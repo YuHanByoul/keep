@@ -139,7 +139,7 @@ public class MenuPrintImpl {
                 menuTag.append("\">\n");
                 if ("D".equals(menuItem1.getType_cd())) { // 메뉴타입코드가 디렉토리인경우
                     mkey = menuItem1.getRef_menuid();
-                    if ("".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
+                    if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
                         menuTag.append("                <a href=\"javascript:void(0)\">\n");
                     } else {
                         menuTag.append("                <a href=\"javascript:goMenu('" + menuItem1.getUrl() + "','"
@@ -193,7 +193,7 @@ public class MenuPrintImpl {
                             menuTag.append("<li>\n");
                             if ("D".equals(menuItem2.getType_cd())) { // 메뉴타입코드가 디렉토리인경우
                                 mkey = menuItem2.getRef_menuid();
-                                if ("".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
+                                if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
                                     menuTag.append("                <a href=\"javascript:void(0)\">\n");
                                 } else {
                                     menuTag.append("                <a href=\"javascript:goMenu('" + menuItem2.getUrl()
@@ -248,7 +248,7 @@ public class MenuPrintImpl {
                                         menuTag.append("<li>\n");
                                         if ("D".equals(menuItem3.getType_cd())) { // 메뉴타입코드가 디렉토리인경우
                                             mkey = menuItem3.getRef_menuid();
-                                            if ("".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
+                                            if (StringUtil.isNumber(menuItem3.getUrl()) || "".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
                                                 menuTag.append("                <a href=\"javascript:void(0)\">\n");
                                             } else {
                                                 menuTag.append("                <a href=\"javascript:goMenu('"
