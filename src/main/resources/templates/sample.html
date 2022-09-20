@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="layout/subLayout1">
+
+<a layout:fragment="back" href="javascript:fnBack()" class="btnBack">이전 페이지</a>
+<div layout:fragment="content" class="mainCont">
+샘플화면
+	<div class="panel-body">
+      <div class="table-responsive">
+        <table class="table table-bordered no-margin">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>프로그램명</th>
+              <th>URL</th>
+              <th>수정일</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${list}">
+              <td th:text="${item.rowNumber}"></td>
+              <td th:text="${item.nm}"></td>
+              <td th:text="${item.url}"></td>
+              <td th:text="${item.updt_dt}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <th:block kattr:pagination="list" onclick="goPage" />
+    
+    <script>
+    	function goPage(page){
+    		location.href = "/sample.html?pageNumber=" + page; 
+    	}
+    </script>
+    
+    <div class="row no-gutter">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>File Upload / Download</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <input type="hidden" name="pfphoto_filegrpid" id="pfphotoFilegrpid" value="0">
+						    <input type="hidden" name="pfphoto_fileid" id="pfphotoFileid" value="0">
+						    <input type="file" name="pfphoto_file" id="pfphotoFile" onclick="uploadFile('pfphotoFile','test', successCallback)">
+						    <div id="fileLink"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <style>
+	    .error-msg { color : red; }
+	</style>
+
+    <script th:inline="javascript">
+
+function successCallback(r) { /*[- (킷캣전용) Android4.4 킷캣에서 파일업로드시 successCallback, fail은 공통처리 -]*/
+    /*[- console.log("Code = " + r.responseCode); -]*/
+    /*[- console.log("Response = " + r.response); -]*/
+    /*[- console.log("Sent = " + r.bytesSent); -]*/
+    fileuploadSuccessCallback(JSON.parse(r.response))
+}
+
+function fileuploadSuccessCallback(response){
+    if(response.result == 'fail'){
+        alert(response.msg);
+    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+        $("#pfphotoFilegrpid").val(response.filegrpid);
+        $("#pfphotoFileid").val(response.fileid);
+        $("#fileLink").html('<a href="javascript:" onclick="downloadFileByFileid(' + response.fileid +',\'' + response.file_idntfc_key +'\')">' + response.orginl_file_nm + '</a>');
+    }
+    closeWorkProgress();
+}
+
+$('#pfphotoFile').on('change', function(event) {
+    var formData = new FormData();
+    var objFile = event.target;
+
+    formData.append("file", objFile.files[0]);
+    formData.append("filegrp_nm", "test");
+    if($('#pfphotoFilegrpid').val() != '')
+        formData.append("filegrpid", $('#pfphotoFilegrpid').val());
+
+    if(displayWorkProgress()){
+	    $.ajax({
+	        url : '/uploadFile.do',
+	        processData : false,
+	        contentType : false,
+	        data : formData,
+	        type : 'POST',
+	        success : function(response) {
+	            fileuploadSuccessCallback(response);
+	        }
+	    });
+	}
+
+    event.preventDefault();
+
+});
+
+    function showToast(){
+        displayWorkProgress();
+        closeWorkProgress();
+                
+        parent.showToast({ header: '알림 제목', message: '알림 내용입니다.', cssClass: 'tabs-bottom', buttons: [
+              {
+                text: '취소',
+                role: 'cancel', /*[- buttons 배열에서 한번만 써야하며 role: 'cancel' 적용시 흰색 텍스트로 적용됨 나머지 버튼은 파란색 텍스트 적용됨. -]*/
+                handler: testCallback
+              },
+              {
+                text: '확인',
+                handler: function() { alert('확인되었습니다.'); }
+              }
+            ] 
+        });
+    }
+     
+    function testCallback(){
+        alert('testCallback called!!');
+    }
+</script>
+<br>
+    <form class="form-horizontal row-border">
+    <div class="row no-gutter">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Toast</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <button type="button" class="btn btn-sm btn-primary" onclick="showToast()">토스트 보기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </form>
+    
+    <div class="row no-gutter">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>SelectBox</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <span kattr:select_code="acnt_lock_cd" grpCd="101" firstOptTxt="선택 안함" addClass=" input-sm " addStyle="margin-left:5px;width:150px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <form id ="userInsertForm">
+        <div class="row no-gutter">
+	        <div class="col-md-6 col-sm-6 col-xs-12">
+	            <div class="panel panel-default">
+	                <div class="panel-heading">
+	                    <h4>Validation</h4>
+	                </div>
+	                <div class="panel-body">
+	                    <div class="form-group">
+	                        <div class="col-md-10">
+	                            <span kattr:select_code="acnt_lock_cd2" grpCd="101" firstOptTxt="선택 안함" addClass=" input-sm " addStyle="margin-left:5px;width:150px;"></span>
+	                        </div>
+	                        <div class="col-md-10">
+	                            <div class="list-row">
+	                                <strong class="control-label">이름 <em class="text-danger">*</em></strong>
+	                                <div class="form-con custom-button">
+	                                    <input type="text" class="form-control input-sm" id="user_nm" name="user_nm">
+	                                    <p class="error-msg"></p>
+	                                </div>
+	                            </div>
+	                            <div class="list-row">
+	                                <strong class="control-label">비밀번호 <em class="text-danger">*</em></strong>
+	                                <div class="form-con custom-button">
+	                                    <input type="password" class="form-control input-sm" id="pwd" name="pwd">
+	                                    <p class="error-msg"></p>
+	                                </div>
+	                            </div>
+	                            <div class="right-align-text">
+	                                <button type="button" class="valid btn btn-sm btn-primary" id="insertMember" onclick="fn_insertMember()" disabled>저장</button>                  
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+    </form>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <script type="text/javascript">
+    var validator= null;
+    
+    $(function(){
+        validator = $("#userInsertForm").validate({
+            rules: {  
+                 acnt_lock_cd2 : { required: true }
+                ,user_nm    :   { required: true ,isBlank : true, maxlength: 100 }  
+                ,pwd        :   { required: true ,isBlank : true , passwordPolicy2 :true , minlength: 8, maxlength: 20 ,isHangulOff :true }  
+            }
+        });
+    });
+            
+    function fn_insertMember(){
+        if(!($("#userInsertForm").valid())) return; // 혹시나 해서 한번 더 체크
+        alert('저장');
+    }
+    
+    $(function() {
+       /* var options = {
+		    //loadingHtml: '<img src="loading.gif" alt="Loading" /> Loading...',
+		    loadingFunction: loadingFunction,
+		    //padding: 20,
+		    nextSelector: '.pagination li a'
+		};
+
+	    $('.jscroll').jscroll(options);  */  
+	});
+        var page = 1;
+    function loadingFunction(){
+        //alert('loadingFunction');
+        //$('.jscroll')[0].innerHTML = page + "<ul class='pagination'><li><a href='/main.html?page=2'></a></li></ul>";
+        page++;
+    }
+    
+    </script>
+    
+    <script th:inline="javascript">
+	    function fnBack(){
+	        location.href = [[@{/main.html}]]; 
+	    }
+	</script>
+	
+	<div class="jscroll">
+    <ul class="pagination">
+        <li><a href="/main.html?page=1"></a></li>
+    </ul>
+    </div>
+</div>
+</html>
