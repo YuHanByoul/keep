@@ -115,7 +115,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		"/test/*",
         		"/sample/*",
         		"/assets/**/*",
-                "/down/**/*"
+                "/down/**/*",
+        		"/ckE/**/*",
+        		"/ckEimg/**/*",
+        		"/exam/**/*",
+        		"/js/ckeditor/**/*"
         ); // 시큐리티를 적용하지 않을 자원들(정적)
     }
 
