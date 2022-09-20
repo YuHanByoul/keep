@@ -1,0 +1,234 @@
+ <form class="form-inline form-horizontal row-border" role="form" id ="pstInsertForm" >
+
+		<div class="panel panel-default">
+	    	<div class="panel-heading" >
+	      		<h4 >> 기본정보</h4>
+	    	</div>
+	        <div class="panel-body">
+					
+		              <div class="form-group  col-md-12 row">
+						  <label class="col-md-2 control-label "><span class="text-danger"></span>게시판명</label>
+						  <div class="col-md-10 form-control-static">
+   			              <label class="form-control-static "><th:block th:text="${paramMap.nm}"/> </label>
+   			              </div>
+					  </div>
+					  
+		              <div class="form-group  col-md-12 row">
+						<label class="col-md-2 control-label form-control-static"><span class="text-danger"> </span>비로그인 조회허용여부</label>
+						<div class="col-md-10 form-control-static">
+   			              <span kattr:radio_yn="nlogin_perm_yn" label1="로그인전 " label2="로그인후 " addClass=" form-control-static "  th:attr="defaultVal=${paramMap.nlogin_perm_yn}" ></span>
+   			             </div>
+					  </div>
+					  
+                     <th:block th:if="${paramMap.cl_use_yn}=='Y'">                          
+		              <div class="form-group  col-md-12 row">
+						<label class="col-md-2 control-label"><span class="text-danger">* </span>글 분류 </label>
+					    <div class="col-md-10 form-control-static  " style="text-align:left;">
+   			               <select id="bbs_clid"  name="bbs_clid"  class="form-control input-sm"  style="width:200px;" >
+					         <option value=""> - 전체 -</option>
+					         <option th:each="item : ${clList}" th:value="${item.bbs_clid}" th:text="${item.cl_nm} "></option>
+					        </select>
+					    </div>                
+					   </div>
+					  </th:block>
+					  
+  		              <div class="form-group  col-sm-12 row">
+						<label class="col-md-2 control-label"><span class="text-danger">* </span>제목</label>
+					    <div class="col-md-10 form-control-static " style="text-align:left;">
+   			              <input type="text"  class="form-control input-sm col-md-10" style="width:800px;" id="title" name= "title" placeholder="제목"  />
+					    </div>               <!-- class="form-control input-sm col-md-10" --> 
+					  </div>
+					  
+                    <th:block th:if="${paramMap.fxd_ntc_use_yn}=='Y'">
+		              <div class="form-group  col-md-12 row">
+						<label class="col-md-2 control-label"><span class="text-danger">* </span>
+						     고정공지여부(<th:block th:text="${paramMap.cur_fxd_ntc_cnt}"/>/<th:block th:text="${paramMap.fxd_ntc_cnt}"/>)
+						</label>
+					    <div class="col-md-2 form-control-static " disabled>
+   			              <span kattr:radio_yn="fxd_ntc_yn" label1="상단고정" label2="미사용"  th:attr="defaultVal=N"  disabled>
+					    </div>                
+                         <label class="control-label">
+                          <!--  <th:block th:if ="${paramMap.cur_fxd_ntc_cnt} =< ${paramMap.fxd_ntc_cnt}"> 이미 고정공지 게시글이 가득차 사용 할수 없습니다.</th:block></label> -->
+                           <th:block th:if ="${paramMap.cur_fxd_ntc_cnt >= paramMap.fxd_ntc_cnt}"> 
+                                                     이미 고정공지 게시글이 가득차 사용 할수 없습니다.
+                               <input type="hidden" id="fxd_ntc_cnt_over_yn" value="Y">
+                           </th:block></label>
+					  </div>
+					  </th:block>
+
+					  
+					  
+		              <div class="form-group  col-md-12 row">
+						<label class="col-md-2 control-label"><span class="text-danger">* </span>내용</label>
+					    <div class="col-md-10  form-control-static" style="text-align:left;">
+   			              <textarea  class="form-control input-sm" id="cntnts" name="cntnts"   style="width:600px; height:100px;" ></textarea>
+					    </div>                
+					  </div>
+					  
+                   <th:block th:if="${paramMap.atchfile_use_yn}=='Y'">
+		              <div class="form-group  col-md-12 row">
+						<label class="col-md-2 control-label"><span class="text-danger">* </span>첨부파일</label>
+					    <div class="form-control-static col-md-9 " style="text-align:left;">
+   			                  <!-- <th:block th:if="${paramMap.atchfile_use_yn} != 'Y' " > 미사용 </th:block> -->
+				                        <div class="multiple-upload" >
+											<label class="btn btn-primary btn-file"> 
+												파일 업로드 <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;">
+											</label>
+											<div class="upload-response">
+												<div id="multipleFileUploadError"></div>
+												<div id="multipleFileUploadSuccess"></div>
+											</div>
+											<input type="hidden"  id = "filegrpid" name = "filegrpid" value='0'/>
+										</div>
+					    </div>                
+					  </div>
+			      </th:block>
+					  <div style= 'text-align : right'> 
+		                <input  type="button" class="btn btn-sm btn-primary" id="insertPst" onclick="fn_insertPst()" value="저장" />
+		                <input type="button" class="btn btn-sm btn-default"  onclick="resetListContent()" value="취소"/>
+	                   </div>
+           </div>
+        </div>
+        
+            <!--hidden 변수 저장  -->
+	   	           <input type="hidden" id="bbsid" name="bbsid"   th:value = "${paramMap.bbsid}" >
+	   	           <input type="hidden" id="login_yn" name= "login_yn"  th:value="${paramMap.nlogin_perm_yn}">
+	   	           <th:block th:if="${paramMap.atchfile_use_yn} == 'Y' ">
+			 	     <input type="hidden" id="atchfile_cnt" name="atchfile_cnt"   th:value = "${paramMap.atchfile_cnt}" >
+			 	     <input type="hidden" id="atchfile_size" name="atchfile_size"   th:value = "${paramMap.atchfile_size}" >
+		           </th:block>
+	        </form>
+	        
+  <script th:inline="javascript" >
+		    var  atchfileCnt = 0 ;
+		    var  atchfileSize = 0;
+	        var editor ;
+		    var uploadFileCnt = 0 ;
+		    
+	        $(function(){
+	        	
+	        	
+	        	if($("#fxd_ntc_cnt_over_yn").val()=='Y'){  $("input[name='fxd_ntc_yn'][value='Y']").attr("disabled","true");}
+	        	
+	        	if($("#atchfile_cnt").val()!= null && $("#atchfile_cnt").val() != 0 ){atchfileCnt = $("#atchfile_cnt").val() }
+			    if($("#atchfile_size").val()!= null && $("#atchfile_size").val() != 0 ){atchfileSize = $("#atchfile_size").val() }
+	        	
+	    		//editor = CKEDITOR.replace('cntnts');
+	    		//에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 ) 
+			    editor =CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
+		        validate();
+		        
+		    	$('#multiFileInput').on("change", function(event) {
+		    		
+			        var objFile = document.querySelector('#multiFileInput');
+			        var formData = new FormData();
+			        var content = "";
+			        
+				    for( i = 0 ; i < objFile.files.length ; i++) {
+		    		
+				    	   if(objFile.files[i].size > (atchfileSize*1024*1024)){
+				    		   alert( atchfileSize + "MG 초과하는 파일은 업로드 하실수 없습니다.  : "+objFile.files[i].name ); 
+				    	   }else if(uploadFileCnt >= atchfileCnt){
+				    		   alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+				    	   }else{
+				    		   formData.append("files", objFile.files[i]);
+				    		   uploadFileCnt++;
+				    	   }
+				    }
+				    
+			        formData.append("filegrpid", $("#filegrpid").val());
+			        
+			        if(uploadFileCnt >0 ){
+			 		    $.ajax({
+							url : '/uploadMultipleFiles.do',
+							processData : false,
+							contentType : false,
+							data : formData,
+							type : 'POST',
+							success : function(response) {
+								if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+									$("#filegrpid").val( response[0].filegrpid );
+								}
+								
+								for(i = 0 ;i < response.length; i++ ){
+									content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginl_file_nm ;
+							        content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =fn_deleteFileList('"+response[i].fileid+"','"+response[i].file_idntfc_key+"') value='X'/></div>"; 
+							        $('#multipleFileUploadSuccess').append(content);
+								}
+							}
+						})
+			           if (detectBrowser() == "other") { 
+						   $("#multiFileInput").val("");
+					   } else {   
+						  $("#multiFileInput").replaceWith( $("#multiFileInput").clone(true)) 
+					   }
+			        }
+			});
+
+	    	  fn_defaultDisplay();
+	    	  $("input").click(function(){
+	    		   fn_defaultDisplay();
+	    	  })
+	       })
+	       
+	       
+	      function fn_defaultDisplay(){
+			   var login_yn=$("input[name='nlogin_perm_yn']:checked").val();
+			   $("#login_yn").val(login_yn);
+			   var fxd_ntc_use_yn=$("input[name='fxd_ntc_use_yn']:checked").val();
+			   if(fxd_ntc_use_yn == "N"){ 
+				   fn_disableTrue("fxd_ntc_strt_dt") ;
+				   fn_disableTrue("fxd_ntc_end_dt");
+			   }else{ 
+				   fn_disableFalse("fxd_ntc_strt_dt") ; 
+				   fn_disableFalse("fxd_ntc_end_dt");
+			   }
+		   }
+	       	
+	       function validate(){
+	         $("#pstInsertForm").validate({
+	       	    ignore: [],
+	 		    rules: {  
+	 		    	  title       : { required: true , maxlength:200  }
+	     	         ,cntnts      : { required: true , maxlength:4000}
+	     	         ,bbs_clid    : { required: true }
+			    },
+			    messages: {  
+			    	  title       : { required: "게시판명을 입력해 주십시오."  , maxlength : "게시판 제목은 200자를 넘을 수 없습니다."  }
+			         ,cntnts      : { required: "게시글 내용을 입력해 주십시오." , maxlength: "게시판 내용은 4000자를 넘을 수 없습니다." }
+			         ,bbs_clid    : { required:"게시글 분류를 선택해주십시오 "}
+			    }
+	 		 });
+	       }
+
+		 	function fn_insertPst(){
+	    	   
+		 	    var editorData = editor.getData();
+		 	    $("#cntnts").val(editorData);
+		 	    if($("#pstInsertForm").valid() == false) return; 
+    	 	    if(!confirm("저장하시겠습니까?")) return;
+ 		        var data =  $("#pstInsertForm").serialize() ;
+ 		        
+				$.ajax({
+					url : "/bbs/insertPst.do",
+					type: 'POST',
+					cache : false,
+					dataType: 'json',
+					data : data,
+					success : function (data){
+						if(data.result=="success"){
+							alert("등록이 완료 되었습니다.");
+							fn_searchForm();
+							toggleContent();
+						}else{
+							alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+						}
+					},
+				 	error : function (error){
+					} 
+				});
+			}
+		 
+   	   </script> 
+   	   
+

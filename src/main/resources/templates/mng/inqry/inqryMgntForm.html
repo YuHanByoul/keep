@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="layout/subLayout" 
+>
+<body>
+	<div layout:fragment="content">
+<script th:inline="javascript">
+	
+	var inqryListUrl = "/mng/inqry/inqryList.do";
+	var inqryDetailUrl = "/mng/inqry/inqryDetailForm.html";
+
+	$(function(){
+		$("#jsGrid").jsGrid({
+	        height: "auto",
+	        width: "100%",
+	        autoload: true,
+	        sorting: false,
+	        paging: true,
+	        pagerContainer: "#listPager",
+	        pagerFormat: "{first} {prev} {pages} {next} {last}",
+	        pagePrevText: "<",
+	        pageNextText: ">",
+	        pageFirstText: "ㅣ<",
+	        pageLastText: ">ㅣ",
+	        noDataContent: "데이터가 없습니다.",
+	        
+	        pageSize: 10,
+	        pageButtonCount: 10,
+	        pageLoading: true,
+	        pageIndex: 1,
+	        
+	        controller: {
+	            loadData: function (filter) {
+	            	var data = $.Deferred();
+	            	
+	            	var formData = $('#searchFrm').serializeArray();
+	            	var params = [
+	            			{name: "pageNumber", value: filter.pageIndex},
+	            			{name: "rowPerPage", value: filter.pageSize},
+	            			{name: "orderField", value: "REG_D"},
+	            			{name: "orderDirection", value: "desc"}
+	            	]
+	            	formData = formData.concat(params);
+	            	
+	                $.ajax({
+	                  type: "GET",
+	                  contentType: "application/json; charset=utf-8",
+	                  url: inqryListUrl,
+	                  data: formData,
+	                  dataType: "json"
+	                }).done(function(response){
+	                	var da = {
+	                            data: escapeGridData(response.list),
+	                            itemsCount: response.totalCount
+	                        };
+	                  data.resolve(da);
+	                });
+	                
+	                return data.promise();
+	            },
+	        },
+	        fields: [ 
+	        	{ title:'번호', name: 'rowNumber', type: "number" , width: "3%", align:"center", sorting: false },
+	        	{ title:'분류', name: 'inqry_cl_nm', type: "text" , width: "5%", align:"center"},
+	            { title:'제목', name: 'title', type: "text" , width: "20%"},
+	            { title:'문의자', name: 'nm', type: "text" , width: "5%", align:"center"},
+	            { title:'문의일자', name: 'reg_d', type: "text" , width: "5%", align:"center"},
+	            { title:'답변일자', name: 'answr_d', type: "text" ,width: "5%", align:"center"},
+	            { title:'답변자', name: 'opetr_nm', type: "text" ,width: "5%", align:"center"},
+	            { name: 'inqryid', visible: false }
+	        ]
+	        /*[# sec:authorize-url="/mng/inqry/inqryDetailForm.html"]*/
+	        ,rowClick: function(args) { loadContent(inqryDetailUrl+'?inqryid='+args.item.inqryid); },
+	        /*[/]*/
+	    });
+	});
+
+	function inqrySearch(){
+		var searchStartDay = $("#searchStartDay").val();
+		var searchEndDay = $("#searchEndDay").val();
+		if(searchStartDay != '' && searchEndDay != '' && searchStartDay > searchEndDay){
+			alert('문의일자 시작일은 종료일보다 커야합니다.');
+			return;
+		}
+		
+		//$("#jsGrid").jsGrid("reset");
+		resetListContent();
+	}
+	
+</script>
+<!-- <form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline" onsubmit="return false;"> -->
+<form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline form-horizontal row-border" onsubmit="return false;">
+	<div class="well well-sm">
+		<div class="row">
+			<div class="col-sm-3">
+			  <div class="form-group col-sm-4">
+			    <label class="control-label form-control-static">문의분류</label>
+			  </div>
+			  <div class="form-group col-sm-6 form-control-static">
+				<th:block kattr:select_code="inqry_cl_cd" grpCd="102" upprCd="0" firstOptTxt="전체" addClass=" input-sm" addStyle="width:200px; padding:0px;"></th:block>
+			  </div>
+			</div>
+			<div class="col-sm-4">
+			  <div class="form-group col-sm-4">
+			    <label class="control-label form-control-static">문의일자</label>
+			  </div>
+			  <div class="form-group col-sm-8 form-control-static">
+				<th:block kattr:date_pic="searchStartDay" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" addClass=" input-sm"></th:block>
+				~
+				<th:block kattr:date_pic="searchEndDay" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" addClass=" input-sm"></th:block>
+			  </div>
+			</div>
+			<div class="col-sm-3">
+			  <div class="form-group col-sm-4">
+			    <label class="control-label form-control-static">답변여부</label>
+			  </div>
+			  <div class="form-group col-sm-6 form-control-static">
+				<select name="searchAnswrYn" id="searchAnswerYn" class="form-control input-sm" style="width:180px; padding:0px;">
+					<option value="">전체</option>
+					<option value="Y">Y</option>
+					<option value="N">N</option>
+				</select>
+				
+			  </div>
+			</div>
+		</div>
+		<div class="row" style="margin-top:10px;">
+			<div class="col-sm-3">
+				<div class="form-group col-sm-4">
+					<label class="control-label form-control-static" style="width:48px">문의자</label>
+				</div>
+				<div class="form-group col-sm-6 form-control-static">
+					<input type="text" name="nm" id="nm" class="form-control input-sm" style="width:200px;">
+				</div>
+			</div>
+			<div class="col-sm-4">
+				<div class="form-group col-sm-4">
+					<label class="control-label form-control-static">문의제목</label>
+				</div>
+				<div class="form-group col-sm-6 form-control-static">
+					<input type="text" name="title" id="title" class="form-control input-sm" style="width:233px">
+				</div>
+			</div>
+			<div class="col-sm-5 text-right">
+				<button type="submit" class="btn btn-sm btn-primary" onclick="inqrySearch()">검색</button>
+			</div>
+		</div>
+	</div>
+</form>	
+	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+		<!-- List Area -->
+		<div class="panel panel-default">
+	    	<div class="panel-heading" role="tab" id="headingOne">
+	      		<h4 class="panel-title">
+	        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
+	      		</h4>
+	    	</div>
+	    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+	      		<div class="panel-body">		
+	      
+					<div class="row">
+						<table id="jsGrid"></table>
+						<div id="listPager" class="text-center"></div>
+					</div>
+			
+				</div>
+			</div>
+		</div>
+		<!-- Content Area -->
+		<div id="contentPanel" class="panel panel-default" style="display:none"></div>
+	</div>
+	<script src="https://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+</div>
+</body>

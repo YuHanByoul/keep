@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : FaqDaoImpl.xml
+    Description : FAQ 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.faq.model.FaqDao">
+    
+    <!-- FAQ리스트 가져옴 -->
+    <select id="getList" parameterType="FaqVo" resultType="FaqVo">
+        /* FaqDao.getList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.CLID,
+            A.USER_SE_CD,
+            A.FAQID,
+            A.TITLE,
+            A.CNTNTS,
+            A.ORD as ord,
+            A.USE_YN,
+            A.UPDT_DT,
+            CONVERT(A.REG_DT, CHAR(10)) AS REG_DT,
+            B.CL_NM cl_nm
+        FROM
+            TB_FAQ A,
+            TB_FAQ_CL B
+        WHERE 1=1
+            AND A.CLID = B.CLID
+            <if test='clid != null and clid !="" '>
+            AND A.CLID = #{clid}
+            </if> 
+            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(use_yn)'>
+            AND A.USE_YN = #{use_yn}
+            </if>
+            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(user_se_cd)'>
+            AND A.USER_SE_CD = #{user_se_cd}
+            </if>
+            <if test="searchType != null and searchType.trim() == 'title' and searchKeyword !='' "> 
+            AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType != null and searchType.trim() == 'cntnts' and searchKeyword !='' ">
+            AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- FAQ 내용을 가져옴 -->
+    <select id="getFaq" parameterType="FaqVo" resultType="FaqVo">
+        /* FaqDao.getFaq */
+    	SELECT
+    		CLID, FAQID, TITLE, USER_SE_CD, CNTNTS, ORD, USE_YN, UPDT_DT, REG_DT
+    	FROM
+    		TB_FAQ
+    	WHERE
+    		FAQID = #{faqid}
+    </select>
+    
+    <!-- FAQ 추가 -->
+    <insert id="addFaq" useGeneratedKeys="true" keyProperty="faqid" parameterType="FaqVo">
+        /* FaqDao.addFaq */
+	    <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
+            SELECT 
+                IFNULL (Max(ORD),0) +1
+            FROM 
+                TB_FAQ
+            WHERE 1=1
+                <!--  AND CLID=#{clid} --> 
+                AND USER_SE_CD = #{user_se_cd}
+        </selectKey>
+        INSERT INTO TB_FAQ 
+            (CLID, TITLE, CNTNTS, USER_SE_CD, ORD, USE_YN, UPDT_DT, REG_DT,UPDTUSERID, REGUSERID) 
+        VALUES 
+            (#{clid}, #{title}, #{cntnts}, #{user_se_cd}, #{ord}, #{use_yn}, NOW(), NOW(), #{user.userid} ,#{reguserid})
+    </insert>
+    
+    <!-- FAQ 수정 -->
+    <update id="updateFaq" parameterType="FaqVo">
+        /* FaqDao.updateFaq */
+    	UPDATE TB_FAQ SET
+    		CLID = #{clid},
+    		USER_SE_CD = #{user_se_cd},
+    		TITLE = #{title},
+    		CNTNTS = #{cntnts},
+    		ORD = #{ord},
+    		USE_YN = #{use_yn},
+    		UPDT_DT = NOW(),
+    		UPDTUSERID = #{user.userid}
+    	WHERE 1=1
+    	  AND FAQID = #{faqid}
+    		<!-- <if test='reguserid != null and reguserid != 0'>
+    	     AND REGUSERID = #{reguserid}
+    		</if> -->
+    </update>
+    
+    <!-- FAQ 삭제 -->
+    <delete id="deleteFaq"  parameterType="FaqVo">
+        /* FaqDao.deleteFaq */
+    	DELETE FROM TB_FAQ 
+    	WHERE 1=1
+    	  AND FAQID = #{faqid}
+    		
+<!--     		<if test='reguserid != null and reguserid != 0'>
+    		AND REGUSERID = #{user.userid}
+    		</if>    		 -->
+    </delete>
+    
+    <!-- FAQ 순서 변경(UP)  -->
+   	<update id="modifyFaqOrdUp" parameterType="FaqVo">
+   	    /* FaqDao.modifyFaqOrdUp */
+        UPDATE TB_FAQ
+            SET 
+            ORD = ORD + 1
+        WHERE 
+            ORD   = #{ord}
+            AND USER_SE_CD  = #{user_se_cd}
+	</update>
+	
+    <!-- FAQ 순서 변경(DOWN)  -->
+    <update id="modifyFaqOrdDown" parameterType="FaqVo" >
+        /* FaqDao.modifyFaqOrdDown */
+        UPDATE TB_FAQ
+            SET 
+            ORD = ORD - 1
+        WHERE 
+            ORD   = #{ord} 
+            AND USER_SE_CD  = #{user_se_cd} 
+    </update>
+	
+	<!-- FAQ 순서 직접 수정 -->
+	<update id="modifyFaqOrdByfaqid" parameterType="FaqVo" >
+        /* FaqDao.modifyFaqOrdByfaqid */
+        UPDATE TB_FAQ
+            SET 
+            ORD =  #{ord}
+        WHERE 
+            FAQID = #{faqid}
+	</update>
+</mapper>

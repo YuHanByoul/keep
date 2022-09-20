@@ -1,0 +1,96 @@
+<!-- Hidden Contents Start -->
+<div class="panel panel-default" id="hiddenCon">
+	<!-- Hidden Contents Title Start -->
+	<div class="panel-heading trans"><strong>상세</strong></div>
+	<!-- Hidden Contents Title End -->
+
+	<!-- Tab Menu Start -->
+	<ul id="myTab" class="nav nav-tabs">
+	<th:block sec:authorize-url="/mng/member/memberModifyForm.html"><li><a href="#tabCon1" data-toggle="tab" id="tabCon1Link">회원정보</a></li></th:block>
+	<th:block sec:authorize-url="/mng/member/emailReceiveHistoryForm.html"><li><a href="#tabCon5" data-toggle="tab" id="tabCon5Link">메일 수신내역</a></li></th:block>
+	<th:block sec:authorize-url="/mng/member/loginHistoryForm.html"><li><a href="#tabCon6" data-toggle="tab" id="tabCon6Link">접속정보</a></li></th:block>
+	</ul>
+	<!-- Tab Menu End -->
+
+	<!-- Tab Container Start -->
+	<div id="myTabContent" class="tab-content">
+	</div>
+	<!-- Tab Container End -->
+</div>
+<!-- Hidden Contents End -->
+       
+<script th:inline="javascript">
+
+    var userid = [[${param.userid}]];
+	       
+	$('.nav-tabs a').on('show.bs.tab', function(event) {
+	    var tabId = event.currentTarget.attributes.id.value;
+	    selectTab(tabId);
+	});
+			
+	function selectTab(tabId) {
+		if(tabId == "tabCon1Link") {
+	    	loadTabContent("/mng/member/memberModifyForm.html?userid=" + userid);
+	    } else if(tabId == "tabCon2Link") {
+	    	loadTabContent("/mng/member/hhServiceHistoryForm.html?userid=" + userid);
+	    } else if(tabId == "tabCon3Link") {
+	    	loadTabContent("/mng/member/notiHistoryForm.html?userid=" + userid);
+	    } else if(tabId == "tabCon4Link") {
+	    	loadTabContent("/mng/member/smsReceiveHistoryForm.html?userid=" + userid);
+	    } else if(tabId == "tabCon5Link") {
+	    	loadTabContent("/mng/member/emailReceiveHistoryForm.html?userid=" + userid);
+	    } else if(tabId == "tabCon6Link") {
+	    	loadTabContent("/mng/member/loginHistoryForm.html?userid=" + userid);
+	    }
+		$("#" + tabId).parent().addClass("active");
+	}
+	
+	function loadTabContent(uri){
+		$('#myTabContent').load(uri);
+		showContent(); 
+		hideList();
+	}
+	
+	function initTab() {
+		var tabFlag = false;
+		/*[# sec:authorize-url="/mng/member/memberModifyForm.html"]*/
+		if(tabFlag == false) {
+			selectTab("tabCon1Link");
+			tabFlag = true;
+		}
+		/*[/]*/
+		/*[# sec:authorize-url="/mng/member/hhServiceHistoryForm.html"]*/
+		if(tabFlag == false) {
+			selectTab("tabCon2Link");
+			tabFlag = true;
+		}
+		/*[/]*/
+		/*[# sec:authorize-url="/mng/member/notiHistoryForm.html"]*/
+		if(tabFlag == false) {
+			selectTab("tabCon3Link");
+			tabFlag = true;
+		}
+		/*[/]*/
+		/*[# sec:authorize-url="/mng/member/smsReceiveHistoryForm.html"]*/
+		if(tabFlag == false) {
+			selectTab("tabCon4Link");
+			tabFlag = true;
+		}
+		/*[/]*/
+		/*[# sec:authorize-url="/mng/member/emailReceiveHistoryForm.html"]*/
+		if(tabFlag == false) {
+			selectTab("tabCon5Link");
+			tabFlag = true;
+		}
+		/*[/]*/
+		/*[# sec:authorize-url="/mng/member/loginHistoryForm.html"]*/
+		if(tabFlag == false) {
+			selectTab("tabCon6Link");
+			tabFlag = true;
+		}
+		/*[/]*/
+	}
+	
+	initTab();
+	
+</script>

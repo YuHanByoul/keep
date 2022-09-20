@@ -1,0 +1,338 @@
+<form class=" form-horizontal row-border" id="siteRegForm">
+    <input type="hidden" name="siteid" th:value="${siteInfo.siteid}">
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4>기본정보</h4>			
+		</div>
+		<div class="panel-body">
+			<div class="form-group">
+				<label for="inputEmail3" class="col-sm-2 control-label"><spanclass="text-danger">* </span>사이트아이디</label>
+				<div class="col-sm-10 form-control-static">
+					<h6>
+						<th:block th:text="${siteInfo.siteid}" />
+					</h6>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="clid" class="col-sm-2 control-label"><span class="text-danger">*</span>시스템구분</label>
+				<div class="col-sm-10 form-control-static">
+                    <input type="radio" name="sys_se_cd" value="U" id="sys_se_cd1" th:checked="${siteInfo.sys_se_cd == 'U'}"><label for="sys_se_cd1">사용자</label>
+                    <input type="radio" name="sys_se_cd" value="A" id="sys_se_cd2" th:checked="${siteInfo.sys_se_cd == 'A'}"><label for="sys_se_cd2">관리자</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>사이트 이름</label>
+				<div class="col-sm-10 form-control-static">
+					<input type="text" class="form-control input-sm" id="site_nm" name="site_nm" required placeholder="이름" th:value="${siteInfo.site_nm}">
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label for="clid" class="col-sm-2 control-label"><span class="text-danger">*</span>사용여부</label>
+				<div class="col-sm-10 form-control-static">
+					<input type="radio" name="use_yn" value="Y" id="use_yn1" th:checked="${siteInfo.use_yn == 'Y'}"><label for="use_yn1">사용</label>
+					<input type="radio" name="use_yn" value="N" id="use_yn2" th:checked="${siteInfo.use_yn == 'N'}"><label for="use_yn2">미사용</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10 text-right">
+					<input type="button" class="btn btn-primary" onclick="handlerSiteForm()" value="저장" />
+					<a href="#" class="btn btn-default" onclick="toggleContent()"> 취소 </a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</form>
+
+    <div class="panel panel-default" style="margin-top: 30px;" th:if="${siteInfo.siteid}">
+        <div class="panel-heading">
+            <h4>도메인정보</h4>
+            <div class="pull-right">
+                <button type="button" class="btn btn-xs btn-warning" onclick="handlerForAddSiteClick()">도메인 추가</button>
+            </div>
+            
+        </div>
+        <div class="panel-body">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th scope="col" class="col-sm-2 text-center">도메인</th>
+						<th scope="col" class="text-center">도메인 설명</th>
+						<th scope="col" class="col-sm-1">&nbsp;</th>
+					</tr>
+				</thead>
+				<tbody id="domainList">
+					<tr th:each="dmnInfo : ${siteInfo.siteDomainList}">
+						<th scope="row">
+						  <input type="hidden" class="siteid" name="siteid" th:value="${siteInfo.siteid}">
+						  <input type="hidden" id="dmn_org" name="dmn_org" th:value="${dmnInfo.dmn}">
+						  <input type="text" class="form-control input-sm" id="dmn" name="dmn" required th:value="${dmnInfo.dmn}">
+						</th>
+						<td><input type="text" class="form-control input-sm" id="dmn_dc" name="dmn_dc" required th:value="${dmnInfo.dmn_dc}"></td>
+						<td class="text-center">
+						      <button type="button" class="btn btn-xs btn-primary" onclick="handlerModifyDmn()" th:attr="data-siteid=${siteInfo.siteid}">수정</button>
+						      <button type="button" class="btn btn-xs btn-warning" onclick="handlerDeleteDmn()" th:attr="data-siteid=${siteInfo.siteid}">삭제</button>
+						</td>
+					</tr>
+					
+				</tbody>
+			</table>
+	
+            <table id="addDomainTmp" style="display:none">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-sm-2 text-center">도메인</th>
+                        <th scope="col" class="text-center">도메인 설명</th>
+                        <th scope="col" class="col-sm-1">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">
+                            <input type="hidden" class="siteid" name="siteid" th:value="${siteInfo.siteid}">
+                            <input type="hidden" id="dmn_org" name="dmn_org">
+                            <input type="text" class="form-control input-sm" id="dmn" name="dmn" required >
+                        </th>
+                        <td>
+                            <input type="text" class="form-control input-sm" id="dmn_dc" name="dmn_dc" required >
+                        </td>
+                        <td class="text-center">
+                              <button type="button" class="btn btn-xs btn-primary" onclick="handlerInsertDmn()">저장</button>
+                              <button type="button" class="btn btn-xs btn-warning" onclick="handlerCancelDmn()">취소</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+    	
+		</div>
+    </div>
+
+    
+    <script>
+
+        /**======================================================
+        도메인 관련 함수들 
+        ======================================================**/
+        function handlerModifyDmn(){
+            var frm = $(event.target).parent().parent();
+            
+            var siteid = $('input[name=siteid]', frm).val();
+            var dmn_org = $('input[name=dmn_org]', frm).val();
+            var dmn = $('input[name=dmn]', frm).val();
+            var dmn_dc = $('input[name=dmn_dc]', frm).val();
+            
+            if(dmn == ""){
+                alert('도메인을 입력해 주세요!');
+                return false;
+            }
+            if( !chkDomain(dmn) ) return false;
+            
+            if(!confirm('저장하시겠습니까?')) return false;
+
+            var actionURL = "/mng/site/updateSiteDomain.do"
+            var params = {
+                siteid: siteid,
+                dmn_org: dmn_org,
+                dmn: dmn,
+                dmn_dc: dmn_dc
+            }
+
+            $.ajax({
+                url : actionURL,
+                contentType: "application/json; charset=utf-8",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data :JSON.stringify(params),
+                success : function (data){
+                    console.log('Result: ' + data.result);
+                    if(data.result == "success"){
+                        alert("수정되었습니다.");
+                    }else{
+                    	alert("수정에 실패했습니다.\n도메인이 중복되었거나, 잘 못 되었을 수 있습니다.\n확인 후 다시 이용해 주세요.");
+                    }
+                },
+                error : function (error){
+                } 
+            });
+            
+        }
+        
+        function chkDomain(dmn){
+        	if(dmn === undefined || dmn == null || dmn == "") return false;
+        	
+            if( /^http(s)*/i.test(dmn) ){
+                alert("http나 https를 제외하고 도메인만 등록해 주세요!");
+                return false;
+            }
+            
+            if( /[^((http(s?))\:\/\/)]([0-9a-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:[0-9]+)?(\/\S*)?$/.test(dmn) ){
+                alert("도메인 형식에 맞지 않습니다.");
+                return false;
+            }
+            
+            if( /(\:[0-9]+)$/.test(dmn) ){
+                alert("도메인에 포트(port)를 추가하실 수 없습니다.");
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function handlerDeleteDmn(){
+            if(!confirm("정말 삭제 하시겠습니까?")) return false;
+            
+            var frm = $(event.target).parent().parent();
+            
+            var siteid = $('input[name=siteid]', frm).val();
+            var dmn_org = $('input[name=dmn_org]', frm).val();
+            
+            var actionURL = "/mng/site/deleteSiteDomain.do";
+            var params = {
+                siteid: siteid,
+                dmn: dmn_org,
+            }
+
+            $.ajax({
+                url : actionURL,
+                contentType: "application/json; charset=utf-8",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data :JSON.stringify(params),
+                success : function (data){
+                    console.log('Result: ' + data.result);
+                    if(data.result == "success"){
+                        alert("삭제되었습니다.");
+                        frm.remove();
+                        
+                    }else{
+                        alert("삭제에 실패했습니다.\n잠시 후 다시 이용해 주세요.");
+                    }
+                },
+                error : function (error){
+                }
+            });
+        }
+        
+        function handlerInsertDmn(){
+            var frm = $(event.target).parent().parent();
+            
+            var siteid = $('input[name=siteid]', frm).val();
+            var dmn = $('input[name=dmn]', frm).val();
+            var dmn_dc = $('input[name=dmn_dc]', frm).val();
+            
+            var actionURL = "/mng/site/insertSiteDomain.do";
+            var params = {
+                siteid: siteid,
+                dmn: dmn,
+                dmn_dc: dmn_dc
+            }
+
+            $.ajax({
+                url : actionURL,
+                contentType: "application/json; charset=utf-8",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data :JSON.stringify(params),
+                success : function (data){
+                    console.log('Result: ' + data.result);
+                    if(data.result == "success"){
+                        alert("추가 되었습니다.");
+                        loadDomainInfo(data.siteid)
+                    }else{
+                        alert("추가에 실패했습니다.\n도메인이 중복되었거나, 잘 못 되었을 수 있습니다.\n확인 후 다시 이용해 주세요.");
+                        
+                    }
+                },
+                error : function (error){
+                }
+            });        	
+        }
+
+        function handlerCancelDmn(){
+            $(event.target).parent().parent().remove();
+        }
+
+        /**======================================================
+        사이트 관련 함수들 
+        ======================================================**/
+        function handlerForAddSiteClick(){
+            $('#domainList').append($('#addDomainTmp tbody tr').clone());
+        }
+        
+        function handlerSiteForm(){
+            var f = document.forms.siteRegForm;
+            var actionURL = "";
+            
+            if(!chkSiteForm()) return;
+            
+            if(f.siteid.value == ''){
+                if(!confirm('등록하시겠습니까?')) return ;
+                actionURL = "/mng/site/insertSite.do";
+            }else{
+                if(!confirm('수정하시겠습니까?')) return ;
+                actionURL = "/mng/site/updateSite.do";
+            }
+            
+            var params = {
+                siteid: f.siteid.value,
+                sys_se_cd: $('#siteRegForm input:radio[name=sys_se_cd]:checked').val(),
+                site_nm: f.site_nm.value,
+                use_yn: $("#siteRegForm input:radio[name=use_yn]:checked").val()
+            }
+
+            $.ajax({
+                url : actionURL,
+                contentType: "application/json; charset=utf-8",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data :JSON.stringify(params),
+                success : function (data){
+                    console.log('Result: ' + data.result);
+                    if(data.result == "success"){
+                    	$("#jsGrid").jsGrid("reset");
+                    	toggleContent();
+                    }else{
+                        alert("처리에 실패했습니다.\n잠시 후 다시 이용해 주세요.");
+                    }
+                },
+                error : function (error){
+                } 
+            });
+        }
+        
+        function chkSiteForm(){
+        	var f = document.forms.siteRegForm;
+        	
+        	if($('#siteRegForm input:radio[name=sys_se_cd]:checked').val() === undefined){
+        		alert('시스템 구분을 선택해 주십시요!');
+        		$("input[name=sys_se_cd]").focus();
+        		return false;
+        	}
+
+            if($("input[name=site_nm]").val() == ""){
+                alert('사이트 이름을 입력해 주십시요!');
+                $("input[name=site_nm]").focus();
+                return false;
+            }
+
+            if($('#siteRegForm input:radio[name=use_yn]:checked').val() === undefined){
+                alert('사용여부를 선택해 주십시요!');
+                $("input[name=use_yn]").focus();
+                return false;
+            }
+            
+            return true;
+        }
+    
+    </script>
+        
+</body>
+</html>

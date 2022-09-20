@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : PrgrmDaoImpl.xml
+	Description : 프로그램관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.prgrm.model.PrgrmDao">
+	
+	<!-- 프로그램 트리 -->
+	<select id="selectPrgrmTreeList" resultType="com.kbrainc.plum.rte.lib.tree.TreeItem">
+		/* PrgrmDao.selectPrgrmTreeList */
+		WITH RECURSIVE PRGRM_CTE
+		AS (
+		    SELECT 
+				IFNULL(UPPR_PRGRMID , '') PKEY,
+				PRGRMID `KEY`,
+				NM  TITLE,
+				TYPE_CD EXT2,
+				CONVERT(RIGHT(CONCAT('0000', ORD), 4), VARCHAR(255)) AS TREE_ORD
+		     FROM TB_PRGRM
+			WHERE UPPR_PRGRMID = 0
+			UNION ALL
+			SELECT 	            
+				IFNULL(UPPR_PRGRMID , '') PKEY,
+				PRGRMID `KEY`,
+				NM  TITLE,
+				TYPE_CD EXT2,
+				CONVERT(CONCAT(C.TREE_ORD, RIGHT(CONCAT('0000', P.ORD), 4)), VARCHAR(255)) AS TREE_ORD
+		     FROM TB_PRGRM P, PRGRM_CTE C
+			WHERE UPPR_PRGRMID = C.KEY
+		)
+		SELECT PKEY, `KEY`, TITLE, EXT2
+		  FROM PRGRM_CTE
+		ORDER BY TREE_ORD
+	</select>
+	
+	<!-- 프로그램 상세 -->
+	<select id="selectPrgrmView" resultType="PrgrmVo" parameterType="Integer">
+        /* PrgrmDao.selectPrgrmView */	
+		SELECT 
+		  A.PRGRMID
+		  , A.NM
+		  , A.TYPE_CD
+		  , A.URL
+		  , A.UPPR_PRGRMID
+		  , A.DC
+		  , A.LOGIN_YN
+		  , A.ORD
+		  , (SELECT NM FROM TB_PRGRM WHERE PRGRMID = A.UPPR_PRGRMID) UPPR_PRGRM_NM
+		FROM TB_PRGRM A
+		WHERE A.PRGRMID = #{prgrmid}
+	</select>
+	
+	<!-- 프로그램 등록 -->
+	<insert id="insertPrgrm" parameterType="PrgrmVo" useGeneratedKeys="true" keyProperty="prgrmid">
+	    /* PrgrmDao.insertPrgrm */
+		INSERT INTO TB_PRGRM
+		(NM, TYPE_CD, URL, UPPR_PRGRMID, DC, LOGIN_YN, ORD, REGUSERID, REG_DT, UPDTUSERID, UPDT_DT
+		)
+		VALUES
+		(#{nm}, #{type_cd}, #{url}, #{uppr_prgrmid}, #{dc}, #{login_yn},
+			(SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_PRGRM A WHERE A.UPPR_PRGRMID = #{uppr_prgrmid}),
+			 #{user.userid}, NOW(), #{user.userid}, NOW()
+		)
+	</insert>
+	
+	<!-- 프로그램 수정 -->
+	<update id="updatePrgrm" parameterType="PrgrmVo">
+	    /* PrgrmDao.updatePrgrm */
+		UPDATE TB_PRGRM SET
+			NM = #{nm}
+			, TYPE_CD = #{type_cd}
+			, URL = #{url}
+			, DC = #{dc}
+			, LOGIN_YN = #{login_yn}
+			, UPDTUSERID = #{user.userid}
+			, UPDT_DT = NOW()
+		WHERE PRGRMID = #{prgrmid}
+	</update>
+	
+	<!-- 프로그램 순서재조정 자리세팅 -->
+	<update id="updatePrgrmReOrder" parameterType="PrgrmVo">
+	    /* PrgrmDao.updatePrgrmReOrder */
+		UPDATE TB_PRGRM SET
+		<if test="upperYn == 'Y'.toString()">
+			ORD = ORD + 1	
+			WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid}, ((SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T)  )) 			
+			<if test="hitMode == 'before'">
+				AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T1)
+				AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM  A WHERE A.PRGRMID = #{tprgrmid}) T1) 
+			</if>
+			<if test="hitMode == 'after'">			
+				AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRM_ID = #{prgrmid}) T1)
+				AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRM_ID = #{tprgrmid}) T1)
+			</if>	
+		</if>
+		<if test="upperYn == 'N'.toString()">
+			ORD = ORD - 1
+			WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid}, ((SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T)  ))
+			<if test="hitMode == 'before'">
+				AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM  A WHERE A.PRGRMID = #{tprgrmid}) T1)
+				AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T1)
+			</if>
+			<if test="hitMode == 'after'">
+				AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRMID = #{tprgrmid}) T1)
+			<!-- <if test="menuid != null and menuid != ''">
+				AND ORD <![CDATA[<= ]]> (SELECT T1.ORD FROM(SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRM_ID = #{prgrmid}) T1)
+				</if> -->
+			</if>
+		</if>			
+	</update>
+	
+	<!-- 프로그램 순서재조정 자리세팅 -->
+	<update id="updatePrgrmReOrderPrnDiff" parameterType="PrgrmVo">
+	    /* PrgrmDao.updatePrgrmReOrderPrnDiff */
+		UPDATE TB_PRGRM SET
+				ORD = ORD+1
+				WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid},(SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T))
+				<if test="hitMode == 'before'">
+					AND ORD <![CDATA[>= ]]> (SELECT T.ORD FROM (SELECT ORD FROM TB_PRGRM WHERE PRGRMID = #{prgrmid}) T)
+				</if>
+				<if test="hitMode == 'after'">		
+					AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_PRGRM WHERE PRGRMID = #{prgrmid})T)
+				</if>
+	</update>
+	
+	<!-- 프로그램 순서재조정 자리세팅 -->
+	<update id="updatePrgrmReOrderPrnDiffOrgin" parameterType="PrgrmVo">
+	    /* PrgrmDao.updatePrgrmReOrderPrnDiffOrgin */
+		UPDATE TB_PRGRM SET
+		ORD = ORD-1
+			WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid},(SELECT T.UPPR_PRGRMID FROM(SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{tprgrmid})T ))
+				AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_PRGRM WHERE PRGRMID = #{tprgrmid}) T) 		
+	</update>
+	
+	<!--  프로그램 순서재조정 -->
+	<update id="updatePrgrmOrderInfo" parameterType="PrgrmVo">
+	    /* PrgrmDao.updatePrgrmOrderInfo */
+		UPDATE TB_PRGRM SET
+	        ORD = #{ord}
+	    WHERE PRGRMID = #{tprgrmid}
+	</update>
+	
+	<!-- 프로그램 순서조정시 부모코드, prgrm_ord 조정 -->
+	<update id="updatePrarmTreeInfo" parameterType="PrgrmVo">
+	    /* PrgrmDao.updatePrarmTreeInfo */
+		UPDATE TB_PRGRM SET
+			UPPR_PRGRMID = #{uppr_prgrmid}
+			<if test="hitMode == 'over'">
+			,ORD = (SELECT T.ORD FROM(SELECT IFNULL(MAX(A.ORD),0) +1 AS ORD
+						   FROM TB_PRGRM A 
+						   WHERE A.UPPR_PRGRMID = #{uppr_prgrmid}) T)
+			</if>
+			<if test="hitMode != 'over'">
+			,ORD =  #{ord}
+			</if>
+			WHERE PRGRMID = #{tprgrmid}
+	</update>
+	
+	<!-- 자식 프로그램 리스트 -->
+	<select id="selectPrgrmChildTreeList" parameterType="PrgrmVo" resultType="PrgrmVo">
+		/* PrgrmDao.selectPrgrmChildTreeList */
+		<if test="prgrmid != '0'.toString()">
+		WITH RECURSIVE PRGRM_CTE(UPPR_PRGRMID, PRGRMID, NM, TYPE_CD)
+		AS (
+		    SELECT 	            
+				UPPR_PRGRMID,
+				PRGRMID,
+				NM,
+				TYPE_CD
+		     FROM TB_PRGRM
+			WHERE PRGRMID = #{prgrmid}
+			UNION ALL
+			SELECT 	            
+				P.UPPR_PRGRMID,
+				P.PRGRMID,
+				P.NM,
+				P.TYPE_CD
+		     FROM TB_PRGRM P, PRGRM_CTE C
+			WHERE P.UPPR_PRGRMID = C.PRGRMID
+		)
+		SELECT PRGRMID, NM, TYPE_CD
+		  FROM PRGRM_CTE
+		</if>		
+	</select>
+	
+	<!-- 프로그램이 연결된 메뉴 리스트 -->
+	<select id="selectPrgrmConnctMenuList" parameterType="PrgrmVo" resultType="java.util.Map">
+		/* PrgrmDao.selectPrgrmConnctMenuList */
+		SELECT MENUID , NM 
+		FROM TB_MENU WHERE PRGRMID = #{prgrmid}
+	</select>
+	
+	<!-- 프로그램 정보 삭제 -->
+	<delete id="deletePrgrm" parameterType="PrgrmVo">
+		/* PrgrmDao.deletePrgrm */
+	    <if test="prgrmid != '0'.toString()">
+            DELETE FROM TB_PRGRM WHERE PRGRMID IN (
+                WITH RECURSIVE PRGRM_CTE(UPPR_PRGRMID, PRGRMID) AS (
+                    SELECT
+                        UPPR_PRGRMID, PRGRMID
+                    FROM 
+                        TB_PRGRM
+                    WHERE 
+                        PRGRMID = #{prgrmid}
+                    UNION ALL
+                    SELECT 
+                        P.UPPR_PRGRMID, P.PRGRMID
+                    FROM 
+                        TB_PRGRM P, PRGRM_CTE C
+                    WHERE 
+                        P.UPPR_PRGRMID = C.PRGRMID
+                ) SELECT PRGRMID FROM PRGRM_CTE
+	       )
+	    </if>		
+	</delete>
+</mapper>

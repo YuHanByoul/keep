@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kbrainc.plum.mng.pop.model.PopDao">
+
+    <insert id="insertPopUpNtc" parameterType="PopUpNtcVo">
+        INSERT into TB_POPUPNTC
+        (
+            title            
+            ,cntnts           
+            ,expsr_lc_cd      
+            ,menuid           
+            ,siteid           
+            ,login_need_yn    
+            ,popup_type_cd    
+            ,strt_dt           
+            ,end_dt            
+            ,width_size       
+            ,vrtcl_size       
+            ,top_lc           
+            ,left_lc          
+            ,ntc_trgt_cd      
+            ,ntc_trgt_roleid  
+            ,updt_dt          
+            ,updtuserid       
+            ,reg_dt           
+            ,reguserid        
+        )VALUES(
+             #{title           } 
+            ,#{cntnts          } 
+            ,#{expsr_lc_cd     } 
+            ,#{menuid          } 
+            ,#{siteid          } 
+            ,#{login_need_yn   } 
+            ,#{popup_type_cd   } 
+            ,#{strt_dt         } 
+            ,#{end_dt          } 
+            ,#{width_size      } 
+            ,#{vrtcl_size      } 
+            ,#{top_lc          } 
+            ,#{left_lc         } 
+            ,#{ntc_trgt_cd     } 
+            ,#{ntc_trgt_roleid }  
+            ,NOW() 
+            ,#{user.userid     } 
+            ,NOW() 
+            ,#{user.userid     }
+        )
+    
+    </insert>
+    
+   <update id="updatePopUpNtc" parameterType="PopUpNtcVo">
+        UPDATE TB_POPUPNTC
+          SET
+            title             =  #{title           } 
+            ,cntnts           =  #{cntnts          } 
+            ,expsr_lc_cd      =  #{expsr_lc_cd     } 
+            ,menuid           =  #{menuid          } 
+            ,siteid           =  #{siteid          } 
+            ,login_need_yn    =  #{login_need_yn   } 
+            ,popup_type_cd    =  #{popup_type_cd   } 
+            ,strt_dt          =  #{strt_dt         } 
+            ,end_dt           =  #{end_dt          } 
+            ,width_size       =  #{width_size      } 
+            ,vrtcl_size       =  #{vrtcl_size      } 
+            ,top_lc           =  #{top_lc          } 
+            ,left_lc          =  #{left_lc         } 
+            ,ntc_trgt_cd      =  #{ntc_trgt_cd     } 
+            ,ntc_trgt_roleid  =  #{ntc_trgt_roleid } 
+            ,updt_dt          =  NOW()           
+            ,updtuserid       =  #{user.userid     }
+        WHERE  popupntcid = #{popupntcid}
+   </update>
+    
+    
+ <select id="selectPopUpNtcList"  parameterType="PopUpNtcVo" resultType="PopUpNtcVo" >
+   <include refid="PaginationMapper.header"/>
+    SELECT 
+      A.POPUPNTCID                 popupntcid   
+     ,A.TITLE                      title         
+     ,A.CNTNTS                     cntnts         
+     ,A.expsr_lc_cd  
+     ,A.MENUID                     menuid     
+     ,A.SITEID                     sitid     
+     ,A.LOGIN_NEED_YN              login_need_yn
+     ,A.POPUP_TYPE_CD              popup_type_cd   
+     ,A.STRT_DT                    strt_dt
+     ,A.END_DT                     end_dt
+     ,A.WIDTH_SIZE                 width_size
+     ,A.VRTCL_SIZE                 vrtcl_size
+     ,A.TOP_LC                     top_lc
+     ,A.LEFT_LC                    left_lc         
+     ,A.NTC_TRGT_CD                ntc_trgt_cd          
+     ,A.ntc_trgt_roleid            ntc_trgt_roleid 
+     ,CONVERT(A.UPDT_DT, CHAR(10)) updt_dt         
+     ,A.UPDTUSERID      
+     ,A.REG_DT          
+     ,A.REGUSERID
+     ,B.NM                         upd_nm
+     ,CASE 
+        WHEN STRT_DT <![CDATA[> ]]> CONVERT(NOW(), CHAR(10))  THEN '대기'
+        WHEN END_DT  <![CDATA[< ]]> CONVERT(NOW(), CHAR(10))  THEN '만료'
+        ELSE '진행'
+      END pop_sts
+   FROM  
+    TB_POPUPNTC A,
+    TB_USER B
+   WHERE 1=1
+         AND A.UPDTUSERID = B.USERID
+        <if test="siteid != null and siteid!='' ">
+         AND A.SITEID = #{siteid}
+        </if>
+        <if test="expsr_lc_cd != null and expsr_lc_cd.trim()!= ''">
+         AND A.expsr_lc_cd = #{expsr_lc_cd}
+        </if>
+        <if test="searchType != null and searchType.trim() == 'titile' and searchKeyword !='' "> 
+         AND A.TITLE LIKE '%'+#{searchKeyword}+'%'
+        </if>
+        <if test="searchType != null and searchType.trim() == 'cntnts' and searchKeyword !='' ">
+         AND A.CNTNTS LIke '%'+#{searchKeyword}+'%'
+        </if>
+         AND ( 1=2 
+            <if test="pop_sts1 != null and pop_sts1 != ''">
+               or CONVERT(NOW(), CHAR(10)) BETWEEN STRT_DT AND END_DT 
+            </if>
+            <if test="pop_sts2 != null and pop_sts2 != ''">
+               or STRT_DT <![CDATA[> ]]>  CONVERT(NOW(), CHAR(10))
+            </if>       
+            <if test="pop_sts3 != null and pop_sts3 != ''">
+              or END_DT  <![CDATA[< ]]>  CONVERT(NOW(), CHAR(10))
+            </if>       
+           )
+    <include refid="PaginationMapper.footer"/>
+   </select>
+   
+   <select id="selectPopUpNtc"  parameterType="PopUpNtcVo" resultType="PopUpNtcVo" > 
+          SELECT
+            title            
+            ,cntnts           
+            ,expsr_lc_cd      
+            ,a.menuid           
+            ,a.siteid           
+            ,login_need_yn    
+            ,popup_type_cd    
+            ,strt_dt           
+            ,end_dt            
+            ,width_size       
+            ,vrtcl_size       
+            ,top_lc           
+            ,left_lc          
+            ,ntc_trgt_cd      
+            ,ntc_trgt_roleid
+            ,popupntcid
+            ,b.NM  role_nm
+            ,c.nm  menu_nm
+          FROM 
+            TB_POPUPNTC a
+           left outer join 
+            tb_role b
+            on (a.ntc_trgt_roleid = b.ROLEID)
+           left outer join
+            tb_menu c
+            on (a.MENUID=c.MENUID)
+          WHERE 1=1
+            AND popupntcid = #{popupntcid}  
+   </select>
+   
+   <delete id="deletePopUpNtc"  parameterType="PopUpNtcVo">
+      DELETE FROM TB_POPUPNTC
+      WHERE POPUPNTCID = #{popupntcid}
+  </delete>
+   
+  <select id="getDataForCommnonPopup"  parameterType="PopUpNtcVo" resultType="PopUpNtcVo" >
+          SELECT
+            title            
+            ,cntnts           
+            ,expsr_lc_cd      
+            ,menuid           
+            ,siteid           
+            ,login_need_yn    
+            ,popup_type_cd    
+            ,strt_dt           
+            ,end_dt            
+            ,width_size       
+            ,vrtcl_size       
+            ,top_lc           
+            ,left_lc          
+            ,ntc_trgt_cd      
+            ,ntc_trgt_roleid
+            ,popupntcid
+          FROM 
+            TB_POPUPNTC a
+          WHERE 1=1
+            AND STRT_DT <![CDATA[<= ]]> CONVERT(NOW(), CHAR(10))
+            AND END_DT  <![CDATA[>= ]]> CONVERT(NOW(), CHAR(10))
+            AND SITEID = #{siteid} 
+           <choose>
+             <when test="menuid == 2 " >
+                 /* menuid == 2  메인 */
+                 AND expsr_lc_cd ='M'
+             </when>
+             <otherwise>
+                 AND menuid = #{menuid}
+             </otherwise>
+           </choose>
+           
+  </select>
+</mapper>

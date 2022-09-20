@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="layout/subLayout" 
+>
+<body>
+	<div layout:fragment="content">
+<script type="text/javascript">
+	var reloadMenuInfoUrl = "/mng/monitor/reloadMenuInfoReflect.do";
+	var reloadMenuAuthUrl = "/mng/monitor/reloadSecurityMetadataSourceReflect.do";
+	var reloadCodeInfoUrl = "/mng/monitor/reloadCodeInfoReflect.do";
+	
+	function reload(url){
+		displayWorkProgress();
+		jQuery.ajax({
+			url : url,
+			cache : false,
+			dataType: 'json',
+			success : function (data){
+				closeWorkProgress();
+				if(data.result == "") {
+					alert("서버 적용 완료!");	//서버 적용 완료!
+				}else {
+					alert("서버 적용 실패! => " + data.result);	//서버 적용 실패!
+				}
+			}
+		});
+	}
+
+</script>
+	<form class="form-horizontal row-border">
+	<div class="row no-gutter">
+		<div class="col-md-6 col-sm-6 col-xs-12">
+			<div class="panel panel-default">
+	        	<div class="panel-heading">
+					<h4>메모리DB 항목</h4>
+				</div>
+	            <div class="panel-body">
+	                <div class="form-group">
+	                	<label class="col-md-2 control-label">메뉴정보</label>
+	                  	<div class="col-md-10">
+	                  	 	<th:block sec:authorize-url="/mng/monitor/reloadMenuInfoReflect.do"><button type="button" class="btn btn-sm btn-primary" onclick="reload(reloadMenuInfoUrl)">RELOAD</button></th:block>
+	                  	</div>
+	                </div>
+	                <div class="form-group">
+	                  	<label class="col-md-2 control-label">메뉴접근권한</label>
+	                  	<div class="col-md-10">
+		                    <th:block sec:authorize-url="/mng/monitor/reloadSecurityMetadataSourceReflect.do"><button type="button" class="btn btn-sm btn-primary" onclick="reload(reloadMenuAuthUrl)">RELOAD</button></th:block>
+	                  	</div>
+	                </div>
+	                <div class="form-group">
+	                	<label class="col-md-2 control-label">코드정보</label>
+	                  	<div class="col-md-10">
+	                    	<th:block sec:authorize-url="/mng/monitor/reloadCodeInfoReflect.do"><button type="button" class="btn btn-sm btn-primary" onclick="reload(reloadCodeInfoUrl)">RELOAD</button></th:block>
+	                  	</div>
+	                </div>
+	    		</div>
+			</div>
+		</div>
+	</div>
+	</form>
+</div>
+</body>

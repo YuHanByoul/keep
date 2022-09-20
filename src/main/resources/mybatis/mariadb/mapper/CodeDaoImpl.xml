@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- SQL File Name : CodeDaoImpl.xml Description : 코드관리 -->
+<mapper namespace="com.kbrainc.plum.mng.code.model.CodeDao">
+
+    <!-- 코드그룹리스트 가져옴 -->
+    <select id="selectCodeGrpList" parameterType="CodeGrpVo" resultType="CodeGrpVo">
+        /* codeDao.selectCodeGrpList */
+        <include refid="PaginationMapper.header" />
+        SELECT 
+            CDGRPID,
+            CDGRP_NM,
+            USE_YN,
+            UPDT_DT
+        FROM 
+            TB_CDGRP
+        WHERE 
+            1=1
+            AND CDGRPID != 'G0001'
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchType == 'CDGRPID'">
+                    AND CDGRPID = #{searchKeyword}
+                </if>
+                <if test="searchType == 'CDGRP_NM'">
+                    AND CDGRP_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType == ''">
+                    AND ( CDGRPID LIKE CONCAT('%',#{searchKeyword},'%') OR CDGRP_NM LIKE CONCAT('%',#{searchKeyword},'%') )
+                </if>                
+            </if>
+        <include refid="PaginationMapper.footer" />
+    </select>
+
+    <!-- 코드리스트 가져옴 -->
+    <select id="selectCodeList" parameterType="CodeVo" resultType="CodeVo">
+        /* codeDao.selectCodeList */
+        WITH RECURSIVE SEARCH_ORG AS (
+            SELECT 
+                A.CD,
+                A.CD_NM,
+                B.CDGRPID,
+                B.CDGRP_NM,
+                A.CD_DC,
+                A.OPTN1,
+                A.OPTN2,
+                A.OPTN3,
+                A.ORD,
+                A.USE_YN,
+                C.NM AS UPDT_NM,
+                A.UPDT_DT AS UPDT_D,
+                A.UPPR_CD,
+                CONVERT(CONCAT(A.CDGRPID, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
+                CONVERT('', VARCHAR(255)) AS UPPR_CD_NM
+            FROM 
+                TB_CD A,
+                TB_CDGRP B,
+                TB_USER C
+            WHERE 
+                A.CDGRPID = B.CDGRPID
+                AND A.UPDTUSERID = C.USERID
+                AND A.UPPR_CD = '0'
+
+            UNION ALL
+        
+            SELECT 
+                A.CD,
+                A.CD_NM,
+                B.CDGRPID,
+                B.CDGRP_NM,
+                A.CD_DC,
+                A.OPTN1,
+                A.OPTN2,
+                A.OPTN3,
+                A.ORD,
+                A.USE_YN,
+                C.NM AS UPDT_NM,
+                A.UPDT_DT AS UPDT_D,
+                A.UPPR_CD,
+                CONVERT(CONCAT(D.TREE_ORD, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
+                CONVERT(D.CD_NM, VARCHAR(255)) AS UPPR_CD_NM
+            FROM 
+                TB_CD A,
+                TB_CDGRP B,
+                TB_USER C,
+                SEARCH_ORG D
+            WHERE 
+                A.CDGRPID = B.CDGRPID
+                AND A.UPDTUSERID = C.USERID
+                AND A.UPPR_CD = D.CD
+        ),
+        <!-- [총건수] -->
+        totalCount AS (
+            SELECT 
+                COUNT(1) AS totalCount
+            FROM 
+                SEARCH_ORG A1              <!-- [조회원본] -->
+            WHERE 
+                1=1
+                <if test="cdgrpid != null and cdgrpid != ''">
+                    AND A1.CDGRPID = #{cdgrpid}
+                </if>
+                <if test="uppr_cd != null and uppr_cd != ''">
+                    AND A1.UPPR_CD = #{uppr_cd}
+                </if>
+
+                <if test="searchType != null and searchType != ''">
+                    <if test="searchType == 'CD'">
+                        AND A1.CD = #{searchKeyword}
+                    </if>
+                    <if test="searchType == 'CD_NM'">
+                        AND A1.CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                    </if>
+                    <if test="searchType == 'UPPR_CD'">
+                        AND A1.UPPR_CD = #{searchKeyword}
+                    </if>
+                    <if test="searchType == 'UPPR_CD_NM'">
+                        AND A1.UPPR_CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                    </if>
+                    <if test="searchType == 'CDGRPID'">
+                        AND A1.CDGRPID = #{searchKeyword}
+                    </if>
+                </if>
+        )
+        SELECT 
+            A1.*,
+            B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.${orderField} ${orderDirection})) + 1 AS rowNumber,
+            B1.totalCount,
+            IFNULL(#{pageNumber}, 1) AS PAGE_NUMBER,
+            CEILING(CONVERT(B1.totalCount, FLOAT) / IFNULL(#{rowPerPage}, 10)) AS TOTAL_PAGE
+        FROM 
+            SEARCH_ORG A1              <!-- [조회원본] -->
+            CROSS JOIN
+            totalCount B1              <!-- [총페이지] -->
+        WHERE 
+            1=1
+            <if test="cdgrpid != null and cdgrpid != ''">
+                AND A1.CDGRPID = #{cdgrpid}
+            </if>
+            <if test="uppr_cd != null and uppr_cd != ''">
+                AND A1.UPPR_CD = #{uppr_cd}
+            </if>
+    
+            <if test="searchType != null and searchType != ''">
+                <if test="searchType == 'CD'">
+                    AND A1.CD = #{searchKeyword}
+                </if>
+                <if test="searchType == 'CD_NM'">
+                    AND A1.CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType == 'UPPR_CD'">
+                    AND A1.UPPR_CD = #{searchKeyword}
+                </if>
+                <if test="searchType == 'UPPR_CD_NM'">
+                    AND A1.UPPR_CD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType == 'CDGRPID'">
+                    AND A1.CDGRPID = #{searchKeyword}
+                </if>
+            </if>
+        ORDER BY
+            A1.${orderField} ${orderDirection}					<!-- ORDER 필수 -->
+        LIMIT #{pageOffset}, #{rowPerPage}
+    </select>
+
+    <!-- 코드그룹정보를 가져옴 -->
+    <select id="selectCodeGrpInfo" parameterType="com.kbrainc.plum.mng.code.model.CodeGrpVo" resultType="CodeGrpVo">
+        /* codeDao.selectCodeGrpInfo */
+        SELECT 
+            A.CDGRPID,
+            A.CDGRP_NM,
+            A.CDGRP_DC,
+            A.OPTN1,
+            A.OPTN2,
+            A.USE_YN,
+            B.NM AS UPDT_NM,
+            A.UPDT_DT
+        FROM 
+            TB_CDGRP A, 
+            TB_USER B
+        WHERE 
+            A.CDGRPID = #{cdgrpid}
+            AND A.UPDTUSERID = B.USERID
+    </select>
+
+    <!-- 코드그룹 등록 -->
+    <insert id="insertCodeGrpInfo" parameterType="CodeGrpVo">
+        /* codeDao.insertCodeGrpInfo */
+        INSERT INTO TB_CDGRP (
+            CDGRPID,
+            CDGRP_NM,
+            CDGRP_DC,
+            OPTN1,
+            OPTN2,
+            USE_YN,
+            UPDTUSERID,
+            UPDT_DT
+        ) VALUES (
+            #{cdgrpid},
+            #{cdgrp_nm},
+            #{cdgrp_dc},
+            #{optn1},
+            #{optn2},
+            #{use_yn},
+            #{user.userid},
+            NOW()
+        )
+    </insert>
+
+    <!-- 코드그룹 수정 -->
+    <update id="updateCodeGrpInfo" parameterType="CodeGrpVo">
+        /* codeDao.updateCodeGrpInfo */
+        UPDATE 
+            TB_CDGRP 
+        SET 
+            CDGRPID = #{cdgrpid},
+            CDGRP_NM = #{cdgrp_nm},
+            CDGRP_DC = #{cdgrp_dc},
+            OPTN1 = #{optn1},
+            OPTN2 = #{optn2},
+            USE_YN = #{use_yn},
+            UPDTUSERID = #{user.userid},
+            UPDT_DT = NOW()
+        WHERE 
+            CDGRPID = #{cdgrpid}
+    </update>
+
+    <!-- 코드 트리 -->
+    <select id="selectCodeTreeList" parameterType="CodeVo" resultType="com.kbrainc.plum.rte.lib.tree.TreeItem">
+        /* codeDao.selectCodeTreeList */
+        WITH RECURSIVE CODE_CTE(PKEY, `KEY`, TITLE, TREE_ORD) AS (
+            SELECT
+                IFNULL(UPPR_CD , '') AS PKEY,
+                CD AS `KEY`,
+                CONCAT(CD_NM, '(', CD, ')') AS TITLE,
+                CONVERT(RIGHT(CONCAT('0000', CONVERT(ORD, VARCHAR(4))), 4), VARCHAR(255)) AS TREE_ORD
+            FROM 
+                TB_CD
+            WHERE 
+                UPPR_CD = '0'
+                AND CDGRPID != 'G0001'
+                AND CDGRPID = #{cdgrpid}
+
+            UNION ALL
+
+            SELECT
+                IFNULL(UPPR_CD , '') AS PKEY,
+                CD AS `KEY`,
+                CONCAT(CD_NM, '(', CD, ')') AS TITLE,
+                CONVERT(C.TREE_ORD + RIGHT(CONCAT('0000', CONVERT(D.ORD, VARCHAR(4))), 4), VARCHAR(255)) AS
+                TREE_ORD
+            FROM 
+                TB_CD D, 
+                CODE_CTE C
+            WHERE 
+                UPPR_CD = C.`KEY`
+        )
+        SELECT 
+            PKEY, 
+            `KEY`, 
+            TITLE
+        FROM 
+            CODE_CTE
+        ORDER BY TREE_ORD
+    </select>
+
+    <!-- 코드정보를 가져옴 -->
+    <select id="selectCodeInfo" parameterType="String"
+        resultType="CodeVo">
+        /* codeDao.selectCodeInfo */
+        SELECT 
+            A.CD,
+            A.CD_NM,
+            A.CD_DC,
+            A.CDGRPID,
+            G.CDGRP_NM,
+            A.UPPR_CD,
+            A.ORD,
+            A.OPTN1,
+            A.OPTN2,
+            A.OPTN3,
+            A.USE_YN,
+            B.NM AS UPDT_NM,
+            A.UPDT_DT
+        FROM 
+            TB_CD A, 
+            TB_USER B, 
+            TB_CDGRP G
+        WHERE 
+            A.CD = #{cd}
+            AND A.UPDTUSERID = B.USERID
+            AND A.CDGRPID = G.CDGRPID
+    </select>
+
+    <!-- 코드 순서재조정 자리세팅 -->
+    <update id="updateCodeReOrder" parameterType="CodeVo">
+        /* codeDao.updateCodeReOrder */
+        UPDATE TB_CD SET
+        <if test="upperYn == 'Y'.toString()">
+            ORD = ORD + 1
+            WHERE UPPR_CD = IFNULL(#{uppr_cd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
+            <if test="hitMode == 'before'">
+                AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
+                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+            </if>
+            <if test="hitMode == 'after'">
+                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
+                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+            </if>
+        </if>
+        <if test="upperYn == 'N'.toString()">
+            ORD = ORD - 1
+            WHERE UPPR_CD = IFNULL(#{uppr_cd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
+            <if test="hitMode == 'before'">
+                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
+            </if>
+            <if test="hitMode == 'after'">
+                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+                <!-- <if test="menuid != null and menuid != ''"> AND ORD <![CDATA[<= 
+                    ]]> (SELECT T1.ORD FROM(SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1) </if> -->
+            </if>
+        </if>
+    </update>
+
+    <!-- 코드 순서재조정 자리세팅 -->
+    <update id="updateCodeReOrderPrnDiff" parameterType="CodeVo">
+        /* codeDao.updateCodeReOrderPrnDiff */
+        UPDATE 
+            TB_CD 
+        SET
+            ORD = ORD+1
+        WHERE 
+            UPPR_CD = IFNULL(#{uppr_cd},(SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T))
+        <if test="hitMode == 'before'">
+            AND ORD <![CDATA[>= ]]> (SELECT T.ORD FROM (SELECT ORD FROM TB_CD WHERE CD = #{cd}) T)
+        </if>
+        <if test="hitMode == 'after'">
+            AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CD WHERE CD = #{cd})T)
+        </if>
+
+    </update>
+
+    <!-- 코드 순서재조정 자리세팅 -->
+    <update id="updateCodeReOrderPrnDiffOrgin" parameterType="CodeVo">
+        /* codeDao.updateCodeReOrderPrnDiffOrgin */
+        UPDATE 
+            TB_CD 
+        SET
+            ORD = ORD-1
+        WHERE 
+            UPPR_CD = IFNULL(#{uppr_cd},(SELECT T.UPPR_CD FROM(SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{tcd})T ))
+            AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CD WHERE CD = #{tcd}) T)
+    </update>
+
+    <!-- 코드 순서조정시 부모코드, ord 조정 -->
+    <update id="updateCodeTreeInfo" parameterType="CodeVo">
+        /* codeDao.updateCodeTreeInfo */
+        UPDATE 
+            TB_CD 
+        SET
+            UPPR_CD = #{uppr_cd}
+            <if test="hitMode == 'over'">
+                ,ORD = (SELECT T.ORD FROM(SELECT IFNULL(MAX(A.ORD),0) +1 AS ORD
+                FROM TB_CD A
+                WHERE A.UPPR_CD = #{uppr_cd}) T)
+            </if>
+            <if test="hitMode != 'over'">
+                ,ORD = #{ord}
+            </if>
+        WHERE 
+            CD = #{tcd}
+    </update>
+
+    <!-- 코드 등록 -->
+    <insert id="insertCodeInfo" parameterType="CodeVo">
+        /* codeDao.insertCodeInfo */
+        INSERT INTO TB_CD (
+            CD,
+            CD_NM,
+            CD_DC,
+            CDGRPID,
+            UPPR_CD,
+            ORD,
+            OPTN1,
+            OPTN2,
+            OPTN3,
+            USE_YN,
+            UPDTUSERID,
+            UPDT_DT
+        ) VALUES (
+            #{cd},
+            #{cd_nm},
+            #{cd_dc},
+            #{cdgrpid},
+            #{uppr_cd},
+            (SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_CD A WHERE A.CDGRPID = #{cdgrpid} AND A.UPPR_CD = #{uppr_cd}),
+            #{optn1},
+            #{optn2},
+            #{optn3},
+            #{use_yn},
+            #{user.userid},
+            NOW()
+        )
+    </insert>
+
+    <!-- 코드 수정 -->
+    <update id="updateCodeInfo" parameterType="CodeVo">
+        /* codeDao.updateCodeInfo */
+        UPDATE 
+            TB_CD
+        SET 
+            CD = #{cd},
+            CD_NM = #{cd_nm},
+            CD_DC = #{cd_dc},
+            CDGRPID = #{cdgrpid},
+            UPPR_CD = #{uppr_cd},
+            OPTN1 = #{optn1},
+            OPTN2 = #{optn2},
+            OPTN3 = #{optn3},
+            USE_YN = #{use_yn},
+            UPDTUSERID = #{user.userid},
+            UPDT_DT = NOW()
+        WHERE 
+            CD = #{cd}
+    </update>
+
+    <!-- 자격증 코드리스트 가져옴 -->
+    <select id="selectCertCodeList" parameterType="CodeVo"
+        resultType="CodeVo">
+        /* codeDao.selectCertCodeList */
+        <include refid="PaginationMapper.header" />
+        SELECT
+            CERT_CD AS CD,
+            CERT_NM AS CD_NM,
+            INSTT_NM AS OPTN1
+        FROM
+            TB_CERT_CD
+        WHERE 
+            1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND CERT_NM LIKE ('%' + #{searchKeyword} + '%')
+            </if>
+        <include refid="PaginationMapper.footer" />
+    </select>
+
+</mapper>

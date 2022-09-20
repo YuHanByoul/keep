@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/popupLayout">
+<head>
+<meta charset="utf-8" />
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
+<title>분류관리 </title>
+
+</head>
+<body>
+<div layout:fragment="content">
+<span th:replace="layout/jsCommon"></span>
+     
+<div class="row no-gutter">
+<div class="col-md-12 col-sm-12 col-xs-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4>분류관리 팝업</h4>
+			<ul class="links">
+				<li><a href="javascript:this.close()"> <span
+						class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+				</a></li>
+			</ul>
+		</div>
+	  <div class="panel-body">
+
+       <form id="popForm" class="form-inline">
+        <input id="bbsid" name ="bbsid" type="hidden" th:value ="${bbsid}">
+			<div class="well well-sm " >
+				<div class="row" style="padding-left: 15px; padding-right: 15px;">
+					<div class=" col-xs-10">
+						<div class="form-group col-xs-2"	style="display: inline-block; margin-bottom: 0px;">
+							<label class="control-label" >게시판 | </label>
+						</div>
+					       <div class="col-xs-5"> 	
+								<select id="bbsCl"  name="bbsCl"   class="form-control input-sm" style="padding:0px; width:200px;" onchange="writeGridByBbsCl()">
+			                     <option th:each="item : ${codeMap}" th:value="${item.bbsid}" th:text="${item.nm} "></option>
+			                    </select>
+						   </div>
+					</div>
+				</div>
+		    </div>
+		   
+				<!-- List Area -->
+				<div class="panel panel-default">
+			    	<div class="panel-heading" role="tab" id="headingOne">
+			      		<h4 class="panel-title">
+			        		목록
+			      		</h4>
+			    	</div>
+			    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+			      		<div class="panel-body">		
+			      
+							<div class="row">
+								<table id="Clgrid"></table>
+								<div id="listPager" class="text-center"></div>
+							</div>
+					
+						</div>
+					</div>
+				</div>
+		     
+				   <div class="panel-body">
+					  <button  type="button" class=" btn btn-sm btn-success pull-right" value="분류추가" onclick="fn_changeModeC()">분류추가</button>
+				   </div>
+			   
+					<!-- List Area -->
+					<div class="panel panel-default">
+				    	<div class="panel-heading" role="tab" id="headingOne">
+				      		<h4 class="panel-title">
+				        		등록
+				      		</h4>
+				    	</div>
+				    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+				      	 <div class="panel-body">		   
+				      		  
+					      	<div class="form-group  col-xs-12 row form-inline ">
+							<label class="col-xs-3 control-label"><span class="text-danger"></span>분류코드</label>
+						    <div class="form-control-static col-xs-8" style="text-align:left;">
+	   			              <input type="text" class="form-control input-sm  inputForm" id="bbs_clid" name= "bbs_clid" placeholder="자동생성" readOnly disabled />
+						    </div>                
+						    </div>
+						   
+						  <div class="form-group  col-xs-12 row">
+							<label class="col-xs-3 control-label"><span class="text-danger">* </span>분류명</label>
+						    <div class="form-control-static col-xs-8 " style="text-align:left;">
+	   			              <input type="text" class="form-control input-sm inputForm" id="cl_nm" name= "cl_nm" placeholder="분류명" />
+						    </div>                
+						  </div>
+						  
+						  <div class="form-group  col-xs-12 row">
+							<label class="col-xs-3 control-label"><span class="text-danger">* </span>사용여부</label>
+						    <div class="form-control-static col-xs-8 " style="text-align:left;">
+	   			              <span kattr:radio_yn="use_yn" label1="사용" label2="미사용"   ></span>
+						    </div>                
+						  </div>
+						  <div style= 'text-align : right'>
+				           <input  type="button" class="btn btn-sm btn-primary" id="modifytBbsClBtn" onclick="fn_modifyBbsCl()" value="저장" />
+				           <input type="button"  class="btn btn-sm btn-default"  onclick="fn_changeModeC()" value="취소"/>
+	   		              </div>
+						 </div>
+					   </div>
+					</div>
+		  
+		    <!--form  data 전송을 위한 hidden 변수  -->
+		     <input type="hidden" class="inputForm" id="ord" name="ord" disabled/>
+		    <!-- C : insert , U :update , UO : update Ord  --> 
+		     <input type="hidden" class="inputForm"  id="cuMode" name="cuMode"   value="C" /> 
+  	</form>
+	</div>
+  </div>
+  
+  </div>
+  </div>
+  
+  	 
+   	<script type="text/javascript">
+	  $(function(){
+		  
+		  if($("#bbsid").val() !=null ){
+			  $("#bbsCl").val($("#bbsid").val());
+		  }
+		  writePopGrid();
+		  
+		  $("#popForm").validate({
+			    rules   : { cl_nm  : { required: true   }  },
+		        messages: { cl_nm  : { required: "분류명을 입력해주세요!"   }
+				    }
+		 })
+	  })
+	  
+         //그리드 새로고침  및 이동
+         function writePopGrid(){
+		  
+	    		$("#Clgrid").jsGrid({
+	    	        height: "auto",
+	    	        width: "100%",
+	    	        autoload: true,
+	    	        sorting: false,
+	    	        paging: true,
+	    	        pagerContainer: "#listPager",
+	    	        pagerFormat: "{first} {prev} {pages} {next} {last}",
+	    	        pagePrevText: "이전",
+	    	        pageNextText: "다음",
+	    	        pageFirstText: "< 처음ㅣ",
+	    	        pageLastText: "ㅣ 마지막 >",
+	    	        
+	    	        pageSize: 5,
+	    	        //pageButtonCount: 5,
+	    	        pageLoading: true,
+	    	        pageIndex: 1,
+	    	        noDataContent: "데이터가 없습니다.",
+	    			
+	    	        controller: {
+	    	            loadData: function (filter) {
+	    	            	var data = $.Deferred();
+	    	            	var params = {
+	    	            			 "bbsid" : $("#bbsid").val()
+	    	            			,"pageNumber": filter.pageIndex
+	    	            			,"rowPerPage": "5"
+	    	            			,"orderField": "ORD"
+	    	            			,"orderDirection": "asc"
+	    	            	}
+	    	                $.ajax({
+	    	                  type: "GET",
+	    	                  contentType: "application/json; charset=utf-8",
+	    	                  url: "/bbs/selectBbsCl.do?pageNumber="+filter.pageIndex+"&rowPerPage=5",
+	    	                  dataType: "json",
+	    	                  data: params
+	    	                }).done(function(response){
+	    	                	var da = {
+	                                    data :response.list
+	                                    ,itemsCount : response.totalCount
+	                                };
+	    	                  data.resolve(da);
+	    	                });
+	    	                return data.promise();
+	    	            }
+	    	        },
+		    	        fields: [ 
+		                     { title: 'no'       ,name: 'rowNumber' ,type: "number" , width: 20 , sorting :false }
+		                    ,{ title: '분류명'     ,name: 'cl_nm'     ,type: "text"   , key: true,  width: 75, validate: "required" }
+		                    ,{ title: '분류코드 '   ,name: 'bbs_clid'  ,type: "text"   , width: 35 }
+		                    ,{ title: '사용여부'    ,name: 'use_yn'    ,type: "text"   , width: 35 }
+		                    ,{ title: '순서'       ,name: 'ord'       ,type: "text"   , width: 50,  align:"center",
+			                   	 itemTemplate: function(value, item) {
+			                   	    var firstObj = $("<a class='btn btn-xs btn-info' />").text("▲").on("click", function() { fn_changeOrd("OU",item);  return false;}).add("<span>&nbsp;</span>");
+			                   	    var lastObj = $("<a class='btn btn-xs btn-info' />").text("▼").on("click", function() { fn_changeOrd("OD",item);  return false;});
+			                   	       
+			                   	        if(item.totalCount==1 ){
+			                   	        	return "-" 
+			                   	        }else if(item.rowNumber==1){
+				                   	    	return firstObj;
+				                   	    }else if(item.rowNumber == item.totalCount){
+				                   	    	return lastObj
+				                   	    }else{
+				                   	    	return firstObj.add(lastObj);
+				                   	    }
+						         }
+		                    }
+
+		    	        ]
+	    	         ,
+	    	        rowClick: function(  args) {
+	    	        	fn_changeModeU(args.item);
+	    	        },
+	    	    });
+    	}
+	  
+	  //order 변경시 호출 
+	  function fn_changeOrd( upAndDown, item){
+		  $("#ord").removeAttr("disabled");
+		  $("#bbs_clid").removeAttr("disabled");
+		  $("#bbs_clid").val(item.bbs_clid);
+		  $("#ord").val(item.ord);
+		  $("#cuMode").val(upAndDown); // mode update 로 변경
+		  fn_modifyBbsCl(); 
+	  }
+	  
+	  //update mode 시  row 클릭시 업데이트 모드로 변환 
+	  function fn_changeModeU(item){
+		    $("#bbs_clid").removeAttr("disabled");
+		  	$("#ord").removeAttr("disabled");
+		  	$("#cuMode").val("U"); // mode update 로 변경 
+		  	$("#modifytBbsClBtn").val("수정");
+		  	$("#bbs_clid").val(item.bbs_clid);
+        	$("#ord").val(item.ord);
+        	$("#cl_nm").val(item.cl_nm);
+        	$('input:radio[name=use_yn]:input[value=' +item.use_yn+ ']').prop("checked", true);
+	  }
+
+	  //insert Mode 전환 등록 추가 처음 로딩시 , 버튼 클릭시 , 취소 클릭시  
+	  function fn_changeModeC(){
+      	    $("#bbs_clid").attr("disabled","true");
+      	    $("#ord").attr("disabled","true");
+ 		    $("#modifytBbsClBtn").val("등록");
+		    $("#cuMode").val("C"); // mode 인서트 로 변경
+			$("#bbs_clid").val("");
+        	$("#ord").val("");
+        	$("#cl_nm").val("");
+        	$('input:radio[name=use_yn]:input[value=' +"Y"+ ']').prop("checked", true);
+	  }
+	  
+	  //select onchange 게시판 명  
+	  function writeGridByBbsCl(){
+		  fn_changeModeC();
+		  $("#bbsid").val($("#bbsCl").val());
+		  writePopGrid();
+	  }
+	  
+	  var validator= $("#popForm").validate({
+		    rules   : { cl_nm  : { required: true   }  },
+	        messages: { cl_nm  : { required: "분류명을 입력해 주십시오."   }
+			    }
+		 })
+ 
+	  function fn_modifyBbsCl(){
+		   var alertStr ='등록';
+		   
+		   var mode = $("#cuMode").val();
+		   if(mode!="OU" && mode!="OD"){//ord 변경일때는 validataion 체크 x
+			   
+			 //jquery 밸리데이션 체크
+ 	  	     if(!$("#popForm").valid()){ return;}
+		   }
+		   
+		   if(mode!="C"){alertStr="수정";}
+		   var queryUrl ="/bbs/insertBbsCl.do?mode="+mode;  
+	       var data =  $("#popForm").serialize() ;
+	       
+			$.ajax({
+				url : queryUrl,
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						alert(alertStr+"이 완료 되었습니다.");
+						writeGridByBbsCl();
+					}else{
+						alert(alertStr+"중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+					}
+				},
+			 	error : function (error){
+				} 
+			});
+	  }
+
+	</script>
+  </div>	
+</body>
+</html>

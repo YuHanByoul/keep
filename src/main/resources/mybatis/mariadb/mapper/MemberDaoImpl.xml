@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : MemberDaoImpl.xml
+	Description : 사용자관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.member.model.MemberDao">
+    
+	<!-- 사용자정보 저장 --> 
+  	<insert id="insertMember" parameterType="MemberVo" useGeneratedKeys="true" keyProperty="userid">
+   		/* MemberDao.insertMember */
+		INSERT INTO TB_USER (
+			ACNT
+		   ,PWD
+		   ,USER_SE_CD
+		   ,NM
+		   ,MOBNO
+		   ,EMAIL
+		   ,TOS_AGRE_YN
+		   ,PRVCY_AGRE_YN
+		   ,ACNT_LOCK_YN
+		   ,ACNT_LOCK_CD
+		   ,STTS_CD
+		   ,DEL_YN
+		   ,UPDT_DT
+		   ,UPDTUSERID
+		   ,REG_DT
+		   ,REGUSERID
+		  )VALUES(
+			 #{acnt}
+			,#{pwd}
+			,#{user_se_cd}
+			,#{nm}
+			,#{mobno}
+			,#{email}
+			,#{tos_agre_yn}
+			,#{prvcy_agre_yn}
+			,#{acnt_lock_yn}
+			,#{acnt_lock_cd}
+			,#{stts_cd}
+			,#{del_yn}
+			,NOW()
+			,#{user.userid}
+			,NOW()
+			,#{user.userid}
+		  )
+	</insert>
+	
+	<!-- 개인상세정보 저장 -->
+	<insert id="insertMemberDtl" parameterType="MemberDtlVo">
+	    /* MemberDao.insertMemberDtl */
+        INSERT INTO TB_USER_DTL (
+		         userid               
+				,brthdy
+				,moon_yn               
+				,sex                  
+				,zip                  
+				,addr                 
+				,addr_dtl             
+				,area_cd              
+				,markt_email_agre_yn  
+				,markt_sms_agre_yn    
+				,intrcn
+				,pphoto_fileid
+				,updt_dt              
+				,updtuserid           
+				,reg_dt               
+				,reguserid            
+			)VALUES(
+				#{userid}               
+				,#{brthdy}
+				,#{moon_yn}               
+		        ,#{sex} 
+		        ,#{zip} 
+		        ,#{addr} 
+		        ,#{addr_dtl} 
+		        ,#{area_cd} 
+		        ,#{markt_email_agre_yn} 
+		        ,#{markt_sms_agre_yn} 
+		        ,#{intrcn}
+		        ,#{pphoto_fileid}
+		        ,NOW()              
+		        ,#{user.userid} 
+		        ,NOW()          
+		        ,#{user.userid} 
+		  )
+    </insert>
+  
+    <!-- 계정중복 확인 --> 
+	<select id="checkIdYn" parameterType="MemberVo" resultType="String">
+    	/* MemberDao.checkIdYn */
+    	SELECT MAX(YN)
+        FROM
+        (
+            SELECT CASE WHEN COUNT(ACNT) > 0  THEN 'Y'
+                        ELSE 'N'
+                    END AS YN
+              FROM TB_USER
+             WHERE 1=1
+               AND DEL_YN = 'N'
+               AND ACNT = #{acnt}
+            UNION ALL
+            SELECT CASE WHEN COUNT(ACNT) > 0  THEN 'Y'
+                        ELSE 'N'
+                    END AS YN
+              FROM TB_USER_DRMNCY
+             WHERE 1=1 
+               AND ACNT = #{acnt}
+        ) T
+	</select>
+	
+    <!-- 사용자정보 조회 -->
+    <select id="selectMemberInfo" parameterType="MemberVo" resultType="MemberVo"> 
+    	/* MemberDao.selectMemberInfo */
+    	SELECT USERID
+		     ,ACNT
+		     ,NM
+		     ,MOBNO
+		     ,EMAIL
+             ,SUBSTRING(EMAIL,1,INSTR(EMAIL, '@')-1) EMAIL1
+             ,RTRIM(SUBSTRING(EMAIL,INSTR(EMAIL, '@')+1,50)) EMAIL2 
+		     ,TOS_AGRE_YN
+		     ,PRVCY_AGRE_YN
+		     ,DATE_ADD(LOGIN_DT, INTERVAL PRVCY_VLDTY YEAR) PRVCY_VLDTY_DT
+		     ,PRVCY_VLDTY
+		     ,ACNT_LOCK_YN
+		     ,ACNT_LOCK_CD
+		     ,DEL_YN
+		     ,STTS_CD
+	    FROM TB_USER
+	   WHERE USERID = #{userid}
+    </select>
+ 
+    <!-- 사용자상세정보 조회 -->
+    <select id="selectMemberDtlInfo" parameterType="MemberVo" resultType="MemberDtlVo"> 
+		/* MemberDao.selectMemberDtlInfo */
+		SELECT USERID
+		      ,BRTHDY
+		      ,MOON_YN
+		      ,SEX
+		      ,ZIP
+		      ,ADDR
+		      ,ADDR_DTL
+		      ,AREA_CD
+		      ,MARKT_EMAIL_AGRE_YN
+		      ,MARKT_SMS_AGRE_YN
+		      ,INTRCN
+		      ,F.FILEGRPID AS PPHOTO_FILEGRPID
+		      ,PPHOTO_FILEID
+		      ,F.FILE_IDNTFC_KEY AS PPHOTO_FILE_IDNTFC_KEY
+		  FROM TB_USER_DTL A
+		  LEFT OUTER JOIN TB_FILE F
+		    ON F.FILEID = A.PPHOTO_FILEID
+	     WHERE USERID = #{userid}
+    </select>
+ 
+    <!-- 사용자정보 목록 조회 -->
+    <select id="selectMemberList" parameterType="MemberVo" resultType="MemberVo">
+        /* MemberDao.selectMemberList */
+        <include refid="PaginationMapper.header"/> 
+	    SELECT 
+	       A.USERID
+	      ,A.ACNT
+	      ,A.NM
+	      ,A.EMAIL
+	      ,A.MOBNO
+	      ,A.DEL_YN
+	      ,A.REG_DT
+	      ,A.UPDT_DT
+	    FROM
+	      TB_USER A
+	     ,TB_USER_DTL B
+	     WHERE 1=1
+	       AND A.USER_SE_CD = 'P'
+	       AND A.USERID = B.USERID
+ 	     <if test="searchKeyword != null and searchKeyword != '' and searchType == 'id'">
+	       AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+	     </if>
+ 	     <if test="searchKeyword != null and searchKeyword != '' and searchType == 'name'">
+	       AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+	     </if>
+	     <if test="searchStartDay != null and searchStartDay != ''">
+			AND A.REG_DT >= #{searchStartDay}
+		</if>
+		<if test="searchEndDay != null and searchEndDay != ''">
+			AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchEndDay},' 23:59:59') AS DATETIME)
+		</if>
+		<if test="searchDelYn != null">
+		    AND A.DEL_YN IN 
+		    <foreach item="item" collection="searchDelYn" open="(" close=")" separator=",">
+		    	#{item}
+		   	</foreach>
+		</if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+   
+    <!-- 사용자수정 -->
+    <update id="updateMember" parameterType="MemberVo">
+	    /* MemberDao.updateMember */
+	    UPDATE TB_USER SET
+			    ACNT              = #{acnt}
+			   ,NM                = #{nm} 
+			   ,MOBNO             = #{mobno}
+			   ,EMAIL             = #{email}
+			   ,TOS_AGRE_YN       = #{tos_agre_yn} 
+			   ,PRVCY_AGRE_YN     = #{prvcy_agre_yn} 
+			   ,ACNT_LOCK_YN      = #{acnt_lock_yn} 
+			   ,ACNT_LOCK_CD      = #{acnt_lock_cd} 
+			   ,STTS_CD           = #{stts_cd}
+			   ,DEL_YN            = #{del_yn}  
+			   ,UPDT_DT           = NOW()          
+			   ,UPDTUSERID        = #{user.userid}
+         WHERE userid = #{userid} 
+    </update>
+	 
+    <!-- 사용자상세수정 -->
+    <update id="updateMemberDtl" parameterType="MemberDtlVo">
+  		/* MemberDao.updateMemberDtl */
+        UPDATE TB_USER_DTL SET
+				brthdy                  = #{brthdy}
+				,moon_yn                = #{moon_yn} 
+				,sex                    = #{sex} 
+				,zip                    = #{zip} 
+				,addr                   = #{addr} 
+				,addr_dtl               = #{addr_dtl} 
+				,area_cd                = #{area_cd} 
+				,markt_email_agre_yn    = #{markt_email_agre_yn} 
+				,markt_sms_agre_yn      = #{markt_sms_agre_yn} 
+				,intrcn                 = #{intrcn}
+				,pphoto_fileid          = #{pphoto_fileid}
+				,updt_dt                = NOW()               
+				,updtuserid             = #{user.userid}      
+		 WHERE userid = #{userid}
+    </update>
+    
+    <!-- 회원의 임시비밀번호를 수정한다 -->
+    <update id="updateMemberTempPwd" parameterType="TempPwdVo">
+	    /* MemberDao.updateMemberTempPwd */
+	    UPDATE TB_USER SET 
+			    PWD = #{pwd}
+			   ,TEMP_PWD_YN = 'Y'
+			   ,PWD_UPDT_DT = NOW()
+			   ,UPDT_DT = NOW()          
+			   ,UPDTUSERID = #{user.userid}
+	     WHERE userid = #{userid} 
+    </update>
+ 
+    <!-- 사용자들의 연락정보를 조회한다 -->
+    <select id="selectUserContactInfoList" parameterType="ContractVo" resultType="ContractVo">
+        /* MemberDao.selectUserContactInfoList */
+        WITH B 
+		AS 
+		(
+			SELECT COUNT(1) AS TOTALCOUNT FROM TB_USER WHERE USERID IN 
+			<foreach item="item" collection="userids" open="(" close=")" separator=",">
+			    #{item}
+			</foreach>
+		)
+		SELECT B.totalCount - ROW_NUMBER() OVER (ORDER BY (SELECT 1)) + 1 AS rowNumber,
+		       A.USERID
+		      ,A.ACNT
+		      ,A.NM
+		      ,A.EMAIL
+		      ,A.MOBNO
+		 FROM TB_USER A CROSS JOIN B
+		 WHERE A.USERID IN
+		 <foreach item="item" collection="userids" open="(" close=")" separator=",">
+		     #{item}
+	   	 </foreach>
+    </select>
+    
+    <!-- 휴면계정 사용자들의 연락정보를 조회한다 -->
+    <select id="selectUserDrmncyContactInfoList" parameterType="ContractVo" resultType="ContractVo">
+        /* MemberDao.selectUserDrmncyContactInfoList */
+        WITH B 
+		AS 
+		(
+			SELECT COUNT(1) AS TOTALCOUNT FROM TB_USER_DRMNCY WHERE USERID IN 
+			<foreach item="item" collection="userids" open="(" close=")" separator=",">
+			    #{item}
+			</foreach>
+		)
+		SELECT B.totalCount - ROW_NUMBER() OVER (ORDER BY (SELECT 1)) + 1 AS rowNumber,
+		       A.USERID
+		      ,A.ACNT
+		      ,A.NM
+		      ,A.EMAIL
+		      ,A.MOBNO
+		 FROM TB_USER_DRMNCY A CROSS JOIN B
+		 WHERE A.USERID IN
+		 <foreach item="item" collection="userids" open="(" close=")" separator=",">
+		     #{item}
+	   	 </foreach>
+    </select>
+    
+    <!-- 휴면회원정보 목록을 조회한다 -->
+    <select id="selectDrmncyMemberList" parameterType="MemberVo" resultType="MemberVo">
+        /* MemberDao.selectDrmncyMemberList */
+		<include refid="PaginationMapper.header"/> 
+	     SELECT 
+	       B.USERID
+	      ,B.ACNT
+	      ,B.NM
+	      ,B.EMAIL
+	      ,B.MOBNO
+	      ,A.DEL_YN
+	      ,A.REG_DT
+	      ,A.UPDT_DT
+	      ,B.LOGIN_DT
+		  ,B.REG_DT AS DRMNCY_DT
+		  ,DATE_ADD(B.REG_DT, INTERVAL 1 YEAR) AS EXPECTED_DEL_DT
+	    FROM
+	     TB_USER A
+	     ,TB_USER_DRMNCY B
+	     WHERE 1=1
+	       	AND B.USER_SE_CD = 'P'
+	       	AND A.USERID = B.USERID
+ 	    <if test="searchKeyword != null and searchKeyword != '' and searchType == 'id'">
+	       	AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+	    </if>
+ 	    <if test="searchKeyword != null and searchKeyword != '' and searchType == 'name'">
+	       	AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+	    </if>
+	    <if test="searchStartDay != null and searchStartDay != ''">
+			AND A.REG_DT >= #{searchStartDay}
+		</if>
+		<if test="searchEndDay != null and searchEndDay != ''">
+			AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchEndDay},' 23:59:59') AS DATETIME)
+		</if>
+		<if test="searchDelYn != null">
+		    AND A.DEL_YN IN 
+		    <foreach item="item" collection="searchDelYn" open="(" close=")" separator=",">
+		    	#{item}
+		   	</foreach>
+		</if>
+		<include refid="PaginationMapper.footer"/>
+	</select>
+
+    <!-- 로그인접속정보 이력 조회 -->
+    <select id="selectLoginHistList" parameterType="MemberVo" resultType="LoginHistVo">
+    	/* MemberDao.selectLoginHistList */
+    	<include refid="PaginationMapper.header"/> 
+	    SELECT LOGIN_HIST_ID
+		       ,USERID
+			   ,DEVICE_CD
+			   ,IP
+			   ,LOGIN_DT
+ 		   FROM TB_LOGIN_HIST
+		  WHERE USERID = #{userid}
+        <include refid="PaginationMapper.footer"/>
+    </select> 
+
+    <!-- 수신이메일 정보 조회 -->
+    <select id="selectEamilSndngHistInfo" parameterType="MailVo" resultType="MailVo"> 
+        /* MemberDao.selectEamilSndngHistInfo */
+        SELECT A.EMAIL_SNDNG_HIST_ID AS mailSndngHistId
+             ,B.NM AS sndngUserNm
+             ,A.REG_DT AS regDt
+             ,A.TITLE
+             ,A.CNTNTS
+        FROM TB_EMAIL_SNDNG_HIST A
+        LEFT OUTER JOIN TB_USER B ON A.SNDNG_USERID = B.USERID
+       WHERE A.EMAIL_SNDNG_HIST_ID = #{mailSndngHistId} 
+         AND A.RCPTN_USERID = #{rcptnUserid}
+    </select>
+    
+    <!-- 수신이메일 이력 조회 -->
+    <select id="selectEmailReceiveHistList" parameterType="MailVo" resultType="MailVo">
+        /* MemberDao.selectEmailReceiveHistList */
+        <include refid="PaginationMapper.header"/> 
+        SELECT A.EMAIL_SNDNG_HIST_ID AS mailSndngHistId
+               ,B.NM AS sndngUserNm
+               ,A.TITLE
+               ,A.REG_DT AS regDt
+           FROM TB_EMAIL_SNDNG_HIST A
+           LEFT OUTER JOIN TB_USER B ON A.SNDNG_USERID = B.USERID
+          WHERE A.RCPTN_USERID = #{rcptnUserid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

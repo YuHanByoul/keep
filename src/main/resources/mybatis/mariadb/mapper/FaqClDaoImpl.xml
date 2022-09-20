@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : FaqClDaoImpl.xml
+    Description : FAQ 분류 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.faq.model.FaqClDao">
+
+    <!-- 분류 리스트 가져옴 -->
+    <select id="getList" parameterType="FaqClVo" resultType="FaqClVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            CLID, CL_NM, USER_SE_CD, ORD, USE_YN
+        FROM
+            TB_FAQ_CL
+        <if test=' searchType!=null and searchType != "" ' >
+        WHERE	USER_SE_CD = #{searchType}
+        </if>
+		<include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 모든 리스트 가져옴 -->
+    <select id="getAllList" parameterType="FaqClVo" resultType="FaqClVo">
+        SELECT
+              CLID, CL_NM, USER_SE_CD, ORD, USE_YN
+        FROM
+              TB_FAQ_CL
+        WHERE 1=1
+       <!--  <if test=' use_yn.equalsIgnoreCase("Y") or use_yn.equalsIgnoreCase("N")' >
+          AND USE_YN = UPPER(#{use_yn})
+        </if> -->
+        <if test=' user_se_cd !=null and !trgt.equalsIgnoreCase("") ' >
+          AND USER_SE_CD =  #{user_se_cd}
+        </if>
+    </select>
+
+    <!-- 분류 추가 -->
+    <insert id="addFaqCl" useGeneratedKeys="true" keyProperty="clid" parameterType="FaqClVo">
+	    <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
+	       SELECT 
+		     IFNULL (Max(ORD),0) +1
+		   from TB_FAQ_CL
+		    WHERE 1=1
+		     AND USER_SE_CD = #{user_se_cd}
+	     </selectKey>
+    	INSERT INTO TB_FAQ_CL
+    		(CL_NM, ORD, USE_YN, USER_SE_CD) 
+    	VALUES 
+    		(#{cl_nm}, #{ord}, #{use_yn}, #{user_se_cd})
+    </insert>
+    
+    <!-- 분류 수정 -->
+    <update id="updateFaqCl" parameterType="FaqClVo">
+    	UPDATE TB_FAQ_CL SET
+    		CL_NM = #{cl_nm},
+    		USER_SE_CD = #{user_se_cd},
+    		ORD = #{ord},
+    		USE_YN = #{use_yn}
+    	WHERE
+    		CLID = #{clid}
+    </update>
+    
+    <!-- 분류 삭제 -->
+    <delete id="deleteFaqCl"  parameterType="FaqClVo">
+        DELETE FROM TB_FAQ_CL
+        WHERE 
+            CLID = #{clid}
+    </delete>
+        
+<!--     <delete id="deleteFaq"  parameterType="FaqVo">
+        UPDATE TB_FAQ
+        SET 
+           USE_YN = #{use_yn} ,
+           UPDT_DT = NOW(),
+           REGUSERID= #{user.userid} 
+        WHERE 
+            CLID = #{clid}
+    </delete> -->    
+    
+    <!-- 분류순서 수정(UP) -->
+    <update id="modifyFaqClOrdUp" parameterType="FaqClVo">
+		 UPDATE TB_FAQ_CL
+		   SET 
+		    ORD = ORD + 1
+		  WHERE ORD   = #{ord} 
+		    AND USER_SE_CD  = #{user_se_cd}
+	</update>
+	
+	<!-- 분류순서 수정(DOWN) -->
+	<update id="modifyFaqClOrdDown" parameterType="FaqClVo" >
+		 UPDATE TB_FAQ_CL
+		   SET 
+		    ORD = ORD - 1
+		  WHERE ORD   = #{ord} 
+		    AND USER_SE_CD  = #{user_se_cd}
+	</update>
+    
+    <!-- 분류순서 수정 -->
+    <update id="modifyFaqClOrdByfaqid" parameterType="FaqClVo" >
+         UPDATE TB_FAQ_CL
+           SET 
+            ORD =  #{ord}
+          WHERE CLID  = #{clid}
+    </update>    
+</mapper>

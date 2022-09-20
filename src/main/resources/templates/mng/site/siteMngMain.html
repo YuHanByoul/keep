@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="layout/subLayout" 
+>
+<body>
+	<div layout:fragment="content">
+
+<script type="text/javascript">
+    
+    var listUrl = "/mng/site/siteList.do";
+
+    $(function(){
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: "< 처음 ㅣ",
+            pageLastText: "ㅣ 마지막 >",
+            noDataContent: "데이터가 없습니다.",
+            
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    
+                    var params = {
+                            "searchType": $('#searchType').val(),
+                            "searchKeyword": $('#searchKeyword').val(),
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": "UPDT_DT",
+                            "orderDirection": "asc"
+                    }
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: listUrl,
+                      data: params,
+                      dataType: "json"
+                    }).done(function(response){
+                        var da = {
+                                data :response.list,
+                                itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    
+                    return data.promise();
+                },
+            },
+            fields: [ 
+                { title:'No.', name: 'rowNumber', type: "number", width: "5%", align : "center",sorting: false },
+                { title:'사이트아이디', name: 'siteid', type: "number", key: true, width:"5%", align:"center", validate: "required" },
+                { title:'시스템구분', name: 'sys_se_nm', type: "text" , width:"10%"},
+                { title:'사이트이름', name: 'site_nm', type: "text" , width:"10%"},
+                { title:'사용여부', name: 'use_yn', type: "text", align:"center" , width:"5%"},
+                { title:'도메인', name: "domains", type: "text", cellRenderer: cellRendererDomains , width:"10%"}
+            ],
+            rowClick: function(args){ hanlderRowClick(args.item); },
+        });
+    });
+    
+    function hanlderRowClick(item){
+        //console.log(item);
+        loadDomainInfo(item.siteid); 
+        showContent(); 
+    }
+    
+    function loadDomainInfo(siteid){
+    	$('#contentPanel').load("/mng/site/siteMngRegForm.html?siteid="+siteid); 
+    }
+
+    function search(){
+        var searchType = $("#searchType").val();
+        var searchKeyword = $("#searchKeyword").val();
+        
+/*         if(searchType != '' && searchKeyword == ""){
+            alert('검색어를 입력해 주십시오.');
+            return;
+        }
+ */        $("#jsGrid").jsGrid("reset");
+    }
+
+    function cellRendererDomains(value, item){
+    	if(isNull(item.domains)) return '<td>-</td>';
+    	
+        return '<td>' + item.domains.replaceAll(",", "<BR>") + '</td>'; 
+    }
+    
+    function handlerForAddClick(){
+        $('#contentPanel').load("/mng/site/siteMngRegForm.html"); 
+        showContent(); 
+    }
+    
+</script>
+
+<div class="panel-body">
+<form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline" onsubmit="return false;">
+	<div class="well well-sm row">
+	
+        <div class="col-sm-11 text-left">
+            <div class="form-group">
+                <label class="control-label ">시스템 구분</label>
+                <select name="searchType" id="searchType" class="form-control input-sm" style="display: inline-block; width: 100px;">
+					<option value="">-전체-</option>
+					<option value="U">사용자</option>
+					<option value="A">관리자</option>
+                </select>
+                <label class="control-label ">사이트 이름</label>
+                <input type="text" name="searchKeyword" id="searchKeyword" class="form-control input-sm" style="display: inline-block;">
+            </div>
+        </div>
+        
+		<div class="col-sm-1 text-right">
+		  <button type="submit" class="btn btn-sm btn-primary" onclick="search()">검색</button>
+		</div>
+		
+	</div>
+</form>
+</div>
+	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+		<!-- List Area -->
+		<div class="panel panel-default">
+	    	<div class="panel-heading" role="tab" id="headingOne">
+	      		<h4 class="panel-title">
+	        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
+	      		</h4>
+                <div class="pull-right">
+                    <button type="button" class="btn btn-xs btn-warning" onclick="handlerForAddClick()">사이트 추가</button>
+                </div>
+	      		
+	    	</div>
+	    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+	      		<div class="panel-body">		
+	      
+					<div class="row">
+						<table id="jsGrid"></table>
+						<div id="listPager" class="text-center"></div>
+					</div>
+			
+				</div>
+			</div>
+		</div>
+		<!-- Content Area -->
+		<div id="contentPanel" class="panel panel-default" style="display:none"></div>
+	</div>
+</body>

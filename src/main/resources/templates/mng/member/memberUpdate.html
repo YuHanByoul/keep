@@ -1,0 +1,428 @@
+<form id ="userModifyForm">
+<input type="hidden" id="userid" name="userid" th:value="${member.userid}">
+<input type="hidden" id="email" name="email">
+<input type="hidden" name="pphoto_filegrpid" id="pphotoFilegrpid" th:value="${memberDtl.pphoto_filegrpid}">
+<input type="hidden" name="pphoto_fileid" id="pphotoFileid" th:value="${memberDtl.pphoto_fileid}">
+<input type="hidden" id="area_cd" name="area_cd" th:value="${memberDtl.area_cd}">
+<input type="hidden" id="del_yn" name="del_yn" th:value="${member.del_yn}">
+<input type="hidden" id="stts_cd" name="stts_cd" th:value="${member.stts_cd}">
+<input type="hidden" id="moon_yn" name="moon_yn" th:value="${memberDtl.moon_yn}">
+
+	<!-- 회원정보 Start -->
+	<div id="tabCon1" class="tab-pane fade active in trans1">
+		<b class="tab-title">회원공통</b>
+		<div class="list-row">
+			<strong class="control-label">아이디 <em class="text-danger">*</em></strong>
+			<div class="form-con custom-email custom-radio">
+				<input type="text" class="form-control input-sm" id="acnt" name= "acnt" th:value="${member.acnt}" onkeyup="changeAcnt()">
+				<th:block sec:authorize-url="/mng/member/checkIdYn.do"><button type="button" th:if="${member.acnt != null and member.acnt != ''}" class="btn btn-sm btn-primary" id="checkId" onclick="fn_checkIdYn()">중복확인</button></th:block>
+				<p id="checkIdYnStr"class="text-danger"></p>
+			</div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">이름 <em class="text-danger">*</em></strong>
+			<div class="form-con custom-button"><input type="text" class="form-control input-sm" id="user_nm" name="nm" th:value="${member.nm}"></div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">비밀번호</strong>
+			<th:block sec:authorize-url="/mng/member/tempPwdPop.html"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#popCon1">임시비번발급</button></th:block>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">휴대폰번호</strong>
+			<div class="form-con custom-button custom-radio">
+				<input type="text" class="form-control input-sm" id="mobno" name="mobno" th:value="${member.mobno}" placeholder="하이픈(-) 없이 입력해주세요.">
+			</div>
+		</div>
+		<div class="list-row">
+            <strong class="control-label">이메일 <em class="text-danger">*</em></strong>
+            <div class="form-con custom-email custom-radio">
+                <input type="text" class="form-control input-sm" id="email1" name= "email1" th:value="${member.email1}">
+                <span>@</span>
+                <input type="text" class="form-control input-sm" id="email2" name= "email2" th:value="${member.email2}">
+                <select class="form-control input-sm"  name="email3" id="email3" onchange="fn_changeDomain();" > 
+                    <option value="1">직접입력</option> 
+                    <option value="naver.com" >naver.com</option> 
+                    <option value="hanmail.net">hanmail.net</option> 
+                    <option value="hotmail.com">hotmail.com</option> 
+                    <option value="nate.com">nate.com</option> 
+                    <option value="yahoo.co.kr">yahoo.co.kr</option> 
+                    <option value="empas.com">empas.com</option> 
+                    <option value="dreamwiz.com">dreamwiz.com</option> 
+                    <option value="freechal.com">freechal.com</option> 
+                    <option value="lycos.co.kr">lycos.co.kr</option> 
+                    <option value="korea.com">korea.com</option> 
+                    <option value="gmail.com">gmail.com</option> 
+                    <option value="hanmir.com">hanmir.com</option> 
+                    <option value="paran.com">paran.com</option> 
+                 </select>
+            </div>
+        </div>
+		<div class="list-row">
+			<strong class="control-label">이용약관 동의 여부 <em class="text-danger">*</em></strong>
+			<span kattr:radio_yn="tos_agre_yn" label1="Y" label2="N" th:attr="defaultVal= ${member.tos_agre_yn}" addStyle="margin-right:5px"></span>					
+		</div>
+		<div class="list-row">
+			<strong class="control-label">개인정보수집 동의 여부 <em class="text-danger">*</em></strong>
+			<div class="form-con custom-button custom-radio">
+				<span kattr:radio_yn="prvcy_agre_yn" label1="Y" label2="N" th:attr="defaultVal=${member.prvcy_agre_yn}" addStyle="margin-top:4px"></span>
+				<p class="text-info"><th:block th:if="${member.prvcy_vldty_dt != null}" th:text="'개인정보 유효기간 ' + ${#dates.format(member.prvcy_vldty_dt, 'yyyy-MM-dd')}" /></p>
+			</div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">계정 잠김 여부<em class="text-danger">*</em></strong>
+			<div class="form-con custom-radio custom-select">					
+				<span kattr:radio_yn="acnt_lock_yn" label1="Y" label2="N" th:attr="defaultVal=${member.acnt_lock_yn}" addStyle="margin-top:4px" onchange="changeAcntLockYn"></span>
+				<span kattr:select_code="acnt_lock_cd" grpCd="101" th:attr="selectedCd=${member.acnt_lock_cd}" firstOptTxt="선택 안함" addClass=" input-sm " addStyle="margin-left:5px;width:150px;"></span>
+			</div>
+		</div>
+
+		<b class="tab-title">개인회원 상세</b>
+		<div class="list-row">
+			<strong class="control-label">생년월일</strong>
+			<div class="form-con custom-select">
+				<select id="brthdyYear" name="brthdyYear" class="form-control input-sm w-type1">
+					<option value="">선택</option>
+					<th:block th:each="year : ${years}">
+					<option th:value="${year}" th:selected="${year} == ${memberDtl.brthdyYear}"><th:block th:text="${year}" /></option>
+					</th:block>
+				</select>
+				<span>년</span>
+				<select id="brthdyMonth" name="brthdyMonth" class="form-control input-sm w-type2">
+					<option value="">선택</option>
+					<option value="01" th:selected="${memberDtl.brthdyMonth == '01'}">1</option>
+					<option value="02" th:selected="${memberDtl.brthdyMonth == '02'}">2</option>
+					<option value="03" th:selected="${memberDtl.brthdyMonth == '03'}">3</option>
+					<option value="04" th:selected="${memberDtl.brthdyMonth == '04'}">4</option>
+					<option value="05" th:selected="${memberDtl.brthdyMonth == '05'}">5</option>
+					<option value="06" th:selected="${memberDtl.brthdyMonth == '06'}">6</option>
+					<option value="07" th:selected="${memberDtl.brthdyMonth == '07'}">7</option>
+					<option value="08" th:selected="${memberDtl.brthdyMonth == '08'}">8</option>
+					<option value="09" th:selected="${memberDtl.brthdyMonth == '09'}">9</option>
+					<option value="10" th:selected="${memberDtl.brthdyMonth == '10'}">10</option>
+					<option value="11" th:selected="${memberDtl.brthdyMonth == '11'}">11</option>
+					<option value="12" th:selected="${memberDtl.brthdyMonth == '12'}">12</option>
+				</select>
+				<span>월</span>
+				<select id="brthdyDay" name="brthdyDay" class="form-control input-sm w-type2">
+					<option value="">선택</option>
+					<option value="01" th:selected="${memberDtl.brthdyDay == '01'}">1</option>
+					<option value="02" th:selected="${memberDtl.brthdyDay == '02'}">2</option>
+					<option value="03" th:selected="${memberDtl.brthdyDay == '03'}">3</option>
+					<option value="04" th:selected="${memberDtl.brthdyDay == '04'}">4</option>
+					<option value="05" th:selected="${memberDtl.brthdyDay == '05'}">5</option>
+					<option value="06" th:selected="${memberDtl.brthdyDay == '06'}">6</option>
+					<option value="07" th:selected="${memberDtl.brthdyDay == '07'}">7</option>
+					<option value="08" th:selected="${memberDtl.brthdyDay == '08'}">8</option>
+					<option value="09" th:selected="${memberDtl.brthdyDay == '09'}">9</option>
+					<option value="10" th:selected="${memberDtl.brthdyDay == '10'}">10</option>
+					<option value="11" th:selected="${memberDtl.brthdyDay == '11'}">11</option>
+					<option value="12" th:selected="${memberDtl.brthdyDay == '12'}">12</option>
+					<option value="13" th:selected="${memberDtl.brthdyDay == '13'}">13</option>
+					<option value="14" th:selected="${memberDtl.brthdyDay == '14'}">14</option>
+					<option value="15" th:selected="${memberDtl.brthdyDay == '15'}">15</option>
+					<option value="16" th:selected="${memberDtl.brthdyDay == '16'}">16</option>
+					<option value="17" th:selected="${memberDtl.brthdyDay == '17'}">17</option>
+					<option value="18" th:selected="${memberDtl.brthdyDay == '18'}">18</option>
+					<option value="19" th:selected="${memberDtl.brthdyDay == '19'}">19</option>
+					<option value="20" th:selected="${memberDtl.brthdyDay == '20'}">20</option>
+					<option value="21" th:selected="${memberDtl.brthdyDay == '21'}">21</option>
+					<option value="22" th:selected="${memberDtl.brthdyDay == '22'}">22</option>
+					<option value="23" th:selected="${memberDtl.brthdyDay == '23'}">23</option>
+					<option value="24" th:selected="${memberDtl.brthdyDay == '24'}">24</option>
+					<option value="25" th:selected="${memberDtl.brthdyDay == '25'}">25</option>
+					<option value="26" th:selected="${memberDtl.brthdyDay == '26'}">26</option>
+					<option value="27" th:selected="${memberDtl.brthdyDay == '27'}">27</option>
+					<option value="28" th:selected="${memberDtl.brthdyDay == '28'}">28</option>
+					<option value="29" th:selected="${memberDtl.brthdyDay == '29'}">29</option>
+					<option value="30" th:selected="${memberDtl.brthdyDay == '30'}">30</option>
+					<option value="31" th:selected="${memberDtl.brthdyDay == '31'}">31</option>
+				</select>
+				<span>일</span>
+			</div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">성별</strong>
+			<div class="form-con custom-radio">
+				<label><input type="radio" name="sex" value="M" th:checked="${memberDtl.sex == 'M'}"><span>남자</span></label>
+				<label><input type="radio" name="sex" value="F" th:checked="${memberDtl.sex == 'F'}"><span>여자</span></label>
+			</div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">우편번호</strong>
+			<div class="form-con custom-button"><input type="text" id="zip" name="zip" th:value="${memberDtl.zip}" class="form-control input-sm" onclick="daumPostcode()" readonly></div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">주소 1</strong>
+			<div class="form-con"><input type="text" id="addr" name="addr" th:value="${memberDtl.addr}" class="form-control input-sm" onclick="daumPostcode()" readonly></div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">주소 2</strong>
+			<div class="form-con"><input type="text" id="addr_dtl" name="addr_dtl" th:value="${memberDtl.addr_dtl}" class="form-control input-sm"></div>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">마케팅 이메일 동의 여부</strong>
+			<span kattr:radio_yn="markt_email_agre_yn" label1="Y" label2="N" th:attr="defaultVal=${memberDtl.markt_email_agre_yn}" addStyle="margin-right:5px"></span>
+		</div>
+		<div class="list-row">
+			<strong class="control-label">마케팅 SMS 동의 여부</strong>
+			<span kattr:radio_yn="markt_sms_agre_yn" label1="Y" label2="N" th:attr="defaultVal=${memberDtl.markt_sms_agre_yn}" addStyle="margin-right:5px"></span>
+		</div>
+
+		<b class="tab-title">프로필 정보</b>
+		<div class="profile-layout">
+			<div class="list-row">
+				<strong class="control-label">소개 <em class="text-danger">*</em></strong>
+				<div class="form-con"><input type="text" id="intrcn" name="intrcn" th:value="${memberDtl.intrcn}" class="form-control input-sm"></div>
+			</div>
+			<div class="profile-photo">
+				<p class="img"><img id="imgPreview"></p>
+				<th:block sec:authorize-url="/uploadFile.do">
+				<p class="btn-file">
+					<span class="btn btn-sm btn-primary">사진등록/수정</span>
+					<input type="file" name="pphoto_file" accept="image/jpeg,image/gif,image/png" id="pphotoFile">
+				</p>
+				</th:block>
+			</div>
+		</div>
+
+		<div class="right-align-text">
+			<th:block sec:authorize-url="/mng/member/modifyMember.do"><button type="button" class="btn btn-sm btn-primary" id="insertMember" onclick="fn_updateMember()">수정</button></th:block>
+			<button type="button" class="btn btn-sm btn-secondary" id="cancelInsertMember" onclick="resetListContent()">취소</button>
+		</div>
+	</div>
+    <!-- 회원정보 End -->
+</form>
+	
+<!-- 임시비밀번호발급 Start -->
+<div class="modal fade" id="popCon1" tabindex="-1" role="dialog" aria-labelledby="popCon1Title" aria-hidden="true"></div>
+<!-- 임시비밀번호발급 End -->
+		                      
+<script th:inline="javascript">
+	
+	init();
+	
+    //아이디 중복 체크 여부 판별용 
+    var checkId = [[${member.acnt}]];
+   	var validator= $("#userModifyForm").validate({
+	    rules: {
+	         acnt       :   { required: true ,isBlank : true, maxlength: 20 }  
+	    	,email1     : 	{ required: true ,isBlank : true, maxlength: 50 }  
+	    	,email2     : 	{ required: true }
+    		,nm         : 	{ required: true ,isBlank : true, maxlength: 20 }
+    		,mobno      :   { number: true, minlength: 11, maxlength: 11 }
+	    	,addr       :   { maxlength: 200 }
+	    	,addr_dtl   :   { maxlength: 400 }
+	    	,intrcn     : 	{ required: true , maxlength: 50 }
+	    },
+	    messages: {
+	         acnt       :   { required: "아이디를 입력해주십시오." , isBlank : "입력값에 공백이 있습니다.", maxlength: "아이디는 20자 이하여야 합니다." }  
+    		,email1     :   { required: "이메일을 입력해주십시오." , isBlank : "입력값에 공백이 있습니다.", maxlength: "이메일은 50자 이하여야 합니다." }
+	    	,email2     :   { required: "이메일 도메인 항목을 입력해주십시오."  }
+    		,nm         :   { required: "이름을 입력해주십시오." , isBlank : "입력값에 공백이 있습니다.", maxlength: "이름은 20자 이하여야 합니다."   }
+    		,mobno      :   { number: "휴대폰번호는 숫자만 입력가능합니다.", minlength: "휴대폰번호는 11자리 이어야 합니다.", maxlength: "휴대폰번호는 11자리 이어야 합니다." }
+	    	,addr       :   { maxlength: "주소1은 200자 이하여야 합니다." }
+	    	,addr_dtl   :   { maxlength: "주소2는 400자 이하여야 합니다." }
+	    	,intrcn     :   { required: "소개를 입력해주십시오." , maxlength: "소개는 50글자 이하여야 합니다." }
+	    }
+    })
+	 		 
+	//이메일 도메인 셀렉트 박스 선택시 호출 
+	function fn_changeDomain(){
+   		var selected = $("#email3").val();
+   		if(selected=="1") $("#email2").val(null);
+   		else $("#email2").val(selected);
+   	}
+   	
+   	//아이디 중복 체크 
+	function fn_checkIdYn(){
+	 	if(!validator.element('#acnt')) return;
+  	 	
+        displayWorkProgress();
+		$.ajax({
+			url : "/mng/member/checkIdYn.do",
+			type: 'POST',
+			cache : false,
+			dataType: 'json',
+			data : { acnt: $("#acnt").val() },
+			success : function (data){
+				if(data.result=="fail"){
+					alert("에러 발생 다시 시도 해주십시오.");
+				}else{
+					if(data.result=="N"){
+						$("#checkIdYnStr").text("사용 가능한 아이디입니다.");
+						checkId = $("#acnt").val();
+					}else{
+						$("#checkIdYnStr").text("이미 사용중인 아이디입니다.");
+						checkId = "";
+					}
+				}
+				closeWorkProgress();
+			}
+		});
+	}
+	        
+ 	function fn_updateMember(){
+  	 	if(checkId == null) checkId = '';
+ 	    if(checkId != $("#acnt").val()) {
+ 	    	alert("아이디 중복체크를 확인 해주십시오!"); 
+ 	    	return;
+ 	    }
+  	 	
+ 	    if(!($("#userModifyForm").valid())) return;
+  	 	  
+  	 	var email = $("#email1").val()+"@"+$("#email2").val();
+  	 	$("#email").val(email);
+  	 	    
+ 	    if($("#pwd").val()!=$("#chkpwd").val()) {
+ 	    	alert("비밀번호와 비밀번호 확인 입력 값이 일치하지 않습니다."); 
+ 	    	return;
+ 	    }
+  	 	    
+  	 	if(!confirm("수정하시겠습니까?")) return;
+  	 	
+  	 	if($('input:radio[name=acnt_lock_yn]:checked').val() == "Y"){
+  	 		if($('#acnt_lock_cd').val() == "101101"){ // 가입대기
+  	 			$('#del_yn').val('N');
+  	 			$('#stts_cd').val('2'); // 대기
+  	 		}else if($('#acnt_lock_cd').val() == "101106"){ // 탈퇴
+  	 			$('#del_yn').val('Y');
+  	 			$('#stts_cd').val('9'); // 탈퇴
+  	 		}else{
+  	 			$('#del_yn').val('N');
+  		 		$('#stts_cd').val('1'); // 가입	
+  	 		}
+  	 	}else{
+  	 		$('#del_yn').val('N');
+	 		$('#stts_cd').val('1'); // 가입
+  	 	}
+  	 	
+	    var data =  $("#userModifyForm").serialize() ;
+  	 	    
+	    displayWorkProgress();
+		$.ajax({
+			url : "/mng/member/modifyMember.do",
+			type: 'POST',
+			cache : false,
+			dataType: 'json',
+			data : data,
+			success : function (data){
+				if(data.result=="success"){
+					alert(data.msg);
+					resetListContent();
+				}else{
+					alert(data.msg);
+				}
+				closeWorkProgress();
+			}
+		});
+	}
+		    
+ 	function init() {
+ 		changeAcntLockYn();
+ 		pphotoImgLoad();
+ 	}
+ 	
+	function changeAcntLockYn() {
+		if($('input:radio[name=acnt_lock_yn]:checked').val() == "Y"){
+			$('#acnt_lock_cd').show();
+		}else{
+			$('#acnt_lock_cd').val('');
+			$('#acnt_lock_cd').hide();
+		}
+	} 
+    	
+	function changeAcnt() {
+		checkId = "";
+		$("#checkIdYnStr").text("");
+	}
+			
+	$('#pphotoFile').on('change', function(event) {
+		var formData = new FormData();
+		var objFile = event.target;
+		formData.append("file", objFile.files[0]);
+		formData.append("filegrp_nm", "user_profile");
+		if($('#pphotoFilegrpid').val() != '')
+			formData.append("filegrpid", $('#pphotoFilegrpid').val());
+
+		displayWorkProgress();
+		$.ajax({
+			url : '/uploadFile.do',
+			processData : false,
+			contentType : false,
+			data : formData,
+			type : 'POST',
+			success : function(response) {
+				if(response.result == 'fail'){
+					alert(response.msg);
+				}else if(response.filegrpid != undefined && response.filegrpid != ''){
+					$("#pphotoFilegrpid").val(response.filegrpid);
+					$("#pphotoFileid").val(response.fileid);
+					$("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.file_idntfc_key);
+				}
+				closeWorkProgress();
+			}
+		});
+
+		event.preventDefault();
+
+	});
+	
+	function pphotoImgLoad() {
+		var pphotoFileid = [[${memberDtl.pphoto_fileid}]];
+		var pphotoFileIdntfcKey = [[${memberDtl.pphoto_file_idntfc_key}]];
+		if(pphotoFileid != 0){
+			$("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + pphotoFileid + "&file_idntfc_key=" + pphotoFileIdntfcKey);
+		}else{
+			defaultImage('imgPreview','profile');
+		}
+    	setDefaultImage('imgPreview','profile');
+	}
+			
+	function daumPostcode(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+                $('#area_cd').val(data.sigunguCode);
+                $('#zip').val(data.zonecode);
+                $('#addr').val(addr);
+                $('#addr_dtl').focus();
+            }
+        }).open();
+	}
+	
+	function frontLogin() {
+		displayWorkProgress();
+		$.ajax({
+			url : "/mng/member/frontLogin.do",
+			type: 'POST',
+			cache : false,
+			dataType: 'json',
+			data : { userid: $('#userid').val() },
+			success : function (data){
+				if(data.result=="success"){							
+					$('#token').val(data.token);
+					$('#frontLoginFrm').submit();
+				}else{
+					alert(data.msg);
+				}
+				closeWorkProgress();
+			}
+		});
+	}
+	
+	$('#popCon1').on('show.bs.modal', function() {
+		$('#popCon1').load("/mng/member/tempPwdPop.html?userid=" + $("#userid").val()); 
+	});
+	$('#popCon1').on('hide.bs.modal', function() {
+		$('#popCon1').html(""); 
+	});
+
+</script> 
+<form id="frontLoginFrm" name="frontLoginFrm" th:action="${frontServerHost}" target="_blank">
+	<input type="hidden" id="token" name="token" value="">
+</form>

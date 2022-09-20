@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/>	
+	<title>팝업공지사항관리</title>
+  	<link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="/css/animate.css" rel="stylesheet" media="screen">
+	<link rel="stylesheet" type="text/css" href="/css/daterange.css">
+	<link href="/css/main.css" rel="stylesheet" media="screen">
+	<link rel="stylesheet" type="text/css" href="/css/slidebars.css">
+	<link href="/fonts/font-awesome.min.css" rel="stylesheet">
+	<link href="/fonts/metrize.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/jquery-ui.structure.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/jquery-ui.theme.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/ui.jqgrid.css">	
+	
+ 	<link rel="stylesheet" type="text/css" href="/css/mngs/dynatree/ui.dynatree.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/dynatree/jquery.contextMenu.css">
+		
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+	 
+	<!-- <script type="text/javascript" charset="utf-8" src="/js/jquery.js"></script> -->	
+    <!-- <script src="/js/common/common.js"></script> -->
+</head>
+<body>
+
+     <span th:replace="layout/jsCommon"></span> 
+      <form id="popForm" >
+      
+        <input type="hidden" name="menuid" id="menuid" />
+		<input type="hidden" name="uppr_menuid" id="uppr_menuid" />	
+		<input type="hidden" name="mode" id="mode" />
+		
+	    <input type="hidden" name="roleid" id="roleid" th:value="${roleid}"/>
+		<input type="hidden" name="uppr_roleid" id="uppr_roleid" value="0"/>
+		<input type="hidden" name="mode" id="mode" value="W"/>
+	        
+		<!-- tree context -->
+			
+		<ul id="roleContext" class="contextMenu">
+			<li class="edit"><a href="#regist">역할선택</a></li>
+			<!-- <li class="quit separator"><a href="#quit">취소</a></li>취소 -->
+			<li class="paste"><a href="#reflash">새로고침</a></li>
+		    <li class="paste"><a href="#allExpend">전체열기</a></li>
+		    <li class="quit"><a href="#allClose">전체닫기</a></li>
+		</ul>
+
+		<ul id="menuContext" class="contextMenu">
+			<li class="edit"><a href="#chooseMenu">메뉴선택</a></li>
+		    <li class="paste"><a href="#reflash">새로고침</a></li>
+		    <li class="paste"><a href="#allExpend">전체열기</a></li>
+		    <li class="quit"><a href="#allClose">전체닫기</a></li>
+		</ul>
+
+		<div class="main-container">
+			<div class="panel-heading">
+			   <h4><span id="popTitle"></span></h4>
+			    <ul class="links">
+				<li><a href="javascript:this.close()"> <span
+						class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+				</a></li>
+			    </ul>
+		    </div>
+				<div class="panel-body">
+					
+				  <div id="adminSelect" class="form-group col-xs-12 row" >
+				   <div  class="col-xs-3 form-group  form-control-static">
+    				    <label class="control-label"><span class="text-danger">* </span>사용자 선택</label>
+				   </div>
+					<div class="col-xs-5 form-group  form-control-static">
+		   			  <select  id="se" name="se" class="form-control input-sm" style="width:150px; padding:0px;" onchange="fn_resetRoleTree()">
+					   <option value="U">사용자 </option> 
+					   <option value="A">관리자 </option> 
+					  </select>
+					</div>       
+				  </div>
+				  
+				<div class="tree thumbnail img-responsive  col-xs-12" id="tree"></div>
+
+	    	</div>
+	    </div>
+  	</form>
+  	
+  	
+   	<script type="text/javascript">
+	  $(function(){
+		  if(window.opener.$("#popupMode").val() == "role"){
+			  $("#popTitle").text("역할선택");
+			  fn_roleTree();
+		  }else{
+			  $("#popTitle").text("메뉴선택");
+			  $("#adminSelect").hide();
+			  fn_selectMenuByTree();
+		  }
+	   })
+	   
+	   function fn_resetRoleTree(){
+		  $("#tree").dynatree("destroy");
+		  fn_roleTree();
+	  }
+	   
+	  
+	  /**
+	   * 
+	   * 
+	   * 
+	   */
+	  	var menuTreeSearchListUrl = "/mng/menu/menuTreeSearchList.do";
+	  	var menuTree = null;
+	  	var menuLayout = null;
+	  	var innerLayout = null;
+	  	var isFlag = true;
+	  	var isSave = true;
+	  	
+	  	// Contextmenu helper
+	  	function bindContextMenu(span) {
+	  	  $(span).contextMenu({menu: "menuContext"}, function(action, el, pos) {
+	  	    var node = $.ui.dynatree.getNode(el);
+	  	    switch(action) {
+	  	    case "chooseMenu":
+	  	    	
+	  	    	if(!confirm(node.data.title+" 메뉴를 선택하시겠습니까?")) return;
+	  	    	
+	  	    	window.opener.$("#menuid").val(node.data.key);
+	  	    	window.opener.$("#menu_nm").val(node.data.title);
+	  	    	this.close();
+	  	    	break;
+	  	    	
+	  	    case "reflash":
+	  	    	if(menuTree != null){
+	  				$("#tree").dynatree("destroy");
+	  			}
+	  	    	fn_selectMenuByTree();
+	  			break;
+	  	    case "allExpend":
+	  	    	menuTree.dynatree("getRoot").visit(function(node){
+	  	   	    	node.expand(true);
+	  	   	    });	   	    
+	  	    	break;
+	  	    case "allClose":
+	  	    	menuTree.dynatree("getRoot").visit(function(node){
+	  	    		node.expand(false);
+	  	   	    });	  
+	  	    	break;
+	  	    	
+	  	    default:
+	  	    	
+	  	    }
+	  	  });
+	  	};
+
+	  	
+	  	function fn_selectMenuByTree(){
+	  		
+	  		menuTree = $("#tree").dynatree({
+	  	    	autoFocus: true,
+	  	    	minExpandLevel: 2,
+	  	    	initAjax: {
+	  				url: menuTreeSearchListUrl,
+	  				dataType:'json',
+	  				data: {	
+	  					siteid : window.opener.$("#insertPopUp [id=siteid]").val(),
+	  					site_nm : window.opener.$("#insertPopUp [id=siteid] option:selected").text(),
+	  					srch_url: $("#srch_url").val()
+	  	            }
+	  			},
+	  	    	onActivate: function(node) {
+	  	    		if(isFlag && isSave){
+	  	  	  			$("#menuid").val(node.data.key);
+	  	    		} 
+	  	    		node.expand(true);
+	  	    	},
+	  	    	onClick: function(node, event) {
+	  	    	},
+	  	    	onCreate: function(node, span){
+	  	    		$(span).attr('id','menu_'+node.data.key);
+	  	    		bindContextMenu(span);
+	  	    		if($("#menuid").val() != ""){
+	  	    			$("#tree").dynatree("getTree").activateKey($("#menuid").val());
+	  	    		}else if($("#uppr_menuid").val() != "0"){
+	  	    			$("#tree").dynatree("getTree").activateKey($("#uppr_menuid").val());
+	  	    		}
+	  	    		
+	  	    	}
+	  	  	});  
+	  	}
+	  	
+	  	
+	  	
+	     /*****역할트리******/
+	  	// --- Contextmenu helper --------------------------------------------------
+	  	function bindContextRole(span) {
+	  	  // Add context menu to this node:
+	  	  jQuery(span).contextMenu({menu: "roleContext"}, function(action, el, pos) {
+	  	    // The event was bound to the <span> tag, but the node object
+	  	    // is stored in the parent <li> tag
+	  	    var node = jQuery.ui.dynatree.getNode(el);
+	  	    switch( action ) {
+	  	    case "regist":
+	  	    	window.opener.$("#ntc_trgt_roleid").val(node.data.key);
+	  	    	window.opener.$("#ntc_trgt_roleid_nm").val(node.data.title);
+	  	    	alert(node.data.title + "역할이 선택되었습니다." );
+	  	    	this.close();
+	  	    	break;    
+	  	    case "reflash":
+	  	    	if(menuTree != null){
+	  				$("#tree").dynatree("destroy");
+	  			}
+	  	    	fn_selectMenuByTree();
+	  			break;
+	  	    case "allExpend":
+	  	    	menuTree.dynatree("getRoot").visit(function(node){
+	  	   	    	node.expand(true);
+	  	   	    });	   	    
+	  	    	break;
+	  	    case "allClose":
+	  	    	menuTree.dynatree("getRoot").visit(function(node){
+	  	    		node.expand(false);
+	  	   	    });	  
+	  	    	break; 	
+	  	    default:
+	  	    	jQuery("#uppr_roleid").val("0");
+	  	    	jQuery("#roleid").val("");
+	  	    	jQuery("#mode").val("W");
+	  	    }
+	  	  });
+	  	};
+	  	
+	  	var treeUrl = "/mng/roleauth/roleMgntTreeList.do";
+	  	
+	  	function fn_roleTree(){
+	  		
+	  		jQuery("#tree").dynatree({
+	  	    	autoFocus: true,
+	  	    	cache: false,
+	  	    	minExpandLevel: 2,
+	  	    	generateIds : true,
+	  	    	initAjax: {
+	  				url: treeUrl,
+	  				dataType:'json',
+	  				data: {	
+	  					se : $("#se").val()
+	  	            }
+	  			},
+	  	    	onActivate: function(node) {   
+	  	    		if(node.data.key !="0" && node.data.key != undefined){
+	  	    			jQuery("#mode").val("E");
+	  	    		}else{
+	  	    			jQuery("#uppr_roleid").val("0");
+	  	    	    	jQuery("#roleid").val("");
+	  	    			jQuery("#mode").val("W");
+	  	    		}
+	  	  	  		
+	  	    	},
+	  	    	onClick: function(node, event) {
+	  	      		if( jQuery(".contextMenu:visible").length > 0 ){
+	  	      			jQuery(".contextMenu").hide();
+	  	      		}
+	  	    	},
+	  	    	
+	  	    	onCreate: function(node, span){
+	  	    		if(node.data.key!="0" ){
+	  	    			bindContextRole(span);
+	  	    		}
+	  	    		
+	  	    		// 선택하기
+	  	    		if(jQuery("#roleid").val() != ""){
+	  	    			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#roleid").val());
+	  	    		}else if(jQuery("#p_upr_menu_id").val() != "0"){
+	  	    			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#uppr_roleid").val());
+	  	    		}
+	  	    		
+	  	    		
+	  	    		
+	  	    		
+	  	    	}
+	  	 
+	  	  	});  
+	  	}
+
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SiteDaoImpl.xml
+	Description : 사이트 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.site.model.SiteDao">
+
+    <!-- 사이트 목록 -->
+    <select id="selectSiteList" parameterType="SiteVo" resultType="SiteVo">
+        /* SiteDao.selectSiteList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            SITEID,
+            SITE_NM,
+            SYS_SE_CD,
+            USE_YN,
+            UPDT_DT,
+            (SELECT GROUP_CONCAT(DMN) FROM TB_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
+        FROM 
+            TB_SITE S
+        WHERE 
+            1=1
+            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty( searchType )'>
+            AND SYS_SE_CD = #{searchType}
+            </if>
+                
+            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty( searchKeyword )'>
+            AND SITE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+
+        <include refid="PaginationMapper.footer"/>    
+    </select>
+    
+    <!-- 사이트 등록 -->
+    <insert id="insertSite" parameterType="SiteVo" useGeneratedKeys="true" keyProperty="siteid">
+        /* SiteDao.insertSite */
+        INSERT INTO TB_SITE (
+            SITE_NM,
+            SYS_SE_CD,
+            USE_YN,
+            UPDT_DT,
+            UPDTUSERID,
+            REG_DT,
+            REGUSERID
+        ) VALUES (
+            #{site_nm},
+            #{sys_se_cd},
+            #{use_yn},
+            NOW(),
+            #{updtuserid},
+            NOW(),
+            #{reguserid}
+        )
+    </insert>
+    
+    <!-- 사이트 정보를 구한다. 도메인 포함. -->
+    <select id="selectSiteInfo" parameterType="Integer" resultType="SiteVo">
+        /* SiteDao.selectSiteInfo */
+        SELECT 
+            SITEID,
+            SITE_NM,
+            SYS_SE_CD,
+            USE_YN,
+            UPDT_DT,
+            UPDTUSERID,
+            REG_DT,
+            REGUSERID,
+            (SELECT GROUP_CONCAT(DMN) FROM TB_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
+        FROM TB_SITE S
+        WHERE
+            SITEID = #{siteid}
+    </select>
+    
+    <!-- 사이트 정보를 수정한다. -->
+    <update id="updateSite" parameterType="SiteVo">
+        /* SiteDao.updateSite */
+        UPDATE 
+            TB_SITE
+        SET
+            SITE_NM = #{site_nm},
+            SYS_SE_CD = #{sys_se_cd},
+            USE_YN = #{use_yn},
+            UPDT_DT = NOW(),
+            UPDTUSERID = #{updtuserid}
+        WHERE
+            SITEID = #{siteid}
+    </update>
+    
+    <!-- 사이트를 삭제한다. -->
+    <update id="deleteSite" parameterType="Integer">
+        /* SiteDao.deleteSite */
+        DELETE FROM TB_SITE WHERE SITEID = #{siteid}
+    </update>
+    
+    <!-- 사이트 등록 -->
+    <insert id="insertSiteDomain" parameterType="SiteDomainVo" useGeneratedKeys="true">
+        /* SiteDao.insertSiteDomain */
+        INSERT INTO TB_SITE_DMN (
+            DMN,
+            SITEID,
+            DMN_DC,
+            UPDT_DT,
+            UPDTUSERID,
+            REG_DT,
+            REGUSERID
+        ) VALUES (
+            #{dmn},
+            #{siteid},
+            #{dmn_dc},
+            NOW(),
+            #{updtuserid},
+            NOW(),
+            #{reguserid}
+        )
+    </insert>
+    
+    <!-- 사이트 도메인 정보를 수정한다. -->
+    <update id="updateSiteDomain" parameterType="SiteDomainVo">
+        /* SiteDao.updateSiteDomain */
+        UPDATE 
+            TB_SITE_DMN
+        SET
+            DMN = #{dmn},
+            DMN_DC = #{dmn_dc},
+            UPDT_DT = NOW(),
+            UPDTUSERID = #{updtuserid}
+        WHERE
+            SITEID = #{siteid}
+            AND DMN = #{dmn_org}
+        
+    </update>
+    
+    <!-- 사이트 도메인을 삭제한다. -->
+    <update id="deleteSiteDomain" parameterType="SiteDomainVo">
+        /* SiteDao.deleteSiteDomain */
+        DELETE FROM TB_SITE_DMN WHERE SITEID = #{siteid} AND DMN = #{dmn}
+    </update>
+    
+    <!-- 사이트에 대한 도메인 목록을 구한다. -->
+    <select id="selectSiteDomainList" parameterType="SiteVo" resultType="SiteDomainVo" >
+        /* SiteDao.selectSiteDomainList */
+        SELECT
+            DMN,
+            DMN_DC,
+            UPDT_DT,
+            UPDTUSERID,
+            REG_DT,
+            REGUSERID
+        FROM
+            TB_SITE_DMN
+        WHERE
+            SITEID = #{siteid}
+    </select>    
+</mapper>

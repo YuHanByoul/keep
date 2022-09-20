@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : MenuDaoImpl.xml
+    Description : 메뉴관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.menu.model.MenuDao">
+	
+	<!-- 사이트별 메뉴트리 -->
+	<select id="selectMenuTreeSearchList" parameterType="java.util.Map" resultType="com.kbrainc.plum.rte.lib.tree.TreeItem">
+		/* MenuDao.selectMenuTreeSearchList */
+		<![CDATA[
+		SELECT 
+			A.MENUID 'KEY',
+			A.UPPR_MENUID PKEY,
+			A.NM TITLE,
+			IFNULL((SELECT TYPE_CD FROM TB_PRGRM WHERE PRGRMID = A.PRGRMID),(CASE WHEN A.TYPE_CD = 'D' THEN '01' END)) ext2		
+		FROM TB_MENU A INNER JOIN TB_SITE B
+		ON A.SITEID = B.SITEID
+		]]>
+		WHERE 1=1
+		<if test="siteid != null and siteid != ''">
+			AND	B.SITEID = #{siteid}
+		</if>
+		ORDER BY ORD ASC
+		
+	</select>
+	
+	<!-- 사이트별 메뉴트리 url검색 -->
+	<select id="selectMenuTreeUrlSearchList" parameterType="java.util.Map" resultType="com.kbrainc.plum.rte.lib.tree.TreeItem">
+		/* MenuDao.selectMenuTreeUrlSearchList */
+		SELECT 
+			MENU.MENUID 'KEY',
+			MENU.UPPR_MENUID PKEY,
+			MENU.NM TITLE,
+			IFNULL((SELECT TYPE_CD FROM TB_PRGRM WHERE PRGRMID = MENU.PRGRMID),
+			(CASE WHEN MENU.TYPE_CD = 'D' THEN '01' END) ) EXT2	
+		 FROM TB_MENU MENU INNER JOIN (
+		SELECT 
+			B.MENUID
+			FROM (
+				SELECT NM , TREE_MENUID 
+				FROM TB_MENU A 
+					LEFT OUTER JOIN TB_PRGRM B 
+					ON A.PRGRMID = B.PRGRMID
+				INNER JOIN TB_SITE C
+					ON A.SITEID = C.SITEID 
+				WHERE 1=1
+				<if test="siteid != null and siteid != ''">
+					AND	C.SITEID = #{siteid}
+				</if>
+				<if test="srch_url != null and srch_url != ''">
+					IFNULL(A.URL,B.URL) LIKE CONCAT('%',#{srch_url},'%')
+				</if>
+				ORDER BY A.ORD
+			) A LEFT OUTER JOIN 
+			TB_MENU B 
+			ON A.TREE_MENUID LIKE CONCAT(B.TREE_MENUID,'%')
+			<if test="siteid != null and siteid != ''">
+				AND B.SITEID = #{siteid}
+			</if>
+			GROUP BY B.MENUID
+		) TEMP
+		ON MENU.MENUID = TEMP.MENUID
+	</select>
+	
+	<!-- 메뉴 상세 정보 -->
+	<select id="selectMenuDetailInfo" parameterType="MenuVo" resultType="MenuVo">
+		/* MenuDao.selectMenuDetailInfo */
+		SELECT 
+		      A.MENUID, 
+		      A.NM, 
+		      A.DC,
+			  A.TYPE_CD, 
+			  A.UPPR_MENUID,
+			  A.SITEID, 
+			  A.PRGRMID, 
+			  A.REF_MENUID, 
+			  A.POPUP_YN,
+			  A.POPUP_WD, 
+			  A.POPUP_HG,
+			  A.POPUP_TRGT_CD,
+			  A.LOGIN_YN, 
+			  A.HIDE_YN,
+			  A.HTTPS_USE_YN,			  
+			  A.DPTH, 
+			  A.ORD, 
+			  A.ORD,
+			  A.NM, 
+			  A.MENUID, 
+			  A.REGUSERID, 
+			  A.REG_DT,
+			  A.UPDTUSERID, 
+			  A.UPDT_DT,
+			  A.NM_EXPSR_TRGT_CD,
+			  B.TYPE_CD AS PTYPE_CD,
+			  B.URL AS PURL
+		FROM TB_MENU A LEFT OUTER JOIN TB_PRGRM B
+		ON A.PRGRMID = B.PRGRMID
+		WHERE A.MENUID = #{menuid}
+	</select>
+	
+	<!-- 메뉴 정보 수정 -->
+	<update id="updateMenuInfo" parameterType="MenuVo">
+		/* MenuDao.updateMenuInfo */
+		UPDATE TB_MENU SET
+			NM = #{nm}, 
+			DC = #{dc},
+			<if test="type_cd != null and type_cd != ''">
+				TYPE_CD = #{type_cd},
+			</if>	
+			<if test="type_cd == 'D'.toString()">
+				REF_MENUID = #{ref_menuid},
+			</if>
+				POPUP_YN = CASE WHEN #{popup_yn} IS NULL THEN 'N' ELSE #{popup_yn} END,			
+			<if test="popup_yn == 'Y'.toString()">				 
+				POPUP_WD = #{popup_wd}, 
+				POPUP_HG = #{popup_hg},
+			</if>
+			POPUP_TRGT_CD = #{popup_trgt_cd},
+			LOGIN_YN = #{login_yn},
+			HIDE_YN = #{hide_yn}, 
+			HTTPS_USE_YN = #{https_use_yn},
+			UPDTUSERID = #{user.userid}, 
+			UPDT_DT = NOW()
+		WHERE MENUID = #{menuid}
+	
+	</update>
+	<!-- 메뉴 직접등록 -->
+	<insert id="insertMenuDirectInsertInfo" useGeneratedKeys="true" keyProperty="menuid" parameterType="MenuVo">
+		/* MenuDao.insertMenuDirectInsertInfo */
+		INSERT INTO TB_MENU (
+				NM,
+				DC,
+				TYPE_CD,
+				UPPR_MENUID,
+				<if test="ref_menuid != null and ref_menuid != ''">
+				REF_MENUID,
+				</if>
+				<if test="siteid != null and siteid != ''">
+				SITEID,
+                </if>			
+				POPUP_YN,	
+				<if test="popup_yn != null and popup_yn != ''">		
+				POPUP_WD,
+				POPUP_HG,
+				</if>
+				POPUP_TRGT_CD,
+				LOGIN_YN,
+				HIDE_YN, 
+				HTTPS_USE_YN,				
+				ORD,				
+				REGUSERID,
+				REG_DT,
+				UPDTUSERID,
+				UPDT_DT
+			)
+		VALUES (
+				#{nm},
+				#{dc},
+				#{type_cd},
+				#{uppr_menuid},
+				<if test="ref_menuid != null and ref_menuid != ''">		
+				#{ref_menuid},
+				</if>
+                <if test="siteid != null and siteid != ''">
+				#{siteid},
+                </if>
+                IFNULL(#{popup_yn},'N'),
+				<if test="popup_yn != null and popup_yn != ''">
+				#{popup_wd},
+				#{popup_hg},
+				</if>
+				#{popup_trgt_cd},
+				#{login_yn},
+				#{hide_yn}, 
+				#{https_use_yn},
+				(SELECT ORD FROM(SELECT IFNULL(MAX(A.ORD),0)+1 AS ORD FROM TB_MENU A WHERE A.UPPR_MENUID = #{uppr_menuid}
+				<if test="siteid != null and siteid != ''">
+				AND SITEID = #{siteid}
+                </if>
+                )T),               
+				#{user.userid},
+				NOW(),
+				#{user.userid},
+				NOW())
+	</insert>
+	<!-- 메뉴 트리 저장 -->
+	<insert id="insertMenuTreeList" useGeneratedKeys="true" keyProperty="menuid" parameterType="MenuVo">
+		/* MenuDao.insertMenuTreeList */
+		INSERT INTO TB_MENU (
+				NM,
+				DC,
+				TYPE_CD,
+				PRGRMID,
+				UPPR_MENUID,
+				POPUP_TRGT_CD,
+				DPTH,
+				SITEID,
+				LOGIN_YN,
+				HIDE_YN, 
+				HTTPS_USE_YN,
+				ORD,
+				REGUSERID,
+				REG_DT,
+				UPDTUSERID,
+				UPDT_DT
+			)		
+		SELECT 
+				NM,
+				DC,
+				CASE TYPE_CD 
+					WHEN '01' then 'D'
+					WHEN '02' then 'P'
+					WHEN '04' then 'P'
+					ELSE 'P'
+				END,
+				PRGRMID,
+				#{uppr_menuid},
+				'P',
+				0,
+				#{siteid},
+				LOGIN_YN,
+				'N',
+				'Y',
+				CASE WHEN PRGRMID = #{prgrmid} then ${ord} ELSE ORD END,
+				#{user.userid},
+				NOW(),
+				#{user.userid},
+				NOW()
+			FROM 
+				TB_PRGRM 
+			WHERE
+				PRGRMID = #{prgrmid}
+        
+	</insert>
+	
+	<!-- 메뉴트리 순서조정 -->
+	<update id="updateMenuTreeOrder" parameterType="java.util.Map">
+		/* MenuDao.updateMenuTreeOrder */
+		
+            UPDATE 
+                TB_MENU P
+                    INNER JOIN 
+                    (
+                        WITH RECURSIVE MENU_CTE (UPPR_MENUID, MENUID, DEPTH) AS
+                        ( 
+                            SELECT UPPR_MENUID, MENUID, 1 DEPTH FROM  TB_MENU A WHERE UPPR_MENUID = 0 
+                            <if test="siteid != null and siteid != ''">
+                                AND A.SITEID = #{siteid}
+                            </if>
+                            UNION ALL
+                            SELECT B.UPPR_MENUID, B.MENUID, A.DEPTH + 1 AS DEPTH FROM  MENU_CTE A JOIN  TB_MENU B ON A.MENUID = B.UPPR_MENUID
+                        )
+                        SELECT * from MENU_CTE  
+                    ) T 
+                ON (P.MENUID = T.MENUID)
+                SET P.DPTH = T.DEPTH
+
+	</update>
+	
+	<!-- 메뉴트리 뎁스조정 -->
+	<update id="updateMenuTreeDepth" parameterType="java.util.Map">
+		/* MenuDao.updateMenuTreeDepth */
+		
+		
+            UPDATE 
+                    TB_MENU P
+                INNER JOIN 
+                    (
+                        WITH RECURSIVE MENU_CTE (UPPR_MENUID, MENUID, DEPTH) AS
+                        ( 
+                            SELECT UPPR_MENUID, MENUID, 1 DEPTH FROM  TB_MENU A WHERE UPPR_MENUID = 0 
+                            <if test="siteid != null and siteid != ''">
+                                AND A.SITEID = #{siteid}
+                            </if>
+                            UNION ALL
+                            SELECT B.UPPR_MENUID, B.MENUID, A.DEPTH + 1 AS DEPTH FROM  MENU_CTE A JOIN  TB_MENU B ON A.MENUID = B.UPPR_MENUID
+                        )
+                        SELECT * from MENU_CTE  
+                    ) T 
+                ON (P.MENUID = T.MENUID)
+                SET P.DPTH = T.DEPTH
+	</update>
+	
+	<!-- 메뉴 정보 삭제 -->
+	<delete id="deleteMenuInfo" parameterType="MenuVo">
+		/* MenuDao.deleteMenuInfo */
+		<if test="menuid != '0'.toString()">
+            DELETE FROM TB_MENU WHERE MENUID IN (
+                WITH RECURSIVE MENU_CTE AS (
+                    SELECT
+                        MENUID
+                    FROM TB_MENU
+                    WHERE MENUID = #{menuid}
+                    UNION ALL
+                    SELECT              
+                        M.MENUID
+                    FROM TB_MENU M, MENU_CTE C
+                    WHERE M.UPPR_MENUID = C.MENUID
+                ) SELECT * from MENU_CTE
+            )
+	    </if>
+	</delete>
+	
+	<!-- 메뉴 menu_ord 조정 -->
+	<update id="updateMenuReOrder">
+		/* MenuDao.updateMenuReOrder */
+		UPDATE TB_MENU SET
+			<if test="upperYn == 'Y'.toString()">
+				ORD = ORD + 1	
+				WHERE UPPR_MENUID = IFNULL(#{uppr_menuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T))
+				<if test="siteid != null and siteid != ''">
+					AND SITEID = #{siteid}
+	            </if>
+	            <if test="hitMode == 'before'">
+					AND ORD <![CDATA[>= ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)
+					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T) 
+				</if>
+				<if test="hitMode == 'after'">			
+					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)
+					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T)
+				</if>	
+			</if>
+			<if test="upperYn == 'N'.toString()">
+				ORD = ORD - 1
+				WHERE UPPR_MENUID = IFNULL(#{uppr_menuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)) 
+				<if test="siteid != null and siteid != ''">
+					AND SITEID = #{siteid}
+	            </if>
+	            <if test="hitMode == 'before'">
+					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T)					
+					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)					
+				</if>
+				<if test="hitMode == 'after'">			
+					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T)
+					<if test="menuid != null and menuid != ''">
+					AND ORD <![CDATA[<= ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)
+					</if>
+				</if>
+			</if>	
+	</update>
+	
+	<!-- 메뉴 저장시 menu_ord 조정 -->
+	<update id="updateMenuTreeReOrder">
+		/* MenuDao.updateMenuTreeReOrder */
+		UPDATE TB_MENU SET
+			ORD = ORD+1	
+			WHERE UPPR_MENUID = #{uppr_menuid} 
+				<if test="siteid != null and siteid != ''">
+				AND SITEID = #{siteid}
+                </if>
+			AND ORD >= #{order}
+	</update>
+	
+	<!-- 메뉴 순서조정시 부모코드, menu_ord 조정 -->
+	<update id="updateMenuTreeInfo">
+		/* MenuDao.updateMenuTreeInfo */
+		UPDATE TB_MENU SET
+			UPPR_MENUID = #{uppr_menuid}
+			<if test="hitMode == 'over'">
+			,ORD =  (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_MENU WHERE UPPR_MENUID = #{uppr_menuid} 
+				<if test="siteid != null and siteid != ''">
+				AND SITEID = #{siteid}
+                </if>)
+			</if>	
+			<if test="hitMode != 'over'">
+				,ORD =  #{ord}		
+			</if>	
+				WHERE MENUID = #{tmenuid}
+			<if test="siteid != null and siteid != ''">
+            	AND SITEID = #{siteid}
+            </if>
+	</update>
+	
+	<!-- 메뉴 순서조정시 부모코드, menu_ord 조정 -->
+	<update id="updateMenuTreeInfoNew">
+		/* MenuDao.updateMenuTreeInfoNew */
+		UPDATE TB_MENU SET
+			UPPR_MENUID = #{uppr_menuid}			
+			,ORD = #{ord}		
+			WHERE MENUID = #{menuid}
+			<if test="siteid != null and siteid != ''">
+			    AND SITEID = #{siteid}
+            </if>
+	</update>
+	
+	<!-- 빠지는곳 메뉴 ord 조정 -->
+	<update id="updateMenuPreOrder">
+		/* MenuDao.updateMenuPreOrder */
+		UPDATE TB_MENU SET
+				ORD = ORD - 1
+				WHERE UPPR_MENUID = (SELECT * FROM (SELECT UPPR_MENUID FROM TB_MENU M WHERE MENUID = #{menuid}) A) 
+				<if test="siteid != null and siteid != ''">
+	            	AND SITEID = #{siteid}
+	            </if>
+				AND ORD <![CDATA[> ]]> (SELECT * FROM(SELECT ORD FROM TB_MENU M WHERE MENUID = #{menuid}) A )
+						
+	</update>
+		
+	<!-- 자식 메뉴 리스트 -->
+	<select id="selectMenuChildTreeList" parameterType="MenuVo" resultType="MenuVo">
+		/* MenuDao.selectMenuChildTreeList */
+		<if test="menuid == '0'.toString()">
+		SELECT A.MENUID , A.NM , A.TYPE_CD
+			FROM TB_MENU A 
+		
+			WHERE 1=1 
+			<if test="siteid != null and siteid != ''">
+				AND SITEID = #{siteid}
+            </if>
+	    </if>
+	    <if test="menuid != '0'.toString()">
+		WITH RECURSIVE MENU_CTE(MENUID, NM, TYPE_CD)
+		AS (
+		    SELECT 	            
+				MENUID,
+				NM,
+				TYPE_CD
+		     FROM TB_MENU
+			WHERE MENUID = #{menuid}
+			
+			UNION ALL
+			
+			SELECT 	            
+				M.MENUID,
+				M.NM,
+				M.TYPE_CD
+		     FROM MENU_CTE C, TB_MENU M
+		     LEFT OUTER JOIN TB_PRGRM P ON M.PRGRMID = P.PRGRMID
+			WHERE M.UPPR_MENUID = C.MENUID
+			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(type_cd)" >
+				AND M.TYPE_CD = #{type_cd}
+			</if>
+			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(ptype_cd)" >
+                AND P.TYPE_CD = #{ptype_cd}
+            </if>
+		)
+		SELECT MENUID, NM, TYPE_CD
+		  FROM MENU_CTE	
+		  WHERE MENUID <![CDATA[<>]]> #{menuid}
+		</if>		
+	</select>
+	
+	<!-- 권한에 매핑된 메뉴를 삭제 -->
+	<delete id="deleteRoleMenuAuth" parameterType="java.util.Map" >
+		/* MenuDao.deleteRoleMenuAuth */
+		DELETE FROM TB_ROLE_MENU 
+		WHERE MENUID = #{menuid}
+	</delete>
+</mapper>

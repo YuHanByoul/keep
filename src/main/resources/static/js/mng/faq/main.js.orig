@@ -1,0 +1,187 @@
+/**
+ * 
+ */
+
+$.getScript( "/js/mng/faq/FAQ.js" );
+
+var listToggle = true;
+var contentToggle = false;
+
+var faqKinds = [
+	{ Name: "占쎌뵬獄쏉옙", Id: 1 },
+	{ Name: "癰귣똻湲�", Id: 2 },
+	{ Name: "占쎌돳占쎌뜚揶쏉옙占쎌뿯", Id: 3 },
+];
+
+var useYn = [
+	{ Name: "占쎄텢占쎌뒠", Id: 'Y' },
+	{ Name: "占쎄텢占쎌뒠占쎈툧占쎈맙", Id: 'N' }
+];
+
+$(function(){
+	$('#contentPanel').hide();
+	
+	//jsGrid Init
+	$("#jsGrid").jsGrid({
+	        height: "auto",
+	        width: "100%",
+	        autoload: true,
+//	        filtering: true,
+	        inserting: true,
+	        editing: true,
+	        sorting: true,
+	        paging: true,
+	        pagerContainer: "#listPager",
+	        pagerFormat: "{first} {prev} {pages} {next} {last}",
+	        pagePrevText: "<",
+	        pageNextText: ">",
+	        pageFirstText: "占쎈��<",
+	        pageLastText: ">占쎈��",
+	        
+	        pageSize: 10,
+	        pageButtonCount: 10,
+	        pageLoading: true,
+	        pageIndex: 1,
+	        
+	        controller: {
+	            loadData: function (filter) {
+	            	var data = $.Deferred();
+	            	
+	            	var params = {
+	            			"clid": $('#sclid').val(),
+	            			"use_yn": $('#useYn').val(),
+	            			"searchType": $('#searchType').val(),
+	            			"searchKeyword": $('#searchKeyword').val(),
+	            			"pageNumber": filter.pageIndex,
+	            			"rowPerPage": filter.pageSize,
+	            			"orderField": filter.sortField,
+	            			"orderDirection": filter.sortOrder
+	            	}
+	            	console.log(filter);
+	                $.ajax({
+	                  type: "GET",
+	                  contentType: "application/json; charset=utf-8",
+	                  url: "/mng/faq/faqList.do",
+	                  data: params,
+	                  dataType: "json"
+	                }).done(function(response){
+	                	var da = {
+                                data :response.list,
+                                itemsCount : response.totalCount
+/*                                 pageSize: response.length,
+                                pageIndex: response.page, */
+                            };
+                            console.log(da);
+	                  data.resolve(da);
+	                });
+	                
+	                return data.promise();
+	            },
+		        insertItem: function(item) {
+		            console.log(item);
+		            FAQ.insert(item);
+		        },
+
+		        updateItem: function(item) {
+		            console.log(item);
+		            FAQ.update(item);
+		        },
+
+		        deleteItem: function(item) {
+		            console.log(item);
+		            FAQ.delete(item, function(){ $("#jsGrid").jsGrid("refresh"); });
+
+		        }
+			
+	        },
+	        deleteConfirm: "占쎌젟筌랃옙 占쎄텣占쎌젫占쎈릭占쎈뻻野껋쥙�뮸占쎈빍繹먲옙?",
+	        fields: [ 
+                { name: 'clid', title:"�겫袁⑥첒", type: "select", items: faqKinds, valueField: "Id", textField: "Name", key: true, width: 50, validate: "required" },
+//                { name: 'faqid', title:"ID", type: "number", width: 50 },
+                { name: 'title', title:"占쎌젫筌륅옙", type: "text", width: 150 },
+                { name: 'cntnts', title:"占쎄땀占쎌뒠", type: "text", width: 200 },
+                { name: 'reg_dt', title:"占쎈쾻嚥≪빘�뵬", type: "text", width: 80, align: "center" },
+                { name: 'use_yn', title:"占쎄텢占쎌뒠占쎌��눧占�", type: "select", items: useYn, valueField: "Id", textField: "Name", width: 50 },
+                { name: 'ord', title:"占쎈떄占쎄퐣", type: "number", width: 50, align: "center" },
+                { type: "control" }
+	        ],
+	        rowClick: function(args) { readModify(args.item.faqid); },
+	        
+	});
+         
+	//野껓옙占쎄퉳 form submit
+	$('#searchFrm').submit(function(){
+		$("#jsGrid").jsGrid("reset");
+		showList();
+		return false;
+	});
+
+});
+
+function regFaq(){
+<<<<<<< HEAD:src/main/resources/static/js/mng/faq/main.js
+	$('#contentPanel').load("/mng/faq/reg.html"); 
+	toggleContent(); 
+	toggleList();	
+=======
+	$('#contentPanel').load("/faq/reg.do"); 
+	showContent(); 
+	hideList();
+>>>>>>> 6c4871701c0945313a0e51b0177c54a7159b039f:src/main/resources/static/js/faq/grid.js
+}
+
+function readModify(faqid){
+	$('#contentPanel').load("/mng/faq/read.html?faqid=" + faqid); 
+	showContent(); 
+	hideList();
+}
+
+function toggleListContent(){
+	$("#jsGrid").jsGrid("reset");
+	toggleContent(); 
+	toggleList();	
+}
+
+function resetListContent(){
+	//�뵳�딅�묕옙釉��⑨옙 占쎌겱占쎌삺 占쎈읂占쎌뵠筌욑옙嚥∽옙 占쎈즼占쎈툡揶쏄쑬�뼄.
+	var curPage = $("#jsGrid").jsGrid("option", "pageIndex");
+	$("#jsGrid").jsGrid("reset").done(function(){
+		$("#jsGrid").jsGrid("openPage", curPage);
+	});
+	hideContent(); 
+	showList();	
+}
+function showList(){
+	if(listToggle) return;
+	listToggle = !listToggle;
+	$('#collapseList').collapse('show');
+}
+
+function hideList(){
+	if(!listToggle) return;
+	listToggle = !listToggle;
+	$('#collapseList').collapse('hide');
+}
+
+function showContent(){
+	if(contentToggle) return;
+	contentToggle = !contentToggle;
+	$('#contentPanel').show();
+}
+
+function hideContent(){
+	if(!contentToggle) return;
+	contentToggle = !contentToggle;
+	$('#contentPanel').hide();
+}
+
+function toggleList(){
+	listToggle ? $('#collapseList').collapse('hide') : $('#collapseList').collapse('show');	
+	listToggle = !listToggle;
+}
+
+function toggleContent(){
+	contentToggle ? $('#contentPanel').hide() : $('#contentPanel').show();
+	if(contentToggle && !listToggle) toggleList();
+	contentToggle = !contentToggle;
+}

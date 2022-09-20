@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : ResCodeDaoImpl.xml
+    Description : 자원(코드)을 담담
+-->
+<mapper namespace="com.kbrainc.plum.rte.model.ResCodeDao">
+
+    <!-- 전체 코드 목록을 조회한다. -->
+	<select id="selectAllCodeInfoList" resultType="CodeInfoVo">
+	    /* ResCodeDao.selectAllCodeInfoList */
+		SELECT A.CDGRPID, A.UPPR_CD, A.ORD, A.CD, A.CD_NM 
+		FROM TB_CD A, TB_CDGRP B 
+		WHERE B.USE_YN = 'Y'
+		  AND B.CDGRPID = A.CDGRPID
+		  AND A.USE_YN = 'Y' 
+		ORDER BY A.CDGRPID, A.UPPR_CD, A.ORD
+	</select>
+	
+	<!-- 그룹코드아이디에 해당하는 코드 목록을 반환 -->
+	<select id="selectCodeList" parameterType="CodeInfoVo" resultType="CodeInfoVo">
+		/* ResCodeDao.selectCodeList */
+		SELECT A.CDGRPID, A.UPPR_CD, A.ORD, A.CD, A.CD_NM 
+		FROM TB_CD A, TB_CDGRP B 
+		WHERE B.USE_YN = 'Y'
+		  AND B.CDGRPID = A.CDGRPID
+		  AND A.USE_YN = 'Y' 
+		  AND B.CDGRPID = #{cdgrpid}
+		  AND A.UPPR_CD = #{uppr_cd}
+		ORDER BY A.CDGRPID, A.UPPR_CD, A.ORD
+	</select>
+	
+	<!-- 코드아이디에 해당하는 코드정보를 반환 -->
+	<select id="selectCodeInfo" parameterType="CodeInfoVo" resultType="CodeInfoVo">
+		/* ResCodeDao.selectCodeInfo */
+		SELECT A.CDGRPID, A.UPPR_CD, A.ORD, A.CD, A.CD_NM 
+		FROM TB_CD A, TB_CDGRP B 
+		WHERE B.USE_YN = 'Y'
+		  AND B.CDGRPID = A.CDGRPID
+		  AND A.USE_YN = 'Y'
+		  AND A.CD = #{cd} 
+	</select>
+	
+	<!-- 그룹코드아이디에 해당하는 모든 하위 코드 목록를 반환 -->
+	<select id="selectCdgrpidAndUpprcdList" parameterType="String" resultType="CodeInfoVo">
+		/* ResCodeDao.selectCdgrpidAndUpprcdList */
+		SELECT DISTINCT A.CDGRPID, A.UPPR_CD 
+		FROM TB_CD A 
+		WHERE A.CDGRPID = #{cdgrpid}
+	</select>
+</mapper>

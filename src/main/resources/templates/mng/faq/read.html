@@ -1,0 +1,217 @@
+<form class="form-horizontal row-border" id="faqModifyForm">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+					<h4>>FAQ 보기 & 수정</h4>
+		  </div>
+          <div class="panel-body">
+          
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>FAQ 대상</label>
+						<div class="col-sm-10 form-control-static">
+		                            <div class="faq-radio"> 
+		                                <input type="radio" name="user_se_cd" id="user_se_cd_111" value="P" th:checked="${info.user_se_cd == 'P'}"><label for="user_se_cd_111">개인</label>
+		                                <input type="radio" name="user_se_cd" id="user_se_cd_222" value="C" th:checked="${info.user_se_cd == 'C'}"><label for="user_se_cd_222">기업</label>
+		                            </div>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label for="clid" class="col-sm-2 control-label"><span class="text-danger">* </span>FAQ
+							분류</label>
+						<div class="col-sm-10 form-control-static">
+							<select kattr:faq-category-list="clid" id="clid" th:value="${info.clid}"
+								class="form-control input-sm" style="width:200px;padding:0px;"></select>
+						</div>
+					</div>
+	
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>FAQ 제목</label>
+						<div class="col-sm-10 form-control-static">
+							<input type="text" class="form-control input-sm" id="title" name="title" required th:value="${info.title}" placeholder="제목">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>FAQ 내용</label>
+						<div class="col-sm-10 form-control-static">
+							<textarea id="cntnts" name="cntnts" required th:utext="${info.cntnts}"></textarea>
+						</div>
+					</div>
+										
+					<div class="form-group">
+						<label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>FAQ 사용여부</label>
+						<div class="col-sm-10 form-control-static">
+							<div class="radio">
+								<label> 
+								  <span kattr:radio_yn="use_yn" label1="사용" label2="미사용"  th:attr="defaultVal=${info.use_yn}" ></span>
+								</label>
+							</div>
+						</div>
+					</div>
+					
+				    <input type="hidden" class="form-control" id="ord" name="ord" required th:value="${info.ord}" >
+					<div class="form-group">
+						<div class="col-sm-offset-2 col-sm-10 text-right">
+							<input type="button"  class="btn btn-primary" onclick="fn_modifyFaq()"value="수정"/>
+							<input type="button"  class="btn btn-danger" onclick="fn_deleteFaq()" value="삭제"/>
+							<a href="javascript:" class="btn btn-default" onclick="toggleContent()"> 취소 </a>
+						</div>
+					</div>
+			</div>
+	</div>
+</form>
+					
+	   <script th:inline="javascript">
+		
+		//$.getScript( "/js/mng/faq/FAQ.js" );
+		
+		var editor;
+		
+		$( function()  {
+			
+			//editor = CKEDITOR.replace( 'cntnts' );
+            //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 ) 
+			editor =CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
+			
+			validate();
+			
+			fn_getClSelectBoxData();
+			
+			$('#faqModifyForm input:radio[name=user_se_cd]').click(function(){
+			  fn_getClSelectBoxData();
+			})
+		});
+		
+		function validate(){
+			
+			$("#faqModifyForm").validate({
+			ignore:[],
+		    rules   : {
+		    	clid    : { required: true } 
+		    	,title  : { required: true } 
+		    	,cntnts : { required: true } 
+			},
+		    messages: {
+		    	clid    : { required: "FAQ 분류를 입력해 주십시오." } 
+		    	,title  : { required: "FAQ 제목을 입력해 주십시오." } 
+		    	,cntnts : { required: "FAQ 내용을 입력해 주십시오." }
+			}
+		   })
+		}
+		
+		function fn_writeClSelectBox(data){
+			var seledctedCD ="";
+			if($("#clid").val()!=null && $("#clid").val()!= ''){
+				seledctedCD =$("#clid").val();
+			}
+			var optionStr="<option value=''>선택</optipon>";
+			for(var i=0 ;i < data.length; i++){
+				optionStr += "<option value='" +data[i].clid +"'";
+				if(seledctedCD == data[i].clid){
+					optionStr += " selected "
+				}
+				optionStr += ">"+data[i].cl_nm+"</option>" 
+			}
+			$("#clid").html(optionStr);
+		}
+		
+		function fn_getClSelectBoxData(){
+			
+			var params ={
+				 "user_se_cd" : $('#faqModifyForm input:radio[name=user_se_cd]:checked').val()
+				,"use_yn" :'Y'
+			}
+			
+			$.ajax({
+				url : "/mng/faq/selectClList.do",
+				contentType: "application/json; charset=utf-8",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data :JSON.stringify(params),
+				success : function (data){
+                    fn_writeClSelectBox(data.list);
+				},
+			 	error : function (error){
+				} 
+			});
+		}
+		
+		
+        function fn_modifyFaq(){
+        	$("#cntnts").val(editor.getData());
+			if( !$("#faqModifyForm").valid() ){ return;}
+			var faqid = [[${info.faqid}]];
+			var params = {
+					"faqid":faqid,
+					"user_se_cd": $("#faqModifyForm  input[name='user_se_cd']:checked").val(),
+					"clid": $("#faqModifyForm select[name='clid']").val(),
+					"title":  $("#faqModifyForm input[name='title']").val(),
+					"cntnts": editor.getData(),
+					"use_yn": $("#faqModifyForm input[name='use_yn']:checked").val(),
+					"ord" : $("#faqModifyForm input[name='ord']").val()
+			}
+			FAQ.update(params, function(){console.log('OK'); alert('수정되었습니다.'); resetListContent();});
+		}
+        
+        function fn_deleteFaq(){
+			var faqid = [[${info.faqid}]];
+			var params = {
+					"faqid":faqid,
+					 "use_yn" :'N'
+			}
+			if(!confirm("해당 FAQ를 삭제하시겠습니까?"))return;
+			FAQ.delete(params, function(){console.log('OK'); alert('삭제되었습니다.'); resetListContent();});
+		}
+       	/**
+		 * FAQ
+		 */
+		var FAQ = {
+        				
+			update: function(item, callback){
+					
+					let data = {
+							"clid": item.clid,
+							"faqid": item.faqid,
+							"user_se_cd": item.user_se_cd,
+							"title": item.title,
+							"cntnts": item.cntnts,
+							"ord": item.ord,
+							"use_yn": item.use_yn
+					};
+					$.ajax({
+		                type: "POST",
+		                contentType: "application/json; charset=utf-8",
+		                url: "/mng/faq/update.do",
+		                data: JSON.stringify(data),
+		                dataType: "json",
+		                success: function(data){
+                          if(!data){
+		            		  alert("수정에 실패하였습니다. 권한이 있는지 확인하십시오.");
+		            	  }else{
+		            	     if(typeof callback === 'function') callback();
+		            	  }
+						 }
+		                });
+			},
+			delete: function(item, callback){
+					
+					$.ajax({
+		                type: "DELETE",
+		                contentType: "application/json; charset=utf-8",
+		                url: "/mng/faq/delete.do?faqid="+item.faqid,
+		                dataType: "json",
+						success: function(data){
+                          if(!data){
+		            		  alert("삭제에 실패하였습니다. 권한이 있는지 확인하십시오.");
+		            	  }else{
+		            	     if(typeof callback === 'function') callback();
+		            	  }
+						}
+		              });
+
+			}
+		}
+	 </script>
+</body>
+</html>

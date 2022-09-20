@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorate="layout/subLayout"
+>
+<head>
+<meta charset="utf-8" />
+<body>
+	<div layout:fragment="content">
+		
+		<th:block th:replace="test/test_nav::nav"></th:block>
+	
+		<h2>JsGrid Test</h2>
+		<table id="jsGrid"></table>
+		
+		<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+		<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+		 
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+	<script>
+	
+	$(function(){
+		$("#jsGrid").jsGrid({
+	        height: "auto",
+	        width: "100%",
+	        autoload: true,
+	        inserting: true,
+	        editing: true,
+	        sorting: true,
+	        paging: true,	        
+	        controller: {
+	            loadData: function (filter) {
+	            	var data = $.Deferred();
+	            	
+	                $.ajax({
+	                  type: "GET",
+	                  contentType: "application/json; charset=utf-8",
+	                  url: "/jsdata.do",
+	                  dataType: "json"
+	                }).done(function(response){
+	                  data.resolve(response);
+	                });
+	                
+	                return data.promise();
+	            }
+	        },
+	        fields: [
+	        	{ name: "selected", type: "checkbox", title: "-", sorting: false },
+                { name: 'seq', key: true, width: 75 },
+                { name: 'create_date', width: 150 },
+                { name: 'create_name', width: 150 },
+                { name: 'title', width: 150 },
+                { name: 'hitnum', width: 150 },
+                { type: "control" }
+	        ]
+	    });
+         
+	})
+
+	</script>
+
+	</div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : PaginationMapper.xml
+    Description : 페이징 관련
+-->
+<mapper namespace="PaginationMapper">
+    <sql id="header">
+        WITH
+        SEARCH_ORG
+        AS
+        (
+    </sql>
+    <sql id="footer">
+        ),
+        totalCount                                                 <!-- [총건수] -->
+        AS
+        (
+        SELECT  COUNT(1)                            AS totalCount
+        FROM    SEARCH_ORG                          A1              <!-- [조회원본] -->
+        )
+        SELECT  A1.*,
+        		B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.${orderField} ${orderDirection})) + 1 AS rowNumber,
+                B1.totalCount,
+                IFNULL(#{pageNumber}, 1)            AS pageNumber,
+                CEILING(CONVERT(B1.totalCount, FLOAT) / IFNULL(#{rowPerPage}, 10))
+                                                    AS totalPage
+        FROM    SEARCH_ORG                          A1              <!-- [조회원본] -->
+        CROSS JOIN
+                totalCount                          B1              <!-- [총페이지] -->
+        ORDER BY
+                A1.${orderField} ${orderDirection}					<!-- ORDER 필수 -->
+        LIMIT #{pageOffset}, #{rowPerPage} 
+    </sql>
+</mapper>

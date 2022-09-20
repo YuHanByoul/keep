@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ResMenuDaoImpl.xml
+	Description : 자원(메뉴)을 담담
+-->
+<mapper namespace="com.kbrainc.plum.rte.model.ResMenuDao">
+	
+	<!-- 특정 사이트의 메뉴리스트를 가지고온다. -->
+	<select id="selectSiteMenuList" parameterType="Map" resultType="com.kbrainc.plum.rte.menu.MenuItem">	
+		<![CDATA[ /* ResMenuDao.selectSiteMenuList */
+		WITH RECURSIVE MENU_CTE AS (
+					SELECT  A.SITEID
+		            ,A.MENUID
+		            ,A.NM
+		            ,A.DC
+		            ,A.TYPE_CD
+		            ,A.UPPR_MENUID
+		            ,A.REF_MENUID
+		            ,A.POPUP_YN
+		            ,A.POPUP_HG
+		            ,A.POPUP_WD
+		            ,A.POPUP_TRGT_CD
+		            ,A.LOGIN_YN
+		            ,A.HIDE_YN
+		            ,A.HTTPS_USE_YN
+		            ,A.NM_EXPSR_TRGT_CD
+		            ,A.DPTH
+		            ,A.ORD
+					,A.NM AS TREE_MENU_NM
+                    ,CONVERT(A.MENUID, VARCHAR(255)) AS TREE_MENUID
+                    ,CONVERT(RIGHT(CONCAT('0000', A.ORD), 4), varchar(255)) AS TREE_ORD                 
+		            ,A.PRGRMID
+					  FROM TB_MENU A
+		                  ,TB_SITE D
+					 WHERE  A.SITEID = D.SITEID
+					   AND D.USE_YN = 'Y'
+		]]>
+		<if test="siteid != null and siteid != ''">
+					   AND D.SITEID = #{siteid}
+		</if>
+		<![CDATA[
+					   AND A.UPPR_MENUID = 0
+					UNION ALL
+					SELECT  A.SITEID
+		            ,A.MENUID
+		            ,A.NM
+		            ,A.DC
+		            ,A.TYPE_CD
+		            ,A.UPPR_MENUID
+		            ,A.REF_MENUID
+		            ,A.POPUP_YN
+		            ,A.POPUP_HG
+		            ,A.POPUP_WD
+		            ,A.POPUP_TRGT_CD
+		            ,A.LOGIN_YN
+		            ,A.HIDE_YN
+		            ,A.HTTPS_USE_YN
+		            ,A.NM_EXPSR_TRGT_CD
+		            ,A.DPTH
+		            ,A.ORD
+                    ,CONCAT(C.TREE_MENU_NM, '>', A.NM) AS TREE_MENU_NM
+                    ,CONCAT(C.TREE_MENUID, '_', A.MENUID) AS TREE_MENUID
+                    ,CONCAT(C.TREE_ORD, RIGHT(CONCAT('0000', A.ORD), 4)) AS TREE_ORD
+		            ,A.PRGRMID
+					  FROM TB_MENU A
+		                  ,TB_SITE D
+						  ,MENU_CTE C
+					 WHERE  A.SITEID = D.SITEID
+					   AND D.USE_YN = 'Y'
+		]]>
+		<if test="siteid != null and siteid != ''">
+					   AND D.SITEID = #{siteid}
+		</if>
+		<![CDATA[
+					   AND A.UPPR_MENUID = C.MENUID		
+		
+		)
+		SELECT C.SITEID, C.MENUID, C.NM, C.DC, C.TYPE_CD, C.UPPR_MENUID, C.REF_MENUID, C.POPUP_YN, C.POPUP_HG, C.POPUP_WD, C.POPUP_TRGT_CD, C.LOGIN_YN, 
+		       C.HIDE_YN, C.HTTPS_USE_YN, C.NM_EXPSR_TRGT_CD, C.DPTH, C.ORD, C.TREE_MENU_NM, C.TREE_MENUID, C.TREE_ORD, C.PRGRMID
+		       ,CASE WHEN C.TYPE_CD = 'P' THEN B.URL
+		             WHEN C.TYPE_CD = 'D' AND B.URL <> '' AND B.URL IS NOT NULL THEN B.URL
+		             WHEN C.TYPE_CD = 'D' THEN (SELECT P.URL
+		                  	                    FROM TB_PRGRM P, TB_MENU M 
+											   WHERE P.PRGRMID = M.PRGRMID AND M.MENUID = C.REF_MENUID
+		                                     )
+		         END URL
+		       ,(CASE WHEN B.TYPE_CD = '01' THEN '02'
+				   	  WHEN B.TYPE_CD = '02' THEN '02'
+					  WHEN B.TYPE_CD IS NULL THEN '02'
+					  ELSE B.TYPE_CD
+			      END) AS PTYPE_CD
+		FROM MENU_CTE C LEFT OUTER JOIN TB_PRGRM B 
+		  ON C.PRGRMID = B.PRGRMID
+		UNION ALL
+		SELECT B.SITEID, A.MENUID, A.NM, A.DC, A.TYPE_CD, A.UPPR_MENUID, A.REF_MENUID, A.POPUP_YN, A.POPUP_HG, A.POPUP_WD, A.POPUP_TRGT_CD, A.LOGIN_YN, 
+		       A.HIDE_YN, A.HTTPS_USE_YN, A.NM_EXPSR_TRGT_CD, A.DPTH, A.ORD, A.TREE_MENU_NM, A.TREE_MENUID, A.TREE_ORD, A.PRGRMID, A.URL, A.PTYPE_CD
+		  FROM (
+		        SELECT 0 MENUID, 'ROOT' NM, '' DC, '' TYPE_CD, 0 UPPR_MENUID, 0 REF_MENUID, '' POPUP_YN, 0 POPUP_HG, 0 POPUP_WD, '' POPUP_TRGT_CD, '' LOGIN_YN, 
+		               '' HIDE_YN, '' HTTPS_USE_YN, '' NM_EXPSR_TRGT_CD, 0 DPTH, '0' ORD, '' TREE_MENU_NM, '' TREE_MENUID, '0' TREE_ORD, 0 PRGRMID, '' URL, '' PTYPE_CD
+			   ) A
+			  ,(
+				SELECT SITEID FROM TB_SITE
+			     WHERE USE_YN = 'Y'
+		]]>
+		<if test="siteid != null and siteid != ''">
+			       AND SITEID = #{siteid}
+		</if>
+		<![CDATA[
+		       ) B
+		ORDER BY SITEID, TREE_ORD
+		]]>
+	</select>
+	
+</mapper>

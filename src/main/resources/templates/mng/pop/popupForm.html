@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="layout/subLayout" 
+>
+<body>
+<div layout:fragment="content">
+
+<script th:inline="javascript">
+	$(function(){
+		
+		$("#jsGrid").jsGrid({
+	        height: "auto",
+	        width: "100%",
+	        autoload: true,
+	        sorting: false,
+	        paging: true,
+	        pagerContainer: "#listPager",
+	        pagerFormat: "{first} {prev} {pages} {next} {last}",
+	        pagePrevText: "이전",
+	        pageNextText: "다음",
+	        pageFirstText: "< 처음ㅣ",
+	        pageLastText: "ㅣ 마지막 >",
+	        pageSize: 10,
+	        pageButtonCount: 10,
+	        pageLoading: true,
+	        pageIndex: 1,
+	        noDataContent: "데이터가 없습니다.",
+	        
+	        controller: {
+	            loadData: function (filter) {
+	            	var data = $.Deferred();
+	            	
+	            	var formData = $('#searchFrm').serializeArray();
+	            	
+	            	var params = [
+	            			{name: "pageNumber", value: filter.pageIndex},
+	            			{name: "rowPerPage", value: filter.pageSize},
+	            			{name: "orderField", value: "updt_dt"},
+	            			{name: "orderDirection", value: "desc"}
+	            	]
+	            	formData = formData.concat(params);
+	            	
+	            	console.log(formData);
+	            	
+	                $.ajax({
+	                  type: "GET",
+	                  contentType: "application/json; charset=utf-8",
+	                  url: "/mng/pop/selectPopUpNtcList.do",
+	                  data: formData,
+	                  dataType: "json"
+	                }).done(function(response){
+	                	var da = {
+	                            data: escapeGridData(response.list),
+	                            itemsCount: response.totalCount
+	                        };
+	                  data.resolve(da);
+	                });
+	                return data.promise();
+	            },
+	        },
+	        fields: [ 
+	        	{ title:'번호'      ,name: 'rowNumber'    , type: "number", width: "3%", align:"center", sorting: false },
+	        	{ title:'공지대상'   ,name: 'ntc_trgt_cd'  , type: "text"  , width: "5%" ,align:"center"
+	        		,itemTemplate:function(value, item){ 
+	        		return item.ntc_trgt_cd=='T' ? '전체':'역할';
+	        		}
+	        	},
+	            { title:'제목'      ,name: 'title'        , type: "text"  , width: "15%"}, 
+	            { title:'노출위치'   ,name: 'expsr_lc_cd'  , type: "text"  , width: "5%" , itemTemplate:function(value, item){ return item.expsr_lc_cd=='M'? '메인':'메뉴'; } ,align:"center"},
+	            { title:'팝업사용기간',type: "text"  , itemTemplate:function(value, item){ return item.strt_dt.substring(0, 10)+" ~ "+item.end_dt.substring(0, 10) }, width: "10%" ,align:"center"},
+	            { title:'상태'      ,name: 'pop_sts'      , type: "text" ,width:"5%" ,align:"center"},
+	            { title:'최종수정자'  ,name: 'upd_nm'      , type: "text"  ,width:"5%" ,align:"center"},
+	            { title:'최종수정월일',name: 'updt_dt'     , type: "text"  ,width:"5%" ,align:"center"},
+	        ]
+	        
+	        /*[# sec:authorize-url="/mng/pop/popupInsertForm.html"]*/
+	        ,rowClick: function(args) { loadContent("/mng/pop/popupUpdateForm.html?popupntcid="+args.item.popupntcid); },
+	        /*[/]*/
+	        
+	    });
+		
+	});
+
+	function formSearch(){
+		resetListContent();
+	}
+	
+    function fn_goInsertForm(){
+   	    var insertUrl ="/mng/pop/popupInsertForm.html";
+   	    loadContent(insertUrl);
+    }
+    
+   var Pop = "";
+   function fn_openPopUp(mode){
+	   
+	   $("#popupMode").val(mode);
+	   var popUrl ="/mng/pop/openPop.html";
+	   
+	   if(mode =="menu"){
+		   if($("#insertPopUp [id=siteid]").val()==""){
+				alert("사이트를 선택해야 합니다."); return;
+			}
+	   };
+	   var popOpt="location=no,left=300,top=100,width=500, height=500, toolbar=no"
+	   if(typeof Pop === 'object'){ 
+		   Pop.close();
+		   Pop = window.open(popUrl, "pop", popOpt);
+	   }else{
+		   Pop = window.open(popUrl, "pop", popOpt);
+	   }
+   }
+   
+	
+</script>
+      
+<form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline" onsubmit="return false;">
+  <input type="hidden" id="popupMode"/>
+  
+	<div class="well well-sm col-sm-12">
+		<div class="row col-sm-12">
+		
+			  <div class="form-group col-sm-1 form-control-static" >
+			    <label class="control-label ">사이트</label>
+			  </div>
+			  
+              <div class="col-sm-4 form-group form-control-static">
+				  <select id="siteid"  name="siteid"  class="form-control input-sm"  style="padding:0px; width:263px;" >
+				     <option value=""> - 전체 -</option>
+				     <option th:each="item : ${siteList}" th:value="${item.siteid}" th:text="${item.site_nm} "></option>
+				  </select>
+			  </div>
+			  
+			  <div class="form-group col-sm-1 form-control-static">
+			    <label class="control-label ">노출위치</label>
+			  </div>
+			  
+			  <div class="form-group col-sm-4 form-control-static">
+			    <!-- <th:block kattr:select_code="expsr_lc_cd" grpCd="106" firstOptTxt="-전체-"  addClass=" input-sm" addStyle="padding:0px; width:150px; text-align:center;" ></th:block> -->
+			    <select name="expsr_lc_cd" id="expsr_lc_cd" class="form-control input-sm"  style="padding:0px; width:80px; display: inline-block;">
+				  <option value="">-전체-</option>
+	              <option value="M">메인 </option>
+	              <option value="S">메뉴 </option>
+				</select>
+			     
+			  </div>
+			  
+		</div>
+		
+		<div class="row col-sm-12" >
+		
+				<div class="form-group col-sm-1 form-control-static">
+					<label class="control-label">검색어</label>
+				</div>
+				<div class="form-group col-sm-4 form-control-static">
+						<select name="searchType" id="searchType" class="form-control input-sm"  style="padding:0px; width:80px; display: inline-block;">
+							<option value="">-전체-</option>
+	                        <option value="title">제목 </option>
+	                        <option value="cntnts">내용 </option>
+						</select>
+						<input type="text" name="searchKeyword" id="searchKeyword"  class="form-control input-sm" style="padding:0; width:180px;display: inline-block;">
+				</div>
+		
+				<div class="form-group col-sm-1 form-control-static">
+					<label class="control-label">상태</label>
+				</div>
+
+				
+				
+				
+				<div class="form-group col-sm-5 form-control-static">
+				
+				<!-- <h6><th:block kattr:check_code="pop_sts" grpCd="109"  addClass=" input-sm form-control-static " addStyle="padding:0px; width:150px; text-align:center;" ></th:block></h6> -->
+				<div class="checkbox-group">
+					<input type="checkbox" name="pop_sts1" id="popSts1" checked><label for="popSts1">진행</label>
+					<input type="checkbox" name="pop_sts2" id="popSts2" checked><label for="popSts2">대기</label>
+					<input type="checkbox" name="pop_sts3" id="popSts3" checked><label for="popSts3">만료</label>
+				</div>
+
+					
+				</div>
+				
+				<div class="form-group col-sm-1 form-control-static text-right" >
+					<button type="submit" class="btn btn-primary" onclick="formSearch()">검색</button>
+				</div>
+		</div>
+			
+	</div>
+	
+
+     <div class="row text-right" style = "margin-bottom: 5px; margin-right: 5px;">
+		<button class="btn btn-sm btn-warning" onclick="fn_goInsertForm();"> 등록 </button>
+	</div>
+		
+	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+		<!-- List Area -->
+		<div class="panel panel-default">
+	    	<div class="panel-heading" role="tab" id="headingOne">
+	      		<h4 class="panel-title">
+	        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
+	      		</h4>
+	    	</div>
+	    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+	      		<div class="panel-body">		
+	      
+					<div class="row">
+						<table id="jsGrid"></table>
+						<div id="listPager" class="text-center"></div>
+					</div>
+			
+				</div>
+			</div>
+		</div>
+		<!-- Content Area -->
+		<div id="contentPanel" class="panel panel-default" style="display:none"></div>
+	</div>
+	<script src="https://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+	
+ </form>
+</div>	
+</body>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout/subLayout">
+<body>
+    <div layout:fragment="content">
+
+        <!--  검색 Row start -->
+        <div class="panel-body">
+            <form id="bbsSearchForm" action="" class="form-inline" onsubmit="return false;">
+                <div class="well well-sm row">
+                    <div class="col-sm-12">
+
+                        <div class="col-sm-6 form-group form-control-static">
+                            <label class="control-label "> 게시판 | <th:block th:text="${bbs_nm}"></th:block></label>
+                        </div>
+                        <div class="col-sm-1 form-group form-control-static">
+                            <label class="control-label ">게시글 검색 </label>
+                        </div>
+
+                        <div class="col-sm-4 form-group form-control-static">
+                            <select name="searchType" id="searchType" class="form-control input-sm" style="padding: 0; width: 120px; display: inline-block;">
+                                <option value="">전체</option>
+                                <option value="nm">게시물명</option>
+                                <option value="cntnts">내용</option>
+                            </select> 
+                            <input type="text" name="searchKeyword" id="searchKeyword" class="form-control input-sm" style="padding: 0; width: 200px; display: inline-block;">
+                        </div>
+
+                        <div class="col-sm-1 form-group form-control-static text-right">
+                            <button type="submit" class="btn btn-sm btn-primary" onclick="fn_searchForm()">검색</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Row end -->
+        <div class="row text-right" style="margin-bottom: 5px; margin-right: 5px;">
+            <button class="btn btn-sm btn-warning" onclick="fn_goInsertForm();">등록</button>
+        </div>
+        <!--  리스트 인서트 패널 Row start -->
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <!-- List Area -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
+                    </h4>
+                </div>
+                <div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <div class="row">
+                            <table id="jsGrid"></table>
+                            <div id="listPager" class="text-center"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Content Area -->
+            <div id="contentPanel" class="panel panel-default" style="display: none"></div>
+        </div>
+        <!-- Row end -->
+
+        <input id="bbsid" name="bbsid" type="hidden" th:value="${bbsid}">
+
+        <script src="https://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+        <script th:inline="javascript">
+	     $(function(){
+	    	 
+	 		var bbsid = "[[ ${bbsid} ]]"; 
+	 		
+	 		writeJsGridData();
+		  })
+
+		  	     
+	     function fn_goInsertForm(){
+	    	    var insertUrl ="/cmm/bbs/"+$("#bbsid").val()+"/write.html";
+	    	    loadContent(insertUrl);
+	     }
+	     
+	     function fn_searchForm(){
+			 writeJsGridData();
+			 showList();
+	     }
+	     
+         function writeJsGridData(){
+	    		$("#jsGrid").jsGrid({
+	    	        height: "auto",
+	    	        width: "100%",
+	    	        autoload: true,
+	    	        sorting: false,
+	    	        paging: true,
+	    	        pagerContainer: "#listPager",
+	    	        pagerFormat: "{first} {prev} {pages} {next} {last}",
+	    	        pagePrevText: "이전",
+	    	        pageNextText: "다음",
+	    	        pageFirstText: "< 처음 ㅣ",
+	    	        pageLastText: "ㅣ 마지막 >",
+	    	        pageSize: 10,
+	    	        pageButtonCount: 10,
+	    	        pageLoading: true,
+	    	        pageIndex: 1,
+	    	        noDataContent: "데이터가 없습니다.",
+	    	        
+	    	        controller: {
+	    	            loadData: function (filter) {
+	    	            	var data = $.Deferred();
+	    	            	var params = {
+	    	            			 "bbsid"     :$('#bbsid').val()
+	    	            			,"searchType": $('#searchType').val()
+	    	            			,"searchKeyword": $('#searchKeyword').val()
+	    	            			,"pageNumber": filter.pageIndex
+	    	            			,"rowPerPage": filter.pageSize
+	    	            			,"orderField": filter.sortField
+	    	            			,"orderDirection": filter.sortOrder
+	    	            	}
+	    	            	if(filter.sortField == undefined){
+	    	            		params.orderField = "REG_DT";
+	    	            	}
+	    	            	
+	    	                $.ajax({
+	    	                  type: "GET",
+	    	                  contentType: "application/json; charset=utf-8",
+	    	                  url: "/bbs/getPstList.do?pageNumber="+filter.pageIndex+"&rowPerPage="+filter.pageSize,
+	    	                  dataType: "json",
+	    	                  data: params
+	    	                }).done(function(response){
+	    	                	var da = {
+	                                    data :response.list
+	                                    ,itemsCount : response.totalCount
+	                                };
+	    	                  data.resolve(da);
+	    	                });
+	    	                
+	    	                return data.promise();
+	    	            }
+	    	        },
+		    	        fields: [ 
+		                     { title: '번호'     ,name: 'rowNumber' ,type: "number" , width: "5%" , align:"center", sorting :false }
+		                    ,{ title: '제목'     ,name: 'title'     ,type: "text"   , width: "35%" }
+		                    ,{ title: '첨부파일수' ,name: 'file_cnt'  ,type: "text"   , width: "10%" , align:"center"}
+		                    ,{ title: '등록일'    ,name: 'reg_dt'    ,type: "text"   , width: "10%" , align:"center"}
+		                    ,{ title: '수정일'    ,name: 'updt_dt'   ,type: "text"   , width: "10%" , align:"center"}
+		    	        ]
+	    	         ,
+	    	        rowClick: function(args) {
+	    	        	var modifyUrl = "/cmm/bbs/"+$("#bbsid").val()+"/read.html?pstid="+args.item.pstid;
+	    	    	    loadContent(modifyUrl);
+	    	        }, 
+	    	    });
+    		}
+
+	    	var clPop = "";
+	    	function fn_goClUse(bbsid){
+	    		console.log(clPop);
+	    		if(clPop == null || clPop == "undefined" || clPop == ""){
+		    		fn_bbsPop(bbsid);
+	    		}else{
+	    			clPop.close();
+	    			fn_bbsPop(bbsid);
+	    		}
+	    	}
+	    	
+	       function fn_bbsPop(bbsid){
+	    	    var popUrl ="/bbs/bbsClPop.html?bbsid="+bbsid;
+	    	    clPop = window.open(popUrl, "_blank", "scrollbars=yes,resizable=yes, top=200, left=500, width=500, height=500");
+	       }
+	       
+	       
+	       function fn_postAjax(url, data,callBack){
+		       	$.ajax({
+					url : url,
+					type: 'POST',
+					cache : false,
+					dataType: 'json',
+					data : data,
+					success : function (data){
+						callBack(data);
+					},
+				 	error : function (error){
+					} 
+		    	});
+	       }
+	       
+	       function fn_deleteFile(fileid, fileIdntfcKey){
+	    	   
+	        	var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+			      $.ajax({
+					url : deleteFileUrl,
+					type: 'GET',
+					cache : false,
+					dataType: 'json',
+					success : function (data){
+						console.log(data);
+						if(data.result=="success"){
+							$("#"+fileid).remove();
+							console.log("uploadFileCnt--->"+uploadFileCnt);
+							if(uploadFileCnt > 0){
+								uploadFileCnt = uploadFileCnt-1;	
+							}
+							alert("파일삭제가 완료 되었습니다.");
+						}else{
+							alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+						}
+					},
+				 	error : function (error){
+					} 
+	             })
+	        };
+	  
+	        
+	        
+        function fn_disableTrue(id){
+     	   $("#"+id).attr("disabled","true");
+        }
+        function fn_disableFalse(id){
+     	   $("#"+id).removeAttr("disabled");
+        }
+        
+        function fn_deleteFileList(fileid, fileIdntfcKey){
+        	if(!confirm("파일을 삭제하시겠습니까?")){return;}
+	     	fn_deleteFile(fileid, fileIdntfcKey);
+	     	$("#inputFiles"+fileid).remove();
+        } 
+        
+	   </script>
+
+    </div>
+</body>
+
+
+</html>

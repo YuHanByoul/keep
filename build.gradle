@@ -1,0 +1,96 @@
+plugins {
+	id 'org.springframework.boot' version '2.2.6.RELEASE'
+	id 'java'
+	id 'war'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.kbrainc'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+	all*.exclude group: 'javax', module: "javaee-api"
+    all*.exclude module: "log4j-slf4j-impl"
+}
+
+repositories {
+	mavenCentral()
+	maven { url "http://maven.egovframe.kr:8080/maven/" }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5:3.0.4.RELEASE'
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'	
+	
+	implementation 'com.google.code.gson:gson:2.8.5'
+	implementation 'com.googlecode.json-simple:json-simple:1.1'
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+	implementation 'org.imgscalr:imgscalr-lib:4.2'
+	
+	implementation 'org.jasypt:jasypt:1.9.3'
+	
+	implementation 'com.sun.mail:javax.mail:1.6.2'
+	implementation 'javax.mail:javax.mail-api:1.6.2'
+		
+	
+	implementation 'org.apache.poi:poi-ooxml:3.9'
+	implementation 'org.liquibase:liquibase-core:3.6.3'
+	
+	implementation 'org.apache.commons:commons-compress:1.18'
+	implementation 'org.apache.commons:commons-lang3:3.8.1'
+	implementation 'commons-configuration:commons-configuration:1.10'
+	
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'	
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// DB driver 시작
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.0'
+	// DB driver 끝    
+	
+	// EhCache 관련 시작
+	implementation 'org.springframework:spring-context-support'
+	implementation 'net.sf.ehcache:ehcache:2.10.6'
+	implementation 'net.sf.ehcache:ehcache-jgroupsreplication:1.7'
+	implementation 'org.jgroups:jgroups:3.4.8.Final'
+	// EhCache 관련 끝
+	
+	// egov 관련 시작
+	implementation 'org.egovframe.rte:org.egovframe.rte.fdl.cmmn:4.0.0'
+	implementation 'org.egovframe.rte:org.egovframe.rte.psl.dataaccess:4.0.0'
+	implementation 'org.egovframe.rte:org.egovframe.rte.fdl.crypto:4.0.0'
+	// egov 관련 끝
+	
+	// 스케줄링 관련 시작
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+	// 스케줄링 관련 끝
+	
+	// 세션클러스터링 관련 시작
+	//implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	//implementation 'org.springframework.session:spring-session-data-redis'
+	// 세션클러스터링 관련 끝
+}
+
+ext.profile = (!project.hasProperty('profile') || !profile) ? 'prod' : profile
+
+sourceSets {
+    main {
+        resources {
+            srcDirs "src/main/resources", "src/main/resources-${profile}"
+        }
+    }
+}

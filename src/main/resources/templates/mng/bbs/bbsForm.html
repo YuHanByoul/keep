@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+ 	layout:decorator="layout/subLayout" 
+>
+	<body>
+<div layout:fragment="content">
+
+      <!--  검색 Row start -->
+   <div class="panel-body">
+      	   <form  id="bbsSearchForm" action="" method="POST" class="form-inline" onsubmit="return false;">
+			<div class="well well-sm row">
+				
+				  <div class="col-sm-1 form-group form-control-static">
+				    <label class="control-label">게시판 유형</label>
+				  </div>
+				  
+				  <div class="col-sm-2 form-group form-control-static ">
+                            <select name="search_cl" id="search_cl" class="form-control input-sm" style="padding:0px; width:150px;" onchange="">
+                                <option value="">선택</option>
+                                <option value="1">일반형</option>
+                                <option value="2">공지형</option>
+                            </select>
+
+				  </div>
+				  
+				  <div class="col-sm-1 form-group form-control-static">
+				    <label class="control-label ">검색구분</label>
+				  </div>
+				  
+				  <div class="col-sm-7 form-group form-control-static">
+					<select name="searchType" id="searchType" class="form-control input-sm"  style="padding:0; width:170px; display: inline-block;">
+						<option value="">전체</option>
+                        <option value="bbsName">게시판명 </option>
+	                        <!-- <option value="id">아이디</option> -->			
+					</select>
+					<input type="text" name="searchKeyword" id="searchKeyword" class="form-control input-sm" style="padding:0; width:200px;display: inline-block;">
+				  </div>
+				 <div class="col-md-1 text-right">
+				  <button type="submit" class="btn btn-sm btn-primary" onclick="fn_searchForm()">검색</button>
+				 </div>
+			</div>
+		</form>
+	</div>
+
+          <!-- Row end -->
+		      	  <div class="row text-right" style="margin-bottom: 5px; margin-right: 5px;">
+					<button class="btn btn-sm btn-warning" onclick="fn_goInsertForm();"> 등록 </button>
+				  </div>
+    		      <!--  리스트 인서트 패널 Row start -->
+				 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+					<!-- List Area -->
+					<div class="panel panel-default">
+				    	<div class="panel-heading" role="tab" id="headingOne">
+				      		<h4 class="panel-title">
+				        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
+				      		</h4>
+				    	</div>
+				    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+				      		<div class="panel-body">		
+				      
+								<div class="row">
+									<table id="jsGrid"></table>
+									<div id="listPager" class="text-center"></div>
+								</div>
+						
+							</div>
+						</div>
+					</div>
+					<!-- Content Area -->
+					<div id="contentPanel" class="panel panel-default" style="display:none"></div>
+				</div>
+		     <!-- Row end -->
+		     
+	 <script type="text/javascript">
+	     $(function(){
+			  
+			  if($("#bbsid").val() !=null ){
+				  $("#bbsCl").val($("#bbsid").val());
+			  }
+			  writeJsGridData();
+		  })
+	     
+	     function fn_goInsertForm(){
+	        	loadContent("/bbs/bbsInsertForm.html");
+	     }
+	     
+	     function fn_goUpdateForm(bbsid){
+	    	    var modifyUrl = "/bbs/bbsUpdateForm.html?bbsid=" + bbsid;
+	    	    loadContent(modifyUrl);
+	     }
+	     function fn_searchForm(){
+	    	 writeJsGridData();
+	    	 //resetListContent();
+	     }
+         function writeJsGridData(){
+	    		$("#jsGrid").jsGrid({
+	    	        height: "auto",
+	    	        width: "100%",
+	    	        autoload: true,
+	    	        sorting: false,
+	    	        paging: true,
+	    	        pagerContainer: "#listPager",
+	    	        pagerFormat: "{first} {prev} {pages} {next} {last}",
+	    	        pagePrevText: "이전",
+	    	        pageNextText: "다음",
+	    	        pageFirstText: "< 처음ㅣ",
+	    	        pageLastText: "ㅣ 마지막 >",
+	    	        pageSize: 10,
+	    	        pageButtonCount: 10,
+	    	        pageLoading: true,
+	    	        pageIndex: 1,
+	    	        noDataContent: "데이터가 없습니다.",
+	    	        
+	    	        controller: {
+	    	            loadData: function (filter) {
+	    	            	var data = $.Deferred();
+	    	            	var params = {
+	    	            			"search_cl"  :$('#search_cl').val()
+	    	            			,"searchType": $('#searchType').val()
+	    	            			,"searchKeyword": $('#searchKeyword').val()
+	    	            			,"pageNumber": filter.pageIndex
+	    	            			,"rowPerPage": filter.pageSize
+	    	            			,"orderField": filter.sortField
+	    	            			,"orderDirection": filter.sortOrder
+	    	            	}
+	    	            	if(filter.sortField == undefined){
+	    	            		params.orderField = "UPDT_DT";
+	    	            	}
+	    	                $.ajax({
+	    	                  type: "GET",
+	    	                  contentType: "application/json; charset=utf-8",
+	    	                  url: "/bbs/getBbsList.do?pageNumber="+filter.pageIndex+"&rowPerPage="+filter.pageSize,
+	    	                  dataType: "json",
+	    	                  data: params
+	    	                }).done(function(response){
+	    	                	var da = {
+	                                    data :response.list
+	                                    ,itemsCount : response.totalCount
+	                                };
+	    	                  data.resolve(da);
+	    	                });
+	    	                
+	    	                return data.promise();
+	    	            }
+	    	        },
+		    	        fields: [ 
+		                     { title: '번호'      ,name: 'rowNumber' ,type: "number", width: "5%" , align:"center", sorting :false }
+		                    ,{ title: '게시판 유형' ,name: 'cl_nm'     ,type: "text"  , width: "7%" , align:"center"}
+		                    ,{ title: '게시판 코드' ,name: 'bbsid'     ,type: "text"  , width: "7%" , align:"center"}
+		                    ,{ title: '게시판명'   ,name: 'nm'        ,type: "text"  , width: "25%"   }
+		                    ,{ title: '게시글수'   ,name: 'pst_cnt'   ,type: "text"  , width: "7%" , align:"center"}
+		                    ,{ title: '사용여부'   ,name: 'use_yn'    ,type: "text"  , width: "4%" , align:"center"}
+		                    ,{ title:'분류관리'    ,name: 'cl_use_yn' ,type: "text"  , width: "5%" , align:"center", 
+		                    	 itemTemplate: function(value, item) {
+		                    	if(value=="Y"){
+		                    		return $("<button class='btn btn-xs btn-info'>").text("분류 관리").on("click", function() {  fn_goClUse(item.bbsid);  return false;});
+		                    	}else{
+		                    		return "<td>  -  </td> "
+		                    	}
+				              }
+		                    }
+		                    ,{ title: '게시물관리'  ,width: "5%",name: '' ,type: "text",sorting:false, align :"center"  ,itemTemplate : function(value,item){
+		                    	return $("<button class='btn btn-xs btn-primary'>").text("게시물 관리").on("click", function() { 
+		                    		location.href="/bbs/bbsPstForm.html?bbsid="+item.bbsid;
+		                    		return false;
+		                    		})
+		                    }}
+		    	        ]
+	    	         ,
+	    	        rowClick: function(args) {
+	    	        	fn_goUpdateForm(args.item.bbsid);
+	    	        }, 
+	    	    });
+    		}
+         
+	    	var clPop = "";	    	
+	    	function fn_goClUse(bbsid){
+	    		console.log(clPop);
+	    		if(clPop == null || clPop == "undefined" || clPop == ""){
+		    		fn_bbsPop(bbsid);
+	    		}else{
+	    			clPop.close();
+	    			fn_bbsPop(bbsid);
+	    		}
+	       }
+	    	
+	       function fn_bbsPop(bbsid){
+	    	   var popUrl ="/bbs/bbsClPop.html?bbsid="+bbsid;
+	    	   var popupOption="scrollbars=yes,left=500,width=600, height=600";
+	    	    clPop = window.open(popUrl, "_blank", popupOption);
+	       }
+	       
+	       function fn_goPst(bbsid){
+	    	   location.herf="/bbs/bbsPstForm.html?bbsid="+bbsid;
+	       }
+	   </script> 
+   	   
+		</div>
+	</body>
+	
+	
+</html>

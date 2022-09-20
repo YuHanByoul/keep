@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : MailDaoImpl.xml
+	Description : Mail 발송 로그 관리
+-->
+<mapper namespace="com.kbrainc.plum.rte.util.mail.model.MailDao">
+    
+    <!-- Mail History를 기록함. -->
+    <insert id="insertMailHist" parameterType="Map">
+	    /* MailDao.insertMailHist */
+	    INSERT INTO TB_EMAIL_SNDNG_HIST (
+	    	EMAIL_SNDNG_HIST_ID,
+	    	SNDNG_EMAIL, 
+	    	RCPTN_EMAIL, 
+	    	TITLE, 
+	    	CNTNTS, 
+	    	SNDNG_USERID, 
+	    	SNDNG_SE_CD, 
+	    	RCPTN_USERID,
+	    	RCPTN_CNFIRM_YN, 
+	    	RCPTN_CNFIRM_DT,
+	    	SNDNG_STTS_CD,
+	    	REG_DT
+	    )
+		VALUES (
+			null,
+			#{sndngEmail},
+			#{rcptnEmail},
+			#{title},
+			#{cntnts},
+            <choose>
+                <when test="sndngSeCd != 'U'.toString()">
+                null,
+                </when>
+                <otherwise>
+                #{sndngUserid},
+                </otherwise>
+            </choose>			
+			#{sndngSeCd},
+            #{rcptnUserid},
+            #{rcptnCnfirmYn},
+            #{rcptnCnfirmDt},
+            #{sndngSttsCd},
+			NOW()
+		)
+    </insert>
+</mapper>

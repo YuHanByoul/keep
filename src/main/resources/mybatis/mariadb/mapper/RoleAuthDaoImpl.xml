@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : RoleAuthDaoImpl.xml
+    Description : 역할관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.role.model.RoleAuthDao">
+
+    <!-- 역할에 매핑된 메뉴권한 삭제 -->
+    <delete id="deleteAuthMenuMpp" parameterType="RoleMenuVo">
+        /* RoleAuthDao.deleteAuthMenuMpp */
+        DELETE FROM TB_ROLE_MENU WHERE ROLEID = #{roleid}
+      <if test="menuid != null and menuid != ''">
+         AND MENUID = #{menuid}
+      </if>
+    </delete>
+
+    <!-- 역할에 메뉴 추가 -->
+    <insert id="insertRoleMenuAuth" parameterType="RoleMenuVo">
+        /* RoleAuthDao.insertRoleMenuAuth */
+        INSERT INTO TB_ROLE_MENU
+            ( ROLEID, MENUID, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID )
+        VALUES
+            (#{roleid}, #{menuid}, NOW(), #{reguserid}, NOW(), #{reguserid} )
+    </insert>
+
+    <!-- [공통] 최상위 역할 확인 -->
+    <select id="selectToproleidyn" parameterType="String" resultType="String">
+        /* RoleauthDao.selectToproleidyn */
+        SELECT
+        CASE WHEN UPPR_ROLEID = '0'
+        THEN 'Y'
+        ELSE
+        'N'
+        END TOPYN
+        FROM TB_ROLE
+        WHERE ROLEID = #{role_id}
+    </select>
+
+    <!-- [공통] 사이트명 구하기 -->
+    <select id="selectRoleTreeSitenm" resultType="String" parameterType="String">
+        /* RoleAuthDao.selectRoleTreeSitenm */
+        SELECT
+        SITE_NM
+        FROM TB_SITE
+        WHERE SITEID = #{siteid}
+    </select>
+
+    <!-- 역할 tree 리스트 -->
+    <select id="selectRoleTreeList" parameterType="RoleVo" resultType="TreeItem">
+        /* RoleAuthDao.selectRoleTreeList */
+        <![CDATA[
+            SELECT
+                IFNULL(UPPR_ROLEID , '') pkey,
+                A.ROLEID 'key',  
+                A.NM  title
+            FROM TB_ROLE A
+            WHERE 1=1
+        ]]>
+        <if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(se_cd)">
+            AND A.SE_CD = #{se_cd}
+        </if>
+        <if test="use_yn == 'Y'.toString()">
+            AND A.USE_YN = #{role_filter}
+        </if>
+        ORDER BY ORD
+    </select>
+
+    <!-- 역할 상세정보 -->
+    <select id="selectRoleInfo" parameterType="java.util.Map" resultType="java.util.Map">
+        <![CDATA[ /* RoleauthDao.selectRoleInfo */
+            SELECT 
+                ROLEID, UPPR_ROLEID, NM, DC, USE_YN, ORD
+            FROM TB_ROLE A
+            WHERE ROLEID = #{roleid}
+        ]]>
+    </select>
+
+    <!-- 역할 등록 -->
+    <insert id="insertRoleInfo" useGeneratedKeys="true" keyProperty="roleid" parameterType="RoleVo">
+        /* RoleAuthDao.insertRoleInfo */
+        INSERT INTO
+            TB_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
+            VALUES ( #{nm}, #{se_cd}, #{uppr_roleid}, #{dc}, #{use_yn},
+                (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_ROLE A WHERE A.UPPR_ROLEID = #{uppr_roleid}),
+                NOW(),
+                #{reguserid},
+                NOW(),
+                #{reguserid}
+            )
+    </insert>
+
+    <!-- 사용자 매핑 리스트 불러오기 -->
+    <select id="selectRoleUserMappedList" parameterType="RoleUserVo" resultType="RoleUserVo">
+        /* RoleAuthDao.selectRoleUserMappedList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            RU.ROLEID, R.NM AS ROLE_NM, RU.USERID, RU.ROLE_STRT_DT, RU.ROLE_END_DT, RU.UPDT_DT, U.ACNT, U.NM, U.USER_SE_CD
+        FROM TB_ROLE_USER RU
+            INNER JOIN TB_USER U ON RU.USERID = U.USERID
+            INNER JOIN TB_ROLE R ON RU.ROLEID = R.ROLEID
+        WHERE 1=1
+            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchType) 
+                and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)'>
+                AND ${searchType} LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        
+            <if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(roleid)">
+                AND RU.ROLEID = #{roleid}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 관리자역할 사용자 권한기간 수정 -->
+    <update id="updateRoleUserMappedTerm" parameterType="RoleUserVo">
+        /* RoleAuthDao.updateRoleJobUserMappedTerm */
+        UPDATE
+            TB_ROLE_USER 
+        SET
+            ROLE_STRT_DT = #{role_strt_dt},
+            ROLE_END_DT = #{role_end_dt},
+            UPDTUSERID = #{updtuserid},
+            UPDT_DT = NOW()
+        WHERE 
+            ROLEID = #{roleid} AND USERID = #{userid}
+    </update>
+
+    <!-- 관리자역할_메뉴 최상위역할 다이나믹트리 -->
+    <select id="selectRoleMenuTreeList" parameterType="java.util.Map" resultType="TreeItem">
+        /* RoleAuthDao.selectRoleMenuTreeList */
+        <![CDATA[
+            SELECT B.pkey, B.MENUID as 'key', B.TITLE as title, IFNULL(C.EXT1,'N') as ext1
+            FROM
+                (SELECT IFNULL(A.UPPR_MENUID, 0) pkey,
+                         A.MENUID,
+                         A.NM TITLE,
+                         A.ORD
+                FROM TB_MENU A               
+             ]]>
+        WHERE 1=1
+        <if test="siteid != null and siteid != ''">
+            AND SITEID = #{siteid}
+        </if>
+        ) B
+        LEFT OUTER JOIN
+        (SELECT AA.MENUID, 'Y' EXT1
+        FROM TB_ROLE_MENU AA
+        WHERE AA.ROLEID = #{roleid}
+        ) C
+        ON B.MENUID = C.MENUID
+        ORDER BY B.ORD ASC
+    </select>
+
+    <!-- 역할 상세 수정 -->
+    <update id="updateRoleInfo" parameterType="RoleVo">
+        /* RoleAuthDao.updateRoleInfo */
+        UPDATE TB_ROLE SET
+            NM = #{nm},
+            DC = #{dc},
+            USE_YN = #{use_yn},
+            SE_CD = #{se_cd},
+            UPDTUSERID = #{updtuserid},
+            UPDT_DT = NOW()
+        WHERE ROLEID = #{roleid}
+    </update>
+
+    <!-- 역할 수정시 하위 역할 수정 -->
+    <update id="updateRoleAuth" parameterType="RoleVo">
+        /* RoleAuthDao.updateRoleAuth */
+        UPDATE TB_ROLE SET
+            UPDTUSERID = #{updtuserid},
+            UPDT_DT = NOW()
+	        <if test="se_cd != 'A'.toString()">
+	            ,SE_CD = #{se_cd}
+	        </if>
+        WHERE ROLEID IN (
+            SELECT * FROM (
+                SELECT ROLEID FROM
+                    TB_ROLE
+                WHERE ROLEID = #{roleid}
+                ) A
+            )
+    </update>
+
+    <!-- 역할별 사이트 리스트를 가져온다. -->
+    <select id="selectRoleSiteList" parameterType="RoleVo" resultType="SiteVo">
+        /* RoleAuthDao.selectRoleSiteList */
+        SELECT 
+		    SITEID, 
+		    SITE_NM 
+		FROM TB_SITE
+		WHERE 
+		    SYS_SE_CD = #{se_cd}
+		AND USE_YN = 'Y'
+    </select>
+    
+    <!-- 역할에 사용자 추가 -->
+    <insert id="insertRoleUser" parameterType="RoleUserVo">
+        /* RoleAuthDao.insertRoleUser */
+        INSERT INTO 
+            TB_ROLE_USER (ROLEID, USERID, ROLE_STRT_DT, ROLE_END_DT, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
+            VALUES (#{roleid}, #{userid}, #{role_strt_dt}, #{role_end_dt}, NOW(), #{reguserid}, NOW(), #{reguserid})
+    </insert>
+    
+     <!-- 사용자 역할의 내용을 수정 -->
+    <update id="updateRoleUser" parameterType="RoleUserVo">
+        /* RoleAuthDao.updateRoleUser */
+        UPDATE 
+            TB_ROLE_USER 
+        SET
+            ROLE_STRT_DT = #{role_strt_dt}, 
+            ROLE_END_DT = #{role_end_dt}, 
+            UPDT_DT = NOW(),
+            UPDTUSERID = #{reguserid} 
+        WHERE 
+            ROLEID = #{roleid} AND USERID = #{userid}
+    </update>
+
+    <!-- 사용자 역할을 삭제 -->
+    <delete id="deleteRoleUser" parameterType="RoleUserVo">
+        /* RoleAuthDao.deleteRoleUser */
+        DELETE FROM TB_ROLE_USER WHERE ROLEID=#{roleid} AND USERID=#{userid}
+    </delete>
+    
+    <!-- 사용자 리스트 가져옴 -->
+    <select id="selectUserList" parameterType="RoleUserVo" resultType="RoleUserVo">
+        /* RoleAuthDao.selectUserList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+          A.USERID, A.ACNT, A.USER_SE_CD, A.NM, A.UPDT_DT, B.ROLEID
+        FROM
+          TB_USER A LEFT OUTER JOIN TB_ROLE_USER B
+                    ON A.USERID = B.USERID AND B.ROLEID = #{roleid}
+         WHERE A.ACNT IS NOT NULL
+        <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchType) 
+            and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)'>
+            AND ${searchType} LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+            AND A.DEL_YN = 'N'
+            AND A.ACNT_LOCK_YN = 'N'
+            AND B.ROLEID IS NULL
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

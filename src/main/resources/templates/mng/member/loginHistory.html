@@ -1,0 +1,97 @@
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <!-- List Area -->
+	<div class="panel panel-default">
+    	<div class="panel-heading" role="tab" id="headingOne">
+      		<h4 class="panel-title">
+        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">목록</a>
+      		</h4>
+    	</div>
+    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+      		<div class="panel-body">		
+      
+				<div class="row">
+					<table id="loginJsGrid"></table>
+					<div id="loginListPager" class="text-center"></div>
+				</div>
+		
+			</div>
+		</div>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	var userid = [[${param.userid}]];
+	         
+	$(function(){
+        loginGridInit();
+		
+        function loginGridInit(){
+			$("#loginJsGrid").jsGrid({
+			    height: "auto",
+			    width: "100%",
+			    autoload: true,
+			    sorting: true,
+			    paging: true,
+			    pagerContainer: "#loginListPager",
+			    pagerFormat: "{first} {prev} {pages} {next} {last}",
+			    pagePrevText: "이전",
+			    pageNextText: "다음",
+			    pageFirstText: " < 처음 ㅣ",
+			    pageLastText: " | 마지막 >",
+		        pageSize: 10,
+		        pageButtonCount: 10,
+		        pageLoading: true,
+		        pageIndex: 1,
+		        noDataContent: "데이터가 없습니다.",
+		        
+		        controller: {
+		            loadData: function (filter) {
+		            	var data = $.Deferred();
+		            	    	            	
+		            	var params = [
+		            			{name: "userid", value: userid},
+		            			{name: "pageNumber", value: filter.pageIndex},
+		            			{name: "rowPerPage", value: filter.pageSize},
+		            	]
+		            	
+		            	if(filter.sortField != undefined){
+		            		params.push({name: "orderField", value: filter.sortField});
+	    					params.push({name: "orderDirection", value: filter.sortOrder});
+		            	}else{
+		            		params.push({name: "orderField", value: "LOGIN_DT"});
+		            	}
+		            	
+		                $.ajax({
+		                  type: "GET",
+		                  contentType: "application/json; charset=utf-8",
+		                  url: "/mng/member/selectLoginHistList.do",
+		                  dataType: "json",
+		                  data: params
+		                }).done(function(response){
+		                	var da = {
+	                                data : escapeGridData(response.list)
+	                                ,itemsCount : response.totalCount
+	                            };
+		                  data.resolve(da);
+		                });
+		                return data.promise();
+		            }
+		        },
+		        fields: [
+	                { title: '번호' ,name: 'rowNumber',    type: "number", width : "5%", align:"center",  sorting :false }
+	                ,{ title: '접속 IP'    ,name: 'ip',    type: "text", width: "10%" }
+	                ,{ title: '디바이스'    ,name: 'device_nm', type: "text", width: "10%", align:"center",  sorting :false, cellRenderer: cellRendererDeviceNm }
+	                ,{ title: '접속일시'    ,name: 'login_dt',   type: "text", width: "10%", align:"center" }
+		        ]
+		    }); 	
+		}
+	});
+	   
+	function cellRendererDeviceNm(value, item){
+	    if(item.device_cd == 'W'){
+            return '<td>web</td>';
+        } else if(item.device_cd == 'A'){
+            return '<td>app</td>';
+        } 
+    }  
+</script>

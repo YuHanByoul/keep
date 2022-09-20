@@ -1,0 +1,61 @@
+package com.kbrainc.plum.rte.service;
+
+import com.kbrainc.plum.rte.menu.MenuTree;
+
+/**
+ * 
+ * 메뉴정보를 조회하는 서비스 인터페이스.
+ *
+ * <pre>
+ * com.kbrainc.plum.rte.service
+ * - ResMenuService.java
+ * </pre> 
+ *
+ * @ClassName : ResMenuService
+ * @Description : 메뉴정보를 조회하는 서비스 인터페이스
+ * @author : KBRAINC
+ * @date : 2021. 2. 26.
+ * @Version : 
+ * @Company : Copyright KBRAINC. All Rights Reserved
+ */
+public interface ResMenuService {
+
+    /**
+    * @Title : getMenuTree
+    * @Description : 메뉴트리 정보를 얻어온다
+    * @param siteid 사이트아이디
+    * @return MenuTree 메뉴트리
+    * @throws Exception 예외
+    */
+    public MenuTree getMenuTree(String siteid) throws Exception;
+
+    /**
+    * @Title : makeTreeMenuInfo
+    * @Description : 트리맵의 홈페이지별 메뉴트리정보를 갱신한다
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    public void makeTreeMenuInfo() throws Exception;
+    
+    /**
+    * siteid를 키로하는 캐시를 삭제한다.
+    *
+    * @Title       : removeCacheForSiteid 
+    * @Description : siteid를 키로하는 캐시를 삭제한다.
+    * @param siteid 사이트아이디
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    public void removeCacheForSiteid(String siteid) throws Exception;
+    
+    /**
+    * siteid를 키로하는 캐시를 등록한다.
+    *
+    * @Title       : putCacheForSiteid 
+    * @Description : siteid를 키로하는 캐시를 등록한다.
+    * @param siteid 사이트아이디
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    public void putCacheForSiteid(String siteid) throws Exception;
+}

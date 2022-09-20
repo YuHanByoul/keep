@@ -1,0 +1,238 @@
+<form id="emailFrm">
+<div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="popCon3Title">e-mail 발송</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body">
+			<!-- Title & Button Start -->
+			<strong class="popup-tit1">수신자 목록</strong>
+			<button type="button" class="btn btn-sm btn-primary pop-trans1" onclick="emailpopDeleteItems()">삭제</button>
+			<!-- Title & Button End -->
+
+			<!--  리스트 인서트 패널 Row start -->
+			 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+				<!-- List Area -->
+				<div class="panel panel-default">
+			    	<div class="panel-heading" role="tab" id="headingOne">
+			      		<h4 class="panel-title">
+			        		<a role="button" data-toggle="collapse" data-parent="#accordion" aria-expanded="true" aria-controls="collapseOne">목록</a>
+			      		</h4>
+			    	</div>
+			    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+			      		<div class="panel-body">		
+			      
+							<div class="row">
+								<table id="emailpopJsGrid"></table>
+								<div id="emailpopListPager" class="text-center"></div>
+							</div>
+					
+						</div>
+					</div>
+				</div>
+				<!-- Content Area -->
+				<div id="contentPanel" class="panel panel-default" style="display:none"></div>
+			</div>
+
+			<strong class="popup-tit1">메일 내용</strong>
+			<div class="editor-area">
+				<div class="list-row">
+					<strong class="control-label">제목 <em class="text-danger">*</em></strong>
+					<div class="form-con"><input type="text" id="emailTitle" name="emailTitle" class="form-control input-sm"></div>
+				</div>
+				<div class="list-row trans1">
+					<strong class="control-label"><span>메일 내용 <em class="text-danger">*</em></span></strong>
+					<div class="form-con"><textarea id="emailContent" name="emailContent" class="form-control input-sm" rows="6"></textarea></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal-footer">
+			<th:block sec:authorize-url="/mng/member/sendEmail.do"><button type="button" class="btn btn-primary" onclick="sendEmail()">보내기</button></th:block>
+			<button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelBtn">닫기</button>
+		</div>
+	</div>
+</div>
+</form>
+
+<script th:inline="javascript">
+	var emailContentEditor = null;
+	var emailpopSelectedItems = [];
+	var emailpopGridData = [[${contactInfoList}]];
+	var emailpopItemsCount = [[${contactInfoItemsCount}]];
+	
+	$(function(){
+		emailContentEditor = CKEDITOR.replace('emailContent');
+		emailpopGridInit();
+	});
+	
+	function emailpopDeleteItems() {
+		if(!emailpopValidChecked()) return false;
+		
+		emailpopSelectedItems.forEach(function (item, index, array) {
+			var i = emailpopGridData.findIndex(function(element) {
+				return element.userid == emailpopSelectedItems[index];
+			});
+			emailpopGridData.splice(i, 1);
+		});
+		var emailpopGridDataLength = emailpopGridData.length;
+		emailpopGridData.forEach(function (item, index, array) {
+			item.rowNumber = emailpopGridDataLength--;
+		});
+		emailpopItemsCount = emailpopGridData.length;
+		emailpopSelectedItems = [];
+		$("#emailpopJsGrid").jsGrid("reset");
+	}
+	
+	function emailpopValidChecked() {
+		if(emailpopSelectedItems.length == 0) {
+			alert("삭제할 대상을 선택해주세요.");
+			return false;
+		}
+		return true;
+	}
+	
+	function emailpopGridInit(){
+		$("#emailpopJsGrid").jsGrid({
+			height: "auto",
+		    width: "100%",
+		    autoload: true,
+		    sorting: false,
+		    paging: true,
+		    pagerContainer: "#emailpopListPager",
+		    pagerFormat: "{first} {prev} {pages} {next} {last}",
+		    pagePrevText: "이전",
+		    pageNextText: "다음",
+		    pageFirstText: " < 처음 ㅣ",
+		    pageLastText: " | 마지막 >",
+		    pageSize: 10,
+		    pageButtonCount: 10,
+		    pageLoading: true,
+		    pageIndex: 1,
+		    noDataContent: "데이터가 없습니다.",
+		    
+		    controller: { loadData: 
+		    	function() { 
+			    	return {
+			    		data : emailpopGridData
+			    	   ,itemsCount : emailpopItemsCount
+			    	}
+		    	}
+		    },
+		    fields: [
+		    	{
+				 	 headerTemplate: function() {
+					  	 return $("<input>").attr("type", "checkbox").attr("id", "emailpopSelectAllCheckbox")
+				 	 },
+				 	 itemTemplate: function(_, item) {
+					  	 return $("<input>").attr("type", "checkbox").attr("class", "emailpopSingleCheckbox")
+					  	 .prop("checked", $.inArray(String(item.userid), emailpopSelectedItems) > -1)
+					  	 .on("change", function () {
+					  	 $(this).is(":checked") ? emailpopSelectItem($(this).parent().next().text()) : emailpopUnselectItem($(this).parent().next().text());
+					  	 });
+				 	 },
+				 	 align: "center",
+				 	 width: "2%",
+				 	 sorting: false
+				}   	        	
+		    	,{ name: 'userid', css: 'hide' }
+		        ,{ title: '번호' ,name: 'rowNumber',    type: "number", width : "5%", align:"center" }
+		        ,{ title: '아이디'    ,name: 'acnt',    type: "text", width: "10%"}
+		        ,{ title: '이름'    ,name: 'nm', type: "text", width: "10%" }
+		        ,{ title: '이메일'   ,name: 'email',   type: "text", width: "20%" }
+		    ],
+	        onPageChanged: function(args) {
+	            emailpopSelectedItems = [];
+	        }
+		});
+	}
+	
+	var emailpopSelectItem = function(item) {
+		emailpopSelectedItems.push(item);
+	    if($(".emailpopSingleCheckbox").length == $(".emailpopSingleCheckbox:checked").length) {
+	        $("#emailpopSelectAllCheckbox").prop("checked", true);
+	    } else {
+	        $("#emailpopSelectAllCheckbox").prop("checked", false);
+	    }
+	}
+	 
+	var emailpopUnselectItem = function(item) {
+		emailpopSelectedItems = $.grep(emailpopSelectedItems, function(i) {
+	    return i !== item;
+	    });
+	    if(emailpopSelectedItems.length == 0) {
+	    	$('#emailpopSelectAllCheckbox').attr('checked', false);
+	    }
+	    if($(".emailpopSingleCheckbox").length == $(".emailpopSingleCheckbox:checked").length) {
+	        $("#emailpopSelectAllCheckbox").prop("checked", true);
+	    } else {
+	        $("#emailpopSelectAllCheckbox").prop("checked", false);
+	    }
+	}
+	
+	$("#emailpopSelectAllCheckbox").click(function(item) {
+		emailpopSelectedItems = [];
+		if(this.checked) { // check select status
+	        $('.emailpopSingleCheckbox').each(function() { 
+	            this.checked = true;   
+	            emailpopSelectItem($(this).parent().next().text());           
+	        });	
+	    }else {
+	    	
+	        $('.emailpopSingleCheckbox').each(function() { 
+	            this.checked = false;      
+	            emailpopUnselectItem(item);
+	        });  
+	        emailpopSelectedItems = [];
+	    }
+	})
+	
+	function sendEmail() {
+		if(emailpopItemsCount == 0) {
+			alert("발송대상이 없습니다.");
+			$("#cancelBtn").click();
+			return false;
+		}
+		
+		$('#emailContent').val(emailContentEditor.getData());
+		if(!($("#emailFrm").valid())) return false;
+		
+		var data = {};
+		emailpopGridData.forEach(function (item, index, array) {
+		    data["emails[" + index + "].rcptnEmail"] = item.email;
+		    data["emails[" + index + "].rcptnUserid"] = item.userid;
+		});
+		data.emailTitle = $("#emailTitle").val();
+		data.emailContent = $("#emailContent").val();
+
+		displayWorkProgress();
+		$.ajax({
+			url : "/mng/member/sendEmail.do",
+			type: 'POST',
+			cache : false,
+			dataType: 'json',
+			data : data,
+			success : function (data){
+				alert(data.msg);
+				closeWorkProgress();
+				$("#cancelBtn").click();
+			}
+		})
+	}
+	
+	var emailPopValidator= $("#emailFrm").validate({
+		ignore: [], // 에디터 사용시 추가해야한다.
+	    rules: {  
+		 	emailTitle        : { required: true, maxlength: 500 }
+		   ,emailContent      : { required: true, maxlength: 4000 }
+		},
+		messages: {  
+		    emailTitle        : { required: "메일제목을 입력해주십시오.", maxlength: "메일제목은 500자 이하여야 합니다."   }
+		   ,emailContent      : { required: "메일내용을 입력해주십시오.", maxlength: "메일내용은 4000자 이하여야 합니다."   }
+		}
+	})
+	
+</script>

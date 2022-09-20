@@ -1,0 +1,237 @@
+<form class=" form-horizontal row-border" id="schedTriggerUpdateForm">
+<input type="hidden" id="triggerid" name="triggerid" th:value="${schedInfo.triggerid}">
+    <div class="panel panel-default">
+          <div class="panel-heading">
+              <h4>> 기본정보</h4>
+              <div class="pull-right">
+                  <th:block sec:authorize-url="/mng/scheduling/execSchedTrigger.do"><button type="button" class="btn btn-xs btn-warning" th:disabled="${schedInfo.active_yn == 'N'}" onclick="execSchedTrigger()">수동실행</button></th:block>
+              </div>
+          </div>
+          <div class="panel-body">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger"></span>트리거ID</label>
+                    <div class="col-sm-10 form-control-static">
+                        <label class="form-control-static"><th:block th:text="${schedInfo.triggerid}" /></label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>트리거명</label>
+                    <div class="col-sm-10 form-control-static">
+                        <input type="text" class="form-control input-sm" name="nm" th:value="${schedInfo.nm}" th:readonly="${schedInfo.active_yn == 'Y'}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger"></span>Job 이름</label>
+                    <div class="col-sm-10 form-control-static">
+                        <label class="form-control-static"><th:block th:text="${schedInfo.job_name}" /></label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger"> </span>설명</label>
+                    <div class="col-sm-10 form-control-static">
+                        <input type="text" class="form-control input-sm" name="dc" th:value="${schedInfo.dc}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>크론표현식</label>
+                    <div class="col-sm-10 form-control-static">
+                        <input type="text" class="form-control input-sm" name="cron_expression" th:value="${schedInfo.cron_expression}">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger"></span>활성여부</label>
+                    <div class="col-sm-10 form-control-static">
+                        <label class="form-control-static"><th:block th:text="${schedInfo.active_yn}" /></label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>사용여부</label>
+                    <div class="col-sm-10 form-control-static">
+                        <div class="form-con custom-button custom-radio">
+                            <label> 
+                               <span kattr:radio_yn="use_yn" label1="사용" label2="미사용" th:attr="defaultVal = ${schedInfo.use_yn}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10 text-right">
+                        <th:block sec:authorize-url="/mng/scheduling/updateSchedTrigger.do"><input type="button" class="btn btn-primary" value="저장" onclick="updateSchedTrigger()" /></th:block>
+                        <a href="#" class="btn btn-default" onclick="toggleContent()"> 취소 </a>
+                    </div>
+                </div>
+        </div>
+   </div>
+</form>
+<div style="margin-top:5px;">    
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>> 실행이력</h4>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <table id="schedHistJsGrid"></table>
+                <div id="schedHistListPager" class="text-center"></div>
+            </div>        
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    
+    $("#schedTriggerUpdateForm").validate({
+        rules: {
+             nm              :   { required: true, isBlank : true, maxlength: 60 }  
+            ,dc              :   { maxlength: 160 }
+            ,cron_expression :   { required: true, maxlength: 60 }  
+        },
+        messages: {
+             nm              :   { required: "트리거명을 입력해주십시오.", isBlank : "트리거명에 공백이 있습니다.", maxlength: "트리거명은 60자 이하여야 합니다." }  
+            ,dc              :   { maxlength: "설명은 160자 이하여야 합니다."  }
+            ,cron_expression :   { required: "크론표현식을 입력해주십시오.", maxlength: "크론표현식은 60자 이하여야 합니다." }
+        }
+    })
+    
+    function updateSchedTrigger(){
+        if(!($("#schedTriggerUpdateForm").valid())) return;
+          
+        //if(!confirm("저장하시겠습니까?")) return;
+            
+        var data =  $("#schedTriggerUpdateForm").serialize() ;
+        
+        displayWorkProgress();
+        $.ajax({
+            url : "/mng/scheduling/updateSchedTrigger.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : data,
+            success : function (data){
+                if(data.result=="success"){
+                    alert(data.msg);
+                    resetListContent();
+                }else{
+                    alert(data.msg);
+                }
+                closeWorkProgress();
+            }
+        });
+    }
+</script>
+<script th:inline="javascript">
+
+    var triggerid = [[${schedInfo.triggerid}]];
+    
+    function execSchedTrigger(){
+        if(!confirm("실행하시겠습니까?")) return;
+        
+        displayWorkProgress();
+        $.ajax({
+            url : "/mng/scheduling/execSchedTrigger.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : { triggerid : triggerid },
+            success : function (data){
+	            if(data.result=="success"){
+	                alert(data.msg);
+	                resetSchedHistListContent();
+	            }else{
+                    alert(data.msg);
+                }
+                closeWorkProgress();
+            }
+        });
+    }
+    
+    function resetSchedHistListContent(){
+	    //리셋하고 현재 페이지로 돌아간다.
+	    var curPage = $("#schedHistJsGrid").jsGrid("option", "pageIndex");
+	    $("#schedHistJsGrid").jsGrid("reset").done(function(){
+	        $("#schedHistJsGrid").jsGrid("openPage", curPage);
+	    });
+	}
+</script>
+<script th:inline="javascript">
+
+    var triggerid = [[${schedulingVo.triggerid}]];
+             
+    $(function(){
+        schedHistGridInit();
+        
+        function schedHistGridInit(){
+            $("#schedHistJsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#schedHistListPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+                                                
+                        var params = [
+                                {name: "triggerid", value: triggerid},
+                                {name: "pageNumber", value: filter.pageIndex},
+                                {name: "rowPerPage", value: filter.pageSize},
+                        ]
+                        
+                        if(filter.sortField != undefined){
+                            params.push({name: "orderField", value: filter.sortField});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        }else{
+                            params.push({name: "orderField", value: "job_strt_dt"});
+                        }
+                        
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: "/mng/scheduling/selectSchedHistList.do",
+                          dataType: "json",
+                          data: params
+                        }).done(function(response){
+                            var da = {
+                                    data : response.list
+                                    ,itemsCount : response.totalCount
+                                };
+                          data.resolve(da);
+                        });
+                        return data.promise();
+                    }
+                },
+                fields: [
+                     //{ title: '번호'     ,name: 'rowNumber',      type: "number", width : "5%", align:"center",  sorting :false }
+                     { title: '시작일시'    ,name: 'job_strt_dt',    type: "text", width: "40%" }
+                    ,{ title: '종료일시'    ,name: 'job_end_dt',     type: "text", width: "40%" }
+                    ,{ title: '상태'       ,name: 'stts_cd',        type: "text", width: "20%", align:"center", cellRenderer: cellRendererSttsNm }
+                ]
+            });     
+        }
+    });
+    
+    function cellRendererSttsNm(value, item){
+        if(item.stts_cd == 'S'){
+            return '<td>성공</td>';
+        } else if(item.stts_cd == 'F'){
+            return '<td>실패</td>';
+        } 
+    }  
+</script>

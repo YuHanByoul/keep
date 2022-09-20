@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ResSiteDaoImpl.xml
+	Description : 자원(사이트)을 담담
+-->
+<mapper namespace="com.kbrainc.plum.rte.model.ResSiteDao">
+	
+    <!-- 사이트정보를 가지고 온다. -->
+	<select id="selectSiteInfo" resultType="SiteInfoVo" parameterType="java.util.Map">
+		 /* ResSiteDao.selectSiteInfo */
+		    SELECT /* 사이트아이디 */
+		            SITEID
+				   /* 사이트명 */
+				   ,SITE_NM
+				   /* 도메인 */
+				   ,#{p_dmn} AS DMN
+		      FROM  TB_SITE
+		     WHERE  SITEID = (SELECT SITEID FROM TB_SITE_DMN WHERE DMN = #{p_dmn})
+		       AND  USE_YN = 'Y'
+	</select>
+	
+	<!-- 사용중인 사이트아이디 목록을 가지고 온다. -->
+	<select id="selectSiteidList" resultType="SiteInfoVo">
+		 /* ResSiteDao.selectSiteidList */
+		 SELECT SITEID
+		 FROM TB_SITE
+		 WHERE USE_YN = 'Y'
+	</select>
+</mapper>

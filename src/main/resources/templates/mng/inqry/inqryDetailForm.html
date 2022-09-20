@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+>
+<body>
+<script th:inline="javascript">
+	
+	var inqryAnswrInsertUrl = "/mng/inqry/insertInqryAnswr.do";
+	var inqryAnswrUpdateUrl = "/mng/inqry/updateInqryAnswr.do";
+	var inqryAnswrDeleteUrl = "/mng/inqry/deleteInqryAnswr.do";
+	var editor = null;
+	
+	$(function(){
+		//editor = CKEDITOR.replace('cntnts');
+		
+		validate();
+	});
+	
+	function initInqryAnswrFrm(){
+		$('#inqryAnswrFrm').find('#title').val('');
+		$('#cntnts').val('');
+		editor.setData('');
+		$('#opetr_nm').text('');
+		$('#opetr_nm').text([[${session.nm}]]);
+		$('#reg_dt').text('');
+	}
+	
+	// 유효성검증기
+	function validate(){
+		$("#inqryAnswrFrm").validate({
+			ignore: [], // 에디터 사용시 추가해야한다.
+		    rules: {
+		    	title: {
+		    		required: true
+		       	   ,maxlength: 200
+		    	},
+		    	cntnts: {
+		    		required: true
+		       	   ,maxlength: 4000
+		    	}
+		    },
+		    messages: { 
+		    	title: {
+		            required: "답변 제목을 입력해주십시오"
+		           ,maxlength: "답변 제목은 200자를 넘을 수 없습니다."
+		        },
+		    	cntnts: {
+		            required: "답변 내용을 입력해주십시오"
+		           ,maxlength: "답변 내용은 4000자를 넘을 수 없습니다."
+		        }
+		    }
+		});
+	}
+	
+	function saveInqryAnswr(){
+		var url = inqryAnswrInsertUrl;
+		if($('#answrid').val() != ''){
+			url = inqryAnswrUpdateUrl;
+		}
+		
+		if(url == inqryAnswrInsertUrl){
+			var isSec = false;
+	        /*[# sec:authorize-url="/mng/inqry/insertInqryAnswr.do"]*/
+	        isSec = true;
+	        /*[/]*/
+	        if(!isSec){
+	        	alert('접근권한이 없습니다.');
+	        	return;
+	        }
+		}else if(url == inqryAnswrUpdateUrl){
+			var isSec = false;
+	        /*[# sec:authorize-url="/mng/inqry/updateInqryAnswr.do"]*/
+	        isSec = true;
+	        /*[/]*/
+	        if(!isSec){
+	        	alert('접근권한이 없습니다.');
+	        	return;
+	        }
+		}
+		//$('#cntnts').val(editor.getData());
+		if(!$('#inqryAnswrFrm').valid()) return;
+		displayWorkProgress();
+		$.ajax({
+			url: url,
+			cache: false,
+			dataType: 'json',
+			data: $("#inqryAnswrFrm").serialize(),
+			success: function(data){
+				alert(data.msg);
+				closeWorkProgress();
+				resetListContent();
+			}
+		});
+	}
+	
+	function deleteInqryAnswr(){
+		displayWorkProgress();
+		$.ajax({
+			url: inqryAnswrDeleteUrl,
+			cache: false,
+			dataType: 'json',
+			data: { answrid: $("#answrid").val() },
+			success: function(data){
+				alert(data.msg);
+				closeWorkProgress();
+				resetListContent();
+			}
+		});
+	}
+	
+</script>
+    <div class="row">
+      <div class="col-md-12 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+					<h4>> 문의내용</h4>
+				</div>
+          <div class="panel-body">
+            <form class="form-horizontal row-border">
+             
+              <div class="form-group form-control-static row">
+              
+                <label class="col-md-2 control-label">회원구분</label>
+                <div class="col-md-4 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.user_se_nm}" /></h6>
+                </div>
+                <label class="col-md-2 control-label">이메일</label>
+                <div class="col-md-4 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.email}" /></h6>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="col-md-2 control-label">문의자명</label>
+                <div class="col-md-4 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.nm}" /></h6>
+                </div>
+				<label class="col-md-2 control-label">휴대폰번호</label>
+                <div class="col-md-4 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.mobno}" /></h6>
+                </div>                
+              </div>
+              <div class="form-group">
+<!--                 <label class="col-md-2 control-label">개인정보취급 동의여부</label>
+                <div class="col-md-4 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.priplcy_agre_yn}" /></h6>
+                </div> -->
+                <label class="col-md-2 control-label">전화번호</label>
+                <div class="col-md-4 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.telno}" /></h6>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">분류</label>
+                <div class="col-md-10 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.inqry_cl_nm}" /></h6>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">제목</label>
+                <div class="col-md-10 form-control-static">
+                  <h6><th:block th:text="${inqryInfo.title}" /></h6>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">내용</label>
+                <div class="col-md-10 form-control-static">
+                  <h6><th:block th:utext="${#strings.replace(#strings.escapeXml(inqryInfo.cntnts),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block></h6>
+                </div>
+              </div>
+              
+              <div class="form-group" th:if="${fileList} != null">
+                <label class="col-md-2 control-label">첨부파일</label>
+                <div class="col-md-10 form-control-static">
+                   <th:block th:each="item : ${fileList}">
+	                  <h6>
+	                  <a href="javascript:" th:onclick="|javascript:downloadFileByFileid('${item.fileid}','${item.file_idntfc_key}')|">
+	                  <th:block th:text="${item.orginl_file_nm}" /></a> 
+	                  <th:block th:if="${item.filegrpid} != null">
+	                   (<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.file_size)}" />)
+	                  </th:block>
+	                 </h6>
+	                </th:block>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="col-md-2 control-label">문의일자</label>
+                <div class="col-md-10 form-control-static">
+                  <h6><th:block th:text="${#dates.format(inqryInfo.reg_dt, 'yyyy-MM-dd HH:mm:ss')}" /></h6>
+                </div>
+              </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:5px;">
+      <div class="col-md-12 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+					<h4>> 답변</h4>
+				</div>
+          <div class="panel-body">
+            <form name="inqryAnswrFrm" id="inqryAnswrFrm" action="" method="POST" class="form-horizontal row-border" onsubmit="return false;">
+              <input type="hidden" name="inqryid" id="inqryid" th:value="${inqryInfo.inqryid}" />
+              <input type="hidden" name="answrid" id="answrid" th:value="${inqryAnswrInfo.answrid}" />
+              <input type="hidden" name="userid" id="userid" th:value="${inqryInfo.userid}" />
+              <div class="form-group">
+                <label class="col-md-2 control-label"><span class="text-danger">*</span> 답변 제목</label>
+                <div class="col-md-10 form-control-static">
+                  <input type="text" name="title" id="title" class="form-control input-sm" th:value="${inqryAnswrInfo.title}">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label"><span class="text-danger">*</span> 답변 내용</label>
+                <div class="col-md-10 form-control-static">
+                
+                  <textarea name="cntnts" id="cntnts" th:utext="${inqryAnswrInfo.cntnts}" class="form-control input-sm" style="height:250px"></textarea>
+                  
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-md-2 control-label">답변자</label>
+                <div class="col-md-4 form-control-static" id="opetr_nm">
+                  <h6><th:block th:text="${inqryAnswrInfo.title != null ? inqryAnswrInfo.opetr_nm : session.user.nm}" /></h6>
+                </div>
+                <label class="col-md-2 control-label">답변일자</label>
+                <div class="col-md-4 form-control-static" id="reg_dt">
+                  <h6><th:block th:text="${#dates.format(inqryAnswrInfo.reg_dt, 'yyyy-MM-dd HH:mm:ss')}" /></h6>
+                </div>
+              </div>
+              <div class="pull-right">
+                  <th:block sec:authorize-url="/mng/inqry/insertInqryAnswr.do"><button type="button" class="btn btn-sm btn-primary" onclick="saveInqryAnswr()">저장</button></th:block>
+                  <th:block th:if="${inqryAnswrInfo.answrid} != null"><th:block sec:authorize-url="/mng/inqry/deleteInqryAnswr.do"><button type="button" class="btn btn-sm btn-danger" onclick="deleteInqryAnswr()">삭제</button></th:block></th:block>
+                  <button type="button" class="btn btn-sm btn-default" onclick="toggleContent()">취소</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>

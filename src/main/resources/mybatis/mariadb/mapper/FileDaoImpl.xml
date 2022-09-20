@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : FileDaoImpl.xml
+    Description : 파일 관련
+-->
+<mapper namespace="com.kbrainc.plum.cmm.file.model.FileDao">
+	
+	<!-- 파일리스트 가져옴 -->
+	<select id="getFileList" parameterType="FileVo" resultType="FileVo">
+	    /* FileDao.getFileList */
+		SELECT 
+			FILEID,
+			FILEGRPID,
+			FILE_IDNTFC_KEY,
+			FILE_PATH,
+			SAVE_FILE_NM,
+			ORGINL_FILE_NM,
+			FILE_EXTSN,
+			FILE_SIZE,
+			ORD,
+			REG_DT,
+			REGUSERID
+		FROM TB_FILE
+		WHERE 1=1
+		<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(filegrpid)">
+			AND FILEGRPID = #{filegrpid}
+		</if>
+		 ORDER BY ORD
+	</select>
+
+	<!-- 파일 등록 -->
+	<insert id="addFile" useGeneratedKeys="true" keyProperty="fileid" parameterType="FileVo">
+		/* FileDao.addFile */
+		INSERT INTO TB_FILE
+		(
+			FILEGRPID,
+			FILE_IDNTFC_KEY,
+			FILE_PATH,
+			SAVE_FILE_NM,
+			ORGINL_FILE_NM,
+			FILE_EXTSN,
+			FILE_SIZE,
+			ORD,
+			UPDT_DT,
+			UPDTUSERID,
+			REG_DT,
+			REGUSERID
+		)
+		VALUES (
+			#{filegrpid},
+			#{file_idntfc_key},
+			#{file_path},
+			#{save_file_nm},
+			#{orginl_file_nm},
+			#{file_extsn},
+			#{file_size},
+			(SELECT  IFNULL(MAX(ORD),0) +1 FROM  TB_FILE AS F WHERE 1=1  AND filegrpid = #{filegrpid} ),
+			NOW(),
+			#{reguserid},
+			NOW(),
+			#{reguserid}
+		)
+	</insert>
+	
+	<!-- 파일 삭제 -->
+	<delete id="deleteFile" parameterType="FileVo">
+		/* FileDao.deleteFile */
+		DELETE
+		FROM TB_FILE
+		WHERE FILEID = #{fileid}
+		  AND FILE_IDNTFC_KEY = #{file_idntfc_key}
+	</delete>
+	
+	<!-- 파일 데이터를 가져옴 -->
+	<select id="selectFile" parameterType="FileVo" resultType="FileVo">
+		/* FileDao.selectFile */
+		SELECT 
+			A.FILEID,
+			A.FILEGRPID,
+			A.FILE_IDNTFC_KEY,
+			B.FILEGRP_NM,
+			A.FILE_PATH,
+			A.SAVE_FILE_NM,
+			A.ORGINL_FILE_NM,
+			A.FILE_EXTSN,
+			A.FILE_SIZE,
+			A.ORD,
+			A.REG_DT,
+			A.REGUSERID
+		FROM TB_FILE A
+		    ,TB_FILEGRP B
+		WHERE 1=1
+			AND A.FILEGRPID = B.FILEGRPID
+			AND A.FILEID = #{fileid}
+	</select>
+	
+	<!-- 파일 정보를 가져옴 -->
+	<select id="selectFileInfo" parameterType="FileGrpVo" resultType="FileVo">
+		/* FileDao.selectFileInfo */
+		SELECT TOP 1
+			A.FILEID,
+			A.FILEGRPID,
+			A.FILE_IDNTFC_KEY,
+			B.FILEGRP_NM,
+			A.FILE_PATH,
+			A.SAVE_FILE_NM,
+			A.ORGINL_FILE_NM,
+			A.FILE_EXTSN,
+			A.FILE_SIZE,
+			A.ORD,
+			A.REG_DT,
+			A.REGUSERID
+		FROM TB_FILE A
+		    ,TB_FILEGRP B
+		WHERE 1=1
+			AND A.FILEGRPID = B.FILEGRPID
+			AND A.FILEGRPID = #{filegrpid}
+	</select>
+	
+	<!-- 이전 파일 목록을 가져옴 -->
+	<select id="selectOldFileList" parameterType="Integer" resultType="FileVo">
+		/* FileDao.selectOldFileList */
+		SELECT 
+			A.FILEID,
+			A.FILEGRPID,
+			A.FILE_IDNTFC_KEY,
+			B.FILEGRP_NM,
+			A.FILE_PATH,
+			A.SAVE_FILE_NM,
+			A.ORGINL_FILE_NM,
+			A.FILE_EXTSN,
+			A.FILE_SIZE,
+			A.ORD,
+			A.REG_DT,
+			A.REGUSERID
+		FROM TB_FILE A
+		    ,TB_FILEGRP B
+		WHERE 1=1
+			AND A.FILEGRPID = B.FILEGRPID
+			AND A.FILEGRPID = (SELECT FILEGRPID FROM TB_FILE WHERE FILEID = #{fileid})
+			AND A.FILEID != #{fileid}
+	</select>
+</mapper>

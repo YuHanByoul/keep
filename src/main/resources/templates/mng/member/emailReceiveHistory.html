@@ -1,0 +1,150 @@
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+    <!-- List Area -->
+    <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingOne">
+            <h4 class="panel-title">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleSubList();">목록</a>
+            </h4>
+        </div>
+        <div id="collapseSubList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">        
+      
+                <div class="row">
+                    <table id="emailHistJsGrid"></table>
+                    <div id="emailHistListPager" class="text-center"></div>
+                </div>
+        
+            </div>
+        </div>
+    </div>
+    <!-- Content Area -->
+    <div id="subContentPanel" class="panel panel-default" style="display:none"></div>
+</div>
+
+<script src="https://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+<script th:inline="javascript">
+
+    var userid = [[${param.userid}]];
+             
+    $(function(){
+        emailHistGridInit();
+        
+        function emailHistGridInit(){
+            $("#emailHistJsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#emailHistListPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+                                                
+                        var params = [
+                                {name: "rcptnUserid", value: userid},
+                                {name: "pageNumber", value: filter.pageIndex},
+                                {name: "rowPerPage", value: filter.pageSize},
+                        ]
+                        
+                        if(filter.sortField != undefined){
+                            params.push({name: "orderField", value: filter.sortField});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        }else{
+                            params.push({name: "orderField", value: "regDt"});
+                        }
+                        
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: "/mng/member/selectEmailReceiveHistList.do",
+                          dataType: "json",
+                          data: params
+                        }).done(function(response){
+                            var da = {
+                                    data : escapeGridData(response.list)
+                                    ,itemsCount : response.totalCount
+                                };
+                          data.resolve(da);
+                        });
+                        return data.promise();
+                    }
+                },
+                fields: [
+                     { name: 'mailSndngHistId', css: 'hide' }
+                    ,{ title: '번호'       ,name: 'rowNumber',    type: "number", width : "5%", align:"center",  sorting :false }
+                    ,{ title: '메일제목'    ,name: 'title',    type: "text", width: "10%" }
+                    ,{ title: '발신자'     ,name: 'sndngUserNm', type: "text", width: "10%", align:"center",  sorting :false }
+                    ,{ title: '발신일자'    ,name: 'regDt',   type: "text", width: "10%", align:"center" }
+                ],
+                /*[# sec:authorize-url="/mng/member/emailReceiveHistoryDetail.html"]*/
+	            rowClick: function(args) {
+	                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+	                var detailUrl = "/mng/member/emailReceiveHistoryDetail.html?mailSndngHistId=" + args.item.mailSndngHistId + "&rcptnUserid=" + userid; 
+	                loadSubContent(detailUrl);
+	            },
+	            /*[/]*/
+            });     
+        }
+    });
+          
+    var subListToggle = true;
+    var subContentToggle = false;
+        
+    function loadSubContent(uri){
+        $('#subContentPanel').load(uri); 
+        showSubContent(); 
+        hideSubList();
+    }
+
+    function resetSubListContent(){
+        //리셋하고 현재 페이지로 돌아간다.
+        var curPage = $("#emailHistJsGrid").jsGrid("option", "pageIndex");
+        $("#emailHistJsGrid").jsGrid("reset").done(function(){
+            $("#emailHistJsGrid").jsGrid("openPage", curPage);
+        });
+        hideSubContent(); 
+        showSubList(); 
+    }
+    
+    function showSubList(){
+        if(subListToggle) return;
+        subListToggle = !subListToggle;
+        $('#collapseSubList').collapse('show');
+    }
+    
+    function hideSubList(){
+        if(!subListToggle) return;
+        subListToggle = !subListToggle;
+        $('#collapseSubList').collapse('hide');
+    }
+    
+    function showSubContent(){
+        if(subContentToggle) return;
+        subContentToggle = !subContentToggle;
+        $('#subContentPanel').show();
+    }
+    
+    function hideSubContent(){
+        if(!subContentToggle) return;
+        subContentToggle = !subContentToggle;
+        $('#subContentPanel').hide();
+    }
+    
+    function toggleSubList(){
+        subListToggle ? $('#collapseSubList').collapse('hide') : $('#collapseSubList').collapse('show'); 
+        subListToggle = !subListToggle;
+    }
+    
+</script>

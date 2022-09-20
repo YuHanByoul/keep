@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorate="layout/subLayout"
+>
+<head>
+<meta charset="utf-8" />
+<body>
+	<div layout:fragment="content">
+		<th:block th:replace="test/test_nav::nav"></th:block>
+		
+		<table id="jqgrid1"></table>
+		<div id="pager"></div>
+		<div id="paginate"></div>
+	
+		<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/ui.jqgrid.css">
+		<script src="/js/common/jqgrid/i18n/grid.locale-en.js"></script>
+		<script src="/js/common/jqgrid/jquery.jqGrid.min.js"></script>
+		<script>
+	
+	$(function(){
+
+        //jqGrid껍데기 생성
+        $("#jqgrid1").jqGrid({
+        	 url: '/jqdata.do',
+        	 //마지막 페이지 다음 페이지 로딩시 total을 구하지 않아도 되도록 파라미터로 보낸다.
+        	 postData: {
+        		    total: function() {
+        		    	var total = $("#jqgrid1").getGridParam('records');
+        		    	if(total == null)
+        		    		total = 0;
+        		        return total;
+        		    }
+        	 },
+             colModel: [
+                 { label: 'idx', name: 'idx', key: true, width: 75 },
+                 { label: 'title', name: 'title', width: 150 },
+                 { label: 'content', name: 'content', width: 150 },
+                 { label: 'reg_id', name: 'reg_id', width: 150 },
+                 { label: 'createdAt', name: 'createdAt', width: 150 }
+             ],
+            loadtext : '로딩중..',
+            datatype: "json",
+            height: 250,
+            rowNum: 10,
+            pager: "#pager",
+            caption: "그리드 목록"
+        });
+         
+})
+
+	</script>
+
+	</div>
+</body>
+</html>

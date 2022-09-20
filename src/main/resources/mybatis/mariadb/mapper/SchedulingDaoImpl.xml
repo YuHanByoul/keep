@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : SchedulingDaoImpl.xml
+    Description : 스케쥴링관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.scheduling.model.SchedulingDao">    
+
+    <!-- 스케줄링트리거 목록을 조회한다. -->
+    <select id="selectSchedTriggerList" parameterType="SchedulingVo" resultType="SchedulingVo">
+        /* SchedulingDao.selectSchedTriggerList */
+        <include refid="PaginationMapper.header"/>
+        SELECT A.TRIGGERID
+              ,A.NM
+              ,B.JOB_NAME
+              ,A.DC
+              ,A.CRON_EXPRESSION
+              ,A.USE_YN
+          FROM TB_SCHED_TRIGGER A 
+        LEFT OUTER JOIN QRTZ_TRIGGERS B ON A.NM = B.TRIGGER_NAME
+         WHERE 1=1
+         <if test="use_yn != null and use_yn != ''">
+           AND A.USE_YN = #{use_yn}
+         </if>
+         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+           AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+         </if>
+         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'job_name'">
+           AND B.JOB_NAME LIKE CONCAT('%',#{searchKeyword},'%')
+         </if>
+         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'dc'">
+           AND A.DC LIKE CONCAT('%',#{searchKeyword},'%')
+         </if>
+         <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 스케줄이력 목록을 조회한다. -->
+    <select id="selectSchedHistList" parameterType="SchedulingHistVo" resultType="SchedulingHistVo">
+        /* SchedulingDao.selectSchedHistList */
+        <include refid="PaginationMapper.header"/>
+        SELECT JOB_STRT_DT
+              ,JOB_END_DT
+              ,STTS_CD
+          FROM TB_SCHED_HIST
+         WHERE TRIGGERID = #{triggerid}
+         <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 트리거이름으로 트리거정보를 조회한다. -->
+    <select id="selectTriggerByNm" parameterType="SchedulingVo" resultType="SchedulingVo">
+        /* SchedulingDao.selectTriggerByNm */
+        SELECT TRIGGERID FROM TB_SCHED_TRIGGER WHERE NM = #{nm}
+    </select>
+    
+    <!-- 스케줄트리거 저장 --> 
+    <insert id="insertSchedTrigger" parameterType="SchedulingVo">
+        /* SchedulingDao.insertSchedTrigger */
+        INSERT INTO TB_SCHED_TRIGGER (NM, DC, CRON_EXPRESSION, USE_YN, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
+        VALUES (#{nm}, #{dc}, #{cron_expression}, #{use_yn}, NOW(), #{user.userid}, NOW(), #{user.userid})
+    </insert>
+    
+    <!-- 트리거정보를 조회한다. -->
+    <select id="selectTriggerInfo" parameterType="SchedulingVo" resultType="SchedulingVo">
+        /* SchedulingDao.selectTriggerInfo */
+        SELECT 
+            A.TRIGGERID, 
+            A.NM,
+            B.JOB_NAME,
+            A.DC,
+            A.CRON_EXPRESSION,
+            A.USE_YN 
+        FROM TB_SCHED_TRIGGER A
+            LEFT OUTER JOIN QRTZ_TRIGGERS B ON A.NM = B.TRIGGER_NAME
+        WHERE 
+            TRIGGERID = #{triggerid}
+    </select>
+    
+    <!-- 스케줄트리거 수정 --> 
+    <update id="updateSchedTrigger" parameterType="SchedulingVo">
+        /* SchedulingDao.updateSchedTrigger */
+        UPDATE TB_SCHED_TRIGGER 
+           SET 
+        <if test="nm != null and nm != ''">       
+               NM = #{nm},
+        </if>        
+               DC = #{dc}, 
+               CRON_EXPRESSION = #{cron_expression}, 
+               USE_YN = #{use_yn}, 
+               UPDT_DT = NOW(), 
+               UPDTUSERID = #{user.userid}
+        WHERE TRIGGERID = #{triggerid}
+    </update>
+</mapper>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/subLayout" 
+>
+<head>
+<meta charset="utf-8" />
+<body>
+    <div layout:fragment="content">
+     
+        
+      <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+          <div class="panel-body">
+              <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+                   <div class="well well-sm row">
+                       <div class="col-sm-12">
+                       
+                         <div class="col-sm-1 form-group form-control-static">
+                           <label class="control-label "> 사용여부 </label>
+                         </div>
+                         
+                         <div class=" col-sm-3 form-group form-control-static">
+                             <select name="use_yn" class="form-control input-sm" style="padding:0px; width:150px;">
+			                     <option value="">-전체-</option>
+			                     <option value="Y">Y</option>
+			                     <option value="N">N</option>
+			                 </select>
+                         </div>
+                         
+                         <div class="col-sm-1 form-group form-control-static">
+                           <label class="control-label ">검색구분</label>
+                         </div>
+                         
+                         <div class="col-sm-5 form-group form-control-static">
+                           <select id="searchType" name="searchType" class="form-control input-sm" style="padding:0; width:170px; display: inline-block;">
+			                    <option value="nm">트리거명</option>
+			                    <option value="job_name">Job이름</option>
+			                    <option value="dc">설명</option>
+			                </select>
+			                <input type="text" id="searchKeyword" name="searchKeyword" class="form-control input-sm" style="padding:0; width:200px;display: inline-block;">
+                         </div>
+                         
+                       <div class="col-sm-2 form-group form-control-static text-right">
+                         <button type="submit" class="btn btn-sm btn-primary" onclick="fn_searchForm()">검색</button>
+                       </div>
+                       
+                     </div>
+                   </div>
+               </form>
+       </div>
+        </form>     
+       
+        <div class="row text-right" style="margin-bottom: 5px; margin-right: 5px;">
+            <th:block sec:authorize-url="/mng/scheduling/schedulingForm.html"><button type="button" class="btn btn-sm btn-warning" onclick="fn_goForm();">트리거 추가</button></th:block>
+        </div>
+                
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <!-- List Area -->
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
+                    </h4>
+                </div>
+                <div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">        
+              
+                        <div class="row">
+                            <table id="jsGrid"></table>
+                            <div id="listPager" class="text-center"></div>
+                        </div>
+                
+                    </div>
+                </div>
+            </div>
+            <!-- Content Area -->
+            <div id="contentPanel" class="panel panel-default" style="display:none">
+            </div>
+        </div>
+       
+<script type="text/javascript">
+
+        $(function(){
+            writeJsGridData();
+        });
+        
+        function fn_goForm(){
+	        var formUrl ="/mng/scheduling/schedulingForm.html";
+	        loadContent(formUrl);
+	    }
+    
+        function fn_searchForm(){
+	        resetListContent();
+	    }
+    
+        function writeJsGridData(){
+            $("#jsGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: true,
+                    paging: true,
+                    pagerContainer: "#listPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: " < 처음 ㅣ",
+                    pageLastText: " | 마지막 >",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    noDataContent: "데이터가 없습니다.",
+                    
+                    controller: {
+                        loadData: function (filter) {
+                            var data = $.Deferred();
+                            
+                            var formData = $('#searchFrm').serializeArray();
+		                    var params = [
+		                            {name: "pageNumber", value: filter.pageIndex},
+		                            {name: "rowPerPage", value: filter.pageSize},
+		                    ]
+		                    
+		                    if(filter.sortField != undefined){
+		                        params.push({name: "orderField", value: filter.sortField});
+		                        params.push({name: "orderDirection", value: filter.sortOrder});
+		                    }else{
+		                        params.push({name: "orderField", value: 'triggerid'});
+		                    }
+		                    formData = formData.concat(params);
+                            
+                            $.ajax({
+                              type: "GET",
+                              contentType: "application/json; charset=utf-8",
+                              url: "/mng/scheduling/selectSchedTriggerList.do",
+                              dataType: "json",
+                              data: formData
+                            }).done(function(response){
+                                var da = {
+                                        data : escapeGridData(response.list)
+                                        ,itemsCount : response.totalCount
+                                    };
+                              data.resolve(da); 
+                            });
+                            return data.promise();
+                        },
+                    },
+                    fields: [ 
+                        { name: 'rowNumber',title:'번호'   , type: "number" , width: "3%", align:"center", sorting: false },
+                        { name: 'triggerid' , title:"트리거ID", type: "number"   , width: "7%"  , align:"center"},
+                        { name: 'nm' , title:"트리거명"    , type: "text"   , width: "20%", align:"center"},
+                        { name: 'job_name', title:"Job 이름"   , type: "text"   , width: "20%", align:"center"},
+                        { name: 'dc', title:"설명"   , type: "text"   , width: "20%", sorting: false },
+                        { name: 'cron_expression', title:"크론표현식", type: "text",  width: "10%" , align:"center", sorting: false },
+                        { name: 'active_yn', title:"활성여부", type: "text",  width: "10%" , align:"center"},
+                        { name: 'use_yn', title:"사용여부", type: "text",  width: "10%" , align:"center"}
+                    ],
+                    /*[# sec:authorize-url="/mng/scheduling/schedulingUpdate.html"]*/
+		            rowClick: function(args) {
+		                var updateUrl = "/mng/scheduling/schedulingUpdate.html?triggerid=" + args.item.triggerid; 
+		                loadContent(updateUrl);
+		            },
+		            /*[/]*/
+            });
+        }
+</script>
+       
+    </div>
+</body>
+</html>
