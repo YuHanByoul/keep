@@ -21,4 +21,6 @@ public interface FileService {
     public List<FileVo> selectOldFileList(int fileid) throws Exception;
 
     public void deleteOldFiles(int fileid) throws Exception;
+    
+    public boolean downloadFileCheck(FileVo fileVo, UserVo user) throws Exception;
 }

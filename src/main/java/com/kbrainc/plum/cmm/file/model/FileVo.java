@@ -25,6 +25,10 @@ public class FileVo {
     private int updtuserid;
     private String reg_dt;
     private int reguserid;
+    private int bbsid;
+    
+    /** 비로그인_허용_여부 */
+    private String nlogin_perm_yn;
 
     /**
      * .

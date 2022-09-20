@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.exception.FileStorageException;
+import com.kbrainc.plum.rte.exception.FiledownloadCheckerException;
 import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.exception.ParameterNotFoundException;
 import com.kbrainc.plum.rte.exception.RestfulException;
@@ -110,5 +111,11 @@ public class ExceptionHandlingController {
     @ResponseBody
     public String myFileNotFoundException(MyFileNotFoundException e) {
         return "404";
+    }
+    
+    @ExceptionHandler({ FiledownloadCheckerException.class })
+    @ResponseBody
+    public String filedownloadCheckerException(MyFileNotFoundException e) {
+        return "403";
     }
 }

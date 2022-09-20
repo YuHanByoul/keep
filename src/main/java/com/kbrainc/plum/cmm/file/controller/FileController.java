@@ -30,6 +30,8 @@ import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
+import com.kbrainc.plum.rte.exception.FiledownloadCheckerException;
+import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.exception.FileStorageException;
@@ -127,8 +129,8 @@ public class FileController {
      * @throws Exception 
     */
     @GetMapping("/downloadFileByFileid.do")
-    public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request) throws Exception {
-        FileVo fileVo =new FileVo();
+    public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request, @UserInfo UserVo user) throws Exception {
+        FileVo fileVo = new FileVo();
     	fileVo.setFileid(fileid);
     	fileVo.setFile_idntfc_key(fileIdntfcKey);
     	String fileName ="";
@@ -143,6 +145,10 @@ public class FileController {
     	}
         
         Resource resource = fileStorageService.loadFileAsResource(fileVo);
+        
+        if (!fileService.downloadFileCheck(fileVo, user)) {
+            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSave_file_nm());
+        }
         
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());

@@ -20,8 +20,8 @@ jQuery(function(){
 		  alert('인증에 실패하였습니다.\n로그인 페이지로 이동합니다.');
 		  location.href='/';
 	  }else if(xhr.status==403){
-		  alert('세션이 유효하지 않거나 접근권한이 없습니다.');
-		  location.href='/';
+		  alert('접근권한이 없습니다.');
+          //location.href='/';
 	  }else if(xhr.status==500){
 		  alert('내부 서버 오류입니다.');
 	  }else if(e === 'parsererror'){
@@ -5907,8 +5907,10 @@ jQuery(function(){
 	    //successCallback: function (url) {},
 	    failCallback: function(html, url) {
 	    	if(html=='404'){
-	    		alert("파일이 없습니다. 관리자에게 문의하세요.")
-	    	}
+	    		alert("파일이 없습니다. 관리자에게 문의하세요.");
+	    	}else if(html=='403'){
+                alert("권한이 없습니다. 관리자에게 문의하세요.");
+            }
 	    }
 	 });
   }

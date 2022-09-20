@@ -28,59 +28,53 @@ public class BbsVo extends ParentRequestVo {
 
     /** 로그인사용자정보 */
     private UserVo user;
-    /** **/
-
-    private Integer bbsid;
     /** 게시판 아이디 **/
-    private String nm;
+    private Integer bbsid;
     /** 이름 **/
-    private String dc;
+    private String nm;
     /** 설명 **/
+    private String dc;
+    /** 분류_코드 **/
     private String cl_cd;
     private String cl_nm;
-    
-    
-    /** 분류_코드 **/
-    private String fxd_ntc_use_yn;
     /** 고정_공지_사용_여부 **/
-    private Integer fxd_ntc_cnt;
+    private String fxd_ntc_use_yn;
     /** 고정_공지_갯수 **/
-    private String atchfile_use_yn;
+    private Integer fxd_ntc_cnt;    
     /** 첨부파일_사용_여부 **/
-    private Integer atchfile_cnt;
+    private String atchfile_use_yn;
     /** 첨부파일_갯수 **/
-    private Integer atchfile_size;
+    private Integer atchfile_cnt;
     /** 첨부파일_사이즈 **/
-    
-    
-    private String rply_use_yn;
+    private Integer atchfile_size;    
     /** 답글_사용_여부 **/
-    private String cmnt_use_yn;
+    private String rply_use_yn;
     /** 댓글 사용여부 **/
-    private String new_use_yn;
+    private String cmnt_use_yn;
     /** NEW_사용_여부 **/
-    private Integer new_indict_daycnt;
+    private String new_use_yn;
     /** NEW_표시일수 **/
-    private String hot_use_yn;
+    private Integer new_indict_daycnt;
     /** HOT_사용_여부 **/
-    private Integer hot_use_stdr_hits;
+    private String hot_use_yn;
     /** HOT_사용_기준_조회수 **/
-    private String cl_use_yn;
+    private Integer hot_use_stdr_hits;
     /** 분류_사용_여부 **/
-    private Integer page_pst_cnt;
+    private String cl_use_yn;
     /** 페이지_게시글_수 **/
+    private Integer page_pst_cnt;
+    /** 비로그인_파일다운로드_여부 **/
     private String nlogin_perm_yn;
-    /** 비로그인_허용_여부 **/
-    private String use_yn;
     /** 사용_여부 **/
-    private String updt_dt;
+    private String use_yn;
     /** 수정_일시 **/
-    private Integer updtuserid;
+    private String updt_dt;
     /** 수정자_아이디 **/
-    private String reg_dt;
+    private Integer updtuserid;
     /** 등록_일시 **/
-    private Integer reguserid;
+    private String reg_dt;
     /** 등록_아이디 **/
+    private Integer reguserid;
 
     private Integer pst_cnt; // 추가 :게시글 수
     private Integer search_cl; // 유형 검색 값

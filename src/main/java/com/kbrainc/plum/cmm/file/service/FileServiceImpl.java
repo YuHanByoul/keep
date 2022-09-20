@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.file.service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -138,5 +139,36 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
 	        deleteFileVo(oldFileInfo);
 	    }
 	}
-
+	
+	/**
+    * 다운로드 가능 여부를 반환한다.
+    *
+    * @Title       : downloadFileCheck 
+    * @Description : 다운로드 가능 여부를 반환한다.
+    * @param fileVo FileVo객체
+    * @param user 사용자세션정보
+    * @return boolean 다운로드가능여부
+    * @throws Exception 예외
+    */
+    @Override
+    public boolean downloadFileCheck(FileVo fileVo, UserVo user) throws Exception {
+        if (this.filegrpName.containsKey(fileVo.getFilegrp_nm())) {
+            LinkedHashMap downloadChecker = ((LinkedHashMap)this.filegrpName.get(fileVo.getFilegrp_nm()).get("downloadChecker"));
+            
+            if ("bbs".equals(fileVo.getFilegrp_nm())) {
+                if ("N".equals(fileVo.getNlogin_perm_yn()) && user.getUserid() == null) {
+                    return false;
+                }
+            } else if (downloadChecker != null) {
+                if (downloadChecker.containsValue("login")) { // 로그인체크
+                    if(user.getUserid() == null) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        return false;
+    }
 }
