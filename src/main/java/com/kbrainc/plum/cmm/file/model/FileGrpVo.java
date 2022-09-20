@@ -12,6 +12,7 @@ public class FileGrpVo {
     private int updtuserid;
     private String reg_dt;
     private int reguserid;
+    private int bbsid;
 
     public FileGrpVo(int filegrpid) {
         this.filegrpid = filegrpid;

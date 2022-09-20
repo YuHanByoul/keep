@@ -87,9 +87,9 @@ public class FileController {
                 }
             }
             
+            return fileService.uploadFile(file, fileGrpVo, user, isMulti);
         }
-        
-        return fileService.uploadFile(file, fileGrpVo, user, isMulti);
+        return new FileVo();
     }
 
     /**
