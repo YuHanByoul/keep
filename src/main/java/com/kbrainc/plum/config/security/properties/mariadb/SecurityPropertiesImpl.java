@@ -11,9 +11,6 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 
 	private static org.apache.commons.configuration.Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
 
-    private static String sysSeCd = applicationConfig.getString("system.separation.code");
-    
-	
 	/** 디폴트타겟URL */
 	private final String DEFAULT_TARGET_URL = "/main.html";
 	
@@ -21,7 +18,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
      * 사용자 로그인 정보를 확인하기 위한 쿼리
      */
 	private String DEF_USER_LOGIN_INFO_QUERY = 
-			"  SELECT  A.USERID, A.NM, A.PWD "
+			"  SELECT  A.USERID, A.NM, A.PWD, A.USER_SE_CD "
 			+ "FROM  TB_USER A "
             + "LEFT OUTER JOIN TB_USER_DTL D "
             + "ON A.USERID = D.USERID "
@@ -33,7 +30,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
      * 사용자에게 부여된 역할을 확인하기 위한 쿼리
      */
 	private final String DEF_GRANTED_AUTHORITY_QUERY = 
-			"  SELECT B.ROLEID, C.NM "
+			"  SELECT B.ROLEID, C.NM, C.SE_CD "
 			+ "FROM TB_USER A, "
             + "     TB_ROLE_USER B, "
             + "     TB_ROLE C "
@@ -41,8 +38,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "AND A.ACNT = :loginid "
             + "AND B.ROLE_STRT_DT <= NOW() "
             + "AND B.ROLE_END_DT >= NOW() "
-            + "AND B.ROLEID = C.ROLEID "
-            + "AND C.SE_CD = '" + sysSeCd + "' ";
+            + "AND B.ROLEID = C.ROLEID ";
 
     /**
      * url 형식인 보호자원 - Role 맵핑정보를 조회하는 default 쿼리
@@ -62,7 +58,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "INNER JOIN TB_ROLE_MENU A  "
             + "ON A.MENUID = B.MENUID "
             + "WHERE B.LOGIN_YN ='N' "
-            + "AND B.SITEID IN (SELECT SITEID FROM TB_SITE WHERE SYS_SE_CD = '" + sysSeCd + "' AND USE_YN ='Y') "
+            + "AND B.SITEID IN (SELECT SITEID FROM TB_SITE WHERE USE_YN ='Y') "
             //+ "AND C.URL IS NOT NULL "
             //+ "AND C.URL <> ''"
             + ") T "
@@ -81,7 +77,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             //+ "AND C.URL <> '' "
             + "LEFT OUTER JOIN TB_ROLE_MENU A "
             + "ON A.MENUID = B.MENUID "
-            + "WHERE B.SITEID IN (SELECT SITEID FROM TB_SITE WHERE SYS_SE_CD = '" + sysSeCd + "' AND USE_YN ='Y')"
+            + "WHERE B.SITEID IN (SELECT SITEID FROM TB_SITE WHERE USE_YN ='Y')"
             //+ ") T "
             //+ "WHERE URL IS NOT NULL "
             //+ "AND URL != '' "
@@ -122,7 +118,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "LEFT OUTER JOIN TB_PRGRM C "
             + "ON B.PRGRMID = C.PRGRMID "
             + "AND C.URL IS NOT NULL "
-            + "WHERE B.SITEID IN (SELECT SITEID FROM TB_SITE WHERE SYS_SE_CD = '" + sysSeCd + "' AND USE_YN ='Y')"
+            + "WHERE B.SITEID IN (SELECT SITEID FROM TB_SITE WHERE USE_YN ='Y')"
             + ") T "
             + "WHERE URL IS NOT NULL "
             + "AND URL != '' "

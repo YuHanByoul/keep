@@ -35,6 +35,9 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     @Value("${server.port}")
     private String serverHttpsPort;
     
+    @Value("${server.servlet.session.cookie.domain}")
+    private String serverCookieDomain;
+    
     @Value("${app.ssl.isuse}")
     private boolean sslIsUse;
     
@@ -56,7 +59,12 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
 
         // 인증 세션을 가져와 새로운 쿠키 생성
         Cookie k = new Cookie("JSESSIONID", request.getSession().getId());
+        k.setDomain(serverCookieDomain);
         k.setPath("/");
+        k.setHttpOnly(true);
+        if (sslIsUse) {
+            k.setSecure(true);
+        }
         response.addCookie(k);
         super.onAuthenticationSuccess(request, response, authentication);
     }

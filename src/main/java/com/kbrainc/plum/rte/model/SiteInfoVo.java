@@ -30,6 +30,10 @@ public class SiteInfoVo extends ParentVo implements Serializable {
     private String siteid = null;
     /** 사이트명 */
     private String site_nm = null;
+    
+    /** 시스템_구분_코드 */
+    private String sys_se_cd = null;
+    
     /** 도메인 */
     private String dmn = null;
 

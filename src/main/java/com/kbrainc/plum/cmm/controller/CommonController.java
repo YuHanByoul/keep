@@ -1,9 +1,11 @@
 package com.kbrainc.plum.cmm.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -14,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -22,10 +25,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.kbrainc.plum.mng.bbs.model.PstVo;
+import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.mng.prgrm.model.PrgrmVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
@@ -54,6 +62,9 @@ public class CommonController {
     @Autowired
     private SecurityProperties securityProperties;
     
+    @Autowired
+    private BbsServiceImpl bbsService;
+    
     /**
     * 인덱스 경로 처리.
     *
@@ -64,7 +75,7 @@ public class CommonController {
     * @return ModelAndView 모델뷰객체
     */
     @GetMapping("/")
-    public ModelAndView login(HttpServletRequest request, HttpSession session) {
+    public ModelAndView login(HttpServletRequest request, HttpSession session, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout) {
         ModelAndView mav = new ModelAndView();
         UserVo user = (UserVo) session.getAttribute("user");
 
@@ -79,7 +90,36 @@ public class CommonController {
             mav.setView(redirectView);
             return mav;
         }   
-        mav.setViewName("login");
+        
+        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
+        String sysSeCd = siteInfo.getSys_se_cd();
+        
+        if ("A".equals(sysSeCd)) { // 관리자 사이트
+            mav.setViewName("mng/login");
+        } else { // 사용자 사이트
+            if (timeout) {
+                mav.addObject("timeout", "true");
+                mav.setViewName("front/login");
+            } else if (error) {
+                mav.addObject("error", "true");
+                mav.setViewName("front/login");
+            } else {      
+                PstVo pstVo =new PstVo();
+                
+                pstVo.setUser(user);
+                pstVo.setRowPerPage(5);
+                pstVo.setBbsid(10);
+                try {
+                    List<PstVo> list= bbsService.selectPstList(pstVo);
+                    mav.addObject("list", list);
+                }catch(Exception e){
+                    mav.addObject("list", null);
+                }
+                
+                mav.setViewName("front/main");
+            }
+        }
+        
         return mav;
     }
     
@@ -103,8 +143,44 @@ public class CommonController {
     * @return String 이동화면경로
     */
     @GetMapping("/main.html")
-    public String main() {
-        return "main";
+    public String main(Model model, PstVo pstVo, @UserInfo UserVo user, HttpSession session) {
+        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
+        String sysSeCd = siteInfo.getSys_se_cd();
+        
+        if ("A".equals(sysSeCd)) { // 관리자 사이트
+            return "mng/main";
+        } else { // 사용자 사이트
+            pstVo.setUser(user);
+            pstVo.setRowPerPage(5);
+            pstVo.setBbsid(10);
+            try {
+                List<PstVo> list= bbsService.selectPstList(pstVo);
+                model.addAttribute("list", list);
+            }catch(Exception e){
+                model.addAttribute("list", null);
+            }
+            
+            return "front/main";
+        }
+    }
+    
+    /**
+    * 로그인 화면으로 이동한다.
+    *
+    * @Title       : login 
+    * @Description : 로그인 화면으로 이동한다.
+    * @return String 이동화면경로
+    */
+    @GetMapping("/login.html")
+    public String login(HttpSession session) {
+        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
+        String sysSeCd = siteInfo.getSys_se_cd();
+        
+        if ("A".equals(sysSeCd)) { // 관리자 사이트
+            return "mng/login";
+        } else { // 사용자 사이트
+            return "front/login";
+        }
     }
 
     /**
@@ -123,7 +199,7 @@ public class CommonController {
         UserVo user = (UserVo) session.getAttribute("user");
 
         if (user != null) {
-            // 열할을 변경한다.
+            // 역할을 변경한다.
             for (Map<String, String> authority : user.getAuthorities()) {
                 if (afterRoleid.equals(authority.get("roleid"))) {
                     ArrayList<GrantedAuthority> authorities = new ArrayList<>();
@@ -173,11 +249,25 @@ public class CommonController {
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-     /*@GetMapping("/sample.html")
+     @GetMapping("/sample.html")
      public String temp(PrgrmVo prgrmVo, Model model) throws Exception {
          Map<String, Object> resultMap = new HashMap<>();
-         List<PrgrmVo> result = commonService.selectPrgrmList(prgrmVo);
-         model.addAttribute("list", result); // 페이징 데이터
+         //List<PrgrmVo> result = commonService.selectPrgrmList(prgrmVo);
+         //model.addAttribute("list", result); // 페이징 데이터
          return "sample";
-     }*/
+     }
+    
+    /**
+    * 서브 화면으로 이동한다(테스트용).
+    *
+    * @Title       : sub
+    * @Description : 서브 화면으로 이동한다(테스트용).
+    * @return String 이동화면경로
+    */
+    @GetMapping("/sub.html")
+    public String sub() {
+        return "sub";
+    }
+
+    
 }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -46,6 +48,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private SecuredObjectService securedObjectService;
+    
+    @Value("${system.person.roleid}")
+    private String sysPersonRoleid;
+    
+    @Value("${system.company.roleid}")
+    private String sysCompanyRoleid;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -64,37 +72,73 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         Map resultMap = null;
         List<Map<String, Object>> resultList = null;
         
-        try {
-            resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
-            if (!password.equals((String) resultMap.get("PWD"))) {
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession session = attr.getRequest().getSession();
+        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
+        String sysSeCd = siteInfo.getSys_se_cd();
+        
+        if ("A".equals(sysSeCd)) { // 관리자 사이트
+            try {
+                resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                if (!password.equals((String) resultMap.get("PWD"))) {
+                    throw new BadCredentialsException("Login Error !!");
+                }
+                
+                resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
+                // 사용자 역할까지 부여
+                String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(P:개인회원, C: 기업회원)
+                Map<String, Object> roleMap = null;
+                if ("P".equals(userSeCd)) {
+                    roleMap = new HashMap<String, Object>();
+                    roleMap.put("ROLEID", sysPersonRoleid);
+                    roleMap.put("NM", "개인회원");
+                    roleMap.put("SE_CD", "U");
+                    resultList.add(roleMap);
+                } else if ("C".equals(userSeCd)) {
+                    roleMap = new HashMap<String, Object>();
+                    roleMap.put("ROLEID", sysCompanyRoleid);
+                    roleMap.put("NM", "기업회원");
+                    roleMap.put("SE_CD", "U");
+                    resultList.add(roleMap);
+                }
+            } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
+                throw new BadCredentialsException("Login Error !!");
+            } catch (Exception e) { // 예외발생시
                 throw new BadCredentialsException("Login Error !!");
             }
-            
-            resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
-        } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
-            throw new BadCredentialsException("Login Error !!");
-        } catch (Exception e) { // 예외발생시
-            throw new BadCredentialsException("Login Error !!");
+        } else { // 사용자 사이트
+            try {
+                resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                if (!password.equals((String) resultMap.get("PWD"))) {
+                    throw new BadCredentialsException("Login Error !!");
+                }
+                
+                resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
+                // 사용자 역할까지 부여
+                String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(P:개인회원, C: 기업회원)
+                Map<String, Object> roleMap = null;
+                if (resultList == null) {
+                    resultList = new ArrayList<Map<String, Object>>();
+                }
+                
+                if ("P".equals(userSeCd)) {
+                    roleMap = new HashMap<String, Object>();
+                    roleMap.put("ROLEID", sysPersonRoleid);
+                    roleMap.put("NM", "개인회원");
+                    roleMap.put("SE_CD", "U");
+                    resultList.add(roleMap);
+                } else if ("C".equals(userSeCd)) {
+                    roleMap = new HashMap<String, Object>();
+                    roleMap.put("ROLEID", sysCompanyRoleid);
+                    roleMap.put("NM", "기업회원");
+                    roleMap.put("SE_CD", "U");
+                    resultList.add(roleMap);
+                }
+            } catch (Exception e) { // 예외발생시
+                throw new BadCredentialsException("Login Error !!");
+            }
         }
-
-        // 추가
-        /*
-        String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(T:교사, G: 일반)
-        Map<String, Object> roleMap = null;
-        resultList = new ArrayList<Map<String, Object>>();
-        if ("T".equals(userSeCd)) {
-            roleMap = new HashMap<String, Object>();
-            roleMap.put("ROLEID", sysTeacherRoleid);
-            roleMap.put("NM", "교사");
-            resultList.add(roleMap);
-        } else if ("G".equals(userSeCd)) {
-            roleMap = new HashMap<String, Object>();
-            roleMap.put("ROLEID", sysGeneralRoleid);
-            roleMap.put("NM", "일반");
-            resultList.add(roleMap);
-        }
-        */
-        
+                
         if (resultList.size() == 0) { // 사용자에게 부여된 역할이 없으면
             throw new BadCredentialsException("Login Error !!");
         }
@@ -109,19 +153,26 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         ArrayList<Map<String, String>> sessionAuthorities = new ArrayList<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         Map<String, String> authority = null;
+        boolean grantedRole = false;
+        
         for (int i = 0; i < resultList.size(); i++) {
-            if (i == 0) { // 사용자에게 부여된 역할중 1개만 적용한다.
-                authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
+            if (!grantedRole) { // 허용된 역할중 1개만 적용한다.
+                if ("A".equals(sysSeCd) && "A".equals(resultList.get(i).get("SE_CD"))) { // 관리자사이트 & 관리자역할
+                    authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
+                    grantedRole = true;
+                } else if ("U".equals(sysSeCd) && "U".equals(resultList.get(i).get("SE_CD"))) { // 사용자사이트 & 사용자역할
+                    authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
+                    grantedRole = true;
+                }
             }
             authority = new HashMap<String, String>();
             authority.put("roleid", (String.valueOf(resultList.get(i).get("ROLEID")))); // 역할ID
             authority.put("nm", (String.valueOf(resultList.get(i).get("NM")))); // 역할명
+            authority.put("se_cd", (String.valueOf(resultList.get(i).get("SE_CD")))); // 구분_코드
             sessionAuthorities.add(authority);
         }
         user.setAuthorities(sessionAuthorities);
 
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = attr.getRequest().getSession();
         session.setAttribute("user", user); // 세션에 사용자정보 객체 추가
         //session.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, loginid); // REDIS_SESSION
 
