@@ -1,6 +1,5 @@
 package com.kbrainc.plum.config;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -31,11 +30,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     
     @Value("${file.upload-dir}")
  	private String uploadImagesPath;
-
+    
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         logger.info("=========== Add Interceptors ===========");
-        registry.addInterceptor(interceptor).addPathPatterns("/**/*.html","/**/*.do");
+        registry.addInterceptor(interceptor).addPathPatterns("/","/**/*.html","/**/*.do");
     }
 
     @Override

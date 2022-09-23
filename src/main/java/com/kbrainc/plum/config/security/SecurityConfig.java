@@ -39,11 +39,13 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 //import org.springframework.session.data.redis.RedisIndexedSessionRepository; // REDIS_SESSION
 //import org.springframework.session.security.SpringSessionBackedSessionRegistry; // REDIS_SESSION
 
+import com.kbrainc.plum.rte.filter.SiteChangeFilter;
 import com.kbrainc.plum.rte.security.AjaxSessionTimeoutFilter;
 import com.kbrainc.plum.rte.security.CustomAuthenticationProvider;
 import com.kbrainc.plum.rte.security.HttpsLoginSuccessHandler;
 import com.kbrainc.plum.rte.security.ReloadableChannelProcessingFilterMetadataSource;
 import com.kbrainc.plum.rte.security.ReloadableFilterSecurityInterceptorMetadataSource;
+import com.kbrainc.plum.rte.service.ResSiteService;
 
 /**
  * 
@@ -98,6 +100,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private FilterSecurityInterceptor filterSecurityInterceptor;
 
     private ChannelProcessingFilter channelProcessingFilter;
+    
+    @Autowired
+    ResSiteService resSiteService;
 
     /*@Autowired
     @Lazy
@@ -156,6 +161,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilterBefore(channelProcessingFilter, ChannelProcessingFilter.class); // http/https 필터적용
         http.addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class); // 인가 필터 적용
+        http.addFilterAfter(new SiteChangeFilter(resSiteService), ExceptionTranslationFilter.class); // 사이트전환시 역할변경 필터 적용
         
         /* ajax로 호출시 sessionTimeout등 응답코드 대응 필터*/
         http.addFilterAfter(new AjaxSessionTimeoutFilter(), ExceptionTranslationFilter.class); 

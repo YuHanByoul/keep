@@ -57,11 +57,13 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         // 접속사이트정보
         ////////////////////////////////////////////////////////////////////////////////////
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        if (siteInfo == null) {
-            String dmn = request.getServerName();
+        String dmn = request.getServerName();
+        
+        if (siteInfo == null || !dmn.equals(siteInfo.getDmn())) {
             siteInfo = resSiteService.getSiteInfo(dmn);
 
             if (siteInfo == null) {
+                session.removeAttribute("site");
                 logger.debug("########## 존재하지않는 사이트입니다. ##########");
                 // 존재하지않는 사이트입니다.
                 throw new PageNotFoundException("존재하지않는 사이트입니다.");
