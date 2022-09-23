@@ -247,9 +247,9 @@ public class FileController {
             
             String fileUrl= request.getContextPath()+"/ckEimg/"+fileName;
             	
-            printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("+callback+",'"+fileUrl+"','이미지가 업로드되었습니다.')"+"</script>");
+            //printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("+callback+",'"+fileUrl+"','이미지가 업로드되었습니다.')"+"</script>");
             //ckEditor 4.8 버전 이상부터 json 형태로 return 해야 오류 발생 없으나 커스텀 alert를 띄울 수 없음   
-            //printWriter.println("{\"filename\" : \""+fileName+"\", \"uploaded\" : 1, \"url\":\""+fileUrl+"\"}");
+            printWriter.println("{\"filename\" : \""+fileName+"\", \"uploaded\" : 1, \"url\":\""+fileUrl+"\"}");
             
             out.flush();
             

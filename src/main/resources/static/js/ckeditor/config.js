@@ -47,7 +47,7 @@ CKEDITOR.editorConfig = function( config ) {
 	config.filebrowserImageUploadUrl = "/ckE/upload.do"
 	
 	//서버에서 불러오는 커스텀 alert 를 사용 할 수 있다.
-	config.filebrowserUploadMethod='form'
+	//config.filebrowserUploadMethod='form'
 	
 	//editor.
 	config.image_previewText = '이미지 미리보기 '
