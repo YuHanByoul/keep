@@ -225,7 +225,7 @@ public class FileController {
             
             String[] ext = (fileName.trim()).split("\\.");
                         
-            String AllowdExt = "jpg,png,tif,jepg,bmp,rle,raw,bpg,svg";
+            String AllowdExt = "jpg,png,tif,jepg,bmp,rle,raw,bpg,svg,gif";
             
             if(!AllowdExt.contains(ext[1].toLowerCase())) {
             	printWriter.println("<script>alert('이미지 파일만 등록 가능합니다.');</script>");

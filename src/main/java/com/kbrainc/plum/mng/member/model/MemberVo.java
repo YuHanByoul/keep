@@ -7,12 +7,11 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -50,6 +49,7 @@ public class MemberVo extends ParentRequestVo {
     
     /** 로그인사용자정보 */
     private UserVo user;
+    
 
     /** 사용자 아이디 */
     private int userid;
@@ -143,4 +143,25 @@ public class MemberVo extends ParentRequestVo {
     
     /** 상태(회원,탈퇴회원) */
     private String[] searchDelYn;
+    
+	/*dtl 컬럼추가	*/
+    /** 생년월일 */
+    private String brthdy;
+    
+    /** 성별 */
+    private String sex;
+    
+    /** 주소 */
+    @Size(max = 200, message = "주소는 200자를 넘을 수 없습니다.")
+    private String addr;
+    
+    /** 주소_상세 */
+    @Size(max = 400, message = "상세주소는 400자를 넘을 수 없습니다.")
+    private String addr_dtl;
+    
+    /** 소개 */
+    @Size(max = 50, message = "소개는 50자를 넘을 수 없습니다.")
+    private String intrcn;
+    
+    
 }

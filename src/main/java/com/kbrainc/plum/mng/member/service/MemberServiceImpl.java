@@ -440,4 +440,19 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     public List<MailVo> selectEmailReceiveHistList(MailVo mailVo) throws Exception {
         return memberDao.selectEmailReceiveHistList(mailVo);
     }
+    
+    
+    /**
+    * 사용자정보 목록 엑셀 다운로드 리스트
+    *
+    * @Title       : selectMemberExcelList 
+    * @Description : 사용자정보 목록 조회.
+    * @param param MemberVo객체
+    * @return List<MemberVo> 사용자정보 목록
+    * @throws Exception 예외
+    */
+    public List<MemberVo> selectMemberExcelList(MemberVo memberVo) throws Exception{
+    	return memberDao.selectMemberExcelList(memberVo);
+    };
+    
 }

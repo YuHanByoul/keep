@@ -58,9 +58,13 @@
 		<!-- Button Group Start -->
 		<div class="row text-right" style = "margin-bottom: 5px; margin-right: 5px;">
 		<div class="justify-button-group" style="overflow:visible">
+		
 			<p class="left-align-text" style = "margin-left: 15px;">
 				<th:block sec:authorize-url="/mng/member/emailPop.html"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#popCon3">e-mail 발송</button></th:block>
+				<th:block ><button type="button" class="btn btn-sm btn-primary" onclick="fn_memberExcelDownload()">엑셀 다운로드</button></th:block>
+				<th:block ><button type="button" class="btn btn-sm btn-primary" onclick="fn_memberExcelInsertPop()">엑셀 일괄등록</button></th:block>
 			</p>
+			
 			<p class="right-align-text">
 				<th:block sec:authorize-url="/mng/member/memberInsertForm.html"><button type="button" class="btn btn-sm btn-warning" onclick="fn_goInsertForm();">등록</button></th:block>
 			</p>
@@ -100,10 +104,14 @@
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script th:inline="javascript">
-	var userid = [[${param.userid}]];
+
+  /*<![CDATA[*/ 
+     var userid = /*[[${param.userid}]]*/null;
+  /*]]>*/
 	var selectedItems = [];
 	         
 	$(function(){
+		
 		writeJsGridData();
 		if(userid != null){
 			var detailUrl = "/mng/member/memberDetailForm.html?userid=" + userid; 
@@ -281,8 +289,29 @@
 	        }
 	   	});
 	}
-        
+    
+   //회원정보 엑셀 다운로드 예시  
+   function  fn_memberExcelDownload(){
+	   var f = document.searchFrm;
+	   f.action ="/example/mng/memberExcelDownList.do";
+	   f.submit();
+   }
+   
+   var ret = null;
+   //회원 엑셀 일괄등록 예시
+   function fn_memberExcelInsertPop(){
+	   
+	   var popupX = (window.screen.width / 2) - (1200 / 2);
+	   var popupY= (window.screen.height / 2) - (500 / 2);
+	   var option = "width=1200,height=500,left='"+popupX+"',top="+popupY;
+	   
+	   if(ret != null){
+		   ret.close();
+	   }
+	   ret = window.open("/example/mng/memberExcelRegisterPop.html", "_blank", option);
+   }
 </script>
+
 <script src="/js/ckeditor/ckeditor.js"></script>
 	</div> 
 	</body>

@@ -10,12 +10,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.ComponentScan;
 //import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession; // REDIS_SESSION
 
 import com.kbrainc.plum.rte.file.FileStorageProperties;
 
 @SpringBootApplication
+@ServletComponentScan
 @ComponentScan(basePackages = {"com.kbrainc.plum"})
 @EnableConfigurationProperties({
     FileStorageProperties.class

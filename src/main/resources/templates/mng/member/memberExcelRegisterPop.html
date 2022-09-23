@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	>
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!--  	<meta name="_csrf" th:content="${_csrf.token}"/>
+	<meta name="_csrf_header" th:content="${_csrf.headerName}"/> -->	
+	<title>excel 회원 정보 일괄등록 </title>
+	
+  	<link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="/css/animate.css" rel="stylesheet" media="screen">
+	<link rel="stylesheet" type="text/css" href="/css/daterange.css">
+	<link href="/css/main.css" rel="stylesheet" media="screen">
+	<link rel="stylesheet" type="text/css" href="/css/slidebars.css">
+	<link href="/fonts/font-awesome.min.css" rel="stylesheet">
+	<link href="/fonts/metrize.css" rel="stylesheet">
+	
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/jquery-ui.structure.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/jquery-ui.theme.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/jgrid/ui.jqgrid.css">	
+	
+ 	<link rel="stylesheet" type="text/css" href="/css/mngs/dynatree/ui.dynatree.css">
+	<link rel="stylesheet" type="text/css" href="/css/mngs/dynatree/jquery.contextMenu.css">
+		
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+	<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+	 
+	<!-- <script type="text/javascript" charset="utf-8" src="/js/jquery.js"></script> -->	
+    <!-- <script src="/js/common/common.js"></script> -->
+</head>
+<body>
+
+<span th:replace="layout/jsCommon"></span>
+
+<style>
+  table {
+    width: 100%;
+    border-top: 1px solid #444444;
+    border-collapse: collapse;
+    text-align :center;
+  }
+  th, td {
+    text-align :center;
+    border-bottom: 1px solid #444444;
+    /* border-left: 1px solid #444444; */
+    padding: 10px;
+  }
+  
+  th:first-child, td:first-child {
+    text-align :center;
+    border-left: none;
+  }
+</style>
+ 
+ <form class="form-inline form-horizontal row-border" role="form" id ="excelForm" name="excelForm" >
+		<div class="panel panel-default">
+	    	<div class="panel-heading" >
+	      		<h4>사용자 엑셀 일괄 등록</h4>
+   				<ul class="links">
+					<li>
+					  <a href="javascript:this.close()"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+					</li>
+			    </ul>
+	    	</div>
+	    	
+	        <div class="panel-body">
+        
+             <div class="form-group  col-md-12 row">
+             
+     			<label class="col-md-12 control-label" style="text-align:left;"><span class="text-danger">* </span>엑셀 파일 선택</label>
+     			<br/>
+     			
+     		    <div class=" col-md-12 form-control-static  " style="text-align:left;">
+     	            <div class="multiple-upload" >
+     					<label class="btn btn-primary btn-sm btn-file"> 
+     						파일 선택 
+     						<input type="file" id="p_excelFile" class="ifile" name="p_excelFile" value="" onchange="getFilePath(this.value);" style="display: none;" />
+                            <!--input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;"> -->
+     					</label>
+                        <input type="text" value="" readonly title="파일위치" class="ipath" id="excelPath">
+                        
+     				</div>
+     		    </div>                
+     		 </div>
+     		 <br/>
+     		 
+             <div class="form-group  col-md-12 row">
+     			<label class="col-md-12 control-label" style="text-align:left;"><span class="text-danger">* </span>데이터 정합성 체크</label>
+     			<br/>
+     			<div class=" col-md-12 form-control-static  " style="text-align:left;">
+         		    <button type="button" class="btn btn-primary btn-sm" onclick="fn_doExcelCheck()">체크</button><!-- 데이터 정합성 체크 -->
+     		    </div>
+     		 </div>
+     		 <br/>
+     		 
+             <div class="form-group  col-md-12 row" >
+     			<label class="col-md-12 control-label" style="text-align:left;"><span class="text-danger">*</span>주의사항</label>
+     			<br/>
+     			<label class="col-md-12 control-label" style="text-align:left;"><span class="text-danger"></span>1. 엑셀 파일 저장시 엑섹 형식으로 저장 하여 사용 할 것</label>
+     			<br/>
+     			<label class="col-md-12 control-label" style="text-align:left;"><span class="text-danger"></span>2. 샘플 양식폼을 변경 할 시 치명적인 오류가 발생합니다.</label>
+     			<br/>
+     			<label class="col-md-12 control-label" style="text-align:left;"><span class="text-danger"></span>3. 샘플파일을 참고하여 작성해주십시오. 
+     			   <a href="javascript:sampleDown('usrRegSample.xls','usrRegSample.xls','/sample');" class="error" style="font-size:15px;color:#1997E5;"> 샘플파일 다운로드 </a>
+     			</label>
+     			<br/>
+     		 </div>
+     		 
+     		 <br/>
+     		 <br/>
+     		 <br/>
+     		 
+     		 <div class="form-group  col-md-12 row" style="margin-top:20px;">
+				<!-- contentsWrap start -->
+				<div class="contentsWrap">
+		        <div class="boardList"  style="display:none;overflow-y:scroll;" id="boardView">
+				<table style="padding:10px; width:100%;">
+					<colgroup>
+						<col style="width:10%"/>
+						<col style="width:10%"/>
+						<col style="width:10%"/>
+						<col style="width:15%"/>
+						<col style="width:10%"/>
+						<col style="width:10%"/>
+						<col style="width:15%"/>
+						<col style="width:10%"/>
+						<col style="width:20%"/>
+					</colgroup>
+					<tr>
+						<th>아이디</th>
+						<th>이름</th>
+						<th>비밀번호</th>
+						<th>이메일</th>
+						<th>핸드폰</th>
+						<th>이용약관<br/>동의여부</th>
+						<th>개인정보수집<br/>동의여부</th>
+						<th>소개</th>
+						<th>결과</th>
+					</tr>
+					<tbody id="resultList">
+					</tbody>
+				</table>
+			</div>
+			<br/>
+			
+			<div class="btnArea" style="display:none;" id="btnArea">
+				<button type="button" class="btn btn-primary btn-sm" id="doSave" onclick="fn_doExcelWrite()" >일괄등록</button><!-- 일괄 등록 -->
+				<button type="button" class="btn btn-primary btn-sm" id="doCancel" onclick="window.close()"  >취소</button><!-- 취소 -->
+			</div>
+			
+		</div>
+		<!-- //contentsWrap end -->
+	    </div>
+	    
+        </div>
+            
+    </div>
+    <!-- //popup end -->
+</form>			
+
+<script type="text/javascript">
+
+var crsCodeDownUrl = "<c:url value='/mngs/lms/crsseq/selectApprovalCrsCdSample.do' />";
+
+function fn_doExcelCheck(){
+	
+	var f = document.excelForm;
+	
+	if(f.p_excelFile.value =="" || f.p_excelFile.value == undefined ) {
+		alert("파일을 등록해 주십시오."); //파일을 등록해 주십시오.
+		return;
+	}
+	
+	var excelfile =f.p_excelFile.value; 
+	var extStr = excelfile.slice(excelfile.indexOf(".") + 1).toLowerCase(); //파일 확장자를 잘라내고, 비교를 위해 소문자로 만듭니다.
+	var regex = /\.(xls|xlsx)$/; 
+	if (!regex.test(excelfile)) { 
+		alert('엑셀 파일만 등록 가능합니다.'); //엑셀 파일만 등록 가능합니다.
+		return; 
+	}
+	
+	var options = {
+			url : "/example/mng/memberExcelDataCheck.do",
+			type: 'post',
+			cache : false,
+			dataType: 'json',
+			data : jQuery("#excelForm").serialize(),
+			success : function(data){
+				checkResultTag(data);
+			},
+			error : function(err){				
+			}
+		}; 
+	jQuery('#excelForm').ajaxSubmit(options);
+}
+
+function checkResultTag(data){
+	
+	var checkList = data.excelList;
+	var successYn = data.successYn;
+	var tag = "";
+		
+	if( checkList != undefined ){
+		for(var i=0; i< checkList.length; i++){
+			var dataList = checkList[i];
+			if(dataList != undefined){
+				tag +="<tr>";
+				for(var j=0; j<dataList.length;j++){
+					tag +="<td";
+					if(j == dataList.length-1){
+						tag += " id='result_"+ i +"' style='color:red'"
+					}									
+					tag+=">"+dataList[j]+"</td>";
+				}
+				tag +="</tr>";
+			}
+		}
+	}
+	
+	jQuery("#resultList").html(tag);
+	jQuery("#boardView").show();
+	jQuery("#btnArea").show();
+	if(successYn == "N"){
+		jQuery("#doSave").hide();
+	}else{
+		jQuery("#doSave").show();
+	}
+}
+
+function fn_doExcelWrite(){	
+	
+	var options = {
+		url : "/example/mng/memberExcelWrite.do",
+		type: 'post',
+		cache : false,
+		dataType: 'json',
+		data : jQuery("#excelForm").serialize(),
+		success : function(data){
+	        alert(data.msg);
+		    window.close();
+			if(data.result){
+				window.opener.fn_searchForm();
+			}
+		},
+		error : function(err){				
+		}
+	}; 
+    jQuery('#excelForm').ajaxSubmit(options);
+}
+
+function sampleDown(rfileName,sfileName,filePath){
+	
+    var f= document.form1;
+	var loc = "/fileDownServlet?rFileName="+rfileName+"&sFileName="+sfileName+"&filePath="+filePath ;
+	hiddenFrame.location.href = loc;
+}
+
+function getFilePath(filePath){
+	var set_filePath = filePath;
+	jQuery("#excelPath").val(set_filePath);
+}
+</script>
+
+</body>
+</html>
