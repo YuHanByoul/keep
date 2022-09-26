@@ -33,7 +33,7 @@ public class MybatisConfig {
         sqlSessionFactoryBean.setDataSource(dataSource);
         sqlSessionFactoryBean.setVfs(SpringBootVFS.class);
         sqlSessionFactoryBean.setTypeAliasesPackage(projectPackage);
-        sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath*:/mybatis/" + databaseDialect + "/mapper/*.xml")); 
+        sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath*:/mybatis/" + databaseDialect + "/mapper/**/*.xml")); 
         return sqlSessionFactoryBean.getObject(); 
     }
     

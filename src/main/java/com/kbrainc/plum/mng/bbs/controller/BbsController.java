@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,7 +44,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
 @Controller
 public class BbsController {
 
-    @Resource
+    @Autowired
     private BbsServiceImpl bbsService;
 
     /**

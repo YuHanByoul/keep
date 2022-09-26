@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +43,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
 @Controller
 public class CmmBbsController {
 
-    @Resource
+    @Autowired
     private BbsServiceImpl bbsService;
 
     /**
