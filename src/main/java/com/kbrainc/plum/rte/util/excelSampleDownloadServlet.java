@@ -16,12 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.io.ClassPathResource;
 
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+
 /**
  * 파일 다운로드
  * 
  */
-@WebServlet(name = "FileDownServlet", urlPatterns = "/fileDownServlet")
-public class FileDownServlet  extends HttpServlet {
+@WebServlet(name = "excelSampleDownloadServlet", urlPatterns = "/excelSampleDownload")
+public class excelSampleDownloadServlet extends HttpServlet {
 	
 	//public LocaleAccessor localeAccessor = LocaleAccessor.getInstance();
 	
