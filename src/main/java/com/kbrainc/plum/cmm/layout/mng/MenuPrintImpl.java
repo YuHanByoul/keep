@@ -1,4 +1,4 @@
-package com.kbrainc.plum.cmm.layout;
+package com.kbrainc.plum.cmm.layout.mng;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
