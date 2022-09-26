@@ -588,7 +588,7 @@ function displayWorkProgress() {
 		var boxContent = ""
 			
 			+ " <div class='loadingBox'>"
-			+ " 	<img src=\"/images/mng/loading02.gif\" style=\"width:25%;height:25%\">"
+			+ " 	<img src=\"/images/mng/loading03.gif\" style=\"width:25%;height:25%\">"
 			+ " </div>";
 		
 		workProgressBox.innerHTML = boxContent;

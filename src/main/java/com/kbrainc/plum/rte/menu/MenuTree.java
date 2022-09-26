@@ -62,7 +62,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
      * @param menuID  메뉴ID
      * @return MenuNode 메뉴노드
      */
-    private MenuNode getMenuNodeByMenuID(MenuNode element, String menuID) {
+    public MenuNode getMenuNodeByMenuID(MenuNode element, String menuID) {
         MenuNode returnNode = null;
         if (element != null) {
             MenuItem item = element.getData();
