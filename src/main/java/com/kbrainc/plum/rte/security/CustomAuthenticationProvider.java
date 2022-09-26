@@ -154,6 +154,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         Map<String, String> authority = null;
         boolean grantedRole = false;
+        authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
         
         for (int i = 0; i < resultList.size(); i++) {
             if (!grantedRole) { // 허용된 역할중 1개만 적용한다.

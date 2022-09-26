@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="front/layout/login/detailLayout" 
+>
+<div layout:fragment="content">
+<form name="login_form" id="login_form" th:action="@{/login}" method="post" onsubmit="return login();">
+    <fieldset>
+        <legend><span>로그인 정보 입력</span></legend>
+        <h3 class="title">하이점프 로그인</h3>
+
+        <div class="login-box">
+            <div class="login-input">
+                <span class="login-input-box">
+                    <label for="id-id" class="ir">아이디</label>
+                    <input type="text" name="p_userid" id="p_userid" placeholder="아이디" class="input-text">
+                    <span class="form-msg" style="margin-left:0px;"></span>
+                </span>
+
+                <span class="login-input-box">
+                    <label for="id-pw" class="ir">비밀번호</label>
+                    <input type="password" name="p_pwd" id="p_pwd" placeholder="비밀번호" class="input-text">
+                    <span class="form-msg" style="margin-left:0px;"></span>
+                </span>
+            </div>
+
+            <button type="submit" class="btn-large btn-color1 btn-login" onclick="login()" style="margin-bottom:24px;">로그인</button>
+            <th:block th:if="${param.error}"><span class="form-msg" style="margin-left:0px;">아이디 또는 비밀번호를 다시 확인해 주십시오.</span></th:block>
+            <th:block th:if="${param.timeout}"><span class="form-msg" style="margin-left:0px;">세션이 유효하지 않습니다.<br>로그인 해주십시오.</span></th:block>
+        </div>
+    </fieldset>
+</form>
+<script type="text/javascript">
+
+	jQuery(document).ready(function(){		
+		var f = document.login_form;
+		//if(jQuery.cookie != null)
+		//{			
+		//	if(jQuery.cookie('userid') && jQuery.cookie('userid') != 'undefined' && jQuery.cookie('userid') != 'null'){
+		//		f.p_userid.value =jQuery.cookie('userid');
+		//	}
+		//}
+		if(f.p_userid.value == ""){
+			jQuery("#p_userid").focus();
+		}else if(f.p_pwd.value == ""){
+			jQuery("#p_pwd").focus();
+		}
+		
+		validateLogin();
+	});
+	
+	// 유효성검증기(로그인)
+	var validator;
+    function validateLogin(){
+        validator = $("#login_form").validate({
+            onsubmit: false,
+            rules: {
+                p_userid: {
+                             required: true
+                            ,maxlength: 40
+                         },
+                p_pwd: {
+                    required: true
+                   ,maxlength: 40
+                }
+            },
+            messages: { 
+                p_userid: {
+                    required: "아이디를 입력해주십시오"
+                   ,maxlength: "아이디는 40자를 넘을 수 없습니다."
+                },
+                p_pwd: {
+                    required: "비밀번호를 입력해주십시오"
+                   ,maxlength: "비밀번호는 40자를 넘을 수 없습니다."
+                }
+            }
+        });
+    }
+
+	function login(){
+		var f = document.login_form;
+		if(!$('#login_form').valid()) return false;
+		//if(f.p_userid.value){
+		//	jQuery.cookie('userid', f.p_userid.value, {expires:30});
+		//}
+		return true;
+	}
+	
+</script>
+</div>
+</html>
