@@ -124,8 +124,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		"/ckE/**/*",
         		"/ckEimg/**/*",
         		"/example/**/*",
-        		"/js/ckeditor/**/*",
-        		"/fileDownServlet/**"
+        		"/js/ckeditor/**/*"
         ); // 시큐리티를 적용하지 않을 자원들(정적)
     }
 
