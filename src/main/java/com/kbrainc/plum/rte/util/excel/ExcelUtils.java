@@ -22,9 +22,20 @@ import com.kbrainc.plum.rte.util.StringUtil;
 import liquibase.util.csv.CSVReader;
 
 /**
- * 엑셀관련기능을 수행하는 객체
- * @author trchoi
+ * 
+ * 엑셀관련기능을 제공하는 클래스.
  *
+ * <pre>
+ * com.kbrainc.plum.rte.util
+ * - ExcelUtils.java
+ * </pre> 
+ *
+ * @ClassName : ExcelUtils
+ * @Description : 엑셀관련기능을 제공하는 클래스
+ * @author : comnic
+ * @date : 2021. 2. 24.
+ * @Version : 
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class ExcelUtils {
 	/**
@@ -110,11 +121,16 @@ public class ExcelUtils {
 		return rowList;
 	}
 	
-	/**
-	 * 업로드된 엑셀파일을 리스트 객체에 담는다.
-	 * @param input
-	 * @return
-	 */
+    /**
+     * 
+     * 업로드된 엑셀파일을 리스트 객체에 담는다.
+     *
+     * @Title : getExcelJxlArrayList
+     * @Description : 업로드된 엑셀파일을 리스트 객체에 담는다.
+     * @param input
+     * @throws Exception
+     * @return ArrayList 엑셀데이터 리스트
+     */
 	public static ArrayList getExcelJxlArrayList(InputStream input) throws Exception{
 		
 		ArrayList rowList = new ArrayList();
@@ -204,11 +220,16 @@ public class ExcelUtils {
 		return rowList;
 	}
 	
-	/**
-	 * 업로드된 엑셀파일을 리스트 객체에 담는다.
-	 * @param input
-	 * @return
-	 */
+    /**
+     * 
+     * 업로드된 엑셀파일을 리스트 객체에 담는다.
+     *
+     * @Title : getExcelCsvArrayList
+     * @Description : 업로드된 엑셀파일을 리스트 객체에 담는다.
+     * @param input
+     * @throws Exception
+     * @return ArrayList 엑셀데이터 리스트
+     */
 	public static ArrayList getExcelCsvArrayList(InputStream input) throws Exception{
 		ArrayList rowList = new ArrayList();
 		ArrayList cellList = null;
