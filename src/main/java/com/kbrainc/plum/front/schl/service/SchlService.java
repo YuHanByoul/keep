@@ -17,7 +17,7 @@ import com.kbrainc.plum.front.schl.model.SchlVo;
 * @author : KBRAINC
 * @date : 2021. 11. 18.
 * @Version : 
-* @Company : Copyright KBRAINC. All Rights Reserved 
+* @Company : Copyright KBRAIN Company. All Rights Reserved 
 */
 public interface SchlService {
 	

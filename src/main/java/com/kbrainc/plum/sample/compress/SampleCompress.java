@@ -18,7 +18,7 @@ import com.kbrainc.plum.rte.util.FileUtil;
  * @author : comnic
  * @date : 2021. 2. 22.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class SampleCompress {
 

@@ -32,7 +32,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 * @author : KBRAINC
 * @date : 2021. 11. 22.
 * @Version : 
-* @Company : Copyright KBRAINC. All Rights Reserved 
+* @Company : Copyright KBRAIN Company. All Rights Reserved 
 */
 @Controller("front.memberController")
 @Alias("front.memberController")

@@ -18,7 +18,7 @@ import com.kbrainc.plum.front.member.model.TeacherVo;
 * @author : KBRAINC
 * @date : 2021. 4. 12.
 * @Version : 
-* @Company : Copyright KBRAINC. All Rights Reserved 
+* @Company : Copyright KBRAIN Company. All Rights Reserved 
 */
 public interface MemberService {
 	

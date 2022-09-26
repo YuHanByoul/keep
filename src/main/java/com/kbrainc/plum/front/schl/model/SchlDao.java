@@ -17,7 +17,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 * @author : KBRAINC
 * @date : 2021. 11. 18.
 * @Version : 
-* @Company : Copyright KBRAINC. All Rights Reserved 
+* @Company : Copyright KBRAIN Company. All Rights Reserved 
 */
 @Mapper("front.schlDao")
 public interface SchlDao {

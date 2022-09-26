@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author : KBRAINC
  * @date : 2021. 2. 17.
  * @Version :
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest

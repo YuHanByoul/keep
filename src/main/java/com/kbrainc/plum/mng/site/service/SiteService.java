@@ -21,7 +21,7 @@ import com.kbrainc.plum.mng.site.model.SiteVo;
  * @author : KBRAINC
  * @date : 2021. 3. 12.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
 public interface SiteService {

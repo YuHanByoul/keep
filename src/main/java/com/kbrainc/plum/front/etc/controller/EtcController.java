@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author : KBRAINC
  * @date : 2021. 11. 24.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller("front.etcController")
 @Alias("front.etcController")

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class ConfigurationFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);

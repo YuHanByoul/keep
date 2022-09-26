@@ -20,7 +20,7 @@ import lombok.Data;
  * @author : KBRAINC
  * @date : 2021. 3. 12.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Data
 public class SiteVo extends ParentRequestVo {

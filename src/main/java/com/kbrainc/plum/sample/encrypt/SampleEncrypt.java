@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author : comnic
  * @date : 2021. 2. 17.
  * @Version :
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class SampleEncrypt {
 

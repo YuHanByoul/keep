@@ -25,7 +25,7 @@ import com.kbrainc.plum.rte.crypto.CryptoAES256;
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Configuration
 public class CryptoConfig {
