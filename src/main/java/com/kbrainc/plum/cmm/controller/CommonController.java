@@ -266,7 +266,7 @@ public class CommonController {
     */
     @GetMapping("/sub.html")
     public String sub() {
-        return "sub";
+        return "front/sub";
     }
 
     
