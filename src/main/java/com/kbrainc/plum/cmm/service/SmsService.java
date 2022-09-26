@@ -16,7 +16,7 @@ import java.util.Map;
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public interface SmsService {
 

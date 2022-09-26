@@ -42,7 +42,7 @@ import com.kbrainc.plum.rte.util.mail.model.MailVo;
  * @author : KBRAINC
  * @date : 2021. 3. 3.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service("MailService")
 public class MailServiceImpl extends PlumAbstractServiceImpl implements MailService {

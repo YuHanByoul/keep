@@ -26,7 +26,7 @@ import com.kbrainc.plum.rte.model.SiteInfoVo;
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service("cmm.resSiteService")
 public class ResSiteServiceImpl extends PlumAbstractServiceImpl implements ResSiteService {

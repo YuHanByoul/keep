@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mypage/detailLayout" 
+>
+    <body>
+        <div layout:fragment="content">
+                <article class="mypage-edit">
+                    <form  id="updateForm"  onsubmit="return false">
+                        <fieldset>
+                            <legend><span>회원정보</span></legend>
+                            <h3 class="title">정보수정</h3>
+
+                            <div class="mypage-edit-required">
+                                <em class="ico-required">*</em> 필수 입력 항목
+                            </div>
+
+                            <div class="board-wrap">
+                                <table class="board-input">
+                                    <caption><span>회원정보 상세 입력</span></caption>
+                                    <colgroup>
+                                        <col style="width: 199px">
+                                        <col>
+                                    </colgroup>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-id"><em class="ico-required">*</em> 아이디</label>
+                                        </th>
+                                        <td>
+                                            <div class="form-group">
+                                                <input type="text" id="acnt" name="acnt" readonly class="input-text" style="width:30%;background-color:lightgray" th:value="${userInfo.acnt}">
+                                                <!-- <button type="button" class="btn-medium btn-color3" onclick="fn_checkDupleID()" >중복확인</button> -->
+                                                 <span class="form-msg acnt_err"></span>                                                
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-name"><em class="ico-required">*</em> 이름</label>
+                                        </th>
+                                        <td>
+                                            <input type="text" id="nm" name="nm" class="input-text" style="width: 30%;" th:value="${userInfo.nm}">
+                                            <span class="form-msg"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-school"><em class="ico-required">*</em> 학교명</label>
+                                        </th>
+                                        <td>
+                                            <div class="form-group">
+                                                <input type="text" id="schl_nm" name="schl_nm"class="input-text" style="width: 30%;" readonly th:value="${userInfo.schl_nm}">
+                                                <button type="button" class="btn-medium btn-color3" onclick="fn_searchSchool()" >학교검색</button>
+                                                <span class="form-msg"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-edu"><em class="ico-required">*</em> 담당 과목 <th:block th:text="${userInfo.chrg_crs_cd}"></th:block></label>
+                                        </th>
+                                        <td>
+                                            <div class="form-group">
+                                                <input type="text" id="chrg_crs_nm" name="chrg_crs_nm" class="input-text" style="width: 30%;" th:value="${userInfo.chrg_crs_nm}">
+                                                <span pattr:select_code="chrg_crs_cd" grpCd="103" firstOptTxt="선택" addClass="form-select" onchange="fn_chooseCourse" th:attr = "selectedCd=${userInfo.chrg_crs_cd}" ></span>
+                                                <span class="form-msg"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for=""><em class="ico-required">*</em> 담임 여부</label>
+                                        </th>
+                                        <td>
+                                          <div class="form-group">
+                                              <span class="form-checkbox">
+                                                  <input type="radio" id="id-checkbox01" name="cls_tchr_yn" class="form-checkbox-input" value="Y" th:checked="${userInfo.cls_tchr_yn == 'Y'}">
+                                                  <label for="id-checkbox01" class="form-checkbox-label">담임</label>
+                                              </span>
+    
+                                              <span class="form-checkbox">
+                                                  <input type="radio" id="id-checkbox02" name="cls_tchr_yn" class="form-checkbox-input" value="N" th:checked="${userInfo.cls_tchr_yn == 'N'}">
+                                                  <label for="id-checkbox02" class="form-checkbox-label">비담임</label>
+                                              </span>
+                                          </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-pw"><em class="ico-required">*</em> 비밀번호</label>
+                                        </th>
+                                        <td>
+                                            <input type="password" id="pwd" name="pwd" class="input-text" style="width: 30%;">
+                                            <!-- validation msg-->
+                                            <span class="form-msg"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-pw2"><em class="ico-required">*</em> 비밀번호 확인</label>
+                                        </th>
+                                        <td>
+                                            <input type="password" id="pwd_chk" name="pwd_chk" class="input-text" style="width: 30%;">
+                                            <!-- validation msg-->
+                                            <span class="form-msg pwd_chk"></span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-email"><em class="ico-required">*</em> E-mail</label>
+                                        </th>
+                                        <td>
+                                            <div class="form-group">
+                                                <input type="text" id="email1" name="email1" class="input-text" style="width: 21%;" th:value="${#strings.arraySplit(userInfo.email,'@')[0]}">
+                                                <span class="at">@</span>
+                                                <!-- 직접입력시 -->
+                                                <input type="text" id="email2" name="email2" title="입력" class="input-text" style="width: 30%;" th:value="${#strings.arraySplit(userInfo.email,'@')[1]}"   >
+                                                <!-- // 직접입력시 -->
+                                                <select title="선택" class="form-select" id="email_domain" name="email_domain"  onchange="fn_changeEmailDomain()">
+                                                   <option value="">직접입력</option>
+                                                   <option value="naver.com"   th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'naver.com'}" >naver.com</option>
+											       <option value="gmail.com"   th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'gmail.com'}" >gmail.com</option>
+											       <option value="daum.net"    th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'daum.net'}" >daum.net</option>
+											       <option value="nate.com"    th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'nate.com'}" >nate.com</option>
+											       <option value="hanmail.net" th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'hanmail.net'}">hanmail.net</option>
+											       <option value="hotmail.com" th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'hotmail.com'}">hotmail.com</option>
+											       <option value="yahoo.com"   th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'yahoo.com'}">yahoo.com</option>
+											       <option value="empas.com"   th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'empas.com'}">empas.com</option>
+											       <option value="korea.com"   th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'korea.com'}">korea.com</option>
+											       <option value="dreamwiz.com"th:selected = "${ #strings.arraySplit(userInfo.email,'@')[1] == 'dreamwiz.com'}">dreamwiz.com</option>
+                                                </select>
+
+                                                <!-- validation msg-->
+                                                <span class="form-msg"></span>
+                                            </div>
+                                        </td>
+                                    </tr>                                    
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="id-phone"><em class="ico-required">*</em> 휴대전화</label>
+                                        </th>
+                                        <td>
+                                            <div class="form-group">
+                                                <select  class="form-select" id="mob_no1" name="mob_no1" >
+                                                        <option>선택</option>
+                                                        <option value="010" th:selected = "${ #strings.arraySplit(userInfo.mobno,'-')[0] == '010'}">010</option>
+                                                        <option value="011" th:selected = "${ #strings.arraySplit(userInfo.mobno,'-')[0] == '011'}">011</option>
+                                                        <option value="016" th:selected = "${ #strings.arraySplit(userInfo.mobno,'-')[0] == '016'}">016</option>
+                                                        <option value="017" th:selected = "${ #strings.arraySplit(userInfo.mobno,'-')[0] == '017'}">017</option>
+                                                </select>
+                                                <span class="dash">-</span>
+                                                <input type="tel" title="휴대전화 중간자리" id="mob_no2" name="mob_no2" class="input-text" style="width: 100px;" 
+                                                       th:value="${#strings.arraySplit(userInfo.mobno,'-')[1]}">
+                                                <span class="dash">-</span>
+                                                <input type="tel" title="휴대전화 끝자리" id="mob_no3" name="mob_no3" class="input-text" style="width: 100px;"
+                                                       th:value="${#strings.arraySplit(userInfo.mobno,'-')[2]}">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="mypage-edit-button">
+                                <button type="button" class="btn-large btn-color1" onclick="fn_updateMemeber()" >정보수정</button>
+                            </div>
+                        </fieldset>
+                        <!--**********HIDDEN PARAMETER**********************  -->
+			                <input type="hidden" id="schl_cd" name="schl_cd" th:value="${userInfo.schl_cd}">
+			                <input type="hidden" id="mob_no" name="mob_no">
+			                <input type="hidden" id="email" name="email">
+			                <input type="hidden" id="user_se_cd" name="user_se_cd" value="T">
+			             <!--***********************************************  -->
+                    </form>
+                </article>                
+    <script th:inline="javascript">
+      
+      var member_update_url      = "/front/member/updateMember.do";
+      var search_school_popup        = "/front/member/searchSchoolPop.html";
+      
+      function fn_chooseCourse(){
+        	var chrg_crs_cd = $("#chrg_crs_cd").val();
+        	var chrg_crs_nm = $("#chrg_crs_cd option:checked").text();
+        	
+        	if( chrg_crs_cd == null || chrg_crs_cd =="" ){
+        		$("#chrg_crs_nm").val(null);
+        	}else{
+        	    $("#chrg_crs_nm").val(chrg_crs_nm)
+        	}
+        }
+        
+        function fn_changeEmailDomain(){
+        	var domain_val = $("#email_domain").val();
+        	var domain_text = $("#email_domain option:checked").text();
+        	
+        	if( domain_val == null || domain_val =="" ){
+        		$("#email2").val(null);
+        	}else{
+        	    $("#email2").val(domain_text)
+        	}
+        }
+        
+        function fn_searchSchool(){
+        	var pop_option ="left=800,top=500,width=500,height=670,toolbar=no,location=no"
+        	window.open(search_school_popup,"school_pop",pop_option);
+        }
+        
+        function fn_updateMemeber(){
+        	
+        	var cmntValidator= $("#updateForm").validate({
+        		   rules   : {
+        			   acnt        : { required: true, minlength:5,maxlength:20},
+        			   nm          : { required: true},
+        			   pwd         : { required: true, passwordPolicy2:true ,minlength:8 ,maxlength:20},
+        			   pwd_chk     : { required: true, passwordPolicy2:true ,minlength:8 ,maxlength:20},
+        			   schl_nm     : { required: true},
+        			   schl_cd     : { required: true},
+        			   chrg_crs_nm : { required: true},
+        			   chrg_crs_cd : { required: true},
+        			   email1      : { required: true ,maxlength:100 ,alphanumeric:true},
+        			   email2      : { required: true ,maxlength:100 },
+        			   cls_tchr_yn : { required: true},
+        			   mob_no1     : { required: true},
+        			   mob_no2     : { required: true},
+        			   mob_no3     : { required: true}
+        	       },
+        	       messages: {
+        			   acnt        : { required: "아이디를 입력해주십시오" , minlength:"5자리 이상 입력해주십시오"},
+        			   nm          : { required: "이름을 입력해주십시오" },
+        			   pwd         : { required: "비밀번호을 입력해주십시오"   ,passwordPolicy2:"영문,숫자,특수기호 조합 8자리 이상 입력해주십시오",minlength:"영문,숫자,특수기호 조합 8자리 이상 입력해주십시오" },
+        			   pwd_chk        : { required: "비밀번호확인을 입력해주십시오",passwordPolicy2:"영문,숫자,특수기호 조합 8자리 이상 입력해주십시오",minlength:"영문,숫자,특수기호 조합 8자리 이상 입력해주십시오" },
+        			   schl_nm     : { required: "학교 검색후 선택해주십시오" },
+        			   schl_cd     : { required: "학교 검색후 선택해주십시오" },
+        			   chrg_crs_nm : { required: "담당과목을 선택해주십시오" },
+        			   chrg_crs_cd : { required: "담당과목을 선택해주십시오" },
+        			   email1      : { required: "이메일을 입력해주십시오" ,alphanumeric:"알파벳과 숫자만 입력 가능합니다."},
+        			   email2      : { required: "이메일을 입력해주십시오" },
+        			   cls_tchr_yn : { required: "담입여부을 체크해주십시오" },
+        			   mob_no1     : { required: "휴대전화번호를 입력해주십시오"},
+        			   mob_no2     : { required: "휴대전화번호를 입력해주십시오"},
+        			   mob_no3     : { required: "휴대전화번호를 입력해주십시오"}
+        	       }
+        		 })
+        		 
+        		 
+        	if($("#updateForm").valid() == false) return;
+        	
+        	//if($("#checked_acnt").val() != $("#acnt").val()){
+        	//	$(".acnt_err").text("아이디 중복확인을 해주십시오");
+        	//	return;
+        	//}	 
+        		 
+            if($("#pwd").val() != $("#pwd_chk").val()){
+            	$(".pwd_chk").text("비밀번호와 일치 하지 않습니다. 다시한번 확해주십시오")
+            	return;
+            }
+        	
+        	var email1 = $("#email1").val();
+        	var email2 = $("#email2").val();
+        	$("#email").val(email1+"@"+email2);
+        	
+        	var mob_no1 = $("#mob_no1").val();
+        	var mob_no2 = $("#mob_no2").val();
+        	var mob_no3 = $("#mob_no3").val();
+        	$("#mob_no").val(mob_no1+"-"+mob_no2+"-"+mob_no3);
+        	
+        	var param_data = $("#updateForm").serialize();
+        	displayWorkProgress();
+		 		$.ajax({
+					url : member_update_url,
+		            cache : false,
+		            dataType: 'json',
+					data : param_data,
+					type : 'POST',
+					success : function(data) {
+						if(data.result){
+							alert("회원정보가 변경되었습니다.")
+							location.href= "/";
+						}else{
+							alert("회원정보가 정상적으로 정상적으로 변경 되지 않았습니다.확인 해주십시오.")
+						}
+						closeWorkProgress();
+					}
+			   })
+        }
+        
+      </script>
+      </div>
+    </body>
+</html>

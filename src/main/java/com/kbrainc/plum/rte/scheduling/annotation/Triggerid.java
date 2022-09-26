@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  * @author : KBRAINC
  * @date : 2021. 3. 5.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

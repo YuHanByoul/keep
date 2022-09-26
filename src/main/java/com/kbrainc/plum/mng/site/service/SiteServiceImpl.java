@@ -25,7 +25,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
  * @author : KBRAINC
  * @date : 2021. 3. 16.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
 public class SiteServiceImpl extends PlumAbstractServiceImpl implements SiteService {

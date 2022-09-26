@@ -38,7 +38,7 @@ import com.kbrainc.plum.rte.service.ResCodeService;
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 
- * @Company : Copyright KBRAINC. All Rights Reserved
+ * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
 public class CodeController {

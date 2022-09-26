@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : BbsDaoImpl.xml
+    Description : 게시판 관리
+-->
+<mapper namespace="kr.plumsoft.plum.front.bbs.model.BbsDao">
+    
+    <!-- 게시물 목록을 가져온다. -->
+    <select id="selectPstList"  parameterType="front.PstVo" resultType ="front.PstVo" >
+        /* BbsDao.selectPstList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+         A.*
+         FROM
+         (
+            SELECT 
+                PSTID,
+                TITLE,
+                IFNULL(B.FILECNT,0) file_cnt,
+                B.NM ,
+                CONVERT(A.REG_DT, CHAR(10)) REG_DT,
+                CONVERT(A.UPDT_DT, CHAR(10)) UPDT_DT,
+                A.LOGIN_YN 
+            FROM 
+                TB_PST A 
+                LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
+                INNER JOIN TB_USER B ON(A.REGUSERID = B.USERID)
+            WHERE 
+                1=1
+                <if test="bbsid != null and bbsid!= 0">
+                AND BBSID= #{bbsid}
+                </if>
+                <if test="searchType != null and searchType == 'TITLE' ">
+                AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>         
+                <if test="searchType != null and searchType == 'cntnts' ">
+                AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+             )  A
+            WHERE 1=1 
+                <if test="searchType != null and searchType == 'WRITER' ">
+                AND A.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+                <if test="user == null or user.userid ==null ">
+                AND A.LOGIN_YN = 'N'
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 게시물 정보를 가져온다. -->
+    <select id="selectPst"  parameterType="front.PstVo" resultType ="front.PstVo" >
+        /* BbsDao.selectPst */
+        SELECT 
+            A.PSTID      as pstid,
+            B.BBSID      as bbsid,
+            B.NM         as nm,
+            A.reguserid  as userid,
+            C.NM    as user_nm,
+            C.ACNT  as acnt,
+            A.REG_DT     as reg_dt,
+            IFNULL(A.HITS,0)   as hits,
+            A.TITLE               as title,
+            A.CNTNTS              as cntnts,
+            A.UPDT_DT             as updt_dt,
+            A.fxd_ntc_yn,
+            A.BBS_CLID            as bbs_clid,
+            IFNULL(a.FILEGRPID,0) as filegrpid,
+            B.hot_use_yn,
+            b.atchfile_use_yn     as atchfile_use_yn,
+            b.atchfile_cnt        as atchfile_cnt,
+            b.atchfile_size       as atchfile_size,
+            B.cmnt_use_yn         as cmnt_use_yn,
+            B.rply_use_yn         as rply_use_yn,
+            B.cl_use_yn           as cl_use_yn,
+            B.fxd_ntc_use_yn      as fxd_ntc_use_yn,
+            B.FXD_NTC_CNT         as fxd_ntc_cnt,
+            D.CL_NM               as cl_nm,
+            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
+        FROM
+            TB_PST A
+            LEFT OUTER JOIN TB_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
+            TB_BBS B,
+            TB_USER C
+        WHERE 
+            1=1
+            AND A.BBSID = B.BBSID
+            AND A.REGUSERID = C.USERID
+            AND A.PSTID = #{pstid}
+    </select>
+</mapper>

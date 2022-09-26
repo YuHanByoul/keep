@@ -1,0 +1,132 @@
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>    
+    <title>HiJUMP 직업계고 기초학력향상 프로그램</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <script src="/assets/js/comm/jquery/jquery-3.6.0.min.js"></script>
+    <script src="/assets/js/swiper/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="/assets/js/swiper/swiper-bundle.min.css">
+    <link rel="preload" href="/assets/fonts/notosanskr/notosanskrregular.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/notosanskr/notosanskrregular.woff" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/notosanskr/notosanskrregular.svg" as="font" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/hijump.css">  
+</head>
+<body>
+
+<div id="wrap">
+    <!-- container -->
+    <main id="container">
+        <section class="section-join">
+            <div class="sub-header">
+                <h2 class="title">학교검색</h2>
+            </div>
+
+            <div class="section-wrap">
+                <div class="join-box">
+                    <h5 class="title">학교를 검색 한 후 선택해주세요</h5>
+                    <br/>
+	                    <div class="form-group">
+	                        <input type="text" id="srch_nm" name="srch_nm"class="input-text" style="width:83%;"  >
+	                        <button type="button" class="btn-medium btn-color3" onclick="fn_selectSchoolList()" >검색</button>
+	                        <span class="form-msg"></span>
+	                    </div>
+                    <br/>
+                    <form onsubmit="return false">
+                        <fieldset>
+                            <div class="join-terms-conts" style="height:290px;OVERFLOW-Y:auto; " >
+                            <table class="board-list">
+                             <tbody  style="font-size:14px;padding:0px;height:1.5em" id="list_area">
+                             </tbody>
+                            </table>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- // container -->
+
+    <!-- footer -->
+   <footer id="footer" class="footer" >
+		<div class="footer-info" style="height:50px;padding:0px;">
+		    <div class="copyright">Copyright © 2021 by KICE All Rights Reserved.</div>
+		</div>
+    </footer>
+ <!-- // footer -->
+</div>
+
+<!-- script -->
+<script src="./assets/js/script.js"></script>
+<!-- // script -->
+
+<!-- 페이지 확인용 -->
+<span th:replace="layout/jsCommon"></span>
+
+<script>
+	    $(function() {
+		  $('#srch_nm').keypress(function(e) {
+		    if(e.keyCode == 13){
+		    	fn_selectSchoolList();
+		    } 
+		  });
+		});
+
+	    function fn_schoolEnterEvent(){
+	    	alert("asdfdsf");
+	    	e.preventDefalt();  
+	    	fn_selectSchoolList()
+	    }
+	    
+	    
+		function school_list_html(schoolList){
+			 var html = ""
+			 schoolList.forEach(function(item){
+				 html += '<tr style="cursor:pointer;" onclick=fn_selectSchool("'+item.schl_cd+'","'+item.schl_nm+'") ><td>';
+				 html += item.schl_nm+"  ( "+item.sido_nm+" ) </td></tr>";
+			 })
+			 return html;
+		}
+		
+		function fn_selectSchool(cd,nm){
+			$(opener.document).find("#schl_cd").val(cd);
+			$(opener.document).find("#schl_nm").val(nm)
+			window.close();
+		}
+		
+		function fn_selectSchoolList(){
+			var srch_nm = $("#srch_nm").val();
+			if(srch_nm ==null || srch_nm == ""){
+				alert("검색 할 학교를 입력해주십시오");
+				return;
+			}
+			$("#list_area").html("");
+        	displayWorkProgress();	
+        	$.ajax({
+				url : "/front/schl/selectSchlList.do",
+	            cache : false,
+	            dataType: 'json',
+				data : {schl_nm: srch_nm},
+				type : 'POST',
+				success : function(data){
+					
+					if(data.totalCount > 0){
+						$("#list_area").html(school_list_html(data.list));
+					}else{
+						$("#list_area").html("<tr><td>검색된 학교가 없습니다.</td></tr>");
+					}
+					keyDown = false;
+					closeWorkProgress();
+				}
+		   })
+		   closeWorkProgress();
+		}
+		
+</script>
+</body>
+</html>
