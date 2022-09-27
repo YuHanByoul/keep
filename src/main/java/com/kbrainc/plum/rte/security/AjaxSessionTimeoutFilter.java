@@ -41,6 +41,10 @@ public class AjaxSessionTimeoutFilter implements Filter {
 
         if (isAjaxRequest(req)) {
             try {
+                if(!req.isRequestedSessionIdValid()) {
+                    res.sendError(HttpServletResponse.SC_UNAUTHORIZED);                 
+                    return;
+                }
                 chain.doFilter(req, res);
             } catch (AccessDeniedException e) {
                 res.sendError(HttpServletResponse.SC_FORBIDDEN);
