@@ -115,7 +115,7 @@ public class ExceptionHandlingController {
     
     @ExceptionHandler({ FiledownloadCheckerException.class })
     @ResponseBody
-    public String filedownloadCheckerException(MyFileNotFoundException e) {
+    public String filedownloadCheckerException(FiledownloadCheckerException e) {
         return "403";
     }
 }
