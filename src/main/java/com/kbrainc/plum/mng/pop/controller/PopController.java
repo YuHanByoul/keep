@@ -24,7 +24,7 @@ import com.kbrainc.plum.mng.pop.service.PopServiceImpl;
 
 /**
  * 
- * 팝업 곤지사항 관리 컨트롤러
+ * 팝업 공지사항 관리 컨트롤러
  *
  * <pre>
  * com.kbrainc.plum.mng.pop.controller
@@ -257,7 +257,7 @@ public class PopController {
     @RequestMapping(value = "/mng/pop/getPopup.html")
     public String getPopup(@RequestParam(name="popupntcid",required=true) int popupntcid, PopUpNtcVo paramVO, Model model) throws Exception {
     	model.addAttribute("item", popService.selectPopUpNtc(paramVO));
-        return "layout/commonPopup";
+        return "layout/mng/commonPopup";
     }
 
 }
