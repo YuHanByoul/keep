@@ -61,34 +61,6 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
     @Autowired
     private MemberDao memberDao;
 
-    @Autowired @Qualifier("MailService")
-    private MailService mailService;
-    
-    //@Autowired
-    //private FormChecker FormChecker;
-    
-    @Autowired
-    private ResCodeService resCodeService;
-    
-    @Autowired
-    private FileDao fileDao;
-    
-    @Autowired
-    private FileService fileService;
-    
-    @Autowired
-    private FileStorageService fileStorageService;
-    
-    @Autowired
-    private SmsService smsService;
-    
-    //@Value("${front.server.host}")
-    private String frontServerHost;
-    
-    @Autowired
-    private TemplateEngine templateEngine;
-    
-    
 	/********************************************************************
 	 * 회원 엑셀 다운로드 예시
 	 * @param param
