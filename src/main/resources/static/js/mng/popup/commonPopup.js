@@ -18,8 +18,7 @@ function fn_openCommonPopup(item){
       popupOption +=",height="+item.vrtcl_size; 
       popupOption +=",top="+item.top_lc;
   var getPopUrl= "/mng/pop/getPopup.html?popupntcid="+item.popupntcid;
-  var commonPopup="";
-      commonPopup= window.open(getPopUrl, "_blank", popupOption);
+  eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
 }
 
 function getDataForCommnonPopup( siteid, menuid ){
@@ -101,15 +100,15 @@ function layer_popup(el,item){
         docWidth = $(document).width(),
         docHeight = $(document).height();
 
-    // 화면의 중앙에 레이어를 띄운다.
-    if ($elHeight < docHeight || $elWidth < docWidth) {
-        $el.css({
-            marginTop: -$elHeight/2,
-            marginLeft: -$elWidth/2
-        })
-    } else {
-        $el.css({top: 0, left: 0});
-    }
+    //if(item.left_lc != 0 || item.top_lc != 0 ){
+	//    $el.css({top: item.top_lc,left: item.left_lc})
+    //}else if ($elHeight < docHeight || $elWidth < docWidth) {  // 화면의 중앙에 레이어를 띄운다.
+    //    $el.css({ marginTop: -$elHeight/2, marginLeft: -$elWidth/2})
+    //} else {
+    //    $el.css({top: 0, left: 0});
+    //}
+
+    $el.css({top: item.top_lc,left: item.left_lc})
 
     $el.find('a.modal-close').click(function(){
         //isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.

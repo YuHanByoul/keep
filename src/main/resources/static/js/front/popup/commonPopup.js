@@ -17,9 +17,10 @@ function fn_openCommonPopup(item){
       popupOption +=",width="+item.width_size; 
       popupOption +=",height="+item.vrtcl_size; 
       popupOption +=",top="+item.top_lc;
-  var getPopUrl= "/mng/pop/getPopup.html?popupntcid="+item.popupntcid;
-  var commonPopup="";
-      commonPopup= window.open(getPopUrl, "_blank", popupOption);
+
+  var getPopUrl= "/front/pop/getPopup.html?popupntcid="+item.popupntcid;
+  eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
+
 }
 
 function getDataForCommnonPopup( siteid, menuid ){
@@ -29,7 +30,7 @@ function getDataForCommnonPopup( siteid, menuid ){
 		};
 		$.ajax({
             type: "POST",
-            url: "/mng/pop/getDataForCommnonPopup.do",
+            url: "/front/pop/getDataForCommnonPopup.do",
             data: data,
             dataType: "json"
           }).done(function(response){
@@ -49,14 +50,14 @@ function getLayerStr(item){
 	    layerStr += '		    <h4>'+item.title+'</h4>';
 	    layerStr += '		     <ul class="links">';
 	    layerStr += '		    	<li>';
-	    layerStr += '		    	  <a class="glyphicon glyphicon-remove modal-close " aria-hidden="true"></a>';
+	    layerStr += '		    	  <a class="glyphicon glyphicon-remove modal-close " aria-hidden="true" href="javascript:void(0);"> X </a>';
 	    layerStr += '		    	</li>';
 	    layerStr += '		     </ul>';
 	    layerStr += '		   </div>';
 	    layerStr += '           <div class="pop-conts row col-xs-12">';
 	    layerStr += '                     '+item.cntnts+'';
 	    layerStr += '           </div>';
-	    layerStr += '            <div  class="col-xs-12 pop-footer" style="border-top :1px solid #cae1ef ; margin:0px; bottom:0;  position:absolute; " >';
+	    layerStr += '            <div  class="col-xs-12 pop-footer" style="height:40px;border-top :1px solid #cae1ef ; margin:0px; bottom:0;  position:absolute; " >';
 	    layerStr += '		       <h6><label class=""   ><input type="checkbox"  id="checkCookie'+item.popupntcid+'" onclick=fn_setPopupCookie('+item.popupntcid+') /> 다시 보지 않기</label></h6>';
 	    layerStr += '            </div>';
 	    layerStr += '        </div>';
@@ -87,9 +88,6 @@ function fn_openCommonModal(item){
 
 function layer_popup(el,item){
 	
-	console.log(el)
-	console.log(item)
-
     var $el = $(el);        //레이어의 id를 $el 변수에 저장
     var isDim = $el.prev().hasClass('dimBg');   //dimmed 레이어를 감지하기 위한 boolean 변수
 
@@ -101,15 +99,16 @@ function layer_popup(el,item){
         docWidth = $(document).width(),
         docHeight = $(document).height();
 
-    // 화면의 중앙에 레이어를 띄운다.
-    if ($elHeight < docHeight || $elWidth < docWidth) {
-        $el.css({
-            marginTop: -$elHeight/2,
-            marginLeft: -$elWidth/2
-        })
-    } else {
-        $el.css({top: 0, left: 0});
-    }
+    //if(item.left_lc != 0 || item.top_lc != 0 ){
+	//    $el.css({top: item.top_lc,left: item.left_lc})
+    //}else if ($elHeight < docHeight || $elWidth < docWidth) {  // 화면의 중앙에 레이어를 띄운다.
+    //    $el.css({ marginTop: -$elHeight/2, marginLeft: -$elWidth/2})
+    //} else {
+    //    $el.css({top: 0, left: 0});
+    //}
+
+    $el.css({top: item.top_lc,left: item.left_lc})
+
 
     $el.find('a.modal-close').click(function(){
         //isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
