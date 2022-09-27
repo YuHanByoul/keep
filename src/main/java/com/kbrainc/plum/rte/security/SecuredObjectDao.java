@@ -140,9 +140,9 @@ public class SecuredObjectDao {
             String bbsId = StringUtil.nvl(tempMap.get("bbsid"));
 
             if (!"".equals(bbsId)) {
-                presentResource = new RegexRequestMatcher(presentResourceStr, null);
+                presentResource = new CustomRegexRequestMatcher(presentResourceStr, null);
             } else {
-                presentResource = new AntPathRequestMatcher(presentResourceStr, null);
+                presentResource = new CustomAntPathRequestMatcher(presentResourceStr, null);
             }
 
             List<ConfigAttribute> configList = new LinkedList<ConfigAttribute>();
@@ -197,9 +197,9 @@ public class SecuredObjectDao {
             String bbsId = StringUtil.nvl(tempMap.get("bbsid"));
 
             if (!"".equals(bbsId)) {
-                presentResource = new RegexRequestMatcher(presentResourceStr, null);
+                presentResource = new CustomRegexRequestMatcher(presentResourceStr, null);
             } else {
-                presentResource = new AntPathRequestMatcher(presentResourceStr, null);
+                presentResource = new CustomAntPathRequestMatcher(presentResourceStr, null);
             }
 
             List<ConfigAttribute> configList = new LinkedList<ConfigAttribute>();

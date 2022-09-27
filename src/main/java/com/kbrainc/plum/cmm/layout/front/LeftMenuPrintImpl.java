@@ -51,6 +51,8 @@ public class LeftMenuPrintImpl {
     @Resource(name = "cmm.resMenuService")
     private ResMenuService resMenuService;
 
+    private HttpServletRequest request = null;
+    
     /**
     * 현재 인증정보로 url에 접근 가능한지를 판단한다.
     *
@@ -63,6 +65,9 @@ public class LeftMenuPrintImpl {
     private boolean isMenuAuth(String url) throws Exception {
         if ("".equals(StringUtil.nvl(url))) {
             return true;
+        }
+        if (!StringUtil.isNumber(url)) {
+            url = request.getServerName() + url; 
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return wipe.isAllowed(url, authentication);
@@ -77,7 +82,7 @@ public class LeftMenuPrintImpl {
     * @throws Exception 예외
     */
     public String menuPrint() throws Exception {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         MenuItem menuItem = (MenuItem) request.getAttribute(ResMenuServiceImpl.MENU_ITEM);
         if (menuItem == null) {
             return "";

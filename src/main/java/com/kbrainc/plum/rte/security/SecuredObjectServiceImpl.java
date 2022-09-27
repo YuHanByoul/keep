@@ -52,10 +52,10 @@ public class SecuredObjectServiceImpl extends PlumAbstractServiceImpl implements
         LinkedHashMap<Object, List<ConfigAttribute>> data = securedObjectDao.getRolesAndUrl();
         Set<Object> keys = data.keySet();
         for (Object key : keys) {
-            if (key instanceof AntPathRequestMatcher) {
-                ret.put((AntPathRequestMatcher) key, data.get(key));
-            } else if (key instanceof RegexRequestMatcher) {
-                ret.put((RegexRequestMatcher) key, data.get(key));
+            if (key instanceof CustomAntPathRequestMatcher) {
+                ret.put((CustomAntPathRequestMatcher) key, data.get(key));
+            } else if (key instanceof CustomRegexRequestMatcher) {
+                ret.put((CustomRegexRequestMatcher) key, data.get(key));
             }
         }
         return ret;
@@ -67,10 +67,10 @@ public class SecuredObjectServiceImpl extends PlumAbstractServiceImpl implements
         LinkedHashMap<Object, List<ConfigAttribute>> data = securedObjectDao.getHttpsAndUrl();
         Set<Object> keys = data.keySet();
         for (Object key : keys) {
-            if (key instanceof AntPathRequestMatcher) {
-                ret.put((AntPathRequestMatcher) key, data.get(key));
-            } else if (key instanceof RegexRequestMatcher) {
-                ret.put((RegexRequestMatcher) key, data.get(key));
+            if (key instanceof CustomAntPathRequestMatcher) {
+                ret.put((CustomAntPathRequestMatcher) key, data.get(key));
+            } else if (key instanceof CustomRegexRequestMatcher) {
+                ret.put((CustomRegexRequestMatcher) key, data.get(key));
             }
         }
         return ret;
