@@ -17,17 +17,22 @@ function fn_openCommonPopup(item){
       popupOption +=",width="+item.width_size; 
       popupOption +=",height="+item.vrtcl_size; 
       popupOption +=",top="+item.top_lc;
-
   var getPopUrl= "/front/pop/getPopup.html?popupntcid="+item.popupntcid;
   eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
 
 }
-
 function getDataForCommnonPopup( siteid, menuid ){
 		let data = {
 				"siteid": siteid,
 				"menuid": menuid
 		};
+		try{
+			if(popMain){
+				data = {"siteid": siteid,"expsr_lc_cd": "M"};
+			}
+		}catch(e){
+			
+		}
 		$.ajax({
             type: "POST",
             url: "/front/pop/getDataForCommnonPopup.do",
