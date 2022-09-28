@@ -239,25 +239,25 @@
             	return;
             }
         	
-        	displayWorkProgress();	
-        	$.ajax({
-				url : id_duplication_chekc_url,
-	            cache : false,
-	            dataType: 'json',
-				data : {acnt: acnt},
-				type : 'POST',
-				success : function(data) {
-					if(data.result){
-						$(".acnt_err").text("사용가능한 아이디입니다.")
-						$("#checked_acnt").val(acnt);
-					}else{
-						$(".acnt_err").text("이미 사용중인 아이디입니다. ")
-						$("#checked_acnt").val(null);
+        	if(displayWorkProgress()){	
+	        	$.ajax({
+					url : id_duplication_chekc_url,
+		            cache : false,
+		            dataType: 'json',
+					data : {acnt: acnt},
+					type : 'POST',
+					success : function(data) {
+						if(data.result){
+							$(".acnt_err").text("사용가능한 아이디입니다.")
+							$("#checked_acnt").val(acnt);
+						}else{
+							$(".acnt_err").text("이미 사용중인 아이디입니다. ")
+							$("#checked_acnt").val(null);
+						}
+						closeWorkProgress();
 					}
-					closeWorkProgress();
-				}
-		   })
-		   closeWorkProgress();
+			   });
+		   }
         }
         
         function fn_searchSchool(){
@@ -325,7 +325,7 @@
         	$("#mob_no").val(mob_no1+"-"+mob_no2+"-"+mob_no3);
         	
         	var param_data = $("#joinForm").serialize();
-        	displayWorkProgress();
+        	if(displayWorkProgress()){
 		 		$.ajax({
 					url : member_register_url,
 		            cache : false,
@@ -341,7 +341,8 @@
 						}
 						closeWorkProgress();
 					}
-			   })
+			   });
+			}
         }
         
       </script>

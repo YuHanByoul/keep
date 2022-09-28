@@ -192,92 +192,94 @@
 		}
 		if(!$('#form1').valid()) return;
 		
-		displayWorkProgress();
-		jQuery.ajax({
-				url : saveUrl,
-				type: 'post',
-				cache : false,
-				dataType: 'json',
-				data : jQuery("#form1").serialize(),
-				success : function(data){
-					if(prgrmTree != null){
-						jQuery("#prgrmTree").dynatree("destroy");
-					}
-					prgrm_tree();
-					alert(data.msg);
-					closeWorkProgress();
-				}		
-		});
-		
+		if(displayWorkProgress()){
+			jQuery.ajax({
+					url : saveUrl,
+					type: 'post',
+					cache : false,
+					dataType: 'json',
+					data : jQuery("#form1").serialize(),
+					success : function(data){
+						if(prgrmTree != null){
+							jQuery("#prgrmTree").dynatree("destroy");
+						}
+						prgrm_tree();
+						alert(data.msg);
+						closeWorkProgress();
+					}		
+			});
+		}
 	}
 	
 	// 상세보기
 	function node_view(key, type){
 		fn_Clean();
-		displayWorkProgress();
-		jQuery.ajax({
-			url: detailUrl,
-			cache: false,
-			dataType: 'json',
-			data: {
-				prgrmid: key
-			},
-			success: function(data){
-				// 상세 
-				jQuery("#view_uppr_prgrmid").text(data.uppr_prgrmid);
-				if(data.uppr_prgrm_nm == null){
-					jQuery("#upr_prgrm_nm").text('');
-				}else{
-					jQuery("#upr_prgrm_nm").text(data.uppr_prgrm_nm);
+		if(displayWorkProgress()){
+			jQuery.ajax({
+				url: detailUrl,
+				cache: false,
+				dataType: 'json',
+				data: {
+					prgrmid: key
+				},
+				success: function(data){
+					// 상세 
+					jQuery("#view_uppr_prgrmid").text(data.uppr_prgrmid);
+					if(data.uppr_prgrm_nm == null){
+						jQuery("#upr_prgrm_nm").text('');
+					}else{
+						jQuery("#upr_prgrm_nm").text(data.uppr_prgrm_nm);
+					}
+					jQuery("#view_prgrmid").text(data.prgrmid);
+					jQuery("#prgrmid").val(data.prgrmid);
+					jQuery("#prgrm_nm").val(data.nm);
+					jQuery("#tmp_prgrm_nm").val(data.nm);
+					jQuery("input:radio[name=type_cd]:input[value='"+data.type_cd+"']").prop("checked", true);
+					jQuery("input:radio[name=login_yn]:input[value='"+data.login_yn+"']").prop("checked", true);
+					if(data.type_cd != '01') {
+					    jQuery("#url").prop("disabled", false);
+					}
+					jQuery("#url").val(data.url);
+					jQuery("#prgrm_expln").val(data.dc);
+					
+					if(type == "reg"){
+				    	fn_Clean();
+						jQuery("#uppr_prgrmid").val(jQuery("#prgrmid").val());
+						jQuery("#view_uppr_prgrmid").text(jQuery("#prgrmid").val());
+						jQuery("#upr_prgrm_nm").text(jQuery("#tmp_prgrm_nm").val());
+						jQuery("#prgrm_nm").val("");
+						jQuery("#prgrmid").val("");
+					}
+    		        closeWorkProgress();
 				}
-				jQuery("#view_prgrmid").text(data.prgrmid);
-				jQuery("#prgrmid").val(data.prgrmid);
-				jQuery("#prgrm_nm").val(data.nm);
-				jQuery("#tmp_prgrm_nm").val(data.nm);
-				jQuery("input:radio[name=type_cd]:input[value='"+data.type_cd+"']").prop("checked", true);
-				jQuery("input:radio[name=login_yn]:input[value='"+data.login_yn+"']").prop("checked", true);
-				if(data.type_cd != '01') {
-				    jQuery("#url").prop("disabled", false);
-				}
-				jQuery("#url").val(data.url);
-				jQuery("#prgrm_expln").val(data.dc);
-				
-				if(type == "reg"){
-			    	fn_Clean();
-					jQuery("#uppr_prgrmid").val(jQuery("#prgrmid").val());
-					jQuery("#view_uppr_prgrmid").text(jQuery("#prgrmid").val());
-					jQuery("#upr_prgrm_nm").text(jQuery("#tmp_prgrm_nm").val());
-					jQuery("#prgrm_nm").val("");
-					jQuery("#prgrmid").val("");
-				}
-			}
-		});
-		closeWorkProgress();
+			});
+		}
 	}
 	
 	// 프로그램 삭제
 	function fn_prgrmDelete(){
-		displayWorkProgress();
-		jQuery.ajax({
-			url : deletePrgrmUrl,
-			type:'post',
-			cache : false,
-			dataType:'json',
-			data : {			
-				prgrmid :  jQuery("#prgrmid").val(),
-				uppr_prgrmid : jQuery("#uppr_prgrmid").val()
-			},
-			success : function(data){
-				if(prgrmTree != null){
-					jQuery("#prgrmTree").dynatree("destroy");
+		if(displayWorkProgress()){
+			jQuery.ajax({
+				url : deletePrgrmUrl,
+				type:'post',
+				cache : false,
+				dataType:'json',
+				data : {			
+					prgrmid :  jQuery("#prgrmid").val(),
+					uppr_prgrmid : jQuery("#uppr_prgrmid").val()
+				},
+				success : function(data){
+					if(prgrmTree != null){
+						jQuery("#prgrmTree").dynatree("destroy");
+					}
+					jQuery("#doCancle").click();
+					$('#sel_prgrm_nm').text('');
+					prgrm_tree();
+					alert(data.msg);
+					closeWorkProgress();
 				}
-				jQuery("#doCancle").click();
-				$('#sel_prgrm_nm').text('');
-				prgrm_tree();
-				alert(data.msg);
-				closeWorkProgress();
-			}
-		})
+			});
+		}
 	}
 	
 	function fn_prgrm_reOrder(node, sourceNode,hitMode){

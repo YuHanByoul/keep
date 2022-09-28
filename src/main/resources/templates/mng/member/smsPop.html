@@ -340,19 +340,20 @@
 		
 		var reserveDate = $("#smsSendDay").val() + " " + $("#smsSendHour").val() + ":" + $("#smsSendMin").val() + ":00"; 
 		
-		displayWorkProgress();
-		$.ajax({
-			url : "/mng/member/sendSms.do",
-			type: 'POST',
-			cache : false,
-			dataType: 'json',
-			data : { mobnos: mobnos.join(','), smsText: $("#smsText").val(), smsSendType: $(":input:radio[name=smsSendType]:checked").val(), reserveDate: reserveDate },
-			success : function (data){
-				alert(data.msg);
-				closeWorkProgress();
-				$("#cancelBtn").click();
-			}
-		})
+		if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/member/sendSms.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : { mobnos: mobnos.join(','), smsText: $("#smsText").val(), smsSendType: $(":input:radio[name=smsSendType]:checked").val(), reserveDate: reserveDate },
+				success : function (data){
+					alert(data.msg);
+					closeWorkProgress();
+					$("#cancelBtn").click();
+				}
+			});
+		}
 	}
 	
 	var smsPopValidator= $("#smsFrm").validate({

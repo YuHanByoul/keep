@@ -113,19 +113,20 @@
 	}
 	
 	function getCodeGrpInfo(cdgrpid, cdgrp_nm){
-		displayWorkProgress();
-		$.ajax({
-			url : codeGrpInfoUrl,
-			cache:false,
-			dataType : 'json',
-			data : {
-				cdgrpid: cdgrpid
-			},
-			success:function(data){
-				setCodeGrpInfo(data);
-				closeWorkProgress();
-			}
-		});
+		if(displayWorkProgress()){
+			$.ajax({
+				url : codeGrpInfoUrl,
+				cache:false,
+				dataType : 'json',
+				data : {
+					cdgrpid: cdgrpid
+				},
+				success:function(data){
+					setCodeGrpInfo(data);
+					closeWorkProgress();
+				}
+			});
+		}
 	}
 	
 	function setCodeGrpInfo(data){
@@ -186,22 +187,23 @@
 		
 		if(!$('#cdgrpFrm').valid()) return;
 		
-		displayWorkProgress();
-		$.ajax({
-			url: url,
-			cache: false,
-			dataType: 'json',
-			data: $("#cdgrpFrm").serialize(),
-			success: function(data){
-				alert(data.msg);
-				
-				if(data.resultCode != 'EXIST'){
-					codeGrpSearch();
-					initCdgrpFrm();
+		if(displayWorkProgress()){
+			$.ajax({
+				url: url,
+				cache: false,
+				dataType: 'json',
+				data: $("#cdgrpFrm").serialize(),
+				success: function(data){
+					alert(data.msg);
+					
+					if(data.resultCode != 'EXIST'){
+						codeGrpSearch();
+						initCdgrpFrm();
+					}
+					closeWorkProgress();
 				}
-				closeWorkProgress();
-			}
-		});
+			});
+		}
 	}
 	
 	// 유효성검증기(코드그룹)
@@ -342,19 +344,20 @@
 	}
 	
 	function getCodeInfo(cd){
-		displayWorkProgress();
-		$.ajax({
-			url : codeInfoUrl,
-			cache:false,
-			dataType : 'json',
-			data : {
-				cd: cd
-			},
-			success:function(data){
-				setCodeInfo(data);
-				closeWorkProgress();
-			}
-		});
+		if(displayWorkProgress()){
+			$.ajax({
+				url : codeInfoUrl,
+				cache:false,
+				dataType : 'json',
+				data : {
+					cd: cd
+				},
+				success:function(data){
+					setCodeInfo(data);
+					closeWorkProgress();
+				}
+			});
+		}
 	}
 
 	function setCodeInfo(data){
@@ -516,30 +519,31 @@
 		}
 		if(!$('#cdFrm').valid()) return;
 		
-		displayWorkProgress();
-		$.ajax({
-			url: url,
-			cache: false,
-			dataType: 'json',
-			data: $("#cdFrm").serialize(),
-			success: function(data){
-				alert(data.msg);
-				
-				if(data.resultCode != 'EXIST'){
-					var cdgrpid = $('#cdFrm').find("#cdgrpid").val();
-					var cdgrp_nm = $('#cdFrm').find("#cdgrp_nm").val();
-					destroyTree();
-		        	code_tree(cdgrpid, cdgrp_nm);
-		        	initCdFrm();
-		        	$('#cdFrm').find("#cdgrpid").val(cdgrpid);
-		        	$('#cdFrm').find("#cdgrp_nm").val(cdgrp_nm);
-	      			$('#cdFrm').find("#uppr_cd").val('0');
-	      			$('#view_cdgrpid').text(cdgrpid);
-	      			$('#view_uppr_cd').text('0');
+		if(displayWorkProgress()){
+			$.ajax({
+				url: url,
+				cache: false,
+				dataType: 'json',
+				data: $("#cdFrm").serialize(),
+				success: function(data){
+					alert(data.msg);
+					
+					if(data.resultCode != 'EXIST'){
+						var cdgrpid = $('#cdFrm').find("#cdgrpid").val();
+						var cdgrp_nm = $('#cdFrm').find("#cdgrp_nm").val();
+						destroyTree();
+			        	code_tree(cdgrpid, cdgrp_nm);
+			        	initCdFrm();
+			        	$('#cdFrm').find("#cdgrpid").val(cdgrpid);
+			        	$('#cdFrm').find("#cdgrp_nm").val(cdgrp_nm);
+		      			$('#cdFrm').find("#uppr_cd").val('0');
+		      			$('#view_cdgrpid').text(cdgrpid);
+		      			$('#view_uppr_cd').text('0');
+					}
+					closeWorkProgress();
 				}
-				closeWorkProgress();
-			}
-		});
+			});
+		}
 	}
 </script>
 <div class="panel-body">

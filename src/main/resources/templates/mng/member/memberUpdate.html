@@ -237,28 +237,29 @@
 	function fn_checkIdYn(){
 	 	if(!validator.element('#acnt')) return;
   	 	
-        displayWorkProgress();
-		$.ajax({
-			url : "/mng/member/checkIdYn.do",
-			type: 'POST',
-			cache : false,
-			dataType: 'json',
-			data : { acnt: $("#acnt").val() },
-			success : function (data){
-				if(data.result=="fail"){
-					alert("에러 발생 다시 시도 해주십시오.");
-				}else{
-					if(data.result=="N"){
-						$("#checkIdYnStr").text("사용 가능한 아이디입니다.");
-						checkId = $("#acnt").val();
+        if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/member/checkIdYn.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : { acnt: $("#acnt").val() },
+				success : function (data){
+					if(data.result=="fail"){
+						alert("에러 발생 다시 시도 해주십시오.");
 					}else{
-						$("#checkIdYnStr").text("이미 사용중인 아이디입니다.");
-						checkId = "";
+						if(data.result=="N"){
+							$("#checkIdYnStr").text("사용 가능한 아이디입니다.");
+							checkId = $("#acnt").val();
+						}else{
+							$("#checkIdYnStr").text("이미 사용중인 아이디입니다.");
+							checkId = "";
+						}
 					}
+					closeWorkProgress();
 				}
-				closeWorkProgress();
-			}
-		});
+			});
+		}
 	}
 	        
  	function fn_updateMember(){
@@ -298,23 +299,24 @@
   	 	
 	    var data =  $("#userModifyForm").serialize() ;
   	 	    
-	    displayWorkProgress();
-		$.ajax({
-			url : "/mng/member/modifyMember.do",
-			type: 'POST',
-			cache : false,
-			dataType: 'json',
-			data : data,
-			success : function (data){
-				if(data.result=="success"){
-					alert(data.msg);
-					resetListContent();
-				}else{
-					alert(data.msg);
+	    if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/member/modifyMember.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
 				}
-				closeWorkProgress();
-			}
-		});
+			});
+		}
 	}
 		    
  	function init() {
@@ -344,24 +346,25 @@
 		if($('#pphotoFilegrpid').val() != '')
 			formData.append("filegrpid", $('#pphotoFilegrpid').val());
 
-		displayWorkProgress();
-		$.ajax({
-			url : '/uploadFile.do',
-			processData : false,
-			contentType : false,
-			data : formData,
-			type : 'POST',
-			success : function(response) {
-				if(response.result == 'fail'){
-					alert(response.msg);
-				}else if(response.filegrpid != undefined && response.filegrpid != ''){
-					$("#pphotoFilegrpid").val(response.filegrpid);
-					$("#pphotoFileid").val(response.fileid);
-					$("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.file_idntfc_key);
+		if(displayWorkProgress()){
+			$.ajax({
+				url : '/uploadFile.do',
+				processData : false,
+				contentType : false,
+				data : formData,
+				type : 'POST',
+				success : function(response) {
+					if(response.result == 'fail'){
+						alert(response.msg);
+					}else if(response.filegrpid != undefined && response.filegrpid != ''){
+						$("#pphotoFilegrpid").val(response.filegrpid);
+						$("#pphotoFileid").val(response.fileid);
+						$("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.file_idntfc_key);
+					}
+					closeWorkProgress();
 				}
-				closeWorkProgress();
-			}
-		});
+			});
+		}
 
 		event.preventDefault();
 
@@ -396,23 +399,24 @@
 	}
 	
 	function frontLogin() {
-		displayWorkProgress();
-		$.ajax({
-			url : "/mng/member/frontLogin.do",
-			type: 'POST',
-			cache : false,
-			dataType: 'json',
-			data : { userid: $('#userid').val() },
-			success : function (data){
-				if(data.result=="success"){							
-					$('#token').val(data.token);
-					$('#frontLoginFrm').submit();
-				}else{
-					alert(data.msg);
+		if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/member/frontLogin.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : { userid: $('#userid').val() },
+				success : function (data){
+					if(data.result=="success"){							
+						$('#token').val(data.token);
+						$('#frontLoginFrm').submit();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
 				}
-				closeWorkProgress();
-			}
-		});
+			});
+		}
 	}
 	
 	$('#popCon1').on('show.bs.modal', function() {
