@@ -197,7 +197,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             	request.setAttribute("popupYn", "N");
             }else {
             	request.setAttribute("popupYn", "Y");
-            	request.setAttribute("menuid", menuItem.getMenuid());
+            	request.setAttribute("menuid", menuItem != null ? menuItem.getMenuid() : null);
             	request.setAttribute("siteid", siteInfo.getSiteid());
             }
             
