@@ -38,9 +38,6 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     @Value("${server.servlet.session.cookie.domain}")
     private String serverCookieDomain;
     
-    @Value("${app.ssl.isuse}")
-    private boolean sslIsUse;
-    
     @Autowired
     private SecurityProperties securityProperties;
 
@@ -62,7 +59,7 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         k.setDomain(serverCookieDomain);
         k.setPath("/");
         k.setHttpOnly(true);
-        if (sslIsUse) {
+        if (request.isSecure()) {
             k.setSecure(true);
         }
         response.addCookie(k);
