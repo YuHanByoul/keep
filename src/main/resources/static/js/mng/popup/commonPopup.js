@@ -20,12 +20,19 @@ function fn_openCommonPopup(item){
   var getPopUrl= "/mng/pop/getPopup.html?popupntcid="+item.popupntcid;
   eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
 }
-
 function getDataForCommnonPopup( siteid, menuid ){
-		let data = {
-				"siteid": siteid,
-				"menuid": menuid
-		};
+	
+		let data = {"siteid": siteid,"menuid": menuid};
+		
+		try{
+			if(popMain){
+				data = {"siteid": siteid,"expsr_lc_cd": "M"};
+			}
+		}catch(e){
+			
+		}
+		
+		
 		$.ajax({
             type: "POST",
             url: "/mng/pop/getDataForCommnonPopup.do",
