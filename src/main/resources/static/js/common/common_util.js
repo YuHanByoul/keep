@@ -583,7 +583,7 @@ function displayWorkProgress() {
 		
 		//workProgressBox.style.backgroundColor = "white";
 		//workProgressBox.style.border	= "1px solid #B8BDED";
-		workProgressBox.style.zIndex="99999999";	
+		workProgressBox.style.zIndex="9999";	
         
 		var boxContent = ""
 			
@@ -593,8 +593,10 @@ function displayWorkProgress() {
 		
 		workProgressBox.innerHTML = boxContent;
 		document.body.appendChild(workProgressBox);	
+        return true;    
 	}else {
-		alert('처리중인 작업이 있습니다.');
+		//alert('처리중인 작업이 있습니다.');
+        return false;
 		//onDisplay(workProgressBox);
 	}
 }
