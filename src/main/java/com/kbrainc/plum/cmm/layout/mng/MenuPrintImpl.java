@@ -65,9 +65,7 @@ public class MenuPrintImpl {
         if ("".equals(StringUtil.nvl(url))) {
             return true;
         }
-        if (!StringUtil.isNumber(url)) {
-            url = request.getServerName() + url; 
-        }
+        
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return wipe.isAllowed(url, authentication);
     }

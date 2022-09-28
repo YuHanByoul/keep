@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
@@ -23,7 +22,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.web.PortMapperImpl;
 import org.springframework.security.web.access.DefaultWebInvocationPrivilegeEvaluator;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
@@ -36,12 +34,11 @@ import org.springframework.security.web.access.channel.RetryWithHttpsEntryPoint;
 import org.springframework.security.web.access.channel.SecureChannelProcessor;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-//import org.springframework.session.data.redis.RedisIndexedSessionRepository; // REDIS_SESSION
-//import org.springframework.session.security.SpringSessionBackedSessionRegistry; // REDIS_SESSION
 
 import com.kbrainc.plum.rte.filter.SiteChangeFilter;
 import com.kbrainc.plum.rte.security.AjaxSessionTimeoutFilter;
 import com.kbrainc.plum.rte.security.CustomAuthenticationProvider;
+import com.kbrainc.plum.rte.security.CustomWebInvocationPrivilegeEvaluator;
 import com.kbrainc.plum.rte.security.HttpsLoginSuccessHandler;
 import com.kbrainc.plum.rte.security.ReloadableChannelProcessingFilterMetadataSource;
 import com.kbrainc.plum.rte.security.ReloadableFilterSecurityInterceptorMetadataSource;
@@ -238,7 +235,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public WebInvocationPrivilegeEvaluator defaultWebInvocationPrivilegeEvaluator() {
-        return new DefaultWebInvocationPrivilegeEvaluator(filterSecurityInterceptor);
+        //return new DefaultWebInvocationPrivilegeEvaluator(filterSecurityInterceptor);
+        return new CustomWebInvocationPrivilegeEvaluator(filterSecurityInterceptor);
     }
 
     @Bean
