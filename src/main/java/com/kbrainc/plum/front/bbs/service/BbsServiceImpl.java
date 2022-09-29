@@ -206,7 +206,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
     }
 
     /**
-     * @Title : selectOneBbs
+     * @Title : selectPst
      * @Description : 게시물 조회
      * @param paramVO PstVO paramVO
      * @throws Exception :

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/intro/detailLayout" 
+>
+    <body>
+        <div layout:fragment="content">
+                        <article class="notice-wrap">
+                            <h3 class="title">공지사항</h3>
+
+                            <div class="search-board">
+                                    <fieldset>
+                                        <legend><span>검색</span></legend>
+                                        <div class="search-board-in">
+                                            <select title="구분" class="select-search" id="searchType" name="searchType">
+                                                <option value="">전체선택</option>
+                                                <option value="WRITER" th:selected="${pstVo.searchType =='WRITER'}" >작성자</option>
+                                                <option value="TITLE"  th:selected="${pstVo.searchType =='TITLE'}" >제목</option>
+                                            </select>
+
+                                            <input type="search" id="searchKeyword" name="searchKeyword" title="검색어" class="input-search" th:value="${pstVo.searchKeyword}">
+
+                                            <button type="button" class="btn-search" onclick="searchNotice()">검색</button>
+                                        </div>
+                                    </fieldset>
+                            </div>
+
+                            <div class="board-wrap">
+                                <div class="board-top">
+                                    <span class="count">전체 : <em><th:block th:text="${totalCount}"></th:block></em>
+                                    ( &nbsp;<th:block th:text="${pageNumber}"></th:block>/<th:block th:text="${totalPage}"></th:block> )
+                                    </span>
+
+                                    <div class="util">
+                                        <button type="button" class="btn-reset"><span class="ir">초기화</span></button>
+
+                                        <button type="button" class="btn-list"><span class="ir">목록설정</span></button>
+                                    </div>
+                                </div>
+
+                                <table class="board-list">
+                                    <caption><span>공지사항 목록</span></caption>
+                                    <colgroup>
+                                        <col style="width: 100px;">
+                                        <col>
+                                        <col style="width: 110px;">
+                                        <col style="width: 160px;">
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">No.</th>
+                                            <th scope="col">제목</th>
+                                            <th scope="col">작성자</th>
+                                            <th scope="col">등록일</th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody>
+<!--                                         <tr>
+                                            <td>28</td>
+                                            <td class="align-lft">
+                                                <a href="notice_view.html">[중요] 홈페이지 오픈일 재공지 및 학습자료 다운로드 안내</a></td>
+                                            <td>관리자</td>
+                                            <td>2021.10.14</td>
+                                        </tr> -->
+                                        <tr th:each="item : ${list}"  >                                             
+                                            <td>
+                                               <th:block th:text="${item.rowNumber}"></th:block>
+                                            </td>
+                                            <td class="align-lft">
+                                               <a th:href="|javascript:fn_goDetailPage('${item.pstid}')|"><th:block th:text="${item.title}"></th:block></a>
+                                            </td>
+                                            <td>
+                                              <th:block th:text="${item.nm}"></th:block>
+                                            </td>
+                                            <td>
+                                              <th:block th:text="${item.updt_dt}"></th:block>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${#lists.size(list) == 0}">
+                                           <td colspan="4">데이터가 없습니다</td>
+                                        </tr> 
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- <div class="notice-button">
+                                <a href="notice_write.html" class="btn-medium btn-color1">글쓰기</a>
+                            </div> -->
+                            
+                            <!-- paging -->
+                            <div class="notice-button">&nbsp;</div>
+                            <div class="paging">
+                                <th:block pattr:pagination="list" onclick="goPage" />
+                            </div>
+
+                            <!-- paging -->
+<!--                             <div class="paging">
+							    <a href="#" class="btn-paging-quick btn-paging-first"><span class="ir">처음</span></a>
+							    <a href="#" class="btn-paging-quick btn-paging-prev"><span class="ir">이전</span></a>
+							    <a href="#" class="btn-paging is-active">1</a>
+							    <a href="#" class="btn-paging">2</a>
+							    <a href="#" class="btn-paging">3</a>
+							    <a href="#" class="btn-paging">4</a>
+							    <a href="#" class="btn-paging">5</a>
+							    <a href="#" class="btn-paging-quick btn-paging-next"><span class="ir">다음</span></a>
+							    <a href="#" class="btn-paging-quick btn-paging-last"><span class="ir">마지막</span></a>
+							</div> -->
+                            <!-- // paging -->
+                            <input type="hidden" id="pageNum" name="pageNum" th:value="${pageNumber}">
+ </article>
+ 
+ <script th:inline="javascript">
+ 
+  function searchNotice(){
+	  
+	  var searchType = $("#searchType").val()
+	  var searchKeyword = $("#searchKeyword").val()
+	  
+	  if(searchType !=null && searchType !=""){
+		  if(searchKeyword==null || searchKeyword==""){
+			  alert("검색어를 입력해주십시오");
+			  return;
+		  }
+	  }else{
+		  if(searchKeyword != null && searchKeyword!=""){
+			  alert("검색조건을 입력해주십시오");
+			  return;
+		  }
+	  }
+	  
+	  location.href = "/cmm/bbs/10/main.html?searchType="+searchType+"&searchKeyword="+searchKeyword;
+	  
+  } 
+  
+  function goPage(page){
+		
+		var searchType = $("#searchType").val()
+		var searchKeyword = $("#searchKeyword").val()
+		
+		if(searchType != null && searchType != ""){
+			location.href = "/cmm/bbs/10/main.html?pageNumber="+page+"&searchType="+searchType+"&searchKeyword="+searchKeyword;
+		}else{
+			location.href = "/cmm/bbs/10/main.html?pageNumber="+page;
+		}
+  }
+      
+  
+  function fn_goDetailPage(pstid){
+	  
+	  var searchType = $("#searchType").val();
+	  var searchKeyword = $("#searchKeyword").val();
+	  var pageNum = $("#pageNum").val();
+	  
+	  location.href = "/cmm/bbs/10/read.html?pstid="+pstid+"&pageNumber="+pageNum+"&searchType="+searchType+"&searchKeyword="+searchKeyword; 
+  }
+  
+  var registerInquiryUrl = "/front/inqury/insertInqury.do";
+      
+  function fn_changeEmailDomain(){
+      	var domain_val = $("#email_domain").val();
+      	var domain_text = $("#email_domain option:checked").text();
+      	
+      	if( domain_val == null || domain_val =="" ){
+      		$("#email2").val(null);
+      	}else{
+      	    $("#email2").val(domain_text)
+      	}
+      }
+      
+      function fn_registerInquiry(){
+        	
+        	var cmntValidator= $("#inquiryForm").validate({
+        		   rules   : {
+        			   nm          : { required: true ,maxlength:50},
+        			   title       : { required: true ,maxlength:100},
+        			   cntnts      : { required: true ,maxlength:2000},
+        			   email1      : { required: true ,maxlength:100 ,alphanumeric:true},
+        			   email2      : { required: true ,maxlength:100 }
+        	       },
+        	       messages: {
+        			   nm          : { required: "작성자를 입력해주십시오" },
+        			   title       : { required: "제목을 입력해주십시오" ,maxlength:"제목은 100자를 넘을 수 없습니다."},
+        			   cntnts      : { required: "내용을 입력해주십시오" ,maxlength:"내용은 2000자를 넘을 수 없습니다."},
+        			   email1      : { required: "이메일을 입력해주십시오" ,alphanumeric:"알파벳과 숫자만 입력 가능합니다."},
+        			   email2      : { required: "이메일을 입력해주십시오" }
+        	       }
+        		 })
+        		 
+        	
+        	if($("#inquiryForm").valid() == false) return;
+        	
+        	var email1 = $("#email1").val();
+        	var email2 = $("#email2").val();
+        	$("#email").val(email1+"@"+email2);
+        	
+        	var param_data = $("#inquiryForm").serialize();
+        	
+        	if(displayWorkProgress()){
+		 		$.ajax({
+					url : registerInquiryUrl,
+		            cache : false,
+		            dataType: 'json',
+					data : param_data,
+					type : 'POST',
+					success : function(data) {
+						console.log(data)
+						if(data.result){
+							alert("문의사항이 등록 되었습니다.")
+							window.location.reload();
+						}else{
+							alert("문의사항이 정상적으로 등록되지 않았습니다. 확인 해주십시오.")
+						}
+						closeWorkProgress();
+					}
+			   });
+			}
+        }
+        
+      </script>
+ </div>
+
+</body>
+</html>
