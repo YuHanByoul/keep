@@ -57,9 +57,8 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
     @Override
     public boolean reloadCodeInfo() throws Exception {
         synchronized (this) {
-        	
-	        Ehcache codeMap = (Ehcache) cacheManager.getCache("codeMap");
-	        Ehcache codeListMap = (Ehcache) cacheManager.getCache("codeListMap");
+	        Ehcache codeMap = (Ehcache) cacheManager.getCache("codeMap").getNativeCache();
+	        Ehcache codeListMap = (Ehcache) cacheManager.getCache("codeListMap").getNativeCache();
 	        codeMap.removeAll(true);
 	        codeListMap.removeAll(true);
 
