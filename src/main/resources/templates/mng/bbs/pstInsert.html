@@ -16,18 +16,29 @@
 		              <div class="form-group  col-md-12 row">
 						<label class="col-md-2 control-label form-control-static"><span class="text-danger"> </span>비로그인 조회허용여부</label>
 						<div class="col-md-10 form-control-static">
-   			              <span pattr:radio_yn="login_yn" label1="로그인후 " label2="로그인전 " addClass=" form-control-static "  th:attr="defaultVal=${paramMap.nlogin_perm_yn == 'N' ? 'Y':'N'}" ></span>
+   			              <span kattr:radio_yn="login_yn" label1="로그인후 " label2="로그인전 " addClass=" form-control-static "  th:attr="defaultVal=${paramMap.nlogin_perm_yn == 'N' ? 'Y':'N'}" ></span>
    			             </div>
 					  </div>
 					 
 					 <th:block th:if="${paramMap.fxd_ntc_use_yn}=='Y'">
                       <div class="form-group  col-md-12 row">
                         <label class="col-md-2 control-label">
-                             고정공지여부(<th:block th:text="${paramMap.cur_fxd_ntc_cnt}"/>/<th:block th:text="${paramMap.fxd_ntc_cnt}"/>)
+                             고정공지여부(<th:block th:text="${paramMap.cur_fxd_ntc_cnt}"/>/<th:block th:text="${paramMap.fxd_ntc_cnt}"/>)/기간
                         </label>
                         <div class="col-md-2 form-control-static ">
-                          <span pattr:radio_yn="fxd_ntc_yn" label1="상단고정" label2="미사용"  th:attr="defaultVal=N">
-                        </div>                
+                          <span kattr:radio_yn="fxd_ntc_yn" label1="상단고정" label2="미사용"  th:attr="defaultVal=N">
+                        </div>
+                                        
+                        <div class="col-md-4 form-control-static " id="fxd_ntc_dt_area">
+	                        <div class="date-picker-area">
+			                    <th:block kattr:date_pic="fxd_ntc_strt_dt" dateForm="yy-mm-dd" addStyle="width:110px;display:inline-block;" 
+			                    addClass=" input-sm" ></th:block> 
+			                    ~
+			                    <th:block kattr:date_pic="fxd_ntc_end_dt" dateForm="yy-mm-dd" addStyle="width:110px;display:inline-block;" 
+			                    addClass=" input-sm" ></th:block>
+			                </div>
+                        </div>
+                        
                          <label class="control-label">
                           <!--  <th:block th:if ="${paramMap.cur_fxd_ntc_cnt} =< ${paramMap.fxd_ntc_cnt}"> 이미 고정공지 게시글이 가득차 사용 할수 없습니다.</th:block></label> -->
                            <th:block th:if ="${paramMap.cur_fxd_ntc_cnt >= paramMap.fxd_ntc_cnt}"> 
@@ -97,13 +108,32 @@
 	        </form>
 	        
   <script th:inline="javascript" >
-		    var  atchfileCnt = 0 ;
-		    var  atchfileSize = 0;
+  
+		    var atchfileCnt = 0 ;
+		    var atchfileSize = 0;
 	        var editor ;
 		    var uploadFileCnt = 0 ;
 		    
+		    function disableFxdNtcDt(){
+		    	var fxd_ntc_yn=$("input[name='fxd_ntc_yn']:checked").val();
+        		if(fxd_ntc_yn == 'Y'){
+        			$("#fxd_ntc_dt_area").show();
+        			$("#fxd_ntc_strt_dt").prop("disabled",true);
+        			$("#fxd_ntc_end_dt").prop("disabled",true);
+        		}else{
+        			$("#fxd_ntc_dt_area").hide();
+        			$("#fxd_ntc_strt_dt").prop("disabled",false);
+        			$("#fxd_ntc_end_dt").prop("disabled",false);
+        		}
+		    }
+		    
 	        $(function(){
 	        	
+	        	disableFxdNtcDt();
+	        	
+	        	$("[name=fxd_ntc_yn]").click(function(){
+	        		disableFxdNtcDt();
+	        	})
 	        	
 	        	if($("#fxd_ntc_cnt_over_yn").val()=='Y'){  $("input[name='fxd_ntc_yn'][value='Y']").attr("disabled","true");}
 	        	
@@ -112,7 +142,7 @@
 	        	
 	    		//editor = CKEDITOR.replace('cntnts');
 	    		//에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 ) 
-			    editor =CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
+			    editor = CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
 		        validate();
 		        
 		    	$('#multiFileInput').on("change", function(event) {
@@ -206,6 +236,32 @@
 		 	    $("#cntnts").val(editorData);
 		 	    if($("#pstInsertForm").valid() == false) return; 
     	 	    if(!confirm("저장하시겠습니까?")) return;
+    	 	    
+    	 	    
+		    	var fxd_ntc_yn=$("input[name='fxd_ntc_yn']:checked").val();
+		    	
+        		if(fxd_ntc_yn == 'Y'){
+        			
+        			var fxd_ntc_strt_dt = $("#fxd_ntc_strt_dt").val(); 
+        			var fxd_ntc_end_dt  = $("#fxd_ntc_end_dt").val();
+        			
+        			if(fxd_ntc_strt_dt==null || fxd_ntc_strt_dt=="" ||fxd_ntc_end_dt==null||fxd_ntc_end_dt==""){
+        				alert("고정공지 기간을 입력해주세요");
+        				return; 
+        			}else{
+        				
+        				var strt_dt = fxd_ntc_strt_dt.replaceAll("-","");
+        				var end_dt = fxd_ntc_end_dt.replaceAll("-","");
+        				if(strt_dt > end_dt){
+        					alert("고정공지 종료일이 시작일보다 작습니다.");
+        					return;
+        				}
+        			}
+        		}else{
+        			$("#fxd_ntc_strt_dt").val("");
+        			$("#fxd_ntc_end_dt" ).val("");
+        		}
+        		
  		        var data =  $("#pstInsertForm").serialize() ;
  		        
 				$.ajax({

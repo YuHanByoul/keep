@@ -36,7 +36,7 @@
                     <div class="form-group  col-md-12 row">
                       <label class="col-md-2 control-label form-control-static"><span class="text-danger"> </span>비로그인 조회허용여부</label>
                       <div class="col-md-10 form-control-static">
-                        <span pattr:radio_yn="login_yn" label1="로그인후 " label2="로그인전 " addClass=" form-control-static "  th:attr="defaultVal=${result.paramMap.login_yn}" ></span>
+                        <span kattr:radio_yn="login_yn" label1="로그인후 " label2="로그인전 " addClass=" form-control-static "  th:attr="defaultVal=${result.paramMap.login_yn}" ></span>
                        </div>
                     </div>
                       
@@ -46,10 +46,21 @@
                              고정공지여부(<th:block th:text="${result.paramMap.cur_fxd_ntc_cnt}"/>/<th:block th:text="${result.paramMap.fxd_ntc_cnt}"/>)
                         </label>
                         <div class="col-md-2 form-control-static ">
-                          <span pattr:radio_yn="fxd_ntc_yn" label1="상단고정" label2="미사용"  th:attr="defaultVal=${result.paramMap.fxd_ntc_yn == null ? 'N':result.paramMap.fxd_ntc_yn }"  >
+                          <span kattr:radio_yn="fxd_ntc_yn" label1="상단고정" label2="미사용"  th:attr="defaultVal=${result.paramMap.fxd_ntc_yn == null ? 'N':result.paramMap.fxd_ntc_yn }"  >
                         </div>                
+                        
+                        
+                        <div class="col-md-4 form-control-static ">
+	                        <div class="date-picker-area" id="fxd_ntc_dt_area">
+			                    <th:block kattr:date_pic="fxd_ntc_strt_dt" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" 
+			                    addClass=" input-sm" th:attr="dateDefault =${ #strings.substring(result.paramMap.fxd_ntc_strt_dt, 0,10)}"></th:block> 
+			                    ~
+			                    <th:block kattr:date_pic="fxd_ntc_end_dt" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" 
+			                    addClass=" input-sm" th:attr="dateDefault =${ #strings.substring(result.paramMap.fxd_ntc_end_dt, 0,10)}"></th:block> 
+			                </div>
+                        </div>
+                        
                          <label class="control-label">
-
                            <th:block th:if ="${result.paramMap.fxd_ntc_yn !='Y' and result.paramMap.cur_fxd_ntc_cnt >= result.paramMap.fxd_ntc_cnt}"> 
                                                      이미 고정공지 게시글이 가득차 사용 할수 없습니다.
                                <input type="hidden" id="fxd_ntc_cnt_over_yn" value="Y">
@@ -390,7 +401,26 @@ var editor = null;
 var formData = new FormData();
 var uploadFileCnt = 0 ;
 
+function disableFxdNtcDt(){
+	var fxd_ntc_yn=$("input[name='fxd_ntc_yn']:checked").val();
+	if(fxd_ntc_yn == 'Y'){
+		$("#fxd_ntc_dt_area").show();
+		$("#fxd_ntc_strt_dt").prop("disabled",true);
+		$("#fxd_ntc_end_dt").prop("disabled",true);
+	}else{
+		$("#fxd_ntc_dt_area").hide();
+		$("#fxd_ntc_strt_dt").prop("disabled",false);
+		$("#fxd_ntc_end_dt").prop("disabled",false);
+	}
+}
+
  $(function(){
+	 
+ 	disableFxdNtcDt();
+	
+	$("[name=fxd_ntc_yn]").click(function(){
+		disableFxdNtcDt();
+	})
 	 
 	 if($("#pageNumber").val() !=null){
 		 $("#pager"+$("#pageNumber").val()).addClass(" jsgrid-pager-current-page ")
@@ -496,6 +526,34 @@ var uploadFileCnt = 0 ;
 	$('#cntnts').val(editor.getData());
 	
 	if(!$('#pstUpdateForm').valid()) return;
+	
+	
+	var fxd_ntc_yn=$("input[name='fxd_ntc_yn']:checked").val();
+	
+	if(fxd_ntc_yn == 'Y'){
+		
+		var fxd_ntc_strt_dt = $("#fxd_ntc_strt_dt").val(); 
+		var fxd_ntc_end_dt  = $("#fxd_ntc_end_dt").val();
+		
+		if(fxd_ntc_strt_dt==null || fxd_ntc_strt_dt=="" ||fxd_ntc_end_dt==null||fxd_ntc_end_dt==""){
+			alert("고정공지 기간을 입력해주세요");
+			return; 
+		}else{
+			
+			var strt_dt = fxd_ntc_strt_dt.replaceAll("-","");
+			var end_dt = fxd_ntc_end_dt.replaceAll("-","");
+			if(strt_dt > end_dt){
+				alert("고정공지 종료일이 시작일보다 작습니다.");
+				return;
+			}
+		}
+	}else{
+		$("#fxd_ntc_strt_dt").val('');
+		$("#fxd_ntc_end_dt" ).val('');
+	}
+	
+	
+	console.log($("#pstUpdateForm").serialize());
 
 	$.ajax({
 		url : "/bbs/updatePst.do",

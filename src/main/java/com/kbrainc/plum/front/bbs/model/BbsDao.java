@@ -249,13 +249,13 @@ public interface BbsDao {
      */
     public int deleteCmnt(PstVo pstVo) throws Exception;
     
-    
-    
-    
-    
-    
-    
-    
-    
+    /**
+     * @Title : selectTotalPstList
+     * @Description : 게시글 목록 가져오기(상단고정, 핫게시글등 order 순서 포함한 리스트  )
+     * @param paramVO BbsVO 타입의 인자
+     * @throws Exception :
+     * @return List
+     */
+    public List<PstVo> selectTotalPstList(BbsVo paramVO) throws Exception;
     
 }
