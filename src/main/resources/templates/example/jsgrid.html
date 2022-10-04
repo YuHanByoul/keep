@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorate="example/layout/exampleLayout"
+>
+<head>
+<meta charset="utf-8" />
+<body>
+	<div layout:fragment="content">
+		
+		<div class="row no-gutter">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                   <h4>grid</h4><br/>
+                </div>
+                <div class="panel-body">    
+                
+					<table id="jsGrid"></table>
+					
+					<link type="text/css" rel="stylesheet" href="/js/common/jsgrid-master/dist/jsgrid.min.css" />
+					<link type="text/css" rel="stylesheet" href="/js/common/jsgrid-master/dist/jsgrid-theme.css" />
+			
+					<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+					<script>
+					
+					var codeGrpListUrl = "/mng/code/codeGrpList.do";
+					
+					$(function(){
+				        $("#jsGrid").jsGrid({
+				            height: "auto",
+				            width: "100%",
+				            autoload: true,
+				            sorting: true,
+				            paging: true,
+				            pagerContainer: "#listPager",
+				            pagerFormat: "{first} {prev} {pages} {next} {last}",
+				            pagePrevText: "이전",
+				            pageNextText: "다음",
+				            pageFirstText: "< 처음 ㅣ",
+				            pageLastText: "ㅣ 마지막 >",
+				            noDataContent: "데이터가 없습니다.",
+				            pageSize: 10,
+				            pageButtonCount: 10,
+				            pageLoading: true,
+				            pageIndex: 1,
+				            
+				            controller: {
+				                loadData: function (filter) {
+				                    var data = $.Deferred();
+				                    
+				                    var params = {
+				                            //"searchType": $('#searchType').val(),
+				                            //"searchKeyword": $('#searchKeyword').val(),
+				                            "pageNumber": filter.pageIndex,
+				                            "rowPerPage": filter.pageSize,
+				                            "orderField": filter.sortField,
+				                            "orderDirection": filter.sortOrder
+				                    }
+				                    
+				                    if(filter.sortField == undefined){
+				                        params.orderField = "UPDT_DT";
+				                    }
+				                    
+				                    $.ajax({
+				                      type: "GET",
+				                      contentType: "application/json; charset=utf-8",
+				                      url: codeGrpListUrl,
+				                      data: params,
+				                      dataType: "json"
+				                    }).done(function(response){
+				                        var da = {
+				                                data :escapeGridData(response.list),
+				                                itemsCount : response.totalCount
+				                            };
+				                      data.resolve(da);
+				                    });
+				                    
+				                    return data.promise();
+				                },
+				            },
+				            fields: [ 
+				                { title:'번호', name: 'rowNumber', type: "number", width:"10%", align:"center", sorting: false },
+				                { title:'코드그룹ID', name: 'cdgrpid', type: "text", width:"10%", align:"center", key: true, validate: "required" },
+				                { title:'이름', name: 'cdgrp_nm', type: "text" ,width:"40%"},
+				                { title:'사용여부', name: 'use_yn', type: "text", width:"10%", align:"center"}
+				            ],
+				            rowClick: function(args) {
+				                
+				            }
+				        });
+				    });
+				
+					</script>
+					<br><font color="red"> * grid에 뿌리는 데이터를 받아올때 xss방지를 위해 escapeGridData함수로 반드시 씌워야함. ex) escapeGridData(response.list)</font>
+                </div>
+            </div>
+        </div>
+       </div>
+	</div>
+</body>
+</html>

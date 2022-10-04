@@ -240,24 +240,6 @@ public class CommonController {
     }
     
     /**
-     * 샘플화면으로 이동한다. 
-     *
-     * @Title : temp
-     * @Description : 샘플화면으로 이동한다.
-     * @param prgrmVo PrgrmVo객체
-     * @param model 모델객체
-     * @return String 이동화면경로
-     * @throws Exception 예외
-     */
-     @GetMapping("/sample.html")
-     public String temp(PrgrmVo prgrmVo, Model model) throws Exception {
-         Map<String, Object> resultMap = new HashMap<>();
-         //List<PrgrmVo> result = commonService.selectPrgrmList(prgrmVo);
-         //model.addAttribute("list", result); // 페이징 데이터
-         return "sample";
-     }
-    
-    /**
     * 서브 화면으로 이동한다(테스트용).
     *
     * @Title       : sub

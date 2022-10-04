@@ -10,7 +10,7 @@ import com.kbrainc.plum.front.bbs.model.PstVo;
 
 /**
  * 
- * 회원관리 임시 서비스 인터페이스
+ * 회원관리 임시 서비스 인터페이스.
  *
  * <pre>
  * com.kbrainc.plum.front.bbs.service

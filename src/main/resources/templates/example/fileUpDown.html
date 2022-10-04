@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+	layout:decorator="example/layout/exampleLayout3">
+
+<div layout:fragment="content" class="mainCont">
+
+    <div class="row no-gutter">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>File Upload / Download</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <label class="btn btn-primary btn-file"> 
+                                단일 파일 업로드 <input id="pfphotoFile" type="file" name="pfphoto_file" style="display: none;">
+                            </label>
+                            <div class="upload-response">
+                                <div id="fileUploadSuccess"></div>
+                            </div>
+                            <input type="hidden" name="pfphoto_filegrpid" id="pfphotoFilegrpid" value="0">
+                            <input type="hidden" name="pfphoto_fileid" id="pfphotoFileid" value="0">
+						    <div id="fileLink"></div>
+                        </div>
+                        <br><br><br><br><br>
+                        <div class="col-md-10" >
+                            <label class="btn btn-primary btn-file"> 
+                                다중 파일 업로드 <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;">
+                            </label>
+                            <div class="upload-response">
+                                <div id="multipleFileUploadError"></div>
+                                <div id="multipleFileUploadSuccess"></div>
+                            </div>
+                            <input type="hidden"  id = "filegrpid" name = "filegrpid" value='0'/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+
+function fn_deleteFileList(fileid, fileIdntfcKey){
+    if(!confirm("파일을 삭제하시겠습니까?")){return;}
+    fn_deleteFile(fileid, fileIdntfcKey);
+    $("#"+fileid).remove();
+} 
+
+function fn_deleteFile(fileid, fileIdntfcKey){
+               
+    var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+      $.ajax({
+        url : deleteFileUrl,
+        type: 'GET',
+        cache : false,
+        dataType: 'json',
+        success : function (data){
+            console.log(data);
+            if(data.result=="success"){
+                $("#"+fileid).remove();
+                alert("파일삭제가 완료 되었습니다.");
+            }else{
+                alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error : function (error){
+        } 
+     })
+};
+
+$('#pfphotoFile').on('change', function(event) {
+    var formData = new FormData();
+    var objFile = event.target;
+    var content = "";
+
+    formData.append("file", objFile.files[0]);
+    formData.append("filegrp_nm", "user_profile");
+    if($('#pfphotoFilegrpid').val() != '')
+        formData.append("filegrpid", $('#pfphotoFilegrpid').val());
+
+    if(displayWorkProgress()){
+	    $.ajax({
+	        url : '/uploadFile.do',
+	        processData : false,
+	        contentType : false,
+	        data : formData,
+	        type : 'POST',
+	        success : function(response) {
+	            if(response.result == 'fail'){
+			        alert(response.msg);
+			    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+			        $("#pfphotoFilegrpid").val(response.filegrpid);
+			        $("#pfphotoFileid").val(response.fileid);
+			        content = "<div class ='' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.file_idntfc_key+"')>"+response.orginl_file_nm +"</a>";
+                    content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =fn_deleteFileList('"+response.fileid+"','"+response.file_idntfc_key+"') value='X'/></div>"; 
+                    $('#fileUploadSuccess').html(content);
+			    }
+			    closeWorkProgress();
+	        }
+	    });
+	    $("#pfphotoFile").val("");
+	}
+
+    event.preventDefault();
+
+});
+
+var atchfileCnt = 2 ;
+var uploadFileCnt = 0 ;
+
+$('#multiFileInput').on("change", function(event) {
+                    
+        var objFile = document.querySelector('#multiFileInput');
+        var formData = new FormData();
+        var content = "";
+        
+        for( i = 0 ; i < objFile.files.length ; i++) {
+        
+               if(uploadFileCnt >= atchfileCnt){
+                   alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+               }else{
+                   formData.append("files", objFile.files[i]);
+                   uploadFileCnt++;
+               }
+        }
+        
+        formData.append("filegrpid", $("#filegrpid").val());
+        formData.append("filegrp_nm", "contract");
+        
+        if(uploadFileCnt >0 ){
+            $.ajax({
+                url : '/uploadMultipleFiles.do',
+                processData : false,
+                contentType : false,
+                data : formData,
+                type : 'POST',
+                success : function(response) {
+                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                        $("#filegrpid").val( response[0].filegrpid );
+                    }
+                    
+                    for(i = 0 ;i < response.length; i++ ){
+                        content = "<div class ='' id='inputFiles"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].file_idntfc_key+"')>"+response[i].orginl_file_nm +"</a>";
+                        content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =fn_deleteFileList('inputFiles"+response[i].fileid+"','"+response[i].file_idntfc_key+"') value='X'/></div>"; 
+                        $('#multipleFileUploadSuccess').append(content);
+                    }
+                }
+            });
+           $("#multiFileInput").val("");
+        }
+});
+
+</script>
+
+</div>
+</html>
