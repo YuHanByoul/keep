@@ -107,7 +107,9 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "UNION ALL "
             + "SELECT '/dupLogout' AS URL "
             + "UNION ALL "
-            + "SELECT '/cmm/changeRole.do' AS URL"
+            + "SELECT '/cmm/changeRole.do' AS URL "
+            + "UNION ALL "
+            + "SELECT '/example2/fileUpDown.html' AS URL"            
             + ") S2 "
             + ") B "
             + "ORDER BY URL ";
