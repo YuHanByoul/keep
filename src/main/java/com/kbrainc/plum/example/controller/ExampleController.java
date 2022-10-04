@@ -113,4 +113,12 @@ public class ExampleController {
         
         return "example/jsgrid";
     }
+    
+    @RequestMapping(value = "/example/excel.html")
+    public String excel(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "엑셀 일괄등록/다운로드");
+        request.setAttribute("MENU_NAVI", "엑셀 일괄등록/다운로드");
+        
+        return "example/excel";
+    }
 }
