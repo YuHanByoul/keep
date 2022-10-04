@@ -5,7 +5,7 @@
     SQL File Name : BbsDaoImpl.xml
     Description : 게시판 관리
 -->
-<mapper namespace="kr.plumsoft.plum.front.bbs.model.BbsDao">
+<mapper namespace="com.kbrainc.plum.front.bbs.model.BbsDao">
     
     <!-- 게시물 목록을 가져온다. -->
     <select id="selectPstList"  parameterType="front.PstVo" resultType ="front.PstVo" >
@@ -16,26 +16,39 @@
          FROM
          (
             SELECT 
-                PSTID,
-                TITLE,
+                A.PSTID,
+                A.TITLE,
+                A.HITS,
+                CASE WHEN FXD_NTC_YN = 'Y' THEN 1
+                     WHEN FXD_NTC_YN = 'N' THEN 2
+                     ELSE 3
+                END AS FXD_NTC_YN_ORD,
+                FXD_NTC_YN,
+                FXD_NTC_STRT_DT,
+                FXD_NTC_END_DT,
                 IFNULL(B.FILECNT,0) file_cnt,
                 B.NM ,
                 CONVERT(A.REG_DT, CHAR(10)) REG_DT,
                 CONVERT(A.UPDT_DT, CHAR(10)) UPDT_DT,
+                A.UPDT_DT ord_DT,
                 A.LOGIN_YN 
             FROM 
                 TB_PST A 
                 LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
                 INNER JOIN TB_USER B ON(A.REGUSERID = B.USERID)
-            WHERE 
-                1=1
+            WHERE 1=1
+                 AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
+                       WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
+                       WHEN FXD_NTC_YN ='N' THEN 'Y'
+                       ELSE 'N' 
+                 END )= 'Y'
                 <if test="bbsid != null and bbsid!= 0">
                 AND BBSID= #{bbsid}
                 </if>
                 <if test="searchType != null and searchType == 'TITLE' ">
                 AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
                 </if>         
-                <if test="searchType != null and searchType == 'cntnts' ">
+                <if test="searchType != null and searchType == 'CNTNTS' ">
                 AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
                 </if>
              )  A
@@ -125,6 +138,94 @@
             1=1
             AND BBSID = #{bbsid}  
     </select>
+    
+    
+    <!-- 게시물 목록을 가져온다. -->
+    <select id="selectTotalPstList"  parameterType="front.BbsVo" resultType ="front.PstVo" >
+        /* BbsDao.selectTotalPstList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+         A.*
+         FROM
+         (
+            SELECT 
+                A.PSTID,
+                A.TITLE,
+                IFNULL(A.HITS,0) HITS,
+                CASE WHEN FXD_NTC_YN = 'Y' THEN 1
+                     <if test ='hot_use_yn == "Y"' >
+                     WHEN HITS <![CDATA[>=]]> #{hot_use_stdr_hits}  THEN 2
+                     </if>
+                     ELSE 3
+                END AS order_num,
+                <choose>
+                    <when test='hot_use_yn == "Y"'>
+       	             CASE WHEN FXD_NTC_YN = 'N' AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN HITS
+	                      ELSE 0
+	                 END hot_order_num,
+       	             CASE WHEN FXD_NTC_YN = 'N' AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN 'Y'
+	                      ELSE 'N'
+	                 END hot_yn,
+                    </when>
+                    <otherwise>
+                      0 hot_order_num,
+                     'N' hot_yn,
+                    </otherwise>
+                </choose>
+                <choose>
+                    <when test='new_use_yn == "Y"'>
+       	             CASE WHEN FXD_NTC_YN = 'N' AND IFNULL(HITS,0) <![CDATA[<]]> #{hot_use_stdr_hits}
+       	                       AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{new_indict_daycnt}  DAY)
+       	                  THEN 'Y'
+	                      ELSE 'N'
+	                 END new_yn,
+                    </when>
+                    <otherwise>
+                      'N' new_yn,
+                    </otherwise>
+                </choose>
+                FXD_NTC_YN,
+                FXD_NTC_STRT_DT,
+                FXD_NTC_END_DT,
+                IFNULL(B.FILECNT,0) file_cnt,
+                B.NM ,
+                CONVERT(A.REG_DT, CHAR(10)) REG_DT,
+                CONVERT(A.UPDT_DT, CHAR(10)) UPDT_DT,
+                A.UPDT_DT ord_updt_dt,
+                A.REG_DT ord_reg_dt,
+                A.LOGIN_YN 
+            FROM 
+                TB_PST A 
+                LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
+                INNER JOIN TB_USER B ON(A.REGUSERID = B.USERID)
+            WHERE 1=1
+                 AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
+                       WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
+                       WHEN FXD_NTC_YN ='N' THEN 'Y'
+                       ELSE 'N' 
+                 END )= 'Y'
+                <if test="bbsid != null and bbsid!= 0">
+                AND BBSID= #{bbsid}
+                </if>
+                <if test="searchType != null and searchType == 'TITLE' ">
+                AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>         
+                <if test="searchType != null and searchType == 'CNTNTS' ">
+                AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+             )  A
+            WHERE 1=1 
+                <if test="searchType != null and searchType == 'WRITER' ">
+                AND A.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+                <if test="user == null or user.userid ==null ">
+                AND A.LOGIN_YN = 'N'
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    
+    
     
     
 </mapper>
