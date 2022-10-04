@@ -65,7 +65,7 @@ public class FaqController {
      *
      * @MethodName : getList
      * @Date : 2019. 5. 10.
-     * @Author : comnic
+     * @author : KBRAINC
      * @Modify :
      * @Description :
      * @param faqVoParam FaqVo 파라미터
@@ -96,7 +96,7 @@ public class FaqController {
      *
      * @MethodName : getFaq
      * @Date : 2019. 5. 10.
-     * @Author : comnic
+     * @author : KBRAINC
      * @Modify :
      * @Description :
      * @param faqVo :

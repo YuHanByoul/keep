@@ -20,7 +20,7 @@ import com.kbrainc.plum.rte.util.ExcelUtil;
  *
  * @ClassName : SampleExcel
  * @Description : 엑셀 파일 읽기/쓰기 샘플.
- * @author : comnic
+ * @author : KBRAINC
  * @date : 2021. 2. 25.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
