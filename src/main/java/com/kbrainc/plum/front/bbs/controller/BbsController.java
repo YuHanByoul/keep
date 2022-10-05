@@ -72,9 +72,109 @@ public class BbsController {
 		paramVo.setBbsid(bbsid);
 		BbsVo bbsInfo = bbsService.selectOneBbs(paramVo);
 		model.addAttribute("bbsid", bbsid);
+		model.addAttribute("BbsVo", paramVo);
 		model.addAttribute("bbsInfo", bbsInfo);
+		
+		BbsClVo bbsClVo = new BbsClVo();
+		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
+			bbsClVo.setBbsid(paramVo.getBbsid());
+		}
+		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
 		return "front/bbs/bbsMain";
+	}
+	
+	
+	/**
+	 * 
+	 * bbsid에 따른 게시물 읽기 처리.
+	 *
+	 * @Title : bbsRead
+	 * @Description :
+	 * @param bbsid
+	 * @param model
+	 * @param paramVo
+	 * @throws Exception
+	 * @return String
+	 */
+	@RequestMapping(value = "/front/bbs/{bbsid}/view.html")
+	public String bbsView(@PathVariable Integer bbsid, Model model, PstVo paramVo ,@UserInfo UserVo user) throws Exception {
+		CmntVo cmntVo = new CmntVo();
+		BbsClVo bbsClVo = new BbsClVo();
+		Map<String, Object> resultMap = new HashMap<>();
+
+		paramVo.setUser(user);
+		model.addAttribute("PstVo", paramVo);
+		
+		//조회수 증가 
+		bbsService.updatePstHitsCount(paramVo);
+		
+		BbsVo bbsVo = new BbsVo();
+		bbsVo.setBbsid(bbsid);
+		BbsVo bbsInfo = bbsService.selectOneBbs(bbsVo);
+		
+		cmntVo.setPstid(paramVo.getPstid());
+		cmntVo.setOrderField(" PSTID, CMNT_GRP,ORD ");
+		cmntVo.setOrderDirection(cmntVo.getOrderDirection().asc);
+
+		resultMap = bbsService.selectPst(paramVo);
+
+		paramVo = (PstVo) resultMap.get("paramMap");
+
+		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
+			bbsClVo.setBbsid(paramVo.getBbsid());
+		}
+		
+		Map result = bbsService.selectPst(paramVo);
+		
+		model.addAttribute("bbsInfo", bbsInfo);
+		model.addAttribute("pstInfo", result.get("paramMap"));
+		model.addAttribute("fileMap", result.get("fileMap"));
+		model.addAttribute("currentFileCnt", result.get("currentFileCnt"));
+		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
+		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
+
+		return "front/bbs/bbsView";
+	}
+	
+	/**
+	 * 
+	 * 게시물 상세 댓글 리스트 호출 
+	 *
+	 * @Title : bbsRead
+	 * @Description :
+	 * @param bbsid
+	 * @param model
+	 * @param paramVo
+	 * @throws Exception
+	 * @return String
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/front/bbs/{bbsid}/selectCmntList.do")
+	public Map<String,Object> selectCmntList(@PathVariable Integer bbsid, Model model, PstVo paramVo ,@UserInfo UserVo user) throws Exception {
+		
+		CmntVo cmntVo = new CmntVo();
+		Map<String, Object> resultMap = new HashMap<>();
+		List<CmntVo> result = new ArrayList<CmntVo>();
+		
+		cmntVo.setUser(user);
+		cmntVo.setPstid(paramVo.getPstid());
+		
+		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
+		
+		result = bbsService.selectCmntList(cmntVo);
+
+		if (result.size() > 0) {
+			resultMap.put("totalCount", (result.get(0).getTotalCount()));
+			//PaginationUtil.getPagingHtml(총페이지 갯수,현재페이지번호,페이지번호 표출 갯수)
+			resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+		} else {
+			resultMap.put("totalCount", 0);
+		}
+		resultMap.put("list", result);
+		
+		
+		return resultMap;
 	}
 
 	/**
@@ -134,7 +234,7 @@ public class BbsController {
 		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
 		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
-		return "front/bbs/bbsRead";
+		return "front/bbs/bbsView";
 	}
 
 	/**
@@ -408,6 +508,7 @@ public class BbsController {
 			paramVo.setBbsid(bbsid);
 			BbsVo bbsVo = bbsService.selectOneBbs(paramVo);
 
+			bbsVo.setBbs_clid(paramVO.getBbs_clid());
 			bbsVo.setSearchKeyword(paramVO.getSearchKeyword());
 			bbsVo.setSearchType(paramVO.getSearchType());
 			bbsVo.setRowPerPage(bbsVo.getPage_pst_cnt());
@@ -435,42 +536,4 @@ public class BbsController {
 		return resultMap;
 	}
 	
-	
-	/**
-	 * 
-	 * bbsid에 따른 게시물 읽기 처리.
-	 *
-	 * @Title : bbsRead
-	 * @Description :
-	 * @param bbsid
-	 * @param model
-	 * @param paramVo
-	 * @throws Exception
-	 * @return String
-	 */
-	@RequestMapping(value = "/front/bbs/{bbsid}/view.html")
-	public String bbsView(@PathVariable Integer bbsid, Model model, PstVo paramVo) throws Exception {
-		CmntVo cmntVo = new CmntVo();
-		BbsClVo bbsClVo = new BbsClVo();
-		Map<String, Object> resultMap = new HashMap<>();
-
-		// paramVo.setPstid(bbsid);
-		cmntVo.setPstid(paramVo.getPstid());
-		cmntVo.setOrderField(" PSTID, CMNT_GRP,ORD ");
-		cmntVo.setOrderDirection(cmntVo.getOrderDirection().asc);
-
-		resultMap = bbsService.selectPst(paramVo);
-
-		paramVo = (PstVo) resultMap.get("paramMap");
-
-		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
-			bbsClVo.setBbsid(paramVo.getBbsid());
-		}
-		model.addAttribute("result", bbsService.selectPst(paramVo));
-		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
-		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
-
-		return "front/bbs/bbsRead";
-	}
-
 }

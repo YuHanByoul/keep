@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/front/intro/detailLayout">
+<body>
+
+	<div layout:fragment="content">
+		<article class="notice-wrap">
+			<h3 class="title">공지사항</h3>
+
+			<div class="board-wrap">
+				<table class="board-view">
+					<caption>
+						<span>공지사항 내용</span>
+					</caption>
+					<colgroup>
+						<col style="width: 179px;">
+						<col>
+						<col style="width: 179px;">
+						<col>
+					</colgroup>
+					<tr>
+						<th scope="row">제 목</th>
+						<td colspan="3"><th:block th:text="${pstInfo.title}"></th:block>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">작성자</th>
+						<td><th:block th:text="${pstInfo.user_nm}"></th:block> (<th:block
+								th:text="${pstInfo.acnt}"></th:block>)</td>
+						<th scope="row">등록일</th>
+						<td><th:block
+								th:text="${#strings.substring(pstInfo.reg_dt,0,10)}"></th:block>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">분 류</th>
+						<td ><th:block th:text="${pstInfo.cl_nm}"></th:block>
+						</td>
+						<th scope="row">조회수</th>
+						<td ><th:block th:text="${pstInfo.hits}"></th:block>
+						</td>
+					</tr>
+
+					<!--
+					    <tr>
+                           <th scope="row">공지기간</th>
+                           <td colspan="3">
+                             <th:block th:text="${#strings.substring(pstInfo.updt_dt,0,10)}"></th:block> 
+                           </td>
+                       </tr> 
+                    -->
+                    
+					<tr>
+						<th scope="row">첨부파일</th>
+						<td colspan="3"><th:block th:if="${fileMap}">
+								<div th:each="item : ${fileMap}" th:id="${item.fileid}"
+									style="padding-top: 5px; padding-bottom: 10px;">
+									<a class="attach-file"
+										th:href="@{'/downloadFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.file_idntfc_key}}"
+										target='_blank'> 
+										<th:block th:text="${item.orginl_file_nm}" /> 
+										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.file_size)}" />)
+									</a>
+									<!-- <a th:name="${item.save_file_nm}" class = 'btn btn-xs btn-warnig' onclick = "fn_downFile(this.name)" > -->
+								</div>
+							</th:block> <th:block th:if="${fileMap} == null">첨부된 파일이 없습니다.</th:block></td>
+					</tr>
+
+					<tr>
+						<td colspan="4" class="contents"><th:block
+								th:utext="${pstInfo.cntnts}"></th:block></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="notice-button">
+				<a href="javascript:goListPage()" class="btn-medium btn-color3">목록</a>
+			</div>
+		</article>
+
+
+
+
+		<!-- 댓글 답글 영역 -->
+
+
+
+
+
+
+
+		<th:block th:if="not ${cmntList.isEmpty()}">
+			<div class="col-md-2 form-group"></div>
+			<div class="col-md-10 form-group">
+
+				<div th:each="item : ${cmntList}" class="col-md-12"
+					style="padding: 10px; border-bottom: 1px solid #cae1ef !important">
+
+					<form th:id="replyForm+${item.cmntid}">
+						<input type="hidden" id="pstid" name="pstid" th:value="${item.pstid}"> 
+						<input type="hidden" id="cmntid" name="cmntid" th:value="${item.cmntid}"> 
+						<input type="hidden" id="dpth" name="dpth" th:value="${item.dpth}">
+						<input type="hidden" id="ord" name="ord" th:value="${item.ord}">
+						<input type="hidden" id="cmnt_grp" name="cmnt_grp" th:value="${item.cmnt_grp}">
+
+						<div th:if="${item.del_yn} =='Y' " class="col-md-12 form-group text-left">
+							<div class="col-md-10 form-group col-xs-8">
+								<label>
+								    <th:block th:utext="${item.dpthStr}"></th:block>
+									<th:block th:text="${item.nm}"></th:block> 
+									( <th:block th:text="${item.acnt}"></th:block> )
+							   </label>
+							</div>
+
+							<div class="col-md-10 form-group col-xs-8">
+								<h6>
+									<label><th:block th:utext="${item.paddingStr}"></th:block>삭제된 게시물입니다.</label>
+								</h6>
+							</div>
+						</div>
+
+						<th:block th:if="${item.del_yn} =='N'">
+						
+							<span th:id="normalForm+${item.cmntid}">
+							
+								<div class="col-md-10 form-group col-xs-8" th:attr="style='padding-left:#{item.dpth}*10px;'">
+									<label><th:block th:utext="${item.paddingStr}"></th:block>
+										<th:block th:utext="${item.dpthStr}"></th:block>
+										<th:block th:text="${item.nm}"></th:block> 
+									   (<th:block th:text="${item.acnt}"></th:block> )
+								   </label>
+								</div>
+
+								<div class="form-group col-md-2 col-xs-4 text-right">
+									<input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_openModifytReplyForm(this.id)" value="수정 " /> 
+									<input type="button" class="btn btn-xs btn-danger"	th:id="${item.cmntid}" onclick="fn_deleteCmntReply(this.id)" value="삭제" />
+								</div>
+								<div class="col-md-12 form-group ">
+									<h6>
+										<th:span th:utext="${item.paddingStr}"></th:span>
+										<th:block th:text="${item.cntnts}"></th:block>
+									</h6>
+								</div> <th:block th:if="${bbsInfo.rply_use_yn} == 'Y' ">
+									<div class="col-md-12 form-group">
+										<th:block th:utext="${item.paddingStr}"></th:block>
+										<input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_openReplyForm(this.id)" value="답글" />
+									</div>
+								</th:block>
+
+							</span>
+
+							<span th:id="modifyForm+${item.cmntid}" style="display: none;">
+								<div class="col-md-12 form-group ">
+									<th:span th:utext="${item.paddingStr}"></th:span>
+									<label><th:block th:utext="${item.dpthStr}"></th:block>
+										<th:block th:text="${item.nm}">
+										</th:block> ( <th:block th:text="${item.acnt}"></th:block> )</label>
+								</div>
+								<div class="col-md-12  form-group">
+									<th:span th:utext="${item.paddingStr}"></th:span>
+									<textarea class="form-control" name="modifyReplyCntnts"	id="modifyReplyCntnts">
+			 	                    <th:block th:text="${item.cntnts}"></th:block></textarea>
+								</div>
+								<div class="form-group col-md-12 col-xs-12 ">
+									<input type="button" class="btn btn-xs btn-primary"	th:id="${item.cmntid}" onclick="fn_modifyCmntReply(this.id)"value="수정등록" /> 
+									<input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_closeModifyReplyForm(this.id)" value="취소" />
+								</div>
+							</span>
+						</th:block>
+
+
+						<div th:id="replyCntntsForm+${item.cmntid}" class="col-md-12 form-group" style="padding-left: 0px; display: none">
+							<div class="col-md-12 form-group ">
+								<textarea id="cntnts" name="cntnts" class="form-control"></textarea>
+							</div>
+							<div class="col-md-12 form-control-static">
+								<input type="button" class="btn btn-xs btn-primary"	th:id="${item.cmntid}" onclick="fn_insertReply(this.id)" value="답글등록" /> 
+								<input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_cnacelInsertReply(this.id)" value="취소 " />
+							</div>
+						</div>
+						
+						
+						
+						
+					</form>
+				</div>
+			</div>
+		</th:block>
+		
+		
+		<div id="pagination"></div>
+		
+		
+		
+		
+		
+		
+
+		<form id="listForm" th:action="@{/}" method="POST" class="form-inline"
+			onsubmit="return false;">
+			<input type="hidden" id="pageNumber" name="pageNumber" th:value="${PstVo.pageNumber}"> 
+			<input type="hidden" id="searchType" name="searchType" th:value="${PstVo.searchType}">
+			<input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${PstVo.searchKeyword}"> 
+			<input type="hidden" id="bbs_clid" name="bbs_clid" th:value="${PstVo.bbs_clid}">
+		</form>
+		
+    <script src="/js/ckeditor/ckeditor.js"></script>
+	<script th:inline="javascript">
+			var PstVo = /*[[${PstVo}]]*/null;
+			var bbsInfo = /*[[${bbsInfo}]]*/null;
+			var goListFormUrl = "/front/bbs/" + bbsInfo.bbsid + "/main.html"
+			var selectCmntListUrl = "/front/bbs/" + bbsInfo.bbsid + "/selectCmntList.do"
+			
+			$(document).ready(function(){
+				fn_selectCmntList();
+			})
+
+			function goListPage() {
+				var f = document.forms.listForm;
+				f.action = goListFormUrl;
+				f.submit();
+			}
+
+			
+			function fn_disableTrue(id){
+	     	   $("#"+id).attr("disabled","true");
+	        }
+	        function fn_disableFalse(id){
+	     	   $("#"+id).removeAttr("disabled");
+	        }
+	        
+	        
+	        function fn_postAjax(url, data,callBack){
+		       	$.ajax({
+					url : url,
+					type: 'POST',
+					cache : false,
+					dataType: 'json',
+					data : data,
+					success : function (data){
+						callBack(data);
+					},
+				 	error : function (error){
+					} 
+		    	});
+	        }
+	        
+	        function fn_selectCmntList(){
+	        	
+		       	$.ajax({
+					url :selectCmntListUrl,
+					type: 'POST',
+					cache : false,
+					dataType: 'json',
+					data : {"pstid" : PstVo.pstid },
+					success : function (data){
+						
+						console.log(data);
+						$("#pagination").html(data.pagination)
+						
+					},
+				 	error : function (error){
+					} 
+		    	});
+	        } 
+	        
+	        
+	        
+	        
+	        
+			/*************************************************/
+			function fn_cnacelInsertReply(cmntid) {
+				$("#replyForm" + cmntid + "  #cntnts").val("");
+				$("#replyCntntsForm" + cmntid).css("display", "none");
+				$("#normalForm" + cmntid).css("display", "block");
+				$("#modifyForm" + cmntid).css("display", "none");
+			}
+
+			function fn_closeModifyReplyForm(cmntid) {
+				$("#replyCntntsForm" + cmntid).css("display", "none");
+				$("#normalForm" + cmntid).css("display", "block");
+				$("#modifyForm" + cmntid).css("display", "none");
+			}
+
+			function fn_openModifytReplyForm(cmntid) {
+				$("#replyCntntsForm" + cmntid).css("display", "none");
+				$("#normalForm" + cmntid).css("display", "none");
+				$("#modifyForm" + cmntid).css("display", "block");
+			}
+
+			function fn_openReplyForm(cmntid) {
+				$("#replyCntntsForm" + cmntid).css("display", "block");
+			}
+
+			function fn_modifyCmntReply(cmntid) {
+				var cmntValidator = $("#replyForm" + cmntid).validate({
+					rules : {
+						modifyReplyCntnts : {
+							required : true
+						}
+					},
+					messages : {
+						modifyReplyCntnts : {
+							required : "답글 내용을 입력해 주십시오."
+						}
+					}
+
+				})
+				if ($("#replyForm" + cmntid).valid() == false)
+					return;
+				
+				var data = {
+					cntnts : $("#replyForm" + cmntid + " #modifyReplyCntnts").val(),
+					cmntid : $("#replyForm" + cmntid + " #cmntid").val(),
+				}
+				if (!confirm("답글을 수정 하시겠습니까?"))
+					return;
+				
+				var url = "/mng/bbs/updateCmnt.do";
+				
+				fn_postAjax(url, data, updateMessage);
+			}
+
+			function fn_deleteCmntReply(cmntid) {
+				var data = {
+					cmntid : $("#replyForm" + cmntid + " #cmntid").val(),
+					del_yn : 'Y'
+				}
+				if (!confirm("답글을 삭제 하시겠습니까?"))
+					return;
+				var url = "/mng/bbs/updateCmntReplyDelYn.do";
+				fn_postAjax(url, data, updateMessage);
+			}
+
+			function goModifyForm() {
+				var modifyUrl = "/bbs/pstUpdateForm.html?pstid="
+						+ $("#pstid").val() + "&pageNumber="
+						+ $("#pageNumber").val();
+				loadContent(modifyUrl);
+			}
+
+			var insertMessage = function(data) {
+				if (data.result == "success") {
+					alert("등록이 완료 되었습니다.");
+					goModifyForm()
+				} else {
+					alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+				}
+			}
+
+			var updateMessage = function(data) {
+				if (data.result == "success") {
+					alert("저장이 완료 되었습니다.");
+					goModifyForm()
+				} else {
+					alert("수정중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+				}
+			}
+
+			//답글
+			function fn_insertReply(cmntid) {
+
+				var cmntValidator = $("#replyForm" + cmntid).validate({
+					rules : {
+						cntnts : {
+							required : true
+						}
+					},
+					messages : {
+						cntnts : {
+							required : "답글 내용을 입력해 주십시오."
+						}
+					}
+				})
+				if ($("#replyForm" + cmntid).valid() == false)
+					return;
+				if (!confirm("답글을 저장하시겠습니까?"))
+					return;
+				var dpth = $("#replyForm" + cmntid + "  #dpth").val();
+				var data = {
+					pstid : $("#replyForm" + cmntid + "  #pstid").val(),
+					cntnts : $("#replyForm" + cmntid + "  #cntnts").val(),
+					dpth : (dpth == null || dpth == '0' || dpth == '') ? 0
+							: Number(dpth),
+					prnts_cmntid : $("#replyForm" + cmntid + "  #cmntid").val(),
+					cmnt_grp : $("#replyForm" + cmntid + "  #cmnt_grp").val(),
+					ord : $("#replyForm" + cmntid + "  #ord").val()
+				}
+				var url = "/mng/bbs/insertCmntReply.do";
+				fn_postAjax(url, data, insertMessage);
+			}
+
+			var atchfileCnt = 0;
+			var atchfileSize = 0;
+
+			/*<![CDATA[*/
+			var currentFileCnt = /*[[ ${currentFileCnt} ]]*/null;
+			/*]]>*/
+
+			var editor = null;
+			var formData = new FormData();
+			var uploadFileCnt = 0;
+
+			function disableFxdNtcDt() {
+				var fxd_ntc_yn = $("input[name='fxd_ntc_yn']:checked").val();
+				if (fxd_ntc_yn == 'Y') {
+					$("#fxd_ntc_dt_area").show();
+					$("#fxd_ntc_strt_dt").prop("disabled", true);
+					$("#fxd_ntc_end_dt").prop("disabled", true);
+				} else {
+					$("#fxd_ntc_dt_area").hide();
+					$("#fxd_ntc_strt_dt").prop("disabled", false);
+					$("#fxd_ntc_end_dt").prop("disabled", false);
+				}
+			}
+
+			$(function() {
+
+				disableFxdNtcDt();
+
+				$("[name=fxd_ntc_yn]").click(function() {
+					disableFxdNtcDt();
+				})
+
+				if ($("#pageNumber").val() != null) {
+					$("#pager" + $("#pageNumber").val()).addClass(
+							" jsgrid-pager-current-page ")
+				}
+
+				if ($("#atchfile_cnt").val() != null
+						&& $("#atchfile_cnt").val() != '0') {
+					atchfileCnt = $("#atchfile_cnt").val();
+				}
+				if ($("#atchfile_size").val() != null
+						&& $("#atchfile_size").val() != '0') {
+					atchfileSize = $("#atchfile_size").val();
+				}
+
+				if (currentFileCnt > 0)
+					uploadFileCnt = currentFileCnt;
+
+				//editor = CKEDITOR.replace("cntnts");
+				//에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 ) 
+				editor = CKEDITOR.replace('cntnts', {
+					enterMode : CKEDITOR.ENTER_BR
+				});
+				validate();
+
+				fn_defaultDisplay();
+				$("input").click(function() {
+					fn_defaultDisplay();
+				})
+
+				$('#multiFileInput')
+						.on(
+								"change",
+								function(event) {
+									var objFile = document
+											.querySelector('#multiFileInput');
+									var formData = new FormData();
+									var content = "";
+
+									for (i = 0; i < objFile.files.length; i++) {
+										if (objFile.files[i].size > (atchfileSize * 1024 * 1024)) {
+											alert(atchfileSize
+													+ "MG 초과하는 파일은 업로드 하실수 없습니다.  : "
+													+ objFile.files[i].name);
+										} else if (uploadFileCnt >= atchfileCnt) {
+											alert("첨부파일은  " + atchfileCnt
+													+ " 개 까지 가능합니다.");
+											break;
+										} else {
+											formData.append("files",
+													objFile.files[i]);
+											uploadFileCnt++;
+										}
+									}
+
+									formData.append("filegrpid",$("#filegrpid").val());
+									formData.append("filegrp_nm","bbs");
+									formData.append("bbsid",$("#bbsid").val());
+									
+									if (atchfileCnt > 0) {
+										$.ajax({
+													url : '/uploadMultipleFiles.do',
+													processData : false,
+													contentType : false,
+													data : formData,
+													type : 'POST',
+													success : function(response) {
+														if ($("#filegrpid").val() == '0'|| $("#filegrpid").val() == ''|| $("#filegrpid").val() == null) {
+															$("#filegrpid").val(response[0].filegrpid);
+														}
+														for (var i = 0; i < response.length; i++) {
+															
+															content = "<div class ='' id='inputFiles"+response[i].fileid+"' style='' >"
+																	+ response[i].orginl_file_nm;
+															content += "&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick = fn_deleteFileList('"
+																	+ response[i].fileid
+																	+ "','"
+																	+ response[i].file_idntfc_key
+																	+ "') value='X'/></div>";
+															$('#multipleFileUploadSuccess').append(content);
+														}
+													}
+										})
+
+										if (detectBrowser() == "other") {
+											$("#multiFileInput").val("");
+										} else {
+											$("#multiFileInput").replaceWith($("#multiFileInput").clone(true))
+										}
+									}
+								});
+
+			})
+
+			function fn_defaultDisplay() {
+				var login_yn = $("input[name='nlogin_perm_yn']:checked").val();
+				$("#login_yn").val(login_yn);
+				var fxd_ntc_use_yn = $("input[name='fxd_ntc_use_yn']:checked")
+						.val();
+				if (fxd_ntc_use_yn == "N") {
+					fn_disableTrue("fxd_ntc_strt_dt");
+					fn_disableTrue("fxd_ntc_end_dt");
+				} else {
+					fn_disableFalse("fxd_ntc_strt_dt");
+					fn_disableFalse("fxd_ntc_end_dt");
+				}
+			}
+
+		</script>
+
+	</div>
+</body>
+</html>

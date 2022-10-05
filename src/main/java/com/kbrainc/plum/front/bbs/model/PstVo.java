@@ -51,6 +51,8 @@ public class PstVo extends ParentRequestVo {
     /** **/
     private Integer bbs_clid;
     /** **/
+    private String cl_nm;
+    /** **/
     private String fxd_ntc_yn;
     /** **/
     private String fxd_ntc_strt_dt;

@@ -90,6 +90,7 @@
             B.fxd_ntc_use_yn      as fxd_ntc_use_yn,
             B.FXD_NTC_CNT         as fxd_ntc_cnt,
             D.CL_NM               as cl_nm,
+            D.BBS_CLID               as bbs_clid,
             (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
         FROM
             TB_PST A
@@ -188,7 +189,9 @@
                 FXD_NTC_STRT_DT,
                 FXD_NTC_END_DT,
                 IFNULL(B.FILECNT,0) file_cnt,
-                B.NM ,
+                C.BBS_CLID,
+                C.CL_NM,
+                D.NM ,
                 CONVERT(A.REG_DT, CHAR(10)) REG_DT,
                 CONVERT(A.UPDT_DT, CHAR(10)) UPDT_DT,
                 A.UPDT_DT ord_updt_dt,
@@ -197,7 +200,8 @@
             FROM 
                 TB_PST A 
                 LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-                INNER JOIN TB_USER B ON(A.REGUSERID = B.USERID)
+                LEFT OUTER JOIN TB_BBS_CL C ON  A.BBS_CLID = C.BBS_CLID
+                INNER JOIN TB_USER D ON(A.REGUSERID = D.USERID)
             WHERE 1=1
                  AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
                        WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
@@ -205,13 +209,16 @@
                        ELSE 'N' 
                  END )= 'Y'
                 <if test="bbsid != null and bbsid!= 0">
-                AND BBSID= #{bbsid}
+                AND A.BBSID= #{bbsid}
                 </if>
                 <if test="searchType != null and searchType == 'TITLE' ">
                 AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
                 </if>         
                 <if test="searchType != null and searchType == 'CNTNTS' ">
                 AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+                <if test="bbs_clid != null and bbs_clid !='' ">
+                AND A.BBS_CLID = #{bbs_clid}
                 </if>
              )  A
             WHERE 1=1 
@@ -224,8 +231,67 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
+      <!-- 게시물 댓글 목록을 가져온다. -->
+  <select id="selectCmntList" parameterType="front.CmntVo"  resultType ="front.CmntVo">
+        /* BbsDao.selectCmntList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            a.PSTID,
+            a.CMNTID,
+            a.CNTNTS,
+            a.PRNTS_CMNTID,
+            a.CMNT_GRP,
+            a.DPTH,
+            a.ORD,
+            a.OPN_YN,
+            a.UPDT_DT,
+            a.UPDTUSERID,
+            a.REG_DT,
+            a.REGUSERID,
+            a.del_yn,
+            b.NM,
+            b.ACNT
+        FROM
+            TB_CMNT a,
+            TB_USER b 
+        WHERE 
+            1=1
+            AND a.REGUSERID = b.USERID
+            -- AND a.del_yn = 'N'
+            AND PSTID = #{pstid}
+            <if test="prnts_cmntid != null and prnts_cmntid != 0 ">
+            AND PRNTS_CMNTID = #{prnts_cmntid}
+            </if>         
+            -- ORDER BY CMNT_GRP, PRNTS_CMNTID,DPTH,ORD
+        <include refid="PaginationMapper.footer"/>
+    </select>
     
+    <!-- 게시판 분류 목록을 가져온다. -->
+    <select id="selectBbsClList"  parameterType="front.BbsClVo" resultType="front.BbsClVo">
+        /* BbsDao.selectBbsClList */
+        SELECT 
+           CL_NM,
+           bbs_clid,
+           BBSID,
+           USE_YN,
+           ORD,
+           UPDT_DT updt_dt
+        FROM 
+           TB_BBS_CL  
+        WHERE 1=1 
+          AND BBSID = #{bbsid}
+    </select>
     
-    
-    
+    <!-- 게시물  조회수 증가  -->
+    <update id="updatePstHitsCount" parameterType="front.PstVo" >
+        /* BbsDao.updatePstHitsCount */
+        UPDATE TB_PST SET
+             HITS        = IFNULL(HITS,0)+1 
+            ,UPDT_DT     = NOW()
+            <if test="user != null and user.userid != null ">
+            ,UPDTUSERID  = #{user.userid }
+            </if>
+        WHERE 
+            pstid = #{pstid}  
+    </update>
 </mapper>

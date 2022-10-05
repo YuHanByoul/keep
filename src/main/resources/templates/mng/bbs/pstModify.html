@@ -146,6 +146,7 @@
 		  <input type="hidden" name="bbsid"   th:value = "${result.paramMap.bbsid}" >
 		  <input type="hidden" id="atchfile_use_yn" name="atchfile_use_yn"   th:value = "${result.paramMap.atchfile_use_yn}" >
 		  <input type="hidden" id="pstid" name="pstid"   th:value = "${result.paramMap.pstid}" >
+		  
 		<th:block th:if="${result.paramMap.atchfile_use_yn} =='Y'">
 		  <input type="hidden" id="atchfile_cnt" name="atchfile_cnt"   th:value = "${result.paramMap.atchfile_cnt}" >
 		  <input type="hidden" id="atchfile_size" name="atchfile_size"   th:value = "${result.paramMap.atchfile_size}">
@@ -221,10 +222,12 @@
 		 	                  
 		 	                  <span  th:id="modifyForm+${item.cmntid}" style="display:none;">
 				                 <div class="col-md-12 form-group " >
-				                  <th:span th:utext="${item.paddingStr}"></th:span><label><th:block th:utext="${item.dpthStr}"></th:block><th:block th:text="${item.nm}"></th:block> ( <th:block th:text="${item.acnt}"></th:block> )</label>
+				                  <th:span th:utext="${item.paddingStr}"></th:span><label><th:block th:utext="${item.dpthStr}"></th:block><th:block th:text="${item.nm}">
+				                  </th:block> ( <th:block th:text="${item.acnt}"></th:block> )</label>
 				                 </div>
 			 	                  <div class="col-md-12  form-group" >
-			 	                    <th:span th:utext="${item.paddingStr}"></th:span><textarea class = "form-control"  name="modifyReplyCntnts" id="modifyReplyCntnts" ><th:block th:text="${item.cntnts}"></th:block></textarea>
+			 	                    <th:span th:utext="${item.paddingStr}"></th:span><textarea class = "form-control"  name="modifyReplyCntnts" id="modifyReplyCntnts" >
+			 	                    <th:block th:text="${item.cntnts}"></th:block></textarea>
 			 	                  </div>
 			 	                  <div class="form-group col-md-12 col-xs-12 ">
 				                    <input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_modifyCmntReply(this.id)" value="수정등록"/>
@@ -251,21 +254,21 @@
             </div>
             
             <th:block th:if="not ${cmntList.isEmpty()}">
-		 	    <input type="hidden" id="pageNumber" name="pageNumber" th:value="${cmntList[0].page_number}">
-		 	    <input type="hidden" id="total_page" name="total_page" th:value="${cmntList[0].total_page}">
+		 	    <input type="hidden" id="pageNumber" name="pageNumber" th:value="${cmntList[0].pageNumber} ">
+		 	    <input type="hidden" id="totalPage" name="totalPage" th:value="${cmntList[0].totalPage}">
 		 	    <div class="text-center" >
-	               <th:block th:if="${cmntList[0].page_number} != 1 and ${cmntList[0].total_page} > 1">
+	               <th:block th:if="${cmntList[0].pageNumber} != 1 and ${cmntList[0].totalPage} > 1">
 			 	       <span class="jsgrid-pager-nav-button"><a onclick="fn_paging(1)"> &lt; 처음 ㅣ</a></span>
-			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].page_number} - 1" onclick="fn_paging(this.name)">이전</a></span>
+			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].pageNumber} - 1" onclick="fn_paging(this.name)">이전</a></span>
 	               </th:block>
-	               <th:block th:if="${cmntList[0].total_page} > 1">
-			 	     <th:block th:each="idx,item:${#numbers.sequence(1,cmntList[0].total_page)}">
+	               <th:block th:if="${cmntList[0].totalPage} > 1">
+			 	     <th:block th:each="idx,item:${#numbers.sequence(1,cmntList[0].totalPage)}">
 			 	       <span th:id="pager+${idx}" class="jsgrid-pager-nav-button "><a th:name="${idx}"  onclick="fn_paging(this.name)"><th:block th:text="${idx}"></th:block></a></span>
 			 	     </th:block>
 		 	       </th:block>
-	               <th:block th:if="${cmntList[0].page_number} != ${cmntList[0].total_page} and ${cmntList[0].total_page} > 1">
-			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].page_number} + 1" onclick="fn_paging(this.name)">다음</a></span>
-			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].total_page}"      onclick="fn_paging(this.name)">| 마지막 &gt;</a></span>
+	               <th:block th:if="${cmntList[0].page_number} != ${cmntList[0].totalPage} and ${cmntList[0].totalPage} > 1">
+			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].pageNumber} + 1" onclick="fn_paging(this.name)">다음</a></span>
+			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].totalPage}"      onclick="fn_paging(this.name)">| 마지막 &gt;</a></span>
 		 	       </th:block>
 		 	    </div>
  	     </th:block>
@@ -394,7 +397,7 @@ function fn_insertReply(cmntid){
    var  atchfileSize = 0;
    
 /*<![CDATA[*/ 
-var  currentFileCnt = /*[[ ${result.currentFileCnt} ]]*/; 
+var  currentFileCnt = /*[[ ${result.currentFileCnt} ]]*/null ; 
 /*]]>*/
 
 var editor = null;
@@ -507,10 +510,11 @@ function disableFxdNtcDt(){
 }
       
  function validate(){
+	 
         $("#pstUpdateForm").validate({
       	    ignore: [],
 	      	  rules: {  
-			    	  title       : { required: true , maxlength:200  }
+		    	  title       : { required: true , maxlength:200  }
 	 	         ,cntnts      : { required: true , maxlength:4000}
 	 	         ,bbs_clid    : { required: true }
 		    },
@@ -552,9 +556,6 @@ function disableFxdNtcDt(){
 		$("#fxd_ntc_end_dt" ).val('');
 	}
 	
-	
-	console.log($("#pstUpdateForm").serialize());
-
 	$.ajax({
 		url : "/bbs/updatePst.do",
 		type: 'POST',
@@ -572,10 +573,7 @@ function disableFxdNtcDt(){
 		}
 		
 	})
-}
- 
-   
-   
+ }
    
  //댓글 입력
  function fn_insertCmnt(){

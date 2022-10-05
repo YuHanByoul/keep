@@ -198,6 +198,14 @@ public interface BbsService {
 
     public List<PstVo> selectTotalPstList(BbsVo paramVO) throws Exception;
     
+    /**
+     * @Title : updatePstHitsCount
+     * @Description : 게시물 조회수 증가 
+     * @param paramVO PstVo 타입의 인자
+     * @return int
+     * @throws Exception :
+     */
+    public int updatePstHitsCount(PstVo pstVo) throws Exception;
     
     
     
