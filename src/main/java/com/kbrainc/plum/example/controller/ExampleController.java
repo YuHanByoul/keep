@@ -153,4 +153,20 @@ public class ExampleController {
         
         return "example/encrypt";
     }
+    
+    @RequestMapping(value = "/example/layout.html")
+    public String layout(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "레이아웃(thymeleaf)");
+        request.setAttribute("MENU_NAVI", "예제>레이아웃(thymeleaf)");
+        
+        return "example/layout";
+    }
+    
+    @RequestMapping(value = "/example/formSubmit.html")
+    public String formSubmit(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "form submit");
+        request.setAttribute("MENU_NAVI", "예제>form submit");
+        
+        return "example/formSubmit";
+    }
 }
