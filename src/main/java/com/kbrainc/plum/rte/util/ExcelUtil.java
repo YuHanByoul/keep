@@ -38,7 +38,7 @@ import liquibase.util.csv.CSVReader;
  *
  * @ClassName : ExcelUtil
  * @Description : 엑셀관련기능을 제공하는 클래스
- * @author : comnic
+ * @author : KBRAINC
  * @date : 2021. 2. 24.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved

@@ -15,7 +15,7 @@ import com.kbrainc.plum.rte.util.FileUtil;
  *
  * @ClassName : SampleCompress
  * @Description : TODO
- * @author : comnic
+ * @author : KBRAINC
  * @date : 2021. 2. 22.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved

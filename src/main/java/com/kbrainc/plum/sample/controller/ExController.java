@@ -24,14 +24,14 @@ public class ExController {
     @RequestMapping(value = "/test/mail")    
     public String testSendMail() throws Exception {
         MailVo mailVo = new MailVo();
-        mailVo.setRcptnEmail("comnics@gmail.com");
+        mailVo.setRcptnEmail("jeongsk@kbrainc.com");
         mailVo.setTitle("메일 발송 테스트");
         mailVo.setCntnts("메일 발송 테스트 샘플입니다.");
         Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
         
         List<MailRcptnVo> mailList  = new ArrayList<MailRcptnVo>();
-        mailList.add(new MailRcptnVo("comnics@gmail.com", null));
-        mailList.add(new MailRcptnVo("jskcj@emlook.com", null));
+        mailList.add(new MailRcptnVo("jeongsk@kbrainc.com", 0));
+        mailList.add(new MailRcptnVo("songjk@kbrainc.com", 0));
         mailVo = new MailVo("rhea.emlook@gmail.com", null, "다중 메일 테스트", "다중메일 테스트 입니다.", 0, "J", 0);
         Map<String, Object> resMap2 = mailService.sendMultiMail(mailList, mailVo);
     	

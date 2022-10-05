@@ -101,7 +101,7 @@ public class ExampleController {
     @RequestMapping(value = "/example/editor.html")
     public String editor(HttpServletRequest request) throws Exception {
         request.setAttribute("MENU_NAME", "에디터(CKEditor4)");
-        request.setAttribute("MENU_NAVI", "에디터(CKEditor4)");
+        request.setAttribute("MENU_NAVI", "예제>에디터(CKEditor4)");
         
         return "example/ckeditor4";
     }
@@ -109,7 +109,7 @@ public class ExampleController {
     @RequestMapping(value = "/example/grid.html")
     public String grid(HttpServletRequest request) throws Exception {
         request.setAttribute("MENU_NAME", "에디터(jsGrid)");
-        request.setAttribute("MENU_NAVI", "에디터(jsGrid)");
+        request.setAttribute("MENU_NAVI", "예제>에디터(jsGrid)");
         
         return "example/jsgrid";
     }
@@ -117,8 +117,56 @@ public class ExampleController {
     @RequestMapping(value = "/example/excel.html")
     public String excel(HttpServletRequest request) throws Exception {
         request.setAttribute("MENU_NAME", "엑셀 일괄등록/다운로드");
-        request.setAttribute("MENU_NAVI", "엑셀 일괄등록/다운로드");
+        request.setAttribute("MENU_NAVI", "예제>엑셀 일괄등록/다운로드");
         
         return "example/excel";
+    }
+    
+    @RequestMapping(value = "/example/serverValidation.html")
+    public String serverValidation(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "서버 validation");
+        request.setAttribute("MENU_NAVI", "예제>서버 validation");
+        
+        return "example/serverValidation";
+    }
+    
+    @RequestMapping(value = "/example/sendMail.html")
+    public String sendMail(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "메일발송");
+        request.setAttribute("MENU_NAVI", "예제>메일발송");
+        
+        return "example/sendMail";
+    }
+    
+    @RequestMapping(value = "/example/compress.html")
+    public String compress(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "압축/압축해제");
+        request.setAttribute("MENU_NAVI", "예제>압축/압축해제");
+        
+        return "example/compress";
+    }
+    
+    @RequestMapping(value = "/example/encrypt.html")
+    public String encrypt(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "문자열 암호화");
+        request.setAttribute("MENU_NAVI", "예제>문자열 암호화");
+        
+        return "example/encrypt";
+    }
+    
+    @RequestMapping(value = "/example/layout.html")
+    public String layout(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "레이아웃(thymeleaf)");
+        request.setAttribute("MENU_NAVI", "예제>레이아웃(thymeleaf)");
+        
+        return "example/layout";
+    }
+    
+    @RequestMapping(value = "/example/formSubmit.html")
+    public String formSubmit(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "form submit");
+        request.setAttribute("MENU_NAVI", "예제>form submit");
+        
+        return "example/formSubmit";
     }
 }

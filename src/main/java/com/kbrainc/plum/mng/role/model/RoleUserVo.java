@@ -11,7 +11,7 @@ import lombok.Setter;
  * @FileName : RoleUserVo.java
  * @Project : airecruit
  * @Date : 2019. 5. 10.
- * @Author : comnic
+ * @author : KBRAINC
  * @Version : 1.0
  * @Modify :
  * @Description :
