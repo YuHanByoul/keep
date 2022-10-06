@@ -169,4 +169,12 @@ public class ExampleController {
         
         return "example/formSubmit";
     }
+    
+    @RequestMapping(value = "/example/spinner.html")
+    public String spinner(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "spinner");
+        request.setAttribute("MENU_NAVI", "예제>spinner");
+        
+        return "example/spinner";
+    }
 }
