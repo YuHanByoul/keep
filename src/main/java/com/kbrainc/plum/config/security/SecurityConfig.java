@@ -136,7 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         if (multiloginIsUse) {
             // 1개의 세션만 로그인이 가능하며, 중복로그인시 먼저로그인한 사람의 세션이 끊기며 action시 expiredUrl로 이동하게 된다. 이중화
-            // 구성시 각서버에서만 적용됨.
+            // 이중화 구성시 각서버에서만 적용됨. 세션서버사용시 중복로그인 사용가능.
             http.sessionManagement().maximumSessions(1).expiredUrl("/dupLogout");
             //http.sessionManagement().maximumSessions(1).expiredUrl("/dupLogout").sessionRegistry(sessionRegistry()); // REDIS_SESSION
         }
