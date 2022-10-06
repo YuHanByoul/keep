@@ -222,7 +222,7 @@ function onDisplay(obj) {
  * DISPLAY off
  */
 function offDisplay(obj) {
-	if (obj) {
+	if (obj && obj.style != undefined) {
 		obj.style.display = "none";
 	}
 }
@@ -556,8 +556,11 @@ var workProgressBoxHeight	= 64;
 /**
  * 작업중 박스 표시
  */
-function displayWorkProgress() {
-	if (workProgressBox == null) {
+function displayWorkProgress(hidden) {
+    if (hidden) {
+        workProgressBox = {};
+        return true;
+    }else if (workProgressBox == null && hidden == undefined) {
 		var winWidth	= getWindowWidth();
 		var winHeight	= getWindowHeight();
 		
