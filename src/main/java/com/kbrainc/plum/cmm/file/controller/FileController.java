@@ -140,28 +140,30 @@ public class FileController {
     * @return ResponseEntity Resource
      * @throws Exception 
     */
-    @GetMapping("/downloadFileByFileid.do")
-    public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request, @UserInfo UserVo user) throws Exception {
+    @GetMapping(value = {"/downloadFileByFileid.do", "/downloadBbsFileByFileid.do"})
+    public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request, @UserInfo UserVo user) throws Exception {        
         FileVo fileVo = new FileVo();
     	fileVo.setFileid(fileid);
     	fileVo.setFile_idntfc_key(fileIdntfcKey);
     	String fileName ="";
         String contentType = null;
         try {
-    		
-    		fileVo=fileService.selectFile(fileVo);
+    		fileVo=fileService.selectFile(fileVo);   
 	    	fileName = fileVo.getSave_file_nm();
-	    	
     	}catch(Exception e) {
     		logger.info("Could not fileSql Exception ");
     	}
         
-        Resource resource = fileStorageService.loadFileAsResource(fileVo);
+        if ("/downloadBbsFileByFileid.do".equals(request.getRequestURI()) && fileVo.getBbsid() == 0) { // 게시판전용 파일다운로드
+            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSave_file_nm());
+        }
         
         if (!fileService.downloadFileCheck(fileVo, user)) {
             throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSave_file_nm());
         }
-        
+
+        Resource resource = fileStorageService.loadFileAsResource(fileVo);
+                
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
