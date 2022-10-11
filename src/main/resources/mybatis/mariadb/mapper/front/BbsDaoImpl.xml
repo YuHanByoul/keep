@@ -70,6 +70,7 @@
             B.BBSID      as bbsid,
             B.NM         as nm,
             A.reguserid  as userid,
+            A.reguserid  as reguserid,
             C.NM    as user_nm,
             C.ACNT  as acnt,
             A.REG_DT     as reg_dt,
@@ -105,7 +106,7 @@
     </select>
     
     
-        <!-- 게시물을 정보를 가져온다. -->
+    <!-- 게시판 정보를 가져온다. -->
     <select id="selectOneBbs" parameterType="front.BbsVo" resultType="front.BbsVo">
         /* BbsDao.selectOneBbs */
         SELECT
@@ -140,7 +141,6 @@
             AND BBSID = #{bbsid}  
     </select>
     
-    
     <!-- 게시물 목록을 가져온다. -->
     <select id="selectTotalPstList"  parameterType="front.BbsVo" resultType ="front.PstVo" >
         /* BbsDao.selectTotalPstList */
@@ -153,18 +153,31 @@
                 A.PSTID,
                 A.TITLE,
                 IFNULL(A.HITS,0) HITS,
-                CASE WHEN FXD_NTC_YN = 'Y' THEN 1
-                     <if test ='hot_use_yn == "Y"' >
-                     WHEN HITS <![CDATA[>=]]> #{hot_use_stdr_hits}  THEN 2
-                     </if>
+                CASE 
+                    <choose>
+	                    <when test='fxd_ntc_use_yn == "Y"'>
+	                      WHEN FXD_NTC_YN = 'Y' THEN 1
+	                    </when>
+                         <otherwise>
+	                      WHEN FXD_NTC_YN = 'Y' THEN 3
+                         </otherwise>
+                    </choose>
+                    <choose>
+	                    <when test='hot_use_yn == "Y"'>
+	                      WHEN HITS <![CDATA[>=]]> #{hot_use_stdr_hits}  THEN 2
+	                    </when>
+                         <otherwise>
+	                      WHEN HITS <![CDATA[>=]]> #{hot_use_stdr_hits}  THEN 3
+                         </otherwise>
+                    </choose>
                      ELSE 3
                 END AS order_num,
                 <choose>
                     <when test='hot_use_yn == "Y"'>
-       	             CASE WHEN FXD_NTC_YN = 'N' AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN HITS
+       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN HITS
 	                      ELSE 0
 	                 END hot_order_num,
-       	             CASE WHEN FXD_NTC_YN = 'N' AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN 'Y'
+       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN 'Y'
 	                      ELSE 'N'
 	                 END hot_yn,
                     </when>
@@ -175,7 +188,7 @@
                 </choose>
                 <choose>
                     <when test='new_use_yn == "Y"'>
-       	             CASE WHEN FXD_NTC_YN = 'N' AND IFNULL(HITS,0) <![CDATA[<]]> #{hot_use_stdr_hits}
+       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hot_use_stdr_hits}
        	                       AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{new_indict_daycnt}  DAY)
        	                  THEN 'Y'
 	                      ELSE 'N'
@@ -203,11 +216,15 @@
                 LEFT OUTER JOIN TB_BBS_CL C ON  A.BBS_CLID = C.BBS_CLID
                 INNER JOIN TB_USER D ON(A.REGUSERID = D.USERID)
             WHERE 1=1
+                 AND A.PRNTS_PSTID IS NULL
+                  <if test='fxd_ntc_use_yn == "Y"'>
                  AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
                        WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
-                       WHEN FXD_NTC_YN ='N' THEN 'Y'
+                       WHEN FXD_NTC_YN ='N' or FXD_NTC_YN = null THEN 'Y'
                        ELSE 'N' 
                  END )= 'Y'
+                 </if>
+                 
                 <if test="bbsid != null and bbsid!= 0">
                 AND A.BBSID= #{bbsid}
                 </if>
@@ -231,7 +248,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
-      <!-- 게시물 댓글 목록을 가져온다. -->
+  <!-- 게시물 댓글 목록을 가져온다. -->
   <select id="selectCmntList" parameterType="front.CmntVo"  resultType ="front.CmntVo">
         /* BbsDao.selectCmntList */
         <include refid="PaginationMapper.header"/>
@@ -257,7 +274,7 @@
         WHERE 
             1=1
             AND a.REGUSERID = b.USERID
-            -- AND a.del_yn = 'N'
+            -- AND A.DEL_YN = 'N'
             AND PSTID = #{pstid}
             <if test="prnts_cmntid != null and prnts_cmntid != 0 ">
             AND PRNTS_CMNTID = #{prnts_cmntid}
@@ -294,4 +311,215 @@
         WHERE 
             pstid = #{pstid}  
     </update>
+    
+        <!-- 게시물 댓글를 추가한다. -->
+    <insert  id="insertCmnt" useGeneratedKeys="true" keyProperty="cmntid" parameterType="front.CmntVo">
+        /* BbsDao.insertCmnt */
+        INSERT INTO TB_CMNT (
+            PSTID,
+            CNTNTS,
+            PRNTS_CMNTID,
+            CMNT_GRP,
+            DPTH,
+            ORD,
+            DEL_YN,
+            UPDT_DT,
+            UPDTUSERID,
+            REG_DT,
+            REGUSERID
+        )VALUES(
+            #{pstid       },
+            #{cntnts      },
+            #{prnts_cmntid},
+            IFNULL(#{cmnt_grp }, (SELECT  IFNULL(MAX(cmnt_GRP),0) +1 FROM TB_CMNT CMNT)),
+            IFNULL(#{dpth}, 0),
+            IFNULL(#{ord  }, 1),
+            'N',
+            NOW(),
+            #{user.userid },
+            NOW(),
+            #{user.userid }
+        );
+    </insert>
+    
+    <!-- 게시물 댓글을 수정한다. -->
+    <update  id="updateCmnt" parameterType="front.CmntVo" >
+        /* BbsDao.updateCmnt */
+        UPDATE TB_CMNT SET
+            CNTNTS        =#{cntnts}, 
+            UPDT_DT       = NOW(),
+            UPDTUSERID    =#{user.userid}
+        WHERE 
+            cmntid = #{cmntid} 
+    </update>
+    
+    <!-- 게시물 댓글 순서를 수정한다. -->
+    <update  id="updateCmntOrdElse" parameterType="front.CmntVo" >
+        /* BbsDao.updateCmntOrdElse */
+        <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
+        SELECT 
+            CASE 
+                WHEN
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmnt_grp} AND DPTH = #{dpth}+1 ) = 0
+                    THEN 
+                        #{ord}+1
+                ELSE
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmnt_grp}  AND DPTH = #{dpth}+1 )+1
+            END
+        </selectKey>
+        update tb_cmnt set
+            ord = ord +1
+        where  
+            CMNT_GRP = #{cmnt_grp}
+            and ord >= #{ord} 
+    </update>
+    
+    <!-- 게시물 댓글 순서를 수정한다. -->
+    <update  id="updateCmntOrd" parameterType="front.CmntVo" >
+        /* BbsDao.updateCmntOrd */
+        UPDATE TB_CMNT SET
+            ORD           = #{ord}, 
+            UPDT_DT       = NOW(),
+            UPDTUSERID    = #{user.userid}
+        WHERE 
+           cmntid = #{cmntid} 
+    </update>
+    
+    <!-- 게시물 댓글 삭제 여부 수정한다. -->
+    <update id="updateCmntReplyDelYn" parameterType="front.CmntVo" >
+        /* BbsDao.updateCmntReplyDelYn */
+        UPDATE TB_CMNT SET
+            DEL_YN      = #{del_yn},
+            UPDT_DT     = NOW(),
+            UPDTUSERID  = #{user.userid }
+        WHERE 
+            cmntid = #{cmntid}  
+    </update>
+    
+    <!-- 게시물 답글 정보를 가져온다 -->
+    <select id="selectReplyPstList"  parameterType="front.PstVo" resultType ="front.PstVo" >
+        /* BbsDao.selectReplyPstList */
+        SELECT 
+            A.PSTID      as pstid,
+            B.BBSID      as bbsid,
+            B.NM         as nm,
+            A.reguserid  as userid,
+            A.reguserid  ,
+            C.NM    as user_nm,
+            C.ACNT  as acnt,
+            A.REG_DT     as reg_dt,
+            IFNULL(A.HITS,0)   as hits,
+            A.TITLE               as title,
+            A.CNTNTS              as cntnts,
+            A.UPDT_DT             as updt_dt,
+            A.fxd_ntc_yn,
+            A.BBS_CLID            as bbs_clid,
+            IFNULL(a.FILEGRPID,0) as filegrpid,
+            B.hot_use_yn,
+            b.atchfile_use_yn     as atchfile_use_yn,
+            b.atchfile_cnt        as atchfile_cnt,
+            b.atchfile_size       as atchfile_size,
+            B.cmnt_use_yn         as cmnt_use_yn,
+            B.rply_use_yn         as rply_use_yn,
+            B.cl_use_yn           as cl_use_yn,
+            B.fxd_ntc_use_yn      as fxd_ntc_use_yn,
+            B.FXD_NTC_CNT         as fxd_ntc_cnt,
+            D.CL_NM               as cl_nm,
+            D.BBS_CLID               as bbs_clid,
+            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
+        FROM
+            TB_PST A
+            LEFT OUTER JOIN TB_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
+            TB_BBS B,
+            TB_USER C
+        WHERE 
+            1=1
+            AND A.BBSID = B.BBSID
+            AND A.REGUSERID = C.USERID
+            AND A.PRNTS_PSTID = #{prnts_pstid}
+            ORDER BY UPDT_DT DESC
+    </select>
+    
+    <!-- 게시물을 추가한다. -->
+    <insert id="insertPst" parameterType="front.PstVo">
+        /* BbsDao.insertPst */
+        INSERT INTO TB_PST (
+            BBSID,
+            TITLE,
+            CNTNTS,
+            PRNTS_PSTID,
+            GRP,
+            DPTH,
+            ORD,
+            HITS,
+            BBS_CLID,
+            FXD_NTC_YN,
+            FXD_NTC_STRT_DT,
+            FXD_NTC_END_DT,
+            LOGIN_YN,
+            FILEGRPID,
+            UPDT_DT,
+            UPDTUSERID,
+            REG_DT,
+            REGUSERID
+        )VALUES(
+            #{bbsid         },
+            #{title         },
+            #{cntnts        },
+            #{prnts_pstid   },
+            #{grp           },
+            #{dpth          },
+            #{ord           },
+            #{hits          },
+            #{bbs_clid      },
+            #{fxd_ntc_yn    },
+            <choose>
+	            <when test='fxd_ntc_yn == "Y" '>
+	            FXD_NTC_STRT_DT= #{fxd_ntc_strt_dt},
+	            FXD_NTC_END_DT = #{fxd_ntc_end_dt },
+	            </when>
+	            <otherwise>
+	            FXD_NTC_STRT_DT= null,
+	            FXD_NTC_END_DT = null,
+	            </otherwise>
+            </choose>
+            #{login_yn      },
+            #{filegrpid     },
+            NOW(),
+            #{user.userid },
+            NOW(),
+            #{user.userid }
+        )
+    </insert>
+    
+    
+   <!-- 게시물을 수정한다. -->
+   <update id="updatePst" parameterType="front.PstVo">
+        /* BbsDao.updatePst */
+        UPDATE TB_PST SET     
+            TITLE          = #{title         },
+            CNTNTS         = #{cntnts        },
+            BBS_CLID       = #{bbs_clid      },
+            FILEGRPID      = #{filegrpid     },
+            UPDT_DT        = NOW(),
+            UPDTUSERID     = #{user.userid   },
+            FXD_NTC_YN     = #{fxd_ntc_yn    },
+            <choose>
+	            <when test='fxd_ntc_yn == "Y" '>
+	            FXD_NTC_STRT_DT= #{fxd_ntc_strt_dt},
+	            FXD_NTC_END_DT = #{fxd_ntc_end_dt },
+	            </when>
+	            <otherwise>
+	            FXD_NTC_STRT_DT= null,
+	            FXD_NTC_END_DT = null,
+	            </otherwise>
+            </choose>
+            LOGIN_YN       = #{login_yn      }
+        WHERE 
+            PSTID = #{pstid}     
+    </update>
+    
+    
+    
+    
 </mapper>

@@ -1,13 +1,11 @@
 package com.kbrainc.plum.front.bbs.controller;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
@@ -15,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.bbs.model.BbsClVo;
@@ -24,13 +21,10 @@ import com.kbrainc.plum.front.bbs.model.CmntVo;
 import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
-import com.kbrainc.plum.sample.model.PagingVo.ORDER_DIRECTION;
 
 /**
  * 
@@ -98,7 +92,7 @@ public class BbsController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/front/bbs/{bbsid}/view.html")
-	public String bbsView(@PathVariable Integer bbsid, Model model, PstVo paramVo ,@UserInfo UserVo user) throws Exception {
+	public String bbsView(@PathVariable Integer bbsid, Model model, PstVo paramVo, @UserInfo UserVo user) throws Exception {
 		CmntVo cmntVo = new CmntVo();
 		BbsClVo bbsClVo = new BbsClVo();
 		Map<String, Object> resultMap = new HashMap<>();
@@ -113,26 +107,17 @@ public class BbsController {
 		bbsVo.setBbsid(bbsid);
 		BbsVo bbsInfo = bbsService.selectOneBbs(bbsVo);
 		
-		cmntVo.setPstid(paramVo.getPstid());
-		cmntVo.setOrderField(" PSTID, CMNT_GRP,ORD ");
-		cmntVo.setOrderDirection(cmntVo.getOrderDirection().asc);
-
 		resultMap = bbsService.selectPst(paramVo);
 
-		paramVo = (PstVo) resultMap.get("paramMap");
-
-		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
-			bbsClVo.setBbsid(paramVo.getBbsid());
-		}
-		
-		Map result = bbsService.selectPst(paramVo);
-		
+		//paramVo = (PstVo) resultMap.get("paramMap");
+		//Map result = bbsService.selectPst(paramVo);
+		paramVo.setPrnts_pstid(paramVo.getPstid());
+        model.addAttribute("replyList", bbsService.selectReplyPstList(paramVo));
+        
 		model.addAttribute("bbsInfo", bbsInfo);
-		model.addAttribute("pstInfo", result.get("paramMap"));
-		model.addAttribute("fileMap", result.get("fileMap"));
-		model.addAttribute("currentFileCnt", result.get("currentFileCnt"));
-		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
-		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
+		model.addAttribute("pstInfo", resultMap.get("paramMap"));
+		model.addAttribute("fileMap", resultMap.get("fileMap"));
+		model.addAttribute("currentFileCnt", resultMap.get("currentFileCnt"));
 
 		return "front/bbs/bbsView";
 	}
@@ -159,8 +144,10 @@ public class BbsController {
 		
 		cmntVo.setUser(user);
 		cmntVo.setPstid(paramVo.getPstid());
-		
-		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
+		cmntVo.setPageNumber(paramVo.getPageNumber());
+		cmntVo.setOrderField(" PSTID, CMNT_GRP,ORD ");
+		cmntVo.setOrderField("CMNT_GRP DESC, ORD ");
+		cmntVo.setOrderDirection(cmntVo.getOrderDirection().asc);
 		
 		result = bbsService.selectCmntList(cmntVo);
 
@@ -192,87 +179,21 @@ public class BbsController {
 	public String bbsPstInsertForm(@PathVariable Integer bbsid, Model model) throws Exception {
 
 		BbsVo paramVo = new BbsVo(bbsid);
-		BbsClVo bbsClVo = new BbsClVo(bbsid);
-
-		model.addAttribute("clList", bbsService.selectBbsCl(bbsClVo));
-		model.addAttribute("paramMap", bbsService.selectOneBbs(paramVo));
+		
+		paramVo.setBbsid(bbsid);
+		BbsVo bbsInfo = bbsService.selectOneBbs(paramVo);
+		model.addAttribute("bbsid", bbsid);
+		model.addAttribute("BbsVo", paramVo);
+		model.addAttribute("bbsInfo", bbsInfo);
+		
+		BbsClVo bbsClVo = new BbsClVo();
+		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
+			bbsClVo.setBbsid(paramVo.getBbsid());
+		}
+		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
 		return "front/bbs/bbsWrite";
 	}
-
-	/**
-	 * 
-	 * bbsid에 따른 게시물 읽기 처리.
-	 *
-	 * @Title : bbsRead
-	 * @Description :
-	 * @param bbsid
-	 * @param model
-	 * @param paramVo
-	 * @throws Exception
-	 * @return String
-	 */
-	@RequestMapping(value = "/front/bbs/{bbsid}/modify.html")
-	public String bbsRead(Model model, PstVo paramVo) throws Exception {
-		CmntVo cmntVo = new CmntVo();
-		BbsClVo bbsClVo = new BbsClVo();
-		Map<String, Object> resultMap = new HashMap<>();
-
-		// paramVo.setPstid(bbsid);
-		cmntVo.setPstid(paramVo.getPstid());
-		cmntVo.setOrderField(" PSTID, CMNT_GRP,ORD ");
-		cmntVo.setOrderDirection(cmntVo.getOrderDirection().asc);
-
-		resultMap = bbsService.selectPst(paramVo);
-
-		paramVo = (PstVo) resultMap.get("paramMap");
-
-		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
-			bbsClVo.setBbsid(paramVo.getBbsid());
-		}
-		model.addAttribute("result", bbsService.selectPst(paramVo));
-		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
-		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
-
-		return "front/bbs/bbsView";
-	}
-
-	/**
-	 * 
-	 * bbsid에 따른 게시물 수정 화면.
-	 *
-	 * @Title : bbsModify
-	 * @Description :
-	 * @param bbsid
-	 * @param model
-	 * @param paramVo
-	 * @throws Exception
-	 * @return String
-	 */
-	@RequestMapping(value = "/front/bbs/{bbsid}/modify1.html")
-	public String bbsModify(@PathVariable Integer bbsid, Model model, PstVo paramVo) throws Exception {
-		CmntVo cmntVo = new CmntVo();
-		BbsClVo bbsClVo = new BbsClVo();
-		Map<String, Object> resultMap = new HashMap<>();
-
-		cmntVo.setPstid(paramVo.getPstid());
-		cmntVo.setOrderField(" PSTID, CMNT_GRP,ORD ");
-		cmntVo.setOrderDirection(CmntVo.ORDER_DIRECTION_ASC);
-
-		resultMap = bbsService.selectPst(paramVo);
-
-		paramVo = (PstVo) resultMap.get("paramMap");
-
-		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
-			bbsClVo.setBbsid(paramVo.getBbsid());
-		}
-		model.addAttribute("result", bbsService.selectPst(paramVo));
-		model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
-		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
-
-		return "front/bbs/bbsModify";
-	}
-
 	/**
 	 * 
 	 * bbsid에 따른 게시물 등록 처리.
@@ -304,7 +225,48 @@ public class BbsController {
 
 		return resultMap;
 	}
+	
+	/**
+	 * 
+	 * bbsid에 따른 게시물 수정 화면 이동.
+	 *
+	 * @Title : bbsRead
+	 * @Description :
+	 * @param bbsid
+	 * @param model
+	 * @param paramVo
+	 * @throws Exception
+	 * @return String
+	 */
+	@RequestMapping(value = "/front/bbs/{bbsid}/modify.html")
+	public String bbsRead(@PathVariable Integer bbsid, Model model, PstVo paramVo,@UserInfo UserVo user) throws Exception {
+		
+		CmntVo cmntVo = new CmntVo();
+		BbsClVo bbsClVo = new BbsClVo();
+		Map<String, Object> resultMap = new HashMap<>();
 
+		paramVo.setUser(user);
+		model.addAttribute("PstVo", paramVo);
+		
+		if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
+			bbsClVo.setBbsid(paramVo.getBbsid());
+		}
+		model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
+		
+		BbsVo bbsVo = new BbsVo();
+		bbsVo.setBbsid(bbsid);
+		BbsVo bbsInfo = bbsService.selectOneBbs(bbsVo);
+		
+		resultMap = bbsService.selectPst(paramVo);
+
+		model.addAttribute("bbsInfo", bbsInfo);
+		model.addAttribute("pstInfo", resultMap.get("paramMap"));
+		model.addAttribute("fileMap", resultMap.get("fileMap"));
+		model.addAttribute("currentFileCnt", resultMap.get("currentFileCnt"));
+		
+		return "front/bbs/bbsModify";
+	}
+	
 	/**
 	 * 
 	 * bbsid에 따른 게시물 수정 처리.

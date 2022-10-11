@@ -1,7 +1,10 @@
 package com.kbrainc.plum.front.bbs.model;/** **/
 
+import java.util.ArrayList;
+
 import org.apache.ibatis.type.Alias;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
@@ -96,6 +99,10 @@ public class PstVo extends ParentRequestVo {
 	private String cl_use_yn ;
 	private String fxd_ntc_use_yn;
 	private Integer fxd_ntc_cnt;
+	
+	//답글 리스트용 추가 
+	private ArrayList<FileVo> fileMap;
+	private Integer currentFileCnt;
 	
 	//현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer cur_fxd_ntc_cnt;
