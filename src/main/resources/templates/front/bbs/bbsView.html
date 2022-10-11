@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/front/intro/detailLayout">
+<body>
+
+	<div layout:fragment="content">
+	
+	<script type="text/javascript" src="/js/validator/jquery.validate.js"></script>    
+	<script type="text/javascript" src="/js/validator/jquery.validate.add.js"></script>    
+	<script type="text/javascript" src="/js/validator/jquery.validate.setting2.js"></script>
+	
+		<article class="notice-wrap">
+			<h3 class="title">공지사항</h3>
+
+			<div class="board-wrap">
+				<table class="board-view">
+					<caption>
+						<span>공지사항 내용</span>
+					</caption>
+					<colgroup>
+						<col style="width: 179px;">
+						<col>
+						<col style="width: 179px;">
+						<col>
+					</colgroup>
+					<tr>
+						<th scope="row">제 목</th>
+						<td colspan="3"><th:block th:text="${pstInfo.title}"></th:block>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">작성자</th>
+						<td><th:block th:text="${pstInfo.user_nm}"></th:block> (<th:block
+								th:text="${pstInfo.acnt}"></th:block>)</td>
+						<th scope="row">등록일</th>
+						<td><th:block
+								th:text="${#strings.substring(pstInfo.reg_dt,0,10)}"></th:block>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">분 류</th>
+						<td ><th:block th:text="${pstInfo.cl_nm}"></th:block>
+						</td>
+						<th scope="row">조회수</th>
+						<td ><th:block th:text="${pstInfo.hits}"></th:block>
+						</td>
+					</tr>
+
+					<!--
+					    <tr>
+                           <th scope="row">공지기간</th>
+                           <td colspan="3">
+                             <th:block th:text="${#strings.substring(pstInfo.updt_dt,0,10)}"></th:block> 
+                           </td>
+                       </tr> 
+                    -->
+                    
+					<tr>
+						<th scope="row">첨부파일</th>
+						<td colspan="3"><th:block th:if="${fileMap}">
+								<div th:each="item : ${fileMap}" th:id="${item.fileid}"
+									style="padding-top: 5px; padding-bottom: 10px;">
+									<a class="attach-file"
+										th:href="@{'/downloadBbsFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.file_idntfc_key}}"
+										target='_blank'> 
+										<th:block th:text="${item.orginl_file_nm}" /> 
+										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.file_size)}" />)
+									</a>
+									<!-- <a th:name="${item.save_file_nm}" class = 'btn btn-xs btn-warnig' onclick = "fn_downFile(this.name)" > -->
+								</div>
+							</th:block> <th:block th:if="${fileMap} == null">첨부된 파일이 없습니다.</th:block></td>
+					</tr>
+
+					<tr>
+						<td colspan="4" class="contents"><th:block
+								th:utext="${pstInfo.cntnts}"></th:block></td>
+					</tr>
+				</table>
+				
+				<div class="notice-button">
+				
+					<th:block th:if="${PstVo.user.userid} == ${pstInfo.reguserid}">
+					<a href="javascript:goModifyPage()" class="btn-medium btn-color3">수정</a>
+					</th:block>
+					<a href="javascript:goListPage()" class="btn-medium btn-color3">목록으로</a>
+			    </div>
+			    
+			    <br/>
+			    <br/>
+			   <!--******************* 답글 사용(리스트) START *****************************-->
+				<th:block th:if="${bbsInfo.rply_use_yn} == 'Y' ">
+				<!--답글 리스트   -->
+			    <table class="board-view" th:each="item : ${replyList}">
+					<caption>
+						<span>공지사항 내용</span>
+					</caption>
+					<colgroup>
+						<col style="width: 179px;">
+						<col>
+						<col style="width: 179px;">
+						<col>
+					</colgroup>
+					
+					<tr>
+						<th scope="row">제 목</th>
+						<td colspan="3">
+						   RE:<th:block th:text="${pstInfo.title}"></th:block>
+						   <br/>
+						   <br/>
+						   <th:block th:text="${item.title}"></th:block>
+						</td>
+					</tr>
+					
+					<tr>
+						<th scope="row">작성자</th>
+						<td><th:block th:text="${item.user_nm}"></th:block></td>
+						<th scope="row">등록일</th>
+						<td><th:block th:text="${#strings.substring(pstInfo.reg_dt,0,10)}"></th:block>
+						</td>
+					</tr>
+					
+				    <th:block th:if="${bbsInfo.atchfile_use_yn} == 'Y' ">
+						<tr>
+							<th scope="row">첨부파일</th>
+							<td colspan="3"><th:block th:if="${item.fileMap}">
+								<div th:each="file : ${fileMap}" th:id="${file.fileid}"
+									style="padding-top: 5px; padding-bottom: 10px;">
+									<a class="attach-file"
+										th:href="@{'/downloadBbsFileByFileid.do?fileid='+${file.fileid}+'&file_idntfc_key='+${file.file_idntfc_key}}"
+										target='_blank'> 
+										<th:block th:text="${file.orginl_file_nm}" /> 
+										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(file.file_size)}" />)
+									</a>
+								</div>
+							</th:block> <th:block th:if="${item.fileMap} == null">첨부된 파일이 없습니다.</th:block></td>
+						</tr>
+					</th:block>
+					
+					<tr>
+						<td colspan="4" class="contents"><th:block th:utext="${item.cntnts}"></th:block></td>
+					</tr>
+				</table>
+				</th:block>
+				<!--******************* 답글 사용(리스트) END*****************************-->
+			</div>
+			
+			<br/>
+			<br/>
+			
+		  <!--******************* 댓글 사용*****************************-->
+		  <th:block th:if ="${bbsInfo.cmnt_use_yn == 'Y' }">
+		  
+	        <table class="board-input">
+               <tr>
+                   <td  class="" style="text-align:right;">
+                      <input type="button" class="btn-medium btn-color1"  onclick="fn_insertCmnt()" value="댓글등록"/>
+                      <form id="cmntForm" >	        
+                       <textarea id="cmntCntnts" name="cmntCntnts" placeholder="댓글을 입력하세요." title="내용입력" class="textarea" style="height: 6.25em;"></textarea>
+                       <span class="form-msg" style="text-align:right;margin-bottom:20px;"></span>
+                      </form>
+                   </td>
+               </tr>
+               <tr>
+                  <td style="border-bottom:none;">
+				      <div id="reply_area" class="" ></div>
+				      <div class="paging" style="text-align:center;"></div>
+                  </td>
+               </tr>
+            </table>
+		  </th:block>
+		   
+		</article>
+
+		<!-- 댓글 답글 영역 -->
+		
+	<form id="listForm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
+		<input type="hidden" id="pageNumber" name="pageNumber" th:value="${PstVo.pageNumber}"> 
+		<input type="hidden" id="searchType" name="searchType" th:value="${PstVo.searchType}">
+		<input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${PstVo.searchKeyword}"> 
+		<input type="hidden" id="bbs_clid" name="bbs_clid" th:value="${PstVo.bbs_clid}">
+	</form>
+	<form id="modifyForm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
+		<input type="hidden" id="pstid" name="pstid" th:value="${PstVo.pstid}">
+    </form> 
+		
+    <script src="/js/ckeditor/ckeditor.js"></script>
+    
+	<script th:inline="javascript">
+	
+			var PstVo = /*[[${PstVo}]]*/null;
+			var bbsInfo = /*[[${bbsInfo}]]*/null;
+			var goListFormUrl = "/front/bbs/" + bbsInfo.bbsid + "/main.html";
+			var selectCmntListUrl = "/front/bbs/" + bbsInfo.bbsid + "/selectCmntList.do";
+	        var insertCmnturl ="/front/bbs/"+bbsInfo.bbsid+"/insertCmnt.do";
+	        var modifyCmntUrl = "/front/bbs/"+bbsInfo.bbsid+"/updateCmnt.do";
+			var delelteCmntUrl = "/front/bbs/"+bbsInfo.bbsid+"/updateCmntReplyDelYn.do";
+			var insertReplyUrl = "/front/bbs/"+bbsInfo.bbsid+"/insertCmntReply.do";
+			var goModifyFormUrl = "/front/bbs/" + bbsInfo.bbsid + "/modify.html";
+			
+			$(document).ready(function(){
+				
+				if(bbsInfo.cmnt_use_yn == 'Y'){
+					fn_selectCmntList();
+				}
+			})
+			function goModifyPage() {
+				var f = document.forms.modifyForm;
+				f.action = goModifyFormUrl;
+				f.submit();
+			}
+			function goListPage() {
+				var f = document.forms.listForm;
+				f.action = goListFormUrl;
+				f.submit();
+			}
+			function fn_disableTrue(id){
+	     	   $("#"+id).attr("disabled","true");
+	        }
+	        function fn_disableFalse(id){
+	     	   $("#"+id).removeAttr("disabled");
+	        }
+	        
+	        function fn_selectCmntList(){
+	        	
+			       	$.ajax({
+						url :selectCmntListUrl,
+						type: 'POST',
+						cache : false,
+						dataType: 'json',
+						data : {
+							"pstid" : PstVo.pstid
+							,"pageNumber": $("#pageNumber").val()
+							},
+						success : function (data){
+							$("#reply_area").html(makeCmntHtml(data.list))
+							$(".paging").html(data.pagination)
+							closeWorkProgress();
+						},
+					 	error : function (error){
+						} 
+			    	})
+	        }
+	        
+	        function makeCmntHtml(list){
+	        	
+	        	if(list == null || list.length <=0)return;
+	        	
+	        	var html = "";
+	        	
+	        	list.forEach(function(item){
+	        		
+	        		if(item.paddingStr ==null || item.paddingStr==""){item.paddingStr="";}
+	        		
+				    html += '<div style="padding:5px;margin-bottom:10px;border:1px solid lightgray;padding:10px;border-radius:5px;">'
+				    html += ' <form id="replyForm'+item.cmntid+'" >';
+				    
+				    html += '<input type="hidden" id="pstid"    name="pstid"    value="'+item.pstid  +'">'
+				    html += '<input type="hidden" id="cmntid"   name="cmntid"   value="'+item.cmntid +'">'
+				    html += '<input type="hidden" id="dpth"     name="dpth"     value="'+item.dpth   +'">'
+				    html += '<input type="hidden" id="ord"      name="ord"      value="'+item.ord    +'">'
+				    html += '<input type="hidden" id="cmnt_grp" name="cmnt_grp" value="'+item.cmnt_grp+'">'
+					html += '<input type="hidden" id="curText" value="'+item.cntnts+'">'
+				    
+	        		if(item.del_yn =='Y'){
+	        			
+		        		html += '<div class="" style="height:30px;">'
+		        		html += '<label>'+ item.dpthStr + item.nm+'('+item.acnt+')</label>'
+						html += '<h6><label style="height:40px;font-size:20px;">'+item.paddingStr+'삭제된 게시물입니다.</label></h6>'
+						html += '</div>'
+	        			
+	        		}else{
+	        			
+						html +='<div id="normalForm'+item.cmntid+'">'
+						
+						
+						html +='<div class="" style="padding-left:'+item.dpth*10+'px;">'
+						
+		        		html += '<div class="" style="height:30px;">'
+						html += '<label>'+ item.dpthStr + item.nm+'('+item.acnt+')</label>'
+					
+					if(PstVo.user != null && PstVo.user.userid == item.reguserid ){
+						
+						html += '	<input type="button" class="btn-small btn-color2" id="'+item.cmntid+'" onclick="fn_openModifytReplyForm(this.id)" value="수정 " />' 
+						html += '	<input type="button" class="btn-small btn-color2" id="'+item.cmntid+'" onclick="fn_deleteCmntReply(this.id)" value="삭제" />'
+					}
+					
+					html += '</div>'
+					html += '</div>'
+					
+					html += '<div style="margin:10px;">'
+					html += '<h6><label style="height:30px;font-size:20px;">'+ item.paddingStr +item.cntnts+'</label></h6>'
+					html += '</div>'
+				    
+				    if(bbsInfo.rply_use_yn == "Y" && item.dpth < 2 ){
+						html += item.paddingStr
+						html += '<input type="button" class="btn-small btn-color1" id=' +item.cmntid +'  onclick="fn_openReplyForm(this.id)" value="답글" />'
+				    }
+					html += '</div>'
+					
+					html += '<div id="modifyForm'+item.cmntid+'" style="margin-top:5px;display:none;">'
+					html += '    <span>'+item.paddingStr+'</span>'
+					html += ' 	 <label>'+item.dpthStr +  item.nm+ '('+item.acnt+')</label>'
+					html += '    <span>'+item.paddingStr+'</span>'
+					html += '    <br/>'
+					html += '    <br/>'
+					html += ' 	 <textarea class="textarea" name="modifyReplyCntnts"	id="modifyReplyCntnts" style="height: 6.25em;">'+item.cntnts+ '</textarea>'
+					html += ' 	 <input type="button" class="btn-small btn-color1"	id="'+item.cmntid+'" onclick="fn_modifyCmntReply(this.id)"value="수정등록" />' 
+					html += ' 	 <input type="button" class="btn-small btn-color1" id="'+item.cmntid+'" onclick="fn_closeModifyReplyForm(this.id)" value="취소" />'
+				    html += ' </div>'
+				    
+					html += ' <div id="replyCntntsForm'+item.cmntid+'" style="padding-left: 0px; display: none">'
+					html += ' 	<textarea id="cntnts" name="cntnts" class="textarea" style="height: 6.25em;"></textarea>'
+					html += ' 	<input type="button" class="btn-small btn-color1"	id="'+item.cmntid+'" onclick="fn_insertReply(this.id)" value="답글등록" />' 
+					html += ' 	<input type="button" class="btn-small btn-color1" id="'+item.cmntid+'" onclick="fn_cnacelInsertReply(this.id)" value="취소 " />'
+					html += '</div>'
+	        		}
+					html += ' </form>'
+					html += '</div>'
+	        	})
+				return html;
+	        }
+	        
+			function fn_cnacelInsertReply(cmntid) {
+				$("#replyForm" + cmntid + "  #cntnts").val("");
+				$("#replyCntntsForm" + cmntid).css("display", "none");
+				$("#normalForm" + cmntid).css("display", "block");
+				$("#modifyForm" + cmntid).css("display", "none");
+			}
+
+			function fn_closeModifyReplyForm(cmntid) {
+				$("#replyCntntsForm" + cmntid).css("display", "none");
+				$("#normalForm" + cmntid).css("display", "block");
+				$("#modifyForm" + cmntid).css("display", "none");
+			}
+
+			function fn_openModifytReplyForm(cmntid) {
+				var text= $("#replyForm" + cmntid+" #curText ").val();
+				$("#modifyForm" + cmntid +"  #modifyReplyCntnts").val(text);
+				$("#replyCntntsForm" + cmntid).css("display", "none");
+				$("#normalForm" + cmntid).css("display", "none");
+				$("#modifyForm" + cmntid).css("display", "block");
+			}
+
+			function fn_openReplyForm(cmntid) {
+				$("#replyCntntsForm" + cmntid).css("display", "block");
+			}
+			
+			function goPage(pageNumber){
+				$("#pageNumber").val(pageNumber);
+				fn_selectCmntList();
+			}
+			
+			 //댓글 입력
+			 function fn_insertCmnt(){
+				 
+			     var cmntValidator= $("#cmntForm").validate({
+				    rules   : { cmntCntnts : { required: true}  },
+			        messages: { cmntCntnts : { required: "댓글 내용을 입력해 주십시오."  } }
+				 })
+				 
+			     if($("#cmntForm").valid() == false) return;
+			     
+				 var cmntCntnts = $("#cmntCntnts").val();
+			     
+				 if(!confirm("저장하시겠습니까?")) return;
+			     var data ={
+			      		pstid  : PstVo.pstid,
+			       		cntnts : $("#cmntCntnts").val()
+			     }
+
+	        	  if(displayWorkProgress()){
+				       	$.ajax({
+							url :insertCmnturl,
+							type: 'POST',
+							cache : false,
+							dataType: 'json',
+							data : data,
+							success : function (data){
+						    	 if(data.result=="success"){
+						    			alert("등록이 완료 되었습니다.");
+						    			$("#cmntCntnts").val("");
+						    			$("#pageNumber").val(1);
+						    			fn_selectCmntList();
+						    		}else{
+						    			alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+						    		}
+								closeWorkProgress();
+							},
+						 	error : function (error){
+							} 
+				    	})
+	        	  }
+			     
+			}
+			 
+			//댓글 수정
+			function fn_modifyCmntReply(cmntid) {
+				
+				$("#replyForm" + cmntid).validate({
+					rules : {
+						modifyReplyCntnts : {required : true}
+					},
+					messages : {
+						modifyReplyCntnts : {required : "답글 내용을 입력해 주십시오."}
+					}
+				})
+				
+				var data = {
+					cntnts : $("#replyForm" + cmntid + " #modifyReplyCntnts").val(),
+					cmntid : $("#replyForm" + cmntid + " #cmntid").val(),
+				}
+				
+				if (!confirm("답글을 수정 하시겠습니까?")){return;}
+				
+	        	  if(displayWorkProgress()){
+				       	$.ajax({
+							url :modifyCmntUrl,
+							type: 'POST',
+							cache : false,
+							dataType: 'json',
+							data : data,
+							success : function (data){
+						    	 if(data.result=="success"){
+						    			alert("수정이 완료 되었습니다.");
+						    			$("#cmntCntnts").val("");
+						    			fn_selectCmntList();
+						    		}else{
+						    			alert("수정중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+						    		}
+								closeWorkProgress();
+							},
+						 	error : function (error){
+							} 
+				    	})
+	        	  }
+			}
+	 		
+            /*댓글 삭제  */
+			function fn_deleteCmntReply(cmntid) {
+				var data = {
+					cmntid : $("#replyForm" + cmntid + " #cmntid").val(),
+					del_yn : 'Y'
+				}
+				if (!confirm("답글을 삭제 하시겠습니까?")){return;}
+				
+	        	  if(displayWorkProgress()){
+				       	$.ajax({
+							url :delelteCmntUrl,
+							type: 'POST',
+							cache : false,
+							dataType: 'json',
+							data : data,
+							success : function (data){
+								if(data.result=="success"){
+					    			alert("삭제가 완료 되었습니다.");
+					    			fn_selectCmntList();
+					    		}else{
+					    			alert("삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+					    		}
+								closeWorkProgress();
+							},
+						 	error : function (error){
+							} 
+				    	})
+	        	  }
+			}
+            
+			/* 댓글 등록 */
+			function fn_insertReply(cmntid) {
+
+				var cmntValidator = $("#replyForm" + cmntid).validate({
+					rules : { 
+						cntnts : {required : true}
+					},
+					messages : {
+						cntnts : {	required : "답글 내용을 입력해 주십시오."}
+					}
+				})
+				
+				if ($("#replyForm" + cmntid).valid() == false){return;}
+				
+				if (!confirm("답글을 저장하시겠습니까?")){return;}
+				
+				var dpth = $("#replyForm" + cmntid + "  #dpth").val();
+				
+				var data = {
+					pstid : $("#replyForm" + cmntid + "  #pstid").val(),
+					cntnts : $("#replyForm" + cmntid + "  #cntnts").val(),
+					dpth : (dpth == null || dpth == '0' || dpth == '') ? 0: Number(dpth),
+					prnts_cmntid : $("#replyForm" + cmntid + "  #cmntid").val(),
+					cmnt_grp : $("#replyForm" + cmntid + "  #cmnt_grp").val(),
+					ord : $("#replyForm" + cmntid + "  #ord").val()
+				}
+				
+	        	if(displayWorkProgress()){
+				       	$.ajax({
+							url :insertReplyUrl,
+							type: 'POST',
+							cache : false,
+							dataType: 'json',
+							data : data ,
+							success : function (data){
+								if(data.result=="success"){
+					    			alert("등록이 완료 되었습니다.");
+					    			fn_selectCmntList();
+					    		}else{
+					    			alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+					    		}
+								closeWorkProgress();
+							},
+						 	error : function (error){
+							} 
+				    	})
+	        	  }
+			}
+			
+		</script>
+
+	</div>
+</body>
+</html>

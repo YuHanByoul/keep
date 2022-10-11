@@ -348,7 +348,9 @@ public class BbsController {
     	
         paramVO.setPstid(pstid);
         cmntVO.setPstid(pstid);
-        cmntVO.setOrderField(" PSTID, CMNT_GRP,ORD "); 
+        //cmntVO.setOrderField(" PSTID, CMNT_GRP,ORD ");
+        cmntVO.setOrderField("CMNT_GRP DESC,ORD ");
+        
         cmntVO.setOrderDirection(CmntVo.ORDER_DIRECTION_ASC);
         resultMap = bbsService.selectPst(paramVO);
         
@@ -357,7 +359,14 @@ public class BbsController {
         if(!StringUtil.nvl(paramVO.getBbsid()).equals("")) {
         	bbsClVo.setBbsid(paramVO.getBbsid());
         }
+        
+        BbsVo bbsVo = new BbsVo();
+        bbsVo.setBbsid(paramVO.getBbsid());
+        model.addAttribute("bbsInfo", bbsService.selectOneBbs(bbsVo));
+        
+        paramVO.setPrnts_pstid(pstid);
         model.addAttribute("result", bbsService.selectPst(paramVO));
+        model.addAttribute("replyList", bbsService.selectReplyPstList(paramVO));
         model.addAttribute("cmntList", bbsService.selectCmntList(cmntVO));
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
@@ -410,7 +419,7 @@ public class BbsController {
 
     /**
      * 
-     * updatePst.
+     * insertCmnt.
      *
      * @Title       : insertCmnt 
      * @Description : TODO
@@ -436,7 +445,7 @@ public class BbsController {
     
     /**
      * 
-     * updatePst.
+     * insertCmntReply.
      *
      * @Title       : insertCmnt 
      * @Description : TODO
@@ -488,7 +497,7 @@ public class BbsController {
     
     /**
      * 
-     * updateCmnt
+     * updateCmntReplyDelYn
      *
      * @Title       : updateCmntReplyDelYn 
      * @Description : TODO

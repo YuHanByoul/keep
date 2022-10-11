@@ -26,8 +26,8 @@ public class CmntVo extends ParentRequestVo {
 
     /** 로그인사용자정보 */
     private UserVo user;
+    
     /** **/
-
     private int cmntid;
     /** **/
     private Integer pstid; 

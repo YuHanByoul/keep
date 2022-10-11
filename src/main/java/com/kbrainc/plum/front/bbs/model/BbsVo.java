@@ -87,6 +87,8 @@ public class BbsVo extends ParentRequestVo {
     private Integer pst_cnt; // 추가 :게시글 수
     private Integer search_cl; // 유형 검색 값
     
+    private Integer bbs_clid; // 유형 검색 값
+    
     //현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer cur_fxd_ntc_cnt;
     
