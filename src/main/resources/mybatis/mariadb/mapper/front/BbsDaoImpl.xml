@@ -155,7 +155,7 @@
                 IFNULL(A.HITS,0) HITS,
                 CASE 
                     <choose>
-	                    <when test='fxd_ntc_use_yn == "Y"'>
+	                    <when test='fxdNtcUseYn == "Y"'>
 	                      WHEN FXD_NTC_YN = 'Y' THEN 1
 	                    </when>
                          <otherwise>
@@ -163,21 +163,21 @@
                          </otherwise>
                     </choose>
                     <choose>
-	                    <when test='hot_use_yn == "Y"'>
-	                      WHEN HITS <![CDATA[>=]]> #{hot_use_stdr_hits}  THEN 2
+	                    <when test='hotUseYn == "Y"'>
+	                      WHEN HITS <![CDATA[>=]]> #{hotUseStdrHits}  THEN 2
 	                    </when>
                          <otherwise>
-	                      WHEN HITS <![CDATA[>=]]> #{hot_use_stdr_hits}  THEN 3
+	                      WHEN HITS <![CDATA[>=]]> #{hotUseStdrHits}  THEN 3
                          </otherwise>
                     </choose>
                      ELSE 3
                 END AS order_num,
                 <choose>
-                    <when test='hot_use_yn == "Y"'>
-       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN HITS
+                    <when test='hotUseYn == "Y"'>
+       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN HITS
 	                      ELSE 0
 	                 END hot_order_num,
-       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hot_use_stdr_hits} THEN 'Y'
+       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN 'Y'
 	                      ELSE 'N'
 	                 END hot_yn,
                     </when>
@@ -187,9 +187,9 @@
                     </otherwise>
                 </choose>
                 <choose>
-                    <when test='new_use_yn == "Y"'>
-       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hot_use_stdr_hits}
-       	                       AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{new_indict_daycnt}  DAY)
+                    <when test='newUseYn == "Y"'>
+       	             CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hotUseStdrHits}
+       	                       AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY)
        	                  THEN 'Y'
 	                      ELSE 'N'
 	                 END new_yn,
@@ -217,7 +217,7 @@
                 INNER JOIN TB_USER D ON(A.REGUSERID = D.USERID)
             WHERE 1=1
                  AND A.PRNTS_PSTID IS NULL
-                  <if test='fxd_ntc_use_yn == "Y"'>
+                  <if test='fxdNtcUseYn == "Y"'>
                  AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
                        WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
                        WHEN FXD_NTC_YN ='N' or FXD_NTC_YN = null THEN 'Y'
@@ -234,8 +234,8 @@
                 <if test="searchType != null and searchType == 'CNTNTS' ">
                 AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
                 </if>
-                <if test="bbs_clid != null and bbs_clid !='' ">
-                AND A.BBS_CLID = #{bbs_clid}
+                <if test="bbsClid != null and bbsClid !='' ">
+                AND A.BBS_CLID = #{bbsClid}
                 </if>
              )  A
             WHERE 1=1 
@@ -276,8 +276,8 @@
             AND a.REGUSERID = b.USERID
             -- AND A.DEL_YN = 'N'
             AND PSTID = #{pstid}
-            <if test="prnts_cmntid != null and prnts_cmntid != 0 ">
-            AND PRNTS_CMNTID = #{prnts_cmntid}
+            <if test="prntsCmntid != null and prntsCmntid != 0 ">
+            AND PRNTS_CMNTID = #{prntsCmntid}
             </if>         
             -- ORDER BY CMNT_GRP, PRNTS_CMNTID,DPTH,ORD
         <include refid="PaginationMapper.footer"/>
@@ -330,8 +330,8 @@
         )VALUES(
             #{pstid       },
             #{cntnts      },
-            #{prnts_cmntid},
-            IFNULL(#{cmnt_grp }, (SELECT  IFNULL(MAX(cmnt_GRP),0) +1 FROM TB_CMNT CMNT)),
+            #{prntsCmntid},
+            IFNULL(#{cmntGrp }, (SELECT  IFNULL(MAX(CMNT_GRP),0) +1 FROM TB_CMNT CMNT)),
             IFNULL(#{dpth}, 0),
             IFNULL(#{ord  }, 1),
             'N',
@@ -360,17 +360,17 @@
         SELECT 
             CASE 
                 WHEN
-                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmnt_grp} AND DPTH = #{dpth}+1 ) = 0
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmntGrp} AND DPTH = #{dpth}+1 ) = 0
                     THEN 
                         #{ord}+1
                 ELSE
-                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmnt_grp}  AND DPTH = #{dpth}+1 )+1
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmntGrp}  AND DPTH = #{dpth}+1 )+1
             END
         </selectKey>
         update tb_cmnt set
             ord = ord +1
         where  
-            CMNT_GRP = #{cmnt_grp}
+            CMNT_GRP = #{cmntGrp}
             and ord >= #{ord} 
     </update>
     
@@ -389,7 +389,7 @@
     <update id="updateCmntReplyDelYn" parameterType="front.CmntVo" >
         /* BbsDao.updateCmntReplyDelYn */
         UPDATE TB_CMNT SET
-            DEL_YN      = #{del_yn},
+            DEL_YN      = #{delYn},
             UPDT_DT     = NOW(),
             UPDTUSERID  = #{user.userid }
         WHERE 
@@ -436,7 +436,7 @@
             1=1
             AND A.BBSID = B.BBSID
             AND A.REGUSERID = C.USERID
-            AND A.PRNTS_PSTID = #{prnts_pstid}
+            AND A.PRNTS_PSTID = #{prntsPstid}
             ORDER BY UPDT_DT DESC
     </select>
     
@@ -466,24 +466,24 @@
             #{bbsid         },
             #{title         },
             #{cntnts        },
-            #{prnts_pstid   },
+            #{prntsPstid   },
             #{grp           },
             #{dpth          },
             #{ord           },
             #{hits          },
-            #{bbs_clid      },
-            #{fxd_ntc_yn    },
+            #{bbsClid      },
+            #{fxdNtcYn    },
             <choose>
-	            <when test='fxd_ntc_yn == "Y" '>
-	            FXD_NTC_STRT_DT= #{fxd_ntc_strt_dt},
-	            FXD_NTC_END_DT = #{fxd_ntc_end_dt },
+	            <when test='fxdNtcYn == "Y" '>
+	            FXD_NTC_STRT_DT= #{fxdNtcStrtDt},
+	            FXD_NTC_END_DT = #{fxdNtcEndDt },
 	            </when>
 	            <otherwise>
 	            FXD_NTC_STRT_DT= null,
 	            FXD_NTC_END_DT = null,
 	            </otherwise>
             </choose>
-            #{login_yn      },
+            #{loginYn      },
             #{filegrpid     },
             NOW(),
             #{user.userid },
@@ -499,22 +499,22 @@
         UPDATE TB_PST SET     
             TITLE          = #{title         },
             CNTNTS         = #{cntnts        },
-            BBS_CLID       = #{bbs_clid      },
+            BBS_CLID       = #{bbsClid      },
             FILEGRPID      = #{filegrpid     },
             UPDT_DT        = NOW(),
             UPDTUSERID     = #{user.userid   },
-            FXD_NTC_YN     = #{fxd_ntc_yn    },
+            FXD_NTC_YN     = #{fxdNtcYn    },
             <choose>
-	            <when test='fxd_ntc_yn == "Y" '>
-	            FXD_NTC_STRT_DT= #{fxd_ntc_strt_dt},
-	            FXD_NTC_END_DT = #{fxd_ntc_end_dt },
+	            <when test='fxdNtcYn == "Y" '>
+	            FXD_NTC_STRT_DT= #{fxdNtcStrtDt},
+	            FXD_NTC_END_DT = #{fxdNtcEndDt },
 	            </when>
 	            <otherwise>
 	            FXD_NTC_STRT_DT= null,
 	            FXD_NTC_END_DT = null,
 	            </otherwise>
             </choose>
-            LOGIN_YN       = #{login_yn      }
+            LOGIN_YN       = #{loginYn      }
         WHERE 
             PSTID = #{pstid}     
     </update>
