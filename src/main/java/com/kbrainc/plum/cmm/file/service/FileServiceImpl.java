@@ -114,12 +114,12 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
 		return false;
 	}
 	
-	public FileVo selectFile(FileVo FileVo) throws Exception{
-		return fileDao.selectFile( FileVo);
+	public FileVo selectFile(FileVo fileVo) throws Exception{
+		return fileDao.selectFile(fileVo);
 	}	
 	
-	public boolean deleteFileVo(FileVo FileVo) throws Exception{
-		return fileDao.deleteFile( FileVo);
+	public boolean deleteFileVo(FileVo fileVo) throws Exception{
+		return fileDao.deleteFile(fileVo);
 	}
 	
 	public FileVo selectFileInfo(FileGrpVo fileGrpVo) throws Exception{
