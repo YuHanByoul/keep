@@ -183,11 +183,11 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 			    cell.setCellStyle(styleL); 
 			    /*사용여부*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getDel_yn(),""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getDelYn(),""));
 			    cell.setCellStyle(styleL); 
 			    /*등록일자*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl( dateFormat.format(modelVo.getReg_dt()), ""));
+			    cell.setCellValue(StringUtil.nvl( dateFormat.format(modelVo.getRegDt()), ""));
 			    cell.setCellStyle(styleR);	
 			    
 			}
@@ -404,15 +404,15 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 		//핸드폰
 		memVo.setMobno((String)data.get(4));
 		//이용약관동의여부
-		memVo.setTos_agre_yn((String)data.get(5));
+		memVo.setTosAgreYn((String)data.get(5));
 		//개징정보 수집 동의여부
-		memVo.setPrvcy_agre_yn((String)data.get(6));
+		memVo.setPrvcyAgreYn((String)data.get(6));
 		//계정잠김여부
-		memVo.setAcnt_lock_yn("N");
+		memVo.setAcntLockYn("N");
 		//삭데여부
-		memVo.setDel_yn("N");
+		memVo.setDelYn("N");
 		//사용자 구분 코드
-		memVo.setUser_se_cd("P");
+		memVo.setUserSeCd("P");
 		
         retVal += memberDao.insertMember(memVo);
         // selectKey userid 받아옴

@@ -95,9 +95,9 @@ public class SchedulingController {
         for (SchedulingVo item : result) {
             isActive = enabled ? schedulerFactory.getScheduler().checkExists(new TriggerKey(item.getNm())) : false; // 트리거의 활성여부 조회
             if (isActive) {
-                item.setActive_yn("Y"); 
+                item.setActiveYn("Y"); 
             } else {
-                item.setActive_yn("N");
+                item.setActiveYn("N");
             }
         }
         
@@ -141,9 +141,9 @@ public class SchedulingController {
         boolean isActive = enabled ? schedulerFactory.getScheduler().checkExists(new TriggerKey(schedulingInfo.getNm())) : false; // 트리거의 활성여부 조회
         
         if (isActive) {
-            schedulingInfo.setActive_yn("Y"); 
+            schedulingInfo.setActiveYn("Y"); 
         } else {
-            schedulingInfo.setActive_yn("N");
+            schedulingInfo.setActiveYn("N");
         }
         model.addAttribute("schedInfo", schedulingInfo);
         
@@ -205,7 +205,7 @@ public class SchedulingController {
         }
         
         try {
-            new CronExpression(schedulingVo.getCron_expression());
+            new CronExpression(schedulingVo.getCronExpression());
         } catch (ParseException e) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "크론표현식이 잘못되어 등록에 실패하였습니다.");
@@ -249,7 +249,7 @@ public class SchedulingController {
         }
         
         try {
-            new CronExpression(schedulingVo.getCron_expression());
+            new CronExpression(schedulingVo.getCronExpression());
         } catch (ParseException e) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "크론표현식이 잘못되어 등록에 실패하였습니다.");
@@ -275,19 +275,19 @@ public class SchedulingController {
         }
         
         if (isActive) {
-            boolean isChangedUseN = "Y".equals(schedulingInfo.getUse_yn()) && "N".equals(schedulingVo.getUse_yn()); // 사용에서 미사용으로 바뀐경우
-            boolean isChangedCronExp = !schedulingInfo.getCron_expression().equals(schedulingVo.getCron_expression()); // 크론표현식이 바뀐경우
+            boolean isChangedUseN = "Y".equals(schedulingInfo.getUseYn()) && "N".equals(schedulingVo.getUseYn()); // 사용에서 미사용으로 바뀐경우
+            boolean isChangedCronExp = !schedulingInfo.getCronExpression().equals(schedulingVo.getCronExpression()); // 크론표현식이 바뀐경우
             if (isChangedUseN || isChangedCronExp) { 
                 scheduler.unscheduleJob(new TriggerKey(schedulingInfo.getNm())); // 트리거삭제
             }
             if (isChangedCronExp) {
                 Trigger trigger = (Trigger)applicationContext.getBean(schedulingInfo.getNm());
                 TriggerBuilder tb = trigger.getTriggerBuilder();
-                trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingVo.getCron_expression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
+                trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingVo.getCronExpression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
                 scheduler.scheduleJob(trigger);
             }
         } else {
-            boolean isChangedUseY = "N".equals(schedulingInfo.getUse_yn()) && "Y".equals(schedulingVo.getUse_yn()); // 미사용에서 사용으로 바뀐경우
+            boolean isChangedUseY = "N".equals(schedulingInfo.getUseYn()) && "Y".equals(schedulingVo.getUseYn()); // 미사용에서 사용으로 바뀐경우
             if (isChangedUseY) {
                 Trigger trigger = null;
                 try {
@@ -295,7 +295,7 @@ public class SchedulingController {
                     
                     if (enabled) {
                         TriggerBuilder tb = trigger.getTriggerBuilder();
-                        trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingVo.getCron_expression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
+                        trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingVo.getCronExpression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
                         scheduler.scheduleJob(trigger);
                     }
                 } catch (Exception e) {

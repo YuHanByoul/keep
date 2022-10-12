@@ -12,28 +12,28 @@ public class RoleVo {
     private String nm;
     
     /* 역할구분코드(A: admin, U: user) */
-    private String se_cd;
+    private String seCd;
     
     /* 설명 */
     private String dc;
     
     /* 상위 역할 ID */
-    private int uppr_roleid;
+    private int upprRoleid;
     
     /* 순서 */
     private int ord;
     
     /* 사용 여부 */
-    private String use_yn;
+    private String useYn;
     
     /* 수정일자 */
-    private String updt_dt;
+    private String updtDt;
     
     /* 수정자 ID */
     private int updtuserid;
     
     /* 등록일자 */
-    private String reg_dt;
+    private String regDt;
     
     /* 등록자 ID */
     private int reguserid;

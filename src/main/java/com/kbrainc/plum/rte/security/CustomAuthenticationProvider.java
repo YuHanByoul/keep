@@ -75,7 +75,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession();
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        String sysSeCd = siteInfo.getSys_se_cd();
+        String sysSeCd = siteInfo.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {

@@ -59,10 +59,10 @@ public class InqryController {
      */
     @RequestMapping(value = "/front/inqury/insertInqury.do")
     @ResponseBody
-    public Map<String, Object> insertInqury(InqryVo InqryVo) throws Exception {
+    public Map<String, Object> insertInqury(InqryVo inqryVo) throws Exception {
     	Map<String, Object> resultMap = new HashMap<>();
     	
-    	int checkDuplicationID = inqryService.insertInqry(InqryVo);
+    	int checkDuplicationID = inqryService.insertInqry(inqryVo);
     	
     	if(checkDuplicationID > 0) {
     		resultMap.put("result", true);

@@ -12,10 +12,10 @@ public class FaqClVo extends ParentRequestVo {
 	private UserVo user;/** **/
 	
 	private int clid;
-	private String cl_nm;
-	private String user_se_cd;
+	private String clNm;
+	private String userSeCd;
 	private Integer ord;
-	private String use_yn;
+	private String useYn;
 
     @Override
     public void chkParams() {

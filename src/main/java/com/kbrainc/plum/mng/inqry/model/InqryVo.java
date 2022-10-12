@@ -45,10 +45,10 @@ public class InqryVo extends ParentRequestVo {
 	private String nm;
 	
 	/** 사용자_구분_코드 */
-	private String user_se_cd;
+	private String userSeCd;
 
 	/** 사용자_구분_명 */
-	private String user_se_nm;
+	private String userSeNm;
 	
 	/** 이메일 */
 	private String email;
@@ -66,30 +66,30 @@ public class InqryVo extends ParentRequestVo {
 	private Integer fileid;
 	
 	/** 파일이름 */
-	private String file_nm;
+	private String fileNm;
 	
 	/** 파일사이즈 */
-	private String file_size;
+	private String fileSize;
 	
 	/** 개인정보취급_동의_여부 */
-	private String priplcy_agre_yn;
+	private String priplcyAgreYn;
 	
 	/** 문의_분류_코드 */
-	private String inqry_cl_cd;
+	private String inqryClCd;
 	
 	/** 문의_분류_명 */
-	private String inqry_cl_nm;
+	private String inqryClNm;
 	
 	/** 등록_일 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-	private Date reg_d;
+	private Date regD;
 	
 	/** 답변_일 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
-	private Date answr_d;
+	private Date answrD;
 	
 	/** 처리자_이름 */
-	private String opetr_nm;
+	private String opetrNm;
 	
 	/** 문의일자 시작일 */
 	private String searchStartDay;
@@ -101,26 +101,26 @@ public class InqryVo extends ParentRequestVo {
 	private String searchAnswrYn;
 	
 	/** 수정_일시 */
-	private Date updt_dt;
+	private Date updtDt;
 	
 	/** 수정자아이디 */
 	private Integer updtuserid;
 	
 	/** 등록_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-	private Date reg_dt;
+	private Date regDt;
 	
 	/** 등록자아이디 */
 	private Integer reguserid;
 	
-	public void setUser_se_cd(String cd) {
-		this.user_se_cd = cd;
+	public void setUserSeCd(String cd) {
+		this.userSeCd = cd;
 		if("P".equals(cd)) {
-			this.setUser_se_nm("개인회원");
+			this.setUserSeNm("개인회원");
 		} else if("C".equals(cd)) {
-			this.setUser_se_nm("기업회원");
+			this.setUserSeNm("기업회원");
 		} else {
-			this.setUser_se_nm("미분류 회원");
+			this.setUserSeNm("미분류 회원");
 		}
 	}
 }

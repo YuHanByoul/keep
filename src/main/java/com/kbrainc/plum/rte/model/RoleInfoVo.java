@@ -26,12 +26,12 @@ public class RoleInfoVo extends ParentVo {
     /** 역할구분코드 */
     private String se;
     /** 기관권한적용범위코드 */
-    private String comp_authar_cd;;
+    private String compAutharCd;
     /** 사이트권한적용범위코드 */
-    private String site_authar_cd;
+    private String siteAutharCd;
 
     /**
-     * @Title : getRole_id
+     * @Title : getRoleid
      * @Description : 역할ID를 가져온다.
      * @return String 역할ID
      */
@@ -40,17 +40,17 @@ public class RoleInfoVo extends ParentVo {
     }
 
     /**
-     * @Title : setRole_id
+     * @Title : setRoleid
      * @Description : 역할ID를 셋팅한다.
      * @param roleid 역할ID
      * @return void
      */
-    public void setRole_id(String roleid) {
+    public void setRoleid(String roleid) {
         this.roleid = roleid;
     }
 
     /**
-     * @Title : getRole_nm
+     * @Title : getNm
      * @Description : 역할명을 가져온다.
      * @return String 역할명
      */
@@ -59,7 +59,7 @@ public class RoleInfoVo extends ParentVo {
     }
 
     /**
-     * @Title : setRole_nm
+     * @Title : setNm
      * @Description : 역할명을 셋팅한다.
      * @param nm 역할명
      * @return void
@@ -69,41 +69,41 @@ public class RoleInfoVo extends ParentVo {
     }
 
     /**
-     * @Title : getComp_authar_cd
+     * @Title : getCompAutharCd
      * @Description : 기관권한적용범위코드를 가져온다.
      * @return String 기관권한적용범위코드
      */
-    public String getComp_authar_cd() {
-        return comp_authar_cd;
+    public String getCompAutharCd() {
+        return compAutharCd;
     }
 
     /**
-     * @Title : setComp_authar_cd
+     * @Title : setCompAutharCd
      * @Description : 기관권한적용범위코드를 셋팅온다.
      * @param comp_authar_cd 기관권한적용범위코드
      * @return void
      */
-    public void setComp_authar_cd(String comp_authar_cd) {
-        this.comp_authar_cd = comp_authar_cd;
+    public void setCompAutharCd(String compAutharCd) {
+        this.compAutharCd = compAutharCd;
     }
 
     /**
-     * @Title : getSite_authar_cd
+     * @Title : getSiteAutharCd
      * @Description : 사이트권한적용범위코드를 가져온다.
      * @return String 사이트권한적용범위코드
      */
-    public String getSite_authar_cd() {
-        return site_authar_cd;
+    public String getSiteAutharCd() {
+        return siteAutharCd;
     }
 
     /**
-     * @Title : setSite_authar_cd
+     * @Title : setSiteAutharCd
      * @Description : 사이트권한적용범위코드를 셋팅한다.
-     * @param site_authar_cd 사이트권한적용범위코드
+     * @param siteAutharCd 사이트권한적용범위코드
      * @return void
      */
-    public void setSite_authar_cd(String site_authar_cd) {
-        this.site_authar_cd = site_authar_cd;
+    public void setSiteAutharCd(String siteAutharCd) {
+        this.siteAutharCd = siteAutharCd;
     }
 
     public String getSe() {

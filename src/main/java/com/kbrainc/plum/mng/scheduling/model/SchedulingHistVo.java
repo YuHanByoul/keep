@@ -36,12 +36,12 @@ public class SchedulingHistVo extends ParentRequestVo {
     
     /** 작업_시작_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private Date job_strt_dt;
+    private Date jobStrtDt;
     
     /** 작업_종료_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private Date job_end_dt;
+    private Date jobEndDt;
     
     /** 상태코드(S:성공, F:실패) */
-    private String stts_cd;
+    private String sttsCd;
 }

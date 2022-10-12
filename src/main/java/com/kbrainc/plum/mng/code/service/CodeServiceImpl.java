@@ -62,7 +62,7 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
     public List<CodeVo> selectCodeList(CodeVo codeVo) throws Exception {
         List<CodeVo> list = null;
         
-        if("CERT".equals(codeVo.getCdgrp_nm())){
+        if("CERT".equals(codeVo.getCdgrpNm())){
             list = codeDao.selectCertCodeList(codeVo);
         }else {
             list = codeDao.selectCodeList(codeVo);
@@ -160,11 +160,11 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
             String tcd = codeVo.getTcd();
             CodeVo codeInfo = codeDao.selectCodeInfo(cd); // 이동될 위치의 ord 정보를 얻기
             Integer pord = codeInfo.getOrd();
-            String pucd = codeInfo.getUppr_cd();
+            String pucd = codeInfo.getUpprCd();
 
             codeInfo = codeDao.selectCodeInfo(tcd);// 이동하는 코드의 code 정보를 얻기
             Integer tord = codeInfo.getOrd();
-            String tucd = codeInfo.getUppr_cd();
+            String tucd = codeInfo.getUpprCd();
 
             if (pucd.equals(tucd)) { // 부모가같을때
                 if (pord.intValue() < tord.intValue()) { // intValue 디버깅 확인 필요

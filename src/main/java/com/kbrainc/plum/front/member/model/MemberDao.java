@@ -28,11 +28,11 @@ public interface MemberDao {
      *
      * @Title : insertMember
      * @Description : 
-     * @param MemberVo MemberVo객체
+     * @param memberVo MemberVo객체
      * @return int 
      * @throws Exception 예외
      */
-    public int insertMember(MemberVo MemberVo) throws Exception;
+    public int insertMember(MemberVo memberVo) throws Exception;
     
     /**
      *
@@ -40,11 +40,11 @@ public interface MemberDao {
      *
      * @Title : updateMember
      * @Description : 회원 정보 수정 
-     * @param MemberVo MemberVo객체
+     * @param memberVo MemberVo객체
      * @return int 
      * @throws Exception 예외
      */
-    public int updateMember(MemberVo MemberVo) throws Exception;
+    public int updateMember(MemberVo memberVo) throws Exception;
     
     /**
      *
@@ -56,7 +56,7 @@ public interface MemberDao {
      * @return int 
      * @throws Exception 예외
      */
-    public int insertMemberTeacher(TeacherVo TeacherVo) throws Exception;
+    public int insertMemberTeacher(TeacherVo teacherVo) throws Exception;
     
     /**
      *
@@ -68,7 +68,7 @@ public interface MemberDao {
      * @return int 
      * @throws Exception 예외
      */
-    public int updateMemberTeacher(TeacherVo TeacherVo) throws Exception;
+    public int updateMemberTeacher(TeacherVo teacherVo) throws Exception;
     
     /**
      *
@@ -76,11 +76,11 @@ public interface MemberDao {
      *
      * @Title : chekcDuplicationUser
      * @Description : ID 중복 체크
-     * @param MemberVo MemberVo객체
+     * @param memberVo MemberVo객체
      * @return int 
      * @throws Exception 예외
      */
-    public int chekcDuplicationUser(MemberVo MemberVo) throws Exception;
+    public int chekcDuplicationUser(MemberVo memberVo) throws Exception;
     
     /**
      *
@@ -88,11 +88,11 @@ public interface MemberDao {
      *
      * @Title : selectTeacherMemberInfo
      * @Description : 회원정보 호출
-     * @param MemberVo MemberVo객체
+     * @param memberVo MemberVo객체
      * @return MemberVo 
      * @throws Exception 예외
      */
-    public Map<String,Object> selectTeacherMemberInfo(MemberVo MemberVo) throws Exception;
+    public Map<String,Object> selectTeacherMemberInfo(MemberVo memberVo) throws Exception;
     
     /**
      *
@@ -100,11 +100,11 @@ public interface MemberDao {
      *
      * @Title : insertRoleId
      * @Description : Role ID 등록
-     * @param MemberVo MemberVo객체
+     * @param memberVo MemberVo객체
      * @return int 
      * @throws Exception 예외
      */
-    public int  insertRoleId(MemberVo MemberVo) throws Exception;
+    public int  insertRoleId(MemberVo memberVo) throws Exception;
     
     
 }

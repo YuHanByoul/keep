@@ -79,8 +79,8 @@ public class FileController {
     @PostMapping("/uploadFile.do")
     public FileVo uploadFile(@RequestParam("file") MultipartFile file, FileGrpVo fileGrpVo, @UserInfo UserVo user, boolean isMulti) throws Exception {
 
-        if (this.filegrpName.containsKey(fileGrpVo.getFilegrp_nm())) {
-            Integer uploadFileSize = (Integer) this.filegrpName.get(fileGrpVo.getFilegrp_nm()).get("uploadFileSize");
+        if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
+            Integer uploadFileSize = (Integer) this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadFileSize");
             if (uploadFileSize != null) {
                 // uploadFileSize byte로 변환 
                 long fileSizeByte = uploadFileSize * 1024 * 1024; // MB -> Byte로 변환 
@@ -90,7 +90,7 @@ public class FileController {
                 
             }
             
-            LinkedHashMap uploadFileExtsn = ((LinkedHashMap)this.filegrpName.get(fileGrpVo.getFilegrp_nm()).get("uploadFileExtsn"));
+            LinkedHashMap uploadFileExtsn = ((LinkedHashMap)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadFileExtsn"));
             if (uploadFileExtsn != null) {
                 String fileNm = file.getOriginalFilename();
                 String fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
@@ -144,22 +144,22 @@ public class FileController {
     public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request, @UserInfo UserVo user) throws Exception {        
         FileVo fileVo = new FileVo();
     	fileVo.setFileid(fileid);
-    	fileVo.setFile_idntfc_key(fileIdntfcKey);
+    	fileVo.setFileIdntfcKey(fileIdntfcKey);
     	String fileName ="";
         String contentType = null;
         try {
     		fileVo=fileService.selectFile(fileVo);   
-	    	fileName = fileVo.getSave_file_nm();
+	    	fileName = fileVo.getSaveFileNm();
     	}catch(Exception e) {
     		logger.info("Could not fileSql Exception ");
     	}
         
         if ("/downloadBbsFileByFileid.do".equals(request.getRequestURI()) && fileVo.getBbsid() == 0) { // 게시판전용 파일다운로드
-            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSave_file_nm());
+            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
         }
         
         if (!fileService.downloadFileCheck(fileVo, user)) {
-            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSave_file_nm());
+            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
         }
 
         Resource resource = fileStorageService.loadFileAsResource(fileVo);
@@ -175,7 +175,7 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileVo.getOrginl_file_nm().getBytes("EUC-KR"),"ISO-8859-1") + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + new String(fileVo.getOrginlFileNm().getBytes("EUC-KR"),"ISO-8859-1") + "\"")
                 .body(resource);
     }
  
@@ -194,11 +194,11 @@ public class FileController {
     	FileVo fileVo =new FileVo();
     	Map<String, Object> resultMap = new HashMap<>();
     	fileVo.setFileid(fileid);
-    	fileVo.setFile_idntfc_key(fileIdntfcKey);
+    	fileVo.setFileIdntfcKey(fileIdntfcKey);
     	try {
     		
     		fileVo = fileService.selectFile(fileVo);
-	    	String fileName = fileVo.getSave_file_nm();
+	    	String fileName = fileVo.getSaveFileNm();
 	    	fileStorageService.deleteFile(fileVo);
 	    	fileService.deleteFileVo(fileVo);
 	    	resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -227,9 +227,9 @@ public class FileController {
             
             String[] ext = (fileName.trim()).split("\\.");
                         
-            String AllowdExt = "jpg,png,tif,jepg,bmp,rle,raw,bpg,svg,gif";
+            String allowdExt = "jpg,png,tif,jepg,bmp,rle,raw,bpg,svg,gif";
             
-            if(!AllowdExt.contains(ext[1].toLowerCase())) {
+            if(!allowdExt.contains(ext[1].toLowerCase())) {
             	printWriter.println("<script>alert('이미지 파일만 등록 가능합니다.');</script>");
             	return;
             }

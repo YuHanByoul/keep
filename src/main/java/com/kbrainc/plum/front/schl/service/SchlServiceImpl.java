@@ -32,7 +32,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class SchlServiceImpl extends PlumAbstractServiceImpl implements SchlService {
 
     @Resource(name = "front.schlDao")
-    private SchlDao SchlDao;
+    private SchlDao schlDao;
     
     
     /**
@@ -45,8 +45,8 @@ public class SchlServiceImpl extends PlumAbstractServiceImpl implements SchlServ
     * @return List<ShclVo> 
     * @throws Exception 예외
     */
-   public List<SchlVo> selectSchlList(SchlVo SchlVo) throws Exception{
-	   return SchlDao.selectSchlList(SchlVo);
+   public List<SchlVo> selectSchlList(SchlVo schlVo) throws Exception{
+	   return schlDao.selectSchlList(schlVo);
    };
       
 }

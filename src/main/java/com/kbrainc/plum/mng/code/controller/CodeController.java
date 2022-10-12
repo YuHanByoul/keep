@@ -272,7 +272,7 @@ public class CodeController {
         TreeItem rootItem = new TreeItem();
         rootItem.setPkey("");
         rootItem.setKey("0");
-        rootItem.setTitle(codeGrpVO.getCdgrp_nm());
+        rootItem.setTitle(codeGrpVO.getCdgrpNm());
 
         List<TreeItem> treeItemList = codeService.selectCodeTreeList(codeGrpVO);
         treeItemList.add(0, rootItem);
@@ -409,7 +409,7 @@ public class CodeController {
     */
     public void removeCacheForCdgrp(String cdgrpid) throws Exception {
         for (CodeInfoVo codeInfo : resCodeService.selectCdgrpidAndUpprcdList(cdgrpid)) {
-            resCodeService.removeCacheForCdgrp(codeInfo.getCdgrpid(), codeInfo.getUppr_cd());
+            resCodeService.removeCacheForCdgrp(codeInfo.getCdgrpid(), codeInfo.getUpprCd());
         }
     }
     

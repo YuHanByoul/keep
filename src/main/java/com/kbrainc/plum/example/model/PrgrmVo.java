@@ -54,28 +54,28 @@ public class PrgrmVo extends ParentRequestVo {
     private String url;
 
     /** 상위_프로그램아이디 */
-    private Integer uppr_prgrmid;
+    private Integer upprPrgrmid;
 
     /** 상위_프로그램명 */
-    private String uppr_prgrm_nm;
+    private String upprPrgrmNm;
 
     /** 로그인_여부 */
-    private String login_yn;
+    private String loginYn;
 
     /** 시스템_코드 */
-    private String sys_cd;
+    private String sysCd;
 
     /** 순서 */
     private Integer ord;
 
     /** 트리_순서 */
-    private String tree_ord;
+    private String treeOrd;
 
     /** 트리_프로그램_이름 */
-    private String tree_prgrm_nm;
+    private String treePrgrmNm;
 
     /** 트리_프로그램아이디 */
-    private String tree_prgrmid;
+    private String treePrgrmid;
 
     /** 대상프로그램아이디 */
     private Integer tprgrmid;
@@ -87,13 +87,13 @@ public class PrgrmVo extends ParentRequestVo {
     private String upperYn;
 
     /** 수정_일시 */
-    private Date updt_dt;
+    private Date updtDt;
 
     /** 수정자아이디 */
     private Integer updtuserid;
 
     /** 등록_일시 */
-    private Date reg_dt;
+    private Date regDt;
 
     /** 등록자아이디 */
     private Integer reguserid;

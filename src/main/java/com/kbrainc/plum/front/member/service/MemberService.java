@@ -28,11 +28,11 @@ public interface MemberService {
     *
     * @Title : insertMember
     * @Description : 
-    * @param MemberVo MemberVo객체
+    * @param memberVo MemberVo객체
     * @return int 
     * @throws Exception 예외
     */
-   public int insertMember(MemberVo MemberVo,TeacherVo TeacherVo) throws Exception;
+   public int insertMember(MemberVo memberVo, TeacherVo teacherVo) throws Exception;
    
    /**
     *
@@ -40,11 +40,11 @@ public interface MemberService {
     *
     * @Title : updateMember
     * @Description : 회원 정보 수정 
-    * @param MemberVo MemberVo객체
+    * @param memberVo MemberVo객체
     * @return int 
     * @throws Exception 예외
     */
-   public int updateMember(MemberVo MemberVo,TeacherVo TeacherVo) throws Exception;
+   public int updateMember(MemberVo memberVo, TeacherVo teacherVo) throws Exception;
    
    /**
    *
@@ -52,11 +52,11 @@ public interface MemberService {
    *
    * @Title : selectTeacherMemberInfo
    * @Description : 회원정보 호출
-   * @param MemberVo MemberVo객체
+   * @param memberVo MemberVo객체
    * @return MemberVo 
    * @throws Exception 예외
    */
-  public Map<String,Object> selectTeacherMemberInfo(MemberVo MemberVo) throws Exception;
+  public Map<String,Object> selectTeacherMemberInfo(MemberVo memberVo) throws Exception;
    
    /**
     *
@@ -64,11 +64,11 @@ public interface MemberService {
     *
     * @Title : chekcDuplicationUser
     * @Description : ID 중복 체크
-    * @param MemberVo MemberVo객체
+    * @param memberVo MemberVo객체
     * @return int 
     * @throws Exception 예외
     */
-   public int chekcDuplicationUser(MemberVo MemberVo) throws Exception;
+   public int chekcDuplicationUser(MemberVo memberVo) throws Exception;
 	
 	
 }

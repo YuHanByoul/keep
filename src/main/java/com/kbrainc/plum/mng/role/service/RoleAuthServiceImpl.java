@@ -84,7 +84,7 @@ public class RoleAuthServiceImpl extends PlumAbstractServiceImpl implements Role
     @Override
     public int saveAdminMenuRole(RoleMenuVo roleMenuVo) throws Exception {
         // 기존 메뉴 매핑 제거
-        String[] delId = StringUtil.nvl(roleMenuVo.getMenu_del()).split(",");
+        String[] delId = StringUtil.nvl(roleMenuVo.getMenuDel()).split(",");
         if (!delId[0].equals("")) {
             for (int i = 0; i < delId.length; i++) {
                 roleMenuVo.setMenuid(delId[i]);
@@ -95,7 +95,7 @@ public class RoleAuthServiceImpl extends PlumAbstractServiceImpl implements Role
         }
 
         // 메뉴 매핑 추가
-        String[] addId = StringUtil.nvl(roleMenuVo.getMenu_add()).split(",");
+        String[] addId = StringUtil.nvl(roleMenuVo.getMenuAdd()).split(",");
         if (!addId[0].equals("")) {
             for (int i = 0; i < addId.length; i++) {
                 roleMenuVo.setMenuid(addId[i]);

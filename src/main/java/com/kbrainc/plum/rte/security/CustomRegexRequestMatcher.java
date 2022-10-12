@@ -42,7 +42,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  * @since 3.1
  */
 public final class CustomRegexRequestMatcher implements RequestMatcher {
-    private final static Log logger = LogFactory.getLog(CustomRegexRequestMatcher.class);
+    private final static Log LOGGER = LogFactory.getLog(CustomRegexRequestMatcher.class);
 
     private final Pattern pattern;
     private final HttpMethod httpMethod;
@@ -112,8 +112,8 @@ public final class CustomRegexRequestMatcher implements RequestMatcher {
             serverName = "";
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking match of request : '" + serverName + url + "'; against '" + pattern
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Checking match of request : '" + serverName + url + "'; against '" + pattern
                     + "'");
         }
 

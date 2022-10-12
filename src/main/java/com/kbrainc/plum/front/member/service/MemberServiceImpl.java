@@ -58,11 +58,11 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 	   int resRegisterMember = memberDao.insertMember(memberVo);
 	   if(resRegisterMember > 0 ) {
 		   // T: 선생님 , G:일반, S:학생 
-		   if(memberVo.getUser_se_cd().equals("T")){
+		   if(memberVo.getUserSeCd().equals("T")){
 			   teacherVo.setUserid(memberVo.getUserid());
 			   memberDao.insertMemberTeacher(teacherVo);
 			   memberDao.updateMember(memberVo);
-		   }else if(memberVo.getUser_se_cd().equals("S")){
+		   }else if(memberVo.getUserSeCd().equals("S")){
 			  //TO-DO
 		   }else {
 			 //TO-DO
@@ -92,10 +92,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 	   
 	   if(resInt > 0 ) {
 		   // T: 선생님 , G:일반, S:학생 
-		   if(memberVo.getUser_se_cd().equals("T")){
+		   if(memberVo.getUserSeCd().equals("T")){
 			   teacherVo.setUserid(memberVo.getUserid());
 			   memberDao.updateMemberTeacher(teacherVo);
-		   }else if(memberVo.getUser_se_cd().equals("S")){
+		   }else if(memberVo.getUserSeCd().equals("S")){
 			  //TO-DO
 		   }else {
 			 //TO-DO
@@ -110,12 +110,12 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
    *
    * @Title : selectTeacherMemberInfo
    * @Description : 회원정보 호출
-   * @param MemberVo MemberVo객체
+   * @param memberVo MemberVo객체
    * @return MemberVo 
    * @throws Exception 예외
    */
-  public Map<String,Object> selectTeacherMemberInfo(MemberVo MemberVo) throws Exception{
-	  return memberDao.selectTeacherMemberInfo(MemberVo);
+  public Map<String,Object> selectTeacherMemberInfo(MemberVo memberVo) throws Exception{
+	  return memberDao.selectTeacherMemberInfo(memberVo);
   };
    
    /**
@@ -124,12 +124,12 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     *
     * @Title : chekcDuplicationUser
     * @Description : ID 중복 체크
-    * @param MemberVo MemberVo객체
+    * @param memberVo MemberVo객체
     * @return int 
     * @throws Exception 예외
     */
-   public int chekcDuplicationUser(MemberVo MemberVo) throws Exception{
-	   return memberDao.chekcDuplicationUser(MemberVo);
+   public int chekcDuplicationUser(MemberVo memberVo) throws Exception{
+	   return memberDao.chekcDuplicationUser(memberVo);
    };
    
 }

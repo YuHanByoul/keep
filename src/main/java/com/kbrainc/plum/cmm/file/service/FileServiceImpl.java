@@ -65,10 +65,10 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/downloadFileByFileid.do")
                 .queryParam("fileid", fileVo.getFileid())
-                .queryParam("file_idntfc_key", fileVo.getFile_idntfc_key())
+                .queryParam("file_idntfc_key", fileVo.getFileIdntfcKey())
                 .toUriString();
         
-        fileVo.setFile_path(fileDownloadUri);
+        fileVo.setFilePath(fileDownloadUri);
         
         return fileVo; 
 	}
@@ -91,14 +91,14 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
 			logger.info("New FileGrp ID : {}", fileGrpVo.getFilegrpid());
 		}
 		
-		String file_nm = fileVo.getOrginl_file_nm();
-		String file_ext = file_nm.substring(file_nm.lastIndexOf("."));
+		String fileNm = fileVo.getOrginlFileNm();
+		String fileExt = fileNm.substring(fileNm.lastIndexOf("."));
 		
 		fileVo.setFilegrpid(fileGrpVo.getFilegrpid());
-		fileVo.setFile_extsn(file_ext);
+		fileVo.setFileExtsn(fileExt);
 		fileVo.setReguserid(fileGrpVo.getReguserid());
 
-		fileVo.setFile_idntfc_key(CommonUtil.getUUIdGnrBean().getNextBigDecimalId().toString());
+		fileVo.setFileIdntfcKey(CommonUtil.getUUIdGnrBean().getNextBigDecimalId().toString());
 		
 		/*
 		 * FileVo FileVo = new FileVo( fileGrpVo.getFilegrpid(),
@@ -152,11 +152,11 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
     */
     @Override
     public boolean downloadFileCheck(FileVo fileVo, UserVo user) throws Exception {
-        if (this.filegrpName.containsKey(fileVo.getFilegrp_nm())) {
-            LinkedHashMap downloadChecker = ((LinkedHashMap)this.filegrpName.get(fileVo.getFilegrp_nm()).get("downloadChecker"));
+        if (this.filegrpName.containsKey(fileVo.getFilegrpNm())) {
+            LinkedHashMap downloadChecker = ((LinkedHashMap)this.filegrpName.get(fileVo.getFilegrpNm()).get("downloadChecker"));
             
-            if ("bbs".equals(fileVo.getFilegrp_nm())) {
-                if ("N".equals(fileVo.getNlogin_perm_yn()) && user.getUserid() == null) {
+            if ("bbs".equals(fileVo.getFilegrpNm())) {
+                if ("N".equals(fileVo.getNloginPermYn()) && user.getUserid() == null) {
                     return false;
                 }
             } else if (downloadChecker != null) {

@@ -302,7 +302,7 @@ public class MemberController {
         
         retVal = memberService.modifyMember(memberVo, memberDtlVo);
         
-        if ("Y".equals(memberVo.getAcnt_lock_yn())) {
+        if ("Y".equals(memberVo.getAcntLockYn())) {
             //사용자의 세션을 차단하는 기능을 구현
         }
         

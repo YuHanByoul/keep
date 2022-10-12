@@ -63,21 +63,21 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
 	        codeListMap.removeAll(true);
 
 	        List<CodeInfoVo> allCodeInfoList = resCodeDao.selectAllCodeInfoList();
-	        List<CodeInfoVo> CodeInfoList = null;
+	        List<CodeInfoVo> codeInfoList = null;
 	        Element element = null;
 
 	        for (CodeInfoVo codeInfo : allCodeInfoList) {
 	            codeMap.put(new Element("CODE|" + codeInfo.getCd(), codeInfo), true);
-	            element = codeListMap.get(codeInfo.getCdgrpid() + "|" + codeInfo.getUppr_cd());
+	            element = codeListMap.get(codeInfo.getCdgrpid() + "|" + codeInfo.getUpprCd());
 	            
 	            if (element == null) {
-	                CodeInfoList = new ArrayList<CodeInfoVo>();
-	                CodeInfoList.add(codeInfo);
-	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUppr_cd(), CodeInfoList), true);
+	                codeInfoList = new ArrayList<CodeInfoVo>();
+	                codeInfoList.add(codeInfo);
+	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUpprCd(), codeInfoList), true);
 	            } else {
-	                CodeInfoList = (List<CodeInfoVo>) element.getObjectValue();    
-	                CodeInfoList.add(codeInfo);
-	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUppr_cd(), CodeInfoList), true);
+	                codeInfoList = (List<CodeInfoVo>) element.getObjectValue();    
+	                codeInfoList.add(codeInfo);
+	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUpprCd(), codeInfoList), true);
 	            }
 	        }
         }
@@ -112,10 +112,10 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
     @Override
     @Cacheable(value = "codeListMap", key = "#cdgrpid.concat('|').concat(#upprCd)")
     public List<CodeInfoVo> getCodeList(String cdgrpid, String upprCd) throws Exception {
-    	CodeInfoVo CodeInfoVo = new CodeInfoVo();
-        CodeInfoVo.setCdgrpid(cdgrpid);
-        CodeInfoVo.setUppr_cd(upprCd);
-        return resCodeDao.selectCodeList(CodeInfoVo);
+    	CodeInfoVo codeInfoVo = new CodeInfoVo();
+        codeInfoVo.setCdgrpid(cdgrpid);
+        codeInfoVo.setUpprCd(upprCd);
+        return resCodeDao.selectCodeList(codeInfoVo);
     }
 
     /**
@@ -161,7 +161,7 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
         if (codeInfo == null) {
             return "";
         }
-        return codeInfo.getCd_nm();
+        return codeInfo.getCdNm();
     }
     
     /**

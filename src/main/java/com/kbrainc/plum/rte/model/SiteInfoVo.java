@@ -29,10 +29,10 @@ public class SiteInfoVo extends ParentVo implements Serializable {
     /** 사이트아이디 */
     private String siteid = null;
     /** 사이트명 */
-    private String site_nm = null;
+    private String siteNm = null;
     
     /** 시스템_구분_코드 */
-    private String sys_se_cd = null;
+    private String sysSeCd = null;
     
     /** 도메인 */
     private String dmn = null;
@@ -57,22 +57,22 @@ public class SiteInfoVo extends ParentVo implements Serializable {
     }
 
     /**
-     * @Title : getSite_nm
+     * @Title : getSiteNm
      * @Description : 사이트명을 가져온다.
      * @return String 사이트명
      */
-    public String getSite_nm() {
-        return site_nm;
+    public String getSiteNm() {
+        return siteNm;
     }
 
     /**
-     * @Title : setSite_nm
+     * @Title : setSiteNm
      * @Description : 사이트명을 셋팅한다.
-     * @param site_nm 사이트명
+     * @param siteNm 사이트명
      * @return void
      */
-    public void setSite_nm(String site_nm) {
-        this.site_nm = site_nm;
+    public void setSiteNm(String siteNm) {
+        this.siteNm = siteNm;
     }
 
     /**

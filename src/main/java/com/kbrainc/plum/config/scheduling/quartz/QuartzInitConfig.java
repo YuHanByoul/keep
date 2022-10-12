@@ -60,11 +60,11 @@ public class QuartzInitConfig {
 	
 	        for (SchedulingTriggerVo schedulingTrigger : schedulingTriggers) {
 	            // 사용여부 Y인 것만 다시등록
-	            if ("Y".equals(schedulingTrigger.getUse_yn())) {
+	            if ("Y".equals(schedulingTrigger.getUseYn())) {
 	                try {
     	                Trigger trigger = (Trigger)applicationContext.getBean(schedulingTrigger.getNm());
     	                TriggerBuilder tb = trigger.getTriggerBuilder();
-    	                trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingTrigger.getCron_expression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
+    	                trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingTrigger.getCronExpression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
     	                scheduler.scheduleJob(trigger); // 트리거 스케쥴링 추가
 	                } catch (Exception e) {
 	                    e.printStackTrace();

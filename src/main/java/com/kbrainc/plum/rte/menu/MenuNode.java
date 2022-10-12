@@ -79,7 +79,7 @@ public class MenuNode extends TreeNode<MenuItem> {
      */
     public String getUpr_menu_id() {
         if (hasData) {
-            return getData().getUppr_menuid();
+            return getData().getUpprMenuid();
         } else {
             return null;
         }

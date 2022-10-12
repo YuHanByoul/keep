@@ -109,11 +109,11 @@ public class PrgrmServiceImpl extends PlumAbstractServiceImpl implements PrgrmSe
             Integer tprgrmid = prgrm.getTprgrmid();
             PrgrmVo prgrmInfo = prgrmDao.selectPrgrmView(prgrmid); // 이동될 위치의 prgrm_ord 정보를 얻기
             Integer pord = prgrmInfo.getOrd();
-            Integer puprid = prgrmInfo.getUppr_prgrmid();
+            Integer puprid = prgrmInfo.getUpprPrgrmid();
 
             prgrmInfo = prgrmDao.selectPrgrmView(tprgrmid);// 이동하는 메뉴의 menu 정보를 얻기
             Integer tord = prgrmInfo.getOrd();
-            Integer tuprid = prgrmInfo.getUppr_prgrmid();
+            Integer tuprid = prgrmInfo.getUpprPrgrmid();
 
             if (puprid.intValue() == tuprid.intValue()) { // 부모가같을때
                 if (pord.intValue() < tord.intValue()) { // intValue 디버깅 확인 필요

@@ -60,7 +60,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  */
 public final class CustomAntPathRequestMatcher
         implements RequestMatcher, RequestVariablesExtractor {
-    private static final Log logger = LogFactory.getLog(CustomAntPathRequestMatcher.class);
+    private static final Log LOGGER = LogFactory.getLog(CustomAntPathRequestMatcher.class);
     private static final String MATCH_ALL = "/**";
 
     private final Matcher matcher;
@@ -157,8 +157,8 @@ public final class CustomAntPathRequestMatcher
     public boolean matches(HttpServletRequest request) {
         if (this.httpMethod != null && StringUtils.hasText(request.getMethod())
                 && this.httpMethod != valueOf(request.getMethod())) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Request '" + request.getMethod() + " "
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Request '" + request.getMethod() + " "
                         + getRequestPath(request) + "'" + " doesn't match '"
                         + this.httpMethod + " " + this.pattern + "'");
             }
@@ -167,8 +167,8 @@ public final class CustomAntPathRequestMatcher
         }
 
         if (this.pattern.equals(MATCH_ALL)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Request '" + getRequestPath(request)
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Request '" + getRequestPath(request)
                         + "' matched by universal pattern '/**'");
             }
 
@@ -181,8 +181,8 @@ public final class CustomAntPathRequestMatcher
             serverName = "";
         }
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Checking match of request : '" + serverName + url + "'; against '"
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Checking match of request : '" + serverName + url + "'; against '"
                     + this.pattern + "'");
         }
 

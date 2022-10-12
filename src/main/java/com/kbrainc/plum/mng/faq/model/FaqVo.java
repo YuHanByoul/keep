@@ -18,15 +18,15 @@ public class FaqVo extends ParentRequestVo {
     private int faqid;
     private String title;
     private String cntnts;
-    private String user_se_cd;
+    private String userSeCd;
     private Integer ord;
-    private String use_yn;
-    private String updt_dt;
+    private String useYn;
+    private String updtDt;
     private int updtuserid;
-    private String reg_dt;
+    private String regDt;
     private int reguserid;
     
-    private String cl_nm;
+    private String clNm;
 
     /**
      * 

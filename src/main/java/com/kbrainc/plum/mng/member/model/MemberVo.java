@@ -63,7 +63,7 @@ public class MemberVo extends ParentRequestVo {
     private String pwd;
     
     /** 사용자_구분 */
-    private String user_se_cd;
+    private String userSeCd;
     
     /** 사용자_이름 */
     @NotEmpty(message = "이름을 입력해주십시오.")
@@ -90,47 +90,47 @@ public class MemberVo extends ParentRequestVo {
     
     /** 이용약관_동의_여부 */
     @Pattern(regexp="[YN]")
-    private String tos_agre_yn;
+    private String tosAgreYn;
     
     /** 개인정보수집및이용_동의_여부 */
     @Pattern(regexp="[YN]")
-    private String prvcy_agre_yn;
+    private String prvcyAgreYn;
     
     /** 개인정보_유효기간 */
-    private String prvcy_vldty; 
+    private String prvcyVldty; 
     
     /** 개인정보_유효일자 */
-    private Date prvcy_vldty_dt;
+    private Date prvcyVldtyDt;
     
     /** 계정_잠김_여부 */
     @Pattern(regexp="[YN]")
-    private String acnt_lock_yn;
+    private String acntLockYn;
     
     /** 계정_잠김_코드 */
-    private String acnt_lock_cd;
+    private String acntLockCd;
     
     /** 상태_코드 */
-    private String stts_cd;
+    private String sttsCd;
     
     /** 삭제_여부 */
     @Pattern(regexp="[YN]")
-    private String del_yn; 
+    private String delYn; 
     
     /** 최종접속일 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date login_dt;
+    private Date loginDt;
     
     /** 휴면계정전환일 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date drmncy_dt;
+    private Date drmncyDt;
     
     /** 계정삭제예정일 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
-    private Date expected_del_dt;
+    private Date expectedDelDt;
     
     /** 등록_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date reg_dt;
+    private Date regDt;
     
     /** 등록자아이디 */
     private int reguserid;
@@ -157,7 +157,7 @@ public class MemberVo extends ParentRequestVo {
     
     /** 주소_상세 */
     @Size(max = 400, message = "상세주소는 400자를 넘을 수 없습니다.")
-    private String addr_dtl;
+    private String addrDtl;
     
     /** 소개 */
     @Size(max = 50, message = "소개는 50자를 넘을 수 없습니다.")

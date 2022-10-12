@@ -49,11 +49,11 @@ public class SchlController {
     */
     @RequestMapping(value = "/front/schl/selectSchlList.do")
     @ResponseBody
-    public Map<String, Object> selectMemberList(SchlVo SchlVo) throws Exception {
+    public Map<String, Object> selectMemberList(SchlVo schlVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<SchlVo> result = null;
         
-        result = schlService.selectSchlList(SchlVo);
+        result = schlService.selectSchlList(schlVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", result.size());

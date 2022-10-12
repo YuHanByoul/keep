@@ -28,25 +28,25 @@ public class RoleUserVo extends ParentRequestVo {
     private String userid;
     
     /** 역할_시작_일시 */
-    private String role_strt_dt;
+    private String roleStrtDt;
     
     /** 역할_종료_일시 */
-    private String role_end_dt;
+    private String roleEndDt;
     
     /** 수정_일시 */
-    private String updt_dt;
+    private String updtDt;
     
     /** 수정자아이디 */
     private String updtuserid;
     
     /** 등록_일시 */
-    private String reg_dt;
+    private String regDt;
     
     /** 등록자아이디 */
     private String reguserid;
 
     /* 역할_이름 */
-    private String role_nm;
+    private String roleNm;
 
     /** 계정 */
     private String acnt;
@@ -55,5 +55,5 @@ public class RoleUserVo extends ParentRequestVo {
     private String nm;
     
     /** 사용자_구분_코드 */
-    private String user_se_cd;
+    private String userSeCd;
 }

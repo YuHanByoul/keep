@@ -92,7 +92,7 @@ public class CommonController {
         }   
         
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        String sysSeCd = siteInfo.getSys_se_cd();
+        String sysSeCd = siteInfo.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             mav.setViewName("mng/login");
@@ -145,7 +145,7 @@ public class CommonController {
     @GetMapping("/main.html")
     public String main(Model model, PstVo pstVo, @UserInfo UserVo user, HttpSession session) {
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        String sysSeCd = siteInfo.getSys_se_cd();
+        String sysSeCd = siteInfo.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             return "mng/main";
@@ -174,7 +174,7 @@ public class CommonController {
     @GetMapping("/login.html")
     public String login(HttpSession session) {
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        String sysSeCd = siteInfo.getSys_se_cd();
+        String sysSeCd = siteInfo.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             return "mng/login";

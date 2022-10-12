@@ -60,7 +60,7 @@ public class SiteChangeFilter implements Filter {
             try {
                 HttpSession session = req.getSession();
                 SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-                String sysSeCd = (siteInfo != null) ? siteInfo.getSys_se_cd() : null;
+                String sysSeCd = (siteInfo != null) ? siteInfo.getSysSeCd() : null;
                 String dmn = request.getServerName();
                 
                 if (siteInfo != null && !dmn.equals(siteInfo.getDmn())) {
@@ -69,10 +69,10 @@ public class SiteChangeFilter implements Filter {
                     UserVo user = (UserVo) session.getAttribute("user");
                     if (user != null) { // 로그인 되어있는 상태에서 도메인 변경시
                         // 시스템_구분_코드가 다를때
-                        if (!sysSeCd.equals(siteInfo.getSys_se_cd())) {
+                        if (!sysSeCd.equals(siteInfo.getSysSeCd())) {
                             // 역할을 변경한다.
                             for (Map<String, String> authority : user.getAuthorities()) {
-                                if (("A".equals(siteInfo.getSys_se_cd()) && "A".equals(authority.get("se_cd"))) || ("U".equals(siteInfo.getSys_se_cd()) && "U".equals(authority.get("se_cd")))) {
+                                if (("A".equals(siteInfo.getSysSeCd()) && "A".equals(authority.get("se_cd"))) || ("U".equals(siteInfo.getSysSeCd()) && "U".equals(authority.get("se_cd")))) {
                                     ArrayList<GrantedAuthority> authorities = new ArrayList<>();
                                     authorities.add(new SimpleGrantedAuthority(authority.get("roleid")));
                                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
@@ -82,7 +82,7 @@ public class SiteChangeFilter implements Filter {
                         }
                     }
                     
-                    sysSeCd = siteInfo.getSys_se_cd();
+                    sysSeCd = siteInfo.getSysSeCd();
                 }
                 
             } catch (Exception e) {

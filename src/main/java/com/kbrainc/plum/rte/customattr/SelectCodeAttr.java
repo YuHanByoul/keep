@@ -123,14 +123,14 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
                 if (!firstOptTxt.equals("")) {
                     result.append("<option value='' >" + firstOptTxt + "</option>").append("\n");
                 }
-                for (CodeInfoVo CodeInfoVo : codeList) {
+                for (CodeInfoVo codeInfoVo : codeList) {
                     if (!selectedCd.equals(null) && !(selectedCd.trim()).equals("")
-                            && CodeInfoVo.getCd().equals(selectedCd)) {
+                            && codeInfoVo.getCd().equals(selectedCd)) {
                         result.append(
-                                "<option value='" + CodeInfoVo.getCd() + "' selected>" + CodeInfoVo.getCd_nm() + "</option>")
+                                "<option value='" + codeInfoVo.getCd() + "' selected>" + codeInfoVo.getCdNm() + "</option>")
                                 .append("\n");
                     } else {
-                        result.append("<option value='" + CodeInfoVo.getCd() + "' >" + CodeInfoVo.getCd_nm() + "</option>")
+                        result.append("<option value='" + codeInfoVo.getCd() + "' >" + codeInfoVo.getCdNm() + "</option>")
                                 .append("\n");
                     }
                 }

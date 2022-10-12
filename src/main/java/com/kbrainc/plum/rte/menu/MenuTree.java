@@ -160,7 +160,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("1".equals(item.getDpth())) {
                 return item.getMenuid();
             } else {
-                return this.getL1MenuId(item.getUppr_menuid());
+                return this.getL1MenuId(item.getUpprMenuid());
             }
         }
         return rv;
@@ -182,7 +182,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("1".equals(item.getDpth())) {
                 return item;
             } else {
-                return this.getL1MenuItem(item.getUppr_menuid());
+                return this.getL1MenuItem(item.getUpprMenuid());
             }
         }
         return null;
@@ -205,7 +205,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("2".equals(item.getDpth())) {
                 return item.getMenuid();
             } else {
-                return this.getL2MenuId(item.getUppr_menuid());
+                return this.getL2MenuId(item.getUpprMenuid());
             }
         }
         return rv;
@@ -227,7 +227,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("2".equals(item.getDpth())) {
                 return item;
             } else {
-                return this.getL2MenuItem(item.getUppr_menuid());
+                return this.getL2MenuItem(item.getUpprMenuid());
             }
         }
         return null;
@@ -250,7 +250,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("3".equals(item.getDpth())) {
                 return item.getMenuid();
             } else {
-                return this.getL3MenuId(item.getUppr_menuid());
+                return this.getL3MenuId(item.getUpprMenuid());
             }
         }
         return rv;
@@ -272,7 +272,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("3".equals(item.getDpth())) {
                 return item;
             } else {
-                return this.getL3MenuItem(item.getUppr_menuid());
+                return this.getL3MenuItem(item.getUpprMenuid());
             }
         }
         return null;
@@ -295,7 +295,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("4".equals(item.getDpth())) {
                 return item.getMenuid();
             } else {
-                return this.getL4MenuId(item.getUppr_menuid());
+                return this.getL4MenuId(item.getUpprMenuid());
             }
         }
         return rv;
@@ -317,7 +317,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
             if ("4".equals(item.getDpth())) {
                 return item;
             } else {
-                return this.getL4MenuItem(item.getUppr_menuid());
+                return this.getL4MenuItem(item.getUpprMenuid());
             }
         }
         return null;

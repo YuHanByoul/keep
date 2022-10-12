@@ -146,7 +146,7 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
             if (TREE_MENU_ROOTID.equals(item.getMenuid())) {
                 tree.setRoot(node);
             } else {
-                pNode = tree.getMenuNodeByMenuID(item.getUppr_menuid());
+                pNode = tree.getMenuNodeByMenuID(item.getUpprMenuid());
             }
 
             if (pNode != null) {

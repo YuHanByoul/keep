@@ -111,7 +111,7 @@ public class BbsController {
 
 		//paramVo = (PstVo) resultMap.get("paramMap");
 		//Map result = bbsService.selectPst(paramVo);
-		paramVo.setPrnts_pstid(paramVo.getPstid());
+		paramVo.setPrntsPstid(paramVo.getPstid());
         model.addAttribute("replyList", bbsService.selectReplyPstList(paramVo));
         
 		model.addAttribute("bbsInfo", bbsInfo);
@@ -470,10 +470,10 @@ public class BbsController {
 			paramVo.setBbsid(bbsid);
 			BbsVo bbsVo = bbsService.selectOneBbs(paramVo);
 
-			bbsVo.setBbs_clid(paramVO.getBbs_clid());
+			bbsVo.setBbsClid(paramVO.getBbsClid());
 			bbsVo.setSearchKeyword(paramVO.getSearchKeyword());
 			bbsVo.setSearchType(paramVO.getSearchType());
-			bbsVo.setRowPerPage(bbsVo.getPage_pst_cnt());
+			bbsVo.setRowPerPage(bbsVo.getPagePstCnt());
 			bbsVo.setPageNumber(paramVO.getPageNumber());
 			bbsVo.setUser(user);
 

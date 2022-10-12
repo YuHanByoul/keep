@@ -39,8 +39,8 @@ public class SchedulingTriggerVo implements Serializable {
     private String dc;
 
     /** 크론표현식 */
-    private String cron_expression;
+    private String cronExpression;
 
     /** 사용여부 */
-    private String use_yn;
+    private String useYn;
 }

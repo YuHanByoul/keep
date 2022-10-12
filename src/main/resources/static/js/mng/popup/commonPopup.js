@@ -26,7 +26,7 @@ function getDataForCommnonPopup( siteid, menuid ){
 		
 		try{
 			if(popMain){
-				data = {"siteid": siteid,"expsr_lc_cd": "M"};
+				data = {"siteid": siteid,"expsrLcCd": "M"};
 			}
 		}catch(e){
 			

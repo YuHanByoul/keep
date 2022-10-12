@@ -81,8 +81,8 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
             if (checkDepth.size() <= 0) {
                 ;
             } else {
-                for (CodeInfoVo CodeInfoVo : checkDepth) {
-                    returnList.addAll(resCode.getCodeList(grpcd, CodeInfoVo.getCd()));
+                for (CodeInfoVo codeInfoVo : checkDepth) {
+                    returnList.addAll(resCode.getCodeList(grpcd, codeInfoVo.getCd()));
                 }
             }
             checkDepth = returnList;
@@ -95,12 +95,12 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
         if (!("JSSFC".equals(grpCd) || "INDUTY".equals(grpCd) || "ADDR".equals(grpCd) || "CERT".equals(grpCd) || "ABLTY".equals(grpCd))) {
             grpCd = "CODE";
         }
-        CodeInfoVo CodeInfoVo = resCode.getCodeInfo(grpCd + "|" + cd);
-        if (CodeInfoVo.getUppr_cd().equals(upprCd) || CodeInfoVo.getUppr_cd().equals("0")) {
-            return CodeInfoVo.getCd();
+        CodeInfoVo codeInfoVo = resCode.getCodeInfo(grpCd + "|" + cd);
+        if (codeInfoVo.getUpprCd().equals(upprCd) || codeInfoVo.getUpprCd().equals("0")) {
+            return codeInfoVo.getCd();
         }
         
-        return getUpprCodeByRecusive(grpCd, upprCd, CodeInfoVo.getUppr_cd()) + ',' + cd;
+        return getUpprCodeByRecusive(grpCd, upprCd, codeInfoVo.getUpprCd()) + ',' + cd;
     }
 
     @Override
@@ -200,11 +200,11 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
                             + (i + 1) + "\" )'> ").append("\n");
                     result.append("<option value=''>" + firstOptTxt + "</option>").append("\n");
                     if (codeList != null) {
-                        for (CodeInfoVo CodeInfoVo : codeList) {
-                            if (selectedCds != null && selectedCds[i-1].equals(CodeInfoVo.getCd())) {
-                                result.append("<option value='" + CodeInfoVo.getCd() + "' selected>" + CodeInfoVo.getCd_nm() + "</option>").append("\n");
+                        for (CodeInfoVo codeInfoVo : codeList) {
+                            if (selectedCds != null && selectedCds[i-1].equals(codeInfoVo.getCd())) {
+                                result.append("<option value='" + codeInfoVo.getCd() + "' selected>" + codeInfoVo.getCdNm() + "</option>").append("\n");
                             } else {
-                                result.append("<option value='" + CodeInfoVo.getCd() + "' >" + CodeInfoVo.getCd_nm() + "</option>").append("\n");
+                                result.append("<option value='" + codeInfoVo.getCd() + "' >" + codeInfoVo.getCdNm() + "</option>").append("\n");
                             }
                         }
                     }

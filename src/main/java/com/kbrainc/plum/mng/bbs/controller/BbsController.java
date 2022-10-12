@@ -364,7 +364,7 @@ public class BbsController {
         bbsVo.setBbsid(paramVO.getBbsid());
         model.addAttribute("bbsInfo", bbsService.selectOneBbs(bbsVo));
         
-        paramVO.setPrnts_pstid(pstid);
+        paramVO.setPrntsPstid(pstid);
         model.addAttribute("result", bbsService.selectPst(paramVO));
         model.addAttribute("replyList", bbsService.selectReplyPstList(paramVO));
         model.addAttribute("cmntList", bbsService.selectCmntList(cmntVO));

@@ -37,8 +37,6 @@ import com.kbrainc.plum.rte.util.CommonUtil;
  */
 public class CheckCodeAttr extends AbstractAttributeTagProcessor {
 
-    private static final Logger logger = LoggerFactory.getLogger(CheckCodeAttr.class);
-
     // ATTR name 설정
     private static final String ATTR_NAME = "check_code";
     private static final int PRECEDENCE = 1000;
@@ -125,17 +123,17 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                 }
             } else {
                 int cnt = 1;
-                for (CodeInfoVo CodeInfoVo : codeList) {
+                for (CodeInfoVo codeInfoVo : codeList) {
                     if("ul".equals(listStyle)) {
                         result.append("<li><label>");
                     }
                     result.append("<input type='checkbox' class='" + addClass + "'  id='" + attributeValue + cnt + "' name ='"
-                            + attributeValue + cnt + "' value='" + CodeInfoVo.getCd() + "' data-cd-name='" + CodeInfoVo.getCd_nm() + "'");
+                            + attributeValue + cnt + "' value='" + codeInfoVo.getCd() + "' data-cd-name='" + codeInfoVo.getCdNm() + "'");
                     if (!selectedCd.equals(null) && !(selectedCd.trim()).equals("")
-                            && inArray(selectedCds, CodeInfoVo.getCd())) {
+                            && inArray(selectedCds, codeInfoVo.getCd())) {
                         result.append(" checked ");
                     }
-                    result.append(" >" + CodeInfoVo.getCd_nm()).append("\n");
+                    result.append(" >" + codeInfoVo.getCdNm()).append("\n");
                     if("ul".equals(listStyle)) {
                         result.append("</label></li>");
                     }

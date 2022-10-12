@@ -43,7 +43,7 @@ public class SchedulingVo extends ParentRequestVo {
     private String nm;
     
     /** Job 이름 */
-    private String job_name;
+    private String jobName;
 
     /** 설명 */
     @Size(max = 160, message = "설명은 160자를 넘을 수 없습니다.")
@@ -52,13 +52,13 @@ public class SchedulingVo extends ParentRequestVo {
     /** 크론표현식 */
     @NotEmpty(message = "크론표현식을 입력해 주십시오.")
     @Size(max = 60, message = "크론표현식은 60자를 넘을 수 없습니다.")
-    private String cron_expression;
+    private String cronExpression;
 
     /** 사용여부 */
     @NotEmpty(message = "사용여부를 입력해 주십시오.")
     @Pattern(regexp = "Y|N")
-    private String use_yn;
+    private String useYn;
     
     /** 활성화여부 */
-    private String active_yn;
+    private String activeYn;
 }

@@ -35,64 +35,64 @@ public class BbsVo extends ParentRequestVo {
     /** 설명 **/
     private String dc;
     /** 분류_코드 **/
-    private String cl_cd;
-    private String cl_nm;
+    private String clCd;
+    private String clNm;
     /** 고정_공지_사용_여부 **/
-    private String fxd_ntc_use_yn;
+    private String fxdNtcUseYn;
     /** 고정_공지_갯수 **/
-    private Integer fxd_ntc_cnt;    
+    private Integer fxdNtcCnt;    
     /** 첨부파일_사용_여부 **/
-    private String atchfile_use_yn;
+    private String atchfileUseYn;
     /** 첨부파일_갯수 **/
-    private Integer atchfile_cnt;
+    private Integer atchfileCnt;
     /** 첨부파일_사이즈 **/
-    private Integer atchfile_size;    
+    private Integer atchfileSize;    
     /** 답글_사용_여부 **/
-    private String rply_use_yn;
+    private String rplyUseYn;
     /** 댓글 사용여부 **/
-    private String cmnt_use_yn;
+    private String cmntUseYn;
     /** NEW_사용_여부 **/
-    private String new_use_yn;
+    private String newUseYn;
     /** NEW_표시일수 **/
-    private Integer new_indict_daycnt;
+    private Integer newIndictDaycnt;
     /** HOT_사용_여부 **/
-    private String hot_use_yn;
+    private String hotUseYn;
     /** HOT_사용_기준_조회수 **/
-    private Integer hot_use_stdr_hits;
+    private Integer hotUseStdrHits;
     /** 분류_사용_여부 **/
-    private String cl_use_yn;
+    private String clUseYn;
     /** 페이지_게시글_수 **/
-    private Integer page_pst_cnt;
+    private Integer pagePstCnt;
     /** 비로그인_파일다운로드_여부 **/
-    private String nlogin_perm_yn;
+    private String nloginPermYn;
     /** 사용_여부 **/
-    private String use_yn;
+    private String useYn;
     /** 수정_일시 **/
-    private String updt_dt;
+    private String updtDt;
     /** 수정자_아이디 **/
     private Integer updtuserid;
     /** 등록_일시 **/
-    private String reg_dt;
+    private String regDt;
     /** 등록_아이디 **/
     private Integer reguserid;
 
-    private Integer pst_cnt; // 추가 :게시글 수
-    private Integer search_cl; // 유형 검색 값
+    private Integer pstCnt; // 추가 :게시글 수
+    private Integer searchCl; // 유형 검색 값
     
     //현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
-    private Integer cur_fxd_ntc_cnt;
+    private Integer curFxdNtcCnt;
     
     public BbsVo(Integer bbsid) {
         this.setBbsid(bbsid);
         this.setSearchKeyword("All");
     }
     
-    public void setCl_cd(String clCd) {
-        this.cl_cd = clCd;
+    public void setClCd(String clCd) {
+        this.clCd = clCd;
         if("1".equals(clCd)) {
-            this.cl_nm = "일반형";
+            this.clNm = "일반형";
         }else if("2".equals(clCd)) {
-            this.cl_nm = "공지형";
+            this.clNm = "공지형";
         }
     }
 

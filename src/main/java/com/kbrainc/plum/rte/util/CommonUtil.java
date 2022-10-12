@@ -52,7 +52,7 @@ public class CommonUtil {
 
     private static Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
 
-    private static String[] WAS_IPPORT = applicationConfig.getStringArray("admin.was.ipport");;
+    private static String[] wasIpport = applicationConfig.getStringArray("admin.was.ipport");;
 
     /**
      * @Title : getBean
@@ -130,8 +130,8 @@ public class CommonUtil {
         URL url = null;
         URLConnection urlcnn = null;
         
-        String[] checkHosts = CommonUtil.WAS_IPPORT;
-        int checkHosts_length = checkHosts.length;
+        String[] checkHosts = CommonUtil.wasIpport;
+        int checkHostsLength = checkHosts.length;
         String resultCheckHost = "";
 
         int idx = 0;
@@ -173,9 +173,9 @@ public class CommonUtil {
                 }
             }
         } catch (Exception e) {
-            for (int i = idx; i < checkHosts_length; i++) {
+            for (int i = idx; i < checkHostsLength; i++) {
                 resultCheckHost += checkHosts[i];
-                if (i < checkHosts_length - 1) {
+                if (i < checkHostsLength - 1) {
                     resultCheckHost += ",";
                 }
             }

@@ -62,8 +62,8 @@ public class MemberController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/front/member/join.html")
-    public String join(@RequestParam(required = false) String agre_yn, Model model) throws Exception {
-    	model.addAttribute("agre_yn", agre_yn);
+    public String join(@RequestParam(required = false) String agreYn, Model model) throws Exception {
+    	model.addAttribute("agreYn", agreYn);
     	return "front/member/join";
     }
     /**
@@ -101,18 +101,18 @@ public class MemberController {
      *
      * @Title       : chekcDuplicationUser 
      * @Description : ID 중복 체크
-     * @param MemberVo MemberVo객체
+     * @param memberVo MemberVo객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
     @RequestMapping(value = "/front/member/chekcDuplicationUser.do")
     @ResponseBody
-    public Map<String, Object> chekcDuplicationUser(MemberVo MemberVo) throws Exception {
+    public Map<String, Object> chekcDuplicationUser(MemberVo memberVo) throws Exception {
     	Map<String, Object> resultMap = new HashMap<>();
     	List<MemberVo> result = null;
     	
-    	int checkDuplicationID = memberService.chekcDuplicationUser(MemberVo);
+    	int checkDuplicationID = memberService.chekcDuplicationUser(memberVo);
     	
     	if(checkDuplicationID > 0) {
     		resultMap.put("result", false);
@@ -127,22 +127,22 @@ public class MemberController {
      *
      * @Title       : insertMember 
      * @Description : 회원등록
-     * @param MemberVo MemberVo , TeacherVo TeacherVo객체
+     * @param memberVo MemberVo , TeacherVo TeacherVo객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
     @RequestMapping(value = "/front/member/insertMember.do")
     @ResponseBody
-    public Map<String, Object> insertMember(MemberVo MemberVo,TeacherVo TeacherVo) throws Exception {
+    public Map<String, Object> insertMember(MemberVo memberVo,TeacherVo teacherVo) throws Exception {
     	
     	Map<String, Object> resultMap = new HashMap<>();
     	List<MemberVo> result = null;
     	
-    	MemberVo.setTos_agre_yn("Y");
-    	MemberVo.setStts_cd("2");
+    	memberVo.setTosAgreYn("Y");
+    	memberVo.setSttsCd("2");
     	
-    	int checkDuplicationID = memberService.insertMember(MemberVo,TeacherVo);
+    	int checkDuplicationID = memberService.insertMember(memberVo,teacherVo);
     	if(checkDuplicationID > 0) {
     		resultMap.put("result", true);
     	}else {
@@ -156,23 +156,23 @@ public class MemberController {
      *
      * @Title       : insertMember 
      * @Description : 회원 정보 수정
-     * @param MemberVo MemberVo , TeacherVo TeacherVo객체
+     * @param memberVo MemberVo , TeacherVo TeacherVo객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
     @RequestMapping(value = "/front/member/updateMember.do")
     @ResponseBody
-    public Map<String, Object> updateMember(MemberVo MemberVo,TeacherVo TeacherVo , @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateMember(MemberVo memberVo, TeacherVo teacherVo , @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<>();
     	List<MemberVo> result = null;
     	
-    	MemberVo.setUser(user);
-    	MemberVo.setUserid(Integer.parseInt(user.getUserid()));
-    	TeacherVo.setUser(user);
-    	TeacherVo.setUserid(Integer.parseInt(user.getUserid()));
+    	memberVo.setUser(user);
+    	memberVo.setUserid(Integer.parseInt(user.getUserid()));
+    	teacherVo.setUser(user);
+    	teacherVo.setUserid(Integer.parseInt(user.getUserid()));
     	
-    	int checkDuplicationID = memberService.updateMember(MemberVo,TeacherVo);
+    	int checkDuplicationID = memberService.updateMember(memberVo,teacherVo);
     	
     	if(checkDuplicationID > 0) {
     		resultMap.put("result", true);

@@ -81,8 +81,8 @@ public class MenuServiceImpl extends PlumAbstractServiceImpl implements MenuServ
     @Override
     public int insertMenuDirectInsertInfo(MenuVo menuVo) throws Exception {
         int retVal = 0;
-        if ("D".equals(menuVo.getType_cd())) {
-            menuVo.setPopup_yn("N"); // 폴더인 경우 팝업사용여부 N
+        if ("D".equals(menuVo.getTypeCd())) {
+            menuVo.setPopupYn("N"); // 폴더인 경우 팝업사용여부 N
         }
 
         int menuid = menuDao.insertMenuDirectInsertInfo(menuVo); // 메뉴를 먼저 등록
@@ -197,10 +197,10 @@ public class MenuServiceImpl extends PlumAbstractServiceImpl implements MenuServ
                         
             if (!"_".equals(pkey.substring(0, 1))) {
                 param.put("uppr_menuid", pkey);
-                menu.setUppr_menuid(Integer.parseInt(pkey));
+                menu.setUpprMenuid(Integer.parseInt(pkey));
                 menuDao.updateMenuTreeReOrder(param);
             } else {
-                menu.setUppr_menuid(keyToMenuid.get(pkey));
+                menu.setUpprMenuid(keyToMenuid.get(pkey));
             }
             menuDao.insertMenuTreeList(menu);
             keyToMenuid.put(key, menu.getMenuid());

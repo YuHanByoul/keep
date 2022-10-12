@@ -41,11 +41,11 @@ public class CodeGrpVo extends ParentRequestVo {
     /** 코드그룹이름 */
     @NotEmpty(message = "코드그룹명을 입력해 주십시오.")
     @Size(max = 200, message = "코드그룹명은 200자를 넘을 수 없습니다.")
-    private String cdgrp_nm;
+    private String cdgrpNm;
 
     /** 코드그룹설명 */
     @Size(max = 200, message = "코드그룹설명은 200자를 넘을 수 없습니다.")
-    private String cdgrp_dc;
+    private String cdgrpDc;
 
     /** 옵션1 */
     @Size(max = 200, message = "옵션1은 200자를 넘을 수 없습니다.")
@@ -56,15 +56,15 @@ public class CodeGrpVo extends ParentRequestVo {
     private String optn2;
 
     /** 사용_여부 */
-    private String use_yn;
+    private String useYn;
 
     /** 수정자아이디 */
     private Integer updtuserid;
 
     /** 수정자이름 */
-    private String updt_nm;
+    private String updtNm;
 
     /** 수정_일시 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updt_dt;
+    private Date updtDt;
 }

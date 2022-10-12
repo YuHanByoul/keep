@@ -41,7 +41,7 @@ public class PstVo extends ParentRequestVo {
     /** **/
     private String cntnts;
     /** **/
-    private Integer prnts_pstid;
+    private Integer prntsPstid;
     /** 부모게시글 아이디 **/
     private String grp;
     /** **/
@@ -51,54 +51,54 @@ public class PstVo extends ParentRequestVo {
     /** **/
     private Integer hits;
     /** **/
-    private Integer bbs_clid;
+    private Integer bbsClid;
     /** **/
-    private String fxd_ntc_yn;
+    private String fxdNtcYn;
     /** **/
-    private String fxd_ntc_strt_dt;
+    private String fxdNtcStrtDt;
     /** **/
-    private String fxd_ntc_end_dt;
+    private String fxdNtcEndDt;
     /** **/
-    private String login_yn;
+    private String loginYn;
     /** **/
     private Integer filegrpid;
     /** **/
-    private String updt_dt;
+    private String updtDt;
     /** 수정_일시 **/
     private int updtuserid;
     /** 수정자_아이디 **/
-    private String reg_dt;
+    private String regDt;
     /** 등록_일시 **/
     private int reguserid;
     /** 등록_아이디 **/
 
     // 이후 추가
     
-    private int file_cnt;
+    private int fileCnt;
     
     
     
     //BBS 정보  
     private String nm;
-    private String user_nm;
+    private String userNm;
     private String userid;
     
-    private String atchfile_use_yn;
-	private Integer atchfile_cnt   ;
-	private Integer atchfile_size;
-	private String cmnt_use_yn   ;
-	private String rply_use_yn;
-	private String cl_use_yn ;
-	private String fxd_ntc_use_yn;
+    private String atchfileUseYn;
+	private Integer atchfileCnt;
+	private Integer atchfileSize;
+	private String cmntUseYn;
+	private String rplyUseYn;
+	private String clUseYn;
+	private String fxdNtcUseYn;
 	
-	private Integer fxd_ntc_cnt;
+	private Integer fxdNtcCnt;
 	
 	//답글 리스트용 추가 
 	private ArrayList<FileVo> fileMap;
 	private Integer currentFileCnt;
 	
 	//현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
-    private Integer cur_fxd_ntc_cnt;
+    private Integer curFxdNtcCnt;
 	
 	
 

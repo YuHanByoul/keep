@@ -58,7 +58,7 @@ public class TreeItem {
     private String ext10 = null;
     
     /** 여분파라미터10. */
-    private String use_yn = null;
+    private String useYn = null;
     
     private String menuicon = "";
     private boolean select = false;

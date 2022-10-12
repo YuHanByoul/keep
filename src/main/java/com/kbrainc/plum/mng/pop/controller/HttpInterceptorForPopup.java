@@ -84,16 +84,16 @@ public class HttpInterceptorForPopup //extends HandlerInterceptorAdapter
                 throw new PageNotFoundException("사이트의 메뉴정보가 없습니다.");
             }
 
-            String menu_url = servletPath;
+            String menuUrl = servletPath;
 
             MenuItem menuItem = null;
             MenuItem menuItem2 = null;
 
             if (!"".equals(StringUtil.nvl(request.getQueryString()))) {
-                menu_url += "?" + request.getQueryString();
+                menuUrl += "?" + request.getQueryString();
             }
 
-            String menu_id = "";
+            String menuId = "";
             String urlkey = siteInfo.getSiteid();
 
             /**
@@ -120,18 +120,18 @@ public class HttpInterceptorForPopup //extends HandlerInterceptorAdapter
             } else { // 2
                 if (!"".equals(StringUtil.nvl(menuKey, ""))) { // 2.1
                     menuItem = menuTree.getMenuItemByMenuID(menuKey);
-                    if (!menu_url.equals(menuItem.getUrl()) && !servletPath.equals(menuItem.getUrl())) {
+                    if (!menuUrl.equals(menuItem.getUrl()) && !servletPath.equals(menuItem.getUrl())) {
                         List<MenuItem> itemList = menuTree.getChildrenMenuItemByMenuID(menuKey); // 메뉴의 하위메뉴리스트
                         if (itemList == null || itemList.size() == 0) {
                             itemList = menuTree.getMenuItemByURL(urlkey, servletPath);
                         }
                         if (itemList != null && itemList.size() > 0) {
-                            menuItem2 = this.getMenuItm(itemList, menu_url);
+                            menuItem2 = this.getMenuItm(itemList, menuUrl);
                             if (menuItem2 == null) {
                                 menuItem2 = this.getMenuItm(itemList, servletPath); // 역순으로 메뉴 찾는 함수
                             }
                             if (menuItem2 != null) {
-                                if ("05".equals(menuItem2.getPtype_cd())) {
+                                if ("05".equals(menuItem2.getPtypeCd())) {
                                     menuItem = menuItem2;
                                 }
                             }
@@ -144,21 +144,21 @@ public class HttpInterceptorForPopup //extends HandlerInterceptorAdapter
                             // 역순으로 url에 해당하는 메뉴를 찾는다.
                             menuItem = this.getMenuItm(itemList, parentUrl); // 역순으로 메뉴 찾는 함수
                             if (menuItem != null) {
-                                if (!menu_url.equals(menuItem.getUrl())) {
+                                if (!menuUrl.equals(menuItem.getUrl())) {
                                     itemList = menuTree.getChildrenMenuItemByMenuID(menuItem.getMenuid()); // p메뉴의 하위 메뉴리스트
                                     
                                     if (itemList == null || itemList.size() == 0) {
-                                        itemList = menuTree.getMenuItemByURL(urlkey, menu_url);
+                                        itemList = menuTree.getMenuItemByURL(urlkey, menuUrl);
                                         if (itemList == null || itemList.size() == 0) {
                                             itemList = menuTree.getMenuItemByURL(urlkey, servletPath);
                                         }
                                     }
-                                    menuItem2 = this.getMenuItm(itemList, menu_url); // 역순으로 메뉴 찾는 함수
+                                    menuItem2 = this.getMenuItm(itemList, menuUrl); // 역순으로 메뉴 찾는 함수
                                     if (menuItem2 == null) {
                                         menuItem2 = this.getMenuItm(itemList, servletPath); // 역순으로 메뉴 찾는 함수
                                     }
                                     if (menuItem2 != null) {
-                                        if ("05".equals(menuItem2.getPtype_cd())) {
+                                        if ("05".equals(menuItem2.getPtypeCd())) {
                                             menuItem = menuItem2;
                                         }
                                     }
@@ -166,12 +166,12 @@ public class HttpInterceptorForPopup //extends HandlerInterceptorAdapter
                             }
                         }
                     } else { // 2.2.2
-                        List<MenuItem> itemList = menuTree.getMenuItemByURL(urlkey, menu_url);
+                        List<MenuItem> itemList = menuTree.getMenuItemByURL(urlkey, menuUrl);
                         if (itemList == null || itemList.size() == 0) {
                             itemList = menuTree.getMenuItemByURL(urlkey, servletPath);
                         }
                         if (itemList != null && itemList.size() > 0) {
-                            menuItem = this.getMenuItm(itemList, menu_url); // 역순으로 메뉴 찾는 함수
+                            menuItem = this.getMenuItm(itemList, menuUrl); // 역순으로 메뉴 찾는 함수
                             if (menuItem == null) {
                                 menuItem = this.getMenuItm(itemList, servletPath); // 역순으로 메뉴 찾는 함수
                             }

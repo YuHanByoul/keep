@@ -186,7 +186,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         retVal += memberDao.updateMember(memberVo);        
         retVal += memberDao.updateMemberDtl(memberDtlVo);
         
-        fileService.deleteOldFiles(memberDtlVo.getPphoto_fileid());
+        fileService.deleteOldFiles(memberDtlVo.getPphotoFileid());
         
         return retVal;
     }
@@ -406,8 +406,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             if (fileVo == null) {
                 return "";
             }
-            fileName = fileVo.getSave_file_nm();
-            base64Img = fileStorageService.imgToStringByBase64(fileVo.getFile_path() + "/THUMB_" + fileName);            
+            fileName = fileVo.getSaveFileNm();
+            base64Img = fileStorageService.imgToStringByBase64(fileVo.getFilePath() + "/THUMB_" + fileName);            
         } catch (Exception e) {
             return "";
         } 

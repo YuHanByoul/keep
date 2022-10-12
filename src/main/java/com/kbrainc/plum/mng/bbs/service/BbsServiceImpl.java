@@ -180,8 +180,8 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
      */
     @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.NOT_SUPPORTED)
     public void modifybbsClOrdUp(BbsClVo paramVO) throws Exception {
-        int NewOrd = paramVO.getOrd() - 1;
-        paramVO.setOrd(NewOrd);
+        int newOrd = paramVO.getOrd() - 1;
+        paramVO.setOrd(newOrd);
         bbsDao.modifybbsClOrdDown(paramVO);
         bbsDao.modifybbsClOrdByClid(paramVO);
     }
@@ -195,8 +195,8 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
      */
     @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.NOT_SUPPORTED)
     public void modifybbsClOrdDown(BbsClVo paramVO) throws Exception {
-        int NewOrd = paramVO.getOrd() + 1;
-        paramVO.setOrd(NewOrd);
+        int newOrd = paramVO.getOrd() + 1;
+        paramVO.setOrd(newOrd);
         bbsDao.modifybbsClOrdUp(paramVO);
         bbsDao.modifybbsClOrdByClid(paramVO);
     }

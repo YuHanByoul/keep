@@ -37,25 +37,25 @@ public class CmntVo extends ParentRequestVo {
     /** **/
     private String cntnts;
     /** **/
-    private Integer prnts_cmntid;
+    private Integer prntsCmntid;
     /** **/
-    private Integer cmnt_grp;
+    private Integer cmntGrp;
     /** **/
     private Integer dpth;
     /** **/
     private Integer ord;
     /** **/
-    private String opn_yn;
+    private String opnYn;
     /** **/
-    private String updt_dt;
+    private String updtDt;
     /** 수정_일시 **/
     private int updtuserid;
     /** 수정자_아이디 **/
-    private String reg_dt;
+    private String regDt;
     /** 등록_일시 **/
     private int reguserid; /** 등록_아이디 **/
 
-    private String del_yn;
+    private String delYn;
     
     private String acnt;
     private String nm;
@@ -63,7 +63,7 @@ public class CmntVo extends ParentRequestVo {
     private String paddingStr;
     private String dpthStr;
     
-    public int total_page;
-    public int page_number;
+    public int totalPage;
+    public int pageNumber;
     
 }

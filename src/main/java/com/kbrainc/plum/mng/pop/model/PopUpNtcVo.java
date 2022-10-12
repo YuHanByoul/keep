@@ -31,32 +31,32 @@ public class PopUpNtcVo extends ParentRequestVo {
     private int popupntcid;
     private String title;
     private String cntnts;
-    private String expsr_lc_cd;
+    private String expsrLcCd;
     private Integer menuid;
     private Integer siteid;
-    private String login_need_yn;
-    private String popup_type_cd;
-    private String strt_dt;
-    private String end_dt;
-    private Integer width_size;
-    private Integer vrtcl_size;
-    private Integer top_lc;
-    private Integer left_lc;
-    private String ntc_trgt_cd;
-    private Integer ntc_trgt_roleid;
-    private String updt_dt;
+    private String loginNeedYn;
+    private String popupTypeCd;
+    private String strtDt;
+    private String endDt;
+    private Integer widthSize;
+    private Integer vrtclSize;
+    private Integer topLc;
+    private Integer leftLc;
+    private String ntcTrgtCd;
+    private Integer ntcTrgtRoleid;
+    private String updtDt;
     private int updtuserid;
-    private String reg_dt;
+    private String regDt;
     private int reguserid;
 
     // 추가
-    private String pop_sts;
-    private String pop_sts1;
-    private String pop_sts2;
-    private String pop_sts3;
-    private String menu_nm;
-    private String upd_nm;
-    private String role_nm;
+    private String popSts;
+    private String popSts1;
+    private String popSts2;
+    private String popSts3;
+    private String menuNm;
+    private String updNm;
+    private String roleNm;
     
     
 

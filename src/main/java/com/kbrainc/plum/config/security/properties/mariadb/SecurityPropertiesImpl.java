@@ -17,7 +17,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 	/**
      * 사용자 로그인 정보를 확인하기 위한 쿼리
      */
-	private String DEF_USER_LOGIN_INFO_QUERY = 
+	private final String DEF_USER_LOGIN_INFO_QUERY = 
 			"  SELECT  A.USERID, A.NM, A.PWD, A.USER_SE_CD "
 			+ "FROM  TB_USER A "
             + "LEFT OUTER JOIN TB_USER_DTL D "

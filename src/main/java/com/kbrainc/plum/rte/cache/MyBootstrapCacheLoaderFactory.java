@@ -113,21 +113,21 @@ public class MyBootstrapCacheLoaderFactory extends BootstrapCacheLoaderFactory i
     	        
     	        ResCodeDao resCodeDao = (ResCodeDao) CommonUtil.getBean("resCodeDao");
     	        List<CodeInfoVo> allCodeInfoList = resCodeDao.selectAllCodeInfoList();
-    	        List<CodeInfoVo> CodeInfoList = null;
+    	        List<CodeInfoVo> codeInfoList = null;
     	        Element element = null;
     
     	        for (CodeInfoVo codeInfo : allCodeInfoList) {
     	            codeMap.put(new Element("CODE|" + codeInfo.getCd(), codeInfo), true);
-    	            element = codeListMap.get(codeInfo.getCdgrpid() + "|" + codeInfo.getUppr_cd());
+    	            element = codeListMap.get(codeInfo.getCdgrpid() + "|" + codeInfo.getUpprCd());
     	            
     	            if (element == null) {
-    	                CodeInfoList = new ArrayList<CodeInfoVo>();
-    	                CodeInfoList.add(codeInfo);
-    	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUppr_cd(), CodeInfoList), true);
+    	                codeInfoList = new ArrayList<CodeInfoVo>();
+    	                codeInfoList.add(codeInfo);
+    	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUpprCd(), codeInfoList), true);
     	            } else {
-    	                CodeInfoList = (List<CodeInfoVo>) element.getObjectValue();    
-    	                CodeInfoList.add(codeInfo);
-    	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUppr_cd(), CodeInfoList), true);
+    	                codeInfoList = (List<CodeInfoVo>) element.getObjectValue();    
+    	                codeInfoList.add(codeInfo);
+    	                codeListMap.put(new Element(codeInfo.getCdgrpid() + "|" + codeInfo.getUpprCd(), codeInfoList), true);
     	            }
     	        }
     	        

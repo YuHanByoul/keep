@@ -33,10 +33,10 @@ public interface ResCodeDao {
     /**
      * @Title : selectCodeList
      * @Description : 그룹코드아이디에 해당하는 코드 목록을 반환한다.
-     * @param CodeInfoVo CodeInfoVo객체
+     * @param codeInfoVo CodeInfoVo객체
      * @return List<CodeInfoVo> 그룹코드아이디에 해당하는 코드 목록
      */
-     public List<CodeInfoVo> selectCodeList(CodeInfoVo CodeInfoVo) throws Exception;
+     public List<CodeInfoVo> selectCodeList(CodeInfoVo codeInfoVo) throws Exception;
 
     /**
      * @Title : selectCodeInfo

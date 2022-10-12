@@ -76,9 +76,9 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
           }
         }
         
-        fileVo.setFile_size(file.getSize());
+        fileVo.setFileSize(file.getSize());
         
-        fileVo.setOrginl_file_nm(fileName);
+        fileVo.setOrginlFileNm(fileName);
         
         try {
             // Check if the file's name contains invalid characters
@@ -87,22 +87,22 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
             }
             UUID uuid = UUID.randomUUID();
             fileName = uuid.toString() + "_" + fileName;
-            fileVo.setSave_file_nm(fileName);
+            fileVo.setSaveFileNm(fileName);
             
             // Copy file to the target location (Replacing existing file with the same name)
-            if (this.filegrpName.containsKey(fileGrpVo.getFilegrp_nm())) {
-                String orginlUploadPath = fileStorageProperties.getUploadDir() + (String)this.filegrpName.get(fileGrpVo.getFilegrp_nm()).get("uploadPath") + 
-                       (("bbs".equals(fileGrpVo.getFilegrp_nm())) ? "/" + fileGrpVo.getBbsid() : "");
+            if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
+                String orginlUploadPath = fileStorageProperties.getUploadDir() + (String)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadPath") + 
+                       (("bbs".equals(fileGrpVo.getFilegrpNm())) ? "/" + fileGrpVo.getBbsid() : "");
                 Path uploadPath = Paths.get(orginlUploadPath).toAbsolutePath().normalize();
                 Files.createDirectories(uploadPath);
                 Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                if (this.filegrpName.get(fileGrpVo.getFilegrp_nm()).get("isThumbnail") != null) {
-                    makeThumbnail(orginlUploadPath, fileName, fileName.substring(fileName.lastIndexOf(".") + 1), (Integer)this.filegrpName.get(fileGrpVo.getFilegrp_nm()).get("thumbnailWidth"), (Integer)this.filegrpName.get(fileGrpVo.getFilegrp_nm()).get("thumbnailHeight"));
+                if (this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("isThumbnail") != null) {
+                    makeThumbnail(orginlUploadPath, fileName, fileName.substring(fileName.lastIndexOf(".") + 1), (Integer)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("thumbnailWidth"), (Integer)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("thumbnailHeight"));
                 }
-                fileVo.setFile_path(orginlUploadPath);
+                fileVo.setFilePath(orginlUploadPath);
             } else {
                 Files.copy(file.getInputStream(), this.fileStorageLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
-                fileVo.setFile_path(fileStorageProperties.getUploadDir());
+                fileVo.setFilePath(fileStorageProperties.getUploadDir());
             }
             
             return fileVo;
@@ -114,7 +114,7 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
 
     public Resource loadFileAsResource(FileVo fileVo) throws Exception {
 	try {
-	    Path filePath = Paths.get(fileVo.getFile_path()).toAbsolutePath().normalize().resolve(fileVo.getSave_file_nm());
+	    Path filePath = Paths.get(fileVo.getFilePath()).toAbsolutePath().normalize().resolve(fileVo.getSaveFileNm());
 	    /*Path filePath = null;
 	    if (this.filegrpName.containsKey(fileVo.getFilegrp_nm()) && this.filegrpName.get(fileVo.getFilegrp_nm()).get("isThumbnail") != null) {
 	        filePath = Paths.get(fileVo.getFile_path()).toAbsolutePath().normalize().resolve("THUMB_" + fileVo.getSave_file_nm());
@@ -126,16 +126,16 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
 	    if (resource.exists()) {
 		return resource;
 	    } else {
-		throw new MyFileNotFoundException("File not found " + fileVo.getSave_file_nm());
+		throw new MyFileNotFoundException("File not found " + fileVo.getSaveFileNm());
 	    }
 	} catch (MalformedURLException ex) {
-	    throw new MyFileNotFoundException("File not found " + fileVo.getSave_file_nm(), ex);
+	    throw new MyFileNotFoundException("File not found " + fileVo.getSaveFileNm(), ex);
 	}
     }
     
     public boolean deleteFile(FileVo fileVo) {
-        Path filePath = Paths.get(fileVo.getFile_path()).toAbsolutePath().normalize().resolve(fileVo.getSave_file_nm());
-        Path thumbnailFilePath = Paths.get(fileVo.getFile_path()).toAbsolutePath().normalize().resolve("THUMB_" + fileVo.getSave_file_nm());
+        Path filePath = Paths.get(fileVo.getFilePath()).toAbsolutePath().normalize().resolve(fileVo.getSaveFileNm());
+        Path thumbnailFilePath = Paths.get(fileVo.getFilePath()).toAbsolutePath().normalize().resolve("THUMB_" + fileVo.getSaveFileNm());
 	File delFile = new File(filePath.toString());
 	File thumbnailDelFile = new File(thumbnailFilePath.toString()); 
 	

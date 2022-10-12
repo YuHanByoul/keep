@@ -13,52 +13,52 @@ public class FileVo {
 	
 	private int fileid;
     private int filegrpid;
-    private String file_idntfc_key;
-    private String filegrp_nm;
-    private String file_path;
-    private String save_file_nm;
-    private String orginl_file_nm;
-    private String file_extsn;
-    private long file_size;
+    private String fileIdntfcKey;
+    private String filegrpNm;
+    private String filePath;
+    private String saveFileNm;
+    private String orginlFileNm;
+    private String fileExtsn;
+    private long fileSize;
     private int ord;
-    private String updt_dt;
+    private String updtDt;
     private int updtuserid;
-    private String reg_dt;
+    private String regDt;
     private int reguserid;
     private int bbsid;
     
     /** 비로그인_파일다운로드_여부 */
-    private String nlogin_perm_yn;
+    private String nloginPermYn;
 
     /**
      * .
      * Desc : Constructor of FileVo.java class
      * @param filegrpid :
-     * @param file_path :
-     * @param save_file_nm :
-     * @param orginl_file_nm :
-     * @param file_extsn :
-     * @param file_size :
+     * @param filePath :
+     * @param saveFileNm :
+     * @param orginlFileNm :
+     * @param fileExtsn :
+     * @param fileSize :
      * @param ord :
      * @param reguserid :
      */
-    public FileVo(int filegrpid, String file_path, String save_file_nm, String orginl_file_nm, String file_extsn,
-            long file_size, int ord, int reguserid) {
+    public FileVo(int filegrpid, String filePath, String saveFileNm, String orginlFileNm, String fileExtsn,
+            long fileSize, int ord, int reguserid) {
         super();
         this.filegrpid = filegrpid;
-        this.file_path = file_path;
-        this.save_file_nm = save_file_nm;
-        this.orginl_file_nm = orginl_file_nm;
-        this.file_extsn = file_extsn;
-        this.file_size = file_size;
+        this.filePath = filePath;
+        this.saveFileNm = saveFileNm;
+        this.orginlFileNm = orginlFileNm;
+        this.fileExtsn = fileExtsn;
+        this.fileSize = fileSize;
         this.ord = ord;
         this.reguserid = reguserid;
     }
 
-    public FileVo(int filegrpid, String file_path) {
+    public FileVo(int filegrpid, String filePath) {
         super();
         this.filegrpid = filegrpid;
-        this.file_path = file_path;
+        this.filePath = filePath;
     }
 
 }

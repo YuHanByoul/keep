@@ -42,31 +42,31 @@ public class MemberVo extends ParentRequestVo {
     private String nm;
     
     /** 휴대폰 */
-    private String mob_no;
+    private String mobNo;
     
     /** 이메일 */
     private String email;
     
     /** 약관 동의 여부*/ 
-    private String tos_agre_yn;
+    private String tosAgreYn;
     
     /** 상태 코드 */
-    private String stts_cd;
+    private String sttsCd;
     
     /** 사용자 구분 코드 */
-    private String user_se_cd;
+    private String userSeCd;
     
     /** 수정 일시  */
-    private String updt_dt    ;
+    private String updtDt;
     
     /** 수정자 아이디  */
-    private Integer updtuserid ;
+    private Integer updtuserid;
     
     /** 등록 일시  */
-    private String reg_dt     ;
+    private String regDt;
     
     /** 등록자 아이디 */
-    private Integer reguserid  ;
+    private Integer reguserid;
     
     /** 역할(권한) */
     private Integer roleid;

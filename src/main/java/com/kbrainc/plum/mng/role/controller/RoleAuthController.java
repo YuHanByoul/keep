@@ -116,7 +116,7 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/defineRole.html")
     public String defineRoleForm(RoleVo paramRoleVo, ModelMap model) throws Exception {
-        model.addAttribute("se_cd", paramRoleVo.getSe_cd());
+        model.addAttribute("se_cd", paramRoleVo.getSeCd());
 
         if (com.kbrainc.plum.rte.util.CommonUtil.isNotEmpty(paramRoleVo.getRoleid())) {
             model.addAttribute("roleid", paramRoleVo.getRoleid());
@@ -137,7 +137,7 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/mappingUserForm.html")
     public String roleMgntUserMappingForm(RoleVo paramRoleVo, ModelMap model) throws Exception {
-        model.addAttribute("se_cd", paramRoleVo.getSe_cd());
+        model.addAttribute("se_cd", paramRoleVo.getSeCd());
 
         if (com.kbrainc.plum.rte.util.CommonUtil.isNotEmpty(paramRoleVo.getRoleid())) {
             model.addAttribute("roleid", paramRoleVo.getRoleid());

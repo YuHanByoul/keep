@@ -119,17 +119,17 @@ public class PopServiceImpl extends PlumAbstractServiceImpl implements PopServic
 				boolean roleMapping = false;
 				boolean checkRoleMapping = false;
 
-				if (list.get(i).getLogin_need_yn().equals("Y")) {
+				if (list.get(i).getLoginNeedYn().equals("Y")) {
 					if (user != null && user.getUserid().equals(null) || user.getUserid().equals("")) {
 						logYnMapping = false;
 					}
 				}
 
-				 if(list.get(i).getNtc_trgt_roleid() != null || list.get(i).getNtc_trgt_cd().equals(108102) ) {
+				 if(list.get(i).getNtcTrgtRoleid() != null || list.get(i).getNtcTrgtCd().equals(108102) ) {
 					checkRoleMapping = true;
 					if (user != null && user.getAuthorities().size() > 0) {
 						for (int x = 0; x < user.getAuthorities().size(); x++) {
-							if ((list.get(i).getNtc_trgt_roleid())
+							if ((list.get(i).getNtcTrgtRoleid())
 									.equals(Integer.parseInt(user.getAuthorities().get(x).get("roleid")))) {
 								roleMapping = true;
 							}

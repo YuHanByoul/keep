@@ -7,10 +7,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FileGrpVo {
     private int filegrpid;
-    private String filegrp_nm;
-    private String updt_dt;
+    private String filegrpNm;
+    private String updtDt;
     private int updtuserid;
-    private String reg_dt;
+    private String regDt;
     private int reguserid;
     private int bbsid;
 
@@ -20,7 +20,7 @@ public class FileGrpVo {
 
     public FileGrpVo(int filegrpid, String filegrpName) {
         this.filegrpid = filegrpid;
-        this.filegrp_nm = filegrpName;
+        this.filegrpNm = filegrpName;
     }
 
 }

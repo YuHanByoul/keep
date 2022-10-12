@@ -28,18 +28,18 @@ public class RoleMenuVo extends ParentRequestVo {
     private String menuid;
     
     /** 수정_일시 */
-    private String updt_dt;
+    private String updtDt;
     
     /** 수정자아이디 */
     private String updtuserid;
     
     /** 등록_일시 */
-    private String reg_dt;
+    private String regDt;
     
     /** 등록자_아이디 */
     private String reguserid;
 
     /** 메뉴 추가,삭제 용. */
-    private String menu_add;
-    private String menu_del;
+    private String menuAdd;
+    private String menuDel;
 }

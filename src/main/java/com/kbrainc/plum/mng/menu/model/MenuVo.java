@@ -63,7 +63,7 @@ public class MenuVo {
     private String dc;
 
     /** 메뉴타입코드(P:프로그램, D:디렉토리) */
-    private String type_cd;
+    private String typeCd;
     private String typeStr;
 
     /** URL */
@@ -71,39 +71,39 @@ public class MenuVo {
     private String url;
 
     /** 상위메뉴아이디 */
-    private Integer uppr_menuid;
+    private Integer upprMenuid;
 
     /** 참조메뉴아이디 */
-    private Integer ref_menuid;
+    private Integer refMenuid;
 
     /** 팝업여부 */
-    private String popup_yn;
+    private String popupYn;
 
     /** 팝업종류 */
-    private String popup_knd;
+    private String popupKnd;
 
     /** 팝업_높이 */
     @Digits(integer = 4, fraction = 0, message = "팝업크기는 정수이어야 합니다.")
-    private Integer popup_hg;
+    private Integer popupHg;
 
     /** 팝업_너비 */
     @Digits(integer = 4, fraction = 0, message = "팝업크기는 정수이어야 합니다.")
-    private Integer popup_wd;
+    private Integer popupWd;
 
     /** 팝업_대상_코드 */
-    private String popup_trgt_cd;
+    private String popupTrgtCd;
 
     /** 로그인여부 */
-    private String login_yn;
+    private String loginYn;
 
     /** 숨김여부 */
-    private String hide_yn;
+    private String hideYn;
 
     /** HTTPS사용여부 */
-    private String https_use_yn;
+    private String httpsUseYn;
 
     /** 메뉴명 노출 대상 N: 모두 A: 로그인 사용자(Auth) */    
-    private String nm_expsr_trgt_cd;
+    private String nmExpsrTrgtCd;
 
     /** 깊이 */
     private Integer dpth;
@@ -112,10 +112,10 @@ public class MenuVo {
     private Integer ord;
 
     /** 트리순서 */
-    private String tree_ord;
+    private String treeOrd;
 
     /** 프로그램타입 */
-    private String ptype_cd;
+    private String ptypeCd;
 
     /** 프로그램URL */
     private String purl;
@@ -133,19 +133,19 @@ public class MenuVo {
     private String upperYn;
 
     /** 수정_일시 */
-    private Date updt_dt;
+    private Date updtDt;
 
     /** 수정자아이디 */
     private Integer updtuserid;
 
     /** 등록_일시 */
-    private Date reg_dt;
+    private Date regDt;
 
     /** 등록자아이디 */
     private Integer reguserid;
 
     public void setType(String t) {
-        this.type_cd = t;
+        this.typeCd = t;
         this.typeStr = getTypeStr();
     }
 
@@ -157,10 +157,10 @@ public class MenuVo {
     * @return String 메뉴타입코드명
     */
     public String getTypeStr() {
-        if (type_cd == null) {
+        if (typeCd == null) {
             return "NONE";
         }
 
-        return TYPE_STRING.get(this.type_cd);
+        return TYPE_STRING.get(this.typeCd);
     }
 }

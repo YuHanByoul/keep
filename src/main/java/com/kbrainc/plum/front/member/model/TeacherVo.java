@@ -33,31 +33,31 @@ public class TeacherVo extends ParentRequestVo {
     private Integer userid;
     
     /** 학교이름 */
-    private String schl_nm;
+    private String schlNm;
     
     /** 학교 코드  */
-    private String schl_cd;
+    private String schlCd;
     
     /** 담당 과목 이름 */
-    private String chrg_crs_nm;
+    private String chrgCrsNm;
     
     /** 담당 과목 코드 */
-    private String chrg_crs_cd;
+    private String chrgCrsCd;
     
     /** 담임 여부  */
-    private String cls_tchr_yn;
+    private String clsTchrYn;
     
     /** 수정 일시  */
-    private String updt_dt    ;
+    private String updtDt;
     
     /** 수정자 아이디  */
-    private Integer updtuserid ;
+    private Integer updtuserid;
     
     /** 등록 일시  */
-    private String reg_dt     ;
+    private String regDt;
     
     /** 등록자 아이디 */
-    private Integer reguserid  ;
+    private Integer reguserid;
     
     
 }

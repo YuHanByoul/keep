@@ -50,12 +50,12 @@ public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
         strOpt += "<option value=\"\">-전체-</option>";
         try {
             FaqClVo param = new FaqClVo();
-            param.setUse_yn("A");
+            param.setUseYn("A");
             List<FaqClVo> list = faqClDao.getAllList(param);
             for (FaqClVo item : list) {
 
                 strOpt += "<option value=\"" + item.getClid() + "\" "
-                        + (item.getClid() == Integer.parseInt(value) ? "selected" : "") + ">" + item.getCl_nm()
+                        + (item.getClid() == Integer.parseInt(value) ? "selected" : "") + ">" + item.getClNm()
                         + "</option>";
             }
         } catch (Exception e) {

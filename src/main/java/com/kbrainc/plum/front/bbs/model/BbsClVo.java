@@ -33,21 +33,21 @@ public class BbsClVo extends ParentRequestVo {
     private UserVo user;
     /** **/
 
-    private int bbs_clid;
+    private int bbsClid;
     /** **/
     private Integer bbsid;
     /** **/
-    private String cl_nm;
+    private String clNm;
     /** **/
     private int ord;
     /**  **/
-    private String use_yn;
+    private String useYn;
     /** **/
-    private String updt_dt;
+    private String updtDt;
     /** 수정_일시 **/
     private int updtuserid;
     /** 수정자_아이디 **/
-    private String reg_dt;
+    private String regDt;
     /** 등록_일시 **/
     private int reguserid;/** 등록_아이디 **/
     

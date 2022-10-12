@@ -59,44 +59,44 @@ public class DateAttr extends AbstractAttributeTagProcessor {
         try {
             // 기본 옵션
             String chkSingle = "1"; // 그룹cd
-            String s_id = "startDate";
-            String e_id = "endDate";
-            String s_default = "";
-            String e_default = "";
-            String s_label = "시작일";
-            String e_label = "종료일";
-            String d_form = "yymmdd";
-            String s_readonly = "";
+            String sId = "startDate";
+            String eId = "endDate";
+            String sDefault = "";
+            String eDefault = "";
+            String sLabel = "시작일";
+            String eLabel = "종료일";
+            String dForm = "yymmdd";
+            String sReadonly = "";
 
             // prameter 유효성 체크
             if (attributeValue != null && attributeValue.equals("2")) {
                 chkSingle = "2";
             }
             if (tag.hasAttribute("s_id") && !tag.getAttribute("s_id").getValue().equals("")) {
-                s_id = tag.getAttribute("s_id").getValue();
+                sId = tag.getAttribute("s_id").getValue();
             }
             if (tag.hasAttribute("e_id") && !tag.getAttribute("e_id").getValue().equals("")) {
-                e_id = tag.getAttribute("e_id").getValue();
+                eId = tag.getAttribute("e_id").getValue();
             }
             if (tag.hasAttribute("s_default") && !tag.getAttribute("s_default").getValue().equals("")) {
-                s_default = tag.getAttribute("s_default").getValue();
+                sDefault = tag.getAttribute("s_default").getValue();
             }
             if (tag.hasAttribute("e_default") && !tag.getAttribute("e_default").getValue().equals("")) {
-                e_default = tag.getAttribute("e_default").getValue();
+                eDefault = tag.getAttribute("e_default").getValue();
             }
 
             if (tag.hasAttribute("s_label") && !tag.getAttribute("s_label").getValue().equals("")) {
-                s_label = tag.getAttribute("s_label").getValue();
+                sLabel = tag.getAttribute("s_label").getValue();
             }
             if (tag.hasAttribute("e_label") && !tag.getAttribute("e_label").getValue().equals("")) {
-                e_label = tag.getAttribute("e_label").getValue();
+                eLabel = tag.getAttribute("e_label").getValue();
             }
             if (tag.hasAttribute("d_form") && !tag.getAttribute("d_form").getValue().equals("")) {
-                d_form = tag.getAttribute("d_form").getValue();
+                dForm = tag.getAttribute("d_form").getValue();
             }
             
             if (tag.hasAttribute("s_readonly") && !tag.getAttribute("s_readonly").getValue().equals("")) {
-                s_readonly = tag.getAttribute("s_readonly").getValue();
+                sReadonly = tag.getAttribute("s_readonly").getValue();
             }
             
 
@@ -104,16 +104,16 @@ public class DateAttr extends AbstractAttributeTagProcessor {
                 result.append("<div class=\"form-inline\">").append("\n");
                 result.append("<div class=\"form-group\">").append("\n");
             }
-            result.append("<span>" + s_label + " : </span>").append("\n");
+            result.append("<span>" + sLabel + " : </span>").append("\n");
 
-            result.append("<input type=\"text\" class=\"form-control\"  id=\"" + s_id + "\" name=\"" + s_id
-                    + "\"  value=\"" + s_default + "\" placeholder=\"" + s_label + "\" " + s_readonly + ">").append("\n");
+            result.append("<input type=\"text\" class=\"form-control\"  id=\"" + sId + "\" name=\"" + sId
+                    + "\"  value=\"" + sDefault + "\" placeholder=\"" + sLabel + "\" " + sReadonly + ">").append("\n");
 
             if (chkSingle.equals("2")) {
 
-                result.append("<span>" + e_label + " : </span>").append("\n");
-                result.append("<input type=\"text\" class=\"form-control\"  id=\"" + e_id + "\" name=\"" + e_id
-                        + "\" value=\"" + e_default + "\" placeholder=\"" + e_label + "\" " + s_readonly + ">").append("\n");
+                result.append("<span>" + eLabel + " : </span>").append("\n");
+                result.append("<input type=\"text\" class=\"form-control\"  id=\"" + eId + "\" name=\"" + eId
+                        + "\" value=\"" + eDefault + "\" placeholder=\"" + eLabel + "\" " + sReadonly + ">").append("\n");
                 result.append("</div >").append("\n");
                 result.append("</div >").append("\n");
             }
@@ -125,7 +125,7 @@ public class DateAttr extends AbstractAttributeTagProcessor {
             result.append("<script type=\"text/javascript\">").append("\n");
             result.append("   $(function(){").append("\n");
             result.append("       $.datepicker.setDefaults({").append("\n");
-            result.append("       dateFormat : \"" + d_form + "\"").append("\n");
+            result.append("       dateFormat : \"" + dForm + "\"").append("\n");
             result.append("       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12']").append("\n");
             result.append("       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']")
                     .append("\n");
@@ -137,9 +137,9 @@ public class DateAttr extends AbstractAttributeTagProcessor {
             result.append("       ,changeYear: true").append("\n");
             result.append("   });").append("\n");
 
-            result.append("$(\"#" + s_id + "\").datepicker();").append("\n");
+            result.append("$(\"#" + sId + "\").datepicker();").append("\n");
             if (chkSingle.equals("2")) {
-                result.append("$(\"#" + e_id + "\").datepicker();").append("\n");
+                result.append("$(\"#" + eId + "\").datepicker();").append("\n");
             }
 
             result.append("})").append("\n");

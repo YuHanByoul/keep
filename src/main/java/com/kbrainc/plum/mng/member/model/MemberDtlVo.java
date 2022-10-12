@@ -45,7 +45,7 @@ public class MemberDtlVo {
     private String brthdyDay; 
     
     /** 생년월일_양음력 */
-    private String moon_yn;
+    private String moonYn;
     
     /** 성별 */
     private String sex;
@@ -59,40 +59,40 @@ public class MemberDtlVo {
     
     /** 주소_상세 */
     @Size(max = 400, message = "상세주소는 400자를 넘을 수 없습니다.")
-    private String addr_dtl;
+    private String addrDtl;
     
     /** 지역_코드 */
-    private String area_cd;
+    private String areaCd;
     
     /** 마케팅_이메일_동의_여부 */
     @Pattern(regexp="[YN]")
-    private String markt_email_agre_yn;
+    private String marktEmailAgreYn;
     
     /** 마케팅_SMS_동의_여부 */
     @Pattern(regexp="[YN]")
-    private String markt_sms_agre_yn;
+    private String marktSmsAgreYn;
     
     /** 소개 */
     @Size(max = 50, message = "소개는 50자를 넘을 수 없습니다.")
     private String intrcn;
     
     /** 프로필사진_파일그룹아이디 */
-    private int pphoto_filegrpid;
+    private int pphotoFilegrpid;
     
     /** 프로필사진_파일아이디 */
-    private int pphoto_fileid;
+    private int pphotoFileid;
     
     /** 프로필사진_파일_식별_키 */
-    private String pphoto_file_idntfc_key;
+    private String pphotoFileIdntfcKey;
         
     /** 수정_일시 */
-    private String updt_dt;
+    private String updtDt;
     
     /** 수정자아이디 */
     private int updtuserid;
     
     /** 등록_일시 */
-    private String reg_dt;
+    private String regDt;
     
     /** 등록자아이디 */
     private int reguserid;

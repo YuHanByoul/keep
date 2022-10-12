@@ -30,18 +30,18 @@ public class SchlVo extends ParentRequestVo {
     private UserVo user;
     
     /** 학교코드 */
-    private String schl_cd;
+    private String schlCd;
     
     /** 학교명 */
-    private String schl_nm;
+    private String schlNm;
     
     /** 학교_계열_이름 */
-    private String schl_line_nm;
+    private String schlLineNm;
     
     /** 시도_이름 */
-    private String sido_nm;
+    private String sidoNm;
     
     /** 마이스터고 여부 */
-    private String meister_yn;
+    private String meisterYn;
     
 }

@@ -28,10 +28,10 @@ public interface SchlDao {
      *
      * @Title : selectSchlList
      * @Description : 
-     * @param ShclVo ShclVo객체
+     * @param shclVo ShclVo객체
      * @return List<ShclVo> 
      * @throws Exception 예외
      */
-    public List<SchlVo> selectSchlList(SchlVo ShclVo) throws Exception;
+    public List<SchlVo> selectSchlList(SchlVo shclVo) throws Exception;
     
 }

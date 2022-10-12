@@ -47,7 +47,7 @@ public class CustomWebInvocationPrivilegeEvaluator implements
     // ~ Static fields/initializers
     // =====================================================================================
 
-    protected static final Log logger = LogFactory
+    protected static final Log LOGGER = LogFactory
             .getLog(CustomWebInvocationPrivilegeEvaluator.class);
 
     // ~ Instance fields
@@ -132,8 +132,8 @@ public class CustomWebInvocationPrivilegeEvaluator implements
                     attrs);
         }
         catch (AccessDeniedException unauthorized) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(fi.toString() + " denied for " + authentication.toString(),
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(fi.toString() + " denied for " + authentication.toString(),
                         unauthorized);
             }
 

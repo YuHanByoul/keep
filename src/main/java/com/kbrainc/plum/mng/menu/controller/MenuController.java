@@ -236,7 +236,7 @@ public class MenuController {
     @RequestMapping("/mng/menu/refMenuIdPopup.html")
     public String refMenuIdPopup(MenuVo menu, Model model) throws Exception {
         menu.setType("P");// 프로그램만 가지고 온다.
-        menu.setPtype_cd("02");// 메뉴만 가지고 온다.
+        menu.setPtypeCd("02");// 메뉴만 가지고 온다.
         List<MenuVo> list = menuService.selectMenuChildTreeList(menu);
         model.addAttribute("underMenuList", list);
         return "mng/menu/refMenuIdPopup";

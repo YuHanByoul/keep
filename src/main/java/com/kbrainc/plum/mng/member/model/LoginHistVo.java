@@ -29,9 +29,9 @@ public class LoginHistVo extends ParentRequestVo {
     private String ip;
     
     /** 디바이스_코드 */
-    private String device_cd;
+    private String deviceCd;
     
     /** 로그인_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date login_dt;
+    private Date loginDt;
 }

@@ -126,8 +126,8 @@ public class FileUtil {
      */
     public static String getFileExtention(String fname) {
         if (!fname.equals("")) {
-            int lst_in = fname.lastIndexOf('.');
-            String ext = fname.substring(lst_in + 1);
+            int lstIn = fname.lastIndexOf('.');
+            String ext = fname.substring(lstIn + 1);
             return ext.toLowerCase();
         } else {
             return "";
@@ -600,12 +600,12 @@ public class FileUtil {
      */
     public static String getSkinImgFileName(String fname, String skin) {
         if (!fname.equals("")) {
-            int lst_in = fname.lastIndexOf('.');
+            int lstIn = fname.lastIndexOf('.');
             String fileNm = fname;
             String ext = "";
-            if (lst_in > -1) {
-                fileNm = fname.substring(0, lst_in);
-                ext = fname.substring(lst_in + 1);
+            if (lstIn > -1) {
+                fileNm = fname.substring(0, lstIn);
+                ext = fname.substring(lstIn + 1);
             }
             return fileNm + "@" + skin;// + "." + ext;
         } else {

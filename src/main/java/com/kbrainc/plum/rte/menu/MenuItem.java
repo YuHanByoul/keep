@@ -32,39 +32,39 @@ public class MenuItem {
     /* 메뉴설명 */
     private String dc;
     /* 메뉴타입코드 */
-    private String type_cd;
+    private String typeCd;
     /* URL */
     private String url;
     /* 상위메뉴ID */
-    private String uppr_menuid;
+    private String upprMenuid;
     /* 참조메뉴ID */
-    private String ref_menuid;
+    private String refMenuid;
     /* 팝업여부 */
-    private String popup_yn;
+    private String popupYn;
     /* 팝업사이즈_높이 */
-    private String popup_hg;
+    private String popupHg;
     /* 팝업사이즈_너비 */
-    private String popup_wd;
+    private String popupWd;
     /* 대상코드 */
-    private String popup_trgt_cd;
+    private String popupTrgtCd;
     /* 로그인여부 */
-    private String login_yn;
+    private String loginYn;
     /* 숨김여부 */
-    private String hide_yn;
+    private String hideYn;
     /* HTTPS사용여부 */
-    private String https_use_yn;
+    private String httpsUseYn;
     /* 메뉴명 노출 대상 */
-    private String nm_expsr_trgt_cd;
+    private String nmExpsrTrgtCd;
     /* 깊이 */
     private String dpth;
     /* 정렬순서 */
     private String ord;
     /* 트리메뉴명 */
-    private String tree_menu_nm;
+    private String treeMenuNm;
     /* 트리메뉴ID */
-    private String tree_menuid;
+    private String treeMenuid;
     /*  */
-    private String tree_ord;
+    private String treeOrd;
     /* 프로그램유형코드 */
-    private String ptype_cd;
+    private String ptypeCd;
 }

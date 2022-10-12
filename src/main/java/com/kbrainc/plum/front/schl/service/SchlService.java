@@ -31,7 +31,7 @@ public interface SchlService {
     * @return List<ShclVo> 
     * @throws Exception 예외
     */
-   public List<SchlVo> selectSchlList(SchlVo SchlVo) throws Exception;
+   public List<SchlVo> selectSchlList(SchlVo schlVo) throws Exception;
 	
 	
 }

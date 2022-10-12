@@ -56,17 +56,17 @@ public class InqryAnswrVo extends ParentRequestVo {
     private Integer opetrid;
 
     /** 처리자_이름 */
-    private String opetr_nm;
+    private String opetrNm;
 
     /** 수정_일시 */
-    private Date updt_dt;
+    private Date updtDt;
 
     /** 수정자아이디 */
     private Integer updtuserid;
 
     /** 등록_일시 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date reg_dt;
+    private Date regDt;
 
     /** 등록자아이디 */
     private Integer reguserid;
