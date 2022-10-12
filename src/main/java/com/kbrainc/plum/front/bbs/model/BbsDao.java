@@ -258,4 +258,23 @@ public interface BbsDao {
      */
     public List<PstVo> selectTotalPstList(BbsVo paramVO) throws Exception;
     
+    /**
+     * @Title : updatePstHitsCount
+     * @Description : 게시물 조회수 증가 
+     * @param paramVO PstVo 타입의 인자
+     * @return int
+     * @throws Exception :
+     */
+    public int updatePstHitsCount(PstVo pstVo) throws Exception;
+    
+    /**
+     * @Title : selectReplyPstList
+     * @Description : 게시글 답글 목록 가져오기
+     * @param paramVO PstVo 타입의 인자
+     * @throws Exception :
+     * @return List
+     */
+    public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception;
+    
+    
 }

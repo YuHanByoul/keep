@@ -366,6 +366,48 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
     	return bbsDao.selectTotalPstList(paramVO);
     }
     
+    /**
+     * @Title : updatePstHitsCount
+     * @Description : 게시물 조회수 증가 
+     * @param paramVO PstVo 타입의 인자
+     * @return int
+     * @throws Exception :
+     */
+    public int updatePstHitsCount(PstVo pstVo) throws Exception{
+    	return bbsDao.updatePstHitsCount(pstVo);
+    }
     
+    /**
+     * @Title : selectReplyPstList
+     * @Description : 게시글 답글 목록 가져오기
+     * @param paramVO PstVo 타입의 인자
+     * @throws Exception :
+     * @return List
+     */
+    public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception{
+        Map<String, Object> resultMap = new HashMap();
+        
+        PstVo pstVo = bbsDao.selectPst(paramVO);
+        
+        List<PstVo> list = bbsDao.selectReplyPstList(paramVO);
+        
+        for(PstVo vo : list) {
+        	
+        	if (!vo.getFilegrpid().equals(null) && !vo.getFilegrpid().equals(0)) {
+        		
+        		FileVo fileVo = new FileVo();
+        		fileVo.setFilegrpid(Integer.parseInt(vo.getFilegrpid().toString()));
+        		ArrayList<FileVo> fileList= fileDao.getFileList(fileVo);
+        		
+        		vo.setFileMap(fileList);
+        		vo.setCurrentFileCnt(fileList.size());
+        	} else {
+        		vo.setFileMap(null);
+        		vo.setCurrentFileCnt(0);
+        	}
+        }
+        
+    	return list;	
+    }
 
 }

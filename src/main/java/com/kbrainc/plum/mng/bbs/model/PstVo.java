@@ -1,6 +1,11 @@
 package com.kbrainc.plum.mng.bbs.model;/** **/
 
 import com.kbrainc.plum.rte.model.UserVo;
+
+import java.util.ArrayList;
+import java.util.Map;
+
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 
 import lombok.Data;
@@ -88,7 +93,9 @@ public class PstVo extends ParentRequestVo {
 	
 	private Integer fxd_ntc_cnt;
 	
-
+	//답글 리스트용 추가 
+	private ArrayList<FileVo> fileMap;
+	private Integer currentFileCnt;
 	
 	//현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer cur_fxd_ntc_cnt;

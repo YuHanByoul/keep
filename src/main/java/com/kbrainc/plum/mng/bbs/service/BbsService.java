@@ -187,6 +187,13 @@ public interface BbsService {
      */
     public int insertReply(CmntVo paramVO) throws Exception;
     
+    /**
+     * @Title : selectReplyPstList
+     * @Description : 게시글 답글 목록 가져오기
+     * @param paramVO PstVo 타입의 인자
+     * @throws Exception :
+     * @return List
+     */
+    public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception;
     
-
 }
