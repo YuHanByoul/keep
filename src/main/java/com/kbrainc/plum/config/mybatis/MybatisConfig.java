@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
@@ -33,7 +35,11 @@ public class MybatisConfig {
         sqlSessionFactoryBean.setDataSource(dataSource);
         sqlSessionFactoryBean.setVfs(SpringBootVFS.class);
         sqlSessionFactoryBean.setTypeAliasesPackage(projectPackage);
-        sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath*:/mybatis/" + databaseDialect + "/mapper/**/*.xml")); 
+        sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath:/mybatis/" + databaseDialect + "/mapper/**/*.xml"));
+        
+        Resource myBatisConfig = new PathMatchingResourcePatternResolver().getResource("classpath:/mybatis/mybatis-config.xml");
+        sqlSessionFactoryBean.setConfigLocation(myBatisConfig);
+        
         return sqlSessionFactoryBean.getObject(); 
     }
     
