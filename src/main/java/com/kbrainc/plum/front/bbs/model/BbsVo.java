@@ -48,6 +48,7 @@ public class BbsVo extends ParentRequestVo {
     /** 고정_공지_갯수 **/
     private Integer fxdNtcCnt;
     /** 첨부파일_사용_여부 **/
+    private String atchfileUseYn;
 
     /** 첨부파일_갯수 **/
     private Integer atchfileCnt;
