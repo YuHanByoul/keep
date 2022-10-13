@@ -35,7 +35,7 @@
         'N'
         END TOPYN
         FROM TB_ROLE
-        WHERE ROLEID = #{role_id}
+        WHERE ROLEID = #{roleId}
     </select>
 
     <!-- [공통] 사이트명 구하기 -->
@@ -58,11 +58,11 @@
             FROM TB_ROLE A
             WHERE 1=1
         ]]>
-        <if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(se_cd)">
-            AND A.SE_CD = #{se_cd}
+        <if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(seCd)">
+            AND A.SE_CD = #{seCd}
         </if>
-        <if test="use_yn == 'Y'.toString()">
-            AND A.USE_YN = #{role_filter}
+        <if test="useYn == 'Y'.toString()">
+            AND A.USE_YN = #{rolefilter}
         </if>
         ORDER BY ORD
     </select>
@@ -82,8 +82,8 @@
         /* RoleAuthDao.insertRoleInfo */
         INSERT INTO
             TB_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
-            VALUES ( #{nm}, #{se_cd}, #{uppr_roleid}, #{dc}, #{use_yn},
-                (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_ROLE A WHERE A.UPPR_ROLEID = #{uppr_roleid}),
+            VALUES ( #{nm}, #{seCd}, #{upprRoleid}, #{dc}, #{useYn},
+                (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_ROLE A WHERE A.UPPR_ROLEID = #{upprRoleid}),
                 NOW(),
                 #{reguserid},
                 NOW(),
@@ -118,8 +118,8 @@
         UPDATE
             TB_ROLE_USER 
         SET
-            ROLE_STRT_DT = #{role_strt_dt},
-            ROLE_END_DT = #{role_end_dt},
+            ROLE_STRT_DT = #{roleStrtDt},
+            ROLE_END_DT = #{roleEndDt},
             UPDTUSERID = #{updtuserid},
             UPDT_DT = NOW()
         WHERE 
@@ -158,8 +158,8 @@
         UPDATE TB_ROLE SET
             NM = #{nm},
             DC = #{dc},
-            USE_YN = #{use_yn},
-            SE_CD = #{se_cd},
+            USE_YN = #{useYn},
+            SE_CD = #{seCd},
             UPDTUSERID = #{updtuserid},
             UPDT_DT = NOW()
         WHERE ROLEID = #{roleid}
@@ -171,8 +171,8 @@
         UPDATE TB_ROLE SET
             UPDTUSERID = #{updtuserid},
             UPDT_DT = NOW()
-	        <if test="se_cd != 'A'.toString()">
-	            ,SE_CD = #{se_cd}
+	        <if test="seCd != 'A'.toString()">
+	            ,SE_CD = #{seCd}
 	        </if>
         WHERE ROLEID IN (
             SELECT * FROM (
@@ -191,7 +191,7 @@
 		    SITE_NM 
 		FROM TB_SITE
 		WHERE 
-		    SYS_SE_CD = #{se_cd}
+		    SYS_SE_CD = #{seCd}
 		AND USE_YN = 'Y'
     </select>
     
@@ -200,7 +200,7 @@
         /* RoleAuthDao.insertRoleUser */
         INSERT INTO 
             TB_ROLE_USER (ROLEID, USERID, ROLE_STRT_DT, ROLE_END_DT, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
-            VALUES (#{roleid}, #{userid}, #{role_strt_dt}, #{role_end_dt}, NOW(), #{reguserid}, NOW(), #{reguserid})
+            VALUES (#{roleid}, #{userid}, #{roleStrtDt}, #{roleEndDt}, NOW(), #{reguserid}, NOW(), #{reguserid})
     </insert>
     
      <!-- 사용자 역할의 내용을 수정 -->
@@ -209,8 +209,8 @@
         UPDATE 
             TB_ROLE_USER 
         SET
-            ROLE_STRT_DT = #{role_strt_dt}, 
-            ROLE_END_DT = #{role_end_dt}, 
+            ROLE_STRT_DT = #{roleStrtDt}, 
+            ROLE_END_DT = #{roleEndDt}, 
             UPDT_DT = NOW(),
             UPDTUSERID = #{reguserid} 
         WHERE 
