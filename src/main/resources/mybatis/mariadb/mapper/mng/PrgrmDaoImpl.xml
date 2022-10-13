@@ -59,8 +59,8 @@
 		(NM, TYPE_CD, URL, UPPR_PRGRMID, DC, LOGIN_YN, ORD, REGUSERID, REG_DT, UPDTUSERID, UPDT_DT
 		)
 		VALUES
-		(#{nm}, #{type_cd}, #{url}, #{uppr_prgrmid}, #{dc}, #{login_yn},
-			(SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_PRGRM A WHERE A.UPPR_PRGRMID = #{uppr_prgrmid}),
+		(#{nm}, #{typeCd}, #{url}, #{upprPrgrmid}, #{dc}, #{loginYn},
+			(SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_PRGRM A WHERE A.UPPR_PRGRMID = #{upprPrgrmid}),
 			 #{user.userid}, NOW(), #{user.userid}, NOW()
 		)
 	</insert>
@@ -70,10 +70,10 @@
 	    /* PrgrmDao.updatePrgrm */
 		UPDATE TB_PRGRM SET
 			NM = #{nm}
-			, TYPE_CD = #{type_cd}
+			, TYPE_CD = #{typeCd}
 			, URL = #{url}
 			, DC = #{dc}
-			, LOGIN_YN = #{login_yn}
+			, LOGIN_YN = #{loginYn}
 			, UPDTUSERID = #{user.userid}
 			, UPDT_DT = NOW()
 		WHERE PRGRMID = #{prgrmid}
@@ -85,7 +85,7 @@
 		UPDATE TB_PRGRM SET
 		<if test="upperYn == 'Y'.toString()">
 			ORD = ORD + 1	
-			WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid}, ((SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T)  )) 			
+			WHERE UPPR_PRGRMID = IFNULL(#{upprPrgrmid}, ((SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T)  )) 			
 			<if test="hitMode == 'before'">
 				AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T1)
 				AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM  A WHERE A.PRGRMID = #{tprgrmid}) T1) 
@@ -97,7 +97,7 @@
 		</if>
 		<if test="upperYn == 'N'.toString()">
 			ORD = ORD - 1
-			WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid}, ((SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T)  ))
+			WHERE UPPR_PRGRMID = IFNULL(#{upprPrgrmid}, ((SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T)  ))
 			<if test="hitMode == 'before'">
 				AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM  A WHERE A.PRGRMID = #{tprgrmid}) T1)
 				AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T1)
@@ -116,7 +116,7 @@
 	    /* PrgrmDao.updatePrgrmReOrderPrnDiff */
 		UPDATE TB_PRGRM SET
 				ORD = ORD+1
-				WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid},(SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T))
+				WHERE UPPR_PRGRMID = IFNULL(#{upprPrgrmid},(SELECT T.UPPR_PRGRMID FROM (SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{prgrmid}) T))
 				<if test="hitMode == 'before'">
 					AND ORD <![CDATA[>= ]]> (SELECT T.ORD FROM (SELECT ORD FROM TB_PRGRM WHERE PRGRMID = #{prgrmid}) T)
 				</if>
@@ -130,7 +130,7 @@
 	    /* PrgrmDao.updatePrgrmReOrderPrnDiffOrgin */
 		UPDATE TB_PRGRM SET
 		ORD = ORD-1
-			WHERE UPPR_PRGRMID = IFNULL(#{uppr_prgrmid},(SELECT T.UPPR_PRGRMID FROM(SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{tprgrmid})T ))
+			WHERE UPPR_PRGRMID = IFNULL(#{upprPrgrmid},(SELECT T.UPPR_PRGRMID FROM(SELECT A.UPPR_PRGRMID FROM TB_PRGRM A WHERE A.PRGRMID = #{tprgrmid})T ))
 				AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_PRGRM WHERE PRGRMID = #{tprgrmid}) T) 		
 	</update>
 	
@@ -146,11 +146,11 @@
 	<update id="updatePrarmTreeInfo" parameterType="PrgrmVo">
 	    /* PrgrmDao.updatePrarmTreeInfo */
 		UPDATE TB_PRGRM SET
-			UPPR_PRGRMID = #{uppr_prgrmid}
+			UPPR_PRGRMID = #{upprPrgrmid}
 			<if test="hitMode == 'over'">
 			,ORD = (SELECT T.ORD FROM(SELECT IFNULL(MAX(A.ORD),0) +1 AS ORD
 						   FROM TB_PRGRM A 
-						   WHERE A.UPPR_PRGRMID = #{uppr_prgrmid}) T)
+						   WHERE A.UPPR_PRGRMID = #{upprPrgrmid}) T)
 			</if>
 			<if test="hitMode != 'over'">
 			,ORD =  #{ord}
