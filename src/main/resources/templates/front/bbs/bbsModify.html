@@ -26,7 +26,7 @@
                                     </td>
                                 </tr>
                                 
-                			    <th:block  th:if ="${bbsInfo.cl_use_yn == 'Y'}">
+                			    <th:block  th:if ="${bbsInfo.clUseYn == 'Y'}">
                                     <tr>
                                     <th scope="row"><label for="title">분류</label></th>
 	                                    <td>
@@ -39,8 +39,8 @@
 										    	<select title="구분" class="form-select" id="bbs_clid" name="bbs_clid">
 										    		<option value="">분류선택</option>
 										    		 <th:block th:each="item : ${clList}">
-											          <option th:if="${item.bbs_clid} == ${pstInfo.bbs_clid}" th:value="${item.bbs_clid}" th:text="${item.cl_nm} " selected></option>
-											          <option th:else th:value="${item.bbs_clid}" th:text="${item.cl_nm} " ></option>
+											          <option th:if="${item.bbsClid} == ${pstInfo.bbsClid}" th:value="${item.bbsClid}" th:text="${item.clNm} " selected></option>
+											          <option th:else th:value="${item.bbsClid}" th:text="${item.clNm} " ></option>
 											         </th:block>
 										    	</select>
 										    	<span class="form-msg"></span> 
@@ -59,7 +59,7 @@
                                     
                               </tr>
                                 
-                              <th:block th:if="${bbsInfo.atchfile_use_yn=='Y'}">
+                              <th:block th:if="${bbsInfo.atchfileUseYn=='Y'}">
                                 <tr>
                                   <th scope="row"><label for="title">파일첨부</label></th>
                                   <td colspan="4" class="">
@@ -74,14 +74,14 @@
 													<th:block th:if="${fileMap}">
 								   					    <div th:each="item : ${fileMap}" th:id="${item.fileid}">
 								   					     
-								   					       <a th:fileid ='${item.fileid}' th:file_idntfc_key = "${item.file_idntfc_key}"  
-								   					          th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('file_idntfc_key'))"  
+								   					       <a th:fileid ='${item.fileid}' th:fileIdntfcKey = "${item.fileIdntfcKey}"
+								   					          th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
 								   					          href ="javascript:void(0)" >
 								   					       
-								   					           <th:block th:text="${item.orginl_file_nm}" />(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.file_size)}" />)
+								   					           <th:block th:text="${item.orginlFileNm}" />(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.fileSize)}" />)
 								   					       </a>
 								   					       	<!-- <a th:name="${item.save_file_nm}" class = 'btn btn-xs btn-warnig' onclick = "fn_downFile(this.name)" > -->
-								   					       	<a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.file_idntfc_key}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" ><input type='button'  class = 'btn btn-xs btn-danger' value="X"    /></a>
+								   					       	<a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" ><input type='button'  class = 'btn btn-xs btn-danger' value="X"    /></a>
 								   					    </div>
 													 </th:block>
 													 
@@ -121,15 +121,15 @@
 	  var goBbsMainUrl = "/front/bbs/"+bbsInfo.bbsid+"/main.html"
 	  var goReadUrl = "/front/bbs/"+bbsInfo.bbsid+"/view.html"
 	  
-	  var atchfileCnt = bbsInfo.atchfile_cnt ;
-	  var atchfileSize = bbsInfo.atchfile_size;
+	  var atchfileCnt = bbsInfo.atchfileCnt ;
+	  var atchfileSize = bbsInfo.atchfileSize;
       var editor ;
 	  var uploadFileCnt = 0 ;
 	    
       $(function(){
     	  
-      	if($("#atchfile_cnt").val()!= null && $("#atchfile_cnt").val() != 0 ){atchfileCnt = $("#atchfile_cnt").val() }
-		    if($("#atchfile_size").val()!= null && $("#atchfile_size").val() != 0 ){atchfileSize = $("#atchfile_size").val() }
+      	if($("#atchfileCnt").val()!= null && $("#atchfileCnt").val() != 0 ){atchfileCnt = $("#atchfileCnt").val() }
+		    if($("#atchfileSize").val()!= null && $("#atchfileSize").val() != 0 ){atchfileSize = $("#atchfileSize").val() }
       	
   		//editor = CKEDITOR.replace('cntnts');
   		//에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 ) 
@@ -155,7 +155,7 @@
 			    }
 			    
 		        formData.append("filegrpid", $("#filegrpid").val());
-		        formData.append("filegrp_nm", "bbs");
+		        formData.append("filegrpNm", "bbs");
                 formData.append("bbsid", bbsInfo.bbsid);
 		        
 		        if(uploadFileCnt >0 ){
@@ -171,8 +171,8 @@
 							}
 							
 							for(i = 0 ;i < response.length; i++ ){
-								content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginl_file_nm ;
-						        content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick = fn_deleteFileList('"+response[i].fileid+"','"+response[i].file_idntfc_key+"') value='X'/></div>"; 
+								content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+						        content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick = fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>";
 						        $('#multipleFileUploadSuccess').append(content);
 							}
 						}
