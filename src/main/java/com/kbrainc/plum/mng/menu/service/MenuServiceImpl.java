@@ -48,7 +48,7 @@ public class MenuServiceImpl extends PlumAbstractServiceImpl implements MenuServ
     */
     @Override
     public List<TreeItem> selectMenuTreeSearchList(Map param) throws Exception {
-        if ("".equals(StringUtil.nvl(param.get("srch_url")))) {
+        if ("".equals(StringUtil.nvl(param.get("srchUrl")))) {
             return menuDao.selectMenuTreeSearchList(param);
         } else {
             return menuDao.selectMenuTreeUrlSearchList(param);
@@ -196,7 +196,7 @@ public class MenuServiceImpl extends PlumAbstractServiceImpl implements MenuServ
             }
                         
             if (!"_".equals(pkey.substring(0, 1))) {
-                param.put("uppr_menuid", pkey);
+                param.put("upprMenuid", pkey);
                 menu.setUpprMenuid(Integer.parseInt(pkey));
                 menuDao.updateMenuTreeReOrder(param);
             } else {
@@ -229,7 +229,7 @@ public class MenuServiceImpl extends PlumAbstractServiceImpl implements MenuServ
         for (int i = 0; i < menuArr.length; i++) {
             param.put("menuid", menuArr[i]);
             param.put("ord", ord);
-            param.put("uppr_menuid", param.get("uppr_menuid"));
+            param.put("upprMenuid", param.get("upprMenuid"));
             menuDao.updateMenuTreeInfoNew(param);
             ord++;
         }

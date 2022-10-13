@@ -78,8 +78,8 @@ public class MenuController {
         TreeItem rootMenu = new TreeItem();
         rootMenu.setPkey("");
         rootMenu.setKey("0");
-        if (!"".equals(commandMap.get("site_nm"))) {
-            rootMenu.setTitle((String) commandMap.get("site_nm"));
+        if (!"".equals(commandMap.get("siteNm"))) {
+            rootMenu.setTitle((String) commandMap.get("siteNm"));
         }
 
         List<TreeItem> treeItemlist = menuService.selectMenuTreeSearchList(commandMap);
