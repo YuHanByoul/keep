@@ -50,8 +50,8 @@
 				<if test="siteid != null and siteid != ''">
 					AND	C.SITEID = #{siteid}
 				</if>
-				<if test="srch_url != null and srch_url != ''">
-					IFNULL(A.URL,B.URL) LIKE CONCAT('%',#{srch_url},'%')
+				<if test="srchUrl != null and srchUrl != ''">
+					IFNULL(A.URL,B.URL) LIKE CONCAT('%',#{srchUrl},'%')
 				</if>
 				ORDER BY A.ORD
 			) A LEFT OUTER JOIN 
@@ -107,22 +107,22 @@
 		UPDATE TB_MENU SET
 			NM = #{nm}, 
 			DC = #{dc},
-			<if test="type_cd != null and type_cd != ''">
-				TYPE_CD = #{type_cd},
+			<if test="typeCd != null and typeCd != ''">
+				TYPE_CD = #{typeCd},
 			</if>	
-			<if test="type_cd == 'D'.toString()">
-				REF_MENUID = #{ref_menuid},
+			<if test="typeCd == 'D'.toString()">
+				REF_MENUID = #{refMenuid},
 			</if>
-				POPUP_YN = CASE WHEN #{popup_yn} IS NULL THEN 'N' ELSE #{popup_yn} END,			
-			<if test="popup_yn == 'Y'.toString()">				 
-				POPUP_WD = #{popup_wd}, 
-				POPUP_HG = #{popup_hg},
+				POPUP_YN = CASE WHEN #{popupYn} IS NULL THEN 'N' ELSE #{popupYn} END,			
+			<if test="popupYn == 'Y'.toString()">				 
+				POPUP_WD = #{popupWd}, 
+				POPUP_HG = #{popupHg},
 			</if>
-			POPUP_TRGT_CD = #{popup_trgt_cd},
-			LOGIN_YN = #{login_yn},
-			HIDE_YN = #{hide_yn}, 
-			HTTPS_USE_YN = #{https_use_yn},
-            NM_EXPSR_TRGT_CD = #{nm_expsr_trgt_cd},
+			POPUP_TRGT_CD = #{popupTrgtCd},
+			LOGIN_YN = #{loginYn},
+			HIDE_YN = #{hideYn}, 
+			HTTPS_USE_YN = #{httpsUseYn},
+            NM_EXPSR_TRGT_CD = #{nmExpsrTrgtCd},
 			UPDTUSERID = #{user.userid}, 
 			UPDT_DT = NOW()
 		WHERE MENUID = #{menuid}
@@ -136,14 +136,14 @@
 				DC,
 				TYPE_CD,
 				UPPR_MENUID,
-				<if test="ref_menuid != null and ref_menuid != ''">
+				<if test="refMenuid != null and refMenuid != ''">
 				REF_MENUID,
 				</if>
 				<if test="siteid != null and siteid != ''">
 				SITEID,
                 </if>			
 				POPUP_YN,	
-				<if test="popup_yn != null and popup_yn != ''">		
+				<if test="popupYn != null and popupYn != ''">		
 				POPUP_WD,
 				POPUP_HG,
 				</if>
@@ -161,25 +161,25 @@
 		VALUES (
 				#{nm},
 				#{dc},
-				#{type_cd},
-				#{uppr_menuid},
-				<if test="ref_menuid != null and ref_menuid != ''">		
-				#{ref_menuid},
+				#{typeCd},
+				#{upprMenuid},
+				<if test="refMenuid != null and refMenuid != ''">		
+				#{refMenuid},
 				</if>
                 <if test="siteid != null and siteid != ''">
 				#{siteid},
                 </if>
-                IFNULL(#{popup_yn},'N'),
-				<if test="popup_yn != null and popup_yn != ''">
-				#{popup_wd},
-				#{popup_hg},
+                IFNULL(#{popupYn},'N'),
+				<if test="popupYn != null and popupYn != ''">
+				#{popupWd},
+				#{popupHg},
 				</if>
-				#{popup_trgt_cd},
-				#{login_yn},
-				#{hide_yn}, 
-				#{https_use_yn},
-                #{nm_expsr_trgt_cd},
-				(SELECT ORD FROM(SELECT IFNULL(MAX(A.ORD),0)+1 AS ORD FROM TB_MENU A WHERE A.UPPR_MENUID = #{uppr_menuid}
+				#{popupTrgtCd},
+				#{loginYn},
+				#{hideYn}, 
+				#{httpsUseYn},
+                #{nm_expsrTrgtCd},
+				(SELECT ORD FROM(SELECT IFNULL(MAX(A.ORD),0)+1 AS ORD FROM TB_MENU A WHERE A.UPPR_MENUID = #{upprMenuid}
 				<if test="siteid != null and siteid != ''">
 				AND SITEID = #{siteid}
                 </if>
@@ -220,7 +220,7 @@
 					ELSE 'P'
 				END,
 				PRGRMID,
-				#{uppr_menuid},
+				#{upprMenuid},
 				'P',
 				0,
 				#{siteid},
@@ -313,7 +313,7 @@
 		UPDATE TB_MENU SET
 			<if test="upperYn == 'Y'.toString()">
 				ORD = ORD + 1	
-				WHERE UPPR_MENUID = IFNULL(#{uppr_menuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T))
+				WHERE UPPR_MENUID = IFNULL(#{upprMenuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T))
 				<if test="siteid != null and siteid != ''">
 					AND SITEID = #{siteid}
 	            </if>
@@ -328,7 +328,7 @@
 			</if>
 			<if test="upperYn == 'N'.toString()">
 				ORD = ORD - 1
-				WHERE UPPR_MENUID = IFNULL(#{uppr_menuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)) 
+				WHERE UPPR_MENUID = IFNULL(#{upprMenuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)) 
 				<if test="siteid != null and siteid != ''">
 					AND SITEID = #{siteid}
 	            </if>
@@ -350,7 +350,7 @@
 		/* MenuDao.updateMenuTreeReOrder */
 		UPDATE TB_MENU SET
 			ORD = ORD+1	
-			WHERE UPPR_MENUID = #{uppr_menuid} 
+			WHERE UPPR_MENUID = #{upprMenuid} 
 				<if test="siteid != null and siteid != ''">
 				AND SITEID = #{siteid}
                 </if>
@@ -361,9 +361,9 @@
 	<update id="updateMenuTreeInfo">
 		/* MenuDao.updateMenuTreeInfo */
 		UPDATE TB_MENU SET
-			UPPR_MENUID = #{uppr_menuid}
+			UPPR_MENUID = #{upprMenuid}
 			<if test="hitMode == 'over'">
-			,ORD =  (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_MENU WHERE UPPR_MENUID = #{uppr_menuid} 
+			,ORD =  (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_MENU WHERE UPPR_MENUID = #{upprMenuid} 
 				<if test="siteid != null and siteid != ''">
 				AND SITEID = #{siteid}
                 </if>)
@@ -381,7 +381,7 @@
 	<update id="updateMenuTreeInfoNew">
 		/* MenuDao.updateMenuTreeInfoNew */
 		UPDATE TB_MENU SET
-			UPPR_MENUID = #{uppr_menuid}			
+			UPPR_MENUID = #{upprMenuid}			
 			,ORD = #{ord}		
 			WHERE MENUID = #{menuid}
 			<if test="siteid != null and siteid != ''">
@@ -433,11 +433,11 @@
 		     FROM MENU_CTE C, TB_MENU M
 		     LEFT OUTER JOIN TB_PRGRM P ON M.PRGRMID = P.PRGRMID
 			WHERE M.UPPR_MENUID = C.MENUID
-			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(type_cd)" >
-				AND M.TYPE_CD = #{type_cd}
+			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(typeCd)" >
+				AND M.TYPE_CD = #{typeCd}
 			</if>
-			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(ptype_cd)" >
-                AND P.TYPE_CD = #{ptype_cd}
+			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(ptypeCd)" >
+                AND P.TYPE_CD = #{ptypeCd}
             </if>
 		)
 		SELECT MENUID, NM, TYPE_CD
