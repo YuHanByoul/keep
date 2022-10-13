@@ -54,7 +54,7 @@
 				return;
 			}
 			$("#menuid").val(node.data.key);			
-			$("#uppr_menuid").val(node.parent.data.key);
+			$("#upprMenuid").val(node.parent.data.key);
 			if($("#menuid").val() == "" || $("#menuid").val() == "0"){
 				alert("삭제할 메뉴를 선택해 주십시오.");
 				return;
@@ -88,16 +88,16 @@
 		fn_getSiteList();
 		fn_menuLayout();
 		fn_prgmTreeList();
-		$("input[name='popup_yn']").each(function(key,val){
+		$("input[name='popupYn']").each(function(key,val){
 			$(this).bind('click',function(){
 				if(key == 1){					
-					$("input[name='popup_wd']").val('');
-					$("input[name='popup_hg']").val('');
-					$("input[name='popup_wd']").attr('disabled',true);
-					$("input[name='popup_hg']").attr('disabled',true);
+					$("input[name='popupWd']").val('');
+					$("input[name='popupHg']").val('');
+					$("input[name='popupWd']").attr('disabled',true);
+					$("input[name='popupHg']").attr('disabled',true);
 				}else{					
-					$("input[name='popup_wd']").attr('disabled',false);
-					$("input[name='popup_hg']").attr('disabled',false);
+					$("input[name='popupWd']").attr('disabled',false);
+					$("input[name='popupHg']").attr('disabled',false);
 				}
 			});
 		});
@@ -141,8 +141,8 @@
 				menuLayout.open("west");
 				$("#menuSave").html("메뉴구성 저장후 닫기");
 				$("#menuCancel").show();
-				$("#layout_menuInfo").hide();
-				$("#layout_menuCompose").show();
+				$("#layoutMenuInfo").hide();
+				$("#layoutMenuCompose").show();
 				$("#tabhide").hide();
 			}else{	
 				fn_treeSave();
@@ -150,7 +150,7 @@
 				menuLayout.close("west");
 				$("#menuSave").html("메뉴구성");
 				$("#menuCancel").hide();
-				$("#layout_menuInfo").show();
+				$("#layoutMenuInfo").show();
 				$("#tabhide").show();
 			}		
 		});
@@ -185,8 +185,8 @@
 			menuLayout.close( "west" );
 			$("#menuSave").html("메뉴구성");
 			$("#menuCancel").hide();
-			$("#layout_menuInfo").show();
-			$("#layout_menuCompose").hide();	
+			$("#layoutMenuInfo").show();
+			$("#layoutMenuCompose").hide();	
 			$("#tabhide").show();
 			if(menuTree != null){
 				$("#tree").dynatree("destroy");
@@ -246,8 +246,8 @@
 				dataType:'json',
 				data: {	
 					siteid: $("#siteid").val(),
-					site_nm: $("#siteid option:selected").text(),
-					srch_url: $("#srch_url").val()
+					siteNm: $("#siteid option:selected").text(),
+					srchUrl: $("#srchUrl").val()
 	            }
 			},
 	    	onActivate: function(node) {
@@ -264,8 +264,8 @@
 	    		bindContextMenu(span);
 	    		if($("#menuid").val() != ""){
 	    			$("#tree").dynatree("getTree").activateKey($("#menuid").val());
-	    		}else if($("#uppr_menuid").val() != "0"){
-	    			$("#tree").dynatree("getTree").activateKey($("#uppr_menuid").val());
+	    		}else if($("#upprMenuid").val() != "0"){
+	    			$("#tree").dynatree("getTree").activateKey($("#upprMenuid").val());
 	    		}
 	    		
 	    	},
@@ -390,7 +390,7 @@
 			cache : false,
 			dataType: 'json',
 			success : function (data){
-				selectbox_insertlist2("siteid", data, "site_nm", "siteid");
+				selectbox_insertlist2("siteid", data, "siteNm", "siteid");
 			},
 			error : function (error){
 				
@@ -420,7 +420,7 @@
 	}
 	
 	function fn_treeSave(){
-		$("#layout_menuCompose").hide();
+		$("#layoutMenuCompose").hide();
 		displayWorkProgress();
 		var saveTreeData = [];
 		$("#tree").dynatree("getRoot").visit(function(node) {
@@ -484,7 +484,7 @@
 			dataType : 'json',
 			data : {
 				menuArr : new String(menuArr),
-				uppr_menuid : uprMenuId,	
+				upprMenuid : uprMenuId,	
 				menuid : sourceNode.data.key,
 				hitMode : hitMode,
 				siteid :  $("#siteid").val()
@@ -507,26 +507,26 @@
 			return;
 		}
 		
-		if(getRadioValue(f,"popup_yn") == "Y"){
-			if($("input[name='popup_wd']").val() == "" || $("input[name='popup_hg']").val() == ""){
+		if(getRadioValue(f,"popupYn") == "Y"){
+			if($("input[name='popupWd']").val() == "" || $("input[name='popupHg']").val() == ""){
 				alert("팝업크기를 지정해야 합니다.");
 				return;
 			}
-			if(!isInteger($("input[name='popup_wd']").val()) ){
+			if(!isInteger($("input[name='popupWd']").val()) ){
 				alert("팝업크기는 정수이어야 합니다.");
 				return;
 			}else{
-                if($("input[name='popup_wd']").val() > 1024) {
+                if($("input[name='popupWd']").val() > 1024) {
                     alert("팝업의 가로크기는 1024이하여야 합니다.")
                     return;
                 }
             }
             
-			if(!isInteger($("input[name='popup_hg']").val()) ){
+			if(!isInteger($("input[name='popupHg']").val()) ){
 				alert("팝업크기는 정수이어야 합니다.");
 				return;
 			}else{
-                if($("input[name='popup_hg']").val() > 768) {
+                if($("input[name='popupHg']").val() > 768) {
                     alert("팝업의 세로크기는 768이하여야 합니다.")
                     return;
                 }
@@ -571,7 +571,7 @@
 			data : {
 				siteid :  $("#siteid").val(),
 				menuid :  $("#menuid").val(),
-				uppr_menuid : $("#uppr_menuid").val()
+				upprMenuid : $("#upprMenuid").val()
 			},
 			success : function(data){
 				alert(data.msg);
@@ -587,51 +587,51 @@
 	
 	function fn_setMenuForm(data){
 		
-		$("#uppr_menuid").val(data.uppr_menuid);
+		$("#upprMenuid").val(data.upprMenuid);
 		if(data.menuid != undefined){
 			if(data.prgrmid == undefined){
 				data.prgrmid = "없음";
 			}
-			$("#view_menuid").html(data.menuid+"("+data.prgrmid+")");
+			$("#viewMenuid").html(data.menuid+"("+data.prgrmid+")");
 		}else{
-			$("#view_menuid").html("");
+			$("#viewMenuid").html("");
 		}
-		$("#menu_nm").val(data.nm);
-		$("#menu_expln").val(data.dc);
+		$("#menuNm").val(data.nm);
+		$("#menuExpln").val(data.dc);
 		
-		if(data.type_cd == 'D'){		//디렉토리
+		if(data.typeCd == 'D'){		//디렉토리
 			$("#urlView").show();
-			$("#new_menutype").hide();
+			$("#newMenutype").hide();
 			$("#menutype").show();
-			$("#view_ref_menuid").show();
-			$("#ref_menuid").html(data.ref_menuid);
-			$("input[name='ref_menuid']").val(data.ref_menuid);
-			$("#view_prgmurl").hide();
-			$("#view_prgrm_type_cd").hide();
-			$("input[name='popup_yn']").eq(1).trigger('click');
-			$("input[name='popup_yn']").attr('disabled',true);
+			$("#viewRefMenuid").show();
+			$("#refMenuid").html(data.refMenuid);
+			$("input[name='refMenuid']").val(data.refMenuid);
+			$("#viewPrgmurl").hide();
+			$("#viewPrgrmTypeCd").hide();
+			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']").attr('disabled',true);
 		}else {
-			$("#view_ref_menuid").hide();
-			$("#ref_menuid").html('');
-			$("input[name='ref_menuid']").val('');
+			$("#viewRefMenuid").hide();
+			$("#refMenuid").html('');
+			$("input[name='refMenuid']").val('');
 			$("#mode").val('U');			
 			$("#urlView").show();
-			$("#new_menutype").hide();
+			$("#newMenutype").hide();
 			$("#menutype").show();
-			$("#view_prgmurl").show();
-			$("#view_prgrm_type_cd").show();
-			$("input[name='popup_yn']").attr('disabled',false);
-			$("input[name='popup_yn']:radio:input[value='"+data.popup_yn+"']").prop("checked", true);
-			$("input[name='popup_wd']").val(data.popup_wd);
-			$("input[name='popup_hg']").val(data.popup_hg);
+			$("#viewPrgmurl").show();
+			$("#viewPrgrmTypeCd").show();
+			$("input[name='popupYn']").attr('disabled',false);
+			$("input[name='popupYn']:radio:input[value='"+data.popupYn+"']").prop("checked", true);
+			$("input[name='popupWd']").val(data.popupWd);
+			$("input[name='popupHg']").val(data.popupHg);
 		}
 		
-		if(data.popup_yn == "N"){
-			$("input[name='popup_wd']").attr('disabled',true);
-			$("input[name='popup_hg']").attr('disabled',true);
+		if(data.popupYn == "N"){
+			$("input[name='popupWd']").attr('disabled',true);
+			$("input[name='popupHg']").attr('disabled',true);
 		}else{
-			$("input[name='popup_wd']").attr('disabled',false);
-			$("input[name='popup_hg']").attr('disabled',false);
+			$("input[name='popupWd']").attr('disabled',false);
+			$("input[name='popupHg']").attr('disabled',false);
 		}
 		
 		if(data.url != "" && data.url != ""){
@@ -640,38 +640,38 @@
 			$("#url").val("");
 		}
 		
-		$("input[name='https_use_yn']:radio:input[value='"+data.https_use_yn+"']").prop("checked", true);
-		$("input[name='type_cd']").attr("disabled", true);
-		$("input[name='type_cd']:radio:input[value='"+data.type_cd+"']").prop("checked", true).attr("disabled", false);
+		$("input[name='httpsUseYn']:radio:input[value='"+data.httpsUseYn+"']").prop("checked", true);
+		$("input[name='typeCd']").attr("disabled", true);
+		$("input[name='typeCd']:radio:input[value='"+data.typeCd+"']").prop("checked", true).attr("disabled", false);
 				
 			
-		$("input[name='popup_trgt_cd']:radio:input[value='"+data.popup_trgt_cd+"']").prop("checked", true);
-		$("input[name='nm_expsr_trgt_cd']:radio:input[value='"+data.nm_expsr_trgt_cd+"']").prop("checked", true);
-		$("input[name='login_yn']:radio:input[value='"+data.login_yn+"']").prop("checked", true);		
-		$("input[name='hide_yn']:radio:input[value='"+data.hide_yn+"']").prop("checked", true);
-		$("input[name='gst_yn']:radio:input[value='"+data.gst_yn+"']").prop("checked", true);
+		$("input[name='popupTrgtCd']:radio:input[value='"+data.popupTrgtCd+"']").prop("checked", true);
+		$("input[name='nmExpsrTrgtCd']:radio:input[value='"+data.nmExpsrTrgtCd+"']").prop("checked", true);
+		$("input[name='loginYn']:radio:input[value='"+data.loginYn+"']").prop("checked", true);		
+		$("input[name='hideYn']:radio:input[value='"+data.hideYn+"']").prop("checked", true);
+		$("input[name='gstYn']:radio:input[value='"+data.gstYn+"']").prop("checked", true);
 		var prgrm_type = ""
-		if(data.ptype_cd == "01"){
+		if(data.ptypeCd == "01"){
 			prgrm_type = "디렉토리";
-			$("input[name='popup_yn']").eq(1).trigger('click');
-			$("input[name='popup_yn']").attr('disabled',true);
-		}else if(data.ptype_cd == "02"){
+			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']").attr('disabled',true);
+		}else if(data.ptypeCd == "02"){
 			prgrm_type = "메뉴";
-		}else if(data.ptype_cd == "03"){
+		}else if(data.ptypeCd == "03"){
 			prgrm_type = "메뉴상세";
-			$("input[name='popup_yn']").eq(1).trigger('click');
-            $("input[name='popup_yn']").attr('disabled',true);
-		}else if(data.ptype_cd == "04"){
+			$("input[name='popupYn']").eq(1).trigger('click');
+            $("input[name='popupYn']").attr('disabled',true);
+		}else if(data.ptypeCd == "04"){
 			prgrm_type = "기능";
-			$("input[name='popup_yn']").eq(1).trigger('click');
-			$("input[name='popup_yn']").attr('disabled',true);
-		}else if(data.ptype_cd == "05"){
+			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']").attr('disabled',true);
+		}else if(data.ptypeCd == "05"){
 			prgrm_type = "팝업";
-            $("input[name='popup_yn']").eq(1).trigger('click');
-            $("input[name='popup_yn']").attr('disabled',true);
+            $("input[name='popupYn']").eq(1).trigger('click');
+            $("input[name='popupYn']").attr('disabled',true);
 		}
 		
-		$("#prgrm_type_cd").html(prgrm_type);
+		$("#prgrmTypeCd").html(prgrm_type);
 		$("#prgmurl").html(data.purl);
 	}
 	
@@ -679,16 +679,16 @@
         // gubun C:디렉토리등록, D:삭제
 		$("#mode").val(gubun);
 		if(gubun =='C' && $("#menuid").val() != ""){
-			$("#uppr_menuid").val($("#menuid").val());
+			$("#upprMenuid").val($("#menuid").val());
 		}else{
 			if(gubun != 'D'){
-				$("#uppr_menuid").val(0);
+				$("#upprMenuid").val(0);
 			}
 		}
 		$("#menuid").val('');		
-		$("#view_menuid").html('');
-		$("#menu_nm").val('');
-		$("#menu_expln").val('');
+		$("#viewMenuid").html('');
+		$("#menuNm").val('');
+		$("#menuExpln").val('');
 		$("#url").val('');
 		if(gubun =='W'){
 			$("#urlView").show();
@@ -696,44 +696,44 @@
 			$("#urlView").hide();
 		}
 		
-		$("#view_ref_menuid").hide();
-		$("#ref_menuid").html('');
-		$("inpput[name='ref_menuid']").val('');
-		$("input[name='popup_yn']").attr('disabled',false);
+		$("#viewRefMenuid").hide();
+		$("#refMenuid").html('');
+		$("inpput[name='refMenuid']").val('');
+		$("input[name='popupYn']").attr('disabled',false);
 		
 		if(gubun =='C'){ //디렉토리등록
-			$("#view_ref_menuid").show();
-			$("input[name='type_cd']").attr('disabled',true);
-			$("input[name='type_cd']:radio:input[value='D']").prop("checked", true).attr("disabled",false);			
-			$("#new_menutype").hide();		
+			$("#viewRefMenuid").show();
+			$("input[name='typeCd']").attr('disabled',true);
+			$("input[name='typeCd']:radio:input[value='D']").prop("checked", true).attr("disabled",false);			
+			$("#newMenutype").hide();		
 			$("#menutype").show();
 		}else{ //초기화
-			$("input[name='type_cd']").attr('disabled',false);
-			$("input[name='type_cd']:radio:input[value='P']").prop("checked", true);
-			$("#new_menutype").hide();
+			$("input[name='typeCd']").attr('disabled',false);
+			$("input[name='typeCd']:radio:input[value='P']").prop("checked", true);
+			$("#newMenutype").hide();
 			$("#menutype").show();
 		}		
-		$("input[name='login_yn']:radio:input[value='Y']").prop("checked", true);
-		$("input[name='hide_yn']:radio:input[value='N']").prop("checked", true);
-		$("input[name='https_use_yn']:radio:input[value='Y']").prop("checked", true);
-		$("input[name='popup_yn']:radio:input[value='Y']").prop("checked", true);
+		$("input[name='loginYn']:radio:input[value='Y']").prop("checked", true);
+		$("input[name='hideYn']:radio:input[value='N']").prop("checked", true);
+		$("input[name='httpsUseYn']:radio:input[value='Y']").prop("checked", true);
+		$("input[name='popupYn']:radio:input[value='Y']").prop("checked", true);
 		
-		$("input[name='popup_wd']").val('');
-		$("input[name='popup_hg']").val('');
+		$("input[name='popupWd']").val('');
+		$("input[name='popupHg']").val('');
 		if(gubun =='C'){
-			$("input[name='popup_yn']").eq(1).trigger('click');
-			$("input[name='popup_yn']").attr('disabled',true);			
+			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']").attr('disabled',true);			
 		}else{
-			$("input[name='popup_yn']").eq(0).trigger('click');			
+			$("input[name='popupYn']").eq(0).trigger('click');			
 		}
 		
-		$("input[name='popup_trgt_cd']:radio:input[value='P']").prop("checked", true);
-		$("#view_prgmurl").hide();
-		$("#view_prgrm_type_cd").hide();
+		$("input[name='popupTrgtCd']:radio:input[value='P']").prop("checked", true);
+		$("#viewPrgmurl").hide();
+		$("#viewPrgrmTypeCd").hide();
 	}
 	
 	function goSearch(){
-		if( $("#layout_menuCompose").css("display") != "none" ){
+		if( $("#layoutMenuCompose").css("display") != "none" ){
 			$("#menuCancel").click();
 		}
 		
@@ -744,7 +744,7 @@
 		if(menuTree != null){
 			$("#tree").dynatree("destroy");
 		}
-		$("#srch_url").val($.trim($("#srch_url").val()));
+		$("#srchUrl").val($.trim($("#srchUrl").val()));
 		fn_menuTreeList();
 	}
 	
@@ -758,7 +758,7 @@
 	}
     
     function fn_jsRefMenuCancel() {
-        $("#ref_menuid").html('');
-        $("input[name='ref_menuid']").val('');
+        $("#refMenuid").html('');
+        $("input[name='refMenuid']").val('');
     }
 	
