@@ -100,7 +100,7 @@
                 <if test="cdgrpid != null and cdgrpid != ''">
                     AND A1.CDGRPID = #{cdgrpid}
                 </if>
-                <if test="uppr_cd != null and uppr_cd != ''">
+                <if test="upprCd != null and upprCd != ''">
                     AND A1.UPPR_CD = #{uppr_cd}
                 </if>
 
@@ -138,7 +138,7 @@
                 AND A1.CDGRPID = #{cdgrpid}
             </if>
             <if test="uppr_cd != null and uppr_cd != ''">
-                AND A1.UPPR_CD = #{uppr_cd}
+                AND A1.UPPR_CD = #{upprCd}
             </if>
     
             <if test="searchType != null and searchType != ''">
@@ -197,11 +197,11 @@
             UPDT_DT
         ) VALUES (
             #{cdgrpid},
-            #{cdgrp_nm},
-            #{cdgrp_dc},
+            #{cdgrpNm},
+            #{cdgrpCc},
             #{optn1},
             #{optn2},
-            #{use_yn},
+            #{useYn},
             #{user.userid},
             NOW()
         )
@@ -214,11 +214,11 @@
             TB_CDGRP 
         SET 
             CDGRPID = #{cdgrpid},
-            CDGRP_NM = #{cdgrp_nm},
-            CDGRP_DC = #{cdgrp_dc},
+            CDGRP_NM = #{cdgrpNm},
+            CDGRP_DC = #{cdgrpDc},
             OPTN1 = #{optn1},
             OPTN2 = #{optn2},
-            USE_YN = #{use_yn},
+            USE_YN = #{useYn},
             UPDTUSERID = #{user.userid},
             UPDT_DT = NOW()
         WHERE 
@@ -298,7 +298,7 @@
         UPDATE TB_CD SET
         <if test="upperYn == 'Y'.toString()">
             ORD = ORD + 1
-            WHERE UPPR_CD = IFNULL(#{uppr_cd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
+            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
             <if test="hitMode == 'before'">
                 AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
                 AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
@@ -310,7 +310,7 @@
         </if>
         <if test="upperYn == 'N'.toString()">
             ORD = ORD - 1
-            WHERE UPPR_CD = IFNULL(#{uppr_cd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
+            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
             <if test="hitMode == 'before'">
                 AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
                 AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
@@ -331,7 +331,7 @@
         SET
             ORD = ORD+1
         WHERE 
-            UPPR_CD = IFNULL(#{uppr_cd},(SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T))
+            UPPR_CD = IFNULL(#{upprCd},(SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T))
         <if test="hitMode == 'before'">
             AND ORD <![CDATA[>= ]]> (SELECT T.ORD FROM (SELECT ORD FROM TB_CD WHERE CD = #{cd}) T)
         </if>
@@ -349,7 +349,7 @@
         SET
             ORD = ORD-1
         WHERE 
-            UPPR_CD = IFNULL(#{uppr_cd},(SELECT T.UPPR_CD FROM(SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{tcd})T ))
+            UPPR_CD = IFNULL(#{upprCd},(SELECT T.UPPR_CD FROM(SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{tcd})T ))
             AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CD WHERE CD = #{tcd}) T)
     </update>
 
@@ -359,11 +359,11 @@
         UPDATE 
             TB_CD 
         SET
-            UPPR_CD = #{uppr_cd}
+            UPPR_CD = #{upprCd}
             <if test="hitMode == 'over'">
                 ,ORD = (SELECT T.ORD FROM(SELECT IFNULL(MAX(A.ORD),0) +1 AS ORD
                 FROM TB_CD A
-                WHERE A.UPPR_CD = #{uppr_cd}) T)
+                WHERE A.UPPR_CD = #{upprCd}) T)
             </if>
             <if test="hitMode != 'over'">
                 ,ORD = #{ord}
@@ -390,15 +390,15 @@
             UPDT_DT
         ) VALUES (
             #{cd},
-            #{cd_nm},
-            #{cd_dc},
+            #{cdNm},
+            #{cdDc},
             #{cdgrpid},
-            #{uppr_cd},
-            (SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_CD A WHERE A.CDGRPID = #{cdgrpid} AND A.UPPR_CD = #{uppr_cd}),
+            #{upprCd},
+            (SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_CD A WHERE A.CDGRPID = #{cdgrpid} AND A.UPPR_CD = #{upprCd}),
             #{optn1},
             #{optn2},
             #{optn3},
-            #{use_yn},
+            #{useYn},
             #{user.userid},
             NOW()
         )
@@ -411,14 +411,14 @@
             TB_CD
         SET 
             CD = #{cd},
-            CD_NM = #{cd_nm},
-            CD_DC = #{cd_dc},
+            CD_NM = #{cdNm},
+            CD_DC = #{cdDc},
             CDGRPID = #{cdgrpid},
-            UPPR_CD = #{uppr_cd},
+            UPPR_CD = #{upprCd},
             OPTN1 = #{optn1},
             OPTN2 = #{optn2},
             OPTN3 = #{optn3},
-            USE_YN = #{use_yn},
+            USE_YN = #{useYn},
             UPDTUSERID = #{user.userid},
             UPDT_DT = NOW()
         WHERE 
