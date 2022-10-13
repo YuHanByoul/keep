@@ -116,7 +116,7 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/defineRole.html")
     public String defineRoleForm(RoleVo paramRoleVo, ModelMap model) throws Exception {
-        model.addAttribute("se_cd", paramRoleVo.getSeCd());
+        model.addAttribute("seCd", paramRoleVo.getSeCd());
 
         if (com.kbrainc.plum.rte.util.CommonUtil.isNotEmpty(paramRoleVo.getRoleid())) {
             model.addAttribute("roleid", paramRoleVo.getRoleid());
@@ -137,7 +137,7 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/mappingUserForm.html")
     public String roleMgntUserMappingForm(RoleVo paramRoleVo, ModelMap model) throws Exception {
-        model.addAttribute("se_cd", paramRoleVo.getSeCd());
+        model.addAttribute("seCd", paramRoleVo.getSeCd());
 
         if (com.kbrainc.plum.rte.util.CommonUtil.isNotEmpty(paramRoleVo.getRoleid())) {
             model.addAttribute("roleid", paramRoleVo.getRoleid());
@@ -319,10 +319,10 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/configRoleMenuForm.html")
     public String adminRoleMenuForm(@RequestParam Map<String, Object> commandMap, ModelMap model) throws Exception {
-        if (!"".equals(commandMap.get("role_id")) && commandMap.get("role_id") != null) {
-            model.addAttribute("role_id", commandMap.get("role_id").toString());
+        if (!"".equals(commandMap.get("roleid")) && commandMap.get("roleid") != null) {
+            model.addAttribute("roleid", commandMap.get("roleid").toString());
         }
-        model.addAttribute("se_cd", commandMap.get("se_cd"));
+        model.addAttribute("seCd", commandMap.get("seCd"));
         
         return "mng/role/fragments/configMenu";
     }
@@ -348,10 +348,10 @@ public class RoleAuthController {
 
         TreeItem root = new TreeItem("", "0", "");
 
-        if (com.kbrainc.plum.rte.util.CommonUtil.isEmpty(commandMap.get("classrm_nm"))) {
+        if (com.kbrainc.plum.rte.util.CommonUtil.isEmpty(commandMap.get("classrmNm"))) {
             root.setTitle(roleAuthService.selectRoleTreeSitenm(commandMap.get("siteid").toString()));
         } else {
-            root.setTitle(commandMap.get("classrm_nm").toString());
+            root.setTitle(commandMap.get("classrmNm").toString());
         }
         root.setExt1("Y");
         List<TreeItem> treeItemlist = roleAuthService.selectRoleMenuTreeList(commandMap);

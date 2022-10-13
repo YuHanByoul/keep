@@ -104,14 +104,13 @@ function fn_roleTreeList(){
 			url: treeUrl,
 			dataType:'json',
 			data: {	
-				se_cd : jQuery("#se_cd").val(),
+				seCd : jQuery("#seCd").val(),
 				//mkey:'${mkey}'
             }
 		},
-    	onActivate: function(node) {   
+    	onActivate: function(node) {
     		if(node.data.key !="0" && node.data.key != undefined){    		
-    			makeGrid(node.data.key);	
-    			resizeJqGridWidthNoSearch("gridList", "gridDiv", "100%"); //그리드 리사이즈
+    			makeGrid(node.data.key);
     			jQuery("#roleid").val(node.data.key);
     			fn_getRoleInfo(node.data.key);
     		}else{
@@ -185,7 +184,7 @@ function makeGrid(roleId) {
             	
             	var params = {
             			"roleid": roleId,
-            			"use_yn": $('#useYn').val(),
+            			"useYn": $('#useYn').val(),
             			"searchType": $('#searchType').val(),
             			"searchKeyword": $('#searchKeyword').val(),
             			"pageNumber": filter.pageIndex,
@@ -202,7 +201,7 @@ function makeGrid(roleId) {
                   dataType: "json"
                 }).done(function(response){
                 	var da = {
-                            data :response.list,
+                            data : escapeGridData(response.list),
                             itemsCount : response.totalCount
                         };
                    //console.log(da);
@@ -243,10 +242,10 @@ function makeGrid(roleId) {
         fields: [ 
             { name: 'nm', title:"이름(기업명)", type: "text", width: "15%", readOnly: true },
             { name: 'acnt', title:"아이디", type: "text", width: "10%", readOnly: true },
-            { name: 'role_nm', title:"역할", type: "text", width: "10%", align: "center", readOnly: true },
-            { name: 'user_se_cd', title:"회원구분", type: "select", width: "10%", items: userSe, valueField: "Id", textField: "Name", readOnly: true },
-            { name: 'role_strt_dt', title:"사용시작일", type: "date", width: "10%", align: "center" },
-            { name: 'role_end_dt', title:"사용종료일", type: "date", width: "10%", align: "center" },
+            { name: 'roleNm', title:"역할", type: "text", width: "10%", align: "center", readOnly: true },
+            { name: 'userSeCd', title:"회원구분", type: "select", width: "10%", items: userSe, valueField: "Id", textField: "Name", readOnly: true },
+            { name: 'roleStrtDt', title:"사용시작일", type: "date", width: "10%", align: "center" },
+            { name: 'roleEndDt', title:"사용종료일", type: "date", width: "10%", align: "center" },
             { type: "control", width: "7%" }
         ],
         //rowClick: function(args) { readModify(args.item.faqid); },
@@ -267,8 +266,8 @@ var addUserList = function(list, startDate, endDate){
 	var roleid = $('#roleid').val();
 	list.map(function(item){
 		item.roleid = roleid;
-		item.role_strt_dt = startDate;
-		item.role_end_dt = endDate;
+		item.roleStrtDt = startDate;
+		item.roleEndDt = endDate;
 		
 		return item;
 	});

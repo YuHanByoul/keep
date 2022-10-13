@@ -41,7 +41,7 @@ public class Constant {
     
     // 팝업 대상 코드
     public static final String POPUP_TARGET_CD_SELF = "P"; //현재창
-    public static final String POPUP_TARGET_CD_NEW = "N";  //현재창
+    public static final String POPUP_TARGET_CD_NEW = "N";  //새창
     
     // 이름 노출 대상 코드
     public static final String NAME_SHOW_TARGET_CD_ALL = "N";   //모두

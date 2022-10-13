@@ -11,8 +11,8 @@ var ROLE = {
 		let data = {
 				"roleid": item.roleid,
 				"userid": item.userid,
-				"role_strt_dt": item.role_strt_dt,
-				"role_end_dt": item.role_end_dt
+				"roleStrtDt": item.roleStrtDt,
+				"roleEndDt": item.roleEndDt
 		};
 			
 		console.log(JSON.stringify(data));

@@ -52,7 +52,7 @@ function makeTree(){
     		url: treeUrl,
 			dataType:'json',
 			data: {	
-				se_cd : jQuery("#se_cd").val(),
+				seCd : jQuery("#seCd").val(),
 				//mkey:'${mkey}'
             },
             complete : function(data) {
@@ -70,15 +70,15 @@ function makeTree(){
 	   			jQuery("#subTree").hide();
 	   			treeReload();
 	   			
-	   			jQuery("#layout_menuCompose #txtDesc").hide();
-	   			jQuery("#layout_menuCompose #menuTreeArea").show();
+	   			jQuery("#layoutMenuCompose #txtDesc").hide();
+	   			jQuery("#layoutMenuCompose #menuTreeArea").show();
                 makeSitecd();
     		}else{
         		jQuery("#roleNm").text("");	// 역할
                 jQuery("#save").hide();
         		
-	   			jQuery("#layout_menuCompose #txtDesc").show();
-	   			jQuery("#layout_menuCompose #menuTreeArea").hide();
+	   			jQuery("#layoutMenuCompose #txtDesc").show();
+	   			jQuery("#layoutMenuCompose #menuTreeArea").hide();
 				
       		}      		
     	},
@@ -214,10 +214,10 @@ function fn_save(){
 			delArray.push(el);
 	});
 	
-	jQuery("#menu_add").val(addArray);
-	jQuery("#menu_del").val(delArray);
+	jQuery("#menuAdd").val(addArray);
+	jQuery("#menuDel").val(delArray);
 	
-	if(jQuery("#menu_add").val() == "" && jQuery("#menu_del").val() == ""){
+	if(jQuery("#menuAdd").val() == "" && jQuery("#menuDel").val() == ""){
     	alert("변경된 데이터가 없습니다.");	// 변경된 데이터가 없습니다.
     	return;
 	}
@@ -243,7 +243,7 @@ function makeSitecd(){
 		cache : false,
 		dataType: 'json',
 		data : {
-            se_cd : jQuery("#se_cd").val()
+            seCd : jQuery("#seCd").val()
 		},
 		success : function(result){
 			if(result.data != undefined && result.data != ""){								
@@ -264,7 +264,7 @@ function createSitecdTag(data){
 		jQuery("#siteid").hide();
 	}
 	jQuery.each(data,function(key,obj){
-		tag += "<option value='"+obj.siteid+"'>"+obj.site_nm+"</option>";
+		tag += "<option value='"+obj.siteid+"'>"+obj.siteNm+"</option>";
 	});
 	jQuery("#siteid").html(tag);
 	

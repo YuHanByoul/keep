@@ -181,10 +181,10 @@ public final class CustomAntPathRequestMatcher
             serverName = "";
         }
 
-        if (LOGGER.isDebugEnabled()) {
+        /*if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Checking match of request : '" + serverName + url + "'; against '"
                     + this.pattern + "'");
-        }
+        }*/
 
         return this.matcher.matches(serverName + url);
     }

@@ -13,14 +13,14 @@ function bindContextMenu(span) {
     var node = jQuery.ui.dynatree.getNode(el);
     switch( action ) {
     case "regist":
-    	jQuery("#uppr_roleid").val(node.data.key);
+    	jQuery("#upprRoleid").val(node.data.key);
     	jQuery("#roleid").val("");
     	jQuery("#mode").val("W2");
     	fn_setRegistForm();
     	jQuery("#registForm").show();
     	break;    
     default:
-    	jQuery("#uppr_roleid").val("0");
+    	jQuery("#upprRoleid").val("0");
     	jQuery("#roleid").val("");
     	jQuery("#mode").val("W");
     	fn_setRegistForm();
@@ -48,7 +48,7 @@ jQuery(document).ready(function(){
 	});
 	
 	jQuery("#doCancle").bind("click",function(){
-		jQuery("#uppr_roleid").val("0");
+		jQuery("#upprRoleid").val("0");
     	jQuery("#roleid").val("");
     	jQuery("#mode").val("W");
     	fn_setRegistForm();
@@ -61,7 +61,7 @@ jQuery(document).ready(function(){
 		fn_roleRegist();
 	});
 	jQuery("#roleWirteForm").bind("click",function(){
-		jQuery("#uppr_roleid").val("0");
+		jQuery("#upprRoleid").val("0");
     	jQuery("#roleid").val("");
     	jQuery("#mode").val("W");
     	fn_setRegistForm(); 
@@ -94,7 +94,7 @@ function fn_roleTreeList(){
 			url: treeUrl,
 			dataType:'json',
 			data: {	
-				se_cd : $("input[name='se_cd']:checked").val(),
+				seCd : $("input[name='seCd']:checked").val(),
 				//mkey:'${mkey}'
             }
 		},
@@ -104,7 +104,7 @@ function fn_roleTreeList(){
     			fn_getRoleInfo(node.data.key);
     			jQuery("#registForm").show();
     		}else{
-    			jQuery("#uppr_roleid").val("0");
+    			jQuery("#upprRoleid").val("0");
     	    	jQuery("#roleid").val("");
     			jQuery("#mode").val("W");
     			fn_setRegistForm();    			
@@ -128,7 +128,7 @@ function fn_roleTreeList(){
     		if(jQuery("#roleid").val() != ""){
     			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#roleid").val());
     		}else if(jQuery("#p_upr_menu_id").val() != "0"){
-    			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#uppr_roleid").val());
+    			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#upprRoleid").val());
     		}
     	},
     	dnd: {
@@ -171,9 +171,9 @@ function fn_role_reOrder(node, sourceNode,hitMode){
 		data : {
 			p_roleArr : new String(roleArr),
 			roleid : sourceNode.data.key,
-			upr_roleid : uprRoleId,	
+			uprRoleid : uprRoleId,	
 			hitMode : hitMode,
-			role_clsf_cd : jQuery("#role_clsf_cd").val(),
+			roleClsfCd : jQuery("#roleClsfCd").val(),
 			mkey:'${mkey}'
 		},
 		success:function(data){
@@ -206,22 +206,22 @@ function fn_getRoleInfo(roleId){
 function fn_setRegistForm(data){
 	if(data != undefined){
 		jQuery("input[name='roleid']").val(data.ROLEID);
-		jQuery("#view_roleId").html(data.ROLEID);
+		jQuery("#viewRoleId").html(data.ROLEID);
 		jQuery("#roleNm").html("역할 : "+data.NM);		// 역할
-		jQuery("#view_role_nm").val(data.NM);
-		jQuery("#view_role_expln").val(data.DC);
-		jQuery("input:radio[name=use_yn]:input[value='"+data.USE_YN+"']").prop("checked", true);
+		jQuery("#viewRoleNm").val(data.NM);
+		jQuery("#viewRoleExpln").val(data.DC);
+		jQuery("input:radio[name=useYn]:input[value='"+data.USE_YN+"']").prop("checked", true);
 		
 		jQuery("#editBtn").show();
 		jQuery("#writeBtn").hide();
 		
 	}else{
-		jQuery("#view_roleId").html('');
+		jQuery("#viewRoleId").html('');
 		jQuery("#roleNm").html("");
-		jQuery("#view_role_nm").val('');
-		jQuery("#view_role_expln").val('');
-		if(jQuery("#uppr_roleid").val() == "0"){
-			jQuery("input[name='use_yn']:radio:input[value='Y']").prop("checked", true);
+		jQuery("#viewRoleNm").val('');
+		jQuery("#viewRoleExpln").val('');
+		if(jQuery("#upprRoleid").val() == "0"){
+			jQuery("input[name='useYn']:radio:input[value='Y']").prop("checked", true);
 		}
 		jQuery("#editBtn").hide();
 		jQuery("#writeBtn").show();
@@ -239,7 +239,7 @@ function fn_roleRegist(){
 		data : jQuery("#defineRoleform").serialize(),
 		success : function(data){
 			alert(data.msg);
-			loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?se_cd='+_ROLE_LEVEL);
+			loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?seCd='+_ROLE_LEVEL);
 		}
 	});
 }

@@ -100,7 +100,7 @@ var init = function(){
                       dataType: "json"
                     }).done(function(response){
                         var da = {
-                                data :response.list,
+                                data : escapeGridData(response.list),
                                 itemsCount : response.totalCount
                             };
 
@@ -133,7 +133,7 @@ var init = function(){
 /*                 { name: 'no', title:"No.", type: "text", width: 30 }, */
                 { name: 'nm', title:"이름", type: "text", width: "20%" },
                 { name: 'acnt', title:"아이디", type: "text", width: "20%", align: "center" },
-                { name: 'user_se_cd', title:"회원구분", type: "select", items: userSe, valueField: "Id", textField: "Name", width: "10%" }
+                { name: 'userSeCd', title:"회원구분", type: "select", items: userSe, valueField: "Id", textField: "Name", width: "10%" }
             ],
             
     });	
@@ -179,8 +179,8 @@ var addUser = function(){
 
 function fn_addUsers(){
 	var f =document.form1;
-	jQuery("#ref_menuid", opener.document).html(val);
-	jQuery("input[name='ref_menuid']", opener.document).val(val);
+	jQuery("#refMenuid", opener.document).html(val);
+	jQuery("input[name='refMenuid']", opener.document).val(val);
 	window.close();
 	
 }
