@@ -209,7 +209,7 @@
 				,	minSize: '40%'
 				,	maxSize: .99 // 50% of layout width
 				, 	onopen : function(){
-					resizeJqGridWidthNoSearch("bbsList", "bbsDiv", "100%"); //그리드 리사이즈
+
 				}
 			}
 			,west: {
