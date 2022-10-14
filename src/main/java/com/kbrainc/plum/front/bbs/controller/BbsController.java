@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
@@ -92,10 +93,17 @@ public class BbsController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/front/bbs/{bbsid}/view.html")
-	public String bbsView(@PathVariable Integer bbsid, Model model, PstVo paramVo, @UserInfo UserVo user) throws Exception {
+	public String bbsView(HttpServletRequest request,  @PathVariable Integer bbsid, Model model, PstVo paramVo, @UserInfo UserVo user) throws Exception {
+
+
 		CmntVo cmntVo = new CmntVo();
 		BbsClVo bbsClVo = new BbsClVo();
 		Map<String, Object> resultMap = new HashMap<>();
+
+		String pstId = request.getParameter("pstId");
+		if(pstId != null && !"".equals(pstId)) {
+			paramVo.setPstid(Integer.parseInt(pstId));
+		}
 
 		paramVo.setUser(user);
 		model.addAttribute("PstVo", paramVo);
@@ -121,7 +129,7 @@ public class BbsController {
 
 		return "front/bbs/bbsView";
 	}
-	
+
 	/**
 	 * 
 	 * 게시물 상세 댓글 리스트 호출 
