@@ -13,7 +13,7 @@ function toggleListContent(){
 	toggleList();	
 }
 
-function resetListContent(){ // 저장/수정/삭제후 사용(컨텐츠영역 숨김, 그리드 노출)
+function resetListContent(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김, 그리드 노출)
 	//리셋하고 현재 페이지로 돌아간다.
 	var curPage = $("#jsGrid").jsGrid("option", "pageIndex");
 	$("#jsGrid").jsGrid("reset").done(function(){
