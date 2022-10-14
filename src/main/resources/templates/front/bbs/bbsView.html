@@ -32,16 +32,16 @@
 					</tr>
 					<tr>
 						<th scope="row">작성자</th>
-						<td><th:block th:text="${pstInfo.user_nm}"></th:block> (<th:block
+						<td><th:block th:text="${pstInfo.userNm}"></th:block> (<th:block
 								th:text="${pstInfo.acnt}"></th:block>)</td>
 						<th scope="row">등록일</th>
 						<td><th:block
-								th:text="${#strings.substring(pstInfo.reg_dt,0,10)}"></th:block>
+								th:text="${#strings.substring(pstInfo.regDt,0,10)}"></th:block>
 						</td>
 					</tr>
 					<tr>
 						<th scope="row">분 류</th>
-						<td ><th:block th:text="${pstInfo.cl_nm}"></th:block>
+						<td ><th:block th:text="${pstInfo.clNm}"></th:block>
 						</td>
 						<th scope="row">조회수</th>
 						<td ><th:block th:text="${pstInfo.hits}"></th:block>
@@ -63,10 +63,10 @@
 								<div th:each="item : ${fileMap}" th:id="${item.fileid}"
 									style="padding-top: 5px; padding-bottom: 10px;">
 									<a class="attach-file"
-										th:href="@{'/downloadBbsFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.file_idntfc_key}}"
+										th:href="@{'/downloadBbsFileByFileid.do?fileid='+${item.fileid}+'&file_idntfc_key='+${item.fileIdntfcKey}}"
 										target='_blank'> 
-										<th:block th:text="${item.orginl_file_nm}" /> 
-										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.file_size)}" />)
+										<th:block th:text="${item.orginlFileNm}" />
+										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.fileSize)}" />)
 									</a>
 									<!-- <a th:name="${item.save_file_nm}" class = 'btn btn-xs btn-warnig' onclick = "fn_downFile(this.name)" > -->
 								</div>
@@ -90,7 +90,7 @@
 			    <br/>
 			    <br/>
 			   <!--******************* 답글 사용(리스트) START *****************************-->
-				<th:block th:if="${bbsInfo.rply_use_yn} == 'Y' ">
+				<th:block th:if="${bbsInfo.rplyUseYn} == 'Y' ">
 				<!--답글 리스트   -->
 			    <table class="board-view" th:each="item : ${replyList}">
 					<caption>
@@ -115,23 +115,23 @@
 					
 					<tr>
 						<th scope="row">작성자</th>
-						<td><th:block th:text="${item.user_nm}"></th:block></td>
+						<td><th:block th:text="${item.userNm}"></th:block></td>
 						<th scope="row">등록일</th>
-						<td><th:block th:text="${#strings.substring(pstInfo.reg_dt,0,10)}"></th:block>
+						<td><th:block th:text="${#strings.substring(pstInfo.regDt,0,10)}"></th:block>
 						</td>
 					</tr>
 					
-				    <th:block th:if="${bbsInfo.atchfile_use_yn} == 'Y' ">
+				    <th:block th:if="${bbsInfo.atchfileUseYn} == 'Y' ">
 						<tr>
 							<th scope="row">첨부파일</th>
 							<td colspan="3"><th:block th:if="${item.fileMap}">
 								<div th:each="file : ${fileMap}" th:id="${file.fileid}"
 									style="padding-top: 5px; padding-bottom: 10px;">
 									<a class="attach-file"
-										th:href="@{'/downloadBbsFileByFileid.do?fileid='+${file.fileid}+'&file_idntfc_key='+${file.file_idntfc_key}}"
+										th:href="@{'/downloadBbsFileByFileid.do?fileid='+${file.fileid}+'&file_idntfc_key='+${file.fileIdntfcKey}}"
 										target='_blank'> 
-										<th:block th:text="${file.orginl_file_nm}" /> 
-										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(file.file_size)}" />)
+										<th:block th:text="${file.orginlFileNm}" />
+										(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(file.fileSize)}" />)
 									</a>
 								</div>
 							</th:block> <th:block th:if="${item.fileMap} == null">첨부된 파일이 없습니다.</th:block></td>
@@ -150,7 +150,7 @@
 			<br/>
 			
 		  <!--******************* 댓글 사용*****************************-->
-		  <th:block th:if ="${bbsInfo.cmnt_use_yn == 'Y' }">
+		  <th:block th:if ="${bbsInfo.cmntUseYn == 'Y' }">
 		  
 	        <table class="board-input">
                <tr>
@@ -179,7 +179,7 @@
 		<input type="hidden" id="pageNumber" name="pageNumber" th:value="${PstVo.pageNumber}"> 
 		<input type="hidden" id="searchType" name="searchType" th:value="${PstVo.searchType}">
 		<input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${PstVo.searchKeyword}"> 
-		<input type="hidden" id="bbs_clid" name="bbs_clid" th:value="${PstVo.bbs_clid}">
+		<input type="hidden" id="bbsClid" name="bbsClid" th:value="${PstVo.bbsClid}">
 	</form>
 	<form id="modifyForm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
 		<input type="hidden" id="pstid" name="pstid" th:value="${PstVo.pstid}">
@@ -200,7 +200,6 @@
 			var goModifyFormUrl = "/front/bbs/" + bbsInfo.bbsid + "/modify.html";
 			
 			$(document).ready(function(){
-				
 				if(bbsInfo.cmnt_use_yn == 'Y'){
 					fn_selectCmntList();
 				}
@@ -260,7 +259,7 @@
 				    html += '<input type="hidden" id="cmntid"   name="cmntid"   value="'+item.cmntid +'">'
 				    html += '<input type="hidden" id="dpth"     name="dpth"     value="'+item.dpth   +'">'
 				    html += '<input type="hidden" id="ord"      name="ord"      value="'+item.ord    +'">'
-				    html += '<input type="hidden" id="cmnt_grp" name="cmnt_grp" value="'+item.cmnt_grp+'">'
+				    html += '<input type="hidden" id="cmntGrp" name="cmntGrp" value="'+item.cmntGrp+'">'
 					html += '<input type="hidden" id="curText" value="'+item.cntnts+'">'
 				    
 	        		if(item.del_yn =='Y'){
@@ -293,7 +292,7 @@
 					html += '<h6><label style="height:30px;font-size:20px;">'+ item.paddingStr +item.cntnts+'</label></h6>'
 					html += '</div>'
 				    
-				    if(bbsInfo.rply_use_yn == "Y" && item.dpth < 2 ){
+				    if(bbsInfo.rplyUseYn == "Y" && item.dpth < 2 ){
 						html += item.paddingStr
 						html += '<input type="button" class="btn-small btn-color1" id=' +item.cmntid +'  onclick="fn_openReplyForm(this.id)" value="답글" />'
 				    }
@@ -489,8 +488,8 @@
 					pstid : $("#replyForm" + cmntid + "  #pstid").val(),
 					cntnts : $("#replyForm" + cmntid + "  #cntnts").val(),
 					dpth : (dpth == null || dpth == '0' || dpth == '') ? 0: Number(dpth),
-					prnts_cmntid : $("#replyForm" + cmntid + "  #cmntid").val(),
-					cmnt_grp : $("#replyForm" + cmntid + "  #cmnt_grp").val(),
+					prntsCmntid : $("#replyForm" + cmntid + "  #cmntid").val(),
+					cmntGrp : $("#replyForm" + cmntid + "  #cmnt_grp").val(),
 					ord : $("#replyForm" + cmntid + "  #ord").val()
 				}
 				
