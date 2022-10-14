@@ -17,23 +17,23 @@
 			<div class="form-group">
 				<label for="clid" class="col-sm-2 control-label"><span class="text-danger">*</span>시스템구분</label>
 				<div class="col-sm-10 form-control-static">
-                    <input type="radio" name="sys_se_cd" value="U" id="sys_se_cd1" th:checked="${siteInfo.sys_se_cd == 'U'}"><label for="sys_se_cd1">사용자</label>
-                    <input type="radio" name="sys_se_cd" value="A" id="sys_se_cd2" th:checked="${siteInfo.sys_se_cd == 'A'}"><label for="sys_se_cd2">관리자</label>
+                    <input type="radio" name="sysSeCd" value="U" id="sysSeCd1" th:checked="${siteInfo.sysSeCd == 'U'}"><label for="sysSeCd1">사용자</label>
+                    <input type="radio" name="sysSeCd" value="A" id="sysSeCd2" th:checked="${siteInfo.sysSeCd == 'A'}"><label for="sysSeCd2">관리자</label>
 				</div>
 			</div>
 
 			<div class="form-group">
 				<label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>사이트 이름</label>
 				<div class="col-sm-10 form-control-static">
-					<input type="text" class="form-control input-sm" id="site_nm" name="site_nm" required placeholder="이름" th:value="${siteInfo.site_nm}">
+					<input type="text" class="form-control input-sm" id="siteNm" name="siteNm" required placeholder="이름" th:value="${siteInfo.siteNm}">
 				</div>
 			</div>
 
 			<div class="form-group">
 				<label for="clid" class="col-sm-2 control-label"><span class="text-danger">*</span>사용여부</label>
 				<div class="col-sm-10 form-control-static">
-					<input type="radio" name="use_yn" value="Y" id="use_yn1" th:checked="${siteInfo.use_yn == 'Y'}"><label for="use_yn1">사용</label>
-					<input type="radio" name="use_yn" value="N" id="use_yn2" th:checked="${siteInfo.use_yn == 'N'}"><label for="use_yn2">미사용</label>
+					<input type="radio" name="useYn" value="Y" id="useYn1" th:checked="${siteInfo.useYn == 'Y'}"><label for="useYn1">사용</label>
+					<input type="radio" name="useYn" value="N" id="useYn2" th:checked="${siteInfo.useYn == 'N'}"><label for="useYn2">미사용</label>
 				</div>
 			</div>
 
@@ -69,10 +69,10 @@
 					<tr th:each="dmnInfo : ${siteInfo.siteDomainList}">
 						<th scope="row">
 						  <input type="hidden" class="siteid" name="siteid" th:value="${siteInfo.siteid}">
-						  <input type="hidden" id="dmn_org" name="dmn_org" th:value="${dmnInfo.dmn}">
+						  <input type="hidden" id="dmnOrg" name="dmnOrg" th:value="${dmnInfo.dmn}">
 						  <input type="text" class="form-control input-sm" id="dmn" name="dmn" required th:value="${dmnInfo.dmn}">
 						</th>
-						<td><input type="text" class="form-control input-sm" id="dmn_dc" name="dmn_dc" required th:value="${dmnInfo.dmn_dc}"></td>
+						<td><input type="text" class="form-control input-sm" id="dmnDc" name="dmnDc" required th:value="${dmnInfo.dmnDc}"></td>
 						<td class="text-center">
 						      <button type="button" class="btn btn-xs btn-primary" onclick="handlerModifyDmn()" th:attr="data-siteid=${siteInfo.siteid}">수정</button>
 						      <button type="button" class="btn btn-xs btn-warning" onclick="handlerDeleteDmn()" th:attr="data-siteid=${siteInfo.siteid}">삭제</button>
@@ -94,11 +94,11 @@
                     <tr>
                         <th scope="row">
                             <input type="hidden" class="siteid" name="siteid" th:value="${siteInfo.siteid}">
-                            <input type="hidden" id="dmn_org" name="dmn_org">
+                            <input type="hidden" id="dmnOrg" name="dmnOrg">
                             <input type="text" class="form-control input-sm" id="dmn" name="dmn" required >
                         </th>
                         <td>
-                            <input type="text" class="form-control input-sm" id="dmn_dc" name="dmn_dc" required >
+                            <input type="text" class="form-control input-sm" id="dmnDc" name="dmnDc" required >
                         </td>
                         <td class="text-center">
                               <button type="button" class="btn btn-xs btn-primary" onclick="handlerInsertDmn()">저장</button>
@@ -121,9 +121,9 @@
             var frm = $(event.target).parent().parent();
             
             var siteid = $('input[name=siteid]', frm).val();
-            var dmn_org = $('input[name=dmn_org]', frm).val();
+            var dmnOrg = $('input[name=dmnOrg]', frm).val();
             var dmn = $('input[name=dmn]', frm).val();
-            var dmn_dc = $('input[name=dmn_dc]', frm).val();
+            var dmnDc = $('input[name=dmnDc]', frm).val();
             
             if(dmn == ""){
                 alert('도메인을 입력해 주세요!');
@@ -136,9 +136,9 @@
             var actionURL = "/mng/site/updateSiteDomain.do"
             var params = {
                 siteid: siteid,
-                dmn_org: dmn_org,
+                dmnOrg: dmnOrg,
                 dmn: dmn,
-                dmn_dc: dmn_dc
+                dmnDc: dmnDc
             }
 
             $.ajax({
@@ -151,6 +151,7 @@
                 success : function (data){
                     console.log('Result: ' + data.result);
                     if(data.result == "success"){
+                        $('input[name=dmnOrg]', frm).val(dmn);
                         alert("수정되었습니다.");
                     }else{
                     	alert("수정에 실패했습니다.\n도메인이 중복되었거나, 잘 못 되었을 수 있습니다.\n확인 후 다시 이용해 주세요.");
@@ -170,11 +171,6 @@
                 return false;
             }
             
-            if( /[^((http(s?))\:\/\/)]([0-9a-zA-Z\-]+\.)+[a-zA-Z]{2,6}(\:[0-9]+)?(\/\S*)?$/.test(dmn) ){
-                alert("도메인 형식에 맞지 않습니다.");
-                return false;
-            }
-            
             if( /(\:[0-9]+)$/.test(dmn) ){
                 alert("도메인에 포트(port)를 추가하실 수 없습니다.");
                 return false;
@@ -189,12 +185,12 @@
             var frm = $(event.target).parent().parent();
             
             var siteid = $('input[name=siteid]', frm).val();
-            var dmn_org = $('input[name=dmn_org]', frm).val();
+            var dmnOrg = $('input[name=dmnOrg]', frm).val();
             
             var actionURL = "/mng/site/deleteSiteDomain.do";
             var params = {
                 siteid: siteid,
-                dmn: dmn_org,
+                dmn: dmnOrg,
             }
 
             $.ajax({
@@ -224,13 +220,13 @@
             
             var siteid = $('input[name=siteid]', frm).val();
             var dmn = $('input[name=dmn]', frm).val();
-            var dmn_dc = $('input[name=dmn_dc]', frm).val();
+            var dmnDc = $('input[name=dmnDc]', frm).val();
             
             var actionURL = "/mng/site/insertSiteDomain.do";
             var params = {
                 siteid: siteid,
                 dmn: dmn,
-                dmn_dc: dmn_dc
+                dmnDc: dmnDc
             }
 
             $.ajax({
@@ -282,9 +278,9 @@
             
             var params = {
                 siteid: f.siteid.value,
-                sys_se_cd: $('#siteRegForm input:radio[name=sys_se_cd]:checked').val(),
-                site_nm: f.site_nm.value,
-                use_yn: $("#siteRegForm input:radio[name=use_yn]:checked").val()
+                sysSeCd: $('#siteRegForm input:radio[name=sysSeCd]:checked').val(),
+                siteNm: f.siteNm.value,
+                useYn: $("#siteRegForm input:radio[name=useYn]:checked").val()
             }
 
             $.ajax({
@@ -311,21 +307,21 @@
         function chkSiteForm(){
         	var f = document.forms.siteRegForm;
         	
-        	if($('#siteRegForm input:radio[name=sys_se_cd]:checked').val() === undefined){
+        	if($('#siteRegForm input:radio[name=sysSeCd]:checked').val() === undefined){
         		alert('시스템 구분을 선택해 주십시요!');
-        		$("input[name=sys_se_cd]").focus();
+        		$("input[name=sysSeCd]").focus();
         		return false;
         	}
 
-            if($("input[name=site_nm]").val() == ""){
+            if($("input[name=siteNm]").val() == ""){
                 alert('사이트 이름을 입력해 주십시요!');
-                $("input[name=site_nm]").focus();
+                $("input[name=siteNm]").focus();
                 return false;
             }
 
-            if($('#siteRegForm input:radio[name=use_yn]:checked').val() === undefined){
+            if($('#siteRegForm input:radio[name=useYn]:checked').val() === undefined){
                 alert('사용여부를 선택해 주십시요!');
-                $("input[name=use_yn]").focus();
+                $("input[name=useYn]").focus();
                 return false;
             }
             
