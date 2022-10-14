@@ -22,6 +22,7 @@ function resetListContent(){ // 검색/저장/수정/삭제후 사용(컨텐츠�
 	hideContent(); 
 	showList();	
 }
+
 function showList(){
 	if(listToggle) return;
 	listToggle = !listToggle;
@@ -46,7 +47,7 @@ function hideContent(){
 	$('#contentPanel').hide();
 }
 
-function toggleList(){ // panel-heading 에서 그리드를 접거나 펼때 사용
+function toggleList(){ // panel-heading 에서 클릭시 그리드를 접거나 펼때 사용
 	listToggle ? $('#collapseList').collapse('hide') : $('#collapseList').collapse('show');	
 	listToggle = !listToggle;
 }
