@@ -64,7 +64,7 @@ public class CmmBbsController {
         paramVo.setBbsid(bbsid);
         BbsVo bbsInfo = bbsService.selectOneBbs(paramVo);
         model.addAttribute("bbsid", bbsid);
-        model.addAttribute("bbs_nm", bbsInfo.getNm());
+        model.addAttribute("bbsNm", bbsInfo.getNm());
         
         return "cmm/bbs/bbsMain";
     }
