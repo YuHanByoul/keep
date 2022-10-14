@@ -4,7 +4,7 @@
           <div class="panel-heading">
               <h4>> 기본정보</h4>
               <div class="pull-right">
-                  <th:block sec:authorize-url="/mng/scheduling/execSchedTrigger.do"><button type="button" class="btn btn-xs btn-warning" th:disabled="${schedInfo.active_yn == 'N'}" onclick="execSchedTrigger()">수동실행</button></th:block>
+                  <th:block sec:authorize-url="/mng/scheduling/execSchedTrigger.do"><button type="button" class="btn btn-xs btn-warning" th:disabled="${schedInfo.activeYn == 'N'}" onclick="execSchedTrigger()">수동실행</button></th:block>
               </div>
           </div>
           <div class="panel-body">
@@ -18,14 +18,14 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>트리거명</label>
                     <div class="col-sm-10 form-control-static">
-                        <input type="text" class="form-control input-sm" name="nm" th:value="${schedInfo.nm}" th:readonly="${schedInfo.active_yn == 'Y'}">
+                        <input type="text" class="form-control input-sm" name="nm" th:value="${schedInfo.nm}" th:readonly="${schedInfo.activeYn == 'Y'}">
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger"></span>Job 이름</label>
                     <div class="col-sm-10 form-control-static">
-                        <label class="form-control-static"><th:block th:text="${schedInfo.job_name}" /></label>
+                        <label class="form-control-static"><th:block th:text="${schedInfo.jobName}" /></label>
                     </div>
                 </div>
                 
@@ -39,14 +39,14 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger">* </span>크론표현식</label>
                     <div class="col-sm-10 form-control-static">
-                        <input type="text" class="form-control input-sm" name="cron_expression" th:value="${schedInfo.cron_expression}">
+                        <input type="text" class="form-control input-sm" name="cronExpression" th:value="${schedInfo.cronExpression}">
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label"><span class="text-danger"></span>활성여부</label>
                     <div class="col-sm-10 form-control-static">
-                        <label class="form-control-static"><th:block th:text="${schedInfo.active_yn}" /></label>
+                        <label class="form-control-static"><th:block th:text="${schedInfo.activeYn}" /></label>
                     </div>
                 </div>
                 
@@ -55,7 +55,7 @@
                     <div class="col-sm-10 form-control-static">
                         <div class="form-con custom-button custom-radio">
                             <label> 
-                               <span kattr:radio_yn="use_yn" label1="사용" label2="미사용" th:attr="defaultVal = ${schedInfo.use_yn}"></span>
+                               <span kattr:radio_yn="useYn" label1="사용" label2="미사용" th:attr="defaultVal = ${schedInfo.useYn}"></span>
                             </label>
                         </div>
                     </div>
@@ -89,12 +89,12 @@
         rules: {
              nm              :   { required: true, isBlank : true, maxlength: 60 }  
             ,dc              :   { maxlength: 160 }
-            ,cron_expression :   { required: true, maxlength: 60 }  
+            ,cronExpression :   { required: true, maxlength: 60 }  
         },
         messages: {
              nm              :   { required: "트리거명을 입력해주십시오.", isBlank : "트리거명에 공백이 있습니다.", maxlength: "트리거명은 60자 이하여야 합니다." }  
             ,dc              :   { maxlength: "설명은 160자 이하여야 합니다."  }
-            ,cron_expression :   { required: "크론표현식을 입력해주십시오.", maxlength: "크론표현식은 60자 이하여야 합니다." }
+            ,cronExpression :   { required: "크론표현식을 입력해주십시오.", maxlength: "크론표현식은 60자 이하여야 합니다." }
         }
     })
     
@@ -221,18 +221,18 @@
                 },
                 fields: [
                      //{ title: '번호'     ,name: 'rowNumber',      type: "number", width : "5%", align:"center",  sorting :false }
-                     { title: '시작일시'    ,name: 'job_strt_dt',    type: "text", width: "40%" }
-                    ,{ title: '종료일시'    ,name: 'job_end_dt',     type: "text", width: "40%" }
-                    ,{ title: '상태'       ,name: 'stts_cd',        type: "text", width: "20%", align:"center", cellRenderer: cellRendererSttsNm }
+                     { title: '시작일시'    ,name: 'jobStrtDt',    type: "text", width: "40%" }
+                    ,{ title: '종료일시'    ,name: 'jobEndDt',     type: "text", width: "40%" }
+                    ,{ title: '상태'       ,name: 'sttsCd',        type: "text", width: "20%", align:"center", cellRenderer: cellRendererSttsNm }
                 ]
             });     
         }
     });
     
     function cellRendererSttsNm(value, item){
-        if(item.stts_cd == 'S'){
+        if(item.sttsCd == 'S'){
             return '<td>성공</td>';
-        } else if(item.stts_cd == 'F'){
+        } else if(item.sttsCd == 'F'){
             return '<td>실패</td>';
         } 
     }  
