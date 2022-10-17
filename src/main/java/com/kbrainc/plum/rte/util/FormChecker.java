@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Administrator
@@ -17,11 +18,9 @@ import org.apache.commons.lang.math.NumberUtils;
 public class FormChecker {
 	
 	public static boolean isNull(String m) {
-		if(m == null || m.trim().length() == 0)
-			return true;
-			
-		return false;
+		return StringUtils.hasText(m);
 	}
+
 	public static boolean isDate(String date) {
 		boolean result =false ;
         if( date == null )  return  false ;
