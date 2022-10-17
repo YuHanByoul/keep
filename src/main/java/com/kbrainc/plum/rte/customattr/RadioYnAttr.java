@@ -30,8 +30,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public class RadioYnAttr extends AbstractAttributeTagProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RadioYnAttr.class);
-
     // ATTR name 설정
     private static final String ATTR_NAME = "radio_yn";
     private static final int PRECEDENCE = 1000;

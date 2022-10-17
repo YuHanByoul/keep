@@ -55,12 +55,6 @@ public class MemberController {
     @Autowired
     private MemberServiceImpl memberService;
     
-    @Autowired
-    private CommonService commonService;
-
-    //@Value("${auth.server.host}")
-    private String authServerHost;
-    
     //@Value("${front.server.host}")
     private String frontServerHost;
     

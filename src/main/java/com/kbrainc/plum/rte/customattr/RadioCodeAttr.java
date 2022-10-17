@@ -36,8 +36,6 @@ import com.kbrainc.plum.rte.util.CommonUtil;
  */
 public class RadioCodeAttr extends AbstractAttributeTagProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RadioCodeAttr.class);
-
     // ATTR name 설정
     private static final String ATTR_NAME = "radio_code";
     private static final int PRECEDENCE = 1000;

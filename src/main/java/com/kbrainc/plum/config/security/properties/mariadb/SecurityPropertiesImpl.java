@@ -9,7 +9,7 @@ import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 @ConfigurationProperties("security")
 public class SecurityPropertiesImpl implements SecurityProperties {
 
-	private static org.apache.commons.configuration.Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
+	/*private static org.apache.commons.configuration.Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();*/
 
 	/** 디폴트타겟URL */
 	private final String DEFAULT_TARGET_URL = "/main.html";

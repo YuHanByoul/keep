@@ -50,7 +50,7 @@ public class MailServiceImpl extends PlumAbstractServiceImpl implements MailServ
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailServiceImpl.class);
 	
 	private static final String MAIL_STATUS_SUCCESS = "S"; // 발송 성공
-	private static final String MAIL_STATUS_READY = "R"; // 발송 성공
+	/*private static final String MAIL_STATUS_READY = "R"; // 발송 성공*/
 	private static final String MAIL_STATUS_FAIL = "F";	// 발송 실패
 	private static final String MAIL_ERROR_NOT_EXIST_ADDRESS = "9001"; // 주소를 입력하지 않을 경우
 	private static final String MAIL_ERROR_CONTENTS = "9002"; // 메시지에 문제가 있을 경우

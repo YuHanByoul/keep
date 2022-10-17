@@ -42,8 +42,6 @@ import com.kbrainc.plum.rte.util.StringUtil;
 @Component
 public class SecuredObjectDao {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private String sqlUserLoginInfo;
 
     private String sqlGrantedAuthority;

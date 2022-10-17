@@ -32,8 +32,6 @@ import com.kbrainc.plum.rte.util.CommonUtil;
  */
 public class PaginationAttr extends AbstractAttributeTagProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PaginationAttr.class);
-
     // ATTR name 설정
     private static final String ATTR_NAME = "pagination";
     private static final int PRECEDENCE = 1000;

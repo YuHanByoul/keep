@@ -60,12 +60,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     private MailService mailService;
     
     @Autowired
-    private ResCodeService resCodeService;
-    
-    @Autowired
-    private FileDao fileDao;
-    
-    @Autowired
     private FileService fileService;
     
     @Autowired

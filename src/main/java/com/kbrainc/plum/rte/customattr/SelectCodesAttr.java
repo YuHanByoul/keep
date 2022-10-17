@@ -38,8 +38,6 @@ import com.kbrainc.plum.rte.util.CommonUtil;
  */
 public class SelectCodesAttr extends AbstractAttributeTagProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SelectCodesAttr.class);
-
     // ATTR name 설정
     private static final String ATTR_NAME = "select_codes";
     private static final int PRECEDENCE = 1000;

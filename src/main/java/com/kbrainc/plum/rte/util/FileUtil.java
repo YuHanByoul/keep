@@ -44,7 +44,7 @@ public class FileUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
     /** global.properties의 Configuration객체 */
-    private static Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
+    /*private static Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();*/
     /** 파일업로드경로 */
     public static final String UPLOAD_PATH = "upload";// globalConfig.getString("Global.Upload.Path");
     /** upload컨텐스트 */

@@ -42,8 +42,6 @@ import com.kbrainc.plum.rte.util.ExcelUtil;
 @Controller
 public class ExcelController {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
-
 	@Autowired
 	ExcelService excelService;
 	

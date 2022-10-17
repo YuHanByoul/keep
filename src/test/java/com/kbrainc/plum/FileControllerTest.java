@@ -8,10 +8,10 @@ import com.kbrainc.plum.cmm.file.controller.FileController;
 
 public class FileControllerTest {
 
-	private MockMvc mockMvc;
+//	private MockMvc mockMvc;
 	
 	@Before
 	public void setup() {
-		this.mockMvc = MockMvcBuilders.standaloneSetup( new FileController() ).build();
+//		this.mockMvc = MockMvcBuilders.standaloneSetup( new FileController() ).build();
 	}
 }

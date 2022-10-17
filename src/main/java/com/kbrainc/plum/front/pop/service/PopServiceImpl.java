@@ -39,9 +39,6 @@ public class PopServiceImpl extends PlumAbstractServiceImpl implements PopServic
 	@Resource(name = "front.popDao")
 	PopDao popDao;
 
-	@Autowired
-	private FileDao fileDao;
-
 	/**
 	 * @Title : insertPopUpNtc
 	 * @Description :TB_PopUpNtc 테이블 인서트

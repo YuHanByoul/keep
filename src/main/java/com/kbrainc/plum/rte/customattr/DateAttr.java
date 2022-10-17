@@ -27,8 +27,6 @@ import org.thymeleaf.templatemode.TemplateMode;
  */
 public class DateAttr extends AbstractAttributeTagProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DateAttr.class);
-
     // ATTR name 설정
     private static final String ATTR_NAME = "date_pic";
     private static final int PRECEDENCE = 1000;
