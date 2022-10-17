@@ -67,11 +67,12 @@ public class FormChecker {
 	public static boolean isNumber(String m) {
 		if(isNull(m))
 			return false;
-		
-		m = m.trim();
-		int n = m.length();
+
+		String tm = m;
+		tm = tm.trim();
+		int n = tm.length();
 		for(int i=0; i < n; i++) {
-			char c = m.charAt(i);
+			char c = tm.charAt(i);
 			if(!('0' <=  c && c <= '9'))
 				return false;
 		}
@@ -81,10 +82,11 @@ public class FormChecker {
 	public static boolean isSame(String m, String n) {
 		if(isNull(m) || isNull(n))
 			return false;
-		
-		m = m.trim();
-		n = n.trim();
-		if(m.equals(n))
+		String tm = m;
+		String tn = n;
+		tm = tn.trim();
+		tn = tn.trim();
+		if(tm.equals(tn))
 			return true;
 		
 		return false;
@@ -93,14 +95,16 @@ public class FormChecker {
 	public static boolean isID(String m) {
 		if(isNull(m))
 			return false;
-		m = m.trim().toUpperCase();
-		char c = m.charAt(0);
+
+		String tm = m;
+		tm = tm.trim().toUpperCase();
+		char c = tm.charAt(0);
 		if(!('A' <= c && c <= 'Z'))
 			return false;
 		
-		int n = m.length();
+		int n = tm.length();
 		for(int i=1; i < n; i++) {
-			c = m.charAt(i);
+			c = tm.charAt(i);
 			if(!(('A' <= c && c <= 'Z') || ('0' <= c && c <= '9') ||
 			     (c == '_')))
 				return false;
@@ -111,10 +115,11 @@ public class FormChecker {
 	public static boolean isCardNumber(String m) {
 		if(isNull(m))
 			return false;
-		m = m.trim();
-		if(m.length() != 16)
+		String tm = m;
+		tm = tm.trim();
+		if(tm.length() != 16)
 			return false;
-		if(isNumber(m))
+		if(isNumber(tm))
 			return true;
 			
 		return false;
@@ -123,7 +128,7 @@ public class FormChecker {
 	public static boolean isEmail(String m) {
 		if(isNull(m))
 			return false;
-		
+
 		int n = m.indexOf("@");
 		if(n < 0)
 			return false;
@@ -237,10 +242,11 @@ public class FormChecker {
 	}
 
 	public static boolean isPhone(String num){
-		num=num.replaceAll("-", "");
+		String tnum = num;
+		tnum=tnum.replaceAll("-", "");
 		//String mat = "^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$";
 		String mat = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$";
-		boolean val = num.matches(mat);
+		boolean val = tnum.matches(mat);
 
 		return val;
 	}
@@ -266,88 +272,90 @@ public class FormChecker {
 				return dispName + "은 필수 입력값 입니다.";
 			}
 		}
-		
-		data = StringUtil.nvl(data);
+		String tmpData = data;
+		tmpData = StringUtil.nvl(tmpData);
 
-		if (!isNull(data) && len > 0) {
-			if (StringUtil.realLength(data) > len) {
+		if (!isNull(tmpData) && len > 0) {
+			if (StringUtil.realLength(tmpData) > len) {
 				return dispName + "의 길이는 " + len + " 보다 큽니다.";
 			}
 		}
-		dataType = StringUtil.nvl(dataType,"S");  
+
+		String tmpDataType = dataType;
+		tmpDataType = StringUtil.nvl(tmpDataType,"S");
 		
-		if ("N".equals(nullYn) && "N".equals(dataType)) {
-			if (!NumberUtils.isNumber(data)) {
+		if ("N".equals(nullYn) && "N".equals(tmpDataType)) {
+			if (!NumberUtils.isNumber(tmpData)) {
 				return dispName + "는 숫자값이어야 합니다.";
 			}
 		}
 		
-		if ("N".equals(nullYn) && "N2".equals(dataType)) {
-			if (!NumberUtils.isNumber(data) && !data.matches("[0-9]*")) {
+		if ("N".equals(nullYn) && "N2".equals(tmpDataType)) {
+			if (!NumberUtils.isNumber(tmpData) && !tmpData.matches("[0-9]*")) {
 				return dispName + "는 숫자만 허용 합니다.";
 			}
 		}
 		
-		if ("YN".equals(dataType)) {
-			if (!"".equals(data) && !"Y".equals(data) && !"N".equals(data)) {
+		if ("YN".equals(tmpDataType)) {
+			if (!"".equals(tmpData) && !"Y".equals(tmpData) && !"N".equals(tmpData)) {
 				return dispName + "는 Y 혹은 N 만 허용 합니다.";
 			}
 		}
 
-		if ("E".equals(dataType)) {
-			if (!isEmail(data)) {
+		if ("E".equals(tmpDataType)) {
+			if (!isEmail(tmpData)) {
 				return dispName + "는 형식에 맞지 않습니다.";
 			}
 		}
 		
-		if ("J".equals(dataType)) {
-			if (!isJumin(data)) {
+		if ("J".equals(tmpDataType)) {
+			if (!isJumin(tmpData)) {
 				return dispName + "는 형식에 맞지 않습니다.";
 			}
 		}
 
-		if ("Date".equals(dataType)) {
-			if (!isDate(data)) {
+		if ("Date".equals(tmpDataType)) {
+			if (!isDate(tmpData)) {
 				return dispName + "는 잘못된 날짜 입니다.";
 			}
 		}
 
-		if ("Birth".equals(dataType)) {
-			if (!isBirth(data)) {
+		if ("Birth".equals(tmpDataType)) {
+			if (!isBirth(tmpData)) {
 				return dispName + "는 잘못된 날짜 입니다.";
 			}
 		}
 
-		if ("P".equals(dataType)) { //휴대전화 (01*-****-***)
-			if (!isPhone(data)) {
+		if ("P".equals(tmpDataType)) { //휴대전화 (01*-****-***)
+			if (!isPhone(tmpData)) {
 				return dispName + "는 잘못된 전화번호 형식입니다.";
 			}
 		}
 
-		if (!isNull(data) && "T".equals(dataType)) { //일반전화(0*-****-****)
-			if (!isTel(data)) {
+		if (!isNull(tmpData) && "T".equals(tmpDataType)) { //일반전화(0*-****-****)
+			if (!isTel(tmpData)) {
 				return dispName + "는 잘못된 전화번호 형식입니다.";
 			}
 		}
 
-		if (!isNull(data)) {
-			if("N".equals(dataType)) {
-				if(!NumberUtils.isNumber(data)) {
+		if (!isNull(tmpData)) {
+			if("N".equals(tmpDataType)) {
+				if(!NumberUtils.isNumber(tmpData)) {
 					return dispName+"는 숫자값이어야 합니다.";
 				}
-			} else if ("N2".equals(dataType)) {
-				if(!NumberUtils.isNumber(data) && !data.matches("[0-9]*")) {
+			} else if ("N2".equals(tmpDataType)) {
+				if(!NumberUtils.isNumber(tmpData) && !tmpData.matches("[0-9]*")) {
 					return dispName+"는 숫자만 허용 합니다.";
 				}
-			} else if("D".equals(dataType)) {
-				if(!isStringDouble(data)) {
+			} else if("D".equals(tmpDataType)) {
+				if(!isStringDouble(tmpData)) {
 					return  dispName+"는 실수만 허용 합니다.";
 				}
 			}
 		}
 		
-		if (dataType.equals("KNOWSUBJTYPE")) {
-			if (!"".equals(data) && !"N".equals(data) && !"J".equals(data)) {
+		if (tmpDataType.equals("KNOWSUBJTYPE")) {
+			if (!"".equals(tmpData) && !"N".equals(tmpData) && !"J".equals(tmpData)) {
 				return dispName + "은 J(참여학습)혹은 N(필요학습)만 허용합니다.";
 			}
 		}

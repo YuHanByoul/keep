@@ -252,23 +252,24 @@ public class ExcelUtils {
 	}
 	
 	public static void excelInfoSet(HttpServletResponse response, String fileName){
-		if(!"".equals(StringUtil.nvl(fileName, ""))){
+		String tmpFileName = fileName;
+		if(!"".equals(StringUtil.nvl(tmpFileName, ""))){
 			long today = System.currentTimeMillis();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
 			String inputFileName = ""; 
 			String inputFileExt = ""; 
-			String[] fileNameArray = fileName.split("\\.");
+			String[] fileNameArray = tmpFileName.split("\\.");
 
 			if(fileNameArray.length >= 2){
 				inputFileName = fileNameArray[0]; 
-				inputFileExt = fileNameArray[1]; 
-				
-				fileName = inputFileName + "_" + sdf.format(today) + "." + inputFileExt;
+				inputFileExt = fileNameArray[1];
+
+				tmpFileName = inputFileName + "_" + sdf.format(today) + "." + inputFileExt;
 			}
 		}
 		
 		response.setHeader("Content-type", "application/octet-stream");
-		response.setHeader("Content-Disposition", "attachment; filename="+fileName);
+		response.setHeader("Content-Disposition", "attachment; filename="+tmpFileName);
 		response.setHeader("Content-Transfer-Encoding", "binary");
 		response.setHeader("Pragma", "no-cache");
 		response.setHeader("Cache-Control", "private");
@@ -276,23 +277,24 @@ public class ExcelUtils {
 	}
 	
 	public static void excelInfoSetCsv(HttpServletResponse response, String fileName){
-		if(!"".equals(StringUtil.nvl(fileName, ""))){
+		String tmpFileName = fileName;
+		if(!"".equals(StringUtil.nvl(tmpFileName, ""))){
 			long today = System.currentTimeMillis();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
 			String inputFileName = ""; 
 			String inputFileExt = ""; 
-			String[] fileNameArray = fileName.split("\\.");
+			String[] fileNameArray = tmpFileName.split("\\.");
 			
 			if(fileNameArray.length >= 2){
 				inputFileName = fileNameArray[0]; 
-				inputFileExt = fileNameArray[1]; 
-				
-				fileName = inputFileName + "_" + sdf.format(today) + "." + inputFileExt;
+				inputFileExt = fileNameArray[1];
+
+				tmpFileName = inputFileName + "_" + sdf.format(today) + "." + inputFileExt;
 			}
 		}
 	
 		response.setHeader("Content-type", "application/octet-stream;charset=euc-kr");
-		response.setHeader("Content-Disposition", "attachment; filename="+fileName);
+		response.setHeader("Content-Disposition", "attachment; filename="+tmpFileName);
 		response.setHeader("Content-Transfer-Encoding", "binary;");
 	}
 }

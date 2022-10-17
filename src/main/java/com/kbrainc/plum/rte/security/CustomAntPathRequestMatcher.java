@@ -121,26 +121,27 @@ public final class CustomAntPathRequestMatcher
         Assert.hasText(pattern, "Pattern cannot be null or empty");
         this.caseSensitive = caseSensitive;
 
-        if (pattern.equals(MATCH_ALL) || pattern.equals("**")) {
-            pattern = MATCH_ALL;
+        String tmpPattern = pattern;
+        if (tmpPattern.equals(MATCH_ALL) || tmpPattern.equals("**")) {
+            tmpPattern = MATCH_ALL;
             this.matcher = null;
         }
         else {
             // If the pattern ends with {@code /**} and has no other wildcards or path
             // variables, then optimize to a sub-path match
-            if (pattern.endsWith(MATCH_ALL)
-                    && (pattern.indexOf('?') == -1 && pattern.indexOf('{') == -1
-                            && pattern.indexOf('}') == -1)
-                    && pattern.indexOf("*") == pattern.length() - 2) {
+            if (tmpPattern.endsWith(MATCH_ALL)
+                    && (tmpPattern.indexOf('?') == -1 && tmpPattern.indexOf('{') == -1
+                            && tmpPattern.indexOf('}') == -1)
+                    && tmpPattern.indexOf("*") == tmpPattern.length() - 2) {
                 this.matcher = new SubpathMatcher(
-                        pattern.substring(0, pattern.length() - 3), caseSensitive);
+                        tmpPattern.substring(0, tmpPattern.length() - 3), caseSensitive);
             }
             else {
-                this.matcher = new SpringAntMatcher(pattern, caseSensitive);
+                this.matcher = new SpringAntMatcher(tmpPattern, caseSensitive);
             }
         }
 
-        this.pattern = pattern;
+        this.pattern = tmpPattern;
         this.httpMethod = StringUtils.hasText(httpMethod) ? HttpMethod.valueOf(httpMethod)
                 : null;
         this.urlPathHelper = urlPathHelper;
@@ -324,11 +325,12 @@ public final class CustomAntPathRequestMatcher
 
         @Override
         public boolean matches(String path) {
+            String tmpPath = path;
             if (!this.caseSensitive) {
-                path = path.toLowerCase();
+                tmpPath = tmpPath.toLowerCase();
             }
-            return path.startsWith(this.subpath)
-                    && (path.length() == this.length || path.charAt(this.length) == '/');
+            return tmpPath.startsWith(this.subpath)
+                    && (tmpPath.length() == this.length || tmpPath.charAt(this.length) == '/');
         }
 
         @Override

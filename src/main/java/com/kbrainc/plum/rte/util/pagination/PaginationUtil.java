@@ -32,39 +32,40 @@ public class PaginationUtil {
 	 */
 	public static String getPagingHtml(int totalPage, int pageNumber , int pageCount ) throws Exception {
 		StringBuffer paginationStr = new StringBuffer();
-		
-		if (totalPage <= pageNumber) {
-			pageNumber = totalPage;
+		int tmpPageNumber = pageNumber;
+
+		if (totalPage <= tmpPageNumber) {
+			tmpPageNumber = totalPage;
 		}
 		
-		int firstPageNum = ((pageNumber - 1) / pageNumber) * pageCount + 1;
+		int firstPageNum = ((tmpPageNumber - 1) / tmpPageNumber) * pageCount + 1;
 		int lastPageNum = firstPageNum + pageCount - 1;
 		
-		if(Math.floorMod(pageNumber,pageCount) > 0) {
+		if(Math.floorMod(tmpPageNumber,pageCount) > 0) {
 			
-			lastPageNum = (Math.floorDiv(pageNumber,pageCount)+1)*pageCount;
-			firstPageNum = (Math.floorDiv(pageNumber,pageCount)+1)*pageCount -(pageCount-1); 
+			lastPageNum = (Math.floorDiv(tmpPageNumber,pageCount)+1)*pageCount;
+			firstPageNum = (Math.floorDiv(tmpPageNumber,pageCount)+1)*pageCount -(pageCount-1);
 		}
 		
 		if (lastPageNum > totalPage) {
 			lastPageNum = totalPage;
 		}
 		
-		if (pageNumber > 1) {
+		if (tmpPageNumber > 1) {
 			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-first\" onclick ='goPage(1)'><span class=\"ir\">처음</span></a>");
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-prev\" onclick ='goPage(").append(pageNumber - 1).append(")'><span class=\"ir\">처음</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-prev\" onclick ='goPage(").append(tmpPageNumber - 1).append(")'><span class=\"ir\">처음</span></a>");
 		}
 		
 		for (int i = firstPageNum; i <= lastPageNum; i++) {
 			
-			if (i == pageNumber) {
+			if (i == tmpPageNumber) {
 				paginationStr.append("<a href='javascript:void(0)' class='btn-paging is-active'>").append(i).append("</a>");
 			} else {
 				paginationStr.append("<a href='javascript:void(0)' class='btn-paging'  onclick ='goPage(").append(i).append(")'>").append(i).append("</a>");
 			}
 		}
-		if (pageNumber < totalPage) {
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-next\" onclick ='goPage(").append(pageNumber + 1).append(")' ><span class=\"ir\">다음</span></a>");
+		if (tmpPageNumber < totalPage) {
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-next\" onclick ='goPage(").append(tmpPageNumber + 1).append(")' ><span class=\"ir\">다음</span></a>");
 			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-last\" onclick ='goPage(").append(totalPage).append(")'><span class=\"ir\">마지막</span></a>");
 		} 
 		
@@ -97,28 +98,29 @@ public class PaginationUtil {
 		String currentPageTag = "<li class=\"active\"><a href=\"#\">{0}</a>";
 		String otherPageTag = "<li><a href=\"javascript:{0}({1});\">{2}</a>";
 		String nextPageTag = "<li class=\"{2}\"><a href=\"javascript:{0}({1});\">&raquo;</a></li>";
+		int tmpPageNumber = pageNumber;
 
-		if (totalPage <= pageNumber) {
-			pageNumber = totalPage;
+		if (totalPage <= tmpPageNumber) {
+			tmpPageNumber = totalPage;
 		}
 
-		int firstPageNum = ((pageNumber - 1) / pageCount) * pageCount + 1;
+		int firstPageNum = ((tmpPageNumber - 1) / pageCount) * pageCount + 1;
 		int lastPageNum = firstPageNum + pageCount - 1;
 
 		if (lastPageNum > totalPage) {
 			lastPageNum = totalPage;
 		}
 
-		if (pageNumber > 1) {
+		if (tmpPageNumber > 1) {
 			paginationStr.append(MessageFormat.format(previousPageTag,
-					new Object[] { onclick, Integer.toString(pageNumber - 1), "" }));
+					new Object[] { onclick, Integer.toString(tmpPageNumber - 1), "" }));
 		} /*
 			 * else { result.append(MessageFormat.format(previousPageTag, new Object[] { "",
 			 * 1, "disabled" })); }
 			 */
 
 		for (int i = firstPageNum; i <= lastPageNum; i++) {
-			if (i == pageNumber) {
+			if (i == tmpPageNumber) {
 				paginationStr.append(MessageFormat.format(currentPageTag, new Object[] { Integer.toString(i) }));
 			} else {
 				paginationStr.append(MessageFormat.format(otherPageTag,
@@ -126,9 +128,9 @@ public class PaginationUtil {
 			}
 		}
 
-		if (pageNumber < totalPage) {
+		if (tmpPageNumber < totalPage) {
 			paginationStr.append(
-					MessageFormat.format(nextPageTag, new Object[] { onclick, Integer.toString(pageNumber + 1), "" }));
+					MessageFormat.format(nextPageTag, new Object[] { onclick, Integer.toString(tmpPageNumber + 1), "" }));
 		} /*
 			 * else { result.append(MessageFormat.format(nextPageTag, new Object[] { "",
 			 * totalPage, "disabled" })); }

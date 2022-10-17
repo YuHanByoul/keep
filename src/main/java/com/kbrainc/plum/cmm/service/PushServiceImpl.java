@@ -36,7 +36,7 @@ public class PushServiceImpl implements PushService {
     private String fcmServerKey;
     
     /** 푸쉬 다중발송 최대인원수 */
-    private static final int maxLength = 1000;
+    private static final int MAX_LENGTH = 1000;
     
 	private final Gson gson = new Gson();
 
@@ -108,9 +108,10 @@ public class PushServiceImpl implements PushService {
 	@Override
 	@Async
 	public void send(Map<String, Object> param, String[] registrationIds) throws Exception {
-		if (registrationIds.length > maxLength) {
-			send(param, Arrays.copyOfRange(registrationIds, maxLength, registrationIds.length));
-			registrationIds = Arrays.copyOfRange(registrationIds, 0, maxLength);
+        String[] tmpRegistrationIds = registrationIds;
+		if (registrationIds.length > MAX_LENGTH) {
+			send(param, Arrays.copyOfRange(registrationIds, MAX_LENGTH, registrationIds.length));
+            tmpRegistrationIds = Arrays.copyOfRange(registrationIds, 0, MAX_LENGTH);
 		}
 		
     	URL url = new URL("https://fcm.googleapis.com/fcm/send");
@@ -127,7 +128,7 @@ public class PushServiceImpl implements PushService {
     	notification.put("sound", "default");
     	
     	Map<String, Object> message = new HashMap<String, Object>();
-    	message.put("registration_ids", registrationIds);
+    	message.put("registration_ids", tmpRegistrationIds);
     	message.put("notification", notification);
     	
     	if (null != param.get("data")) { // 전달할 데이터 파라미터 셋팅

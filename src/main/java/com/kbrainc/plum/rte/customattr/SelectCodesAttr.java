@@ -77,7 +77,6 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
         while (checkDepth.size() > 0) {
             List<CodeInfoVo> returnList = new ArrayList<CodeInfoVo>();
             if (checkDepth.size() <= 0) {
-                ;
             } else {
                 for (CodeInfoVo codeInfoVo : checkDepth) {
                     returnList.addAll(resCode.getCodeList(grpcd, codeInfoVo.getCd()));
@@ -90,15 +89,16 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
     }
     
     public String getUpprCodeByRecusive(String grpCd, String upprCd, String cd) throws Exception {
+        String tmpGrpCd = grpCd;
         if (!("JSSFC".equals(grpCd) || "INDUTY".equals(grpCd) || "ADDR".equals(grpCd) || "CERT".equals(grpCd) || "ABLTY".equals(grpCd))) {
-            grpCd = "CODE";
+            tmpGrpCd = "CODE";
         }
         CodeInfoVo codeInfoVo = resCode.getCodeInfo(grpCd + "|" + cd);
         if (codeInfoVo.getUpprCd().equals(upprCd) || codeInfoVo.getUpprCd().equals("0")) {
             return codeInfoVo.getCd();
         }
         
-        return getUpprCodeByRecusive(grpCd, upprCd, codeInfoVo.getUpprCd()) + ',' + cd;
+        return getUpprCodeByRecusive(tmpGrpCd, upprCd, codeInfoVo.getUpprCd()) + ',' + cd;
     }
 
     @Override

@@ -118,12 +118,12 @@ public class CmmBbsController {
         
         resultMap = bbsService.selectPst(paramVo);
         
-        paramVo = (PstVo)resultMap.get("paramMap");
+        PstVo tmpParamVo = (PstVo)resultMap.get("paramMap");
         
-        if(!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
-            bbsClVo.setBbsid(paramVo.getBbsid());
+        if(!StringUtil.nvl(tmpParamVo.getBbsid()).equals("")) {
+            bbsClVo.setBbsid(tmpParamVo.getBbsid());
         }
-        model.addAttribute("result", bbsService.selectPst(paramVo));
+        model.addAttribute("result", bbsService.selectPst(tmpParamVo));
         model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
         
@@ -154,12 +154,12 @@ public class CmmBbsController {
         
         resultMap = bbsService.selectPst(paramVo);
         
-        paramVo = (PstVo)resultMap.get("paramMap");
+        PstVo tmpParamVo = (PstVo)resultMap.get("paramMap");
         
-        if(!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
-            bbsClVo.setBbsid(paramVo.getBbsid());
+        if(!StringUtil.nvl(tmpParamVo.getBbsid()).equals("")) {
+            bbsClVo.setBbsid(tmpParamVo.getBbsid());
         }
-        model.addAttribute("result", bbsService.selectPst(paramVo));
+        model.addAttribute("result", bbsService.selectPst(tmpParamVo));
         model.addAttribute("cmntList", bbsService.selectCmntList(cmntVo));
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
         

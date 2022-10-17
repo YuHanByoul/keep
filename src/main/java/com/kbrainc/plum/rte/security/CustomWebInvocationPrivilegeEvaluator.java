@@ -105,13 +105,14 @@ public class CustomWebInvocationPrivilegeEvaluator implements
     public boolean isAllowed(String contextPath, String uri, String method,
             Authentication authentication) {
         Assert.notNull(uri, "uri parameter is required");
+        String tmpUri = uri;
 
-        if (!StringUtil.isNumber(uri)) {
+        if (!StringUtil.isNumber(tmpUri)) {
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-            uri = attr.getRequest().getServerName() + uri; 
+            tmpUri = attr.getRequest().getServerName() + tmpUri;
         }
         
-        FilterInvocation fi = new FilterInvocation(contextPath, uri, method);
+        FilterInvocation fi = new FilterInvocation(contextPath, tmpUri, method);
         Collection<ConfigAttribute> attrs = securityInterceptor
                 .obtainSecurityMetadataSource().getAttributes(fi);
 

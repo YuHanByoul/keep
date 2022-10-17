@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -336,15 +335,15 @@ public class BbsController {
     }
 
     /**
+     * @param PstVo
+     * @return String 이동화면경로
+     * @throws Exception
      * @Title : pstUpdateForm
      * @Description : 게시물 업데이트 트화면 이동
-     * @param PstVo
-     * @throws Exception
-     * @return String 이동화면경로
      */
     @RequestMapping(value = "/bbs/pstUpdateForm.html")
     public String pstUpdateForm(@RequestParam(value = "pstid", required = true) int pstid, Model model, PstVo paramVO,CmntVo cmntVO,
-        Map<String, Object> resultMap, BbsClVo bbsClVo) throws Exception {
+                                BbsClVo bbsClVo) throws Exception {
     	
         paramVO.setPstid(pstid);
         cmntVO.setPstid(pstid);
@@ -352,21 +351,21 @@ public class BbsController {
         cmntVO.setOrderField("CMNT_GRP DESC,ORD ");
         
         cmntVO.setOrderDirection(CmntVo.ORDER_DIRECTION_ASC);
-        resultMap = bbsService.selectPst(paramVO);
+        Map<String, Object> resultMap = bbsService.selectPst(paramVO);
         
-        paramVO = (PstVo)resultMap.get("paramMap");
+        PstVo tmpParamVO = (PstVo) resultMap.get("paramMap");
         //bbsClVo.setBbsid(Integer.parseInt(paramVO.getBbsid()));
-        if(!StringUtil.nvl(paramVO.getBbsid()).equals("")) {
-        	bbsClVo.setBbsid(paramVO.getBbsid());
+        if(!StringUtil.nvl(tmpParamVO.getBbsid()).equals("")) {
+        	bbsClVo.setBbsid(tmpParamVO.getBbsid());
         }
         
         BbsVo bbsVo = new BbsVo();
-        bbsVo.setBbsid(paramVO.getBbsid());
+        bbsVo.setBbsid(tmpParamVO.getBbsid());
         model.addAttribute("bbsInfo", bbsService.selectOneBbs(bbsVo));
-        
-        paramVO.setPrntsPstid(pstid);
-        model.addAttribute("result", bbsService.selectPst(paramVO));
-        model.addAttribute("replyList", bbsService.selectReplyPstList(paramVO));
+
+        tmpParamVO.setPrntsPstid(pstid);
+        model.addAttribute("result", bbsService.selectPst(tmpParamVO));
+        model.addAttribute("replyList", bbsService.selectReplyPstList(tmpParamVO));
         model.addAttribute("cmntList", bbsService.selectCmntList(cmntVO));
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
