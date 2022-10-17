@@ -3,8 +3,8 @@ function fn_chooseCommonPopup(list){
 	if(list.length > 0){
 		for( i= 0; i < list.length ; i++){
 			if($.cookie("commonPop_cookie_"+list[i].popupntcid) != "Y") {  
-				if(list[i].popup_type_cd =="P")fn_openCommonPopup(list[i]); //팝업
-				else if(list[i].popup_type_cd =="L")fn_openCommonModal(list[i]); //레이어 모달
+				if(list[i].popupTypeCd =="P")fn_openCommonPopup(list[i]); //팝업
+				else if(list[i].popupTypeCd =="L")fn_openCommonModal(list[i]); //레이어 모달
 				else fn_openCommonLayerPopup(list[i]); // 딥 모달  ---> function name 주의 
 			}
 	  }
@@ -13,10 +13,10 @@ function fn_chooseCommonPopup(list){
 
 function fn_openCommonPopup(item){
   var popupOption  ="scrollbars=yes,resizable=no,menubar=no , location=no" ;
-      popupOption +=",left="+item.left_lc;
-      popupOption +=",width="+item.width_size; 
-      popupOption +=",height="+item.vrtcl_size; 
-      popupOption +=",top="+item.top_lc;
+      popupOption +=",left="+item.leftLc;
+      popupOption +=",width="+item.widthSize;
+      popupOption +=",height="+item.vrtclSize;
+      popupOption +=",top="+item.topLc;
   var getPopUrl= "/mng/pop/getPopup.html?popupntcid="+item.popupntcid;
   eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
 }
@@ -49,7 +49,7 @@ function fn_neverShow(id,isChecked){
 
 function getLayerStr(item){
 	
-	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="overflow:auto;  width:'+item.width_size+'px; height : '+item.vrtcl_size+'px; ">';
+	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="overflow:auto;  width:'+item.widthSize+'px; height : '+item.vrtclSize+'px; ">';
 	    layerStr += '        <div class="panel panel-default">';
 	    layerStr += '	      <div class="panel-heading">';
 	    layerStr += '		    <h4>'+item.title+'</h4>';
@@ -115,7 +115,7 @@ function layer_popup(el,item){
     //    $el.css({top: 0, left: 0});
     //}
 
-    $el.css({top: item.top_lc,left: item.left_lc})
+    $el.css({top: item.topLc,left: item.leftLc})
 
     $el.find('a.modal-close').click(function(){
         //isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
