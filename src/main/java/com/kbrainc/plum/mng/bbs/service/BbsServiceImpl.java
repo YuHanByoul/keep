@@ -346,8 +346,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
     	
     	bbsDao.updateCmntOrdElse(paramVO);
     	paramVO.setDpth(paramVO.getDpth()+1);
-    	System.out.println(paramVO);
-    	
+
       return bbsDao.insertCmnt(paramVO);     	
     }
     

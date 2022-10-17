@@ -165,7 +165,6 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
             + new String(Base64.getEncoder().encodeToString(byteArray));
             fis.close();
         } else {
-            System.out.println("file not Found : " + filePath);
             throw new MyFileNotFoundException("file not found");
         }
         return changeString;

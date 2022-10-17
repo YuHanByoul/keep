@@ -213,7 +213,6 @@ public class FaqController {
         //logger.info("[SKYJOB]FAQ Update Data : " + faqClVo);
         faqClVo.setUser(user);
         
-        System.out.println(faqClVo); 
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("list", faqService.getAllList(faqClVo));
         return response;
