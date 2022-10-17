@@ -163,17 +163,5 @@ public interface CodeDao {
      * @throws Exception :
      * @return int 수정로우수
      */
-    public int updateCodeInfo(CodeVo codeVo) throws Exception;
-    
-    /**
-     * 자격증 코드 리스트.
-     *
-     * @Title       : selectCertCodeList 
-     * @Description : 자격증 코드 리스트.
-     * @param codeVo
-     * @return List<CodeVo>
-     * @throws Exception
-     */
-    public List<CodeVo> selectCertCodeList(CodeVo codeVo) throws Exception;
-    
+    public int updateCodeInfo(CodeVo codeVo) throws Exception;   
 }
