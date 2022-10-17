@@ -344,7 +344,7 @@ public class MemberController {
         boolean retVal = false;
         retVal = memberService.createTempPwd(tempPwdVo);
         
-        if (retVal == true) {
+        if (retVal) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "임시비밀번호발급에 성공하였습니다.");
         } else {
@@ -429,7 +429,7 @@ public class MemberController {
         boolean retVal = false;
         retVal = memberService.sendMail(emailVo);
         
-        if (retVal == true) {
+        if (retVal) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "메일 발송에 성공하였습니다.");
         } else {
@@ -466,7 +466,7 @@ public class MemberController {
         boolean retVal = false;
         retVal = memberService.sendSms(smsVo);
         
-        if (retVal == true) {
+        if (retVal) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "SMS 발송에 성공하였습니다.");
         } else {

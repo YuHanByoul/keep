@@ -129,7 +129,7 @@ public class PopServiceImpl extends PlumAbstractServiceImpl implements PopServic
 
 					}
 				}
-				if((checkRoleMapping == true && roleMapping == true && logYnMapping ==true) || (checkRoleMapping == false && logYnMapping ==true )) {
+				if((checkRoleMapping && roleMapping && logYnMapping) || (!checkRoleMapping && logYnMapping)) {
 				   returnList.add(list.get(i));
 				}
 			}
