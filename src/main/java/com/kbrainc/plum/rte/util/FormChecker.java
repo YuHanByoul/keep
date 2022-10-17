@@ -6,6 +6,7 @@ package com.kbrainc.plum.rte.util;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -26,7 +27,7 @@ public class FormChecker {
         if( date == null )  return  false ;
         else {
             try {
-                SimpleDateFormat formatter = new SimpleDateFormat ( "yyyyMMdd" ) ;      
+                SimpleDateFormat formatter = new SimpleDateFormat ( "yyyyMMdd", Locale.getDefault() ) ;
                 formatter.setLenient(false); 
                 formatter.parse ( date ) ;
                 result = true ;
@@ -47,7 +48,7 @@ public class FormChecker {
 			boolean val = date.matches(mat);
 			if (val) {
 				try {
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 					formatter.setLenient(false);
 					formatter.parse(date);
 					result = true;

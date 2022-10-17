@@ -4,10 +4,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -138,7 +135,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 		list = memberDao.selectMemberExcelList(memberVo);
 		
 		//DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd  hh:mm:ss");
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
 		
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
@@ -258,7 +255,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
        
         HashMap map = new HashMap();
        
-        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyyMMdd" ) ;       
+        SimpleDateFormat formatter = new SimpleDateFormat ( "yyyyMMdd", Locale.getDefault() ) ;
        
         if(data != null && data.size() > 0 ) {
         	

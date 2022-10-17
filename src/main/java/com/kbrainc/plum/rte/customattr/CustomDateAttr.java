@@ -3,6 +3,7 @@ package com.kbrainc.plum.rte.customattr;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
@@ -75,7 +76,7 @@ public class CustomDateAttr extends AbstractAttributeTagProcessor {
             }
 
             if (tag.hasAttribute("dateDefaultToday") && tag.getAttribute("dateDefaultToday").getValue().equals("Y")) {
-                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 Date date = new Date();
                 dateDefault = dateFormat.format(date);
             }

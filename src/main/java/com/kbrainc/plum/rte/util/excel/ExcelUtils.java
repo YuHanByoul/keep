@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -252,7 +253,7 @@ public class ExcelUtils {
 	public static void excelInfoSet(HttpServletResponse response, String fileName){
 		if(!"".equals(StringUtil.nvl(fileName, ""))){
 			long today = System.currentTimeMillis();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
 			String inputFileName = ""; 
 			String inputFileExt = ""; 
 			String[] fileNameArray = fileName.split("\\.");
@@ -276,7 +277,7 @@ public class ExcelUtils {
 	public static void excelInfoSetCsv(HttpServletResponse response, String fileName){
 		if(!"".equals(StringUtil.nvl(fileName, ""))){
 			long today = System.currentTimeMillis();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
 			String inputFileName = ""; 
 			String inputFileExt = ""; 
 			String[] fileNameArray = fileName.split("\\.");
