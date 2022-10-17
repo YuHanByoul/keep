@@ -50,7 +50,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 @ConfigurationProperties(prefix = "file")
 public class FileController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     private Map<String, Map<String, Object>> filegrpName;
     

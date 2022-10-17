@@ -41,7 +41,7 @@ import com.kbrainc.plum.rte.service.ResSiteService;
 */
 public class SiteChangeFilter implements Filter {
 
-    private ResSiteService resSiteService;
+    private final ResSiteService resSiteService;
 
     public SiteChangeFilter(ResSiteService resSiteService) {
         this.resSiteService = resSiteService;

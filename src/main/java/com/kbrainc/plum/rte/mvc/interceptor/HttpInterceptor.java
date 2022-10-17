@@ -28,7 +28,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
 @Component
 @Qualifier(value = "httpInterceptor")
 public class HttpInterceptor extends HandlerInterceptorAdapter {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
 
     @Autowired

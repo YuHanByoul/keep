@@ -25,7 +25,7 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 @Service
 @ConfigurationProperties(prefix = "file")
 public class FileServiceImpl extends PlumAbstractServiceImpl implements FileService {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     FileStorageService fileStorageService;

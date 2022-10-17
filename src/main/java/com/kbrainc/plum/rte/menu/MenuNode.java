@@ -35,8 +35,16 @@ public class MenuNode extends TreeNode<MenuItem> {
      * 
      * @param item 메뉴노드의 아이템
      */
+    /*
     public MenuNode(MenuItem item) {
         this();
+        if (item != null) {
+            this.setData(item);
+            this.hasData = true;
+        }
+    }
+    */
+    public void setMenuNode(MenuItem item) {
         if (item != null) {
             this.setData(item);
             this.hasData = true;

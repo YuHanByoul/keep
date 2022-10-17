@@ -42,7 +42,7 @@ public class SmsServiceImpl extends PlumAbstractServiceImpl implements SmsServic
     @Value("${sms.callback}")
     private String smsCallback;
     
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
     
     /**
     * 단일 SMS 발송(동기).

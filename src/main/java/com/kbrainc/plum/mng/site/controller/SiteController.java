@@ -42,7 +42,7 @@ import com.kbrainc.plum.rte.service.ResMenuService;
 @Controller
 @RequestMapping(value = "/mng/site")
 public class SiteController {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
     @Autowired
     SiteService siteService;

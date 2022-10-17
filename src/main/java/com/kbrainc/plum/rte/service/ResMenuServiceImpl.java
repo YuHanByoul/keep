@@ -140,7 +140,9 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
         Map<String, List<MenuItem>> menuMap = new HashMap<String, List<MenuItem>>();
 
         for (MenuItem item : menuList) {
-            MenuNode node = new MenuNode(item);
+            MenuNode node = new MenuNode();
+            node.setMenuNode(item);
+
             MenuNode pNode = null;
 
             if (TREE_MENU_ROOTID.equals(item.getMenuid())) {

@@ -25,7 +25,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
 @Component
 public class HttpInterceptorForPopup //extends HandlerInterceptorAdapter
 {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
 
     @Autowired

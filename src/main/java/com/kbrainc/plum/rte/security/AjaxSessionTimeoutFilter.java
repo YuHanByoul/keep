@@ -32,7 +32,7 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class AjaxSessionTimeoutFilter implements Filter {
 
-    private String ajaxHeader = "AJAX";
+    private final String ajaxHeader = "AJAX";
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {

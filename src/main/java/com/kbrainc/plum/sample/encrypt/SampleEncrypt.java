@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SampleEncrypt {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Resource(name="digestService")
 	EgovDigestService digestService;

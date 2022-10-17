@@ -34,7 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class TestEncrypt {
 
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Resource(name="digestService")
 	EgovDigestService digestService;

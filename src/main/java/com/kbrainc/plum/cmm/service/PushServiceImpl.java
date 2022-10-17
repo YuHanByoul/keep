@@ -38,7 +38,7 @@ public class PushServiceImpl implements PushService {
     /** 푸쉬 다중발송 최대인원수 */
     final int maxLength = 1000;
     
-	private Gson gson = new Gson();
+	private final Gson gson = new Gson();
 
     /**
     * 단일 푸쉬 발송(비동기).

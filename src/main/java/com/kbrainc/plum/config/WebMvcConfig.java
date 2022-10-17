@@ -22,7 +22,7 @@ import com.kbrainc.plum.config.annotation.AnnotationUserInfoArgumentResolver;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier("httpInterceptor")

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.kbrainc.plum.rte.util.ExcelUtil;
 
 public class TestExcel {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Test
 	public void testReadExcelFile() throws Exception {

@@ -32,8 +32,8 @@ import org.apache.commons.codec.binary.Base64;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class CryptoAES256 {
-    private String iv;
-    private Key keySpec;
+    private final String iv;
+    private final Key keySpec;
     
     
     /**

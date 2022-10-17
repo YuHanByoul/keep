@@ -26,7 +26,7 @@ import com.kbrainc.plum.rte.util.ExcelUtil;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class SampleExcel {
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * 

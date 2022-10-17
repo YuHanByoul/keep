@@ -42,9 +42,9 @@ import com.kbrainc.plum.rte.util.StringUtil;
 @Component
 public class SecuredObjectDao {
 
-    private String sqlUserLoginInfo;
+    private final String sqlUserLoginInfo;
 
-    private String sqlGrantedAuthority;
+    private final String sqlGrantedAuthority;
 
     private String sqlRolesAndUrl;
 

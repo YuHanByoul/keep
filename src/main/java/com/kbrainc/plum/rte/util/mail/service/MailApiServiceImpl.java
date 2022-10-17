@@ -42,7 +42,7 @@ public class MailApiServiceImpl extends PlumAbstractServiceImpl implements MailS
     @Value("${mail.server.host}")
     private String mailServerHost;
     
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
     
     /**
     * 단일 메일 발송(동기).

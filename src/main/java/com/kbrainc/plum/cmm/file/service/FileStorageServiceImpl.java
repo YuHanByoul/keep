@@ -35,7 +35,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements FileStorageService {
     private final Path fileStorageLocation;
 
-    private FileStorageProperties fileStorageProperties;
+    private final FileStorageProperties fileStorageProperties;
     
     private Map<String, Map<String, Object>> filegrpName;
 

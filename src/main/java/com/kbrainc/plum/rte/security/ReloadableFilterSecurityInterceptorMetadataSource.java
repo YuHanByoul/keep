@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReloadableFilterSecurityInterceptorMetadataSource implements FilterInvocationSecurityMetadataSource {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource(name = "urlResourcesRolesMapFactoryBean")
     private Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;

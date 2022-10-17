@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReloadableChannelProcessingFilterMetadataSource implements FilterInvocationSecurityMetadataSource {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Resource(name = "urlResourcesHttpsMapFactoryBean")
     private Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;

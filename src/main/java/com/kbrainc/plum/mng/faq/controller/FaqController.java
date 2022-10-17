@@ -40,7 +40,7 @@ import com.kbrainc.plum.mng.faq.service.FaqService;
 @Controller
 public class FaqController {
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     FaqService faqService;
