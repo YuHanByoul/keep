@@ -83,32 +83,30 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
 
-            result.append("<label class=\"radio-inline\" style=\"" + addStyle + "\">").append("\n");
-            result.append(
-                    "<input type='radio' name = '" + attributeValue + "' id='" + attributeValue + "1" + "'value='Y'");
+            result.append("<label class=\"radio-inline\" style=\"").append(addStyle).append("\">").append("\n");
+            result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("1").append("'value='Y'");
             if (defaultVal.equals("Y")) {
                 result.append("checked");
             }
             if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                 String changeFunction = tag.getAttribute("onchange").getValue().toString();
-                result.append("    onchange ='" + changeFunction + "()' ");
+                result.append("    onchange ='").append(changeFunction).append("()' ");
             }
             
-            result.append(">" + label1).append("\n");
+            result.append(">").append(label1).append("\n");
             result.append("</label>");
 
-            result.append("<label class=\"radio-inline\" style=\"" + addStyle + "\">").append("\n");
-            result.append(
-                    "<input type='radio' name = '" + attributeValue + "' id='" + attributeValue + "2" + "'value='N'");
+            result.append("<label class=\"radio-inline\" style=\"").append(addStyle).append("\">").append("\n");
+            result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("2").append("'value='N'");
             if (defaultVal.equals("N")) {
                 result.append("checked");
             }
             if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                 String changeFunction = tag.getAttribute("onchange").getValue().toString();
-                result.append("    onchange ='" + changeFunction + "()' ");
+                result.append("    onchange ='").append(changeFunction).append("()' ");
             }
             
-            result.append(">" + label2).append("\n");
+            result.append(">").append(label2).append("\n");
             result.append("</label>");
 
         } catch (Exception e) {

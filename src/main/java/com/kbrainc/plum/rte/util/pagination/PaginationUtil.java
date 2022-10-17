@@ -52,20 +52,20 @@ public class PaginationUtil {
 		
 		if (pageNumber > 1) {
 			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-first\" onclick ='goPage(1)'><span class=\"ir\">처음</span></a>");
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-prev\" onclick ='goPage("+(pageNumber - 1)+")'><span class=\"ir\">처음</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-prev\" onclick ='goPage(").append(pageNumber - 1).append(")'><span class=\"ir\">처음</span></a>");
 		}
 		
 		for (int i = firstPageNum; i <= lastPageNum; i++) {
 			
 			if (i == pageNumber) {
-				paginationStr.append("<a href='javascript:void(0)' class='btn-paging is-active'>"+i+"</a>");
+				paginationStr.append("<a href='javascript:void(0)' class='btn-paging is-active'>").append(i).append("</a>");
 			} else {
-				paginationStr.append("<a href='javascript:void(0)' class='btn-paging'  onclick ='goPage("+i+")'>"+i+"</a>");
+				paginationStr.append("<a href='javascript:void(0)' class='btn-paging'  onclick ='goPage(").append(i).append(")'>").append(i).append("</a>");
 			}
 		}
 		if (pageNumber < totalPage) {
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-next\" onclick ='goPage("+(pageNumber + 1)+")' ><span class=\"ir\">다음</span></a>");
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-last\" onclick ='goPage("+(totalPage)+")'><span class=\"ir\">마지막</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-next\" onclick ='goPage(").append(pageNumber + 1).append(")' ><span class=\"ir\">다음</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-last\" onclick ='goPage(").append(totalPage).append(")'><span class=\"ir\">마지막</span></a>");
 		} 
 		
 		return paginationStr.toString();

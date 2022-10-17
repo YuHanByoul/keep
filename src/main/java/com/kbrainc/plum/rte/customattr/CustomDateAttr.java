@@ -92,8 +92,7 @@ public class CustomDateAttr extends AbstractAttributeTagProcessor {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
 
-            result.append("<input type=\"text\" class=\"form-control  " + addClass + "\"  id=\"" + attributeValue 
-                    + "\" name=\"" + attributeValue + "\"  value=\"" + dateDefault + "\"   style=\"" + addStyle + "\">")
+            result.append("<input type=\"text\" class=\"form-control  ").append(addClass).append("\"  id=\"").append(attributeValue).append("\" name=\"").append(attributeValue).append("\"  value=\"").append(dateDefault).append("\"   style=\"").append(addStyle).append("\">")
                     .append("\n");
             result.append("<style>").append("\n");
             result.append(".hasDatepicker{cursor: pointer;}").append("\n");
@@ -102,7 +101,7 @@ public class CustomDateAttr extends AbstractAttributeTagProcessor {
             result.append("<script type=\"text/javascript\">").append("\n");
             result.append("   $(function(){").append("\n");
             result.append("       $.datepicker.setDefaults({").append("\n");
-            result.append("       dateFormat : \"" + dateForm + "\"").append("\n");
+            result.append("       dateFormat : \"").append(dateForm).append("\"").append("\n");
             result.append("       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12']").append("\n");
             result.append("       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']").append("\n");
             result.append("       ,dayNamesMin: ['일','월','화','수','목','금','토']").append("\n");

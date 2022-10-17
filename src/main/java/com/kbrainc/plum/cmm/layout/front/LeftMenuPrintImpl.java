@@ -24,19 +24,19 @@ import com.kbrainc.plum.rte.service.ResMenuServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 /**
- * 
+ *
  * LNB영역에 메뉴를 출력하기 위한 클래스
  *
  * <pre>
  * com.kbrainc.plum.cmm.layout
  * - LeftMenuPrintImpl.java
- * </pre> 
+ * </pre>
  *
  * @ClassName : LeftMenuPrintImpl
  * @Description : LNB영역에 메뉴를 출력하기 위한 클래스
  * @author : KBRAINC
  * @date : 2021. 11. 23.
- * @Version : 
+ * @Version :
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Component
@@ -52,11 +52,11 @@ public class LeftMenuPrintImpl {
     private ResMenuService resMenuService;
 
     private HttpServletRequest request = null;
-    
+
     /**
     * 현재 인증정보로 url에 접근 가능한지를 판단한다.
     *
-    * @Title       : isMenuAuth 
+    * @Title       : isMenuAuth
     * @Description : 현재 인증정보로 url에 접근 가능한지를 판단한다.
     * @param url URL
     * @return boolean 인가여부
@@ -66,7 +66,7 @@ public class LeftMenuPrintImpl {
         if ("".equals(StringUtil.nvl(url))) {
             return true;
         }
-        
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return wipe.isAllowed(url, authentication);
     }
@@ -74,7 +74,7 @@ public class LeftMenuPrintImpl {
     /**
     * 현재 접속사이트의 메뉴트리 정보를 불러와 HTML 마크업을 출력한다.
     *
-    * @Title       : menuPrint 
+    * @Title       : menuPrint
     * @Description : 현재 접속사이트의 메뉴트리 정보를 불러와 HTML 마크업을 출력한다.
     * @return String 메뉴HTML마크업
     * @throws Exception 예외
@@ -100,16 +100,16 @@ public class LeftMenuPrintImpl {
         UserVo user = (UserVo) session.getAttribute("user");
         String mkey = "";
         StringBuffer menuTag = new StringBuffer();
-        
+
         for (TreeNode<MenuItem> treeNode0 : menuTree.getRoot().getChildren()) {
             if (menuItemL1.getMenuid().equals(treeNode0.getData().getMenuid())) {
-            	menuTag.append("<strong class=\"title\">" + treeNode0.getData().getNm() + "</strong>\n");
+            	menuTag.append("<strong class=\"title\">").append(treeNode0.getData().getNm()).append("</strong>\n");
             	menuTag.append("<div class=\"lnb-wrap\">\n");
             	menuTag.append("	<ul class=\"lnb-sub\">\n");
-            	
+
             	for (TreeNode<MenuItem> treeNode1 : treeNode0.getChildren()) {
                     menuItem1 = treeNode1.getData();
-                    
+
 		            if ("02".equals(menuItem1.getPtypeCd()) && "N".equals(menuItem1.getHideYn())) {
 		                if ((user != null && isMenuAuth(menuItem1.getUrl())) || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
 		                    isMenuView = true;
@@ -120,7 +120,7 @@ public class LeftMenuPrintImpl {
 		                isMenuView = false;
 		            }
 		            if (isMenuView) { // 프로그램유형코드가 메뉴/디렉토리이면서 숨김여부가 N이면서 현재역할로 메뉴에 접근가능할때만
-		
+
 		            	menuTag.append("		<li class=\"");
 		            	if (menuItem1.getMenuid().equals(menuItem.getMenuid()) || menuTree.getMenuNodeByMenuID((MenuNode)treeNode1, menuItem.getMenuid()) != null) {
 		            		menuTag.append("is-on ");
@@ -132,8 +132,15 @@ public class LeftMenuPrintImpl {
 		                    if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
 		                        menuTag.append("                <button type=\"button\" class=\"btn-lnb-sub\">");
 		                    } else {
-		                        menuTag.append("                <button type=\"button\" class=\"btn-lnb-sub\" onclick=\"javascript:goMenu('" + menuItem1.getUrl() + "','"
-		                                + mkey + "','" + menuItem1.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\">");
+		                        menuTag.append("                <button type=\"button\" class=\"btn-lnb-sub\" onclick=\"javascript:goMenu('")
+										.append(menuItem1.getUrl())
+										.append("','")
+										.append(mkey)
+										.append("','")
+										.append(menuItem1.getLoginYn())
+										.append("','")
+										.append(user == null ? "N" : "Y")
+										.append("')\">");
 		                    }
 		                } else {
 		                    if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
@@ -143,16 +150,12 @@ public class LeftMenuPrintImpl {
 
 		                        if ("Y".equals(menuItem1.getPopupYn())) {
 		                            if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-		                                menuTag.append("			<a href=\"javascript:goMenuNewWin('" + menuItem1.getUrl() + "','"
-		                                        + mkey + "')\" class=\"btn-lnb-sub\">");
+		                                menuTag.append("			<a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\" class=\"btn-lnb-sub\">");
 		                            } else { // 현재창
-		                                menuTag.append("			<a href=\"javascript:goMenuPop('" + menuItem1.getUrl() + "','"
-		                                        + mkey + "','" + menuItem1.getPopupWd() + "','" + menuItem1.getPopupHg()
-		                                        + "','" + menuItem1.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\" class=\"btn-lnb-sub\">");
+		                                menuTag.append("			<a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\" class=\"btn-lnb-sub\">");
 		                            }
 		                        } else {
-		                            menuTag.append("			<a href=\"javascript:goMenu('" + menuItem1.getUrl() + "','" + mkey
-		                                    + "','" + menuItem1.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\" class=\"btn-lnb-sub\">");
+		                            menuTag.append("			<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\" class=\"btn-lnb-sub\">");
 		                        }
 		                    }
 		                }
@@ -162,7 +165,7 @@ public class LeftMenuPrintImpl {
 		                } else {
 		                	menuTag.append("</a>\n");
 		                }
-		                
+
 		                if (treeNode1.hasChildren()) {
 		                	String ptypeCd = "";
 		                	boolean existUlTag = false;
@@ -195,8 +198,7 @@ public class LeftMenuPrintImpl {
 		                                if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
 		                                    menuTag.append("					<strong class=\"tit\">");
 		                                } else {
-		                                    menuTag.append("                	<strong style=\"cursor:pointer;\" class=\"tit\" onClick=\"javascript:goMenu('" + menuItem2.getUrl()
-		                                            + "','" + mkey + "','" + menuItem2.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\">");
+											menuTag.append("                	<strong style=\"cursor:pointer;\" class=\"tit\" onClick=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
 		                                }
 		                            } else {
 		                                if ("".equals(StringUtil.nvl(menuItem2.getUrl(), ""))) {
@@ -206,12 +208,9 @@ public class LeftMenuPrintImpl {
 
 		                                    if ("Y".equals(menuItem2.getPopupYn())) {
 		                                        if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-		                                            menuTag.append("					<a href=\"javascript:goMenuNewWin('"
-		                                                    + menuItem2.getUrl() + "','" + mkey + "')\" class=\"tit\">");
+		                                            menuTag.append("					<a href=\"javascript:goMenuNewWin('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\" class=\"tit\">");
 		                                        } else { // 현재창
-		                                            menuTag.append("					<a href=\"javascript:goMenuPop('" + menuItem2.getUrl()
-		                                                    + "','" + mkey + "','" + menuItem2.getPopupWd() + "','"
-		                                                    + menuItem2.getPopupHg() + "','" + menuItem2.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\" class=\"tit\">");
+		                                            menuTag.append("					<a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\" class=\"tit\">");
 		                                        }
 		                                    } else {
 		                                        menuTag.append("					<a");
@@ -220,8 +219,7 @@ public class LeftMenuPrintImpl {
 		                                            menuTag.append("is-active ");
 		                                        }
 		                                        menuTag.append("\" ");
-		                                        menuTag.append(" href=\"javascript:goMenu('" + menuItem2.getUrl() + "','" + mkey
-		                                                + "','" + menuItem2.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\">");
+		                                        menuTag.append(" href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
 		                                    }
 		                                }
 		                            }
@@ -254,8 +252,7 @@ public class LeftMenuPrintImpl {
 		                                            if (StringUtil.isNumber(menuItem3.getUrl()) || "".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
 		                                                menuTag.append("                <a href=\"javascript:void(0)\">\n");
 		                                            } else {
-		                                                menuTag.append("                <a href=\"javascript:goMenu('"
-		                                                        + menuItem3.getUrl() + "','" + mkey + "','" + menuItem3.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\">\n");
+		                                                menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">\n");
 		                                            }
 		                                        } else {
 		                                            if ("".equals(StringUtil.nvl(menuItem3.getUrl(), ""))) {
@@ -265,25 +262,20 @@ public class LeftMenuPrintImpl {
 
 		                                                if ("Y".equals(menuItem3.getPopupYn())) {
 		                                                    if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-		                                                        menuTag.append("    <a href=\"javascript:goMenuNewWin('"
-		                                                                + menuItem3.getUrl() + "','" + mkey + "')\">\n");
+		                                                        menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
 		                                                    } else { // 현재창
-		                                                        menuTag.append("    <a href=\"javascript:goMenuPop('"
-		                                                                + menuItem3.getUrl() + "','" + mkey + "','"
-		                                                                + menuItem3.getPopupWd() + "','"
-		                                                                + menuItem3.getPopupHg() + "','" + menuItem3.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\">\n");
+		                                                        menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getPopupWd()).append("','").append(menuItem3.getPopupHg()).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">\n");
 		                                                    }
 		                                                } else {
 		                                                    menuTag.append("    <a");
 		                                                    if (mkey.equals(menuItem.getMenuid()) || menuTree.getMenuNodeByMenuID((MenuNode)treeNode3, menuItem.getMenuid()) != null) {
 		                                                        menuTag.append(" class=\"is-active\"");
 		                                                    }
-		                                                    menuTag.append(" href=\"javascript:goMenu('" + menuItem3.getUrl()
-		                                                            + "','" + mkey + "','" + menuItem3.getLoginYn() + "','" + (user == null ? "N":"Y") + "')\">\n");
+		                                                    menuTag.append(" href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">\n");
 		                                                }
 		                                            }
 		                                        }
-		                                        menuTag.append(menuItem3.getNm() + "</a></li>\n");
+		                                        menuTag.append(menuItem3.getNm()).append("</a></li>\n");
 		                                    }
 		                                }
 		                                menuTag.append("</ul>\n");

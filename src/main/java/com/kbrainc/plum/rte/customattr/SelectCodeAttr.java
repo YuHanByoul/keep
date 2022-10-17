@@ -112,25 +112,23 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
             if (codeList.size() <= 0) {
                 result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
             } else {
-                result.append("<select  class ='form-control  " + addClass + "' style='" + addStyle + "'  id='"
-                        + attributeValue + "'  name='" + attributeValue + "' ");
+                result.append("<select  class ='form-control  ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                     String changeFunction = tag.getAttribute("onchange").getValue().toString();
-                    result.append("    onchange ='" + changeFunction + "()' ");
+                    result.append("    onchange ='").append(changeFunction).append("()' ");
                 }
                 result.append(" >").append("\n");
 
                 if (!firstOptTxt.equals("")) {
-                    result.append("<option value='' >" + firstOptTxt + "</option>").append("\n");
+                    result.append("<option value='' >").append(firstOptTxt).append("</option>").append("\n");
                 }
                 for (CodeInfoVo codeInfoVo : codeList) {
                     if (selectedCd != null && !(selectedCd.trim()).equals("")
                             && codeInfoVo.getCd().equals(selectedCd)) {
-                        result.append(
-                                "<option value='" + codeInfoVo.getCd() + "' selected>" + codeInfoVo.getCdNm() + "</option>")
+                        result.append("<option value='").append(codeInfoVo.getCd()).append("' selected>").append(codeInfoVo.getCdNm()).append("</option>")
                                 .append("\n");
                     } else {
-                        result.append("<option value='" + codeInfoVo.getCd() + "' >" + codeInfoVo.getCdNm() + "</option>")
+                        result.append("<option value='").append(codeInfoVo.getCd()).append("' >").append(codeInfoVo.getCdNm()).append("</option>")
                                 .append("\n");
                     }
                 }

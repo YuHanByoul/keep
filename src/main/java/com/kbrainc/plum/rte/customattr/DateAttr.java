@@ -104,16 +104,14 @@ public class DateAttr extends AbstractAttributeTagProcessor {
                 result.append("<div class=\"form-inline\">").append("\n");
                 result.append("<div class=\"form-group\">").append("\n");
             }
-            result.append("<span>" + sLabel + " : </span>").append("\n");
+            result.append("<span>").append(sLabel).append(" : </span>").append("\n");
 
-            result.append("<input type=\"text\" class=\"form-control\"  id=\"" + sId + "\" name=\"" + sId
-                    + "\"  value=\"" + sDefault + "\" placeholder=\"" + sLabel + "\" " + sReadonly + ">").append("\n");
+            result.append("<input type=\"text\" class=\"form-control\"  id=\"").append(sId).append("\" name=\"").append(sId).append("\"  value=\"").append(sDefault).append("\" placeholder=\"").append(sLabel).append("\" ").append(sReadonly).append(">").append("\n");
 
             if (chkSingle.equals("2")) {
 
-                result.append("<span>" + eLabel + " : </span>").append("\n");
-                result.append("<input type=\"text\" class=\"form-control\"  id=\"" + eId + "\" name=\"" + eId
-                        + "\" value=\"" + eDefault + "\" placeholder=\"" + eLabel + "\" " + sReadonly + ">").append("\n");
+                result.append("<span>").append(eLabel).append(" : </span>").append("\n");
+                result.append("<input type=\"text\" class=\"form-control\"  id=\"").append(eId).append("\" name=\"").append(eId).append("\" value=\"").append(eDefault).append("\" placeholder=\"").append(eLabel).append("\" ").append(sReadonly).append(">").append("\n");
                 result.append("</div >").append("\n");
                 result.append("</div >").append("\n");
             }
@@ -125,7 +123,7 @@ public class DateAttr extends AbstractAttributeTagProcessor {
             result.append("<script type=\"text/javascript\">").append("\n");
             result.append("   $(function(){").append("\n");
             result.append("       $.datepicker.setDefaults({").append("\n");
-            result.append("       dateFormat : \"" + dForm + "\"").append("\n");
+            result.append("       dateFormat : \"").append(dForm).append("\"").append("\n");
             result.append("       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12']").append("\n");
             result.append("       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']")
                     .append("\n");
@@ -137,9 +135,9 @@ public class DateAttr extends AbstractAttributeTagProcessor {
             result.append("       ,changeYear: true").append("\n");
             result.append("   });").append("\n");
 
-            result.append("$(\"#" + sId + "\").datepicker();").append("\n");
+            result.append("$(\"#").append(sId).append("\").datepicker();").append("\n");
             if (chkSingle.equals("2")) {
-                result.append("$(\"#" + eId + "\").datepicker();").append("\n");
+                result.append("$(\"#").append(eId).append("\").datepicker();").append("\n");
             }
 
             result.append("})").append("\n");

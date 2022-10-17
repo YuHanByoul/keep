@@ -145,8 +145,7 @@ public class MenuPrintImpl {
                     if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
                         menuTag.append("                <a href=\"javascript:void(0)\">\n");
                     } else {
-                        menuTag.append("                <a href=\"javascript:goMenu('" + menuItem1.getUrl() + "','"
-                                + mkey + "')\">\n");
+                        menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                     }
                 } else {
                     if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
@@ -156,21 +155,16 @@ public class MenuPrintImpl {
 
                         if ("Y".equals(menuItem1.getPopupYn())) {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("    <a href=\"javascript:goMenuNewWin('" + menuItem1.getUrl() + "','"
-                                        + mkey + "')\">\n");
+                                menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                             } else { // 현재창
-                                menuTag.append("    <a href=\"javascript:goMenuPop('" + menuItem1.getUrl() + "','"
-                                        + mkey + "','" + menuItem1.getPopupWd() + "','" + menuItem1.getPopupHg()
-                                        + "')\">\n");
+                                menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("')\">\n");
                             }
                         } else {
-                            menuTag.append("    <a href=\"javascript:goMenu('" + menuItem1.getUrl() + "','" + mkey
-                                    + "')\">\n");
+                            menuTag.append("    <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                         }
                     }
                 }
-                menuTag.append("<span><p class=\"glyphicon glyphicon-cloud\" aria-hidden=\"true\"></p> <strong>"
-                        + menuItem1.getNm() + "</strong></span></a>\n");
+                menuTag.append("<span><p class=\"glyphicon glyphicon-cloud\" aria-hidden=\"true\"></p> <strong>").append(menuItem1.getNm()).append("</strong></span></a>\n");
                 if (treeNode1.hasChildren()) {
 
                     if (menuItem1.getMenuid().equals(upprMenuid)) {
@@ -199,8 +193,7 @@ public class MenuPrintImpl {
                                 if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
                                     menuTag.append("                <a href=\"javascript:void(0)\">\n");
                                 } else {
-                                    menuTag.append("                <a href=\"javascript:goMenu('" + menuItem2.getUrl()
-                                            + "','" + mkey + "')\">\n");
+                                    menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
                                 }
                             } else {
                                 if ("".equals(StringUtil.nvl(menuItem2.getUrl(), ""))) {
@@ -210,24 +203,20 @@ public class MenuPrintImpl {
 
                                     if ("Y".equals(menuItem2.getPopupYn())) {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("    <a href=\"javascript:goMenuNewWin('"
-                                                    + menuItem2.getUrl() + "','" + mkey + "')\">\n");
+                                            menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
                                         } else { // 현재창
-                                            menuTag.append("    <a href=\"javascript:goMenuPop('" + menuItem2.getUrl()
-                                                    + "','" + mkey + "','" + menuItem2.getPopupWd() + "','"
-                                                    + menuItem2.getPopupHg() + "')\">\n");
+                                            menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("')\">\n");
                                         }
                                     } else {
                                         menuTag.append("    <a");
                                         if (mkey.equals(curMenuid) && "2".equals(menuItem.getDpth())) {
                                             menuTag.append(" class=\"select\"");
                                         }
-                                        menuTag.append(" href=\"javascript:goMenu('" + menuItem2.getUrl() + "','" + mkey
-                                                + "')\">\n");
+                                        menuTag.append(" href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
                                     }
                                 }
                             }
-                            menuTag.append("<span>" + menuItem2.getNm() + "</span></a>\n");
+                            menuTag.append("<span>").append(menuItem2.getNm()).append("</span></a>\n");
 
                             // menuTag.append("<ul><li><a class=\"select\" style=\"padding-left:55px\"
                             // href=\"javascript:void(0)\"><span>테스트</span></a></li></ul>\n");
@@ -254,8 +243,7 @@ public class MenuPrintImpl {
                                             if (StringUtil.isNumber(menuItem3.getUrl()) || "".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
                                                 menuTag.append("                <a href=\"javascript:void(0)\">\n");
                                             } else {
-                                                menuTag.append("                <a href=\"javascript:goMenu('"
-                                                        + menuItem3.getUrl() + "','" + mkey + "')\">\n");
+                                                menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
                                             }
                                         } else {
                                             if ("".equals(StringUtil.nvl(menuItem3.getUrl(), ""))) {
@@ -265,25 +253,20 @@ public class MenuPrintImpl {
 
                                                 if ("Y".equals(menuItem3.getPopupYn())) {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("    <a href=\"javascript:goMenuNewWin('"
-                                                                + menuItem3.getUrl() + "','" + mkey + "')\">\n");
+                                                        menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
                                                     } else { // 현재창
-                                                        menuTag.append("    <a href=\"javascript:goMenuPop('"
-                                                                + menuItem3.getUrl() + "','" + mkey + "','"
-                                                                + menuItem3.getPopupWd() + "','"
-                                                                + menuItem3.getPopupHg() + "')\">\n");
+                                                        menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getPopupWd()).append("','").append(menuItem3.getPopupHg()).append("')\">\n");
                                                     }
                                                 } else {
                                                     menuTag.append("    <a");
                                                     if (mkey.equals(menuItem.getMenuid())) {
                                                         menuTag.append(" class=\"select\" style=\"padding-left:55px\"");
                                                     }
-                                                    menuTag.append(" href=\"javascript:goMenu('" + menuItem3.getUrl()
-                                                            + "','" + mkey + "')\">\n");
+                                                    menuTag.append(" href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
                                                 }
                                             }
                                         }
-                                        menuTag.append("<span>" + menuItem3.getNm() + "</span></a></li>\n");
+                                        menuTag.append("<span>").append(menuItem3.getNm()).append("</span></a></li>\n");
                                     }
                                 }
                                 menuTag.append("</ul>\n");

@@ -198,13 +198,13 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
                     result.append("<select class ='form-control " + addClass + "' style='" + addStyle + "' id='" + attributeVal + "_" + i + "' name='" + attributeVal + "_" + i
                             + "'  onchange ='setNextDepth(\"" + grpcd + "\",this.value,\"" + attributeVal + "_"
                             + (i + 1) + "\" )'> ").append("\n");
-                    result.append("<option value=''>" + firstOptTxt + "</option>").append("\n");
+                    result.append("<option value=''>").append(firstOptTxt).append("</option>").append("\n");
                     if (codeList != null) {
                         for (CodeInfoVo codeInfoVo : codeList) {
                             if (selectedCds != null && selectedCds[i-1].equals(codeInfoVo.getCd())) {
-                                result.append("<option value='" + codeInfoVo.getCd() + "' selected>" + codeInfoVo.getCdNm() + "</option>").append("\n");
+                                result.append("<option value='").append(codeInfoVo.getCd()).append("' selected>").append(codeInfoVo.getCdNm()).append("</option>").append("\n");
                             } else {
-                                result.append("<option value='" + codeInfoVo.getCd() + "' >" + codeInfoVo.getCdNm() + "</option>").append("\n");
+                                result.append("<option value='").append(codeInfoVo.getCd()).append("' >").append(codeInfoVo.getCdNm()).append("</option>").append("\n");
                             }
                         }
                     }

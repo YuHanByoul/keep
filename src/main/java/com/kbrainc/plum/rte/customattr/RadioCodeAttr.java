@@ -123,7 +123,7 @@ public class RadioCodeAttr extends AbstractAttributeTagProcessor {
                             }
                         }
                     }
-                    result.append("><span>" + codeInfoVo.getCdNm()).append("</span>\n");
+                    result.append("><span>").append(codeInfoVo.getCdNm()).append("</span>\n");
                     result.append("</label>&nbsp; ");
                     cnt++;
                 }

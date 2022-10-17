@@ -127,13 +127,12 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                     if("ul".equals(listStyle)) {
                         result.append("<li><label>");
                     }
-                    result.append("<input type='checkbox' class='" + addClass + "'  id='" + attributeValue + cnt + "' name ='"
-                            + attributeValue + cnt + "' value='" + codeInfoVo.getCd() + "' data-cd-name='" + codeInfoVo.getCdNm() + "'");
+                    result.append("<input type='checkbox' class='").append(addClass).append("'  id='").append(attributeValue).append(cnt).append("' name ='").append(attributeValue).append(cnt).append("' value='").append(codeInfoVo.getCd()).append("' data-cd-name='").append(codeInfoVo.getCdNm()).append("'");
                     if (selectedCd != null && !(selectedCd.trim()).equals("")
                             && inArray(selectedCds, codeInfoVo.getCd())) {
                         result.append(" checked ");
                     }
-                    result.append(" >" + codeInfoVo.getCdNm()).append("\n");
+                    result.append(" >").append(codeInfoVo.getCdNm()).append("\n");
                     if("ul".equals(listStyle)) {
                         result.append("</label></li>");
                     }
