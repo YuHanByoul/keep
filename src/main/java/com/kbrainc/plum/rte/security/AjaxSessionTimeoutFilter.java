@@ -57,9 +57,11 @@ public class AjaxSessionTimeoutFilter implements Filter {
     }
 
     public void init(FilterConfig filterConfig) {
+//        init
     }
 
     public void destroy() {
+//        destroy
     }
 
     /**

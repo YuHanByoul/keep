@@ -94,8 +94,10 @@ public class SiteChangeFilter implements Filter {
     }
 
     public void init(FilterConfig filterConfig) {
+//        init
     }
 
     public void destroy() {
+//        destroy
     }
 }

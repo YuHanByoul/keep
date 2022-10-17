@@ -150,8 +150,10 @@ public class CommonUtil {
                             return null;
                         }
                         public void checkClientTrusted(X509Certificate[] certs, String authType) {
+//                            checkClientTrusted
                         }
                         public void checkServerTrusted(X509Certificate[] certs, String authType) {
+//                            checkServerTrusted
                         }
                     }};
     

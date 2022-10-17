@@ -28,7 +28,7 @@ public class LogAopController {
      */
     @Pointcut("@annotation(org.springframework.web.bind.annotation.RequestMapping)")
     public void RequestMapping() {
-        
+        // RequestMapping
     }
     
     @Before("RequestMapping()")
