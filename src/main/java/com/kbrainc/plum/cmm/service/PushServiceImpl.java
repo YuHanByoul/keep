@@ -36,7 +36,7 @@ public class PushServiceImpl implements PushService {
     private String fcmServerKey;
     
     /** 푸쉬 다중발송 최대인원수 */
-    final int maxLength = 1000;
+    private static final int maxLength = 1000;
     
 	private final Gson gson = new Gson();
 

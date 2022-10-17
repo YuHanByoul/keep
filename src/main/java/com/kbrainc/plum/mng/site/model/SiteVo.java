@@ -24,8 +24,8 @@ import lombok.Data;
  */
 @Data
 public class SiteVo extends ParentRequestVo {
-	private final String SYSTEM_SE_NAME_ADMIN = "관리자";
-	private final String SYSTEM_SE_NAME_USER = "사용자";
+	private static final String SYSTEM_SE_NAME_ADMIN = "관리자";
+	private static final String SYSTEM_SE_NAME_USER = "사용자";
 
 	private Integer siteid;	//사이트 아이디
 	private String siteNm; //사이트 이름 

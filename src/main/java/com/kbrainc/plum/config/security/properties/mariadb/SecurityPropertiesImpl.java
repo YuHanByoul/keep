@@ -12,7 +12,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 	/*private static org.apache.commons.configuration.Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();*/
 
 	/** 디폴트타겟URL */
-	private final String DEFAULT_TARGET_URL = "/main.html";
+	private static final String DEFAULT_TARGET_URL = "/main.html";
 	
 	/**
      * 사용자 로그인 정보를 확인하기 위한 쿼리
