@@ -8,12 +8,12 @@ var FAQ = {
 	insert: function(item, callback){
 
 			let data = {
-					"user_se_cd": item.user_se_cd,
+					"userSeCd": item.userSeCd,
 					"clid": item.clid,
 					"title": item.title,
 					"cntnts": item.cntnts,
 					"ord": item.ord,
-					"use_yn": item.use_yn
+					"useYn": item.useYn
 			};
 			
 			$.ajax({
@@ -41,11 +41,11 @@ var FAQ = {
 			let data = {
 					"clid": item.clid,
 					"faqid": item.faqid,
-					"user_se_cd": item.user_se_cd,
+					"userSeCd": item.userSeCd,
 					"title": item.title,
 					"cntnts": item.cntnts,
 					"ord": item.ord,
-					"use_yn": item.use_yn
+					"useYn": item.useYn
 			};
 			
 			$.ajax({

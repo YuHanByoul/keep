@@ -8,10 +8,10 @@ var FAQ_CL = {
 	insert: function(item, callback){
 
 			let data = {
-					"user_se_cd": item.user_se_cd,
-					"cl_nm": item.cl_nm,
+					"userSeCd": item.userSeCd,
+					"clNm": item.clNm,
 					"ord": item.ord,
-					"use_yn": item.use_yn
+					"useYn": item.useYn
 			};
 			
 			$.ajax({
@@ -38,10 +38,10 @@ var FAQ_CL = {
 			
 		let data = {
 				"clid": item.clid,
-				"user_se_cd": item.user_se_cd,
-				"cl_nm": item.cl_nm,
+				"userSeCd": item.userSeCd,
+				"clNm": item.clNm,
 				"ord": item.ord,
-				"use_yn": item.use_yn
+				"useYn": item.useYn
 		};
 			
 		$.ajax({
@@ -162,10 +162,10 @@ $(function(){
 	        deleteConfirm: "정말 삭제하시겠습니까?",
 	        fields: [ 
                 { name: 'rowNumber', title:"번호", key: true, width: "3%", align:"center"},
-                { name: 'user_se_cd'     , title:"대상"    , type: "select", items: FAQ_CL_TARGET, valueField: "Id", textField: "Name", width: "5%" },
-                { name: 'cl_nm'    , title:"분류명" , type: "text", width: "20%" },
+                { name: 'userSeCd'     , title:"대상"    , type: "select", items: FAQ_CL_TARGET, valueField: "Id", textField: "Name", width: "5%" },
+                { name: 'clNm'    , title:"분류명" , type: "text", width: "20%" },
                 { name: 'clid'     , title:"분류코드", type: "text", width: "5%" },
-                { name: 'use_yn'   , title:"사용여부", width: "5%" },
+                { name: 'useYn'   , title:"사용여부", width: "5%" },
                 { name: 'ord'      , title:"순서", type: "number", width: "5%", align: "center" , sorting: false},
                 { name: 'ord'      , title:"정렬", type: "number", width: "5%", align: "center"
                   	 ,itemTemplate: function(value, item) {
@@ -190,10 +190,10 @@ $(function(){
 	        	$("#regForm").show();
 	        	$("#modifytFaqClBtn").val("수정");
 	        	$("#clid").val(args.item.clid);
-	        	$("#cl_nm").val(args.item.cl_nm);
-	        	$('input:radio[name=user_se_cd]:input[value=' +args.item.user_se_cd+ ']').prop("checked", true);
+	        	$("#clNm").val(args.item.clNm);
+	        	$('input:radio[name=userSeCd]:input[value=' +args.item.userSeCd+ ']').prop("checked", true);
 	        	$("#ord").val(args.item.ord);
-	        	$('input:radio[name=use_yn]:input[value=' +args.item.use_yn+ ']').prop("checked", true);
+	        	$('input:radio[name=useYn]:input[value=' +args.item.useYn+ ']').prop("checked", true);
 	        }
 	        
 	});
@@ -213,10 +213,10 @@ function hideRegForm(){
 function fn_clearFaqClForm(){
 	$("#modifytFaqClBtn").val("저장");
 	$("#clid").val("");
-	$("#cl_nm").val("");
-	$('input:radio[name=user_se_cd]:input[value="101102"]').prop("checked", true);
+	$("#clNm").val("");
+	$('input:radio[name=userSeCd]:input[value="101102"]').prop("checked", true);
 	$("#ord").val("");
-	$('input:radio[name=use_yn]:input[value="N"]').prop("checked", true);
+	$('input:radio[name=useYn]:input[value="N"]').prop("checked", true);
 }
 
 
@@ -226,16 +226,16 @@ function fn_modifyFaqCl(){
 	
 	var params = {
 			 clid  : $("#clid").val()
-			,cl_nm : $("#cl_nm").val()
-        	,user_se_cd  : $('input:radio[name=user_se_cd]:checked').val()
+			,clNm : $("#clNm").val()
+        	,userSeCd  : $('input:radio[name=userSeCd]:checked').val()
         	,ord   : $("#ord").val()
-        	,use_yn: $('input:radio[name=use_yn]:checked').val()
+        	,useYn: $('input:radio[name=useYn]:checked').val()
 	}
     var clid = $("#clid").val();
 	
 	var validator= $("#faqClForm").validate({
-	    rules   : { cl_nm : { required: true } },
-	    messages: {cl_nm : 	{ required: "분류명을 입력하십시오" } }
+	    rules   : { clNm : { required: true } },
+	    messages: {clNm : 	{ required: "분류명을 입력하십시오" } }
 	 })
 	
 	if(($("#faqClForm").valid() == false)) return;

@@ -39,14 +39,14 @@ $(function(){
 	            	
 	            	var params = {
 	            			"clid": $('#sclid').val(),
-	            			"use_yn": $('#useYn').val(),
+	            			"useYn": $('#useYn').val(),
 	            			"searchType": $('#searchType').val(),
 	            			"searchKeyword": $('#searchKeyword').val(),
 	            			"pageNumber": filter.pageIndex,
 	            			"rowPerPage": filter.pageSize,
 	            			"orderField": filter.sortField,
 	            			"orderDirection": filter.sortOrder,
-	            			"user_se_cd" :  $('input[name=user_se_cd]:checked').val(),
+	            			"userSeCd" :  $('input[name=userSeCd]:checked').val(),
 	            			
 	            	}
 	            	
@@ -69,10 +69,10 @@ $(function(){
 	        deleteConfirm: "정말 삭제하시겠습니까?",
 	        fields: [ 
 	        	{ name: 'rowNumber',title:'번호'   , type: "number" , width: "3%", align:"center", sorting: false },
-                { name: 'cl_nm' , title:"FAQ 분류", type: "text"   , width: "8%"  },
+                { name: 'clNm' , title:"FAQ 분류", type: "text"   , width: "8%"  },
                 { name: 'title' , title:"제목"    , type: "text"   , width: "20%" },
-                { name: 'reg_dt', title:"등록일"   , type: "text"   , width: "5%"  },
-                { name: 'use_yn', title:"사용여부",  width: "5%" },
+                { name: 'regDt', title:"등록일"   , type: "text"   , width: "5%"  },
+                { name: 'useYn', title:"사용여부",  width: "5%" },
                 { name: 'ord', title:"순서", type: "number", width: "5%", align: "center" , sorting: false},
                 { name: 'ord', title:"정렬", type: "number", width: "5%", align: "center"
                   	 ,itemTemplate: function(value, item) {

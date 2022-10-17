@@ -8,10 +8,10 @@ var FAQ_CL = {
 	insert: function(item, callback){
 
 			let data = {
-					"user_se_cd": item.user_se_cd,
-					"cl_nm": item.cl_nm,
+					"userSeCd": item.userSeCd,
+					"clNm": item.clNm,
 					"ord": item.ord,
-					"use_yn": item.use_yn
+					"useYn": item.useYn
 			};
 			
 			$.ajax({
@@ -38,10 +38,10 @@ var FAQ_CL = {
 			
 		let data = {
 				"clid": item.clid,
-				"user_se_cd": item.user_se_cd,
-				"cl_nm": item.cl_nm,
+				"userSeCd": item.userSeCd,
+				"clNm": item.clNm,
 				"ord": item.ord,
-				"use_yn": item.use_yn
+				"useYn": item.useYn
 		};
 			
 		$.ajax({
