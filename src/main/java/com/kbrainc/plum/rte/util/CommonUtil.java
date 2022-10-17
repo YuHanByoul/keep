@@ -142,7 +142,6 @@ public class CommonUtil {
                 if (checkHosts[i].startsWith("https://")) {
                     BufferedReader br = null;
                     StringBuilder sb = new StringBuilder();
-                    String line = null;
                     url = new URL(checkHosts[i] + callUrl);
                     
                     TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
@@ -163,9 +162,11 @@ public class CommonUtil {
                     HttpsURLConnection conn = (HttpsURLConnection)url.openConnection();
                     InputStream is = conn.getInputStream();
                     br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-    
-                    while ((line = br.readLine()) != null) {
+
+                    String line = br.readLine();
+                    while (line != null) {
                         sb.append(line);
+                        line = br.readLine();
                     }
                 } else {
                     url = new URL(checkHosts[i] + callUrl);

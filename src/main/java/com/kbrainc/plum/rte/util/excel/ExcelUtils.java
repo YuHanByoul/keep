@@ -234,17 +234,18 @@ public class ExcelUtils {
 	public static ArrayList getExcelCsvArrayList(InputStream input) throws Exception{
 		ArrayList rowList = new ArrayList();
 		ArrayList cellList = null;
-		String[] nextLine;
 		InputStreamReader readFile = new InputStreamReader(input);
-		CSVReader reader = new CSVReader(readFile);		
+		CSVReader reader = new CSVReader(readFile);
 
-		while ( (nextLine = reader.readNext()) != null ){
+		String[] nextLine = reader.readNext();
+		while ( nextLine != null){
 			cellList = new ArrayList();
 			for ( String str : nextLine ){				
 				cellList.add(str);
 				
 			}
 			rowList.add(cellList);
+			nextLine = reader.readNext();
 		}
 		
 		return rowList;

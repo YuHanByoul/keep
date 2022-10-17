@@ -227,10 +227,10 @@ public class FileUtil {
                     try {
                         in = new FileInputStream(sFile);
                         out = new FileOutputStream(newTarget, true);
-                        int read = 0;
-
-                        while ((read = in.read(buf, 0, bufSize)) > 0) {
+                        int read = in.read(buf,0,bufSize);
+                        while (read > 0) {
                             out.write(buf, 0, read);
+                            read = in.read(buf,0,bufSize);
                         }
 
                         in.close();
@@ -263,10 +263,10 @@ public class FileUtil {
                 String newTarget = target + delimeter + sourceFile.getName();
                 in = new FileInputStream(sourceFile);
                 out = new FileOutputStream(newTarget, true);
-                int read = 0;
-
-                while ((read = in.read(buf, 0, bufSize)) > 0) {
+                int read = in.read(buf,0,bufSize);
+                while (read > 0) {
                     out.write(buf, 0, read);
+                    read = in.read(buf,0,bufSize);
                 }
 
                 in.close();
@@ -341,11 +341,13 @@ public class FileUtil {
                     try {
                         in = new FileInputStream(sFile);
                         out = new FileOutputStream(newTarget, true);
-                        int read = 0;
 
-                        while ((read = in.read(buf, 0, bufSize)) > 0) {
+                        int read = in.read(buf,0,bufSize);
+                        while (read > 0) {
                             out.write(buf, 0, read);
+                            read = in.read(buf,0,bufSize);
                         }
+
                         in.close();
                         out.close();
                     } catch (IOException e) {
@@ -380,10 +382,11 @@ public class FileUtil {
                     String newTarget = target + delimeter + sourceFile.getName();
                     in = new FileInputStream(sourceFile);
                     out = new FileOutputStream(newTarget, true);
-                    int read = 0;
 
-                    while ((read = in.read(buf, 0, bufSize)) > 0) {
+                    int read = in.read(buf,0,bufSize);
+                    while (read > 0) {
                         out.write(buf, 0, read);
+                        read = in.read(buf,0,bufSize);
                     }
 
                     in.close();
@@ -493,10 +496,12 @@ public class FileUtil {
 
                 outputStream.setLevel(8);
 
-                int len;
-                while ((len = bInputStream.read(buf, 0, bufSize)) > 0) {
+                int len = bInputStream.read(buf, 0, bufSize);
+                while (len > 0) {
                     outputStream.write(buf, 0, len);
+                    len = bInputStream.read(buf, 0, bufSize);
                 }
+
             } else if (file.isDirectory()) { // 디렉토리인 경우
                 File fileList[] = file.listFiles(); // 파일목록
 
@@ -555,9 +560,10 @@ public class FileUtil {
 		         
 		         // write file content
 		         FileOutputStream fos = new FileOutputStream(newFile);
-		         int len;
-		         while ((len = zis.read(buffer)) > 0) {
+		         int len = zis.read(buffer);
+		         while (len > 0) {
 		             fos.write(buffer, 0, len);
+                     len = zis.read(buffer);
 		         }
 		         fos.close();
 		     }

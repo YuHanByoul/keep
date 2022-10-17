@@ -82,9 +82,10 @@ public class excelSampleDownloadServlet extends HttpServlet {
 				byte b[] = new byte[1024];
 	
 				try {
-					int nRead;
-					while( (nRead = in.read(b)) > -1){
+					int nRead = in.read(b);
+					while( nRead > -1){
 						binaryOut.write( b, 0, nRead );
+						nRead = in.read(b);
 					}
 					
 					binaryOut.flush();

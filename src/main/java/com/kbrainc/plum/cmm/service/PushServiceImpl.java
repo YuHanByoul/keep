@@ -85,11 +85,12 @@ public class PushServiceImpl implements PushService {
         os.close();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputLine;
         StringBuffer response = new StringBuffer();
 
-        while ((inputLine = in.readLine()) != null) {
+        String inputLine = in.readLine();
+        while (inputLine != null) {
             response.append(inputLine);
+            inputLine = in.readLine();
         }
         in.close();
 	}
@@ -140,11 +141,13 @@ public class PushServiceImpl implements PushService {
         os.close();
         
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputLine;
+
         StringBuffer response = new StringBuffer();
 
-        while ((inputLine = in.readLine()) != null) {
+        String inputLine = in.readLine();
+        while (inputLine != null) {
             response.append(inputLine);
+            inputLine = in.readLine();
         }
         in.close();
 	}
