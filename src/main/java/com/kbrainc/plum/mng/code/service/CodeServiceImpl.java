@@ -52,8 +52,7 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
      * 코드 리스트 가져옴.
      * 
      * @Title : selectCodeList
-     * @Description : 코드 리스트 가져옴. 
-     *  CDGRP_NM이 "CERT"이면 자격증 테이블에서 값을 가져온다.
+     * @Description : 코드 리스트 가져옴.
      * @param codeVo 코드VO 클래스
      * @throws Exception :
      * @return List<CodeVo> 코드 목록
@@ -61,12 +60,7 @@ public class CodeServiceImpl extends PlumAbstractServiceImpl implements CodeServ
     @Override
     public List<CodeVo> selectCodeList(CodeVo codeVo) throws Exception {
         List<CodeVo> list = null;
-        
-        if("CERT".equals(codeVo.getCdgrpNm())){
-            list = codeDao.selectCertCodeList(codeVo);
-        }else {
-            list = codeDao.selectCodeList(codeVo);
-        }
+        list = codeDao.selectCodeList(codeVo);
         
         return list;
     }
