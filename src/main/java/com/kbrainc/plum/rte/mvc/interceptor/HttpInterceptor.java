@@ -193,7 +193,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
                 request.setAttribute(ResMenuServiceImpl.MENU_NAME, menuItem.getNm());
             }
             
-            if(siteInfo.equals(null)){
+            if(siteInfo == null){
             	request.setAttribute("popupYn", "N");
             }else {
             	request.setAttribute("popupYn", "Y");

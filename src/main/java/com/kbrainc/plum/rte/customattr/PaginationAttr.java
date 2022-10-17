@@ -66,7 +66,7 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             int pageCount = 5;
 
             // prameter 유효성 체크
-            if (attributeValue.equals(null) || attributeValue.equals("")) {
+            if (attributeValue == null || attributeValue.equals("")) {
                 listName = "list";
             }
             if (tag.hasAttribute("onclick")) {

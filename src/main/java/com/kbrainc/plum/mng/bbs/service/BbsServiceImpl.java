@@ -214,7 +214,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         
         PstVo pstVo = bbsDao.selectPst(paramVO);
         
-        if (!pstVo.getFilegrpid().equals(null) && !pstVo.getFilegrpid().equals(0)) {
+        if (pstVo.getFilegrpid() != null && !pstVo.getFilegrpid().equals(0)) {
         	
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(Integer.parseInt(pstVo.getFilegrpid().toString()));
@@ -368,7 +368,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         
         for(PstVo vo : list) {
         	
-        	if (!vo.getFilegrpid().equals(null) && !vo.getFilegrpid().equals(0)) {
+        	if (vo.getFilegrpid() != null && !vo.getFilegrpid().equals(0)) {
         		
         		FileVo fileVo = new FileVo();
         		fileVo.setFilegrpid(Integer.parseInt(vo.getFilegrpid().toString()));

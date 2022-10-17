@@ -111,11 +111,11 @@ public class RadioCodeAttr extends AbstractAttributeTagProcessor {
                     result.append("<label>").append("\n");
                     result.append("<input type='radio' name = '" + attributeValue + "' id='" + attributeValue + cnt
                             + "'value='" + codeInfoVo.getCd() + "'");
-                    if (!selectedCd.equals(null) && !(selectedCd.trim()).equals("")
+                    if (selectedCd != null && !(selectedCd.trim()).equals("")
                             && codeInfoVo.getCd().equals(selectedCd)) {
                         result.append(" checked ");
                     }
-                    if (!disabled.equals(null) && !(disabled.trim()).equals("")) {
+                    if (disabled != null && !(disabled.trim()).equals("")) {
                         checkDis = disabled.split("\\|");
                         for (int i = 0; i < checkDis.length; i++) {
                             if (codeInfoVo.getCd().equals(checkDis[i])) {

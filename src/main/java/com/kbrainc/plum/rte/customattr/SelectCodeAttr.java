@@ -124,7 +124,7 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
                     result.append("<option value='' >" + firstOptTxt + "</option>").append("\n");
                 }
                 for (CodeInfoVo codeInfoVo : codeList) {
-                    if (!selectedCd.equals(null) && !(selectedCd.trim()).equals("")
+                    if (selectedCd != null && !(selectedCd.trim()).equals("")
                             && codeInfoVo.getCd().equals(selectedCd)) {
                         result.append(
                                 "<option value='" + codeInfoVo.getCd() + "' selected>" + codeInfoVo.getCdNm() + "</option>")

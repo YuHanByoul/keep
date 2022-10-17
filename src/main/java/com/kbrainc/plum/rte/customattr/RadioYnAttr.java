@@ -67,7 +67,7 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
             String addStyle = ""; 
 
             // prameter 유효성 체크
-            if (attributeValue.equals(null) || attributeValue.equals("")) {
+            if (attributeValue == null || attributeValue.equals("")) {
                 attrId = "radio_";
             }
             if (tag.hasAttribute("label1")) {

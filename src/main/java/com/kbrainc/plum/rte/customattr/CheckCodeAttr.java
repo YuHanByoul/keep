@@ -129,7 +129,7 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                     }
                     result.append("<input type='checkbox' class='" + addClass + "'  id='" + attributeValue + cnt + "' name ='"
                             + attributeValue + cnt + "' value='" + codeInfoVo.getCd() + "' data-cd-name='" + codeInfoVo.getCdNm() + "'");
-                    if (!selectedCd.equals(null) && !(selectedCd.trim()).equals("")
+                    if (selectedCd != null && !(selectedCd.trim()).equals("")
                             && inArray(selectedCds, codeInfoVo.getCd())) {
                         result.append(" checked ");
                     }

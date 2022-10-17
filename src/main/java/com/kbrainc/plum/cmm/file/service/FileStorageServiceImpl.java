@@ -149,8 +149,7 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
     }
     
     public String imgToStringByBase64(String filePath) throws Exception {        
-        filePath = filePath.toString();
-        File f = new File(filePath.toString());
+        File f = new File(filePath);
         FileInputStream fis = null;
         String changeString = null;
         if (f.exists()) {
