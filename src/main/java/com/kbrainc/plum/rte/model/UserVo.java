@@ -1,14 +1,11 @@
 package com.kbrainc.plum.rte.model;
 
+import lombok.Data;
+import org.springframework.security.core.AuthenticatedPrincipal;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
-
-import org.springframework.security.core.AuthenticatedPrincipal;
-
-import com.kbrainc.plum.rte.model.ParentVo;
-
-import lombok.Data;
 
 @Data
 public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializable {

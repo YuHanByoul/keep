@@ -1,23 +1,16 @@
 package com.kbrainc.plum.rte.model;
 
-import java.io.Serializable;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.model.ParentRequestVo;
-import com.kbrainc.plum.rte.service.ResCodeService;
-import com.kbrainc.plum.rte.util.CommonUtil;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 
