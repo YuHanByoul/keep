@@ -70,7 +70,7 @@ public class UUIdGnr {
             	//2017-02-03 장동한 시큐어코딩(ES)-시큐어 코딩 적절하지 않은 난수값 사용[CWE-330]
             	addressBytes[i] = (byte) (random.nextDouble() * 255 + 0);
             }
-        } else {
+        } else { 
             if (address.indexOf(".") > 0) {
                 // we should have an IP
                 StringTokenizer stok = new StringTokenizer(address, ".");
