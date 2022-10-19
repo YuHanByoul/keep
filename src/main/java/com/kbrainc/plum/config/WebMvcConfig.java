@@ -34,7 +34,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         logger.info("=========== Add Interceptors ===========");
-        registry.addInterceptor(interceptor).addPathPatterns("/","/**/*.html","/**/*.do");
+        registry.addInterceptor(interceptor).addPathPatterns("/","/**/*.html","/**/*.do").excludePathPatterns("/mng/monitor/reloadMenuInfo.do", "/mng/monitor/reloadSecurityMetadataSource.do", "/mng/monitor/reloadCodeInfo.do");
     }
 
     @Override
