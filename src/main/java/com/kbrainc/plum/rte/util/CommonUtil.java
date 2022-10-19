@@ -1,9 +1,5 @@
 package com.kbrainc.plum.rte.util;
 
-import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
-import com.kbrainc.plum.rte.crypto.CryptoAES256;
-import com.kbrainc.plum.rte.idgnr.UUIdGnr;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,11 +22,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
+import com.kbrainc.plum.rte.crypto.CryptoAES256;
+import com.kbrainc.plum.rte.idgnr.UUIdGnr;
 
 /**
  * 
@@ -53,7 +52,7 @@ public class CommonUtil {
     private static Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
 
     private static String[] wasIpport = applicationConfig.getStringArray("admin.was.ipport");
-
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수
