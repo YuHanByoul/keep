@@ -7,6 +7,8 @@ import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.kbrainc.plum.rte.util.CommonUtil;
+
 /**
  * 
  * application 프로퍼티 객체를 관리한다.
@@ -27,6 +29,7 @@ public class ConfigurationFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);
     private static ConfigurationFactory instance = null;
     private PropertiesConfiguration applicationConfig = null;
+    public static String profile;
 
     /**.
      * @Title : getInstance
@@ -41,6 +44,7 @@ public class ConfigurationFactory {
                 try {
                     p1 = new PropertiesConfiguration("application.properties");
                     p1.setReloadingStrategy(new FileChangedReloadingStrategy());
+                    p1.append(new PropertiesConfiguration("application-" + profile + ".properties"));
                     instance.setApplicationConfig(p1);
                 } catch (ConfigurationException e) {
                     LOGGER.error(e.getMessage());
