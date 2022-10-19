@@ -52,7 +52,7 @@ public class CommonUtil {
 
     private static Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
 
-    private static String[] wasIpport = applicationConfig.getStringArray("admin.was.ipport");;
+    private static String[] wasIpport = applicationConfig.getStringArray("admin.was.ipport");
 
     /**
      * @Title : getBean
