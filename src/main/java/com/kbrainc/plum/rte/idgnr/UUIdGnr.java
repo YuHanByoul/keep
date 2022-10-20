@@ -10,6 +10,10 @@ import java.util.Random;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import org.egovframe.rte.fdl.cmmn.exception.FdlException;
+
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -75,26 +79,28 @@ public class UUIdGnr {
                 // we should have an IP
                 StringTokenizer stok = new StringTokenizer(address, ".");
                 if (stok.countTokens() != 4) {
-                    throw new Exception(ERROR_STRING);
+                    throw new CustomRuntimeException(ERROR_STRING);
                 }
                 addressBytes[0] = (byte) 255;
                 addressBytes[1] = (byte) 255;
                 int i = 2;
 				while (stok.hasMoreTokens()) {
-					addressBytes[i++] = Integer.valueOf(stok.nextToken(), 16).byteValue();
+					//addressBytes[i++] = Integer.valueOf(stok.nextToken(), 16).byteValue();
+					addressBytes[i++] = Byte.parseByte(stok.nextToken());
 				}
             } else if (address.indexOf(":") > 0) {
                 // we should have a MAC
                 StringTokenizer stok = new StringTokenizer(address, ":");
                 if (stok.countTokens() != 6) {
-                    throw new Exception(ERROR_STRING);
+                    throw new CustomRuntimeException(ERROR_STRING);
                 }
                 int i = 0;
 				while (stok.hasMoreTokens()) {
-					addressBytes[i++] = Integer.valueOf(stok.nextToken(), 16).byteValue();
+					//addressBytes[i++] = Integer.valueOf(stok.nextToken(), 16).byteValue();
+					addressBytes[i++] = Byte.parseByte(stok.nextToken());
 				}
             } else {
-                throw new Exception(ERROR_STRING);
+                throw new CustomRuntimeException(ERROR_STRING);
             }
         }
         // CHECKSTYLE:ON

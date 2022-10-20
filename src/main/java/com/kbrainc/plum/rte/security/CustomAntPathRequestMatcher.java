@@ -269,6 +269,7 @@ public final class CustomAntPathRequestMatcher
             return HttpMethod.valueOf(method);
         }
         catch (IllegalArgumentException e) {
+        	LOGGER.debug(e);
         }
 
         return null;

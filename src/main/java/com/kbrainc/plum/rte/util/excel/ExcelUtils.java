@@ -18,9 +18,11 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import liquibase.util.csv.CSVReader;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -38,6 +40,7 @@ import liquibase.util.csv.CSVReader;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Slf4j
 public class ExcelUtils {
 	/**
 	 * 업로드된 엑셀파일을 리스트 객체에 담는다.
@@ -111,9 +114,9 @@ public class ExcelUtils {
 				//CELL이 하나라도 빈값이 아닌경우 리스트에 넣어줌
 				if(blankCnt < firstCells){
 					rowList.add(cellList);
-					
+				} 
 				//CELL이 모두 빈값인경우는 리스트에 넣지 않음
-				} else {}
+				//else {}
 				
 			}
 			
@@ -143,7 +146,7 @@ public class ExcelUtils {
 		int firstCells = 0;		
 		int firstCells2 = 0;		
 		if (rows <= 0) {
-			throw new Exception("Read 할 데이터가 엑셀에 존재하지 않습니다.");
+			throw new CustomRuntimeException("Read 할 데이터가 엑셀에 존재하지 않습니다.");
 		}
 		
 		// 엑셀데이터를 배열에 저장
@@ -211,9 +214,9 @@ public class ExcelUtils {
 				//CELL이 하나라도 빈값이 아닌경우 리스트에 넣어줌
 				if(blankCnt < firstCells){
 					rowList.add(cellList);
-					
+				} 
 				//CELL이 모두 빈값인경우는 리스트에 넣지 않음
-				} else {}
+				//else {}
 				
 			 }
 		}		

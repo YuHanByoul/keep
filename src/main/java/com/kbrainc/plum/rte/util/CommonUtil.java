@@ -29,6 +29,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 import com.kbrainc.plum.rte.crypto.CryptoAES256;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.idgnr.UUIdGnr;
 
 /**
@@ -321,7 +322,7 @@ public class CommonUtil {
              } 
              encodedFilename = sb.toString(); 
          } else { 
-             throw new RuntimeException("Not supported browser"); 
+             throw new CustomRuntimeException("Not supported browser"); 
          } 
          return encodedFilename; 
      }
