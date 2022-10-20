@@ -64,9 +64,6 @@ public class UUIdGnr {
     		return;
     	}
         byte[] addressBytes = new byte[6];
-        byte[] addressBytes2 = new byte[6];
-        byte[] addressBytes3 = new byte[6];
-        byte[] addressBytes4 = new byte[6];
         
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
