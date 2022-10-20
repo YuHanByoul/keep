@@ -64,6 +64,10 @@ public class UUIdGnr {
     		return;
     	}
         byte[] addressBytes = new byte[6];
+        byte[] addressBytes2 = new byte[6];
+        byte[] addressBytes3 = new byte[6];
+        byte[] addressBytes4 = new byte[6];
+        
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         if (null == address) {
@@ -85,9 +89,10 @@ public class UUIdGnr {
                 addressBytes[1] = (byte) 255;
                 int i = 2;
 				while (stok.hasMoreTokens()) {
-					//addressBytes[i++] = Integer.valueOf(stok.nextToken(), 16).byteValue();
-					addressBytes[i++] = Byte.parseByte(stok.nextToken());
+					Integer intValue = Integer.valueOf(stok.nextToken(),16);
+					addressBytes[i++] = intValue.byteValue();
 				}
+				
             } else if (address.indexOf(":") > 0) {
                 // we should have a MAC
                 StringTokenizer stok = new StringTokenizer(address, ":");
@@ -96,8 +101,9 @@ public class UUIdGnr {
                 }
                 int i = 0;
 				while (stok.hasMoreTokens()) {
-					//addressBytes[i++] = Integer.valueOf(stok.nextToken(), 16).byteValue();
-					addressBytes[i++] = Byte.parseByte(stok.nextToken());
+					
+					Integer intValue = Integer.valueOf(stok.nextToken(),16);
+					addressBytes[i++] = intValue.byteValue();
 				}
             } else {
                 throw new CustomRuntimeException(ERROR_STRING);
