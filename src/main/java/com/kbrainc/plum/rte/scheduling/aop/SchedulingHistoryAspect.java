@@ -18,7 +18,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.rte.scheduling.annotation.SchedulingHistory;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.scheduling.annotation.Triggerid;
 
 /**
@@ -82,7 +82,7 @@ public class SchedulingHistoryAspect {
         	if (transactional != null) {
         		this.namedParameterJdbcTemplate.update("COMMIT", paramSource);
         	}
-        	throw new RuntimeException(throwable);
+        	throw new CustomRuntimeException(throwable);
         }
     }
 	
@@ -93,6 +93,6 @@ public class SchedulingHistoryAspect {
                 return (int) args[i];
             }
         }
-        throw new RuntimeException("can't find Triggerid");
+        throw new CustomRuntimeException("can't find Triggerid");
     }
 }

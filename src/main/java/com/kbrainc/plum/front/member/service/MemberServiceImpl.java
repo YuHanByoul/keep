@@ -56,18 +56,25 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
        memberVo.setPwd(password);
        
 	   int resRegisterMember = memberDao.insertMember(memberVo);
-	   if(resRegisterMember > 0 ) {
-		   // T: 선생님 , G:일반, S:학생 
-		   if(memberVo.getUserSeCd().equals("T")){
-			   teacherVo.setUserid(memberVo.getUserid());
-			   memberDao.insertMemberTeacher(teacherVo);
-			   memberDao.updateMember(memberVo);
-		   }else if(memberVo.getUserSeCd().equals("S")){
-			  //TO-DO
-		   }else {
-			 //TO-DO
-		   }
-	   }
+	   
+	   //TO-DO    
+	   //상황에 맞도록 멤버 member detail insert 및 update 작업 할 것
+	   //PMD 검사로 인하 주석 처리(기존 하이점프 역할로 되어 있음 ) 작업 이후 삭제 할것
+	   
+	   //if(resRegisterMember > 0 ) {
+		//// T: 선생님 , G:일반, S:학생 
+		//if(memberVo.getUserSeCd().equals("T")){
+		// teacherVo.setUserid(memberVo.getUserid());
+		// memberDao.insertMemberTeacher(teacherVo);
+		// memberDao.updateMember(memberVo);
+		//}else if(memberVo.getUserSeCd().equals("S")){
+		////TO-DO
+		//}else {
+		///TO-DO
+		//}
+		   
+	  //}
+	   
 	   return resRegisterMember;
    };
    
@@ -89,18 +96,23 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 	   memberVo.setPwd(password);
 	   
 	   int resInt = memberDao.updateMember(memberVo);
+
+		//TO-DO    
+		//상황에 맞도록 멤버 member detail update 작업 할 것
+		///PMD 검사로 인하 주석 처리(기존 하이점프 역할로 되어 있음 ) 작업 이후 삭제 할것
 	   
-	   if(resInt > 0 ) {
-		   // T: 선생님 , G:일반, S:학생 
-		   if(memberVo.getUserSeCd().equals("T")){
-			   teacherVo.setUserid(memberVo.getUserid());
-			   memberDao.updateMemberTeacher(teacherVo);
-		   }else if(memberVo.getUserSeCd().equals("S")){
-			  //TO-DO
-		   }else {
-			 //TO-DO
-		   }
-	   }
+	   //if(resInt > 0 ) {
+		// // T: 선생님 , G:일반, S:학생 
+		// if(memberVo.getUserSeCd().equals("T")){
+		//     teacherVo.setUserid(memberVo.getUserid());
+		//	   memberDao.updateMemberTeacher(teacherVo);
+		// }else if(memberVo.getUserSeCd().equals("S")){
+		//	  //TO-DO
+		// }else {
+		//	 //TO-DO
+		// }
+	   //}
+	   
 	   return resInt;
    };
    

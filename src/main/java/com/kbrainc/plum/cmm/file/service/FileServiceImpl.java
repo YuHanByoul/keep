@@ -17,8 +17,9 @@ import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileGrpDao;
 import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.file.FileStorageProperties;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
@@ -85,7 +86,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
 			fileGrpDao.newFileGrp(fileGrpVo);
 			
 			if(fileGrpVo.getFilegrpid() <= 0) {
-				throw new Exception("File Group ID를 생성하지 못했습니다.");
+				throw new CustomRuntimeException("File Group ID를 생성하지 못했습니다.");
 			}
 			
 			logger.info("New FileGrp ID : {}", fileGrpVo.getFilegrpid());

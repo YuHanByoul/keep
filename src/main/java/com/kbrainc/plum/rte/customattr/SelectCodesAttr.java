@@ -76,8 +76,7 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
 
         while (checkDepth.size() > 0) {
             List<CodeInfoVo> returnList = new ArrayList<CodeInfoVo>();
-            if (checkDepth.size() <= 0) {
-            } else {
+            if (checkDepth.size() > 0) {
                 for (CodeInfoVo codeInfoVo : checkDepth) {
                     returnList.addAll(resCode.getCodeList(grpcd, codeInfoVo.getCd()));
                 }

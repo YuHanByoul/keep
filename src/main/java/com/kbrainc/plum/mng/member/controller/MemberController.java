@@ -295,10 +295,12 @@ public class MemberController {
         }
         
         retVal = memberService.modifyMember(memberVo, memberDtlVo);
+
+        //사용자의 세션을 차단하는 기능을 구현
+        //PMD 검사로 인한 주석처리 구현시 주석해제 할 것
         
-        if ("Y".equals(memberVo.getAcntLockYn())) {
-            //사용자의 세션을 차단하는 기능을 구현
-        }
+        //if ("Y".equals(memberVo.getAcntLockYn())) {
+        //}
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

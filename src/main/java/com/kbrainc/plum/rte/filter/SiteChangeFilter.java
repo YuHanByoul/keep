@@ -19,10 +19,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.kbrainc.plum.rte.exception.PageNotFoundException;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResSiteService;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
 * 사이트 변경시 역할을 변경해주는 필터.
@@ -39,6 +40,7 @@ import com.kbrainc.plum.rte.service.ResSiteService;
 * @Version     : 
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
+@Slf4j
 public class SiteChangeFilter implements Filter {
 
     private final ResSiteService resSiteService;
@@ -84,9 +86,10 @@ public class SiteChangeFilter implements Filter {
                     
                     sysSeCd = siteInfo.getSysSeCd();
                 }
+    
                 
             } catch (Exception e) {
-                
+            	log.debug("Exception:"+e);
             }
     
             chain.doFilter(req, res);

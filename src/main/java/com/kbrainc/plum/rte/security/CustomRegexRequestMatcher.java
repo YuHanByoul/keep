@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.jaas.LoginExceptionResolver;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
@@ -42,8 +43,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  * @since 3.1
  */
 public final class CustomRegexRequestMatcher implements RequestMatcher {
-    //private final static Log LOGGER = LogFactory.getLog(CustomRegexRequestMatcher.class);
-
+    private final static Log LOGGER = LogFactory.getLog(CustomRegexRequestMatcher.class);
     private final Pattern pattern;
     private final HttpMethod httpMethod;
 
@@ -133,6 +133,7 @@ public final class CustomRegexRequestMatcher implements RequestMatcher {
             return HttpMethod.valueOf(method);
         }
         catch (IllegalArgumentException e) {
+        	LOGGER.debug(e);
         }
 
         return null;
