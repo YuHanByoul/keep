@@ -190,10 +190,10 @@ public class FileController {
      * @throws UnsupportedEncodingException :
      */    
     @GetMapping("/deleteFile.do")
-    public @ResponseBody Map<String,Object> deleteFile(@RequestParam(required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request) throws UnsupportedEncodingException {
+    public @ResponseBody Map<String,Object> deleteFile(@RequestParam(required=true) String fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request) throws UnsupportedEncodingException {
     	FileVo fileVo =new FileVo();
     	Map<String, Object> resultMap = new HashMap<>();
-    	fileVo.setFileid(fileid);
+    	fileVo.setFileid(Integer.valueOf(fileid));
     	fileVo.setFileIdntfcKey(fileIdntfcKey);
     	try {
     		
