@@ -4,7 +4,11 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,23 +22,16 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 
-import com.kbrainc.plum.cmm.file.model.FileDao;
-import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.cmm.file.service.FileStorageService;
-import com.kbrainc.plum.cmm.service.SmsService;
 import com.kbrainc.plum.mng.member.model.MemberDao;
 import com.kbrainc.plum.mng.member.model.MemberDtlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.FormChecker;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
-import com.kbrainc.plum.rte.util.mail.service.MailService;
 
 /**
  * 
@@ -134,8 +131,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 
 		list = memberDao.selectMemberExcelList(memberVo);
 		
-		//DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd  hh:mm:ss");
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
 		
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
@@ -272,16 +268,19 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 			 */
 			//public static String Validate(String data, String dispName, String nullYn, int len, String dataType) {
 		    
-		    
-		    //아이디 정합서 ㅇ체크 및 중복여부 체크 
+		    //아이디 정합성 체크 및 중복여부 체크 
 		    MemberVo paramVo = new MemberVo();
-		    checkStr = FormChecker.Validate((String)data.get(0), "아이디", "N", 100 , "S");
 		    
 			paramVo.setAcnt((String)data.get(0));
 			String isDUplicated = memberDao.checkIdYn(paramVo);
+						
 			if(isDUplicated.equals("Y")) {
+			    index++;
 				checkStr = "이미 사용하고 있는아이디입니다.";
+				checkStrSum += index+". "+checkStr;
 			}
+			
+			checkStr = FormChecker.Validate((String)data.get(0), "아이디", "N", 100 , "S");
 		   	if(!checkStr.equals("")){
 		   		if (index > 0) {
 		   			checkStrSum += "<br/>";
@@ -367,14 +366,14 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 	}
     
     
-	public int memberWriteExcel(ArrayList list) throws Exception{
+	public int memberWriteExcel(ArrayList list ,UserVo user) throws Exception{
 		int retVal=0;
 		if(list != null){
 			ArrayList memberList = null;
 			
 			for(int i=1; i<list.size(); i++ ){ //해더 제외
 				memberList = (ArrayList)list.get(i);
-				insertMemberByExcelWrite(memberList);
+				insertMemberByExcelWrite(memberList , user);
 			}
 		}	
 		retVal = 1;
@@ -382,7 +381,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 	}
     
 	
-	public int insertMemberByExcelWrite(ArrayList data) throws Exception {
+	public int insertMemberByExcelWrite(ArrayList data ,UserVo user) throws Exception {
 		
 		int retVal = 0;
 		
@@ -406,14 +405,21 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 		memVo.setPrvcyAgreYn((String)data.get(6));
 		//계정잠김여부
 		memVo.setAcntLockYn("N");
-		//삭데여부
+		//삭제여부
 		memVo.setDelYn("N");
+		
 		//사용자 구분 코드
 		memVo.setUserSeCd("P");
+		//사용자 상태 코드
+		memVo.setSttsCd("1");
+		
+		memVo.setUser(user);
 		
         retVal += memberDao.insertMember(memVo);
+        
         // selectKey userid 받아옴
         memDtlVo.setUserid(memVo.getUserid());
+        memDtlVo.setUser(user);
         //소개
         memDtlVo.setIntrcn((String)data.get(7));
         retVal += memberDao.insertMemberDtl(memDtlVo);

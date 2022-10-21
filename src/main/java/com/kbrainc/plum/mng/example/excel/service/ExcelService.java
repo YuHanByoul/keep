@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
  * 
@@ -32,6 +33,6 @@ public interface ExcelService {
 
 	public Map<String, Object> memberExcelDatalValidationCheck(ArrayList list) throws Exception;
 
-	public int memberWriteExcel(ArrayList list) throws Exception;
+	public int memberWriteExcel(ArrayList list,  UserVo user) throws Exception;
 
 }

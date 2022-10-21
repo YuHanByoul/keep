@@ -16,9 +16,10 @@ import org.springframework.util.StringUtils;
  *
  */
 public class FormChecker {
-	
+    
 	public static boolean isNull(String m) {
-		return StringUtils.hasText(m);
+	    if(m == null || m == "" || !StringUtils.hasText(m))return true;
+	    else return false;
 	}
 
 	public static boolean isDate(String date) {
@@ -269,7 +270,7 @@ public class FormChecker {
 	public static String Validate(String data, String dispName, String nullYn, int len, String dataType) {
 		if ("N".equals(nullYn)) {
 			if (isNull(data)) {
-				return dispName + "은 필수 입력값 입니다.";
+				return dispName + "은(는) 필수 입력값 입니다.";
 			}
 		}
 		String tmpData = data;

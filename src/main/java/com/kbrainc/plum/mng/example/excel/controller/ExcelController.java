@@ -6,10 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.text.View;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -17,11 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.kbrainc.plum.mng.example.excel.service.ExcelService;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.ExcelUtil;
 
 /**
@@ -88,16 +86,17 @@ public class ExcelController {
 	}
 	
 	/**
-	 * 회원정보 엑셀 데이터 정합성 체크
+	 * 회원정보 엑셀 일괄 등록
 	 */
 	@RequestMapping("/example/mng/memberExcelWrite.do")
 	@ResponseBody
-	public Map<String,Object> memberExcelWrite (MultipartHttpServletRequest multiRequest,HttpServletResponse response,ModelMap model)throws Exception{
+	public Map<String,Object> memberExcelWrite (MultipartHttpServletRequest multiRequest,HttpServletResponse response,ModelMap model ,@UserInfo UserVo user)throws Exception{
 		
 		Map<String,Object> map = new HashMap();
 		
 		MultipartFile file = multiRequest.getFile("p_excelFile");
 		ArrayList excelList = null;
+		
 		//엑셀내용을 리스트로
 		if(file.getOriginalFilename().indexOf(".xlsx") >-1){
 			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
@@ -105,7 +104,7 @@ public class ExcelController {
 			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
 		}
 		
-		int retVal = excelService.memberWriteExcel(excelList);//엑셀 체크
+		int retVal = excelService.memberWriteExcel(excelList , user);//엑셀 체크
 		
 		String msg = "";
 		
