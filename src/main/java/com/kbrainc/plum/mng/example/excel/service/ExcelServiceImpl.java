@@ -131,8 +131,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 
 		list = memberDao.selectMemberExcelList(memberVo);
 		
-		//DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd  hh:mm:ss");
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
 		
 		if(list != null && list.size() > 0){
 			int cellnum = 0;
