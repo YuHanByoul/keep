@@ -1,12 +1,12 @@
 <form id ="userInsertForm">
-<input type="hidden" id="user_se_cd" name="user_se_cd" value="P">
+<input type="hidden" id="userSeCd" name="userSeCd" value="P">
 <input type="hidden" id="email" name= "email">
-<input type="hidden" name="pphoto_filegrpid" id="pphotoFilegrpid" value="0">
-<input type="hidden" name="pphoto_fileid" id="pphotoFileid" value="0">
-<input type="hidden" id="area_cd" name="area_cd">
-<input type="hidden" id="del_yn" name="del_yn" value="N">
-<input type="hidden" id="stts_cd" name="stts_cd" value="1">
-<input type="hidden" id="moon_yn" name="moon_yn" value="N">
+<input type="hidden" name="pphotoFilegrpid" id="pphotoFilegrpid" value="0">
+<input type="hidden" name="pphotoFileid" id="pphotoFileid" value="0">
+<input type="hidden" id="areaCd" name="areaCd">
+<input type="hidden" id="delYn" name="delYn" value="N">
+<input type="hidden" id="sttsCd" name="sttsCd" value="1">
+<input type="hidden" id="moonYn" name="moonYn" value="N">
 
 	<!-- Hidden Contents Start -->
 	<div class="panel panel-default" id="hiddenCon">
@@ -177,7 +177,7 @@
 				</div>
 				<div class="list-row">
 					<strong class="control-label">주소 2</strong>
-					<div class="form-con"><input type="text" id="addr_dtl" name="addr_dtl" class="form-control input-sm"></div>
+					<div class="form-con"><input type="text" id="addrDtl" name="addrDtl" class="form-control input-sm"></div>
 				</div>
 				<div class="list-row">
 					<strong class="control-label">마케팅 이메일 동의 여부</strong>
@@ -199,7 +199,7 @@
 						<th:block sec:authorize-url="/uploadFile.do">
 						<p class="btn-file">
 							<span class="btn btn-sm btn-primary">사진등록/수정</span>
-							<input type="file" name="pphoto_file" accept="image/jpeg,image/gif,image/png" id="pphotoFile">
+							<input type="file" name="pphotoFile" accept="image/jpeg,image/gif,image/png" id="pphotoFile">
 						</p>
 						</th:block>
 					</div>
@@ -231,7 +231,7 @@
 	    	,chkpwd     : 	{ required: true ,isBlank : true , passwordPolicy2 :true , minlength: 8, maxlength: 20 ,isHangulOff :true }
 	    	,mobno      :   { number: true, minlength: 11, maxlength: 11 }
 	    	,addr       :   { maxlength: 200 }
-	    	,addr_dtl   :   { maxlength: 400 }
+	    	,addrDtl   :   { maxlength: 400 }
 	    	,intrcn     : 	{ required: true , maxlength: 50 }
 	    },
 	    messages: {
@@ -243,7 +243,7 @@
 	    	,chkpwd     :   { required: "비밀번호 확인란을 입력해주십시오." , isBlank : "입력값에 공백이 있습니다.", passwordPolicy2 : "영문,숫자,특수기호가  하나 이상 포함되어야 합니다." ,minlength:"비밀번호는 8자 이상이어야 합니다.", maxlength: "비밀번호는 20자 이하여야 합니다." ,isHangulOff :"한글은 사용하실 수 없습니다."    }
 	    	,mobno      :   { number: "휴대폰번호는 숫자만 입력가능합니다.", minlength: "휴대폰번호는 11자리 이어야 합니다.", maxlength: "휴대폰번호는 11자리 이어야 합니다." }
 	    	,addr       :   { maxlength: "주소1은 200자 이하여야 합니다." }
-	    	,addr_dtl   :   { maxlength: "주소2는 400자 이하여야 합니다." }
+	    	,addrDtl   :   { maxlength: "주소2는 400자 이하여야 합니다." }
 	    	,intrcn     :   { required: "소개를 입력해주십시오." , maxlength: "소개는 50글자 이하여야 합니다." }
 	    }
 	})
@@ -298,23 +298,22 @@
   	 	if(!confirm("저장하시겠습니까?")) return;
   	 	
   	 	if($('input:radio[name=acnt_lock_yn]:checked').val() == "Y"){
-  	 		if($('#acnt_lock_cd').val() == "101101"){ // 가입대기
-  	 			$('#del_yn').val('N');
-  	 			$('#stts_cd').val('2'); // 대기
-  	 		}else if($('#acnt_lock_cd').val() == "101106"){ // 탈퇴
-  	 			$('#del_yn').val('Y');
-  	 			$('#stts_cd').val('9'); // 탈퇴
+  	 		if($('#acntLockCd').val() == "101101"){ // 가입대기
+  	 			$('#delYn').val('N');
+  	 			$('#sttsCd').val('2'); // 대기
+  	 		}else if($('#acntLockCd').val() == "101106"){ // 탈퇴
+  	 			$('#delYn').val('Y');
+  	 			$('#sttsCd').val('9'); // 탈퇴
   	 		}else{
-  	 			$('#del_yn').val('N');
-  		 		$('#stts_cd').val('1'); // 가입	
+  	 			$('#delYn').val('N');
+  		 		$('#sttsCd').val('1'); // 가입	
   	 		}
   	 	}else{
-  	 		$('#del_yn').val('N');
-	 		$('#stts_cd').val('1'); // 가입
+  	 		$('#delYn').val('N');
+	 		$('#sttsCd').val('1'); // 가입
   	 	}
   	 	    
 	    var data =  $("#userInsertForm").serialize() ;
-  	 	
 	    if(displayWorkProgress()){
 			$.ajax({
 				url : "/mng/member/insertMember.do",
@@ -357,8 +356,10 @@
 	$('#pphotoFile').on('change', function(event) {
 		var formData = new FormData();
 		var objFile = event.target;
+		
 		formData.append("file", objFile.files[0]);
-		formData.append("filegrp_nm", "user_profile");
+		formData.append("filegrpNm", "user_profile");
+		
 		if($('#pphotoFilegrpid').val() != '')
 			formData.append("filegrpid", $('#pphotoFilegrpid').val());
 
@@ -375,7 +376,7 @@
 					}else if(response.filegrpid != undefined && response.filegrpid != ''){
 						$("#pphotoFilegrpid").val(response.filegrpid);
 						$("#pphotoFileid").val(response.fileid);
-						$("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.file_idntfc_key);
+						$("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.fileIdntfcKey);
 					}
 					closeWorkProgress();
 				}
@@ -395,10 +396,10 @@
                 } else {
                     addr = data.jibunAddress;
                 }
-                $('#area_cd').val(data.sigunguCode);
+                $('#areaCd').val(data.sigunguCode);
                 $('#zip').val(data.zonecode);
                 $('#addr').val(addr);
-                $('#addr_dtl').focus();
+                $('#addrDtl').focus();
             }
         }).open();
 	}
