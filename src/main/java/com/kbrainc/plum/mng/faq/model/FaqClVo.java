@@ -15,6 +15,7 @@ public class FaqClVo extends ParentRequestVo {
 	private String clNm;
 	private String userSeCd;
 	private Integer ord;
+	private Integer newOrd;
 	private String useYn;
 
     @Override

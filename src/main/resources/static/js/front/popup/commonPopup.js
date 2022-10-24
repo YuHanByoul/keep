@@ -22,17 +22,12 @@ function fn_openCommonPopup(item){
 
 }
 function getDataForCommnonPopup( siteid, menuid ){
-		let data = {
-				"siteid": siteid,
-				"menuid": menuid
-		};
-		try{
-			if(popMain){
-				data = {"siteid": siteid,"expsrLcCd": "M"};
-			}
-		}catch(e){
-			
-		}
+    
+		let data = { "siteid": siteid,"menuid": menuid};
+        try{
+            if(isMainPage){ data = {"siteid": siteid,"expsrLcCd": "M"}; }
+        }catch(e){ console.log("no main Page parameter")}
+        
 		$.ajax({
             type: "POST",
             url: "/front/pop/getDataForCommnonPopup.do",
@@ -49,13 +44,13 @@ function fn_neverShow(id,isChecked){
 
 function getLayerStr(item){
 	
-	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="overflow:auto;  width:'+item.widthSize+'px; height : '+item.vrtclSize+'px; ">';
+	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="cursor:move; overflow:auto;  width:'+item.widthSize+'px; height : '+item.vrtclSize+'px; ">';
 	    layerStr += '        <div class="panel panel-default">';
-	    layerStr += '	      <div class="panel-heading">';
+	    layerStr += '	      <div class="panel-heading" style="cursor:move;" id="layer'+item.popupntcid+'header">';
 	    layerStr += '		    <h4>'+item.title+'</h4>';
 	    layerStr += '		     <ul class="links">';
 	    layerStr += '		    	<li>';
-	    layerStr += '		    	  <a class="glyphicon glyphicon-remove modal-close " aria-hidden="true" href="javascript:void(0);"> X </a>';
+	    layerStr += '		    	  <a class="glyphicon glyphicon-remove modal-close " aria-hidden="true" href="javascript:void(0);" style="cursor:pointer;"> X </a>';
 	    layerStr += '		    	</li>';
 	    layerStr += '		     </ul>';
 	    layerStr += '		   </div>';
@@ -99,10 +94,10 @@ function layer_popup(el,item){
     //isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
     isDim ? $("#dim-layer-"+item.popupntcid).fadeIn() : $el.fadeIn();
 
-    var $elWidth = ~~($el.outerWidth()),
-        $elHeight = ~~($el.outerHeight()),
-        docWidth = $(document).width(),
-        docHeight = $(document).height();
+    //var $elWidth = ~~($el.outerWidth()),
+    //    $elHeight = ~~($el.outerHeight()),
+    //    docWidth = $(document).width(),
+    //    docHeight = $(document).height();
 
     //if(item.left_lc != 0 || item.top_lc != 0 ){
 	//    $el.css({top: item.top_lc,left: item.left_lc})
@@ -126,6 +121,8 @@ function layer_popup(el,item){
         $("#dim-layer-"+item.popupntcid).fadeOut();
         return false;
     });
+    
+    dragElement($el);
  }
 
   function fn_setPopupCookie(id){
@@ -137,16 +134,67 @@ function layer_popup(el,item){
     
 }
 
+//2022-10-24 modal draggable  기능 추가 
+function dragElement(elmnt) {
+    
+  var id = $(elmnt).attr("id");
+  elmnt = document.getElementById(id);
+  
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
+  
+    //modal 전체 영역에서 드래그 가능하도록
+  elmnt.onmousedown = dragMouseDown;
 
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
 
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    if((elmnt.offsetTop - pos2) < 0){
+        elmnt.style.top = 0+"px";
+    }else if (elmnt.offsetTop+elmnt.offsetHeight > window.innerHeight){
+        elmnt.style.top = window.innerHeight-elmnt.offsetHeight-5+"px";
+    }else{
+        elmnt.style.top = (elmnt.offsetTop - pos2)+"px";
+    }
+    
+    if((elmnt.offsetLeft - pos1) < 0){
+        elmnt.style.left = 0+"px";
+    }else if (elmnt.offsetWidth +elmnt.offsetLeft > window.innerWidth-5){
+        elmnt.style.left = (window.innerWidth - elmnt.offsetWidth -5)+"px";
+    }else{
+        elmnt.style.left = (elmnt.offsetLeft - pos1)+"px";
+    }
+  }
 
-
-
-
-
-
-
-
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
 
 
 
