@@ -51,7 +51,7 @@ function getLayerStr(item){
 	
 	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="overflow:auto;  width:'+item.widthSize+'px; height : '+item.vrtclSize+'px; ">';
 	    layerStr += '        <div class="panel panel-default">';
-	    layerStr += '	      <div class="panel-heading">';
+	    layerStr += '	      <div class="panel-heading" style="cursor:move;" id="layer'+item.popupntcid+'header">';
 	    layerStr += '		    <h4>'+item.title+'</h4>';
 	    layerStr += '		     <ul class="links">';
 	    layerStr += '		    	<li>';
@@ -126,6 +126,8 @@ function layer_popup(el,item){
         $("#dim-layer-"+item.popupntcid).fadeOut();
         return false;
     });
+    
+    dragElement($el);
  }
 
   function fn_setPopupCookie(id){
@@ -137,16 +139,51 @@ function layer_popup(el,item){
     
 }
 
+//2022-10-24 modal draggable  기능 추가 
+function dragElement(elmnt) {
+    
+  var id = $(elmnt).attr("id");
+  elmnt =   document.getElementById(id);
+  
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    // if present, the header is where you move the DIV from:
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    // otherwise, move the DIV from anywhere inside the DIV:
+    elmnt.onmousedown = dragMouseDown;
+  }
 
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
 
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
 
-
-
-
-
-
-
-
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
 
 
 

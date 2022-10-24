@@ -69,7 +69,7 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
    // @Transactional
     @Override
     public boolean modifyFaqOrdUp(FaqVo param) {
-        param.setOrd(param.getOrd() - 1);
+        param.setNewOrd(param.getOrd() - 1);
         faqDao.modifyFaqOrdUp(param);
         faqDao.modifyFaqOrdByfaqid(param);
         return true;
@@ -78,7 +78,7 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
    // @Transactional
     @Override
     public boolean modifyFaqOrdDown(FaqVo param) {
-        param.setOrd(param.getOrd() + 1);
+        param.setNewOrd(param.getOrd() + 1);
         faqDao.modifyFaqOrdDown(param);
         faqDao.modifyFaqOrdByfaqid(param);
         return true;
@@ -87,16 +87,16 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
     @Transactional
     @Override
     public boolean modifyFaqClOrdUp(FaqClVo param) {
-        param.setOrd(param.getOrd() - 1);
+        param.setNewOrd(param.getOrd() - 1);
         faqClDao.modifyFaqClOrdUp(param);
         faqClDao.modifyFaqClOrdByfaqid(param);
-        return true;
+        return true; 
     }
 
     @Transactional
     @Override
     public boolean modifyFaqClOrdDown(FaqClVo param) {
-        param.setOrd(param.getOrd() + 1);
+        param.setNewOrd(param.getOrd() + 1);
         faqClDao.modifyFaqClOrdDown(param);
         faqClDao.modifyFaqClOrdByfaqid(param);
         return true;
