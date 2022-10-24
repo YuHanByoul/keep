@@ -57,13 +57,14 @@ public class ExceptionHandlingController {
      * @param e :
      * @return
      */
+    /*
     @ExceptionHandler({ ParameterNotFoundException.class })
     public String parameterNotFoundError(ParameterNotFoundException e) {
         String msg = e.getMessage();
         logger.error("parameterNotFoundError : {}", msg);
 
         return "error/exception-001";
-    }
+    }*/
     
     /**
      * RESTFul Exception 처리.
@@ -73,6 +74,7 @@ public class ExceptionHandlingController {
      * @param e :
      * @return Map String,Object
      */
+    /*
     @ExceptionHandler({ RestfulException.class })
     @ResponseBody
     public Map<String, Object> restfullException(RestfulException e) {
@@ -84,7 +86,7 @@ public class ExceptionHandlingController {
         res.put("msg", (e.getMessage() != null) ?  e.getMessage() : "Occur RestfulException.");
         
         return res;
-    }
+    }*/
 
     /**
     * FileStorage Exception 처리.
