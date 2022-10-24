@@ -39,11 +39,11 @@ import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.exception.FiledownloadCheckerException;
 import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 @RestController
@@ -230,7 +230,7 @@ public class FileController {
             String allowdExt = "jpg,png,tif,jpeg,bmp,rle,raw,bpg,svg,gif";
             
             if(!allowdExt.contains(ext[1].toLowerCase())) {
-            	printWriter.println("<script>alert('이미지 파일만 등록 가능합니다.');</script>");
+            	printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"이미지 파일만 업로드 가능합니다.\"}}");
             	return;
             }
             
@@ -256,7 +256,7 @@ public class FileController {
             out.flush();
             
         }catch(Exception e) {
-        	printWriter.println("<script>alert('이미지 업로드에 실패했습니다.');</script>");
+            printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"이미지 업로드에 실패 하였습니다.\"}}");
         }finally {
         	printWriter.flush();
         }
