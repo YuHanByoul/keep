@@ -10,6 +10,6 @@ CKEDITOR.plugins.setLang( 'filetools', 'ko', {
 	httpError: '파일 업로드중 HTTP 오류가 발생했습니다 (오류 코드 %1).',
 	noUrlError: '업로드 주소가 정의되어 있지 않습니다.',
 	//responseError: '잘못된 서버 응답.'
-	responseError: '업로드중 오류가 발생했습니다. 이미지 파일 여부를 다시 한번 확인해주십시오.',
+	responseError: '업로드중 오류가 발생했습니다',
 	httpError415: '파일 업로드중 HTTP 오류가 발생했습니다 (415: 거부).',
 } );
