@@ -52,6 +52,9 @@ public class CustomErrorController implements ErrorController {
             } else if (statusCode == HttpStatus.NOT_FOUND.value()) { // 페이지를 찾을수 없음
                 return "error/error_404";
             } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) { // 내부서버오류
+                if (request.getAttribute(RequestDispatcher.ERROR_EXCEPTION).toString().endsWith("rejectPublicInvocations property is set to 'true'")) {
+                    return "error/error_404";
+                }
                 return "error/error_500";
             }
         }
