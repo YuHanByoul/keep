@@ -227,11 +227,22 @@ public class FileController {
             
             String[] ext = (fileName.trim()).split("\\.");
                         
-            String allowdExt = "jpg,png,tif,jpeg,bmp,rle,raw,bpg,svg,gif";
+            LinkedHashMap uploadFileExtsn = ((LinkedHashMap)this.filegrpName.get("ckEditor").get("uploadFileExtsn"));
+            if (uploadFileExtsn != null) {
+                String fileNm = upload.getOriginalFilename();
+                String fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
+                
+                if (!uploadFileExtsn.containsValue(fileExt.toLowerCase())) {
+                    printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"허용되지않는 파일형식입니다.\"}}");
+                    return;
+                }
+            }
             
-            if(!allowdExt.contains(ext[1].toLowerCase())) {
-            	printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"이미지 파일만 업로드 가능합니다.\"}}");
-            	return;
+            Integer uploadFileSize = (Integer) this.filegrpName.get("ckEditor").get("uploadFileSize");
+            long fileSizeByte = uploadFileSize * 1024 * 1024; // MB -> Byte로 변환
+            if (fileSizeByte < upload.getSize()) {
+                printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"파일사이즈는 "+uploadFileSize+" MB 이하여야 합니다.\"}}");
+                return;
             }
             
             //파일을 바이트 배열로 변환
@@ -240,14 +251,15 @@ public class FileController {
             //이미지를 업로드할 디렉토리를 정해준다
             String uploadPath=uploadImagesPath;
      
-            OutputStream out = new FileOutputStream(new File(uploadPath+"/ckEimg/"+fileName));
+            String ckImgPath = (String) this.filegrpName.get("ckEditor").get("uploadPath");
+            
+            
+            OutputStream out = new FileOutputStream(new File(uploadPath+ckImgPath+"/"+fileName));
             
             //upload directory write
             out.write(bytes);
             
-            String callback ="1";
-            
-            String fileUrl= request.getContextPath()+"/ckEimg/"+fileName;
+            String fileUrl= request.getContextPath()+ckImgPath+"/"+fileName;
             	
             //printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("+callback+",'"+fileUrl+"','이미지가 업로드되었습니다.')"+"</script>");
             //ckEditor 4.8 버전 이상부터 json 형태로 return 해야 오류 발생 없으나 커스텀 alert를 띄울 수 없음   
