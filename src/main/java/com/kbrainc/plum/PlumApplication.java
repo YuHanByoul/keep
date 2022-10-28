@@ -43,7 +43,7 @@ public class PlumApplication {
 	
     public static void main(String[] args) {
         ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-        ConfigurationFactory.profile = applicationArguments.getOptionValues("spring.profiles.active").get(0).toString();
+        ConfigurationFactory.profile = applicationArguments.getOptionValues("spring.profiles.active").get(0);
         SpringApplication.run(PlumApplication.class, args);
     }
 

@@ -126,7 +126,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
                     menuItem = menuTree.getMenuItemByMenuID(menuKey);
                     if (!menuUrl.equals(menuItem.getUrl()) && !servletPath.equals(menuItem.getUrl())) {
                         List<MenuItem> itemList = menuTree.getChildrenMenuItemByMenuID(menuKey); // 메뉴의 하위메뉴리스트
-                        if (itemList == null || itemList.size() == 0) {
+                        if (itemList.isEmpty() || itemList.size() == 0) {
                             itemList = menuTree.getMenuItemByURL(urlkey, servletPath);
                         }
                         if (itemList != null && itemList.size() > 0) {
@@ -151,7 +151,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
                                 if (!menuUrl.equals(menuItem.getUrl())) {
                                     itemList = menuTree.getChildrenMenuItemByMenuID(menuItem.getMenuid()); // p메뉴의 하위 메뉴리스트
                                     
-                                    if (itemList == null || itemList.size() == 0) {
+                                    if (itemList.isEmpty() || itemList.size() == 0) {
                                         itemList = menuTree.getMenuItemByURL(urlkey, menuUrl);
                                         if (itemList == null || itemList.size() == 0) {
                                             itemList = menuTree.getMenuItemByURL(urlkey, servletPath);

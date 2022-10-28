@@ -87,7 +87,7 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
                 result.append("checked");
             }
             if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
-                String changeFunction = tag.getAttribute("onchange").getValue().toString();
+                String changeFunction = tag.getAttribute("onchange").getValue();
                 result.append("    onchange ='").append(changeFunction).append("()' ");
             }
             
@@ -100,7 +100,7 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
                 result.append("checked");
             }
             if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
-                String changeFunction = tag.getAttribute("onchange").getValue().toString();
+                String changeFunction = tag.getAttribute("onchange").getValue();
                 result.append("    onchange ='").append(changeFunction).append("()' ");
             }
             
