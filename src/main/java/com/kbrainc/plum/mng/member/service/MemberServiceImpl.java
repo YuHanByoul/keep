@@ -345,7 +345,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             resMap = smsService.sendMultiReserveSms(mobnos, smsText, smsVo.getReserveDate()); // SMS 예약발송
         }
         
-        String result = (String)resMap.get("result");
+        String result = "";
+        if (resMap != null) {
+            result = (String)resMap.get("result");
+        }
         
         if ("OK".equals(result)) {
             return true;
