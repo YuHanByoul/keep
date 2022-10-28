@@ -64,24 +64,30 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
 
     public FileVo storeFile(MultipartFile file, FileGrpVo fileGrpVo) {
     	
-    	FileVo fileVo =new FileVo();
- 
-        // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-        //IE 브라우저에서 cleanPath 로 파일명을 못가져옴 
-        if(fileName.contains("/")) {
-          String splitFileName[] =	fileName.split("/");	
-          if(splitFileName.length > 0) {
-        	  fileName =splitFileName[splitFileName.length-1];
-          }
-        }
-        
-        fileVo.setFileSize(file.getSize());
-        
-        fileVo.setOrginlFileNm(fileName);
-        
         try {
+            if (file == null) {
+                throw new Exception();
+            }
+            
+            FileVo fileVo =new FileVo();
+     
+            // Normalize file name
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+    
+    
+            //IE 브라우저에서 cleanPath 로 파일명을 못가져옴 
+            if(fileName.contains("/")) {
+              String splitFileName[] =	fileName.split("/");	
+              if(splitFileName.length > 0) {
+            	  fileName =splitFileName[splitFileName.length-1];
+              }
+            }
+            
+            fileVo.setFileSize(file.getSize());
+            
+            fileVo.setOrginlFileNm(fileName);
+        
+        
             // Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);

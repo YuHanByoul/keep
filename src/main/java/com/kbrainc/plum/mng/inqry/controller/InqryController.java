@@ -127,7 +127,9 @@ public class InqryController {
 
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            map.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                map.put("msg", fieldError.getDefaultMessage());
+            }
             return map;
         }
         inqryAnswrVO.setUser(user);
@@ -164,7 +166,9 @@ public class InqryController {
 
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            map.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                map.put("msg", fieldError.getDefaultMessage());
+            }
             return map;
         }
 

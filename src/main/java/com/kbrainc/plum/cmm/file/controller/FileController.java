@@ -96,7 +96,10 @@ public class FileController {
             LinkedHashMap uploadFileExtsn = ((LinkedHashMap)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadFileExtsn"));
             if (uploadFileExtsn != null) {
                 String fileNm = file.getOriginalFilename();
-                String fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
+                String fileExt = "";
+                if (fileNm != null) {
+                    fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
+                }
                 
                 if (!uploadFileExtsn.containsValue(fileExt.toLowerCase(new Locale(fileExt)))) {
                     //throw new FileStorageException("파일확장자는 " + uploadFileExtsn.values() + "만 가능합니다.");
@@ -233,7 +236,10 @@ public class FileController {
             LinkedHashMap uploadFileExtsn = ((LinkedHashMap)this.filegrpName.get("ckEditor").get("uploadFileExtsn"));
             if (uploadFileExtsn != null) {
                 String fileNm = upload.getOriginalFilename();
-                String fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
+                String fileExt = "";
+                if (fileNm != null) {
+                    fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
+                }
                 
                 if (!uploadFileExtsn.containsValue(fileExt.toLowerCase(new Locale(fileExt)))) {
                     printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"허용되지않는 파일형식입니다.\"}}");
