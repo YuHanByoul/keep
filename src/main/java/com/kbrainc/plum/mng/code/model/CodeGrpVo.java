@@ -71,5 +71,8 @@ public class CodeGrpVo extends ParentRequestVo {
     public void setUpdtDt(Date updtDt) {
         this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
     }
+    public Date getUpdtDt() {
+        return updtDt != null ? (Date) updtDt.clone() : null;
+    }
 
 }

@@ -171,5 +171,13 @@ public class MenuVo {
     public void setUpdtDt(Date updtDt) {
         this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
     }
+    public Date getRegDt() {
+        return regDt != null ? (Date) regDt.clone() : null;
+    }
+
+    public Date getUpdtDt() {
+        return updtDt != null ? (Date) updtDt.clone() : null;
+    }
+
 
 }

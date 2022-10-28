@@ -119,15 +119,13 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         if(CommonUtil.isNotEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                if( !resCodeService.equals(null) ) {
-                    String cdkey = "CODE|" + this.cd;
-                    //다른 코드들을 고려한다.(JSSFC, CERT, ADDR, INDUTY)
-                    if(CommonUtil.isNotEmpty(this.cdgrpid)) {
-                        cdkey = this.cdgrpid + "|" + this.cd;
-                    }
-                    CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
-                    this.cdNm = code.getCdNm();
-                    this.upprCd = code.getUpprCd();
+                String cdkey = "CODE|" + this.cd;
+                //다른 코드들을 고려한다.(JSSFC, CERT, ADDR, INDUTY)
+                if(CommonUtil.isNotEmpty(this.cdgrpid)) {
+                    cdkey = this.cdgrpid + "|" + this.cd;
+                CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
+                this.cdNm = code.getCdNm();
+                this.upprCd = code.getUpprCd();
                 }
             }catch(Exception e) {
                 //e.printStackTrace();
@@ -143,11 +141,9 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         if(CommonUtil.isNotEmpty(this.cd) && CommonUtil.isEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                if( !resCodeService.equals(null)  ) {
                     CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.cd);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
-                }
             }catch(Exception e) {
                 return ;
             }
@@ -167,16 +163,12 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         //uppr_cd_nm를 구해서 저장 후 리턴한다.
         try {
             ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-            if( !resCodeService.equals(null) ) {
-                CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
-                this.upprCdNm = code.getCdNm();
-                return this.upprCdNm;
-            }
+            CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
+            this.upprCdNm = code.getCdNm();
+            return this.upprCdNm;
         }catch(Exception e) {
             return "";
         }
-        
-        return "";
     }
     
     /** 로그인사용자정보 */

@@ -183,5 +183,23 @@ public class MemberVo extends ParentRequestVo {
         this.expectedDelDt = expectedDelDt != null ? (Date) expectedDelDt.clone() : null;
     }
     
+    public Date getRegDt() {
+        return regDt != null ? (Date) regDt.clone() : null;
+    }
+
+    public Date getLoginDt() {
+        return loginDt != null ? (Date) loginDt.clone() : null;
+    }
+    
+    public Date getDrmncyDt() {
+        return drmncyDt != null ? (Date) drmncyDt.clone() : null;
+    }
+    public Date getPrvcyVldtyDt() {
+        return prvcyVldtyDt != null ? (Date) prvcyVldtyDt.clone() : null;
+    }
+    public Date getExpectedDelDt() {
+        return expectedDelDt != null ? (Date) expectedDelDt.clone() : null;
+    }
+
     
 }

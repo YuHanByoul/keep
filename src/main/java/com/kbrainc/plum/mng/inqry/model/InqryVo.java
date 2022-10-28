@@ -139,5 +139,22 @@ public class InqryVo extends ParentRequestVo {
         this.answrD = answrD != null ? (Date) answrD.clone() : null;
     }
 
+    
+    public Date getRegDt() {
+        return regDt != null ? (Date) regDt.clone() : null;
+    }
+
+    public Date getUpdtDt() {
+        return updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public Date getRegD() {
+        return regD != null ? (Date) regD.clone() : null;
+    }
+    
+    public Date getAnswrD() {
+        return answrD != null ? (Date) answrD.clone() : null;
+    }
+
 
 }

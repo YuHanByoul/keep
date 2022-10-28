@@ -121,7 +121,6 @@ public class CodeVo extends ParentRequestVo implements Serializable {
         if(CommonUtil.isNotEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                if( !resCodeService.equals(null) ) {
                     String cdkey = "CODE|" + this.cd;
                     //다른 코드들을 고려한다.(JSSFC, CERT, ADDR, INDUTY)
                     if(CommonUtil.isNotEmpty(this.cdgrpid)) {
@@ -130,7 +129,6 @@ public class CodeVo extends ParentRequestVo implements Serializable {
                     CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
-                }
             }catch(Exception e) {
                 //e.printStackTrace();
                 return ;
@@ -145,11 +143,9 @@ public class CodeVo extends ParentRequestVo implements Serializable {
         if(CommonUtil.isNotEmpty(this.cd) && CommonUtil.isEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                if( !resCodeService.equals(null) ) {
                     CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.cd);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
-                }
             }catch(Exception e) {
                 return ;
             }
