@@ -19,6 +19,8 @@ import org.springframework.core.io.ClassPathResource;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * 파일 다운로드
  * 
@@ -40,7 +42,7 @@ public class excelSampleDownloadServlet extends HttpServlet {
 		String fileGubun = StringUtil.nvl(request.getParameter("FILEGU"));
 		String lmsdataPath = FileUtil.UPLOAD_PATH;
 
-		if (rFileName.indexOf("../") > -1 || sFileName.indexOf("../") > -1 || filePath.indexOf("../") > -1) {
+		if (rFileName.indexOf("../") > -1 || sFileName.indexOf("../") > -1 || filePath.indexOf("../") > -1 || rFileName.contains("\r\n")) {
 			response.setContentType("text/html;charset=utf-8");
 			PrintWriter out = response.getWriter();
 
@@ -106,6 +108,7 @@ public class excelSampleDownloadServlet extends HttpServlet {
 		}
 	}
 	
+	@SuppressFBWarnings(value = "HTTP_RESPONSE_SPLITTING", justification = "외부입력값(rFileName)에서 개행문자(\\r\\n)를 제거하였음")
 	private void setDisposition(String filename, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String browser = getBrowser(request);
 		
@@ -137,7 +140,8 @@ public class excelSampleDownloadServlet extends HttpServlet {
 			throw new IOException("Not supported browser");
 		}
 		
-		response.setHeader("Content-Disposition", dispositionPrefix + encodedFilename);
+		// 보안약점 HTTP_RESPONSE_SPLITTING 패턴 대응처리
+		response.setHeader("Content-Disposition", dispositionPrefix + encodedFilename.replaceAll("[\\r\\n]", ""));
 
 		if ("Opera".equals(browser)){
 			response.setContentType("application/octet-stream;charset=UTF-8");
