@@ -130,7 +130,11 @@ public class CommonUtil {
         URL url = null;
         URLConnection urlcnn = null;
         
-        String[] checkHosts = CommonUtil.wasIpport;
+        int j = 0;
+        String[] checkHosts = new String[CommonUtil.wasIpport.length];
+        for (String trustedHost : CommonUtil.wasIpport) {
+            checkHosts[j++] = trustedHost;
+        }
         int checkHostsLength = checkHosts.length;
         String resultCheckHost = "";
 
