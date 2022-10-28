@@ -98,7 +98,7 @@ public class FormChecker {
 			return false;
 
 		String tm = m;
-		tm = tm.trim().toUpperCase();
+		tm = tm.trim().toUpperCase(new Locale(tm));
 		char c = tm.charAt(0);
 		if(!('A' <= c && c <= 'Z'))
 			return false;

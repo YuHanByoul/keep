@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -227,7 +228,7 @@ public class DataSet {
     public Array getArray(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (Array) hmap.get(colName.toUpperCase().trim());
+            return (Array) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -246,7 +247,7 @@ public class DataSet {
     public InputStream getAsciiStream(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (InputStream) hmap.get(colName.toUpperCase().trim());
+            return (InputStream) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -265,7 +266,7 @@ public class DataSet {
     public BigDecimal getBigDecimal(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return new BigDecimal(hmap.get(colName.toUpperCase().trim()).toString());
+            return new BigDecimal(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -284,7 +285,7 @@ public class DataSet {
     public InputStream getBinaryStream(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (InputStream) hmap.get(colName.toUpperCase().trim());
+            return (InputStream) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -303,7 +304,7 @@ public class DataSet {
     public Blob getBlob(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (Blob) hmap.get(colName.toUpperCase().trim());
+            return (Blob) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -322,7 +323,7 @@ public class DataSet {
     public boolean getBoolean(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Boolean.valueOf(hmap.get(colName.toUpperCase().trim()).toString());
+            return Boolean.valueOf(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return false;
         } catch (Exception e) {
@@ -341,7 +342,7 @@ public class DataSet {
     public byte getByte(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Byte.parseByte(hmap.get(colName.toUpperCase().trim()).toString());
+            return Byte.parseByte(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return Byte.parseByte("");
         } catch (Exception e) {
@@ -360,7 +361,7 @@ public class DataSet {
     public Reader getCharacterStream(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (Reader) (hmap.get(colName.toUpperCase().trim()));
+            return (Reader) (hmap.get(colName.toUpperCase(new Locale(colName)).trim()));
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -379,7 +380,7 @@ public class DataSet {
     public Clob getClob(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (Clob) hmap.get(colName.toUpperCase().trim());
+            return (Clob) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -398,7 +399,7 @@ public class DataSet {
     public java.sql.Date getDate(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return java.sql.Date.valueOf(hmap.get(colName.toUpperCase().trim()).toString());
+            return java.sql.Date.valueOf(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -417,7 +418,7 @@ public class DataSet {
     public double getDouble(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Double.parseDouble(hmap.get(colName.toUpperCase().trim()).toString());
+            return Double.parseDouble(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return Double.parseDouble("0");
         } catch (Exception e) {
@@ -436,7 +437,7 @@ public class DataSet {
     public float getFloat(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Float.parseFloat(hmap.get(colName.toUpperCase().trim()).toString());
+            return Float.parseFloat(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return Float.parseFloat("0");
         } catch (Exception e) {
@@ -455,7 +456,7 @@ public class DataSet {
     public int getInt(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Integer.parseInt(hmap.get(colName.toUpperCase().trim()).toString());
+            return Integer.parseInt(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return Integer.parseInt("0");
         } catch (Exception e) {
@@ -474,7 +475,7 @@ public class DataSet {
     public long getLong(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Long.parseLong(hmap.get(colName.toUpperCase().trim()).toString());
+            return Long.parseLong(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return Long.parseLong("0");
         } catch (Exception e) {
@@ -493,7 +494,7 @@ public class DataSet {
     public Object getObject(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return hmap.get(colName.toUpperCase().trim());
+            return hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -549,7 +550,7 @@ public class DataSet {
     public Ref getRef(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (Ref) hmap.get(colName.toUpperCase().trim());
+            return (Ref) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -568,7 +569,7 @@ public class DataSet {
     public short getShort(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Short.parseShort(hmap.get(colName.toUpperCase().trim()).toString());
+            return Short.parseShort(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return Short.parseShort("0");
         } catch (Exception e) {
@@ -587,7 +588,7 @@ public class DataSet {
     public String getString(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return StringUtil.nvl(hmap.get(colName.toUpperCase().trim()).toString());
+            return StringUtil.nvl(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return "";
         } catch (Exception e) {
@@ -606,7 +607,7 @@ public class DataSet {
     public java.sql.Time getTime(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return java.sql.Time.valueOf(hmap.get(colName.toUpperCase().trim()).toString());
+            return java.sql.Time.valueOf(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -625,7 +626,7 @@ public class DataSet {
     public Timestamp getTimestamp(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return Timestamp.valueOf(hmap.get(colName.toUpperCase().trim()).toString());
+            return Timestamp.valueOf(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -644,7 +645,7 @@ public class DataSet {
     public InputStream getUnicodeStream(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return (InputStream) hmap.get(colName.toUpperCase().trim());
+            return (InputStream) hmap.get(colName.toUpperCase(new Locale(colName)).trim());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
@@ -663,7 +664,7 @@ public class DataSet {
     public URL getURL(String colName) throws Exception {
         try {
             hmap = (HashMap) dsLst.get(lstPos);
-            return new URL(hmap.get(colName.toUpperCase().trim()).toString());
+            return new URL(hmap.get(colName.toUpperCase(new Locale(colName)).trim()).toString());
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {

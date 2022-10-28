@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -209,6 +210,6 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
         String thumbName = filePath + "/THUMB_" + fileName; 
         File thumbFile = new File(thumbName);
         
-        ImageIO.write(destImg, fileExt.toUpperCase(), thumbFile);
+        ImageIO.write(destImg, fileExt.toUpperCase(new Locale(fileExt)), thumbFile);
     }
 }

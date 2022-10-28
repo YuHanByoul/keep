@@ -128,7 +128,7 @@ public class FileUtil {
         if (!fname.equals("")) {
             int lstIn = fname.lastIndexOf('.');
             String ext = fname.substring(lstIn + 1);
-            return ext.toLowerCase();
+            return ext.toLowerCase(new Locale(ext));
         } else {
             return "";
         }
