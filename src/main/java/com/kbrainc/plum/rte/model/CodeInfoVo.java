@@ -1,16 +1,20 @@
 package com.kbrainc.plum.rte.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kbrainc.plum.rte.service.ResCodeService;
-import com.kbrainc.plum.rte.util.CommonUtil;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.Serializable;
+import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
-import java.util.Date;
+
+import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
+
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 
@@ -115,15 +119,13 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         if(CommonUtil.isNotEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                if( !resCodeService.equals(null) ) {
-                    String cdkey = "CODE|" + this.cd;
-                    //다른 코드들을 고려한다.(JSSFC, CERT, ADDR, INDUTY)
-                    if(CommonUtil.isNotEmpty(this.cdgrpid)) {
-                        cdkey = this.cdgrpid + "|" + this.cd;
-                    }
-                    CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
-                    this.cdNm = code.getCdNm();
-                    this.upprCd = code.getUpprCd();
+                String cdkey = "CODE|" + this.cd;
+                //다른 코드들을 고려한다.(JSSFC, CERT, ADDR, INDUTY)
+                if(CommonUtil.isNotEmpty(this.cdgrpid)) {
+                    cdkey = this.cdgrpid + "|" + this.cd;
+                CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
+                this.cdNm = code.getCdNm();
+                this.upprCd = code.getUpprCd();
                 }
             }catch(Exception e) {
                 //e.printStackTrace();
@@ -139,11 +141,9 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         if(CommonUtil.isNotEmpty(this.cd) && CommonUtil.isEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                if( !resCodeService.equals(null)  ) {
                     CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.cd);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
-                }
             }catch(Exception e) {
                 return ;
             }
@@ -152,7 +152,7 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
     
     public String getUpprCdNm() {
         //이미 값이 있으면, 현재값을 리턴한다.
-        if(CommonUtil.isNotEmpty(this.upprCdNm)) {
+        if(!CommonUtil.isEmpty(this.upprCdNm)) {
             return this.upprCdNm;
         }
         //uppr_cd코드가 없으면 ""을 리턴한다.
@@ -163,16 +163,41 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         //uppr_cd_nm를 구해서 저장 후 리턴한다.
         try {
             ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-            if( !resCodeService.equals(null) ) {
-                CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
-                this.upprCdNm = code.getCdNm();
-                return this.upprCdNm;
-            }
+            CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
+            this.upprCdNm = code.getCdNm();
+            return this.upprCdNm;
         }catch(Exception e) {
             return "";
         }
-        
-        return "";
     }
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public Date getUpdtDt() {
+        return updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public void setUpdtD(Date updtD) {
+        this.updtD = updtD != null ? (Date) updtD.clone() : null;
+    }
+    
+    public Date getUpdtD() {
+        return updtD != null ? (Date) updtD.clone() : null;
+    }
+
+    
+    
     
 }

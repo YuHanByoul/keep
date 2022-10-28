@@ -3,6 +3,8 @@ package com.kbrainc.plum.mng.member.model;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
@@ -96,4 +98,16 @@ public class MemberDtlVo {
     
     /** 등록자아이디 */
     private int reguserid;
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
+    
 }

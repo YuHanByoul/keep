@@ -7,6 +7,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -163,5 +165,55 @@ public class MemberVo extends ParentRequestVo {
     @Size(max = 50, message = "소개는 50자를 넘을 수 없습니다.")
     private String intrcn;
     
+    public void setRegDt(Date regDt) {
+        this.regDt = regDt != null ? (Date) regDt.clone() : null;
+    }
+    
+    public void setLoginDt(Date loginDt) {
+        this.loginDt = loginDt != null ? (Date) loginDt.clone() : null;
+    }
+    
+    public void setDrmncyDt(Date drmncyDt) {
+        this.drmncyDt = drmncyDt != null ? (Date) drmncyDt.clone() : null;
+    }
+    
+    public void setPrvcyVldtyDt(Date prvcyVldtyDt) {
+        this.prvcyVldtyDt = prvcyVldtyDt != null ? (Date) prvcyVldtyDt.clone() : null;
+    }
+    
+    public void setExpectedDelDt(Date expectedDelDt) {
+        this.expectedDelDt = expectedDelDt != null ? (Date) expectedDelDt.clone() : null;
+    }
+    
+    public Date getRegDt() {
+        return regDt != null ? (Date) regDt.clone() : null;
+    }
+
+    public Date getLoginDt() {
+        return loginDt != null ? (Date) loginDt.clone() : null;
+    }
+    
+    public Date getDrmncyDt() {
+        return drmncyDt != null ? (Date) drmncyDt.clone() : null;
+    }
+    public Date getPrvcyVldtyDt() {
+        return prvcyVldtyDt != null ? (Date) prvcyVldtyDt.clone() : null;
+    }
+    public Date getExpectedDelDt() {
+        return expectedDelDt != null ? (Date) expectedDelDt.clone() : null;
+    }
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
+    
+
     
 }

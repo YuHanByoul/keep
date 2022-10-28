@@ -1,10 +1,10 @@
 package com.kbrainc.plum.front.pop.model;
 
-import com.kbrainc.plum.rte.model.UserVo;
-
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -62,6 +62,16 @@ public class PopUpNtcVo extends ParentRequestVo {
     private String updNm;
     private String roleNm;
     
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
     
 
 }

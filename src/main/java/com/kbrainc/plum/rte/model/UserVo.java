@@ -1,14 +1,16 @@
 package com.kbrainc.plum.rte.model;
 
-import lombok.Data;
-import org.springframework.security.core.AuthenticatedPrincipal;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.security.core.AuthenticatedPrincipal;
+
+import lombok.Data;
+
 @Data
-public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializable {
+public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializable ,Cloneable {
 
     private static final long serialVersionUID = 6779696145911699932L;
     
@@ -29,4 +31,31 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     
     /** 사용자에게 부여된 역할목록 */
     private ArrayList<Map<String, String>> authorities;
+    
+    public void setData(Map data) {
+        this.data.putAll(data);
+    }
+    
+    public void setAuthorities(ArrayList<Map<String, String>> authorities) {
+        this.authorities.addAll(authorities);
+    }
+    
+    public UserVo(UserVo user)
+    {
+        this.acnt = user.getAcnt();
+        this.authorities = user.getAuthorities();
+        this.data = user.getData();
+        this.name = user.getName();
+        this.nm = user.getNm();
+        this.userid = user.getUserid();
+    }
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        UserVo userVo = (UserVo) super.clone();
+        userVo.data = new HashMap<>();
+        userVo.authorities = new ArrayList<Map<String, String>>();
+        return userVo;    
+    }
+    
 }

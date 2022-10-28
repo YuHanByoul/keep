@@ -44,4 +44,25 @@ public class SchedulingHistVo extends ParentRequestVo {
     
     /** 상태코드(S:성공, F:실패) */
     private String sttsCd;
+    
+    
+    public void setJobStrtDt(Date jobStrtDt) {
+        this.jobStrtDt = jobStrtDt != null ? (Date) jobStrtDt.clone() : null;
+    }
+    
+    public Date getUpdtDt() {
+        return jobStrtDt != null ? (Date) jobStrtDt.clone() : null;
+    }
+    
+    public void setJobEndDt(Date jobEndDt) {
+        this.jobEndDt = jobEndDt != null ? (Date) jobEndDt.clone() : null;
+    }
+    
+    public Date getUpdtD() {
+        return jobEndDt != null ? (Date) jobEndDt.clone() : null;
+    }
+
+    
+    
+    
 }

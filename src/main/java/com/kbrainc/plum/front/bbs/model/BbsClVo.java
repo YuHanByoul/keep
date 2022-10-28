@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.bbs.model;/** **/
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -54,5 +55,16 @@ public class BbsClVo extends ParentRequestVo {
     public BbsClVo(Integer bbsid) {
         this.setBbsid(bbsid);
     }
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
 
 }

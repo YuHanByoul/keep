@@ -1,13 +1,15 @@
 package com.kbrainc.plum.mng.inqry.model;
 
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.model.ParentRequestVo;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+
+import org.apache.commons.lang3.SerializationUtils;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -70,4 +72,33 @@ public class InqryAnswrVo extends ParentRequestVo {
 
     /** 등록자아이디 */
     private Integer reguserid;
+    
+    public void setRegDt(Date regDt) {
+        this.regDt = regDt != null ? (Date) regDt.clone() : null;
+    }
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+
+    public Date getRegDt() {
+        return regDt != null ? (Date) regDt.clone() : null;
+    }
+
+    public Date getUpdtDt() {
+        return updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
+    
+
 }

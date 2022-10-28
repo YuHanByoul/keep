@@ -1,12 +1,12 @@
 package com.kbrainc.plum.mng.bbs.model;/** **/
 
-import com.kbrainc.plum.rte.model.UserVo;
-
 import java.util.ArrayList;
-import java.util.Map;
+
+import org.apache.commons.lang3.SerializationUtils;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -100,6 +100,16 @@ public class PstVo extends ParentRequestVo {
 	//현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer curFxdNtcCnt;
 	
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
 	
 
 }

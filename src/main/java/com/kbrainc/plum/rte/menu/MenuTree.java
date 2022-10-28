@@ -88,7 +88,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
      * @param menuMap 메뉴맵
      */
     public void setMenuMap(Map<String, List<MenuItem>> menuMap) {
-        this.menuMap = menuMap;
+        this.menuMap.putAll(menuMap);
     }
 
     /**

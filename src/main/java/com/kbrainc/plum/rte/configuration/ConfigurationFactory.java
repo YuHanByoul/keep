@@ -35,8 +35,9 @@ public class ConfigurationFactory {
      * @Title : getInstance
      * @Description : 환경설정 Factory 인스턴스를 반환한다
      * @return ConfigurationFactory
+     * @throws CloneNotSupportedException 
      */
-    public static ConfigurationFactory getInstance() {
+    public static ConfigurationFactory getInstance() throws CloneNotSupportedException {
         if (instance == null) {
             synchronized (ConfigurationFactory.class) {
                 instance = new ConfigurationFactory();
@@ -51,10 +52,7 @@ public class ConfigurationFactory {
                 }
             }
         }
-
-        ConfigurationFactory copyInstance = new ConfigurationFactory();
-        copyInstance = instance;
-        return copyInstance;
+        return  (ConfigurationFactory)instance.clone();
     }
 
     /**.
