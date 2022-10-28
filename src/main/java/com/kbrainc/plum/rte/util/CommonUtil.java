@@ -9,6 +9,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -238,13 +239,13 @@ public class CommonUtil {
         if (obj instanceof String) {
             return isEmpty(obj) || "".equals(obj.toString().trim());
         } else if (obj instanceof List) {
-            return isEmpty(obj) || ((List) obj).isEmpty();
+            return obj == null || ((ArrayList) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return isEmpty(obj) || ((Map) obj).isEmpty();
+            return obj == null || ((Map) obj).isEmpty();
         } else if (obj instanceof Object[]) {
-            return isEmpty(obj) || Array.getLength(obj) == 0;
+            return obj == null || Array.getLength(obj) == 0;
         } else {
-            return isEmpty(obj);
+            return obj == null;
         }
     }
 
