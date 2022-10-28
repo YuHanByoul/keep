@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -21,6 +21,8 @@ public class UUIdGnr {
 
 	private static final String ERROR_STRING = "address in the configuration should be a valid IP or MAC Address";
 
+	private static SecureRandom random = new SecureRandom();
+	
     /**
      * Address Id
      */
@@ -65,7 +67,6 @@ public class UUIdGnr {
     	}
         byte[] addressBytes = new byte[6];
         
-        Random random = new Random();
         random.setSeed(System.currentTimeMillis());
         if (null == address) {
             log.warn("IDGeneration Service : Using a random number as the base for id's."

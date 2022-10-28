@@ -1,9 +1,9 @@
 package com.kbrainc.plum.rte.util;
 
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -24,6 +24,7 @@ import java.util.Set;
  */
 public class StringUtil {
 
+    private static SecureRandom random = new SecureRandom();
 	/**
 	 * 
 	 * substring
@@ -649,7 +650,6 @@ public class StringUtil {
      */
     public static String temporaryPassword(int size) {
         StringBuffer buffer = new StringBuffer();
-        Random random = new Random();
         String chars[] = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,0,1,2,3,4,5,6,7,8,9,!,@,#,$,%,^,*,(,)".split(",");
 
         for (int i = 0; i < size; i++) {
