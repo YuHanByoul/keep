@@ -91,7 +91,10 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             if (tag.hasAttribute("selectedCd")) {
                 selectedCd = tag.getAttribute("selectedCd").getValue();
             }
-            selectedCds = selectedCd.split(",");
+            
+            if (selectedCd != null) {
+                selectedCds = selectedCd.split(",");
+            }
             
             if (tag.hasAttribute("addClass") && !tag.getAttribute("addClass").getValue().equals("")) {
                 addClass = tag.getAttribute("addClass").getValue();
