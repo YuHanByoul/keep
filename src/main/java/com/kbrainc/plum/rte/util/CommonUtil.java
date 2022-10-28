@@ -236,7 +236,7 @@ public class CommonUtil {
      */
     public static boolean isEmpty(Object obj) {
         if (obj instanceof String) {
-            return obj == null || "".equals(obj.toString().trim());
+            return isEmpty(obj) || "".equals(obj.toString().trim());
         } else if (obj instanceof List) {
             return obj == null || ((List) obj).isEmpty();
         } else if (obj instanceof Map) {
