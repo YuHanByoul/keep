@@ -71,7 +71,7 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             @Valid
             String grpcd = ""; // 그룹cd
             String selectedCd = "";// default cd
-            String[] selectedCds;
+            String[] selectedCds = null;
             String upprCd = ""; // upper Code
             String listStyle = "";
             String addClass = "";
