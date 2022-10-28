@@ -195,7 +195,9 @@ public class SchedulingController {
         
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         
@@ -247,7 +249,9 @@ public class SchedulingController {
         
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         

@@ -183,13 +183,17 @@ public class MemberController {
         
         if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         
         if (bindingResult2.hasErrors()) {
             FieldError fieldError = bindingResult2.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         
@@ -274,13 +278,17 @@ public class MemberController {
         
         if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         
         if (bindingResult2.hasErrors()) {
             FieldError fieldError = bindingResult2.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
     	
@@ -426,7 +434,9 @@ public class MemberController {
         
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         
@@ -463,7 +473,9 @@ public class MemberController {
         
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            resultMap.put("msg", fieldError.getDefaultMessage());
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
             return resultMap;
         }
         
