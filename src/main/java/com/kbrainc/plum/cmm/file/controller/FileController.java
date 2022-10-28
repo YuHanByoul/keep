@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -97,7 +98,7 @@ public class FileController {
                 String fileNm = file.getOriginalFilename();
                 String fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
                 
-                if (!uploadFileExtsn.containsValue(fileExt.toLowerCase())) {
+                if (!uploadFileExtsn.containsValue(fileExt.toLowerCase(new Locale(fileExt)))) {
                     //throw new FileStorageException("파일확장자는 " + uploadFileExtsn.values() + "만 가능합니다.");
                     throw new FileStorageException("허용되지않는 파일형식입니다.");
                 }
@@ -234,7 +235,7 @@ public class FileController {
                 String fileNm = upload.getOriginalFilename();
                 String fileExt = fileNm.substring(fileNm.lastIndexOf(".") + 1);
                 
-                if (!uploadFileExtsn.containsValue(fileExt.toLowerCase())) {
+                if (!uploadFileExtsn.containsValue(fileExt.toLowerCase(new Locale(fileExt)))) {
                     printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"허용되지않는 파일형식입니다.\"}}");
                     return;
                 }

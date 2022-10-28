@@ -16,13 +16,13 @@
 package com.kbrainc.plum.rte.security;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.security.web.util.matcher.RequestVariablesExtractor;
@@ -317,9 +317,10 @@ public final class CustomAntPathRequestMatcher
         private final int length;
         private final boolean caseSensitive;
 
+        
         private SubpathMatcher(String subpath, boolean caseSensitive) {
             assert!subpath.contains("*");
-            this.subpath = caseSensitive ? subpath : subpath.toLowerCase();
+            this.subpath = caseSensitive ? subpath : subpath.toLowerCase(new Locale(subpath));
             this.length = subpath.length();
             this.caseSensitive = caseSensitive;
         }
@@ -328,7 +329,7 @@ public final class CustomAntPathRequestMatcher
         public boolean matches(String path) {
             String tmpPath = path;
             if (!this.caseSensitive) {
-                tmpPath = tmpPath.toLowerCase();
+                tmpPath = tmpPath.toLowerCase(new Locale(tmpPath));
             }
             return tmpPath.startsWith(this.subpath)
                     && (tmpPath.length() == this.length || tmpPath.charAt(this.length) == '/');
