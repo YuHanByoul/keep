@@ -18,6 +18,7 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -226,7 +227,7 @@ public class FileUtil {
 
                     try {
                         in = new FileInputStream(sFile);
-                        out = new FileOutputStream(newTarget, true);
+                        out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
                         int read = in.read(buf,0,bufSize);
                         while (read > 0) {
                             out.write(buf, 0, read);
@@ -262,7 +263,7 @@ public class FileUtil {
             try {
                 String newTarget = target + delimeter + sourceFile.getName();
                 in = new FileInputStream(sourceFile);
-                out = new FileOutputStream(newTarget, true);
+                out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
                 int read = in.read(buf,0,bufSize);
                 while (read > 0) {
                     out.write(buf, 0, read);
@@ -340,7 +341,7 @@ public class FileUtil {
 
                     try {
                         in = new FileInputStream(sFile);
-                        out = new FileOutputStream(newTarget, true);
+                        out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
 
                         int read = in.read(buf,0,bufSize);
                         while (read > 0) {
@@ -381,7 +382,7 @@ public class FileUtil {
                 if (fmfd.compareTo(fmtd) < 0) {
                     String newTarget = target + delimeter + sourceFile.getName();
                     in = new FileInputStream(sourceFile);
-                    out = new FileOutputStream(newTarget, true);
+                    out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
 
                     int read = in.read(buf,0,bufSize);
                     while (read > 0) {
@@ -446,7 +447,7 @@ public class FileUtil {
         }
 
         try {
-            outputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(targetPath)));
+            outputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(FilenameUtils.getName(targetPath))));
             compressZipFileOutput(outputStream, inFile, source);
 
             outputStream.closeArchiveEntry();
