@@ -80,7 +80,7 @@ public class CryptoAES256 {
             InvalidAlgorithmParameterException, 
             IllegalBlockSizeException, 
             BadPaddingException {
-        Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
         c.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));
         
         byte[] encrypted = c.doFinal(str.getBytes("UTF-8"));
@@ -113,7 +113,7 @@ public class CryptoAES256 {
             BadPaddingException {
         
         try {
-            Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            Cipher c = Cipher.getInstance("AES/GCM/NoPadding");
             c.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));
             
             byte[] byteStr = Base64.decodeBase64(str.getBytes());
