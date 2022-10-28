@@ -40,6 +40,8 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
         this.authorities.addAll(authorities);
     }
     
+    public UserVo() {}
+    
     public UserVo(UserVo user)
     {
         this.acnt = user.getAcnt();

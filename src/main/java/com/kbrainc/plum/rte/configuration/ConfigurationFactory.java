@@ -7,7 +7,7 @@ import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kbrainc.plum.rte.util.CommonUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -25,7 +25,8 @@ import com.kbrainc.plum.rte.util.CommonUtil;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
-public class ConfigurationFactory {
+@Slf4j
+public class ConfigurationFactory implements Cloneable{
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationFactory.class);
     private static ConfigurationFactory instance = null;
     private PropertiesConfiguration applicationConfig = null;
@@ -37,7 +38,7 @@ public class ConfigurationFactory {
      * @return ConfigurationFactory
      * @throws CloneNotSupportedException 
      */
-    public static ConfigurationFactory getInstance() throws CloneNotSupportedException {
+    public static ConfigurationFactory getInstance() {
         if (instance == null) {
             synchronized (ConfigurationFactory.class) {
                 instance = new ConfigurationFactory();
@@ -52,7 +53,16 @@ public class ConfigurationFactory {
                 }
             }
         }
-        return  (ConfigurationFactory)instance.clone();
+        
+        ConfigurationFactory returnInstance = new ConfigurationFactory();
+        
+        try {
+            returnInstance = (ConfigurationFactory)instance.clone();
+        }catch(CloneNotSupportedException e) {
+            log.error("getInstance.CloneNotSupportedException.60L");
+        }
+        
+        return  instance;
     }
 
     /**.

@@ -32,8 +32,6 @@ import com.kbrainc.plum.rte.crypto.CryptoAES256;
 import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.idgnr.UUIdGnr;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
  * 
  * 공통Util 클래스.
@@ -127,7 +125,6 @@ public class CommonUtil {
      * @throws Exception
      * @return String 미실행 was ip목록
      */
-    @SuppressFBWarnings(value = "URLCONNECTION_SSRF_FD", justification = "checkHosts를 properties파일로 부터 가져오고있음. 사용자입력값이 아님.")
     public static String allWasUrlCaller(String callUrl) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         URL url = null;
@@ -239,15 +236,15 @@ public class CommonUtil {
      */
     public static boolean isEmpty(Object obj) {
         if (obj instanceof String) {
-            return obj == null || "".equals(obj.toString().trim());
+            return isEmpty(obj) || "".equals(obj.toString().trim());
         } else if (obj instanceof List) {
-            return obj == null || ((List) obj).isEmpty();
+            return isEmpty(obj) || ((List) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return obj == null || ((Map) obj).isEmpty();
+            return isEmpty(obj) || ((Map) obj).isEmpty();
         } else if (obj instanceof Object[]) {
-            return obj == null || Array.getLength(obj) == 0;
+            return isEmpty(obj) || Array.getLength(obj) == 0;
         } else {
-            return obj == null;
+            return isEmpty(obj);
         }
     }
 

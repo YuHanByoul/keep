@@ -5,6 +5,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  * 
  */
+@Data
 @NoArgsConstructor
 public class MailVo extends ParentRequestVo {
 
