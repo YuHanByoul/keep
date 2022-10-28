@@ -51,7 +51,10 @@ public class ConfigurationFactory {
                 }
             }
         }
-        return instance;
+
+        ConfigurationFactory copyInstance = new ConfigurationFactory();
+        copyInstance = instance;
+        return copyInstance;
     }
 
     /**.
