@@ -10,7 +10,7 @@ import org.springframework.security.core.AuthenticatedPrincipal;
 import lombok.Data;
 
 @Data
-public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializable {
+public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializable ,Cloneable {
 
     private static final long serialVersionUID = 6779696145911699932L;
     
@@ -44,18 +44,18 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     {
         this.acnt = user.getAcnt();
         this.authorities = user.getAuthorities();
-        this.data =user.getData();
+        this.data = user.getData();
         this.name = user.getName();
         this.nm = user.getNm();
         this.userid = user.getUserid();
     }
     
-    
-    
-    
-
-    
-    
-    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        UserVo userVo = (UserVo) super.clone();
+        userVo.data = new HashMap<>();
+        userVo.authorities = new ArrayList<Map<String, String>>();
+        return userVo;    
+    }
     
 }

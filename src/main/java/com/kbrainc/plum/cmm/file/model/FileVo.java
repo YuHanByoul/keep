@@ -1,5 +1,7 @@
 package com.kbrainc.plum.cmm.file.model;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
@@ -60,5 +62,15 @@ public class FileVo {
         this.filegrpid = filegrpid;
         this.filePath = filePath;
     }
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
 
 }

@@ -2,11 +2,11 @@ package com.kbrainc.plum.rte.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -172,12 +172,14 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
     }
     
     /** 로그인사용자정보 */
-    public void setUserVo(UserVo user){
-        UserVo vo =  new UserVo(user);
-        this.setUser(vo);
-
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
     }   
-    
     
     public void setUpdtDt(Date updtDt) {
         this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;

@@ -1,7 +1,9 @@
 package com.kbrainc.plum.mng.bbs.model;/** **/
 
-import com.kbrainc.plum.rte.model.UserVo;
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -62,5 +64,16 @@ public class CmntVo extends ParentRequestVo {
     
     public int totalPage;
     public int pageNumber;
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
     
 }

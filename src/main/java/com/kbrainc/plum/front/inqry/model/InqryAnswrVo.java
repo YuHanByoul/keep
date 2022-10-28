@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -89,5 +90,16 @@ public class InqryAnswrVo extends ParentRequestVo {
     public Date getUpdtDt() {
         return updtDt != null ? (Date) updtDt.clone() : null;
     }
+    
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }   
+
 
 }
