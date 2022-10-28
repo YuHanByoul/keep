@@ -130,11 +130,7 @@ public class CommonUtil {
         URL url = null;
         URLConnection urlcnn = null;
         
-        int j = 0;
-        String[] checkHosts = new String[CommonUtil.wasIpport.length];
-        for (String trustedHost : CommonUtil.wasIpport) {
-            checkHosts[j++] = trustedHost;
-        }
+        String[] checkHosts = CommonUtil.wasIpport;
         int checkHostsLength = checkHosts.length;
         String resultCheckHost = "";
 
@@ -240,15 +236,15 @@ public class CommonUtil {
      */
     public static boolean isEmpty(Object obj) {
         if (obj instanceof String) {
-            return isEmpty(obj) || "".equals(obj.toString().trim());
+            return obj == null || "".equals(obj.toString().trim());
         } else if (obj instanceof List) {
-            return isEmpty(obj) || ((List) obj).isEmpty();
+            return obj == null || ((List) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return isEmpty(obj) || ((Map) obj).isEmpty();
+            return obj == null || ((Map) obj).isEmpty();
         } else if (obj instanceof Object[]) {
-            return isEmpty(obj) || Array.getLength(obj) == 0;
+            return obj == null || Array.getLength(obj) == 0;
         } else {
-            return isEmpty(obj);
+            return obj == null;
         }
     }
 
