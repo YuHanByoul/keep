@@ -67,4 +67,9 @@ public class CodeGrpVo extends ParentRequestVo {
     /** 수정_일시 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updtDt;
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+
 }

@@ -169,16 +169,30 @@ public class CodeVo extends ParentRequestVo implements Serializable {
         //uppr_cd_nm를 구해서 저장 후 리턴한다.
         try {
             ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-            if( !resCodeService.equals(null) ) {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
                 this.upprCdNm = code.getCdNm();
                 return this.upprCdNm;
-            }
         }catch(Exception e) {
             return "";
         }
-        
-        return "";
     }
+    
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public Date getUpdtDt() {
+        return updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public void setUpdtD(Date updtD) {
+        this.updtD = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public Date getUpdtD() {
+        return updtD != null ? (Date) updtD.clone() : null;
+    }
+    
     
 }

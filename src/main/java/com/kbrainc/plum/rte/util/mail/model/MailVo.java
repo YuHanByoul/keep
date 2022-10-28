@@ -2,10 +2,9 @@ package com.kbrainc.plum.rte.util.mail.model;
 
 import java.util.Date;
 
-import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.ParentRequestVo;
 
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
@@ -25,7 +24,6 @@ import lombok.NoArgsConstructor;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  * 
  */
-@Data
 @NoArgsConstructor
 public class MailVo extends ParentRequestVo {
 
@@ -42,7 +40,7 @@ public class MailVo extends ParentRequestVo {
 	private String rcptnCnfirmDt;
 	private String sndngSttsCd;	// 발송_상태_코드(R: 대기, S: 성공, F: 실패)
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-	private Date regDt;
+	public Date regDt;
 	
 	/**
 	 * 

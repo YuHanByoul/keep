@@ -70,7 +70,7 @@ public class DataSet {
      * @param llist 데이터목록
      */
     public void setDataSet(ArrayList llist) {
-        dsLst = llist;
+        this.dsLst.addAll(llist);
         size = dsLst.size();
     }
 
@@ -80,7 +80,10 @@ public class DataSet {
      * @return List 데이터목록
      */
     public List getDataSet() {
-        return dsLst;
+        
+        ArrayList returnArray = new ArrayList(); 
+        returnArray.addAll(this.dsLst);
+        return returnArray;
     }
 
     /**

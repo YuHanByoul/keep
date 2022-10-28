@@ -3,6 +3,8 @@ package com.kbrainc.plum.rte.lib.tree;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * 
  * TreeNode 클래스.
@@ -19,6 +21,7 @@ import java.util.List;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@SuppressFBWarnings(value = "URLCONNECTION_SSRF_FD", justification = "checkHosts를 properties파일로 부터 가져오고있음. 사용자입력값이 아님.")
 public class TreeNode<T> {
 
     /** 트리노드의 아이템. */

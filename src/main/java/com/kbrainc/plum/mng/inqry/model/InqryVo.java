@@ -123,4 +123,21 @@ public class InqryVo extends ParentRequestVo {
 			this.setUserSeNm("미분류 회원");
 		}
 	}
+	
+    public void setRegDt(Date regDt) {
+        this.regDt = regDt != null ? (Date) regDt.clone() : null;
+    }
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+    
+    public void setRegD(Date regD) {
+        this.regD = regD != null ? (Date) regD.clone() : null;
+    }
+    public void setAnswrD(Date answrD) {
+        this.answrD = answrD != null ? (Date) answrD.clone() : null;
+    }
+
+
 }

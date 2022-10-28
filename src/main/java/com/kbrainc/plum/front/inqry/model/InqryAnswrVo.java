@@ -73,4 +73,14 @@ public class InqryAnswrVo extends ParentRequestVo {
 
     /** 등록자아이디 */
     private Integer reguserid;
+    
+    public void setRegDt(Date regDt) {
+        this.regDt = regDt != null ? (Date) regDt.clone() : null;
+    }
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+
+    
 }

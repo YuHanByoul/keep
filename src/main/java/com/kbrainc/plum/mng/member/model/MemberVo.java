@@ -163,5 +163,25 @@ public class MemberVo extends ParentRequestVo {
     @Size(max = 50, message = "소개는 50자를 넘을 수 없습니다.")
     private String intrcn;
     
+    public void setRegDt(Date regDt) {
+        this.regDt = regDt != null ? (Date) regDt.clone() : null;
+    }
+    
+    public void setLoginDt(Date loginDt) {
+        this.loginDt = loginDt != null ? (Date) loginDt.clone() : null;
+    }
+    
+    public void setDrmncyDt(Date drmncyDt) {
+        this.drmncyDt = drmncyDt != null ? (Date) drmncyDt.clone() : null;
+    }
+    
+    public void setPrvcyVldtyDt(Date prvcyVldtyDt) {
+        this.prvcyVldtyDt = prvcyVldtyDt != null ? (Date) prvcyVldtyDt.clone() : null;
+    }
+    
+    public void setExpectedDelDt(Date expectedDelDt) {
+        this.expectedDelDt = expectedDelDt != null ? (Date) expectedDelDt.clone() : null;
+    }
+    
     
 }

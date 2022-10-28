@@ -34,4 +34,10 @@ public class LoginHistVo extends ParentRequestVo {
     /** 로그인_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date loginDt;
+    
+    public void setLoginDt(Date loginDt) {
+        this.loginDt = loginDt != null ? (Date) loginDt.clone() : null;
+    }
+    
+    
 }

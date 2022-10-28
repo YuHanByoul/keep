@@ -57,5 +57,11 @@ public class SiteVo extends ParentRequestVo {
 			this.setSysSeNm(SYSTEM_SE_NAME_USER);
 		}
 	}
+    public void setSiteDomainList(List<SiteDomainVo> siteDomainList) {
+        this.siteDomainList.addAll(siteDomainList);
+    }
+	
+	
+	
 	
 }

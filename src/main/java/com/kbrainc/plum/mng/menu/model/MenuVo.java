@@ -163,4 +163,13 @@ public class MenuVo {
 
         return TYPE_STRING.get(this.typeCd);
     }
+    
+    public void setRegDt(Date regDt) {
+        this.regDt = regDt != null ? (Date) regDt.clone() : null;
+    }
+    
+    public void setUpdtDt(Date updtDt) {
+        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    }
+
 }
