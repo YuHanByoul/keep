@@ -6,6 +6,8 @@ import com.kbrainc.plum.rte.util.ApplicationContextProvider;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -15,6 +17,7 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(FaqCategoryListTagProcessor.class);
     private static final String ATTR_NAME = "faq-category-list";
     private static final int PRECEDENCE = 10000;
 
@@ -59,7 +62,7 @@ public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
                         + "</option>";
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("doProcess.Exception.65L");
         }
 
         structureHandler.setBody(strOpt, false);

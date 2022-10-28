@@ -20,12 +20,14 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 파일 다운로드
  * 
  */
 @WebServlet(name = "excelSampleDownloadServlet", urlPatterns = "/excelSampleDownload")
+@Slf4j
 public class excelSampleDownloadServlet extends HttpServlet {
 	
 	//public LocaleAccessor localeAccessor = LocaleAccessor.getInstance();
@@ -69,7 +71,7 @@ public class excelSampleDownloadServlet extends HttpServlet {
 				try {
 					in = new FileInputStream(file);
 				} catch ( Exception e ) {
-					e.printStackTrace();
+					log.error("doGet.Exception.74L");
 				}
 				
 				//response.setCharacterEncoding("UTF-8");
@@ -92,7 +94,7 @@ public class excelSampleDownloadServlet extends HttpServlet {
 					
 					binaryOut.flush();
 				} catch (Exception e) {
-					e.printStackTrace();
+					log.error("doGet.Exception.97L");
 				} finally {
 					if (in != null) {
 						in.close();
@@ -103,7 +105,7 @@ public class excelSampleDownloadServlet extends HttpServlet {
 				}
 	
 			} catch(Exception e) {
-				e.printStackTrace();
+				log.error("doGet.Exception.108L");
 			}
 		}
 	}

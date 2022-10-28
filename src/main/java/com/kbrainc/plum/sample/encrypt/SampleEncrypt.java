@@ -85,7 +85,7 @@ public class SampleEncrypt {
 				logger.info("decrypted Text : {}", decrypted.toString());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("ARIACryptoSample.Exception.88L");
 		}		
 	}
 

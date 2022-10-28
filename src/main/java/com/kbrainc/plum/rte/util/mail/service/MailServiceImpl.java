@@ -28,6 +28,8 @@ import com.kbrainc.plum.rte.util.mail.model.MailDao;
 import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 자체 메일 발송 서비스.
@@ -45,6 +47,7 @@ import com.kbrainc.plum.rte.util.mail.model.MailVo;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service("MailService")
+@Slf4j
 public class MailServiceImpl extends PlumAbstractServiceImpl implements MailService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MailServiceImpl.class);
@@ -163,7 +166,7 @@ public class MailServiceImpl extends PlumAbstractServiceImpl implements MailServ
             return resultMap; 
         }
         catch (Exception e) {
-        	e.printStackTrace();
+        	log.error("sendMail.Exception.166L");
         	
         	mailVo.setSndngSttsCd(MAIL_ERROR_UNKNOWN);
         	resultMap.put("result", Constant.REST_API_RESULT_FAIL);

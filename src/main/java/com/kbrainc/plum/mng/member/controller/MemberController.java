@@ -33,6 +33,8 @@ import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 사용자관리 컨트롤러 클래스.
@@ -50,6 +52,7 @@ import com.kbrainc.plum.rte.util.mail.model.MailVo;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
+@Slf4j
 public class MemberController {
 
     @Autowired
@@ -153,7 +156,7 @@ public class MemberController {
             String result = memberService.checkIdYn(memberVo);
             resultMap.put("result", result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("checkIdYn.Exception.156L");
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
         }
         return resultMap;

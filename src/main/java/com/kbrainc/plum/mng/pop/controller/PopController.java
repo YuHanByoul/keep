@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+
+import lombok.extern.slf4j.Slf4j;
+
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
@@ -39,6 +42,7 @@ import com.kbrainc.plum.mng.pop.service.PopServiceImpl;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
+@Slf4j
 public class PopController {
 
     @Autowired
@@ -96,7 +100,7 @@ public class PopController {
             }
             resultMap.put("list", result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("selectPopUpNtcList.Exception.103L");
         }
         return resultMap;
     }

@@ -67,7 +67,7 @@ public class QuartzInitConfig {
     	                trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingTrigger.getCronExpression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
     	                scheduler.scheduleJob(trigger); // 트리거 스케쥴링 추가
 	                } catch (Exception e) {
-	                    e.printStackTrace();
+	                    log.error("init.Exception.70L");
 	                }
 	            }
 	        }
@@ -77,7 +77,7 @@ public class QuartzInitConfig {
                 scheduler.unscheduleJobs(new ArrayList<>(scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup())));
         	    scheduler.shutdown();
     	    } catch (Exception e) {
-    	        e.printStackTrace();
+    	        log.error("init.Exception.80L");
     	    }
     	}
     }

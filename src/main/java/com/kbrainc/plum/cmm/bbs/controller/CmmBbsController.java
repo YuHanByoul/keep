@@ -24,6 +24,8 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 생성된 게시판에 대한 사용 예시.
@@ -41,6 +43,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
+@Slf4j
 public class CmmBbsController {
 
     @Autowired
@@ -190,7 +193,7 @@ public class CmmBbsController {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertPst.Exception.196L");
         }
         resultMap.put("result", resultMsg);
 
@@ -218,7 +221,7 @@ public class CmmBbsController {
             bbsService.updatePst(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("updatePst.Exception.224L");
         }
         
         resultMap.put("result", resultMsg);
@@ -247,7 +250,7 @@ public class CmmBbsController {
             bbsService.insertCmnt(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertCmnt.Exception.253L");
         }
 
         resultMap.put("result", resultMsg);
@@ -276,7 +279,7 @@ public class CmmBbsController {
             bbsService.insertReply(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertCmntReply.Exception.282L");
         }
 
         resultMap.put("result", resultMsg);
@@ -305,7 +308,7 @@ public class CmmBbsController {
             bbsService.updateCmnt(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("updateCmnt.Exception.308L");
         }
 
         resultMap.put("result", resultMsg);
@@ -334,7 +337,7 @@ public class CmmBbsController {
             bbsService.updateCmntReplyDelYn(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("updateCmntReplyDelYn.Exception.340L");
         }
 
         resultMap.put("result", resultMsg);
@@ -365,7 +368,7 @@ public class CmmBbsController {
             bbsService.deletePst(pstVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("deletePst.Exception.371L");
         }
 
         resultMap.put("result", resultMsg);

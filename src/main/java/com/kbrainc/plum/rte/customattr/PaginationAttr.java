@@ -124,7 +124,6 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
 			result.append("</div>");
 
         } catch (Exception e) {
-            e.printStackTrace();
             result.append("<p>Error 발생 </p>");
         }
         structureHandler.replaceWith(result.toString(), true);

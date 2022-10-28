@@ -24,6 +24,8 @@ import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import liquibase.util.csv.CSVReader;
 
@@ -44,7 +46,9 @@ import liquibase.util.csv.CSVReader;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class ExcelUtil {
-
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExcelUtil.class);
+    
 	/**
 	 * 
 	 * 업로드된 엑셀파일을 리스트 객체에 담는다.
@@ -283,7 +287,7 @@ public class ExcelUtil {
             fos = new FileOutputStream(file);
             workbook.write(fos);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error("writeExcel.FileNotFoundException.290L");
             return false;
         } catch (IOException e) {
             e.printStackTrace();

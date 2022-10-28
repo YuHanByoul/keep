@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * TestEncrypt
@@ -32,6 +34,7 @@ import org.springframework.test.context.junit4.SpringRunner;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 public class TestEncrypt {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -97,7 +100,7 @@ public class TestEncrypt {
 				logger.info("decrypted Text : {}", decrypted.toString());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("ARIACryptoTest.Exception.103L");
 		}		
 	}
 

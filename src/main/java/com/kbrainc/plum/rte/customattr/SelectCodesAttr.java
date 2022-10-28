@@ -217,7 +217,6 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
             result.append(" <p> code=null 코드 값을 입력해 주십시오. </p>");
 
         } catch (Exception e) {
-            e.printStackTrace();
             result.append("<p>코드 목록 조회중 에러 발생 Error 발생 </p>");
         }
 

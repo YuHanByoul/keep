@@ -14,6 +14,7 @@ import com.kbrainc.plum.rte.menu.MenuNode;
 import com.kbrainc.plum.rte.menu.MenuTree;
 import com.kbrainc.plum.rte.model.ResMenuDao;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 
@@ -34,6 +35,7 @@ import net.sf.ehcache.Element;
 * @Company : Copyright KBRAIN Company. All Rights Reserved
 */
 @Service("cmm.resMenuService")
+@Slf4j
 public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMenuService {
 
     // private static final Logger LOGGER =
@@ -67,7 +69,7 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
             try {
                 makeTreeMenuInfoSite(siteid);
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("getMenuTree.Exception.72L");
             }
         }
         return treeMap.get(siteid);
@@ -102,7 +104,7 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
                     prevSiteid = menuItem.getSiteid();
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("makeTreeMenuInfo.Exception.107L");
             }
         }
     }

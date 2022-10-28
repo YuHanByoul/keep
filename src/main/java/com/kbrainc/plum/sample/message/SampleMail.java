@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 메일 발송 예제.
@@ -21,6 +23,7 @@ import com.kbrainc.plum.rte.util.mail.service.MailService;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Slf4j
 public class SampleMail {
     @Autowired
     private MailService mailService;
@@ -42,7 +45,7 @@ public class SampleMail {
     		
 			mailService.sendMail(mailVo);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("sendMail.Exception.48L");
 		}
     	
     	return true;

@@ -1,16 +1,14 @@
 package com.kbrainc.plum.rte.customattr;
 
-import com.kbrainc.plum.rte.service.ResCodeService;
-import com.kbrainc.plum.rte.util.CommonUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  * 
@@ -108,7 +106,6 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
             result.append("</label>");
 
         } catch (Exception e) {
-            e.printStackTrace();
             result.append("<p>Error 발생 </p>");
         }
         structureHandler.replaceWith(

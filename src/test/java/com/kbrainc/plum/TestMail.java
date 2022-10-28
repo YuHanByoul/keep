@@ -12,8 +12,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Slf4j
 class TestMail {
 	
 	@Autowired @Qualifier("MailService")
@@ -27,7 +30,7 @@ class TestMail {
     		
 			mailService.sendMail(mailVo);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("test.Exception.33L");
 			fail("Check Messaging Server(8087).");
 		}
 

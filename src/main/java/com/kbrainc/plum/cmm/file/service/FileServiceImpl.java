@@ -23,8 +23,11 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @ConfigurationProperties(prefix = "file")
+@Slf4j
 public class FileServiceImpl extends PlumAbstractServiceImpl implements FileService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -60,7 +63,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
                          }*/
 			 fileVo = saveFile(fileVo, fileGrpVo); 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("uploadFile.Exception.63L");
 		}
         //리턴값 생성
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()

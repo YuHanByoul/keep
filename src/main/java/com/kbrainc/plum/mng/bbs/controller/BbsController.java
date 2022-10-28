@@ -24,6 +24,8 @@ import com.kbrainc.plum.mng.bbs.model.PstVo;
 import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * BBS Controller
@@ -41,6 +43,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
+@Slf4j
 public class BbsController {
 
     @Autowired
@@ -87,7 +90,7 @@ public class BbsController {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertBbs.Exception.93L");
         }
 
         Map<String, String> resultMap = new HashMap<String, String>();
@@ -118,7 +121,7 @@ public class BbsController {
             }
             resultMap.put("list", result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("getBbsList.Exception.124L");
         }
         return resultMap;
     }
@@ -182,7 +185,7 @@ public class BbsController {
             }
             resultMap.put("list", result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("selectBbsCl.Exception.188L");
         }
         return resultMap;
     }
@@ -204,7 +207,7 @@ public class BbsController {
             bbsService.updateBbs(paramVO);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("updateBbs.Exception.210L");
         }
         resultMap.put("result", resultMsg);
         return resultMap;
@@ -235,7 +238,7 @@ public class BbsController {
             }
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertBbsCl.Exception.241L");
         }
         
         Map<String, String> resultMap = new HashMap<String, String>();
@@ -302,7 +305,7 @@ public class BbsController {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertPst.Exception.308L");
         }
         resultMap.put("result", resultMsg);
 
@@ -329,7 +332,7 @@ public class BbsController {
             }
             resultMap.put("list", result);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("getPstList.Exception.335L");
         }
         return resultMap;
     }
@@ -389,7 +392,7 @@ public class BbsController {
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("updatePst.Exception.392L");
         }
         return resultMap;
     }
@@ -411,7 +414,7 @@ public class BbsController {
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("deleteFileByFileId.Exception.417L");
         }
         return resultMap;
     }
@@ -437,7 +440,7 @@ public class BbsController {
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("insertCmnt.Exception.443L");
         }
         return resultMap;
     }
@@ -463,7 +466,7 @@ public class BbsController {
     		resultMsg = Constant.REST_API_RESULT_SUCCESS;
     		resultMap.put("result", resultMsg);
     	} catch (Exception e) {
-    		e.printStackTrace();
+    		log.error("insertCmntReply.Exception.469L");
     	}
     	return resultMap;
     }
@@ -489,7 +492,7 @@ public class BbsController {
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("updateCmnt.Exception.495L");
         }
         return resultMap;
     }
@@ -515,7 +518,7 @@ public class BbsController {
     		resultMsg = Constant.REST_API_RESULT_SUCCESS;
     		resultMap.put("result", resultMsg);
     	} catch (Exception e) {
-    		e.printStackTrace();
+    		log.error("updateCmntReplyDelYn.Exception.521L");
     	}
     	return resultMap;
     }
@@ -542,7 +545,7 @@ public class BbsController {
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("deletePst.Exception.548L");
         }
         return resultMap;
     }

@@ -13,6 +13,7 @@ import com.kbrainc.plum.rte.security.ReloadableFilterSecurityInterceptorMetadata
 import com.kbrainc.plum.rte.service.ResMenuServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -20,6 +21,7 @@ import net.sf.ehcache.bootstrap.BootstrapCacheLoader;
 import net.sf.ehcache.bootstrap.BootstrapCacheLoaderFactory;
 import net.sf.ehcache.event.CacheEventListener;
 
+@Slf4j
 public class MyBootstrapCacheLoaderFactory extends BootstrapCacheLoaderFactory implements BootstrapCacheLoader {
 
     public MyBootstrapCacheLoaderFactory() {
@@ -164,7 +166,7 @@ public class MyBootstrapCacheLoaderFactory extends BootstrapCacheLoaderFactory i
     	    				resMenuService.makeTreeMenuInfoSite(element.getObjectKey().toString());
     						cache.put(new Element(element.getObjectKey().toString(), true));
     					} catch (Exception e) {
-    						e.printStackTrace();
+    						log.error("notifyElementRemoved.Exception.167L");
     					}
     	            }
     
@@ -217,7 +219,7 @@ public class MyBootstrapCacheLoaderFactory extends BootstrapCacheLoaderFactory i
     	    		        reloadableFilterSecurityInterceptorMetadataSource.reload();
     						cache.put(new Element("auth", true));
     					} catch (Exception e) {
-    						e.printStackTrace();
+    						log.error("notifyElementRemoved.Exception.222L");
     					}
     	            }
     
@@ -253,8 +255,7 @@ public class MyBootstrapCacheLoaderFactory extends BootstrapCacheLoaderFactory i
     	        });
     	    }
     	} catch (Exception e) {
-    	    // TODO Auto-generated catch block
-    	    e.printStackTrace();
+    	    log.error("load.Exception.258L");
     	}
     }
 }

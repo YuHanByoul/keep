@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -16,6 +18,8 @@ import org.springframework.util.StringUtils;
  *
  */
 public class FormChecker {
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(FormChecker.class);
     
 	public static boolean isNull(String m) {
 	    if(m == null || m == "" || !StringUtils.hasText(m))return true;
@@ -382,8 +386,7 @@ public class FormChecker {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("ValidateData.Exception.389L");
 		}
 		
 		if(vali){

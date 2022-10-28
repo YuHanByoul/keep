@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.thymeleaf.context.ITemplateContext;
 import org.thymeleaf.engine.AttributeName;
 import org.thymeleaf.model.IProcessableElementTag;
@@ -133,11 +131,9 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
                 result.append("</select> ").append("\n");
             }
         } catch (NullPointerException e) {
-            e.printStackTrace();
             result.append(" <p> code=null 코드 값을 입력해 주십시오. </p>");
 
         } catch (Exception e) {
-            e.printStackTrace();
             result.append("<p>코드 목록 조회중 에러 발생 Error 발생 </p>");
         }
 

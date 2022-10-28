@@ -27,6 +27,8 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * BBS Controller
@@ -44,6 +46,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
  */
 @Controller("front.bbsController")
 @Alias("front.bbsController")
+@Slf4j
 public class BbsController {
 
 	@Resource(name = "front.bbsServiceImpl")
@@ -227,7 +230,7 @@ public class BbsController {
 				resultMsg = Constant.REST_API_RESULT_SUCCESS;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("insertPst.Exception.233L");
 		}
 		resultMap.put("result", resultMsg);
 
@@ -297,7 +300,7 @@ public class BbsController {
 			bbsService.updatePst(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("updatePst.Exception.303L");
 		}
 
 		resultMap.put("result", resultMsg);
@@ -327,7 +330,7 @@ public class BbsController {
 			bbsService.insertCmnt(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("insertCmnt.Exception.330L");
 		}
 
 		resultMap.put("result", resultMsg);
@@ -357,7 +360,7 @@ public class BbsController {
 			bbsService.insertReply(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("insertCmntReply.Exception.363L");
 		}
 
 		resultMap.put("result", resultMsg);
@@ -387,7 +390,7 @@ public class BbsController {
 			bbsService.updateCmnt(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("updateCmnt.Exception.393L");
 		}
 
 		resultMap.put("result", resultMsg);
@@ -417,7 +420,7 @@ public class BbsController {
 			bbsService.updateCmntReplyDelYn(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("updateCmntReplyDelYn.Exception.423L");
 		}
 
 		resultMap.put("result", resultMsg);
@@ -449,7 +452,7 @@ public class BbsController {
 			bbsService.deletePst(pstVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("deletePst.Exception.455L");
 		}
 
 		resultMap.put("result", resultMsg);
@@ -501,7 +504,7 @@ public class BbsController {
 			resultMap.put("list", result);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("getPstList.Exception.507L");
 		}
 		return resultMap;
 	}

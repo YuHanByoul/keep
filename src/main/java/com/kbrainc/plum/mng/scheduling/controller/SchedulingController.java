@@ -32,6 +32,8 @@ import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
 * 
 * 스케쥴링 관리 컨트롤러
@@ -49,6 +51,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 * @Company : Copyright KBRAIN Company. All Rights Reserved
 */
 @Controller
+@Slf4j
 public class SchedulingController {
 
     @Autowired
@@ -346,7 +349,7 @@ public class SchedulingController {
                 scheduler.triggerJob(scheduler.getTrigger(new TriggerKey(schedulingInfo.getNm())).getJobKey());
                 retVal = true;
             } catch(Exception e) {
-                e.printStackTrace();
+                log.error("execSchedTrigger.Exception.349L");
             }
         }
         

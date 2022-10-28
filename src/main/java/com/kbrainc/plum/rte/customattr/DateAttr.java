@@ -142,7 +142,6 @@ public class DateAttr extends AbstractAttributeTagProcessor {
             result.append("</script>").append("\n");
 
         } catch (Exception e) {
-            e.printStackTrace();
             result.append("<p>에러발생 </p>");
         }
         structureHandler.replaceWith(result.toString(), true
