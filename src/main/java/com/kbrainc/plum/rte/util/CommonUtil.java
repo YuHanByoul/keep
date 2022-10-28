@@ -238,13 +238,13 @@ public class CommonUtil {
         if (obj instanceof String) {
             return isEmpty(obj) || "".equals(obj.toString().trim());
         } else if (obj instanceof List) {
-            return obj == null || ((List) obj).isEmpty();
+            return isEmpty(obj) || ((List) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return obj == null || ((Map) obj).isEmpty();
+            return isEmpty(obj) || ((Map) obj).isEmpty();
         } else if (obj instanceof Object[]) {
-            return obj == null || Array.getLength(obj) == 0;
+            return isEmpty(obj) || Array.getLength(obj) == 0;
         } else {
-            return obj == null;
+            return isEmpty(obj);
         }
     }
 
