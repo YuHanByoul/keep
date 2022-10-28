@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.encoder.Encode;
+import org.owasp.encoder.Encoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -263,7 +265,7 @@ public class FileController {
             	
             //printWriter.println("<script>window.parent.CKEDITOR.tools.callFunction("+callback+",'"+fileUrl+"','이미지가 업로드되었습니다.')"+"</script>");
             //ckEditor 4.8 버전 이상부터 json 형태로 return 해야 오류 발생 없으나 커스텀 alert를 띄울 수 없음   
-            printWriter.println("{\"filename\" : \""+fileName+"\", \"uploaded\" : 1, \"url\":\""+fileUrl+"\"}");
+            printWriter.println("{\"filename\" : \""+Encode.forHtml(fileUrl)+"\", \"uploaded\" : 1, \"url\":\""+Encode.forHtml(fileUrl)+"\"}");
             
             out.flush();
             
