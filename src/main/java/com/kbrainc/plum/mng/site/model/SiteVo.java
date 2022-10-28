@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.site.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -38,7 +39,7 @@ public class SiteVo extends ParentRequestVo {
 	private Integer reguserid; //등록자 아이디
 	
 	private String domains; //등록된 도메인들의 목록 문자열
-	private List<SiteDomainVo> siteDomainList; //등록된 도메인 list
+	private List<SiteDomainVo> siteDomainList = new ArrayList(); //등록된 도메인 list
 	
 	/**
 	 * 
