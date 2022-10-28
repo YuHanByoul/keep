@@ -80,7 +80,7 @@ public class PushServiceImpl implements PushService {
         
         OutputStream os = conn.getOutputStream();
         // 서버에서 날려서 한글 깨지는 사람은 아래처럼  UTF-8로 인코딩해서 날려주자
-        os.write(gson.toJson(message).toString().getBytes("UTF-8"));
+        os.write(gson.toJson(message).getBytes("UTF-8"));
         os.flush();
         os.close();
 
@@ -137,7 +137,7 @@ public class PushServiceImpl implements PushService {
     	
         OutputStream os = conn.getOutputStream();
         // 서버에서 날려서 한글 깨지는 사람은 아래처럼  UTF-8로 인코딩해서 날려주자
-        os.write(gson.toJson(message).toString().getBytes("UTF-8"));
+        os.write(gson.toJson(message).getBytes("UTF-8"));
         os.flush();
         os.close();
         

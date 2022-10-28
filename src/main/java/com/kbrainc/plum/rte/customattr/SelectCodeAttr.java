@@ -112,7 +112,7 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
             } else {
                 result.append("<select  class ='form-control  ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
-                    String changeFunction = tag.getAttribute("onchange").getValue().toString();
+                    String changeFunction = tag.getAttribute("onchange").getValue();
                     result.append("    onchange ='").append(changeFunction).append("()' ");
                 }
                 result.append(" >").append("\n");
