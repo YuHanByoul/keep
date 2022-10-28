@@ -91,6 +91,10 @@ public class MenuPrintImpl {
             menuTree = resMenuService.getMenuTree(siteInfo.getSiteid());
         }
 
+        if (menuTree == null) {
+            return "";
+        }
+        
         String curMenuid = "";
         String upprMenuid = "";
 

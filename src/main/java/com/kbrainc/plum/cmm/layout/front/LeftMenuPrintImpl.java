@@ -92,6 +92,10 @@ public class LeftMenuPrintImpl {
             menuTree = resMenuService.getMenuTree(siteInfo.getSiteid());
         }
 
+        if (menuTree == null) {
+            return "";
+        }
+        
         MenuItem menuItemL1 = menuTree.getL1MenuItem(menuItem.getMenuid());
         MenuItem menuItem1 = null;
         MenuItem menuItem2 = null;
