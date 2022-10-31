@@ -66,7 +66,11 @@ public class CommonUtil {
     public static Object getBean(String beanName, HttpServletRequest request) {
         WebApplicationContext ctx = WebApplicationContextUtils
                 .getWebApplicationContext(request.getSession().getServletContext());
-        return ctx.getBean(beanName);
+        if (ctx != null) {
+            return ctx.getBean(beanName);
+        } else {
+            return null;
+        }
     }
 
     /**

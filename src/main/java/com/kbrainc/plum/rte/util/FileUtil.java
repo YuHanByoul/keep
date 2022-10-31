@@ -214,43 +214,45 @@ public class FileUtil {
         File sourceFile = new File(source);
         if (sourceFile.isDirectory()) {
             File sourceFileList[] = sourceFile.listFiles();
-            for (int i = 0; i < sourceFileList.length; i++) {
-                File sFile = sourceFileList[i];
-                String newSource = sFile.getPath();
-                String newTarget = target + delimeter + sFile.getName();
-
-                if (sFile.isDirectory()) { // 디렉토리
-                    copyDirectoryFile(newSource, newTarget);
-                } else if (sFile.isFile()) { // 파일
-                    InputStream in = null;
-                    OutputStream out = null;
-
-                    try {
-                        in = new FileInputStream(sFile);
-                        out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
-                        int read = in.read(buf,0,bufSize);
-                        while (read > 0) {
-                            out.write(buf, 0, read);
-                            read = in.read(buf,0,bufSize);
-                        }
-
-                        in.close();
-                        out.close();
-                    } catch (IOException e) {
-                        result = false;
-                    } finally {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (IOException e) {
-                                result = false;
+            if (sourceFileList != null) {
+                for (int i = 0; i < sourceFileList.length; i++) {
+                    File sFile = sourceFileList[i];
+                    String newSource = sFile.getPath();
+                    String newTarget = target + delimeter + sFile.getName();
+    
+                    if (sFile.isDirectory()) { // 디렉토리
+                        copyDirectoryFile(newSource, newTarget);
+                    } else if (sFile.isFile()) { // 파일
+                        InputStream in = null;
+                        OutputStream out = null;
+    
+                        try {
+                            in = new FileInputStream(sFile);
+                            out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
+                            int read = in.read(buf,0,bufSize);
+                            while (read > 0) {
+                                out.write(buf, 0, read);
+                                read = in.read(buf,0,bufSize);
                             }
-                        }
-                        if (out != null) {
-                            try {
-                                out.close();
-                            } catch (IOException e) {
-                                result = false;
+    
+                            in.close();
+                            out.close();
+                        } catch (IOException e) {
+                            result = false;
+                        } finally {
+                            if (in != null) {
+                                try {
+                                    in.close();
+                                } catch (IOException e) {
+                                    result = false;
+                                }
+                            }
+                            if (out != null) {
+                                try {
+                                    out.close();
+                                } catch (IOException e) {
+                                    result = false;
+                                }
                             }
                         }
                     }
@@ -321,51 +323,53 @@ public class FileUtil {
         File sourceFile = new File(source);
         if (sourceFile.isDirectory()) {
             File sourceFileList[] = sourceFile.listFiles();
-            for (int i = 0; i < sourceFileList.length; i++) {
-                File sFile = sourceFileList[i];
-                String newSource = sFile.getPath();
-                String newTarget = target + delimeter + sFile.getName();
-
-                if (sFile.isDirectory()) { // 디렉토리
-                    copyDirectoryDateFile(newSource, newTarget);
-                } else if (sFile.isFile()) { // 파일
-                    InputStream in = null;
-                    OutputStream out = null;
-
-                    fd.setTime(sFile.lastModified());// 파일수정날짜
-                    fmfd = formatter.format(fd);
-
-                    if (fmfd.compareTo(fmtd) < 0) {
-                        continue;// 파일수정날짜와 오늘날짜 비교
-                    }
-
-                    try {
-                        in = new FileInputStream(sFile);
-                        out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
-
-                        int read = in.read(buf,0,bufSize);
-                        while (read > 0) {
-                            out.write(buf, 0, read);
-                            read = in.read(buf,0,bufSize);
+            if (sourceFileList != null) {
+                for (int i = 0; i < sourceFileList.length; i++) {
+                    File sFile = sourceFileList[i];
+                    String newSource = sFile.getPath();
+                    String newTarget = target + delimeter + sFile.getName();
+    
+                    if (sFile.isDirectory()) { // 디렉토리
+                        copyDirectoryDateFile(newSource, newTarget);
+                    } else if (sFile.isFile()) { // 파일
+                        InputStream in = null;
+                        OutputStream out = null;
+    
+                        fd.setTime(sFile.lastModified());// 파일수정날짜
+                        fmfd = formatter.format(fd);
+    
+                        if (fmfd.compareTo(fmtd) < 0) {
+                            continue;// 파일수정날짜와 오늘날짜 비교
                         }
-
-                        in.close();
-                        out.close();
-                    } catch (IOException e) {
-                        result = false;
-                    } finally {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (IOException e) {
-                                result = false;
+    
+                        try {
+                            in = new FileInputStream(sFile);
+                            out = new FileOutputStream(FilenameUtils.getName(newTarget), true);
+    
+                            int read = in.read(buf,0,bufSize);
+                            while (read > 0) {
+                                out.write(buf, 0, read);
+                                read = in.read(buf,0,bufSize);
                             }
-                        }
-                        if (out != null) {
-                            try {
-                                out.close();
-                            } catch (IOException e) {
-                                result = false;
+    
+                            in.close();
+                            out.close();
+                        } catch (IOException e) {
+                            result = false;
+                        } finally {
+                            if (in != null) {
+                                try {
+                                    in.close();
+                                } catch (IOException e) {
+                                    result = false;
+                                }
+                            }
+                            if (out != null) {
+                                try {
+                                    out.close();
+                                } catch (IOException e) {
+                                    result = false;
+                                }
                             }
                         }
                     }
@@ -505,9 +509,11 @@ public class FileUtil {
 
             } else if (file.isDirectory()) { // 디렉토리인 경우
                 File fileList[] = file.listFiles(); // 파일목록
-
-                for (int i = 0; i < fileList.length; i++) {
-                    compressZipFileOutput(outputStream, fileList[i], source);
+                
+                if (fileList != null) {
+                    for (int i = 0; i < fileList.length; i++) {
+                        compressZipFileOutput(outputStream, fileList[i], source);
+                    }
                 }
             }
         } catch (Exception e) {

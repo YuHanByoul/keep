@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -57,8 +58,19 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
     @Override
     public boolean reloadCodeInfo() throws Exception {
         synchronized (this) {
-	        Ehcache codeMap = (Ehcache) cacheManager.getCache("codeMap").getNativeCache();
-	        Ehcache codeListMap = (Ehcache) cacheManager.getCache("codeListMap").getNativeCache();
+            Cache cache = cacheManager.getCache("codeMap");
+            Cache cache2 = cacheManager.getCache("codeListMap");
+            Ehcache codeMap = null;
+            Ehcache codeListMap = null;
+            
+            if (cache != null) {
+                codeMap = (Ehcache) cache.getNativeCache();
+            }
+            
+            if (cache2 != null) {
+                codeListMap = (Ehcache) cache2.getNativeCache();
+            }
+            
 	        codeMap.removeAll(true);
 	        codeListMap.removeAll(true);
 
@@ -176,11 +188,26 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
     */
     @Override
     public void removeCacheForCdgrp(String cdgrpid, String upprCd) throws Exception {
-        Ehcache codeListMap = (Ehcache)cacheManager.getCache("codeListMap").getNativeCache();
-        Element element = codeListMap.get(cdgrpid + "|" + upprCd);
+        Cache cache = cacheManager.getCache("codeListMap");
+        Ehcache codeListMap = null;
+        Element element = null;
+        
+        if (cache != null) {
+            codeListMap = (Ehcache)cache.getNativeCache();
+        }
+        
+        if (codeListMap != null) {
+            element = codeListMap.get(cdgrpid + "|" + upprCd);
+        }
         
         if (element != null) {
-            Ehcache codeMap = (Ehcache)cacheManager.getCache("codeMap").getNativeCache();
+            Cache cache2 = cacheManager.getCache("codeMap");
+            Ehcache codeMap = null;
+                    
+            if (cache2 != null) {
+                codeMap = (Ehcache)cache2.getNativeCache();
+            }
+            
             List<CodeInfoVo> codeList = (List<CodeInfoVo>) element.getObjectValue();   
 
             for (CodeInfoVo codeInfo : codeList) {

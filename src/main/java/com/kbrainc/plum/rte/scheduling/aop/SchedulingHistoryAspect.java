@@ -68,10 +68,17 @@ public class SchedulingHistoryAspect {
             if (transactional != null) {
             	this.namedParameterJdbcTemplate.update("COMMIT", paramSource);
             }
-            paramSource.addValue("sched_hist_id", keyHolder.getKey().intValue());
+            
+            Number key = keyHolder.getKey();
+            if ( key != null) {
+                paramSource.addValue("sched_hist_id", key.intValue());
+            }
+            
+            Object result = null;
             paramSource.addValue("now", new Date());
-            Object result = thisJoinPoint.proceed();
+            result = thisJoinPoint.proceed();            
             this.namedParameterJdbcTemplate.update("UPDATE TB_SCHED_HIST SET JOB_END_DT = :now, STTS_CD = 'S' WHERE SCHED_HIST_ID = :sched_hist_id", paramSource);
+
             return result;
         } catch (Throwable throwable) {
         	if (transactional != null) {
