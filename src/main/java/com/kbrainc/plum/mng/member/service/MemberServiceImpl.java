@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.member.service;
 
 import java.security.MessageDigest;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -405,7 +406,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             }
             fileName = fileVo.getSaveFileNm();
             base64Img = fileStorageService.imgToStringByBase64(fileVo.getFilePath() + "/THUMB_" + fileName);            
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            return "";
+        }  catch (Exception e) {
             return "";
         } 
                         

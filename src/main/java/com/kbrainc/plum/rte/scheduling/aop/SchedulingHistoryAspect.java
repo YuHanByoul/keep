@@ -80,7 +80,7 @@ public class SchedulingHistoryAspect {
             this.namedParameterJdbcTemplate.update("UPDATE TB_SCHED_HIST SET JOB_END_DT = :now, STTS_CD = 'S' WHERE SCHED_HIST_ID = :sched_hist_id", paramSource);
 
             return result;
-        } catch (Throwable throwable) {
+        } catch (CustomRuntimeException throwable) {
         	if (transactional != null) {
         		this.namedParameterJdbcTemplate.update("ROLLBACK", paramSource);
             }

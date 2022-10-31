@@ -1,5 +1,7 @@
 package com.kbrainc.plum.cmm.file.service;
 
+import java.io.FileNotFoundException;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,9 +64,11 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
                              deleteFileVo(oldFileInfo);
                          }*/
 			 fileVo = saveFile(fileVo, fileGrpVo); 
+		} catch (SQLException e) {
+			log.error("uploadFile.SQLException.63L");
 		} catch (Exception e) {
-			log.error("uploadFile.Exception.63L");
-		}
+            log.error("uploadFile.Exception.63L");
+        }
         //리턴값 생성
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/downloadFileByFileid.do")

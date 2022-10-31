@@ -1,6 +1,7 @@
 package com.kbrainc.plum.rte.model;
 
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
@@ -10,11 +11,13 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.config.scheduling.quartz.QuartzExecConfig;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -32,6 +35,7 @@ import lombok.RequiredArgsConstructor;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Slf4j
 @Data
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CodeInfoVo extends ParentRequestVo implements Serializable {
@@ -127,8 +131,11 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
                 this.cdNm = code.getCdNm();
                 this.upprCd = code.getUpprCd();
                 }
+            }catch(SQLException e) {
+                log.error("executeInternal.SQLException.51L");
+                return ;
             }catch(Exception e) {
-                //e.printStackTrace();
+                log.error("executeInternal.SQLException.51L");
                 return ;
             }
         }
@@ -144,6 +151,8 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
                     CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.cd);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
+            }catch(NullPointerException e) {
+                return ;
             }catch(Exception e) {
                 return ;
             }
@@ -166,7 +175,11 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
             CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
             this.upprCdNm = code.getCdNm();
             return this.upprCdNm;
+        }catch(NullPointerException e) {
+            log.error("getUpprCdNm.NullPointerException.161L");
+            return "";
         }catch(Exception e) {
+            log.error("getUpprCdNm.Exception.161L");
             return "";
         }
     }

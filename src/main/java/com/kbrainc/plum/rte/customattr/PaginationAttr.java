@@ -123,6 +123,8 @@ public class PaginationAttr extends AbstractAttributeTagProcessor {
             result.append("</ul>");
 			result.append("</div>");
 
+        } catch (NumberFormatException e) {
+            result.append("<p>Error NumberFormatException발생 </p>");
         } catch (Exception e) {
             result.append("<p>Error 발생 </p>");
         }

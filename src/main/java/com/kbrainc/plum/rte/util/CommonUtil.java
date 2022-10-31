@@ -181,6 +181,13 @@ public class CommonUtil {
                     urlcnn.getContent();
                 }
             }
+        } catch (RuntimeException e) {
+            for (int i = idx; i < checkHostsLength; i++) {
+                resultCheckHost += checkHosts[i];
+                if (i < checkHostsLength - 1) {
+                    resultCheckHost += ",";
+                }
+            }
         } catch (Exception e) {
             for (int i = idx; i < checkHostsLength; i++) {
                 resultCheckHost += checkHosts[i];

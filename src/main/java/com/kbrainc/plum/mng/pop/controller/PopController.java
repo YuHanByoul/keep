@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.pop.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,16 +15,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
+import com.kbrainc.plum.mng.pop.service.PopServiceImpl;
+import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
-
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
-import com.kbrainc.plum.mng.pop.service.PopServiceImpl;
 
 /**
  * 
@@ -99,6 +99,8 @@ public class PopController {
                 resultMap.put("totalCount", 0);
             }
             resultMap.put("list", result);
+        } catch (SQLException e) {
+            log.error("selectPopUpNtcList.SQLException.103L");
         } catch (Exception e) {
             log.error("selectPopUpNtcList.Exception.103L");
         }

@@ -1,5 +1,6 @@
 package com.kbrainc.plum.rte.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,8 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
         if (treeMap == null || !treeMap.containsKey(siteid)) {
             try {
                 makeTreeMenuInfoSite(siteid);
+            } catch (SQLException e) {
+                log.error("getMenuTree.SQLException.72L");
             } catch (Exception e) {
                 log.error("getMenuTree.Exception.72L");
             }
@@ -104,6 +107,8 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
                     menuList2.add(menuItem);
                     prevSiteid = menuItem.getSiteid();
                 }
+            } catch (RuntimeException e) {
+                log.error("makeTreeMenuInfo.RuntimeException.107L");
             } catch (Exception e) {
                 log.error("makeTreeMenuInfo.Exception.107L");
             }

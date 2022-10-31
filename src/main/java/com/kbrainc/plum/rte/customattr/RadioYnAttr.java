@@ -105,6 +105,8 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
             result.append(">").append(label2).append("\n");
             result.append("</label>");
 
+        } catch (NullPointerException e) {
+            result.append("<p>NullPointerException 발생 </p>");
         } catch (Exception e) {
             result.append("<p>Error 발생 </p>");
         }

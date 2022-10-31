@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +113,8 @@ public class CommonController {
                 try {
                     List<PstVo> list= bbsService.selectPstList(pstVo);
                     mav.addObject("list", list);
+                }catch(SQLException e){
+                    mav.addObject("list", null);
                 }catch(Exception e){
                     mav.addObject("list", null);
                 }

@@ -52,7 +52,9 @@ public class ParentVo {
     public String toString() {
         try {
             return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
-        } catch (Exception e) {
+        }catch (NullPointerException e) {
+            return "";
+        }catch (Exception e) {
             return "";
         }
     }

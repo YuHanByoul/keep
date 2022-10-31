@@ -4,7 +4,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.MalformedURLException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -68,9 +70,10 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
         
         try {
             Files.createDirectories(this.fileStorageLocation);
+        } catch (NotDirectoryException ex) {
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.",ex);
         } catch (Exception ex) {
-            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.",
-                    ex);
+            throw new FileStorageException("Could not create the directory where the uploaded files will be stored.",ex);
         }
     }
 
@@ -128,6 +131,8 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
             
             return fileVo;
             
+        } catch (FileStorageException ex) {
+            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         } catch (Exception ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }

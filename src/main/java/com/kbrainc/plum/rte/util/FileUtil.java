@@ -23,7 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.kbrainc.plum.mng.bbs.controller.BbsController;
 import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -41,6 +44,7 @@ import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Slf4j
 public class FileUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
@@ -172,22 +176,18 @@ public class FileUtil {
                 } else {
                     imsi1 = name.substring(bracketIdx + 1);
                     imsi2 = name.substring(0, bracketIdx);
-                    try {
-                        imsiNum = Integer.parseInt(imsi1);
-                        check = 1;
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
-                    }
-
+                    imsiNum = Integer.parseInt(imsi1);
+                    check = 1;
                     if (check > 0) {
                         name = imsi2 + "-" + (imsiNum + 1);
                     }
                 }
-
                 rtn = getFileExistRename(filePath, name + "." + fileType);
             }
+        } catch (NumberFormatException e) {
+            LOGGER.error("getFileExistRename.NumberFormatException.176L");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getFileExistRename.Exception.176L");
         }
         return rtn;
     }
@@ -456,6 +456,8 @@ public class FileUtil {
 
             outputStream.closeArchiveEntry();
             outputStream.close();
+        } catch (IOException e) {
+            result = false;
         } catch (Exception e) {
             result = false;
         } finally {
@@ -516,22 +518,24 @@ public class FileUtil {
                     }
                 }
             }
+        } catch (IOException e) {
+            log.error("compressZipFileOutput.IOException.520");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            log.error("compressZipFileOutput.Exception.522L");
         } finally {
             try {
                 if (bInputStream != null) {
                     bInputStream.close();
                 }
             } catch (IOException e) {
-                LOGGER.error(e.getMessage());
+                log.error("compressZipFileOutput.IOException.529L");
             }
             try {
                 if (fInputStream != null) {
                     fInputStream.close();
                 }
             } catch (IOException e) {
-                LOGGER.error(e.getMessage());
+                log.error("compressZipFileOutput.Exception.536L");
             }
         }
     }
