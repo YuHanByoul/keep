@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
@@ -189,11 +190,23 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
     */
     @Override
     public void removeCacheForSiteid(String siteid) throws Exception {
-        Ehcache menuMap = (Ehcache)cacheManager.getCache("menuMap").getNativeCache();
-        Element element = menuMap.get(siteid);
+        if (cacheManager != null) {
+            Cache cache = cacheManager.getCache("menuMap");
         
-        if (element != null) {
-            menuMap.remove(siteid);
+            Ehcache menuMap = null;
+            Element element = null;
+            
+            if (cache != null) {
+                menuMap = (Ehcache)cache.getNativeCache();
+            }
+            
+            if (menuMap != null) {
+                element = menuMap.get(siteid);
+            }
+            
+            if (element != null) {
+                menuMap.remove(siteid);
+            }
         }
     }
     
@@ -207,11 +220,23 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
     * @throws Exception 예외
     */
     public void putCacheForSiteid(String siteid) throws Exception {
-        Ehcache menuMap = (Ehcache)cacheManager.getCache("menuMap").getNativeCache();
-        Element element = menuMap.get(siteid);
-        
-        if (element == null) {
-            menuMap.put(new Element(siteid, true));
+        if (cacheManager != null) {
+            Cache cache = cacheManager.getCache("menuMap");
+            
+            Ehcache menuMap = null;
+            Element element = null;
+            
+            if (cache != null) {
+                menuMap = (Ehcache)cache.getNativeCache();
+            }
+            
+            if (menuMap != null) {
+                element = menuMap.get(siteid);
+            }
+            
+            if (element == null) {
+                menuMap.put(new Element(siteid, true));
+            }
         }
     }
 }

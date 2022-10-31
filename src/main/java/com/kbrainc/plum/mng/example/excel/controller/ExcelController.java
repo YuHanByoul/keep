@@ -71,10 +71,16 @@ public class ExcelController {
 		MultipartFile file = multiRequest.getFile("p_excelFile");
 		ArrayList excelList = null;
 		//엑셀내용을 리스트로
-		if(file.getOriginalFilename().indexOf(".xlsx") >-1){
-			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
-		}else if( file.getOriginalFilename().indexOf(".xls") >-1){
-			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
+		String oriFilename = null;
+		if (file != null) {
+		    oriFilename = file.getOriginalFilename();
+		}
+		if (oriFilename != null) {
+    		if(oriFilename.indexOf(".xlsx") >-1){
+    			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
+    		}else if(oriFilename.indexOf(".xls") >-1){
+    			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
+    		}
 		}
 		
 		Map<String,Object> result = excelService.memberExcelDatalValidationCheck(excelList);//엑셀 체크
@@ -98,10 +104,17 @@ public class ExcelController {
 		ArrayList excelList = null;
 		
 		//엑셀내용을 리스트로
-		if(file.getOriginalFilename().indexOf(".xlsx") >-1){
-			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
-		}else if( file.getOriginalFilename().indexOf(".xls") >-1){
-			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
+		String oriFilename = null;
+		if (file != null) {
+		    oriFilename = file.getOriginalFilename();
+		}
+		
+		if (oriFilename != null) {
+    		if(oriFilename.indexOf(".xlsx") >-1){
+    			excelList = ExcelUtil.getExcelPoiArrayList(file.getInputStream());
+    		}else if(oriFilename.indexOf(".xls") >-1){
+    			excelList = ExcelUtil.getExcelJxlArrayList(file.getInputStream());
+    		}
 		}
 		
 		int retVal = excelService.memberWriteExcel(excelList , user);//엑셀 체크

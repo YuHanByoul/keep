@@ -8,6 +8,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
@@ -49,11 +50,22 @@ public class ResAuthServiceImpl extends PlumAbstractServiceImpl implements ResAu
     */
     @Override
     public void removeCacheForAuth() throws Exception {
-        Ehcache authMap = (Ehcache)cacheManager.getCache("authMap").getNativeCache();
-        Element element = authMap.get("auth");
-        
-        if (element != null) {
-            authMap.remove("auth");
+        if (cacheManager != null) {
+            Cache cache = cacheManager.getCache("authMap");
+            Ehcache authMap = null;
+            Element element = null;
+            
+            if (cache != null) {
+                authMap = (Ehcache)cache.getNativeCache();
+            }
+            
+            if (authMap != null) {
+                element = authMap.get("auth");
+            }
+            
+            if (element != null) {
+                authMap.remove("auth");
+            }
         }
     }
 
