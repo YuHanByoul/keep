@@ -235,7 +235,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getArray.Exception.238L");
             throw e;
         }
     }
@@ -254,7 +254,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getAsciiStream.Exception.257L");
             throw e;
         }
     }
@@ -273,7 +273,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getBigDecimal.Exception.276L");
             throw e;
         }
     }
@@ -292,7 +292,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getBinaryStream.Exception.295L");
             throw e;
         }
     }
@@ -311,7 +311,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getBlob.Exception.314L");
             throw e;
         }
     }
@@ -330,7 +330,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return false;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getBoolean.Exception.333L");
             throw e;
         }
     }
@@ -349,7 +349,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return Byte.parseByte("");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getByte.Exception.352L");
             throw e;
         }
     }
@@ -368,7 +368,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getCharacterStream.Exception.371L");
             throw e;
         }
     }
@@ -387,7 +387,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getClob.Exception.390L");
             throw e;
         }
     }
@@ -406,7 +406,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getDate.Exception.409L");
             throw e;
         }
     }
@@ -425,7 +425,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return Double.parseDouble("0");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getDouble.Exception.428L");
             throw e;
         }
     }
@@ -444,7 +444,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return Float.parseFloat("0");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getFloat.Exception.447L");
             throw e;
         }
     }
@@ -463,7 +463,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return Integer.parseInt("0");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getInt.Exception.466L");
             throw e;
         }
     }
@@ -482,7 +482,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return Long.parseLong("0");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getLong.Exception.485L");
             throw e;
         }
     }
@@ -501,7 +501,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getObject.Exception.504L");
             throw e;
         }
     }
@@ -519,7 +519,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getCurMap.Exception.522L");
             throw e;
         }
     }
@@ -538,7 +538,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getCurBox.Exception.541L");
             throw e;
         }
     }
@@ -557,7 +557,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getRef.Exception.560L");
             throw e;
         }
     }
@@ -576,7 +576,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return Short.parseShort("0");
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getShort.Exception.579L");
             throw e;
         }
     }
@@ -595,7 +595,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return "";
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getString.Exception.598L");
             throw e;
         }
     }
@@ -614,7 +614,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getTime.Exception.617L");
             throw e;
         }
     }
@@ -633,7 +633,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getTimestamp.Exception.636L");
             throw e;
         }
     }
@@ -652,7 +652,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getUnicodeStream.Exception.655L");
             throw e;
         }
     }
@@ -671,7 +671,7 @@ public class DataSet {
         } catch (NullPointerException e) {
             return null;
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getURL.Exception.674L");
             throw e;
         }
     }

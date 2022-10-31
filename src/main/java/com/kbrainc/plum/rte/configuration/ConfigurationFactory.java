@@ -49,7 +49,7 @@ public class ConfigurationFactory implements Cloneable{
                     p1.append(new PropertiesConfiguration("application-" + profile + ".properties"));
                     instance.setApplicationConfig(p1);
                 } catch (ConfigurationException e) {
-                    LOGGER.error(e.getMessage());
+                    LOGGER.error("getInstance.ConfigurationException.52L");
                 }
             }
         }

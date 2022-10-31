@@ -176,7 +176,7 @@ public class FileUtil {
                         imsiNum = Integer.parseInt(imsi1);
                         check = 1;
                     } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
+                        LOGGER.error("getFileExistRename.Exception.179L");
                     }
 
                     if (check > 0) {
@@ -187,7 +187,7 @@ public class FileUtil {
                 rtn = getFileExistRename(filePath, name + "." + fileType);
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("getFileExistRename.Exception.190L");
         }
         return rtn;
     }
@@ -517,21 +517,21 @@ public class FileUtil {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error("compressZipFileOutput.Exception.520L");
         } finally {
             try {
                 if (bInputStream != null) {
                     bInputStream.close();
                 }
             } catch (IOException e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error("compressZipFileOutput.IOException.527L");
             }
             try {
                 if (fInputStream != null) {
                     fInputStream.close();
                 }
             } catch (IOException e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error("compressZipFileOutput.IOException.534L");
             }
         }
     }
