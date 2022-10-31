@@ -290,7 +290,7 @@ public class ExcelUtil {
             LOGGER.error("writeExcel.FileNotFoundException.290L");
             return false;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("writeExcel.IOException.293L");
             return false;
         } finally {
             try {
@@ -298,7 +298,7 @@ public class ExcelUtil {
                 if(fos!=null) fos.close();
                 
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error("writeExcel.IOException.301L");
             }
         }
 

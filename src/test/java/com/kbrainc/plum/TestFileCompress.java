@@ -6,6 +6,9 @@ import org.junit.Test;
 
 import com.kbrainc.plum.rte.util.FileUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class TestFileCompress {
 
 	@Test
@@ -24,14 +27,14 @@ public class TestFileCompress {
 		try {
 			FileUtil.decompressZipFile("/Users/comnic/Desktop/testFolder.zip", "/Users/comnic/Desktop");
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("testFileDecompress.IOException.30L");
 		}
 		
 		// 파일 압축 해제
 		try {
 			FileUtil.decompressZipFile("/Users/comnic/Desktop/testFile.zip", "/Users/comnic/Desktop");
 		} catch (IOException e) {
-			e.printStackTrace();
+		    log.error("testFileDecompress.IOException.37L");
 		}
 	}
 	
