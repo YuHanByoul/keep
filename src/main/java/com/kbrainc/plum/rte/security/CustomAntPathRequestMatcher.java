@@ -146,6 +146,10 @@ public final class CustomAntPathRequestMatcher
                 : null;
         this.urlPathHelper = urlPathHelper;
     }
+    
+    public Object clone()throws CloneNotSupportedException{  
+        return super.clone();  
+    }  
 
     /**
      * Returns true if the configured pattern (and HTTP-Method) match those of the

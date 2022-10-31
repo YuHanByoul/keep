@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -237,15 +238,15 @@ public class CommonUtil {
      */
     public static boolean isEmpty(Object obj) {
         if (obj instanceof String) {
-            return isEmpty(obj) || "".equals(obj.toString().trim());
+            return Objects.isNull(obj) || "".equals(obj.toString().trim());
         } else if (obj instanceof List) {
-            return obj == null || ((ArrayList) obj).isEmpty();
+            return Objects.isNull(obj) || ((ArrayList) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return obj == null || ((Map) obj).isEmpty();
+            return Objects.isNull(obj) || ((Map) obj).isEmpty();
         } else if (obj instanceof Object[]) {
-            return obj == null || Array.getLength(obj) == 0;
+            return Objects.isNull(obj) || Array.getLength(obj) == 0;
         } else {
-            return obj == null;
+            return Objects.isNull(obj);
         }
     }
 

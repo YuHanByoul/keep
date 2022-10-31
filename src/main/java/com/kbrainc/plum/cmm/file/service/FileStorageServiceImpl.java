@@ -9,12 +9,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.lang.SerializationUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -26,22 +28,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.file.FileStorageProperties;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @ConfigurationProperties(prefix = "file")
-public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements FileStorageService {
+public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements FileStorageService,Cloneable{
     private final Path fileStorageLocation;
 
-    private final FileStorageProperties fileStorageProperties;
+    private FileStorageProperties fileStorageProperties ;
     
-    private Map<String, Map<String, Object>> filegrpName;
+    private Map<String, Map<String, Object>> filegrpName = new HashMap();
 
     public void setFilegrpName(Map<String, Map<String, Object>> filegrpName) {
-        this.filegrpName = filegrpName;
+        this.filegrpName.putAll(filegrpName);
     } 
     
     /**
@@ -51,9 +57,15 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
      */
     @Autowired
     public FileStorageServiceImpl(FileStorageProperties fileStorageProperties) {
-        this.fileStorageProperties = fileStorageProperties;
+        
+        try {
+            this.fileStorageProperties = (FileStorageProperties)fileStorageProperties.clone();
+        }catch(CloneNotSupportedException e) {
+            log.error("FileStorageServiceImpl.CloneNotSupportedException.64L");   
+        }
+        
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir()).toAbsolutePath().normalize();
-
+        
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (Exception ex) {

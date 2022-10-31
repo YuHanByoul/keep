@@ -52,12 +52,4 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
         this.userid = user.getUserid();
     }
     
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        UserVo userVo = (UserVo) super.clone();
-        userVo.data = new HashMap<>();
-        userVo.authorities = new ArrayList<Map<String, String>>();
-        return userVo;    
-    }
-    
 }

@@ -1,7 +1,7 @@
 package com.kbrainc.plum.sample.model;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ public class JqGridResponse {
     private int records;
     private int page;
     private int total;
-    private List<TestTableVO> rows;
+    private List<TestTableVO> rows = new ArrayList<TestTableVO>();
 
     /**
      * 
@@ -28,7 +28,9 @@ public class JqGridResponse {
         this.records = records;
         this.page = page;
         this.total = total;
-        this.rows = rows;
+        this.rows.addAll(rows);
     }
+    
+    
 
 }
