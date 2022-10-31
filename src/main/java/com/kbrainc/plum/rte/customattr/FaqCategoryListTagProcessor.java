@@ -1,9 +1,6 @@
 package com.kbrainc.plum.rte.customattr;
 
-import com.kbrainc.plum.mng.faq.model.FaqClDao;
-import com.kbrainc.plum.mng.faq.model.FaqClVo;
-import com.kbrainc.plum.rte.util.ApplicationContextProvider;
-
+import java.sql.SQLException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,6 +11,10 @@ import org.thymeleaf.model.IProcessableElementTag;
 import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
+
+import com.kbrainc.plum.mng.faq.model.FaqClDao;
+import com.kbrainc.plum.mng.faq.model.FaqClVo;
+import com.kbrainc.plum.rte.util.ApplicationContextProvider;
 
 public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
 
@@ -61,6 +62,8 @@ public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
                         + (item.getClid() == Integer.parseInt(value) ? "selected" : "") + ">" + item.getClNm()
                         + "</option>";
             }
+        } catch (SQLException e) {
+            LOGGER.error("doProcess.SQLException.65L");
         } catch (Exception e) {
             LOGGER.error("doProcess.Exception.65L");
         }

@@ -216,6 +216,8 @@ public class HttpInterceptorForPopup //extends HandlerInterceptorAdapter
                     menuItem = list.get(i);
                     return menuItem;
                 }
+            } catch (NullPointerException e) {
+                logger.error(e.getMessage());
             } catch (Exception e) {
                 logger.error("getMenuItm.Excepton.220L");
             }

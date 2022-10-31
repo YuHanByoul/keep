@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.bbs.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,7 +90,9 @@ public class BbsController {
             if (bbsService.insertBbs(bbsVO) == 1) {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            log.error("insertBbs.SQLException.93L");
+        }catch (Exception e) {
             log.error("insertBbs.Exception.93L");
         }
 
@@ -120,6 +123,8 @@ public class BbsController {
                 resultMap.put("totalCount", 0);
             }
             resultMap.put("list", result);
+        } catch (SQLException e) {
+            log.error("getBbsList.SQLException.124L");
         } catch (Exception e) {
             log.error("getBbsList.Exception.124L");
         }
@@ -184,6 +189,8 @@ public class BbsController {
                 resultMap.put("totalCount", 0);
             }
             resultMap.put("list", result);
+        } catch (SQLException e) {
+            log.error("selectBbsCl.SQLException.188L");
         } catch (Exception e) {
             log.error("selectBbsCl.Exception.188L");
         }
@@ -206,6 +213,8 @@ public class BbsController {
         try {
             bbsService.updateBbs(paramVO);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("updateBbs.SQLException.210L");
         } catch (Exception e) {
             log.error("updateBbs.Exception.210L");
         }
@@ -237,6 +246,8 @@ public class BbsController {
                 bbsService.modifybbsClOrdDown(clVo);
             }
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("insertBbsCl.SQLException.241L");
         } catch (Exception e) {
             log.error("insertBbsCl.Exception.241L");
         }
@@ -304,6 +315,8 @@ public class BbsController {
             if (bbsService.insertPst(paramVO) == 1) {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
+        } catch (SQLException e) {
+            log.error("insertPst.SQLException.308L");
         } catch (Exception e) {
             log.error("insertPst.Exception.308L");
         }
@@ -331,6 +344,8 @@ public class BbsController {
                 resultMap.put("totalCount", 0);
             }
             resultMap.put("list", result);
+        } catch (SQLException e) {
+            log.error("getPstList.SQLException.335L");
         } catch (Exception e) {
             log.error("getPstList.Exception.335L");
         }
@@ -391,6 +406,8 @@ public class BbsController {
             bbsService.updatePst(paramVO);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
+        } catch (SQLException e) {
+            log.error("updatePst.SQLException.392L");
         } catch (Exception e) {
             log.error("updatePst.Exception.392L");
         }
@@ -413,6 +430,8 @@ public class BbsController {
             bbsService.deleteFileByfileId(fileId);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
+        } catch (SQLException e) {
+            log.error("deleteFileByFileId.SQLException.417L");
         } catch (Exception e) {
             log.error("deleteFileByFileId.Exception.417L");
         }
@@ -439,6 +458,8 @@ public class BbsController {
             bbsService.insertCmnt(paramVO);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
+        } catch (SQLException e) {
+            log.error("insertCmnt.SQLException.443L");
         } catch (Exception e) {
             log.error("insertCmnt.Exception.443L");
         }
@@ -465,9 +486,11 @@ public class BbsController {
     		bbsService.insertReply(paramVO);
     		resultMsg = Constant.REST_API_RESULT_SUCCESS;
     		resultMap.put("result", resultMsg);
+    	} catch (SQLException e) {
+    		log.error("insertCmntReply.SQLException.469L");
     	} catch (Exception e) {
-    		log.error("insertCmntReply.Exception.469L");
-    	}
+            log.error("insertCmntReply.Exception.469L");
+        }
     	return resultMap;
     }
 
@@ -491,6 +514,8 @@ public class BbsController {
             bbsService.updateCmnt(paramVO);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
+        } catch (SQLException e) {
+            log.error("updateCmnt.SQLException.495L");
         } catch (Exception e) {
             log.error("updateCmnt.Exception.495L");
         }
@@ -517,9 +542,11 @@ public class BbsController {
     		bbsService.updateCmntReplyDelYn(paramVO);
     		resultMsg = Constant.REST_API_RESULT_SUCCESS;
     		resultMap.put("result", resultMsg);
+    	} catch (SQLException e) {
+    		log.error("updateCmntReplyDelYn.SQLException.521L");
     	} catch (Exception e) {
-    		log.error("updateCmntReplyDelYn.Exception.521L");
-    	}
+            log.error("updateCmntReplyDelYn.Exception.521L");
+        }
     	return resultMap;
     }
 
@@ -544,6 +571,8 @@ public class BbsController {
             bbsService.deletePst(pstVO);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
             resultMap.put("result", resultMsg);
+        } catch (SQLException e) {
+            log.error("deletePst.SQLException.548L");
         } catch (Exception e) {
             log.error("deletePst.Exception.548L");
         }

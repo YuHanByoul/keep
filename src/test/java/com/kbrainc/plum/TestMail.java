@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
@@ -29,10 +30,13 @@ class TestMail {
     		MailVo mailVo = new MailVo("comnics@gmail.com", "comnics@gmail.com", "메일발송 테스트입니다.", "메일발송 테스트입니다.", 0, "S", 1233456789);
     		
 			mailService.sendMail(mailVo);
-		} catch (Exception e) {
-			log.error("test.Exception.33L");
+		} catch (ResponseStatusException e) {
+			log.error("test.ResponseStatusException.33L");
 			fail("Check Messaging Server(8087).");
-		}
+		} catch (Exception e) {
+            log.error("test.Exception.33L");
+            fail("Check Messaging Server(8087).");
+        }
 
 	}
 

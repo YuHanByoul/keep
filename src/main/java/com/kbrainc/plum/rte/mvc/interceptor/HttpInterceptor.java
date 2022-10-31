@@ -224,6 +224,8 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
                     menuItem = list.get(i);
                     return menuItem;
                 }
+            } catch (NullPointerException e) {
+                logger.error(e.getMessage());
             } catch (Exception e) {
                 logger.error("getMenuItm.Exception.228L");
             }

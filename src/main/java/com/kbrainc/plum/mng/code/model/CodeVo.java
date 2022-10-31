@@ -130,6 +130,9 @@ public class CodeVo extends ParentRequestVo implements Serializable {
                     CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
             }catch(Exception e) {
                 //e.printStackTrace();
                 return ;
@@ -147,6 +150,8 @@ public class CodeVo extends ParentRequestVo implements Serializable {
                     CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.cd);
                     this.cdNm = code.getCdNm();
                     this.upprCd = code.getUpprCd();
+            }catch(NoClassDefFoundError e) {
+                return ;
             }catch(Exception e) {
                 return ;
             }
@@ -169,6 +174,8 @@ public class CodeVo extends ParentRequestVo implements Serializable {
                 CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
                 this.upprCdNm = code.getCdNm();
                 return this.upprCdNm;
+        }catch(NoClassDefFoundError e) {
+            return "";
         }catch(Exception e) {
             return "";
         }

@@ -1,5 +1,7 @@
 package com.kbrainc.plum.sample.message;
 
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
@@ -44,9 +46,11 @@ public class SampleMail {
     		mailVo.setCntnts("메일발송 테스트입니다.");
     		
 			mailService.sendMail(mailVo);
+		} catch (SQLException e) {
+			log.error("sendMail.SQLException.48L");
 		} catch (Exception e) {
-			log.error("sendMail.Exception.48L");
-		}
+            log.error("sendMail.Exception.48L");
+        }
     	
     	return true;
     }

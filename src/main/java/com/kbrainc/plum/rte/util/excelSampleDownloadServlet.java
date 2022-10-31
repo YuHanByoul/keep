@@ -70,9 +70,11 @@ public class excelSampleDownloadServlet extends HttpServlet {
 				
 				try {
 					in = new FileInputStream(file);
+				} catch ( IOException e ) {
+					log.error("doGet.IOException.74L");
 				} catch ( Exception e ) {
-					log.error("doGet.Exception.74L");
-				}
+                    log.error("doGet.Exception.74L");
+                }
 				
 				//response.setCharacterEncoding("UTF-8");
 				response.setContentType( "application/x-msdownload" );
@@ -93,9 +95,11 @@ public class excelSampleDownloadServlet extends HttpServlet {
 					}
 					
 					binaryOut.flush();
+				} catch (IOException e) {
+					log.error("doGet.IOException.97L");
 				} catch (Exception e) {
-					log.error("doGet.Exception.97L");
-				} finally {
+                    log.error("doGet.Exception.97L");
+                } finally {
 					if (in != null) {
 						in.close();
 					}
@@ -104,9 +108,11 @@ public class excelSampleDownloadServlet extends HttpServlet {
 					}
 				}
 	
+			} catch(IOException e) {
+				log.error("doGet.IOException.108L");
 			} catch(Exception e) {
-				log.error("doGet.Exception.108L");
-			}
+                log.error("doGet.Exception.108L");
+            }
 		}
 	}
 	

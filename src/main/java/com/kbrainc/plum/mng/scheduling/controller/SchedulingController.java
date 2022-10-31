@@ -9,6 +9,7 @@ import javax.validation.Valid;
 
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
+import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
@@ -305,7 +306,7 @@ public class SchedulingController {
                         trigger = tb.withSchedule(CronScheduleBuilder.cronSchedule(schedulingVo.getCronExpression()).withMisfireHandlingInstructionDoNothing()).build(); // 트리거 재생성(크론시간 반영)
                         scheduler.scheduleJob(trigger);
                     }
-                } catch (Exception e) {
+                } catch (NoSuchBeanDefinitionException e) {
                     if (e instanceof NoSuchBeanDefinitionException) {
                         resultMap.put("result", Constant.REST_API_RESULT_FAIL);
                         resultMap.put("msg", "트리거가 존재하지않아 수정에 실패하였습니다.");
@@ -352,6 +353,8 @@ public class SchedulingController {
             try {
                 scheduler.triggerJob(scheduler.getTrigger(new TriggerKey(schedulingInfo.getNm())).getJobKey());
                 retVal = true;
+            } catch(JobExecutionException e) {
+                log.error("execSchedTrigger.JobExecutionException.349L");
             } catch(Exception e) {
                 log.error("execSchedTrigger.Exception.349L");
             }

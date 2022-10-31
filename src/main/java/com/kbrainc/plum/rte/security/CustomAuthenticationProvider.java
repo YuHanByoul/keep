@@ -1,6 +1,7 @@
 package com.kbrainc.plum.rte.security;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,6 +66,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         try {
              password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
              // sha3-512 비밀번호 암호화
+        } catch (NoSuchAlgorithmException e) {
+            throw new BadCredentialsException("Login Error !!");
         } catch (Exception e) {
             throw new BadCredentialsException("Login Error !!");
         }
@@ -134,6 +137,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
                 }
+            } catch (EmptyResultDataAccessException e) { // 예외발생시
+                throw new BadCredentialsException("Login Error !!");
             } catch (Exception e) { // 예외발생시
                 throw new BadCredentialsException("Login Error !!");
             }

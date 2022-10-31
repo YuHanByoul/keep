@@ -254,9 +254,11 @@ public class MyBootstrapCacheLoaderFactory extends BootstrapCacheLoaderFactory i
     				}
     	        });
     	    }
+    	} catch (CacheException e) {
+    	    log.error("load.CacheException.258L");
     	} catch (Exception e) {
-    	    log.error("load.Exception.258L");
-    	}
+            log.error("load.Exception.258L");
+        }
     }
 }
 

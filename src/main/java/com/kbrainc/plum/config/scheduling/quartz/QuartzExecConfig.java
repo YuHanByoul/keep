@@ -1,5 +1,7 @@
 package com.kbrainc.plum.config.scheduling.quartz;
 
+import java.sql.SQLException;
+
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -53,9 +55,13 @@ public class QuartzExecConfig extends QuartzJobBean {
     	if (triggerid == 6 && "userDrmncyJob".equals(jobName)) {
     		try {
 				batchJobService.callSpUserDrmncy(triggerid);
-			} catch (Exception e) {
+			} catch (SQLException e) {
+			    log.error("executeInternal.SQLException.51L");
 				throw new JobExecutionException(jobName);
-			}
+			} catch (Exception e) {
+			    log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
     	}
     	
     	log.info("================= batch job end ({}) ================", jobName);

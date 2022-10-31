@@ -118,6 +118,8 @@ public class CustomDateAttr extends AbstractAttributeTagProcessor {
             result.append("})").append("\n");
             result.append("</script>").append("\n");
 
+        } catch (NullPointerException e) {
+            result.append("<p>NullPointerException 에러발생 </p>");
         } catch (Exception e) {
             result.append("<p>에러발생 </p>");
         }

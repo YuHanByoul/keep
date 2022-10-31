@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.member.controller;
 
 import java.security.MessageDigest;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -155,6 +156,9 @@ public class MemberController {
 
             String result = memberService.checkIdYn(memberVo);
             resultMap.put("result", result);
+        } catch (SQLException e) {
+            log.error("checkIdYn.Exception.156L");
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
         } catch (Exception e) {
             log.error("checkIdYn.Exception.156L");
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);

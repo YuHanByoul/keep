@@ -57,9 +57,11 @@ public class LogAopController {
             Object result = joinPoint.proceed();
             LOGGER.info("======================== ASPECT : {} Around Logging End========================", methodName);
             return result;
+        }catch (NullPointerException e) {
+            LOGGER.error("======================== ASPECT : {} Around NullPointerException========================", methodName);
+            return null;
         }catch (Exception e) {
             LOGGER.error("======================== ASPECT : {} Around Exception========================", methodName);
-            LOGGER.error(e.toString());
             return null;
         }
     }

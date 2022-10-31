@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.bbs.controller;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -192,6 +193,8 @@ public class CmmBbsController {
             if (bbsService.insertPst(paramVo) == 1) {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
+        } catch (SQLException e) {
+            log.error("insertPst.SQLException.196L");
         } catch (Exception e) {
             log.error("insertPst.Exception.196L");
         }
@@ -220,6 +223,8 @@ public class CmmBbsController {
         try {
             bbsService.updatePst(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("updatePst.SQLException.224L");
         } catch (Exception e) {
             log.error("updatePst.Exception.224L");
         }
@@ -249,6 +254,8 @@ public class CmmBbsController {
         try {
             bbsService.insertCmnt(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("insertCmnt.SQLException.253L");
         } catch (Exception e) {
             log.error("insertCmnt.Exception.253L");
         }
@@ -278,6 +285,8 @@ public class CmmBbsController {
         try {
             bbsService.insertReply(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("insertCmntReply.SQLException.282L");
         } catch (Exception e) {
             log.error("insertCmntReply.Exception.282L");
         }
@@ -307,6 +316,8 @@ public class CmmBbsController {
         try {
             bbsService.updateCmnt(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("updateCmnt.SQLException.308L");
         } catch (Exception e) {
             log.error("updateCmnt.Exception.308L");
         }
@@ -336,6 +347,8 @@ public class CmmBbsController {
         try {
             bbsService.updateCmntReplyDelYn(paramVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("updateCmntReplyDelYn.SQLException.340L");
         } catch (Exception e) {
             log.error("updateCmntReplyDelYn.Exception.340L");
         }
@@ -367,6 +380,8 @@ public class CmmBbsController {
         try {
             bbsService.deletePst(pstVo);
             resultMsg = Constant.REST_API_RESULT_SUCCESS;
+        } catch (SQLException e) {
+            log.error("deletePst.SQLException.371L");
         } catch (Exception e) {
             log.error("deletePst.Exception.371L");
         }

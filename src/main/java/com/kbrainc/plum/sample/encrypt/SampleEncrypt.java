@@ -5,9 +5,12 @@ import javax.annotation.Resource;
 import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
 import org.egovframe.rte.fdl.cryptography.EgovDigestService;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.jasypt.salt.StringFixedSaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import groovyjarjarcommonscli.ParseException;
 
 /**
  * 
@@ -84,9 +87,11 @@ public class SampleEncrypt {
 				byte[] decrypted = cryptoService.decrypt(encrypted, password);
 				logger.info("decrypted Text : {}", decrypted.toString());
 			}
+		} catch (EncryptionOperationNotPossibleException e) {
+			logger.error("ARIACryptoSample.EncryptionOperationNotPossibleException.88L");
 		} catch (Exception e) {
-			logger.error("ARIACryptoSample.Exception.88L");
-		}		
+            logger.error("ARIACryptoSample.Exception.88L");
+        }		
 	}
 
 }

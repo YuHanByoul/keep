@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.bbs.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -229,9 +230,11 @@ public class BbsController {
 			if (bbsService.insertPst(paramVo) == 1) {
 				resultMsg = Constant.REST_API_RESULT_SUCCESS;
 			}
+		} catch (SQLException e) {
+			log.error("insertPst.SQLException.233L");
 		} catch (Exception e) {
-			log.error("insertPst.Exception.233L");
-		}
+            log.error("insertPst.Exception.233L");
+        }
 		resultMap.put("result", resultMsg);
 
 		return resultMap;
@@ -299,9 +302,11 @@ public class BbsController {
 		try {
 			bbsService.updatePst(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
+		} catch (SQLException e) {
+			log.error("updatePst.SQLException.303L");
 		} catch (Exception e) {
-			log.error("updatePst.Exception.303L");
-		}
+            log.error("updatePst.Exception.303L");
+        }
 
 		resultMap.put("result", resultMsg);
 
@@ -329,9 +334,11 @@ public class BbsController {
 		try {
 			bbsService.insertCmnt(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
+		} catch (SQLException e) {
+			log.error("insertCmnt.SQLException.330L");
 		} catch (Exception e) {
-			log.error("insertCmnt.Exception.330L");
-		}
+            log.error("insertCmnt.Exception.330L");
+        }
 
 		resultMap.put("result", resultMsg);
 
@@ -359,9 +366,11 @@ public class BbsController {
 		try {
 			bbsService.insertReply(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
+		} catch (SQLException e) {
+			log.error("insertCmntReply.SQLException.363L");
 		} catch (Exception e) {
-			log.error("insertCmntReply.Exception.363L");
-		}
+            log.error("insertCmntReply.Exception.363L");
+        }
 
 		resultMap.put("result", resultMsg);
 
@@ -389,9 +398,11 @@ public class BbsController {
 		try {
 			bbsService.updateCmnt(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
+		} catch (SQLException e) {
+			log.error("updateCmnt.SQLException.393L");
 		} catch (Exception e) {
-			log.error("updateCmnt.Exception.393L");
-		}
+            log.error("updateCmnt.Exception.393L");
+        }
 
 		resultMap.put("result", resultMsg);
 
@@ -419,9 +430,11 @@ public class BbsController {
 		try {
 			bbsService.updateCmntReplyDelYn(paramVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
+		} catch (SQLException e) {
+			log.error("updateCmntReplyDelYn.SQLException.423L");
 		} catch (Exception e) {
-			log.error("updateCmntReplyDelYn.Exception.423L");
-		}
+            log.error("updateCmntReplyDelYn.Exception.423L");
+        }
 
 		resultMap.put("result", resultMsg);
 
@@ -451,9 +464,11 @@ public class BbsController {
 		try {
 			bbsService.deletePst(pstVo);
 			resultMsg = Constant.REST_API_RESULT_SUCCESS;
+		} catch (SQLException e) {
+			log.error("deletePst.SQLException.455L");
 		} catch (Exception e) {
-			log.error("deletePst.Exception.455L");
-		}
+            log.error("deletePst.Exception.455L");
+        }
 
 		resultMap.put("result", resultMsg);
 
@@ -503,9 +518,11 @@ public class BbsController {
 			}
 			resultMap.put("list", result);
 
+		} catch (SQLException e) {
+			log.error("getPstList.SQLException.507L");
 		} catch (Exception e) {
-			log.error("getPstList.Exception.507L");
-		}
+            log.error("getPstList.Exception.507L");
+        }
 		return resultMap;
 	}
 	

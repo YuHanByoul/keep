@@ -4,6 +4,7 @@
 package com.kbrainc.plum.rte.util;
 
 import java.text.SimpleDateFormat;
+import java.util.FormatterClosedException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,8 +36,10 @@ public class FormChecker {
                 formatter.setLenient(false); 
                 formatter.parse ( date ) ;
                 result = true ;
-            } catch(Exception e) {
+            } catch(FormatterClosedException e) {
             	 result = false ;
+            } catch(Exception e) {
+                result = false ;
             }finally {
             	return result ;
             }
@@ -56,9 +59,11 @@ public class FormChecker {
 					formatter.setLenient(false);
 					formatter.parse(date);
 					result = true;
-				} catch (Exception e) {
+				} catch (FormatterClosedException e) {
 					result = false;
-				} finally {
+				} catch (Exception e) {
+                    result = false;
+                } finally {
 					return result;
 				}
 			}else{
@@ -385,9 +390,11 @@ public class FormChecker {
 					
 				}
 			}
-		} catch (Exception e) {
-			LOGGER.error("ValidateData.Exception.389L");
-		}
+		} catch (NullPointerException e) {
+			LOGGER.error("ValidateData.NullPointerException.389L");
+		}catch (Exception e) {
+            LOGGER.error("ValidateData.Exception.389L");
+        }
 		
 		if(vali){
 			return "";

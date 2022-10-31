@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import javax.annotation.Resource;
 
+import org.aspectj.weaver.patterns.ParserException;
 import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
 import org.egovframe.rte.fdl.cryptography.EgovDigestService;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import groovyjarjarcommonscli.ParseException;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -99,9 +101,11 @@ public class TestEncrypt {
 				byte[] decrypted = cryptoService.decrypt(encrypted, password);
 				logger.info("decrypted Text : {}", decrypted.toString());
 			}
+		} catch (ParserException e) {
+			log.error("ARIACryptoTest.ParserException.103L");
 		} catch (Exception e) {
-			log.error("ARIACryptoTest.Exception.103L");
-		}		
+            log.error("ARIACryptoTest.Exception.103L");
+        }       
 	}
 
 }

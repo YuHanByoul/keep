@@ -1,6 +1,8 @@
 package com.kbrainc.plum.rte.filter;
 
 import java.io.IOException;
+import java.net.http.HttpConnectTimeoutException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -88,8 +90,10 @@ public class SiteChangeFilter implements Filter {
                 }
     
                 
-            } catch (Exception e) {
+            } catch (SQLException e) {
             	log.debug("Exception:"+e);
+            } catch (Exception e) {
+                log.debug("Exception:"+e);
             }
     
             chain.doFilter(req, res);

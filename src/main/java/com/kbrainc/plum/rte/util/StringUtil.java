@@ -269,6 +269,8 @@ public class StringUtil {
         str = nvl(str);
         try {
             Long.parseLong(str);
+        } catch (ClassCastException e) {
+            return false;
         } catch (Exception e) {
             return false;
         }

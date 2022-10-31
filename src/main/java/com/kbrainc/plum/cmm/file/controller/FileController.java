@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.owasp.encoder.Encode;
-import org.owasp.encoder.Encoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,6 @@ import com.kbrainc.plum.cmm.file.service.FileStorageService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.exception.FiledownloadCheckerException;
-import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
@@ -156,9 +155,11 @@ public class FileController {
         try {
     		fileVo=fileService.selectFile(fileVo);   
 	    	fileName = fileVo.getSaveFileNm();
+    	}catch(SQLException e) {
+    		logger.info("Could not fileSql SQLException ");
     	}catch(Exception e) {
-    		logger.info("Could not fileSql Exception ");
-    	}
+            logger.info("Could not fileSql Exception ");
+        }
         
         if ("/downloadBbsFileByFileid.do".equals(request.getRequestURI()) && fileVo.getBbsid() == 0) { // 게시판전용 파일다운로드
             throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
@@ -208,10 +209,13 @@ public class FileController {
 	    	fileStorageService.deleteFile(fileVo);
 	    	fileService.deleteFileVo(fileVo);
 	    	resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-    	}catch(Exception e) {
-    		logger.info("Could not delete file ");
+    	}catch(SQLException e) {
+    		logger.info("Could not SQLException file ");
     		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-    	}
+    	}catch(Exception e) {
+            logger.info("Could not delete file ");
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        }
     	return resultMap;
     }
     
@@ -276,6 +280,8 @@ public class FileController {
             
             out.flush();
             
+        }catch(IOException e) {
+            printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"이미지 업로드에 실패 하였습니다.\"}}");
         }catch(Exception e) {
             printWriter.println("{\"uploaded\" : 0, \"error\":{\"message\":\"이미지 업로드에 실패 하였습니다.\"}}");
         }finally {
