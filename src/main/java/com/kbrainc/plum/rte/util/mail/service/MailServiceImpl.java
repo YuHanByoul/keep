@@ -147,21 +147,21 @@ public class MailServiceImpl extends PlumAbstractServiceImpl implements MailServ
             resultMap.put("resultMsg", null);
 
         }catch (AddressException e) {  //예외처리 주소를 입력하지 않을 경우
-            e.printStackTrace();
+            log.error("sendMail.AddressException.150L");
             
             mailVo.setSndngSttsCd(MAIL_ERROR_NOT_EXIST_ADDRESS);
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("resultCode", mailVo.getSndngSttsCd());
-            resultMap.put("resultMsg", e.getMessage());
+            resultMap.put("resultMsg", "메일주소누락");
             
             return resultMap; 
         }catch (MessagingException e) { //메시지에 이상이 있을 경우
-            e.printStackTrace();
+            log.error("sendMail.MessagingException.159L");
             
             mailVo.setSndngSttsCd(MAIL_ERROR_CONTENTS);
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("resultCode", mailVo.getSndngSttsCd());
-            resultMap.put("resultMsg", e.getMessage());
+            resultMap.put("resultMsg", "메시지이상");
 
             return resultMap; 
         }
@@ -171,7 +171,7 @@ public class MailServiceImpl extends PlumAbstractServiceImpl implements MailServ
         	mailVo.setSndngSttsCd(MAIL_ERROR_UNKNOWN);
         	resultMap.put("result", Constant.REST_API_RESULT_FAIL);
         	resultMap.put("resultCode", mailVo.getSndngSttsCd());
-        	resultMap.put("resultMsg", e.getMessage()); //
+        	resultMap.put("resultMsg", "메일발송오류"); //
 
             return resultMap; 
         }finally{

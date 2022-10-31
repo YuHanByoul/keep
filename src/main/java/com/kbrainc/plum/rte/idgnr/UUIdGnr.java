@@ -197,7 +197,7 @@ final class TimeBasedUUIDGenerator {
 			}
 		//2017.02.15 장동한 시큐어코딩(ES)-부적절한 예외 처리[CWE-253, CWE-440, CWE-754]
 		} catch(IllegalArgumentException | UnknownHostException | SocketException e) {
-			log.error("[IllegalArgumentException] getHostId Exception : "+ e.getMessage());
+			log.error("[IllegalArgumentException] getHostId Exception : getHostId.IllegalArgumentException.200L");
 		}
 
 		log.debug("MAC Address (from Network Interface) : " + getMacAddressAsString(getMacAddress(macAddressAsLong)));

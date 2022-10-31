@@ -178,6 +178,12 @@ public class FileUtil {
                     imsi2 = name.substring(0, bracketIdx);
                     imsiNum = Integer.parseInt(imsi1);
                     check = 1;
+                    try {
+                        imsiNum = Integer.parseInt(imsi1);
+                        check = 1;
+                    } catch (Exception e) {
+                        LOGGER.error("getFileExistRename.Exception.179L");
+                    }
                     if (check > 0) {
                         name = imsi2 + "-" + (imsiNum + 1);
                     }
@@ -187,7 +193,7 @@ public class FileUtil {
         } catch (NumberFormatException e) {
             LOGGER.error("getFileExistRename.NumberFormatException.176L");
         } catch (Exception e) {
-            LOGGER.error("getFileExistRename.Exception.176L");
+            LOGGER.error("getFileExistRename.Exception.190L");
         }
         return rtn;
     }

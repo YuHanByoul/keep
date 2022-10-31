@@ -129,7 +129,7 @@ public class FileController {
                     try {
                         return uploadFile(file, fileGrpVo, user, true);
                     } catch (Exception e) {
-                        throw new FileStorageException(e.getMessage());
+                        throw new FileStorageException("uploadMultipleFiles.FileStorageException.133L");
                     }
                 })
                 .collect(Collectors.toList());
