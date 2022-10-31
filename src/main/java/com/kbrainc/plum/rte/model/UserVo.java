@@ -27,10 +27,10 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     private String nm;
     
     /** 사용자정보조회시 조회된 데이터 ROW Map */
-    private Map data;
+    private Map data = new HashMap();
     
     /** 사용자에게 부여된 역할목록 */
-    private ArrayList<Map<String, String>> authorities;
+    private ArrayList<Map<String, String>> authorities = new ArrayList();
     
     public void setData(Map data) {
         this.data.putAll(data);

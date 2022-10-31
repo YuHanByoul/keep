@@ -64,6 +64,8 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
 
     public FileVo storeFile(MultipartFile file, FileGrpVo fileGrpVo) {
     	
+        String fileName = "";
+        
         try {
             if (file == null) {
                 throw new Exception();
@@ -72,7 +74,7 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
             FileVo fileVo =new FileVo();
      
             // Normalize file name
-            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+             fileName = StringUtils.cleanPath(file.getOriginalFilename());
     
     
             //IE 브라우저에서 cleanPath 로 파일명을 못가져옴 

@@ -1,6 +1,7 @@
 package com.kbrainc.plum.rte.menu;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
     /**
      * menu_id or url 기반의 메뉴맵.
      */
-    private Map<String, List<MenuItem>> menuMap = null;
+    private Map<String, List<MenuItem>> menuMap = new HashMap();
 
     /**
      * Desc : Constructor of MenuTree.java class
