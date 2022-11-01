@@ -453,16 +453,23 @@ public class FileUtil {
             targetPath = targetPath + targetName + ".zip";
         }
 
+        FileOutputStream fos = null; 
+        BufferedOutputStream bos = null; 
+        
         try {
-            outputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(FilenameUtils.getName(targetPath))));
+            
+            fos = new FileOutputStream(FilenameUtils.getName(targetPath));
+            bos = new BufferedOutputStream(fos);
+            outputStream = new ZipArchiveOutputStream(bos);
             compressZipFileOutput(outputStream, inFile, source);
         } catch (IOException e) {
             result = false;
         } catch (Exception e) {
             result = false;
         } finally {
-            
             try {
+                fos.close();
+                bos.close();
                 outputStream.closeArchiveEntry();
                 outputStream.close();
             } catch (IOException e) {
@@ -518,7 +525,7 @@ public class FileUtil {
                 }
             }
         } catch (IOException e) {
-            log.error("compressZipFileOutput.IOException.520");
+            log.error("compressZipFileOutput.IOException.520L");
         } catch (Exception e) {
             log.error("compressZipFileOutput.Exception.522L");
         } finally {
@@ -553,7 +560,8 @@ public class FileUtil {
 	public static void decompressZipFile(String fileZip, String destDirPath) throws IOException {
 		File destDir = new File(destDirPath);
 		byte[] buffer = new byte[1024];
-		ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+		FileInputStream fis = new FileInputStream(fileZip);
+		ZipInputStream zis = new ZipInputStream(fis);
 		ZipEntry zipEntry = zis.getNextEntry();
 		
 		try {
@@ -582,6 +590,7 @@ public class FileUtil {
 		            }catch(IOException e) {
 		                log.error("decompressZipFile.IOException.586L");
 		            }finally {
+		                fis.close();
 		                fos.close();
 		                fos.flush();
 		            }
