@@ -2,9 +2,12 @@ package com.kbrainc.plum.rte.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 
@@ -659,5 +662,62 @@ public class StringUtil {
         }
 
         return buffer.toString();
+    }
+    
+    
+    /**
+    * SqlInjection 해당여부 확인.
+    *
+    * @Title : isSqlInjectionSafe
+    * @Description : 입력문자열이 SqlInjection에 안전한지 확인한다.
+    * @param dataString 입력문자열
+    * @return boolean sqlInjection 안전 여부
+    */
+    public static boolean isSqlInjectionSafe(String dataString){
+        String SQL_TYPES =
+                "TABLE, TABLESPACE, PROCEDURE, FUNCTION, TRIGGER, KEY, VIEW, MATERIALIZED VIEW, LIBRARY" +
+                "DATABASE LINK, DBLINK, INDEX, CONSTRAINT, TRIGGER, USER, SCHEMA, DATABASE, PLUGGABLE DATABASE, BUCKET, " +
+                "CLUSTER, COMMENT, SYNONYM, TYPE, JAVA, SESSION, ROLE, PACKAGE, PACKAGE BODY, OPERATOR" +
+                "SEQUENCE, RESTORE POINT, PFILE, CLASS, CURSOR, OBJECT, RULE, USER, DATASET, DATASTORE, " +
+                "COLUMN, FIELD, OPERATOR";
+        
+        String[] sqlRegexps = {
+                "(?i)(.*)(\\b)+SELECT(\\b)+\\s.*(\\b)+FROM(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+INSERT(\\b)+\\s.*(\\b)+INTO(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+UPDATE(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+DELETE(\\b)+\\s.*(\\b)+FROM(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+UPSERT(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+SAVEPOINT(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+CALL(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+ROLLBACK(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+KILL(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+DROP(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+CREATE(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+ALTER(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+TRUNCATE(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+LOCK(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+UNLOCK(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+RELEASE(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+DESC(\\b)+(\\w)*\\s.*(.*)",
+                "(?i)(.*)(\\b)+DESCRIBE(\\b)+(\\w)*\\s.*(.*)",
+                "(.*)(/\\*|\\*/|;){1,}(.*)",
+                "(.*)(-){2,}(.*)"
+        };
+        
+        if(dataString == null || dataString.length() == 0){
+            return true;
+        }
+
+        List<Pattern> patterns = new ArrayList<Pattern>();
+        for(String sqlExpression : sqlRegexps){
+            patterns.add(Pattern.compile(sqlExpression, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE));
+        }
+        
+        for(Pattern pattern : patterns){
+            if(pattern.matcher(dataString).matches()){
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -21,7 +21,17 @@
         FROM    SEARCH_ORG                          A1              <!-- [조회원본] -->
         )
         SELECT  A1.*,
-        		B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.${orderField} ${orderDirection})) + 1 AS rowNumber,
+        <choose>
+        		<when test="orderDirection.name() == 'desc'">
+                B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.${orderField} DESC)) + 1 AS rowNumber,
+                </when>
+                <when test="orderDirection.name() == 'asc'">
+                B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.${orderField} ASC)) + 1 AS rowNumber,
+                </when>
+                <otherwise>
+                B1.totalCount - (ROW_NUMBER() OVER(ORDER BY A1.${orderField})) + 1 AS rowNumber,
+                </otherwise>
+        </choose>
                 B1.totalCount,
                 IFNULL(#{pageNumber}, 1)            AS pageNumber,
                 CEILING(CONVERT(B1.totalCount, FLOAT) / IFNULL(#{rowPerPage}, 10))
@@ -30,7 +40,17 @@
         CROSS JOIN
                 totalCount                          B1              <!-- [총페이지] -->
         ORDER BY
-                A1.${orderField} ${orderDirection}					<!-- ORDER 필수 -->
+        <choose>
+                <when test="orderDirection.name() == 'desc'">
+                A1.${orderField} DESC
+                </when>
+                <when test="orderDirection.name() == 'asc'">
+                A1.${orderField} ASC
+                </when>
+                <otherwise>
+                A1.${orderField}
+                </otherwise>
+        </choose>
         LIMIT #{pageOffset}, #{rowPerPage} 
     </sql>
 </mapper>
