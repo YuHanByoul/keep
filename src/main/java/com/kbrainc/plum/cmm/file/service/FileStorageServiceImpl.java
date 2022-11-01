@@ -3,8 +3,8 @@ package com.kbrainc.plum.cmm.file.service;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
@@ -18,7 +18,6 @@ import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -30,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.file.FileStorageProperties;
@@ -179,17 +177,22 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
         FileInputStream fis = null;
         String changeString = null;
         if (f.exists()) {
+            
             fis = new FileInputStream(f);
-            byte[] byteArray = new byte[(int)f.length()];
-            fis.read(byteArray);
+            try {
+                byte[] byteArray = new byte[(int)f.length()];
+                fis.read(byteArray);
+                //when using package 'import org.docx4j.org.apache.xml.security.utils.Base64;'
+                //changeString = "data:image/"+filePath.substring(filePath.lastIndexOf(".")) +";base64, "+ Base64.encode(byteArray);
+                //java.util.base64
+                changeString = "data:image/" + filePath.substring(filePath.lastIndexOf(".")) + ";base64, " 
+                        + new String(Base64.getEncoder().encodeToString(byteArray));
+            }catch(IOException e) {
+                log.error("imgToStringByBase64.IOException.124L");   
+            }finally {
+                fis.close();
+            }
             
-            //when using package 'import org.docx4j.org.apache.xml.security.utils.Base64;'
-            //changeString = "data:image/"+filePath.substring(filePath.lastIndexOf(".")) +";base64, "+ Base64.encode(byteArray);
-            
-            //java.util.base64
-            changeString = "data:image/" + filePath.substring(filePath.lastIndexOf(".")) + ";base64, " 
-            + new String(Base64.getEncoder().encodeToString(byteArray));
-            fis.close();
         } else {
             throw new MyFileNotFoundException("file not found");
         }

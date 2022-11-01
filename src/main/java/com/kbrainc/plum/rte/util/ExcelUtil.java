@@ -1,5 +1,6 @@
 package com.kbrainc.plum.rte.util;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import liquibase.util.csv.CSVReader;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -229,16 +231,22 @@ public class ExcelUtil {
         InputStreamReader readFile = new InputStreamReader(input);
         CSVReader reader = new CSVReader(readFile);
 
-        String[] nextLine = reader.readNext();
-        while (nextLine != null) {
-            cellList = new ArrayList();
-            for (String str : nextLine) {
-                cellList.add(str);
+        try {
+            String[] nextLine = reader.readNext();
+            while (nextLine != null) {
+                cellList = new ArrayList();
+                for (String str : nextLine) {
+                    cellList.add(str);
+                }
+                rowList.add(cellList);
+                nextLine = reader.readNext();
             }
-            rowList.add(cellList);
-            nextLine = reader.readNext();
+            
+        }catch(IOException e) {
+            LOGGER.error("getBbsList.SQLException.124L");       
+        }finally {
+            readFile.close();
         }
-
         return rowList;
     }
     

@@ -156,10 +156,10 @@ public class FormChecker {
 			s2 = jumin.substring(6,13);
 		}else return false;
 		
-		if(!isNumber(s1))	
+		if(s1==null || !isNumber(s1))	
 			return false;
 
-		if(!isNumber(s2))
+		if(s2==null ||!isNumber(s2))
 			return false;
 		
 		s1 = s1.trim();

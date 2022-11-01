@@ -1,5 +1,6 @@
 package com.kbrainc.plum.rte.util.excel;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
@@ -239,18 +240,22 @@ public class ExcelUtils {
 		ArrayList cellList = null;
 		InputStreamReader readFile = new InputStreamReader(input);
 		CSVReader reader = new CSVReader(readFile);
-
-		String[] nextLine = reader.readNext();
-		while ( nextLine != null){
-			cellList = new ArrayList();
-			for ( String str : nextLine ){				
-				cellList.add(str);
-				
-			}
-			rowList.add(cellList);
-			nextLine = reader.readNext();
-		}
-		
+        try {
+            String[] nextLine = reader.readNext();
+            while ( nextLine != null){
+                cellList = new ArrayList();
+                for ( String str : nextLine ){				
+                    cellList.add(str);
+                    
+                }
+                rowList.add(cellList);
+                nextLine = reader.readNext();
+            }
+        }catch(IOException e) {
+            log.error("getBbsList.SQLException.124L");       
+        }finally {
+            readFile.close();
+        }
 		return rowList;
 	}
 	

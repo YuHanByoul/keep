@@ -1,6 +1,7 @@
 package com.kbrainc.plum.cmm.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -13,8 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.rte.util.CommonUtil;
 import com.google.gson.Gson;
+import com.kbrainc.plum.rte.util.CommonUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <pre>
@@ -29,6 +32,7 @@ import com.google.gson.Gson;
  * @Company : CopyrightⒸ KBRAINC. All Rights Reserved
  *
  */
+@Slf4j
 @Service
 public class PushServiceImpl implements PushService {
 
@@ -86,13 +90,19 @@ public class PushServiceImpl implements PushService {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         StringBuffer response = new StringBuffer();
-
-        String inputLine = in.readLine();
-        while (inputLine != null) {
-            response.append(inputLine);
-            inputLine = in.readLine();
+        try {
+            String inputLine = in.readLine();
+            while (inputLine != null) {
+                response.append(inputLine);
+                inputLine = in.readLine();
+            }
+            
+        }catch(IOException e){
+            log.error("send.IOException.124L");
+        }finally {
+            in.close();
         }
-        in.close();
+        
 	}
 
 	/**
@@ -144,12 +154,18 @@ public class PushServiceImpl implements PushService {
         BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
         StringBuffer response = new StringBuffer();
-
-        String inputLine = in.readLine();
-        while (inputLine != null) {
-            response.append(inputLine);
-            inputLine = in.readLine();
+        
+        try {
+            String inputLine = in.readLine();
+            while (inputLine != null) {
+                response.append(inputLine);
+                inputLine = in.readLine();
+            }
+        }catch(IOException e){
+            log.error("send.IOException.124L");
+        }finally {
+            in.close();
         }
-        in.close();
+        
 	}
 }
