@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.exception.FileStorageException;
 import com.kbrainc.plum.rte.exception.MyFileNotFoundException;
 import com.kbrainc.plum.rte.file.FileStorageProperties;
@@ -42,12 +43,12 @@ import lombok.extern.slf4j.Slf4j;
 public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements FileStorageService,Cloneable{
     private final Path fileStorageLocation;
 
-    private FileStorageProperties fileStorageProperties ;
+    private FileStorageProperties fileStorageProperties;
     
-    private Map<String, Map<String, Object>> filegrpName = new HashMap();
+    private Map<String, Map<String, Object>> filegrpName;
 
     public void setFilegrpName(Map<String, Map<String, Object>> filegrpName) {
-        this.filegrpName.putAll(filegrpName);
+        this.filegrpName = filegrpName;
     } 
     
     /**
@@ -81,7 +82,7 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
         
         try {
             if (file == null) {
-                throw new Exception();
+                throw new CustomRuntimeException("file not found Error");
             }
             
             FileVo fileVo =new FileVo();

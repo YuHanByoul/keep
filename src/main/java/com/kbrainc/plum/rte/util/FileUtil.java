@@ -456,23 +456,19 @@ public class FileUtil {
         try {
             outputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(FilenameUtils.getName(targetPath))));
             compressZipFileOutput(outputStream, inFile, source);
-
-            outputStream.closeArchiveEntry();
-            outputStream.close();
         } catch (IOException e) {
             result = false;
         } catch (Exception e) {
             result = false;
         } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    result = false;
-                }
+            
+            try {
+                outputStream.closeArchiveEntry();
+                outputStream.close();
+            } catch (IOException e) {
+                result = false;
             }
         }
-
         return result;
     }
 
@@ -561,6 +557,7 @@ public class FileUtil {
 		ZipEntry zipEntry = zis.getNextEntry();
 		
 		try {
+		    
 		    while (zipEntry != null) {
 		        File newFile = newFile(destDir, zipEntry);
 		        if (zipEntry.isDirectory()) {

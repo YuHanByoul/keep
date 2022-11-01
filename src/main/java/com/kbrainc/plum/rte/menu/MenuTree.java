@@ -29,7 +29,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
     /**
      * menu_id or url 기반의 메뉴맵.
      */
-    private Map<String, List<MenuItem>> menuMap = new HashMap();
+    private Map<String, List<MenuItem>> menuMap;
 
     /**
      * Desc : Constructor of MenuTree.java class
@@ -89,7 +89,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
      * @param menuMap 메뉴맵
      */
     public void setMenuMap(Map<String, List<MenuItem>> menuMap) {
-        this.menuMap.putAll(menuMap);
+        this.menuMap = menuMap;
     }
 
     /**

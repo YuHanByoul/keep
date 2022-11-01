@@ -674,7 +674,7 @@ public class StringUtil {
     * @return boolean sqlInjection 안전 여부
     */
     public static boolean isSqlInjectionSafe(String dataString){
-        String SQL_TYPES =
+        String sqlTypes =
                 "TABLE, TABLESPACE, PROCEDURE, FUNCTION, TRIGGER, KEY, VIEW, MATERIALIZED VIEW, LIBRARY" +
                 "DATABASE LINK, DBLINK, INDEX, CONSTRAINT, TRIGGER, USER, SCHEMA, DATABASE, PLUGGABLE DATABASE, BUCKET, " +
                 "CLUSTER, COMMENT, SYNONYM, TYPE, JAVA, SESSION, ROLE, PACKAGE, PACKAGE BODY, OPERATOR" +
@@ -692,12 +692,12 @@ public class StringUtil {
                 "(?i)(.*)(\\b)+ROLLBACK(\\b)+\\s.*(.*)",
                 "(?i)(.*)(\\b)+KILL(\\b)+\\s.*(.*)",
                 "(?i)(.*)(\\b)+DROP(\\b)+\\s.*(.*)",
-                "(?i)(.*)(\\b)+CREATE(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
-                "(?i)(.*)(\\b)+ALTER(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
-                "(?i)(.*)(\\b)+TRUNCATE(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
-                "(?i)(.*)(\\b)+LOCK(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
-                "(?i)(.*)(\\b)+UNLOCK(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
-                "(?i)(.*)(\\b)+RELEASE(\\b)+(\\s)*(" + SQL_TYPES.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+CREATE(\\b)+(\\s)*(" + sqlTypes.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+ALTER(\\b)+(\\s)*(" + sqlTypes.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+TRUNCATE(\\b)+(\\s)*(" + sqlTypes.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+LOCK(\\b)+(\\s)*(" + sqlTypes.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+UNLOCK(\\b)+(\\s)*(" + sqlTypes.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
+                "(?i)(.*)(\\b)+RELEASE(\\b)+(\\s)*(" + sqlTypes.replaceAll(",", "|") + ")(\\b)+\\s.*(.*)",
                 "(?i)(.*)(\\b)+DESC(\\b)+(\\w)*\\s.*(.*)",
                 "(?i)(.*)(\\b)+DESCRIBE(\\b)+(\\w)*\\s.*(.*)",
                 "(.*)(/\\*|\\*/|;){1,}(.*)",

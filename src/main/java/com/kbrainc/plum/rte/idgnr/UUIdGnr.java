@@ -73,10 +73,8 @@ public class UUIdGnr {
             		+ "This is not the best method for many purposes, but may be adequate in some circumstances."
             		+ " Consider using an IP or ethernet (MAC) address if available. ");
             for (int i = 0; i < 6; i++) {
-                
                 double res = (random.nextDouble() * 255 + 0);
-                
-                if( (res+1) < Double.MAX_VALUE) {
+                if( res > Double.MIN_VALUE && res < Double.MAX_VALUE) {
                     addressBytes[i] = (byte)res;
                 }
             }
