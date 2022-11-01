@@ -181,6 +181,8 @@ public class FileUtil {
                     try {
                         imsiNum = Integer.parseInt(imsi1);
                         check = 1;
+                    } catch (NumberFormatException e) {
+                        LOGGER.error("getFileExistRename.NumberFormatException.179L");
                     } catch (Exception e) {
                         LOGGER.error("getFileExistRename.Exception.179L");
                     }
