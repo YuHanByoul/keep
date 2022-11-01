@@ -20,8 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UUIdGnr {
 
 	private static final String ERROR_STRING = "address in the configuration should be a valid IP or MAC Address";
-
-	private static SecureRandom random = new SecureRandom();
 	
     /**
      * Address Id
@@ -67,48 +65,34 @@ public class UUIdGnr {
     	}
         byte[] addressBytes = new byte[6];
         
-        random.setSeed(System.currentTimeMillis());
-        if (null == address) {
-            log.warn("IDGeneration Service : Using a random number as the base for id's."
-            		+ "This is not the best method for many purposes, but may be adequate in some circumstances."
-            		+ " Consider using an IP or ethernet (MAC) address if available. ");
-            for (int i = 0; i < 6; i++) {
-                double ran = random.nextDouble();
-                
-                if((ran * 255 + 0) > Double.MIN_VALUE && (ran * 255 + 0) < Double.MAX_VALUE) {
-                    addressBytes[i] = (byte)(ran * 255 + 0);
-                }
-            }
-        } else { 
-            if (address.indexOf(".") > 0) {
-                // we should have an IP
-                StringTokenizer stok = new StringTokenizer(address, ".");
-                if (stok.countTokens() != 4) {
-                    throw new CustomRuntimeException(ERROR_STRING);
-                }
-                addressBytes[0] = (byte) 255;
-                addressBytes[1] = (byte) 255;
-                int i = 2;
-				while (stok.hasMoreTokens()) {
-					Integer intValue = Integer.valueOf(stok.nextToken(),16);
-					addressBytes[i++] = intValue.byteValue();
-				}
-				
-            } else if (address.indexOf(":") > 0) {
-                // we should have a MAC
-                StringTokenizer stok = new StringTokenizer(address, ":");
-                if (stok.countTokens() != 6) {
-                    throw new CustomRuntimeException(ERROR_STRING);
-                }
-                int i = 0;
-				while (stok.hasMoreTokens()) {
-					
-					Integer intValue = Integer.valueOf(stok.nextToken(),16);
-					addressBytes[i++] = intValue.byteValue();
-				}
-            } else {
+        if (address.indexOf(".") > 0) {
+            // we should have an IP
+            StringTokenizer stok = new StringTokenizer(address, ".");
+            if (stok.countTokens() != 4) {
                 throw new CustomRuntimeException(ERROR_STRING);
             }
+            addressBytes[0] = (byte) 255;
+            addressBytes[1] = (byte) 255;
+            int i = 2;
+			while (stok.hasMoreTokens()) {
+				Integer intValue = Integer.valueOf(stok.nextToken(),16);
+				addressBytes[i++] = intValue.byteValue();
+			}
+			
+        } else if (address.indexOf(":") > 0) {
+            // we should have a MAC
+            StringTokenizer stok = new StringTokenizer(address, ":");
+            if (stok.countTokens() != 6) {
+                throw new CustomRuntimeException(ERROR_STRING);
+            }
+            int i = 0;
+			while (stok.hasMoreTokens()) {
+				
+				Integer intValue = Integer.valueOf(stok.nextToken(),16);
+				addressBytes[i++] = intValue.byteValue();
+			}
+        } else {
+            throw new CustomRuntimeException(ERROR_STRING);
         }
         // CHECKSTYLE:ON
 
