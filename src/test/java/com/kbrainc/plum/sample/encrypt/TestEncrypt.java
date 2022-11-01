@@ -1,5 +1,6 @@
 package com.kbrainc.plum.sample.encrypt;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import javax.annotation.Resource;
@@ -109,6 +110,7 @@ public class TestEncrypt {
 		 
 				byte[] decrypted = cryptoService.decrypt(encrypted, password);
 				logger.info("decrypted Text : {}", decrypted.toString());
+				assertEquals(str, new String(decrypted, "UTF-8"));
 			}
 		} catch (ParserException e) {
 			log.error("ARIACryptoTest.ParserException.103L");
