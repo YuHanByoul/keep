@@ -500,12 +500,17 @@
 		return true;
 		
 	}
+        
 	function fn_menuEdit(){
+        
 		var f= document.form1;
 		
-		if(!validate2(f)){
-			return;
-		}
+        $("#form1").validate({
+              rules: {nm : { required: true}},
+              messages: {nm : { required: "메뉴명을 입력해 주십시오."}  }
+        })
+		
+		if($("#form1").valid() == false) return;
 		
 		if(getRadioValue(f,"popupYn") == "Y"){
 			if($("input[name='popupWd']").val() == "" || $("input[name='popupHg']").val() == ""){
