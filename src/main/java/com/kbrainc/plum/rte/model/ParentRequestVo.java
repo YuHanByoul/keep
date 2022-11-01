@@ -1,5 +1,7 @@
 package com.kbrainc.plum.rte.model;
 
+import com.kbrainc.plum.rte.util.StringUtil;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,9 +41,16 @@ public class ParentRequestVo {
         this.pageNumber = pageNumber;
         this.pageOffset = (this.pageNumber - 1) * this.rowPerPage;
     }
+    
+    public void setOrderField(String orderField) {
+        if (StringUtil.isSqlInjectionSafe(orderField)) {
+            this.orderField = orderField;
+        }
+    }
 
     /**
      * .
+     * @throws Exception 
      *
      * @Title       : chkParams 
      * @Description : TODO
