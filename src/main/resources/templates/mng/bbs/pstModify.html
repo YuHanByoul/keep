@@ -783,18 +783,23 @@ function disableFxdNtcDt(){
  }
 
  var editor000;
+ var obj = {name : "javascript"};
  $(document).ready(function () {
      
      if(rplyUseYn == 'Y'){
     	 //답글 등록창 editor 초기화
     	 editor000 = CKEDITOR.replace("cntnts000", {enterMode: CKEDITOR.ENTER_BR});
      }
+
+    
+     
      
 	 if (replyList.length > 0) {
 		 replyList.forEach(function (item) {
 			 //editor = CKEDITOR.replace("cntnts");
 			 //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
-			 eval("editor" + item.pstid + "= CKEDITOR.replace(cntnts" + item.pstid + ", {enterMode: CKEDITOR.ENTER_BR})");
+			 //eval("editor" + item.pstid + "= CKEDITOR.replace(cntnts" + item.pstid + ", {enterMode: CKEDITOR.ENTER_BR})");
+			 obj["editor" + item.pstid] = CKEDITOR.replace("cntnts" + item.pstid , {enterMode: CKEDITOR.ENTER_BR});
 		 })
 	 }
 	 
@@ -849,9 +854,11 @@ function disableFxdNtcDt(){
 
  //답글 수정 
  function fn_updateReplyPst(pstid) {
-
+	 
 	 replyFormvalidate(pstid);
-	 $('#cntnts' + pstid).val((eval("editor" + pstid)).getData());
+
+	 $('#cntnts' + pstid).val(  obj["editor" + pstid].getData() );
+	 
 	 if (!$('#pstUpdateForm' + pstid).valid()) return;
 
 	 var paramData = {
