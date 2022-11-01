@@ -207,130 +207,6 @@ jQuery(function(){
         return  true;
     }
     
-    /**
-     * 주민등록번호를 체크한다.
-     *
-     * @param   obj 주민등록번호 필드
-     * @return  true - 올바른 번호
-     *          	  false - 틀린 번호
-     */
-    function jsCheckJumin2(obj) {
-    	var str = deleteHyphen(obj.value);  // 필드에 있는 주민번호에서 '-'제거
-    	
-    	if( !jsCheckJuminNo2(str) ) {
-    		alert("잘못된 주민등록번호입니다.");
-    		obj.value="";
-    		//obj.focus();
-    		if (window.event) {
-    			window.event.returnValue = false;
-    		}
-    		return  false;
-    	}
-    	
-    	obj.value = str;
-    	return  true;
-    }
-
-    /**
-     * 주민번호 체크(내.외국인)
-     * @param ssn
-     * @returns   true - 올바른 번호
-     *          		false - 틀린 번호
-     */
-    function jsCheckJuminNo2(ssn) {
-		 var sum = 0; 
-		 var month = ssn.substr(2,2);
-		 var day = ssn.substr(4,2);
-		 
-		 if(ssn.length != 13) {
-		 	return false;
-		 }
-		 
-		 //월의 경우 13월을 넘지 않아야 한다.
-		 if(month < 13 && month != 0 && day != 0) {
-		 	//2월의 경우
-		 	if(month == 2) {
-		   		//29일을 넘지 않아야 한다.
-		   		if(day > 29) return false;
-		   		
-		  	} else if(month == 4 || month == 6 || month == 9 || month == 11){
-		  		// 4,6,9,11월의 경우 30일을 넘지 않아야 한다.   
-			   	if(day > 30) return false;
-		  	} else {
-			  	// 그외 월이 31일을 넘지 않아야 한다.
-		   		if(day > 31) return false;
-		  	}
-		 	
-		 }else {
-		  	return false;
-		 }
-		 
-		 for(var i = 0; i < 12; i++) {
-		 	sum += Number(ssn.substr(i, 1)) * ((i % 8) + 2);
-		 }
-		 
-		 if(ssn.substr(6,1) == 1 || ssn.substr(6,1) == 2 || ssn.substr(6,1) == 3 || ssn.substr(6,1) == 4 || ssn.substr(6,1) == 9 || ssn.substr(6,1) == 0) {
-			 //내국인 주민번호 검증(1900(남/여) 2000(남/여))
-		 	if(((11 - (sum % 11)) % 10) == Number(ssn.substr(12,1))) {
-		   		return true;
-		  	}
-		  	return false;
-		 }else if(ssn.substr(6,1) == 5 || ssn.substr(6,1) == 6 || ssn.substr(6,1) == 7 || ssn.substr(6,1) == 8) {
-			//외국인 주민번호 검증(1900(남/여) 2000(남/여))
-		  	if(Number(ssn.substr(8,1)) % 2 != 0) {
-		   		return false;
-		  	}		  
-		  	if((((11 - (sum % 11)) % 10 + 2) % 10) == Number(ssn.substr(12, 1))) {
-			   return true;
-			}
-		  	return false;
-		 }  
-		 
-	  return true;
-	} 
-
-    /**
-     * 주민번호를 체크한다.
-     *
-     * @param       주민번호(앞자리뒷자리 합친)
-     * @param       주민번호 앞자리
-     * @param       주민번호 뒷자리
-     * @param       다음으로 이동할 포커스
-     * @author      강병곤
-     * @since       2003-12-04
-     */
-    function checkJuminNo(juminNo, juminNo1, juminNo2, nextFocus)
-    {
-        var form    = document.form1;
-        var flag    = true;
-
-        var juminNoElm  = eval(form.elements[juminNo]);
-        var juminNo1Elm     = eval(form.elements[juminNo1]);
-        var juminNo2Elm     = eval(form.elements[juminNo2]);
-        var nextFocusElm    = eval(form.elements[nextFocus]);
-        //alert("juminNo ::"+ juminNoElm.value +"/ juminNo1 ::"+ juminNo1Elm.value +"/ juminNo2 ::"+ juminNo2Elm.value +"/ nextFocus ::"+ nextFocusElm.value);
-
-        if(juminNo2Elm.value == "" || juminNo2Elm.value.length < 7)
-        {
-            jsRange(7, 7);
-            juminNo2Elm.focus();
-            return;
-        }
-
-        if(!jsCheckJumin(juminNo1Elm.value + juminNo2Elm.value))
-        {
-    		alert("잘못된 주민등록번호입니다.");
-            juminNo1Elm.value = "";
-            juminNo2Elm.value = "";
-            juminNo1Elm.focus();
-        }
-        else
-        {
-            juminNoElm.value    = juminNo1Elm.value + juminNo2Elm.value;
-            nextFocusElm.focus();
-        }
-    }
-
     // 사업자등록번호 검사
     function checkBizNo(bizno)
     {
@@ -747,9 +623,9 @@ jQuery(function(){
             return  false;
         }
 
-        var year = eval(date.substring(0, 4));
-        var month = eval(date.substring(4, 6));
-        var day = eval(date.substring(6, 8));
+        var year = parseInt(date.substring(0, 4));
+        var month = parseInt(date.substring(4, 6));
+        var day = parseInt(date.substring(6, 8));
 
 		if(year == "0000") {
 			return false;
@@ -761,7 +637,7 @@ jQuery(function(){
 
         var totalDays;
 
-        switch (eval(month)){
+        switch (month){
 
             case 1 :
                 totalDays = 31;
@@ -844,24 +720,6 @@ jQuery(function(){
 
 		return new Date(year,month,day,hour,min);
 	}
-
-    /**
-     * 데이터 유효성을 체크한다.
-     *
-     * @param   form
-     */
-    function validate2(form) {
-        var obj;
-        
-        for (i = 0; i < form.elements.length; i++) {
-
-            obj = form.elements[i];
-            if(!validateObj(form, obj)){
-            	return false;
-            }
-        } /// end of for()
-        return  true;
-    }
 
     /**
      * 숫자에 comma를 붙인다.
@@ -1400,226 +1258,6 @@ jQuery(function(){
     }
 
     /**
-     * 데이터 유효성을 체크한다.
-     * 하나의 오브젝트에 대한 것임.
-     *
-     * @param   form
-     * @param   obj
-     */
-    function validateObj(form, obj) {
-
-    	var dispName;
-        var dataType;
-        var minValue;
-        var maxValue;
-        var isValid;
-        var value;
-        var message;
-        var messageAdd;
-        
-        dispName = obj.getAttribute("dispName");
-        if(dispName == "" || dispName == null) return true;
-        obj.value = trim(obj.value);
-        dataType = obj.getAttribute("dataType");
-        minValue = obj.getAttribute("minValue");
-        maxValue = obj.getAttribute("maxValue");
-        len      = obj.getAttribute("len");
-        lenCheck = obj.getAttribute("lenCheck");
-        byteCheck = obj.getAttribute("byteCheck");
-        message  = obj.getAttribute("message"); /// notNull 일때 사용자가 정의한 메세지를 보여주기 위해서
-        messageAdd  = obj.getAttribute("messageAdd"); /// notNull 일때 기본메세지 + 사용자정의메세지를 보여준다.
-        value = obj.value;
-
-        if (dispName == null) {
-            dispName = obj.name;
-        }
-
-        // 필수 입력 항목 체크
-        if (obj.getAttribute("isNull") == "N") {
-            isValid = false;
-
-            if (obj.type == "radio" || obj.type == "checkbox" || obj.type == "select") {
-                if (form.elements[obj.name].length) {
-                    for (j = 0; j < form.elements[obj.name].length; j++) {
-                        if (form.elements[obj.name][j].checked) {
-                            isValid = true;
-                            break;
-                        }
-                    }
-                } else {
-                    if (obj.checked) {
-                        isValid = true;
-                    }
-                }
-            } else {
-                if (jQuery.trim(value) != "") {
-                    isValid = true;
-                } else {
-                    if (obj.getAttribute("comma") != null) {
-                        obj.value = 0;
-                        isValid = true;
-                    }
-                }
-            }
-
-            if (!isValid) {
-                if(message == "" || message == null) {
-                	if (obj.type == "radio" || obj.type == "checkbox" || obj.type == "select" || obj.type == "select-one") {
-                		var manyLanguage=dispName+"을(를) 선택하십시오.";
-                		alert(manyLanguage+ ((messageAdd == "" || messageAdd == null) ? "" : "\n"+ messageAdd));
-                	 } else {
-                		 var manyLanguage1=dispName+"을(를) 입력하십시오.";
-                		 alert(manyLanguage1+ ((messageAdd == "" || messageAdd == null) ? "" : "\n"+ messageAdd));
-                	 }
-                }
-                else
-                    alert(message);
-                if(obj.type != "hidden" && obj.style.visibility != "hidden" && obj.style.display != "none")
-                    obj.focus();
-                if (window.event) {
-                    window.event.returnValue = false;
-                }
-                return  false;
-            }
-        }
-
-        // 데이터 길이 체크
-        if (len != null) {
-            if (jsByteLength(value) != eval(len)) {
-            	var manyLanguage = dispName + "은(는) " + len + "자리를 입력해야 합니다.";
-                alert(manyLanguage);
-                obj.focus();
-                if (window.event) {
-                    window.event.returnValue = false;
-                }
-                return  false;
-            }
-        }
-
-        if(lenCheck != null)
-        {
-          if(jsStrLength(value) > eval(lenCheck))
-            {
-        	  var manyLanguage=dispName + "은(는) " + lenCheck + " 자리를 넘을수 없습니다 현재 글자수("+jsStrLength(value)+")";
-              alert(manyLanguage);
-              obj.focus();
-              if(window.event)
-                {
-                   window.event.returnValue = false;
-                }
-
-                return false;
-            }
-        }
-        
-        if(byteCheck != null)
-        {
-          if(jsByteLength(value) > eval(byteCheck))
-            {
-        	  var manyLanguage=dispName + "은(는) " + byteCheck + " btye를 넘을 수 없습니다 현재 byte("+jsByteLength(value)+")";
-              alert(manyLanguage);
-              obj.focus();
-              if(window.event)
-                {
-                   window.event.returnValue = false;
-                }
-
-                return false;
-            }
-        }
-
-
-        if (obj.type == "text") {
-            // 데이터 타입 체크
-            if (dataType == null) { // 2002.01.30 추가
-                if (obj.readOnly == false && obj.maxLength != -1 && jsByteLength(value) > (obj.maxLength*2)) {
-                	var manyLanguage = dispName + " 길이가 " + obj.maxLength + " 을(를) 넘습니다."; 
-                    alert(manyLanguage);
-                    obj.focus();
-                    if (window.event) {
-                        window.event.returnValue = false;
-                    }
-
-                    return  false;
-                }
-            } else if ((value != "") && (dataType != null)) {
-                isValid = true;
-                checkValue = false;
-
-                if (dataType == "date") {
-                    value = deleteDateFormatStr(value);
-                    isValid = isDate(value);
-                    checkValue = true;
-                } else if (dataType == "email") {
-                    isValid = isEmail(value);
-                } else if (dataType == "float") {
-                    value = deleteCommaStr(value);
-                    isValid = isFloat(value);
-                    checkValue = true;
-                } else if (dataType == "integer") {
-                    value = deleteCommaStr(value);
-                    isValid = isInteger(value);
-                    checkValue = true;
-                } else if (dataType == "number") {
-                    value = deleteCommaStr(value);
-                    isValid = isNumber(value);
-                    checkValue = true;
-                } else if (dataType == "double") {
-                    value = deleteCommaStr(value);
-                    isValid = isNumber(value);
-                    checkValue = true;
-                } else if (dataType == "bizno") {
-                    isValid = checkBizNo(value);
-                    checkValue = true;
-                }
-
-                if (!isValid) {
-                	var manyLanguage=dispName + " 형식이 올바르지 않습니다.";
-                    alert(manyLanguage);
-                    if (dataType == "float" || dataType == "integer" || dataType == "number" || dataType == "double") {
-                        obj.value = "0";
-                    }
-
-                   	obj.focus();
-
-                    if (window.event) {
-                        window.event.returnValue = false;
-                    }
-                    return  false;
-                }
-
-                if (checkValue) {
-                    if (minValue != null) {
-                        if (eval(minValue) > eval(value)) {
-                        	var manyLanguage=dispName + " 값은 최소값(" + minValue + ") 이상입니다.";
-                            alert(manyLanguage);
-                            obj.focus();
-                            if (window.event) {
-                                window.event.returnValue = false;
-                            }
-                            return  false;
-                        }
-                    }
-
-                    if (isValid && (maxValue != null)) {
-                        if (eval(maxValue) < eval(value)) {
-                        	var manyLanguage=dispName + " 값이 최대값(" + maxValue + ")을 초과합니다.";
-                            alert(manyLanguage);
-                            obj.focus();
-                            if (window.event) {
-                                window.event.returnValue = false;
-                            }
-                            return  false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return  true;
-    }
-
-    /**
      * 숫자형식에서 comma를 없애고, 날짜형식에서 "/" 를 없앤다.
      * 하나의 오브젝트에 대한 것임.
      *
@@ -1686,90 +1324,6 @@ jQuery(function(){
     }
 
     /**
-     * 납입주기에 따른 이율을 계산한다.
-     * (소수로 반환한다.)
-     *
-     * @param   currencyCd 통화
-     * @param   yRate 년이율
-     * @param   term 납입주기
-     * @return  소수 이율
-     */
-    function jsRateCalc(currencyCd, yRate, term) {
-
-        var yday = jsYdayCalc(currencyCd);
-        var rate = eval((yRate / 100) * (term / 12) * (365 / yday));
-
-        return  rate;
-    }
-
-    /**
-     * 금액을 단수 처리한다.
-     *
-     * 원화(WON)
-     *
-     *  단수단위
-     *      0 - 원미만
-     *      1 - 십원미만
-     *      2 - 백원미만
-     *      3 - 천원미만
-     *      4 - 만원미만
-     *
-     *  단수처리
-     *      1 - 반올림
-     *      2 - 절상
-     *      3 - 절사
-     *
-     * 외화
-     *
-     *  단수단위
-     *      0 - 소수점 0 미만
-     *      1 - 소수점 1 미만
-     *      2 - 소수점 2 미만
-     *
-     *  단수처리
-     *      1 - 반올림
-     *      2 - 절상
-     *      3 - 절사
-     * @param   currency 통화 (text)
-     * @param   amt 금액 (text)
-     * @param   unit 단수단위 (text)
-     * @param   method 단수처리 (text)
-     */
-    function jsTruncAmt(currency, amt, unit, method) {
-
-        var after = eval(amt);
-
-        if (currency == "WON") {
-
-            after /= Math.pow(10, eval(unit));
-
-            if (method == "1") {
-                after = Math.round(after);
-            } else if (method == "2") {
-                after = Math.ceil(after);
-            } else if (method == "3") {
-                after = Math.floor(after);
-            }
-
-            after *= Math.pow(10, eval(unit));
-        } else {
-            after *= Math.pow(10, eval(unit));
-
-            if (method == "1") {
-                after = Math.round(after);
-            } else if (method == "2") {
-                after = Math.ceil(after);
-            } else if (method == "3") {
-                after = Math.floor(after);
-            }
-
-            after /= Math.pow(10, eval(unit));
-        }
-
-        return  after;
-    }
-
-    /**
      * String이 null인 경우 '0'으로 바꾸어 준다.
      *
      * @param   string
@@ -1811,35 +1365,6 @@ jQuery(function(){
                 }
             }
         }
-    }
-
-    /**
-     * 일수를 계산한다.(초일산입 말일불산입)
-     *
-     * @param   from 시작일
-     * @param   to 종료일
-     * @return  일수
-     */
-    function jsGetDays(from, to) {
-
-        var fromDt = deleteDateFormatStr(from);
-        var toDt = deleteDateFormatStr(to);
-        var days = 0 ;
-
-        var fromYy = eval(fromDt.substring(0,4));
-        var fromMm = eval(fromDt.substring(4,6) - 1);
-        var fromDd = eval(fromDt.substring(6,8));
-
-        var toYy = eval(toDt.substring(0,4));
-        var toMm = eval(toDt.substring(4,6) - 1);
-        var toDd = eval(toDt.substring(6,8));
-
-        var fromDate = new Date(fromYy, fromMm, fromDd) ;
-        var toDate = new Date(toYy, toMm, toDd) ;
-
-        days = ((toDate - fromDate) / 60 / 60 / 24 / 1000);
-
-        return  days;
     }
 
     /**
@@ -2461,69 +1986,6 @@ jQuery(function(){
     }
 
     /**
-     * 기준일부터 특정일자 이전(0), 이후(1)의 개월수 만큼 차이나는 날짜를 리턴한다.(YYYYMMDD)
-     */
-    function getIntervalMonth(kijunDate, term, isPrevNext)
-    {
-        var kijunDate   = deleteDateFormatStr(kijunDate);
-        var year        = kijunDate.substring(0,4); /// 년
-        var month       = kijunDate.substring(4,6); /// 월
-        var date        = kijunDate.substring(6,8); /// 일
-        var addMonth;
-        var addYear;
-        var tempYear;
-        var tempMonth;
-        var rtnDate;
-
-        if(isPrevNext == "0") /// 이전
-        {
-            addMonth    = eval(month) - eval(term);
-            addYear     = Math.floor(eval(addMonth/12)); /// 빼줄 년도 계산
-            tempYear    = eval(addYear) + eval(addMonth%12);
-            if(tempYear > 0)
-            {
-                tempMonth   = eval(tempYear%13);
-            }
-            else
-            {
-                tempMonth   = eval(12 + addMonth%12);
-                if(tempYear == 0)
-                    addYear     = addYear-1;
-            }
-        }
-        else /// 이후
-        {
-            addMonth    = eval(month) + eval(term);
-            addYear     = Math.floor(eval(addMonth/13)); /// 더해줄 년도 계산
-            tempYear    = eval(addYear) + eval(addMonth%13);
-
-            if(tempYear < 13)
-            {
-                tempMonth   = eval(tempYear%13);
-            }
-            else
-            {
-                tempMonth   = eval(tempYear%13 +1);
-                addYear     = addYear+1;
-            }
-        }
-
-        tempMonth   = tempMonth + ""; /// 길이를 알아보기위해 string으로 바꿔줌.
-        if(tempMonth.length == 1)
-        {
-            tempMonth = "0" + tempMonth;
-        }
-        /// 해당월에 해당일이 존재하는지 체크하고 존재하지 않는다면 마지막 일을 가져온다.
-        if( !isValidDay(eval(year) + eval(addYear), tempMonth, date))
-            date = getLastDay(eval(year) + eval(addYear), tempMonth);
-
-        rtnDate = eval(year) + eval(addYear) +""+ tempMonth +""+ date;
-        //alert(">날짜 ::"+ rtnDate);
-
-        return rtnDate;
-    }
-
-    /**
      * Time 스트링을 자바스크립트 Date 객체로 변환
      *
      * parameter time: Time 형식의 String
@@ -3043,6 +2505,9 @@ jQuery(function(){
 		   return;
 		}
 
+        s_width = parseInt(s_width);
+        s_height = parseInt(s_height);
+
         var version = navigator.appVersion;
         var addHeight = 0;
         if(version.indexOf("MSIE 7.0") > -1) addHeight=50;
@@ -3063,8 +2528,12 @@ jQuery(function(){
 		
 		var xpos;
 		var ypos;
-		xpos=((aw - eval(s_width))/2);
-		ypos=((ah - eval(s_height))/2);
+		
+		s_width = parseInt(s_width);
+		s_height = parseInt(s_height);
+		
+		xpos=((aw - s_width)/2);
+		ypos=((ah - s_height)/2);
 		//ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes width="+s_width+" height="+s_height+",top="+((aw - eval(s_width))/2)+",left="+((ah - eval(s_height))/2);
 		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes ,width="+s_width+", height="+s_height+",top="+ypos+",left="+xpos;
 		
@@ -3082,7 +2551,7 @@ jQuery(function(){
 		//wd_pop.resizeTo(s_width, s_height+addHeight);
         var aw = window.screen.availWidth;
         var ah = window.screen.availHeight;
-		wd_pop.moveTo(((aw - eval(s_width))/2),((ah - eval(s_height))/2));
+		wd_pop.moveTo(((aw - s_width)/2),((ah - s_height)/2));
 		wd_pop.focus();
 
 		return wd_pop;
@@ -3095,8 +2564,12 @@ jQuery(function(){
 		
 		var xpos;
 		var ypos;
-		xpos=((aw - eval(s_width))/2);
-		ypos=((ah - eval(s_height))/2);
+		
+		s_width = parseInt(s_width);
+        s_height = parseInt(s_height);
+        
+		xpos=((aw - s_width)/2);
+		ypos=((ah - s_height)/2);
 		//ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes width="+s_width+" height="+s_height+",top="+((aw - eval(s_width))/2)+",left="+((ah - eval(s_height))/2);
 		
 		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable="+s_resize+", scrollbars="+s_scroll+", status=yes ,width="+s_width+", height="+s_height+",top="+ypos+",left="+xpos;
@@ -3115,44 +2588,12 @@ jQuery(function(){
 		//wd_pop.resizeTo(s_width, s_height+addHeight);
         //var aw = window.screen.availWidth;
         //var ah = window.screen.availHeight;
-		//wd_pop.moveTo(((aw - eval(s_width))/2),((ah - eval(s_height))/2));
+		//wd_pop.moveTo(((aw - s_width)/2),((ah - s_height)/2));
 		wd_pop.focus();
 
 		return wd_pop;
 	}
 	
-	function Center_Fixed_Popup3(s_url, s_name, s_width, s_height, s_scroll) {
-		var aw = window.screen.availWidth;
-        var ah = window.screen.availHeight;
-		//alert(aw);
-        
-		//alert(ah);
-		
-		var xpos;
-		var ypos;
-		xpos=((aw - eval(s_width))/2);
-		ypos=((ah - eval(s_height))/2);
-		//ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes width="+s_width+" height="+s_height+",top="+((aw - eval(s_width))/2)+",left="+((ah - eval(s_height))/2);
-		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes, width="+s_width+" ,height="+s_height+",top="+ypos+",left="+xpos;
-		//ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=no, scrollbars="+s_scroll+", status=yes width="+s_width+" height="+s_height;
-		wd_pop = window.open(s_url, s_name,ls_pri);
-		if(wd_pop == null) {
-			alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
-		   return;
-		}
-
-       // var version = navigator.appVersion;
-        //var addHeight = 0;
-        //if(version.indexOf("MSIE 7.0") > -1) addHeight=50;
-
-		//wd_pop.blur();
-		//wd_pop.resizeTo(s_width, s_height+addHeight);
-        
-		//wd_pop.moveTo(((aw - eval(s_width))/2),((ah - eval(s_height))/2));
-		wd_pop.focus();
-
-		return wd_pop;
-	}
 	function Center_Fixed_Popup4(s_url, s_name, s_width, s_height, s_scroll) {
 		var ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=no, scrollbars="+s_scroll+", status=yes, width="+s_width+", height="+s_height;
 		var wd_pop = window.open(s_url, s_name,ls_pri);
@@ -3160,114 +2601,6 @@ jQuery(function(){
 			alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
 			return;
 		}
-	}
-	
-	function Center_Fixed_Popup_Knowledge(s_url, s_name, s_width, s_height, s_scroll, s_resize) {
-		var aw = window.screen.availWidth;
-        var ah = window.screen.availHeight;
-		var xpos;
-		var ypos;
-		xpos=((aw - eval(s_width))/2);
-		ypos=((ah - eval(s_height))/2);
-		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes, width="+s_width+" ,height="+s_height+",top="+ypos+",left="+xpos +",resizable="+s_resize;
-		wd_pop = window.open(s_url, s_name,ls_pri);
-		if(wd_pop == null) {
-		   alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
-		   return;
-		}
-		wd_pop.focus();
-
-		return wd_pop;
-	}
-
-	function Center_Fixed_Popup_Preview(s_url, s_name, s_width, s_height, s_scroll) {
-		
-		var aw = window.screen.availWidth;
-        var ah = window.screen.availHeight;
-		
-		var xpos;
-		var ypos;
-		xpos=((aw - eval(s_width))/2);
-		ypos=((ah - eval(s_height))/2);
-		//ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes width="+s_width+" height="+s_height+",top="+((aw - eval(s_width))/2)+",left="+((ah - eval(s_height))/2);
-		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes, width="+s_width+", height="+s_height+",top="+ypos+",left="+xpos;
-		
-//		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes width="+s_width+" height="+s_height;
-		wd_pop = window.open(s_url, s_name,ls_pri);
-		if(wd_pop == null) {
-			alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
-		   return;
-		}
-
-        var version = navigator.appVersion;
-        var addHeight = 0;
-        if(version.indexOf("MSIE 7.0") > -1) addHeight=50;
-
-		//wd_pop.blur();
-		//wd_pop.resizeTo(s_width, s_height+addHeight);
-        //var aw = window.screen.availWidth;
-        //var ah = window.screen.availHeight;
-		//wd_pop.moveTo(((aw - eval(s_width))/2),((ah - eval(s_height))/2));
-		wd_pop.focus();
-
-		return wd_pop;
-	}
-	
-	function Center_Fixed_Popup_Preview2(s_url, s_name, s_width, s_height, s_scroll, s_top, s_left) {
-		var aw = window.screen.availWidth;
-        var ah = window.screen.availHeight;
-		
-		var xpos;
-		var ypos;
-		xpos=((aw - eval(s_width))/2);
-		ypos=((ah - eval(s_height))/2);
-		
-		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars="+s_scroll+", status=yes, width="+s_width+", height="+s_height+", top="+ypos+", left="+xpos;
-		wd_pop = window.open(s_url, s_name,ls_pri);
-		if(wd_pop == null) {
-			alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
-		   return;
-		}
-
-        var version = navigator.appVersion;
-        var addHeight = 0;
-        if(version.indexOf("MSIE 7.0") > -1) addHeight=50;
-
-		//wd_pop.blur();
-		//wd_pop.resizeTo(s_width, s_height+addHeight);
-        //var aw = window.screen.availWidth;
-        //var ah = window.screen.availHeight;
-		//wd_pop.moveTo(((aw - eval(s_width))/2),((ah - eval(s_height))/2));
-		wd_pop.focus();
-
-		return wd_pop;
-	}
-
-	function Contents_Popup(s_url, s_val, s_name, s_width, s_height) {
-		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=no, scrollbars=no, status=yes width=400 height=400";
-		wd_pop = window.open(s_url+"?"+s_val, s_name,ls_pri);
-		if(wd_pop == null) {
-			alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
-		   return;
-		}
-
-		wd_pop.blur();
-		wd_pop.resizeTo(s_width, s_height);
-		wd_pop.moveTo(((screen.availwidth - eval(s_width))/2),((screen.availheight - eval(s_height))/2));
-		wd_pop.focus();
-		return wd_pop;
-	}
-
-	function Contents_Popup2(s_url, s_name) {
-		//ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=no, scrollbars=yes, status=yes width=400 height=400";
-		ls_pri = "toolbar=no, location=no, directories=no, menubar=no, resizable=yes, scrollbars=no, status=yes width=1024 height=700";
-		wd_pop = window.open(s_url, s_name,ls_pri);
-		if(wd_pop == null) {
-			alert("현재 사이트의 팝업이 차단되어 있습니다. 차단을 해제해 주십시요.");
-		   return;
-		}
-
-		return wd_pop;
 	}
 
 	function getBrowserVersion(){
@@ -3858,23 +3191,6 @@ jQuery(function(){
 
 		return scrollY;
 	}
-
-
-	/**
-	 * 객체 가져오기
-	 * @param objName(객체명)
-	 */
-	function getObject(objName) {
-		var returnObj = null;
-		if (browserType == "IE") {
-			returnObj = eval("document.all."+objName);
-		}
-		else if (browserType == "NE") {
-			returnObj = document.getElementById(objName);
-		}
-		return returnObj;
-	}
-
 
 	/**
 	 * 객체 DISPLAY 변경
@@ -5392,21 +4708,6 @@ jQuery(function(){
 	 	return str;
 	}
 	
-	/* 에디터 함수 */
-	function Editor_PasteHTML(id, html) {
-		var oEditors = eval("oEditors_" + id + ";");
-		oEditors.getById[id].exec("PASTE_HTML", [html]);
-	}
-
-	function Editor_GetHTML(id) {
-		var oEditors = eval("oEditors_" + id + ";");
-		return oEditors.getById[id].getIR();
-	}
-		
-	function Editor_SetValue(id) {
-		var oEditors = eval("oEditors_" + id + ";");
-		oEditors.getById[id].exec("UPDATE_CONTENTS_FIELD", []);	// 에디터의 내용이 textarea에 적용됩니다.
-	}
 	/**
 	 * 달력을 띄울 폼에 class='dateSet' 클래스를 지정
 	 * 

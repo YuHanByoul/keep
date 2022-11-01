@@ -26,7 +26,9 @@ function getDataForCommnonPopup( siteid, menuid ){
 		let data = { "siteid": siteid,"menuid": menuid};
         try{
             if(isMainPage){ data = {"siteid": siteid,"expsrLcCd": "M"}; }
-        }catch(e){}
+        }catch(e){
+            //
+        }
         
 		$.ajax({
             type: "POST",

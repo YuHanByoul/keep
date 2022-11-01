@@ -175,23 +175,6 @@ function getScrollY() {
 	return scrollY;
 }
 
-
-/**
- * 객체 가져오기
- * @param objName(객체명)
- */
-function getObject(objName) {
-	var returnObj = null;
-	if (browserType == "IE") {
-		returnObj = eval("document.all."+objName);
-	}
-	else if (browserType == "NE") {
-		returnObj = document.getElementById(objName);
-	}
-	return returnObj;
-}
-
-
 /**
  * 객체 DISPLAY 변경
  */
@@ -725,16 +708,6 @@ function toUTF8(szInput) {
   		}
  	}
  	return(szRet);
-}
-
-function CKeditorSetValue(instance, obj){
-	eval("var oEditor = CKEDITOR.instances."+instance+";");
-	obj.value = oEditor.getData();
-}
-
-function CKeditorSetData(instance, data){
-	eval("var oEditor = CKEDITOR.instances."+instance+";");
-	oEditor.setData(data);
 }
 
 function WeditorSetValue(instance, obj){
