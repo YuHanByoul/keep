@@ -2,11 +2,9 @@ package com.kbrainc.plum.cmm.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -26,12 +24,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.kbrainc.plum.mng.bbs.model.PstVo;
-import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
-import com.kbrainc.plum.mng.prgrm.model.PrgrmVo;
-import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
+import com.kbrainc.plum.mng.bbs.model.PstVo;
+import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -159,6 +156,8 @@ public class CommonController {
             try {
                 List<PstVo> list= bbsService.selectPstList(pstVo);
                 model.addAttribute("list", list);
+            }catch(SQLException e){
+                model.addAttribute("list", null);
             }catch(Exception e){
                 model.addAttribute("list", null);
             }
