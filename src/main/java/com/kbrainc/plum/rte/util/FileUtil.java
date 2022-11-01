@@ -17,14 +17,9 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import com.kbrainc.plum.mng.bbs.controller.BbsController;
-import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -564,32 +559,47 @@ public class FileUtil {
 		byte[] buffer = new byte[1024];
 		ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
 		ZipEntry zipEntry = zis.getNextEntry();
-		while (zipEntry != null) {
-		     File newFile = newFile(destDir, zipEntry);
-		     if (zipEntry.isDirectory()) {
-		         if (!newFile.isDirectory() && !newFile.mkdirs()) {
-		             throw new IOException("Failed to create directory " + newFile);
-		         }
-		     } else {
-		         // fix for Windows-created archives
-		         File parent = newFile.getParentFile();
-		         if (!parent.isDirectory() && !parent.mkdirs()) {
-		             throw new IOException("Failed to create directory " + parent);
-		         }
-		         
-		         // write file content
-		         FileOutputStream fos = new FileOutputStream(newFile);
-		         int len = zis.read(buffer);
-		         while (len > 0) {
-		             fos.write(buffer, 0, len);
-                     len = zis.read(buffer);
-		         }
-		         fos.close();
-		     }
-		 zipEntry = zis.getNextEntry();
-		}
-		zis.closeEntry();
-		zis.close();
+		
+		try {
+		    while (zipEntry != null) {
+		        File newFile = newFile(destDir, zipEntry);
+		        if (zipEntry.isDirectory()) {
+		            if (!newFile.isDirectory() && !newFile.mkdirs()) {
+		                throw new IOException("Failed to create directory " + newFile);
+		            }
+		        } else {
+		            // fix for Windows-created archives
+		            File parent = newFile.getParentFile();
+		            if (!parent.isDirectory() && !parent.mkdirs()) {
+		                throw new IOException("Failed to create directory " + parent);
+		            }
+		            
+		            // write file content
+		            FileOutputStream fos = new FileOutputStream(newFile);
+		            try {
+		                int len = zis.read(buffer);
+		                while (len > 0) {
+		                    fos.write(buffer, 0, len);
+		                    len = zis.read(buffer);
+		                }
+		            }catch(IOException e) {
+		                log.error("decompressZipFile.IOException.586L");
+		            }finally {
+		                fos.close();
+		                fos.flush();
+		            }
+		        }
+		        zipEntry = zis.getNextEntry();
+		    }
+		    
+		}catch(IOException e) {
+		    log.error("decompressZipFile.IOException.596L");
+		}finally {
+		    zis.closeEntry();
+		    zis.close();
+        }
+		
+		
 	}
 
 	/**

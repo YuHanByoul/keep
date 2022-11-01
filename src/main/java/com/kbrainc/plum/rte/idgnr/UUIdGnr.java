@@ -73,8 +73,12 @@ public class UUIdGnr {
             		+ "This is not the best method for many purposes, but may be adequate in some circumstances."
             		+ " Consider using an IP or ethernet (MAC) address if available. ");
             for (int i = 0; i < 6; i++) {
-            	//2017-02-03 장동한 시큐어코딩(ES)-시큐어 코딩 적절하지 않은 난수값 사용[CWE-330]
-            	addressBytes[i] = (byte) (random.nextDouble() * 255 + 0);
+                
+                double res = (random.nextDouble() * 255 + 0);
+                
+                if( (res+1) < Double.MAX_VALUE) {
+                    addressBytes[i] = (byte)res;
+                }
             }
         } else { 
             if (address.indexOf(".") > 0) {

@@ -143,7 +143,7 @@ public class CommonController {
     * @return String 이동화면경로
     */
     @GetMapping("/main.html")
-    public String main(Model model, PstVo pstVo, @UserInfo UserVo user, HttpSession session) {
+    public String mainPage(Model model, PstVo pstVo, @UserInfo UserVo user, HttpSession session) {
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
         

@@ -1,6 +1,9 @@
 package com.kbrainc.plum;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +13,29 @@ import org.slf4j.LoggerFactory;
 
 import com.kbrainc.plum.rte.util.ExcelUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class TestExcel {
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Test
 	public void testReadExcelFile() throws Exception {
-		FileInputStream fis;
-		fis = new FileInputStream("/Users/comnic/Desktop/test.xlsx");
-		ArrayList dataList = ExcelUtil.getExcelPoiArrayList(fis);
+		FileInputStream fis ;
 		
-		for (int i = 0; i < dataList.size(); i++) {
-			logger.info(dataList.get(i).toString());
+		fis = new FileInputStream("/Users/comnic/Desktop/test.xlsx");
+		
+		try {
+		    ArrayList dataList = ExcelUtil.getExcelPoiArrayList(fis);
+		    for (int i = 0; i < dataList.size(); i++) {
+		        logger.info(dataList.get(i).toString());
+		    }
+		}catch(IOException e){
+		    log.error("testReadExcelFile.IOException.124L");
+		}finally {
+		    fis.close();
 		}
+		
 	}
 
 	@Test

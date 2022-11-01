@@ -1,6 +1,8 @@
 package com.kbrainc.plum.rte.util;
 
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
@@ -34,6 +36,8 @@ import com.kbrainc.plum.rte.crypto.CryptoAES256;
 import com.kbrainc.plum.rte.exception.CustomRuntimeException;
 import com.kbrainc.plum.rte.idgnr.UUIdGnr;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * 공통Util 클래스.
@@ -50,6 +54,7 @@ import com.kbrainc.plum.rte.idgnr.UUIdGnr;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Slf4j
 public class CommonUtil {
 
     private static Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
@@ -169,11 +174,18 @@ public class CommonUtil {
                     InputStream is = conn.getInputStream();
                     br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
-                    String line = br.readLine();
-                    while (line != null) {
-                        sb.append(line);
-                        line = br.readLine();
+                    try {
+                        String line = br.readLine();
+                        while (line != null) {
+                            sb.append(line);
+                            line = br.readLine();
+                        }
+                    }catch(IOException e) {
+                        log.error("getBbsList.SQLException.124L");       
+                    }finally {
+                        br.close();
                     }
+                    
                 } else {
                     url = new URL(checkHosts[i] + callUrl);
                     urlcnn = url.openConnection();

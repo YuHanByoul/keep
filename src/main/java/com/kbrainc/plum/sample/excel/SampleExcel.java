@@ -1,6 +1,9 @@
 package com.kbrainc.plum.sample.excel;
 
+
+
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,11 +43,16 @@ public class SampleExcel {
 	public void sampleReadExcelFile() throws Exception {
 		FileInputStream fis;
 		fis = new FileInputStream("/Users/comnic/Desktop/test.xlsx");
-		ArrayList dataList = ExcelUtil.getExcelPoiArrayList(fis);
-		
-		for (int i = 0; i < dataList.size(); i++) {
-			logger.info(dataList.get(i).toString());
-		}
+		try {
+		    ArrayList dataList = ExcelUtil.getExcelPoiArrayList(fis);
+		    for (int i = 0; i < dataList.size(); i++) {
+		        logger.info(dataList.get(i).toString());
+		    }
+        }catch(IOException e){
+            logger.error("send.IOException.124L");
+        }finally {
+            fis.close();
+        }
 	}
 
 	/**
