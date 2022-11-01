@@ -1,7 +1,5 @@
 package com.kbrainc.plum.rte.exception;
 
-import javax.servlet.ServletException;
-
 /**
  * 
  * RuntimeException 랩핑 exception 
