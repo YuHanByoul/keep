@@ -468,10 +468,10 @@ public class FileUtil {
             result = false;
         } finally {
             try {
-                fos.close();
-                bos.close();
                 outputStream.closeArchiveEntry();
                 outputStream.close();
+                bos.close();
+                fos.close();
             } catch (IOException e) {
                 result = false;
             }
@@ -590,7 +590,6 @@ public class FileUtil {
 		            }catch(IOException e) {
 		                log.error("decompressZipFile.IOException.586L");
 		            }finally {
-		                fis.close();
 		                fos.close();
 		                fos.flush();
 		            }
@@ -603,6 +602,7 @@ public class FileUtil {
 		}finally {
 		    zis.closeEntry();
 		    zis.close();
+            fis.close();
         }
 		
 		
