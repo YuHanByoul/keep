@@ -10,11 +10,15 @@ import org.egovframe.rte.fdl.cryptography.EgovDigestService;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.StringFixedSaltGenerator;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 
 import groovyjarjarcommonscli.ParseException;
 import lombok.extern.slf4j.Slf4j;
@@ -37,16 +41,21 @@ import lombok.extern.slf4j.Slf4j;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
+@ActiveProfiles("local")
 public class TestEncrypt {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	static {
+	    ConfigurationFactory.profile = "local";
+	}
 	
 	@Resource(name="digestService")
 	EgovDigestService digestService;
 	
     @Resource(name="ariaCryptoService")
     EgovCryptoService cryptoService;
-	
+	    
 	@Test
 	public void encryptPBETest() {
 		StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();

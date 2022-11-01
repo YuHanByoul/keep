@@ -7,9 +7,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
 import com.kbrainc.plum.rte.util.mail.service.MailService;
 
@@ -18,10 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Slf4j
+@ActiveProfiles("local")
 class TestMail {
 	
 	@Autowired @Qualifier("MailService")
     private MailService mailService;
+	
+	static {
+        ConfigurationFactory.profile = "local";
+    }
 
 	@Test
 	void test() {
