@@ -2516,7 +2516,7 @@ jQuery(function(){
 		wd_pop.resizeTo(s_width, s_height+addHeight);
 		var aw = window.screen.availWidth;
         var ah = window.screen.availHeight;
-		wd_pop.moveTo(((aw - eval(s_width))/2),((ah - eval(s_height))/2));
+		wd_pop.moveTo((aw - (s_width/2)),(ah - (s_height/2)));
 		wd_pop.focus();
 
 		return wd_pop;

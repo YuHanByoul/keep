@@ -495,22 +495,28 @@
 		});	
 		
 	}
+	
 	function validate(f){
 		//$(f).validate();
 		return true;
-		
 	}
-        
+    
 	function fn_menuEdit(){
         
 		var f= document.form1;
-		
+		 
         $("#form1").validate({
-              rules: {nm : { required: true}},
-              messages: {nm : { required: "메뉴명을 입력해 주십시오."}  }
+              rules: {
+                   nm : { required: true,maxlength : [100]}
+                  ,dc : { maxlength : [400] }
+              },
+              messages: {
+                  nm  : { required: "메뉴명을 입력해 주십시오.",maxlength : "메뉴명은 100자를 넘을 수 없습니다."}  
+                  ,dc : { maxlength : "메뉴 설명은 400자를 넘을 수 없습니다."}
+              }
         })
 		
-		if($("#form1").valid() == false) return;
+		if(!$("#form1").valid()) return;
 		
 		if(getRadioValue(f,"popupYn") == "Y"){
 			if($("input[name='popupWd']").val() == "" || $("input[name='popupHg']").val() == ""){

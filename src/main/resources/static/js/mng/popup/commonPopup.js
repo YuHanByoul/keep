@@ -1,4 +1,5 @@
 
+
 function fn_chooseCommonPopup(list){
 	if(list.length > 0){
 		for( i= 0; i < list.length ; i++){
@@ -11,6 +12,8 @@ function fn_chooseCommonPopup(list){
 	}
 }
 
+var obj = {};
+
 function fn_openCommonPopup(item){
   var popupOption  ="scrollbars=yes,resizable=no,menubar=no , location=no" ;
       popupOption +=",left="+item.leftLc;
@@ -18,7 +21,9 @@ function fn_openCommonPopup(item){
       popupOption +=",height="+item.vrtclSize;
       popupOption +=",top="+item.topLc;
   var getPopUrl= "/mng/pop/getPopup.html?popupntcid="+item.popupntcid;
-  eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
+  
+  //eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
+  obj["objWin" + item.popupntcid] = window.open(getPopUrl, 'objWin'+ item.popupntcid, popupOption);
 }
 function getDataForCommnonPopup( siteid, menuid ){
 	
@@ -26,7 +31,7 @@ function getDataForCommnonPopup( siteid, menuid ){
 		try{
 			if(isMainPage){ data = {"siteid": siteid,"expsrLcCd": "M"};	}
 		}catch(e){
-            //
+            console.log("not main Page");
         }
         
 		$.ajax({

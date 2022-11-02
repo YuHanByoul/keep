@@ -1,4 +1,7 @@
 
+
+var obj = {};
+
 function fn_chooseCommonPopup(list){
 	if(list.length > 0){
 		for( i= 0; i < list.length ; i++){
@@ -18,7 +21,10 @@ function fn_openCommonPopup(item){
       popupOption +=",height="+item.vrtclSize;
       popupOption +=",top="+item.topLc;
   var getPopUrl= "/front/pop/getPopup.html?popupntcid="+item.popupntcid;
-  eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
+  
+  
+  obj["objWin" + item.popupntcid] = window.open(getPopUrl, 'objWin'+ item.popupntcid, popupOption);
+  //eval("objWin" + item.popupntcid + " = window.open(getPopUrl, 'objWin" + item.popupntcid+"', popupOption);");    
 
 }
 function getDataForCommnonPopup( siteid, menuid ){
@@ -27,7 +33,7 @@ function getDataForCommnonPopup( siteid, menuid ){
         try{
             if(isMainPage){ data = {"siteid": siteid,"expsrLcCd": "M"}; }
         }catch(e){
-            //
+            console.log("not main Page");
         }
         
 		$.ajax({
