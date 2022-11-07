@@ -5250,5 +5250,9 @@ jQuery(function(){
     	window.open('/mng/postn/postnPop.do?postnid='+postnid ,"", 'top=50,left=50,width=900, height=900 ,scrollbars=yes');
     }
     
-    
+    // id에 해당하는 엘리먼트로 브라우저 스크롤 이동
+    function scrollIntoView(id) {
+        window.scrollTo({top: document.getElementById(id).getBoundingClientRect().top + window.pageYOffset, behavior: 'smooth'});
+        //$('html').animate({scrollTop : $('#'+id).offset().top}, 400);
+    }
 	

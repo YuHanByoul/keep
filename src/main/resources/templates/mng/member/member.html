@@ -51,6 +51,7 @@
             </div>
             <div class="form-group col-sm-6 form-control-static text-right" >
                 <button type="submit" class="btn btn-sm btn-primary" onclick="fn_searchForm()">검색</button>
+                <button type="submit" class="btn btn-sm btn-primary" onclick="fn_init()">초기화</button>
             </div>
         </div>
     </div>
@@ -74,11 +75,11 @@
 		<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 		    <!-- List Area -->
 			<div class="panel panel-default">
-		    	<div class="panel-heading" role="tab" id="headingOne">
+		    	<!-- div class="panel-heading" role="tab" id="headingOne">
 		      		<h4 class="panel-title">
 		        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
 		      		</h4>
-		    	</div>
+		    	</div -->
 		    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
 		      		<div class="panel-body">		
 		      
@@ -90,6 +91,7 @@
 					</div>
 				</div>
 			</div>
+			
 			<!-- Content Area -->
 			<div id="contentPanel" class="panel panel-default" style="display:none"></div>
 		</div>
@@ -109,13 +111,13 @@
      var userid = /*[[${param.userid}]]*/null;
   /*]]>*/
 	var selectedItems = [];
-	         
+	var content1;         
 	$(function(){
-		
+		content1 = new GridHelper('contentPanel','jsGrid');
 		writeJsGridData();
 		if(userid != null){
 			var detailUrl = "/mng/member/memberDetailForm.html?userid=" + userid; 
-	      	    loadContent(detailUrl);
+	      	    content1.loadContent(detailUrl);
 		}
 		
 		$('#popCon2').on('show.bs.modal', function() {
@@ -153,11 +155,21 @@
 	
     function fn_goInsertForm(){
         var insertUrl ="/mng/member/memberInsertForm.html";
-    	    loadContent(insertUrl);
+    	    content1.loadContent(insertUrl);
     }
      
     function fn_searchForm(){
-    	resetListContent();
+    	content1.resetListContent();
+    }
+    
+    function fn_init() {
+        //alert('초기화');
+        //searchDelYn
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+        $("#searchStartDay").val('');
+        $("#searchEndDay").val('');
+        $("input:checkbox[name=searchDelYn]").prop("checked", true);
     }
         
     function writeJsGridData(){
@@ -232,7 +244,7 @@
 	        	,{ name: 'userid', css: 'hide' }
                 ,{ title: '번호' ,name: 'rowNumber',    type: "number", width : "5%", align:"center",  sorting :false }
                 ,{ title: '아이디'    ,name: 'acnt',    type: "text", width: "10%"}
-                ,{ title: '이름'    ,name: 'nm', type: "text", width: "10%" }
+                ,{ title: '이름'    ,name: 'nm', type: "text", width: "10%"}
                 ,{ title: '이메일'   ,name: 'email',   type: "text", width: "10%" }
                 ,{ title: '휴대폰'   ,name: 'mobno',   type: "text", width: "10%", align:"center" }
                 ,{ title: '탈퇴' ,name: 'delYn',  type: "text", width: "5%", align:"center" }
@@ -242,7 +254,8 @@
 	        rowClick: function(args) {
 	        	if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 	        	var detailUrl = "/mng/member/memberDetailForm.html?userid=" + args.item.userid; 
-	       	    loadContent(detailUrl);
+	       	    content1.loadContent(detailUrl);
+	       	    content1.rowClick(args);
 	        },
 	        /*[/]*/
 	        onPageChanged: function(args) {
