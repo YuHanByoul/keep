@@ -32,7 +32,7 @@ public class ExController {
         List<MailRcptnVo> mailList  = new ArrayList<MailRcptnVo>();
         mailList.add(new MailRcptnVo("jeongsk@kbrainc.com", 0));
         mailList.add(new MailRcptnVo("songjk@kbrainc.com", 0));
-        mailVo = new MailVo("rhea.emlook@gmail.com", null, "다중 메일 테스트", "다중메일 테스트 입니다.", 0, "J", 0);
+        mailVo = new MailVo("plum@gmail.com", null, "다중 메일 테스트", "다중메일 테스트 입니다.", 0, "J", 0);
         Map<String, Object> resMap2 = mailService.sendMultiMail(mailList, mailVo);
     	
         return "OK";
