@@ -1,32 +1,8 @@
 /*
-function GridHelper(contentPanelId, jsGridId) {
+function GridHelper(jsGridId, contentPanelId) {
     this.contentToggle = false;
-    this.contentPanelId = contentPanelId;
     this.jsGridId = jsGridId;
-    this.loadContent = function(uri){ // 등록/수정 컨텐츠영역 로드시 사용(컨텐츠영역 노출, 그리드 숨김)
-        var contentPanelId = this.contentPanelId;
-        this.removeHighlight();
-        $.ajax({
-            cache: false,
-            url: uri, 
-            type: 'GET',
-            async: 'false',
-            dataType: 'html',
-            success: function(result){ //요청이 성공했을때 실행되는 콜백 함수
-                $('#'+contentPanelId).html(result);
-                scrollIntoView(contentPanelId);
-            }
-        });
-        this.showContent();
-    };
-    this.resetListContent = function(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김, 그리드 노출)
-        //리셋하고 현재 페이지로 돌아간다.
-        var curPage = $("#"+this.jsGridId).jsGrid("option", "pageIndex");
-        $("#"+this.jsGridId).jsGrid("reset").done(function(){
-            $("#"+this.jsGridId).jsGrid("openPage", curPage);
-        });
-        this.hideContent(); 
-    };
+    this.contentPanelId = contentPanelId;
     this.showContent = function(){
         if(this.contentToggle) return;
         this.contentToggle = !this.contentToggle;
@@ -37,33 +13,7 @@ function GridHelper(contentPanelId, jsGridId) {
         this.contentToggle = !this.contentToggle;
         $('#'+this.contentPanelId).hide();
     };
-    this.toggleContent = function(){ // 컨텐츠영역에서 취소시 사용(컨텐츠 토글, 그리드 토글)
-        this.contentToggle ? $('#'+this.contentPanelId).hide() : $('#'+this.contentPanelId).show();
-        this.contentToggle = !this.contentToggle;
-    }
-    this.rowClick = function(args) { // 그리드 클릭시 하이라이트 처리
-        var $row = $("#"+this.jsGridId).jsGrid("rowByItem", args.item)
-        var selectedRow = $("#"+this.jsGridId).find('table tr.highlight');
-        if (selectedRow.length) {
-            selectedRow.toggleClass('highlight');
-        };
-        $row.toggleClass("highlight");
-    }
-    this.removeHighlight = function() { // 그리드 하이라이트 제거
-        var selectedRow = $("#"+this.jsGridId).find('table tr.highlight');
-        if (selectedRow.length) {
-            selectedRow.toggleClass('highlight');
-        };
-    }
-}
-*/
-class GridHelper {
-    constructor(contentPanelId, jsGridId) {
-        this.contentToggle = false;
-        this.contentPanelId = contentPanelId;
-        this.jsGridId = jsGridId;
-    }
-    loadContent(uri){ // 등록/수정 컨텐츠영역 로드시 사용(컨텐츠영역 노출, 그리드 숨김)
+    this.loadContent = function(uri){ // 등록/수정 컨텐츠영역 로드시 사용(컨텐츠영역 노출)
         var contentPanelId = this.contentPanelId;
         this.removeHighlight();
         $.ajax({
@@ -72,20 +22,43 @@ class GridHelper {
             type: 'GET',
             async: 'false',
             dataType: 'html',
-            success: function(result){ //요청이 성공했을때 실행되는 콜백 함수
+            success: function(result){
                 $('#'+contentPanelId).html(result);
                 scrollIntoView(contentPanelId);
             }
         });
         this.showContent();
-    }
-    resetListContent(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김, 그리드 노출)
+    };
+    this.resetListContent = function(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김)
         //리셋하고 현재 페이지로 돌아간다.
         var curPage = $("#"+this.jsGridId).jsGrid("option", "pageIndex");
         $("#"+this.jsGridId).jsGrid("reset").done(function(){
             $("#"+this.jsGridId).jsGrid("openPage", curPage);
         });
         this.hideContent(); 
+    };
+    this.toggleContent = function(){ // 컨텐츠영역에서 취소시 사용(컨텐츠 토글)
+        this.contentToggle ? $('#'+this.contentPanelId).hide() : $('#'+this.contentPanelId).show();
+        this.contentToggle = !this.contentToggle;
+    }
+    this.rowClick = function(args) { // 그리드 row클릭시 하이라이트 처리
+        this.removeHighlight();
+        var $row = $("#"+this.jsGridId).jsGrid("rowByItem", args.item)
+        $row.toggleClass("highlight");
+    }
+    this.removeHighlight = function() { // 그리드 하이라이트 제거(등록)
+        var selectedRow = $("#"+this.jsGridId).find('table tr.highlight');
+        if (selectedRow.length) {
+            selectedRow.toggleClass('highlight');
+        };
+    }
+}
+*/
+class GridHelper {
+    constructor(jsGridId, contentPanelId) {
+        this.contentToggle = false;
+        this.jsGridId = jsGridId;
+        this.contentPanelId = contentPanelId;
     }
     showContent(){
         if(this.contentToggle) return;
@@ -97,19 +70,40 @@ class GridHelper {
         this.contentToggle = !this.contentToggle;
         $('#'+this.contentPanelId).hide();
     }
-    toggleContent(){ // 컨텐츠영역에서 취소시 사용(컨텐츠 토글, 그리드 토글)
+    loadContent(uri){ // 등록/수정 컨텐츠영역 로드시 사용(컨텐츠영역 노출)
+        var contentPanelId = this.contentPanelId;
+        this.removeHighlight();
+        $.ajax({
+            cache: false,
+            url: uri, 
+            type: 'GET',
+            async: 'false',
+            dataType: 'html',
+            success: function(result){
+                $('#'+contentPanelId).html(result);
+                scrollIntoView(contentPanelId);
+            }
+        });
+        this.showContent();
+    }
+    resetListContent(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김)
+        //리셋하고 현재 페이지로 돌아간다.
+        var curPage = $("#"+this.jsGridId).jsGrid("option", "pageIndex");
+        $("#"+this.jsGridId).jsGrid("reset").done(function(){
+            $("#"+this.jsGridId).jsGrid("openPage", curPage);
+        });
+        this.hideContent(); 
+    }
+    toggleContent(){ // 컨텐츠영역에서 취소시 사용(컨텐츠 토글)
         this.contentToggle ? $('#'+this.contentPanelId).hide() : $('#'+this.contentPanelId).show();
         this.contentToggle = !this.contentToggle;
     }
-    rowClick(args) { // 그리드 클릭시 하이라이트 처리
+    rowClick(args) { // 그리드 row클릭시 하이라이트 처리
+        this.removeHighlight();
         var $row = $("#"+this.jsGridId).jsGrid("rowByItem", args.item)
-        var selectedRow = $("#"+this.jsGridId).find('table tr.highlight');
-        if (selectedRow.length) {
-            selectedRow.toggleClass('highlight');
-        };
         $row.toggleClass("highlight");
     }
-    removeHighlight() { // 그리드 하이라이트 제거
+    removeHighlight() { // 그리드 하이라이트 제거(등록시 사용)
         var selectedRow = $("#"+this.jsGridId).find('table tr.highlight');
         if (selectedRow.length) {
             selectedRow.toggleClass('highlight');
