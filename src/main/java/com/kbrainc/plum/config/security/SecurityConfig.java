@@ -119,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		"/favicon.ico",
         		"/test/*",
         		"/sample/*",
-        		"/assets/**/*",
+        		"/files/**/*",
                 "/down/**/*",
         		"/ckE/**/*",
         		"/ckEimg/**/*",
