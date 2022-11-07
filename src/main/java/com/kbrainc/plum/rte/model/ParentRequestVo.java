@@ -33,8 +33,8 @@ public class ParentRequestVo {
     }
     
     public void setRowPerPage(int rowPerPage) {
-        this.pageOffset = (this.pageNumber - 1) * this.rowPerPage;
         this.rowPerPage = rowPerPage;
+        this.pageOffset = (this.pageNumber - 1) * this.rowPerPage;
     }
 
     public void setPageNumber(int pageNumber) {
