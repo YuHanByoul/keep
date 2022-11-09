@@ -36,11 +36,7 @@ import lombok.RequiredArgsConstructor;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Data
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CodeVo extends ParentRequestVo implements Serializable {
-
-    //코드정보
-    //private ResCodeService resCodeService;
 
     /**  */
 	private static final long serialVersionUID = 1L;

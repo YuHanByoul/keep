@@ -37,11 +37,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Data
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CodeInfoVo extends ParentRequestVo implements Serializable {
-
-    //코드정보
-    //private ResCodeService resCodeService;
 
     /**  */
 	private static final long serialVersionUID = 1L;
