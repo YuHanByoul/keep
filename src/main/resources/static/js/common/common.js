@@ -4983,25 +4983,9 @@ jQuery(function(){
 	    return options;
 	}
 	
-	 /**
-     * Grid 실행 결과 데이터 세팅
-     * @param string grdid 그리드 생성 table 아이디
-     * @param string gridUrl 그리드 데이터 select 쿼리 url
-     * @param Array param select 쿼리 검색 조건 데이터
-     */
-	function jsGridSetReload(grdid, gridUrl, param){
-		
-		jQuery("#"+grdid).jqGrid("setGridParam", {
-			url: gridUrl,
-			datatype: 'json',
-			page: 1,
-			postData:param		
-		}).trigger("reloadGrid"); 
-	}
-	
-	 /**
-     * 한글 여부 확인
-     */
+	/**
+    * 한글 여부 확인
+    */
 	function isHangulChar(ch) {
 	  c = ch.charCodeAt(0);
 	  if( 0x1100<=c && c<=0x11FF ) return true;
