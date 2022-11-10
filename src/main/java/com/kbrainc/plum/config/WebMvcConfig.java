@@ -54,9 +54,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         .addResourceLocations("/resources/static/fonts/", "classpath:/static/fonts/")
         .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
         
-        registry.addResourceHandler("/files/**")
+        /*registry.addResourceHandler("/files/**")
         .addResourceLocations("classpath:/META-INF/resources/files/")
-        .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
+        .setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));*/
         
 	    registry.addResourceHandler("/ckEimg/**")
         .addResourceLocations("file:///" +uploadImagesPath + "/ckEimg/")
