@@ -614,7 +614,7 @@
 			$("#urlView").show();
 			$("#newMenutype").hide();
 			$("#menutype").show();
-			$("#viewRefMenuid").show();
+			//$("#viewRefMenuid").show();
 			$("#refMenuid").html(data.refMenuid);
 			$("input[name='refMenuid']").val(data.refMenuid);
 			$("#viewPrgmurl").hide();
@@ -622,7 +622,7 @@
 			$("input[name='popupYn']").eq(1).trigger('click');
 			$("input[name='popupYn']").attr('disabled',true);
 		}else {
-			$("#viewRefMenuid").hide();
+			//$("#viewRefMenuid").hide();
 			$("#refMenuid").html('');
 			$("input[name='refMenuid']").val('');
 			$("#mode").val('U');			
@@ -707,13 +707,13 @@
 			$("#urlView").hide();
 		}
 		
-		$("#viewRefMenuid").hide();
+		//$("#viewRefMenuid").hide();
 		$("#refMenuid").html('');
 		$("inpput[name='refMenuid']").val('');
 		$("input[name='popupYn']").attr('disabled',false);
 		
 		if(gubun =='C'){ //디렉토리등록
-			$("#viewRefMenuid").show();
+			//$("#viewRefMenuid").show();
 			$("input[name='typeCd']").attr('disabled',true);
 			$("input[name='typeCd']:radio:input[value='D']").prop("checked", true).attr("disabled",false);			
 			$("#newMenutype").hide();		
