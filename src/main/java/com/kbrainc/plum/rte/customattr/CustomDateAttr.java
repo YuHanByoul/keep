@@ -93,7 +93,7 @@ public class CustomDateAttr extends AbstractAttributeTagProcessor {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
 
-            result.append("<input type=\"text\" class=\"form-control  ").append(addClass).append("\"  id=\"").append(attributeValue).append("\" name=\"").append(attributeValue).append("\"  value=\"").append(dateDefault).append("\"   style=\"").append(addStyle).append("\">")
+            result.append("<input type=\"text\" inputmode=\"none\" class=\"form-control  ").append(addClass).append("\"  id=\"").append(attributeValue).append("\" name=\"").append(attributeValue).append("\"  value=\"").append(dateDefault).append("\"   style=\"").append(addStyle).append("\">")
                     .append("\n");
             result.append("<style>").append("\n");
             result.append(".hasDatepicker{cursor: pointer;}").append("\n");
