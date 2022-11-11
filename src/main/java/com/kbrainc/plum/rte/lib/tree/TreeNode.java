@@ -3,6 +3,8 @@ package com.kbrainc.plum.rte.lib.tree;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.kbrainc.plum.rte.menu.MenuItem;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
@@ -111,7 +113,22 @@ public class TreeNode<T> {
      * @return boolean 자식 트리노드의 존재여부
      */
     public boolean hasChildren() {
-        return (getNumberOfChildren() > 0);
+        String ptypeCd = null;
+        String typeCd = null;
+        
+        for (int i = 0; i < this.children.size(); i++) {
+            MenuItem item = ((TreeNode<MenuItem>)this.children.get(i)).getData();
+            ptypeCd = item.getPtypeCd();
+            typeCd = item.getTypeCd();
+            
+            if ("D".equals(typeCd)) { // 메뉴타입이 디렉토리 일때
+                return true;
+            } else if ("01".equals(ptypeCd) || "02".equals(ptypeCd)) { // 프로그램타입이 디렉토리 또는 메뉴일때
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**
