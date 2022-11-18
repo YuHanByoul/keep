@@ -5239,4 +5239,23 @@ jQuery(function(){
         window.scrollTo({top: document.getElementById(id).getBoundingClientRect().top + window.pageYOffset, behavior: 'smooth'});
         //$('html').animate({scrollTop : $('#'+id).offset().top}, 400);
     }
+    
+    /**
+    * 특정 문자열입력 엘리먼트에서 지정한 최대 문자열길이 초과입력시 초과된 문자열을 자동으로 삭제.
+    *
+    * @Description : 특정 문자열입력 엘리먼트에서 지정한 최대 문자열길이 초과입력시 초과된 문자열을 자동으로 삭제후 안내 alert을 띄워준다.
+    *                onkeyup등에서 해당함수를 적용하도록 하고, 현재입력글자수를 화면에 노출해야 할시 리턴값을 사용하도록 한다.
+    * @param element 문자열입력 엘리먼트
+    * @param maxLen 입력을 허용할 최대 문자열 길이
+    * @return 처리 이후 입력된 문자수
+    *
+    */
+    function jsSubstrLength(element, maxLen) {
+        if(element.value.length > maxLen){
+            alert('최대 허용 길이인 ' + maxLen + '글자를 초과했습니다.\n초과한 문자열은 자동 삭제 처리 됩니다.');
+            element.value = element.value.substr(0, maxLen);
+            return maxLen;
+        }
+        return element.value.length;
+    }
 	
