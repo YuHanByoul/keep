@@ -18,7 +18,7 @@ function fn_openCommonPopup(item){
   var popupOption  ="scrollbars=yes,resizable=no,menubar=no , location=no" ;
       popupOption +=",left="+item.leftLc;
       popupOption +=",width="+item.widthSize;
-      popupOption +=",height="+item.vrtclSize;
+      popupOption +=",height="+item.vrticlSize;
       popupOption +=",top="+item.topLc;
   var getPopUrl= "/front/pop/getPopup.html?popupntcid="+item.popupntcid;
   
@@ -52,7 +52,7 @@ function fn_neverShow(id,isChecked){
 
 function getLayerStr(item){
 	
-	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="cursor:move; overflow:auto;  width:'+item.widthSize+'px; height : '+item.vrtclSize+'px; ">';
+	var layerStr = '    <div id="layer'+item.popupntcid+'" class="pop-layer" style="cursor:move; overflow:auto;  width:'+item.widthSize+'px; height : '+item.vrticlSize+'px; ">';
 	    layerStr += '        <div class="panel panel-default">';
 	    layerStr += '	      <div class="panel-heading" style="cursor:move;" id="layer'+item.popupntcid+'header">';
 	    layerStr += '		    <h4>'+item.title+'</h4>';
