@@ -10,7 +10,7 @@
     <!-- 역할에 매핑된 메뉴권한 삭제 -->
     <delete id="deleteAuthMenuMpp" parameterType="RoleMenuVo">
         /* RoleAuthDao.deleteAuthMenuMpp */
-        DELETE FROM TB_ROLE_MENU WHERE ROLEID = #{roleid}
+        DELETE FROM TB_CMM_ROLE_MENU WHERE ROLEID = #{roleid}
       <if test="menuid != null and menuid != ''">
          AND MENUID = #{menuid}
       </if>
@@ -19,7 +19,7 @@
     <!-- 역할에 메뉴 추가 -->
     <insert id="insertRoleMenuAuth" parameterType="RoleMenuVo">
         /* RoleAuthDao.insertRoleMenuAuth */
-        INSERT INTO TB_ROLE_MENU
+        INSERT INTO TB_CMM_ROLE_MENU
             ( ROLEID, MENUID, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID )
         VALUES
             (#{roleid}, #{menuid}, NOW(), #{reguserid}, NOW(), #{reguserid} )
@@ -34,7 +34,7 @@
         ELSE
         'N'
         END TOPYN
-        FROM TB_ROLE
+        FROM TB_CMM_ROLE
         WHERE ROLEID = #{roleId}
     </select>
 
@@ -43,7 +43,7 @@
         /* RoleAuthDao.selectRoleTreeSitenm */
         SELECT
         SITE_NM
-        FROM TB_SITE
+        FROM TB_CMM_SITE
         WHERE SITEID = #{siteid}
     </select>
 
@@ -55,7 +55,7 @@
                 IFNULL(UPPR_ROLEID , '') pkey,
                 A.ROLEID 'key',  
                 A.NM  title
-            FROM TB_ROLE A
+            FROM TB_CMM_ROLE A
             WHERE 1=1
         ]]>
         <if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(seCd)">
@@ -72,7 +72,7 @@
         <![CDATA[ /* RoleauthDao.selectRoleInfo */
             SELECT 
                 ROLEID, UPPR_ROLEID, NM, DC, USE_YN, ORD
-            FROM TB_ROLE A
+            FROM TB_CMM_ROLE A
             WHERE ROLEID = #{roleid}
         ]]>
     </select>
@@ -81,9 +81,9 @@
     <insert id="insertRoleInfo" useGeneratedKeys="true" keyProperty="roleid" parameterType="RoleVo">
         /* RoleAuthDao.insertRoleInfo */
         INSERT INTO
-            TB_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
+            TB_CMM_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
             VALUES ( #{nm}, #{seCd}, #{upprRoleid}, #{dc}, #{useYn},
-                (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_ROLE A WHERE A.UPPR_ROLEID = #{upprRoleid}),
+                (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_CMM_ROLE A WHERE A.UPPR_ROLEID = #{upprRoleid}),
                 NOW(),
                 #{reguserid},
                 NOW(),
@@ -97,9 +97,9 @@
         <include refid="PaginationMapper.header"/>
         SELECT 
             RU.ROLEID, R.NM AS ROLE_NM, RU.USERID, RU.ROLE_STRT_DT, RU.ROLE_END_DT, RU.UPDT_DT, U.ACNT, U.NM, U.USER_SE_CD
-        FROM TB_ROLE_USER RU
-            INNER JOIN TB_USER U ON RU.USERID = U.USERID
-            INNER JOIN TB_ROLE R ON RU.ROLEID = R.ROLEID
+        FROM TB_CMM_ROLE_USER RU
+            INNER JOIN TB_CMM_USER U ON RU.USERID = U.USERID
+            INNER JOIN TB_CMM_ROLE R ON RU.ROLEID = R.ROLEID
         WHERE 1=1
             <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchType) 
                 and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword) and searchType == "U.NM"'>
@@ -120,7 +120,7 @@
     <update id="updateRoleUserMappedTerm" parameterType="RoleUserVo">
         /* RoleAuthDao.updateRoleJobUserMappedTerm */
         UPDATE
-            TB_ROLE_USER 
+            TB_CMM_ROLE_USER 
         SET
             ROLE_STRT_DT = #{roleStrtDt},
             ROLE_END_DT = #{roleEndDt},
@@ -140,7 +140,7 @@
                          A.MENUID,
                          A.NM TITLE,
                          A.ORD
-                FROM TB_MENU A               
+                FROM TB_CMM_MENU A               
              ]]>
         WHERE 1=1
         <if test="siteid != null and siteid != ''">
@@ -149,7 +149,7 @@
         ) B
         LEFT OUTER JOIN
         (SELECT AA.MENUID, 'Y' EXT1
-        FROM TB_ROLE_MENU AA
+        FROM TB_CMM_ROLE_MENU AA
         WHERE AA.ROLEID = #{roleid}
         ) C
         ON B.MENUID = C.MENUID
@@ -159,7 +159,7 @@
     <!-- 역할 상세 수정 -->
     <update id="updateRoleInfo" parameterType="RoleVo">
         /* RoleAuthDao.updateRoleInfo */
-        UPDATE TB_ROLE SET
+        UPDATE TB_CMM_ROLE SET
             NM = #{nm},
             DC = #{dc},
             USE_YN = #{useYn},
@@ -172,7 +172,7 @@
     <!-- 역할 수정시 하위 역할 수정 -->
     <update id="updateRoleAuth" parameterType="RoleVo">
         /* RoleAuthDao.updateRoleAuth */
-        UPDATE TB_ROLE SET
+        UPDATE TB_CMM_ROLE SET
             UPDTUSERID = #{updtuserid},
             UPDT_DT = NOW()
 	        <if test="seCd != 'A'.toString()">
@@ -181,7 +181,7 @@
         WHERE ROLEID IN (
             SELECT * FROM (
                 SELECT ROLEID FROM
-                    TB_ROLE
+                    TB_CMM_ROLE
                 WHERE ROLEID = #{roleid}
                 ) A
             )
@@ -193,7 +193,7 @@
         SELECT 
 		    SITEID, 
 		    SITE_NM 
-		FROM TB_SITE
+		FROM TB_CMM_SITE
 		WHERE 
 		    SYS_SE_CD = #{seCd}
 		AND USE_YN = 'Y'
@@ -203,7 +203,7 @@
     <insert id="insertRoleUser" parameterType="RoleUserVo">
         /* RoleAuthDao.insertRoleUser */
         INSERT INTO 
-            TB_ROLE_USER (ROLEID, USERID, ROLE_STRT_DT, ROLE_END_DT, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
+            TB_CMM_ROLE_USER (ROLEID, USERID, ROLE_STRT_DT, ROLE_END_DT, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
             VALUES (#{roleid}, #{userid}, #{roleStrtDt}, #{roleEndDt}, NOW(), #{reguserid}, NOW(), #{reguserid})
     </insert>
     
@@ -211,7 +211,7 @@
     <update id="updateRoleUser" parameterType="RoleUserVo">
         /* RoleAuthDao.updateRoleUser */
         UPDATE 
-            TB_ROLE_USER 
+            TB_CMM_ROLE_USER 
         SET
             ROLE_STRT_DT = #{roleStrtDt}, 
             ROLE_END_DT = #{roleEndDt}, 
@@ -224,7 +224,7 @@
     <!-- 사용자 역할을 삭제 -->
     <delete id="deleteRoleUser" parameterType="RoleUserVo">
         /* RoleAuthDao.deleteRoleUser */
-        DELETE FROM TB_ROLE_USER WHERE ROLEID=#{roleid} AND USERID=#{userid}
+        DELETE FROM TB_CMM_ROLE_USER WHERE ROLEID=#{roleid} AND USERID=#{userid}
     </delete>
     
     <!-- 사용자 리스트 가져옴 -->
@@ -234,7 +234,7 @@
         SELECT
           A.USERID, A.ACNT, A.USER_SE_CD, A.NM, A.UPDT_DT, B.ROLEID
         FROM
-          TB_USER A LEFT OUTER JOIN TB_ROLE_USER B
+          TB_CMM_USER A LEFT OUTER JOIN TB_CMM_ROLE_USER B
                     ON A.USERID = B.USERID AND B.ROLEID = #{roleid}
          WHERE A.ACNT IS NOT NULL
         <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchType) 

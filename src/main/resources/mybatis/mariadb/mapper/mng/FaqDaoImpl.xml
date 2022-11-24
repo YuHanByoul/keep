@@ -23,8 +23,8 @@
             CONVERT(A.REG_DT, CHAR(10)) AS REG_DT,
             B.CL_NM cl_nm
         FROM
-            TB_FAQ A,
-            TB_FAQ_CL B
+            TB_CMM_FAQ A,
+            TB_CMM_FAQ_CL B
         WHERE 1=1
             AND A.CLID = B.CLID
             <if test='clid != null and clid !="" '>
@@ -52,7 +52,7 @@
     	SELECT
     		CLID, FAQID, TITLE, USER_SE_CD, CNTNTS, ORD, USE_YN, UPDT_DT, REG_DT
     	FROM
-    		TB_FAQ
+    		TB_CMM_FAQ
     	WHERE
     		FAQID = #{faqid}
     </select>
@@ -64,12 +64,12 @@
             SELECT 
                 IFNULL (Max(ORD),0) +1
             FROM 
-                TB_FAQ
+                TB_CMM_FAQ
             WHERE 1=1
                 <!--  AND CLID=#{clid} --> 
                 AND USER_SE_CD = #{userSeCd}
         </selectKey>
-        INSERT INTO TB_FAQ 
+        INSERT INTO TB_CMM_FAQ 
             (CLID, TITLE, CNTNTS, USER_SE_CD, ORD, USE_YN, UPDT_DT, REG_DT,UPDTUSERID, REGUSERID) 
         VALUES 
             (#{clid}, #{title}, #{cntnts}, #{userSeCd}, #{ord}, #{useYn}, NOW(), NOW(), #{user.userid} ,#{reguserid})
@@ -78,7 +78,7 @@
     <!-- FAQ 수정 -->
     <update id="updateFaq" parameterType="FaqVo">
         /* FaqDao.updateFaq */
-    	UPDATE TB_FAQ SET
+    	UPDATE TB_CMM_FAQ SET
     		CLID = #{clid},
     		USER_SE_CD = #{userSeCd},
     		TITLE = #{title},
@@ -97,7 +97,7 @@
     <!-- FAQ 삭제 -->
     <delete id="deleteFaq"  parameterType="FaqVo">
         /* FaqDao.deleteFaq */
-    	DELETE FROM TB_FAQ 
+    	DELETE FROM TB_CMM_FAQ 
     	WHERE 1=1
     	  AND FAQID = #{faqid}
     		
@@ -109,7 +109,7 @@
     <!-- FAQ 순서 변경(UP)  -->
    	<update id="modifyFaqOrdUp" parameterType="FaqVo">
    	    /* FaqDao.modifyFaqOrdUp */
-        UPDATE TB_FAQ
+        UPDATE TB_CMM_FAQ
             SET 
             ORD = ORD + 1
         WHERE 
@@ -120,7 +120,7 @@
     <!-- FAQ 순서 변경(DOWN)  -->
     <update id="modifyFaqOrdDown" parameterType="FaqVo" >
         /* FaqDao.modifyFaqOrdDown */
-        UPDATE TB_FAQ
+        UPDATE TB_CMM_FAQ
             SET 
             ORD = ORD - 1
         WHERE 
@@ -132,7 +132,7 @@
 	<!-- FAQ 순서 직접 수정 -->
 	<update id="modifyFaqOrdByfaqid" parameterType="FaqVo" >
         /* FaqDao.modifyFaqOrdByfaqid */
-        UPDATE TB_FAQ
+        UPDATE TB_CMM_FAQ
             SET 
             ORD =  #{newOrd}
         WHERE 

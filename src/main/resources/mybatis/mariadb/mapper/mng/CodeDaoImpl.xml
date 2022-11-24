@@ -14,7 +14,7 @@
             USE_YN,
             UPDT_DT
         FROM 
-            TB_CDGRP
+            TB_CMM_CDGRP
         WHERE 
             1=1
             AND CDGRPID != 'G0001'
@@ -53,9 +53,9 @@
                 CONVERT(CONCAT(A.CDGRPID, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
                 CONVERT('', VARCHAR(255)) AS UPPR_CD_NM
             FROM 
-                TB_CD A,
-                TB_CDGRP B,
-                TB_USER C
+                TB_CMM_CD A,
+                TB_CMM_CDGRP B,
+                TB_CMM_USER C
             WHERE 
                 A.CDGRPID = B.CDGRPID
                 AND A.UPDTUSERID = C.USERID
@@ -80,9 +80,9 @@
                 CONVERT(CONCAT(D.TREE_ORD, RIGHT(CONCAT('0000', CONVERT(A.ORD, VARCHAR(4))), 4)), VARCHAR(255)) AS TREE_ORD,
                 CONVERT(D.CD_NM, VARCHAR(255)) AS UPPR_CD_NM
             FROM 
-                TB_CD A,
-                TB_CDGRP B,
-                TB_USER C,
+                TB_CMM_CD A,
+                TB_CMM_CDGRP B,
+                TB_CMM_USER C,
                 SEARCH_ORG D
             WHERE 
                 A.CDGRPID = B.CDGRPID
@@ -176,8 +176,8 @@
             B.NM AS UPDT_NM,
             A.UPDT_DT
         FROM 
-            TB_CDGRP A, 
-            TB_USER B
+            TB_CMM_CDGRP A, 
+            TB_CMM_USER B
         WHERE 
             A.CDGRPID = #{cdgrpid}
             AND A.UPDTUSERID = B.USERID
@@ -186,7 +186,7 @@
     <!-- 코드그룹 등록 -->
     <insert id="insertCodeGrpInfo" parameterType="CodeGrpVo">
         /* codeDao.insertCodeGrpInfo */
-        INSERT INTO TB_CDGRP (
+        INSERT INTO TB_CMM_CDGRP (
             CDGRPID,
             CDGRP_NM,
             CDGRP_DC,
@@ -211,7 +211,7 @@
     <update id="updateCodeGrpInfo" parameterType="CodeGrpVo">
         /* codeDao.updateCodeGrpInfo */
         UPDATE 
-            TB_CDGRP 
+            TB_CMM_CDGRP 
         SET 
             CDGRPID = #{cdgrpid},
             CDGRP_NM = #{cdgrpNm},
@@ -235,7 +235,7 @@
                 CONCAT(CD_NM, '(', CD, ')') AS TITLE,
                 CONVERT(RIGHT(CONCAT('0000', CONVERT(ORD, VARCHAR(4))), 4), VARCHAR(255)) AS TREE_ORD
             FROM 
-                TB_CD
+                TB_CMM_CD
             WHERE 
                 UPPR_CD = '0'
                 AND CDGRPID != 'G0001'
@@ -250,7 +250,7 @@
                 CONVERT(C.TREE_ORD + RIGHT(CONCAT('0000', CONVERT(D.ORD, VARCHAR(4))), 4), VARCHAR(255)) AS
                 TREE_ORD
             FROM 
-                TB_CD D, 
+                TB_CMM_CD D, 
                 CODE_CTE C
             WHERE 
                 UPPR_CD = C.`KEY`
@@ -283,9 +283,9 @@
             B.NM AS UPDT_NM,
             A.UPDT_DT
         FROM 
-            TB_CD A, 
-            TB_USER B, 
-            TB_CDGRP G
+            TB_CMM_CD A, 
+            TB_CMM_USER B, 
+            TB_CMM_CDGRP G
         WHERE 
             A.CD = #{cd}
             AND A.UPDTUSERID = B.USERID
@@ -295,30 +295,30 @@
     <!-- 코드 순서재조정 자리세팅 -->
     <update id="updateCodeReOrder" parameterType="CodeVo">
         /* codeDao.updateCodeReOrder */
-        UPDATE TB_CD SET
+        UPDATE TB_CMM_CD SET
         <if test="upperYn == 'Y'.toString()">
             ORD = ORD + 1
-            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
+            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T) ))
             <if test="hitMode == 'before'">
-                AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
-                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+                AND ORD <![CDATA[>= ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1)
+                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
             </if>
             <if test="hitMode == 'after'">
-                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
-                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1)
+                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
             </if>
         </if>
         <if test="upperYn == 'N'.toString()">
             ORD = ORD - 1
-            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T) ))
+            WHERE UPPR_CD = IFNULL(#{upprCd}, ((SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T) ))
             <if test="hitMode == 'before'">
-                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
-                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1)
+                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
+                AND ORD <![CDATA[< ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1)
             </if>
             <if test="hitMode == 'after'">
-                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CD A WHERE A.CD = #{tcd}) T1)
+                AND ORD <![CDATA[> ]]> (SELECT T1.ORD FROM (SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{tcd}) T1)
                 <!-- <if test="menuid != null and menuid != ''"> AND ORD <![CDATA[<= 
-                    ]]> (SELECT T1.ORD FROM(SELECT A.ORD FROM TB_CD A WHERE A.CD = #{cd}) T1) </if> -->
+                    ]]> (SELECT T1.ORD FROM(SELECT A.ORD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T1) </if> -->
             </if>
         </if>
     </update>
@@ -327,16 +327,16 @@
     <update id="updateCodeReOrderPrnDiff" parameterType="CodeVo">
         /* codeDao.updateCodeReOrderPrnDiff */
         UPDATE 
-            TB_CD 
+            TB_CMM_CD 
         SET
             ORD = ORD+1
         WHERE 
-            UPPR_CD = IFNULL(#{upprCd},(SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{cd}) T))
+            UPPR_CD = IFNULL(#{upprCd},(SELECT T.UPPR_CD FROM (SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{cd}) T))
         <if test="hitMode == 'before'">
-            AND ORD <![CDATA[>= ]]> (SELECT T.ORD FROM (SELECT ORD FROM TB_CD WHERE CD = #{cd}) T)
+            AND ORD <![CDATA[>= ]]> (SELECT T.ORD FROM (SELECT ORD FROM TB_CMM_CD WHERE CD = #{cd}) T)
         </if>
         <if test="hitMode == 'after'">
-            AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CD WHERE CD = #{cd})T)
+            AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CMM_CD WHERE CD = #{cd})T)
         </if>
 
     </update>
@@ -345,24 +345,24 @@
     <update id="updateCodeReOrderPrnDiffOrgin" parameterType="CodeVo">
         /* codeDao.updateCodeReOrderPrnDiffOrgin */
         UPDATE 
-            TB_CD 
+            TB_CMM_CD 
         SET
             ORD = ORD-1
         WHERE 
-            UPPR_CD = IFNULL(#{upprCd},(SELECT T.UPPR_CD FROM(SELECT A.UPPR_CD FROM TB_CD A WHERE A.CD = #{tcd})T ))
-            AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CD WHERE CD = #{tcd}) T)
+            UPPR_CD = IFNULL(#{upprCd},(SELECT T.UPPR_CD FROM(SELECT A.UPPR_CD FROM TB_CMM_CD A WHERE A.CD = #{tcd})T ))
+            AND ORD <![CDATA[> ]]> (SELECT T.ORD FROM(SELECT ORD FROM TB_CMM_CD WHERE CD = #{tcd}) T)
     </update>
 
     <!-- 코드 순서조정시 부모코드, ord 조정 -->
     <update id="updateCodeTreeInfo" parameterType="CodeVo">
         /* codeDao.updateCodeTreeInfo */
         UPDATE 
-            TB_CD 
+            TB_CMM_CD 
         SET
             UPPR_CD = #{upprCd}
             <if test="hitMode == 'over'">
                 ,ORD = (SELECT T.ORD FROM(SELECT IFNULL(MAX(A.ORD),0) +1 AS ORD
-                FROM TB_CD A
+                FROM TB_CMM_CD A
                 WHERE A.UPPR_CD = #{upprCd}) T)
             </if>
             <if test="hitMode != 'over'">
@@ -375,7 +375,7 @@
     <!-- 코드 등록 -->
     <insert id="insertCodeInfo" parameterType="CodeVo">
         /* codeDao.insertCodeInfo */
-        INSERT INTO TB_CD (
+        INSERT INTO TB_CMM_CD (
             CD,
             CD_NM,
             CD_DC,
@@ -394,7 +394,7 @@
             #{cdDc},
             #{cdgrpid},
             #{upprCd},
-            (SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_CD A WHERE A.CDGRPID = #{cdgrpid} AND A.UPPR_CD = #{upprCd}),
+            (SELECT IFNULL(MAX(A.ORD),0)+1 FROM TB_CMM_CD A WHERE A.CDGRPID = #{cdgrpid} AND A.UPPR_CD = #{upprCd}),
             #{optn1},
             #{optn2},
             #{optn3},
@@ -408,7 +408,7 @@
     <update id="updateCodeInfo" parameterType="CodeVo">
         /* codeDao.updateCodeInfo */
         UPDATE 
-            TB_CD
+            TB_CMM_CD
         SET 
             CD = #{cd},
             CD_NM = #{cdNm},

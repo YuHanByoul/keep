@@ -10,7 +10,7 @@
 	<!-- 사용자정보 저장 --> 
   	<insert id="insertMember" parameterType="MemberVo" useGeneratedKeys="true" keyProperty="userid">
    		/* MemberDao.insertMember */
-		INSERT INTO TB_USER (
+		INSERT INTO TB_CMM_USER (
 			ACNT
 		   ,PWD
 		   ,USER_SE_CD
@@ -50,7 +50,7 @@
 	<!-- 개인상세정보 저장 -->
 	<insert id="insertMemberDtl" parameterType="MemberDtlVo">
 	    /* MemberDao.insertMemberDtl */
-        INSERT INTO TB_USER_DTL (
+        INSERT INTO TB_CMM_USER_DTL (
 		         userid               
 				,brthdy
 				,moon_yn               
@@ -96,7 +96,7 @@
             SELECT CASE WHEN COUNT(ACNT) > 0  THEN 'Y'
                         ELSE 'N'
                     END AS YN
-              FROM TB_USER
+              FROM TB_CMM_USER
              WHERE 1=1
                AND DEL_YN = 'N'
                AND ACNT = #{acnt}
@@ -104,7 +104,7 @@
             SELECT CASE WHEN COUNT(ACNT) > 0  THEN 'Y'
                         ELSE 'N'
                     END AS YN
-              FROM TB_USER_DRMNCY
+              FROM TB_CMM_USER_DRMNCY
              WHERE 1=1 
                AND ACNT = #{acnt}
         ) T
@@ -128,7 +128,7 @@
 		     ,ACNT_LOCK_CD
 		     ,DEL_YN
 		     ,STTS_CD
-	    FROM TB_USER
+	    FROM TB_CMM_USER
 	   WHERE USERID = #{userid}
     </select>
  
@@ -149,8 +149,8 @@
 		      ,F.FILEGRPID AS PPHOTO_FILEGRPID
 		      ,PPHOTO_FILEID
 		      ,F.FILE_IDNTFC_KEY AS PPHOTO_FILE_IDNTFC_KEY
-		  FROM TB_USER_DTL A
-		  LEFT OUTER JOIN TB_FILE F
+		  FROM TB_CMM_USER_DTL A
+		  LEFT OUTER JOIN TB_CMM_FILE F
 		    ON F.FILEID = A.PPHOTO_FILEID
 	     WHERE USERID = #{userid}
     </select>
@@ -169,8 +169,8 @@
 	      ,A.REG_DT
 	      ,A.UPDT_DT
 	    FROM
-	      TB_USER A
-	     ,TB_USER_DTL B
+	      TB_CMM_USER A
+	     ,TB_CMM_USER_DTL B
 	     WHERE 1=1
 	       AND A.USER_SE_CD = 'P'
 	       AND A.USERID = B.USERID
@@ -198,7 +198,7 @@
     <!-- 사용자수정 -->
     <update id="updateMember" parameterType="MemberVo">
 	    /* MemberDao.updateMember */
-	    UPDATE TB_USER SET
+	    UPDATE TB_CMM_USER SET
 			    ACNT              = #{acnt}
 			   ,NM                = #{nm} 
 			   ,MOBNO             = #{mobno}
@@ -217,7 +217,7 @@
     <!-- 사용자상세수정 -->
     <update id="updateMemberDtl" parameterType="MemberDtlVo">
   		/* MemberDao.updateMemberDtl */
-        UPDATE TB_USER_DTL SET
+        UPDATE TB_CMM_USER_DTL SET
 				brthdy                  = #{brthdy}
 				,moon_yn                = #{moonYn} 
 				,sex                    = #{sex} 
@@ -237,7 +237,7 @@
     <!-- 회원의 임시비밀번호를 수정한다 -->
     <update id="updateMemberTempPwd" parameterType="TempPwdVo">
 	    /* MemberDao.updateMemberTempPwd */
-	    UPDATE TB_USER SET 
+	    UPDATE TB_CMM_USER SET 
 			    PWD = #{pwd}
 			   ,TEMP_PWD_YN = 'Y'
 			   ,PWD_UPDT_DT = NOW()
@@ -252,7 +252,7 @@
         WITH B 
 		AS 
 		(
-			SELECT COUNT(1) AS TOTALCOUNT FROM TB_USER WHERE USERID IN 
+			SELECT COUNT(1) AS TOTALCOUNT FROM TB_CMM_USER WHERE USERID IN 
 			<foreach item="item" collection="userids" open="(" close=")" separator=",">
 			    #{item}
 			</foreach>
@@ -263,7 +263,7 @@
 		      ,A.NM
 		      ,A.EMAIL
 		      ,A.MOBNO
-		 FROM TB_USER A CROSS JOIN B
+		 FROM TB_CMM_USER A CROSS JOIN B
 		 WHERE A.USERID IN
 		 <foreach item="item" collection="userids" open="(" close=")" separator=",">
 		     #{item}
@@ -276,7 +276,7 @@
         WITH B 
 		AS 
 		(
-			SELECT COUNT(1) AS TOTALCOUNT FROM TB_USER_DRMNCY WHERE USERID IN 
+			SELECT COUNT(1) AS TOTALCOUNT FROM TB_CMM_USER_DRMNCY WHERE USERID IN 
 			<foreach item="item" collection="userids" open="(" close=")" separator=",">
 			    #{item}
 			</foreach>
@@ -287,7 +287,7 @@
 		      ,A.NM
 		      ,A.EMAIL
 		      ,A.MOBNO
-		 FROM TB_USER_DRMNCY A CROSS JOIN B
+		 FROM TB_CMM_USER_DRMNCY A CROSS JOIN B
 		 WHERE A.USERID IN
 		 <foreach item="item" collection="userids" open="(" close=")" separator=",">
 		     #{item}
@@ -311,8 +311,8 @@
 		  ,B.REG_DT AS DRMNCY_DT
 		  ,DATE_ADD(B.REG_DT, INTERVAL 1 YEAR) AS EXPECTED_DEL_DT
 	    FROM
-	     TB_USER A
-	     ,TB_USER_DRMNCY B
+	     TB_CMM_USER A
+	     ,TB_CMM_USER_DRMNCY B
 	     WHERE 1=1
 	       	AND B.USER_SE_CD = 'P'
 	       	AND A.USERID = B.USERID
@@ -346,7 +346,7 @@
 			   ,DEVICE_CD
 			   ,IP
 			   ,LOGIN_DT
- 		   FROM TB_LOGIN_HIST
+ 		   FROM TB_CMM_LOGIN_HIST
 		  WHERE USERID = #{userid}
         <include refid="PaginationMapper.footer"/>
     </select> 
@@ -359,8 +359,8 @@
              ,A.REG_DT AS regDt
              ,A.TITLE
              ,A.CNTNTS
-        FROM TB_EMAIL_SNDNG_HIST A
-        LEFT OUTER JOIN TB_USER B ON A.SNDNG_USERID = B.USERID
+        FROM TB_CMM_EMAIL_SNDNG_HIST A
+        LEFT OUTER JOIN TB_CMM_USER B ON A.SNDNG_USERID = B.USERID
        WHERE A.EMAIL_SNDNG_HIST_ID = #{mailSndngHistId} 
          AND A.RCPTN_USERID = #{rcptnUserid}
     </select>
@@ -373,8 +373,8 @@
                ,B.NM AS sndngUserNm
                ,A.TITLE
                ,A.REG_DT AS regDt
-           FROM TB_EMAIL_SNDNG_HIST A
-           LEFT OUTER JOIN TB_USER B ON A.SNDNG_USERID = B.USERID
+           FROM TB_CMM_EMAIL_SNDNG_HIST A
+           LEFT OUTER JOIN TB_CMM_USER B ON A.SNDNG_USERID = B.USERID
           WHERE A.RCPTN_USERID = #{rcptnUserid}
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -396,8 +396,8 @@
 	      ,B.ADDR_DTL 
 	      ,B.INTRCN
 	    FROM
-	      TB_USER A
-	     ,TB_USER_DTL B
+	      TB_CMM_USER A
+	     ,TB_CMM_USER_DTL B
 	     WHERE 1=1
 	       AND A.USER_SE_CD = 'P'
 	       AND A.USERID = B.USERID

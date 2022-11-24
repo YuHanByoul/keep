@@ -22,7 +22,7 @@
 			ORD,
 			REG_DT,
 			REGUSERID
-		FROM TB_FILE
+		FROM TB_CMM_FILE
 		WHERE 1=1
 		<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(filegrpid)">
 			AND FILEGRPID = #{filegrpid}
@@ -33,7 +33,7 @@
 	<!-- 파일 등록 -->
 	<insert id="addFile" useGeneratedKeys="true" keyProperty="fileid" parameterType="FileVo">
 		/* FileDao.addFile */
-		INSERT INTO TB_FILE
+		INSERT INTO TB_CMM_FILE
 		(
 			FILEGRPID,
 			FILE_IDNTFC_KEY,
@@ -56,7 +56,7 @@
 			#{orginlFileNm},
 			#{fileExtsn},
 			#{fileSize},
-			(SELECT IFNULL(MAX(ORD),0) +1 FROM  TB_FILE AS F WHERE 1=1  AND filegrpid = #{filegrpid} ),
+			(SELECT IFNULL(MAX(ORD),0) +1 FROM  TB_CMM_FILE AS F WHERE 1=1  AND filegrpid = #{filegrpid} ),
 			NOW(),
 			#{reguserid},
 			NOW(),
@@ -68,7 +68,7 @@
 	<delete id="deleteFile" parameterType="FileVo">
 		/* FileDao.deleteFile */
 		DELETE
-		FROM TB_FILE
+		FROM TB_CMM_FILE
 		WHERE FILEID = #{fileid}
 		  AND FILE_IDNTFC_KEY = #{fileIdntfcKey}
 	</delete>
@@ -91,9 +91,9 @@
 			A.ORD,
 			A.REG_DT,
 			A.REGUSERID
-		FROM TB_FILE A
-		    ,TB_FILEGRP B
-            LEFT OUTER JOIN TB_BBS C ON B.BBSID = C.BBSID
+		FROM TB_CMM_FILE A
+		    ,TB_CMM_FILEGRP B
+            LEFT OUTER JOIN TB_CMM_BBS C ON B.BBSID = C.BBSID
 		WHERE 1=1
 			AND A.FILEGRPID = B.FILEGRPID
 			AND A.FILEID = #{fileid}
@@ -116,8 +116,8 @@
 			A.ORD,
 			A.REG_DT,
 			A.REGUSERID
-		FROM TB_FILE A
-		    ,TB_FILEGRP B
+		FROM TB_CMM_FILE A
+		    ,TB_CMM_FILEGRP B
 		WHERE 1=1
 			AND A.FILEGRPID = B.FILEGRPID
 			AND A.FILEGRPID = #{filegrpid}
@@ -139,11 +139,11 @@
 			A.ORD,
 			A.REG_DT,
 			A.REGUSERID
-		FROM TB_FILE A
-		    ,TB_FILEGRP B
+		FROM TB_CMM_FILE A
+		    ,TB_CMM_FILEGRP B
 		WHERE 1=1
 			AND A.FILEGRPID = B.FILEGRPID
-			AND A.FILEGRPID = (SELECT FILEGRPID FROM TB_FILE WHERE FILEID = #{fileid})
+			AND A.FILEGRPID = (SELECT FILEGRPID FROM TB_CMM_FILE WHERE FILEID = #{fileid})
 			AND A.FILEID != #{fileid}
 	</select>
 </mapper>

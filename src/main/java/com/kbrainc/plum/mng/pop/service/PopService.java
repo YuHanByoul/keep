@@ -25,7 +25,7 @@ public interface PopService {
 
 	/**
 	 * @Title : insertPopUpNtc
-	 * @Description :TB_PopUpNtc 테이블 인서트
+	 * @Description :TB_CMM_PopUpNtc 테이블 인서트
 	 * @param PopUpNtcVo 타입의 인자
 	 * @throws Exception
 	 * @return int
@@ -34,7 +34,7 @@ public interface PopService {
 	  
 	/**
 	 * @Title : updatePopUpNtc
-	 * @Description :TB_PopUpNtc 테이블 update
+	 * @Description :TB_CMM_PopUpNtc 테이블 update
 	 * @param PopUpNtcVo 타입의 인자
 	 * @throws Exception
 	 * @return int
@@ -61,7 +61,7 @@ public interface PopService {
 	
 	/**
 	 * @Title : deletePopUpNtc
-	 * @Description :TB_PopUpNtc 테이블 row delete
+	 * @Description :TB_CMM_PopUpNtc 테이블 row delete
 	 * @param PopUpNtcVo 타입의 인자
 	 * @throws Exception
 	 * @return int

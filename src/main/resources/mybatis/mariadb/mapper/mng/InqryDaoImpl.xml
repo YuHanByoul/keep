@@ -19,11 +19,11 @@
 		      ,A.REGUSERID
 			  ,D.NM AS OPETR_NM
 		      ,B.REG_DT AS ANSWR_D
-        FROM TB_INQRY A 
-            LEFT OUTER JOIN TB_INQRY_ANSWR B ON A.INQRYID = B.INQRYID
-            LEFT OUTER JOIN TB_USER D ON B.OPETRID = D.USERID
-		    INNER JOIN (SELECT CD, CD_NM FROM TB_CD WHERE CDGRPID = #{cdgrpid}) C ON A.INQRY_CL_CD = C.CD
-		    INNER JOIN TB_USER E ON E.USERID = A.USERID
+        FROM TB_CMM_INQRY A 
+            LEFT OUTER JOIN TB_CMM_INQRY_ANSWR B ON A.INQRYID = B.INQRYID
+            LEFT OUTER JOIN TB_CMM_USER D ON B.OPETRID = D.USERID
+		    INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) C ON A.INQRY_CL_CD = C.CD
+		    INNER JOIN TB_CMM_USER E ON E.USERID = A.USERID
 		 WHERE 1=1 
 		<if test="inqryClCd != null and inqryClCd != ''">
 			AND C.CD = #{inqryClCd}
@@ -69,10 +69,10 @@
 			  ,B.CD_NM AS INQRY_CL_NM
 			  ,C.USER_SE_CD
 			  ,A.REG_DT
-        FROM TB_INQRY A
-        	LEFT OUTER JOIN TB_FILE F ON A.FILEGRPID = F.FILEGRPID AND F.ORD=1
-            INNER JOIN (SELECT CD, CD_NM FROM TB_CD WHERE CDGRPID = #{cdgrpid}) B ON A.INQRY_CL_CD = B.CD
-		    INNER JOIN TB_USER C ON C.USERID = A.USERID
+        FROM TB_CMM_INQRY A
+        	LEFT OUTER JOIN TB_CMM_FILE F ON A.FILEGRPID = F.FILEGRPID AND F.ORD=1
+            INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) B ON A.INQRY_CL_CD = B.CD
+		    INNER JOIN TB_CMM_USER C ON C.USERID = A.USERID
         WHERE
             A.INQRYID = #{inqryid}
 	</select>
@@ -86,8 +86,8 @@
 			  ,A.CNTNTS
 			  ,B.NM AS OPETR_NM
 			  ,A.REG_DT
-        FROM TB_INQRY_ANSWR A
-		    ,TB_USER B		    
+        FROM TB_CMM_INQRY_ANSWR A
+		    ,TB_CMM_USER B		    
         WHERE A.INQRYID = #{inqryid}
           AND A.OPETRID = B.USERID
         LIMIT 1
@@ -96,7 +96,7 @@
 	<!-- 1:1문의답변 등록 -->
 	<insert id="insertInqryAnswr" parameterType="InqryAnswrVo">
 		/* InqryDao.insertInqryAnswr */
-		INSERT INTO TB_INQRY_ANSWR
+		INSERT INTO TB_CMM_INQRY_ANSWR
 		           (INQRYID
 		           ,TITLE
 		           ,CNTNTS
@@ -119,7 +119,7 @@
 	<!-- 1:1문의답변 수정 -->
 	<update id="updateInqryAnswr" parameterType="InqryAnswrVo">
 		/* InqryDao.updateInqryAnswr */
-		UPDATE TB_INQRY_ANSWR
+		UPDATE TB_CMM_INQRY_ANSWR
 		   SET INQRYID = #{inqryid}
 		      ,TITLE = #{title}
 		      ,CNTNTS = #{cntnts}
@@ -131,7 +131,7 @@
 	<!-- 1:1문의답변 삭제 -->
 	<delete id="deleteInqryAnswr" parameterType="InqryAnswrVo">
 		/* InqryDao.deleteInqryAnswr */
-		DELETE FROM TB_INQRY_ANSWR WHERE ANSWRID = #{answrid}
+		DELETE FROM TB_CMM_INQRY_ANSWR WHERE ANSWRID = #{answrid}
 	</delete>
 	
 	<select id="selectAttachFileList"  parameterType="FileVo" resultType="FileVo">
@@ -148,7 +148,7 @@
 			A.ORD,
 			A.REG_DT,
 			A.REGUSERID
-		FROM TB_FILE A
+		FROM TB_CMM_FILE A
 	   WHERE 1=1
 	  	 AND A.FILEGRPID = #{filegrpid}
 	</select>

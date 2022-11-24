@@ -15,8 +15,8 @@
 			A.MENUID 'KEY',
 			A.UPPR_MENUID PKEY,
 			A.NM TITLE,
-			IFNULL((SELECT TYPE_CD FROM TB_PRGRM WHERE PRGRMID = A.PRGRMID),(CASE WHEN A.TYPE_CD = 'D' THEN '01' END)) ext2		
-		FROM TB_MENU A INNER JOIN TB_SITE B
+			IFNULL((SELECT TYPE_CD FROM TB_CMM_PRGRM WHERE PRGRMID = A.PRGRMID),(CASE WHEN A.TYPE_CD = 'D' THEN '01' END)) ext2		
+		FROM TB_CMM_MENU A INNER JOIN TB_CMM_SITE B
 		ON A.SITEID = B.SITEID
 		]]>
 		WHERE 1=1
@@ -34,17 +34,17 @@
 			MENU.MENUID 'KEY',
 			MENU.UPPR_MENUID PKEY,
 			MENU.NM TITLE,
-			IFNULL((SELECT TYPE_CD FROM TB_PRGRM WHERE PRGRMID = MENU.PRGRMID),
+			IFNULL((SELECT TYPE_CD FROM TB_CMM_PRGRM WHERE PRGRMID = MENU.PRGRMID),
 			(CASE WHEN MENU.TYPE_CD = 'D' THEN '01' END) ) EXT2	
-		 FROM TB_MENU MENU INNER JOIN (
+		 FROM TB_CMM_MENU MENU INNER JOIN (
 		SELECT 
 			B.MENUID
 			FROM (
 				SELECT NM , TREE_MENUID 
-				FROM TB_MENU A 
-					LEFT OUTER JOIN TB_PRGRM B 
+				FROM TB_CMM_MENU A 
+					LEFT OUTER JOIN TB_CMM_PRGRM B 
 					ON A.PRGRMID = B.PRGRMID
-				INNER JOIN TB_SITE C
+				INNER JOIN TB_CMM_SITE C
 					ON A.SITEID = C.SITEID 
 				WHERE 1=1
 				<if test="siteid != null and siteid != ''">
@@ -55,7 +55,7 @@
 				</if>
 				ORDER BY A.ORD
 			) A LEFT OUTER JOIN 
-			TB_MENU B 
+			TB_CMM_MENU B 
 			ON A.TREE_MENUID LIKE CONCAT(B.TREE_MENUID,'%')
 			<if test="siteid != null and siteid != ''">
 				AND B.SITEID = #{siteid}
@@ -96,7 +96,7 @@
 			  A.NM_EXPSR_TRGT_CD,
 			  B.TYPE_CD AS PTYPE_CD,
 			  B.URL AS PURL
-		FROM TB_MENU A LEFT OUTER JOIN TB_PRGRM B
+		FROM TB_CMM_MENU A LEFT OUTER JOIN TB_CMM_PRGRM B
 		ON A.PRGRMID = B.PRGRMID
 		WHERE A.MENUID = #{menuid}
 	</select>
@@ -104,7 +104,7 @@
 	<!-- 메뉴 정보 수정 -->
 	<update id="updateMenuInfo" parameterType="MenuVo">
 		/* MenuDao.updateMenuInfo */
-		UPDATE TB_MENU SET
+		UPDATE TB_CMM_MENU SET
 			NM = #{nm}, 
 			DC = #{dc},
 			<if test="typeCd != null and typeCd != ''">
@@ -131,7 +131,7 @@
 	<!-- 메뉴 직접등록 -->
 	<insert id="insertMenuDirectInsertInfo" useGeneratedKeys="true" keyProperty="menuid" parameterType="MenuVo">
 		/* MenuDao.insertMenuDirectInsertInfo */
-		INSERT INTO TB_MENU (
+		INSERT INTO TB_CMM_MENU (
 				NM,
 				DC,
 				TYPE_CD,
@@ -179,7 +179,7 @@
 				#{hideYn}, 
 				#{httpsUseYn},
                 #{nm_expsrTrgtCd},
-				(SELECT ORD FROM(SELECT IFNULL(MAX(A.ORD),0)+1 AS ORD FROM TB_MENU A WHERE A.UPPR_MENUID = #{upprMenuid}
+				(SELECT ORD FROM(SELECT IFNULL(MAX(A.ORD),0)+1 AS ORD FROM TB_CMM_MENU A WHERE A.UPPR_MENUID = #{upprMenuid}
 				<if test="siteid != null and siteid != ''">
 				AND SITEID = #{siteid}
                 </if>
@@ -192,7 +192,7 @@
 	<!-- 메뉴 트리 저장 -->
 	<insert id="insertMenuTreeList" useGeneratedKeys="true" keyProperty="menuid" parameterType="MenuVo">
 		/* MenuDao.insertMenuTreeList */
-		INSERT INTO TB_MENU (
+		INSERT INTO TB_CMM_MENU (
 				NM,
 				DC,
 				TYPE_CD,
@@ -233,7 +233,7 @@
 				#{user.userid},
 				NOW()
 			FROM 
-				TB_PRGRM 
+				TB_CMM_PRGRM 
 			WHERE
 				PRGRMID = #{prgrmid}
         
@@ -244,17 +244,17 @@
 		/* MenuDao.updateMenuTreeOrder */
 		
             UPDATE 
-                TB_MENU P
+                TB_CMM_MENU P
                     INNER JOIN 
                     (
                         WITH RECURSIVE MENU_CTE (UPPR_MENUID, MENUID, DEPTH) AS
                         ( 
-                            SELECT UPPR_MENUID, MENUID, 1 DEPTH FROM  TB_MENU A WHERE UPPR_MENUID = 0 
+                            SELECT UPPR_MENUID, MENUID, 1 DEPTH FROM  TB_CMM_MENU A WHERE UPPR_MENUID = 0 
                             <if test="siteid != null and siteid != ''">
                                 AND A.SITEID = #{siteid}
                             </if>
                             UNION ALL
-                            SELECT B.UPPR_MENUID, B.MENUID, A.DEPTH + 1 AS DEPTH FROM  MENU_CTE A JOIN  TB_MENU B ON A.MENUID = B.UPPR_MENUID
+                            SELECT B.UPPR_MENUID, B.MENUID, A.DEPTH + 1 AS DEPTH FROM  MENU_CTE A JOIN  TB_CMM_MENU B ON A.MENUID = B.UPPR_MENUID
                         )
                         SELECT * from MENU_CTE  
                     ) T 
@@ -269,17 +269,17 @@
 		
 		
             UPDATE 
-                    TB_MENU P
+                    TB_CMM_MENU P
                 INNER JOIN 
                     (
                         WITH RECURSIVE MENU_CTE (UPPR_MENUID, MENUID, DEPTH) AS
                         ( 
-                            SELECT UPPR_MENUID, MENUID, 1 DEPTH FROM  TB_MENU A WHERE UPPR_MENUID = 0 
+                            SELECT UPPR_MENUID, MENUID, 1 DEPTH FROM  TB_CMM_MENU A WHERE UPPR_MENUID = 0 
                             <if test="siteid != null and siteid != ''">
                                 AND A.SITEID = #{siteid}
                             </if>
                             UNION ALL
-                            SELECT B.UPPR_MENUID, B.MENUID, A.DEPTH + 1 AS DEPTH FROM  MENU_CTE A JOIN  TB_MENU B ON A.MENUID = B.UPPR_MENUID
+                            SELECT B.UPPR_MENUID, B.MENUID, A.DEPTH + 1 AS DEPTH FROM  MENU_CTE A JOIN  TB_CMM_MENU B ON A.MENUID = B.UPPR_MENUID
                         )
                         SELECT * from MENU_CTE  
                     ) T 
@@ -291,16 +291,16 @@
 	<delete id="deleteMenuInfo" parameterType="MenuVo">
 		/* MenuDao.deleteMenuInfo */
 		<if test="menuid != '0'.toString()">
-            DELETE FROM TB_MENU WHERE MENUID IN (
+            DELETE FROM TB_CMM_MENU WHERE MENUID IN (
                 WITH RECURSIVE MENU_CTE AS (
                     SELECT
                         MENUID
-                    FROM TB_MENU
+                    FROM TB_CMM_MENU
                     WHERE MENUID = #{menuid}
                     UNION ALL
                     SELECT              
                         M.MENUID
-                    FROM TB_MENU M, MENU_CTE C
+                    FROM TB_CMM_MENU M, MENU_CTE C
                     WHERE M.UPPR_MENUID = C.MENUID
                 ) SELECT * from MENU_CTE
             )
@@ -310,36 +310,36 @@
 	<!-- 메뉴 menu_ord 조정 -->
 	<update id="updateMenuReOrder">
 		/* MenuDao.updateMenuReOrder */
-		UPDATE TB_MENU SET
+		UPDATE TB_CMM_MENU SET
 			<if test="upperYn == 'Y'.toString()">
 				ORD = ORD + 1	
-				WHERE UPPR_MENUID = IFNULL(#{upprMenuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T))
+				WHERE UPPR_MENUID = IFNULL(#{upprMenuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_CMM_MENU A WHERE A.MENUID = #{menuid}) T))
 				<if test="siteid != null and siteid != ''">
 					AND SITEID = #{siteid}
 	            </if>
 	            <if test="hitMode == 'before'">
-					AND ORD <![CDATA[>= ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)
-					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T) 
+					AND ORD <![CDATA[>= ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{menuid}) T)
+					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{tmenuid}) T) 
 				</if>
 				<if test="hitMode == 'after'">			
-					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)
-					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T)
+					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{menuid}) T)
+					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{tmenuid}) T)
 				</if>	
 			</if>
 			<if test="upperYn == 'N'.toString()">
 				ORD = ORD - 1
-				WHERE UPPR_MENUID = IFNULL(#{upprMenuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)) 
+				WHERE UPPR_MENUID = IFNULL(#{upprMenuid},(SELECT UPPR_MENUID FROM(SELECT A.UPPR_MENUID FROM TB_CMM_MENU A WHERE A.MENUID = #{menuid}) T)) 
 				<if test="siteid != null and siteid != ''">
 					AND SITEID = #{siteid}
 	            </if>
 	            <if test="hitMode == 'before'">
-					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T)					
-					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)					
+					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{tmenuid}) T)					
+					AND ORD <![CDATA[< ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{menuid}) T)					
 				</if>
 				<if test="hitMode == 'after'">			
-					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{tmenuid}) T)
+					AND ORD <![CDATA[> ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{tmenuid}) T)
 					<if test="menuid != null and menuid != ''">
-					AND ORD <![CDATA[<= ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_MENU A WHERE A.MENUID = #{menuid}) T)
+					AND ORD <![CDATA[<= ]]> (SELECT ORD FROM(SELECT A.ORD FROM TB_CMM_MENU A WHERE A.MENUID = #{menuid}) T)
 					</if>
 				</if>
 			</if>	
@@ -348,7 +348,7 @@
 	<!-- 메뉴 저장시 menu_ord 조정 -->
 	<update id="updateMenuTreeReOrder">
 		/* MenuDao.updateMenuTreeReOrder */
-		UPDATE TB_MENU SET
+		UPDATE TB_CMM_MENU SET
 			ORD = ORD+1	
 			WHERE UPPR_MENUID = #{upprMenuid} 
 				<if test="siteid != null and siteid != ''">
@@ -360,10 +360,10 @@
 	<!-- 메뉴 순서조정시 부모코드, menu_ord 조정 -->
 	<update id="updateMenuTreeInfo">
 		/* MenuDao.updateMenuTreeInfo */
-		UPDATE TB_MENU SET
+		UPDATE TB_CMM_MENU SET
 			UPPR_MENUID = #{upprMenuid}
 			<if test="hitMode == 'over'">
-			,ORD =  (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_MENU WHERE UPPR_MENUID = #{upprMenuid} 
+			,ORD =  (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_CMM_MENU WHERE UPPR_MENUID = #{upprMenuid} 
 				<if test="siteid != null and siteid != ''">
 				AND SITEID = #{siteid}
                 </if>)
@@ -380,7 +380,7 @@
 	<!-- 메뉴 순서조정시 부모코드, menu_ord 조정 -->
 	<update id="updateMenuTreeInfoNew">
 		/* MenuDao.updateMenuTreeInfoNew */
-		UPDATE TB_MENU SET
+		UPDATE TB_CMM_MENU SET
 			UPPR_MENUID = #{upprMenuid}			
 			,ORD = #{ord}		
 			WHERE MENUID = #{menuid}
@@ -392,13 +392,13 @@
 	<!-- 빠지는곳 메뉴 ord 조정 -->
 	<update id="updateMenuPreOrder">
 		/* MenuDao.updateMenuPreOrder */
-		UPDATE TB_MENU SET
+		UPDATE TB_CMM_MENU SET
 				ORD = ORD - 1
-				WHERE UPPR_MENUID = (SELECT * FROM (SELECT UPPR_MENUID FROM TB_MENU M WHERE MENUID = #{menuid}) A) 
+				WHERE UPPR_MENUID = (SELECT * FROM (SELECT UPPR_MENUID FROM TB_CMM_MENU M WHERE MENUID = #{menuid}) A) 
 				<if test="siteid != null and siteid != ''">
 	            	AND SITEID = #{siteid}
 	            </if>
-				AND ORD <![CDATA[> ]]> (SELECT * FROM(SELECT ORD FROM TB_MENU M WHERE MENUID = #{menuid}) A )
+				AND ORD <![CDATA[> ]]> (SELECT * FROM(SELECT ORD FROM TB_CMM_MENU M WHERE MENUID = #{menuid}) A )
 						
 	</update>
 		
@@ -407,7 +407,7 @@
 		/* MenuDao.selectMenuChildTreeList */
 		<if test="menuid == '0'.toString()">
 		SELECT A.MENUID , A.NM , A.TYPE_CD
-			FROM TB_MENU A 
+			FROM TB_CMM_MENU A 
 		
 			WHERE 1=1 
 			<if test="siteid != null and siteid != ''">
@@ -421,7 +421,7 @@
 				MENUID,
 				NM,
 				TYPE_CD
-		     FROM TB_MENU
+		     FROM TB_CMM_MENU
 			WHERE MENUID = #{menuid}
 			
 			UNION ALL
@@ -430,8 +430,8 @@
 				M.MENUID,
 				M.NM,
 				M.TYPE_CD
-		     FROM MENU_CTE C, TB_MENU M
-		     LEFT OUTER JOIN TB_PRGRM P ON M.PRGRMID = P.PRGRMID
+		     FROM MENU_CTE C, TB_CMM_MENU M
+		     LEFT OUTER JOIN TB_CMM_PRGRM P ON M.PRGRMID = P.PRGRMID
 			WHERE M.UPPR_MENUID = C.MENUID
 			<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(typeCd)" >
 				AND M.TYPE_CD = #{typeCd}
@@ -449,7 +449,7 @@
 	<!-- 권한에 매핑된 메뉴를 삭제 -->
 	<delete id="deleteRoleMenuAuth" parameterType="java.util.Map" >
 		/* MenuDao.deleteRoleMenuAuth */
-		DELETE FROM TB_ROLE_MENU 
+		DELETE FROM TB_CMM_ROLE_MENU 
 		WHERE MENUID = #{menuid}
 	</delete>
 </mapper>

@@ -63,7 +63,7 @@ public class SchedulingHistoryAspect {
         	KeyHolder keyHolder = new GeneratedKeyHolder();
         	paramSource.addValue("triggerid", triggerid);
         	paramSource.addValue("now", new Date());
-            this.namedParameterJdbcTemplate.update("INSERT INTO TB_SCHED_HIST(TRIGGERID, JOB_STRT_DT) VALUES(:triggerid, :now)", paramSource, keyHolder);
+            this.namedParameterJdbcTemplate.update("INSERT INTO TB_CMM_SCHED_HIST(TRIGGERID, JOB_STRT_DT) VALUES(:triggerid, :now)", paramSource, keyHolder);
             
             if (transactional != null) {
             	this.namedParameterJdbcTemplate.update("COMMIT", paramSource);
@@ -77,7 +77,7 @@ public class SchedulingHistoryAspect {
             Object result = null;
             paramSource.addValue("now", new Date());
             result = thisJoinPoint.proceed();            
-            this.namedParameterJdbcTemplate.update("UPDATE TB_SCHED_HIST SET JOB_END_DT = :now, STTS_CD = 'S' WHERE SCHED_HIST_ID = :sched_hist_id", paramSource);
+            this.namedParameterJdbcTemplate.update("UPDATE TB_CMM_SCHED_HIST SET JOB_END_DT = :now, STTS_CD = 'S' WHERE SCHED_HIST_ID = :sched_hist_id", paramSource);
 
             return result;
         } catch (CustomRuntimeException throwable) {
@@ -85,7 +85,7 @@ public class SchedulingHistoryAspect {
         		this.namedParameterJdbcTemplate.update("ROLLBACK", paramSource);
             }
         	paramSource.addValue("now", new Date());
-        	this.namedParameterJdbcTemplate.update("UPDATE TB_SCHED_HIST SET JOB_END_DT = :now, STTS_CD = 'F' WHERE SCHED_HIST_ID = :sched_hist_id", paramSource);
+        	this.namedParameterJdbcTemplate.update("UPDATE TB_CMM_SCHED_HIST SET JOB_END_DT = :now, STTS_CD = 'F' WHERE SCHED_HIST_ID = :sched_hist_id", paramSource);
         	if (transactional != null) {
         		this.namedParameterJdbcTemplate.update("COMMIT", paramSource);
         	}

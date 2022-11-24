@@ -17,9 +17,9 @@
             SYS_SE_CD,
             USE_YN,
             UPDT_DT,
-            (SELECT GROUP_CONCAT(DMN) FROM TB_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
+            (SELECT GROUP_CONCAT(DMN) FROM TB_CMM_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
         FROM 
-            TB_SITE S
+            TB_CMM_SITE S
         WHERE 
             1=1
             <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty( searchType )'>
@@ -36,7 +36,7 @@
     <!-- 사이트 등록 -->
     <insert id="insertSite" parameterType="SiteVo" useGeneratedKeys="true" keyProperty="siteid">
         /* SiteDao.insertSite */
-        INSERT INTO TB_SITE (
+        INSERT INTO TB_CMM_SITE (
             SITE_NM,
             SYS_SE_CD,
             USE_YN,
@@ -67,8 +67,8 @@
             UPDTUSERID,
             REG_DT,
             REGUSERID,
-            (SELECT GROUP_CONCAT(DMN) FROM TB_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
-        FROM TB_SITE S
+            (SELECT GROUP_CONCAT(DMN) FROM TB_CMM_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
+        FROM TB_CMM_SITE S
         WHERE
             SITEID = #{siteid}
     </select>
@@ -77,7 +77,7 @@
     <update id="updateSite" parameterType="SiteVo">
         /* SiteDao.updateSite */
         UPDATE 
-            TB_SITE
+            TB_CMM_SITE
         SET
             SITE_NM = #{siteNm},
             SYS_SE_CD = #{sysSeCd},
@@ -91,13 +91,13 @@
     <!-- 사이트를 삭제한다. -->
     <update id="deleteSite" parameterType="Integer">
         /* SiteDao.deleteSite */
-        DELETE FROM TB_SITE WHERE SITEID = #{siteid}
+        DELETE FROM TB_CMM_SITE WHERE SITEID = #{siteid}
     </update>
     
     <!-- 사이트 등록 -->
     <insert id="insertSiteDomain" parameterType="SiteDomainVo" useGeneratedKeys="true">
         /* SiteDao.insertSiteDomain */
-        INSERT INTO TB_SITE_DMN (
+        INSERT INTO TB_CMM_SITE_DMN (
             DMN,
             SITEID,
             DMN_DC,
@@ -120,7 +120,7 @@
     <update id="updateSiteDomain" parameterType="SiteDomainVo">
         /* SiteDao.updateSiteDomain */
         UPDATE 
-            TB_SITE_DMN
+            TB_CMM_SITE_DMN
         SET
             DMN = #{dmn},
             DMN_DC = #{dmnDc},
@@ -135,7 +135,7 @@
     <!-- 사이트 도메인을 삭제한다. -->
     <update id="deleteSiteDomain" parameterType="SiteDomainVo">
         /* SiteDao.deleteSiteDomain */
-        DELETE FROM TB_SITE_DMN WHERE SITEID = #{siteid} AND DMN = #{dmn}
+        DELETE FROM TB_CMM_SITE_DMN WHERE SITEID = #{siteid} AND DMN = #{dmn}
     </update>
     
     <!-- 사이트에 대한 도메인 목록을 구한다. -->
@@ -149,7 +149,7 @@
             REG_DT,
             REGUSERID
         FROM
-            TB_SITE_DMN
+            TB_CMM_SITE_DMN
         WHERE
             SITEID = #{siteid}
     </select>    

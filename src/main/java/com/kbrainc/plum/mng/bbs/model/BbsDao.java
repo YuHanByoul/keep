@@ -26,7 +26,7 @@ public interface BbsDao {
 
     /**
      * @Title : insertUserTemp
-     * @Description :TB_USER 테이블 인서트
+     * @Description :TB_CMM_USER 테이블 인서트
      * @param paramVO UserTempVo 타입의 인자
      * @throws Exception :
      * @return int
@@ -55,7 +55,7 @@ public interface BbsDao {
 
     /**
      * @Title : updateUserTemp
-     * @Description :TB_USER 테이블 update
+     * @Description :TB_CMM_USER 테이블 update
      * @param paramVO UserTempDt 타입의 인자
      * @throws Exception :
      * @return int
@@ -95,7 +95,7 @@ public interface BbsDao {
 
     /**
      * @Title : insertUserTemp
-     * @Description :TB_BBS_CL 테이블 인서트
+     * @Description :TB_CMM_BBS_CL 테이블 인서트
      * @param paramVO BbsCl 타입의 인자
      * @throws Exception :
      * @return int
@@ -104,7 +104,7 @@ public interface BbsDao {
 
     /**
      * @Title : updateBbsCl
-     * @Description :TB_BBS_CL 테이블 update
+     * @Description :TB_CMM_BBS_CL 테이블 update
      * @param paramVO BbsCl 타입의 인자
      * @throws Exception :
      * @return int
@@ -113,7 +113,7 @@ public interface BbsDao {
 
     /**
      * @Title : insertPst
-     * @Description :TB_PST insert
+     * @Description :TB_CMM_PST insert
      * @param paramVO PstVO 타입의 인자
      * @throws Exception :
      * @return int

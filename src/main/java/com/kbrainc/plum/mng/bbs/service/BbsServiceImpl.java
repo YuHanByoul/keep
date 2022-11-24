@@ -44,7 +44,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
 
     /**
      * @Title : insertBbs
-     * @Description :TB_USER 테이블 인서트
+     * @Description :TB_CMM_USER 테이블 인서트
      * @param paramVO BbsVO 타입의 인자
      * @throws Exception :
      * @return String
@@ -128,7 +128,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
 
     /**
      * @Title : insertUserTemp
-     * @Description :TB_BBS_CL 테이블 인서트
+     * @Description :TB_CMM_BBS_CL 테이블 인서트
      * @param paramVO BbsCl 타입의 인자
      * @throws Exception :
      * @return int
@@ -139,7 +139,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
 
     /**
      * @Title : updateBbsCl
-     * @Description :TB_BBS_CL 테이블 update
+     * @Description :TB_CMM_BBS_CL 테이블 update
      * @param paramVO BbsCl 타입의 인자
      * @throws Exception :
      * @return int
@@ -150,7 +150,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
 
     /**
      * @Title : insertPst
-     * @Description :TB_PST insert
+     * @Description :TB_CMM_PST insert
      * @param paramVO PstVO 타입의 인자
      * @throws Exception :
      * @return int

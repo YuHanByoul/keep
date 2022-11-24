@@ -33,9 +33,9 @@
                 A.UPDT_DT ord_DT,
                 A.LOGIN_YN 
             FROM 
-                TB_PST A 
-                LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-                INNER JOIN TB_USER B ON(A.REGUSERID = B.USERID)
+                TB_CMM_PST A 
+                LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
+                INNER JOIN TB_CMM_USER B ON(A.REGUSERID = B.USERID)
             WHERE 1=1
                  AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
                        WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
@@ -92,12 +92,12 @@
             B.FXD_NTC_CNT         as fxd_ntc_cnt,
             D.CL_NM               as cl_nm,
             D.BBS_CLID               as bbs_clid,
-            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
+            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMM_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
         FROM
-            TB_PST A
-            LEFT OUTER JOIN TB_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
-            TB_BBS B,
-            TB_USER C
+            TB_CMM_PST A
+            LEFT OUTER JOIN TB_CMM_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
+            TB_CMM_BBS B,
+            TB_CMM_USER C
         WHERE 
             1=1
             AND A.BBSID = B.BBSID
@@ -133,9 +133,9 @@
             UPDTUSERID,
             REG_DT,
             REGUSERID,
-            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_PST  WHERE BBSID = #{bbsid}) cur_fxd_ntc_cnt
+            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMM_PST  WHERE BBSID = #{bbsid}) cur_fxd_ntc_cnt
         FROM
-            TB_BBS
+            TB_CMM_BBS
         WHERE 
             1=1
             AND BBSID = #{bbsid}  
@@ -211,10 +211,10 @@
                 A.REG_DT ord_reg_dt,
                 A.LOGIN_YN 
             FROM 
-                TB_PST A 
-                LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-                LEFT OUTER JOIN TB_BBS_CL C ON  A.BBS_CLID = C.BBS_CLID
-                INNER JOIN TB_USER D ON(A.REGUSERID = D.USERID)
+                TB_CMM_PST A 
+                LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
+                LEFT OUTER JOIN TB_CMM_BBS_CL C ON  A.BBS_CLID = C.BBS_CLID
+                INNER JOIN TB_CMM_USER D ON(A.REGUSERID = D.USERID)
             WHERE 1=1
                  AND A.PRNTS_PSTID IS NULL
                   <if test='fxdNtcUseYn == "Y"'>
@@ -269,8 +269,8 @@
             b.NM,
             b.ACNT
         FROM
-            TB_CMNT a,
-            TB_USER b 
+            TB_CMM_CMNT a,
+            TB_CMM_USER b 
         WHERE 
             1=1
             AND a.REGUSERID = b.USERID
@@ -294,7 +294,7 @@
            ORD,
            UPDT_DT updt_dt
         FROM 
-           TB_BBS_CL  
+           TB_CMM_BBS_CL  
         WHERE 1=1 
           AND BBSID = #{bbsid}
     </select>
@@ -302,7 +302,7 @@
     <!-- 게시물  조회수 증가  -->
     <update id="updatePstHitsCount" parameterType="front.PstVo" >
         /* BbsDao.updatePstHitsCount */
-        UPDATE TB_PST SET
+        UPDATE TB_CMM_PST SET
              HITS        = IFNULL(HITS,0)+1 
             ,UPDT_DT     = NOW()
             <if test="user != null and user.userid != null ">
@@ -315,7 +315,7 @@
         <!-- 게시물 댓글를 추가한다. -->
     <insert  id="insertCmnt" useGeneratedKeys="true" keyProperty="cmntid" parameterType="front.CmntVo">
         /* BbsDao.insertCmnt */
-        INSERT INTO TB_CMNT (
+        INSERT INTO TB_CMM_CMNT (
             PSTID,
             CNTNTS,
             PRNTS_CMNTID,
@@ -331,7 +331,7 @@
             #{pstid       },
             #{cntnts      },
             #{prntsCmntid},
-            IFNULL(#{cmntGrp }, (SELECT  IFNULL(MAX(CMNT_GRP),0) +1 FROM TB_CMNT CMNT)),
+            IFNULL(#{cmntGrp }, (SELECT  IFNULL(MAX(CMNT_GRP),0) +1 FROM TB_CMM_CMNT CMNT)),
             IFNULL(#{dpth}, 0),
             IFNULL(#{ord  }, 1),
             'N',
@@ -345,7 +345,7 @@
     <!-- 게시물 댓글을 수정한다. -->
     <update  id="updateCmnt" parameterType="front.CmntVo" >
         /* BbsDao.updateCmnt */
-        UPDATE TB_CMNT SET
+        UPDATE TB_CMM_CMNT SET
             CNTNTS        =#{cntnts}, 
             UPDT_DT       = NOW(),
             UPDTUSERID    =#{user.userid}
@@ -360,14 +360,14 @@
         SELECT 
             CASE 
                 WHEN
-                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmntGrp} AND DPTH = #{dpth}+1 ) = 0
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_CMNT  WHERE CMNT_GRP= #{cmntGrp} AND DPTH = #{dpth}+1 ) = 0
                     THEN 
                         #{ord}+1
                 ELSE
-                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMNT  WHERE CMNT_GRP= #{cmntGrp}  AND DPTH = #{dpth}+1 )+1
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_CMNT  WHERE CMNT_GRP= #{cmntGrp}  AND DPTH = #{dpth}+1 )+1
             END
         </selectKey>
-        update tb_cmnt set
+        update tb_cmm_cmnt set
             ord = ord +1
         where  
             CMNT_GRP = #{cmntGrp}
@@ -377,7 +377,7 @@
     <!-- 게시물 댓글 순서를 수정한다. -->
     <update  id="updateCmntOrd" parameterType="front.CmntVo" >
         /* BbsDao.updateCmntOrd */
-        UPDATE TB_CMNT SET
+        UPDATE TB_CMM_CMNT SET
             ORD           = #{ord}, 
             UPDT_DT       = NOW(),
             UPDTUSERID    = #{user.userid}
@@ -388,7 +388,7 @@
     <!-- 게시물 댓글 삭제 여부 수정한다. -->
     <update id="updateCmntReplyDelYn" parameterType="front.CmntVo" >
         /* BbsDao.updateCmntReplyDelYn */
-        UPDATE TB_CMNT SET
+        UPDATE TB_CMM_CMNT SET
             DEL_YN      = #{delYn},
             UPDT_DT     = NOW(),
             UPDTUSERID  = #{user.userid }
@@ -426,12 +426,12 @@
             B.FXD_NTC_CNT         as fxd_ntc_cnt,
             D.CL_NM               as cl_nm,
             D.BBS_CLID               as bbs_clid,
-            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
+            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMM_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
         FROM
-            TB_PST A
-            LEFT OUTER JOIN TB_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
-            TB_BBS B,
-            TB_USER C
+            TB_CMM_PST A
+            LEFT OUTER JOIN TB_CMM_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
+            TB_CMM_BBS B,
+            TB_CMM_USER C
         WHERE 
             1=1
             AND A.BBSID = B.BBSID
@@ -443,7 +443,7 @@
     <!-- 게시물을 추가한다. -->
     <insert id="insertPst" parameterType="front.PstVo">
         /* BbsDao.insertPst */
-        INSERT INTO TB_PST (
+        INSERT INTO TB_CMM_PST (
             BBSID,
             TITLE,
             CNTNTS,
@@ -496,7 +496,7 @@
    <!-- 게시물을 수정한다. -->
    <update id="updatePst" parameterType="front.PstVo">
         /* BbsDao.updatePst */
-        UPDATE TB_PST SET     
+        UPDATE TB_CMM_PST SET     
             TITLE          = #{title         },
             CNTNTS         = #{cntnts        },
             BBS_CLID       = #{bbsClid      },

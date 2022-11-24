@@ -17,7 +17,7 @@
               ,A.DC
               ,A.CRON_EXPRESSION
               ,A.USE_YN
-          FROM TB_SCHED_TRIGGER A 
+          FROM TB_CMM_SCHED_TRIGGER A 
         LEFT OUTER JOIN QRTZ_TRIGGERS B ON A.NM = B.TRIGGER_NAME
          WHERE 1=1
          <if test="useYn != null and useYn != ''">
@@ -42,7 +42,7 @@
         SELECT JOB_STRT_DT
               ,JOB_END_DT
               ,STTS_CD
-          FROM TB_SCHED_HIST
+          FROM TB_CMM_SCHED_HIST
          WHERE TRIGGERID = #{triggerid}
          <include refid="PaginationMapper.footer"/>
     </select>
@@ -50,13 +50,13 @@
     <!-- 트리거이름으로 트리거정보를 조회한다. -->
     <select id="selectTriggerByNm" parameterType="SchedulingVo" resultType="SchedulingVo">
         /* SchedulingDao.selectTriggerByNm */
-        SELECT TRIGGERID FROM TB_SCHED_TRIGGER WHERE NM = #{nm}
+        SELECT TRIGGERID FROM TB_CMM_SCHED_TRIGGER WHERE NM = #{nm}
     </select>
     
     <!-- 스케줄트리거 저장 --> 
     <insert id="insertSchedTrigger" parameterType="SchedulingVo">
         /* SchedulingDao.insertSchedTrigger */
-        INSERT INTO TB_SCHED_TRIGGER (NM, DC, CRON_EXPRESSION, USE_YN, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
+        INSERT INTO TB_CMM_SCHED_TRIGGER (NM, DC, CRON_EXPRESSION, USE_YN, UPDT_DT, UPDTUSERID, REG_DT, REGUSERID)
         VALUES (#{nm}, #{dc}, #{cronExpression}, #{useYn}, NOW(), #{user.userid}, NOW(), #{user.userid})
     </insert>
     
@@ -70,7 +70,7 @@
             A.DC,
             A.CRON_EXPRESSION,
             A.USE_YN 
-        FROM TB_SCHED_TRIGGER A
+        FROM TB_CMM_SCHED_TRIGGER A
             LEFT OUTER JOIN QRTZ_TRIGGERS B ON A.NM = B.TRIGGER_NAME
         WHERE 
             TRIGGERID = #{triggerid}
@@ -79,7 +79,7 @@
     <!-- 스케줄트리거 수정 --> 
     <update id="updateSchedTrigger" parameterType="SchedulingVo">
         /* SchedulingDao.updateSchedTrigger */
-        UPDATE TB_SCHED_TRIGGER 
+        UPDATE TB_CMM_SCHED_TRIGGER 
            SET 
         <if test="nm != null and nm != ''">       
                NM = #{nm},
