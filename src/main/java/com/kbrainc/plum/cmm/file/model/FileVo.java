@@ -23,7 +23,7 @@ public class FileVo {
     private String fileExtsn;
     private long fileSize;
     private int ord;
-    private String updtDt;
+    private String mdfcnDt;
     private int updtuserid;
     private String regDt;
     private int reguserid;

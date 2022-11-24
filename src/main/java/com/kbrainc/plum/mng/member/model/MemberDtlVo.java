@@ -88,7 +88,7 @@ public class MemberDtlVo {
     private String pphotoFileIdntfcKey;
         
     /** 수정_일시 */
-    private String updtDt;
+    private String mdfcnDt;
     
     /** 수정자아이디 */
     private int updtuserid;

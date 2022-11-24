@@ -34,7 +34,7 @@ public class RoleUserVo extends ParentRequestVo {
     private String roleEndDt;
     
     /** 수정_일시 */
-    private String updtDt;
+    private String mdfcnDt;
     
     /** 수정자아이디 */
     private String updtuserid;

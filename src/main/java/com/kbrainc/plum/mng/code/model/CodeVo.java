@@ -109,7 +109,7 @@ public class CodeVo extends ParentRequestVo implements Serializable {
 
     /** 수정_일시 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updtDt;
+    private Date mdfcnDt;
     
     public void setCd(String cd) throws Exception{
         this.cd = cd;
@@ -178,16 +178,16 @@ public class CodeVo extends ParentRequestVo implements Serializable {
     }
     
     
-    public void setUpdtDt(Date updtDt) {
-        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    public void setmdfcnDt(Date mdfcnDt) {
+        this.mdfcnDt = mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
     
-    public Date getUpdtDt() {
-        return updtDt != null ? (Date) updtDt.clone() : null;
+    public Date getmdfcnDt() {
+        return mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
     
     public void setUpdtD(Date updtD) {
-        this.updtD = updtDt != null ? (Date) updtDt.clone() : null;
+        this.updtD = mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
     
     public Date getUpdtD() {

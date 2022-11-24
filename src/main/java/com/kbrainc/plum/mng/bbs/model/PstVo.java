@@ -63,7 +63,7 @@ public class PstVo extends ParentRequestVo {
     /** **/
     private Integer filegrpid;
     /** **/
-    private String updtDt;
+    private String mdfcnDt;
     /** 수정_일시 **/
     private int updtuserid;
     /** 수정자_아이디 **/

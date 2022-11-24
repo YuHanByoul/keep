@@ -48,7 +48,7 @@ public class PopUpNtcVo extends ParentRequestVo {
     private Integer leftLc;
     private String ntcTrgtCd;
     private Integer ntcTrgtRoleid;
-    private String updtDt;
+    private String mdfcnDt;
     private int updtuserid;
     private String regDt;
     private int reguserid;

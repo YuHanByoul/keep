@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class FileGrpVo {
     private int filegrpid;
     private String filegrpNm;
-    private String updtDt;
+    private String mdfcnDt;
     private int updtuserid;
     private String regDt;
     private int reguserid;

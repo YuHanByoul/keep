@@ -49,7 +49,7 @@ public class TeacherVo extends ParentRequestVo {
     private String clsTchrYn;
     
     /** 수정 일시  */
-    private String updtDt;
+    private String mdfcnDt;
     
     /** 수정자 아이디  */
     private Integer updtuserid;

@@ -27,7 +27,7 @@ public class RoleVo {
     private String useYn;
     
     /* 수정일자 */
-    private String updtDt;
+    private String mdfcnDt;
     
     /* 수정자 ID */
     private int updtuserid;

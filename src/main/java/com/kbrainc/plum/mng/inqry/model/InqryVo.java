@@ -101,7 +101,7 @@ public class InqryVo extends ParentRequestVo {
 	private String searchAnswrYn;
 	
 	/** 수정_일시 */
-	private Date updtDt;
+	private Date mdfcnDt;
 	
 	/** 수정자아이디 */
 	private Integer updtuserid;
@@ -128,8 +128,8 @@ public class InqryVo extends ParentRequestVo {
         this.regDt = regDt != null ? (Date) regDt.clone() : null;
     }
     
-    public void setUpdtDt(Date updtDt) {
-        this.updtDt = updtDt != null ? (Date) updtDt.clone() : null;
+    public void setmdfcnDt(Date mdfcnDt) {
+        this.mdfcnDt = mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
     
     public void setRegD(Date regD) {
@@ -144,8 +144,8 @@ public class InqryVo extends ParentRequestVo {
         return regDt != null ? (Date) regDt.clone() : null;
     }
 
-    public Date getUpdtDt() {
-        return updtDt != null ? (Date) updtDt.clone() : null;
+    public Date getmdfcnDt() {
+        return mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
     
     public Date getRegD() {

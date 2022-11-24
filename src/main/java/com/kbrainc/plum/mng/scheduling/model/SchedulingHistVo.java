@@ -50,7 +50,7 @@ public class SchedulingHistVo extends ParentRequestVo {
         this.jobStrtDt = jobStrtDt != null ? (Date) jobStrtDt.clone() : null;
     }
     
-    public Date getUpdtDt() {
+    public Date getmdfcnDt() {
         return jobStrtDt != null ? (Date) jobStrtDt.clone() : null;
     }
     

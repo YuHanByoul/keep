@@ -44,7 +44,7 @@ public class BbsClVo extends ParentRequestVo {
     /**  **/
     private String useYn;
     /** **/
-    private String updtDt;
+    private String mdfcnDt;
     /** 수정_일시 **/
     private int updtuserid;
     /** 수정자_아이디 **/
