@@ -18,10 +18,8 @@ public class SecurityPropertiesImpl implements SecurityProperties {
      * 사용자 로그인 정보를 확인하기 위한 쿼리
      */
 	private final String DEF_USER_LOGIN_INFO_QUERY = 
-			"  SELECT  A.USERID, A.NM, A.PSWD, A.USER_SE_CD "
+			"  SELECT  A.USERID, A.NM, A.PSWD, 'P' AS USER_SE_CD "
 			+ "FROM  TB_CMM_USER A "
-            + "LEFT OUTER JOIN TB_CMM_USER_DTL D "
-            + "ON A.USERID = D.USERID "
             + "WHERE A.ACNT = :loginid "
             + "AND A.DEL_YN = 'N' "
             + "AND A.ACNT_LOCK_YN = 'N' ";
@@ -36,8 +34,8 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "     TB_CMM_ROLE C "
             + "WHERE A.USERID = B.USERID "
             + "AND A.ACNT = :loginid "
-            + "AND B.ROLE_STRT_DT <= NOW() "
-            + "AND B.ROLE_END_DT >= NOW() "
+            + "AND B.ROLE_STRT_DD <= NOW() "
+            + "AND B.ROLE_END_DD >= NOW() "
             + "AND B.ROLEID = C.ROLEID ";
 
     /**
