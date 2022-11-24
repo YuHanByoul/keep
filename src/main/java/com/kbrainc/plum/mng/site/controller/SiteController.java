@@ -137,8 +137,8 @@ public class SiteController {
     public Map<String, Object> insertSite(@UserInfo UserVo user, @RequestBody SiteVo siteVo) throws Exception {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("result", Constant.REST_API_RESULT_SUCCESS);
-        siteVo.setReguserid(Integer.parseInt(user.getUserid()));
-        siteVo.setUpdtuserid(Integer.parseInt(user.getUserid()));
+        siteVo.setRgtrid(Integer.parseInt(user.getUserid()));
+        siteVo.setMdfrid(Integer.parseInt(user.getUserid()));
         Boolean res = siteService.insertSite(siteVo);
         
         if(!res) {
@@ -166,7 +166,7 @@ public class SiteController {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("result", Constant.REST_API_RESULT_SUCCESS);
         
-        siteVo.setUpdtuserid(Integer.parseInt(user.getUserid()));
+        siteVo.setMdfrid(Integer.parseInt(user.getUserid()));
         Boolean res = siteService.updateSite(siteVo);
         
         if(!res) {
@@ -217,8 +217,8 @@ public class SiteController {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("result", Constant.REST_API_RESULT_SUCCESS);
         
-        siteDomainVo.setReguserid(Integer.parseInt(user.getUserid()));
-        siteDomainVo.setUpdtuserid(Integer.parseInt(user.getUserid()));
+        siteDomainVo.setRgtrid(Integer.parseInt(user.getUserid()));
+        siteDomainVo.setMdfrid(Integer.parseInt(user.getUserid()));
         Boolean res = siteService.insertSiteDomain(siteDomainVo);
         
         if(!res) {
@@ -246,7 +246,7 @@ public class SiteController {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("result", Constant.REST_API_RESULT_SUCCESS);
         
-        siteDomainVo.setUpdtuserid(Integer.parseInt(user.getUserid()));
+        siteDomainVo.setMdfrid(Integer.parseInt(user.getUserid()));
         Boolean res = siteService.updateSiteDomain(siteDomainVo);
         
         if(!res) {

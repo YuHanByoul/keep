@@ -120,7 +120,7 @@ public class FaqController {
 
     @RequestMapping(value = "/mng/faq/add.do", method = RequestMethod.POST)
     public @ResponseBody boolean insertFaq(@UserInfo UserVo user, @RequestBody FaqVo faqVo) throws Exception {
-        faqVo.setReguserid(Integer.parseInt(user.getUserid()));
+        faqVo.setRgtrid(Integer.parseInt(user.getUserid()));
         // FaqVo.setCntnts(HtmlEscape.escapeHtml5(FaqVo.getCntnts()));
         faqVo.setUser(user);
         return faqService.addFaq(faqVo);
@@ -141,7 +141,7 @@ public class FaqController {
         logger.info("[SKYJOB]FAQ Update Data : " + faqVo);
 
         faqVo.setUser(user);
-        faqVo.setReguserid(Integer.parseInt(user.getUserid()));
+        faqVo.setRgtrid(Integer.parseInt(user.getUserid()));
         // FaqVo.setCntnts(HtmlEscape.escapeHtml5(FaqVo.getCntnts()));
         return faqService.updateFaq(faqVo);
     }

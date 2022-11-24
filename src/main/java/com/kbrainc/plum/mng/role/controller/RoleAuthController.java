@@ -181,8 +181,8 @@ public class RoleAuthController {
         String msg = "";
 
         try {
-            roleVo.setUpdtuserid(Integer.parseInt(user.getUserid()));
-            roleVo.setReguserid(Integer.parseInt(user.getUserid()));
+            roleVo.setMdfrid(Integer.parseInt(user.getUserid()));
+            roleVo.setRgtrid(Integer.parseInt(user.getUserid()));
         } catch (NullPointerException ex) {
             throw new BadCredentialsException("Login Error !!");
         }
@@ -228,7 +228,7 @@ public class RoleAuthController {
     @ResponseBody
     public Map<String, String> insertRoleUser(@UserInfo UserVo user, @RequestBody RoleUserVo roleUserVoParam) throws Exception {
         Map<String, String> response = new HashMap<String, String>();
-        roleUserVoParam.setReguserid(user.getUserid());
+        roleUserVoParam.setRgtrid(user.getUserid());
 
         if (roleAuthService.insertRoleUser(roleUserVoParam)) {
             response.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -276,7 +276,7 @@ public class RoleAuthController {
     @ResponseBody
     public Map<String, String> roleUserMappSave(@UserInfo UserVo user, @RequestBody RoleUserVo roleUserVo) throws Exception {
         Map<String, String> map = new HashMap<String, String>();
-        roleUserVo.setUpdtuserid(user.getUserid());
+        roleUserVo.setMdfrid(user.getUserid());
         boolean retVal = roleAuthService.roleUserMappSave(roleUserVo);
         map.put("result", (retVal) ? Constant.REST_API_RESULT_SUCCESS : Constant.REST_API_RESULT_FAIL);
 
@@ -375,7 +375,7 @@ public class RoleAuthController {
     @ResponseBody
     public Map<String, Object> saveMenuRole(@UserInfo UserVo user, RoleMenuVo roleMenuVo) throws Exception {
         int retVal = 0;
-        roleMenuVo.setReguserid(user.getUserid());
+        roleMenuVo.setRgtrid(user.getUserid());
 
         // 저장
         retVal = roleAuthService.saveAdminMenuRole(roleMenuVo);

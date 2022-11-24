@@ -53,7 +53,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
     	
         // 파일저장
         FileVo fileVo = fileStorageService.storeFile(file, fileGrpVo);
-        fileGrpVo.setReguserid(Integer.parseInt(userVo.getUserid()));
+        fileGrpVo.setRgtrid(Integer.parseInt(userVo.getUserid()));
         fileVo.setUser(userVo);
         //DB처리
         try {
@@ -104,7 +104,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
 		
 		fileVo.setFilegrpid(fileGrpVo.getFilegrpid());
 		fileVo.setFileExtsn(fileExt);
-		fileVo.setReguserid(fileGrpVo.getReguserid());
+		fileVo.setRgtrid(fileGrpVo.getRgtrid());
 
 		fileVo.setFileIdntfcKey(CommonUtil.getUUIdGnrBean().getNextBigDecimalId().toString());
 		
