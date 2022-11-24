@@ -37,7 +37,7 @@ public class RoleMenuVo extends ParentRequestVo {
     private String regDt;
     
     /** 등록자_아이디 */
-    private String reguserid;
+    private String rgtrid;
 
     /** 메뉴 추가,삭제 용. */
     private String menuAdd;

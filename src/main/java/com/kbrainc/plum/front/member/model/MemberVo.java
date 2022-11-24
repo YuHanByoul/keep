@@ -67,7 +67,7 @@ public class MemberVo extends ParentRequestVo {
     private String regDt;
     
     /** 등록자 아이디 */
-    private Integer reguserid;
+    private Integer rgtrid;
     
     /** 역할(권한) */
     private Integer roleid;

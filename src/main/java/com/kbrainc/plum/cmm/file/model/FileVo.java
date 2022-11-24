@@ -26,7 +26,7 @@ public class FileVo {
     private String mdfcnDt;
     private int mdfrid;
     private String regDt;
-    private int reguserid;
+    private int rgtrid;
     private int bbsid;
     
     /** 비로그인_파일다운로드_여부 */
@@ -42,10 +42,10 @@ public class FileVo {
      * @param fileExtsn :
      * @param fileSize :
      * @param ord :
-     * @param reguserid :
+     * @param rgtrid :
      */
     public FileVo(int filegrpid, String filePath, String saveFileNm, String orginlFileNm, String fileExtsn,
-            long fileSize, int ord, int reguserid) {
+            long fileSize, int ord, int rgtrid) {
         super();
         this.filegrpid = filegrpid;
         this.filePath = filePath;
@@ -54,7 +54,7 @@ public class FileVo {
         this.fileExtsn = fileExtsn;
         this.fileSize = fileSize;
         this.ord = ord;
-        this.reguserid = reguserid;
+        this.rgtrid = rgtrid;
     }
 
     public FileVo(int filegrpid, String filePath) {

@@ -11,5 +11,5 @@ public class SiteDomainVo {
 	private String mdfcnDt; //수정일시
 	private Integer mdfrid; //수정자아이디
 	private String regDt; //등록일시
-	private Integer reguserid; //등록자아이디
+	private Integer rgtrid; //등록자아이디
 }

@@ -48,7 +48,7 @@ public class BbsClVo extends ParentRequestVo {
     /** 수정자_아이디 **/
     private String regDt;
     /** 등록_일시 **/
-    private int reguserid;/** 등록_아이디 **/
+    private int rgtrid;/** 등록_아이디 **/
     
     public BbsClVo(Integer bbsid) {
         this.setBbsid(bbsid);

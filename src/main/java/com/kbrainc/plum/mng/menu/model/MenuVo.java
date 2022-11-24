@@ -144,7 +144,7 @@ public class MenuVo {
     private Date regDt;
 
     /** 등록자아이디 */
-    private Integer reguserid;
+    private Integer rgtrid;
 
     public void setType(String t) {
         this.typeCd = t;

@@ -74,7 +74,7 @@ public class PstVo extends ParentRequestVo {
     /** 등록_일시 **/
     private String regDt;
     /** 등록_아이디 **/
-    private int reguserid;
+    private int rgtrid;
     
     /** HOT 게시글 여부  **/
     private String hotYn;

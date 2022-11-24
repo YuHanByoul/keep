@@ -27,7 +27,7 @@ public class FaqVo extends ParentRequestVo {
     private String mdfcnDt;
     private int mdfrid;
     private String regDt;
-    private int reguserid;
+    private int rgtrid;
     
     private String clNm;
 

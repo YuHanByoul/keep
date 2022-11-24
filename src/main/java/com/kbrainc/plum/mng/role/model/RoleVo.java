@@ -36,7 +36,7 @@ public class RoleVo {
     private String regDt;
     
     /* 등록자 ID */
-    private int reguserid;
+    private int rgtrid;
 
     /* action mode 값(W: 쓰기, E: 수정) */
     private String mode;

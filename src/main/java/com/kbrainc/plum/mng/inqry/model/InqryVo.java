@@ -111,7 +111,7 @@ public class InqryVo extends ParentRequestVo {
 	private Date regDt;
 	
 	/** 등록자아이디 */
-	private Integer reguserid;
+	private Integer rgtrid;
 	
 	public void setUserSeCd(String cd) {
 		this.userSeCd = cd;

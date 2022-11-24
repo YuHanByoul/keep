@@ -76,7 +76,7 @@ public class BbsVo extends ParentRequestVo {
     /** 등록_일시 **/
     private String regDt;
     /** 등록_아이디 **/
-    private Integer reguserid;
+    private Integer rgtrid;
 
     private Integer pstCnt; // 추가 :게시글 수
     private Integer searchCl; // 유형 검색 값

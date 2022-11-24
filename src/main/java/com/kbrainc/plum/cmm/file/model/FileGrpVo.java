@@ -11,7 +11,7 @@ public class FileGrpVo {
     private String mdfcnDt;
     private int mdfrid;
     private String regDt;
-    private int reguserid;
+    private int rgtrid;
     private int bbsid;
 
     public FileGrpVo(int filegrpid) {

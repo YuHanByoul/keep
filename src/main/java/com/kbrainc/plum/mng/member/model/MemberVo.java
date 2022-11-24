@@ -135,7 +135,7 @@ public class MemberVo extends ParentRequestVo {
     private Date regDt;
     
     /** 등록자아이디 */
-    private int reguserid;
+    private int rgtrid;
     
     /** 가입기간 시작일 */
     private String searchStartDay;

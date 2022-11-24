@@ -36,7 +36,7 @@ public class SiteVo extends ParentRequestVo {
 	private String mdfcnDt; //수정일시
 	private Integer mdfrid; //수정자 아이디
 	private String regDt; //등록일시
-	private Integer reguserid; //등록자 아이디
+	private Integer rgtrid; //등록자 아이디
 	
 	private String domains; //등록된 도메인들의 목록 문자열
 	private List<SiteDomainVo> siteDomainList = new ArrayList(); //등록된 도메인 list

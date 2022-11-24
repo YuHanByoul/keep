@@ -97,7 +97,7 @@ public class PrgrmVo extends ParentRequestVo {
     private Date regDt;
 
     /** 등록자아이디 */
-    private Integer reguserid;
+    private Integer rgtrid;
     
     
     public void setRegDt(Date regDt) {

@@ -43,7 +43,7 @@ public class RoleUserVo extends ParentRequestVo {
     private String regDt;
     
     /** 등록자아이디 */
-    private String reguserid;
+    private String rgtrid;
 
     /* 역할_이름 */
     private String roleNm;

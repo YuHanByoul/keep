@@ -97,7 +97,7 @@ public class MemberDtlVo {
     private String regDt;
     
     /** 등록자아이디 */
-    private int reguserid;
+    private int rgtrid;
     
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

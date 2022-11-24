@@ -35,7 +35,7 @@
             FROM 
                 TB_CMM_PST A 
                 LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-                INNER JOIN TB_CMM_USER B ON(A.REGUSERID = B.USERID)
+                INNER JOIN TB_CMM_USER B ON(A.RGTRID = B.USERID)
             WHERE 1=1
                  AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
                        WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'
@@ -69,8 +69,8 @@
             A.PSTID      as pstid,
             B.BBSID      as bbsid,
             B.NM         as nm,
-            A.reguserid  as userid,
-            A.reguserid  as reguserid,
+            A.rgtrid  as userid,
+            A.rgtrid  as rgtrid,
             C.NM    as user_nm,
             C.ACNT  as acnt,
             A.REG_DT     as reg_dt,
@@ -101,7 +101,7 @@
         WHERE 
             1=1
             AND A.BBSID = B.BBSID
-            AND A.REGUSERID = C.USERID
+            AND A.RGTRID = C.USERID
             AND A.PSTID = #{pstid}
     </select>
     
@@ -132,7 +132,7 @@
             MDFCN_DT,
             MDFRID,
             REG_DT,
-            REGUSERID,
+            RGTRID,
             (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMM_PST  WHERE BBSID = #{bbsid}) cur_fxd_ntc_cnt
         FROM
             TB_CMM_BBS
@@ -214,7 +214,7 @@
                 TB_CMM_PST A 
                 LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
                 LEFT OUTER JOIN TB_CMM_BBS_CL C ON  A.BBS_CLID = C.BBS_CLID
-                INNER JOIN TB_CMM_USER D ON(A.REGUSERID = D.USERID)
+                INNER JOIN TB_CMM_USER D ON(A.RGTRID = D.USERID)
             WHERE 1=1
                  AND A.PRNTS_PSTID IS NULL
                   <if test='fxdNtcUseYn == "Y"'>
@@ -264,7 +264,7 @@
             a.MDFCN_DT,
             a.MDFRID,
             a.REG_DT,
-            a.REGUSERID,
+            a.RGTRID,
             a.del_yn,
             b.NM,
             b.ACNT
@@ -273,7 +273,7 @@
             TB_CMM_USER b 
         WHERE 
             1=1
-            AND a.REGUSERID = b.USERID
+            AND a.RGTRID = b.USERID
             -- AND A.DEL_YN = 'N'
             AND PSTID = #{pstid}
             <if test="prntsCmntid != null and prntsCmntid != 0 ">
@@ -326,7 +326,7 @@
             MDFCN_DT,
             MDFRID,
             REG_DT,
-            REGUSERID
+            RGTRID
         )VALUES(
             #{pstid       },
             #{cntnts      },
@@ -403,8 +403,8 @@
             A.PSTID      as pstid,
             B.BBSID      as bbsid,
             B.NM         as nm,
-            A.reguserid  as userid,
-            A.reguserid  ,
+            A.rgtrid  as userid,
+            A.rgtrid  ,
             C.NM    as user_nm,
             C.ACNT  as acnt,
             A.REG_DT     as reg_dt,
@@ -435,7 +435,7 @@
         WHERE 
             1=1
             AND A.BBSID = B.BBSID
-            AND A.REGUSERID = C.USERID
+            AND A.RGTRID = C.USERID
             AND A.PRNTS_PSTID = #{prntsPstid}
             ORDER BY MDFCN_DT DESC
     </select>
@@ -461,7 +461,7 @@
             MDFCN_DT,
             MDFRID,
             REG_DT,
-            REGUSERID
+            RGTRID
         )VALUES(
             #{bbsid         },
             #{title         },
