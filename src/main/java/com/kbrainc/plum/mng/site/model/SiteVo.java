@@ -34,7 +34,7 @@ public class SiteVo extends ParentRequestVo {
 	private String sysSeNm; //시스템 구분 이름
 	private String useYn; //사용유무
 	private String mdfcnDt; //수정일시
-	private Integer updtuserid; //수정자 아이디
+	private Integer mdfrid; //수정자 아이디
 	private String regDt; //등록일시
 	private Integer reguserid; //등록자 아이디
 	

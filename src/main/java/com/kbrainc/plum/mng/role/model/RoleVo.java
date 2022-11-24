@@ -30,7 +30,7 @@ public class RoleVo {
     private String mdfcnDt;
     
     /* 수정자 ID */
-    private int updtuserid;
+    private int mdfrid;
     
     /* 등록일자 */
     private String regDt;

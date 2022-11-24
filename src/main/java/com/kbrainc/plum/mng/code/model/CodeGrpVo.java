@@ -61,7 +61,7 @@ public class CodeGrpVo extends ParentRequestVo {
     private String useYn;
 
     /** 수정자아이디 */
-    private Integer updtuserid;
+    private Integer mdfrid;
 
     /** 수정자이름 */
     private String updtNm;

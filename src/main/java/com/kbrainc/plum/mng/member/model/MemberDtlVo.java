@@ -91,7 +91,7 @@ public class MemberDtlVo {
     private String mdfcnDt;
     
     /** 수정자아이디 */
-    private int updtuserid;
+    private int mdfrid;
     
     /** 등록_일시 */
     private String regDt;

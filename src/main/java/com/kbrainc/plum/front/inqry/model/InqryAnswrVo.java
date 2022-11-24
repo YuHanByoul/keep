@@ -66,7 +66,7 @@ public class InqryAnswrVo extends ParentRequestVo {
     private Date mdfcnDt;
 
     /** 수정자아이디 */
-    private Integer updtuserid;
+    private Integer mdfrid;
 
     /** 등록_일시 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

@@ -37,7 +37,7 @@ public class RoleUserVo extends ParentRequestVo {
     private String mdfcnDt;
     
     /** 수정자아이디 */
-    private String updtuserid;
+    private String mdfrid;
     
     /** 등록_일시 */
     private String regDt;

@@ -20,7 +20,7 @@
     <insert id="insertRoleMenuAuth" parameterType="RoleMenuVo">
         /* RoleAuthDao.insertRoleMenuAuth */
         INSERT INTO TB_CMM_ROLE_MENU
-            ( ROLEID, MENUID, MDFCN_DT, UPDTUSERID, REG_DT, REGUSERID )
+            ( ROLEID, MENUID, MDFCN_DT, MDFRID, REG_DT, REGUSERID )
         VALUES
             (#{roleid}, #{menuid}, NOW(), #{reguserid}, NOW(), #{reguserid} )
     </insert>
@@ -81,7 +81,7 @@
     <insert id="insertRoleInfo" useGeneratedKeys="true" keyProperty="roleid" parameterType="RoleVo">
         /* RoleAuthDao.insertRoleInfo */
         INSERT INTO
-            TB_CMM_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, MDFCN_DT, UPDTUSERID, REG_DT, REGUSERID)
+            TB_CMM_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, MDFCN_DT, MDFRID, REG_DT, REGUSERID)
             VALUES ( #{nm}, #{seCd}, #{upprRoleid}, #{dc}, #{useYn},
                 (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_CMM_ROLE A WHERE A.UPPR_ROLEID = #{upprRoleid}),
                 NOW(),
@@ -124,7 +124,7 @@
         SET
             ROLE_STRT_DT = #{roleStrtDt},
             ROLE_END_DT = #{roleEndDt},
-            UPDTUSERID = #{updtuserid},
+            MDFRID = #{mdfrid},
             MDFCN_DT = NOW()
         WHERE 
             ROLEID = #{roleid} AND USERID = #{userid}
@@ -164,7 +164,7 @@
             DC = #{dc},
             USE_YN = #{useYn},
             SE_CD = #{seCd},
-            UPDTUSERID = #{updtuserid},
+            MDFRID = #{mdfrid},
             MDFCN_DT = NOW()
         WHERE ROLEID = #{roleid}
     </update>
@@ -173,7 +173,7 @@
     <update id="updateRoleAuth" parameterType="RoleVo">
         /* RoleAuthDao.updateRoleAuth */
         UPDATE TB_CMM_ROLE SET
-            UPDTUSERID = #{updtuserid},
+            MDFRID = #{mdfrid},
             MDFCN_DT = NOW()
 	        <if test="seCd != 'A'.toString()">
 	            ,SE_CD = #{seCd}
@@ -203,7 +203,7 @@
     <insert id="insertRoleUser" parameterType="RoleUserVo">
         /* RoleAuthDao.insertRoleUser */
         INSERT INTO 
-            TB_CMM_ROLE_USER (ROLEID, USERID, ROLE_STRT_DT, ROLE_END_DT, MDFCN_DT, UPDTUSERID, REG_DT, REGUSERID)
+            TB_CMM_ROLE_USER (ROLEID, USERID, ROLE_STRT_DT, ROLE_END_DT, MDFCN_DT, MDFRID, REG_DT, REGUSERID)
             VALUES (#{roleid}, #{userid}, #{roleStrtDt}, #{roleEndDt}, NOW(), #{reguserid}, NOW(), #{reguserid})
     </insert>
     
@@ -216,7 +216,7 @@
             ROLE_STRT_DT = #{roleStrtDt}, 
             ROLE_END_DT = #{roleEndDt}, 
             MDFCN_DT = NOW(),
-            UPDTUSERID = #{reguserid} 
+            MDFRID = #{reguserid} 
         WHERE 
             ROLEID = #{roleid} AND USERID = #{userid}
     </update>

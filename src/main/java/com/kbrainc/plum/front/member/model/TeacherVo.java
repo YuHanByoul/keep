@@ -52,7 +52,7 @@ public class TeacherVo extends ParentRequestVo {
     private String mdfcnDt;
     
     /** 수정자 아이디  */
-    private Integer updtuserid;
+    private Integer mdfrid;
     
     /** 등록 일시  */
     private String regDt;

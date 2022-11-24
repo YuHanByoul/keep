@@ -9,7 +9,7 @@ public class FileGrpVo {
     private int filegrpid;
     private String filegrpNm;
     private String mdfcnDt;
-    private int updtuserid;
+    private int mdfrid;
     private String regDt;
     private int reguserid;
     private int bbsid;

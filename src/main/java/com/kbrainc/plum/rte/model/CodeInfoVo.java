@@ -99,7 +99,7 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
     private String upperYn;
 
     /** 수정자아이디 */
-    private Integer updtuserid;
+    private Integer mdfrid;
 
     /** 수정자이름 */
     private String updtNm;

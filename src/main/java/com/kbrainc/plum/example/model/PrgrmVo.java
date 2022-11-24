@@ -91,7 +91,7 @@ public class PrgrmVo extends ParentRequestVo {
     private Date mdfcnDt;
 
     /** 수정자아이디 */
-    private Integer updtuserid;
+    private Integer mdfrid;
 
     /** 등록_일시 */
     private Date regDt;

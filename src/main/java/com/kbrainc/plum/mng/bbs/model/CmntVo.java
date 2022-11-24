@@ -48,7 +48,7 @@ public class CmntVo extends ParentRequestVo {
     /** **/
     private String mdfcnDt;
     /** 수정_일시 **/
-    private int updtuserid;
+    private int mdfrid;
     /** 수정자_아이디 **/
     private String regDt;
     /** 등록_일시 **/

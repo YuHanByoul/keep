@@ -72,7 +72,7 @@ public class BbsVo extends ParentRequestVo {
     /** 수정_일시 **/
     private String mdfcnDt;
     /** 수정자_아이디 **/
-    private Integer updtuserid;
+    private Integer mdfrid;
     /** 등록_일시 **/
     private String regDt;
     /** 등록_아이디 **/
