@@ -116,41 +116,18 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         this.cd = cd;
         
         //이미 코드이름이 있다면, 무시.
-        if(CommonUtil.isNotEmpty(this.cdNm)) { 
+        if(CommonUtil.isEmpty(this.cdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                String cdkey = "CODE|" + this.cd;
-                //다른 코드들을 고려한다.(JSSFC, CERT, ADDR, INDUTY)
-                if(CommonUtil.isNotEmpty(this.cdgrpid)) {
-                    cdkey = this.cdgrpid + "|" + this.cd;
-                CodeInfoVo code = resCodeService.getCodeInfo(cdkey);
+                CodeInfoVo code = resCodeService.getCodeInfo(this.cd);
                 this.cdNm = code.getCdNm();
                 this.upprCd = code.getUpprCd();
-                }
             }catch(SQLException e) {
                 log.error("executeInternal.SQLException.51L");
                 return ;
             }catch(Exception e) {
                 log.error("executeInternal.SQLException.51L");
-                return ;
-            }
-        }
-    }
-    
-    public void setCdgrpid(String cd) throws Exception{
-        this.cdgrpid = cd;
-        
-        //코드값이 있고, 이름이 비었다면...
-        if(CommonUtil.isNotEmpty(this.cd) && CommonUtil.isEmpty(this.cdNm)) { 
-            try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                    CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.cd);
-                    this.cdNm = code.getCdNm();
-                    this.upprCd = code.getUpprCd();
-            }catch(NullPointerException e) {
-                return ;
-            }catch(Exception e) {
-                return ;
+                return;
             }
         }
     }
@@ -168,7 +145,7 @@ public class CodeInfoVo extends ParentRequestVo implements Serializable {
         //uppr_cd_nm를 구해서 저장 후 리턴한다.
         try {
             ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-            CodeInfoVo code = resCodeService.getCodeInfo(this.cdgrpid + "|" + this.upprCd);
+            CodeInfoVo code = resCodeService.getCodeInfo(this.upprCd);
             this.upprCdNm = code.getCdNm();
             return this.upprCdNm;
         }catch(NullPointerException e) {

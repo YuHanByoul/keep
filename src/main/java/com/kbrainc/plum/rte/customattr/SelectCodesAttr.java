@@ -87,17 +87,13 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
         return depth;
     }
     
-    public String getUpprCodeByRecusive(String grpCd, String upprCd, String cd) throws Exception {
-        String tmpGrpCd = grpCd;
-        if (!("JSSFC".equals(grpCd) || "INDUTY".equals(grpCd) || "ADDR".equals(grpCd) || "CERT".equals(grpCd) || "ABLTY".equals(grpCd))) {
-            tmpGrpCd = "CODE";
-        }
-        CodeInfoVo codeInfoVo = resCode.getCodeInfo(grpCd + "|" + cd);
+    public String getUpprCodeByRecusive(String upprCd, String cd) throws Exception {
+        CodeInfoVo codeInfoVo = resCode.getCodeInfo(cd);
         if (codeInfoVo.getUpprCd().equals(upprCd) || codeInfoVo.getUpprCd().equals("0")) {
             return codeInfoVo.getCd();
         }
         
-        return getUpprCodeByRecusive(tmpGrpCd, upprCd, codeInfoVo.getUpprCd()) + ',' + cd;
+        return getUpprCodeByRecusive(upprCd, codeInfoVo.getUpprCd()) + ',' + cd;
     }
 
     @Override
@@ -119,7 +115,7 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
             String selectedCd = "";//
             String[] selectedCds = null;
             Object[] selectedCdLists = null;
-            String upprCd = ""; // default cd
+            String upprCd = "0"; // default cd
             String firstOptTxt = "";
             String addClass = ""; 
             String addStyle = ""; 
@@ -133,16 +129,19 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
                 result.append(" <p> grpcd=null 코드 값을 입력해 주십시오. </p>");
                 structureHandler.setBody(result.toString(), false);
             }
+            
+            if (tag.hasAttribute("upprCd")) {
+                upprCd = tag.getAttribute("upprCd").getValue();
+            }
 
             if (tag.hasAttribute("selectedCd")) {
                 selectedCd = tag.getAttribute("selectedCd").getValue();
                 if(!"".equals(selectedCd)) {
-                    selectedCds = getUpprCodeByRecusive(grpcd, upprCd, selectedCd).split(",");
+                    selectedCds = getUpprCodeByRecusive(upprCd, selectedCd).split(",");
                     selectedCdLists = new Object[selectedCds.length];
                     for(int i = 0; i < selectedCds.length; i++) {
                         if(i == 0) {
                             if (tag.hasAttribute("upprCd")) {
-                                upprCd = tag.getAttribute("upprCd").getValue();
                                 selectedCdLists[i] = resCode.getCodeList(grpcd, upprCd);
                             } else {
                                 selectedCdLists[i] = resCode.getCodeList(grpcd);

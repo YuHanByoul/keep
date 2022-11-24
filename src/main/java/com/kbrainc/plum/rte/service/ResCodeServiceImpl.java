@@ -140,7 +140,7 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
     * @throws Exception 예외
     */
     @Override
-    @Cacheable(value = "codeMap", key = "#cd")
+    @Cacheable(value = "codeMap", key = "'CODE|'.concat(#cd)")
     public CodeInfoVo getCodeInfo(String cd) throws Exception {
     	return resCodeDao.selectCodeInfo(cd);
     }
