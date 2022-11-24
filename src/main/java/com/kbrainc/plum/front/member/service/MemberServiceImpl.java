@@ -51,9 +51,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
    @Transactional
    public int insertMember(MemberVo memberVo,TeacherVo teacherVo) throws Exception{
 	   
-       String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPwd().getBytes("UTF-8")));
+       String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
        
-       memberVo.setPwd(password);
+       memberVo.setPswd(password);
        
 	   int resRegisterMember = memberDao.insertMember(memberVo);
 	   
@@ -91,9 +91,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
    @Transactional
    public int updateMember(MemberVo memberVo,TeacherVo teacherVo) throws Exception{
 	   
-	   String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPwd().getBytes("UTF-8")));
+	   String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
 	   
-	   memberVo.setPwd(password);
+	   memberVo.setPswd(password);
 	   
 	   int resInt = memberDao.updateMember(memberVo);
 

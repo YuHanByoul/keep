@@ -37,7 +37,7 @@ public class MemberVo extends ParentRequestVo {
     private String acnt;
     
     /** 비밀번호 */
-    private String pwd;
+    private String pswd;
     
     /** 이름 */
     private String nm;

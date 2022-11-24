@@ -41,10 +41,10 @@ public class TempPwdVo {
     private String transType;
     
     /** 비밀번호 */
-    private String pwd;
+    private String pswd;
     
     /** 비밀번호확인 */
-    private String chkpwd;
+    private String chkpswd;
     
     
     /** 로그인사용자정보 */

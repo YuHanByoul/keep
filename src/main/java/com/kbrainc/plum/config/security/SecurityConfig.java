@@ -155,7 +155,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          * 로그인아이디/비밀번호
          * 파라미터명 설정
          */
-        http.formLogin().failureUrl("/?error=true").usernameParameter("p_userid").passwordParameter("p_pwd") 
+        http.formLogin().failureUrl("/?error=true").usernameParameter("p_userid").passwordParameter("p_pswd") 
                 .successHandler(httpsLoginSuccessHandler());
 
         http.logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("JSESSIONID").invalidateHttpSession(true);

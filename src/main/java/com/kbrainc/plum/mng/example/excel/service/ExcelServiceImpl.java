@@ -394,7 +394,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 		//비밀번호
         String password = (String)data.get(2);
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
-		memVo.setPwd(hashPassword);
+		memVo.setPswd(hashPassword);
 		//이메일
 		memVo.setEmail((String)data.get(3));
 		//핸드폰

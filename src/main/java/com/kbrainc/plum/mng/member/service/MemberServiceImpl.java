@@ -206,7 +206,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         String password = "";
         
         if ("nonauto".equals(tempPwdVo.getMethod())) { // 수동인 경우 DB에 저장
-            password = tempPwdVo.getPwd();
+            password = tempPwdVo.getPswd();
         } else {
             // 랜덤임시비밀번호 생성
             password = StringUtil.temporaryPassword(8);
@@ -214,7 +214,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         
         // 비밀번호 암호화
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
-        tempPwdVo.setPwd(hashPassword);
+        tempPwdVo.setPswd(hashPassword);
         int retVal = memberDao.updateMemberTempPwd(tempPwdVo);
         
         if ("nonauto".equals(tempPwdVo.getMethod())) { // 수동인 경우 DB에 저장

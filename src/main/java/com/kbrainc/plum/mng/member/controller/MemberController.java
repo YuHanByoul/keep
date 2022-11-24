@@ -206,9 +206,9 @@ public class MemberController {
 
         int retVal = 0;
         
-        String password = memberVo.getPwd();
+        String password = memberVo.getPswd();
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
-        memberVo.setPwd(hashPassword);
+        memberVo.setPswd(hashPassword);
         
         String brthdyYear = StringUtil.nvl(memberDtlVo.getBrthdyYear());
         String brthdyMonth = StringUtil.nvl(memberDtlVo.getBrthdyMonth());

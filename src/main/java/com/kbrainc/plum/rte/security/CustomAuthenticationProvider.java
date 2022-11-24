@@ -83,7 +83,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
-                if (!password.equals((String) resultMap.get("PWD"))) {
+                if (!password.equals((String) resultMap.get("PSWD"))) {
                     throw new BadCredentialsException("Login Error !!");
                 }
                 
@@ -112,7 +112,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         } else { // 사용자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
-                if (!password.equals((String) resultMap.get("PWD"))) {
+                if (!password.equals((String) resultMap.get("PSWD"))) {
                     throw new BadCredentialsException("Login Error !!");
                 }
                 

@@ -62,7 +62,7 @@ public class MemberVo extends ParentRequestVo {
     
     /** 패스워드 */
     @Size(min = 8, max = 20, message = "비밀번호는 8자이상 20자 이하여야합니다.")
-    private String pwd;
+    private String pswd;
     
     /** 사용자_구분 */
     private String userSeCd;
