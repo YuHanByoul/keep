@@ -28,10 +28,10 @@ public class RoleUserVo extends ParentRequestVo {
     private String userid;
     
     /** 역할_시작_일시 */
-    private String roleStrtDt;
+    private String roleStrtDd;
     
     /** 역할_종료_일시 */
-    private String roleEndDt;
+    private String roleEndDd;
     
     /** 수정_일시 */
     private String mdfcnDt;

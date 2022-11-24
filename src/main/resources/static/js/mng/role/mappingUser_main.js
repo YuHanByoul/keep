@@ -244,8 +244,8 @@ function makeGrid(roleId) {
             { name: 'acnt', title:"아이디", type: "text", width: "10%", readOnly: true },
             { name: 'roleNm', title:"역할", type: "text", width: "10%", align: "center", readOnly: true },
             { name: 'userSeCd', title:"회원구분", type: "select", width: "10%", items: userSe, valueField: "Id", textField: "Name", readOnly: true },
-            { name: 'roleStrtDt', title:"사용시작일", type: "date", width: "10%", align: "center" },
-            { name: 'roleEndDt', title:"사용종료일", type: "date", width: "10%", align: "center" },
+            { name: 'roleStrtDd', title:"사용시작일", type: "date", width: "10%", align: "center" },
+            { name: 'roleEndDd', title:"사용종료일", type: "date", width: "10%", align: "center" },
             { type: "control", width: "7%" }
         ],
         //rowClick: function(args) { readModify(args.item.faqid); },
@@ -266,8 +266,8 @@ var addUserList = function(list, startDate, endDate){
 	var roleid = $('#roleid').val();
 	list.map(function(item){
 		item.roleid = roleid;
-		item.roleStrtDt = startDate;
-		item.roleEndDt = endDate;
+		item.roleStrtDd = startDate;
+		item.roleEndDd = endDate;
 		
 		return item;
 	});
