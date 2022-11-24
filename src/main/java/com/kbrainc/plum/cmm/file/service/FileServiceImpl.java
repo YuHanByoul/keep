@@ -164,7 +164,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
             LinkedHashMap downloadChecker = ((LinkedHashMap)this.filegrpName.get(fileVo.getFilegrpNm()).get("downloadChecker"));
             
             if ("bbs".equals(fileVo.getFilegrpNm())) {
-                if ("N".equals(fileVo.getNloginPermYn()) && user.getUserid() == null) {
+                if ("N".equals(fileVo.getNloginDwnldPermYn()) && user.getUserid() == null) {
                     return false;
                 }
             } else if (downloadChecker != null) {

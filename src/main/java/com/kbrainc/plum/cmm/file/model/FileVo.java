@@ -30,7 +30,7 @@ public class FileVo {
     private int bbsid;
     
     /** 비로그인_파일다운로드_여부 */
-    private String nloginPermYn;
+    private String nloginDwnldPermYn;
 
     /**
      * .

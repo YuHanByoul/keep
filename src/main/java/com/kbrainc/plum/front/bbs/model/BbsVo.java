@@ -74,7 +74,7 @@ public class BbsVo extends ParentRequestVo {
     /** 페이지_게시글_수 **/
     private Integer pagePstCnt;
     /** 비로그인_파일다운로드_여부 **/
-    private String nloginPermYn;
+    private String nloginDwnldPermYn;
     /** 사용_여부 **/
     private String useYn;
     /** 수정_일시 **/
