@@ -65,7 +65,7 @@ public class ParentRequestVo {
         }
 
         if (this.orderField == null || "".equals(this.orderField)) {
-            this.orderField = "UPDT_DT";
+            this.orderField = "MDFCN_DT";
         }
         
         if (this.orderDirection == null) {
