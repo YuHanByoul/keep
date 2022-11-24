@@ -85,7 +85,7 @@ public class SampleEncrypt {
 				logger.info("encrypted Text : {}", encrypted.toString());
 		 
 				byte[] decrypted = cryptoService.decrypt(encrypted, password);
-				logger.info("decrypted Text : {}", decrypted.toString());
+				logger.info("decrypted Text : {}", new String(decrypted, "UTF-8"));
 			}
 		} catch (EncryptionOperationNotPossibleException e) {
 			logger.error("ARIACryptoSample.EncryptionOperationNotPossibleException.88L");
