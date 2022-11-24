@@ -177,4 +177,20 @@ public class ExampleController {
         
         return "example/spinner";
     }
+    
+    @RequestMapping(value = "/example/authUiUx.html")
+    public String authUiUx(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "접근권한 View단 처리");
+        request.setAttribute("MENU_NAVI", "예제>접근권한 View단 처리");
+        
+        return "example/authUiUx";
+    }
+    
+    @RequestMapping(value = "/example/code.html")
+    public String code(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "code 사용");
+        request.setAttribute("MENU_NAVI", "예제>code 사용");
+        
+        return "example/code";
+    }
 }
