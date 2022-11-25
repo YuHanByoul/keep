@@ -17,6 +17,7 @@ public class AsyncThreadConfiguration {
 		threadPoolTaskExecutor.setCorePoolSize(8); 
 		threadPoolTaskExecutor.setMaxPoolSize(8); 
 		threadPoolTaskExecutor.setThreadNamePrefix("plum-admin-pool"); 
+		threadPoolTaskExecutor.initialize();
 		return threadPoolTaskExecutor; 
 	} 
 }
