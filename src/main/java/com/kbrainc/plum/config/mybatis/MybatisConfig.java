@@ -28,7 +28,6 @@ public class MybatisConfig {
     private static String databaseDialect = applicationConfig.getString("database.dialect");
 
     @Bean(name = "sqlSession")
-    @Autowired
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource, ApplicationContext applicationContext) 
             throws Exception { 
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean(); 
