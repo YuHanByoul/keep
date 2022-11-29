@@ -26,6 +26,12 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     /** 사용자이름 */
     private String nm;
     
+    /** 기관아이디 */
+    private Integer instid;
+    
+    /** 기관담당자_역할_코드 */
+    private String instpicRoleCd;
+    
     /** 사용자정보조회시 조회된 데이터 ROW Map */
     private Map data = new HashMap();
     

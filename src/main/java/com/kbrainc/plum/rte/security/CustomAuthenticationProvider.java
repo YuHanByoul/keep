@@ -153,6 +153,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         user.setAcnt(loginid);
         user.setName(loginid);
         user.setNm((String) resultMap.get("NM"));
+        user.setInstid((Integer)resultMap.get("INSTID"));
+        user.setInstpicRoleCd((String)resultMap.get("INSTPIC_ROLE_CD"));
         user.setData(resultMap);
 
         ArrayList<Map<String, String>> sessionAuthorities = new ArrayList<>();
