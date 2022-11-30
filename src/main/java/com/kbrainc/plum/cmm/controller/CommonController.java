@@ -29,6 +29,7 @@ import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.mng.bbs.model.PstVo;
 import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -207,6 +208,8 @@ public class CommonController {
                     ArrayList<GrantedAuthority> authorities = new ArrayList<>();
                     authorities.add(new SimpleGrantedAuthority(afterRoleid));
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                    RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("se_cd"), (String)authority.get("trgt_instt_cd"));
+                    user.setRoleInfo(roleInfo);
                     break;
                 }
             }
