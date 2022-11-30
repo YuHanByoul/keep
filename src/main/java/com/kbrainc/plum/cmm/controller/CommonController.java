@@ -208,7 +208,7 @@ public class CommonController {
                     ArrayList<GrantedAuthority> authorities = new ArrayList<>();
                     authorities.add(new SimpleGrantedAuthority(afterRoleid));
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
-                    RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("se_cd"), (String)authority.get("trgt_instt_cd"));
+                    RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("se_cd"), (String)authority.get("trgt_inst_cd"));
                     user.setRoleInfo(roleInfo);
                     break;
                 }

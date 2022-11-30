@@ -168,12 +168,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             if (!grantedRole) { // 허용된 역할중 1개만 적용한다.
                 if ("A".equals(sysSeCd) && "A".equals(resultList.get(i).get("SE_CD"))) { // 관리자사이트 & 관리자역할
                     authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
-                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INSTT_CD"));
+                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"));
                     user.setRoleInfo(roleInfo);
                     grantedRole = true;
                 } else if ("U".equals(sysSeCd) && "U".equals(resultList.get(i).get("SE_CD"))) { // 사용자사이트 & 사용자역할
                     authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
-                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INSTT_CD"));
+                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"));
                     user.setRoleInfo(roleInfo);
                     grantedRole = true;
                 }
@@ -182,7 +182,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             authority.put("roleid", (String.valueOf(resultList.get(i).get("ROLEID")))); // 역할ID
             authority.put("nm", (String.valueOf(resultList.get(i).get("NM")))); // 역할명
             authority.put("se_cd", (String.valueOf(resultList.get(i).get("SE_CD")))); // 구분_코드
-            authority.put("trgt_instt_cd", (String.valueOf(resultList.get(i).get("TRGT_INSTT_CD")))); // 대상_기관_코드
+            authority.put("trgt_inst_cd", (String.valueOf(resultList.get(i).get("TRGT_INST_CD")))); // 대상_기관_코드
             sessionAuthorities.add(authority);
         }
         user.setAuthorities(sessionAuthorities);
