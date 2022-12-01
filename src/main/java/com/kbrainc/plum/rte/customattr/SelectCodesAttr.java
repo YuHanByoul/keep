@@ -119,6 +119,8 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
             String firstOptTxt = "";
             String addClass = ""; 
             String addStyle = ""; 
+            String isAdmin = "";
+            String applyClass = "";
             
             List<CodeInfoVo> codeList = new ArrayList<CodeInfoVo>();
 
@@ -175,6 +177,14 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
             
+            if (tag.hasAttribute("isAdmin")) {
+                isAdmin = tag.getAttribute("isAdmin").getValue();
+                applyClass = (isAdmin.equals("true"))? "form-select form-select-sm form-control-sm  ":" ";
+            }else {
+                //사용자 class 적용 할것 
+                applyClass = " ";
+            }
+            
             int depth = 0;
 
             /** grpcd not null 이면 depth 추적 */
@@ -190,8 +200,8 @@ public class SelectCodesAttr extends AbstractAttributeTagProcessor {
                         codeList = (List<CodeInfoVo>)selectedCdLists[i-1];
                     }
  
-                    result.append("<div class=\"form-group\" style=\"margin-left: 3px;\">").append("\n");
-                    result.append("<select class ='form-control " + addClass + "' style='" + addStyle + "' id='" + attributeVal + "_" + i + "' name='" + attributeVal + "_" + i
+                    result.append("<div class=\"form-group\"").append(" style=\"margin-left: 3px;\">").append("\n");
+                    result.append("<select class ='"+applyClass+"  "+ addClass + "' style='" + addStyle + "' id='" + attributeVal + "_" + i + "' name='" + attributeVal + "_" + i
                             + "'  onchange ='setNextDepth(\"" + grpcd + "\",this.value,\"" + attributeVal + "_"
                             + (i + 1) + "\" )'> ").append("\n");
                     result.append("<option value=''>").append(firstOptTxt).append("</option>").append("\n");

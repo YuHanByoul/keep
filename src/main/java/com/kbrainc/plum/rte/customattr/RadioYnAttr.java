@@ -79,7 +79,12 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
 
-            result.append("<label class=\"radio-inline\" style=\"").append(addStyle).append("\">").append("\n");
+            //Radio area start
+            result.append("<div class=\"form-radio\">");
+            
+            //first Radio
+            result.append("<div class=\"radio radio-inline\">");
+            result.append("<label class=\"mb-0 form-label'\" style=\"").append(addStyle).append("\">").append("\n");
             result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("1").append("'value='Y'");
             if (defaultVal.equals("Y")) {
                 result.append("checked");
@@ -89,10 +94,15 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
                 result.append("    onchange ='").append(changeFunction).append("()' ");
             }
             
-            result.append(">").append(label1).append("\n");
+            result.append(">");
+            result.append("<i class='helper'></i>")
+            .append(label1).append("\n");
             result.append("</label>");
-
-            result.append("<label class=\"radio-inline\" style=\"").append(addStyle).append("\">").append("\n");
+            result.append("</div> ");
+            
+            //second Radio
+            result.append("<div class=\"radio radio-inline\">");
+            result.append("<label class=\"mb-0 form-label\" style=\"").append(addStyle).append("\">").append("\n");
             result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("2").append("'value='N'");
             if (defaultVal.equals("N")) {
                 result.append("checked");
@@ -101,9 +111,14 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
                 String changeFunction = tag.getAttribute("onchange").getValue();
                 result.append("    onchange ='").append(changeFunction).append("()' ");
             }
-            
-            result.append(">").append(label2).append("\n");
+            result.append(">");
+            result.append("<i class='helper'></i>")
+            .append(label2).append("\n");
             result.append("</label>");
+            result.append("</div> ");
+            
+            result.append("</div> ");
+            //Radio area end
 
         } catch (NullPointerException e) {
             result.append("<p>NullPointerException 발생 </p>");

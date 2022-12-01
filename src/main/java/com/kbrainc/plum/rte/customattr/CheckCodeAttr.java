@@ -75,8 +75,8 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             String upprCd = ""; // upper Code
             String listStyle = "";
             String addClass = "";
-            String addUlClass = ""; 
-
+            String addUlClass = "";
+            String isAdmin = "false";
 
             List<CodeInfoVo> codeList = new ArrayList<CodeInfoVo>();
 
@@ -114,38 +114,76 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             if (tag.hasAttribute("listStyle")) {
                 listStyle = tag.getAttribute("listStyle").getValue();
             }
-
-            if("ul".equals(listStyle)) {
-                result.append("<ul id='" + attributeValue + "' class='" + addUlClass + "'>");
-            }
-            if (codeList.size() <= 0) {
-                if("ul".equals(listStyle)) {
-                    result.append("<li><p> 조회 된 코드 목록이 없습니다.</p></li>");   
-                } else {
-                    result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
-                }
-            } else {
-                int cnt = 1;
-                for (CodeInfoVo codeInfoVo : codeList) {
-                    if("ul".equals(listStyle)) {
-                        result.append("<li><label>");
-                    }
-                    result.append("<input type='checkbox' class='").append(addClass).append("'  id='").append(attributeValue).append(cnt).append("' name ='").append(attributeValue).append(cnt).append("' value='").append(codeInfoVo.getCd()).append("' data-cd-name='").append(codeInfoVo.getCdNm()).append("'");
-                    if (selectedCd != null && !(selectedCd.trim()).equals("")
-                            && inArray(selectedCds, codeInfoVo.getCd())) {
-                        result.append(" checked ");
-                    }
-                    result.append(" >").append(codeInfoVo.getCdNm()).append("\n");
-                    if("ul".equals(listStyle)) {
-                        result.append("</label></li>");
-                    }
-                    
-                    cnt++;
-                }
+            
+            if (tag.hasAttribute("isAdmin")) {
+                isAdmin = tag.getAttribute("isAdmin").getValue();
             }
             
-            if("ul".equals(listStyle)) {
-                result.append("</ul>");
+            //관리자 적용시 
+            if(isAdmin.equals("true")) {
+                
+                //result.append("<div class=\"card-block-small p-t-0\">");
+                
+                result.append("<div class=\"border-checkbox-section\">");
+                
+                if (codeList.size() <= 0) {
+                        result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
+                } else {
+                    int cnt = 1;
+                    for (CodeInfoVo codeInfoVo : codeList) {
+                        result.append("<div class=\"border-checkbox-group border-checkbox-group-inverse\">");
+                        result.append("<input type='checkbox' class='border-checkbox ").append(addClass)
+                        .append("'  id='").append(attributeValue).append(cnt)
+                        .append("' name ='").append(attributeValue).append(cnt)
+                        .append("' value='").append(codeInfoVo.getCd())
+                        .append("' data-cd-name='").append(codeInfoVo.getCdNm())
+                        .append("'");
+                        if (selectedCd != null && !(selectedCd.trim()).equals("")
+                                && inArray(selectedCds, codeInfoVo.getCd())) {
+                            result.append(" checked ");
+                        }
+                        result.append(" >");
+                        result.append("<label class='form-label border-checkbox-label' for='"+attributeValue+cnt+"'>"+codeInfoVo.getCdNm()+"</label>");
+                        result.append("\n");
+                        result.append("</div>");
+                        cnt++;
+                    }
+                    result.append("</div>");
+                    //result.append("</div>");
+                }
+                
+            }else{//사용자 
+                
+                if("ul".equals(listStyle)) {
+                    result.append("<ul id='" + attributeValue + "' class='" + addUlClass + "'>");
+                }
+                if (codeList.size() <= 0) {
+                    if("ul".equals(listStyle)) {
+                        result.append("<li><p> 조회 된 코드 목록이 없습니다.</p></li>");   
+                    } else {
+                        result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
+                    }
+                } else {
+                    int cnt = 1;
+                    for (CodeInfoVo codeInfoVo : codeList) {
+                        if("ul".equals(listStyle)) {
+                            result.append("<li><label>");
+                        }
+                        result.append("<input type='checkbox' class='").append(addClass).append("'  id='").append(attributeValue).append(cnt).append("' name ='").append(attributeValue).append(cnt).append("' value='").append(codeInfoVo.getCd()).append("' data-cd-name='").append(codeInfoVo.getCdNm()).append("'");
+                        if (selectedCd != null && !(selectedCd.trim()).equals("")
+                                && inArray(selectedCds, codeInfoVo.getCd())) {
+                            result.append(" checked ");
+                        }
+                        result.append(" >").append(codeInfoVo.getCdNm()).append("\n");
+                        if("ul".equals(listStyle)) {
+                            result.append("</label></li>");
+                        }
+                        cnt++;
+                    }
+                }
+                if("ul".equals(listStyle)) {
+                    result.append("</ul>");
+                }
             }
             
 
