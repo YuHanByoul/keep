@@ -84,7 +84,7 @@ public class SwitchYnAttr extends AbstractAttributeTagProcessor {
                 //Switch html 
                 //result.append("<div class=\"pt-0 card-block-small\">");
                 
-                result.append("<input type='hidden' class='js-single' />");
+                //result.append("<input type='hidden' class='js-single' />");
                 result.append("<input type='checkbox' class='js-single-small' ");
                 result.append("name='"+attributeValue+"' id='"+attributeValue+"' ");
                 
