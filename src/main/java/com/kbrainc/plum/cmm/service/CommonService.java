@@ -1,6 +1,7 @@
 package com.kbrainc.plum.cmm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.kbrainc.plum.mng.site.model.SiteVo;
 
@@ -32,4 +33,14 @@ public interface CommonService {
     * @throws Exception 예외
     */
     public List<SiteVo> selectSiteList(SiteVo site) throws Exception;
+    
+    /**
+    * 현재 사용자의 접근가능한 기관목록을 반환한다.
+    *
+    * @Title : selectAlowedInstList
+    * @Description : 현재 사용자의 접근가능한 기관목록을 반환한다.
+    * @return List<Map<String,Object>> 기관목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedInstList() throws Exception;
 }

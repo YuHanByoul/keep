@@ -1,10 +1,13 @@
 package com.kbrainc.plum.cmm.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.model.RoleInfoVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
  * 
@@ -35,4 +38,15 @@ public interface CommonDao {
     * @throws Exception 예외
     */
     public List<SiteVo> selectSiteList(SiteVo site) throws Exception;
+    
+    /**
+    * 현재 사용자의 접근가능한 기관목록을 반환한다.
+    *
+    * @Title : selectAlowedInstList
+    * @Description : 현재 사용자의 접근가능한 기관목록을 반환한다.
+    * @param userVo UserVo객체
+    * @return List<Map<String,Object>> 기관목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedInstList(UserVo userVo) throws Exception;
 }

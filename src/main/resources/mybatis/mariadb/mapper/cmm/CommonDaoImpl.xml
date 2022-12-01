@@ -8,7 +8,7 @@
 <mapper namespace="com.kbrainc.plum.cmm.model.CommonDao">
     
     <!-- 사이트 리스트를 반환한다. -->
-    <select id="selectSiteList" resultType="SiteVo" parameterType="SiteVo">
+    <select id="selectSiteList" parameterType="SiteVo" resultType="SiteVo">
 	    /* CommonDao.selectSiteList */
         SELECT 
 	        SITEID,   
@@ -20,6 +20,33 @@
 		    AND SITEID = #{siteid}			
 	    </if>
 	</select>
+    
+    <!-- 현재 사용자의 접근가능한 기관목록을 반환한다. -->
+    <select id="selectAlowedInstList" parameterType="UserVo" resultType="java.util.Map">
+        /* CommonDao.selectAlowedInstList */
+        SELECT 
+            INSTID,
+            INST_NM
+        FROM TB_CMM_INST
+        WHERE 
+            USE_YN = 'Y'
+        AND APRV_STTS_CD = '2'
+        <choose>
+            <when test='roleInfo.trgtInsttCd == "A"'>
+            </when>
+            <when test='roleInfo.trgtInsttCd == "S"'>
+                AND INSTID = #{instid}          
+            </when>
+            <when test='roleInfo.trgtInsttCd == "C"'>
+                AND INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{roleInfo.roleid})          
+            </when>
+            <otherwise>
+                AND 1 != 1
+            </otherwise>
+        </choose>
+        ORDER BY INST_NM ASC
+    </select>
+    
     
     
 </mapper>
