@@ -22,7 +22,12 @@ public class ParentRequestVo {
     public ORDER_DIRECTION orderDirection;
     
     protected String searchType;
-    protected String searchKeyword; 
+    protected String searchKeyword;
+    
+    /** Mybatis bind변수로 searchInstValue 미사용시 에러 방지를 위해 선언. 기관 검색시 사용하는 변수. */
+    protected String searchInstValue;
+    /** Mybatis bind변수로 searchSiteValue 미사용시 에러 방지를 위해 선언. 사이트 검색시 사용하는 변수. */
+    protected String searchSiteValue;
     
     public enum ORDER_DIRECTION {
         asc, desc
