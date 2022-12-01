@@ -20,9 +20,18 @@ $.validator.setDefaults({
 			        	//*$(errorList[0].element).val(null); 
 			        	//$(errorList[0].element).attr("placeholder",errorList[0].message);
 			        	
-			        	//option3 : input border 라인 red 강조 수정
-			        	$(errorList[0].element).css("border","2px solid #ff0000");//#B0371D : 진한빨강 ,  
-			        	setTimeout(function() { $(errorList[0].element).css("border","")}, 1000);
+			        	let $el = $(errorList[0].element)[0];
+			        	
+			        	if($el.hasAttribute('selectsearchcondition')){
+                            let borderEl =  $($el).siblings('.select2-container').find('.select2-selection');
+                            $(borderEl).css("border","2px solid #ff0000").animate({}, 500);//#B0371D : 진한빨강 ,
+    			        	setTimeout(function() { $(borderEl).css("border","")}, 1000);
+                        }else{
+    			        	//if($(errorList[0].element).parent("<div>") )
+    			        	//option3 : input border 라인 red 강조 수정
+    			        	$($el).css("border","2px solid #ff0000");//#B0371D : 진한빨강 ,  
+    			        	setTimeout(function() { $($el).css("border","")}, 1000);
+                        }
 			        }
 			    }
 });

@@ -129,7 +129,10 @@ public class SelectInstAttr extends AbstractAttributeTagProcessor {
                 width = tag.getAttribute("width").getValue();
             }
 
-            result.append("<input type='hidden'").append(" selectSearchCondition id='").append(attributeValue).append("'").append(" name='").append(attributeValue).append("' />\n");
+            result.append("<input type='text'").append(" selectSearchCondition id='").append(attributeValue).append("'").append(" name='").append(attributeValue)
+            .append("'")
+            .append(" style='position:absolute;width:0px;margin:0px;padding:0px;visibility:hidden;' ")
+            .append(" />\n");
             result.append("<select class='").append(addClass).append("' id='selectInst").append(attributeValue).append("' ");
             result.append(" >").append("\n");
             result.append("</select> ").append("\n");
