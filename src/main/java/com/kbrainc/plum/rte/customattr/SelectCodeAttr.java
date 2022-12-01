@@ -69,6 +69,8 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
         String firstOptTxt = "";
         String addClass = "";
         String addStyle = "";
+        String isAdmin = "";
+        String applyClass = "";
 
         List<CodeInfoVo> codeList = new ArrayList<CodeInfoVo>();
         StringBuffer result = new StringBuffer(); // html 코드 작성용
@@ -104,11 +106,19 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
             } else {
                 codeList = resCode.getCodeList(grpcd);
             }
-
+            
+            if (tag.hasAttribute("isAdmin")) {
+                isAdmin = tag.getAttribute("isAdmin").getValue();
+                applyClass = (isAdmin.equals("true"))? "form-select form-select-sm form-control-sm  ":" ";
+            }else {
+                //사용자 class 적용 할것 
+                applyClass = " ";
+            }
+            
             if (codeList.size() <= 0) {
                 result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
             } else {
-                result.append("<select  class ='form-control  ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
+                result.append("<select  class ='").append(applyClass+" ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                     String changeFunction = tag.getAttribute("onchange").getValue();
                     result.append("    onchange ='").append(changeFunction).append("()' ");

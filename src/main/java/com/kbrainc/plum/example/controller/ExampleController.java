@@ -67,6 +67,7 @@ public class ExampleController {
         request.setAttribute("MENU_NAVI", "예제>커스텀 태그(thymeleaf)");
 
         model.addAttribute("grpcd", "G0001");
+        model.addAttribute("selectedCd", "A0002");
         return "example/customTag";
     }
     

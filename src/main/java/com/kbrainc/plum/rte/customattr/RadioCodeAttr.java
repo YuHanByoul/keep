@@ -74,6 +74,8 @@ public class RadioCodeAttr extends AbstractAttributeTagProcessor {
 
             String disabled = ""; // default cd
             String[] checkDis;
+            
+            String isAdmin = "false";
 
             List<CodeInfoVo> codeList = new ArrayList<>();
             // List<CodeInfoVo> codeList = new ArrayList<CodeInfoVo>();
@@ -100,32 +102,55 @@ public class RadioCodeAttr extends AbstractAttributeTagProcessor {
             } else {
                 codeList = resCode.getCodeList(grpcd);
             }
+            
+            if (tag.hasAttribute("isAdmin")) {
+                isAdmin = tag.getAttribute("isAdmin").getValue();
+            }
+            
+            //관리자 적용시 
+            if(isAdmin.equals("true")) {
 
-            if (codeList.size() <= 0) {
-                result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
-            } else {
-                int cnt = 1;
-                for (CodeInfoVo codeInfoVo : codeList) {
-                    result.append("<label>").append("\n");
-                    result.append("<input type='radio' name = '" + attributeValue + "' id='" + attributeValue + cnt
-                            + "'value='" + codeInfoVo.getCd() + "'");
-                    if (selectedCd != null && !(selectedCd.trim()).equals("")
-                            && codeInfoVo.getCd().equals(selectedCd)) {
-                        result.append(" checked ");
-                    }
-                    if (disabled != null && !(disabled.trim()).equals("")) {
-                        checkDis = disabled.split("\\|");
-                        for (int i = 0; i < checkDis.length; i++) {
-                            if (codeInfoVo.getCd().equals(checkDis[i])) {
-                                result.append(" disabled  ");
+                if (codeList.size() <= 0) {
+                    result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
+                } else {
+                    
+                    int cnt = 1;
+                    result.append("<div class=\"form-radio\">");
+                    
+                    for (CodeInfoVo codeInfoVo : codeList) {
+                        result.append("<div class=\"radio radio-inline\">");
+                        result.append("<label class='mb-0 form-label' >").append("\n");
+                        result.append("<input type='radio' name = '" + attributeValue + "' id='" + attributeValue + cnt+ "'value='" + codeInfoVo.getCd() + "'");
+                        if (selectedCd != null && !(selectedCd.trim()).equals("")
+                                && codeInfoVo.getCd().equals(selectedCd)) {
+                            result.append(" checked ");
+                        }
+                        if (disabled != null && !(disabled.trim()).equals("")) {
+                            checkDis = disabled.split("\\|");
+                            for (int i = 0; i < checkDis.length; i++) {
+                                if (codeInfoVo.getCd().equals(checkDis[i])) {
+                                    result.append(" disabled  ");
+                                }
                             }
                         }
+                        result.append(">");
+                        result.append("<i class='helper'></i>");
+                        result.append(codeInfoVo.getCdNm());
+                        result.append("</label>&nbsp; ");
+                        result.append("</div> ");
+                        cnt++;
                     }
-                    result.append("><span>").append(codeInfoVo.getCdNm()).append("</span>\n");
-                    result.append("</label>&nbsp; ");
-                    cnt++;
+                    result.append("</div> ");
                 }
+                
+            }else {//사용자 적용시 
+                
+                
+                
+                
             }
+            
+            
 
         } catch (NullPointerException e) {
             result.append(" <p> code=null 코드 값을 입력해 주십시오. </p>");
