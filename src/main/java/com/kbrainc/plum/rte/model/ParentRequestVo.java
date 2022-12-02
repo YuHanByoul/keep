@@ -28,6 +28,8 @@ public class ParentRequestVo {
     protected String searchInstValue;
     /** Mybatis bind변수로 searchSiteValue 미사용시 에러 방지를 위해 선언. 사이트 검색시 사용하는 변수. */
     protected String searchSiteValue;
+    /** Mybatis bind변수로 searchSiteSysSeCd 미사용시 에러 방지를 위해 선언. 사이트 검색시 사용하는 변수(시스템_구분_코드). */
+    protected String searchSiteSysSeCd;
     
     public enum ORDER_DIRECTION {
         asc, desc

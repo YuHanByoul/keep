@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,5 +66,24 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         HttpSession session = request.getSession();
         UserVo userInfo = (UserVo)session.getAttribute("user");
         return commonDao.selectAlowedInstList(userInfo);
+    }
+    
+    /**
+    * 현재 사용자의 접근가능한 사이트목록을 반환한다.
+    *
+    * @Title : selectAlowedSiteList
+    * @Description : 현재 사용자의 접근가능한 사이트목록을 반환한다.
+    * @param sysSeCd 시스템구분코드
+    * @return List<Map<String,Object>> 사이트목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAlowedSiteList(String sysSeCd) throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        HttpSession session = request.getSession();
+        UserVo userInfo = (UserVo)session.getAttribute("user");
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("user", userInfo);
+        param.put("sysSeCd", sysSeCd);
+        return commonDao.selectAlowedSiteList(param);
     }
 }

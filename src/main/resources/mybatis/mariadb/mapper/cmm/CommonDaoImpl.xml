@@ -27,7 +27,8 @@
         SELECT 
             INSTID,
             INST_NM
-        FROM TB_CMM_INST
+        FROM 
+            TB_CMM_INST
         WHERE 
             USE_YN = 'Y'
         AND APRV_STTS_CD = '2'
@@ -47,6 +48,34 @@
         ORDER BY INST_NM ASC
     </select>
     
-    
+    <!-- 현재 사용자의 접근가능한 사이트목록을 반환한다. -->
+    <select id="selectAlowedSiteList" parameterType="java.util.Map" resultType="java.util.Map">
+        /* CommonDao.selectAlowedSiteList */
+        SELECT 
+            S.SITEID,
+            S.SITE_NM,
+            I.INST_NM
+        FROM
+            TB_CMM_SITE S LEFT OUTER JOIN TB_CMM_INST I ON S.INSTID = I.INSTID
+        WHERE 
+            S.USE_YN = 'Y'
+        <if test="sysSeCd != null and sysSeCd != ''">
+            AND S.SYS_SE_CD = #{sysSeCd}
+        </if>
+        <choose>
+            <when test='user.roleInfo.trgtInsttCd == "A"'>
+            </when>
+            <when test='user.roleInfo.trgtInsttCd == "S"'>
+                AND S.INSTID = #{user.instid}          
+            </when>
+            <when test='user.roleInfo.trgtInsttCd == "C"'>
+                AND S.INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{user.roleInfo.roleid})          
+            </when>
+            <otherwise>
+                AND 1 != 1
+            </otherwise>
+        </choose>
+        ORDER BY S.SITE_NM ASC
+    </select>
     
 </mapper>

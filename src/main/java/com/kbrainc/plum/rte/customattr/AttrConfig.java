@@ -53,6 +53,7 @@ public class AttrConfig extends AbstractProcessorDialect {
         processors.add(new RadioYnAttr(dialectPrefix));
         processors.add(new PaginationAttr(dialectPrefix));
         processors.add(new SelectInstAttr(dialectPrefix));
+        processors.add(new SelectSiteAttr(dialectPrefix));
         processors.add(new SwitchYnAttr(dialectPrefix));
         
         return processors;
