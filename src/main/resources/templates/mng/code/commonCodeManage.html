@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout"
+>
+
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="card">
+            <div class="card-block-small">
+                <form id="searchForm" name="searchForm" action="" onsubmit="return false;" >
+                    <div class="d-lg-inline-block">
+                        <div class="mb-0 form-group row">
+                            <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+
+                            <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                    <option value="">-선택-</option>
+                                    <option value="CDGRP_NM">코드그룹명</option>
+                                    <option value="CDGRPID">코드그룹아이디</option>
+                                    <option value="CD">코드아이디</option>
+                                </select>
+                                <input name="searchKeyword" id="searchKeyword" type="text" class="form-control" aria-label="Text input with dropdown button">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m-t-20">
+                        <button type="submit" class="btn btn-disabled m-r-5" onclick="codeGrpSearchInit()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" onclick="codeGrpSearch2()">Search</button>
+                     </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-block-small">
+                <div class="row">
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <h5 class="mb-3">
+                            <strong>코드그룹 목록</strong>
+                        </h5>
+                        <div class="card">
+                            <div class="card-block-small">
+                                <div class="col-12 mb-2 text-right">
+                                    <button class="btn btn-primary" onclick="addCdgrp()">등록</button>
+                                </div>
+
+                                <!--jsGrid-->
+                                <table id="jsGrid" class="table table-responsive overflow-auto" style="max-height: 500px;"></table>
+                                <div id="listPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <h5 class="mb-3">
+                            <strong>코드그룹 정보</strong>
+                        </h5>
+                        <div class="card">
+                            <div class="card-block-small">
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpid"><strong>코드그룹ID</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdgrpid" id="cdgrpid" readonly=""/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpNm"><strong>코드그룹명</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdgrpNm" id="cdgrpNm"/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpDc"><strong>코드그룹설명</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdgrpDc" id="cdgrpDc"/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpOptn1"><strong>옵션1</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="optn1" id="cdgrpOptn1"/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpOptn2"><strong>옵션2</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="optn2" id="cdgrpOptn2"/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpUpdtUserNm"><strong>수정자</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdgrpUpdtUserNm" id="cdgrpUpdtUserNm" readonly/>
+                                    </div>
+                                </div>
+
+                                <div class="mb-2 form-group row">
+                                    <div class="col-sm-12">
+                                        <input type="hidden" class="js-single"/>
+                                        <input type="checkbox" class="js-single-small" name="useYn" id="cdgrpUseYn" checked/>
+                                        <label for="cdgrpUseYn" class="v-middle">코드그룹 사용</label>
+                                    </div>
+                                </div>
+                                <div class="mb-0 mt-4 form-group row">
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-primary" onclick="saveCdgrpInfo()" >저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <h5 class="mb-3">
+                            <strong>코드 구조</strong>
+                        </h5>
+                        <div class="card">
+                            <div class="card-block-small">
+                                <div class="tree thumbnail img-responsive" id="codeTree"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-xl-3">
+                        <h5 class="mb-3">
+                            <strong>코드 정보</strong>
+                        </h5>
+                        <div class="card">
+                            <div class="card-block-small">
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdTxt"><strong>코드</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdTxt" id="cdTxt" readonly=""/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdNm"><strong>코드명</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdNm" id="cdNm"/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdDc"><strong>코드설명</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdDc" id="cdDc" />
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewCdgrpid"><strong>코드그룹ID</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="viewCdgrpid" id="viewCdgrpid" readonly/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewUpprCd"><strong>상위코드</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="viewUpprCd" id="viewUpprCd" readonly/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn1"><strong>옵션1</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="optn1" id="cdOptn1" />
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn2"><strong>옵션2</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="optn2" id="cdOptn2" />
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn3"><strong>옵션3</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="optn3" id="cdOptn3" />
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdUpdtUserNm"><strong>수정자</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="cdUpdtUserNm" id="cdUpdtUserNm" readonly/>
+                                    </div>
+                                </div>
+                                <div class="mb-2 form-group row">
+                                    <div class="col-sm-12">
+                                        <input type="hidden" class="js-single"/>
+                                        <input type="checkbox" class="js-single-small" name="useYn" id="useYn" checked/>
+                                        <label for="useYn" class="v-middle">코드 사용</label>
+                                    </div>
+                                </div>
+                                <div class="mb-0 mt-4 form-group row">
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-primary" onclick="saveCdInfo()">저장</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        var codeGrpListUrl = "/mng/code/codeGrpList.do";
+        var codeGrpInfoUrl = "/mng/code/codeGrpInfo.do";
+        var codeTreeUrl = "/mng/code/selectCodeTreeList.do";
+        var codeGrpInsertUrl = "/mng/code/insertCodeGrpInfo.do";
+        var codeGrpUpdateUrl = "/mng/code/updateCodeGrpInfo.do";
+        var codeTree = null;
+
+        //코드그룹 정보 저장
+        function saveCdgrpInfo(){
+            var url = codeGrpInsertUrl;
+            if($('#cdgrpFrm').find('#cdgrpid').is(':visible') == false /*수정자가 null이 아닌경우로 변경 필요*/){
+                url = codeGrpUpdateUrl;
+            }
+
+            if(url == codeGrpInsertUrl){
+                var isSec = false;
+                /*[# sec:authorize-url="/mng/code/insertCodeGrpInfo.do"]*/
+                isSec = true;
+                /*[/]*/
+                if(!isSec){
+                    alert('접근권한이 없습니다.');
+                    return;
+                }
+            }else if(url == codeGrpUpdateUrl){
+                var isSec = false;
+                /*[# sec:authorize-url="/mng/code/updateCodeGrpInfo.do"]*/
+                isSec = true;
+                /*[/]*/
+                if(!isSec){
+                    alert('접근권한이 없습니다.');
+                    return;
+                }
+            }
+
+            if(!$('#cdgrpFrm').valid()) return;
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url: url,
+                    cache: false,
+                    dataType: 'json',
+                    data: $("#cdgrpFrm").serialize(),
+                    success: function(data){
+                        alert(data.msg);
+
+                        if(data.resultCode != 'EXIST'){
+                            codeGrpSearch();
+                            initCdgrpFrm();
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        //검색폼 초기화
+        function codeGrpSearchInit() {
+            $("#searchType").val('');
+            $("#searchKeyword").val('');
+        }
+
+        function codeGrpSearch2(){
+            var searchType = $("#searchType").val();
+            var searchKeyword = $("#searchKeyword").val();
+
+            if(searchType != '' && searchKeyword == ""){
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            $("#jsGrid").jsGrid("reset");
+            initCdgrpFrm();
+            destroyTree();
+            initCdFrm();
+        }
+
+        //코드 검색
+        function codeGrpSearch(){
+            var searchType = $("#searchType").val();
+            var searchKeyword = $("#searchKeyword").val();
+
+            if(searchType != '' && searchKeyword == ""){
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            $("#jsGrid").jsGrid("reset");
+            initCdgrpFrm();
+            destroyTree();
+            initCdFrm();
+        }
+
+        //코드그룹 등록
+        function addCdgrp(){
+            $('#cdgrpid').attr('readonly',false);
+            initCdgrpFrm();
+            destroyTree();
+            initCdFrm();
+        }
+
+        $(function() {
+            //$(document).ready(function(){});과 동일. DOM객체가 생성되어 준비되는 시점에서 호출된다는 의미(html 문서가 로딩이 된 시점)
+            $("#jsGrid").jsGrid({
+                height:"auto",
+                width:"100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+
+                        var params = {
+                            "searchType": $('#searchType').val(),
+                            "searchKeyword": $('#searchKeyword').val(),
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": filter.sortField,
+                            "orderDirection": "asc"
+                        };
+
+                        if(filter.sortField == undefined){
+                            params.orderField = "CDGRP_NM";
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: codeGrpListUrl,
+                            data: params,
+                            dataType: "json"
+                        }).done(function(response){
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    { title: '코드그룹명' ,name: 'cdgrpNm', type: "text"} ,
+                    { title: '사용여부', name: 'useYn', type: "text"}
+                ],
+                /* [# sec:authorize-url=""] */
+                rowClick: function(args){
+                    initCdgrpFrm();
+                    getCodeGrpInfo(args.item.cdgrpid);
+
+                    destroyTree();
+                    code_tree(args.item.cdgrpid, args.item.cdgrpNm);
+                    initCdFrm();
+                    $('#cdFrm').find("#cdgrpid").val(args.item.cdgrpid);
+                    $('#cdFrm').find("#cdgrpNm").val(args.item.cdgrpNm);
+                    $('#cdFrm').find("#upprCd").val('0');
+                    $('#viewCdgrpid').text(args.item.cdgrpid);
+                    $('#viewUpprCd').text('0');
+                },
+                /* [/] */
+                onPageChanged: function(args) {
+
+                }
+            });
+        });
+
+        //코드그룹 폼 초기화
+        function initCdgrpFrm(){
+            $('#cdgrpid').attr('readonly',true);
+            $('#cdgrpid').val('');
+            $('#cdgrpNm').val('');
+            $('#cdgrpDc').val('');
+            $('#cdgrpOptn1').val('');
+            $('#cdgrpOptn2').val('');
+            $('#cdgrpFrm').find("input:radio[name=useYn]:input[value='Y']").prop("checked", true);
+            $('#cdgrpUpdtUserNm').val('');
+        }
+
+        //코드그룹 정보 ajax
+        function getCodeGrpInfo(cdgrpid){
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : codeGrpInfoUrl,
+                    cache:false,
+                    dataType : 'json',
+                    data : {
+                        cdgrpid: cdgrpid
+                    },
+                    success:function(data){
+                        setCodeGrpInfo(data);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function destroyTree(){
+            if(codeTree != null){
+                $("#codeTree").dynatree("destroy");
+                $("#codeTree").text('');
+                codeTree = null;
+            }
+        }
+
+        function bindContextMenu(span) {
+            jQuery(span).contextMenu({menu: "codeContext"}, function(action, el, pos) {
+                var node = jQuery.ui.dynatree.getNode(el);
+                switch( action ) {
+                    case "regist":
+                        var cdgrpid = $('#cdFrm').find("#cdgrpid").val();
+                        var cdgrpNm = $('#cdFrm').find("#cdgrpNm").val();
+                        initCdFrm();
+                        $('#cdFrm').find("#cdgrpid").val(cdgrpid);
+                        $('#cdFrm').find("#cdgrpNm").val(cdgrpNm);
+                        $('#cdFrm').find("#upprCd").val(node.data.key);
+                        $('#viewCdgrpid').text(cdgrpid);
+                        $('#viewUpprCd').text(node.data.key);
+                        break;
+                    default:
+                }
+            });
+        }
+
+        function code_tree(cdgrpid, cdgrpNm){
+            codeTree = jQuery("#codeTree").dynatree({
+                title: "",
+                autoFocus: true,
+                cache: false,
+                minExpandLevel: 2,
+                generateIds : true,
+                initAjax: {
+                    url: codeTreeUrl,
+                    type: 'post',
+                    dataType:'json',
+                    data: {
+                        cdgrpid: cdgrpid
+                        ,cdgrpNm: cdgrpNm
+                    },
+                    beforeSend: function(xhr) {
+                        var token = $("meta[name='_csrf']").attr("content");
+                        var header = $("meta[name='_csrf_header']").attr("content");
+                        xhr.setRequestHeader("AJAX", true);
+                        xhr.setRequestHeader(header, token);
+                    }
+                },
+                onClick: function(node, event) {
+                    if($(".contextMenu:visible").length > 0 ){
+                        $(".contextMenu").hide();
+                    }
+
+                    if(node.data.key != "0"){
+                        getCodeInfo(node.data.key);
+                    }else{
+                        initCdFrm();
+                        $('#cdFrm').find("#cdgrpid").val(cdgrpid);
+                        $('#cdFrm').find("#cdgrpNm").val(cdgrpNm);
+                        $('#cdFrm').find("#upprCd").val('0');
+                        $('#viewCdgrpid').text(cdgrpid);
+                        $('#viewUpprCd').text('0');
+                    }
+                },
+                onCreate: function(node, span){
+                    if(node.data.key != "0" ){
+                        bindContextMenu(span);
+                    }
+                },
+                autoExpandMS: 1000,
+                preventVoidMoves: true,
+                dnd: {
+                    onDragStart: function(node) {
+                        selfMove = true;
+                        //logMsg("tree.onDragStart(%o)", node);
+                        return true;
+                    },
+                    onDragEnter: function(node, sourceNode) {
+                        //logMsg("tree.onDragEnter(%o, %o)", node, sourceNode);
+                        return true;
+                    },
+                    onDragOver: function(node, sourceNode, hitMode) {
+                        //logMsg("tree.onDragOver(%o, %o, %o)", node, sourceNode, hitMode);
+                    },
+                    onDrop: function(node, sourceNode, hitMode, ui, draggable) {
+                        var isSec = false;
+                        /*[# sec:authorize-url="/mng/code/codeTreeReorder.do"]*/
+                        isSec = true;
+                        /*[/]*/
+                        if(isSec){
+                            if(node.data.pkey != sourceNode.data.pkey){
+                                alert('같은 레벨에서만 이동이 가능합니다.');
+                            }else{
+                                //logMsg("tree.onDrop(%o, %o)", node, sourceNode);
+                                if(selfMove) {
+                                    sourceNode.move(node, hitMode);
+                                }
+                                node.tree.redraw();
+                                codeReorder(node, sourceNode,hitMode);
+                            }
+                        }else{
+                            alert('접근권한이 없습니다.');
+                        }
+                    },
+                    onDragLeave: function(node, sourceNode) {
+                        //logMsg("tree.onDragLeave(%o, %o)", node, sourceNode);
+                    }
+                }
+            });
+        }
+        function initCdFrm(){
+            $('#cd').val('');
+            $('#cd').show();
+            $('#cdTxt').text('');
+            $('#cdNm').val('');
+            $('#cdDc').val('');
+            $('#cdFrm').find('#cdgrpid').val('');
+            $('#cdFrm').find('#cdgrpNm').val('');
+            $('#cdFrm').find('#upprCd').val('');
+            $('#viewCdgrpid').text('');
+            $('#viewUpprCd').text('');
+            $('#cdOptn1').val('');
+            $('#cdOptn2').val('');
+            $('#cdOptn3').val('');
+            $('#cdFrm').find("input:radio[name=useYn]:input[value='Y']").prop("checked", true);
+            $('#cdUpdtUserNm').text('');
+        }
+
+        function setCodeGrpInfo(data){
+            $('#cdgrpFrm').find('#cdgrpid').hide();
+            $('#cdgrpFrm').find('#cdgrpid').val(data.cdgrpid);
+            $('#cdgrpid').val(data.cdgrpid);
+            $('#cdgrpidTxt').text(data.cdgrpid);
+            $('#cdgrpNm').val(data.cdgrpNm);
+            $('#cdgrpDc').val(data.cdgrpDc);
+            $('#cdgrpOptn1').val(data.optn1);
+            $('#cdgrpOptn2').val(data.optn2);
+            $('#cdgrpFrm').find("input:radio[name=useYn]:input[value='"+data.useYn+"']").prop("checked", true);
+            $('#cdgrpUpdtUserNm').val(data.updtNm + ' ' + data.mdfcnDt);
+        }
+
+        // 유효성검증기(코드)
+        function validateCode(){
+            $("#cdFrm").validate({
+                rules: {
+                    cd: {
+                        required: true
+                        ,maxlength: 6
+                    },
+                    cdNm: {
+                        required: true
+                        ,maxlength: 200
+                    },
+                    cdDc: {
+                        maxlength: 200
+                    },
+                    optn1: {
+                        maxlength: 200
+                    },
+                    optn2: {
+                        maxlength: 200
+                    },
+                    optn3: {
+                        maxlength: 200
+                    }
+                },
+                messages: {
+                    cd: {
+                        required: "코드를 입력해주십시오"
+                        ,maxlength: "코드는 6자를 넘을 수 없습니다."
+                    },
+                    cdNm: {
+                        required: "코드명을 입력해주십시오"
+                        ,maxlength: "코드명은 200자를 넘을 수 없습니다."
+                    },
+                    cdDc: {
+                        maxlength: "코드설명은 200자를 넘을 수 없습니다."
+                    },
+                    optn1: {
+                        maxlength: "옵션1은 200자를 넘을 수 없습니다."
+                    },
+                    optn2: {
+                        maxlength: "옵션2는 200자를 넘을 수 없습니다."
+                    },
+                    optn3: {
+                        maxlength: "옵션3는 200자를 넘을 수 없습니다."
+                    }
+                }
+            });
+        }
+
+        // 유효성검증기(코드그룹)
+        function validateCodeGrp(){
+            $("#cdgrpFrm").validate({
+                rules: {
+                    cdgrpid: {
+                        required: true
+                        ,maxlength: 3
+                    },
+                    cdgrpNm: {
+                        required: true
+                        ,maxlength: 200
+                    },
+                    cdgrpDc: {
+                        maxlength: 200
+                    },
+                    optn1: {
+                        maxlength: 200
+                    },
+                    optn2: {
+                        maxlength: 200
+                    }
+                },
+                messages: {
+                    cdgrpid: {
+                        required: "코드그룹ID를 입력해주십시오"
+                        ,maxlength: "코드그룹ID는 3자를 넘을 수 없습니다."
+                    },
+                    cdgrpNm: {
+                        required: "코드그룹명을 입력해주십시오"
+                        ,maxlength: "코드그룹명은 200자를 넘을 수 없습니다."
+                    },
+                    cdgrpDc: {
+                        maxlength: "코드그룹설명은 200자를 넘을 수 없습니다."
+                    },
+                    optn1: {
+                        maxlength: "옵션1은 200자를 넘을 수 없습니다."
+                    },
+                    optn2: {
+                        maxlength: "옵션2는 200자를 넘을 수 없습니다."
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+</body>
+</html>
