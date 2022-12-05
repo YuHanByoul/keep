@@ -5258,4 +5258,28 @@ jQuery(function(){
         }
         return element.value.length;
     }
+    
+    /**
+    * 스위치엘리먼트의 on/off 설정.
+    *
+    * @Description : 스위치엘리먼트의 on/off 설정.
+    * @param switch_elem 스위치 엘리먼트
+    * @param on 스위치on(true) off(false)
+    *
+    */
+    function toggleSwitch(switch_elem, on) {
+    if (on){ // turn it on
+        if ($(switch_elem)[0].checked){ // it already is so do 
+            // nothing
+        }else{
+            $(switch_elem).trigger('click').attr("checked", "checked"); // it was off, turn it on
+        }
+    }else{ // turn it off
+        if ($(switch_elem)[0].checked){ // it's already on so 
+            $(switch_elem).trigger('click').removeAttr("checked"); // turn it off
+        }else{ // otherwise 
+            // nothing, already off
+        }
+    }
+}
 	
