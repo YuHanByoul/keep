@@ -62,6 +62,10 @@ public class CodeController {
         return "mng/code/codeMgntForm";
     }
 
+    @RequestMapping(value = "/mng/code/commonCodeManage.html")
+    public String commonCodeManage() throws Exception{
+        return "mng/code/commonCodeManage";
+    }
     /**
      * 코드그룹 목록을 조회한다.
      * 
