@@ -20,8 +20,28 @@
 
 		var codeTree = null;
 
+		function codeGrpSearch(){
+			var searchType = $("#searchType").val();
+			var searchKeyword = $("#searchKeyword").val();
+
+			if(searchType != '' && searchKeyword == ""){
+				alert('검색어를 입력해 주십시오.');
+				return;
+			}
+
+			$("#jsGrid").jsGrid("reset");
+			initCdgrpFrm();
+			destroyTree();
+			initCdFrm();
+		}
+
+		function codeGrpSearchInit() {
+			$("#searchType").val('');
+			$("#searchKeyword").val('');
+		}
+
 		$(function(){
-			//$(document).ready(function(){});과 동일. DOM객체가 생성되어 준비되는 시점에서 호출된다는 의미(html 문서가 로딩이 된 시점)
+			gridHelper1 = new GridHelper('jsGrid','contentPanel');
 			$("#jsGrid").jsGrid({
 				height:"auto",
 				width:"100%",
@@ -78,18 +98,19 @@
 					{ title: '사용여부', name: 'useYn', type: "text", width:"40%"}
 				],
 				rowClick: function(args){
+					gridHelper1.rowClick(args);
 					initCdgrpFrm();
 					getCodeGrpInfo(args.item.cdgrpid);
+
 					destroyTree();
 					code_tree(args.item.cdgrpid, args.item.cdgrpNm);
 					initCdFrm();
+					toggleSwitch("#cdUseYn", true);
 					$('#cdFrm').find("#cdgrpid").val(args.item.cdgrpid);
 					$('#cdFrm').find("#cdgrpNm").val(args.item.cdgrpNm);
 					$('#cdFrm').find("#upprCd").val('0');
 					$('#viewCdgrpid').val(args.item.cdgrpid);
 					$('#viewUpprCd').val('0');
-				},
-				onPageChanged: function(args) {
 				}
 			});
 
@@ -103,21 +124,6 @@
 		 *
 		 *
 		 */
-		function codeGrpSearch(){
-			var searchType = $("#searchType").val();
-			var searchKeyword = $("#searchKeyword").val();
-
-			if(searchType != '' && searchKeyword == ""){
-				alert('검색어를 입력해 주십시오.');
-				return;
-			}
-
-			$("#jsGrid").jsGrid("reset");
-			initCdgrpFrm();
-			destroyTree();
-			initCdFrm();
-		}
-
 		function getCodeGrpInfo(cdgrpid){
 			if(displayWorkProgress()){
 				$.ajax({
@@ -137,18 +143,11 @@
 
 		function setCodeGrpInfo(data){
 			if(data.useYn === 'Y') {
-				if(!$('#cdgrpUseYn').is(':checked')) {
-					$('#cdgrpUseYn').next().trigger('click');
-					$('#cdgrpUseYn').attr('checked',true);
-				}
+				toggleSwitch("#cdgrpUseYn", true);
 			} else {
-				if($('#cdgrpUseYn').is(':checked')) {
-					$('#cdgrpUseYn').next().trigger('click');
-					$('#cdgrpUseYn').attr('checked',false);
-				}
+				toggleSwitch("#cdgrpUseYn", false);
 			}
 
-			$('#cdgrpFrm').find('#cdgrpid').attr('readonly',true);
 			$('#cdgrpFrm').find('#cdgrpid').val(data.cdgrpid);
 			$('#cdgrpNm').val(data.cdgrpNm);
 			$('#cdgrpDc').val(data.cdgrpDc);
@@ -158,6 +157,7 @@
 		}
 
 		function initCdgrpFrm(){
+			$('#cdgrpFrm').find('#cdgrpid').attr('readonly',true);
 			$('#cdgrpFrm').find('#cdgrpid').val('');
 			$('#cdgrpNm').val('');
 			$('#cdgrpDc').val('');
@@ -167,8 +167,11 @@
 		}
 
 		function addCdgrp(){
-			$('#cdgrpFrm').find('#cdgrpid').attr('readonly',false);
+			if(!$("#cdgrpUseYn").is(':checked')) {
+				toggleSwitch("#cdgrpUseYn",true);
+			}
 			initCdgrpFrm();
+			$('#cdgrpFrm').find('#cdgrpid').attr('readonly',false);
 			destroyTree();
 			initCdFrm();
 		}
@@ -383,17 +386,10 @@
 		}
 
 		function setCodeInfo(data){
-
 			if(data.useYn === 'Y') {
-				if(!$('#cdUseYn').is(':checked')) {
-					$('#cdUseYn').next().trigger('click');
-					$('#cdUseYn').attr('checked',true);
-				}
+				toggleSwitch("#cdUseYn", true);
 			} else {
-				if($('#cdUseYn').is(':checked')) {
-					$('#cdUseYn').next().trigger('click');
-					$('#cdUseYn').attr('checked',false);
-				}
+				toggleSwitch("#cdUseYn", false);
 			}
 			$('#cd').attr('readonly',true);
 			$('#cd').val(data.cd);
@@ -411,6 +407,7 @@
 		}
 
 		function initCdFrm(){
+			toggleSwitch("#cdUseYn", true);
 			$('#cd').attr('readonly',false);
 			$('#cd').val('');
 			$('#cdNm').val('');
@@ -423,7 +420,6 @@
 			$('#cdOptn1').val('');
 			$('#cdOptn2').val('');
 			$('#cdOptn3').val('');
-			$('#cdFrm').find("input:radio[name=useYn]:input[value='Y']").prop("checked", true);
 			$('#cdUpdtUserNm').val('');
 		}
 
@@ -436,7 +432,6 @@
 						var cdgrpid = $('#cdFrm').find("#cdgrpid").val();
 						var cdgrpNm = $('#cdFrm').find("#cdgrpNm").val();
 						initCdFrm();
-						$('#cd').attr('readonly',false);
 						$('#cdFrm').find("#cdgrpid").val(cdgrpid);
 						$('#cdFrm').find("#cdgrpNm").val(cdgrpNm);
 						$('#cdFrm').find("#upprCd").val(node.data.key);
@@ -586,6 +581,7 @@
 				$('#cdgrpFrm').find('#useYn').val("N");
 			}
 		}
+
 		function cdSwitch() {
 			if($("#cdUseYn").is(":checked")) {
 				$('#cdUseYn').find('#useYn').val("Y");
@@ -593,12 +589,8 @@
 				$('#cdUseYn').find('#useYn').val("N");
 			}
 		}
-
-		function codeGrpSearchInit() {
-			$("#searchType").val('');
-			$("#searchKeyword").val('');
-		}
 	</script>
+
 	<div class="row">
 		<div class="card">
 			<div class="card-block-small">
@@ -609,7 +601,7 @@
 
 							<div class="input-group input-group-sm input-group-dropdown mb-0">
 								<select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
-									<option value="">-선택-</option>
+									<option value="">- 선택 -</option>
 									<option value="CDGRP_NM">코드그룹명</option>
 									<option value="CDGRPID">코드그룹아이디</option>
 									<option value="CD">코드아이디</option>
@@ -619,7 +611,7 @@
 						</div>
 					</div>
 					<div class="m-t-20">
-						<button type="submit" class="btn btn-disabled m-r-5" onclick="codeGrpSearchInit()">Cancel</button>
+						<button type="button" class="btn btn-disabled m-r-5" onclick="codeGrpSearchInit()">Cancel</button>
 						<button type="submit" class="btn btn-primary" onclick="codeGrpSearch()">Search</button>
 					</div>
 				</form>
@@ -635,7 +627,9 @@
 						<div class="card">
 							<div class="card-block-small">
 								<div class="col-12 mb-2 text-right">
-									<button class="btn btn-primary" onclick="addCdgrp()">등록</button>
+									<th:block sec:authorize-url="/mng/code/insertCodeGrpInfo.do">
+										<button class="btn btn-primary" onclick="addCdgrp()">등록</button>
+									</th:block>
 								</div>
 
 								<!--jsGrid-->
@@ -690,7 +684,7 @@
 									</div>
 									<div class="mb-2 form-group row">
 										<div class="col-sm-12">
-											<span kattr:switch_yn="cdgrpUseYn" label="코드그룹 사용" defaultVal="Y" onchange="cdSwitch" isAdmin="true"></span>
+											<span kattr:switch_yn="cdgrpUseYn" label="코드그룹 사용" defaultVal="Y" onchange="cdgrpSwitch" isAdmin="true"></span>
 										</div>
 									</div>
 									<div class="mb-0 mt-4 form-group row">
@@ -787,7 +781,7 @@
 									</div>
 									<div class="mb-2 form-group row">
 										<div class="col-sm-12">
-											<span kattr:switch_yn="cdUseYn" label="코드그룹 사용" defaultVal="Y" onchange="cdgrpSwitch" isAdmin="true"></span>
+											<span kattr:switch_yn="cdUseYn" label="코드 사용" defaultVal="Y" onchange="cdSwitch" isAdmin="true"></span>
 										</div>
 									</div>
 									<div class="mb-0 mt-4 form-group row">
