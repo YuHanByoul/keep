@@ -141,17 +141,17 @@ public class SelectInstAttr extends AbstractAttributeTagProcessor {
             result.append("var selectInst").append(attributeValue).append("Data = [\n");
             
             if (isFirstOptVal && isFirstOptTxt) {
-                result.append(makeObj(firstOptVal, firstOptTxt, firstOptVal));
+                result.append(makeObj(firstOptVal, firstOptTxt, null, firstOptVal));
             }
             
             if (isSecondOptVal && isSecondOptTxt) {
-                result.append(makeObj(secondOptVal, secondOptTxt, secondOptVal));
+                result.append(makeObj(secondOptVal, secondOptTxt, null, secondOptVal));
             }
             
             List<Map<String, Object>> instList = commonService.selectAlowedInstList();
             
             for (Map<String, Object> inst : instList) {
-                result.append(makeObj(String.valueOf(inst.get("INSTID")), (String)inst.get("INST_NM"), String.valueOf(inst.get("INSTID"))));
+                result.append(makeObj(String.valueOf(inst.get("INSTID")), (String)inst.get("INST_NM"), (String)inst.get("INST_CD"), String.valueOf(inst.get("INSTID"))));
             }
             
             result.append("];\n");
@@ -195,14 +195,22 @@ public class SelectInstAttr extends AbstractAttributeTagProcessor {
 
     }
 
-    private String makeObj(String id, String text, String value) {
+    private String makeObj(String id, String text, String text2, String value) {
         StringBuffer objStr = new StringBuffer();
+        StringBuffer finalText = new StringBuffer();
+        finalText.append(text);
+        
         if ("".equals(id)) {
             id = " "; // id값은 공백일수 없음
         }
+        
+        if (text2 != null) {
+            finalText.append("(").append(text2).append(")");
+        }
+        
         objStr.append("{");
         objStr.append("id: '").append(id).append("', ");
-        objStr.append("text: '").append(text).append("', ");
+        objStr.append("text: '").append(finalText.toString()).append("', ");
         objStr.append("value: '").append(value).append("' ");
         objStr.append("},\n");
         return objStr.toString();
