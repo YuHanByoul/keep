@@ -51,7 +51,7 @@ $(document).ready(function() {
     $(".main-menu").mCustomScrollbar({
         setTop: sessionStorage.getItem("scrolledTopPx"),
         setHeight: "calc(100% - 80px)",
-        callbacks:{onScroll:function(){sessionStorage.setItem('scrolledTopPx',$(this).children().first().children().first().children().first().css('top'));}}
+        callbacks:{whileScrolling:function(){sessionStorage.setItem('scrolledTopPx',$("#mCSB_1_container").css('top'));}}
     });
     /*chatbar js start*/
 
