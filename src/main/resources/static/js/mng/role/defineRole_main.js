@@ -73,12 +73,12 @@ jQuery(document).ready(function(){
 	
     jQuery("#defineRoleform").validate({
         rules: {
-             nm         :   { required: true ,isBlank : true, maxlength: 20 }  
-            ,dc         :   { maxlength: 130 }
+             nm         :   { required: true ,isBlank : true, maxlength: 60 }  
+            ,dc         :   { maxlength: 400 }
         },
         messages: {
-             nm         :   { required: "역할명을 입력해주십시오." , isBlank : "역할명에 공백이 있습니다.", maxlength: "역할명은 20자 이하여야 합니다." }  
-            ,dc         :   { maxlength: "역할설명은 130자 이하여야 합니다."   }
+             nm         :   { required: "역할명을 입력해주십시오." , isBlank : "역할명에 공백이 있습니다.", maxlength: "역할명은 60자 이하여야 합니다." }  
+            ,dc         :   { maxlength: "역할설명은 400자 이하여야 합니다."   }
         }
     });
 });
@@ -206,23 +206,32 @@ function fn_getRoleInfo(roleId){
 function fn_setRegistForm(data){
 	if(data != undefined){
 		jQuery("input[name='roleid']").val(data.ROLEID);
-		jQuery("#viewRoleId").html(data.ROLEID);
+		jQuery("#viewRoleId").val(data.ROLEID);
 		jQuery("#roleNm").html("역할 : "+data.NM);		// 역할
 		jQuery("#viewRoleNm").val(data.NM);
 		jQuery("#viewRoleExpln").val(data.DC);
-		jQuery("input:radio[name=useYn]:input[value='"+data.USE_YN+"']").prop("checked", true);
+		jQuery("input:radio[name=kndCd]:input[value='"+data.KND_CD+"']").prop("checked", true);
+		jQuery("input:radio[name=trgtInstCd]:input[value='"+data.TRGT_INST_CD+"']").prop("checked", true);
+		jQuery("input:radio[name=trgtRgnCd]:input[value='"+data.TRGT_RGN_CD+"']").prop("checked", true);
+		if(data.USE_YN == "Y"){
+		    toggleSwitch("#useYn", true);
+		}else{
+            toggleSwitch("#useYn", false);
+        }
 		
 		jQuery("#editBtn").show();
 		jQuery("#writeBtn").hide();
 		
 	}else{
-		jQuery("#viewRoleId").html('');
+		jQuery("#viewRoleId").val('');
 		jQuery("#roleNm").html("");
 		jQuery("#viewRoleNm").val('');
 		jQuery("#viewRoleExpln").val('');
-		if(jQuery("#upprRoleid").val() == "0"){
-			jQuery("input[name='useYn']:radio:input[value='Y']").prop("checked", true);
-		}
+		jQuery("input[name='kndCd']:radio:input[value='A']").prop("checked", true);
+		jQuery("input[name='trgtInstCd']:radio:input[value='A']").prop("checked", true);
+		jQuery("input[name='trgtRgnCd']:radio:input[value='A']").prop("checked", true);
+		toggleSwitch("#useYn", true);
+		
 		jQuery("#editBtn").hide();
 		jQuery("#writeBtn").show();
 	}

@@ -430,8 +430,7 @@ public class RoleAuthController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/roleauth/roleUserMappPopup.html")
-    public String roleUserMappPopup(RoleUserVo roleUserVo, @RequestParam("roleid") String roleid, ModelMap model) throws Exception {
-        model.addAttribute("roleid", roleid);
+    public String roleUserMappPopup(RoleUserVo roleUserVo, ModelMap model) throws Exception {
         return "mng/role/roleUserMappSearchPopup";
     }
 

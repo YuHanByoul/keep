@@ -8,30 +8,28 @@
 /** 체크박스로 선택된 항목 저장 */
 var selectedItems = [];
 
-/** jsGrid의 회원분류 값. */
-var userSe = [
-    { Name: "개인회원", Id: "P" },
-    { Name: "기업회원", Id: "C" }
-];
-
 /**
  * 로딩 후 처리.
  * 
  * @returns
  */
 $(function(){
-	init();
+    $("#userAddModal").off("show.bs.modal").on("show.bs.modal", initRoleUserMappSearch);
+});
+
+function initRoleUserMappSearch() {
+	initSearch();
     
     //검색 form submit
-    $('#searchForm').submit(function(){
-        $("#jsGrid").jsGrid("reset");        
+    $('#searchPopupForm').submit(function(){
+        $("#jsGridPopup").jsGrid("reset");        
         return false;
     });
     
     //사용자 추가 버튼 처리
     $('#addUserForm').submit(addUser);
 
-});
+}
 
 var selectItem = function(item) {
     selectedItems.push(item);
@@ -48,24 +46,24 @@ var selectToggle = function(){
 		selectedItems = [];
 		$($('.jsgrid-grid-body .jsgrid-table tbody tr td:nth-child(1) input')).prop('checked', false);
 	} else {
-		selectedItems =	$("#jsGrid").jsGrid('option', 'data');
+		selectedItems =	$("#jsGridPopup").jsGrid('option', 'data');
 		$($('.jsgrid-grid-body .jsgrid-table tbody tr td:nth-child(1) input')).prop('checked', true);
 	}
 }
 
-var init = function(){
+var initSearch = function(){
 	var curDate = new Date().toISOString();
 	$('#roleStartDate').val(curDate.substring(0,10));	//오늘 날짜를 default로 세팅한다.
 	
     //jsGrid Init
-    $("#jsGrid").jsGrid({
+    $("#jsGridPopup").jsGrid({
             height: "auto",
             width: "100%",
             autoload: true,            
             sorting: false,
             paging: true,
             selecting: true,
-            pagerContainer: "#listPager",
+            pagerContainer: "#popupListPager",
             pagerFormat: "{first} {prev} {pages} {next} {last}",
             pagePrevText: "이전",
             pageNextText: "다음",
@@ -84,8 +82,8 @@ var init = function(){
                     
                     var params = {
                             "roleid": jQuery("#roleid").val(),
-                            "searchType": $('#searchType').val(),
-                            "searchKeyword": $('#searchKeyword').val(),
+                            "searchType": $('#searchType', "#searchPopupForm").val(),
+                            "searchKeyword": $('#searchKeyword', "#searchPopupForm").val(),
                             "pageNumber": filter.pageIndex,
                             "rowPerPage": filter.pageSize,
                             "orderField": filter.sortField,
@@ -128,15 +126,27 @@ var init = function(){
                                 });
                     },
                     align: "center",
-                    width: "5%"
+                    width: "50"
                 },
-/*                 { name: 'no', title:"No.", type: "text", width: 30 }, */
-                { name: 'nm', title:"이름", type: "text", width: "20%" },
-                { name: 'acnt', title:"아이디", type: "text", width: "20%", align: "center" },
-                { name: 'userSeCd', title:"회원구분", type: "select", items: userSe, valueField: "Id", textField: "Name", width: "10%" }
+                { name: 'nm', title:"이름(기관)", type: "text", width: "200", itemTemplate: function(value, item) {
+                        if(item.instNm == null){
+                            return item.nm;
+                        }else{
+                            return item.nm + "(" + item.instNm + ")";
+                        }
+                    }
+                },
+                { name: 'acnt', title:"아이디", type: "text", width: "200", align: "center" },
+                { name: 'moblphon', title:"휴대폰", type: "text", width: "200", align: "center" },
+                { name: 'eml', title:"이메일", type: "text", width: "200", align: "center" }
             ],
             
     });	
+}
+
+function initSearchPopup() {
+    $("#searchType", "#searchPopupForm").val('');
+    $("#searchKeyword", "#searchPopupForm").val('');   
 }
 
 var addUser = function(){
@@ -144,18 +154,18 @@ var addUser = function(){
 	var endDate = $('#roleEndDate').val();
 	
 	if (startDate == '') {
-		alert("사용기간을 선택해 주십시오.");
+		alert("권한 시작일을 선택해 주십시오.");
 		$('#roleStartDate').focus();
 		return false;
 	} else if (endDate == '') {
-        alert("사용기간을 선택해 주십시오.");
+        alert("권한 종료일을 선택해 주십시오.");
         $('#roleEndDate').focus();
         return false;
     }
 
 	//if (parseInt(startDate.replace(/-/g, "")) > parseInt(endDate.replace(/-/g, ""))) {
 	if (startDate > endDate) {
-		alert("권한 사용기간 종료일자는 시작일보다 같거나 커야 합니다.");
+		alert("권한 종료일은 시작일보다 같거나 커야 합니다.");
 		$('#roleEndDate').focus();
 		return false;
 	}
@@ -166,21 +176,12 @@ var addUser = function(){
 	}
 	
 	if(confirm("사용자를 추가 하시겠습니까?")){
-		opener.addUserList(selectedItems, startDate, endDate);
+		addUserList(selectedItems, startDate, endDate);
 		self.close();
 		
 		return true;
 	}else{
 		return false;
 	}
-	
-}
-
-
-function fn_addUsers(){
-	var f =document.form1;
-	jQuery("#refMenuid", opener.document).html(val);
-	jQuery("input[name='refMenuid']", opener.document).val(val);
-	window.close();
 	
 }

@@ -3,103 +3,160 @@
 <head>
 <meta charset="utf-8" />
 <body>
-	<div th:fragment="content">
-	
-		<script src="/js/mng/role/defineRole_main.js"></script>
+	<script src="/js/mng/role/defineRole_main.js"></script>
+	<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
 
-		<form id="defineRoleform" name="defineRoleform" method="post" action="" class="form-horizontal row-border">
-			<input type="hidden" name="roleid" id="roleid" th:value="${roleid}"/>
-			<input type="hidden" name="upprRoleid" id="upprRoleid" value="0"/>
-			<input type="hidden" name="mode" id="mode" value="W"/>
-		        
+    <form id="defineRoleform" name="defineRoleform" method="post" action="" class="row">
+        <input type="hidden" name="roleid" id="roleid" th:value="${roleid}"/>
+        <input type="hidden" name="upprRoleid" id="upprRoleid" value="0"/>
+        <input type="hidden" name="mode" id="mode" value="W"/>
+            
+        <!-- tree context -->   
+        <ul id="roleContext" class="contextMenu" style="width: 130px;">
+            <li class="edit"><a href="#regist">하위 역할등록</a></li><!-- 하위 역할등록 -->
+            <li class="quit separator"><a href="#quit">취소</a></li><!-- 취소 -->
+        </ul>
+        
+        <div class="col-12 col-xl-4">
+            <h5 class="mb-3">
+                <strong>역할구조</strong>
+            </h5>
+            <div class="card">
+                <div class="card-block-small" id="tree">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-8">
+            <h5 class="mb-3">
+                <strong>역할정보</strong>
+            </h5>
+            <div class="card">
+            
+                <div class="card-block-small">
+                    <div class="mb-2 form-group row">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewRoleId"><strong>역할코드</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" id="viewRoleId" value="" readonly=""/>
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewRoleNm"><strong>역할명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="nm" id="viewRoleNm" />
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewRoleExpln"><strong>역할설명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="dc" id="viewRoleExpln" />
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>역할구분</strong></div>
+                        <div class="col-sm-12">
+                            <div class="form-radio">
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label" th:if="${seCd} == 'A'">
+                                        <input type="radio" name="seCd" value="A" checked="checked">
+                                        <i class="helper"></i>관리자
+                                    </label>
+                                    <label class="mb-0 form-label" th:if="${seCd} == 'U'">
+                                        <input type="radio" name="seCd" value="U" checked="checked">
+                                        <i class="helper"></i>사용자
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>역할종류</strong></div>
+                        <div class="col-sm-12">
+                            <div class="form-radio">
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="kndCd" value="A" checked="checked">
+                                        <i class="helper"></i>총괄관리자
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="kndCd" value="G">
+                                        <i class="helper"></i>일반관리자
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="kndCd" value="M">
+                                        <i class="helper"></i>기관관리자
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>권한적용 범위(기관)</strong></div>
+                        <div class="col-sm-12">
+                            <div class="form-radio">
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="trgtInstCd" value="A" checked="checked">
+                                        <i class="helper"></i>전체기관
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="trgtInstCd" value="S">
+                                        <i class="helper"></i>소속기관
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="trgtInstCd" value="C">
+                                        <i class="helper"></i>선택기관
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>권한적용 범위(지역)</strong></div>
+                        <div class="col-sm-12">
+                            <div class="form-radio">
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="trgtRgnCd" value="A" checked="checked">
+                                        <i class="helper"></i>사용안함
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 form-label">
+                                        <input type="radio" name="trgtRgnCd" value="S">
+                                        <i class="helper"></i>선택지역
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2 form-group row">
+                        <div class="col-sm-12">
+                            <input type="checkbox" class="js-single-small" name="useYn" id="useYn" value="Y" />
+                            <label for="useYn" class="v-middle">사용여부</label>
+                        </div>
+                    </div>
+                    <div class="mb-0 mt-4 form-group row">
+                        <div class="col-sm-12" id="editBtn">
+                            <button type="button" class="btn btn-disabled m-r-5" id="doCancle">취소</button>
+                            <button type="button" class="btn btn-primary" id="doEdit">저장</button>
+                        </div>
+                        <div class="col-sm-12" id="writeBtn">
+                            <button type="button" class="btn btn-primary" id="doWrite">저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </form>
 
-			<!-- tree context -->	
-			<ul id="roleContext" class="contextMenu">
-				<li class="edit"><a href="#regist">하위 역할등록</a></li><!-- 하위 역할등록 -->
-				<li class="quit separator"><a href="#quit">취소</a></li><!-- 취소 -->
-			</ul>
-				
-			<div class="row no-gutter">
-				<div class="col-md-5 col-sm-5 col-xs-12">
-				
-					<div class="panel panel-default">
-						<div class="panel-heading">
-							<h4>역할구조</h4>
-						</div>
-						<div class="panel-body">
-							<div>
-								<div class="tree thumbnail img-responsive" id="tree"></div>
-							</div>
-						</div>
-					</div>
-
-				</div>
-				<div class="col-md-7 col-sm-7 col-xs-12" style="height:900px;">
-					<div class="ui-layout-west panel panel-default" id="layoutMenuCompose">
-						<div class="panel-heading">
-							<h4>역할정보</h4>
-						</div>
-						<div class="panel-body">
-
- 		              <div class="form-group  col-md-12 row">
-						<label class="col-md-2 control-label"><span class="text-danger"></span>역할코드</label>
-					    <div class="form-control-static  " style="text-align:left;">
-					    <label id="viewRoleId" class="col-md-10 form-control-static"></label>
-   			              <!-- <span id="view_roleId" >자동생성</span> -->
-					    </div>                
-					  </div>
-					  
- 		              <div class="form-group  col-md-12 row">
-						<label class="col-md-2 control-label"><span class="text-danger">* </span>역할명</label>
-					    <div class="col-md-10 form-control-static " style="text-align:left;">
-   			              <input type="text" name="nm" id="viewRoleNm" class="form-control input-sm col-md-12">
-					    </div>                
-					  </div>
-					  
- 		              <div class="form-group  col-md-12 row">
-						<label class="col-md-2 control-label"><span class="text-danger"></span>역할설명</label>
-					    <div class="col-md-10 form-control-static" style="text-align:left;">
-   			              <textarea name="dc" rows="3" dispName="역할설명" lenCheck="400" id="viewRoleExpln" class="form-control col-md-12" ></textarea>
-					    </div>                
-					  </div>
-					  
- 		              <div class="form-group  col-md-12 row">
-						<label class="col-md-2 control-label"><span class="text-danger"> </span>사용여부</label>
-					    <div class="col-md-3 form-control-static  " style="text-align:left;">
-   			              <label class="radio-inline">
-							<input type="radio" name="useYn" value="Y" checked> 사용
-						</label>
-						<label class="radio-inline">
-							<input type="radio" name="useYn" value="N" checked> 미사용
-						</label>
-					    </div>                
-					  </div>
- 		              <div class="form-group  col-md-12 row">
-						<label class="col-md-2 control-label"><span class="text-danger"> </span>역할구분</label>
-					    <div class="col-md-3 form-control-static  " style="text-align:left;">
-   			              <label class="radio-inline" th:if="${seCd} == 'A'">
-							<input type="radio" name="seCd" value="A" checked> 관리자
-						</label>
-						<label class="radio-inline" th:if="${seCd} == 'U'">
-							<input type="radio" name="seCd" value="U" checked> 사용자
-						</label>
-					    </div>                
-					  </div>
- 							<div id="editBtn" class="btnArea text-right" style="display:none">
-			            		<button type="button" id="doEdit" class="btn btn-sm btn-primary">저장<!-- 저장 --></button>
-			            		<button type="button" id="doCancle" class="btn btn-sm btn-default">취소</button><!-- 취소 -->
-			            	</div>
-			            	<div id="writeBtn" class="btnArea text-right">
-			            		<button type="button" class="btn btn-sm btn-primary" id="doWrite">저장</button><!-- 다음 -->
-			            	</div>
-			            </div>
-					</div>
-				</div>
-			</div>
-			
-		</form>
-	
-
-	</div><!-- layout:fragment="content" -->
 </body>
 </html>

@@ -18,24 +18,26 @@ jQuery(document).ready(function(){
 	init();
 });
 
+var userAddModal;
 function init(){
 	initJsGridCustom();
 	
 	fn_roleTreeList();
 	
 	makeGrid();
-	
+
 	jQuery("#goPopup").bind("click",function(){		
 		if(jQuery("#roleid").val()  == '0' || jQuery("#roleid").val()  == ''){
 			alert("역할을 선택해 주십시오.");
 			return;
 		}
-		var f= document.mappingUserForm;
-		Center_Fixed_Popup2("", "roleUserMappPopup", 700, 500, "yes");
-		f.target = "roleUserMappPopup";
-		f.action = popupUrl;
-		f.submit();
-		f.target = "_self";
+		
+		$("#userAddModal").load(popupUrl, function(response, status, xhr) {
+            if (status == "success") {
+                userAddModal = new bootstrap.Modal($('#userAddModal'));
+                userAddModal.show();
+            }
+        });
 	});
 	
 	//검색 form submit
@@ -46,6 +48,11 @@ function init(){
 	
 }
 
+function initSearch() {
+    jQuery("#searchType", "#searchForm").val("");
+    jQuery("#searchKeyword", "#searchForm").val("");
+}
+
 function initJsGridCustom(){
 
 	var MyDateField = function(config) {
@@ -53,9 +60,6 @@ function initJsGridCustom(){
 	};
 	 
 	MyDateField.prototype = new jsGrid.Field({
-	 
-	    css: "date-field",            // redefine general property 'css'
-	    align: "center",              // redefine general property 'align'
 
 	    sorter: function(date1, date2) {
 	        return new Date(date1) - new Date(date2);
@@ -67,25 +71,19 @@ function initJsGridCustom(){
 	    },
 	 
 	    insertTemplate: function(value) {
-	        return this._insertPicker = $("<input>").datepicker({ defaultDate: new Date(), dateFormat:'yy-mm-dd',
-	        	dayNamesMin: [  "일", "월", "화", "수", "목", "금", "토" ], 
-				monthNamesShort : [ '1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월' ]});
+	        return this._insertPicker = $("<input type='date' value='" + new Date().toISOString().substring(0, 10) + "'>");
 	    },
 	 
 	    editTemplate: function(value) {
-	        return this._editPicker = $("<input>").datepicker({dateFormat:'yy-mm-dd',
-	        	dayNamesMin: [  "일", "월", "화", "수", "목", "금", "토" ], 
-				monthNamesShort : [ '1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월' ]}).datepicker("setDate", new Date(value));
+	        return this._editPicker = $("<input type='date' value='" + value + "'>");
 	    },
 	 
 	    insertValue: function() {
-	        return this._insertPicker.datepicker("getDate").toISOString();
+	        return this._insertPicker.val();
 	    },
 	 
 	    editValue: function() {
-	    	var date = new Date(this._editPicker.datepicker("getDate"));
-	    	date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-	    	return date.toISOString().substring(0, 10);
+	    	return this._editPicker.val();
 	    }
 	});
 	 
@@ -169,8 +167,8 @@ function makeGrid(roleId) {
         pagerFormat: "{first} {prev} {pages} {next} {last}",
         pagePrevText: "이전",
         pageNextText: "다음",
-        pageFirstText: "< 처음 ㅣ",
-        pageLastText: "ㅣ마지막 >",
+        pageFirstText: " < 처음 ㅣ",
+        pageLastText: " | 마지막 >",
         noDataContent: "데이터가 없습니다.",
         
         pageSize: 10,
@@ -240,13 +238,36 @@ function makeGrid(roleId) {
         },
         deleteConfirm: "정말 삭제하시겠습니까?",
         fields: [ 
-            { name: 'nm', title:"이름(기업명)", type: "text", width: "15%", readOnly: true },
-            { name: 'acnt', title:"아이디", type: "text", width: "10%", readOnly: true },
-            { name: 'roleNm', title:"역할", type: "text", width: "10%", align: "center", readOnly: true },
-            { name: 'userSeCd', title:"회원구분", type: "select", width: "10%", items: userSe, valueField: "Id", textField: "Name", readOnly: true },
-            { name: 'roleStrtDd', title:"사용시작일", type: "date", width: "10%", align: "center" },
-            { name: 'roleEndDd', title:"사용종료일", type: "date", width: "10%", align: "center" },
-            { type: "control", width: "7%" }
+            { name: 'nm', title:"이름(기관)", type: "text", width: "200", 
+                itemTemplate: function (value, item) {
+                    if(item.instNm == null){
+                        return item.nm;
+                    }else{
+                        return item.nm + "(" + item.instNm + ")";
+                    }
+                }, 
+                editTemplate: function (value, item) {
+                    if(item.instNm == null){
+                        return item.nm;
+                    }else{
+                        return item.nm + "(" + item.instNm + ")";
+                    }
+                },
+                editValue: function (value, item) {
+                    return value;
+                }
+            },
+            { name: 'acnt', title:"아이디", type: "text", width: "150", 
+                editTemplate: function (value, item) {
+                    return value;
+                },
+                editValue: function (value, item) {
+                    return value;
+                }
+            },
+            { name: 'roleStrtDd', title:"사용시작일", type: "date", width: "150", align: "center" },
+            { name: 'roleEndDd', title:"사용종료일", type: "date", width: "150", align: "center" },
+            { type: "control", width: "70" }
         ],
         //rowClick: function(args) { readModify(args.item.faqid); },
         
@@ -286,6 +307,7 @@ var addUserList = function(list, startDate, endDate){
 			//리로드
 			$("#gridList").jsGrid("reset");
 			
+			userAddModal.hide();
 		}
 	});
 	

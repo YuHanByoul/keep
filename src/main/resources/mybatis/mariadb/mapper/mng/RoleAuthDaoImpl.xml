@@ -71,7 +71,7 @@
     <select id="selectRoleInfo" parameterType="java.util.Map" resultType="java.util.Map">
         <![CDATA[ /* RoleauthDao.selectRoleInfo */
             SELECT 
-                ROLEID, UPPR_ROLEID, NM, DC, USE_YN, ORD
+                ROLEID, UPPR_ROLEID, NM, DC, KND_CD, TRGT_INST_CD, TRGT_RGN_CD, USE_YN, ORD
             FROM TB_CMM_ROLE A
             WHERE ROLEID = #{roleid}
         ]]>
@@ -81,8 +81,8 @@
     <insert id="insertRoleInfo" useGeneratedKeys="true" keyProperty="roleid" parameterType="RoleVo">
         /* RoleAuthDao.insertRoleInfo */
         INSERT INTO
-            TB_CMM_ROLE( NM, SE_CD, UPPR_ROLEID, DC, USE_YN, ORD, MDFCN_DT, MDFRID, REG_DT, RGTRID)
-            VALUES ( #{nm}, #{seCd}, #{upprRoleid}, #{dc}, #{useYn},
+            TB_CMM_ROLE( NM, SE_CD, UPPR_ROLEID, DC, KND_CD, TRGT_INST_CD, TRGT_RGN_CD, USE_YN, ORD, MDFCN_DT, MDFRID, REG_DT, RGTRID)
+            VALUES ( #{nm}, #{seCd}, #{upprRoleid}, #{dc}, #{kndCd}, #{trgtInstCd}, #{trgtRgnCd}, #{useYn},
                 (SELECT IFNULL(MAX(ORD),0)+1 FROM TB_CMM_ROLE A WHERE A.UPPR_ROLEID = #{upprRoleid}),
                 NOW(),
                 #{rgtrid},
@@ -96,10 +96,11 @@
         /* RoleAuthDao.selectRoleUserMappedList */
         <include refid="PaginationMapper.header"/>
         SELECT 
-            RU.ROLEID, R.NM AS ROLE_NM, RU.USERID, RU.ROLE_STRT_DD, RU.ROLE_END_DD, RU.MDFCN_DT, U.ACNT, U.NM, 'P' AS USER_SE_CD
+            RU.ROLEID, R.NM AS ROLE_NM, RU.USERID, RU.ROLE_STRT_DD, RU.ROLE_END_DD, RU.MDFCN_DT, U.ACNT, U.NM, I.INST_NM
         FROM TB_CMM_ROLE_USER RU
             INNER JOIN TB_CMM_USER U ON RU.USERID = U.USERID
             INNER JOIN TB_CMM_ROLE R ON RU.ROLEID = R.ROLEID
+            LEFT OUTER JOIN TB_CMM_INST I ON U.INSTID = I.INSTID
         WHERE 1=1
             <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchType) 
                 and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword) and searchType == "U.NM"'>
@@ -162,6 +163,9 @@
         UPDATE TB_CMM_ROLE SET
             NM = #{nm},
             DC = #{dc},
+            KND_CD = #{kndCd},
+            TRGT_INST_CD = #{trgtInstCd},
+            TRGT_RGN_CD = #{trgtRgnCd},
             USE_YN = #{useYn},
             SE_CD = #{seCd},
             MDFRID = #{mdfrid},
@@ -232,10 +236,10 @@
         /* RoleAuthDao.selectUserList */
         <include refid="PaginationMapper.header"/>
         SELECT
-          A.USERID, A.ACNT, A.USER_SE_CD, A.NM, A.MDFCN_DT, B.ROLEID
+          A.USERID, A.ACNT, A.NM, A.MOBLPHON, A.EML, A.MDFCN_DT, C.INST_NM
         FROM
-          TB_CMM_USER A LEFT OUTER JOIN TB_CMM_ROLE_USER B
-                    ON A.USERID = B.USERID AND B.ROLEID = #{roleid}
+          TB_CMM_USER A LEFT OUTER JOIN TB_CMM_ROLE_USER B ON A.USERID = B.USERID AND B.ROLEID = '1'
+          LEFT OUTER JOIN TB_CMM_INST C ON A.INSTID = C.INSTID
          WHERE A.ACNT IS NOT NULL
         <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchType) 
             and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword) and searchType == "A.NM"'>

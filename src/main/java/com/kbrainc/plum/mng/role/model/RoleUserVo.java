@@ -51,9 +51,15 @@ public class RoleUserVo extends ParentRequestVo {
     /** 계정 */
     private String acnt;
     
+    /** 기관_이름 */
+    private String instNm;
+    
     /** 이름 */
     private String nm;
     
-    /** 사용자_구분_코드 */
-    private String userSeCd;
+    /** 휴대폰번호 */
+    private String moblphon;
+    
+    /** 이메일 */
+    private String eml;
 }
