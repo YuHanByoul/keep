@@ -39,7 +39,7 @@ public interface MemberService {
     * @return int insert로우수
     * @throws Exception 예외
     */
-    public int insertMember(MemberVo memberVo, MemberDtlVo memberDtlVo) throws Exception;
+    public int insertMember(MemberVo memberVo) throws Exception;
 
     /**
     * 계정중복 확인.
@@ -95,7 +95,7 @@ public interface MemberService {
     * @return int update로우수
     * @throws Exception 예외
     */
-    public int modifyMember(MemberVo memberVo, MemberDtlVo memberDtlVo) throws Exception;
+    public int modifyMember(MemberVo memberVo) throws Exception;
     
     /**
     * 회원의 임시비밀번호를 수정한다.

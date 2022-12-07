@@ -200,4 +200,71 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public List<MemberVo> selectMemberExcelList(MemberVo memberVo) throws Exception;
+
+    
+    /*****************************************************************/
+    /**
+    * 관심 환경분야 저장
+    *
+    * @Title       : insertEnvfld 
+    * @Description : 사용자수정.
+    * @param memberVo MemberVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int insertEnvfld(MemberVo memberVo) throws Exception;
+    /**
+     *  환경분야 저장
+     *
+     * @Title       : insertItrstyfld 
+     * @Description : 사용자수정.
+     * @param memberVo MemberVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int insertItrstfld(MemberVo memberVo) throws Exception;
+    /**
+     *  간편로그인 저장
+     *
+     * @Title       : insertEsylgn 
+     * @Description : 사용자수정.
+     * @param memberVo MemberVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int insertEsylgn(MemberVo memberVo) throws Exception;
+    
+    /**
+     * 환경분야 삭제
+     *
+     * @Title       : deleteEnvfld 
+     * @Description : 사용자수정.
+     * @param memberVo MemberVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int deleteEnvfld(MemberVo memberVo) throws Exception;
+    /**
+     *  관심분야 삭제
+     *
+     * @Title       : deleteItrstyfld 
+     * @Description : 사용자수정.
+     * @param memberVo MemberVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int deleteItrstfld(MemberVo memberVo) throws Exception;
+    /**
+     *  간편로그인 삭제
+     *
+     * @Title       : deletetEsylgn 
+     * @Description : 사용자수정.
+     * @param memberVo MemberVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int deletetEsylgn(MemberVo memberVo) throws Exception;
+    
+    
+    
 }
