@@ -46,7 +46,7 @@ public class CodeVo extends ParentRequestVo implements Serializable {
 
     /** 코드 */
     @NotEmpty(message = "코드를 입력해 주십시오.")
-    @Size(max = 6, message = "코드는 6자를 넘을 수 없습니다.")
+    @Size(max = 12, message = "코드는 12자를 넘을 수 없습니다.")
     private String cd;
 
     /** 코드_이름 */
