@@ -289,22 +289,24 @@ var addUserList = function(list, startDate, endDate){
 	
 	//console.log(list);
 	
-	jQuery.ajax({
-		url : "/mng/roleauth/insertRoleUserList.do",
-		contentType: 'application/json',
-		dataType:'json',
-		method: 'post',
-		data : JSON.stringify(list),
-		success : function(data){
-			console.log(data);
-			
-			//리로드
-			$("#gridList").jsGrid("reset");
-			
-			userAddModal.hide();
-		}
-	});
-	
+	if(displayWorkProgress()){
+    	jQuery.ajax({
+    		url : "/mng/roleauth/insertRoleUserList.do",
+    		contentType: 'application/json',
+    		dataType:'json',
+    		method: 'post',
+    		data : JSON.stringify(list),
+    		success : function(data){
+    			console.log(data);
+    			
+    			//리로드
+    			$("#gridList").jsGrid("reset");
+    			
+    			userAddModal.hide();
+    			closeWorkProgress();
+    		}
+    	});
+    }
 }
 
 

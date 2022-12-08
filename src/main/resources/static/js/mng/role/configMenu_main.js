@@ -222,17 +222,20 @@ function fn_save(){
     	return;
 	}
 		
-	jQuery.ajax({
-		url : saveUrl,
-		cache : false,
-		dataType: 'json',
-		type : 'POST',
-		data : $('#configMenuForm').serialize(),
-		success : function(data){
-			alert(data.msg);
-			treeReload();
-		}
-	});
+	if(displayWorkProgress()){
+    	jQuery.ajax({
+    		url : saveUrl,
+    		cache : false,
+    		dataType: 'json',
+    		type : 'POST',
+    		data : $('#configMenuForm').serialize(),
+    		success : function(data){
+    			alert(data.msg);
+    			treeReload();
+    			closeWorkProgress();
+    		}
+    	});
+    }
 
 }
 

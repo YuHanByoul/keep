@@ -241,16 +241,19 @@ function fn_roleRegist(){
 	var f = document.defineRoleform;
 	if(!(jQuery("#defineRoleform").valid())) return;
     
-	jQuery.ajax({
-		url : saveUrl,
-		cache : false,
-		dataType: 'json',
-		data : jQuery("#defineRoleform").serialize(),
-		success : function(data){
-			alert(data.msg);
-			loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?seCd='+_ROLE_LEVEL);
-		}
-	});
+    if(displayWorkProgress()){
+    	jQuery.ajax({
+    		url : saveUrl,
+    		cache : false,
+    		dataType: 'json',
+    		data : jQuery("#defineRoleform").serialize(),
+    		success : function(data){
+    			alert(data.msg);
+    			loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?seCd='+_ROLE_LEVEL);
+    			closeWorkProgress();
+    		}
+    	});
+    }
 }
 
 //탭 이동
