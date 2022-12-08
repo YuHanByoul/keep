@@ -100,11 +100,12 @@
                         <h5><strong>회원검색결과</strong></h5>
                     </div>
                     <div class="col-12 col-md-6 text-right">
-                    
-                        <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" data-bs-toggle="modal" data-bs-target="#blackListAppointPopup">블랙리스트 지정</button>
-                        
-                        <button type="button" class="btn btn-primary waves-effect waves-light m-r-5">블랙리스트 해지</button>
-                        
+                        <th:block sec:authorize-url="/mng/member/updatetBlcklstDsctn.do">
+                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5"  onclick='fn_openBlackListModal()'>블랙리스트 지정</button>
+                        </th:block>
+                        <th:block sec:authorize-url="/mng/member/updatetBlcklstDsctn.do">
+                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" onclick='fn_clearBlackList()' >블랙리스트 해지</button>
+                        </th:block>
                         <th:block sec:authorize-url="/mng/member/memberInsertForm.html">
                             <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();" >등록</button>
                         </th:block>
@@ -125,9 +126,6 @@
  
       </div>
   </div>
-  
-  
-  
   
   <!-- Button Group Start  엑셀 예시용 -->
   <!--   
@@ -157,6 +155,10 @@
   <!-- e-mail 발송 Start -->
   <div class="modal fade" id="popCon3" tabindex="-1" role="dialog" aria-labelledby="popCon3Title" aria-hidden="true">
   </div>
+  
+<!--블랙리스트 지정 팝업-->
+<div class="modal fade" id="blackListAppointPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+<!--//블랙리스트 지정 팝업-->
 
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script th:inline="javascript">
@@ -289,7 +291,8 @@
                      },
                      itemTemplate: function(_, item) {
                          return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-                         .prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                         //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                         .prop("checked", $.inArray(item, selectedItems) > -1)
                          .on("change", function () {
                          $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
                          });
@@ -299,6 +302,7 @@
                      sorting: false
                  }                  
                 ,{ name: 'userid', css: 'hide' }
+                ,{ name: 'nm', css: 'hide' }
                 ,{ title: '번호'   ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
                 ,{ title: '아이디'  ,name: 'acnt'      ,type: "text" , width: "200" 
                     ,itemTemplate: function(value, item){ return (item.blcklstYn=='Y')? value+"&nbsp;&nbsp;<span class='label label-inverse'>balcklist</span>" :value;}
@@ -364,6 +368,61 @@
             }
         });
     }
+
+  var popupUrl = "/mng/member/blcklstDsctnPopup.html";
+  var userAddModal;
+  
+  //블랙리스트 모달 오픈   
+  fn_openBlackListModal = () => {
+
+	  if(selectedItems.length <=0 ){
+		alert("블랙리스트 적용 대상을 선택해주십시오.");
+		return;
+	  }
+	  var blcklstIds = selectedItems.join(",")
+	  var url = popupUrl+"?blcklstIds="+blcklstIds;
+	  
+	  $("#blackListAppointPopup").load(url, function(response, status, xhr) {
+	      if (status == "success") {
+	          userAddModal = new bootstrap.Modal($('#blackListAppointPopup'));
+	          userAddModal.show();
+	      }
+	  });
+  }
+     
+  fn_clearBlackList =()=>{
+
+	  if(selectedItems.length <=0 ){
+	        alert("블랙리스트 해제 대상을 선택해주십시오.");
+	        return;
+	  }
+	  
+      if(!confirm("선택하신 사용자들을 블랙리스트에서 해지처리 하시겠습니까"))return;
+	  
+	  var blcklstIds = selectedItems.join(",")
+	  
+      var params ={
+              blcklstIds : blcklstIds
+              ,blcklstYn : "N"
+              ,blcklstRsn : "관리자 블랙리스트 해제"
+      }
+      
+      if(displayWorkProgress()){
+          $.ajax({
+              url : "/mng/member/updatetBlcklstDsctn.do",
+              type: 'POST',
+              cache : false,
+              dataType: 'json',
+              data : params,
+              success : function (data){
+                  alert(data.msg);
+                  gridHelper1.resetListContent();
+                  selectedItems = [];
+                  closeWorkProgress();
+              }
+          });
+      }
+  }
 </script>
 
 <script src="/js/ckeditor/ckeditor.js"></script>

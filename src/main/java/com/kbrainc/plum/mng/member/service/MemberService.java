@@ -1,7 +1,9 @@
 package com.kbrainc.plum.mng.member.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.mng.member.model.EmailVo;
 import com.kbrainc.plum.mng.member.model.LoginHistVo;
@@ -214,5 +216,49 @@ public interface MemberService {
     * @throws Exception 예외
     */
     public List<MemberVo> selectMemberExcelList(MemberVo memberVo) throws Exception;
+    
+    /**
+     *  사용자 블랙리스트 여부 업데이트 
+     *
+     * @Title       : deletetEsylgn 
+     * @Description : 사용자수정.
+     * @param BlcklstDsctnVo BlcklstDsctnVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public Map<String,Object> updateMemberBlcklstYn(BlcklstDsctnVo blcklstDsctnVo) throws Exception;
+    
+    /**
+    * 블랙리스트 대상 사용자 리스트
+    *
+    * @Title       : selectBlcklstMemberList 
+    * @Description : 사용자정보 목록 조회.
+    * @param param BlcklstDsctnVo객체
+    * @return List<MemberVo> 블랙리스트 체크 목록
+    * @throws Exception 예외
+    */
+    public List<MemberVo> selectBlcklstMemberList(BlcklstDsctnVo blcklstDsctnVo) throws Exception;
+    
+    /**
+     *  사용자 계정잠금 해제 처리  
+     *
+     * @Title       : updateLockStts 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int updateLockStts(MemberVo memberVo) throws Exception;
+    /**
+     *  사용자 탈퇴 처리  
+     *
+     * @Title       : updateMemberDelYn 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int updateMemberDelYn(MemberVo memberVo) throws Exception;
+    
     
 }

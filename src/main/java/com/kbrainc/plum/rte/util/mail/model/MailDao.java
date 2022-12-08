@@ -35,4 +35,15 @@ public interface MailDao {
 	 */
 	public int insertMailHist(MailVo mailVo);
 	
+	/**
+	 * 
+	 * 메일 발송 히스토리 저장. 
+	 *
+	 * @Title : insertMailHist
+	 * @Description : 메일 발송 히스토리 저장.
+	 * @param mailVo
+	 * @return int
+	 */
+	public int insertEmlSndngDsctn(MailVo mailVo);
+	
 }

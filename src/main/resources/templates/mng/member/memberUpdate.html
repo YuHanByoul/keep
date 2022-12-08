@@ -29,8 +29,8 @@
                            <div class="col-sm-12">
                                <select id="gndr" name="gndr" class="form-select form-select-sm form-control-sm">
                                    <option value="">선택</option>
-                                   <option value="M">남</option>
-                                   <option value="F">여</option>
+                                   <option value="M" th:selected="${member.gndr =='M'}">남</option>
+                                   <option value="F" th:selected="${member.gndr =='F'}">여</option>
                                </select>
                            </div>
                        </div>
@@ -73,7 +73,7 @@
                        <div class="mb-2 form-group row required">
 	                       <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>비밀번호</strong></span>
 	                       <div class="col-sm-12 btn-group-sm">
-	                           <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#tempPasswordPopup">임시 비밀번호 발급</button>
+	                           <button type="button" class="btn btn-inverse"  onclick="fn_openTempPswdModal()">임시 비밀번호 발급</button>
 	                       </div>
                        </div>
                        
@@ -101,7 +101,7 @@
                            </div>
                        </div>
                        
-                      <div class="mb-2 form-group row">
+                      <div class="mb-2 form-group row required">
                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
                                   for="mobileNum"><strong>휴대전화</strong></label>
                            <div class="col-sm-12">
@@ -138,7 +138,7 @@
                    
                    <div class="col-lg-12">
                        <div class="mb-2 form-group row">
-                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"  for="recentDate"><strong>계정잠김 여부</strong></label>
+                           <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"  for="recentDate"><strong>계정잠금 여부</strong></label>
                            <div class="col-sm-12 row">
                                <div class="col-sm-2">
                                    <span kattr:radio_yn="acntLockYn" label1="Y" label2="N"   th:attr="defaultVal=${member.acntLockYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeAcntLockYn"></span>
@@ -149,7 +149,9 @@
                                
                                <div class="col-sm-3 btn-group-sm">
                                <div class="col-sm-12 btn-group-sm">
-                                 <button type="button" class="btn btn-inverse" onclick="clearLock()" id="btn_clear">잠김  해제</button>
+                                 <th:block sec:authorize-url="/mng/member/clearAcntLock.do">
+                                 <button type="button" class="btn btn-inverse" id="btn_clear" onclick="fn_clearAcntLock()">잠금 해제</button>
+                                 </th:block>
                                </div>
                                </div>
                                
@@ -223,9 +225,17 @@
                </div>
            </div>
            <div class="card-block-small">
-               <button type="button" class="btn btn-inverse m-r-5">탈퇴</button>
+           
+               <th:block sec:authorize-url="/mng/member/quitMember.do">
+                   <button type="button" class="btn btn-inverse m-r-5" onclick="fn_quitMember()">탈퇴</button>
+               </th:block>
+               
                <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()" >취소</button>
+               
+               <th:block sec:authorize-url="/mng/member/modifyMember.do">
                <button type="button" class="btn btn-primary" onclick ="fn_updateMember()" >저장</button>
+               </th:block>
+               
            </div>
        </div>
        
@@ -238,6 +248,9 @@
 <!-- 임시비밀번호발급 Start -->
 <div class="modal fade" id="popCon1" tabindex="-1" role="dialog" aria-labelledby="popCon1Title" aria-hidden="true"></div>
 <!-- 임시비밀번호발급 End -->
+
+<!--임시 비밀번호 발급 팝업-->
+<div class="modal fade" id="tempPswdPopup" aria-hidden="true" data-bs-backdrop="static" ></div>
 		                      
 <script th:inline="javascript">
 	
@@ -258,7 +271,7 @@
         messages: {
              eml        :   { required: "이메일 항목을 입력해주십시오."  }
             ,gndr       :   { required: "성별을 입력하세요"  }  
-            ,moblphon   :   { required: "휴대폼 번호를 입력하세요" ,number : "숫자만 입력가능합니다."}  
+            ,moblphon   :   { required: "휴대폰 번호를 입력하세요" ,number : "숫자만 입력가능합니다."}  
             ,acntLockCd :   { required: "계정 잠김 코드를 선택해주세요"  }
             ,telno      :   { number  : "숫자만 입력가능합니다." }
             ,brdt       :   { required: "생년월일을 입력하세요"  }  
@@ -274,10 +287,7 @@
   	 	  
   	 	if($('input:radio[name=acntLockYn]:checked').val() == "Y"){
 
-            if($('#acntLockCd').val() ==null || $('#acntLockCd').val() == ""){
-                alert("계정잠김 코드를 선택해주십시오.");
-                return;
-            }else if($('#acntLockCd').val() == "101101"){ // 가입대기
+  	         if($('#acntLockCd').val() == "101101"){ // 가입대기
   	 			$('#delYn').val('N');
   	 			$('#sttsCd').val('2'); // 대기
   	 		}else if($('#acntLockCd').val() == "101106"){ // 탈퇴
@@ -321,7 +331,7 @@
 			});
 		}
 	}
-		    
+
  	function init() {
  		changeAcntLockYn();
  	}
@@ -353,6 +363,76 @@
             }
         }).open();
 	}
+
+	fn_clearAcntLock = ()=>{
+
+		if(!confirm("계정잠금을 해제하시겠습니까?"))return;
+		
+	    if(displayWorkProgress()){
+	            $.ajax({
+	                url : "/mng/member/clearAcntLock.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : {userid : $("#userid").val()},
+	                success : function (data){
+	                    if(data.result=="success"){
+	                        alert(data.msg);
+	                        $("input:radio[name='acntLockYn']:radio[value='N']").prop('checked', true); 
+	                        $("#acntLockCd").val("");
+	                    }else{
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+    }
+
+    fn_quitMember = ()=>{
+
+        if(!confirm("탈퇴 처리 하시겠습니까?"))return;
+        
+        if(displayWorkProgress()){
+                $.ajax({
+                    url : "/mng/member/quitMember.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : {
+                        userid : $("#userid").val(),
+                        delYn : "Y"
+                    },
+                    success : function (data){
+                        if(data.result=="success"){
+                            alert(data.msg);
+                            gridHelper1.resetListContent();
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+    }
+
+
+    //블랙리스트 모달 오픈   
+    fn_openTempPswdModal = () => {
+        
+        var url = "/mng/member/tempPwdPop.html?userid="+$("#userid").val();
+        
+        $("#tempPswdPopup").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                userAddModal = new bootstrap.Modal($('#tempPswdPopup'));
+                userAddModal.show();
+            }
+        });
+    }
+
+
+    
+    
 	
 	$('#popCon1').on('show.bs.modal', function() {
 		$('#popCon1').load("/mng/member/tempPwdPop.html?userid=" + $("#userid").val()); 

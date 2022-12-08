@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.member.service;
 
 import java.security.MessageDigest;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,11 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
 import com.kbrainc.plum.cmm.service.SmsService;
+import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.mng.member.model.EmailVo;
 import com.kbrainc.plum.mng.member.model.LoginHistVo;
@@ -28,7 +30,6 @@ import com.kbrainc.plum.mng.member.model.SmsVo;
 import com.kbrainc.plum.mng.member.model.TempPwdVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.exception.MailSendFailException;
-import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
@@ -220,9 +221,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Transactional
     public boolean createTempPwd(TempPwdVo tempPwdVo) throws Exception {
         
-        MemberVo param = new MemberVo();
-        param.setUserid(tempPwdVo.getUserid());
-        MemberVo mebmerInfo = selectMemberInfo(param);
+        MemberVo memVo = new MemberVo();
+        memVo.setUserid(tempPwdVo.getUserid());
+        MemberVo mebmerInfo = selectMemberInfo(memVo);
         
         String password = "";
         
@@ -245,7 +246,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         } else { // 자동인 경우 전송수단에 따라서 이메일 또는 SMS발송 처리       
             String transType = tempPwdVo.getTransType();
             
-            //if ("email".equals(transType)) {
+            if ("email".equals(transType)) {
                 Context context = new Context();
                 context.setVariable("pssword", password);
                 context.setVariable("frontServerHost", frontServerHost);
@@ -262,13 +263,16 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 } else {
                     throw new MailSendFailException("메일발송에 실패하였습니다.");
                 }
-            /*} else if("sms".equals(transType)) {
+            } 
+            
+            //SMS 차후 처리 할것 
+            else if("sms".equals(transType)) {
                 // sms 발송
-                String phone = mebmerInfo.getMobno();
+                String phone = mebmerInfo.getMoblphon();
                 if ("".equals(StringUtil.nvl(phone))) {
                     return false;
                 }
-                String msg = "[임시비밀번호 : " + password + "] Plum에서 보낸 임시비밀번호 입니다.";
+                String msg = "[임시비밀번호 : " + password + "] KEEP 에서 보낸 임시비밀번호 입니다.";
                 Map<String, Object> resMap = smsService.sendOneSms(phone, msg); // sms 발송
                 String result = (String)resMap.get("result");
                 
@@ -277,9 +281,13 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 } else {
                     return false;
                 }
-            } else {
+            }
+            
+            
+            
+            else {
                 return false;
-            }*/
+            }
         }
 
         return true;
@@ -462,7 +470,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         return memberDao.selectEmailReceiveHistList(mailVo);
     }
     
-    
     /**
     * 사용자정보 목록 엑셀 다운로드 리스트
     *
@@ -474,6 +481,103 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     public List<MemberVo> selectMemberExcelList(MemberVo memberVo) throws Exception{
     	return memberDao.selectMemberExcelList(memberVo);
+    };
+    
+    /**
+     *  사용자 블랙리스트 여부 업데이트 
+     *
+     * @Title       : deletetEsylgn 
+     * @Description : 사용자수정.
+     * @param BlcklstDsctnVo BlcklstDsctnVo객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    @Transactional
+    public Map<String,Object> updateMemberBlcklstYn(BlcklstDsctnVo blcklstDsctnVo) throws Exception{
+        
+        Map<String,Object> result = new HashMap();
+        
+        List<BlcklstDsctnVo> emeList = memberDao.selectBlcklstMemberChkList(blcklstDsctnVo);
+        
+        boolean isUnmatchedgUser = false;
+        Integer unmatchedgUserCnt = 0;
+        
+        List<BlcklstDsctnVo> insertBlcklstList = new ArrayList();
+        List<BlcklstDsctnVo> updateUserBlckYnList = new ArrayList();
+        
+        List<String> insertBlcklstArr = new ArrayList();
+        List<String> updateUserBlckYnArr = new ArrayList();
+        
+        for(BlcklstDsctnVo vo :  emeList) {
+            if(vo.getUpdtCd().equals("1")){
+                
+                insertBlcklstArr.add(String.valueOf(vo.getUserid()));
+                updateUserBlckYnArr.add(String.valueOf(vo.getUserid()));
+            }else if(vo.getUpdtCd().equals("2")) {
+                updateUserBlckYnArr.add(String.valueOf(vo.getUserid()));
+            }else if(vo.getUpdtCd().equals("3")) {
+                insertBlcklstArr.add(String.valueOf(vo.getUserid()));
+            }else {
+                isUnmatchedgUser = true;
+                unmatchedgUserCnt++;
+            }
+        }
+        
+        if(insertBlcklstArr.size() > 0) {
+            String[] insertIds = insertBlcklstArr.toArray(new String[insertBlcklstArr.size()]);
+            blcklstDsctnVo.setBlcklstIds(insertIds);
+            result.put("blackInsertCnt",memberDao.insertBlcklstDsctn(blcklstDsctnVo));
+        }
+        
+        if(updateUserBlckYnArr.size() > 0) {
+            String[] updateIds = updateUserBlckYnArr.toArray(new String[updateUserBlckYnArr.size()]);
+            blcklstDsctnVo.setBlcklstIds(updateIds);
+            result.put("userUpdateCnt",memberDao.updateMemberBlcklstYn(blcklstDsctnVo));
+        }
+        
+        result.put("isUnmatchedgUser",isUnmatchedgUser);
+        result.put("unmatchedgUserCnt",unmatchedgUserCnt);
+        
+        return result ;
+    };
+    
+    /**
+    * 블랙리스트 대상 사용자 리스트
+    *
+    * @Title       : selectBlcklstMemberList 
+    * @Description : 사용자정보 목록 조회.
+    * @param param BlcklstDsctnVo객체
+    * @return List<MemberVo> 블랙리스트 체크 목록
+    * @throws Exception 예외
+    */
+    public List<MemberVo> selectBlcklstMemberList(BlcklstDsctnVo blcklstDsctnVo) throws Exception{
+        return memberDao.selectBlcklstMemberList(blcklstDsctnVo);
+    };
+    
+    
+    /**
+     *  사용자 계정잠금 해제 처리  
+     *
+     * @Title       : updateLockStts 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int updateLockStts(MemberVo memberVo) throws Exception{
+        return memberDao.updateLockStts(memberVo);
+    };
+    /**
+     *  사용자 탈퇴 처리  
+     *
+     * @Title       : updateMemberDelYn 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int updateMemberDelYn(MemberVo memberVo) throws Exception{
+        return memberDao.updateMemberDelYn(memberVo);
     };
     
 }

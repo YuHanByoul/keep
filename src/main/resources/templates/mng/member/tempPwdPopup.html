@@ -1,0 +1,146 @@
+<form id="tempPwdFrm">
+<input type="hidden" id="userid" name="userid" th:value="${tempPwdVo.userid}">
+<input type="hidden" id="method" name="method" value="auto">
+<!--임시 비밀번호 발급 팝업-->
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">임시비밀번호 발급</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+            
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <ul class="nav nav-tabs  tabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="auto" data-bs-toggle="tab" href="#tempPasswordAuto" role="tab" onclick="clickTab('auto')"><strong>자동발급</strong></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tempPasswordManual" role="tab" onclick="clickTab('nonauto')"><strong>수동발급</strong></a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content tabs p-t-20">
+                            <div class="tab-pane active" id="tempPasswordAuto" role="tabpanel">
+                                <div class="mb-0 form-group row">
+                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>전송수단 선택</strong></span>
+                                    <div class="col-sm-12">
+                                        <div class="form-radio">
+                                            <div class="radio radio-inline">
+                                                <label class="mb-0 form-label">
+                                                    <input type="radio" name="transType" value="email" checked="checked"/>
+                                                    <i class="helper"></i>이메일로 발급
+                                                </label>
+                                            </div>
+                                            <div class="radio radio-inline">
+                                                <label class="mb-0 form-label">
+                                                    <input type="radio" name="transType" value="sms"/>
+                                                    <i class="helper"></i>SMS로 발급
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="tempPasswordManual" role="tabpanel">
+                                <div class="mb-2 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tempPasswordInput"><strong>비밀번호 입력</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="password" class="form-control form-control-sm" name="pswd" id="pswd" placeholder="비밀번호" value=""/>
+                                    </div>
+                                </div>
+                                <div class="mb-0 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="confirmTempPasswordInput"><strong>비밀번호 확인</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="password" class="form-control form-control-sm" name="chkpswd" id="chkpswd" placeholder="비밀번호 확인" value=""/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <th:block sec:authorize-url="/mng/member/createTempPwd.do">
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="createTempPwd()" >발급</button>
+                </th:block>
+            </div>
+        </div>
+    </div>
+<!--//임시 비밀번호 발급 팝업-->
+</form>
+
+<script th:inline="javascript">
+
+
+    clickTab = (mode) =>{
+      console.log(mode);
+      $("#method").val(mode);
+	}
+	
+	var tempPwdValidator= $("#tempPwdFrm").validate({
+	    rules: {  
+	     	pswd     : 	{ required: true ,isBlank : true ,isHangulOff :true, minlength: 8, maxlength: 20 }  
+	    	,chkpswd  : 	{ required: true ,isBlank : true ,isHangulOff :true, minlength: 8, maxlength: 20 }
+	    },
+	    messages: {  
+		    pswd     : { required: "비밀번호를 입력해주십시오." , isBlank : "입력값에 공백이 있습니다." ,isHangulOff :"한글은 사용하실 수 없습니다.", minlength:"비밀번호는 8자 이상이어야 합니다.", maxlength: "비밀번호는 20자 이하여야 합니다."   }
+	    	,chkpswd  : { required: "비밀번호 확인란을 입력해주십시오." , isBlank : "입력값에 공백이 있습니다." ,isHangulOff :"한글은 사용하실 수 없습니다.", minlength:"비밀번호는 8자 이상이어야 합니다.", maxlength: "비밀번호는 20자 이하여야 합니다."    }
+	    }
+    })
+	 
+	function selectMethod(selMethod) {
+		if(selMethod == "nonauto") {
+			$("#transType").hide();
+			$("#tempPwdNonauto").show();
+		}else{
+			$("#transType").show();
+			$("#tempPwdNonauto").hide();
+			$("#pswd").val("");
+			$("#chkpswd").val("");
+		}
+	}
+	
+	function createTempPwd() {
+		
+		if($("#userid").val() == "") {
+			alert("비밀번호 발급 대상 사용자 정보가 없습니다.");
+			return false;
+		}
+
+		var method=$("#method").val();
+			
+		if(method != "auto"){
+			if(!($("#tempPwdFrm").valid())) return;
+			if( $("#pswd").val() != $("#chkpswd").val()) {
+				alert("입력하신 비밀번호와 비밀번호 확인 값이 다름니다.");
+				return false;
+			}
+		}
+		
+		if(!confirm("비밀번호를 발급하시겠습니까?")) return false;
+		
+		if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/member/createTempPwd.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : $("#tempPwdFrm").serialize(),
+				success : function (data){
+					if(data.result == "success"){
+					    alert(data.msg);
+						userAddModal.hide();
+					}
+					closeWorkProgress();
+				}
+			});
+			userAddModal.hide();
+		}
+	}
+	
+</script>
