@@ -35,10 +35,10 @@ import com.kbrainc.plum.rte.util.CommonUtil;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
-public class CheckCodeAttr extends AbstractAttributeTagProcessor {
+public class CheckCodeVerticalAttr extends AbstractAttributeTagProcessor {
 
     // ATTR name 설정
-    private static final String ATTR_NAME = "check_code";
+    private static final String ATTR_NAME = "check_code_v";
     private static final int PRECEDENCE = 1000;
 
     ResCodeService resCode = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
@@ -48,7 +48,7 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
      * Desc : Constructor of CheckCodeAttr.java class
      * @param dialectPrefix : 
      */
-    public CheckCodeAttr(final String dialectPrefix) {
+    public CheckCodeVerticalAttr(final String dialectPrefix) {
         super(TemplateMode.HTML, // This processor will apply only to HTML mode
                 dialectPrefix, // Prefix to be applied to name for matching
                 null, // No tag name: match any tag name
@@ -160,6 +160,7 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                         result.append("<label class='form-label border-checkbox-label' for='"+attributeValue+cnt+"'>"+codeInfoVo.getCdNm()+"</label>");
                         result.append("\n");
                         result.append("</div>");
+                        result.append("</br>");
                         cnt++;
                     }
                     result.append("</div>");

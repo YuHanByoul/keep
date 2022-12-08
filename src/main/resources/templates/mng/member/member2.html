@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+ 	layout:decorator="layout/mng/mainLayout" 
+>
+
+	<body>
+	<div layout:fragment="content">
+	<style>
+.hide
+{
+   display:none;
+}
+</style>
+
+<!-- Page-body start -->
+  <div class="page-body">
+      <div class="row">
+      
+           <form name="searchFrm1" id="searchFrm1" action="" onsubmit="return false;">
+             <!-- 필터 부분 -->
+             <div class="card">
+                 <div class="card-block-small">
+                     <!-- 키워드 filter -->
+                     <div class="row">
+                         <div class="col-lg-3 mb-2">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                 
+                                     <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                        <option value="">전체</option>
+					                    <option value="id">아이디</option>
+					                    <option value="name">이름 </option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" 
+                                     aria-label="Text input with dropdown button">
+                                     
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3 mb-2">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원구분</strong></span>
+                                 <div class="col-sm-12">
+                                     <select id ="searchRoleCd" name="searchRoleCd" class="form-select form-select-sm form-control-sm">
+                                        <option value="">전체</option>
+                                        <option value="U">개인회원</option>
+                                        <option value="C">기관담당자 </option>
+                                        <option value="A">관리자</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3 mb-2">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색시작일</strong></span>
+                                 <div class="col-sm-12">
+                                     <input class="form-control form-control-sm" type="date" id="searchStartDay" name="searchStartDay"/>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색종료일</strong></span>
+                                 <div class="col-sm-12">
+                                     <input class="form-control form-control-sm" type="date" id="searchEndDay" name="searchEndDay"/>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="col-lg-3 mb-2">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원상태</strong></span>
+                                 <div class="col-sm-12">
+                                 
+                                     <select id="searchSttsCd" name="searchSttsCd" class="form-select form-select-sm form-control-sm">
+                                        <option value="">전체</option>
+                                        <option value="1">가입</option>
+                                        <option value="2">대기</option>
+                                        <option value="9">탈퇴</option>
+                                     </select>
+                                     
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <!-- //키워드 filter -->
+                     <!-- 키워드 filter-btn -->
+                     <div class="m-t-20">
+                         <button class="btn btn-disabled m-r-5" onclick="fn_init()" >Cancel</button>
+                         <button class="btn btn-primary" onclick="fn_searchForm()" >Search</button>
+                     </div>
+                 </div>
+             </div>
+             </form>
+             <!-- //필터 부분 -->
+             
+             
+     <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+        <div class="well well-sm col-sm-12">
+        <div class="row col-sm-12">
+            <div class="form-group col-sm-1 form-control-static" >
+                <label class="control-label ">키워드</label>
+            </div>
+            <div class="col-sm-5 form-group form-control-static">
+                <select name="searchType" id="searchType" class="form-control input-sm" style="padding:0px; width:80px; display: inline-block;">
+                    <option value="">전체</option>
+                    <option value="id">아이디</option>
+                    <option value="name">이름 </option>
+                </select>
+                <input type="text" name="searchKeyword" id="searchKeyword" class="form-control input-sm" style="padding:0; width:180px;display: inline-block;">
+            </div>
+            <div class="form-group col-sm-1 form-control-static">
+                <label class="control-label ">가입기간</label>
+            </div>
+            <div class="form-group col-sm-3 form-control-static">
+                <div class="date-picker-area">
+                    <th:block kattr:date_pic="searchStartDay" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" addClass=" input-sm"></th:block> 
+                    ~
+                    <th:block kattr:date_pic="searchEndDay" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" addClass=" input-sm"></th:block>
+                </div>
+            </div>
+        </div>
+        <div class="row col-sm-12" >
+            <div class="form-group col-sm-1 form-control-static">
+                <label class="control-label">상태</label>
+            </div>
+            <div class="form-group col-sm-5 form-control-static">               
+                <!-- <h6><th:block kattr:check_code="pop_sts" grpCd="109"  addClass=" input-sm form-control-static " addStyle="padding:0px; width:150px; text-align:center;" ></th:block></h6> -->
+                <div class="checkbox-group">
+                    <input type="checkbox" name="searchDelYn" value="N" checked><label>회원</label>
+                    <input type="checkbox" name="searchDelYn" value="Y" checked><label>탈퇴회원</label>
+                </div>
+            </div>
+            <div class="form-group col-sm-6 form-control-static text-right" >
+                <button type="submit" class="btn btn-sm btn-primary" onclick="fn_searchForm()">검색</button>
+                <button type="submit" class="btn btn-sm btn-primary" onclick="fn_init()">초기화</button>
+            </div>
+        </div>
+    </div>
+    </form>         
+             
+             
+             
+             
+             
+             
+             
+             
+             <div class="card">
+                <div class="row p-20 p-b-0">
+                    <div class="col-12 col-md-6">
+                        <h5><strong>회원검색결과</strong></h5>
+                    </div>
+                    <div class="col-12 col-md-6 text-right">
+                    
+                        <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" data-bs-toggle="modal" data-bs-target="#blackListAppointPopup">블랙리스트 지정</button>
+                        
+                        <button type="button" class="btn btn-primary waves-effect waves-light m-r-5">블랙리스트 해지</button>
+                        
+                        <th:block sec:authorize-url="/mng/member/memberInsertForm.html">
+                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();" >등록</button>
+                        </th:block>
+                        
+                    </div>
+                </div>
+                <div class="card-block-small">
+                    <div class="dt-responsive table-responsive">
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                       </div>
+                    </div>
+                </div>
+                
+            </div>
+
+ 
+      </div>
+  </div>
+  
+  
+  
+  
+  <!-- Button Group Start  엑셀 예시용 -->
+  <!--   
+  <div class="row text-right" style = "margin-bottom: 5px; margin-right: 5px;">
+	  <div class="justify-button-group" style="overflow:visible">
+		
+			<p class="left-align-text" style = "margin-left: 15px;">
+				<th:block sec:authorize-url="/mng/member/emailPop.html"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#popCon3">e-mail 발송</button></th:block>
+				<th:block ><button type="button" class="btn btn-sm btn-primary" onclick="fn_memberExcelDownload()">엑셀 다운로드</button></th:block>
+				<th:block ><button type="button" class="btn btn-sm btn-primary" onclick="fn_memberExcelInsertPop()">엑셀 일괄등록</button></th:block>
+			</p>
+			
+			<p class="right-align-text">
+				<th:block sec:authorize-url="/mng/member/memberInsertForm.html"><button type="button" class="btn btn-sm btn-warning" onclick="fn_goInsertForm();">등록</button></th:block>
+			</p>
+	  </div>
+  </div> -->
+  		
+			
+  <!-- Content Area -->
+  <div id="contentPanel" class="panel panel-default" style="display:none"></div>
+		
+		
+  <!-- SMS 발송 Start -->
+  <div class="modal fade" id="popCon2" tabindex="-1" role="dialog" aria-labelledby="popCon2Title" aria-hidden="true">
+  </div>
+		
+  <!-- e-mail 발송 Start -->
+  <div class="modal fade" id="popCon3" tabindex="-1" role="dialog" aria-labelledby="popCon3Title" aria-hidden="true">
+  </div>
+
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script th:inline="javascript">
+
+  /*<![CDATA[*/ 
+     var userid = /*[[${param.userid}]]*/null;
+  /*]]>*/
+	var selectedItems = [];
+	var gridHelper1;         
+	$(function(){
+		
+		gridHelper1 = new GridHelper('jsGrid','contentPanel');
+		
+		writeJsGridData();
+		
+		if(userid != null){
+			var detailUrl = "/mng/member/memberDetailForm.html?userid=" + userid; 
+	      	    gridHelper1.loadContent(detailUrl);
+		}
+		
+		$('#popCon2').on('show.bs.modal', function() {
+			if(validChecked()) {
+				$('#popCon2').load("/mng/member/smsPop.html", { userids: selectedItems.join(',') });
+			}else{
+				return false;
+			}
+		});
+		
+		$('#popCon2').on('hide.bs.modal', function() {
+			$('#popCon2').html(""); 
+		});
+		
+		$('#popCon3').on('show.bs.modal', function() {
+			if(validChecked()) {
+				$('#popCon3').load("/mng/member/emailPop.html", { userids: selectedItems.join(',') });
+			}else{
+				return false;
+			}
+		});
+		
+		$('#popCon3').on('hide.bs.modal', function() {
+			$('#popCon3').html(""); 
+		});
+	});
+	
+	function validChecked() {
+		if(selectedItems.length == 0) {
+			alert("대상을 선택해주세요.");
+			return false;
+		}
+		return true;
+	}
+	
+    function fn_goInsertForm(){
+        var insertUrl ="/mng/member/memberInsertForm.html";
+    	    gridHelper1.loadContent(insertUrl);
+    }
+     
+    function fn_searchForm(){
+    	gridHelper1.resetListContent();
+    }
+    
+    function fn_init() {
+        //alert('초기화');
+        //searchDelYn
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+        $("#searchStartDay").val('');
+        $("#searchEndDay").val('');
+        $("input:checkbox[name=searchDelYn]").prop("checked", true);
+    }
+        
+    function writeJsGridData(){
+		$("#jsGrid").jsGrid({
+			height: "auto",
+		    width: "100%",
+		    autoload: true,
+		    sorting: true,
+		    paging: true,
+		    pagerContainer: "#listPager",
+		    pagerFormat: "{first} {prev} {pages} {next} {last}",
+		    pagePrevText: "이전",
+		    pageNextText: "다음",
+		    pageFirstText: " < 처음 ㅣ",
+		    pageLastText: " | 마지막 >",
+	        pageSize: 10,
+	        pageButtonCount: 10,
+	        pageLoading: true,
+	        pageIndex: 1,
+	        noDataContent: "데이터가 없습니다.",
+	        
+	        controller: {
+	            loadData: function (filter) {
+	            	var data = $.Deferred();
+	            	    	            	
+	            	var formData = $('#searchFrm').serializeArray();
+	            	var params = [
+	            			{name: "pageNumber", value: filter.pageIndex},
+	            			{name: "rowPerPage", value: filter.pageSize},
+	            	]
+	            	
+	            	if(filter.sortField != undefined){
+	            		params.push({name: "orderField", value: filter.sortField});
+    					params.push({name: "orderDirection", value: filter.sortOrder});
+	            	}else{
+	            		params.push({name: "orderField", value: 'reg_dt'});
+	            	}
+	            	formData = formData.concat(params);
+	            	
+	                $.ajax({
+	                  type: "GET",
+	                  contentType: "application/json; charset=utf-8",
+	                  url: "/mng/member/selectMemberList.do",
+	                  //url: "/mng/site/siteList.do",
+	                  dataType: "json",
+	                  data: formData,
+	                }).done(function(response){
+	                	var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+
+                      console.log(da)
+                        
+	                  data.resolve(da);
+	                });
+	                return data.promise();
+	            },
+	        },
+	        fields: [
+	        	 {
+				 	 headerTemplate: function() {
+					  	 return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+				 	 },
+				 	 itemTemplate: function(_, item) {
+					  	 return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+					  	 .prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+					  	 .on("change", function () {
+					  	 $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+					  	 });
+				 	 },
+				 	 align: "center",
+				 	 width: "50",
+				 	 sorting: false
+				 }   	        	
+	        	,{ name: 'userid', css: 'hide' }
+                ,{ title: '번호' ,name: 'rowNumber',    type: "number", width : "50", align:"center",  sorting :false }
+                ,{ title: '아이디'    ,name: 'acnt',    type: "text", width: "100"}
+                ,{ title: '이름'    ,name: 'nm', type: "text", width: "100"}
+                ,{ title: '이메일'   ,name: 'email',   type: "text", width: "100" }
+                ,{ title: '휴대폰'   ,name: 'mobno',   type: "text", width: "100", align:"center" }
+                ,{ title: '탈퇴' ,name: 'delYn',  type: "text", align:"center" }
+                ,{ title: '가입일' ,name: 'regDt',  type: "text", width: "120", align:"center" }
+	        ],
+	        /*[# sec:authorize-url="/mng/member/memberDetailForm.html"]*/
+	        rowClick: function(args) {
+	        	if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+	        	var detailUrl = "/mng/member/memberDetailForm.html?userid=" + args.item.userid; 
+	       	    gridHelper1.loadContent(detailUrl);
+	       	    gridHelper1.rowClick(args);
+	        },
+	        /*[/]*/
+	        onPageChanged: function(args) {
+	            selectedItems = [];
+	        }
+    	});
+ 		
+	    var selectItem = function(item) {
+		    selectedItems.push(item);
+		    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+		};
+	     
+	    var unselectItem = function(item) {
+		    selectedItems = $.grep(selectedItems, function(i) {
+		    return i !== item;
+		    });
+		    if(selectedItems.length == 0) {
+		    	$('#selectAllCheckbox').attr('checked', false);
+		    }
+		    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+	    };
+		
+	    $("#selectAllCheckbox").click(function(item) {
+	    	selectedItems = [];
+	    	if(this.checked) { // check select status
+	            $('.singleCheckbox').each(function() { 
+	                this.checked = true;   
+	                selectItem($(this).parent().next().text());           
+	            });	
+	        }else {
+	            $('.singleCheckbox').each(function() { 
+	                this.checked = false;      
+	                unselectItem(item);
+	            });  
+	            selectedItems = [];
+	        }
+	   	});
+	}
+    
+   //회원정보 엑셀 다운로드 예시  
+   function  fn_memberExcelDownload(){
+	   var f = document.searchFrm;
+	   f.action ="/example/mng/memberExcelDownList.do";
+	   f.submit();
+   }
+   
+   var ret = null;
+   //회원 엑셀 일괄등록 예시
+   function fn_memberExcelInsertPop(){
+	   
+	   var popupX = (window.screen.width / 2) - (1200 / 2);
+	   var popupY= (window.screen.height / 2) - (500 / 2);
+	   var option = "width=1200,height=500,left='"+popupX+"',top="+popupY;
+	   
+	   if(ret != null){
+		   ret.close();
+	   }
+	   ret = window.open("/example/mng/memberExcelRegisterPop.html", "_blank", option);
+   }
+</script>
+
+<script src="/js/ckeditor/ckeditor.js"></script>
+</div> 
+</body>
+</html>

@@ -2,15 +2,21 @@ package com.kbrainc.plum.mng.member.controller;
 
 import java.security.MessageDigest;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.apache.commons.codec.binary.Hex;
+import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
+import org.egovframe.rte.fdl.cryptography.EgovDigestService;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
+import org.jasypt.salt.StringFixedSaltGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,9 +24,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.cmm.service.CommonService;
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.mng.member.model.EmailVo;
 import com.kbrainc.plum.mng.member.model.LoginHistVo;
@@ -29,6 +32,8 @@ import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.member.model.SmsVo;
 import com.kbrainc.plum.mng.member.model.TempPwdVo;
 import com.kbrainc.plum.mng.member.service.MemberServiceImpl;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -62,6 +67,15 @@ public class MemberController {
     //@Value("${front.server.host}")
     private String frontServerHost;
     
+    @Resource(name="digestService")
+    EgovDigestService digestService;
+    
+    @Resource(name="ariaCryptoService")
+    EgovCryptoService cryptoService;
+    
+    @Value("${crypto.key}")
+    private String encryptKey;
+    
     /**
     * 개인회원관리 리스트화면 이동.
     *
@@ -93,7 +107,8 @@ public class MemberController {
             years[j] = i;
         }
         model.addAttribute("years", years);
-        return "mng/member/memberInsert";
+       // return "mng/member/memberInsert";
+        return "mng/member/memberForm";
     }
     
     /**
@@ -109,7 +124,21 @@ public class MemberController {
     @RequestMapping(value = "/mng/member/memberDetailForm.html")
     public String memberDetailForm(MemberVo memberVo, Model model) throws Exception {
         //model.addAttribute("etcInfo", memberService.selectEtcInfo(memberVo.getUserid()));
-        return "mng/member/memberDetailForm";
+        //return "mng/member/memberDetailForm";
+        
+        
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
+        //encryptor.setSaltGenerator(new RandomSaltGenerator());
+        
+        encryptor.setPassword(encryptKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        String encStr = encryptor.decrypt(memberVo.getGndr());
+        memberVo.setGndr(encStr);
+        
+        model.addAttribute("member", memberService.selectMemberInfo(memberVo));
+        
+        return "mng/member/memberUpdate";
     }
 
     /**
@@ -182,7 +211,7 @@ public class MemberController {
     */
     @RequestMapping(value = "/mng/member/insertMember.do")
     @ResponseBody
-    public Map<String, Object> insertMember(@Valid MemberVo memberVo, BindingResult bindingResult1, @Valid MemberDtlVo memberDtlVo, BindingResult bindingResult2, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertMember(@Valid MemberVo memberVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult1.hasErrors()) {
@@ -193,16 +222,7 @@ public class MemberController {
             return resultMap;
         }
         
-        if (bindingResult2.hasErrors()) {
-            FieldError fieldError = bindingResult2.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-        
         memberVo.setUser(user);
-        memberDtlVo.setUser(user);
 
         int retVal = 0;
         
@@ -210,15 +230,23 @@ public class MemberController {
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
         memberVo.setPswd(hashPassword);
         
-        String brthdyYear = StringUtil.nvl(memberDtlVo.getBrthdyYear());
-        String brthdyMonth = StringUtil.nvl(memberDtlVo.getBrthdyMonth());
-        String brthdyDay = StringUtil.nvl(memberDtlVo.getBrthdyDay());
+        String encryptKeyword = encryptKey;
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        //encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
+        encryptor.setSaltGenerator(new RandomSaltGenerator());
         
-        if(!"".equals(brthdyYear) && !"".equals(brthdyMonth) && !"".equals(brthdyDay)) {
-            memberDtlVo.setBrthdy(brthdyYear + "-" + brthdyMonth + "-" + brthdyDay);
-        }
-                
-        retVal = memberService.insertMember(memberVo, memberDtlVo);
+        String str = encryptKeyword;
+        encryptor.setPassword(encryptKeyword);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        String encStr = encryptor.encrypt(memberVo.getGndr());
+        
+        //String decStr = encryptor.decrypt(encStr);
+        //byte[] encrypted = cryptoService.encrypt(memberVo.getGndr().getBytes("UTF-8"), encryptKeyword);
+        //memberVo.setGndr(encrypted.toString());
+        //String hasGndr = encrypted.toString();
+        
+        memberVo.setGndr(encStr);
+        retVal = memberService.insertMember(memberVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -246,11 +274,7 @@ public class MemberController {
         Map<String, Object> resultMap = new HashMap<>();
         List<MemberVo> result = null;
         
-        if (memberVo.getSearchDelYn() == null) {
-            result = new ArrayList<MemberVo>();
-        } else {
-            result = memberService.selectMemberList(memberVo);
-        }
+        result = memberService.selectMemberList(memberVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -277,7 +301,7 @@ public class MemberController {
     */
     @RequestMapping(value = "/mng/member/modifyMember.do")
     @ResponseBody
-    public Map<String, Object> modifyMember(@Valid MemberVo memberVo, BindingResult bindingResult1, @Valid MemberDtlVo memberDtlVo, BindingResult bindingResult2, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> modifyMember(@Valid MemberVo memberVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult1.hasErrors()) {
@@ -288,28 +312,11 @@ public class MemberController {
             return resultMap;
         }
         
-        if (bindingResult2.hasErrors()) {
-            FieldError fieldError = bindingResult2.getFieldError();
-            if (fieldError != null) {
-                resultMap.put("msg", fieldError.getDefaultMessage());
-            }
-            return resultMap;
-        }
-    	
         memberVo.setUser(user);
-        memberDtlVo.setUser(user);
 
         int retVal = 0;
         
-        String brthdyYear = StringUtil.nvl(memberDtlVo.getBrthdyYear());
-        String brthdyMonth = StringUtil.nvl(memberDtlVo.getBrthdyMonth());
-        String brthdyDay = StringUtil.nvl(memberDtlVo.getBrthdyDay());
-        
-        if(!"".equals(brthdyYear) && !"".equals(brthdyMonth) && !"".equals(brthdyDay)) {
-            memberDtlVo.setBrthdy(brthdyYear + "-" + brthdyMonth + "-" + brthdyDay);
-        }
-        
-        retVal = memberService.modifyMember(memberVo, memberDtlVo);
+        retVal = memberService.modifyMember(memberVo);
 
         //사용자의 세션을 차단하는 기능을 구현
         //PMD 검사로 인한 주석처리 구현시 주석해제 할 것

@@ -87,13 +87,24 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     @Override
     @Transactional
-    public int insertMember(MemberVo memberVo, MemberDtlVo memberDtlVo) throws Exception {
+    public int insertMember(MemberVo memberVo) throws Exception {
         int retVal = 0;
         retVal += memberDao.insertMember(memberVo);
-        // selectKey userid 받아옴
-        memberDtlVo.setUserid(memberVo.getUserid());
-        retVal += memberDao.insertMemberDtl(memberDtlVo);
         
+        memberDao.deleteEnvfld(memberVo);
+        memberDao.deleteItrstfld(memberVo);
+        memberDao.deletetEsylgn(memberVo);
+        
+        
+       if(memberVo.getEnvfldCds()!=null) {
+           retVal += memberDao.insertEnvfld(memberVo);
+       }
+       if(memberVo.getItrstfldCds()!=null) {
+           retVal += memberDao.insertItrstfld(memberVo);
+       }
+       if(memberVo.getEsylgnCds()!=null) {
+           retVal += memberDao.insertEsylgn(memberVo);
+       }
         return retVal;
     }
 
@@ -175,14 +186,24 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     @Override
     @Transactional
-    public int modifyMember(MemberVo memberVo, MemberDtlVo memberDtlVo) throws Exception {
+    public int modifyMember(MemberVo memberVo) throws Exception {
         int retVal = 0;
         
-        retVal += memberDao.updateMember(memberVo);        
-        retVal += memberDao.updateMemberDtl(memberDtlVo);
+        retVal += memberDao.updateMember(memberVo);
         
-        fileService.deleteOldFiles(memberDtlVo.getPphotoFileid());
+        memberDao.deleteEnvfld(memberVo);
+        memberDao.deleteItrstfld(memberVo);
+        memberDao.deletetEsylgn(memberVo);
         
+        if(memberVo.getEnvfldCds()!=null && memberVo.getEnvfldCds().length > 0) {
+            retVal += memberDao.insertEnvfld(memberVo);
+        }
+        if(memberVo.getItrstfldCds()!=null && memberVo.getItrstfldCds().length > 0) {
+            retVal += memberDao.insertItrstfld(memberVo);
+        }
+        if(memberVo.getEsylgnCds()!=null && memberVo.getEsylgnCds().length > 0) {
+            retVal += memberDao.insertEsylgn(memberVo);
+        }
         return retVal;
     }
     
@@ -231,7 +252,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 String mailContents = templateEngine.process("mail/mail_tempPwd", context);
                 
                 String mailTitle = "임시비밀번호 발급";
-                MailVo mailVo = new MailVo(null, mebmerInfo.getEmail(), mailTitle, mailContents, Integer.valueOf(tempPwdVo.getUser().getUserid()), "U", mebmerInfo.getUserid());
+                MailVo mailVo = new MailVo(null, mebmerInfo.getEml(), mailTitle, mailContents, Integer.valueOf(tempPwdVo.getUser().getUserid()), "U", mebmerInfo.getUserid());
                                 
                 Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
                 String result = (String)resMap.get("result");
