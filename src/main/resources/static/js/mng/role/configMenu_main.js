@@ -230,9 +230,9 @@ function fn_save(){
     		type : 'POST',
     		data : $('#configMenuForm').serialize(),
     		success : function(data){
+    			closeWorkProgress();
     			alert(data.msg);
     			treeReload();
-    			closeWorkProgress();
     		}
     	});
     }

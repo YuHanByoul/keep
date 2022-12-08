@@ -315,12 +315,12 @@ var addUserList = function(list, startDate, endDate){
     		data : JSON.stringify(list),
     		success : function(data){
     			//console.log(data);
+    			closeWorkProgress();
     			
     			//리로드
     			$("#gridList").jsGrid("reset");
     			
     			userAddModal.hide();
-    			closeWorkProgress();
     		}
     	});
     }

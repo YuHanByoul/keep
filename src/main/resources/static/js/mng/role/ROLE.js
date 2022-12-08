@@ -24,13 +24,13 @@ var ROLE = {
                     dataType: "json"
                   }).done(function(response){
                 	  //console.log(response);
+                	  closeWorkProgress();
                 	  if(!response){
                 		  alert("저장에 실패하였습니다. 권한이 있는지 확인하십시오.");
                 		  return false;
                 	  }
     
                 	  if(typeof callback === 'function') callback(response);
-                	  closeWorkProgress();
             });
         }			
 	},
@@ -50,12 +50,12 @@ var ROLE = {
                     dataType: "json"
                   }).done(function(response){
                 	  //console.log(response);
+                	  closeWorkProgress();
                 	  if(!response){
                 		  alert("삭제에 실패하였습니다. 권한이 있는지 확인하십시오.");
                 	  }
                 	  
                 	  if(typeof callback === 'function') callback(response);
-                	  closeWorkProgress();
                   });
             }
 		}

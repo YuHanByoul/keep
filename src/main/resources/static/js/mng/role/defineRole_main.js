@@ -248,9 +248,9 @@ function fn_roleRegist(){
     		dataType: 'json',
     		data : jQuery("#defineRoleform").serialize(),
     		success : function(data){
+    			closeWorkProgress();
     			alert(data.msg);
     			loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?seCd='+_ROLE_LEVEL);
-    			closeWorkProgress();
     		}
     	});
     }
