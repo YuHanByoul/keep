@@ -59,8 +59,12 @@ public class BlcklstDsctnVo extends ParentRequestVo {
     private int userid;
     
     /** 블랙리스트 사유 */
-    @Size(max = 1000, message = "아이디는 20자를 넘을 수 없습니다.")
-    private String BLCKLST_RSN;
+    @Size(max = 1000, message = "블랙리스트 사유는 20자를 넘을 수 없습니다.")
+    private String blcklstRsn;
+    
+    /**  블랙리스트_여부 */
+    @Pattern(regexp="[YN]")
+    private String blcklstYn;
     
     /** 처리_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -79,6 +83,16 @@ public class BlcklstDsctnVo extends ParentRequestVo {
     
     /** 등록자아이디 */
     private int rgtrid;
+    
+    /*******저장 및 검색용 추가*******/
+    /** 블랙리스트 적용자 아이디 **/
+    private String[]  blcklstIds;
+    
+    /** 블래리스트 적용 및 해제 CRUD 코드 **/
+    private String  updtCd;
+    
+    
+    
     
        
 }

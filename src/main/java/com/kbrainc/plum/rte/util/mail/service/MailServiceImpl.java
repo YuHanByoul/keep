@@ -180,7 +180,8 @@ public class MailServiceImpl extends PlumAbstractServiceImpl implements MailServ
             //LOGGER.info("**************************************************");
 
             // history에 기록한다.
-            mailDao.insertMailHist(mailVo);
+            //mailDao.insertMailHist(mailVo);
+            mailDao.insertEmlSndngDsctn(mailVo);
             
         }
         

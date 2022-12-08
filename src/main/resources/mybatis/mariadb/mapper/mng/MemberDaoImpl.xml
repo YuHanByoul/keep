@@ -246,29 +246,6 @@
            WHERE A.USERID = #{userid}
     </select>
     
-    <!-- 사용자상세정보 조회 -->
-    <select id="selectMemberDtlInfo" parameterType="MemberVo" resultType="MemberDtlVo"> 
-		/* MemberDao.selectMemberDtlInfo */
-		SELECT USERID
-		      ,BRTHDY
-		      ,MOON_YN
-		      ,SEX
-		      ,ZIP
-		      ,ADDR
-		      ,ADDR_DTL
-		      ,AREA_CD
-		      ,MARKT_EMAIL_AGRE_YN
-		      ,MARKT_SMS_AGRE_YN
-		      ,INTRCN
-		      ,F.FILEGRPID AS PPHOTO_FILEGRPID
-		      ,PPHOTO_FILEID
-		      ,F.FILE_IDNTFC_KEY AS PPHOTO_FILE_IDNTFC_KEY
-		  FROM TB_CMM_USER_DTL A
-		  LEFT OUTER JOIN TB_CMM_FILE F
-		    ON F.FILEID = A.PPHOTO_FILEID
-	     WHERE USERID = #{userid}
-    </select>
- 
     <!-- 사용자정보 목록 조회 -->
     <select id="selectMemberList" parameterType="MemberVo" resultType="MemberVo">
         /* MemberDao.selectMemberList */
@@ -333,7 +310,6 @@
         <include refid="PaginationMapper.footer"/>
     </select>
    
-   
     <!-- 사용자수정 -->
     <update id="updateMember" parameterType="MemberVo">
 	    /* MemberDao.updateMember */
@@ -350,13 +326,13 @@
                ,ADDR_DTL          = #{addrDtl}                    
                ,INSTID            = #{instid}                     
                ,INSTPIC_ROLE_CD   = #{instpicRoleCd}
-                             
-<!--                ,TOS_AGRE_YN       = #{tosAgreYn}                          
+              <!--           
+               ,TOS_AGRE_YN       = #{tosAgreYn}                          
                ,PRIVCY_AGRE_YN    = #{privcyAgreYn}                          
                ,MARKT_EML_AGRE_YN = #{marktEmlAgreYn}             
                ,MARKT_SMS_AGRE_YN = #{marktSmsAgreYn}             
-               ,PRVC_VLDTY        = #{prvcyVldty} -->
-               
+               ,PRVC_VLDTY        = #{prvcyVldty} 
+              -->
                <choose>
                   <when test='acntLockYn == "N" '>
                    ,ACNT_LOCK_YN      = 'N'                 
@@ -384,7 +360,7 @@
 			   ,MDFRID = #{user.userid}
 	     WHERE userid = #{userid} 
     </update>
- 
+    
     <!-- 사용자들의 연락정보를 조회한다 -->
     <select id="selectUserContactInfoList" parameterType="ContractVo" resultType="ContractVo">
         /* MemberDao.selectUserContactInfoList */
@@ -559,5 +535,133 @@
 		   	</foreach>
 		</if>
     </select>
+    
+    <!--*********************************************************************************************-->
+     
+    <!-- 사용자 블랙리스트 내역 저장 --> 
+    <insert id="insertBlcklstDsctn" parameterType="BlcklstDsctnVo" >
+         /* MemberDao.insertBlcklstDsctn */
+         INSERT INTO TB_CMM_USER_BLCKLST_DSCTN(
+             USERID
+             ,BLCKLST_RSN
+             ,BLCKLST_YN
+             ,PRCS_DT
+             ,MDFCN_DT
+             ,MDFRID
+             ,REG_DT
+             ,RGTRID
+         )VALUES
+          <foreach item="item" collection="blcklstIds"  separator=",">
+          (
+             #{item}
+            ,#{blcklstRsn}
+            ,#{blcklstYn}
+            ,NOW()
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+           )
+          </foreach>
+    </insert>
+    
+    <!-- 블랙리스트여부 수정한다 -->
+    <update id="updateMemberBlcklstYn" parameterType="BlcklstDsctnVo">
+        /* MemberDao.updateMemberBlcklstYn */
+        UPDATE TB_CMM_USER SET 
+               BLCKLST_YN = #{blcklstYn}
+               ,MDFCN_DT = NOW()          
+               ,MDFRID = #{user.userid}
+         WHERE 1=1
+           AND userid IN
+           (
+             <foreach item="item" collection="blcklstIds"  separator=",">
+                #{item}
+             </foreach>
+           )  
+    </update>
+    
+    <!-- 사용자 블랙리스트 검색 --> 
+    <select id="selectBlcklstMemberChkList" parameterType="BlcklstDsctnVo" resultType="BlcklstDsctnVo"  >
+     SELECT 
+        CASE 
+          WHEN IFNULL(AA.BLCKLST_YN,'N') != #{blcklstYn} AND IFNULL(BB.BLCKLST_YN,'N') != #{blcklstYn}  THEN '1'  -- user 업데이트, blacklst 인서트  대상
+          WHEN IFNULL(AA.BLCKLST_YN,'N') != #{blcklstYn} AND IFNULL(BB.BLCKLST_YN,'N')  = #{blcklstYn}  THEN '2'  -- user  업데이트 대상
+          WHEN IFNULL(AA.BLCKLST_YN,'N')  = #{blcklstYn} AND IFNULL(BB.BLCKLST_YN,'N') != #{blcklstYn}  THEN '3'  -- blacklst  인서트 대상
+          WHEN IFNULL(AA.BLCKLST_YN,'N')  = #{blcklstYn} AND IFNULL(BB.BLCKLST_YN,'N')  = #{blcklstYn}  THEN '4'  -- 업데이트 대상 아님
+        END AS UPDT_CD
+        ,AA.USERID
+       FROM
+         TB_CMM_USER AA
+         LEFT OUTER JOIN 
+         (
+           SELECT 
+              A.USERID
+              ,A.BLCKLST_YN 
+              ,B.BLCKLSTID
+             FROM 
+             TB_CMM_USER_BLCKLST_DSCTN A
+             INNER JOIN 
+             (
+              SELECT 
+                  USERID
+                  ,MAX(BLCKLSTID) AS BLCKLSTID
+                FROM 
+                  TB_CMM_USER_BLCKLST_DSCTN 
+                WHERE 1=1
+                 AND USERID IN (
+                     <foreach item="item" collection="blcklstIds"  separator=",">
+                      #{item}
+                     </foreach>
+                 )
+                 GROUP BY USERID
+             )B ON A.BLCKLSTID = B.BLCKLSTID 
+         )BB ON AA.USERID = BB.USERID
+        WHERE 1=1
+          AND AA.USERID IN (
+            <foreach item="item" collection="blcklstIds"  separator=",">
+             #{item}
+            </foreach>
+          )
+    </select>
+    
+    <!-- 블랙리스트 사용자  검색 --> 
+    <select id="selectBlcklstMemberList" parameterType="BlcklstDsctnVo" resultType="MemberVo"  >
+       SELECT 
+         *
+         FROM
+           TB_CMM_USER A
+        WHERE 1=1  
+          AND A.USERID IN (
+            <foreach item="item" collection="blcklstIds"  separator=",">
+             #{item}
+            </foreach>
+          )
+    </select>
+    
+    <!-- 계정 잠김 해제 처리-->
+    <update id="updateLockStts" parameterType="MemberVo">
+        /* MemberDao.updateLockStts */
+        UPDATE TB_CMM_USER SET
+               ACNT_LOCK_YN      = 'N'                 
+               ,ACNT_LOCK_CD      = null
+               ,MDFCN_DT          = NOW()                         
+               ,MDFRID            = #{user.userid}                
+         WHERE userid = #{userid} 
+    </update>
+    
+    <!-- 탈퇴 처리-->
+    <update id="updateMemberDelYn" parameterType="MemberVo">
+        /* MemberDao.updateLockStts */
+        UPDATE TB_CMM_USER SET
+               DEL_YN = #{delYn}
+               ,ACNT_LOCK_YN      = 'Y'                 
+               ,ACNT_LOCK_CD      = '101106'
+               ,MDFCN_DT          = NOW()                         
+               ,MDFRID            = #{user.userid}                
+         WHERE userid = #{userid} 
+    </update>
+    
+    
     
 </mapper>

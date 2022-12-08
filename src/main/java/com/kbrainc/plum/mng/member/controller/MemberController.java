@@ -24,6 +24,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.mng.member.model.EmailVo;
 import com.kbrainc.plum.mng.member.model.LoginHistVo;
@@ -126,17 +127,17 @@ public class MemberController {
         //model.addAttribute("etcInfo", memberService.selectEtcInfo(memberVo.getUserid()));
         //return "mng/member/memberDetailForm";
         
+        MemberVo resultVo = memberService.selectMemberInfo(memberVo);
         
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
-        //encryptor.setSaltGenerator(new RandomSaltGenerator());
-        
+        encryptor.setSaltGenerator(new RandomSaltGenerator());
         encryptor.setPassword(encryptKey);
         encryptor.setAlgorithm("PBEWithMD5AndDES");
-        String encStr = encryptor.decrypt(memberVo.getGndr());
-        memberVo.setGndr(encStr);
+        String decStr = encryptor.decrypt(resultVo.getGndr());
         
-        model.addAttribute("member", memberService.selectMemberInfo(memberVo));
+        resultVo.setGndr(decStr);
+        
+        model.addAttribute("member", resultVo);
         
         return "mng/member/memberUpdate";
     }
@@ -164,7 +165,7 @@ public class MemberController {
         model.addAttribute("years", years);
         model.addAttribute("frontServerHost", frontServerHost);
 
-        return "mng/member/memberUpdate";
+        return "mng/member/memberUpdate2";
     }
 
     /**
@@ -230,20 +231,11 @@ public class MemberController {
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
         memberVo.setPswd(hashPassword);
         
-        String encryptKeyword = encryptKey;
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        //encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
         encryptor.setSaltGenerator(new RandomSaltGenerator());
-        
-        String str = encryptKeyword;
-        encryptor.setPassword(encryptKeyword);
+        encryptor.setPassword(encryptKey);
         encryptor.setAlgorithm("PBEWithMD5AndDES");
         String encStr = encryptor.encrypt(memberVo.getGndr());
-        
-        //String decStr = encryptor.decrypt(encStr);
-        //byte[] encrypted = cryptoService.encrypt(memberVo.getGndr().getBytes("UTF-8"), encryptKeyword);
-        //memberVo.setGndr(encrypted.toString());
-        //String hasGndr = encrypted.toString();
         
         memberVo.setGndr(encStr);
         retVal = memberService.insertMember(memberVo);
@@ -316,6 +308,15 @@ public class MemberController {
 
         int retVal = 0;
         
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setSaltGenerator(new RandomSaltGenerator());
+        encryptor.setPassword(encryptKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        String encStr = encryptor.encrypt(memberVo.getGndr());
+        
+        String decStr = encryptor.decrypt(encStr);
+        memberVo.setGndr(encStr);
+        
         retVal = memberService.modifyMember(memberVo);
 
         //사용자의 세션을 차단하는 기능을 구현
@@ -344,8 +345,9 @@ public class MemberController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/member/tempPwdPop.html")
-    public String tempPwdPop() throws Exception {
-        return "mng/member/tempPwdPop";
+    public String tempPwdPop(TempPwdVo tempPwdVo,Model model) throws Exception {
+        model.addAttribute("tempPwdVo",tempPwdVo);
+        return "mng/member/tempPwdPopup";
     }
 
     /**
@@ -650,4 +652,126 @@ public class MemberController {
 
         return resultMap;
     }
+    
+    /********************************************************************/
+    /**
+    * 블랙리스트 레이어팝업화면.
+    *
+    * @Title       : blcklstDsctnPopup 
+    * @Description : 임시비밀번호 레이어팝업화면.
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/member/blcklstDsctnPopup.html")
+    public String blcklstDsctnPopup(BlcklstDsctnVo blcklstDsctnVo,Model model) throws Exception {
+        List<MemberVo> result = memberService.selectBlcklstMemberList(blcklstDsctnVo);
+        model.addAttribute("users", result);
+        return "mng/member/blcklstDsctnPopup";
+    }
+    
+    /**
+    * 블랙리스트 지정 및 해제 처리.
+    *
+    * @Title       : updatetBlcklstDsctn 
+    * @Description : 블랙리스트 지정 및 해제 처리
+    * @param BlcklstDsctnVo blcklstDsctnVo객체
+    * @param bindingResult 유효성검증결과
+    * @param user 사용자세션정보
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/member/updatetBlcklstDsctn.do")
+    @ResponseBody
+    public Map<String, Object> updatetBlcklstDsctn(BlcklstDsctnVo blcklstDsctnVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        Map<String, Object> resMap = new HashMap<String, Object>();
+        
+        int retVal = 0 ;
+        
+        blcklstDsctnVo.setUser(user);
+        
+        resMap = memberService.updateMemberBlcklstYn(blcklstDsctnVo);
+        
+        if((boolean)resMap.get("isUnmatchedgUser") == true) {
+            resultMap.put("msg"
+                    , (blcklstDsctnVo.getBlcklstYn().equals("Y"))? 
+                       "이미 블랙리스트로 지정된 사용자를 제외하고 처리되었습니다."
+                       :"이미 블랙리스트에 포함되지 않은 사용자를 제외하고 처리되었습니다");
+        }else {
+            resultMap.put("msg"
+                    , (blcklstDsctnVo.getBlcklstYn().equals("Y"))? 
+                            "블랙리스트로 지정처리 되었습니다"
+                            :"블랙리스트에서 해지처리되었습니다");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+    * 계정 잠금 해제 
+    *
+    * @Title       : clearAcntLock 
+    * @Description : 계정 잠금 해제
+    * @param MemberVo memberVo 
+    * @param bindingResult 유효성검증결과
+    * @param user 사용자세션정보
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/member/clearAcntLock.do")
+    @ResponseBody
+    public Map<String, Object> clearAcntLock(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        memberVo.setUser(user);           
+        int retVal = 0;
+        
+        retVal = memberService.updateLockStts(memberVo); 
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "계정잠금을 해제 하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "계정잠금 해제에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+     * 회원탈퇴 
+     *
+     * @Title       : sendSms 
+     * @Description : sms발송.
+     * @param smsVo SmsVo객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/member/quitMember.do")
+    @ResponseBody
+    public Map<String, Object> quitMember(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        memberVo.setUser(user);           
+        int retVal = 0;
+        
+        retVal = memberService.updateMemberDelYn(memberVo); 
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "탈퇴 처리 하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "탈퇴 처리에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    
+    
+    
 }
