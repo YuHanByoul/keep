@@ -186,7 +186,7 @@ function fn_role_reOrder(node, sourceNode,hitMode){
 }
 
 function fn_getRoleInfo(roleId){
-	console.log("fn_getRoleInfo : " + roleId);
+	//console.log("fn_getRoleInfo : " + roleId);
 	jQuery.ajax({
 		url : detailUrl,
 		cache : false,
@@ -196,7 +196,7 @@ function fn_getRoleInfo(roleId){
 			//mkey:'${mkey}'
 		},
 		success : function(data){
-			console.log(data);
+			//console.log(data);
 			fn_setRegistForm(data);
 		
 		}

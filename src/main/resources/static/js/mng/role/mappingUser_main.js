@@ -60,8 +60,12 @@ function initJsGridCustom(){
 	    },
 	 
 	    itemTemplate: function(value) {
-	    	var date = new Date(value);
-	    	return date.toISOString().substring(0, 10);
+            try{
+    	    	var date = new Date(value);
+    	    	return date.toISOString().substring(0, 10);
+    	    }catch(e){
+                $("#gridList").jsGrid("reset");
+            }
 	    },
 	 
 	    insertTemplate: function(value) {
@@ -86,7 +90,7 @@ function initJsGridCustom(){
 }
 
 function fn_roleTreeList(){
-	console.log("fn_roleTreeList");
+	//console.log("fn_roleTreeList");
 	jQuery("#mappingUserTree").dynatree({
     	autoFocus: true,
     	cache: false,
@@ -184,7 +188,7 @@ function makeGrid(roleId) {
             			"orderField": filter.sortField,
             			"orderDirection": filter.sortOrder
             	}
-            	console.log(filter);
+            	//console.log(filter);
                 $.ajax({
                   type: "GET",
                   contentType: "application/json; charset=utf-8",
@@ -203,7 +207,20 @@ function makeGrid(roleId) {
                 return data.promise();
             },
 	        updateItem: function(item) {
-	            console.log(item);
+	            //console.log(item);
+	            if (item.roleStrtDd == '') {
+                    alert("권한 시작일을 선택해 주십시오.");
+                    return false;
+                } else if (item.roleEndDd == '') {
+                    alert("권한 종료일을 선택해 주십시오.");
+                    return false;
+                }
+            
+                if (item.roleStrtDd > item.roleEndDd) {
+                    alert("권한 종료일은 시작일보다 같거나 커야 합니다.");
+                    return false;
+                }
+                    
 	            ROLE.update(item, function(data){
 	    			if(data.result == 'success'){
 	    				alert("저장하였습니다.");		// 저장하였습니다.
@@ -215,7 +232,7 @@ function makeGrid(roleId) {
 	        },
 
 	        deleteItem: function(item) {
-	            console.log(item);
+	            //console.log(item);
 	            ROLE.delete(item, function(data){
 	            	if(data.result == 'success'){
 	    				alert("삭제하였습니다.");		// 저장하였습니다.
@@ -259,8 +276,8 @@ function makeGrid(roleId) {
                     return value;
                 }
             },
-            { name: 'roleStrtDd', title:"사용시작일", type: "date", width: "150", align: "center" },
-            { name: 'roleEndDd', title:"사용종료일", type: "date", width: "150", align: "center" },
+            { name: 'roleStrtDd', title:"권한 시작일", type: "date", width: "150", align: "center" },
+            { name: 'roleEndDd', title:"권한 종료일", type: "date", width: "150", align: "center" },
             { type: "control", width: "70" }
         ],
         rowClick: function() {  },
@@ -297,7 +314,7 @@ var addUserList = function(list, startDate, endDate){
     		method: 'post',
     		data : JSON.stringify(list),
     		success : function(data){
-    			console.log(data);
+    			//console.log(data);
     			
     			//리로드
     			$("#gridList").jsGrid("reset");

@@ -26,9 +26,20 @@ function initRoleUserMappSearch() {
         return false;
     });
     
-    //사용자 추가 버튼 처리
+    //저장 버튼 처리
     $('#addUserForm').submit(addUser);
-
+    
+    jQuery("#addUserForm").validate({
+        onsubmit: false,
+        rules: {
+             roleStartDate : { required: true }  
+            ,roleEndDate   : { required: true }
+        },
+        messages: {
+             roleStartDate : { required: "권한 시작일을 선택해 주십시오." }  
+            ,roleEndDate   : { required: "권한 종료일을 선택해 주십시오." }
+        }
+    });
 }
 
 var selectItem = function(item) {
@@ -153,14 +164,8 @@ var addUser = function(){
 	var startDate = $('#roleStartDate').val();
 	var endDate = $('#roleEndDate').val();
 	
-	if (startDate == '') {
-		alert("권한 시작일을 선택해 주십시오.");
-		$('#roleStartDate').focus();
-		return false;
-	} else if (endDate == '') {
-        alert("권한 종료일을 선택해 주십시오.");
-        $('#roleEndDate').focus();
-        return false;
+    if(!jQuery("#addUserForm").valid()){
+      return false;
     }
 
 	//if (parseInt(startDate.replace(/-/g, "")) > parseInt(endDate.replace(/-/g, ""))) {

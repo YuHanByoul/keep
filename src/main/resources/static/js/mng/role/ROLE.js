@@ -15,8 +15,6 @@ var ROLE = {
 				"roleEndDd": item.roleEndDd
 		};
 			
-		console.log(JSON.stringify(data));
-			
 		if(displayWorkProgress()){
     		$.ajax({
                     type: "POST",
@@ -25,7 +23,7 @@ var ROLE = {
                     data: JSON.stringify(data),
                     dataType: "json"
                   }).done(function(response){
-                	  console.log(response);
+                	  //console.log(response);
                 	  if(!response){
                 		  alert("저장에 실패하였습니다. 권한이 있는지 확인하십시오.");
                 		  return false;
@@ -41,7 +39,7 @@ var ROLE = {
 	 * 
 	 */
 	delete: function(item, callback){
-			console.log(JSON.stringify(item));
+			//console.log(JSON.stringify(item));
 		      
 		    if(displayWorkProgress()){	
     			$.ajax({
@@ -51,7 +49,7 @@ var ROLE = {
                     data: JSON.stringify(item),
                     dataType: "json"
                   }).done(function(response){
-                	  console.log(response);
+                	  //console.log(response);
                 	  if(!response){
                 		  alert("삭제에 실패하였습니다. 권한이 있는지 확인하십시오.");
                 	  }

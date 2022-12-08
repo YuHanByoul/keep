@@ -94,7 +94,7 @@ function makeTree(){
 }
 
 function treeReload(){
-	console.log("treeReload");
+	//console.log("treeReload");
 	if(jQuery("#roleid").val() == "" || jQuery("#roleid").val() == "0" || jQuery("#siteid").val() == null || jQuery("#siteid").val() == "" ){
         if(jQuery("#siteid").val() == ""){
             jQuery("#subTree").hide();
