@@ -22,7 +22,7 @@ function init(){
 
 	jQuery("#goPopup").bind("click",function(){		
 		if(jQuery("#roleid").val()  == '0' || jQuery("#roleid").val()  == ''){
-			alert("역할을 선택해 주십시오.");
+			alert("트리에서 역할을 선택해 주십시오.");
 			return;
 		}
 		
