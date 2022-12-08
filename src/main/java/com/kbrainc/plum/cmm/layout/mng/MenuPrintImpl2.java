@@ -117,6 +117,7 @@ public class MenuPrintImpl2 {
         String url = "";
         StringBuffer menuTag = new StringBuffer();
         boolean isNoLink = false;
+        String iconClass = null;
 
         for (TreeNode<MenuItem> treeNode1 : menuTree.getRoot().getChildren()) {
             menuItem1 = treeNode1.getData();
@@ -224,7 +225,11 @@ public class MenuPrintImpl2 {
                                     }
                                 }
                             }
-                            menuTag.append("<span class=\"pcoded-micon\"><i class=\"feather icon-hash\"></i></span><span class=\"pcoded-mtext\">").append(menuItem2.getNm()).append("</span></a>\n");
+                            iconClass = menuItem2.getClassNm();
+                            if ("".equals(StringUtil.nvl(iconClass, ""))) {
+                                iconClass = "icon-hash";
+                            }
+                            menuTag.append("<span class=\"pcoded-micon\"><i class=\"feather ").append(iconClass).append("\"></i></span><span class=\"pcoded-mtext\">").append(menuItem2.getNm()).append("</span></a>\n");
                             if (treeNode2.hasChildren()) {
                                 menuTag.append("        <ul class=\"first-depth-submenu pcoded-submenu\">\n");
                                 for (TreeNode<MenuItem> treeNode3 : treeNode2.getChildren()) {
