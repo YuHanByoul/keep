@@ -152,7 +152,7 @@ function fn_setRegistForm(data){
 
 function makeGrid(roleId) {
 
-	$("#gridList").jsGrid({
+    $("#gridList").jsGrid({
         height: "auto",
         width: "100%",
         autoload: true,
@@ -176,19 +176,19 @@ function makeGrid(roleId) {
         
         controller: {
             loadData: function (filter) {
-            	var data = $.Deferred();
-            	
-            	var params = {
-            			"roleid": roleId,
-            			"useYn": $('#useYn').val(),
-            			"searchType": $('#searchType').val(),
-            			"searchKeyword": $('#searchKeyword').val(),
-            			"pageNumber": filter.pageIndex,
-            			"rowPerPage": filter.pageSize,
-            			"orderField": filter.sortField,
-            			"orderDirection": filter.sortOrder
-            	}
-            	//console.log(filter);
+                var data = $.Deferred();
+                
+                var params = {
+                        "roleid": roleId,
+                        "useYn": $('#useYn').val(),
+                        "searchType": $('#searchType').val(),
+                        "searchKeyword": $('#searchKeyword').val(),
+                        "pageNumber": filter.pageIndex,
+                        "rowPerPage": filter.pageSize,
+                        "orderField": filter.sortField,
+                        "orderDirection": filter.sortOrder
+                }
+                //console.log(filter);
                 $.ajax({
                   type: "GET",
                   contentType: "application/json; charset=utf-8",
@@ -196,19 +196,27 @@ function makeGrid(roleId) {
                   data: params,
                   dataType: "json"
                 }).done(function(response){
-                	var da = {
+                    var da = {
                             data : escapeGridData(response.list),
                             itemsCount : response.totalCount
                         };
                    //console.log(da);
                   data.resolve(da);
+                  
+                  if(!isEdit & !isDelete){
+                     $('..jsgrid-control-field').hide();
+                  }else if(!isEdit){
+                    $('.jsgrid-edit-button').hide();    
+                  }else if(!isDelete){
+                    $('.jsgrid-delete-button').hide();    
+                  }
                 });
                 
                 return data.promise();
             },
-	        updateItem: function(item) {
-	            //console.log(item);
-	            if (item.roleStrtDd == '') {
+            updateItem: function(item) {
+                //console.log(item);
+                if (item.roleStrtDd == '') {
                     alert("권한 시작일을 선택해 주십시오.");
                     return false;
                 } else if (item.roleEndDd == '') {
@@ -221,31 +229,31 @@ function makeGrid(roleId) {
                     return false;
                 }
                     
-	            ROLE.update(item, function(data){
-	    			if(data.result == 'success'){
-	    				alert("저장하였습니다.");		// 저장하였습니다.
-	    			}else{
-	    				alert("저장에 실패하였습니다.");		// 저장에 실패하였습니다.
-	    			}
-	            	
-	            });
-	        },
+                ROLE.update(item, function(data){
+                    if(data.result == 'success'){
+                        alert("저장하였습니다.");      // 저장하였습니다.
+                    }else{
+                        alert("저장에 실패하였습니다.");      // 저장에 실패하였습니다.
+                    }
+                    
+                });
+            },
 
-	        deleteItem: function(item) {
-	            //console.log(item);
-	            ROLE.delete(item, function(data){
-	            	if(data.result == 'success'){
-	    				alert("삭제하였습니다.");		// 저장하였습니다.
-	    			}else{
-	    				alert("삭제에 실패하였습니다.");		// 저장에 실패하였습니다.
-	    			}
-	            	
-	            	$("#gridList").jsGrid("reset"); 
-	            });
+            deleteItem: function(item) {
+                //console.log(item);
+                ROLE.delete(item, function(data){
+                    if(data.result == 'success'){
+                        alert("삭제하였습니다.");      // 저장하였습니다.
+                    }else{
+                        alert("삭제에 실패하였습니다.");      // 저장에 실패하였습니다.
+                    }
+                    
+                    $("#gridList").jsGrid("reset"); 
+                });
 
-	        }
+            }
             
-		
+        
         },
         deleteConfirm: "정말 삭제하시겠습니까?",
         fields: [ 

@@ -1,5 +1,5 @@
 var treeUrl = "/mng/roleauth/roleMgntTreeList.do";
-var orderUrl = "/mng/roleauth/roleReorder.do";
+//var orderUrl = "/mng/roleauth/roleReorder.do";
 var detailUrl = "/mng/roleauth/roleDetailInfo.do";
 var saveUrl = "/mng/roleauth/roleRegistInfo.do";
 var tab1Url = "/mng/roleauth/roleMgntUserMappingForm.do";
@@ -131,7 +131,7 @@ function fn_roleTreeList(){
     			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#upprRoleid").val());
     		}
     	},
-    	dnd: {
+    	/*dnd: {
     		preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
     		onDragStart: function(node) {
       			return true;
@@ -147,7 +147,7 @@ function fn_roleTreeList(){
       			fn_role_reOrder(node, sourceNode,hitMode);
     		}
  
-    	}
+    	}*/
   	});  
 }
 
