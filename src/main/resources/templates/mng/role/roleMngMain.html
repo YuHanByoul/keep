@@ -15,22 +15,56 @@
             var _ROLE_LEVEL = /*[[${rolelevel}]]*/ 'A'; //Controller로 부터 받아서 사용. main.js에서 사용.
         
         /*]]>*/
-        </script>       
+        
+            $(document).ready(function(){
+                //console.log("Start : " + _ROLE_LEVEL);
+                
+                var tabFlag = false;
+                /*[# sec:authorize-url="/mng/roleauth/defineRole.html"]*/
+                if(tabFlag == false) {
+                    tabFlag = true;
+                    loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?seCd='+_ROLE_LEVEL);
+                    $('a[href="#defineRole"').addClass('active');    
+                }
+                /*[/]*/
+                /*[# sec:authorize-url="/mng/roleauth/mappingUserForm.html"]*/
+                if(tabFlag == false) {
+                    tabFlag = true;
+                    loadTabContent('#defineRoleContent', '/mng/roleauth/mappingUserForm.html?seCd='+_ROLE_LEVEL);
+                    $('a[href="#mappingUser"').addClass('active');        
+                }
+                /*[/]*/
+                /*[# sec:authorize-url="/mng/roleauth/configRoleMenuForm.html"]*/
+                if(tabFlag == false) {
+                    tabFlag = true;
+                    loadTabContent('#defineRoleContent', '/mng/roleauth/configRoleMenuForm.html?seCd='+_ROLE_LEVEL);
+                    $('a[href="#configMenu"').addClass('active');        
+                }
+                /*[/]*/
+            });
+            
+        </script>
         <script src="/js/mng/role/main.js"></script>
 
         <div class="row">
             <div class="card">
                 <div class="card-block-small">
                     <ul class="nav nav-tabs  tabs" role="tablist" id="roleMngMainTab">
+                        <th:block sec:authorize-url="/mng/roleauth/defineRole.html">
                         <li class="nav-item">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#defineRole" role="tab"><strong>역할정의</strong></a>
+                            <a class="nav-link" data-bs-toggle="tab" href="#defineRole" role="tab"><strong>역할정의</strong></a>
                         </li>
+                        </th:block>
+                        <th:block sec:authorize-url="/mng/roleauth/mappingUserForm.html">
                         <li class="nav-item" th:if="${'A'.equals(rolelevel)}">
                             <a class="nav-link" data-bs-toggle="tab" href="#mappingUser" role="tab"><strong>사용자매핑</strong></a>
                         </li>
+                        </th:block>
+                        <th:block sec:authorize-url="/mng/roleauth/configRoleMenuForm.html">                        
                         <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="tab" href="#configMenu" role="tab"><strong>메뉴권한설정</strong></a>
                         </li>
+                        </th:block>
                         <li class="nav-item" th:if="${'A'.equals(rolelevel)}">
                             <a class="nav-link" data-bs-toggle="tab" href="#agencyAuthSetting" role="tab"><strong>기관권한설정</strong></a>
                         </li>

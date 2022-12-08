@@ -1,6 +1,4 @@
 $(document).ready(function(){
-	//console.log("Start : " + _ROLE_LEVEL);
-	loadTabContent('#defineRoleContent', '/mng/roleauth/defineRole.html?seCd='+_ROLE_LEVEL);
 	
 	$('#roleMngMainTab a').click(function (e) {
 		  e.preventDefault();
