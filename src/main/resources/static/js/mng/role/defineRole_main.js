@@ -244,6 +244,7 @@ function fn_roleRegist(){
     if(displayWorkProgress()){
     	jQuery.ajax({
     		url : saveUrl,
+    		type: "POST",
     		cache : false,
     		dataType: 'json',
     		data : jQuery("#defineRoleform").serialize(),

@@ -313,6 +313,7 @@ var addUserList = function(list, startDate, endDate){
 	});
 	
 	//console.log(list);
+	var roleUserVoList = { "roleUserVoList" : list };
 	
 	if(displayWorkProgress()){
     	jQuery.ajax({
@@ -320,7 +321,7 @@ var addUserList = function(list, startDate, endDate){
     		contentType: 'application/json',
     		dataType:'json',
     		method: 'post',
-    		data : JSON.stringify(list),
+    		data : JSON.stringify(roleUserVoList),
     		success : function(data){
     			//console.log(data);
     			closeWorkProgress();
