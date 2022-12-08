@@ -1,11 +1,5 @@
 $.getScript( "/js/mng/role/ROLE.js" );
 
-/** jsGrid의 회원분류 값. */
-var userSe = [
-    { Name: "개인회원", Id: "P" },
-    { Name: "기업회원", Id: "C" }
-];
-
 var orgnGrid = null;
 var gridUrl = "/mng/roleauth/roleMgntUserMapped.do";
 var treeUrl = "/mng/roleauth/roleMgntTreeList.do";
@@ -48,7 +42,7 @@ function init(){
 	
 }
 
-function initSearch() {
+function initSearchForm() {
     jQuery("#searchType", "#searchForm").val("");
     jQuery("#searchKeyword", "#searchForm").val("");
 }
@@ -269,7 +263,7 @@ function makeGrid(roleId) {
             { name: 'roleEndDd', title:"사용종료일", type: "date", width: "150", align: "center" },
             { type: "control", width: "70" }
         ],
-        //rowClick: function(args) { readModify(args.item.faqid); },
+        rowClick: function() {  },
         
 });
 
