@@ -134,42 +134,41 @@ public class MenuPrintImpl2 {
             }
             if (isMenuView) { // 프로그램유형코드가 메뉴/디렉토리이면서 숨김여부가 N이면서 현재역할로 메뉴에 접근가능할때만
 
-                menuTag.append("<div class=\"pcoded-navigatio-lavel\">");
-                
                 if ("D".equals(menuItem1.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                     //mkey = menuItem1.getRefMenuid();
                     mkey = null;
                     if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
-                        //menuTag.append("                <a href=\"javascript:void(0)\">\n");
+                        menuTag.append("<div class=\"pcoded-navigatio-lavel\">");
                         isNoLink = true;
                     } else {
-                        menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
+                        menuTag.append("                <a class=\"d-block pcoded-navigatio-lavel\" href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                     }
                 } else {
                     if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
-                        //menuTag.append("    <a href=\"javascript:void(0)\">\n");
+                        menuTag.append("<div class=\"pcoded-navigatio-lavel\">");
                         isNoLink = true;
                     } else {
                         mkey = menuItem1.getMenuid();
 
                         if ("Y".equals(menuItem1.getPopupYn())) {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
+                                menuTag.append("    <a class=\"d-block pcoded-navigatio-lavel\" href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                             } else { // 현재창
-                                menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("')\">\n");
+                                menuTag.append("    <a class=\"d-block pcoded-navigatio-lavel\" href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("')\">\n");
                             }
                         } else {
-                            menuTag.append("    <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
+                            menuTag.append("    <a class=\"d-block pcoded-navigatio-lavel\" href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
                         }
                     }
                 }
                 
                 menuTag.append(menuItem1.getNm());
-                if (!isNoLink) {
+                if (isNoLink) {
+                    menuTag.append("</div>");
+                } else {
                     menuTag.append("</a>");
                 }
                 
-                menuTag.append("</div>\n");
                 if (treeNode1.hasChildren()) {
                     menuTag.append("<ul class=\"pcoded-item pcoded-left-item\">");
                     for (TreeNode<MenuItem> treeNode2 : treeNode1.getChildren()) {
