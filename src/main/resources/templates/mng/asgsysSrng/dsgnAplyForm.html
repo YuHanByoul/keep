@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/mainLayout"
+>
+    <body>
+
+    <div layout:fragment="content">
+<style>
+.hide
+{
+   display:none;
+}
+</style>
+
+<!-- Page-body start -->
+	<div class="page-body">
+	   <div class="row">
+
+		    <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+		    <!-- 필터 부분 -->
+		        <div class="card-block-small">
+		            <!-- 키워드 filter -->
+		            <div class="row">
+		                <div class="col-lg-3 mb-2">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+		                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+		                            <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+		                               <option value="">프로그램명</option>
+		                               <option value="id">기관명</option>
+		                               <option value="name">사업자번호</option>
+		                            </select>
+		                            <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-lg-3 mb-2">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></span>
+		                        <div class="col-sm-12">
+		                            <select id ="searchRoleCd" name="searchRoleCd" class="form-select form-select-sm form-control-sm">
+		                               <option value="">- 전체 -</option>
+		                               <option value="A">작성중</option>
+		                               <option value="B">신청완료</option>
+		                               <option value="C">요건검토중</option>
+		                               <option value="D">서류요청</option>
+		                               <option value="E">서류보완</option>
+		                               <option value="F">심사위원심사</option>
+		                               <option value="G">지원단심사</option>
+		                               <option value="H">보완요청</option>
+		                               <option value="I">보완완료</option>
+		                               <option value="J">결과보고</option>
+		                               <option value="K">지정승인</option>
+		                               <option value="L">지정탈락</option>
+		                            </select>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-lg-3 mb-2">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청일 - 검색 시작일</strong></span>
+		                        <div class="col-sm-12">
+		                            <input class="form-control form-control-sm" type="date" id="searchStartDay" name="searchStartDay"/>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-lg-3">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청일 - 검색종료일</strong></span>
+		                        <div class="col-sm-12">
+		                            <input class="form-control form-control-sm" type="date" id="searchEndDay" name="searchEndDay"/>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-lg-3 mb-2">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사위원 심사상태</strong></span>
+		                        <div class="col-sm-12">
+
+		                            <select id="searchSrngSttsCd" name="searchSrngSttsCd" class="form-select form-select-sm form-control-sm">
+		                               <option value="">- 전체 -</option>
+		                               <option value="1">가입</option>
+		                               <option value="2">대기</option>
+		                               <option value="9">탈퇴</option>
+		                            </select>
+
+		                        </div>
+		                    </div>
+		                </div>
+
+		                <div class="col-lg-3 mb-2">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지원단 심사상태</strong></span>
+		                        <div class="col-sm-12">
+
+		                            <select id="searchSrgnSttsCd" name="searchSrgnSttsCd" class="form-select form-select-sm form-control-sm">
+		                               <option value="">- 전체 -</option>
+		                               <option value="1">가입</option>
+		                               <option value="2">대기</option>
+		                               <option value="9">탈퇴</option>
+		                            </select>
+
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-lg-3 mb-2">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>현장점검 지정일 - 검색 시작일</strong></span>
+		                        <div class="col-sm-12">
+		                            <input class="form-control form-control-sm" type="date" id="searchStartDay" name="searchStartDay"/>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-lg-3">
+		                    <div class="mb-0 form-group row">
+		                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>현장점검 지정일- 검색종료일</strong></span>
+		                        <div class="col-sm-12">
+		                            <input class="form-control form-control-sm" type="date" id="searchEndDay" name="searchEndDay"/>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		            <!-- //키워드 filter -->
+		            <!-- 키워드 filter-btn -->
+		            <div class="m-t-20 text-center" >
+		                <button class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
+		                <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
+		            </div>
+		        </div>
+		    </form>
+		    <!-- //필터 부분 -->
+
+		    <!-- 그리드 부분 -->
+		    <div class="card">
+		        <div class="row p-20 p-b-0">
+		            <div class="col-12 col-md-6">
+		                <h5><strong>지정신청 검색결과</strong></h5>
+		            </div>
+		            <div class="col-12 col-md-6 text-right">
+		                <button type="button" class="btn btn-primary m-r-5">지원단 캘린더</button>
+		                <button type="button" class="btn btn-primary m-r-5">지원단총평 엑셀다운로드</button>
+		                <button type="button" class="btn btn-primary">엑셀다운로드</button>
+		            </div>
+		        </div>
+		        <div class="card-block-small">
+		            <div class="dt-responsive table-responsive">
+
+		                <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+			                <table id="jsGrid" class="table-responsive"></table>
+			                <div id="listPager" class="text-center"></div>
+		                </div>
+		            </div>
+
+		        </div>
+		    </div>
+        </div>
+        <!-- Content Area -->
+        <div id="contentPanel" class="panel panel-default" style="display:none"></div>
+
+
+	<script type="text/javascript">
+
+	var userid = /*[[${param.userid}]]*/null;
+
+	var selectedItems = [];
+    var gridHelper1;
+	$(function(){
+        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+        writeJsGridData();
+
+console.log("@@@@@@@@@ user id : " + userid);
+console.log("@@@@@@@@@ user id : " + userid);
+console.log("@@@@@@@@@ user id : " + userid);
+        if(userid != null){
+            //var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?userid=" + userid;
+            //gridHelper1.loadContent(detailUrl);
+        }
+
+    });
+
+
+	//취소버튼
+	function fn_init() {
+        $("#searchRoleCd").val('');
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+        $("#searchSttsCd").val('');
+        $("#searchStartDay").val('');
+        $("#searchEndDay").val('');
+    }
+
+	//검색버튼
+    function fn_searchForm(){
+        gridHelper1.resetListContent();
+    }
+
+    /* 지원단 캘린더 팝업 */
+    function sprtgrpCalBtnClck(){
+debugger;
+    	var popupUrl = "/mng/bbs/bbsForm.html";
+    	var userAddModal;
+
+    	$("#userAddModal").load(popupUrl, function(response, status, xhr) {
+    	    if (status == "success") {
+    	        userAddModal = new bootstrap.Modal($('#userAddModal'));
+    	        userAddModal.show();
+    	    }
+    	});
+
+/*
+    	// 모달이 나타날때 초기화 수행
+    	$(function(){
+    	    $("#userAddModal").off("show.bs.modal").on("show.bs.modal", 초기화함수명);
+    	});
+    	// 모달에서 선택/저장후
+    	userAddModal.hide();
+*/
+
+    }
+
+    /* 지원단 총평 엑셀 다운로드 */
+    function 지원단BtnClck(){
+
+    }
+
+    /* 엑셀 다운로드 */
+    function 지원단BtnClck(){
+
+    }
+
+
+    //목록
+    function writeJsGridData(){
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/asgsysSrng/selectDsgnAplyList.do",
+                      dataType: "json",
+                      data: formData
+                    }).done(function(response){
+console.log("@@@@@1");
+//debugger;
+console.log("@@@@@2");
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     headerTemplate: function() {
+                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                     },
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                         .prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                         .on("change", function () {
+                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                         });
+                     },
+                     align: "center",
+                     width: "50",
+                     sorting: false
+                 }
+                ,{ name: 'prgrmid', css:'hide'}
+                ,{ title: 'No'                ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '프로그램명'        ,name: 'prgrmNm',    type: "text", width: "100"}
+                ,{ title: '기관명'            ,name: 'instNm', type: "text", width: "100"}
+                ,{ title: '진행상태'          ,name: 'email',   type: "text", width: "100" }
+                ,{ title: '신청일'            ,name: 'delYn',  type: "text", align:"center" }
+                ,{ title: '심사위원 심사상태' ,name: 'srngSttsCd',   type: "text", width: "100", align:"center" }
+                ,{ title: '지원단 심사상태'   ,name: 'srgnSttsCd',  type: "text", width: "120", align:"center" }
+                ,{ title: '현장점검 지정일시' ,name: 'vstDe',  type: "text", width: "120", align:"center" }
+            ],
+
+            rowClick: function(args) {
+
+debugger;
+console.log("@@@@@@@ 클릭 1");
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+console.log("@@@@@@@ 클릭 2");
+                var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + args.item.prgrmid;
+                gridHelper1.loadContent(detailUrl);
+console.log("@@@@@@@ 클릭 3");
+                gridHelper1.rowClick(args);
+            },
+            onPageChanged: function(args) {
+                selectedItems = [];
+            }
+        });
+
+        var selectItem = function(item) {
+            selectedItems.push(item);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+
+        var unselectItem = function(item) {
+            selectedItems = $.grep(selectedItems, function(i) {
+            return i !== item;
+            });
+            if(selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr('checked', false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+
+        $("#selectAllCheckbox").click(function(item) {
+            selectedItems = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox').each(function() {
+                    this.checked = true;
+                    selectItem($(this).parent().next().text());
+                });
+            }else {
+                $('.singleCheckbox').each(function() {
+                    this.checked = false;
+                    unselectItem(item);
+                });
+                selectedItems = [];
+            }
+        });
+    }
+
+	</script>
+	<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>
