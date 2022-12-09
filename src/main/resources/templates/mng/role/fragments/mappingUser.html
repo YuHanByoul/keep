@@ -1,86 +1,94 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="utf-8" />
 <body>
-	<div th:fragment="content">
-        
-        <script src="/js/mng/role/mappingUser_main.js"></script>
-        
-			
+    <script th:inline="javascript">
+        var isEdit = false;
+        var isDelete = false;
 
-            <div class="row no-gutter">
-                <div class="col-md-4 col-sm-4 col-xs-12">
-                
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4>역할구조</h4>
-                        </div>
-                        <div class="panel-body">
-                            <div>
-                                <div class="tree thumbnail img-responsive" id="mappingUserTree"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-                <div class="col-md-8 col-sm-8 col-xs-12" style="height:900px;">
-                    <div class="ui-layout-west panel panel-default" id="layoutMenuCompose">
-                        <div class="panel-heading">
-                            <h4>사용자 정보</h4>
-                        </div>
-                        <div class="panel-body">
-                        
-                            <!-- 검색 -->
-                            <form id="searchForm" name="searchForm" method="get" action="" class="form-inline">
-					        <div class="well well-sm " style="padding: 5px;">
-					            <div class="row" style="padding-left:15px;padding-right:15px;">
-					            
-						            <div class="col-sm-6">
-						              <div class="form-group">
-						                <label class="control-label form-control-static ">검색조건</label>
-						              </div>
-						              <div class="form-group">
-						                <select id="searchType" name="searchType" class="form-control input-sm form-control-static" style="padding:0px; width:100px;">
-						                    <option value="U.NM">성명</option>
-						                    <option value="ACNT">ID</option>
-						                </select>
-						                <input type="text" class="form-control input-sm form-control-static" id="searchKeyword" name="searchKeyword">
-						              </div>
-						            </div>
-						            <div class="col-sm-6 text-right">
-						              <button type="submit" class="btn btn-sm btn-primary">검색</button>
-						            </div>
-					            </div>
-					            </form>
-					        </div>
-        
-        
-					        <form id="mappingUserForm" name="mappingUserForm" method="get" action="" class="form-inline">
-					            <input type="hidden" name="roleid" id="roleid" th:value="${roleid}" />
-					            <input type="hidden" name="seCd" id="seCd" value="A" />
-                              
-		                    <div>
-		                            <div class="btnArea text-right" style="margin-bottom: 5px;">
-		                                <button type="button" id="goPopup" class="btn btn-sm btn-warning">
-		                                    사용자 추가
-		                                </button>
-		                            </div>		
-		                    </div>
-		                    <div id="gridDiv">
-		                        <table id="gridList"></table>
-		                        <div id="page"></div>
-		                    </div>
-                        
-                            </form>
+        /*[# sec:authorize-url="/mng/roleauth/roleUserMappSave.do"]*/
+        isEdit = true;
+        /*[/]*/
+        /*[# sec:authorize-url="/mng/roleauth/deleteRoleUser.do"]*/
+        isDelete = true;
+        /*[/]*/
+    </script>
+    <script src="/js/mng/role/mappingUser_main.js"></script>
+    
+	<div class="col-12 col-xl-4">
+        <h5 class="mb-3">
+            <strong>역할구조</strong>
+        </h5>
+        <div class="card">
+            <div class="card-block-small" id="mappingUserTree">
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-8">
+        <h5 class="mb-3">
+            <strong>사용자 정보</strong>
+        </h5>
+        <div class="card">
+            <form id="searchForm" name="searchForm" method="get" action="">
+            <div class="card-block-small">
+                <div class="col-12 col-lg-6">
+                    <div class="mb-0 form-group row">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                            <select id="searchType" name="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                <option value="">- 선택 -</option>
+                                <option value="U.NM">이름</option>
+                                <option value="ACNT">아이디</option>
+                            </select>
+                            <input type="text" class="form-control"
+                                   aria-label="Text input with dropdown button" id="searchKeyword" name="searchKeyword">
                         </div>
                     </div>
                 </div>
             </div>
-
-
-
-	</div>
-	<!-- layout:fragment="content" -->
+            <div class="card-block-small text-center">
+                <button type="button" class="btn btn-disabled m-r-5" onclick="initSearchForm()">초기화</button>
+                <button class="btn btn-primary">검색</button>
+            </div>
+            </form>
+        </div>
+        <div class="card">
+            <form id="mappingUserForm" name="mappingUserForm" method="get" action="">
+                <input type="hidden" name="roleid" id="roleid" th:value="${roleid}" />
+                <input type="hidden" name="seCd" id="seCd" value="A" />
+            <div class="row p-20 p-b-0">
+                <div class="col-12 col-md-6">
+                    <h5><strong>사용자 검색 결과</strong></h5>
+                </div>
+                <div class="col-12 col-md-6 text-right">
+                    <th:block sec:authorize-url=" /mng/roleauth/roleUserMappPopup.html">
+                    <button type="button" id="goPopup" class="btn btn-primary waves-effect waves-light">사용자추가</button>
+                    </th:block>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <div class="dt-responsive table-responsive">
+                    <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <table id="gridList" class="table-responsive"></table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12">
+                                <div id="listPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </form>
+            
+            <div class="modal fade" id="userAddModal" data-bs-backdrop="static">
+            </div>
+        </div>
+    </div>
 </body>
 </html>

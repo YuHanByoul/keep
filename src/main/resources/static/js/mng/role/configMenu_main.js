@@ -57,7 +57,7 @@ function makeTree(){
             },
             complete : function(data) {
             	//메뉴구성 창의 기본 높이를 역할구조와 맞추기 위해.
-        		$('#menuBody').css("min-height", $('#roleBody').outerHeight() + "px");
+        		//$('#menuBody').css("height", $('#roleBody').outerHeight() + "px");
             }
 		},
     	onActivate: function(node) {
@@ -94,7 +94,7 @@ function makeTree(){
 }
 
 function treeReload(){
-	console.log("treeReload");
+	//console.log("treeReload");
 	if(jQuery("#roleid").val() == "" || jQuery("#roleid").val() == "0" || jQuery("#siteid").val() == null || jQuery("#siteid").val() == "" ){
         if(jQuery("#siteid").val() == ""){
             jQuery("#subTree").hide();
@@ -222,17 +222,20 @@ function fn_save(){
     	return;
 	}
 		
-	jQuery.ajax({
-		url : saveUrl,
-		cache : false,
-		dataType: 'json',
-		type : 'POST',
-		data : $('#configMenuForm').serialize(),
-		success : function(data){
-			alert(data.msg);
-			treeReload();
-		}
-	});
+	if(displayWorkProgress()){
+    	jQuery.ajax({
+    		url : saveUrl,
+    		cache : false,
+    		dataType: 'json',
+    		type : 'POST',
+    		data : $('#configMenuForm').serialize(),
+    		success : function(data){
+    			closeWorkProgress();
+    			alert(data.msg);
+    			treeReload();
+    		}
+    	});
+    }
 
 }
 
@@ -259,9 +262,9 @@ function createSitecdTag(data){
 	var tag ="";	
 	if(data.length > 1){
 		tag += "<option value=''>- 선택 -</option>";		
-		jQuery("#siteid").show();
+		jQuery("#siteCard").show();
 	}else{		
-		jQuery("#siteid").hide();
+		jQuery("#siteCard").hide();
 	}
 	jQuery.each(data,function(key,obj){
 		tag += "<option value='"+obj.siteid+"'>"+obj.siteNm+"</option>";

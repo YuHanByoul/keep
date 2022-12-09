@@ -5,10 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.role.model.RoleMenuVo;
 import com.kbrainc.plum.mng.role.model.RoleUserVo;
+import com.kbrainc.plum.mng.role.model.RoleUserVoList;
 import com.kbrainc.plum.mng.role.model.RoleVo;
 import com.kbrainc.plum.mng.role.service.RoleAuthService;
 import com.kbrainc.plum.mng.site.model.SiteVo;
@@ -175,10 +180,16 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/roleRegistInfo.do")
     @ResponseBody
-    public Map<String, String> roleRegistInfo(@UserInfo UserVo user, RoleVo roleVo, ModelMap model) throws Exception {
+    public Map<String, String> roleRegistInfo(@UserInfo UserVo user, @Valid RoleVo roleVo, BindingResult bindingResult, ModelMap model) throws Exception {
         Map<String, String> response = new HashMap<String, String>();
         String mode = (String) roleVo.getMode();
         String msg = "";
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            response.put("msg", fieldError.getDefaultMessage());
+            return response;
+        }
 
         try {
             roleVo.setMdfrid(Integer.parseInt(user.getUserid()));
@@ -251,11 +262,15 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/insertRoleUserList.do")
     @ResponseBody
-    public List<Object> insertRoleUserList(@UserInfo UserVo user, @RequestBody List<RoleUserVo> roleUserVoList) throws Exception {
+    public List<Object> insertRoleUserList(@UserInfo UserVo user, @RequestBody @Valid RoleUserVoList roleUserVoList, BindingResult bindingResult) throws Exception {
         List<Object> response = new ArrayList<Object>();
         response.add(Constant.REST_API_RESULT_SUCCESS);
+        
+        if (bindingResult.hasErrors()) {
+            return response;
+        }
 
-        for (RoleUserVo roleUserVo : roleUserVoList) {
+        for (RoleUserVo roleUserVo : roleUserVoList.getRoleUserVoList()) {
             response.add(insertRoleUser(user, roleUserVo));
         }
 
@@ -274,8 +289,15 @@ public class RoleAuthController {
     */
     @RequestMapping(value = "/mng/roleauth/roleUserMappSave.do")
     @ResponseBody
-    public Map<String, String> roleUserMappSave(@UserInfo UserVo user, @RequestBody RoleUserVo roleUserVo) throws Exception {
+    public Map<String, String> roleUserMappSave(@UserInfo UserVo user, @Valid @RequestBody RoleUserVo roleUserVo, BindingResult bindingResult) throws Exception {
         Map<String, String> map = new HashMap<String, String>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            map.put("result", fieldError.getDefaultMessage());
+            return map;
+        }
+        
         roleUserVo.setMdfrid(user.getUserid());
         boolean retVal = roleAuthService.roleUserMappSave(roleUserVo);
         map.put("result", (retVal) ? Constant.REST_API_RESULT_SUCCESS : Constant.REST_API_RESULT_FAIL);
@@ -430,8 +452,7 @@ public class RoleAuthController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/roleauth/roleUserMappPopup.html")
-    public String roleUserMappPopup(RoleUserVo roleUserVo, @RequestParam("roleid") String roleid, ModelMap model) throws Exception {
-        model.addAttribute("roleid", roleid);
+    public String roleUserMappPopup(RoleUserVo roleUserVo, ModelMap model) throws Exception {
         return "mng/role/roleUserMappSearchPopup";
     }
 

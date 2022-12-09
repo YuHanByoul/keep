@@ -55,6 +55,7 @@ public class AttrConfig extends AbstractProcessorDialect {
         processors.add(new SelectInstAttr(dialectPrefix));
         processors.add(new SelectSiteAttr(dialectPrefix));
         processors.add(new SwitchYnAttr(dialectPrefix));
+        processors.add(new CheckCodeVerticalAttr(dialectPrefix));
         
         return processors;
     }

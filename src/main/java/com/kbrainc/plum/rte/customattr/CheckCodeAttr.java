@@ -72,6 +72,8 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
             String grpcd = ""; // 그룹cd
             String selectedCd = "";// default cd
             String[] selectedCds = null;
+            String readOnly = "";// default cd
+            String[] readOnlys = null;
             String upprCd = ""; // upper Code
             String listStyle = "";
             String addClass = "";
@@ -92,8 +94,16 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                 selectedCd = tag.getAttribute("selectedCd").getValue();
             }
             
+            if (tag.hasAttribute("readOnly")) {
+                readOnly = tag.getAttribute("readOnly").getValue();
+            }
+            
             if (selectedCd != null) {
                 selectedCds = selectedCd.split(",");
+            }
+            
+            if (readOnly != null) {
+                readOnlys = readOnly.split(",");
             }
             
             if (tag.hasAttribute("addClass") && !tag.getAttribute("addClass").getValue().equals("")) {
@@ -141,6 +151,10 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                         if (selectedCd != null && !(selectedCd.trim()).equals("")
                                 && inArray(selectedCds, codeInfoVo.getCd())) {
                             result.append(" checked ");
+                        }
+                        if (readOnly != null && !(readOnly.trim()).equals("")
+                                && inArray(readOnlys, codeInfoVo.getCd())) {
+                            result.append(" onclick='return false;' ");
                         }
                         result.append(" >");
                         result.append("<label class='form-label border-checkbox-label' for='"+attributeValue+cnt+"'>"+codeInfoVo.getCdNm()+"</label>");

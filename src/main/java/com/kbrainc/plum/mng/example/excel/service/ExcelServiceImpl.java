@@ -156,15 +156,15 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 			    cell.setCellStyle(styleL);
 			    /*생년월일*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getBrthdy(), ""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getBrdt(), ""));
 			    cell.setCellStyle(styleL);
 				/*이메일*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getEmail(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getEml(), ""));
 				cell.setCellStyle(styleL);
 				/*휴대폰 번호*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getMobno(),""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getMoblphon(),""));
 			    cell.setCellStyle(styleL);
 			    /*주소*/
 			    cell = row.createCell(cellnum++);
@@ -172,7 +172,7 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
 			    cell.setCellStyle(styleL);
 			    /*소개*/
 			    cell = row.createCell(cellnum++);
-			    cell.setCellValue(StringUtil.nvl(modelVo.getIntrcn(),""));
+			    cell.setCellValue(StringUtil.nvl(modelVo.getNm(),""));
 			    cell.setCellStyle(styleL); 
 			    /*사용여부*/
 			    cell = row.createCell(cellnum++);
@@ -396,13 +396,13 @@ public class ExcelServiceImpl extends PlumAbstractServiceImpl implements ExcelSe
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
 		memVo.setPswd(hashPassword);
 		//이메일
-		memVo.setEmail((String)data.get(3));
+		memVo.setEml((String)data.get(3));
 		//핸드폰
-		memVo.setMobno((String)data.get(4));
+		memVo.setMoblphon((String)data.get(4));
 		//이용약관동의여부
 		memVo.setTosAgreYn((String)data.get(5));
 		//개징정보 수집 동의여부
-		memVo.setPrvcyAgreYn((String)data.get(6));
+		memVo.setPrivcyAgreYn((String)data.get(6));
 		//계정잠김여부
 		memVo.setAcntLockYn("N");
 		//삭제여부

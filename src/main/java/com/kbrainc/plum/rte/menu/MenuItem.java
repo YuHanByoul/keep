@@ -18,6 +18,21 @@ import lombok.Data;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+/**
+* [클래스 요약].
+*
+* <pre>
+* com.kbrainc.plum.rte.menu
+* - MenuItem.java
+* </pre>
+*
+* @ClassName : MenuItem
+* @Description : TODO
+* @author : user
+* @date : 2022. 12. 8.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 public class MenuItem {
 
@@ -67,4 +82,6 @@ public class MenuItem {
     private String treeOrd;
     /* 프로그램유형코드 */
     private String ptypeCd;
+    /** 메뉴아이콘 클래스명 */
+    private String classNm;
 }

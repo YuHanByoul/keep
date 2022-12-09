@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.role.model.RoleAuthDao;
 import com.kbrainc.plum.mng.role.model.RoleMenuVo;
@@ -188,6 +189,7 @@ public class RoleAuthServiceImpl extends PlumAbstractServiceImpl implements Role
     * @throws Exception 예외
     */
     @Override
+    @Transactional
     public boolean updateRoleInfo(RoleVo param) throws Exception {
         roleAuthDao.updateRoleAuth(param); // 하위역할 수정
         return roleAuthDao.updateRoleInfo(param);
