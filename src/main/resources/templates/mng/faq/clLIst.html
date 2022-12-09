@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+	<div class="row">
+		<div class="card">
+			<div class="card-block-small">
+				<div class="mb-0 form-group row">
+					<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트선택</strong></div>
+					<th:block kattr:select_site="searchSite" witdh="100%" firstOptTxt="- 선택 - " firstOptVal=""></th:block>
+				</div>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-block-small">
+				<div class="row">
+					<div class="col-12 col-lg-6 mb-2 mb-lg-0">
+						<h5 class="mb-3">
+							<strong>FAQ 분류 목록</strong>
+						</h5>
+						<div class="card">
+							<div class="card-block-small">
+								<div class="dt-responsive table-responsive">
+									<div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+										<div class="row">
+											<div class="col-xs-12 col-sm-12">
+												<table id="jsGrid" class="table table-responsive overflow-auto" style="max-height:500px;"></table>
+												<div id="listPager" class="text-center"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-12 col-lg-6">
+						<div style="display:flex; justify-content: space-between; flex-wrap:wrap;">
+							<h5 class="mb-3">
+								<strong>FAQ 분류 정보</strong>
+							</h5>
+							<div class="mb-3 text-right">
+								<th:block sec:authorize-url="/mng/faq/addCl.do">
+									<button class="btn btn-primary" onclick="addFaqCl()">등록</button>
+								</th:block>
+							</div>
+						</div>
+						<div class="card">
+							<div class="card-block-small">
+								<form name="faqClForm" id="faqClForm" action="" method="post">
+									<input type="hidden" id="useYn" name="useYn" value="Y">
+									<input type="hidden" id="ord" name="id">
+									<div class="mb-2 form-group required row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clid"><strong>분류코드</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="clid" id="clid" placeholder="자동생성" readonly/>
+										</div>
+									</div>
+									<div class="mb-2 form-group required row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clNm"><strong>분류명</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="clNm" id="clNm"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<div class="col-sm-12">
+											<div class="col-sm-12">
+												<span kattr:switch_yn="clUseYn" label="FAQ 분류 사용" defaultVal="Y" onchange="clSwitch" isAdmin="true"></span>
+											</div>
+										</div>
+									</div>
+									<div class="mb-0 mt-4 form-group row">
+										<div class="col-sm-12">
+											<th:block sec:authorize-url="/mng/faq/addCl.do">
+												<button type="button" class="btn btn-primary" onclick="saveFaqCl()" >저장</button>
+											</th:block>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		var faqClInsertUrl = "/mng/faq/addCl.do";
+		var faqClUpdateUrl = "/mng/faq/updateCl.do";
+		/**
+		 * faqCl
+		 */
+		var faqCl = {
+			insert: function (item, callback) {
+				let data = {
+					"clNm": item.clNm,
+					"ord": item.ord,
+					"useYn": item.useYn,
+					"siteId": $("#selectSitesearchSite").val()
+				};
+
+				if(displayWorkProgress()){
+					$.ajax({
+						type: "POST",
+						contentType: "application/json; charset=utf-8",
+						url: faqClInsertUrl,
+						data: JSON.stringify(data),
+						dataType: "json"
+					}).done(function (response) {
+						if (!response) {
+							alert("추가에 실패하였습니다.");
+						}
+						if (typeof callback === 'function') callback();
+
+						writeJsGridData("insert");
+						closeWorkProgress();
+					});
+				}
+			},
+
+			update: function (item, callback) {
+				let data = {
+					"clid": item.clid,
+					"clNm": item.clNm,
+					"ord": item.ord,
+					"useYn": item.useYn
+				};
+
+				if(displayWorkProgress()){
+					$.ajax({
+						type: "POST",
+						contentType: "application/json; charset=utf-8",
+						url: faqClUpdateUrl,
+						data: JSON.stringify(data),
+						dataType: "json"
+					}).done(function (response) {
+						if (!response) {
+							alert("수정에 실패하였습니다.");
+						}
+						if (typeof callback === 'function') callback();
+						$("#jsGrid").jsGrid("reset");
+						closeWorkProgress();
+					});
+				}
+			},
+		}
+
+		$.getScript("/js/mng/faq/faqCl.js");
+
+		$(function () {
+			gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+
+			$("#selectSitesearchSite").change(function () {
+				if ($("#selectSitesearchSite").val() == null || $("#selectSitesearchSite").val() == " ") {
+					alert('검색할 사이트를 선택해 주십시오.');
+					return;
+				}
+				writeJsGridData("init");
+			});
+		});
+
+		function writeJsGridData(mode) {
+			$("#jsGrid").jsGrid({
+				height: "auto",
+				width: "100%",
+				autoload: true,
+				sorting: false,
+				paging: true,
+				pagerContainer: "#listPager",
+				pagerFormat: "{first} {prev} {pages} {next} {last}",
+				pagePrevText: "이전",
+				pageNextText: "다음",
+				pageFirstText: "< 처음 ㅣ",
+				pageLastText: "ㅣ마지막 >",
+				pageSize: 500,
+				pageButtonCount: 10,
+				pageLoading: true,
+				pageIndex: 1,
+				noDataContent: "데이터가 없습니다.",
+
+				controller: {
+					loadData: function (filter) {
+
+						var data = $.Deferred();
+
+						var params = {
+							"searchSite": $("#selectSitesearchSite").val(),
+							"pageNumber": filter.pageIndex,
+							"rowPerPage": filter.pageSize,
+							"orderField": filter.sortField,
+							"orderDirection": "asc"
+						};
+
+						if (filter.sortField == undefined) {
+							params.orderField = "ord";
+						}
+
+						$.ajax({
+							type: "GET",
+							contentType: "application/json; charset=utf-8",
+							url: "/mng/faq/faqClList.do",
+							data: params,
+							dataType: "json"
+						}).done(function (response) {
+							var da = {
+								data: escapeGridData(response.list),
+								itemsCount: response.totalCount
+							};
+							data.resolve(da);
+						});
+
+						return data.promise();
+					},
+				},
+				onDataLoaded: function(args) {
+					var gridBody = $("#jsGrid").find('.jsgrid-grid-body');
+					if(mode == "init") {
+						gridBody.find('.jsgrid-table tr:first-child()').trigger('click');
+					} else if(mode == "insert") {
+						gridBody.find('.jsgrid-table tr:last-child()').trigger('click');
+					}
+				},
+				fields: [
+					{name: 'clNm', title: "분류명", type: "text", width: "200"},
+					{
+						name: 'clid',
+						title: "분류코드",
+						type: "text",
+						width: "100",
+						align: "center"
+					},
+					{
+						name: 'useYn',
+						title: "사용여부",
+						width: "100",
+						align: "center"
+					},
+					{
+						name: 'ord',
+						title: "순서",
+						type: "number",
+						width: "50",
+						align: "center",
+						sorting: false
+					},
+					{
+						name: 'ord',
+						title: "정렬",
+						type: "number",
+						width: "100",
+						align: "center"
+						,
+						itemTemplate: function (value, item) {
+							var firstObj = $("<a class='btn btn-xs btn-info' />").text("▲").on("click", function () {
+								changeOrd("OU", item);
+								return false;
+							}).add("<span>&nbsp;</span>");
+							var lastObj = $("<a class='btn btn-xs btn-info' />").text("▼").on("click", function () {
+								changeOrd("OD", item);
+								return false;
+							});
+
+							if (item.totalCount == 1) {
+								return "-";
+							} else if (item.rowNumber == 1) {
+								return firstObj;
+							} else if (item.rowNumber == item.totalCount) {
+								return lastObj
+							} else {
+								return firstObj.add(lastObj);
+							}
+						}
+					},
+				],
+				rowClick: function (args) {
+					gridHelper1.rowClick(args);
+					$("#clid").val(args.item.clid);
+					$("#clNm").val(args.item.clNm);
+					$("#ord").val(args.item.ord);
+
+					if (args.item.useYn === 'Y') {
+						toggleSwitch("#clUseYn", true);
+					} else {
+						toggleSwitch("#clUseYn", false);
+					}
+				}
+
+			});
+		}
+
+		function saveFaqCl() {
+			var clid = $("#clid").val();
+
+			if (clid != null && clid != '' && clid != '0') {
+				var isSec = false;
+				/*[# sec:authorize-url="/mng/faq/updateCl.do"]*/
+				isSec = true;
+				/*[/]*/
+				if(!isSec){
+					alert('접근권한이 없습니다.');
+					return;
+				}
+				checkValidation();
+				executeFaqClFunction("update");
+
+			} else {
+				var isSec = false;
+				/*[# sec:authorize-url="/mng/faq/addCl.do"]*/
+				isSec = true;
+				/*[/]*/
+				if(!isSec){
+					alert('접근권한이 없습니다.');
+					return;
+				}
+				checkValidation();
+				executeFaqClFunction("insert");
+			}
+		}
+
+		function executeFaqClFunction(mode) {
+			var params = {
+				clid: $("#clid").val()
+				, clNm: $("#clNm").val()
+				, ord: $("#ord").val()
+				, useYn: $("#useYn").val()
+				, siteId: $("#selectSitesearchSite").val()
+			}
+
+			if(mode == "insert") {
+				faqCl.insert(params, function () {
+					alert("저장되었습니다.");
+					return false;
+				});
+			} else if(mode =="update") {
+				faqCl.update(params, function () {
+					alert("수정되었습니다.");
+					return false;
+				});
+			}
+		}
+
+		function checkValidation() {
+			var validator = $("#faqClForm").validate({
+				onsubmit: false,
+				rules: {clNm: {required: true, maxlength: 100}},
+				messages: {clNm: {required: "분류명을 입력해주십시오.", maxlength: "분류명은 100자를 넘을 수 없습니다."}}
+			})
+
+			if (($("#faqClForm").valid() == false)) return;
+		}
+
+		function changeOrd(mode, item) {
+			var params = {
+				"clid": item.clid,
+				"ord": item.ord,
+				"mode": mode
+			}
+			var updUrl = "/mng/faq/modifyFaqClOrd.do";
+			if(displayWorkProgress()){
+				$.ajax({
+					url: updUrl,
+					type: 'POST',
+					cache: false,
+					dataType: 'json',
+					data: params,
+					success: function (data) {
+						if (data) {
+							writeJsGridData();
+							closeWorkProgress();
+						} else {
+							alert("정렬이 실패하였습니다. 다시한번 시도해주십시오.");
+						}
+					},
+					error: function (error) {
+					}
+				});
+			}
+		}
+
+		function addFaqCl() {
+			$("#clid").val("");
+			$("#clid").attr('placeholder', '자동생성');
+			$("#clNm").val("");
+			toggleSwitch("#clUseYn", true);
+		}
+
+		function clSwitch() {
+			if ($("#clUseYn").is(":checked")) {
+				$('#faqClForm').find('#useYn').val("Y");
+			} else {
+				$('#faqClForm').find('#useYn').val("N");
+			}
+		}
+	</script>
+</div>
+</body>
+</html>
+

@@ -46,7 +46,7 @@ public class FaqController {
     FaqService faqService;
 
     @RequestMapping(value = "/mng/faq/list.html")
-    public String getListPage() {
+    public String getListPage(@UserInfo UserVo user) {
         return "mng/faq/list";
     }
 
@@ -55,9 +55,9 @@ public class FaqController {
         return "mng/faq/reg";
     }
 
-    @RequestMapping(value = "/mng/faq/cl_list.html")
+    @RequestMapping(value = "/mng/faq/clList.html")
     public String getClListPage() {
-        return "mng/faq/cl_list";
+        return "mng/faq/clList";
     }
 
     /**
@@ -147,8 +147,9 @@ public class FaqController {
     }
 
     @RequestMapping(value = "/mng/faq/faqClList.do")
-    public @ResponseBody Map<String, Object> selectClList(FaqClVo faqClVoParam) throws Exception {
+    public @ResponseBody Map<String, Object> selectClList(FaqClVo faqClVoParam, @UserInfo UserVo user) throws Exception {
 
+        faqClVoParam.setUser(user);
         List<FaqClVo> list = faqService.getClList(faqClVoParam);
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -165,8 +166,8 @@ public class FaqController {
     }
 
     @RequestMapping(value = "/mng/faq/addCl.do", method = RequestMethod.POST)
-    public @ResponseBody boolean insertFaqCl(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
-
+    @ResponseBody
+    public boolean insertFaqCl(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
         return faqService.addFaqCl(faqClVo);
     }
 
@@ -181,7 +182,6 @@ public class FaqController {
 
     @RequestMapping(value = "/mng/faq/updateCl.do", method = RequestMethod.POST)
     public @ResponseBody boolean updateFaqCl(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
-        logger.info("[SKYJOB]FAQ Update Data : " + faqClVo);
         faqClVo.setUser(user);
         return faqService.updateFaqCl(faqClVo);
     }
@@ -200,7 +200,6 @@ public class FaqController {
     @RequestMapping(value = "/mng/faq/modifyFaqClOrd.do", method = RequestMethod.POST)
     public @ResponseBody boolean updateFaqClOrd(@RequestParam(name = "mode", required = true) String mode,
             @UserInfo UserVo user, FaqClVo faqClVo) throws Exception {
-        // logger.info("[SKYJOB]FAQ Update Data : " + faqClVo);
         if ("OD".equals(mode)) {
             return faqService.modifyFaqClOrdDown(faqClVo);
         } else {
@@ -210,7 +209,6 @@ public class FaqController {
     
     @RequestMapping(value = "/mng/faq/selectClList.do", method = RequestMethod.POST)
     public @ResponseBody Map<String, Object>  selectClList(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
-        //logger.info("[SKYJOB]FAQ Update Data : " + faqClVo);
         faqClVo.setUser(user);
         
         Map<String, Object> response = new HashMap<String, Object>();

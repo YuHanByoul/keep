@@ -7,6 +7,9 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 @Data
 public class FaqClVo extends ParentRequestVo {
 	
@@ -14,11 +17,20 @@ public class FaqClVo extends ParentRequestVo {
 	private UserVo user;/** **/
 	
 	private int clid;
+
+    @NotEmpty(message= "분류명을 입력해 주십시오.")
+    @Size(max = 100, message = "분류명은 100자를 넘을 수 없습니다.")
 	private String clNm;
-	private String userSeCd;
+
+	private int siteId;
+
 	private Integer ord;
+
 	private Integer newOrd;
+
 	private String useYn;
+
+    private String searchSite;
 
     @Override
     public void chkParams() {

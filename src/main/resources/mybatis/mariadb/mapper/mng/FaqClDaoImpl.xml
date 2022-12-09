@@ -11,13 +11,15 @@
     <select id="getList" parameterType="FaqClVo" resultType="FaqClVo">
         <include refid="PaginationMapper.header"/>
         SELECT
-            CLID, CL_NM, USER_SE_CD, ORD, USE_YN
+            CLID, CL_NM, ORD, USE_YN
         FROM
-            TB_CMM_FAQ_CL
-        <if test=' searchType!=null and searchType != "" ' >
-        WHERE	USER_SE_CD = #{searchType}
-        </if>
-		<include refid="PaginationMapper.footer"/>
+            TB_CMM_FAQ_CL AS TCFC
+        WHERE 1=1
+        <bind name="searchSiteValue" value="searchSite" />
+        <include refid="SearchMapper.siteLmtCondition">
+            <property name="tableAlias" value="TCFC" />
+        </include>
+        <include refid="PaginationMapper.footer"/>
     </select>
     
     <!-- 모든 리스트 가져옴 -->
@@ -37,24 +39,23 @@
 
     <!-- 분류 추가 -->
     <insert id="addFaqCl" useGeneratedKeys="true" keyProperty="clid" parameterType="FaqClVo">
-	    <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
-	       SELECT 
+	    <selectKey keyProperty="ord" resultType="Int" order="BEFORE">
+	       SELECT
 		     IFNULL (Max(ORD),0) +1
 		   from TB_CMM_FAQ_CL
 		    WHERE 1=1
-		     AND USER_SE_CD = #{userSeCd}
+		     AND SITEID = #{siteId}
 	     </selectKey>
     	INSERT INTO TB_CMM_FAQ_CL
-    		(CL_NM, ORD, USE_YN, USER_SE_CD) 
+    		(SITEID, CL_NM, ORD, USE_YN)
     	VALUES 
-    		(#{clNm}, #{ord}, #{useYn}, #{userSeCd})
+    		(#{siteId}, #{clNm}, #{ord}, #{useYn})
     </insert>
     
     <!-- 분류 수정 -->
     <update id="updateFaqCl" parameterType="FaqClVo">
     	UPDATE TB_CMM_FAQ_CL SET
     		CL_NM = #{clNm},
-    		USER_SE_CD = #{userSeCd},
     		ORD = #{ord},
     		USE_YN = #{useYn}
     	WHERE
