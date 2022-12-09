@@ -54,7 +54,7 @@
 				pageNextText: "다음",
 				pageFirstText: " < 처음 ㅣ",
 				pageLastText: " | 마지막 >",
-				pageSize: 10,
+				pageSize: 500,
 				pageButtonCount: 10,
 				pageLoading: true,
 				pageIndex: 1,
@@ -93,6 +93,14 @@
 						return data.promise();
 					}
 				},
+				onDataLoaded: function(args) {
+					var searchType = $("#searchType").val();
+
+					if(searchType == 'CD') {
+						var gridBody = $("#jsGrid").find('.jsgrid-grid-body');
+						gridBody.find('.jsgrid-table tr:first-child()').trigger('click');
+					}
+				},
 				fields: [
 					{ title: '코드그룹명' ,name: 'cdgrpNm', type: "text" ,width:"170"} ,
 					{ title: '사용여부', name: 'useYn', type: "text", width:"80"}
@@ -103,7 +111,7 @@
 					getCodeGrpInfo(args.item.cdgrpid);
 
 					destroyTree();
-					code_tree(args.item.cdgrpid, args.item.cdgrpNm);
+					code_tree(args.item.cdgrpid, args.item.cdgrpNm, $("#searchKeyword").val());
 					initCdFrm();
 					toggleSwitch("#cdUseYn", true);
 					$('#cdFrm').find("#cdgrpid").val(args.item.cdgrpid);
@@ -111,6 +119,7 @@
 					$('#cdFrm').find("#upprCd").val('0');
 					$('#viewCdgrpid').val(args.item.cdgrpid);
 					$('#viewUpprCd').val('0');
+
 				}
 			});
 
@@ -118,12 +127,6 @@
 			validateCode();
 		});
 
-		/**
-		 *
-		 * 코드그룹 관련
-		 *
-		 *
-		 */
 		function getCodeGrpInfo(cdgrpid){
 			if(displayWorkProgress()){
 				$.ajax({
@@ -226,6 +229,7 @@
 		// 유효성검증기(코드그룹)
 		function validateCodeGrp(){
 			$("#cdgrpFrm").validate({
+				onsubmit: false,
 				rules: {
 					cdgrpid: {
 						required: true
@@ -267,14 +271,6 @@
 			});
 		}
 
-
-		/**
-		 *
-		 *
-		 * 코드 관련
-		 *
-		 *
-		 */
 		function destroyTree(){
 			if(codeTree != null){
 				$("#codeTree").dynatree("destroy");
@@ -283,10 +279,11 @@
 			}
 		}
 
-		function code_tree(cdgrpid, cdgrpNm){
+		function code_tree(cdgrpid, cdgrpNm, searchCd){
+			var searchType = $("#searchType").val();
 			codeTree = jQuery("#codeTree").dynatree({
 				title: "",
-				autoFocus: true,
+				autoFocus: searchType== "CD" ? false : true,
 				cache: false,
 				minExpandLevel: 2,
 				generateIds : true,
@@ -303,6 +300,15 @@
 						var header = $("meta[name='_csrf_header']").attr("content");
 						xhr.setRequestHeader("AJAX", true);
 						xhr.setRequestHeader(header, token);
+					}
+				},
+				onPostInit: function() {
+					var searchType = $("#searchType").val();
+					if(searchType == 'CD') {
+						$("#codeTree").dynatree("getRoot").visit(function(node) {
+							node.expand(true);
+						})
+						$("#codeTree").dynatree("getTree").activateKey(searchCd);
 					}
 				},
 				onClick: function(node, event) {
@@ -424,7 +430,6 @@
 		}
 
 		function bindContextMenu(span) {
-
 			jQuery(span).contextMenu({menu: "codeContext"}, function(action, el, pos) {
 				var node = jQuery.ui.dynatree.getNode(el);
 				switch( action ) {
@@ -461,13 +466,13 @@
 				},
 				success:function(data){
 				}
-
 			});
 		}
 
 		// 유효성검증기(코드)
 		function validateCode(){
 			$("#cdFrm").validate({
+				onsubmit: false,
 				rules: {
 					cd: {
 						required: true
@@ -633,7 +638,7 @@
 								</div>
 
 								<!--jsGrid-->
-								<table id="jsGrid" class="table-responsive"></table>
+								<table id="jsGrid" class="table-responsive overflow-auto" style="max-height:500px;"></table>
 								<div id="listPager" class="text-center"></div>
 							</div>
 						</div>
