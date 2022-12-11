@@ -1,0 +1,134 @@
+<form id ="qestnrUpdateForm">
+    <input type="hidden" name="qestnrid" th:value="${qestnr.qestnrid}">
+    <input type="hidden" name="useYn" th:value="${qestnr.useYn}">
+    <div class="tab-pane active" id="qestnrUpdate" role="tabpanel">
+        <div class="card-header p-t-0 p-b-0">
+            <h3 class="sub-title"><strong>기본정보</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="mb-2 row">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                    <div class="mb-0 form-group required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>설문 종류</strong></div>
+                        <div class="col-sm-12">
+                            <select name="qestnrKndCd" class="form-select form-select-sm form-control-sm">
+                                <option value="">선택</option>
+                                <option value="A" th:selected="${qestnr.qestnrKndCd} == 'A'">A</option>
+                                <option value="B" th:selected="${qestnr.qestnrKndCd} == 'B'">B</option>
+                                <option value="C" th:selected="${qestnr.qestnrKndCd} == 'C'">C</option>
+                                <option value="D" th:selected="${qestnr.qestnrKndCd} == 'D'">D</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="mb-0 form-group row required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트(기관)</strong></div>
+                        <div class="col-sm-12">
+                            <select name="siteid" class="js-example-basic-single col-sm-12 sm">
+                                <option value="">선택</option>
+                                <optgroup label="Group1">
+                                    <option value="1" th:selected="${qestnr.siteid} == 1">SITE1</option>
+                                    <option value="2" th:selected="${qestnr.siteid} == 2">SITE2</option>
+                                </optgroup>
+                                <optgroup label="Group2">
+                                    <option value="3" th:selected="${qestnr.siteid} == 3">SITE3</option>
+                                    <option value="4" th:selected="${qestnr.siteid} == 4">SITE4</option>
+                                    <option value="5" th:selected="${qestnr.siteid} == 5">SITE5</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-2 form-group row required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="qestnrNm"><strong>설문지명</strong></label>
+                <div class="col-sm-12">
+                    <input type="text" name="qestnrNm" id="qestnrNm" class="form-control form-control-sm" th:value="${qestnr.qestnrNm}" placeholder="설문지명을 입력해주세요."/>
+                </div>
+            </div>
+            <div class="mb-2 form-group row required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="expln"><strong>설문지 설명</strong></label>
+                <div class="col-sm-12">
+                    <textarea rows="5" cols="5" name="expln" id="expln" class="form-control form-control-sm" th:text="${qestnr.expln}" placeholder="설문지 설명을 입력해주세요."></textarea>
+                </div>
+            </div>
+            <div class="mb-0 form-group row">
+                <div class="col-12">
+                    <input type="checkbox" class="js-single-small" id="useYn" checked/>
+                    <label for="useYn" class="v-middle">설문지 사용</label>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <button type="button" class="btn btn-disabled m-r-5" onclick="qestnrUpdate.offUpdateQestnr();">취소</button>
+            <th:block sec:authorize-url="/mng/qestnr/updateQestnr.do"><button type="button" class="btn btn-primary" onclick="qestnrUpdate.onUpdateQestnr();">저장</button></th:block>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+    var qestnrUpdate = {
+        init: function() {
+            var elemsingleSmallList = document.querySelectorAll('.js-single-small');
+            for(var i = 0; i < elemsingleSmallList.length; i++) {
+                new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
+           }
+           $(".js-example-basic-single").select2();
+           toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
+           
+           this.registEvent();
+        },
+        
+        registEvent: function() {
+            // TODO
+        },
+        
+        setValid: function() {
+            var validator = $('#qestnrInsertForm').validate({
+                rules: {
+                    qestnrKndCd: {required: true},
+                    siteid: {required: true},
+                    qestnrNm: {required: true, maxlength: 20},
+                    expln: {required: true, maxlength: 400}
+                },
+                messages: {
+                    qestnrKndCd: {required: "설문지 종류를 선택해주세요."},
+                    siteid: {required: "사이트(기관)을 선택해주세요."},
+                    qestnrNm: {required: "설문지명을 입력해주세요.", maxlength: "설문지명은 20자 이하여야 합니다."},
+                    expln: {required: "설문지 설명을 입력해주세요.", maxlength: "설문지 설명은 400자 이하여야 합니다."}
+                }
+            });
+        },
+        
+        onUpdateQestnr: function() {
+            if(!($("#qestnrUpdateForm").valid())) return;
+            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
+            var param = $("#qestnrUpdateForm").serialize();
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/qestnr/updateQestnr.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            qestnrGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        
+        offUpdateQestnr: function() {
+            qestnrGrid.toggleContent();
+        }
+    };
+    
+    qestnrUpdate.init();
+</script>

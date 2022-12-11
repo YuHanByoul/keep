@@ -1,0 +1,92 @@
+package com.kbrainc.plum.mng.qestnr.service;
+
+import java.util.List;
+
+import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+
+/**
+ * 
+ * 서비스 인터페이스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.qestnr.service
+ * - QestnrService.java
+ * </pre> 
+ *
+ * @ClassName : QestnrService
+ * @Description : 설문지관리 서비스 인터페이스 
+ * @author : KBRAINC
+ * @date : 2022. 11. 29.
+ * @Version : 
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
+public interface QestnrService {
+    
+    /**
+     * 설문지 정보 등록
+     *
+     * @Title : insertQestnr 
+     * @Description : 설문지 정보 등록
+     * @param qestnrVo QestnrVo객체
+     * @return int qestrnid
+     * @throws Exception 예외
+     */
+    public int insertQestnr(QestnrVo qestnrVo) throws Exception;
+    
+    /**
+     * 설문지 정보 등록
+     *
+     * @Title : insertQestnr 
+     * @Description : 설문지 정보 등록
+     * @param qestnrVo QestnrVo객체
+     * @return int qestrnid
+     * @throws Exception 예외
+     */
+    public List<QestnrVo> selectQestnrList(QestnrVo qestnrVo) throws Exception;
+     
+    /**
+     * 설문지 정보 조회
+     *
+     * @Title : selectQestnrInfo
+     * @Description : 설문지 상세정보 조회
+     * @param qestnrVo QestnrVo 객체
+     * @return QestnrVo QestnrVo 객체
+     * @throws Exception 예외
+     */
+    public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
+     
+    /**
+     * 설문지 정보 수정
+     *
+     * @Title : updateQestnr
+     * @Description : 설문지 정보 수정
+     * @param qestnrVo QestnrVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateQestnr(QestnrVo qestnrVo) throws Exception;
+     
+    /**
+     * 설문지 문항 목록 조회
+     *
+     * @Title : selectQitemList
+     * @Description : 설문지 목록 조회
+     * @param qitemVo QitemVo 객체
+     * @return List<QitemVo> 설문지 문항 목록
+     * @throws Exception 예외
+     */
+    public List<QitemVo> selectQitemList(QitemVo qitemVo) throws Exception;
+      
+    /**
+     * 설문지 문항 등록
+     *
+     * @Title : insertQitem 
+     * @Description : 설문지 문항 등록
+     * @param qitemVo QitemVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertQitem(QitemVo qitemVo) throws Exception;
+    
+}
