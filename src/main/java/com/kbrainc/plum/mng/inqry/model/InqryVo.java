@@ -43,6 +43,9 @@ public class InqryVo extends ParentRequestVo {
 	
 	/** 사용자_이름 */
 	private String nm;
+
+	/** 사용자 아이디 */
+	private String acnt;
 	
 	/** 사용자_구분_코드 */
 	private String userSeCd;
@@ -79,7 +82,7 @@ public class InqryVo extends ParentRequestVo {
 	
 	/** 문의_분류_명 */
 	private String inqryClNm;
-	
+
 	/** 등록_일 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date regD;
@@ -105,14 +108,20 @@ public class InqryVo extends ParentRequestVo {
 	
 	/** 수정자아이디 */
 	private Integer mdfrid;
-	
+
+	/** 기관명 */
+	private String instNm;
+
 	/** 등록_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
 	private Date regDt;
 	
 	/** 등록자아이디 */
 	private Integer rgtrid;
-	
+
+	/** 답변 상태코드 */
+	private String inqrySttsCd;
+
 	public void setUserSeCd(String cd) {
 		this.userSeCd = cd;
 		if("P".equals(cd)) {

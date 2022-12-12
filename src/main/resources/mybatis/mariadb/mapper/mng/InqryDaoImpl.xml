@@ -12,41 +12,40 @@
 		/* InqryDao.selectInqryList */
 		<include refid="PaginationMapper.header"/>
 		SELECT A.INQRYID
-		      ,A.TITLE
-		      ,E.NM
-		      ,C.CD_NM AS INQRY_CL_NM
-		      ,A.REG_DT AS REG_D
-		      ,A.RGTRID
-			  ,D.NM AS OPETR_NM
-		      ,B.REG_DT AS ANSWR_D
-        FROM TB_CMM_INQRY A 
+		      ,A.TITLE /*제목*/
+		      ,E.NM /*작성자*/
+		      ,F.CD_NM AS INQRY_STTS_CD
+		      ,C.CD_NM AS INQRY_CL_NM /*분류*/
+		      ,A.REG_DT AS REG_DT /*작성일*/
+			  ,D.NM AS OPETR_NM /*처리자*/
+        FROM TB_CMM_INQRY A
             LEFT OUTER JOIN TB_CMM_INQRY_ANSWR B ON A.INQRYID = B.INQRYID
             LEFT OUTER JOIN TB_CMM_USER D ON B.OPETRID = D.USERID
 		    INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) C ON A.INQRY_CL_CD = C.CD
+            INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) F ON A.STTS_CD = F.CD
 		    INNER JOIN TB_CMM_USER E ON E.USERID = A.USERID
 		 WHERE 1=1 
 		<if test="inqryClCd != null and inqryClCd != ''">
 			AND C.CD = #{inqryClCd}
 		</if>
-		<if test="searchAnswrYn != null and searchAnswrYn != ''">
-			<if test="searchAnswrYn == 'Y'.toString()">
-			    AND B.OPETRID IS NOT NULL
+
+		<if test="searchType != null and searchType != ''">
+			<if test="searchKeyword == 'title'">
+
 			</if>
-			<if test="searchAnswrYn == 'N'.toString()">
-				AND B.OPETRID IS NULL
+			<if test="searchKeyword == 'cntnts'">
+
+			</if>
+			<if test="searchKeyword == 'nm'">
+
+			</if>
+			<if test="searchKeyword == 'id'">
+
 			</if>
 		</if>
-		<if test="searchStartDay != null and searchStartDay != ''">
-			AND A.REG_DT >= #{searchStartDay}
-		</if>
-		<if test="searchEndDay != null and searchEndDay != ''">
-			AND A.REG_DT <![CDATA[<]]> CONCAT(#{searchEndDay}, ' 23:59:59')
-		</if>
-		<if test="nm != null and nm != ''">
-			AND E.NM LIKE CONCAT('%', #{nm}, '%')
-		</if>
-		<if test="title != null and title != ''">
-			AND A.TITLE LIKE CONCAT('%', #{title}, '%')
+
+		<if test="inqrySttsCd != null and inqrySttsCd != ''">
+			AND F.CD = #{inqrySttsCd}
 		</if>
 		<include refid="PaginationMapper.footer"/>
 	</select>
@@ -56,23 +55,22 @@
 		/* InqryDao.selectInqryInfo */
 	    SELECT A.INQRYID
 	          ,A.userid
-			  ,C.EMAIL
-			  ,C.MOBNO
-			  ,A.PRIPLCY_AGRE_YN
-			  ,A.TITLE
+			  ,A.TITLE /*제목*/
 			  ,A.CNTNTS
-			  ,C.NM
+			  ,C.NM /*문의자명*/
+	          ,C.ACNT
+	          ,D.INST_NM /*기관명*/
 			  ,A.FILEGRPID
 			  ,F.FILEID
 			  ,F.ORGINL_FILE_NM AS FILE_NM
 			  ,F.FILE_SIZE
-			  ,B.CD_NM AS INQRY_CL_NM
-			  ,C.USER_SE_CD
+			  ,B.CD_NM AS INQRY_CL_NM /*분류*/
 			  ,A.REG_DT
         FROM TB_CMM_INQRY A
         	LEFT OUTER JOIN TB_CMM_FILE F ON A.FILEGRPID = F.FILEGRPID AND F.ORD=1
             INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) B ON A.INQRY_CL_CD = B.CD
 		    INNER JOIN TB_CMM_USER C ON C.USERID = A.USERID
+			LEFT OUTER JOIN TB_CMM_INST D ON D.INSTID = A.INSTID
         WHERE
             A.INQRYID = #{inqryid}
 	</select>

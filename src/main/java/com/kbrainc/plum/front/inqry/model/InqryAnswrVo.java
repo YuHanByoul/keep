@@ -74,6 +74,9 @@ public class InqryAnswrVo extends ParentRequestVo {
 
     /** 등록자아이디 */
     private Integer rgtrid;
+
+    /** 답변 상태코드 */
+    private String inqrySttsCd;
     
     public void setRegDt(Date regDt) {
         this.regDt = regDt != null ? (Date) regDt.clone() : null;
