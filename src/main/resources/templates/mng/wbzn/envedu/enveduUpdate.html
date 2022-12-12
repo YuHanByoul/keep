@@ -1,14 +1,11 @@
 <form id ="enveduUpdateForm">
 <input type="hidden" id="enveduid" name="enveduid" th:value="${envedu.enveduid}">
-	<!-- Hidden Contents Start -->
-	<div class="panel panel-default" id="hiddenCon">
-		<!-- Hidden Contents Title Start -->
-		<div class="panel-heading trans"><strong>기본정보</strong></div>
-		<!-- Hidden Contents Title End -->
-
-		<!-- Tab Container Start -->
-		<div class="card">
-		    <div class="card-block-small p-t-0">
+		 <!-- UPDATE -->
+         <div class="card-header p-b-0">
+             <h3 class="sub-title"><strong>기본정보</strong></h3>
+         </div>
+         <div class="card-block-small p-t-0">
+             <div class="row">
 		        <div class="mb-2 row">
 		            <div class="col-12 col-lg-3 mb-2 mb-lg-0">
 		                <div class="mb-0 form-group required">
@@ -65,14 +62,20 @@
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="environmentEduThumbnailImg">썸네일이미지</label>
 		                <div class="mb-2 row">
 		                    <div class="col-auto">
+		                    	<th:block th:if="${fileBtn}">
+		                        <div id="fileUploadSuccess" th:utext="${fileBtn}">
+		                        </div>
+		                        </th:block>
+                		        <th:block th:unless="${fileBtn}">
 		                        <div id="fileUploadSuccess">
 		                        </div>
+		                        </th:block>
 		                    </div>
 		                </div>
 		                <div class="col-sm-12">
 		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
-                            <!-- <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${envedu.thmbnFilegrpid}">
-                            <input type="hidden" name="thmbnFileid" id="thmbnFileid" th:value="${envedu.thmbnFileid}"> -->		                    
+                            <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${envedu.filegrpid}">
+                            <input type="hidden" name="thmbnFileid" id="thmbnFileid" th:value="${envedu.thmbnFileid}">		                    
 		                </div>
 		            </div>
 		        </div>
@@ -114,14 +117,12 @@
 		            </div>
 		        </div>
 		    </div>
-		    <div class="card-block-small">
-		        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertMmnws" onclick="gridHelper1.toggleContent()">취소</button>
-		        <th:block sec:authorize-url="/mng/wbzn/updateEnvedu.do"><button type="button" class="btn btn-primary" id="updateEnvedu" onclick="fn_updateEnvedu()">저장</button></th:block>
-		    </div>
 		</div>
+	    <div class="card-block-small">
+	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertMmnws" onclick="gridHelper1.toggleContent()">취소</button>
+	        <th:block sec:authorize-url="/mng/envedu/updateEnvedu.do"><button type="button" class="btn btn-primary" id="updateEnvedu" onclick="fn_updateEnvedu()">저장</button></th:block>
+	    </div>
 		<!-- Tab Container End -->
-	</div>
-	<!-- Hidden Contents End -->
 </form>
 
 <script type="text/javascript">
@@ -197,6 +198,8 @@
 	            if(data.result=="success"){
 	                $("#"+fileid).remove();
 	                $('#thmbnFile').val('');
+	                $('#thmbnFileid').val(0);
+	                $('#thmbnFilegrpid').val(0);
 	                alert("파일삭제가 완료 되었습니다.");
 	            }else{
 	                alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
@@ -221,6 +224,7 @@
 			$(".cnStyle").hide();
 			$(".cn").hide();
 		}
+		console.log();
  	}
  	
  	function fn_updateEnvedu(){
@@ -231,7 +235,7 @@
 	    var data =  $("#enveduUpdateForm").serialize();
 	    if(displayWorkProgress()){
 			$.ajax({
-				url : "/mng/wbzn/updateEnvedu.do",
+				url : "/mng/envedu/updateEnvedu.do",
 				type: 'POST',
 				cache : false,
 				dataType: 'json',
