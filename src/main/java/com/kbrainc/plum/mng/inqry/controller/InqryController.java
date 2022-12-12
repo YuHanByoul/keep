@@ -91,11 +91,17 @@ public class InqryController {
 
         InqryVo inqryInfo = inqryService.selectInqryInfo(inqryVO);
         InqryAnswrVo inqryAnswrInfo = inqryService.selectInqryAnswrInfo(inqryVO);
+
+        if (inqryAnswrInfo == null) {
+            inqryInfo = new InqryVo();
+        }
+
         if (inqryAnswrInfo == null) {
             inqryAnswrInfo = new InqryAnswrVo();
         }
 
         model.addAttribute("inqryInfo", inqryInfo);
+
         model.addAttribute("inqryAnswrInfo", inqryAnswrInfo);
         
         

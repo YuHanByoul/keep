@@ -1,176 +1,334 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-	layout:decorator="layout/mng/subLayout" 
->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	  layout:decorator="layout/mng/mainLayout">
 <body>
-	<div layout:fragment="content">
-<script th:inline="javascript">
-	
-	var inqryListUrl = "/mng/inqry/inqryList.do";
-	var inqryDetailUrl = "/mng/inqry/inqryDetailForm.html";
+<div layout:fragment="content">
+	<script th:inline="javascript">
+		var inqryListUrl = "/mng/inqry/inqryList.do";
+		var inqryDetailUrl = "/mng/inqry/inqryDetailForm.html";
+		var gridHelper1;
 
-	$(function(){
-		$("#jsGrid").jsGrid({
-	        height: "auto",
-	        width: "100%",
-	        autoload: true,
-	        sorting: false,
-	        paging: true,
-	        pagerContainer: "#listPager",
-	        pagerFormat: "{first} {prev} {pages} {next} {last}",
-	        pagePrevText: "<",
-	        pageNextText: ">",
-	        pageFirstText: "ㅣ<",
-	        pageLastText: ">ㅣ",
-	        noDataContent: "데이터가 없습니다.",
-	        
-	        pageSize: 10,
-	        pageButtonCount: 10,
-	        pageLoading: true,
-	        pageIndex: 1,
-	        
-	        controller: {
-	            loadData: function (filter) {
-	            	var data = $.Deferred();
-	            	
-	            	var formData = $('#searchFrm').serializeArray();
-	            	var params = [
-	            			{name: "pageNumber", value: filter.pageIndex},
-	            			{name: "rowPerPage", value: filter.pageSize},
-	            			{name: "orderField", value: "REG_D"},
-	            			{name: "orderDirection", value: "desc"}
-	            	]
-	            	formData = formData.concat(params);
-	            	
-	                $.ajax({
-	                  type: "GET",
-	                  contentType: "application/json; charset=utf-8",
-	                  url: inqryListUrl,
-	                  data: formData,
-	                  dataType: "json"
-	                }).done(function(response){
-	                	var da = {
-	                            data: escapeGridData(response.list),
-	                            itemsCount: response.totalCount
-	                        };
-	                  data.resolve(da);
-	                });
-	                
-	                return data.promise();
-	            },
-	        },
-	        fields: [ 
-	        	{ title:'번호', name: 'rowNumber', type: "number" , width: "3%", align:"center", sorting: false },
-	        	{ title:'분류', name: 'inqryClNm', type: "text" , width: "5%", align:"center"},
-	            { title:'제목', name: 'title', type: "text" , width: "20%"},
-	            { title:'문의자', name: 'nm', type: "text" , width: "5%", align:"center"},
-	            { title:'문의일자', name: 'regD', type: "text" , width: "5%", align:"center"},
-	            { title:'답변일자', name: 'answrD', type: "text" ,width: "5%", align:"center"},
-	            { title:'답변자', name: 'opetrNm', type: "text" ,width: "5%", align:"center"},
-	            { name: 'inqryid', visible: false }
-	        ]
-	        /*[# sec:authorize-url="/mng/inqry/inqryDetailForm.html"]*/
-	        ,rowClick: function(args) { loadContent(inqryDetailUrl+'?inqryid='+args.item.inqryid); },
-	        /*[/]*/
-	    });
-	});
+		$(function(){
+			gridHelper1 = new GridHelper('jsGrid','contentPanel');
 
-	function inqrySearch(){
-		var searchStartDay = $("#searchStartDay").val();
-		var searchEndDay = $("#searchEndDay").val();
-		if(searchStartDay != '' && searchEndDay != '' && searchStartDay > searchEndDay){
-			alert('문의일자 시작일은 종료일보다 커야합니다.');
-			return;
-		}
-		
-		//$("#jsGrid").jsGrid("reset");
-		resetListContent();
-	}
-	
-</script>
-<!-- <form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline" onsubmit="return false;"> -->
-<form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline form-horizontal row-border" onsubmit="return false;">
-	<div class="well well-sm">
-		<div class="row">
-			<div class="col-sm-3">
-			  <div class="form-group col-sm-4">
-			    <label class="control-label form-control-static">문의분류</label>
-			  </div>
-			  <div class="form-group col-sm-6 form-control-static">
-				<th:block kattr:select_code="inqryClCd" grpCd="102" upprCd="0" firstOptTxt="전체" addClass=" input-sm" addStyle="width:200px; padding:0px;"></th:block>
-			  </div>
-			</div>
-			<div class="col-sm-4">
-			  <div class="form-group col-sm-4">
-			    <label class="control-label form-control-static">문의일자</label>
-			  </div>
-			  <div class="form-group col-sm-8 form-control-static">
-				<th:block kattr:date_pic="searchStartDay" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" addClass=" input-sm"></th:block>
-				~
-				<th:block kattr:date_pic="searchEndDay" dateForm="yy-mm-dd" addStyle="width:110px;display: inline-block;" addClass=" input-sm"></th:block>
-			  </div>
-			</div>
-			<div class="col-sm-3">
-			  <div class="form-group col-sm-4">
-			    <label class="control-label form-control-static">답변여부</label>
-			  </div>
-			  <div class="form-group col-sm-6 form-control-static">
-				<select name="searchAnswrYn" id="searchAnswerYn" class="form-control input-sm" style="width:180px; padding:0px;">
-					<option value="">전체</option>
-					<option value="Y">Y</option>
-					<option value="N">N</option>
-				</select>
-				
-			  </div>
-			</div>
-		</div>
-		<div class="row" style="margin-top:10px;">
-			<div class="col-sm-3">
-				<div class="form-group col-sm-4">
-					<label class="control-label form-control-static" style="width:48px">문의자</label>
-				</div>
-				<div class="form-group col-sm-6 form-control-static">
-					<input type="text" name="nm" id="nm" class="form-control input-sm" style="width:200px;">
-				</div>
-			</div>
-			<div class="col-sm-4">
-				<div class="form-group col-sm-4">
-					<label class="control-label form-control-static">문의제목</label>
-				</div>
-				<div class="form-group col-sm-6 form-control-static">
-					<input type="text" name="title" id="title" class="form-control input-sm" style="width:233px">
-				</div>
-			</div>
-			<div class="col-sm-5 text-right">
-				<button type="submit" class="btn btn-sm btn-primary" onclick="inqrySearch()">검색</button>
-			</div>
-		</div>
-	</div>
-</form>	
-	<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-		<!-- List Area -->
-		<div class="panel panel-default">
-	    	<div class="panel-heading" role="tab" id="headingOne">
-	      		<h4 class="panel-title">
-	        		<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="toggleList();">목록</a>
-	      		</h4>
-	    	</div>
-	    	<div id="collapseList" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-	      		<div class="panel-body">		
-	      
-					<div class="row">
-						<table id="jsGrid"></table>
-						<div id="listPager" class="text-center"></div>
+			$("#jsGrid").jsGrid({
+				height: "auto",
+				width: "100%",
+				autoload: true,
+				sorting: false,
+				paging: true,
+				pagerContainer: "#listPager",
+				pagerFormat: "{first} {prev} {pages} {next} {last}",
+				pagePrevText: "이전",
+				pageNextText: "다음",
+				pageFirstText: " < 처음 ㅣ",
+				pageLastText: " | 마지막 >",
+				pageSize: 10,
+				pageButtonCount: 10,
+				pageLoading: true,
+				pageIndex: 1,
+				noDataContent: "데이터가 없습니다.",
+
+				controller: {
+					loadData: function (filter) {
+						var data = $.Deferred();
+
+						var formData = $('#searchFrm').serializeArray();
+						var params = [
+							{name: "pageNumber", value: filter.pageIndex},
+							{name: "rowPerPage", value: filter.pageSize},
+						]
+
+						if(filter.sortField != undefined){
+							params.push({name: "orderField", value: filter.sortField});
+							params.push({name: "orderDirection", value: filter.sortOrder});
+						}else{
+							params.push({name: "orderField", value: 'reg_dt'});
+
+						}
+						// 	작성일 desc
+						params.push({name:"orderDirection", value: "desc"});
+
+						formData = formData.concat(params);
+
+						$.ajax({
+							type: "GET",
+							contentType: "application/json; charset=utf-8",
+							url: inqryListUrl,
+							dataType: "json",
+							data: formData,
+						}).done(function(response){
+							var da = {
+								data : escapeGridData(response.list)
+								,itemsCount : response.totalCount
+							};
+							data.resolve(da);
+						});
+						return data.promise();
+					},
+				},
+				fields: [
+					{
+						headerTemplate: function() {
+							return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+						},
+						itemTemplate: function(_, item) {
+							return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+									//.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+									.prop("checked", $.inArray(item, selectedItems) > -1)
+									.on("change", function () {
+										$(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+									});
+						},
+						align: "center",
+						width: "50",
+						sorting: false
+					},
+					{ title:'No.', name: 'rowNumber', type: "number" , width: "80", align:"center"},
+					{ title:'제목', name: 'title', type: "text" , width: "300"},
+					{ title:'분류', name: 'inqryClNm', type: "text" , width: "100", align:"center"},
+					{ title:'작성자', name: 'nm', type: "text" , width: "120", align:"center"},
+					{ title:'작성일', name: 'regD', type: "text" , width: "150", align:"center"},
+					{ title:'상태', name: 'inqrySttsCd', type: "text" ,width: "120", align:"center"},
+					{ title:'처리자', name: 'opetrNm', type: "text" ,width: "120", align:"center"},
+					{ name: 'inqryid', visible: false }
+				],
+				/*[# sec:authorize-url="/mng/inqry/inqryDetailForm.html"]*/
+				rowClick: function (args) {
+					gridHelper1.loadContent(inqryDetailUrl + '?inqryid=' + args.item.inqryid);
+				},
+				/*[/]*/
+				onPageChanged: function (args) {
+					selectedItems = [];
+				}
+			});
+
+			var selectItem = function(item) {
+				selectedItems.push(item);
+				if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+					$("#selectAllCheckbox").prop("checked", true);
+				} else {
+					$("#selectAllCheckbox").prop("checked", false);
+				}
+			};
+
+			var unselectItem = function(item) {
+				selectedItems = $.grep(selectedItems, function(i) {
+					return i !== item;
+				});
+				if(selectedItems.length == 0) {
+					$('#selectAllCheckbox').attr('checked', false);
+				}
+				if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+					$("#selectAllCheckbox").prop("checked", true);
+				} else {
+					$("#selectAllCheckbox").prop("checked", false);
+				}
+			};
+
+			$("#selectAllCheckbox").click(function(item) {
+				selectedItems = [];
+				if(this.checked) { // check select status
+					$('.singleCheckbox').each(function() {
+						this.checked = true;
+						selectItem($(this).parent().next().text());
+					});
+				}else {
+					$('.singleCheckbox').each(function() {
+						this.checked = false;
+						unselectItem(item);
+					});
+					selectedItems = [];
+				}
+			});
+
+		});
+
+function insertInqry() {
+	gridHelper1.loadContent(inqryDetailUrl + '?inqryid=1');
+}
+	</script>
+<div class="page-body">
+	<div class="row">
+		<div class="card">
+			<div class="card-block-small">
+				<form id="searchForm" name="searchForm" action="post" onsubmit="return false;"></form>
+				<div class="row">
+					<div class="col-12 col-lg-3 mb-2 mb-lg-0">
+						<div class="mb-0 form-group row">
+							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+							<div class="input-group input-group-sm input-group-dropdown mb-0">
+								<select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+									<option value="opt1">- 선택 -</option>
+									<option value="opt2">제목</option>
+									<option value="opt3">내용</option>
+									<option value="opt4">작성자</option>
+									<option value="opt5">아이디</option>
+								</select>
+								<input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+							</div>
+						</div>
 					</div>
-			
+					<div class="col-12 col-lg-3 mb-2 mb-lg-0">
+						<div class="mb-0 form-group row">
+							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+							<div class="col-sm-12">
+								<th:block kattr:select_code="inqryClCd" grpCd="102" upprCd="0" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 col-lg-3">
+						<div class="mb-0 form-group row">
+							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+							<div class="col-sm-12">
+								<select name="filterStatusSelect" class="form-select form-select-sm form-control-sm">
+									<option value="opt1">- 전체 -</option>
+									<option value="opt2">접수완료</option>
+									<option value="opt3">접수취소</option>
+									<option value="opt4">답변중</option>
+									<option value="opt5">답변완료</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="m-t-20 text-center">
+					<button type="button" class="btn btn-disabled m-r-5">초기화</button>
+					<button type="submit" class="btn btn-primary">검색</button>
 				</div>
 			</div>
 		</div>
-		<!-- Content Area -->
-		<div id="contentPanel" class="panel panel-default" style="display:none"></div>
+
+		<div class="card">
+			<div class="row p-20 p-b-0">
+				<div class="col-12 col-md-6">
+					<h5><strong>1:1 문의 검색결과</strong></h5>
+				</div>
+				<div class="col-12 col-md-6 text-right">
+					<th:block sec:authorize-url="/mng/member/memberInsertForm.html"> <!--수정필요-->
+						<button type="button" class="btn btn-inverse" onclick="deleteInqry()">삭제</button>
+					</th:block>
+					<th:block sec:authorize-url="/mng/inqry/insertInqryAnswr.do"> <!--수정필요-->
+						<button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertInqry()">등록</button>
+					</th:block>
+				</div>
+			</div>
+			<div class="card-block-small">
+				<table id="jsGrid" class="table-responsive"></table>
+				<div id="listPager" class="text-center"></div>
+			</div>
+		</div>
+
+
+		 <div id="contentPanel" class="panel panel-default" style="display:none"></div>
+			<div class="col-12 col-lg-6 p-l-0">
+				<div class="card">
+					<div class="card-header p-b-0">
+						<h4 class="sub-title"><strong>문의</strong></h4>
+					</div>
+					<div class="card-block-small p-t-0">
+						<p>
+							<strong>[분류] Cum sociis natoque penatibus et magnis dis
+								parturient montes</strong>
+						</p>
+						<p>
+							기관명 홍길동(아이디)<br/>
+							YYYY-MM-DD
+						</p>
+					</div>
+					<div class="card-header p-t-0 p-b-0">
+						<h4 class="sub-title"><strong>문의 내용</strong></h4>
+					</div>
+					<div class="card-block-small p-t-0">
+						<p>
+							Nullam quis risus eget urna mollis ornare vel eu leo. Cum
+							sociis natoque penatibus et magnis dis parturient montes,
+							nascetur ridiculus mus.<br/>
+							Nullam id dolor id nibh ultricies vehicula. Cum sociis
+							natoque penatibus et magnis dis parturient montes, nascetur
+							ridiculus mus. Donec ullamcorper nulla non metus auctor
+							fringilla.
+							Duis mollis, est non commodo luctus, nisi erat porttitor
+							ligula, eget lacinia odio sem nec elit. Donec ullamcorper
+							nulla non metus auctor fringilla.
+						</p>
+						<div class="mt-2 row">
+							<ul>
+								<li><a href="javascript:void(0)"><i class="ion-paperclip f-18"></i> Cum sociis natoque.pptx</a></li>
+								<li><a href="javascript:void(0)"><i class="ion-paperclip f-18"></i> Cum sociis natoque.xlsx</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 col-lg-6 p-r-0">
+				<div class="card">
+					<div class="card-header p-b-0">
+						<h4 class="sub-title"><strong>답변</strong></h4>
+					</div>
+					<div class="card-block-small p-t-0">
+						<div class="mb-2 form-group row required">
+							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+							<div class="col-sm-12">
+								<select name="answerStatus" class="form-select form-select-sm form-control-sm" id="answerStatus">
+									<option value="0">답변대기</option>
+									<option value="1">답변완료</option>
+								</select>
+							</div>
+						</div>
+						<div class="mb-2 form-group row">
+							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+								   for="answerTitle"><strong>답변 제목</strong></label>
+							<div class="col-sm-12">
+								<input type="text" class="form-control form-control-sm"
+									   name="answerTitle" id="answerTitle"
+									   placeholder="Text Input Validation"/>
+							</div>
+						</div>
+						<div class="mb-2 form-group row">
+							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+								   for="answerContents"><strong>답변 내용</strong></label>
+							<div class="col-sm-12">
+																	<textarea rows="5" cols="5" class="form-control form-control-sm"
+																			  placeholder="Default textarea"
+																			  id="answerContents"
+																			  name="answerContents"></textarea>
+							</div>
+						</div>
+						<div class="mb-0 row">
+							<div class="col-12 col-lg-6 mb-2 mb-lg-0">
+								<div class="mb-0 form-group">
+									<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+										   for="answerManager"><strong>답변자</strong></label>
+									<div class="col-sm-12">
+										<input type="text" class="form-control form-control-sm"
+											   name="answerManager" id="answerManager"
+											   placeholder="Text Input Validation"/>
+									</div>
+								</div>
+							</div>
+							<div class="col-12 col-lg-6">
+								<div class="mb-0 form-group">
+									<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+										   for="answerDate"><strong>답변일자</strong></label>
+									<div class="col-sm-12">
+										<input type="text" class="form-control form-control-sm" name="answerDate" id="answerDate" placeholder="Text Input Validation"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="p-t-0 card-block-small">
+						<button class="btn btn-disabled m-r-5">취소</button>
+						<button class="btn btn-primary">저장</button>
+					</div>
+				</div>
+			</div>
 	</div>
-	<script src="https://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
 </div>
+</div>
+	<script src="https://cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
 </body>
+</html>
