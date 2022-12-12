@@ -32,4 +32,6 @@ public class RoleInfoVo extends ParentVo implements Serializable {
     private String seCd;
     /** 대상_기관_코드 */
     private String trgtInstCd;
+    /** 대상_지역_코드 */
+    private String trgtRgnCd;
 }
