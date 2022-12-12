@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.mng.role.model.RoleInstVo;
 import com.kbrainc.plum.mng.role.model.RoleMenuVo;
+import com.kbrainc.plum.mng.role.model.RoleRgnVo;
 import com.kbrainc.plum.mng.role.model.RoleUserVo;
 import com.kbrainc.plum.mng.role.model.RoleUserVoList;
 import com.kbrainc.plum.mng.role.model.RoleVo;
@@ -348,6 +350,46 @@ public class RoleAuthController {
         
         return "mng/role/fragments/configMenu";
     }
+    
+    /**
+    * 관리자역할 기관권한설정 페이지.
+    * 
+    * @Title : adminRoleInstForm
+    * @Description : 관리자역할 기관권한설정 페이지
+    * @param commandMap 요청파라미터맵
+    * @param model      모델객체
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/configRoleInstForm.html")
+    public String adminRoleInstForm(@RequestParam Map<String, Object> commandMap, ModelMap model) throws Exception {
+        if (!"".equals(commandMap.get("roleid")) && commandMap.get("roleid") != null) {
+            model.addAttribute("roleid", commandMap.get("roleid").toString());
+        }
+        model.addAttribute("seCd", commandMap.get("seCd"));
+        
+        return "mng/role/fragments/configInst";
+    }
+    
+    /**
+    * 관리자역할 지역권한설정 페이지.
+    * 
+    * @Title : adminRoleRgnForm
+    * @Description : 관리자역할 지역권한설정 페이지
+    * @param commandMap 요청파라미터맵
+    * @param model      모델객체
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/configRoleRgnForm.html")
+    public String adminRoleRgnForm(@RequestParam Map<String, Object> commandMap, ModelMap model) throws Exception {
+        if (!"".equals(commandMap.get("roleid")) && commandMap.get("roleid") != null) {
+            model.addAttribute("roleid", commandMap.get("roleid").toString());
+        }
+        model.addAttribute("seCd", commandMap.get("seCd"));
+        
+        return "mng/role/fragments/configRgn";
+    }
 
     /**
     * 관리자역할_메뉴 트리.
@@ -498,6 +540,90 @@ public class RoleAuthController {
         Map<String, Object> response = new HashMap<String, Object>();
         List<SiteVo> list = roleAuthService.selectRoleSiteList(roleVo);
         response.put("data", list);
+        return response;
+    }
+        
+    /**
+    * 기관권한설정 기관 정보 조회.
+    * 
+    * @Title : selectRoleInstInfo
+    * @Description : 기관권한설정 기관 정보 조회.
+    * @param commandMap 요청파라미터맵
+    * @param model 모델객체
+    * @return Map<String, Object> 응답Map객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/selectRoleInstInfo.do")
+    @ResponseBody
+    public Map<String, Object> selectRoleInstInfo(@RequestParam Map<String, Object> commandMap, ModelMap model) throws Exception {
+        Map<String, Object> map = roleAuthService.selectRoleInstInfo(commandMap);
+        return map;
+    }
+    
+    /**
+    * 역할 기관 저장.
+    *
+    * @Title : saveInstRole
+    * @Description : 역할 기관 저장.
+    * @param user 사용자세션정보
+    * @param roleInstVo RoleInstVo객체
+    * @return Map<String, Object> 응답결과Map객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/saveInstRole.do")
+    @ResponseBody
+    public Map<String, Object> saveInstRole(@UserInfo UserVo user, RoleInstVo roleInstVo) throws Exception {
+        roleInstVo.setUser(user);
+
+        // 저장
+        roleAuthService.saveInstRole(roleInstVo);
+        Map<String, Object> response = new HashMap<String, Object>();
+
+        response.put("msg", "저장하였습니다.");
+        response.put("result", Constant.REST_API_RESULT_SUCCESS);
+
+        return response;
+    }
+    
+    /**
+    * 지역권한설정 지역 정보 조회.
+    * 
+    * @Title : selectRoleRgnInfo
+    * @Description : 지역권한설정 지역 정보 조회.
+    * @param commandMap 요청파라미터맵
+    * @param model 모델객체
+    * @return Map<String, Object> 응답Map객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/selectRoleRgnInfo.do")
+    @ResponseBody
+    public Map<String, Object> selectRoleRgnInfo(@RequestParam Map<String, Object> commandMap, ModelMap model) throws Exception {
+        Map<String, Object> map = roleAuthService.selectRoleRgnInfo(commandMap);
+        return map;
+    }
+    
+    /**
+    * 역할 지역 저장.
+    *
+    * @Title : saveRgnRole
+    * @Description : 역할 지역 저장.
+    * @param user 사용자세션정보
+    * @param roleRgnVo RoleRgnVo객체
+    * @return Map<String, Object> 응답결과Map객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/saveRgnRole.do")
+    @ResponseBody
+    public Map<String, Object> saveRgnRole(@UserInfo UserVo user, RoleRgnVo roleRgnVo) throws Exception {
+        roleRgnVo.setUser(user);
+
+        // 저장
+        roleAuthService.saveRgnRole(roleRgnVo);
+        Map<String, Object> response = new HashMap<String, Object>();
+
+        response.put("msg", "저장하였습니다.");
+        response.put("result", Constant.REST_API_RESULT_SUCCESS);
+
         return response;
     }
 }

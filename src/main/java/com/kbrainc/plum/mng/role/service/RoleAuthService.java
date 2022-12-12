@@ -3,11 +3,18 @@ package com.kbrainc.plum.mng.role.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.kbrainc.plum.mng.role.model.RoleInstVo;
 import com.kbrainc.plum.mng.role.model.RoleMenuVo;
+import com.kbrainc.plum.mng.role.model.RoleRgnVo;
 import com.kbrainc.plum.mng.role.model.RoleUserVo;
 import com.kbrainc.plum.mng.role.model.RoleVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.lib.tree.TreeItem;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
 * 역할관리 서비스 인터페이스.
@@ -180,4 +187,48 @@ public interface RoleAuthService {
     * @return List<RoleUserVo> 사용자목록
     */
     public List<RoleUserVo> selectUserList(RoleUserVo roleUserVo) throws Exception;
+    
+    /**
+    * 역할 기관 맵핑목록정보 / 기관목록 조회.
+    *
+    * @Title : selectRoleInstInfo
+    * @Description : 역할 기관 맵핑목록정보 / 기관목록 조회
+    * @param param Map타입의 인자
+    * @return Map<String,Object> 역할/전체 기관 목록 정보 
+    * @throws Exception 예외
+    */
+    public Map<String, Object> selectRoleInstInfo(Map<String, Object> param) throws Exception;
+    
+    /**
+    * 역할 기관 저장.
+    *
+    * @Title : saveInstRole
+    * @Description : 역할 기관 저장 
+    * @param roleInstVo RoleInstVo객체
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    public void saveInstRole(RoleInstVo roleInstVo) throws Exception;
+    
+    /**
+    * 역할 지역 맵핑목록정보 / 지역목록 조회.
+    *
+    * @Title : selectRoleRgnInfo
+    * @Description : 역할 지역 맵핑목록정보 / 지역목록 조회
+    * @param param Map타입의 인자
+    * @return Map<String,Object> 역할/전체 지역 목록 정보 
+    * @throws Exception 예외
+    */
+    public Map<String, Object> selectRoleRgnInfo(Map<String, Object> param) throws Exception;
+    
+    /**
+    * 역할 기관 저장.
+    *
+    * @Title : saveRgnRole
+    * @Description : 역할 지역 저장 
+    * @param roleRgnVo RoleRgnVo객체
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    public void saveRgnRole(RoleRgnVo roleRgnVo) throws Exception;
 }

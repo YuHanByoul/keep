@@ -212,4 +212,90 @@ public interface RoleAuthDao {
     * @return List<RoleUserVo> 사용자목록
     */
     public List<RoleUserVo> selectUserList(RoleUserVo roleUserVo) throws Exception;
+    
+    /**
+    * 역할 기관 목록 조회.
+    *
+    * @Title : selectRoleInstList
+    * @Description : 역할 기관 목록 조회
+    * @param param Map타입의 인자
+    * @return List<Map<String,Object>> 역할기관 목록 
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectRoleInstList(Map<String, Object> param) throws Exception;
+    
+    /**
+    * 전체 기관 목록 조회.
+    *
+    * @Title : selectAllInstList
+    * @Description : 전체 기관 목록 조회
+    * @return List<Map<String,Object>> 기관 목록 
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAllInstList() throws Exception;
+    
+    /**
+    * 역할 기관 삭제.
+    *
+    * @Title : deleteRoleInst
+    * @Description : 역할 기관 삭제
+    * @param roleInstVo RoleInstVo객체
+    * @return int delete로우수
+    * @throws Exception 예외
+    */
+    public int deleteRoleInst(RoleInstVo roleInstVo) throws Exception;
+    
+    /**
+    * 역할 기관 입력.
+    *
+    * @Title : insertRoleInst
+    * @Description : 역할 기관 입력
+    * @param roleInstVo RoleInstVo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertRoleInst(RoleInstVo roleInstVo) throws Exception;
+    
+    /**
+    * 역할 지역 목록 조회.
+    *
+    * @Title : selectRoleRgnList
+    * @Description : 역할 지역 목록 조회
+    * @param param Map타입의 인자
+    * @return List<Map<String,Object>> 역할기관 목록 
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectRoleRgnList(Map<String, Object> param) throws Exception;
+    
+    /**
+    * 전체 지역 목록 조회.
+    *
+    * @Title : selectAllRgnList
+    * @Description : 전체 지역 목록 조회
+    * @return List<Map<String,Object>> 기관 목록 
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAllRgnList() throws Exception;
+    
+    /**
+    * 역할 지역 삭제.
+    *
+    * @Title : deleteRoleRgn
+    * @Description : 역할 지역 삭제
+    * @param roleRgnVo RoleRgnVo객체
+    * @return int delete로우수
+    * @throws Exception 예외
+    */
+    public int deleteRoleRgn(RoleRgnVo roleRgnVo) throws Exception;
+    
+    /**
+    * 역할 지역 입력.
+    *
+    * @Title : insertRoleRgn
+    * @Description : 역할 지역 입력
+    * @param roleRgnVo RoleRgnVo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertRoleRgn(RoleRgnVo roleRgnVo) throws Exception;
 }

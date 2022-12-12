@@ -17,8 +17,8 @@ public class RoleVo {
     @Size(max = 60, message = "역할명은 60자를 넘을 수 없습니다.")
     private String nm;
     
-    /** 종류_코드(A: 총괄관리자, G: 일반관리자, M: 기관관리자)  */
-    @Pattern(regexp="[AGM]")
+    /** 종류_코드(U: 일반사용자 , O: 기관사용자 , A: 총괄관리자, G: 일반관리자, M: 기관관리자)  */
+    @Pattern(regexp="[UOAGM]")
     private String kndCd;
     
     /** 역할구분코드(A: admin, U: user) */
