@@ -205,10 +205,10 @@ public class QestnrController {
     }
         
     /**
-     * 설문지 정보 저장
+     * 설문지 정보 업데이트
      *
      * @Title : updateQestnr
-     * @Description : 설문지 정보 저장
+     * @Description : 설문지 정보 업데이트
      * @param qestnrVo QestnrVo 객체
      * @param bindingResult qestnrVo 유효성 검증결과
      * @param user 사용자 세션 정보
@@ -304,6 +304,86 @@ public class QestnrController {
             resultMap.put("msg", "등록에 실패하였습니다");
         }
               
+        return resultMap;
+    }
+    
+    // 설문지 문항 정보 조회
+    // 설문지 문항 정보 업데이트
+    
+    /**
+     * 설문지 문항 순서 업데이트
+     *
+     * @Title : updateQestnr
+     * @Description : 설문지 문항 순서 업데이트
+     * @param qestnrVo QestnrVo 객체
+     * @param bindingResult qestnrVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/qestnr/updateQitemOrdr.do")
+    @ResponseBody
+    public Map<String, Object> updateQitemOrdr(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        qitemVo.setUser(user);
+        retVal = qestnrService.updateQitemOrdr(qitemVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "순서 변경에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "순서 변경에 실패하였습니다");
+        }
+            
+        return resultMap;
+    }
+    
+    /**
+     * 설문지 문항 삭제
+     *
+     * @Title : deleteQitem
+     * @Description : 설문지 문항 삭제
+     * @param qitemVo QitemVo 객체
+     * @param bindingResult qestnrVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/qestnr/deleteQitem.do")
+    @ResponseBody
+    public Map<String, Object> deleteQitem(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        retVal = qestnrService.deleteQitem(qitemVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제에 실패하였습니다");
+        }
+            
         return resultMap;
     }
     

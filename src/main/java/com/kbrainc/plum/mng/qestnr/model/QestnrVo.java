@@ -2,6 +2,9 @@ package com.kbrainc.plum.mng.qestnr.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -36,15 +39,21 @@ public class QestnrVo extends ParentRequestVo {
     private int qestnrid;
     
     /** 사이트 아이디 */
+    @NotEmpty(message = "사이트(기관을) 선택해주세요.")
     private int siteid;
     
     /** 설문지 종류 코드 */
+    @NotEmpty(message = "설문지 종류를 선택해주세요.")
     private String qestnrKndCd;
     
     /** 설문지 이름 */
+    @NotEmpty(message = "설문지명을 입력해주세요.")
+    @Size(max = 20, message = "설문지명은 20자 이하여야 합니다.")
     private String qestnrNm;
     
     /** 설명 */
+    @NotEmpty(message = "설문지 설명을 입력해주세요.")
+    @Size(max = 400, message = "설문지명은 20자 이하여야 합니다.")
     private String expln;
     
     /** 사용 여부 */

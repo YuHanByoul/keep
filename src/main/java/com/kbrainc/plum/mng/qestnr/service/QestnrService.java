@@ -49,7 +49,7 @@ public interface QestnrService {
      * 설문지 정보 조회
      *
      * @Title : selectQestnrInfo
-     * @Description : 설문지 상세정보 조회
+     * @Description : 설문지 정보 조회
      * @param qestnrVo QestnrVo 객체
      * @return QestnrVo QestnrVo 객체
      * @throws Exception 예외
@@ -57,10 +57,10 @@ public interface QestnrService {
     public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
      
     /**
-     * 설문지 정보 수정
+     * 설문지 정보 업데이트
      *
      * @Title : updateQestnr
-     * @Description : 설문지 정보 수정
+     * @Description : 설문지 정보 업데이트
      * @param qestnrVo QestnrVo 객체
      * @return int update 로우수
      * @throws Exception 예외
@@ -88,5 +88,49 @@ public interface QestnrService {
      * @throws Exception 예외
      */
     public int insertQitem(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 설문지 문항 정보 조회
+     *
+     * @Title : selectQitemInfo
+     * @Description : 설문지 문항 정보 조회
+     * @param qitemVo QitemVo 객체
+     * @return QitemVo QitemVo 객체
+     * @throws Exception 예외
+     */
+    public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 설문지 문항 정보 업데이트
+     *
+     * @Title : updateQitem
+     * @Description : 설문지 문항 정보 업데이트
+     * @param qitemVo QitemVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateQitem(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 설문지 문항 순서 업데이트
+     *
+     * @Title : updateQitemOrdr
+     * @Description : 설문지 문항 순서 업데이트
+     * @param qitemVo QitemVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateQitemOrdr(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 설문지 문항 삭제
+     *
+     * @Title : deleteQitem
+     * @Description : 설문지 문항 삭제
+     * @param qitemVo QitemVo 객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    public int deleteQitem(QitemVo qitemVo) throws Exception;
     
 }
