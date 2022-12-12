@@ -1,6 +1,5 @@
 <form id="memberFrm" >
        <!-- insert 부분 -->
-       <div class="card">
            <div class="card-header p-b-0">
                <h3 class="sub-title"><strong>기본정보</strong></h3>
            </div>
@@ -11,7 +10,7 @@
                        <div class="mb-2 form-group row required ">
                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>아이디</strong></label>
                            <div class="col-sm-12">
-                               <input type="text" class="form-control form-control-sm" name="acnt" id="acnt" onblur="fn_checkIdYn()">
+                               <input type="text" class="form-control form-control-sm" name="acnt" id="acnt" onblur="fn_checkIdYn()" placeholder="아이디">
                                <!-- <span class="messages"></span> -->
                            </div>
                        </div>
@@ -28,7 +27,7 @@
                            <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>성별</strong></span>
                            <div class="col-sm-12">
                                <select id="gndr" name="gndr" class="form-select form-select-sm form-control-sm">
-                                   <option value="">선택</option>
+                                   <option value="">- 선택 -</option>
                                    <option value="M">남</option>
                                    <option value="F">여</option>
                                </select>
@@ -74,13 +73,13 @@
                        
                            <div class="col-sm-6">
                            <label class="form-label col-sm-6 col-form-label p-t-0 pb-1" for="pswd"><strong>비밀번호</strong></label>
-                               <input type="password" class="form-control form-control-sm" name="pswd" id="pswd">
+                               <input type="password" class="form-control form-control-sm" name="pswd" id="pswd" placeholder="비밀번호">
                                <span class="messages"></span>
                            </div>
                            
                            <div class="col-sm-6 required">
                            <label class="form-label col-sm-6 col-form-label p-t-0 pb-1" for="pswdChk"><strong>비밀번호 확인</strong></label>
-                               <input type="password" class="form-control form-control-sm" name="pswdChk" id="pswdChk">
+                               <input type="password" class="form-control form-control-sm" name="pswdChk" id="pswdChk" placeholder="비밀번호 확인">
                                <span class="messages"></span>
                            </div>
                            
@@ -144,7 +143,7 @@
 	                               <span kattr:radio_yn="acntLockYn" label1="Y" label2="N"  defaultVal="N" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeAcntLockYn"></span>
 	                           </div>
 	                           <div class="col-sm-2">
-	                               <span kattr:select_code="acntLockCd" grpCd="101" firstOptTxt="선택 안함"  addClass="form-select form-select-sm form-control-sm" addStyle="margin-left:5px;width:150px;"></span>
+	                               <span kattr:select_code="acntLockCd" grpCd="101" firstOptTxt="-선택 -"  addClass="form-select form-select-sm form-control-sm" addStyle="margin-left:5px;width:150px;"></span>
 	                           </div>
 	                           
 	                           <!-- <div class="col-sm-2">
@@ -212,14 +211,16 @@
                </div>
            </div>
            
-           <div class="card-header p-t-0 p-b-0">
+       <!-- 간편로그인 차후 필요시 사용 -->    
+       <!--<div class="card-header p-t-0 p-b-0">
                <h4 class="sub-title"><strong>간편 로그인 연동</strong></h4>
            </div>
            <div class="card-block-small p-t-0">
                <div class="border-checkbox-section">
                   <span kattr:check_code_v="esylgnCds" grpCd="106"  isAdmin="true" addClass="esylgnCds" />
                </div>
-           </div>
+           </div> -->
+           
            <div class="card-block-small">
                <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()" >취소</button>
                
@@ -227,7 +228,6 @@
                    <button type="button" class="btn btn-primary" onclick ="fn_insertMember()" >저장</button>
                </th:block>
            </div>
-       </div>
        
       <input type="hidden" id="delYn" name="delYn" value="N">
       <input type="hidden" id="sttsCd" name="sttsCd" value="1">
@@ -242,12 +242,13 @@
     //아이디 중복 체크 여부 판별용 
     var checkId = "";
 	var validator= $("#memberFrm").validate({
+		    onsubmit: false,
 		    rules: {
 		         acnt       :   { required: true ,isBlank : true, maxlength: 20 }
 		    	,eml        :   { required: true ,isBlank : true, maxlength: 50 }
 	            ,acntLockCd :   { required: true  }
-		    	,moblphon   :   { required: true ,number :true }
-		    	,telno      :   { number :true }
+		    	,moblphon   :   { required: true ,number :true ,maxlength: 12}
+		    	,telno      :   { number :true ,maxlength: 12}
 		    	,gndr       :   { required: true  }
 		    	,brdt       :   { required: true  }
 		    	,nm         : 	{ required: true ,isBlank : true, maxlength: 20 }
@@ -259,8 +260,8 @@
 	    	    ,eml        :   { required: "이메일 항목을 입력해주십시오."  }
 	            ,acntLockCd :   { required: "계정 잠김 코드를 선택해주세요"  }
 		    	,gndr       :   { required: "성별을 입력하세요"  }  
-		    	,moblphon   :   { required: "휴대폼 번호를 입력하세요" ,number : "숫자만 입력가능합니다."}  
-		    	,telno      :   { number  : "숫자만 입력가능합니다." }
+		    	,moblphon   :   { required: "휴대폰 번호를 입력하세요" ,number : "숫자만 입력가능합니다.", maxlength:"휴대폰 번호는 12자리 이하여야 합니다."}  
+		    	,telno      :   { number  : "숫자만 입력가능합니다." , maxlength:"전화 번호는 12자리 이하여야 합니다."}
 		    	,brdt       :   { required: "생년월일을 입력하세요"  }  
 		    	,nm         :   { required: "이름을 입력해주십시오." , isBlank : "입력값에 공백이 있습니다.", maxlength: "이름은 20자 이하여야 합니다."   }
 			    ,pswd       :   { required: "비밀번호를 입력해주십시오." , isBlank : "입력값에 공백이 있습니다.", passwordPolicy2 : "영문,숫자,특수기호가  하나 이상 포함되어야 합니다." ,minlength:"비밀번호는 8자 이상이어야 합니다.", maxlength: "비밀번호는 20자 이하여야 합니다." ,isHangulOff :"한글은 사용하실 수 없습니다."   }
@@ -275,7 +276,7 @@
 			alert("아이디는 20자 이하여야 합니다.");
 			return;
  		}
-
+ 		
         if(displayWorkProgress()){
 			$.ajax({
 				url : "/mng/member/checkIdYn.do",

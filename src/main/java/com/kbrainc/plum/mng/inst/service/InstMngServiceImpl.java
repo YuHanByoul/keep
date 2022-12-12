@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.member.service;
+package com.kbrainc.plum.mng.inst.service;
 
 import java.security.MessageDigest;
 import java.sql.SQLException;
@@ -19,6 +19,8 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
 import com.kbrainc.plum.cmm.service.SmsService;
+import com.kbrainc.plum.mng.inst.model.InstMngDao;
+import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.mng.member.model.EmailVo;
@@ -53,8 +55,14 @@ import com.kbrainc.plum.rte.util.mail.service.MailService;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
-public class MemberServiceImpl extends PlumAbstractServiceImpl implements MemberService {
+public class InstMngServiceImpl extends PlumAbstractServiceImpl implements InstMngService {
 
+    @Autowired
+    private InstMngDao instMngDao;
+    
+    
+    
+    
     @Autowired
     private MemberDao memberDao;
 
@@ -75,6 +83,39 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     
     @Autowired
     private TemplateEngine templateEngine;
+    
+    
+    /**
+    * 기관정보 목록 리스트
+    *
+    * @Title       : selectInstList 
+    * @Description : 기관정보 목록 리스트
+    * @param param InstVo instvo 객체
+    * @return List<InstVo> 기관정보 목록
+    * @throws Exception 예외
+    */
+    public List<InstVo> selectInstList(InstVo instvo) throws Exception{
+        return instMngDao.selectInstList(instvo);
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /**
     * 사용자정보 등록.

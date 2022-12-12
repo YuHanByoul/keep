@@ -25,13 +25,15 @@
                      <div class="row">
                          <div class="col-lg-3 mb-2">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관 키워드</strong></span>
                                  <div class="input-group input-group-sm input-group-dropdown mb-0">
                                  
                                      <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
                                         <option value="">- 전체 -</option>
-                                        <option value="id">아이디</option>
-                                        <option value="name">이름 </option>
+                                        <option value="instNm">기관명</option>
+                                        <option value="rprsvNm">대표자명 </option>
+                                        <option value="mngNm">담당자명 </option>
+                                        <option value="bizNum">사업자등록번호 </option>
                                      </select>
                                      <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" 
                                      aria-label="Text input with dropdown button">
@@ -39,45 +41,26 @@
                                  </div>
                              </div>
                          </div>
+                         
                          <div class="col-lg-3 mb-2">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원구분</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관유형</strong></span>
                                  <div class="col-sm-12">
-                                     <select id ="searchRoleCd" name="searchRoleCd" class="form-select form-select-sm form-control-sm">
-                                        <option value="">- 전체 -</option>
-                                        <option value="U">개인회원</option>
-                                        <option value="C">기관담당자 </option>
-                                        <option value="A">관리자</option>
-                                     </select>
+                                     <span kattr:select_code="searchInstCd" grpCd="108" firstOptTxt="-선택 -"  addClass="form-select form-select-sm form-control-sm" ></span>
                                  </div>
                              </div>
                          </div>
+                         
                          <div class="col-lg-3 mb-2">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색시작일</strong></span>
-                                 <div class="col-sm-12">
-                                     <input class="form-control form-control-sm" type="date" id="searchStartDay" name="searchStartDay"/>
-                                 </div>
-                             </div>
-                         </div>
-                         <div class="col-lg-3">
-                             <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>가입일 - 검색종료일</strong></span>
-                                 <div class="col-sm-12">
-                                     <input class="form-control form-control-sm" type="date" id="searchEndDay" name="searchEndDay"/>
-                                 </div>
-                             </div>
-                         </div>
-                         <div class="col-lg-3 mb-2">
-                             <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원상태</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>승인상태</strong></span>
                                  <div class="col-sm-12">
                                  
-                                     <select id="searchSttsCd" name="searchSttsCd" class="form-select form-select-sm form-control-sm">
+                                     <select id ="searchApprovalSttsCd" name="searchApprovalSttsCd" class="form-select form-select-sm form-control-sm">
                                         <option value="">- 전체 -</option>
-                                        <option value="1">가입</option>
-                                        <option value="2">대기</option>
-                                        <option value="9">탈퇴</option>
+                                        <option value="1">신청</option>
+                                        <option value="2">승인</option>
+                                        <option value="9">승인거부</option>
                                      </select>
                                      
                                  </div>
@@ -100,12 +83,7 @@
                         <h5><strong>회원검색결과</strong></h5>
                     </div>
                     <div class="col-12 col-md-6 text-right">
-                        <th:block sec:authorize-url="/mng/member/updatetBlcklstDsctn.do">
-                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5"  onclick='fn_openBlackListModal()'>블랙리스트 지정</button>
-                        </th:block>
-                        <th:block sec:authorize-url="/mng/member/updatetBlcklstDsctn.do">
-                            <button type="button" class="btn btn-primary waves-effect waves-light m-r-5" onclick='fn_clearBlackList()' >블랙리스트 해지</button>
-                        </th:block>
+                    
                         <th:block sec:authorize-url="/mng/member/memberInsertForm.html">
                             <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();" >등록</button>
                         </th:block>
@@ -123,42 +101,17 @@
                 
             </div>
 
-          <!-- Content Area -->
-          <div id="contentPanel" style="display:none" class="card"></div>
-          
-		  <!-- SMS 발송 Start -->
-		  <div class="modal fade" id="popCon2" tabindex="-1" role="dialog" aria-labelledby="popCon2Title" aria-hidden="true"></div>
-		        
-		  <!-- e-mail 발송 Start -->
-		  <div class="modal fade" id="popCon3" tabindex="-1" role="dialog" aria-labelledby="popCon3Title" aria-hidden="true"></div>
-		  
-		<!--블랙리스트 지정 팝업-->
-		<div class="modal fade" id="blackListAppointPopup" aria-hidden="true" data-bs-backdrop="static"></div>
-		<!--//블랙리스트 지정 팝업-->
  
       </div>
   </div>
   
-  <!-- Button Group Start  엑셀 예시용 -->
-  <!--   
-  <div class="row text-right" style = "margin-bottom: 5px; margin-right: 5px;">
-      <div class="justify-button-group" style="overflow:visible">
-        
-            <p class="left-align-text" style = "margin-left: 15px;">
-                <th:block sec:authorize-url="/mng/member/emailPop.html"><button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#popCon3">e-mail 발송</button></th:block>
-                <th:block ><button type="button" class="btn btn-sm btn-primary" onclick="fn_memberExcelDownload()">엑셀 다운로드</button></th:block>
-                <th:block ><button type="button" class="btn btn-sm btn-primary" onclick="fn_memberExcelInsertPop()">엑셀 일괄등록</button></th:block>
-            </p>
-            
-            <p class="right-align-text">
-                <th:block sec:authorize-url="/mng/member/memberInsertForm.html"><button type="button" class="btn btn-sm btn-warning" onclick="fn_goInsertForm();">등록</button></th:block>
-            </p>
-      </div>
-  </div> -->
-        
-
+  <!-- Content Area -->
+  <div id="contentPanel" class="panel panel-default" style="display:none"></div>
   
-        
+  
+  <!--팝업-->
+  <div class="modal fade" id="blackListAppointPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+  <!--팝업-->
 
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script th:inline="javascript">
@@ -222,12 +175,10 @@
     }
     
     function fn_init() {
-        $("#searchRoleCd").val('');
-        $("#searchSttsCd").val('');
         $("#searchType").val('');
         $("#searchKeyword").val('');
-        $("#searchStartDay").val('');
-        $("#searchEndDay").val('');
+        $("#searchInstCd").val('');
+        $("#searchApprovalSttsCd").val('');
     }
         
     function writeJsGridData(){
@@ -270,8 +221,7 @@
                     $.ajax({
                       type: "GET",
                       contentType: "application/json; charset=utf-8",
-                      url: "/mng/member/selectMemberList.do",
-                      //url: "/mng/site/siteList.do",
+                      url: "/mng/inst/selectInstList.do",
                       dataType: "json",
                       data: formData,
                     }).done(function(response){
@@ -301,21 +251,18 @@
                      width: "30",
                      sorting: false
                  }                  
-                ,{ name: 'userid', css: 'hide' }
-                ,{ name: 'nm', css: 'hide' }
-                ,{ title: 'No.'   ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
-                ,{ title: '아이디'  ,name: 'acnt'      ,type: "text" , width: "200" 
-                    ,itemTemplate: function(value, item){ return (item.blcklstYn=='Y')? value+"&nbsp;&nbsp;<span class='label label-inverse'>balcklist</span>" :value;}
+                ,{ name: 'instid', css: 'hide' }
+                ,{ name: 'nm'    , css: 'hide' }
+                ,{ title: 'No.'    ,name: 'rowNumber'     ,type: "number" ,width: "80"   ,align:"center",  sorting :false }
+                ,{ title: '기관명'   ,name: 'instNm'        ,type: "text"  ,width: "300"  ,align:"center"}
+                ,{ title: '기관유형'  ,name: 'instTypeCdNm' ,type: "text"   ,width: "100"  ,align:"center"}
+                ,{ title: '대표자명'  ,name: 'rprsvNm'      ,type: "text"   ,width: "200"  ,align:"center"}
+                ,{ title: '전화번호'  ,name: 'telno'        ,type: "text"   ,width: "200"  ,align:"center"}
+                ,{ title: '인증상태'  ,name: 'aprvSttsCd'   ,type: "text"   ,width: "100"  ,align:"center"
+                	,itemTemplate: function(value, item){ if(value=='1'){return "신청";}else if(value=='2'){return "승인";}else{return "승인거부";}}
                  }
-                ,{ title: '이름'   ,name: 'nm'    ,type: "text" , width: "100" ,align:"center"}
-                ,{ title: '이메일'  ,name: 'eml'   ,type: "text" , width: "200" ,align:"center"}
-                ,{ title: '회원유형' ,name: 'rolecd' ,type: "text" , width: "100", align:"center" 
-                	,itemTemplate: function(value, item){ if(value=='A'){return "관리자";}else if(value=='C'){return "기관회원";}else{return "개인회원";}}
-                 }
-                ,{ title: '회원상태'   ,name: 'sttsCd' ,type: "text" , align:"center"
-                	,itemTemplate: function(value, item){ if(value=='1'){return "가입";}else if(value=='2'){return "대기";}else{return "탈퇴";}} 
-                 }
-                ,{ title: '가입일'  ,name: 'regDt' ,type: "text" , width: "120", align:"center" }
+                ,{ title: '사용여부'  ,name: ' useYn'   ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '등록일자'  ,name: 'regDt' ,type: "text" , width: "150", align:"center" }
             ],
             
             /*[# sec:authorize-url="/mng/member/memberDetailForm.html"]*/
