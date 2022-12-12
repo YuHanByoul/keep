@@ -1,0 +1,84 @@
+<form id ="mmnwsUpdateForm">
+<input type="hidden" id="nscvrgid" name="nscvrgid" th:value="${mmnws.nscvrgid}">
+	<!-- Hidden Contents Start -->
+	<div class="panel panel-default" id="hiddenCon">
+		<!-- Hidden Contents Title Start -->
+		<div class="panel-heading trans"><strong>기본정보</strong></div>
+		<!-- Hidden Contents Title End -->
+
+		<!-- Tab Container Start -->
+		<div class="card">
+		    <div class="card-block-small p-t-0">
+		        <div class="mb-2 form-group required">
+		            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+		            <div class="col-sm-12">
+		                <select name="clsfCd" id="clsfCd" class="form-select form-select-sm form-control-sm">
+		                    <option value="">- 선택 -</option>
+		                    <option value="C" th:selected="${mmnws.clsfCd == 'C'}">센터소식</option>
+		                    <option value="E" th:selected="${mmnws.clsfCd == 'E'}">환경교육소식</option>
+		                </select>
+		            </div>
+		        </div>
+		        <div class="mb-2 form-group required">
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="oxprNm"><strong>언론사</strong></label>
+		            <div class="col-sm-12">
+		                <input type="text" class="form-control form-control-sm" name="oxprNm" id="oxprNm" placeholder="언론사" th:value="${mmnws.oxprNm}"/>
+		            </div>
+		        </div>
+		        <div class="mb-2 form-group required">
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>제목</strong></label>
+		            <div class="col-sm-12">
+		                <input type="text" class="form-control form-control-sm" name="ttl" id="ttl" placeholder="제목" th:value="${mmnws.ttl}"/>
+		            </div>
+		        </div>
+		        <div class="mb-2 form-group required">
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="url"><strong>링크주소</strong></label>
+		            <div class="col-sm-12">
+		                <input type="text" class="form-control form-control-sm" name="url" id="url" placeholder="URL" th:value="${mmnws.url}"/>
+		            </div>
+		        </div>
+		        <div class="mb-0 form-group row">
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="wrtDe"><strong>표시용 작성일</strong></label>
+		            <div class="col-auto">
+		                <input class="form-control form-control-sm" type="date" name="wrtDe" id="wrtDe" th:value="${mmnws.wrtDe}"/>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="card-block-small">
+		        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertMmnws" onclick="gridHelper1.toggleContent()">취소</button>
+		        <th:block sec:authorize-url="/mng/mmnws/updateMmnws.do"><button type="button" class="btn btn-primary" id="updateMmnws" onclick="fn_updateMmnws()">저장</button></th:block>
+		    </div>
+		</div>
+		<!-- Tab Container End -->
+	</div>
+	<!-- Hidden Contents End -->
+</form>
+
+<script type="text/javascript">
+ 	function fn_updateMmnws(){
+	 	if(!($("#mmnwsUpdateForm").valid())) return;
+
+  	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	    
+	    var data =  $("#mmnwsUpdateForm").serialize();
+	    console.log(data);
+	    if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/mmnws/updateMmnws.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						gridHelper1.resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
+				}
+			});
+		}
+	}
+</script>
