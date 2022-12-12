@@ -1,13 +1,12 @@
 <form id ="enveudInsertForm">
-	<!-- Hidden Contents Start -->
-	<div class="panel panel-default" id="hiddenCon">
-		<!-- Hidden Contents Title Start -->
-		<div class="panel-heading trans"><strong>등록</strong></div>
-		<!-- Hidden Contents Title End -->
+		<!-- INSERT -->
+		<div class="card-header p-b-0">
+        	<h3 class="sub-title"><strong>등록</strong></h3>
+        </div>
 
 		<!-- Tab Container Start -->
-		<div class="card">
-		    <div class="card-block-small p-t-0">
+        <div class="card-block-small p-t-0">
+        	<div class="row">
 		        <div class="mb-2 row">
 		            <div class="col-12 col-lg-3 mb-2 mb-lg-0">
 		                <div class="mb-0 form-group required">
@@ -70,8 +69,8 @@
 		                </div>
 		                <div class="col-sm-12">
 		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
-                            <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid">
-                            <input type="hidden" name="thmbnFileid" id="thmbnFileid">		                    
+                            <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" value="0">
+                            <input type="hidden" name="thmbnFileid" id="thmbnFileid" value="0">		                    
 		                </div>
 		            </div>
 		        </div>
@@ -113,14 +112,12 @@
 		            </div>
 		        </div>
 		    </div>
-		    <div class="card-block-small">
-		        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertEnvedu" onclick="gridHelper1.toggleContent()">취소</button>
-		        <th:block sec:authorize-url="/mng/wbzn/insertEnvedu.do"><button type="button" class="btn btn-primary" id="insertEnvedu" onclick="fn_insertEnvedu()">저장</button></th:block>
-		    </div>
 		</div>
+	    <div class="card-block-small">
+	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertEnvedu" onclick="gridHelper1.toggleContent()">취소</button>
+	        <th:block sec:authorize-url="/mng/envedu/insertEnvedu.do"><button type="button" class="btn btn-primary" id="insertEnvedu" onclick="fn_insertEnvedu()">저장</button></th:block>
+	    </div>
 		<!-- Tab Container End -->
-	</div>
-	<!-- Hidden Contents End -->
 </form>
 
 <script th:inline="javascript">
@@ -161,7 +158,7 @@
 				        $("#thmbnFilegrpid").val(response.filegrpid);
 				        $("#thmbnFileid").val(response.fileid);
 				        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
-	                    content +="<a href=javascript:fn_deleteFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a>";
+	                    content +="<a href=javascript:fn_deleteFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
 	                    $('#fileUploadSuccess').html(content);
 				    }
 				    closeWorkProgress();
@@ -193,6 +190,8 @@
 	            console.log(data);
 	            if(data.result=="success"){
 	                $("#"+fileid).remove();
+	                $('#thmbnFileid').val(0);
+	                $('#thmbnFilegrpid').val(0);
 	                $('#thmbnFile').val('');
 	                alert("파일삭제가 완료 되었습니다.");
 	            }else{
@@ -228,7 +227,7 @@
 	    var data =  $("#enveudInsertForm").serialize();
 	    if(displayWorkProgress()){
 			$.ajax({
-				url : "/mng/wbzn/insertEnvedu.do",
+				url : "/mng/envedu/insertEnvedu.do",
 				type: 'POST',
 				cache : false,
 				dataType: 'json',

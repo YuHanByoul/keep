@@ -112,7 +112,8 @@
 
 
 		<!-- Content Area -->
-		<div id="contentPanel" class="panel panel-default" style="display: none"></div>	
+		<div id="contentPanel" style="display:none" class="card"></div>
+		
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 		<script th:inline="javascript">
@@ -125,39 +126,10 @@
 			
 			
 		    function fn_goInsertForm(){
-		        var insertUrl ="/mng/wbzn/enveduInsertForm.html";
+		        var insertUrl ="/mng/envedu/enveduInsertForm.html";
 		    	    gridHelper1.loadContent(insertUrl);
 		    }
 		    
-		    function deleteItem(){
-				if(selectedItems.length == 0) {
-					alert("대상을 선택해주세요.");
-					return false;
-				}
-				if(!confirm("삭제하시겠습니까?")) return;
-				var msg;
-			    	for(var i=0; i<selectedItems.length; i++){
-			    		if(displayWorkProgress()){
-		    			$.ajax({
-		    				url: "/mng/envedu/deleteEnvedu.do",
-		    				type: 'POST',
-		    				cache : false,
-		    				dataType: 'json',
-		    				data: {nscvrgid:selectedItems[i]},
-		    				success: function(data){
-		    					if(data.result=="success"){
-		    						alert(data.msg);
-		    					}else{
-		    						alert(data.msg);
-		    					}
-		    					closeWorkProgress();
-		    				}
-		    			});
-			    	}
-			    	gridHelper1.resetListContent();
-				}
-		    }
-		     
 		    function fn_searchForm(){
 		    	gridHelper1.resetListContent();
 		    }
@@ -211,7 +183,7 @@
 			                $.ajax({
 			                  type: "GET",
 			                  contentType: "application/json; charset=utf-8",
-			                  url: "/mng/wbzn/selectEnveduList.do",
+			                  url: "/mng/envedu/selectEnveduList.do",
 			                  dataType: "json",
 			                  data: formData
 			                }).done(function(response){
@@ -235,7 +207,12 @@
 			        ],
 			        rowClick: function(args) {
 			        	if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-			        	var detailUrl = "/mng/wbzn/enveduUpdateForm.html?enveduid=" + args.item.enveduid; 
+			        	var detailUrl = "";
+						if(args.item.thmbnFileid != null && args.item.filegrpid != null) {
+							detailUrl = "/mng/envedu/enveduUpdateForm.html?enveduid=" + args.item.enveduid + "&thmbnFileid=" + args.item.thmbnFileid + "&filegrpid=" + args.item.filegrpid; 
+						}else {
+							detailUrl = "/mng/envedu/enveduUpdateForm.html?enveduid=" + args.item.enveduid; 
+						}
 			       	    gridHelper1.loadContent(detailUrl);
 			       	    gridHelper1.rowClick(args);
 			        },
