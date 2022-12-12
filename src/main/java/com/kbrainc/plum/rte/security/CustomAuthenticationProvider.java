@@ -90,18 +90,18 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(P:개인회원, C: 기업회원)
+                String instid = (String) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
-                if ("P".equals(userSeCd)) {
+                if (instid == null) {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysPersonRoleid);
                     roleMap.put("NM", "개인회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
-                } else if ("C".equals(userSeCd)) {
+                } else {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysCompanyRoleid);
-                    roleMap.put("NM", "기업회원");
+                    roleMap.put("NM", "기관회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
                 }
@@ -119,22 +119,22 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(P:개인회원, C: 기업회원)
+                String instid = (String) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
                 if (resultList == null) {
                     resultList = new ArrayList<Map<String, Object>>();
                 }
                 
-                if ("P".equals(userSeCd)) {
+                if (instid == null) {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysPersonRoleid);
                     roleMap.put("NM", "개인회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
-                } else if ("C".equals(userSeCd)) {
+                } else {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysCompanyRoleid);
-                    roleMap.put("NM", "기업회원");
+                    roleMap.put("NM", "기관회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
                 }
