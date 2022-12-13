@@ -626,4 +626,25 @@ public class RoleAuthController {
 
         return response;
     }
+    
+    /**
+    * 역할의 순서를 조정한다.(상위역할로 변경할 수 없다.).
+    *
+    * @Title : roleReorder
+    * @Description : 역할의 순서를 조정한다
+    * @param user 사용자세션정보
+    * @param commandMap 요청파라미터맵
+    * @param model 모델객체
+    * @return Map<String,Object> 응답Map객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/roleauth/roleReorder.do")
+    @ResponseBody
+    public Map<String, Object> roleReorder(@UserInfo UserVo user, @RequestParam Map<String, Object> commandMap, ModelMap model) throws Exception {
+        HashMap map = new HashMap();
+        commandMap.put("user", user);
+        //commandMap.put("role_clsf_list", StringUtil.nvl(commandMap.get("role_clsf_cd")).split(","));
+        roleAuthService.updateRoleReorder(commandMap);
+        return map;
+    }
 }

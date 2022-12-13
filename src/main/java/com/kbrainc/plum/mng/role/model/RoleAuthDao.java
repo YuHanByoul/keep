@@ -298,4 +298,15 @@ public interface RoleAuthDao {
     * @throws Exception 예외
     */
     public int insertRoleRgn(RoleRgnVo roleRgnVo) throws Exception;
+
+    /**
+    * 역할 reorder 갱신.
+    *
+    * @Title : updateRoleTreeInfoNew
+    * @Description : 역할 reorder 갱신
+    * @param param Map타입의 인자
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateRoleTreeInfoNew (Map param) throws Exception;   
 }

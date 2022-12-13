@@ -331,4 +331,31 @@ public class RoleAuthServiceImpl extends PlumAbstractServiceImpl implements Role
             roleAuthDao.insertRoleRgn(roleRgnVo);
         }
     }
+    
+    /**
+    * 역할 트리의 순서를 재조정한다.
+    *
+    * @Title : updateRoleReorder
+    * @Description : 역할 트리의 순서를 재조정한다
+    * @param param Map타입의 인자
+    * @return int udpate로우수
+    * @throws Exception 예외
+    */
+    @Transactional
+    public int updateRoleReorder(Map param) throws Exception {
+        int retVal = 0;
+        String [] roleArr = StringUtil.nvl(param.get("p_roleArr")).split(",");
+        int ord = 1;
+        for(int i=0 ; i< roleArr.length;i++){
+            param.put("p_roleid",roleArr[i]);
+            param.put("p_ord",ord);
+            param.put("p_upr_roleid",param.get("uprRoleid"));
+            param.put("p_se_cd", param.get("seCd"));
+            roleAuthDao.updateRoleTreeInfoNew(param);
+            ord++;
+        }   
+        
+        retVal = 1;
+        return retVal;
+    }
 }

@@ -1,5 +1,5 @@
 var treeUrl = "/mng/roleauth/roleMgntTreeList.do";
-//var orderUrl = "/mng/roleauth/roleReorder.do";
+var orderUrl = "/mng/roleauth/roleReorder.do";
 var detailUrl = "/mng/roleauth/roleDetailInfo.do";
 var saveUrl = "/mng/roleauth/roleRegistInfo.do";
 var tab1Url = "/mng/roleauth/roleMgntUserMappingForm.do";
@@ -131,7 +131,7 @@ function fn_roleTreeList(){
     			jQuery("#tree").dynatree("getTree").activateKey(jQuery("#upprRoleid").val());
     		}
     	},
-    	/*dnd: {
+    	dnd: {
     		preventVoidMoves: true, // Prevent dropping nodes 'before self', etc.
     		onDragStart: function(node) {
       			return true;
@@ -147,12 +147,12 @@ function fn_roleTreeList(){
       			fn_role_reOrder(node, sourceNode,hitMode);
     		}
  
-    	}*/
+    	}
   	});  
 }
 
 function fn_role_reOrder(node, sourceNode,hitMode){
-	var uprRoleId = sourceNode.parent.data.key;
+    var uprRoleId = sourceNode.parent.data.key;
 	var roleArr  = new Array();
 	var child = node.parent.getChildren();
 	
@@ -172,17 +172,13 @@ function fn_role_reOrder(node, sourceNode,hitMode){
 			p_roleArr : new String(roleArr),
 			roleid : sourceNode.data.key,
 			uprRoleid : uprRoleId,	
-			hitMode : hitMode,
-			roleClsfCd : jQuery("#roleClsfCd").val(),
-			mkey:'${mkey}'
+			seCd : jQuery("input[name=seCd]").val(),
+			hitMode : hitMode
 		},
 		success:function(data){
 			
 		}
-		
 	});
-		
-	
 }
 
 function fn_getRoleInfo(roleId){
