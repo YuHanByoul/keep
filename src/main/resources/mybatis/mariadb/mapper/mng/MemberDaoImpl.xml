@@ -60,7 +60,7 @@
                ,'Y'
                ,#{marktEmlAgreYn}
                ,#{marktSmsAgreYn}
-               ,#{prvcyVldty}
+               ,1
                ,#{acntLockYn}
                ,#{acntLockCd}
                ,#{tmprPswdYn}
@@ -231,7 +231,7 @@
                ,A.RGTRID
                ,(SELECT GROUP_CONCAT(ITRSTFLD_CD SEPARATOR',') FROM TB_CMM_USER_ITRSTFLD  WHERE USERID = #{userid} ) AS ITRSTFLD_CD
                ,(SELECT GROUP_CONCAT(ENVFLD_CD SEPARATOR',') FROM TB_CMM_USER_ENVFLD  WHERE USERID = #{userid} ) AS ENVFLD_CD
-               ,(SELECT GROUP_CONCAT(ESYLGN_CD SEPARATOR',') FROM TB_CMM_USER_ESYLGN  WHERE USERID = #{userid} ) AS ESYLGN_CD
+               <!-- ,(SELECT GROUP_CONCAT(ESYLGN_CD SEPARATOR',') FROM TB_CMM_USER_ESYLGN  WHERE USERID = #{userid} ) AS ESYLGN_CD -->
                ,IFNULL(B.ROLECD ,'' ) AS ROLEIDS
                ,CASE WHEN INSTR(B.ROLECD,'1') > 0 OR INSTR(B.ROLECD,'5') > 0 THEN 'A'
                      WHEN A.INSTID IS NOT NULL THEN 'C'
@@ -654,7 +654,9 @@
     <update id="updateMemberDelYn" parameterType="MemberVo">
         /* MemberDao.updateLockStts */
         UPDATE TB_CMM_USER SET
-               DEL_YN = #{delYn}
+               STTS_CD      = '9'
+               -- ,DEL_YN = #{delYn}
+               ,PRVC_VLDTY  =  0                 
                ,ACNT_LOCK_YN      = 'Y'                 
                ,ACNT_LOCK_CD      = '101106'
                ,MDFCN_DT          = NOW()                         

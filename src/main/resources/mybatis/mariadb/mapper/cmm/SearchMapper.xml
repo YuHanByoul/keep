@@ -18,20 +18,23 @@
                         USE_YN = 'Y'
                     AND APRV_STTS_CD = '2'
                 <choose>
-                    <when test='user.roleInfo.trgtInsttCd == "A"'>
+                    <when test='user.roleInfo.trgtInstCd == "A"'>
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "S"'>
+                    <when test='user.roleInfo.trgtInstCd == "S"'>
                         AND INSTID = #{user.instid}          
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "C"'>
+                    <when test='user.roleInfo.trgtInstCd == "C"'>
                         AND INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{user.roleInfo.roleid})          
                     </when>
                     <otherwise>
                         AND 1 != 1
                     </otherwise>
                 </choose>
+                <if test='user.roleInfo.trgtRgnCd == "S"'>
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                </if>
                         )
-                    <if test='user.roleInfo.trgtInsttCd == "A"'>
+                    <if test='user.roleInfo.trgtInstCd == "A" and user.roleInfo.trgtRgnCd == "A"'>
                         OR ${tableAlias}.INSTID IS NULL
                     </if>
                     )
@@ -46,14 +49,14 @@
                         USE_YN = 'Y'
                     AND APRV_STTS_CD = '2'
                 <choose>
-                    <when test='user.roleInfo.trgtInsttCd == "A"'>
+                    <when test='user.roleInfo.trgtInstCd == "A"'>
                         AND INSTID = #{searchInstValue}
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "S"'>
+                    <when test='user.roleInfo.trgtInstCd == "S"'>
                         AND INSTID = #{searchInstValue}    
                         AND #{searchInstValue} = #{user.instid}   
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "C"'>
+                    <when test='user.roleInfo.trgtInstCd == "C"'>
                         AND INSTID = #{searchInstValue}
                         AND #{searchInstValue} IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{user.roleInfo.roleid})           
                     </when>
@@ -61,6 +64,9 @@
                         AND 1 != 1
                     </otherwise>
                 </choose>
+                <if test='user.roleInfo.trgtRgnCd == "S"'>
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                </if>
                         )
             </otherwise>
         </choose>
@@ -80,20 +86,23 @@
                     AND SYS_SE_CD = #{searchSiteSysSeCd}
                 </if>
                 <choose>
-                    <when test='user.roleInfo.trgtInsttCd == "A"'>
+                    <when test='user.roleInfo.trgtInstCd == "A"'>
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "S"'>
+                    <when test='user.roleInfo.trgtInstCd == "S"'>
                         AND INSTID = #{user.instid}
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "C"'>
+                    <when test='user.roleInfo.trgtInstCd == "C"'>
                         AND INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{user.roleInfo.roleid})
                     </when>
                     <otherwise>
                         AND 1 != 1
                     </otherwise>
                 </choose>
+                <if test='user.roleInfo.trgtRgnCd == "S"'>
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                </if>
                         )
-                    <if test='user.roleInfo.trgtInsttCd == "A" and @com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchSiteSysSeCd)'>
+                    <if test='user.roleInfo.trgtInstCd == "A" and @com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchSiteSysSeCd) and user.roleInfo.trgtRgnCd == "A"'>
                         OR ${tableAlias}.SITEID IS NULL
                     </if>
                     )
@@ -110,14 +119,14 @@
                     AND SYS_SE_CD = #{searchSiteSysSeCd}
                 </if>
                 <choose>
-                    <when test='user.roleInfo.trgtInsttCd == "A"'>
+                    <when test='user.roleInfo.trgtInstCd == "A"'>
                         AND SITEID = #{searchSiteValue}
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "S"'>
+                    <when test='user.roleInfo.trgtInstCd == "S"'>
                         AND SITEID = #{searchSiteValue}
                         AND INSTID = #{user.instid}
                     </when>
-                    <when test='user.roleInfo.trgtInsttCd == "C"'>
+                    <when test='user.roleInfo.trgtInstCd == "C"'>
                         AND SITEID = #{searchSiteValue}
                         AND INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{user.roleInfo.roleid})          
                     </when>
@@ -125,6 +134,9 @@
                         AND 1 != 1
                     </otherwise>
                 </choose>
+                <if test='user.roleInfo.trgtRgnCd == "S"'>
+                    AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+                </if>
                         )
             </otherwise>
         </choose>

@@ -172,4 +172,80 @@
         )
     </insert>
     
+    <!-- 설문지 문항 정보 조회 -->
+    <select id="selectQitemInfo" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectQitemInfo */
+        SELECT
+            A.QITEMID
+            , A.QESTNRID
+            , A.QESTNR_TYPE_CD
+            , A.CN
+            , A.EX_CNT
+            , A.SCALE
+            , A.ORDR
+            , A.USE_YN
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE QITEMID = #{qitemid}
+    </select>
+    
+    <!-- 설문지 문항 정보 업데이트 -->
+    
+    
+    <!-- 설문지 다음 문항 정보 조회 -->
+    <select id="selectNextQitemInfo" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectNextQitemInfo */
+        SELECT
+            A.QITEMID
+            , A.ORDR
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE QESTNRID = #{qestnrid}
+            AND ORDR = #{ordr} + 1
+    </select>
+    
+    <!-- 설문지 이전 문항 정보 조회 -->
+    <select id="selectPrevQitemInfo" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectNextQitemInfo */
+        SELECT
+            A.QITEMID
+            , A.ORDR
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE QESTNRID = #{qestnrid}
+            AND ORDR = #{ordr} - 1
+    </select>    
+    
+    <!-- 설문지 문항 순서 업데이트 -->
+    <update id="updateQitemOrdr" parameterType="QitemVo">
+        /* QestnrDao.updateQitemOrdr */
+        UPDATE TB_CMM_QESTNR_QITEM SET
+            ORDR = #{ordr}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE QITEMID = #{qitemid}
+    </update>
+    
+    <!-- 설문지 문항 삭제 -->
+    <delete id="deleteQitem" parameterType="QitemVo">
+        /* QestnrDao.deleteQitemOrdr */
+        DELETE 
+            FROM TB_CMM_QESTNR_QITEM
+        WHERE QITEMID IN
+        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
+        <!-- 설문지 문항 보기 삭제 -->
+    <delete id="deleteQitemEx" parameterType="QitemVo">
+        /* QestnrDao.deleteQitemEx */
+        DELETE 
+            FROM TB_CMM_QESTNR_QITEM_EX
+        WHERE QITEMID IN
+        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
 </mapper>

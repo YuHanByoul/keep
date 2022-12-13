@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.role.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.role.model.RoleAuthDao;
+import com.kbrainc.plum.mng.role.model.RoleInstVo;
 import com.kbrainc.plum.mng.role.model.RoleMenuVo;
+import com.kbrainc.plum.mng.role.model.RoleRgnVo;
 import com.kbrainc.plum.mng.role.model.RoleUserVo;
 import com.kbrainc.plum.mng.role.model.RoleVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
@@ -261,5 +264,71 @@ public class RoleAuthServiceImpl extends PlumAbstractServiceImpl implements Role
     */
     public List<RoleUserVo> selectUserList(RoleUserVo roleUserVo) throws Exception {
         return roleAuthDao.selectUserList(roleUserVo);
+    }
+    
+    /**
+    * 역할 기관 맵핑목록정보 / 기관목록 조회.
+    *
+    * @Title : selectRoleInstInfo
+    * @Description : 역할 기관 맵핑목록정보 / 기관목록 조회
+    * @param param Map타입의 인자
+    * @return Map<String,Object> 역할/전체 기관 목록 정보 
+    * @throws Exception 예외
+    */
+    public Map<String, Object> selectRoleInstInfo(Map<String, Object> param) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("roleInstList", roleAuthDao.selectRoleInstList(param));
+        resultMap.put("allInstList", roleAuthDao.selectAllInstList());
+        return resultMap;
+    }
+    
+    /**
+    * 역할 기관 저장.
+    *
+    * @Title : saveInstRole
+    * @Description : 역할 기관 저장 
+    * @param roleInstVo RoleInstVo객체
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    @Transactional
+    public void saveInstRole(RoleInstVo roleInstVo) throws Exception {
+        roleAuthDao.deleteRoleInst(roleInstVo);
+        if (roleInstVo.getInstids() != null) {
+            roleAuthDao.insertRoleInst(roleInstVo);
+        }
+    }
+    
+    /**
+    * 역할 지역 맵핑목록정보 / 지역목록 조회.
+    *
+    * @Title : selectRoleRgnInfo
+    * @Description : 역할 지역 맵핑목록정보 / 지역목록 조회
+    * @param param Map타입의 인자
+    * @return Map<String,Object> 역할/전체 지역 목록 정보 
+    * @throws Exception 예외
+    */
+    public Map<String, Object> selectRoleRgnInfo(Map<String, Object> param) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("roleRgnList", roleAuthDao.selectRoleRgnList(param));
+        resultMap.put("allRgnList", roleAuthDao.selectAllRgnList());
+        return resultMap;
+    }
+    
+    /**
+    * 역할 기관 저장.
+    *
+    * @Title : saveRgnRole
+    * @Description : 역할 지역 저장 
+    * @param roleRgnVo RoleRgnVo객체
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    @Transactional
+    public void saveRgnRole(RoleRgnVo roleRgnVo) throws Exception {
+        roleAuthDao.deleteRoleRgn(roleRgnVo);
+        if (roleRgnVo.getRgncds() != null) {
+            roleAuthDao.insertRoleRgn(roleRgnVo);
+        }
     }
 }

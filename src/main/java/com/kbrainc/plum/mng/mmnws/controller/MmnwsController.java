@@ -47,7 +47,7 @@ public class MmnwsController {
     *
     * @Title : mmnwsForm
     * @Description : 언론보도관리 리스트화면으로 이동
-    * @throws Exception
+    * @throws Exception 예외
     * @return String
     */
     @RequestMapping(value = "/mng/mmnws/mmnwsForm.html")
@@ -60,7 +60,7 @@ public class MmnwsController {
     *
     * @Title : mmnwsInsertForm
     * @Description : 언론보도관리 등록화면으로 이동
-    * @throws Exception
+    * @throws Exception 예외
     * @return String
     */
     @RequestMapping(value = "/mng/mmnws/mmnwsInsertForm.html")

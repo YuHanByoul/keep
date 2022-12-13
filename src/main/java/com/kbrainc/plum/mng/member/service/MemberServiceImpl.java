@@ -94,8 +94,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         
         memberDao.deleteEnvfld(memberVo);
         memberDao.deleteItrstfld(memberVo);
-        memberDao.deletetEsylgn(memberVo);
-        
+        //간편로그인 차후 필요시 사용
+        //memberDao.deletetEsylgn(memberVo);
         
        if(memberVo.getEnvfldCds()!=null) {
            retVal += memberDao.insertEnvfld(memberVo);
@@ -103,10 +103,12 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
        if(memberVo.getItrstfldCds()!=null) {
            retVal += memberDao.insertItrstfld(memberVo);
        }
-       if(memberVo.getEsylgnCds()!=null) {
-           retVal += memberDao.insertEsylgn(memberVo);
-       }
-        return retVal;
+       //간편로그인 차후 필요시 사용
+       //if(memberVo.getEsylgnCds()!=null) {
+       //    retVal += memberDao.insertEsylgn(memberVo);
+       //}
+       
+       return retVal;
     }
 
     /**
@@ -194,7 +196,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         
         memberDao.deleteEnvfld(memberVo);
         memberDao.deleteItrstfld(memberVo);
-        memberDao.deletetEsylgn(memberVo);
+        //간편로그인 차후 필요시 사용
+        //memberDao.deletetEsylgn(memberVo);
         
         if(memberVo.getEnvfldCds()!=null && memberVo.getEnvfldCds().length > 0) {
             retVal += memberDao.insertEnvfld(memberVo);
@@ -202,9 +205,11 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         if(memberVo.getItrstfldCds()!=null && memberVo.getItrstfldCds().length > 0) {
             retVal += memberDao.insertItrstfld(memberVo);
         }
-        if(memberVo.getEsylgnCds()!=null && memberVo.getEsylgnCds().length > 0) {
-            retVal += memberDao.insertEsylgn(memberVo);
-        }
+        //간편로그인 차후 필요시 사용
+        //if(memberVo.getEsylgnCds()!=null && memberVo.getEsylgnCds().length > 0) {
+        //    retVal += memberDao.insertEsylgn(memberVo);
+        //}
+        
         return retVal;
     }
     

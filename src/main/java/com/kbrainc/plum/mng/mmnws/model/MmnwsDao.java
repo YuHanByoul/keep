@@ -45,7 +45,7 @@ public interface MmnwsDao {
     public int insertMmnws(MmnwsVo mmnwsVo) throws Exception;
     
     /**
-    * 언론보도관리 게시글 상세정보
+    * 언론보도관리 게시글 상세정보 조회
     *
     * @Title : selectMmnwsInfo
     * @Description : 언론보도관리 게시글 상세정보

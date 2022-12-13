@@ -90,18 +90,18 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(P:개인회원, C: 기업회원)
+                String instid = (String) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
-                if ("P".equals(userSeCd)) {
+                if (instid == null) {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysPersonRoleid);
                     roleMap.put("NM", "개인회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
-                } else if ("C".equals(userSeCd)) {
+                } else {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysCompanyRoleid);
-                    roleMap.put("NM", "기업회원");
+                    roleMap.put("NM", "기관회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
                 }
@@ -119,22 +119,22 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                String userSeCd = (String) resultMap.get("USER_SE_CD"); // 사용자_구분_코드(P:개인회원, C: 기업회원)
+                String instid = (String) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
                 if (resultList == null) {
                     resultList = new ArrayList<Map<String, Object>>();
                 }
                 
-                if ("P".equals(userSeCd)) {
+                if (instid == null) {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysPersonRoleid);
                     roleMap.put("NM", "개인회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
-                } else if ("C".equals(userSeCd)) {
+                } else {
                     roleMap = new HashMap<String, Object>();
                     roleMap.put("ROLEID", sysCompanyRoleid);
-                    roleMap.put("NM", "기업회원");
+                    roleMap.put("NM", "기관회원");
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
                 }
@@ -168,12 +168,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             if (!grantedRole) { // 허용된 역할중 1개만 적용한다.
                 if ("A".equals(sysSeCd) && "A".equals(resultList.get(i).get("SE_CD"))) { // 관리자사이트 & 관리자역할
                     authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
-                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"));
+                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"), (String)resultList.get(i).get("TRGT_RGN_CD"));
                     user.setRoleInfo(roleInfo);
                     grantedRole = true;
                 } else if ("U".equals(sysSeCd) && "U".equals(resultList.get(i).get("SE_CD"))) { // 사용자사이트 & 사용자역할
                     authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
-                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"));
+                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"), (String)resultList.get(i).get("TRGT_RGN_CD"));
                     user.setRoleInfo(roleInfo);
                     grantedRole = true;
                 }
@@ -183,6 +183,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             authority.put("nm", (String.valueOf(resultList.get(i).get("NM")))); // 역할명
             authority.put("se_cd", (String.valueOf(resultList.get(i).get("SE_CD")))); // 구분_코드
             authority.put("trgt_inst_cd", (String.valueOf(resultList.get(i).get("TRGT_INST_CD")))); // 대상_기관_코드
+            authority.put("trgt_rgn_cd", (String.valueOf(resultList.get(i).get("TRGT_RGN_CD")))); // 대상_지역_코드
             sessionAuthorities.add(authority);
         }
         user.setAuthorities(sessionAuthorities);

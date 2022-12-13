@@ -34,18 +34,21 @@
             USE_YN = 'Y'
         AND APRV_STTS_CD = '2'
         <choose>
-            <when test='roleInfo.trgtInsttCd == "A"'>
+            <when test='roleInfo.trgtInstCd == "A"'>
             </when>
-            <when test='roleInfo.trgtInsttCd == "S"'>
+            <when test='roleInfo.trgtInstCd == "S"'>
                 AND INSTID = #{instid}          
             </when>
-            <when test='roleInfo.trgtInsttCd == "C"'>
+            <when test='roleInfo.trgtInstCd == "C"'>
                 AND INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{roleInfo.roleid})          
             </when>
             <otherwise>
                 AND 1 != 1
             </otherwise>
         </choose>
+        <if test='roleInfo.trgtRgnCd == "S"'>
+            AND INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{roleInfo.roleid}))          
+        </if>
         ORDER BY INST_NM ASC
     </select>
     
@@ -64,18 +67,21 @@
             AND S.SYS_SE_CD = #{sysSeCd}
         </if>
         <choose>
-            <when test='user.roleInfo.trgtInsttCd == "A"'>
+            <when test='user.roleInfo.trgtInstCd == "A"'>
             </when>
-            <when test='user.roleInfo.trgtInsttCd == "S"'>
+            <when test='user.roleInfo.trgtInstCd == "S"'>
                 AND S.INSTID = #{user.instid}          
             </when>
-            <when test='user.roleInfo.trgtInsttCd == "C"'>
+            <when test='user.roleInfo.trgtInstCd == "C"'>
                 AND S.INSTID IN(SELECT INSTID FROM TB_CMM_ROLE_INST WHERE ROLEID = #{user.roleInfo.roleid})          
             </when>
             <otherwise>
                 AND 1 != 1
             </otherwise>
         </choose>
+        <if test='user.roleInfo.trgtRgnCd == "S"'>
+            AND S.INSTID IN(SELECT INSTID FROM TB_CMM_INST WHERE RGN_CD IN(SELECT RGN_CD FROM TB_CMM_ROLE_RGN WHERE ROLEID = #{user.roleInfo.roleid}))          
+        </if>
         ORDER BY S.SITE_NM ASC
     </select>
     

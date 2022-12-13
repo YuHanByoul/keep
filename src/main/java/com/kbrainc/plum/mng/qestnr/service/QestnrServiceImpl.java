@@ -1,7 +1,6 @@
 package com.kbrainc.plum.mng.qestnr.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,8 +10,8 @@ import com.kbrainc.plum.mng.qestnr.model.QestnrDao;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.rte.model.ParentRequestVo.ORDER_DIRECTION;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 
 /**
  * 
@@ -71,7 +70,7 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
      * 설문지 정보 조회
      *
      * @Title : selectQestnrInfo
-     * @Description : 설문지 상세정보 조회
+     * @Description : 설문지 정보 조회
      * @param qestnrVo QestnrVo 객체
      * @return QestnrVo QestnrVo 객체
      * @throws Exception 예외
@@ -82,10 +81,10 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
     }
       
     /**
-     * 설문지 정보 수정
+     * 설문지 정보 업데이트
      *
      * @Title : updateQestnr
-     * @Description : 설문지 정보 수정
+     * @Description : 설문지 정보 업데이트
      * @param qestnrVo QestnrVo 객체
      * @return int update 로우수
      * @throws Exception 예외
@@ -127,13 +126,111 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
         int retVal = 0;
         retVal = qestnrDao.insertQitem(qitemVo);
         List<QitemExVo> exampleList = qitemVo.getExampleList();
-        if(exampleList.size() > 0) {
+        if(exampleList != null && exampleList.size() > 0) {
             QitemExVo qitemExVo = null;
             for(int i = 0 ; i < exampleList.size() ; i++) {
                 qitemExVo = exampleList.get(i);
                 qitemExVo.setUser(qitemVo.getUser());
                 qitemExVo.setQitemid(qitemVo.getQitemid());
                 retVal = qestnrDao.insertQitemEx(qitemExVo);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * 설문지 문항 정보 조회
+     *
+     * @Title : selectQitemInfo
+     * @Description : 설문지 문항 정보 조회
+     * @param qitemVo QitemVo 객체
+     * @return QitemVo QitemVo 객체
+     * @throws Exception 예외
+     */
+    @Override
+    public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception {
+        return qestnrDao.selectQitemInfo(qitemVo);
+    }
+    
+    /**
+     * 설문지 문항 정보 업데이트
+     *
+     * @Title : updateQestnr
+     * @Description : 설문지 정보 업데이트
+     * @param qestnrVo QestnrVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    public int updateQitem(QitemVo qitemVo) throws Exception {
+        int retVal = 0;
+        retVal = qestnrDao.updateQitem(qitemVo);        
+             
+        return retVal;
+    }
+    
+    /**
+     * 설문지 문항 순서 업데이트
+     *
+     * @Title : updateQestnr
+     * @Description : 설문지 정보 업데이트
+     * @param qestnrVo QestnrVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int updateQitemOrdr(QitemVo qitemVo) throws Exception {
+        int retVal = 0;
+        int ordr = qitemVo.getOrdr();
+        String dir = qitemVo.getChangeDir();
+        // 1. 다음(이전) 문항 조회
+        QitemVo changeQitemVo = null;
+        if(dir.equals("next")) { // 다음 문항
+            changeQitemVo = qestnrDao.selectNextQitemInfo(qitemVo);
+            qitemVo.setOrdr(ordr + 1);
+            changeQitemVo.setOrdr(changeQitemVo.getOrdr() - 1);
+        } else { // 이전 문항
+            changeQitemVo = qestnrDao.selectPrevQitemInfo(qitemVo);
+            qitemVo.setOrdr(ordr - 1);
+            changeQitemVo.setOrdr(changeQitemVo.getOrdr() + 1);
+        }
+        // 2. 선택 문항 업데이트
+        retVal = qestnrDao.updateQitemOrdr(qitemVo);
+        // 3. 다음(이전) 문항 업데이트
+        retVal = qestnrDao.updateQitemOrdr(changeQitemVo);
+             
+        return retVal;
+    }
+    
+    /**
+     * 설문지 문항 삭제
+     *
+     * @Title : updateQestnr
+     * @Description : 설문지 정보 업데이트
+     * @param qitemVo QitemVo 객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int deleteQitem(QitemVo qitemVo) throws Exception {
+        int retVal = 0;
+        
+        // 1. 문항에 걸려있는 보기 삭제
+        retVal = qestnrDao.deleteQitemEx(qitemVo);
+        // 2. 문항 삭제
+        retVal = qestnrDao.deleteQitem(qitemVo);
+        // 3. 문항 조회 후 순서 업데이트
+        qitemVo.setOrderField("ORDR");
+        qitemVo.setOrderDirection(ORDER_DIRECTION.asc);
+        List<QitemVo> qitemList = qestnrDao.selectQitemList(qitemVo);
+        if(qitemList != null && qitemList.size() > 0) {
+            for(int i = 0; i < qitemList.size(); i++) {
+                QitemVo qitem = qitemList.get(i);
+                qitem.setOrdr(i + 1);
+                retVal = qestnrDao.updateQitemOrdr(qitem);
             }
         }
         

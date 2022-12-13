@@ -28,7 +28,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
      * 사용자에게 부여된 역할을 확인하기 위한 쿼리
      */
 	private final String DEF_GRANTED_AUTHORITY_QUERY = 
-			"  SELECT B.ROLEID, C.NM, C.SE_CD, C.TRGT_INST_CD "
+			"  SELECT B.ROLEID, C.NM, C.SE_CD, C.TRGT_INST_CD, C.TRGT_RGN_CD "
 			+ "FROM TB_CMM_USER A, "
             + "     TB_CMM_ROLE_USER B, "
             + "     TB_CMM_ROLE C "
