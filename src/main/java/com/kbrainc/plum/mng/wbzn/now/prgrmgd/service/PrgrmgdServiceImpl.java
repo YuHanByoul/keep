@@ -1,12 +1,12 @@
-package com.kbrainc.plum.mng.envedu.service;
+package com.kbrainc.plum.mng.wbzn.now.prgrmgd.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.envedu.model.EnveduDao;
-import com.kbrainc.plum.mng.envedu.model.EnveduVo;
+import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdDao;
+import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -25,10 +25,10 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Service
-public class EnveduServiceImpl extends PlumAbstractServiceImpl implements EnveduService{
+public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements PrgrmgdService{
     
     @Autowired
-    private EnveduDao enveduDao;
+    private PrgrmgdDao prgrmgdDao;
     
     /**
     * 환경교육관리 게시글 목록 조회
@@ -39,8 +39,8 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
-    public List<EnveduVo> selectEnveduList(EnveduVo enveduVo) throws Exception {
-        return enveduDao.selectEnveduList(enveduVo);
+    public List<PrgrmgdVo> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception {
+        return prgrmgdDao.selectPrgrmgdList(prgrmgdVo);
     }
     
     /**
@@ -52,8 +52,8 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예회
     * @return int
     */
-    public int insertEnvedu(EnveduVo enveduVo) throws Exception{
-        return enveduDao.insertEnvedu(enveduVo);
+    public int insertPrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception{
+        return prgrmgdDao.insertPrgrmgd(prgrmgdVo);
     }
     
     /**
@@ -65,8 +65,8 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예외
     * @return EnveduVo
     */
-    public EnveduVo selectEnveduInfo(EnveduVo enveduVo) throws Exception{
-        return enveduDao.selectEnveduInfo(enveduVo);
+    public PrgrmgdVo selectPrgrmgdInfo(PrgrmgdVo prgrmgdVo) throws Exception{
+        return prgrmgdDao.selectPrgrmgdInfo(prgrmgdVo);
     }
     
     /**
@@ -78,7 +78,7 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @throws Exception 예외
     * @return int
     */
-    public int updateEnvedu(EnveduVo enveduVo) throws Exception{
-        return enveduDao.updateEnvedu(enveduVo);
+    public int updatePrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception{
+        return prgrmgdDao.updatePrgrmgd(prgrmgdVo);
     }
 }

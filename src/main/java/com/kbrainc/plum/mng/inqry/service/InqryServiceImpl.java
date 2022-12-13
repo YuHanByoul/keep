@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.inqry.service;
 
 import java.util.List;
 
+import com.kbrainc.plum.rte.model.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,12 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
     @Override
     @Transactional
     public int insertInqryAnswr(InqryAnswrVo inqryAnswrVO) throws Exception {
-        return inqryDao.insertInqryAnswr(inqryAnswrVO);
+        int retVal = 0;
+
+        retVal += inqryDao.insertInqryAnswr(inqryAnswrVO);
+        retVal += inqryDao.updateInqrySttsCd(inqryAnswrVO);
+
+        return retVal;
     }
 
     /**
@@ -93,22 +99,14 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
     @Override
     @Transactional
     public int updateInqryAnswr(InqryAnswrVo inqryAnswrVO) throws Exception {
-        return inqryDao.updateInqryAnswr(inqryAnswrVO);
+        int retVal = 0;
+
+        retVal += inqryDao.updateInqryAnswr(inqryAnswrVO);
+        retVal += inqryDao.updateInqrySttsCd(inqryAnswrVO);
+
+        return retVal;
     }
 
-    /**
-     * @Title : deleteInqryAnswr
-     * @Description : 1:1문의답변 삭제
-     * @param inqryAnswrVO 1:1문의답변VO 클래스
-     * @throws Exception
-     * @return int 삭제 로우수
-     */
-    @Override
-    @Transactional
-    public int deleteInqryAnswr(InqryAnswrVo inqryAnswrVO) throws Exception {
-        return inqryDao.deleteInqryAnswr(inqryAnswrVO);
-    }
-    
     /**
      * @Title : selectAttachFileList
      * @Description :첨부파일 리스트 호출
@@ -118,5 +116,11 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
      */
     public List<FileVo> selectAttachFileList(FileVo fileVo) throws Exception{
         return inqryDao.selectAttachFileList(fileVo);
+    }
+
+    @Override
+    @Transactional
+    public int deleteInqryInfo(String[] deleteInqryIds, UserVo userVo) throws Exception {
+        return inqryDao.deleteInqryInfo(deleteInqryIds, userVo);
     }
 }

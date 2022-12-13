@@ -5,20 +5,21 @@
 	SQL File Name : EnveduDaoImpl.xml
 	Description : 환경교육 NOW -> 환경교육관리
 -->
-<mapper namespace="com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduDao">
+<mapper namespace="com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdDao">
     
     <!-- 환경교육관리 게시글 목록 조회 -->
-    <select id="selectEnveduList" parameterType="EnveduVo" resultType="EnveduVo">
-        /* EnveduDao.selectEnveduList */
+    <select id="selectPrgrmgdList" parameterType="PrgrmgdVo" resultType="PrgrmgdVo">
+        /* PrgrmgdDao.selectPrgrmgdList */
         <include refid="PaginationMapper.header"/>
         SELECT
-        	  A.ENVEDUID
+        	  A.PRGRMID
         	, A.CLSF_CD
-        	, A.ENVEDU_SE_CD
+        	, A.RGN_CD
         	, CONCAT(A.YR, '-' ,A.MM) AS YRMM
             , A.YR
         	, A.MM
         	, A.TTL
+            , A.DT
         	, A.URL
         	, A.THMBN_FILEID
             , C.FILEGRPID
@@ -30,7 +31,7 @@
         	, A.RGTRID
             , B.NM
         FROM 
-            TB_CMM_WBZN_ENVEDU A
+            TB_CMM_WBZN_PRGRM A
             LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
             LEFT OUTER JOIN TB_CMM_FILE C ON A.THMBN_FILEID = C.FILEID
         WHERE 
@@ -38,8 +39,8 @@
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
             AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
-            <if test="searchSeCd != null and searchSeCd != ''">
-            AND A.ENVEDU_SE_CD = #{searchSeCd}
+            <if test="searchRgnCd != null and searchRgnCd != ''">
+            AND A.RGN_CD = #{searchRgnCd}
             </if>
             <if test="searchYr != null and searchYr != ''">
             AND A.YR = #{searchYr}
@@ -51,14 +52,15 @@
     </select>
     
     <!-- 환경교육관리 게시글 등록 --> 
-    <insert id="insertEnvedu" parameterType="EnveduVo" keyProperty="EnveduVo">
-        /* EnveduDao.insertEnvedu */
-        INSERT INTO TB_CMM_WBZN_ENVEDU (
+    <insert id="insertPrgrmgd" parameterType="PrgrmgdVo" keyProperty="PrgrmgdVo">
+        /* PrgrmgdDao.insertPrgrmgd */
+        INSERT INTO TB_CMM_WBZN_PRGRM (
             CLSF_CD
-            , ENVEDU_SE_CD
+            , RGN_CD
             , YR
             , MM
             , TTL
+            , DT
             <if test="url != null and url != ''">
             , URL
             </if>
@@ -79,6 +81,7 @@
             ,#{yr}
             ,#{mm}
             ,#{ttl}
+            ,#{dt}
             <if test="url != null and url != ''">
             ,#{url}
             </if>
@@ -97,15 +100,16 @@
     </insert>
     
     <!-- 환경교육관리 상세조회 -->
-    <select id="selectEnveduInfo" parameterType="EnveduVo" resultType="EnveduVo"> 
-        /* EnveduDao.selectEnveduInfo */
+    <select id="selectPrgrmgdInfo" parameterType="PrgrmgdVo" resultType="PrgrmgdVo"> 
+        /* PrgrmgdDao.selectPrgrmgdInfo */
         SELECT 
-        	  A.ENVEDUID
+        	  A.PRGRMID
         	, A.CLSF_CD
-        	, A.ENVEDU_SE_CD
+        	, A.RGN_CD
             , A.YR
         	, A.MM
         	, A.TTL
+            , A.DT
         	, A.URL
         	, A.THMBN_FILEID
             , B.FILEGRPID
@@ -113,31 +117,32 @@
             , B.ORGINL_FILE_NM
         	, A.CN_STYLE
         	, A.CN
-        FROM TB_CMM_WBZN_ENVEDU A
+        FROM TB_CMM_WBZN_PRGRM A
         LEFT OUTER JOIN TB_CMM_FILE B ON A.THMBN_FILEID = B.FILEID
-       WHERE ENVEDUID = #{enveduid}
+       WHERE PRGRMID = #{prgrmid}
     </select>
     
     <!-- 환경교육관리 게시글 수정 -->
-    <update id="updateEnvedu" parameterType="EnveduVo" keyProperty="EnveduVo">
-        /* EnveduDao.updateEnvedu */
-        UPDATE TB_CMM_WBZN_ENVEDU SET
-                ENVEDU_SE_CD              = #{enveduSeCd}
-                ,YR                     = #{yr} 
-                ,MM                     = #{mm} 
-                ,TTL                    = #{ttl} 
-                ,THMBN_FILEID           = #{thmbnFileid}
+    <update id="updatePrgrmgd" parameterType="PrgrmgdVo" keyProperty="PrgrmgdVo">
+        /* PrgrmgdDao.updatePrgrmgd */
+        UPDATE TB_CMM_WBZN_PRGRM SET
+                RGN_CD              = #{rgnCd}
+                , YR                     = #{yr} 
+                , MM                     = #{mm} 
+                , TTL                    = #{ttl}
+                , DT                     = #{dt}
+                , THMBN_FILEID           = #{thmbnFileid}
                 <if test="url != null and url != ''">
-                ,url                    = #{url}
+                , url                    = #{url}
                 </if>
                 <if test="cnStyle != null and cnStyle != ''">
-                ,CN_STYLE               = #{cnStyle}
+                , CN_STYLE               = #{cnStyle}
                 </if>
                 <if test="cn != null and cn != ''">
-                ,CN                     = #{cn}
+                , CN                     = #{cn}
                 </if>
-                ,MDFCN_DT               = NOW() 
-                ,MDFRID                 = #{user.userid}
-         WHERE ENVEDUID = #{enveduid}
+                , MDFCN_DT               = NOW() 
+                , MDFRID                 = #{user.userid}
+         WHERE PRGRMID = #{prgrmid}
     </update>    
 </mapper>

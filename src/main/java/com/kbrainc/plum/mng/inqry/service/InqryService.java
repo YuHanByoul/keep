@@ -5,6 +5,7 @@ import java.util.List;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.inqry.model.InqryAnswrVo;
 import com.kbrainc.plum.mng.inqry.model.InqryVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
  * 
@@ -70,15 +71,6 @@ public interface InqryService {
     public int updateInqryAnswr(InqryAnswrVo inqryAnswrVO) throws Exception;
 
     /**
-     * @Title : deleteInqryAnswr
-     * @Description : 1:1문의답변 삭제
-     * @param inqryAnswrVO 1:1문의답변VO 클래스
-     * @throws Exception
-     * @return int 삭제 로우수
-     */
-    public int deleteInqryAnswr(InqryAnswrVo inqryAnswrVO) throws Exception;
-    
-    /**
      * @Title : selectAttachFileList
      * @Description :첨부파일 리스트 호출
      * @param FileVo
@@ -86,5 +78,7 @@ public interface InqryService {
      * @return FileVo
      */
     public List<FileVo> selectAttachFileList(FileVo fileVo) throws Exception;
+
+    public int deleteInqryInfo(String[] deleteInqryIds, UserVo userVo) throws Exception;
 
 }
