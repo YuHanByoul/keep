@@ -231,4 +231,15 @@ public interface RoleAuthService {
     * @throws Exception 예외
     */
     public void saveRgnRole(RoleRgnVo roleRgnVo) throws Exception;
+    
+    /**
+    * 역할 트리의 순서를 재조정한다.
+    *
+    * @Title : updateRoleReorder
+    * @Description : 역할 트리의 순서를 재조정한다
+    * @param param Map타입의 인자
+    * @return int udpate로우수
+    * @throws Exception 예외
+    */
+    public int updateRoleReorder(Map param) throws Exception; 
 }
