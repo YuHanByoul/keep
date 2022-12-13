@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.envedu.model;
+package com.kbrainc.plum.mng.wbzn.now.prgrmgd.model;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Mapper
-public interface EnveduDao {
+public interface PrgrmgdDao {
     
     /**
     * 환경교육관리 게시글 목록 조회
@@ -33,7 +33,7 @@ public interface EnveduDao {
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
-    public List<EnveduVo> selectEnveduList(EnveduVo enveduVo) throws Exception;
+    public List<PrgrmgdVo> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception;
     
     /**
     * 환경교육관리 게시글 등록
@@ -44,7 +44,7 @@ public interface EnveduDao {
     * @throws Exception 예회
     * @return int
     */
-    public int insertEnvedu(EnveduVo enveduVo) throws Exception;
+    public int insertPrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception;
     
     /**
     * 환경교육관리 게시글 상세조회
@@ -55,7 +55,7 @@ public interface EnveduDao {
     * @throws Exception 예외
     * @return EnveduVo
     */
-    public EnveduVo selectEnveduInfo(EnveduVo enveduVo) throws Exception;
+    public PrgrmgdVo selectPrgrmgdInfo(PrgrmgdVo prgrmgdVo) throws Exception;
     
     /**
     * 환경교육관리 게시글 수정
@@ -66,5 +66,5 @@ public interface EnveduDao {
     * @throws Exception 예외
     * @return int
     */
-    public int updateEnvedu(EnveduVo enveduVo) throws Exception;
+    public int updatePrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception;
 }
