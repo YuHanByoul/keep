@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.asgsysSrng.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -59,6 +60,35 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
 	public AsgsysSrngVo selectDsgnAplyDtlInfo(AsgsysSrngVo asgsysSrngVo) throws Exception {
 		return asgsysSrngDao.selectDsgnAplyDtlInfo(asgsysSrngVo);
+	}
+
+
+	/**
+	* 프로그램상태코드 조회
+	*
+	* @Title : selectPrgrmSttsCd
+	* @Description : 프로그램상태코드 조회
+	* @param asgsysSrngVo
+    * @throws Exception 예외
+	* @return Object
+	*/
+	public String selectPrgrmSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selectPrgrmSttsCd(asgsysSrngVo);
+	}
+
+	/**
+	* 프로그램상태코드 변경
+	*
+	* @Title : updateSttsCd
+	* @Description : 프로그램상태코드 변경
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		int updateCnt = asgsysSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+		return updateCnt;
+
 	}
 
 }

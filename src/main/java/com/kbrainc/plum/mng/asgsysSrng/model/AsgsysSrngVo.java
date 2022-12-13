@@ -32,7 +32,6 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private UserVo user;
 
 
-
     /** 지정신청목록 검색용 파라메터*/
     /** 키워드.프로그램명  */
     private String searchPrgrmNm;
@@ -41,7 +40,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String searchInstNm;
 
     /** 키워드.사업자번호  */
-    private String brno;
+    private String searchBrno;
 
     /** 진행상태   */
     private String searchSttsCd;
@@ -64,27 +63,26 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 현장점검지정일 종료일 */
     private String searchChckDsgnEndDt;
 
-
 	/** 프로그램 명 */
-	private String PrgrmNm;
+	private String prgrmNm;
 
 	/** 기관 명 */
-	private String InstNm;
+	private String instNm;
 
 	/** 심사상태코드 */
-	private String SrgnSttsCd;
+	private String srgnSttsCd;
 
 	/** 지원단상태코드*/
-	private String SrngSttsCd;
+	private String srngSttsCd;
 
 	/** 방문일자 */
-	private String VstDe;
+	private String vstDe;
 
 	/** 방문시간 */
-	private String VstHr;
+	private String vstHr;
 
 	/** 방문분 */
-	private String VstMnt;
+	private String vstMnt;
 
     /** 프로그램아이디 */
 	private int prgrmid;
@@ -102,49 +100,52 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String aplcntEml;
 
     /** 신청자_휴대폰 */
-	private String AplcntMoblphon;
+	private String aplcntMoblphon;
+
+	/** 사업자_등록번호 */
+	private String brno;
 
     /** 기관_이메일 */
-	private String InstEml;
+	private String instEml;
 
     /** 기관_연락처 */
-	private String InstCntct;
+	private String instCntct;
 
     /** 기관_홈페이지 */
-	private String InstHmpg;
+	private String instHmpg;
 
     /** 기관_유형_코드 */
-	private String InstTypeCd;
+	private String instTypeCd;
 
     /** 기관_지역_코드 */
-	private String InstRgnCd;
+	private String instRgnCd;
 
     /** 기관_우편번호 */
-	private String InstZip;
+	private String instZip;
 
     /** 기관_주소 */
-	private String InstAddr;
+	private String instAddr;
 
     /** 기관_상세주소 */
-	private String InstDtladdr;
+	private String instDtladdr;
 
     /** 파일그룹아이디 */
 	private int filegrpid;
 
     /** 상태_코드 */
-	private String SttsCd;
+	private String sttsCd;
 
     /** 지정_번호 */
-	private String DsgnNo;
+	private String dsgnNo;
 
     /** 지정_일자 */
-	private String DsgnDe;
+	private String dsgnDe;
 
     /** 지정_시작_일자 */
-	private String DsgnBgngDe;
+	private String dsgnBgngDe;
 
     /** 지정_종료_일자 */
-	private String DsgnEndDe;
+	private String dsgnEndDe;
 
     /** 승인자아이디 */
 	private int autzrid;
@@ -154,21 +155,21 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 신청_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
-	private Date  AplyDt;
+	private Date  aplyDt;
 
     /** 수정_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
-	private Date  MdfcnDt;
+	private Date  mdfcnDt;
 
     /** 수정자아이디 */
 	private int mdfrid;
 
     /** 등록_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
-	private Date  RegDt;
+	private Date  regDt;
 
     /** 등록자아이디 */
-	private int RGTRID;
+	private int rgtrid;
 
 
     /** 로그인사용자정보 */
