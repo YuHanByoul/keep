@@ -3,6 +3,9 @@ package com.kbrainc.plum.mng.qestnr.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -44,6 +47,7 @@ public class QitemVo extends ParentRequestVo {
     private String qitemTypeCd;
     
     /** 내용 */
+    @Size(min = 8, max = 400, message = "문항은 400자 이하여야합니다.")
     private String cn;
     
     /** 보기 개수 */
@@ -57,6 +61,12 @@ public class QitemVo extends ParentRequestVo {
     
     /** 사용 여부 */
     private String useYn;
+    
+    /** 순서 변경 방향 */
+    private String changeDir;
+    
+    /** 삭제 문항 아이디 */
+    private String[] deleteQitemids;
     
     /** 보기 목록 */
     private List<QitemExVo> exampleList;

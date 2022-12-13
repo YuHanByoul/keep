@@ -50,7 +50,7 @@ public class QitemExVo extends ParentRequestVo {
     private int scr;
     
     /** 기타 여부 */
-    private int etcYn;
+    private String etcYn;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
