@@ -11,17 +11,17 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 VO 클래스
+* 환경교육NOW -> 환경교육관리 VO 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
-* - PrgrmgdVo.java
+* com.kbrainc.plum.mng.envedu.model
+* - EnveduVo.java
 * </pre>
 *
-* @ClassName : PrgrmgdVo
-* @Description : 환경교육NOW -> 프로그램안내관리 VO 클래스
+* @ClassName : EnveduVo
+* @Description : 환경교육NOW -> 환경교육관리 VO 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 7.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -31,12 +31,12 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 로그인 사용자 정보*/
     private UserVo user;
     
-    /** 프로그램안내아이디 */
+    /** 환경교육아이디 */
     private int prgrmid;
     /** 분류_코드 */
     private String clsfCd;
-    /** 지역구분_코드 */
-    @NotEmpty(message = "지역구분을 선택해주십시오.")
+    /** 환경교육_구분_코드 */
+    @NotEmpty(message = "환경교육구분을 선택해주십시오.")
     private String rgnCd;
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
