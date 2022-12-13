@@ -23,17 +23,17 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
-* 환경교육NOW -> 환경교육관리 컨트롤러 클래스
+* 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.envedu.controller
-* - EnveduController.java
+* com.kbrainc.plum.mng.wbzn.now.prgrmgd.controller
+* - PrgrmgdController.java
 * </pre>
 *
-* @ClassName : EnveduController
-* @Description : 환경교육NOW -> 환경교육관리 컨트롤러 클래스
+* @ClassName : PrgrmgdController
+* @Description : 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
 * @author : JD
-* @date : 2022. 12. 7.
+* @date : 2022. 12. 9.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -44,10 +44,10 @@ public class PrgrmgdController {
     private PrgrmgdService prgrmgdService;
     
     /**
-    * 환경교육관리 리스트화면으로 이동
+    * 프로그램안내관리 리스트화면으로 이동
     *
-    * @Title : enveduForm
-    * @Description : 환경교육관리 리스트 화면으로 이동
+    * @Title : prgrmgdForm
+    * @Description : 프로그램안내관리 리스트 화면으로 이동
     * @param model 객체
     * @throws Exception 예외
     * @return String
@@ -73,10 +73,10 @@ public class PrgrmgdController {
     }
     
     /**
-    * 환경교육관리 등록화면으로 이동
+    * 프로그램안내관리 등록화면으로 이동
     *
-    * @Title : enveduInsertForm
-    * @Description : 환경교육관리 등록화면으로 이동
+    * @Title : prgrmgdInsertForm
+    * @Description : 프로그램안내관리 등록화면으로 이동
     * @param model 객체
     * @throws Exception 예외
     * @return String
@@ -102,11 +102,11 @@ public class PrgrmgdController {
     }
     
     /**
-    * 환경교육관리 수정화면으로 이동
+    * 프로그램안내관리 수정화면으로 이동
     *
-    * @Title : enveduUpdateForm
-    * @Description : 환경교육관리 수정화면으로 이동
-    * @param enveduVo 환경교육관리 객체
+    * @Title : prgrmgdUpdateForm
+    * @Description : 프로그램안내관리 수정화면으로 이동
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @param model 객체
     * @throws Exception 예외
     * @return String
@@ -145,11 +145,11 @@ public class PrgrmgdController {
    
     
     /**
-    * 환경교육관리 게시글 목록 조회
+    * 프로그램안내관리 게시글 목록 조회
     *
-    * @Title : selectEnveduList
-    * @Description : 환경교육관리 게시글 목록 조회
-    * @param enveduVo 환경교육관리 객체
+    * @Title : selectPrgrmgdList
+    * @Description : 프로그램안내관리 게시글 목록 조회
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception
     * @return Map<String,Object>
     */
@@ -172,19 +172,19 @@ public class PrgrmgdController {
     }
     
     /**
-    * 환경교육관리 게시글 수정 기능
+    * 프로그램안내관리 게시글 수정 기능
     *
-    * @Title : insertEnvedu
-    * @Description : 환경교육관리 수정 기능
-    * @param enveduVo 환경교육관리 객체
-    * @param bindingResult 환경교육관리 유효성 검증결과
+    * @Title : insertPrgrmgd
+    * @Description : 프로그램안내관리 수정 기능
+    * @param prgrmgdVo 프로그램안내관리 객체
+    * @param bindingResult 프로그램안내관리 유효성 검증결과
     * @param user 사용자 세션정보
     * @throws Exception 예외
     * @return Map<String,Object>
     */
     @RequestMapping(value = "/mng/wbzn/now/prgrmgd/insertPrgrmgd.do")
     @ResponseBody
-    public Map<String, Object> insertprgrmgd(@Valid PrgrmgdVo prgrmgdVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertPrgrmgd(@Valid PrgrmgdVo prgrmgdVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -213,12 +213,12 @@ public class PrgrmgdController {
     }
     
     /**
-    * 환경교육관리 게시글 수정 기능
+    * 프로그램안내관리 게시글 수정 기능
     *
-    * @Title : updateMmnws
-    * @Description : 환경교육관리 게시글 수정 기능
-    * @param enveduVo 환경교육관리 객체
-    * @param bindingResult 환경교육관리 유효성 검증결과
+    * @Title : updatePrgrmgd
+    * @Description : 프로그램안내관리 게시글 수정 기능
+    * @param prgrmgdVo 프로그램안내관리 객체
+    * @param bindingResult 프로그램안내관리 유효성 검증결과
     * @param user 사용자 세션정보
     * @throws Exception 예외
     * @return Map<String,Object>
