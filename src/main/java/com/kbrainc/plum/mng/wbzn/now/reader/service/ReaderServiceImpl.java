@@ -10,17 +10,17 @@ import com.kbrainc.plum.mng.wbzn.now.reader.model.ReaderVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 서비스 구현 클래스
+* 환경교육NOW -> 구독자 서비스 구현 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.service
-* - PrgrmgdServiceImpl.java
+* com.kbrainc.plum.mng.wbzn.now.reader.service
+* - ReaderServiceImpl.java
 * </pre>
 *
-* @ClassName : PrgrmgdServiceImpl
-* @Description : 환경교육NOW -> 프로그램안내관리 서비스 구현 클래스
+* @ClassName : ReaderServiceImpl
+* @Description : 환경교육NOW -> 구독자 서비스 구현 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -31,11 +31,11 @@ public class ReaderServiceImpl extends PlumAbstractServiceImpl implements Reader
     private ReaderDao readerDao;
     
     /**
-    * 프로그램안내관리 게시글 목록 조회
+    * 구독자 게시글 목록 조회
     *
-    * @Title : selectPrgrmgdList
-    * @Description : 프로그램안내관리 게시글 목록 조회
-    * @param prgrmgdVo 프로그램안내관리 객체
+    * @Title : selectReaderList
+    * @Description : 구독자 게시글 목록 조회
+    * @param ReaderVo 구독자 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */

@@ -5,17 +5,17 @@ import java.util.List;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 Dao 클래스
+* 환경교육NOW -> 구독자 Dao 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
-* - PrgrmgdDao.java
+* com.kbrainc.plum.mng.wbzn.now.reader.model
+* - ReaderDao.java
 * </pre>
 *
-* @ClassName : PrgrmgdDao
-* @Description : 환경교육NOW -> 프로그램안내관리 Dao 클래스
+* @ClassName : ReaderDao
+* @Description : 환경교육NOW -> 구독자 Dao 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -23,11 +23,11 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 public interface ReaderDao {
     
     /**
-    * 프로그램안내관리 게시글 목록 조회
+    * 구독자 게시글 목록 조회
     *
-    * @Title : selectPrgrmgdList
-    * @Description : 프로그램안내관리 게시글 목록 조회
-    * @param readerVo 프로그램안내관리 객체
+    * @Title : selectReaderList
+    * @Description : 구독자 게시글 목록 조회
+    * @param readerVo 구독자 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */

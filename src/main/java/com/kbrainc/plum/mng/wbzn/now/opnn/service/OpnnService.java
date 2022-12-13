@@ -6,28 +6,28 @@ import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnVo;
 import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 서비스 인터페이스
+* 환경교육NOW -> 독자소리 서비스 인터페이스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.service
-* - PrgrmgdService.java
+* com.kbrainc.plum.mng.wbzn.now.opnn.service
+* - OpnnService.java
 * </pre>
 *
-* @ClassName : PrgrmgdService
-* @Description : 환경교육NOW -> 프로그램안내관리 서비스 인터페이스
+* @ClassName : OpnnService
+* @Description : 환경교육NOW -> 독자소리 서비스 인터페이스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 public interface OpnnService {
     
     /**
-    * 프로그램안내관리 게시글 목록 조회
+    * 독자소리 게시글 목록 조회
     *
-    * @Title : selectPrgrmgdList
-    * @Description : 프로그램안내관리 게시글 목록 조회
-    * @param prgrmgdVo 프로그램안내관리 객체
+    * @Title : selectOpnnList
+    * @Description : 독자소리 게시글 목록 조회
+    * @param OpnnVo 독자소리 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */

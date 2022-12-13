@@ -17,17 +17,17 @@ import com.kbrainc.plum.mng.wbzn.now.reader.service.ReaderService;
 import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
+* 환경교육NOW -> 구독자 컨트롤러 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.controller
-* - PrgrmgdController.java
+* com.kbrainc.plum.mng.wbzn.now.reader.controller
+* - ReaderController.java
 * </pre>
 *
-* @ClassName : PrgrmgdController
-* @Description : 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
+* @ClassName : ReaderController
+* @Description : 환경교육NOW -> 구독자 컨트롤러 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -38,11 +38,10 @@ public class ReaderController {
     private ReaderService readerService;
     
     /**
-    * 프로그램안내관리 리스트화면으로 이동
+    * 구독자 리스트화면으로 이동
     *
-    * @Title : prgrmgdForm
-    * @Description : 프로그램안내관리 리스트 화면으로 이동
-    * @param model 객체
+    * @Title : readerForm
+    * @Description : 구독자 리스트 화면으로 이동
     * @throws Exception 예외
     * @return String
     */
@@ -52,11 +51,11 @@ public class ReaderController {
     }
     
     /**
-    * 프로그램안내관리 게시글 목록 조회
+    * 구독자 게시글 목록 조회
     *
-    * @Title : selectPrgrmgdList
-    * @Description : 프로그램안내관리 게시글 목록 조회
-    * @param prgrmgdVo 프로그램안내관리 객체
+    * @Title : selectReaderList
+    * @Description : 구독자 게시글 목록 조회
+    * @param ReaderVo 구독자 객체
     * @throws Exception
     * @return Map<String,Object>
     */

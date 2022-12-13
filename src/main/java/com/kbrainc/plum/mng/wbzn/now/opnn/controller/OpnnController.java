@@ -13,17 +13,17 @@ import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnVo;
 import com.kbrainc.plum.mng.wbzn.now.opnn.service.OpnnService;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
+* 환경교육NOW -> 독자소리 컨트롤러 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.controller
-* - PrgrmgdController.java
+* com.kbrainc.plum.mng.wbzn.now.opnn.controller
+* - OpnnController.java
 * </pre>
 *
-* @ClassName : PrgrmgdController
-* @Description : 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
+* @ClassName : OpnnController
+* @Description : 환경교육NOW -> 독자소리 컨트롤러 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -34,25 +34,24 @@ public class OpnnController {
     private OpnnService OpnnService;
     
     /**
-    * 프로그램안내관리 리스트화면으로 이동
+    * 독자소리 리스트화면으로 이동
     *
-    * @Title : prgrmgdForm
-    * @Description : 프로그램안내관리 리스트 화면으로 이동
-    * @param model 객체
+    * @Title : opnnForm
+    * @Description : 독자소리 리스트 화면으로 이동
     * @throws Exception 예외
     * @return String
     */
     @RequestMapping(value = "/mng/wbzn/now/opnn/opnnForm.html")
-    public String prgrmgdForm() throws Exception {        
+    public String opnnForm() throws Exception {        
         return "mng/wbzn/now/opnn/opnnForm";
     }
     
     /**
-    * 프로그램안내관리 게시글 목록 조회
+    * 독자소리 게시글 목록 조회
     *
-    * @Title : selectPrgrmgdList
-    * @Description : 프로그램안내관리 게시글 목록 조회
-    * @param prgrmgdVo 프로그램안내관리 객체
+    * @Title : selectOpnnList
+    * @Description : 독자소리 게시글 목록 조회
+    * @param OpnnVo 독자소리 객체
     * @throws Exception
     * @return Map<String,Object>
     */

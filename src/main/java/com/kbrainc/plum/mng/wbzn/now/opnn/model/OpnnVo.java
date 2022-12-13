@@ -11,17 +11,17 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 VO 클래스
+* 환경교육NOW -> 독자소리 VO 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
-* - PrgrmgdVo.java
+* com.kbrainc.plum.mng.wbzn.now.opnn.model
+* - OpnnVo.java
 * </pre>
 *
-* @ClassName : PrgrmgdVo
-* @Description : 환경교육NOW -> 프로그램안내관리 VO 클래스
+* @ClassName : OpnnVo
+* @Description : 환경교육NOW -> 독자소리 VO 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
