@@ -28,59 +28,11 @@
 									<div class="input-group input-group-sm input-group-dropdown mb-0">
 										<select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
 											<option value="">- 선택 -</option>
-											<option value="ttl">제목</option>
+											<option value="nm">이름</option>
+											<option value="moblphon">휴대폰</option>
+											<option value="eml">이메일</option>
 										</select> 
 										<input type="text" class="form-control form-control-sm" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button">
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-3 mb-2 mb-lg-0">
-								<div class="mb-0 form-group row">
-									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-										<strong>지역구분</strong>
-									</div>
-									<div class="col-sm-12">
-										<select name="searchSeCd" id="searchSeCd" class="form-select form-select-sm form-control-sm">
-											<option value="">- 전체 -</option>
-											<option value="서울">서울</option>
-											<option value="경기/인천">경기/인천</option>
-											<option value="강원/제주">강원/제주</option>
-											<option value="호남권">호남권</option>
-											<option value="충청권">충청권</option>
-											<option value="영남권">영남권</option>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-3 mb-2 mb-lg-0">
-								<div class="mb-0 form-group row">
-									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-										<strong>연도</strong>
-									</div>
-									<div class="col-sm-12">
-										<select name="searchYr" id="searchYr" class="form-select form-select-sm form-control-sm">
-											<option value="">- 전체 -</option>
-											<th:block th:each="year : ${years}">
-												<option th:value="${year}"><th:block
-														th:text="${year}" /></option>
-											</th:block>
-										</select>
-									</div>
-								</div>
-							</div>
-							<div class="col-lg-3">
-								<div class="mb-0 form-group row">
-									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-										<strong>월</strong>
-									</div>
-									<div class="col-sm-12">
-										<select name="searchMm" id="searchMm" class="form-select form-select-sm form-control-sm">
-											<option value="">- 전체 -</option>
-											<th:block th:each="month : ${month}">
-												<option th:value="${month}"><th:block
-														th:text="${month}" /></option>
-											</th:block>
-										</select>
 									</div>
 								</div>
 							</div>
@@ -99,7 +51,7 @@
 					<div class="row p-20 p-b-0">
 						<div class="col-12 col-md-6">
 							<h5>
-								<strong>프로그램안내 검색결과</strong>
+								<strong>구독자 검색결과</strong>
 							</h5>
 						</div>
 						<div class="col-12 col-md-6 text-right">
@@ -115,9 +67,6 @@
 						</div>
 					</div>
 				</div>
-
-				<!-- Content Area -->
-				<div id="contentPanel" style="display: none" class="card"></div>
 			</div>
 		</div>
 
@@ -131,11 +80,6 @@
 				writeJsGridData();
 			});
 
-			function fn_goInsertForm() {
-				var insertUrl = "/mng/wbzn/now/prgrmgd/prgrmgdInsertForm.html";
-				gridHelper1.loadContent(insertUrl);
-			}
-
 			function fn_searchForm() {
 				gridHelper1.resetListContent();
 			}
@@ -143,9 +87,6 @@
 			function fn_init() {
 				$("#searchType").val('');
 				$("#searchKeyword").val('');
-				$("#searchSeCd").val('');
-				$("#searchYr").val('');
-				$("#searchMm").val('');
 			}
 
 			function writeJsGridData() {
@@ -181,15 +122,14 @@
 		                        params.push({name: "orderField", value: filter.sortField});
 		                        params.push({name: "orderDirection", value: filter.sortOrder});
 		                    }else{
-		                        params.push({name: "orderField", value: 'reg_dt'});
+		                        params.push({name: "orderField", value: 'join_dt'});
 		                    }
 		                    formData = formData.concat(params);
 		                    
 		                    $.ajax({
 		                        type: "GET",
 		                        contentType: "application/json; charset=utf-8",
-		                        url: "/mng/wbzn/now/prgrmgd/selectPrgrmgdList.do",
-		                        //url: "/mng/site/siteList.do",
+		                        url: "/mng/wbzn/now/reader/selectReaderList.do",
 		                        dataType: "json",
 		                        data: formData,
 		                      }).done(function(response){
@@ -203,65 +143,15 @@
 		                  },
 		              },
 		              fields : [ 
-		            	  { name : 'prgrmid', css : 'hide' }
+		            	  { name : 'readerid', css : 'hide' }
 		            	, { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
-		            	, { title : '연-월', name : 'yrMm', type : "text", width : "150", align : "center" }
-		            	, { title : '지역구분', name : 'rgnCd', type : "text", width : "150", align : "center" }
-		            	, { title : '제목', name : 'ttl', type : "text", width : "auto" }
-		            	, { title : '작성자', name : 'nm', type : "text", width : "150", align : "center" }
-		            	, { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center" } 
+		            	, { title : '이름', name : 'nm', type : "text", width : "auto", align : "center" }
+		            	, { title : '휴대폰', name : 'moblphon', type : "text", width : "auto", align : "center" }
+		            	, { title : '이메일', name : 'eml', type : "text", width : "auto", align : "center" }
+		            	, { title : '직업', name : 'cr', type : "text", width : "auto", align : "center" }
+		            	, { title : '가입일', name : 'joinDt', type : "text", width : "auto", align : "center" } 
 		            ],
-					rowClick : function(args) {
-						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-						var detailUrl = "";
-						if (args.item.thmbnFileid != null && args.item.filegrpid != null) {
-							detailUrl = "/mng/wbzn/now/prgrmgd/prgrmgdUpdateForm.html?prgrmid=" + args.item.prgrmid + "&thmbnFileid=" + args.item.thmbnFileid + "&filegrpid=" + args.item.filegrpid;
-						} else {
-							detailUrl = "/mng/wbzn/now/prgrmgd/prgrmgdUpdateForm.html?prgrmid=" + args.item.prgrmid;
-						}
-						gridHelper1.loadContent(detailUrl);
-						gridHelper1.rowClick(args);
-					},
 					onPageChanged : function(args) {
-						selectedItems = [];
-					}
-				});
-
-				var selectItem = function(item) {
-					selectedItems.push(item);
-					if ($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-						$("#selectAllCheckbox").prop("checked", true);
-					} else {
-						$("#selectAllCheckbox").prop("checked", false);
-					}
-				};
-
-				var unselectItem = function(item) {
-					selectedItems = $.grep(selectedItems, function(i) {
-						return i !== item;
-					});
-					if (selectedItems.length == 0) {
-						$('#selectAllCheckbox').attr('checked', false);
-					}
-					if ($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-						$("#selectAllCheckbox").prop("checked", true);
-					} else {
-						$("#selectAllCheckbox").prop("checked", false);
-					}
-				};
-
-				$("#selectAllCheckbox").click(function(item) {
-					selectedItems = [];
-					if (this.checked) { // check select status
-						$('.singleCheckbox').each(function() {
-							this.checked = true;
-							selectItem($(this).parent().next().text());
-						});
-					} else {
-						$('.singleCheckbox').each(function() {
-							this.checked = false;
-							unselectItem(item);
-						});
 						selectedItems = [];
 					}
 				});

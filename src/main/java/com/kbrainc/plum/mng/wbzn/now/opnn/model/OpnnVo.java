@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.wbzn.now.prgrmgd.model;
+package com.kbrainc.plum.mng.wbzn.now.opnn.model;
 
 import java.util.Date;
 
@@ -26,7 +26,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class PrgrmgdVo extends ParentRequestVo {
+public class OpnnVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보*/
     private UserVo user;

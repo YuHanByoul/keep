@@ -149,143 +149,85 @@
 			}
 
 			function writeJsGridData() {
-				$("#jsGrid")
-						.jsGrid(
-								{
-									height : "auto",
-									width : "100%",
-									autoload : true,
-									sorting : true,
-									paging : true,
-									pagerContainer : "#listPager",
-									pagerFormat : "{first} {prev} {pages} {next} {last}",
-									pagePrevText : "이전",
-									pageNextText : "다음",
-									pageFirstText : " < 처음 ㅣ",
-				    pageLastText: " | 마지막 >",
-									pageSize : 10,
-									pageButtonCount : 10,
-									pageLoading : true,
-									pageIndex : 1,
-									noDataContent : "데이터가 없습니다.",
+		        $("#jsGrid").jsGrid({
+		            height: "auto",
+		            width: "100%",
+		            autoload: true,
+		            sorting: true,
+		            paging: true,
+		            pagerContainer: "#listPager",
+		            pagerFormat: "{first} {prev} {pages} {next} {last}",
+		            pagePrevText: "이전",
+		            pageNextText: "다음",
+		            pageFirstText: " < 처음 ㅣ",
+		            pageLastText: " | 마지막 >",
+		            pageSize: 10,
+		            pageButtonCount: 10,
+		            pageLoading: true,
+		            pageIndex: 1,
+		            noDataContent: "데이터가 없습니다.",
 
-									controller : {
-										loadData : function(filter) {
-											var data = $.Deferred();
-
-											var formData = $('#searchFrm')
-													.serializeArray();
-											var params = [ {
-												name : "pageNumber",
-												value : filter.pageIndex
-											}, {
-												name : "rowPerPage",
-												value : filter.pageSize
-											}, ]
-
-											if (filter.sortField != undefined) {
-												params.push({
-													name : "orderField",
-													value : filter.sortField
-												});
-												params.push({
-													name : "orderDirection",
-													value : filter.sortOrder
-												});
-											} else {
-												params.push({
-													name : "orderField",
-													value : 'reg_dt'
-												});
-											}
-
-											formData = formData.concat(params);
-
-											$
-													.ajax(
-															{
-																type : "GET",
-																contentType : "application/json; charset=utf-8",
-																url : "/mng/wbzn/now/envedu/selectEnveduList.do",
-																dataType : "json",
-																data : formData
-															})
-													.done(
-															function(response) {
-																var da = {
-																	data : escapeGridData(response.list),
-																	itemsCount : response.totalCount
-																};
-																data
-																		.resolve(da);
-															});
-											return data.promise();
-										},
-									},
-									fields : [ {
-										name : 'enveduid',
-										css : 'hide'
-									}, {
-										title : 'No.',
-										name : 'rowNumber',
-										type : "number",
-										width : "80",
-										align : "center",
-										sorting : false
-									}, {
-										title : '연-월',
-										name : 'yrMm',
-										type : "text",
-										width : "150",
-										align : "center"
-									}, {
-										title : '환경교육구분',
-										name : 'enveduSeCd',
-										type : "text",
-										width : "150",
-										align : "center"
-									}, {
-										title : '제목',
-										name : 'ttl',
-										type : "text",
-										width : "auto"
-									}, {
-										title : '작성자',
-										name : 'nm',
-										type : "text",
-										width : "150",
-										align : "center"
-									}, {
-										title : '등록일',
-										name : 'regDt',
-										type : "text",
-										width : "150",
-										align : "center"
-									} ],
-									rowClick : function(args) {
-										if (args.event.originalEvent.target.cellIndex == 0
-												|| isNaN(args.event.originalEvent.target.cellIndex))
-											return;
-										var detailUrl = "";
-										if (args.item.thmbnFileid != null
-												&& args.item.filegrpid != null) {
-											detailUrl = "/mng/wbzn/now/envedu/enveduUpdateForm.html?enveduid="
-													+ args.item.enveduid
-													+ "&thmbnFileid="
-													+ args.item.thmbnFileid
-													+ "&filegrpid="
-													+ args.item.filegrpid;
-										} else {
-											detailUrl = "/mng/wbzn/now/envedu/enveduUpdateForm.html?enveduid="
-													+ args.item.enveduid;
-										}
-										gridHelper1.loadContent(detailUrl);
-										gridHelper1.rowClick(args);
-									},
-									onPageChanged : function(args) {
-										selectedItems = [];
-									}
-								});
+		            controller: {
+		                loadData: function (filter) {
+		                    var data = $.Deferred();
+		                                            
+		                    var formData = $('#searchFrm').serializeArray();
+		                    var params = [
+		                            {name: "pageNumber", value: filter.pageIndex},
+		                            {name: "rowPerPage", value: filter.pageSize},
+		                    ]
+		                    
+		                    if(filter.sortField != undefined){
+		                        params.push({name: "orderField", value: filter.sortField});
+		                        params.push({name: "orderDirection", value: filter.sortOrder});
+		                    }else{
+		                        params.push({name: "orderField", value: 'reg_dt'});
+		                    }
+		                    formData = formData.concat(params);
+		                    
+		                    $.ajax({
+		                        type: "GET",
+		                        contentType: "application/json; charset=utf-8",
+		                        url: "/mng/wbzn/now/envedu/selectEnveduList.do",
+		                        //url: "/mng/site/siteList.do",
+		                        dataType: "json",
+		                        data: formData,
+		                      }).done(function(response){
+		                          var da = {
+		                                  data : escapeGridData(response.list)
+		                                  ,itemsCount : response.totalCount
+		                              };
+		                        data.resolve(da);
+		                      });
+		                      return data.promise();
+		                  },				
+					},
+					
+					fields : [
+						{ name : 'enveduid', css : 'hide' }
+					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
+					  , { title : '연-월', name : 'yrMm', type : "text", width : "150", align : "center" }
+					  , { title : '환경교육구분', name : 'enveduSeCd', type : "text", width : "150", align : "center" }
+					  , { title : '제목', name : 'ttl', type : "text", width : "auto" }
+					  , { title : '작성자', name : 'nm', type : "text", width : "150", align : "center" }
+					  , { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center"} 
+					],
+					
+					rowClick : function(args) {
+						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+						var detailUrl = "";
+						if (args.item.thmbnFileid != null && args.item.filegrpid != null) {
+							detailUrl = "/mng/wbzn/now/envedu/enveduUpdateForm.html?enveduid=" + args.item.enveduid + "&thmbnFileid=" + args.item.thmbnFileid + "&filegrpid=" + args.item.filegrpid;
+						} else {
+							detailUrl = "/mng/wbzn/now/envedu/enveduUpdateForm.html?enveduid=" + args.item.enveduid;
+						}
+						gridHelper1.loadContent(detailUrl);
+						gridHelper1.rowClick(args);
+					},
+					onPageChanged : function(args) {
+						selectedItems = [];
+					}
+				});
 
 				var selectItem = function(item) {
 					selectedItems.push(item);
