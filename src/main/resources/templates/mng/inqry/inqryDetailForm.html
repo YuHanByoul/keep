@@ -2,47 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
-<script th:inline="javascript">
-/*문의내용 -> 기관담당자인 경우 기관명 표시*/
-
-$(function () {
-
-});
-
-function validate() {
-    $("#inqryAnswrFrm").validate({
-        ignore: [], // 에디터 사용시 추가해야한다.
-        rules: {
-            title: {
-                required: true
-                , maxlength: 200
-            },
-            cntnts: {
-                required: true
-                , maxlength: 4000
-            }
-        },
-        messages: {
-            title: {
-                required: "답변 제목을 입력해주십시오"
-                , maxlength: "답변 제목은 200자를 넘을 수 없습니다."
-            },
-            cntnts: {
-                required: "답변 내용을 입력해주십시오"
-                , maxlength: "답변 내용은 4000자를 넘을 수 없습니다."
-            }
-        }
-    });
-}
-
-function saveInqryAnswr() {
-    if(displayWorkProgress()){
-        $.ajax({
-
-        });
-    }
-}
-</script>
+<div class="row">
     <div class="col-12 col-lg-6 p-l-0">
         <div class="card">
             <div class="card-header p-b-0">
@@ -53,9 +13,8 @@ function saveInqryAnswr() {
                     <strong th:text="|[${inqryInfo.inqryClNm}] ${inqryInfo.title}|">[분류] 제목</strong>
                 </p>
                 <p>
-
                     <th:block th:if="${not #strings.isEmpty(inqryInfo.instNm)}">
-                        <th:block th:text="${inqryInfo.instNm}"></th:block> &nbsp;
+                        <th:block th:text="${inqryInfo.instNm} "></th:block>
                     </th:block>
 
                     <th:block th:text="|${inqryInfo.nm}(${inqryInfo.acnt})|"></th:block><br/>
@@ -73,7 +32,7 @@ function saveInqryAnswr() {
                     <ul th:if="${fileList != null}">
                         <th:block th:each="file : ${fileList}">
                             <li>
-                                <a href ="javascript:void(0)" th:onclick="|javascript:downloadFileByFileid('${item.fileid}','${item.fileIdntfcKey}')|">
+                                <a href="javascript:void(0)" th:onclick="|javascript:downloadFileByFileid('${item.fileid}','${item.fileIdntfcKey}')|">
                                     <i class="ion-paperclip f-18"></i> [[${file.orginlFileNm}]]
                                 </a>
                             </li>
@@ -86,6 +45,9 @@ function saveInqryAnswr() {
     <div class="col-12 col-lg-6 p-r-0">
         <div class="card">
             <form name="inqryAnswrFrm" id="inqryAnswrFrm" action="" method="POST" class="form-horizontal row-border" onsubmit="return false;">
+                <input type="hidden" name="inqryid" id="inqryid" th:value="${inqryInfo.inqryid}" />
+                <input type="hidden" name="answrid" id="answrid" th:value="${inqryAnswrInfo.answrid}" />
+
                 <div class="card-header p-b-0">
                     <h4 class="sub-title"><strong>답변</strong></h4>
                 </div>
@@ -93,24 +55,21 @@ function saveInqryAnswr() {
                     <div class="mb-2 form-group row required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
                         <div class="col-sm-12">
-                            <select name="answerStatus" class="form-select form-select-sm form-control-sm" id="answerStatus">
-                                <option value="0">답변대기</option>
-                                <option value="1">답변완료</option>
-                            </select>
+                            <span kattr:select_code="inqrySttsCd" th:attr="grpCd=103,selectedCd=${inqryInfo.inqrySttsCd}" isAdmin="true">
                         </div>
                     </div>
                     <div class="mb-2 form-group row">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
                                for="title"><strong>답변 제목</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" name="title" id="title"/>
+                            <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${inqryAnswrInfo.title}"/>
                         </div>
                     </div>
                     <div class="mb-2 form-group row">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
                                for="cntnts"><strong>답변 내용</strong></label>
                         <div class="col-sm-12">
-                            <textarea rows="5" cols="5" class="form-control form-control-sm" id="cntnts" name="cntnts"></textarea>
+                            <textarea rows="5" cols="5" class="form-control form-control-sm" id="cntnts" name="cntnts" th:utext="${inqryAnswrInfo.cntnts}" ></textarea>
                         </div>
                     </div>
                     <div class="mb-0 row">
@@ -119,8 +78,8 @@ function saveInqryAnswr() {
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
                                        for="opetrNm"><strong>답변자</strong></label>
                                 <div class="col-sm-12">
-                                    <input type="text" class="form-control form-control-sm"
-                                           name="opetrNm" id="opetrNm" disabled/>
+                                    <input type="text" class="form-control form-control-sm" name="opetrNm" id="opetrNm" readonly
+                                           th:value="${inqryAnswrInfo.opetrNm != null ? inqryAnswrInfo.opetrNm : session.user.nm}"/>
                                 </div>
                             </div>
                         </div>
@@ -129,19 +88,129 @@ function saveInqryAnswr() {
                                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
                                        for="regDt"><strong>답변일자</strong></label>
                                 <div class="col-sm-12">
-                                    <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" disabled/>
+                                    <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" readonly
+                                           th:value="${inqryAnswrInfo.regDt != null ? #dates.format(inqryAnswrInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="p-t-0 card-block-small">
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
                     <th:block sec:authorize-url="/mng/inqry/insertInqryAnswr.do">
                         <button type="button" class="btn btn-primary" onclick="saveInqryAnswr()">저장</button>
                     </th:block>
-                    <button type="button" class="btn btn-disabled m-r-5" onclick="toggleContent()">취소</button>
                 </div>
             </form>
 
         </div>
     </div>
+</div>
+
+<script th:inline="javascript">
+    var inqryAnswrInsertUrl = "/mng/inqry/insertInqryAnswr.do";
+    var inqryAnswrUpdateUrl = "/mng/inqry/updateInqryAnswr.do";
+
+    $(function(){
+        validate();
+    })
+
+    function validate() {
+        $("#inqryAnswrFrm").validate({
+            rules: {
+                title: {
+                    maxlength: 200
+                },
+                cntnts: {
+                    maxlength: 4000
+                }
+            },
+            messages: {
+                title: {
+                    maxlength: "답변 제목은 200자를 넘을 수 없습니다."
+                },
+                cntnts: {
+                    maxlength: "답변 내용은 4000자를 넘을 수 없습니다."
+                }
+            }
+        });
+    }
+
+    function saveInqryAnswr() {
+        var url = inqryAnswrInsertUrl;
+        if ($('#answrid').val() != '') {
+            url = inqryAnswrUpdateUrl;
+        }
+
+        if (url == inqryAnswrInsertUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/inqry/insertInqryAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+        else if (url == inqryAnswrUpdateUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/inqry/updateInqryAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+
+        var inqrySttsCd = $('#inqryAnswrFrm').find('#inqrySttsCd').val();
+
+        /*
+            - 답변 최초 등록 시 상태가 ＂접수완료“,”접수취소＂인 경우 답변으로 입력하지 않음.
+            - 답변 최초 등록 시 상태가 ＂답변중“,”답변완료＂인 경우만 답변으로 입력.
+        */
+        if (inqrySttsCd == '103101' || inqrySttsCd == '103102') {
+            alert('답변중 또는 답변완료 상태인 경우에만 입력이 가능합니다.');
+            return;
+        }
+
+        /*
+            - 상태가 “접수완료”인 경우 : 필수 없음.
+            - 상태가 “접수취소＂인 경우 : 필수 없음.
+            - 상태가 “답변중“ 인 경우 : 필수 없음.
+            - 상태가 “답변완료＂인 경우 : 답변제목, 답변내용 필수.
+        */
+        if (inqrySttsCd == '103104') {
+            var $title = $("#title");
+            var $cntnts = $("#cntnts");
+            if($title.val() == '' || $title.val() == null){
+                alert('답변 제목을 입력해주십시오.');
+                $title.css("border","2px solid #ff0000");
+                setTimeout(function() { $title.css("border","")}, 1000);
+                return;
+            }
+            if($cntnts.val() == '' || $cntnts.val() == null) {
+                alert('답변 제목을 입력해주십시오.');
+                $cntnts.css("border","2px solid #ff0000");
+                setTimeout(function() { $cntnts.css("border","")}, 1000);
+                return;
+            }
+        }
+
+        if (!$('#inqryAnswrFrm').valid()) return;
+
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                cache: false,
+                dataType: 'json',
+                data: $("#inqryAnswrFrm").serialize(),
+                success: function (data) {
+                    alert(data.msg);
+                    closeWorkProgress();
+                    resetListContent();
+                }
+            });
+        }
+    }
+</script>

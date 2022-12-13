@@ -12,6 +12,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 /**
  * 
@@ -42,12 +43,10 @@ public class InqryAnswrVo extends ParentRequestVo {
     private Integer answrid;
 
     /** 제목 */
-    @NotEmpty(message = "답변 제목을 입력해 주십시오.")
     @Size(max = 200, message = "답변 제목은 200자를 넘을 수 없습니다.")
     private String title;
 
     /** 내용 */
-    @NotEmpty(message = "답변 내용을 입력해 주십시오.")
     @Size(max = 4000, message = "답변 내용은 4000자를 넘을 수 없습니다.")
     private String cntnts;
 
@@ -67,12 +66,15 @@ public class InqryAnswrVo extends ParentRequestVo {
     private Integer mdfrid;
 
     /** 등록_일시 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date regDt;
 
     /** 등록자아이디 */
     private Integer rgtrid;
-    
+
+    private String inqrySttsCd;
+
     public void setRegDt(Date regDt) {
         this.regDt = regDt != null ? (Date) regDt.clone() : null;
     }
@@ -98,7 +100,5 @@ public class InqryAnswrVo extends ParentRequestVo {
         UserVo clone = (UserVo) SerializationUtils.clone(this.user);
         return  clone;
     }   
-
-    
 
 }
