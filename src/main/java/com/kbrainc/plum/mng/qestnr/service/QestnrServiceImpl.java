@@ -100,7 +100,7 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
      /**
       * 설문지 문항 목록 조회
       *
-      * @Title : selectQestnrList
+      * @Title : selectQitemList
       * @Description : 설문지 목록 조회
       * @param QitemVo qitemVo 객체
       * @return List<QitemVo> 설문지 문항 목록
@@ -154,18 +154,50 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
     }
     
     /**
+     * 설문지 문항 보기 목록 조회
+     *
+     * @Title : selectQitemExList
+     * @Description : 설문지 문항 보기 목록 조회
+     * @param QitemVo qitemVo 객체
+     * @return List<QitemVo> 설문지 문항 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception {
+        return qestnrDao.selectQitemExList(qitemVo);
+    }
+    
+    /**
      * 설문지 문항 정보 업데이트
      *
-     * @Title : updateQestnr
+     * @Title : updateQitem
      * @Description : 설문지 정보 업데이트
-     * @param qestnrVo QestnrVo 객체
+     * @param qitemVo QitemVo 객체
      * @return int update 로우수
      * @throws Exception 예외
      */
     @Override
+    @Transactional
     public int updateQitem(QitemVo qitemVo) throws Exception {
         int retVal = 0;
-        retVal = qestnrDao.updateQitem(qitemVo);        
+        // 1. 이전 등록된 보기 삭제
+        String[] deleteIds = new String[1];
+        deleteIds[0] = String.valueOf(qitemVo.getQitemid());
+        qitemVo.setDeleteQitemids(deleteIds);
+        retVal = qestnrDao.deleteQitemEx(qitemVo);
+        // 2. 문항 정보 업데이트
+        retVal = qestnrDao.updateQitem(qitemVo);
+        // 3. 보기 등록
+        List<QitemExVo> exampleList = qitemVo.getExampleList();
+        if(exampleList != null && exampleList.size() > 0) {
+            QitemExVo qitemExVo = null;
+            for(int i = 0 ; i < exampleList.size() ; i++) {
+                qitemExVo = exampleList.get(i);
+                qitemExVo.setUser(qitemVo.getUser());
+                qitemExVo.setQitemid(qitemVo.getQitemid());
+                retVal = qestnrDao.insertQitemEx(qitemExVo);
+            }
+        }
              
         return retVal;
     }
@@ -175,7 +207,7 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
      *
      * @Title : updateQestnr
      * @Description : 설문지 정보 업데이트
-     * @param qestnrVo QestnrVo 객체
+     * @param qitemVo QitemVo 객체
      * @return int update 로우수
      * @throws Exception 예외
      */

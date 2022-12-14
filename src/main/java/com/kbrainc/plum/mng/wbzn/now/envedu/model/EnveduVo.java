@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.envedu.model;
+package com.kbrainc.plum.mng.wbzn.now.envedu.model;
 
 import java.util.Date;
 

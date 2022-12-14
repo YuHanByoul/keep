@@ -1,9 +1,10 @@
-package com.kbrainc.plum.mng.envedu.controller;
+package com.kbrainc.plum.mng.wbzn.now.envedu.controller;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.envedu.model.EnveduVo;
-import com.kbrainc.plum.mng.envedu.service.EnveduService;
+import com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduVo;
+import com.kbrainc.plum.mng.wbzn.now.envedu.service.EnveduService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -51,8 +52,8 @@ public class EnveduController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/envedu/enveduForm.html")
-    public String enveduForm(Model model) throws Exception {
+    @RequestMapping(value = "/mng/wbzn/now/envedu/enveduForm.html")
+    public String enveduForm(Model model, HttpServletRequest request) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
@@ -68,7 +69,7 @@ public class EnveduController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/envedu/enveduForm";
+        return "mng/wbzn/now/envedu/enveduForm";
     }
     
     /**
@@ -80,7 +81,7 @@ public class EnveduController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/envedu/enveduInsertForm.html")
+    @RequestMapping(value = "/mng/wbzn/now/envedu/enveduInsertForm.html")
     public String enveduInsertForm(Model model) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
@@ -97,7 +98,7 @@ public class EnveduController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/envedu/enveduInsert";
+        return "mng/wbzn/now/envedu/enveduInsert";
     }
     
     /**
@@ -110,7 +111,7 @@ public class EnveduController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/envedu/enveduUpdateForm.html")
+    @RequestMapping(value = "/mng/wbzn/now/envedu/enveduUpdateForm.html")
     public String enveduUpdateForm(EnveduVo enveduVo, Model model) throws Exception {
         EnveduVo result = null;
         result = enveduService.selectEnveduInfo(enveduVo);
@@ -139,7 +140,7 @@ public class EnveduController {
             model.addAttribute("fileBtn", fileBtn);
         }
         
-        return "mng/wbzn/envedu/enveduUpdate";
+        return "mng/wbzn/now/envedu/enveduUpdate";
     }
    
     
@@ -152,7 +153,7 @@ public class EnveduController {
     * @throws Exception
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/envedu/selectEnveduList.do")
+    @RequestMapping(value = "/mng/wbzn/now/envedu/selectEnveduList.do")
     @ResponseBody
     public Map<String, Object> selectEnveduList(EnveduVo enveduVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
@@ -171,7 +172,7 @@ public class EnveduController {
     }
     
     /**
-    * 환경교육관리 게시글 수정 기능
+    * 환경교육관리 게시글 등록 기능
     *
     * @Title : insertEnvedu
     * @Description : 환경교육관리 수정 기능
@@ -181,7 +182,7 @@ public class EnveduController {
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/envedu/insertEnvedu.do")
+    @RequestMapping(value = "/mng/wbzn/now/envedu/insertEnvedu.do")
     @ResponseBody
     public Map<String, Object> insertEnvedu(@Valid EnveduVo enveduVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -214,7 +215,7 @@ public class EnveduController {
     /**
     * 환경교육관리 게시글 수정 기능
     *
-    * @Title : updateMmnws
+    * @Title : updateEnvedu
     * @Description : 환경교육관리 게시글 수정 기능
     * @param enveduVo 환경교육관리 객체
     * @param bindingResult 환경교육관리 유효성 검증결과
@@ -222,9 +223,9 @@ public class EnveduController {
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/envedu/updateEnvedu.do")
+    @RequestMapping(value = "/mng/wbzn/now/envedu/updateEnvedu.do")
     @ResponseBody
-    public Map<String, Object> updateMmnws(@Valid EnveduVo enveduVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateEnvedu(@Valid EnveduVo enveduVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {

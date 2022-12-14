@@ -1,8 +1,9 @@
-package com.kbrainc.plum.mng.envedu.service;
+package com.kbrainc.plum.mng.wbzn.now.envedu.service;
 
 import java.util.List;
 
-import com.kbrainc.plum.mng.envedu.model.EnveduVo;
+import com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduVo;
+
 
 /**
 * 환경교육NOW -> 환경교육관리 서비스 인터페이스

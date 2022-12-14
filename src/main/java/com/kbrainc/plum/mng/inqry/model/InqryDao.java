@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.inqry.model;
 
 import java.util.List;
 
+import com.kbrainc.plum.rte.model.UserVo;
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
@@ -70,15 +72,6 @@ public interface InqryDao {
      */
     public int updateInqryAnswr(InqryAnswrVo inqryAnswrVO) throws Exception;
 
-    /**
-     * @Title : deleteInqryAnswr
-     * @Description : 1:1문의답변 삭제
-     * @param inqryAnswrVO 1:1문의답변VO 클래스
-     * @throws Exception
-     * @return int 삭제 로우수
-     */
-    public int deleteInqryAnswr(InqryAnswrVo inqryAnswrVO);
-    
    /**
      * @Title : selectAttachFileList
      * @Description :첨부파일 리스트 호출
@@ -87,4 +80,8 @@ public interface InqryDao {
      * @return FileVo
      */
     public List<FileVo> selectAttachFileList(FileVo fileVo) throws Exception;
+
+    public int deleteInqryInfo(@Param("deleteInqryIds") String[] deleteInqryIds, @Param("userVo") UserVo userVo);
+
+    public int updateInqrySttsCd(InqryAnswrVo inqryAnswrVo);
 }

@@ -1,12 +1,12 @@
-package com.kbrainc.plum.mng.envedu.service;
+package com.kbrainc.plum.mng.wbzn.now.envedu.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.envedu.model.EnveduDao;
-import com.kbrainc.plum.mng.envedu.model.EnveduVo;
+import com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduDao;
+import com.kbrainc.plum.mng.wbzn.now.envedu.model.EnveduVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -28,7 +28,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 public class EnveduServiceImpl extends PlumAbstractServiceImpl implements EnveduService{
     
     @Autowired
-    private EnveduDao enveduDao;
+    private EnveduDao envprgrmDao;
     
     /**
     * 환경교육관리 게시글 목록 조회
@@ -40,7 +40,7 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @return List<EnveduVo>
     */
     public List<EnveduVo> selectEnveduList(EnveduVo enveduVo) throws Exception {
-        return enveduDao.selectEnveduList(enveduVo);
+        return envprgrmDao.selectEnveduList(enveduVo);
     }
     
     /**
@@ -53,7 +53,7 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @return int
     */
     public int insertEnvedu(EnveduVo enveduVo) throws Exception{
-        return enveduDao.insertEnvedu(enveduVo);
+        return envprgrmDao.insertEnvedu(enveduVo);
     }
     
     /**
@@ -66,7 +66,7 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @return EnveduVo
     */
     public EnveduVo selectEnveduInfo(EnveduVo enveduVo) throws Exception{
-        return enveduDao.selectEnveduInfo(enveduVo);
+        return envprgrmDao.selectEnveduInfo(enveduVo);
     }
     
     /**
@@ -79,6 +79,6 @@ public class EnveduServiceImpl extends PlumAbstractServiceImpl implements Envedu
     * @return int
     */
     public int updateEnvedu(EnveduVo enveduVo) throws Exception{
-        return enveduDao.updateEnvedu(enveduVo);
+        return envprgrmDao.updateEnvedu(enveduVo);
     }
 }
