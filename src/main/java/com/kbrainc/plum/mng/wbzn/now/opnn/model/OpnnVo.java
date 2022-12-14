@@ -28,61 +28,21 @@ import lombok.Data;
 @Data
 public class OpnnVo extends ParentRequestVo {
     
-    /** 로그인 사용자 정보*/
-    private UserVo user;
-    
     /** 프로그램안내아이디 */
-    private int prgrmid;
-    /** 분류_코드 */
+    private int opnnid;
+    /** 분류 코드 */
     private String clsfCd;
-    /** 지역구분_코드 */
-    @NotEmpty(message = "지역구분을 선택해주십시오.")
-    private String rgnCd;
-    /** 연도 */
-    @NotEmpty(message = "연도를 선택해주십시오.")
-    private String yr;
-    /** 분기 */
-    private String qu;
-    /** 월 */
-    @NotEmpty(message = "월을 선택해주십시오.")
-    private String mm;
     /** 제목 */
-    @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
     /** 일시 */
     private String dt;
-    /** URL */
-    private String url;
-    /** 썸네일_파일아이디 */
-    private int thmbnFileid;
-    /** 내용_STYLE */
-    private String cnStyle;
+    /** 볼륨 */
+    private String volum;
     /** 내용 */
-    private String cn; 
-    /** 수정_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date mdfcnDt;
-    /** 수정자아이디 */
-    private int mdfrid;
-    /** 등록_일시 */
+    private String cn;
+    /** 작성자 이름 */
+    private String wrtrNm;
+    /** 등록 일시*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
-    /** 등록자아이디 */
-    private int rgtrid;
-    
-    /** 연-월*/
-    private String yrMm;
-    
-    /** 첨부파일 관련*/
-    private String filegrpid;
-    private String fileIdntfcKey;
-    private String orginlFileNm;
-    
-    /** 작성자 */
-    private String nm;
-    
-    /** 검색 관련*/
-    private String searchRgnCd;
-    private String searchYr;
-    private String searchMm;
 }

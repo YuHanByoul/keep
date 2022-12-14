@@ -6,11 +6,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnVo;
 import com.kbrainc.plum.mng.wbzn.now.opnn.service.OpnnService;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
 * 환경교육NOW -> 독자소리 컨트롤러 클래스
@@ -42,7 +44,7 @@ public class OpnnController {
     * @return String
     */
     @RequestMapping(value = "/mng/wbzn/now/opnn/opnnForm.html")
-    public String opnnForm() throws Exception {        
+    public String opnnForm() throws Exception {
         return "mng/wbzn/now/opnn/opnnForm";
     }
     
@@ -57,14 +59,15 @@ public class OpnnController {
     */
     @RequestMapping(value = "/mng/wbzn/now/Opnn/selectOpnnList.do")
     @ResponseBody
-    public Map<String, Object> selectOpnnList(OpnnVo prgrmgdVo) throws Exception {
+    public Map<String, Object> selectOpnnList(OpnnVo opnnVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<OpnnVo> result = null;
         
-        result =  OpnnService.selectOpnnList(prgrmgdVo);
+        result =  OpnnService.selectOpnnList(opnnVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
+            resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
         } else {
             resultMap.put("totalCount", 0);
         }
