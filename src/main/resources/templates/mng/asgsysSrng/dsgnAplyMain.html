@@ -139,9 +139,9 @@
 		                <h5><strong>지정신청 검색결과</strong></h5>
 		            </div>
 		            <div class="col-12 col-md-6 text-right">
-		                <button type="button" class="btn btn-primary m-r-5">지원단 캘린더</button>
-		                <button type="button" class="btn btn-primary m-r-5">지원단총평 엑셀다운로드</button>
-		                <button type="button" class="btn btn-primary">엑셀다운로드</button>
+		                <button type="button" class="btn btn-primary m-r-5" onclick="fn_openSprtgrpCalModal()">지원단 캘린더</button>
+		                <button type="button" class="btn btn-primary m-r-5" onclick="fn_gnrlrvwExcelDownload()">지원단총평 엑셀다운로드</button>
+		                <button type="button" class="btn btn-primary" onclick="fn_aplyExcelDownload()">엑셀다운로드</button>
 		            </div>
 		        </div>
 		        <div class="card-block-small">
@@ -160,6 +160,10 @@
         </div>
     </div>
 
+    <!--팝업-->
+    <div class="modal fade" id="sprtgrpCalenderPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+    <!--팝업-->
+
 	<script type="text/javascript">
 
 	var userid = /*[[${param.userid}]]*/null;
@@ -170,24 +174,23 @@
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
         writeJsGridData();
 
-console.log("@@@@@@@@@ user id : " + userid);
-console.log("@@@@@@@@@ user id : " + userid);
-console.log("@@@@@@@@@ user id : " + userid);
         if(userid != null){
             //
         }
 
     });
 
-
 	//취소버튼
 	function fn_init() {
-        $("#searchRoleCd").val('');
-        $("#searchType").val('');
+        $("#searchType").val("searchPrgrmNm");
         $("#searchKeyword").val('');
         $("#searchSttsCd").val('');
-        $("#searchStartDay").val('');
-        $("#searchEndDay").val('');
+        $("#searchAplyStartDt").val('');
+        $("#searchAplyEndDt").val('');
+        $("#searchSrngSttsCd").val('');
+        $("#searchSrgnSttsCd").val('');
+        $("#searchChckDsgnStartDt").val('');
+        $("#searchChckDsgnEndDt").val('');
     }
 
 	//검색버튼
@@ -196,37 +199,31 @@ console.log("@@@@@@@@@ user id : " + userid);
     }
 
     /* 지원단 캘린더 팝업 */
-    function sprtgrpCalBtnClck(){
-debugger;
-    	var popupUrl = "/mng/bbs/bbsForm.html";
-    	var userAddModal;
+    var userAddModal;
+    fn_openSprtgrpCalModal = () => {
 
-    	$("#userAddModal").load(popupUrl, function(response, status, xhr) {
-    	    if (status == "success") {
-    	        userAddModal = new bootstrap.Modal($('#userAddModal'));
-    	        userAddModal.show();
-    	    }
-    	});
 
-/*
-    	// 모달이 나타날때 초기화 수행
-    	$(function(){
-    	    $("#userAddModal").off("show.bs.modal").on("show.bs.modal", 초기화함수명);
-    	});
-    	// 모달에서 선택/저장후
-    	userAddModal.hide();
-*/
+        var blcklstIds = selectedItems.join(",")
+        var url = "/mng/asgsysSrng/sprtgrpCalenderPopup.html";
 
+        $("#sprtgrpCalenderPopup").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                userAddModal = new bootstrap.Modal($('#sprtgrpCalenderPopup'));
+                userAddModal.show();
+            }
+        });
     }
 
     /* 지원단 총평 엑셀 다운로드 */
-    function 지원단BtnClck(){
+    function fn_gnrlrvwExcelDownload(){
 
     }
 
     /* 엑셀 다운로드 */
-    function 지원단BtnClck(){
-
+    function fn_aplyExcelDownload(){
+    	var f = document.searchFrm;
+        f.action ="/mng/asgsysSrng/aplyExcelDownList.do";
+        f.submit();
     }
 
 
@@ -277,7 +274,7 @@ debugger;
                       data: formData
                     }).done(function(response){
 console.log("@@@@@1");
-//debugger;
+//
 console.log("@@@@@2");
                         var da = {
                                 data : escapeGridData(response.list)
@@ -289,6 +286,7 @@ console.log("@@@@@2");
                 },
             },
             fields: [
+            	/*
                  {
                      headerTemplate: function() {
                          return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
@@ -304,7 +302,9 @@ console.log("@@@@@2");
                      width: "50",
                      sorting: false
                  }
-                ,{ name: 'prgrmid', css:'hide'}
+                ,
+                */
+                 { name: 'prgrmid', css:'hide'}
                 ,{ title: 'No.'               ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
                 ,{ title: '프로그램명'        ,name: 'prgrmNm',    type: "text", width: "100", aline:"left"}
                 ,{ title: '기관명'            ,name: 'instNm', type: "text", width: "100", aline:"left"}
@@ -336,6 +336,7 @@ console.log("@@@@@2");
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
                 var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + args.item.prgrmid;
+
                 gridHelper1.loadContent(detailUrl);
                 gridHelper1.rowClick(args);
             },
@@ -385,7 +386,6 @@ console.log("@@@@@2");
     }
 
 	</script>
-	<script src="/js/ckeditor/ckeditor.js"></script>
 	</div>
 </body>
 </html>

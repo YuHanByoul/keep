@@ -87,6 +87,83 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 지정신청 목록 엑셀 다운로드 -->
+    <select id="aplyExcelDownList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.aplyExcelDownList */
+        SELECT
+            A.PRGRM_NM
+          , A.PRGRMID
+          , A.INST_NM
+          , A.STTS_CD
+          , A.APLY_DT
+          , A.REG_DT
+          , B.SRNG_STTS_CD
+          , C.SRGN_STTS_CD
+          , C.VST_DE
+          , C.VST_HR
+          , C.VST_MNT
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+        (   SELECT
+                PRGRMID
+              , SRNG_STTS_CD
+            FROM
+                TB_ASS_PRGRM_JDGS LIMIT 0,1 ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN
+        (   SELECT
+                PRGRMID
+              , SRGN_STTS_CD
+              , VST_DE
+              , VST_HR
+              , VST_MNT
+            FROM
+                TB_ASS_SPRTGRP_SRNG LIMIT 0,1 ) C ON A.PRGRMID  = C.PRGRMID
+        LEFT OUTER JOIN
+        TB_CMM_INST D ON A.INSTID  = D.INSTID
+        WHERE 1=1
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.사업자번호 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchBrno'">
+            AND D.BRNO LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 진행상태  -->
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.STTS_CD = #{searchSttsCd}
+        </if>
+        <!-- 신청일 검색시작일  -->
+        <if test="searchAplyStartDt != null and searchAplyStartDt != ''">
+            AND A.APLY_DT >= #{searchAplyStartDt}
+        </if>
+        <!-- 신청일 검색종료일  -->
+        <if test="searchAplyEndDt  != null and searchAplyEndDt != ''">
+            AND A.APLY_DT <![CDATA[<]]> CAST(CONCAT(#{searchAplyEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 심사위원 심사상태-->
+        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
+            AND B.SRNG_STTS_CD = #{searchSrngSttsCd}
+        </if>
+        <!-- 지원단 심사상태-->
+        <if test="searchSrgnSttsCd != null and searchSrgnSttsCd != ''">
+            AND C.SRGN_STTS_CD = #{searchSrgnSttsCd }
+        </if>
+        <!-- 현장점검지정일 시작일-->
+        <if test="searchChckDsgnStartDt != null and searchChckDsgnStartDt != ''">
+            AND C.VST_DE >= #{searchChckDsgnStartDt}
+        </if>
+        <!-- 현장점검지정일 종료일-->
+        <if test="searchChckDsgnEndDt != null and searchChckDsgnEndDt != ''">
+            AND C.VST_DE <![CDATA[<]]> CAST(CONCAT(#{searchChckDsgnEndDt},' 23:59:59') AS DATETIME)
+        </if>
+    </select>
+
     <!-- 지정신청상세 조회. -->
     <select id="selectDsgnAplyDtlInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
     SELECT
@@ -256,5 +333,27 @@
         STTS_CD = #{sttsCd}    /* 상태_코드 */
     WHERE PRGRMID = #{prgrmid}
     </update>
+
+    <!-- 보완요청 목록조회 -->
+    <select id="selectSplmntDmndList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSplmntDmndList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            SPLMNT_DMNDID    /* 보완_요청아이디 */
+          , PRGRMID          /* 프로그램아이디 */
+          , STTS_CD          /* 상태_코드 */
+          , OPNN_CN          /* 의견_내용 */
+          , CMPTN_PRCS_DE    /* 완료_처리_일자 */
+          , MDFCN_DT         /* 수정_일시 */
+          , MDFRID           /* 수정자아이디 */
+          , REG_DT           /* 등록_일시 */
+          , RGTRID           /* 등록자아이디 */
+        FROM
+            TB_ASS_PRGRM_SPLMNT_DMND
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
 
 </mapper>

@@ -171,6 +171,13 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 등록자아이디 */
 	private int rgtrid;
 
+	/** 보완요청아이디 */
+	private int splmntdmndid;
+
+	/** 의견내용 */
+	private  String opnnCn;
+	/** 완료처리일자 */
+	private  String cmptnPrcsDe;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

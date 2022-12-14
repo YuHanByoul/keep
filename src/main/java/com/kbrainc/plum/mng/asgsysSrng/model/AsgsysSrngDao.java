@@ -1,9 +1,10 @@
 package com.kbrainc.plum.mng.asgsysSrng.model;
 
 import java.util.List;
-import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+
+import com.kbrainc.plum.mng.member.model.MemberVo;
 
 /**
 * 지정제심사관리 DAO클래스.
@@ -67,6 +68,26 @@ public interface AsgsysSrngDao {
 	*/
 	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	 * 지정신청목록 엑셀다운로드
+	 *
+	 * @Title : selectMemberExcelList
+	 * @Description : 지정신청목록 엑셀다운로드
+	 * @param asgsysSrngVo
+	 * @throws Exception
+	 * @return List<AsgsysSrngVo> 사용자정보 목록
+	 */
+	public List<AsgsysSrngVo> aplyExcelDownList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 보완요청 목록조회
+	*
+	* @Title : selectSplmntDmndList
+	* @Description : 보완요청 목록조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSplmntDmndList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }
