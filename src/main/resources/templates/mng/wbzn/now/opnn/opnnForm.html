@@ -12,7 +12,7 @@
 		   display:none;
 		}
 		</style>
-		
+		<form id="bbsForm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
         <div class="page-body">
             <div class="row">
                 <div class="card">
@@ -22,16 +22,20 @@
                                 <div class="mb-0 form-group row">
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                     <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                        <select name="filterKeywordSelect" class="form-select form-control form-control-primary form-bg-primary">
-                                            <option value="opt1">- 전체 -</option>
-                                            <option value="opt2">제목</option>
-                                            <option value="opt3">내용</option>
+                                        <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                            <option value="">- 전체 -</option>
+                                            <option value="ttl">제목</option>
+                                            <option value="cn">내용</option>
                                         </select>
-                                        <input type="text" class="form-control form-control-sm" name="filterKeywordInput" aria-label="Text input with dropdown button">
+                                        <input type="text" class="form-control form-control-sm" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button">
                                     </div>
                                 </div>
                             </div>
                         </div>
+     					<div class="m-t-20 text-center">
+							<button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+							<button type="submit" class="btn btn-primary" onclick="searchOpnnList()">검색</button>
+						</div>
                     </div>
                 </div>
                 <div class="card">
@@ -39,79 +43,116 @@
                         <h3 class="sub-title"><strong>독자소리 검색결과</strong></h3>
                     </div>
                     <div class="card-block-small">
-                        <div class="col-12">
-                            <div class="col-12 m-0 mb-2 row border border-dark p-10 rounded">
-                                <div class="col-12 mb-2">
-                                    <strong>Cum sociis natoque penatibus et magnis dis parturient montes</strong>
-                                </div>
-                                <div class="col-12 mb-1">
-                                    Volum : YYYY-MM
-                                </div>
-                                <div class="col-12 mb-1">
-                                    작성일 : YYYY-MM-DD
-                                </div>
-                                <p class="mb-0">
-                                    Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
-                                </p>
-                            </div>
-                            <div class="col-12 m-0 mb-2 row border border-dark p-10 rounded">
-                                <div class="col-12 mb-2">
-                                    <strong>Cum sociis natoque penatibus et magnis dis parturient montes</strong>
-                                </div>
-                                <div class="col-12 mb-1">
-                                    Volum : YYYY-MM
-                                </div>
-                                <div class="col-12 mb-1">
-                                    작성일 : YYYY-MM-DD
-                                </div>
-                                <p class="mb-0">
-                                    Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
-                                </p>
-                            </div>
-                            <div class="col-12 m-0 mb-2 row border border-dark p-10 rounded">
-                                <div class="col-12 mb-2">
-                                    <strong>Cum sociis natoque penatibus et magnis dis parturient montes</strong>
-                                </div>
-                                <div class="col-12 mb-1">
-                                    Volum : YYYY-MM
-                                </div>
-                                <div class="col-12 mb-1">
-                                    작성일 : YYYY-MM-DD
-                                </div>
-                                <p class="mb-0">
-                                    Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Donec ullamcorper nulla non metus auctor fringilla.
-                                </p>
-                            </div>
+                        <div class="col-12" id="list_area">
+
                         </div>
-                        <ul class="m-t-15 pagination justify-content-center">
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                            </li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </li>
-                        </ul>
+					    <!-- paging -->
+					    <div class="paging"></div>
+					    
+						<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+						<input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="DESC"> 
+						<input type="hidden" id="orderField" name="orderField" value="REG_DT">
+					    <input type="hidden" id="pstid" name="pstid" value="0">
                     </div>
                 </div>
             </div>
         </div>
+        </form>
 
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 		<script th:inline="javascript">
+			$(document).ready(function() {
+				selectOpnnList();
+			})
+			
+			function selectOpnnList() {
+				if (displayWorkProgress()){
+					$.ajax({
+						url : "/mng/wbzn/now/Opnn/selectOpnnList.do",
+						cache : false,
+						dataType : 'json',
+						data : $("#bbsForm").serialize(),
+						type : 'POST',
+						success : function(data) {
+							$("#list_area").html(fn_makeListHtml(data.list));
+							$(".paging").html(data.pagination);
+							closeWorkProgress();
+						}
+					});
+				}
+			}
+			
+			function fn_makeListHtml(list) {
+				var html = "";
+				if (list == null || list.length <= 0) {
+					html += '<tr><td colspan="5"> 데이터가 없습니다.</td></tr>'
+				} else {
+					list.forEach(function(item) {
+						console.log(item);
+				    	html += '<div class="col-12 m-0 mb-2 row border border-dark p-10 rounded">'
+					    html += '<div class="col-12 mb-2">'
+					    html += '<strong>' + item.ttl + '</strong>'
+					    html += '</div>'
+					    html += '<div class="col-12 mb-1">'
+					    html += 'Volum : ' + item.volum
+					    html += '</div>'
+						html += '<div class="col-12 mb-1">'
+						html += '작성일 : ' + item.regDt
+						html += '</div>'
+					    html += '<p class="mb-0">'
+					    html += item.cn
+				    	html += '</p>'
+				    	html += '</div>'
+				    })
+				}
+				return html;
+			}
+			
+			function searchInit() {
+				$("#searchType").val('');
+				$("#searchKeyword").val('');
+				selectOpnnList();
+			}
+			
+			function searchOpnnList() {
+				var searchType = $("#searchType").val()
+				var searchKeyword = $("#searchKeyword").val()
 
+				if (searchType != null && searchType != "") {
+					if (searchKeyword == null || searchKeyword == "") {
+						alert("검색어를 입력해주십시오");
+						return;
+					}
+				} else {
+					if (searchKeyword != null && searchKeyword != "") {
+						alert("검색조건을 선택해주십시오");
+						return;
+					}
+				}
+				$("#pageNumber").val(1);
+				selectOpnnList();
+			}
+			
+			//공통 Pagination 사용시 function name 일괄 적용 할것
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				selectOpnnList();
+			}
+			
+			function goWriteForm(){
+				var f = document.forms.bbsForm ;
+				f.action = goWriteUrl;
+				f.submit();
+			}
+			
+			function goDetail(pstid){
+				var f = document.forms.bbsForm ;
+				f.pstid.value=pstid;
+				f.action = goReadUrl;
+				f.submit();
+			}
 		</script>
-
-		<script src="/js/ckeditor/ckeditor.js"></script>
 	</div>
 </body>
 </html>
