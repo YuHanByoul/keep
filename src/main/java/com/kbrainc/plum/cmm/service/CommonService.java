@@ -3,6 +3,8 @@ package com.kbrainc.plum.cmm.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.kbrainc.plum.mng.site.model.SiteVo;
 
 /**
@@ -54,4 +56,29 @@ public interface CommonService {
     * @throws Exception 예외
     */
     public List<Map<String, Object>> selectAlowedSiteList(String sysSeCd) throws Exception;
+    
+    /**
+    * 로그인 성공 후처리.
+    *
+    * @Title : insertLoginSuccess
+    * @Description : 로그인 성공 후처리를 한다.
+    * @param request 요청객체
+    * @param userid 사용자아이디
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertLoginSuccess(HttpServletRequest request, String userid) throws Exception;
+    
+    /**
+    * 로그인 실패 후처리.
+    *
+    * @Title : insertLoginFailDescription
+    * @Description : 로그인 실패 후처리를 한다.
+    * @param request 요청객체
+    * @param userid 사용자아이디
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertLoginFail(HttpServletRequest request, String userid) throws Exception;
+    
 }

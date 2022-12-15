@@ -8,7 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
+import org.springframework.mobile.device.LiteDeviceResolver;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -17,6 +21,7 @@ import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  * 
@@ -85,5 +90,74 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         param.put("user", userInfo);
         param.put("sysSeCd", sysSeCd);
         return commonDao.selectAlowedSiteList(param);
+    }
+    
+    /**
+    * 로그인 성공 후처리.
+    *
+    * @Title : insertLoginSuccess
+    * @Description : 로그인 성공 후처리를 한다.
+    * @param request 요청객체
+    * @param userid 사용자아이디
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    @Transactional
+    public int insertLoginSuccess(HttpServletRequest request, String userid) throws Exception {
+        int retVal = 0;
+        Map<String, String> param = new HashMap<String, String>();
+        
+        param.put("userid", userid);
+        Device device = new LiteDeviceResolver().resolveDevice(request);
+        request.setAttribute(DeviceUtils.CURRENT_DEVICE_ATTRIBUTE,device);
+        Device currentDevice  = DeviceUtils.getCurrentDevice(request);
+        if(currentDevice .isMobile()){
+            param.put("deviceCd", "PHONE");
+        }else if(currentDevice .isTablet()){
+            param.put("deviceCd", "PAD");
+        }else{
+            param.put("deviceCd", "PC");
+        }
+        param.put("ipAddr", CommonUtil.getClientIp(request));
+        
+        retVal = commonDao.insertLoginDescription(param);
+        retVal += commonDao.updateLgnFailCntZero(userid);
+        
+        return retVal;
+    }
+    
+    /**
+    * 로그인 실패 후처리.
+    *
+    * @Title : insertLoginFailDescription
+    * @Description : 로그인 실패 후처리를 한다.
+    * @param request 요청객체
+    * @param userid 사용자아이디
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    @Transactional
+    public int insertLoginFail(HttpServletRequest request, String userid) throws Exception {
+        int retVal = 0;
+        Map<String, String> param = new HashMap<String, String>();
+        
+        param.put("userid", userid);
+        Device device = new LiteDeviceResolver().resolveDevice(request);
+        request.setAttribute(DeviceUtils.CURRENT_DEVICE_ATTRIBUTE,device);
+        Device currentDevice  = DeviceUtils.getCurrentDevice(request);
+        if(currentDevice .isMobile()){
+            param.put("deviceCd", "PHONE");
+        }else if(currentDevice .isTablet()){
+            param.put("deviceCd", "PAD");
+        }else{
+            param.put("deviceCd", "PC");
+        }
+        param.put("ipAddr", CommonUtil.getClientIp(request));
+        
+        commonDao.insertLoginFailDescription(param);
+        commonDao.updateLgnFailCntPlusOne(userid);
+        commonDao.updateAccountLock(userid);
+        
+        return retVal;
     }
 }

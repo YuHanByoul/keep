@@ -6,11 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.util.Base64Utils;
 
 import com.kbrainc.plum.rte.util.StringUtil;
 
@@ -37,7 +35,7 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
         String message = (String)request.getAttribute("message");
         
         if (!"".equals(StringUtil.nvl(message))) {
-            defaultFailureUrl += "&msg=" + message;
+            defaultFailureUrl += "&msg=" + Base64Utils.encodeToUrlSafeString(message.getBytes());
         }
         setDefaultFailureUrl(defaultFailureUrl);
  

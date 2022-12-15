@@ -85,4 +85,72 @@
         ORDER BY S.SITE_NM ASC
     </select>
     
+    <!-- 로그인 성공 이력을 저장한다. -->
+    <insert id="insertLoginDescription" parameterType="java.util.Map">
+        /* CommonDao.insertLoginDescription */    
+        INSERT INTO TB_CMM_LGN_DSCTN 
+            (USERID, 
+             DEVICE_CD, 
+             IP, 
+             LGN_DT
+            )
+            VALUES
+            (#{userid}, 
+             #{deviceCd}, 
+             #{ipAddr}, 
+             NOW()
+            )
+    </insert>
+    
+    <!-- 로그인 실패 횟수를 0으로 수정한다. -->
+    <update id="updateLgnFailCntZero" parameterType="java.util.Map">
+        /* CommonDao.updateLgnFailCntZero */
+        UPDATE 
+            TB_CMM_USER 
+        SET 
+            LGN_FAIL_CNT = 0 
+        WHERE USERID = #{userid}
+    </update>
+    
+    <!-- 로그인 실패 이력을 저장한다. -->
+    <insert id="insertLoginFailDescription" parameterType="java.util.Map">
+        /* CommonDao.insertLoginFailDescription */    
+        INSERT INTO TB_CMM_LGN_FAIL_DSCTN 
+            (USERID, 
+             DEVICE_CD, 
+             IP, 
+             LGN_DT
+            )
+            VALUES
+            (#{userid}, 
+             #{deviceCd}, 
+             #{ipAddr}, 
+             NOW()
+            )
+    </insert>
+    
+    <!-- 로그인 실패 횟수를 1회 증가시킨다. -->
+    <update id="updateLgnFailCntPlusOne" parameterType="java.util.Map">
+        /* CommonDao.updateLgnFailCntPlusOne */
+        UPDATE 
+            TB_CMM_USER 
+        SET 
+            LGN_FAIL_CNT = NVL(LGN_FAIL_CNT,0) + 1 
+        WHERE 
+            USERID = #{userid}
+    </update>
+    
+    <!-- 계정을 잠근다(비밀번호 5회 초과 사유) -->
+    <update id="updateAccountLock" parameterType="java.util.Map">
+        /* CommonDao.updateAccountLock */
+        UPDATE 
+            TB_CMM_USER 
+        SET 
+            ACNT_LOCK_YN = 'Y', 
+            ACNT_LOCK_CD = '101103' 
+        WHERE 
+            USERID = #{userid} 
+        AND LGN_FAIL_CNT >= 5
+    </update>
+    
 </mapper>
