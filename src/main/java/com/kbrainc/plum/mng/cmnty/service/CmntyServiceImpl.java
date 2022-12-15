@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.mng.cmnty.model.CmntyDao;
+import com.kbrainc.plum.mng.cmnty.model.CmntyMbrVo;
+import com.kbrainc.plum.mng.cmnty.model.CmntyPstVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -36,7 +38,7 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
      *
      * @Title : selectCmntyrList
      * @Description : 커뮤니티 목록 조회
-     * @param qestnrVo QestnrVo 객체
+     * @param cmntyVo CmntyVo 객체
      * @return List<CmntyVo> 커뮤니티 목록
      * @throws Exception 예외
      */
@@ -58,5 +60,32 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
     public CmntyVo selectCmntyInfo(CmntyVo cmntyVo) throws Exception {
         return cmntyDao.selectCmntyInfo(cmntyVo);
     }
-     
+    
+    /**
+     * 커뮤니티 회원 목록 조회
+     *
+     * @Title : selectCmntyMbrList
+     * @Description : 커뮤니티 회원 목록 조회
+     * @param cmntyMbrVo CmntyMbrVo 객체
+     * @return List<CmntyMbrVo> 커뮤니티 회원 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<CmntyMbrVo> selectCmntyMbrList(CmntyMbrVo cmntyMbrVo) throws Exception {
+        return cmntyDao.selectCmntyMbrList(cmntyMbrVo);
+    }
+    
+    /**
+     * 커뮤니티 게시글 목록 조회
+     *
+     * @Title : selectCmntyPstList
+     * @Description : 커뮤니티 게시글 목록 조회
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @return List<CmntyPstVo> 커뮤니티 게시글 목록
+     * @throws Exception 예외
+     */
+    public List<CmntyPstVo> selectCmntyPstList(CmntyPstVo cmntyPstVo) throws Exception {
+        return cmntyDao.selectCmntyPstList(cmntyPstVo);
+    }
+    
 }
