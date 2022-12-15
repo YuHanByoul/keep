@@ -5236,7 +5236,7 @@ jQuery(function(){
     
     // id에 해당하는 엘리먼트로 브라우저 스크롤 이동
     function scrollIntoView(id) {
-        window.scrollTo({top: document.getElementById(id).getBoundingClientRect().top + window.pageYOffset, behavior: 'smooth'});
+        window.scrollTo({top: document.getElementById(id).getBoundingClientRect().top-80 + window.pageYOffset, behavior: 'smooth'});
         //$('html').animate({scrollTop : $('#'+id).offset().top}, 400);
     }
     
