@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EmployDaoImpl.xml
+	Description : 채용정보
+-->
+<mapper namespace="com.kbrainc.plum.mng.employ.model.EmployDao">
+
+
+    <select id="selectEmployList" parameterType="EmployVo" resultType="EmployVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                PSTID
+                ,TITLE
+                ,B.NM AS REG_NM
+                ,REG_DT
+                ,C.SITE_NM
+                ,D.INST_NM
+            FROM
+                TB_CMM_PST A
+            INNER JOIN (SELECT USERID, NM FROM TB_CMM_USER) B
+                ON A.RGTRID = B.USERID
+            INNER JOIN (SELECT INSTID, SITEID, SITE_NM FROM TB_CMM_SITE) C
+                ON A.SITEID = C.SITEID
+            INNER JOIN (SELECT INSTID, INST_NM FROM TB_CMM_INST) D
+                ON C.INSTID = D.INSTID
+            WHERE 1=1
+                AND BBSID = #{bbsid}
+            <bind name="searchSiteValue" value="searchSite" />
+            <bind name="searchSiteSysSeCd" value="'U'" />
+            <include refid="SearchMapper.siteLmtCondition">
+                <property name="tableAlias" value="A" />
+            </include>
+            <if test="searchType != null and searchType == 'title' ">
+                AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType != null and searchType == 'cntnts' ">
+                AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <include refid="PaginationMapper.footer"/>
+    </select>
+    <select id="selectEmployInfo" parameterType="EmployVo" resultType="EmployVo">
+        SELECT
+            PSTID
+            ,SITEID
+            ,TITLE
+            ,FXD_NTC_YN
+            ,FXD_NTC_STRT_DT
+            ,FXD_NTC_END_DT
+            ,CNTNTS
+            ,FILEGRPID
+        FROM
+            TB_CMM_PST A
+        WHERE  1=1
+            AND PSTID = #{pstid}
+    </select>
+
+    <insert id="insertEmploy" useGeneratedKeys="true" keyProperty="pstid" parameterType="EmployVo">
+        INSERT INTO TB_CMM_PST(
+                SITEID
+                ,BBSID
+                ,TITLE
+                ,CNTNTS
+                ,HITS
+                ,BBS_CLID
+                ,FXD_NTC_YN
+                ,FXD_NTC_STRT_DT
+                ,FXD_NTC_END_DT
+                ,LOGIN_YN
+                ,FILEGRPID
+                ,MDFCN_DT
+                ,MDFRID
+                ,REG_DT
+                ,RGTRID
+        ) VALUES(
+            #{siteid}
+            ,#{bbsid}
+            ,#{title}
+            ,#{cntnts}
+            ,0
+            ,#{bbsClid}
+            ,#{fxdNtcYn}
+            <choose>
+                <when test='fxdNtcYn =="Y"'>
+                    ,#{fxdNtcStrtDt}
+                    ,DATE_SUB(DATE_ADD(#{fxdNtcEndDt}, INTERVAL 1 DAY), INTERVAL 1 SECOND)
+                </when>
+                <otherwise>
+                    ,NULL
+                    ,NULL
+                </otherwise>
+            </choose>
+            ,#{loginYn}
+            ,#{filegrpid}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        );
+    </insert>
+
+    <update id="updateEmploy" parameterType="EmployVo">
+        UPDATE TB_CMM_PST SET
+            SITEID = #{siteid}
+            ,TITLE = #{title}
+            ,CNTNTS = #{cntnts}
+            ,BBS_CLID = #{bbsClid}
+            ,FXD_NTC_YN = #{fxdNtcYn}
+            <choose>
+                <when test='fxdNtcYn == "Y"'>
+                    ,FXD_NTC_STRT_DT = #{fxdNtcStrtDt}
+                    ,FXD_NTC_END_DT = DATE_SUB(DATE_ADD(#{fxdNtcEndDt}, INTERVAL 1 DAY), INTERVAL 1 SECOND)
+                </when>
+                <otherwise>
+                    ,FXD_NTC_STRT_DT = NULL
+                    ,FXD_NTC_END_DT = NULL
+                </otherwise>
+            </choose>
+            ,LOGIN_YN = #{loginYn}
+            ,FILEGRPID = #{filegrpid}
+            ,MDFCN_DT = NOW()
+            ,MDFRID = #{user.userid}
+        WHERE PSTID=#{pstid}
+    </update>
+
+    <delete id="deleteEmploy">
+        DELETE FROM TB_CMM_PST
+        WHERE
+            PSTID IN
+            (
+            <foreach item="employId" collection="deleteEmployIds"  separator=",">
+                #{employId}
+            </foreach>
+            )
+
+    </delete>
+
+    <select id="selectAttachFileList" resultType="FileVo">
+        /* EmployDaoImpl.selectAttachFileList */
+        SELECT
+            A.FILEID,
+            A.FILEGRPID,
+            A.FILE_IDNTFC_KEY,
+            A.FILE_PATH,
+            A.SAVE_FILE_NM,
+            A.ORGINL_FILE_NM,
+            A.FILE_EXTSN,
+            A.FILE_SIZE,
+            A.ORD,
+            A.REG_DT,
+            A.RGTRID
+        FROM TB_CMM_FILE A
+        WHERE 1=1
+          AND A.FILEGRPID = #{filegrpid}
+    </select>
+</mapper>

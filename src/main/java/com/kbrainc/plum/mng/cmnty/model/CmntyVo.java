@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.qestnr.model;
+package com.kbrainc.plum.mng.cmnty.model;
 
 import java.util.Date;
 
@@ -9,48 +9,79 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * 
- * 설문지문항보기Vo 클래스
+ * 설문지Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.qestnr.model
- * - QitemVo.java
+ * com.kbrainc.plum.mng.cmnty.model
+ * - QestnrVo.java
  * </pre> 
  *
- * @ClassName : QitemVo
- * @Description : 설문지문항보기Vo 클래스 
+ * @ClassName : QestnrVo
+ * @Description : 설문지Vo 클래스 
  * @author : KBRAINC
- * @date : 2022. 11. 29.
+ * @date : 2022. 12. 14.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-@NoArgsConstructor
-public class QitemExVo extends ParentRequestVo {
+public class CmntyVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
     
-    /** 보기 아이디 */
-    private int exid;
+    /** 커뮤니티지 아이디 */
+    private int cmntyid;
     
-    /** 문항 아이디 */
-    private int qitemid;
+    /** 커뮤니티 명 */
+    private String cmntyNm;
     
-    /** 보기 번호 */
-    private int exNo;
+    /** 커뮤니티 소개 */
+    private String cmntyIntrcn;
     
-    /** 내용 */
-    private String cn;
+    /** 개설자 아이디 */
+    private int esterid;
     
-    /** 점수 */
-    private int scr;
+    /** 개설자 계정 */
+    private String acnt;
     
-    /** 기타 여부 */
-    private String etcYn;
+    /** 개설자 명 */
+    private String nm;
+    
+    /** 가입 승인 방식 코드 */
+    private String joinaprvmthdCd;
+    
+    /** 공개 여부 */
+    private String rlsYn;
+    
+    /** 검색 노출 여부 */
+    private String srchExpsrYn;
+    
+    /** 운영 여부 */
+    private String operYn;
+    
+    /** 로고 파일 아이디 */
+    private String cmntyLogoFileid;
+    
+    /** 공지사항 여부 */
+    private String ntcmttrYn;
+    
+    /** 정보게시판 여부 */
+    private String infobbsYn;
+    
+    /** 자료실 여부 */
+    private String recsroomYn;
+    
+    /** 환경관찰활동 여부 */
+    private String envobservactvtYn;
+    
+    /** 회원수 */
+    private int mbrCnt;
+    
+    /** 검색 운영 여부 */
+    private String searchOperYn;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -58,6 +89,7 @@ public class QitemExVo extends ParentRequestVo {
     
     /** 수정자 아이디 */
     private String mdfrid;
+    
     
     /** 등록일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
