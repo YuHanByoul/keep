@@ -6,11 +6,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.util.Base64Utils;
 
 import com.kbrainc.plum.rte.util.StringUtil;
 
@@ -33,13 +31,15 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String defaultFailureUrl = "/?error=true";
+        StringBuffer defaultFailureUrl = new StringBuffer("/?error=true&loginid=");
         String message = (String)request.getAttribute("message");
         
+        defaultFailureUrl.append(request.getAttribute("loginid"));
+        
         if (!"".equals(StringUtil.nvl(message))) {
-            defaultFailureUrl += "&msg=" + message;
+            defaultFailureUrl.append("&msg=").append(Base64Utils.encodeToUrlSafeString(message.getBytes()));
         }
-        setDefaultFailureUrl(defaultFailureUrl);
+        setDefaultFailureUrl(defaultFailureUrl.toString());
  
         super.onAuthenticationFailure(request, response, exception);
     }

@@ -57,14 +57,14 @@ public class QitemExVo extends ParentRequestVo {
     private Date mdfcnDt;
     
     /** 수정자 아이디 */
-    private String mdfrid;
+    private int mdfrid;
     
     /** 등록일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     
     /** 등록자 아이디 */
-    private String rgtrid;
+    private int rgtrid;
     
     /** 수정일자 정보 */
     public Date getMdfcnDt() {

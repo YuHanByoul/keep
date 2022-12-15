@@ -60,4 +60,60 @@ public interface CommonDao {
     * @throws Exception 예외
     */
     public List<Map<String, Object>> selectAlowedSiteList(Map<String, Object> param) throws Exception;
+    
+    /**
+    * 로그인 성공 이력을 저장한다.
+    *
+    * @Title : insertLoginDescription
+    * @Description : 로그인 성공 이력을 저장한다.
+    * @param Map타입의 인자
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertLoginDescription(Map<String, String> param) throws Exception;
+    
+    /**
+    * 로그인 실패 횟수를 0으로 수정한다.
+    *
+    * @Title : updateLgnFailCntZero
+    * @Description : 로그인 실패 횟수를 0으로 수정한다.
+    * @param userid 사용자아이디
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateLgnFailCntZero(String userid) throws Exception;
+    
+    /**
+    * 로그인 실패 이력을 저장한다.
+    *
+    * @Title : insertLoginFailDescription
+    * @Description : 로그인 실패 이력을 저장한다.
+    * @param Map타입의 인자
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertLoginFailDescription(Map<String, String> param) throws Exception;
+    
+    /**
+    * 로그인 실패 횟수를 1회 증가시킨다.
+    *
+    * @Title : updateLgnFailCntPlusOne
+    * @Description : 로그인 실패 횟수를 1회 증가시킨다.
+    * @param userid 사용자아이디
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateLgnFailCntPlusOne(String userid) throws Exception;
+    
+    /**
+    * 계정을 잠근다(비밀번호 5회 초과 사유).
+    *
+    * @Title : updateAccountLock
+    * @Description : 계정을 잠근다(비밀번호 5회 초과 사유)
+    * @param userid 사용자아이디
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateAccountLock(String userid) throws Exception;
+    
 }

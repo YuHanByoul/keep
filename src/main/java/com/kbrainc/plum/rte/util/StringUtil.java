@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.springframework.util.Base64Utils;
+
 /**
  * 
  * 문자열유틸 클래스.
@@ -719,5 +721,9 @@ public class StringUtil {
             }
         }
         return true;
+    }
+    
+    public static String base64DecodeFromUrlSafeString(String encodedStr) {
+        return new String(Base64Utils.decodeFromUrlSafeString(encodedStr));
     }
 }

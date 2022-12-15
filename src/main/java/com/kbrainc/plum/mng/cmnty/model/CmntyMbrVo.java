@@ -12,22 +12,22 @@ import lombok.Data;
 
 /**
  * 
- * 커뮤니티Vo 클래스
+ * 커뮤니티회원Vo 클래스
  *
  * <pre>
  * com.kbrainc.plum.mng.cmnty.model
- * - CmntyVo.java
+ * - CmntyMbrVo.java
  * </pre> 
  *
- * @ClassName : CmntyVo
- * @Description : 커뮤니티Vo 클래스 
+ * @ClassName : CmntyMbrVo
+ * @Description : 커뮤니티회원Vo 클래스 
  * @author : KBRAINC
- * @date : 2022. 12. 14.
+ * @date : 2022. 12. 15.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class CmntyVo extends ParentRequestVo {
+public class CmntyMbrVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
@@ -35,61 +35,44 @@ public class CmntyVo extends ParentRequestVo {
     /** 커뮤니티 아이디 */
     private int cmntyid;
     
-    /** 커뮤니티 명 */
-    private String cmntyNm;
+    /** 회원 아이디 */
+    private int userid;
     
-    /** 커뮤니티 소개 */
-    private String cmntyIntrcn;
-    
-    /** 개설자 아이디 */
-    private int esterid;
-    
-    /** 개설자 계정 */
+    /** 회원 계정 */
     private String acnt;
     
-    /** 개설자 명 */
+    /** 회원명 */
     private String nm;
     
-    /** 가입 승인 방식 코드 */
-    private String joinaprvmthdCd;
+    /** 회원 상태 코드 */
+    private String mbrSttsCd;
     
-    /** 공개 여부 */
-    private String rlsYn;
+    /** 회원 상태 코드명 */
+    private String mbrSttsCdNm;
     
-    /** 검색 노출 여부 */
-    private String srchExpsrYn;
+    /** 권한 코드 */
+    private String authrtCd;
     
-    /** 운영 여부 */
-    private String operYn;
+    /** 권한 코드명 */
+    private String authrtCdNm;
     
-    /** 로고 파일 아이디 */
-    private Integer cmntyLogoFileid;
+    /** 가입신청 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date joinAplyDt;
     
-    /** 공지사항 여부 */
-    private String ntcmttrYn;
+    /** 가입승인 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date joinAprvDt;
     
-    /** 정보게시판 여부 */
-    private String infobbsYn;
+    /** 승인자 아이디 */
+    private String autzrId;
     
-    /** 자료실 여부 */
-    private String recsroomYn;
-    
-    /** 환경관찰활동 여부 */
-    private String envobservactvtYn;
-    
-    /** 회원수 */
-    private int mbrCnt;
-    
-    /** 검색 운영 여부 */
-    private String searchOperYn;
-    
-    /** 수정일시 */
+    /** 수정 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
     
     /** 수정자 아이디 */
     private String mdfrid;
-    
     
     /** 등록 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -97,6 +80,24 @@ public class CmntyVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private String rgtrid;
+    
+    /** 가입신청 일자 정보 */
+    public Date getJoinAplyDt() {
+        return joinAplyDt != null ? (Date) joinAplyDt.clone() : null;
+    }
+    
+    public void setJoinAplyDt(Date joinAplyDt) {
+        this.joinAplyDt = joinAplyDt != null ? (Date) joinAplyDt.clone() : null;
+    }
+    
+    /** 가입승인 일자 정보 */
+    public Date getJoinAprvDt() {
+        return joinAprvDt != null ? (Date) joinAprvDt.clone() : null;
+    }
+    
+    public void setJoinAprvDt(Date joinAprvDt) {
+        this.joinAprvDt = joinAprvDt != null ? (Date) joinAprvDt.clone() : null;
+    }
     
     /** 수정 일자 정보 */
     public Date getMdfcnDt() {

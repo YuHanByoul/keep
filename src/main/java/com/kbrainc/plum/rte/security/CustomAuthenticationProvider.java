@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Hex;
@@ -15,16 +16,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 //import org.springframework.session.FindByIndexNameSessionRepository; // REDIS_SESSION
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -51,11 +56,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     private SecuredObjectService securedObjectService;
     
+    @Autowired
+    private CommonService commonService;
+    
     @Value("${system.person.roleid}")
     private String sysPersonRoleid;
     
     @Value("${system.company.roleid}")
     private String sysCompanyRoleid;
+    
+    private Map<String,Integer> usernameNotFoundMap = new HashMap<String,Integer>();
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -68,23 +78,34 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
              password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
              // sha3-512 비밀번호 암호화
         } catch (NoSuchAlgorithmException e) {
-            throw new BadCredentialsException("Login Error !!");
+            throw new InternalAuthenticationServiceException("Login Error !!");
         } catch (Exception e) {
-            throw new BadCredentialsException("Login Error !!");
+            throw new InternalAuthenticationServiceException("Login Error !!");
         }
 
         Map resultMap = null;
         List<Map<String, Object>> resultList = null;
         
         ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpSession session = attr.getRequest().getSession();
+        HttpServletRequest request = attr.getRequest();
+        HttpSession session = request.getSession();
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
+        request.setAttribute("loginid", loginid);
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
+                    request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
+                    throw new LockedException("Login Error !!");
+                }
                 if (!password.equals((String) resultMap.get("PSWD"))) {
+                    commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
+                    Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
+                    getLoginFailMessage(loginFailCnt);
+                    Map<String, Object> data = getLoginFailMessage(loginFailCnt);
+                    request.setAttribute("message", data.get("message"));
                     throw new BadCredentialsException("Login Error !!");
                 }
                 
@@ -106,14 +127,33 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     resultList.add(roleMap);
                 }
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
-                throw new BadCredentialsException("Login Error !!");
+                Integer loginFailCnt = usernameNotFoundMap.get(loginid);
+                if (loginFailCnt != null && loginFailCnt >= 5) {
+                    request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
+                } else {
+                    Map<String, Object> data = getLoginFailMessage(loginFailCnt);
+                    request.setAttribute("message", data.get("message"));
+                    usernameNotFoundMap.put(loginid, (Integer) data.get("loginFailCnt"));
+                }
+                throw new UsernameNotFoundException("Login Error !!");
+            } catch (LockedException e) { // 계정이 잠긴 사용자일때
+                throw new LockedException("Login Error !!");
             } catch (Exception e) { // 예외발생시
-                throw new BadCredentialsException("Login Error !!");
+                throw new InternalAuthenticationServiceException("Login Error !!");
             }
         } else { // 사용자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
+                    request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
+                    throw new LockedException("Login Error !!");
+                }
                 if (!password.equals((String) resultMap.get("PSWD"))) {
+                    commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
+                    Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
+                    getLoginFailMessage(loginFailCnt);
+                    Map<String, Object> data = getLoginFailMessage(loginFailCnt);
+                    request.setAttribute("message", data.get("message"));
                     throw new BadCredentialsException("Login Error !!");
                 }
                 
@@ -138,15 +178,23 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     roleMap.put("SE_CD", "U");
                     resultList.add(roleMap);
                 }
-            } catch (EmptyResultDataAccessException e) { // 예외발생시
-                throw new BadCredentialsException("Login Error !!");
+            } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
+                Integer loginFailCnt = usernameNotFoundMap.get(loginid);
+                if (loginFailCnt != null && loginFailCnt >= 5) {
+                    request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
+                } else {
+                    Map<String, Object> data = getLoginFailMessage(loginFailCnt);
+                    request.setAttribute("message", data.get("message"));
+                    usernameNotFoundMap.put(loginid, (Integer) data.get("loginFailCnt"));
+                }
+                throw new UsernameNotFoundException("Login Error !!");
             } catch (Exception e) { // 예외발생시
-                throw new BadCredentialsException("Login Error !!");
+                throw new InternalAuthenticationServiceException("Login Error !!");
             }
         }
                 
         if (resultList.size() == 0) { // 사용자에게 부여된 역할이 없으면
-            throw new BadCredentialsException("Login Error !!");
+            throw new InternalAuthenticationServiceException("Login Error !!");
         }
 
         UserVo user = new UserVo();
@@ -191,11 +239,38 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         session.setAttribute("user", user); // 세션에 사용자정보 객체 추가
         //session.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, loginid); // REDIS_SESSION
 
+        try {
+            commonService.insertLoginSuccess(attr.getRequest(), user.getUserid());
+        } catch (Exception e) {
+            throw new InternalAuthenticationServiceException("Login Error !!");
+        }
+        
         return new UsernamePasswordAuthenticationToken(user, null, authorities);
     }
 
     @Override
     public boolean supports(Class authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
+    }
+    
+    private Map<String, Object> getLoginFailMessage(Integer loginFailCnt) {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        StringBuffer sb = new StringBuffer();
+        
+        if (loginFailCnt == null) {
+            loginFailCnt = 1;
+        } else {
+            loginFailCnt += 1;
+            if (loginFailCnt > 5) {
+                loginFailCnt = 5;
+            }
+        }
+        
+        sb.append("등록되지 않은 아이디이거나 또는 비밀번호를 잘못 입력하셨습니다. 로그인 5회 이상 실패시 정보 보호를 위해 서비스 이용이 차단 됩니다. (로그인 실패 ").append(loginFailCnt).append("회)");
+        
+        resultMap.put("message", sb.toString());
+        resultMap.put("loginFailCnt", loginFailCnt);
+        
+        return  resultMap;
     }
 }
