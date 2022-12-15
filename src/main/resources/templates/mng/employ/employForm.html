@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <style>
+        .hide {
+            display:none;
+        }
+    </style>
+
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <!-- 필터 부분 -->
+                <div class="card">
+                    <div class="card-block-small">
+                        <form  name="searchForm" id="searchForm" method="post" onsubmit="return false;">
+                            <!-- 키워드 filter -->
+                            <div class="row">
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType"  id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                                <option value="">- 선택 -</option>
+                                                <option value="title">제목</option>
+                                                <option value="cntnts">내용</option>
+                                            </select>
+                                            <input type="text" class="form-control form-control-sm" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+                                        <div class="col-sm-12">
+                                            <th:block kattr:select_site="searchSite" sysSeCd="U" witdh="50%" firstOptTxt="- 전체 - " firstOptVal=""></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //키워드 filter -->
+                            <!-- 키워드 filter-btn -->
+                            <div class="m-t-20 text-center">
+                                <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+                                <button class="btn btn-primary" onclick="searchEmploy()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- //필터 부분 -->
+            </div>
+
+            <div class="col-12">
+                <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6 mb-2 mb-md-0">
+                            <h5><strong>채용정보 검색결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/employ/deleteEmploy.do">
+                                <button type="button" class="btn btn-inverse waves-effect waves-light m-r-5" onclick="deleteEmploy()">삭제</button>
+                            </th:block>
+
+                            <th:block sec:authorize-url="/mng/employ/insertEmploy.do">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertEmploy()">등록</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <div class="dt-responsive table-responsive">
+                            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+            </div>
+
+            <div class="col-12">
+                <div id="contentPanel" class="card"></div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var employListUrl = "/mng/employ/selectEmployList.do";
+        var employDetailUrl = "/mng/employ/employDetailForm.html";
+        var employDeleteUrl = "/mng/inqry/deleteEmployInfo.do";
+        var gridHelper1;
+        var selectedItems = [];
+
+        $(function(){
+            gridHelper1 = new GridHelper('jsGrid','contentPanel');
+
+            $("#jsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var formData = $('#searchForm').serializeArray();
+                        var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                        ]
+
+                        if(filter.sortField != undefined){
+                            params.push({name: "orderField", value: filter.sortField});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        }else{
+                            params.push({name: "orderField", value: 'reg_dt'});
+
+                        }
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: employListUrl,
+                            dataType: "json",
+                            data: formData,
+                        }).done(function(response){
+                            var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                        },
+                        itemTemplate: function(_, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                                //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                                .prop("checked", $.inArray(item, selectedItems) > -1)
+                                .on("change", function () {
+                                    $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                                });
+                        },
+                        align: "center",
+                        width: "50",
+                        sorting: false
+                    },
+                    { name: 'pstid', css:'hide'},
+                    { title:'No.', name: 'rowNumber', type: "number" , width: "80", align:"center", sorting: false},
+                    { title:'사이트', name: 'siteNm', type: "text" , width: "300", itemTemplate: function(value,item) {
+                            if (item.instNm == null) {
+                                return item.siteNm;
+                            } else {
+                                return item.siteNm + "(" + item.instNm + ")";
+                            }
+                        }
+                    },
+                    { title:'제목', name: 'title', type: "text" , width: "150", align:"center", sorting: false},
+                    { title:'작성자', name: 'regNm', type: "text" , width: "120", align:"center"},
+                    { title:'등록일', name: 'regDt', type: "text" , width: "150", align:"center"},
+                ],
+                /*[# sec:authorize-url="/mng/employ/employDetailForm.html"]*/
+                rowClick: function (args) {
+                    gridHelper1.loadContent(employDetailUrl + '?pstid=' + args.item.pstid);
+                },
+                /*[/]*/
+                onPageChanged: function (args) {
+                    selectedItems = [];
+                }
+            });
+
+            var selectItem = function(item) {
+                selectedItems.push(item);
+
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            var unselectItem = function(item) {
+                selectedItems = $.grep(selectedItems, function(i) {
+                    return i !== item;
+                });
+                if(selectedItems.length == 0) {
+                    $('#selectAllCheckbox').attr('checked', false);
+                }
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            $("#selectAllCheckbox").click(function(item) {
+                selectedItems = [];
+                if(this.checked) { // check select status
+                    $('.singleCheckbox').each(function() {
+                        this.checked = true;
+                        selectItem($(this).parent().next().text());
+                    });
+                }else {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = false;
+                        unselectItem(item);
+                    });
+                    selectedItems = [];
+                }
+            });
+
+        });
+
+        function deleteEmploy() {
+            if(selectedItems.length <=0 ){
+                alert("삭제할 채용정보를 선택해 주십시오.");
+                return;
+            }
+
+            if(!confirm("선택한 채용정보들을 삭제하시겠습니까?"))return;
+
+            var deleteEmployIds = selectedItems.join(",")
+            var url = employDeleteUrl+"?deleteEmployIds="+deleteEmployIds;
+
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/employ/deleteEmploy.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : url,
+                    type: 'POST',
+                    cache : false,
+                    success : function (data){
+                        alert(data.msg);
+                        gridHelper1.resetListContent();
+                        selectedItems = [];
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function searchInit() {
+            $("#searchType").val('');
+            $("#searchKeyword").val('');
+            $("#searchSite").val('')
+            gridHelper1.resetListContent();
+        }
+
+        function searchEmploy() {
+            var searchType = $("#searchType").val();
+            var searchKeyword = $("#searchKeyword").val();
+            if(searchType != '' && searchKeyword == ""){
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            gridHelper1.resetListContent();
+        }
+
+        function insertEmploy() {
+            gridHelper1.loadContent(employDetailUrl);
+        }
+    </script>
+    <script src="/js/ckeditor/ckeditor.js"></script>
+</div>
+</body>
+</html>

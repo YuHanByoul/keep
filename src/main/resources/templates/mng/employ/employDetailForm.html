@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
+
+<!-- insert 부분 -->
+<form id="employForm" name="employForm" method="post" onsubmit="return false;">
+    <input type="hidden" name="pstid" id="pstid" th:value="${employInfo.pstid}" />
+    <input type="hidden" id="bbsid" name="bbsid"   th:value = "${bbsInfo.bbsid}" >
+    <th:block th:if="${bbsInfo.atchfileUseYn} == 'Y' ">
+        <input type="hidden" id="atchfileCnt" name="atchfileCnt"   th:value = "${bbsInfo.atchfileCnt}" >
+        <input type="hidden" id="atchfileSize" name="atchfileSize"   th:value = "${bbsInfo.atchfileSize}" >
+    </th:block>
+
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>기본정보</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="mb-2 form-group row required">
+            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1 "><strong>사이트</strong></div>
+            <div class="col-sm-6">
+                <th:block kattr:select_site="siteid" sysSeCd="U" firstOptTxt="- 선택 -" firstOptVal="" th:attr="selectedId=${employInfo.siteid}" isAdmin="true" ></th:block>
+            </div>
+        </div>
+        <div class="mb-2 form-group row">
+            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>로그인 여부</strong></div>
+            <div class="col-12 mt-1">
+                 <span kattr:radio_yn="loginYn" label1="로그인후" label2="로그인전" th:attr="defaultVal=${employInfo.loginYn == null ? 'N' : employInfo.loginYn}">
+            </div>
+        </div>
+
+        <div class="mb-2 form-group row required">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="title"><strong>제목</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${employInfo.title}"/>
+            </div>
+        </div>
+        <div class="mb-2 row">
+            <div class="col-12 col-lg-4 mb-2 mb-lg-0">
+                <div class="mb-0 form-group">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>고정공지 여부</strong></div>
+                    <div class="col-12 mt-1">
+                        <div class="form-radio">
+                            <span kattr:radio_yn="fxdNtcYn" label1="사용" label2="사용안함" th:attr="defaultVal=${employInfo.fxdNtcYn == null ? 'N':employInfo.fxdNtcYn }"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-8">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="mb-0 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="fxdNtcStrtDt"><strong>고정공지 시작일</strong></label>
+                            <div class="col-sm-12">
+                                <input class="form-control form-control-sm" type="date" name="fxdNtcStrtDt" id="fxdNtcStrtDt" th:value="${#dates.format(employInfo.fxdNtcStrtDt, 'yyyy-MM-dd')}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-0 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="fxdNtcEndDt"><strong>고정공지 종료일</strong></label>
+                            <div class="col-sm-12">
+                                <input class="form-control form-control-sm" type="date" name="fxdNtcEndDt" id="fxdNtcEndDt" th:value="${#dates.format(employInfo.fxdNtcEndDt, 'yyyy-MM-dd')}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2 form-group row required">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cntnts"><strong>내용</strong></label>
+            <div class="col-sm-12">
+                <textarea class="form-control form-control-sm" name="cntnts" id="cntnts"><th:block th:text="${employInfo.cntnts}"></th:block></textarea>
+            </div>
+        </div>
+        <th:block th:if="${bbsInfo.atchfileUseYn}=='Y'">
+            <div class="mb-0 form-group row">
+                <div class="mb-0 form-group">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1">첨부파일</label>
+                    <div class="mb-2 row">
+                        <div class="col-auto" id="multipleFileUploadSuccess">
+                            <th:block th:if="${fileList != null}">
+                                <th:block th:each="file : ${fileList}">
+                                    <span class="label label-inverse" th:id="inputFiles + ${file.fileid}">
+                                        <a href="javascript:void(0)" class="text-white"
+                                           th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]&nbsp;&nbsp;
+                                        </a>
+                                        <a href="javascript:void(0)" class="text-white" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                           th:onclick="|javascript:deleteFileList(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">X</a>
+                                    </span>
+                                </th:block>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm">
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="filegrpid" name="filegrpid" value='0'/>
+        </th:block>
+    </div>
+    <div class="card-block-small">
+        <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+        <th:block sec:authorize-url="/mng/employ/insertEmploy.do">
+            <button type="button" class="btn btn-primary" onclick="saveEmploy()">저장</button>
+        </th:block>
+    </div>
+</form>
+<script th:inline="javascript">
+    var employInsertUrl = '/mng/employ/insertEmploy.do';
+    var employUpdateUrl = '/mng/employ/updateEmploy.do';
+    var editor;
+    var uploadFileCnt = 0 ;
+    var atchfileCnt = 0 ;
+    var atchfileSize = 0;
+
+
+    function disableFxdNtcDt(){
+        if ($("input[name='fxdNtcYn']:checked").val() == 'N') {
+            $("#fxdNtcStrtDt").attr('disabled', "true");
+            $("#fxdNtcEndDt").attr('disabled', "true");
+            $("#fxdNtcStrtDt").val('');
+            $("#fxdNtcEndDt").val('');
+        } else {
+            $("#fxdNtcStrtDt").removeAttr('disabled');
+            $("#fxdNtcEndDt").removeAttr('disabled');
+        }
+    }
+
+    $(function () {
+        disableFxdNtcDt();
+        $("[name=fxdNtcYn]").click(function(){
+            disableFxdNtcDt();
+        })
+        editor = CKEDITOR.replace('cntnts');
+        if($("#atchfileCnt").val()!= null && $("#atchfileCnt").val() != 0 ){atchfileCnt = $("#atchfileCnt").val() }
+        if($("#atchfileSize").val()!= null && $("#atchfileSize").val() != 0 ){atchfileSize = $("#atchfileSize").val() }
+
+        validateEmployForm();
+    });
+
+    function validateEmployForm() {
+        $("#employForm").validate({
+            onsubmit: false,
+            rules: {
+                siteid       :   { required:true }
+                ,title        :   { required: true, maxlength: 250 }
+                ,cntnts :   { required: true, maxlength: 4000  }
+            },
+            messages: {
+                siteid      :   { required: "사이트를 선택해 주십시오."}
+                ,title        :   { required: "제목을 입력해 주십시오.", maxlength: "제목은 250자를 넘을 수 없습니다." }
+                ,cntnts :   { required: "내용은 입력해 주십시오.", maxlength:"내용은 4000자를 넘을 수 없습니다." }
+            }
+        });
+
+    }
+
+    function saveEmploy() {
+        var url = employInsertUrl;
+        if ($('#pstid').val() != '') {
+            url = employUpdateUrl;
+        }
+
+        if (url == employInsertUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/employ/insertEmploy.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+        else if (url == employUpdateUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/employ/updateEmploy.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+
+        if (!$('#employForm').valid()) return;
+
+        //고정공지 여부 사용인 경우 고정공지 시작일과 고정공지 종료일 필수
+        if ($("input[name='fxdNtcYn']:checked").val() == 'Y') {
+            var $fxdNtcStrtDt = $("#fxdNtcStrtDt");
+            var $fxdNtcEndDt = $("#fxdNtcEndDt");
+            if($fxdNtcStrtDt.val() == '' || $fxdNtcStrtDt.val() == null) {
+                alert('고정공지 시작일을 선택해주십시오.');
+                $fxdNtcStrtDt.css("border","2px solid #ff0000");
+                setTimeout(function() { $fxdNtcStrtDt.css("border","")}, 1000);
+                return;
+            }
+            if($fxdNtcEndDt.val() == '' || $fxdNtcEndDt.val() == null) {
+                alert('고정공지 종료일을 선택해주십시오.');
+                $fxdNtcEndDt.css("border","2px solid #ff0000");
+                setTimeout(function() { $fxdNtcEndDt.css("border","")}, 1000);
+                return;
+            }
+            var strtDt = $fxdNtcStrtDt.val().replaceAll("-", "");
+            var endDt = $fxdNtcEndDt.val().replaceAll("-", "");
+            if (strtDt > endDt) {
+                alert("고정공지 종료일이 시작일보다 작습니다.");
+                $fxdNtcEndDt.css("border","2px solid #ff0000");
+                setTimeout(function() { $fxdNtcEndDt.css("border","")}, 1000);
+                return;
+            }
+        } else {
+            $("#fxdNtcStrtDt").val('');
+            $("#fxdNtcEndDt").val('');
+        }
+
+        // 고정공지 게시글 개수 검증
+        /*<![CDATA[*/
+        var curFxdNtcCnt = /*[[${bbsInfo.curFxdNtcCnt}]]*/;
+        var fxdNtcCnt = /*[[${bbsInfo.fxdNtcCnt}]]*/;
+        var fxdNtcYn = /*[[${employInfo.fxdNtcYn}]]*/;
+        /*]]>*/
+
+        if(url == employInsertUrl) {
+            if(curFxdNtcCnt >= fxdNtcCnt) {
+                alert("등록할 수 있는 고정공지 게시글의 개수를 초과하였습니다. ")
+                return ;
+            }
+        } else {
+            if(curFxdNtcCnt >= fxdNtcCnt && fxdNtcYn == 'N' && $('input[name=fxdNtcYn]:checked').val() == 'Y') {
+                alert("등록할 수 있는 고정공지 게시글의 개수를 초과하였습니다. ")
+                return ;
+            }
+        }
+
+        var editorData = editor.getData();
+        $("#cntnts").val(editorData);
+
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                cache: false,
+                dataType: 'json',
+                data: $("#employForm").serialize(),
+                success: function (data) {
+                    alert(data.msg);
+                    closeWorkProgress();
+                    gridHelper1.resetListContent();
+                }
+            });
+        }
+    }
+
+    $('#multiFileInput').on("change", function(event) {
+
+        var objFile = document.querySelector('#multiFileInput');
+        var formData = new FormData();
+        var content = "";
+
+        for( i = 0 ; i < objFile.files.length ; i++) {
+            if(objFile.files[i].size > (atchfileSize*1024*1024)){
+                alert( atchfileSize + "MB를 초과하는 파일은 업로드 하실수 없습니다.  : "+objFile.files[i].name );
+            }else if(uploadFileCnt >= atchfileCnt){
+                alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+            }else{
+                formData.append("files", objFile.files[i]);
+                uploadFileCnt++;
+            }
+        }
+
+        formData.append("filegrpid", $("#filegrpid").val());
+        formData.append("filegrpNm", "bbs");
+        formData.append("bbsid", $("#bbsid").val());
+
+        if(uploadFileCnt >0 ){
+            $.ajax({
+                url : '/uploadMultipleFiles.do',
+                processData : false,
+                contentType : false,
+                data : formData,
+                type : 'POST',
+                success : function(response) {
+                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                        $("#filegrpid").val( response[0].filegrpid );
+                    }
+
+                    for(i = 0 ;i < response.length; i++ ){
+                        content = "<span class ='label label-inverse' id='inputFiles"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') class='text-white'>"+response[i].orginlFileNm +"&nbsp;&nbsp;</a>";
+                        content +="<a href='javascript:void(0)' class='text-white' onclick =uploadFileCnt--;deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a>";
+                        content += "</span>"
+                        $('#multipleFileUploadSuccess').append(content);
+                    }
+                }
+            });
+            $("#multiFileInput").val("");
+
+            if (detectBrowser() == "other") {
+                $("#multiFileInput").val("");
+            } else {
+                $("#multiFileInput").replaceWith($("#multiFileInput").clone(true))
+            }
+
+        }
+    });
+
+    function deleteFileList(fileid, fileIdntfcKey) {
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        deleteFile(fileid, fileIdntfcKey);
+        $("#inputFiles"+fileid).remove();
+    }
+
+    function deleteFile(fileid, fileIdntfcKey) {
+        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+        $.ajax({
+            url : deleteFileUrl,
+            type: 'GET',
+            cache : false,
+            dataType: 'json',
+            success : function (data){
+                if(data.result=="success"){
+                    $("#"+fileid).remove();
+                    alert("파일삭제가 완료 되었습니다.");
+                }else{
+                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                }
+            },
+            error : function (error){
+            }
+        });
+    }
+</script>
+<!-- //insert 부분 -->
+    <script src="/js/ckeditor/ckeditor.js"></script>
+</html>
