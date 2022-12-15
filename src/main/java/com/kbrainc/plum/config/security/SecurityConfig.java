@@ -37,6 +37,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 
 import com.kbrainc.plum.rte.filter.SiteChangeFilter;
 import com.kbrainc.plum.rte.security.AjaxSessionTimeoutFilter;
+import com.kbrainc.plum.rte.security.CustomAuthFailureHandler;
 import com.kbrainc.plum.rte.security.CustomAuthenticationProvider;
 import com.kbrainc.plum.rte.security.CustomWebInvocationPrivilegeEvaluator;
 import com.kbrainc.plum.rte.security.HttpsLoginSuccessHandler;
@@ -155,8 +156,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          * 로그인아이디/비밀번호
          * 파라미터명 설정
          */
-        http.formLogin().failureUrl("/?error=true").usernameParameter("p_userid").passwordParameter("p_pswd") 
-                .successHandler(httpsLoginSuccessHandler());
+        http.formLogin().usernameParameter("p_userid").passwordParameter("p_pswd") 
+                .successHandler(httpsLoginSuccessHandler()).failureHandler(customAuthFailureHandler());
 
         http.logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("JSESSIONID").invalidateHttpSession(true);
 
@@ -259,6 +260,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public HttpsLoginSuccessHandler httpsLoginSuccessHandler() throws Exception {
         HttpsLoginSuccessHandler httpsLoginSuccessHandler = new HttpsLoginSuccessHandler();
         return httpsLoginSuccessHandler;
+    }
+    
+    @Bean
+    public CustomAuthFailureHandler customAuthFailureHandler() throws Exception {
+        CustomAuthFailureHandler customAuthFailureHandler = new CustomAuthFailureHandler();
+        return customAuthFailureHandler;
     }
     /*
     @Bean
