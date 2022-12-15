@@ -29,6 +29,9 @@ public class PaginationUtil {
 	 * @param pageCount  로우당 노출되는 페이징 카운트의 수 ex:7) << < 1 2 3 4 5 6 7 > >>
 	 * @return String 페이징 html 
 	 * @throws Exception 예외
+	 * 
+	 * @수정일 : 2022. 12. 14.
+	 * @author : 서정도
 	 */
 	public static String getPagingHtml(int totalPage, int pageNumber , int pageCount ) throws Exception {
 		StringBuffer paginationStr = new StringBuffer();
@@ -51,22 +54,35 @@ public class PaginationUtil {
 			lastPageNum = totalPage;
 		}
 		
+	      if (tmpPageNumber <= 1) {
+	            paginationStr.append("<div class=\"text-center jsgrid-pager-container\" style=\"\">");
+	            paginationStr.append("<div class=\"jsgrid-pager\">");
+	        }
+		
 		if (tmpPageNumber > 1) {
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-first\" onclick ='goPage(1)'><span class=\"ir\">처음</span></a>");
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-prev\" onclick ='goPage(").append(tmpPageNumber - 1).append(")'><span class=\"ir\">처음</span></a>");
+		    paginationStr.append("<div class=\"text-center jsgrid-pager-container\" style=\"\">");
+		    paginationStr.append("<div class=\"jsgrid-pager\">");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"jsgrid-pager-nav-button\" onclick ='goPage(1)'><span class=\"ir\"> < 처음 ㅣ</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-prev\" onclick ='goPage(").append(tmpPageNumber - 1).append(")'><span class=\"ir\">이전</span></a>");
 		}
 		
 		for (int i = firstPageNum; i <= lastPageNum; i++) {
 			
 			if (i == tmpPageNumber) {
-				paginationStr.append("<a href='javascript:void(0)' class='btn-paging is-active'>").append(i).append("</a>");
+			    paginationStr.append("<span class=\"jsgrid-pager-page\">");
+				paginationStr.append("<a href='javascript:void(0)' class='page-jsgrid-pager-page jsgrid-pager-current-page'>").append(i).append("</a>");
+				paginationStr.append("</span>");
 			} else {
-				paginationStr.append("<a href='javascript:void(0)' class='btn-paging'  onclick ='goPage(").append(i).append(")'>").append(i).append("</a>");
+			    paginationStr.append("<span class=\"jsgrid-pager-page\">");
+				paginationStr.append("<a href='javascript:void(0)' class='page-jsgrid-pager-page'  onclick ='goPage(").append(i).append(")'>").append(i).append("</a>");
+				paginationStr.append("</span>");
 			}
 		}
 		if (tmpPageNumber < totalPage) {
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-next\" onclick ='goPage(").append(tmpPageNumber + 1).append(")' ><span class=\"ir\">다음</span></a>");
-			paginationStr.append("<a href=\"javascript:void(0)\" class=\"btn-paging-quick btn-paging-last\" onclick ='goPage(").append(totalPage).append(")'><span class=\"ir\">마지막</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"jsgrid-pager-nav-button\" onclick ='goPage(").append(tmpPageNumber + 1).append(")' ><span class=\"ir\">다음</span></a>");
+			paginationStr.append("<a href=\"javascript:void(0)\" class=\"jsgrid-pager-nav-button\" onclick ='goPage(").append(totalPage).append(")'><span class=\"ir\">마지막</span></a>");
+			paginationStr.append("</div>");
+			paginationStr.append("</div>");
 		} 
 		
 		return paginationStr.toString();

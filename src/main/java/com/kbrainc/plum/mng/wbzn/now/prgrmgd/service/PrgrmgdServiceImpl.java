@@ -10,17 +10,17 @@ import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
-* 환경교육NOW -> 환경교육관리 서비스 구현 클래스
+* 환경교육NOW -> 프로그램안내관리 서비스 구현 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.envedu.service
-* - EnveduServiceImpl.java
+* com.kbrainc.plum.mng.wbzn.now.prgrmgd.service
+* - PrgrmgdServiceImpl.java
 * </pre>
 *
-* @ClassName : EnveduServiceImpl
-* @Description : 환경교육NOW -> 환경교육관리 서비스 구현 클래스
+* @ClassName : PrgrmgdServiceImpl
+* @Description : 환경교육NOW -> 프로그램안내관리 서비스 구현 클래스
 * @author : JD
-* @date : 2022. 12. 7.
+* @date : 2022. 12. 9.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -31,11 +31,11 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     private PrgrmgdDao prgrmgdDao;
     
     /**
-    * 환경교육관리 게시글 목록 조회
+    * 프로그램안내관리 게시글 목록 조회
     *
-    * @Title : selectEnveduList
-    * @Description : 환경교육관리 게시글 목록 조회
-    * @param enveduVo 환경교육관리 객체
+    * @Title : selectPrgrmgdList
+    * @Description : 프로그램안내관리 게시글 목록 조회
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
@@ -44,11 +44,11 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     }
     
     /**
-    * 환경교육관리 게시글 등록
+    * 프로그램안내관리 게시글 등록
     *
-    * @Title : insertEnvedu
-    * @Description : 환경교육관리 게시글 등록
-    * @param enveduVo 환경교육관리 객체
+    * @Title : insertPrgrmgd
+    * @Description : 프로그램안내관리 게시글 등록
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예회
     * @return int
     */
@@ -57,24 +57,24 @@ public class PrgrmgdServiceImpl extends PlumAbstractServiceImpl implements Prgrm
     }
     
     /**
-    * 환경교육관리 게시글 상세조회
+    * 프로그램안내관리 게시글 상세조회
     *
-    * @Title : selectEnveduInfo
-    * @Description : 환경교육관리 게시글 상세조회
-    * @param enveduVo 환경교육관리 객체
+    * @Title : selectPrgrmgdInfo
+    * @Description : 프로그램안내관리 게시글 상세조회
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예외
-    * @return EnveduVo
+    * @return PrgrmgdVo
     */
     public PrgrmgdVo selectPrgrmgdInfo(PrgrmgdVo prgrmgdVo) throws Exception{
         return prgrmgdDao.selectPrgrmgdInfo(prgrmgdVo);
     }
     
     /**
-    * 환경교육관리 게시글 수정
+    * 프로그램안내관리 게시글 수정
     *
-    * @Title : updateEnvedu
-    * @Description : 환경교육관리 게시글 수정
-    * @param enveduVo 환경교육관리 객체
+    * @Title : updatePrgrmgd
+    * @Description : 프로그램안내관리 게시글 수정
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예외
     * @return int
     */

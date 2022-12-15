@@ -10,8 +10,11 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -119,9 +122,12 @@ public class MemberVo extends ParentRequestVo {
     /** 기관 아이디 */
     private Integer instid;
     
-    /** 기관 코드 */
+    /** 기관 역할 코드 */
     @Size(max = 20, message = "기관코드는 20자를 넘을 수 없습니다.")
     private String instpicRoleCd;
+    
+    /** 기관 역할 코드 명*/
+    private String instpicRoleCdNm;
     
     /** 이용약관_동의_여부 */
     @Pattern(regexp="[YN]")
@@ -192,6 +198,9 @@ public class MemberVo extends ParentRequestVo {
     /** 수정자아이디 */
     private int mdfrid;
     
+    /** 회원 역할 아이디 */
+    private Integer roleid;
+    
     /** 역할 아이디모음  */
     private String roleids;
     
@@ -216,6 +225,9 @@ public class MemberVo extends ParentRequestVo {
     /** 간편로그인 코드  저장용*/
     private String [] esylgnCds;
     
+    /** 간편로그인 코드  저장용*/
+    private String [] userids;
+    
     /** 회원 검색용 파라메터 추가 *****/
     /** 상태코드 검색용 */
     private String searchSttsCd;
@@ -228,6 +240,25 @@ public class MemberVo extends ParentRequestVo {
     
     /** 회원 검색 종료일자(가입일 기준) */
     private String searchEndDay;
+    
+    public void setInstpicRoleCd(String instpicRoleCd) throws Exception{
+        this.instpicRoleCd = instpicRoleCd;
+        
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.instpicRoleCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instpicRoleCd);
+                this.instpicRoleCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+             }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+             }
+        }
+    }
     
     
 }

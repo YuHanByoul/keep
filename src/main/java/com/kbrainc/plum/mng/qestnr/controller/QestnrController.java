@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.mng.qestnr.service.QestnrServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -138,6 +139,24 @@ public class QestnrController {
     @RequestMapping(value = "/mng/qestnr/qitemInsertForm.html")
     public String qitemInsertForm() throws Exception {
         return "mng/qestnr/qitemInsert";
+    }
+    
+    /**
+     * 설문지 문항 수정 화면
+     *
+     * @Title : qitemUpdateForm
+     * @Description : 설문지문항 수정 화면
+     * @param qitemVo QitemVo 객체
+     * @param qitemExVo QitemExVo 객체
+     * @param model 모델객체
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/qestnr/qitemUpdateForm.html")
+    public String qitemUpdateForm(QitemVo qitemVo, QitemExVo qitemExVo, Model model) throws Exception {
+        model.addAttribute("qitem", qestnrService.selectQitemInfo(qitemVo));
+        model.addAttribute("qitemEx", qestnrService.selectQitemExList(qitemVo));
+        return "mng/qestnr/qitemUpdate";
     }
        
     /**
@@ -307,8 +326,44 @@ public class QestnrController {
         return resultMap;
     }
     
-    // 설문지 문항 정보 조회
-    // 설문지 문항 정보 업데이트
+    /**
+     * 설문지 문항 정보 업데이트
+     *
+     * @Title : updateQitem
+     * @Description : 설문지 문항 정보 업데이트
+     * @param qitemVo QitemVo 객체
+     * @param bindingResult qitemVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/qestnr/updateQitem.do")
+    @ResponseBody
+    public Map<String, Object> updateQitem(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        qitemVo.setUser(user);
+        retVal = qestnrService.updateQitem(qitemVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
+            
+        return resultMap;
+    }
     
     /**
      * 설문지 문항 순서 업데이트
@@ -316,7 +371,7 @@ public class QestnrController {
      * @Title : updateQestnr
      * @Description : 설문지 문항 순서 업데이트
      * @param qestnrVo QestnrVo 객체
-     * @param bindingResult qestnrVo 유효성 검증결과
+     * @param bindingResult qitemVo 유효성 검증결과
      * @param user 사용자 세션 정보
      * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외
@@ -355,7 +410,7 @@ public class QestnrController {
      * @Title : deleteQitem
      * @Description : 설문지 문항 삭제
      * @param qitemVo QitemVo 객체
-     * @param bindingResult qestnrVo 유효성 검증결과
+     * @param bindingResult qitemVo 유효성 검증결과
      * @param user 사용자 세션 정보
      * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외

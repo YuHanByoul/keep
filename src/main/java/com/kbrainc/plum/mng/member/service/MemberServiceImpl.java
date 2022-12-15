@@ -584,5 +584,17 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     public int updateMemberDelYn(MemberVo memberVo) throws Exception{
         return memberDao.updateMemberDelYn(memberVo);
     };
+    /**
+     *  회원 기관정보 수정  
+     *
+     * @Title       : updateInstMemberRole 
+     * @Description : 회원 기관정보 수정
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int updateInstMemberRole(MemberVo memberVo) throws Exception{
+        return memberDao.updateInstMemberRole(memberVo);
+    };
     
 }

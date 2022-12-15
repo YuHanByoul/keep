@@ -172,7 +172,7 @@ public class EnveduController {
     }
     
     /**
-    * 환경교육관리 게시글 수정 기능
+    * 환경교육관리 게시글 등록 기능
     *
     * @Title : insertEnvedu
     * @Description : 환경교육관리 수정 기능

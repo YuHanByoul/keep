@@ -55,7 +55,7 @@ public class InstVo extends ParentRequestVo {
     private int instid;
     
     /** 기관 이름 */
-    @Size(max = 100, message = "기관 이름은 20자를 넘을 수 없습니다.")
+    @Size(max = 100, message = "기관 이름은 100자를 넘을 수 없습니다.")
     private String instNm;
     
     /** 기관코드 */
@@ -68,6 +68,9 @@ public class InstVo extends ParentRequestVo {
     
     /** 기관유형코드명 */
     private String instTypeCdNm;
+    
+    /** 지역 코드 */
+    private String rgnCd;
     
     /** 사업자번호 */
     @Size(max = 10, message = "사업자번호는 10자를 넘을 수 없습니다.")
@@ -104,6 +107,9 @@ public class InstVo extends ParentRequestVo {
     /** 로고파일 아이디 */
     private Integer logoFileid;
     
+    /** 첨부 파일 그룹아이디 */
+    private Integer filegrpid;
+    
     /** 승인 상태 코드 */
     @Size(max = 20, message = "승인상태 코드는 20자를 넘을 수 없습니다.")
     private String aprvSttsCd;
@@ -129,8 +135,15 @@ public class InstVo extends ParentRequestVo {
     /** 수정자아이디 */
     private int mdfrid;
     
+    
     /*** 담당자명 ***/
     private String mngnms;
+    
+    /*** 사용자아이디 (삭제용) ***/
+    private String[] userids;
+    
+    /** 역할 아이디 */
+    private int roleid;
     
     /**** 검색용 파라메터 추가****/
     /** 기관유형 */
@@ -139,6 +152,8 @@ public class InstVo extends ParentRequestVo {
     /** 승인 상태 코드 */
     private String searchApprovalSttsCd;
     
+    /** MODE */
+    private String mode;
     
     public void setInstTypeCd(String instTypeCd) throws Exception{
         this.instTypeCd = instTypeCd;
@@ -158,9 +173,5 @@ public class InstVo extends ParentRequestVo {
              }
         }
     }
-    
-    
-    
-    
     
 }
