@@ -1,0 +1,100 @@
+ <div class="card-header p-b-0">
+    <ul class="nav nav-tabs  tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/cmnty/cmntyUpdateForm.html">
+            <li class="nav-item">
+                <a id="cmntyTab" class="nav-link active" data-bs-toggle="tab" href="#cmnty" role="tab"><strong>기본설정</strong></a>
+            </li>
+            <li class="nav-item">
+                <a id="mbrTab" class="nav-link" data-bs-toggle="tab" href="#mbr" role="tab"><strong>회원</strong></a>
+            </li>
+        </th:block>
+        <th:block th:if="${cmnty.ntcmttrYn == 'Y'}">
+            <li class="nav-item">
+                <a id="ntcmttrTab" class="nav-link" data-bs-toggle="tab" href="#ntcmttr" role="tab"><strong>공지사항</strong></a>
+            </li>
+        </th:block>
+        <th:block th:if="${cmnty.infobbsYn == 'Y'}">
+            <li class="nav-item">
+                <a id="infobbsTab" class="nav-link" data-bs-toggle="tab" href="#infobbs" role="tab"><strong>정보게시판</strong></a>
+            </li>
+        </th:block>
+        <th:block th:if="${cmnty.recsroomYn == 'Y'}">
+            <li class="nav-item">
+                <a id="recsroomTab" class="nav-link" data-bs-toggle="tab" href="#recsroom" role="tab"><strong>자료실</strong></a>
+            </li>
+        </th:block>
+        <th:block th:if="${cmnty.envobservactvtYn == 'Y'}">
+            <li class="nav-item">
+                <a id="envobservactvtTab" class="nav-link" data-bs-toggle="tab" href="#envobservactvt" role="tab"><strong>환경관찰활동</strong></a>
+            </li>
+        </th:block>
+    </ul>
+</div>
+<div id="tabContent" class="tab-content tabs p-t-20">
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var cmntyDetail = {
+        cmntyid: /*[[${param.cmntyid}]]*/,
+        
+        init: function() {
+            this.setTab();
+            this.registEvent();
+        },
+        
+        setTab: function() {
+            var tabFlag = false;
+            if(tabFlag == false) {
+                this.selectTab("cmntyTab");
+                tabFlag = true;
+            }
+            if(tabFlag == false) {
+                this.selectTab("mbrTab");
+                tabFlag = true;
+            }
+        },
+        
+        registEvent: function() {
+            var _this = this;
+            $(".nav-tabs a").on("show.bs.tab", function(event) {
+                var tabId = event.currentTarget.attributes.id.value;
+                _this.selectTab(tabId);
+            });
+        },
+        
+        selectTab: function(tabId) {
+            var uri; 
+            if(tabId == "cmntyTab") {
+                uri = "/mng/cmnty/cmntyUpdateForm.html";
+            } else if(tabId == "mbrTab") {
+                uri = "/mng/qestnr/qitemForm.html";
+            }  else if(tabId == "mbrTab") {
+                uri = "/mng/qestnr/qitemForm.html";
+            }  else if(tabId == "mbrTab") {
+                uri = "/mng/qestnr/qitemForm.html";
+            }  else if(tabId == "mbrTab") {
+                uri = "/mng/qestnr/qitemForm.html";
+            }
+            this.loadTabContent(uri + "?cmntyid=" + this.cmntyid);
+            $("#" + tabId).parent().addClass("active");
+        },
+        
+        loadTabContent: function(uri) {
+            $.ajax({
+                cache: false,
+                url: uri, 
+                type: "GET",
+                async: "false",
+                dataType: "html",
+                success: function(result) { //요청이 성공했을때 실행되는 콜백 함수
+                    $("#tabContent").html(result);
+                    scrollIntoView("contentPanel");
+                }
+            });
+        }
+    };
+    
+    cmntyDetail.init();
+    /*]]>*/
+</script>

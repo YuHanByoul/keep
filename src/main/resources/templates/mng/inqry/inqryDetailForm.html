@@ -2,108 +2,108 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
 >
-<div class="row">
-    <div class="col-12 col-lg-6 p-l-0">
-        <div class="card">
-            <div class="card-header p-b-0">
-                <h4 class="sub-title"><strong>문의</strong></h4>
-            </div>
-            <div class="card-block-small p-t-0">
-                <p>
-                    <strong th:text="|[${inqryInfo.inqryClNm}] ${inqryInfo.title}|">[분류] 제목</strong>
-                </p>
-                <p>
-                    <th:block th:if="${not #strings.isEmpty(inqryInfo.instNm)}">
-                        <th:block th:text="${inqryInfo.instNm} "></th:block>
-                    </th:block>
 
-                    <th:block th:text="|${inqryInfo.nm}(${inqryInfo.acnt})|"></th:block><br/>
-                    <th:block th:text="${#dates.format(inqryInfo.regDt, 'yyyy-MM-dd')}"/>
-                </p>
-            </div>
-            <div class="card-header p-t-0 p-b-0">
-                <h4 class="sub-title"><strong>문의 내용</strong></h4>
-            </div>
-            <div class="card-block-small p-t-0">
-                <p>
-                    <th:block th:utext="${#strings.replace(#strings.escapeXml(inqryInfo.cntnts),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
-                </p>
-                <div class="mt-2 row">
-                    <ul th:if="${fileList != null}">
-                        <th:block th:each="file : ${fileList}">
-                            <li>
-                                <a href="javascript:void(0)" th:onclick="|javascript:downloadFileByFileid('${item.fileid}','${item.fileIdntfcKey}')|">
-                                    <i class="ion-paperclip f-18"></i> [[${file.orginlFileNm}]]
-                                </a>
-                            </li>
-                        </th:block>
-                    </ul>
-                </div>
+<div class="col-12 col-lg-6 ">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h4 class="sub-title"><strong>문의</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <strong th:text="|[${inqryInfo.inqryClNm}] ${inqryInfo.title}|">[분류] 제목</strong>
+            </p>
+            <p>
+                <th:block th:if="${not #strings.isEmpty(inqryInfo.instNm)}">
+                    <th:block th:text="${inqryInfo.instNm} "></th:block>
+                </th:block>
+
+                <th:block th:text="|${inqryInfo.nm}(${inqryInfo.acnt})|"></th:block><br/>
+                <th:block th:text="${#dates.format(inqryInfo.regDt, 'yyyy-MM-dd')}"/>
+            </p>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <h4 class="sub-title"><strong>문의 내용</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(inqryInfo.cntnts),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </p>
+            <div class="mt-2 row">
+                <ul th:if="${fileList != null}">
+                    <th:block th:each="file : ${fileList}">
+                        <li>
+                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                <i class="ion-paperclip f-18"></i> [[${file.orginlFileNm}]]
+                            </a>
+                        </li>
+                    </th:block>
+                </ul>
             </div>
         </div>
     </div>
-    <div class="col-12 col-lg-6 p-r-0">
-        <div class="card">
-            <form name="inqryAnswrFrm" id="inqryAnswrFrm" action="" method="POST" class="form-horizontal row-border" onsubmit="return false;">
-                <input type="hidden" name="inqryid" id="inqryid" th:value="${inqryInfo.inqryid}" />
-                <input type="hidden" name="answrid" id="answrid" th:value="${inqryAnswrInfo.answrid}" />
+</div>
+<div class="col-12 col-lg-6 ">
+    <div class="card">
+        <form name="inqryAnswrFrm" id="inqryAnswrFrm" action="" method="POST" onsubmit="return false;">
+            <input type="hidden" name="inqryid" id="inqryid" th:value="${inqryInfo.inqryid}" />
+            <input type="hidden" name="answrid" id="answrid" th:value="${inqryAnswrInfo.answrid}" />
 
-                <div class="card-header p-b-0">
-                    <h4 class="sub-title"><strong>답변</strong></h4>
+            <div class="card-header p-b-0">
+                <h4 class="sub-title"><strong>답변</strong></h4>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="mb-2 form-group row required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                    <div class="col-sm-12">
+                        <span kattr:select_code="inqrySttsCd" th:attr="grpCd=103,selectedCd=${inqryInfo.inqrySttsCd}" isAdmin="true">
+                    </div>
                 </div>
-                <div class="card-block-small p-t-0">
-                    <div class="mb-2 form-group row required">
-                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
-                        <div class="col-sm-12">
-                            <span kattr:select_code="inqrySttsCd" th:attr="grpCd=103,selectedCd=${inqryInfo.inqrySttsCd}" isAdmin="true">
-                        </div>
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                           for="title"><strong>답변 제목</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${inqryAnswrInfo.title}"/>
                     </div>
-                    <div class="mb-2 form-group row">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
-                               for="title"><strong>답변 제목</strong></label>
-                        <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${inqryAnswrInfo.title}"/>
-                        </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                           for="cntnts"><strong>답변 내용</strong></label>
+                    <div class="col-sm-12">
+                        <textarea rows="5" cols="5" class="form-control form-control-sm" id="cntnts" name="cntnts" th:utext="${inqryAnswrInfo.cntnts}" ></textarea>
                     </div>
-                    <div class="mb-2 form-group row">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
-                               for="cntnts"><strong>답변 내용</strong></label>
-                        <div class="col-sm-12">
-                            <textarea rows="5" cols="5" class="form-control form-control-sm" id="cntnts" name="cntnts" th:utext="${inqryAnswrInfo.cntnts}" ></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-0 row">
-                        <div class="col-12 col-lg-6 mb-2 mb-lg-0">
-                            <div class="mb-0 form-group">
-                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
-                                       for="opetrNm"><strong>답변자</strong></label>
-                                <div class="col-sm-12">
-                                    <input type="text" class="form-control form-control-sm" name="opetrNm" id="opetrNm" readonly
-                                           th:value="${inqryAnswrInfo.opetrNm != null ? inqryAnswrInfo.opetrNm : session.user.nm}"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-lg-6">
-                            <div class="mb-0 form-group">
-                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
-                                       for="regDt"><strong>답변일자</strong></label>
-                                <div class="col-sm-12">
-                                    <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" readonly
-                                           th:value="${inqryAnswrInfo.regDt != null ? #dates.format(inqryAnswrInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
-                                </div>
+                </div>
+                <div class="mb-0 row">
+                    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                                   for="opetrNm"><strong>답변자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="opetrNm" id="opetrNm" readonly
+                                       th:value="${inqryAnswrInfo.opetrNm != null ? inqryAnswrInfo.opetrNm : session.user.nm}"/>
                             </div>
                         </div>
                     </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                                   for="regDt"><strong>답변일자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" readonly
+                                       th:value="${inqryAnswrInfo.regDt != null ? #dates.format(inqryAnswrInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-t-0 card-block-small">
-                    <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
-                    <th:block sec:authorize-url="/mng/inqry/insertInqryAnswr.do">
-                        <button type="button" class="btn btn-primary" onclick="saveInqryAnswr()">저장</button>
-                    </th:block>
-                </div>
-            </form>
+            </div>
+            <div class="p-t-0 card-block-small">
+                <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+                <th:block sec:authorize-url="/mng/inqry/insertInqryAnswr.do">
+                    <button type="button" class="btn btn-primary" onclick="saveInqryAnswr()">저장</button>
+                </th:block>
+            </div>
+        </form>
 
-        </div>
     </div>
 </div>
 
