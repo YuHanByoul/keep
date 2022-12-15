@@ -56,10 +56,13 @@ public class QestnrVo extends ParentRequestVo {
     /** 사용 여부 */
     private String useYn;
     
-    /** 사이트아이디 */
+    /** 문항수 */
+    private int qitemCnt;
+    
+    /** 검색 사이트 아이디 */
     private String searchSiteid;
     
-    /** 설문종류 */
+    /** 검색 설문 종류 */
     private String searchQestnrKndCd;
     
     /** 수정일시 */
@@ -68,9 +71,6 @@ public class QestnrVo extends ParentRequestVo {
     
     /** 수정자 아이디 */
     private String mdfrid;
-    
-    /** 문항수 */
-    private int qitemCnt;
     
     /** 등록일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

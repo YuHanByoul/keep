@@ -80,9 +80,6 @@ public class QitemVo extends ParentRequestVo {
     /** 수정자 아이디 */
     private String mdfrid;
     
-    /** 문항수 */
-    private int qitemCnt;
-    
     /** 등록일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;

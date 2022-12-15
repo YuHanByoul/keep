@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CmntyDaoImpl.xml
+	Description : 커뮤니티 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.cmnty.model.CmntyDao">
+    
+    <!-- 커뮤니티 목록 조회 -->
+    <select id="selectCmntyList" parameterType="CmntyVo" resultType="CmntyVo">
+        /* CmntyDao.selectCmntyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.CMNTYID
+            , A.CMNTY_NM
+            , A.ESTERID
+            , C.ACNT
+            , C.NM
+            , COUNT(B.USERID) AS MBR_CNT
+            , A.OPER_YN
+            , A.REG_DT            
+        FROM
+            TB_CMT_CMNTY A            
+        LEFT OUTER JOIN
+            TB_CMT_CMNTY_MBR B ON (B.CMNTYID = A.CMNTYID)
+        INNER JOIN (
+            SELECT USERID, ACNT, NM FROM TB_CMM_USER
+        ) C ON A.ESTERID = C.USERID
+        WHERE 1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cmntyNm'">
+            AND A.CMNTY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+            AND C.NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
+            AND C.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchOperYn != null and searchOperYn != ''">
+            AND A.OPER_YN = #{searchOperYn}
+        </if>
+        GROUP BY
+            A.CMNTYID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 커뮤니티 정보 조회 -->
+    <select id="selectCmntyInfo" parameterType="CmntyVo" resultType="CmntyVo">
+        /* CmntyDao.selectCmntyInfo */
+        SELECT
+            A.CMNTYID
+            , A.CMNTY_NM
+            , A.CMNTY_INTRCN
+            , A.ESTERID
+            , A.JOINAPRVMTHD_CD
+            , A.RLS_YN
+            , A.SRCH_EXPSR_YN
+            , A.OPER_YN
+            , A.CMNTY_LOGO_FILEID
+            , A.NTCMTTR_YN
+            , A.INFOBBS_YN
+            , A.RECSROOM_YN
+            , A.ENVOBSERVACTVT_YN
+        FROM
+            TB_CMT_CMNTY A
+        WHERE CMNTYID = #{cmntyid}
+    </select>
+    
+</mapper>
