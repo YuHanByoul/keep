@@ -5,15 +5,11 @@
     layout:decorator="layout/mng/mainLayout" 
 >
 
-    <body>
-    <div layout:fragment="content">
-    <style>
-.hide
-{
-   display:none;
-}
+<body>
+ <div layout:fragment="content">
+ <style>
+.hide{display:none;}
 </style>
-
 <!-- Page-body start -->
   <div class="page-body">
       <div class="row">
@@ -78,9 +74,10 @@
            <!-- //필터 부분 -->
              
            <div class="card">
+           
                 <div class="row p-20 p-b-0">
-                    <div class="col-12 col-md-6">
-                        <h5><strong>회원검색결과</strong></h5>
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <h5><strong>기관 검색 결과</strong></h5>
                     </div>
                     <div class="col-12 col-md-6 text-right">
                     
@@ -90,6 +87,7 @@
                         
                     </div>
                 </div>
+                
                 <div class="card-block-small">
                     <div class="dt-responsive table-responsive">
                         <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -98,15 +96,14 @@
                        </div>
                     </div>
                 </div>
-                
             </div>
-
- 
+            
+		  <!-- Content Area -->
+		  <div id="contentPanel" class="card"></div>
+		  
       </div>
   </div>
   
-  <!-- Content Area -->
-  <div id="contentPanel" class="panel panel-default" style="display:none"></div>
   
   
   <!--팝업-->
@@ -122,51 +119,12 @@
     var selectedItems = [];
     var gridHelper1;         
     $(function(){
-        
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
-        
         writeJsGridData();
-        
-        if(userid != null){
-            var detailUrl = "/mng/member/memberDetailForm.html?userid=" + userid; 
-                gridHelper1.loadContent(detailUrl);
-        }
-        
-        $('#popCon2').on('show.bs.modal', function() {
-            if(validChecked()) {
-                $('#popCon2').load("/mng/member/smsPop.html", { userids: selectedItems.join(',') });
-            }else{
-                return false;
-            }
-        });
-        
-        $('#popCon2').on('hide.bs.modal', function() {
-            $('#popCon2').html(""); 
-        });
-        
-        $('#popCon3').on('show.bs.modal', function() {
-            if(validChecked()) {
-                $('#popCon3').load("/mng/member/emailPop.html", { userids: selectedItems.join(',') });
-            }else{
-                return false;
-            }
-        });
-        
-        $('#popCon3').on('hide.bs.modal', function() {
-            $('#popCon3').html(""); 
-        });
     });
     
-    function validChecked() {
-        if(selectedItems.length == 0) {
-            alert("대상을 선택해주세요.");
-            return false;
-        }
-        return true;
-    }
-    
     function fn_goInsertForm(){
-        var insertUrl ="/mng/member/memberInsertForm.html";
+        var insertUrl = "/mng/inst/instDetail.html?mode=I"
             gridHelper1.loadContent(insertUrl);
     }
      
@@ -180,7 +138,7 @@
         $("#searchInstCd").val('');
         $("#searchApprovalSttsCd").val('');
     }
-        
+    
     function writeJsGridData(){
         $("#jsGrid").jsGrid({
             height: "auto",
@@ -235,24 +193,10 @@
                 },
             },
             fields: [
-                 {
-                     headerTemplate: function() {
-                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-                     },
-                     itemTemplate: function(_, item) {
-                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-                         //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
-                         .prop("checked", $.inArray(item, selectedItems) > -1)
-                         .on("change", function () {
-                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-                         });
-                     },
-                     align: "center",
-                     width: "30",
-                     sorting: false
-                 }                  
-                ,{ name: 'instid', css: 'hide' }
+                  
+                 { name: 'instid', css: 'hide' }
                 ,{ name: 'nm'    , css: 'hide' }
+                
                 ,{ title: 'No.'    ,name: 'rowNumber'     ,type: "number" ,width: "80"   ,align:"center",  sorting :false }
                 ,{ title: '기관명'   ,name: 'instNm'        ,type: "text"  ,width: "300"  ,align:"center"}
                 ,{ title: '기관유형'  ,name: 'instTypeCdNm' ,type: "text"   ,width: "100"  ,align:"center"}
@@ -261,61 +205,23 @@
                 ,{ title: '인증상태'  ,name: 'aprvSttsCd'   ,type: "text"   ,width: "100"  ,align:"center"
                 	,itemTemplate: function(value, item){ if(value=='1'){return "신청";}else if(value=='2'){return "승인";}else{return "승인거부";}}
                  }
-                ,{ title: '사용여부'  ,name: ' useYn'   ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '사용여부'  ,name: 'useYn'   ,type: "text" , width: "100" ,align:"center"}
                 ,{ title: '등록일자'  ,name: 'regDt' ,type: "text" , width: "150", align:"center" }
             ],
             
-            /*[# sec:authorize-url="/mng/member/memberDetailForm.html"]*/
+            /*[# sec:authorize-url="/mng/inst/instDetail.html"]*/
             rowClick: function(args) {
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                var detailUrl = "/mng/member/memberDetailForm.html?userid=" + args.item.userid; 
+                var detailUrl = "/mng/inst/instDetail.html?mode=M&instid=" + args.item.instid; 
                 gridHelper1.loadContent(detailUrl);
                 gridHelper1.rowClick(args);
             },
             /*[/]*/
             onPageChanged: function(args) {
-                selectedItems = [];
+                //selectedItems = [];
             }
         });
         
-        var selectItem = function(item) {
-            selectedItems.push(item);
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        };
-         
-        var unselectItem = function(item) {
-            selectedItems = $.grep(selectedItems, function(i) {
-            return i !== item;
-            });
-            if(selectedItems.length == 0) {
-                $('#selectAllCheckbox').attr('checked', false);
-            }
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        };
-        
-        $("#selectAllCheckbox").click(function(item) {
-            selectedItems = [];
-            if(this.checked) { // check select status
-                $('.singleCheckbox').each(function() { 
-                    this.checked = true;   
-                    selectItem($(this).parent().next().text());           
-                }); 
-            }else {
-                $('.singleCheckbox').each(function() { 
-                    this.checked = false;      
-                    unselectItem(item);
-                });  
-                selectedItems = [];
-            }
-        });
     }
 
   var popupUrl = "/mng/member/blcklstDsctnPopup.html";
@@ -372,6 +278,26 @@
           });
       }
   }
+
+
+  function fn_deleteFile(fileid, fileIdntfcKey){
+      
+        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+        $.ajax({
+          url : deleteFileUrl,
+          type: 'GET',
+          cache : false,
+          dataType: 'json',
+          success : function (data){
+          },
+          error : function (error){
+          } 
+       })
+  };
+
+
+
+  
 </script>
 
 <script src="/js/ckeditor/ckeditor.js"></script>

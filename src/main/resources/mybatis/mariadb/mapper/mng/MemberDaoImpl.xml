@@ -664,6 +664,47 @@
          WHERE userid = #{userid} 
     </update>
     
-    
+    <!-- 회원 역할 권한 등록 -->
+    <insert id="insertRoleId" parameterType="MemberVo" >
+        /* MemberDao.insertRoleId */
+        INSERT INTO TB_CMM_ROLE_USER (
+           ROLEID
+           ,USERID
+           ,ROLE_STRT_DD
+           ,ROLE_END_DD
+           ,MDFCN_DT
+           ,MDFRID
+           ,REG_DT
+           ,RGTRID
+        ) VALUES (
+           #{roleid  }
+           ,#{userid }
+           ,DATE_FORMAT(NOW(),'%Y-%m-%d')
+           ,'9999-12-31'  
+           ,NOW()
+           ,#{userid }
+           ,NOW()
+           ,#{userid}
+        )
+    </insert>
+    <!-- 회원 기관정보 수정--> 
+    <update id="updateInstMemberRole" parameterType="MemberVo" >
+         /* MemberDao.updateInstMemberRole */
+        UPDATE TB_CMM_USER SET
+               INSTID            = #{instid}                     
+               ,INSTPIC_ROLE_CD   = #{instpicRoleCd}
+               ,MDFCN_DT          = NOW()                         
+               ,MDFRID            = #{user.userid}                
+         WHERE 1=1
+           AND userid = #{userid}
+    </update>
+    <!-- 회원 역할 정보 삭제--> 
+    <update id="deleteRoleUser" parameterType="MemberVo" >
+         /* MemberDao.deleteRoleUser */
+        DELETE FROM  TB_CMM_ROLE_USER                
+          WHERE 1=1
+            AND userid = #{userid}
+            AND ROLEID = #{roleid}
+    </update>
     
 </mapper>

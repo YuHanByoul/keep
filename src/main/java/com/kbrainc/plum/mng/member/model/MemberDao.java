@@ -327,6 +327,35 @@ public interface MemberDao {
      * @throws Exception 예외
      */
     public int updateMemberDelYn(MemberVo memberVo) throws Exception;
-    
+    /**
+     *  회원 역할정보변경  
+     *
+     * @Title       : insertRoleId 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int insertRoleId(MemberVo memberVo) throws Exception;
+    /**
+     *  회원 기관 정보변경  
+     *
+     * @Title       : updateInstMemberRole 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int updateInstMemberRole(MemberVo memberVo) throws Exception;
+    /**
+     *  회원 역할정보 삭제   
+     *
+     * @Title       : deleteRoleUser 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return int update로우수
+     * @throws Exception 예외
+     */
+    public int deleteRoleUser(MemberVo memberVo) throws Exception;
     
 }
