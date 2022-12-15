@@ -91,6 +91,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         HttpSession session = request.getSession();
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
+        request.setAttribute("loginid", loginid);
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
@@ -143,7 +144,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         } else { // 사용자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
+                    request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
+                    throw new LockedException("Login Error !!");
+                }
                 if (!password.equals((String) resultMap.get("PSWD"))) {
+                    commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
+                    Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
+                    getLoginFailMessage(loginFailCnt);
+                    Map<String, Object> data = getLoginFailMessage(loginFailCnt);
+                    request.setAttribute("message", data.get("message"));
                     throw new BadCredentialsException("Login Error !!");
                 }
                 
@@ -169,6 +179,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     resultList.add(roleMap);
                 }
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
+                Integer loginFailCnt = usernameNotFoundMap.get(loginid);
+                if (loginFailCnt != null && loginFailCnt >= 5) {
+                    request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
+                } else {
+                    Map<String, Object> data = getLoginFailMessage(loginFailCnt);
+                    request.setAttribute("message", data.get("message"));
+                    usernameNotFoundMap.put(loginid, (Integer) data.get("loginFailCnt"));
+                }
                 throw new UsernameNotFoundException("Login Error !!");
             } catch (Exception e) { // 예외발생시
                 throw new InternalAuthenticationServiceException("Login Error !!");

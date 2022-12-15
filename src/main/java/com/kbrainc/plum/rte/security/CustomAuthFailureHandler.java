@@ -31,13 +31,15 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        String defaultFailureUrl = "/?error=true";
+        StringBuffer defaultFailureUrl = new StringBuffer("/?error=true&loginid=");
         String message = (String)request.getAttribute("message");
         
+        defaultFailureUrl.append(request.getAttribute("loginid"));
+        
         if (!"".equals(StringUtil.nvl(message))) {
-            defaultFailureUrl += "&msg=" + Base64Utils.encodeToUrlSafeString(message.getBytes());
+            defaultFailureUrl.append("&msg=").append(Base64Utils.encodeToUrlSafeString(message.getBytes()));
         }
-        setDefaultFailureUrl(defaultFailureUrl);
+        setDefaultFailureUrl(defaultFailureUrl.toString());
  
         super.onAuthenticationFailure(request, response, exception);
     }
