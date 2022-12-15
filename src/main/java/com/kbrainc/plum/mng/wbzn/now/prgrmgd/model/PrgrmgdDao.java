@@ -7,17 +7,17 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
 
 /**
-* 환경교육NOW -> 환경교육관리 Dao 클래스
+* 환경교육NOW -> 프로그램안내관리 Dao 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.envedu.model
-* - EnveduDao.java
+* com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
+* - PrgrmgdDao.java
 * </pre>
 *
-* @ClassName : EnveduDao
-* @Description : 환경교육NOW -> 환경교육관리 Dao 클래스
+* @ClassName : PrgrmgdDao
+* @Description : 환경교육NOW -> 프로그램안내관리 Dao 클래스
 * @author : JD
-* @date : 2022. 12. 7.
+* @date : 2022. 12. 9.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -25,44 +25,44 @@ import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
 public interface PrgrmgdDao {
     
     /**
-    * 환경교육관리 게시글 목록 조회
+    * 프로그램안내관리 게시글 목록 조회
     *
-    * @Title : selectEnveduList
-    * @Description : 환경교육관리 게시글 목록 조회
-    * @param enveduVo 환경교육관리 객체
+    * @Title : selectPrgrmgdList
+    * @Description : 프로그램안내관리 게시글 목록 조회
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
     public List<PrgrmgdVo> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception;
     
     /**
-    * 환경교육관리 게시글 등록
+    * 프로그램안내관리 게시글 등록
     *
-    * @Title : insertEnvedu
-    * @Description : 환경교육관리 게시글 등록
-    * @param enveduVo 환경교육관리 객체
+    * @Title : insertPrgrmgd
+    * @Description : 프로그램안내관리 게시글 등록
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예회
     * @return int
     */
     public int insertPrgrmgd(PrgrmgdVo prgrmgdVo) throws Exception;
     
     /**
-    * 환경교육관리 게시글 상세조회
+    * 프로그램안내관리 게시글 상세조회
     *
-    * @Title : selectEnveduInfo
-    * @Description : 환경교육관리 게시글 상세조회
-    * @param enveduVo 환경교육관리 객체
+    * @Title : selectPrgrmgdInfo
+    * @Description : 프로그램안내관리 게시글 상세조회
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예외
-    * @return EnveduVo
+    * @return PrgrmgdVo
     */
     public PrgrmgdVo selectPrgrmgdInfo(PrgrmgdVo prgrmgdVo) throws Exception;
     
     /**
-    * 환경교육관리 게시글 수정
+    * 프로그램안내관리 게시글 수정
     *
-    * @Title : updateEnvedu
-    * @Description : 환경교육관리 게시글 수정
-    * @param enveduVo 환경교육관리 객체
+    * @Title : updatePrgrmgd
+    * @Description : 프로그램안내관리 게시글 수정
+    * @param prgrmgdVo 프로그램안내관리 객체
     * @throws Exception 예외
     * @return int
     */

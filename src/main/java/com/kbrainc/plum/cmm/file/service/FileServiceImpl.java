@@ -2,6 +2,7 @@ package com.kbrainc.plum.cmm.file.service;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,4 +180,13 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
         
         return false;
     }
+    
+    
+    public ArrayList<FileVo> getFileList(FileVo fileVo) throws Exception{
+        return fileDao.getFileList(fileVo);
+    }
+    public FileVo getFileInfo(FileVo fileVo) throws Exception{
+        return fileDao.getFileInfo(fileVo);
+    }
+    
 }

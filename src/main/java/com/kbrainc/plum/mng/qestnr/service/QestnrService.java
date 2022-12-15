@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.qestnr.service;
 import java.util.List;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 
 /**
@@ -99,6 +100,17 @@ public interface QestnrService {
      * @throws Exception 예외
      */
     public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 설문지 문항 보기 목록 조회
+     *
+     * @Title : selectQitemExList
+     * @Description : 설문지 문항 보기 목록 조회
+     * @param qitemVo QitemVo 객체
+     * @return List<QitemExVo> 설문지 문항 보기 목록
+     * @throws Exception 예외
+     */
+    public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 정보 업데이트

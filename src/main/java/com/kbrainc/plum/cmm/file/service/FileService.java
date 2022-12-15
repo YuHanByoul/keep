@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.file.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -23,4 +24,10 @@ public interface FileService {
     public void deleteOldFiles(int fileid) throws Exception;
     
     public boolean downloadFileCheck(FileVo fileVo, UserVo user) throws Exception;
+    
+    public ArrayList<FileVo> getFileList(FileVo fileVo) throws Exception;
+
+    public FileVo getFileInfo(FileVo fileVo) throws Exception;
+
+    
 }

@@ -103,13 +103,24 @@ public interface QestnrDao {
     /**
      * 설문지 문항 정보 조회
      *
-     * @Title : selectQestnrInfo
+     * @Title : selectQitemInfo
      * @Description : 설문지 문항 정보 조회
      * @param qitemVo QitemVo 객체
      * @return QitemVo QitemVo 객체
      * @throws Exception 예외
      */
     public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 설문지 문항 보기 목록 조회
+     *
+     * @Title : selectQitemExList
+     * @Description : 설문지 문항 보기 목록 조회
+     * @param qitemVo QitemVo 객체
+     * @return List<QitemExVo> 설문지 문항 보기 목록
+     * @throws Exception 예외
+     */
+    public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 정보 업데이트

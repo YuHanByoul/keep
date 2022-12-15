@@ -1,0 +1,423 @@
+
+<form id="instFrm" >
+    <!--탭영역 start --> 
+    <div class="tab-content tabs p-t-20">
+    
+      <div class="tab-pane active" id="agencyInfo" role="tabpanel">
+         <div class="card-header p-t-0 p-b-0">
+             <h3 class="sub-title"><strong>기본정보</strong></h3>
+         </div>
+         <div class="card-block-small p-t-0">
+             <div class="mb-2 row align-items-end">
+                 <div class="col-12 col-lg-3 mb-2 mb-lg-0">
+                 
+                     <th:block th:if ="${logoFile != null}">
+	                     <img  id="imgPreview" class="img-fluid col-12" th:src="'/downloadFileByFileid.do?fileid='+${logoFile.fileid}+'&file_idntfc_key='+${logoFile.fileIdntfcKey}" 
+	                     alt="logo image" style="max-width:300px; height:auto;">
+                     </th:block>
+                     <th:block th:unless ="${logoFile != null}">
+	                     <img  id="imgPreview" class="img-fluid col-12" src="/images/mng/default_logo.png" alt="logo image" style="max-width:300px; height:auto;">
+                     </th:block>
+                     
+                 </div>
+                 <div class="col-12 col-lg-9 form-group mb-0">
+                     <div class="mb-2 row">
+                         <div class="col-auto">
+                             <!-- 파일 명 및 삭제 버튼 영역-->
+                             <span id="logoFileListArea">
+                             
+	                             <th:block th:if ="${logoFile !=null}">
+	                                 <span th:id="'logo_img_'+${logoFile.fileid}" class="label label-inverse">
+	                                    <th:block th:text = "${logoFile.orginlFileNm}"></th:block>&nbsp;&nbsp;&nbsp;
+						                 <a  href="javascript:void(0)"
+						                     th:fileid ="${logoFile.fileid}"
+						                     th:fileIdntfcKey ="${logoFile.fileIdntfcKey}"
+						                     onclick="deleteLogoFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))" class="text-white">X</a>
+						             </span>
+                                 </th:block>
+                             </span>
+                         </div>
+                     </div>
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1">로고선택</label>
+                         <div class="col-sm-12">
+                             <input type="file" id="logoFile" name="logoFile" class="form-control form-control-sm"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="agencyName"><strong>기관명</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="기관명" th:value="${inst.instNm}"/>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="agencyCode"><strong>기관코드</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="instCd" id="instCd" placeholder="기관코드" readonly th:value="${inst.instCd}"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                     <div class="mb-0 form-group required">
+                         <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관유형</strong></span>
+                         <div class="col-sm-12">
+                         
+                             <span kattr:select_code="instTypeCd" grpCd="108" firstOptTxt="-선택 -"  th:attr="selectedCd=${inst.instTypeCd}" addClass="form-select form-select-sm form-control-sm" ></span>
+                             
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="brno"><strong>사업자등록번호</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="brno" id="brno" placeholder="사업자등록번호" th:value="${inst.brno}"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="rprsvNm"><strong>대표자명</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="rprsvNm" id="rprsvNm" placeholder="대표자명" th:value="${inst.rprsvNm}" />
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group row">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="fxno"><strong>팩스</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="fxno" id="fxno" placeholder="팩스 번호" th:value="${inst.fxno}" />
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="telno"><strong>전화번호</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="telno" id="telno" placeholder="전화번호" th:value="${inst.telno}" />
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="hmpg"><strong>홈페이지</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="hmpg" id="hmpg" placeholder="홈페이지" th:value="${inst.hmpg}"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                     <div class="mb-0 form-group">
+                         <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>승인상태</strong></span>
+                         <div class="col-sm-12">
+                              <select id ="aprvSttsCd" name="aprvSttsCd" class="form-select form-select-sm form-control-sm">
+                                 <option value="">- 전체 -</option>
+                                 <option value="1" th:selected = "${inst.aprvSttsCd == '1'}" >신청</option>
+                                 <option value="2" th:selected = "${inst.aprvSttsCd == '2'}" >승인</option>
+                                 <option value="9" th:selected = "${inst.aprvSttsCd == '9'}" >승인거부</option>
+                              </select>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="zip"><strong>우편번호</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="zip" id="zip" placeholder="우편번호"  readonly onclick="daumPostcode()" th:value="${inst.zip}"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                     <div class="mb-0 form-group row">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addr"><strong>주소</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="addr" id="addr" placeholder="주소" onclick="daumPostcode()" readonly th:value="${inst.addr}"/>
+                         </div>
+                     </div>
+                 </div>
+                 
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group row">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addrDtl"><strong>상세주소</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="addrDtl" id="addrDtl" placeholder="상세주소" th:value="${inst.addrDtl}"/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group row">
+                         <label class="form-label col-sm-6 col-form-label p-t-0 pb-1" for="instFiles"><strong>파일첨부</strong></label>
+                         <div class="col-sm-12">
+                             <input type="file" multiple id="multiFileInput" name="multiFileInput" class="form-control form-control-sm"/>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+            
+             <div class="mb-2 row">
+                 <div class="col-12 col-lg-6">
+                     <div class="mb-0 form-group row">
+                         <div class="col-auto">
+                             <!-- 파일 명 및 삭제 버튼 영역-->
+                             <div id="fileListArea">
+                             
+                                 <th:block th:if = "${fileMap} != null ">
+			                      <div  th:each="item:${fileMap}" >
+			                        <span class ='label label-inverse mb-2' th:id="'instFile_'+${item.fileid}">
+			                            <th:block th:text="${item.orginlFileNm}"></th:block>
+			                            &nbsp;&nbsp;
+				                        <a  class = 'btn text-white' href="javascript:void(0);"
+				                                         th:fileid ="${item.fileid}" 
+				                                         th:fileIdntfcKey ="${item.fileIdntfcKey}" 
+				                                     onclick ="fn_deleteInstFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"> X</a>
+			                         </span>
+			                       </div>
+                                  </th:block> 
+                                  
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+             
+            <div class="mb-2 form-group row">
+                <div class="col-12">
+                    <input type="hidden" class="js-single"/>
+                    <input type="checkbox" class="js-single-small" name="useYnChk" id="useYnChk" th:checked = "${inst.useYn == 'Y' }" />
+                    <label for="useYn" class="v-middle">사용여부</label>
+                </div>
+            </div>
+             
+         </div>
+         
+         <div class="card-block-small">
+             <button type="button" class="btn btn-disabled m-r-5" onclick = "gridHelper1.toggleContent()" > 취소</button>
+             <button type="button" class="btn btn-primary" onclick="fn_updateInst()">저장</button>
+         </div>
+         
+     </div>
+     
+     <div class="tab-pane" id="managerInfo" role="tabpanel"></div>
+     
+    </div>
+    <!-- 탭영역 end -->
+    
+    <input type="hidden" id="logoFilegrpid" name="logoFilegrpid" value="0"/>
+    <input type="hidden" id="logoFileid" name="logoFileid" th:value="${inst.logoFileid}"/>
+    <input type="hidden" id="filegrpid" name="filegrpid" th:value="${inst.filegrpid}"/>
+    <input type="hidden" id="instid" name="instid" th:value="${inst.instid}"/>
+    
+</form>
+
+<!-- 임시비밀번호발급 Start -->
+<div class="modal fade" id="popCon1" tabindex="-1" role="dialog" aria-labelledby="popCon1Title" aria-hidden="true"></div>
+<!-- 임시비밀번호발급 End -->
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+
+<script th:inline="javascript">
+
+  var validator= $("#instFrm").validate({
+		    onsubmit: false,
+		    rules: {
+		    	instNm      :   { required: true , maxlength: 100 }
+		    	,instTypeCd :   { required: true }
+	            ,brno       :   { required: true ,number :true ,maxlength:10}
+		    	,rprsvNm    :   { required: true  }
+		    	,aprvSttsCd :   { required: true }
+		    	,telno      :   { number :true ,maxlength: 12}
+		    },
+		    messages: {
+		    	instNm      :   { required: "기관명을 입력해주십시오." , maxlength: "기관명은 100자 이하여야 합니다." }  
+	    	    ,instTypeCd :   { required: "기관유형을 선택해주십시오." }
+	            ,brno       :   { required: "사업자번호를 입력해주세요." ,number : "숫자만 입력가능합니다.", maxlength:"사업자 번호는 10자리 이하여야 합니다." }
+		    	,rprsvNm    :   { required: "대표자명을 입력하세요"  }
+	    	    ,aprvSttsCd :   { required: "승인상태를 선택해주십시오." }
+		    	,telno      :   { number  : "숫자만 입력가능합니다." , maxlength:"전화 번호는 12자리 이하여야 합니다."}
+		    }
+	})
+    
+ 	function fn_updateInst(){
+ 	 	
+	 	if(!($("#instFrm").valid())) return;
+	 	
+  	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	
+  	 	let data =  $("#instFrm").serialize() ;
+  	 	let tailStr = "&useYn="+($('#useYnChk').is(':checked'))?"Y":"N";
+  	 	let useYn = ( $('#useYnChk').is(':checked') )? "Y" : "N" ;
+  	 	data = data+"&useYn="+useYn;
+  	 	 
+	    if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/inst/updateInst.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						gridHelper1.resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
+				}
+			});
+		}
+	}
+		    
+	function daumPostcode(){
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = '';
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else {
+                    addr = data.jibunAddress;
+                }
+                //$('#areaCd').val(data.sigunguCode);
+                $('#zip').val(data.zonecode);
+                $('#addr').val(addr);
+                $('#addrDtl').focus();
+            }
+        }).open();
+   }
+
+	   
+   // 로고 파일 첨부 
+   $('#logoFile').on('change', function(event) {
+        let formData = new FormData();
+        let objFile = event.target;
+        
+        formData.append("file", objFile.files[0]);
+        formData.append("filegrpNm", "biz_logo");
+        
+        if($('#logoFilegrpid').val() != '')
+            formData.append("filegrpid", $('#logoFilegrpid').val());
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : '/uploadFile.do',
+                processData : false,
+                contentType : false,
+                data : formData,
+                type : 'POST',
+                success : function(response) {
+                    
+                    if(response.result == 'fail'){
+                        alert(response.msg);
+                    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                        $("#logoFilegrpid").val(response.filegrpid);
+                        $("#logoFileid").val(response.fileid);
+                        $("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.fileIdntfcKey);
+
+					    let imageStr = '<span id="logo_img_'+response.fileid+'" class="label label-inverse">'+response.orginlFileNm
+					                   +' &nbsp;&nbsp;&nbsp;<a href="javascript:deleteLogoFile('+response.fileid+','+response.fileIdntfcKey+')" class="text-white">X</a>'
+					                   +'</span>'
+
+                        $("#logoFileListArea").html(imageStr);
+
+	                    var agent = navigator.userAgent.toLowerCase();
+	                   					                   
+	                    if ( (navigator.appName == 'Netscape' && navigator.userAgent.search('Trident') != -1) || (agent.indexOf("msie") != -1) ) {
+	                       $("#logoFile").replaceWith($("#logoFile").clone(true));
+	                    }else{
+	                       $("#logoFile").val("");
+	                    }
+                    
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+        event.preventDefault();
+    });
+
+    //기업 파일 첨부 (멀티 파일) 
+    $('#multiFileInput').on("change", function(event) {
+       
+       var objFile = document.querySelector('#multiFileInput');
+       var formData = new FormData();
+       var content = "";
+       var uploadFileCnt = 0;
+       
+       for( i = 0 ; i < objFile.files.length ; i++) {
+           formData.append("files", objFile.files[i]);
+           uploadFileCnt++;
+       }
+       formData.append("filegrpid", $("#filegrpid").val());
+       formData.append("filegrpNm", "biz_file");
+       
+           $.ajax({
+               url : '/uploadMultipleFiles.do',
+               processData : false,
+               contentType : false,
+               data : formData,
+               type : 'POST',
+               success : function(response) {
+                   
+                   if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                       $("#filegrpid").val( response[0].filegrpid );
+                   }
+                   
+                   for(i = 0 ;i < response.length; i++ ){
+                       content = "<div><span class ='label label-inverse mb-2' id='instFile_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                       content +="&nbsp;&nbsp;  <a  class = 'btn text-white' href = javascript:fn_deleteInstFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span></div>";
+                       $('#fileListArea').append(content);
+                   }
+               }
+           })
+           
+          if (detectBrowser() == "other") { 
+              $("#multiFileInput").val("");
+          } else {   
+             $("#multiFileInput").replaceWith( $("#multiFileInput").clone(true)) 
+          }
+           
+    });
+    
+    var fn_deleteInstFile = (fileid,fileIdntfcKey)=>{
+        
+    	if(!confirm("파일을 삭제 하시겠습니까?")){return;}
+    	$("#instFile_"+fileid).remove();
+    	fn_deleteFile(fileid, fileIdntfcKey);
+    }
+
+    var deleteLogoFile = (fileid,fileIdntfcKey) =>{
+
+        if(!confirm("로고 파일을 삭제 하시겠습니까?")){return;}
+        
+    	$("#logo_img_"+fileid).remove();
+        $("#imgPreview").attr('src', "/images/mng/default_logo.png");
+    	fn_deleteFile(fileid, fileIdntfcKey);
+    	$("#logoFileid").val(0);
+    }
+
+
+    
+	
+	
+</script>
