@@ -10,9 +10,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.cmnty.model.CmntyMbrVo;
+import com.kbrainc.plum.mng.cmnty.model.CmntyPstVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyVo;
 import com.kbrainc.plum.mng.cmnty.service.CmntyServiceImpl;
-import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
@@ -36,10 +41,13 @@ public class CmntyController {
     @Autowired
     private CmntyServiceImpl cmntyService;
     
+    @Autowired
+    private FileService fileService;
+    
     /**
      * 커뮤니티 목록 화면
      *
-     * @Title : qestnrForm
+     * @Title : cmntyForm
      * @Description : 커뮤니티 목록 화면
      * @return String 화면경로
      * @throws Exception 예외
@@ -67,16 +75,38 @@ public class CmntyController {
      * 커뮤니티 수정 화면
      *
      * @Title : qestnrUpdateForm
-     * @Description : 설문지 수정 화면
-     * @param qestnrVo QestnrVo 객체
+     * @Description : 커뮤니티 수정 화면
+     * @param cmntyVo CmntyVo 객체
      * @param model 모델객체
+     * @param user 사용자 세션 정보
      * @return String 화면경로
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/cmnty/cmntyUpdateForm.html")
-    public String cmntyUpdateForm(CmntyVo cmntyVo, Model model) throws Exception {
-        model.addAttribute("cmnty", cmntyService.selectCmntyInfo(cmntyVo));
+    public String cmntyUpdateForm(CmntyVo cmntyVo, Model model, @UserInfo UserVo user) throws Exception {
+        cmntyVo.setUser(user);
+        CmntyVo resultVo = cmntyService.selectCmntyInfo(cmntyVo);
+        if(resultVo.getCmntyLogoFileid() != null && resultVo.getCmntyLogoFileid() != 0) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFileid(resultVo.getCmntyLogoFileid());
+            fileVo.setUser(user);
+            model.addAttribute("logoFile", fileService.getFileInfo(fileVo));
+        }
+        model.addAttribute("cmnty", resultVo);
         return "mng/cmnty/cmntyUpdate";
+    }
+    
+    /**
+     * 커뮤니티 회원 목록 화면
+     *
+     * @Title : cmntyMbrForm
+     * @Description : 커뮤니티 회원 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/cmntyMbrForm.html")
+    public String cmntyMbrForm() throws Exception {
+        return "mng/cmnty/cmntyMbr";
     }
     
     /**
@@ -93,6 +123,56 @@ public class CmntyController {
     public Map<String, Object> selectCmntyList(CmntyVo cmntyVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<CmntyVo> result = cmntyService.selectCmntyList(cmntyVo);
+                    
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+     * 커뮤니티 회원 목록 조회
+     *
+     * @Title : selectCmntyMbrList
+     * @Description : 커뮤니티 회원 목록 조회
+     * @param cmntyMbrVo CmntyMbrVo 객체
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/selectCmntyMbrList.do")
+    @ResponseBody
+    public Map<String, Object> selectCmntyMbrList(CmntyMbrVo cmntyMbrVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CmntyMbrVo> result = cmntyService.selectCmntyMbrList(cmntyMbrVo);
+                    
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+     * 커뮤니티 게시글 목록 조회
+     *
+     * @Title : selectCmntyPstList
+     * @Description : 커뮤니티 게시글 목록 조회
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/selectCmntyPstList.do")
+    @ResponseBody
+    public Map<String, Object> selectCmntyPstList(CmntyPstVo cmntyPstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CmntyPstVo> result = cmntyService.selectCmntyPstList(cmntyPstVo);
                     
         if(result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
