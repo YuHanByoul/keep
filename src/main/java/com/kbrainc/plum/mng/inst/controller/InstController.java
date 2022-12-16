@@ -60,19 +60,7 @@ public class InstController {
     
     @Autowired
     private MemberServiceImpl memberService;
-    
-    //@Value("${front.server.host}")
-    private String frontServerHost;
-    
-    @Resource(name="digestService")
-    EgovDigestService digestService;
-    
-    @Resource(name="ariaCryptoService")
-    EgovCryptoService cryptoService;
-    
-    @Value("${crypto.key}")
-    private String encryptKey;
-    
+
     /**
     * 기관관리 화면 이동.
     *
@@ -83,7 +71,7 @@ public class InstController {
     */
     @RequestMapping(value = "/mng/inst/instMng.html")
     public String instMng() throws Exception {
-        return "mng/inst/inst";
+        return "mng/inst/instList";
     }
     
     /**
@@ -352,22 +340,23 @@ public class InstController {
         int retVal = 0;
         
         //마스터에서 일반으로 
-        if(checkVo.getInstpicRoleCd().equals("109101") && memberVo.getInstpicRoleCd().equals("109102")) {
+        if(!CommonUtil.isEmpty(checkVo.getInstpicRoleCd()) && checkVo.getInstpicRoleCd().equals("109101") && memberVo.getInstpicRoleCd().equals("109102")) {
             
             List<MemberVo> memberList =  instService.selectInstMemberList(instVo);
-            for(MemberVo vo : memberList) {
-                if(vo.getUserid() != memberVo.getUserid() && vo.getInstpicRoleCd().equals("109101")) {
-                    isThereOtherMasterManager = true;
+            if(memberList!=null && memberList.size() > 0 ) {
+                for(MemberVo vo : memberList) {
+                    if(vo.getUserid() != memberVo.getUserid() && vo.getInstpicRoleCd().equals("109101")) {
+                        isThereOtherMasterManager = true;
+                    }
                 }
             }
-            
             if(!isThereOtherMasterManager) {
                 resultMap.put("result", Constant.REST_API_RESULT_FAIL);
                 resultMap.put("msg", "마스터 관리자는 반드시 1인이 지정 되어야 합니다.");
                 return resultMap;
             }
             
-        }else if (checkVo.getInstpicRoleCd().equals("109102") && memberVo.getInstpicRoleCd().equals("109101")) {
+        }else if (!CommonUtil.isEmpty(checkVo.getInstpicRoleCd()) && checkVo.getInstpicRoleCd().equals("109102") && memberVo.getInstpicRoleCd().equals("109101")) {
             //기관 회원 모두 일반으로 업데이트 
             MemberVo paramVo = new MemberVo ();
             paramVo.setUser(user);

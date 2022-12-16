@@ -241,6 +241,7 @@
 	init();
     //아이디 중복 체크 여부 판별용 
     var checkId = "";
+    var isDuplicatedId = false;
 	var validator= $("#memberFrm").validate({
 		    onsubmit: false,
 		    rules: {
@@ -304,19 +305,36 @@
 	}
 	        
  	function fn_insertMember(){
- 	 	 
+ 	 	
+ 		let today = new Date();   
+ 		let year = today.getFullYear(); // 년도
+ 		let month = today.getMonth() + 1;  // 월
+ 		let date = today.getDate();  // 날짜
+ 		let thisday =  year+""+month+""+date;
+ 		let brdt = ($("#brdt").val()).replaceAll("-","");
+
 	 	if(!($("#memberFrm").valid())) return;
 	 	
 	 	if(checkId !=  $("#acnt").val()){
- 	    	alert("아이디 중복 여부를 확인 해주시기 바랍니다."); 
+ 	    	alert("아이디 중복 여부를 확인 해주시기 바랍니다.");
+ 	    	showErrorMark("#acnt"); 
  	    	return;
 	 	}
 	 	
  	    if($("#pswd").val()!=$("#pswdChk").val()) {
- 	    	alert("비밀번호와 비밀번호 확인 입력 값이 일치하지 않습니다."); 
+ 	    	alert("비밀번호와 비밀번호 확인 입력 값이 일치하지 않습니다.");
+ 	    	showErrorMark("#pswd"); 
+ 	    	showErrorMark("#pswdChk"); 
  	    	return;
  	    }
-
+ 	    
+ 	    if(Number(brdt)  > Number(thisday)) {
+ 	    	alert("생년월일은 금일보다 이전이어야 합니다."); 
+ 	    	showErrorMark("#brdt"); 
+ 	    	return;
+ 	 	}
+ 	    
+ 	 	
   	 	if($('input:radio[name=acntLockYn]:checked').val() == "Y"){
             if($('#acntLockCd').val() ==null || $('#acntLockCd').val() == ""){
                 alert("계정잠김 코드를 선택해주십시오.");
@@ -344,7 +362,8 @@
   	 	var envfldCds   = $('.envfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
   	 	
 	    var data =  $("#memberFrm").serialize() ;
-  	 	data = data+"&itrstfldCds="+itrstfldCds+"&esylgnCds="+esylgnCds+"&envfldCds="+envfldCds
+	    //&esylgnCds="+esylgnCds+" -- 간편로그인 보류 
+  	 	data = data+"&itrstfldCds="+itrstfldCds+"&envfldCds="+envfldCds
 	    
 	    if(displayWorkProgress()){
 			$.ajax({

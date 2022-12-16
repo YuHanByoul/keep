@@ -1,0 +1,246 @@
+<!-- 분류 관리 팝업 -->
+<div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">분류관리</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+            
+                <div class="card m-b-10">
+	                <div class="card-block-small">
+                          <div class="dt-responsive table-responsive">
+                             <div  class="dataTables_wrapper dt-bootstrap4">
+                                 <table id="Clgrid" class="table-responsive"></table>
+                                 <div id="clListPager" class="text-center" style="display:block;"></div>
+                             </div>
+                         </div>
+	                    
+	                </div>
+	                <div class="card-block-small p-t-0 text-right">
+	                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_changeModeC()">분류등록</button>
+	                </div>
+	             </div>
+                
+                <form id="popForm" class="form-inline">
+                <div class="card m-b-10">
+                    <div class="card-header p-b-0">
+                        <h3 class="sub-title"><strong>기본정보</strong></h3>
+                    </div>
+                    <div class="card-block-small p-t-0">
+                        <div class="mb-2 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="categoryCode"><strong>분류코드</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" id="bbsClid" name= "bbsClid" placeholder="자동생성" readonly disabled/>
+                            </div>
+                        </div>
+                        <div class="mb-2 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="categoryName"><strong>분류명</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" id="clNm" name= "clNm" placeholder="분류명"/>
+                            </div>
+                        </div>
+                        <div class="mb-0 form-group row">
+                            <div class="col-sm-12">
+                                <input type="checkbox" class="js-single-small" name="useYnChkBox" id="useYnChkBox" checked/>
+                                <label for="popupCategoryUse" class="v-middle">분류 사용</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+	            <!--form  data 전송을 위한 hidden 변수  -->
+	            <input type="hidden" id="ord"    name="ord" disabled/>
+	            <!-- C : insert , U :update , UO : update Ord  --> 
+	            <input type="hidden" id="cuMode" name="cuMode" value="C" />
+                <input type="hidden" id="bbsid"  name ="bbsid" th:value ="${bbsid}">
+                <input type="hidden" id="useYn"  name ="useYn" value="Y" >
+               </form>
+               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_modifyBbsCl()">저장</button>
+            </div>
+        </div>
+  </div>
+
+  
+  <script th:inline="javascript">
+
+      var Switch = [];
+      
+	  $(function(){
+		  
+		  let elemsingleSmallList = document.querySelectorAll('#popForm .js-single-small');
+		  for(var i=0; i < elemsingleSmallList.length; i++){
+		   	Switch[elemsingleSmallList[i].getAttribute('id')]  = new Switchery(elemsingleSmallList[i], { color: '#4680ff', jackColor: '#fff', size : 'small'});
+		  }
+		  
+		  writePopGrid();
+		  
+		  $("#popForm").validate({
+			    rules   : { clNm  : { required: true   }  },
+		        messages: { clNm  : { required: "분류명을 입력해주세요!"   }
+		   }
+		 });
+			 
+          $("#popForm #useYnChkBox").bind("change",function(){
+        	  var useYn = ($("#popForm #useYnChkBox").is(":checked"))?"Y":"N";
+        	  $("#popForm #useYn").val(useYn);
+          })
+	   })
+	  
+       //그리드 새로고침  및 이동
+       function writePopGrid(){
+		  
+	    		$("#Clgrid").jsGrid({
+	                height: "auto",
+	                width: "100%",
+	                autoload: true,
+	                sorting: false,
+	                paging: true,
+	                pagerContainer: "#clListPager",
+	                pagerFormat: "{first} {prev} {pages} {next} {last}",
+	                pagePrevText: "이전",
+	                pageNextText: "다음",
+	                pageFirstText: " < 처음 ㅣ",
+	                pageLastText: " | 마지막 >",
+	                pageSize: 5,
+	                pageButtonCount: 10,
+	                pageLoading: true,
+	                pageIndex: 1,
+	                noDataContent: "데이터가 없습니다.",
+	                
+	    	        controller: {
+	    	            loadData: function (filter) {
+		    	            
+	    	            	var data = $.Deferred();
+	    	            	var params = {
+	    	            			 "bbsid" : $("#popForm #bbsid").val()
+	    	            			,"pageNumber": filter.pageIndex
+	    	            			,"rowPerPage": filter.pageSize
+	    	            			,"orderField": "ORD"
+	    	            			,"orderDirection": "asc"
+	    	            	}
+	    	            	
+	    	                $.ajax({
+	    	                  type: "GET",
+	    	                  contentType: "application/json; charset=utf-8",
+	    	                  url: "/bbs/selectBbsCl.do?", 
+	    	                  dataType: "json",
+	    	                  data: params
+	    	                }).done(function(response){
+	    	                	var da = {
+	                                    data : escapeGridData(response.list)
+	                                    ,itemsCount : response.totalCount
+	                                };
+	    	                  data.resolve(da);
+	    	                });
+	    	                return data.promise();
+	    	            }
+	    	        },
+		    	       fields: [ 
+		                     { title: 'no'       ,name: 'rowNumber' ,type: "number" , width: 20 , sorting :false }
+		                    ,{ title: '분류명'     ,name: 'clNm'     ,type: "text"   , key: true,  width: 75, validate: "required" }
+		                    ,{ title: '분류코드 '   ,name: 'bbsClid'  ,type: "text"   , width: 35 }
+		                    ,{ title: '사용여부'    ,name: 'useYn'    ,type: "text"   , width: 35 }
+		                    ,{ title: '순서'       ,name: 'ord'       ,type: "text"   , width: 50,  align:"center",
+			                   	 itemTemplate: function(value, item) {
+			                   	    var firstObj = $("<a class='btn btn-xs btn-info btn-mini' />").text("▲").on("click", function() { fn_changeOrd("OU",item);  return false;}).add("<span>&nbsp;</span>");
+			                   	    var lastObj = $("<a class='btn btn-xs btn-info btn-mini' />").text("▼").on("click", function() { fn_changeOrd("OD",item);  return false;});
+			                   	       
+			                   	    if(item.totalCount==1 ){return "-"; 
+			                   	    }else if(item.rowNumber==1){return firstObj;
+				                   	}else if(item.rowNumber == item.totalCount){return lastObj
+				                   	}else{return firstObj.add(lastObj);
+				                   	}
+						         }
+		                    }
+
+		    	    ],
+	    	        rowClick: function(args) {
+	    	        	fn_changeModeU(args.item);
+	    	        }
+	    	    });
+      }
+      
+	  //order 변경시 호출 
+	  function fn_changeOrd( upAndDown, item){
+		  $("#popForm #ord").removeAttr("disabled");
+		  $("#popForm #bbsClid").removeAttr("disabled");
+		  $("#popForm #bbsClid").val(item.bbsClid);
+		  $("#popForm #ord").val(item.ord);
+		  $("#popForm #cuMode").val(upAndDown); // mode update 로 변경
+		  fn_modifyBbsCl(); 
+	  }
+	  
+	  //update mode 시  row 클릭시 업데이트 모드로 변환 
+	  function fn_changeModeU(item){
+		    $("#popForm #bbsClid").removeAttr("disabled");
+		  	$("#popForm #ord").removeAttr("disabled");
+		  	$("#popForm #cuMode").val("U"); // mode update 로 변경 
+		  	$("#popForm #bbsClid").val(item.bbsClid);
+        	$("#popForm #ord").val(item.ord);
+        	$("#popForm #clNm").val(item.clNm);
+        	toggleSwitch("#useYnChkBox", (item.useYn =='Y'));
+	  }
+
+	  //insert Mode 전환 등록 추가 처음 로딩시 , 버튼 클릭시 , 취소 클릭시  
+	  function fn_changeModeC(){
+      	    $("#popForm #bbsClid").attr("disabled","true");
+      	    $("#popForm #ord").attr("disabled","true");
+		    $("#popForm #cuMode").val("C"); // mode 인서트 로 변경
+			$("#popForm #bbsClid").val("");
+        	$("#popForm #ord").val("");
+        	$("#popForm #clNm").val("");
+        	
+        	toggleSwitch("#useYnChkBox",true);
+	  }
+	  
+	  //select onchange 게시판 명  
+	  function writeGridByBbsCl(){
+		  fn_changeModeC();
+		  $("#Clgrid").jsGrid("reset");
+	  }
+	  
+	  var validator= $("#popForm").validate({
+		    rules   : { clNm  : { required: true   }  },
+	        messages: { clNm  : { required: "분류명을 입력해 주십시오."   }
+			    }
+		 })
+ 
+	  function fn_modifyBbsCl(){
+		   var alertStr ='등록';
+		   var mode = $("#cuMode").val();
+		   if(mode!="OU" && mode!="OD"){//ord 변경일때는 validataion 체크 x
+			 //jquery 밸리데이션 체크
+ 	  	     if(!$("#popForm").valid()){ return;}
+		   }
+		   if(mode!="C"){alertStr="수정";}
+		   var queryUrl ="/bbs/insertBbsCl.do?mode="+mode;
+	       var data =  $("#popForm").serialize() ;
+           
+		   $.ajax({
+				url : queryUrl,
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						if(mode!="OU" && mode!="OD"){
+						  alert(alertStr+"이 완료 되었습니다.");
+						}
+						writeGridByBbsCl();
+					}else{
+						alert(alertStr+"중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+					}
+				},
+			 	error : function (error){
+				} 
+			});
+	  }
+	</script>

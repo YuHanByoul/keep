@@ -58,7 +58,7 @@ public class BbsController {
      */
     @RequestMapping(value = "/bbs/bbsForm.html")
     public String userTempListForm() throws Exception {
-        return "mng/bbs/bbsForm";
+        return "mng/bbs/bbsList";
     }
 
     /**
@@ -69,7 +69,7 @@ public class BbsController {
      */
     @RequestMapping(value = "/bbs/bbsInsertForm.html")
     public String userTempInsertForm() throws Exception {
-        return "mng/bbs/bbsInsert";
+        return "mng/bbs/bbsInsertForm";
     }
 
     /**
@@ -150,7 +150,7 @@ public class BbsController {
         paramVO.setBbsid(bbsid);
         model.addAttribute("paramMap", bbsService.selectOneBbs(paramVO));
 
-        return "mng/bbs/bbsModify";
+        return "mng/bbs/bbsUpdate";
     }
 
     /**
@@ -166,7 +166,7 @@ public class BbsController {
         paramVO.setBbsid(bbsid);
         model.addAttribute("codeMap", bbsService.selectBbsbyClUseYn(paramVO));
         model.addAttribute("bbsid", bbsid);
-        return "mng/bbs/bbsPop";
+        return "mng/bbs/bbsPopup";
     }
 
     /**
@@ -549,9 +549,8 @@ public class BbsController {
         }
     	return resultMap;
     }
-
     
-   /**
+    /**
      * 
      * deletePst
      *
