@@ -2,449 +2,482 @@
 <html xmlns:th="http://www.thymeleaf.org" 
 	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-	layout:decorator="layout/mng/subLayout" 
+	layout:decorator="layout/mng/mainLayout" 
 >
 <body>
-	<div layout:fragment="content">
+<div layout:fragment="content" class="page-body">
+<script type="text/javascript" charset="utf-8" src="/js/common/jquery/jquery.js"></script>
 <script type="text/javascript">
-	var treeUrl = "/mng/prgrm/selectPrgrmTreeList.do";
-	var saveUrl = "/mng/prgrm/savePrgrm.do";
-	var detailUrl = "/mng/prgrm/selectPrgrmView.do";
-	var deletePrgrmUrl = "/mng/prgrm/deletePrgrm.do";
-	var orderUrl = "/mng/prgrm/prgrmTreeReorder.do"
-	
-	var prgrmTree = null;
-	
-	function bindContextMenu(span) {
-	  jQuery(span).contextMenu({menu: "roleContext"}, function(action, el, pos) {
-	    var node = jQuery.ui.dynatree.getNode(el);
-	    switch( action ) {
-	    case "regist":
-	    	jQuery("#prgrmid").val(node.data.key);
-  			jQuery("#selPrgrmNm").text(node.data.title);
-  			node_view(node.data.key, "reg");
-	    	break; 
-		case "delete":
-			
-			jQuery("#prgrmid").val(node.data.key);
-			jQuery("#upprPrgrmid").val(node.parent.data.key);
-			if(jQuery("#prgrmid").val() == ""){
-				alert("삭제할 프로그램을 선택해 주십시오.");
-				return;
-			}
-			
-			if(!confirm("삭제 할경우 하위 프로그램 및 관련 메뉴까지 삭제가 진행됩니다. 삭제 하시겠습니까?")){
-				return;
-			}
-			fn_prgrmDelete();
-			break;
-	    default:
-	    	
-	    }
-	  });
-	};
+    var treeUrl = "/mng/prgrm/selectPrgrmTreeList.do";
+    var saveUrl = "/mng/prgrm/savePrgrm.do";
+    var detailUrl = "/mng/prgrm/selectPrgrmView.do";
+    var deletePrgrmUrl = "/mng/prgrm/deletePrgrm.do";
+    var orderUrl = "/mng/prgrm/prgrmTreeReorder.do"
+    
+    var prgrmTree = null;
+    
+    function bindContextMenu(span) {
+      jQuery(span).contextMenu({menu: "roleContext"}, function(action, el, pos) {
+        var node = jQuery.ui.dynatree.getNode(el);
+        switch( action ) {
+        case "regist":
+            jQuery("#prgrmid").val(node.data.key);
+            //jQuery("#selPrgrmNm").text(node.data.title);
+            node_view(node.data.key, "reg");
+            break; 
+        case "delete":
+            
+            jQuery("#prgrmid").val(node.data.key);
+            jQuery("#upprPrgrmid").val(node.parent.data.key);
+            if(jQuery("#prgrmid").val() == ""){
+                alert("삭제할 프로그램을 선택해 주십시오.");
+                return;
+            }
+            
+            if(!confirm("삭제 할경우 하위 프로그램 및 관련 메뉴까지 삭제가 진행됩니다. 삭제 하시겠습니까?")){
+                return;
+            }
+            fn_prgrmDelete();
+            break;
+        default:
+            
+        }
+      });
+    };
 
-	jQuery(document).ready(function(){
-		prgrm_tree();
-		
-		// 프로그램 등록
-		jQuery("#reg").bind("click",function(){
-			 fn_Clean();
-			 
-			 jQuery("#upprPrgrmid").val(jQuery("#prgrmid").val());
-			 jQuery("#viewUpprPrgrmid").text(jQuery("#prgrmid").val());
-			 jQuery("#uprPrgrmNm").text(jQuery("#tmpPrgrmNm").val());
-			 jQuery("#prgrmNm").val("");
-			 jQuery("#prgrmid").val("");
-		});
-		
-		// 프로그램 저장
-		jQuery("#doSave").bind("click",function(){
-			fn_Save();
-		});
-		
-		// 프로그램 취소
-		jQuery("#doCancle").bind("click",function(){
-			 fn_Clean();
-			 jQuery("#prgrmid").val("");
-			 jQuery("#prgrmNm").val("");
-			 jQuery("#viewUpprPrgrmid").text("0");
-			 jQuery("#uprPrgrmNm").text("");
-			 jQuery("#upprPrgrmid").val("0");
-		});
-		
-		// 유효성검증기 바인드
-		validate();
-		
-		jQuery("input[name='typeCd']").change(function(obj) {
-		  if(jQuery("input[name='typeCd']:checked").val() == '01') {
-		      jQuery("#url").prop("disabled", true);  
-		  }else {
-		      jQuery("#url").prop("disabled", false);
-		  }
-		});
-	});
-	
-	// 초기화
-	function fn_Clean(){
-		jQuery("#viewPrgrmid").text("");
-		//jQuery("#viewPrgrmNm").text("");
-		jQuery("#url").val("").prop("disabled", true);
-		
-		jQuery("#prgrmExpln").val("");
-		jQuery("input:radio[name=typeCd]:input[value=01]").prop("checked", true);
-	}
-	
-	function prgrm_tree(){
-		
-		prgrmTree = jQuery("#prgrmTree").dynatree({
-			title: "",
-			autoFocus: true,
-	    	cache: false,
-	    	minExpandLevel: 2,
-	    	generateIds : true,
-			initAjax: {
-				url: treeUrl,
-				type: 'post',
-				dataType:'json',
-				beforeSend: function(xhr) {
-					var token = $("meta[name='_csrf']").attr("content");
-					var header = $("meta[name='_csrf_header']").attr("content");
-					xhr.setRequestHeader("AJAX", true);
-				    xhr.setRequestHeader(header, token);
-			    }
-			},
-			onClick: function(node, event) {
-				
-	      		if( jQuery(".contextMenu:visible").length > 0 ){
-	      			jQuery(".contextMenu").hide();
-	      		}
-	      			      		
-	      		if(node.data.key != "0"){
-	      			jQuery("#prgrmid").val(node.data.key);
-	      			jQuery("#selPrgrmNm").text(node.data.title);
-	      			node_view(node.data.key);
-	      		}else{
-	      			fn_Clean();
-	      			jQuery("#prgrmid").val("");
-	      			jQuery("#upprPrgrmid").val("0");
-	      			jQuery("#viewUpprPrgrmid").text("0");
-	      			jQuery("#viewPrgrmid").text("");
-	   			 	jQuery("#prgrmNm").val("");
-	   			 	jQuery("#uprPrgrmNm").text("");
-	   			 	jQuery("#selPrgrmNm").text("");
-	      		}
-	    	},
-	    	onCreate: function(node, span){
-	    		if(node.data.key != "0" ){
-	      			bindContextMenu(span);
-	    		}
-				
-	    		jQuery(span).attr('id','prgrm_'+node.data.key);
-	    		if(jQuery("#prgrmid").val() != ""){
-	    			jQuery("#prgrmTree").dynatree("getTree").activateKey(jQuery("#prgrmid").val());
-	    		}else if(jQuery("#upprPrgrmid").val() != "0"){
-	    			jQuery("#prgrmTree").dynatree("getTree").activateKey(jQuery("#upprPrgrmid").val());
-	    		}	    		
-	    	},
-	    	autoExpandMS: 1000,
-        	preventVoidMoves: true,
-	        dnd: {
-	            onDragStart: function(node) {
-	            	selfMove = true;
-                	logMsg("tree.onDragStart(%o)", node);
-                	var ptype = node.data.menuicon;
-                  	return true;
-	            },
-				onDragEnter: function(node, sourceNode) {
-	            	logMsg("tree.onDragEnter(%o, %o)", node, sourceNode);
-	            	return true;
-	            },
-	            onDragOver: function(node, sourceNode, hitMode) {
-	            	logMsg("tree.onDragOver(%o, %o, %o)", node, sourceNode, hitMode);
-	            },
-	            onDrop: function(node, sourceNode, hitMode, ui, draggable) {
-	            	logMsg("tree.onDrop(%o, %o)", node, sourceNode);
-	            	if(selfMove) {
-	                	sourceNode.move(node, hitMode);
-	            	}
-	            	node.tree.redraw();
-	            	
-	            	fn_prgrm_reOrder(node, sourceNode,hitMode);
-	            },
-	            onDragLeave: function(node, sourceNode) {
-	              logMsg("tree.onDragLeave(%o, %o)", node, sourceNode);
-	            }
-        	}
-	    	
-	  	});
-	}
-	
-	// 저장
-	function fn_Save(){	
-		if(!confirm("저장하시겠습니까?")){
-			return;
-		}
-		
-		if($('#viewUpprPrgrmid').text() == ''){
-			alert('상위프로그램을 선택해 주십시오.');
-			return;
-		}
-		if(!$('#form1').valid()) return;
-		
-		if(displayWorkProgress()){
-			jQuery.ajax({
-					url : saveUrl,
-					type: 'post',
-					cache : false,
-					dataType: 'json',
-					data : jQuery("#form1").serialize(),
-					success : function(data){
-						if(prgrmTree != null){
-							jQuery("#prgrmTree").dynatree("destroy");
-						}
-						prgrm_tree();
-						alert(data.msg);
-						closeWorkProgress();
-					}		
-			});
-		}
-	}
-	
-	// 상세보기
-	function node_view(key, type){
-		fn_Clean();
-		if(displayWorkProgress()){
-			jQuery.ajax({
-				url: detailUrl,
-				cache: false,
-				dataType: 'json',
-				data: {
-					prgrmid: key
-				},
-				success: function(data){
-					// 상세 
-					jQuery("#viewUpprPrgrmid").text(data.upprPrgrmid);
-					if(data.upprPrgrmNm == null){
-						jQuery("#uprPrgrmNm").text('');
-					}else{
-						jQuery("#uprPrgrmNm").text(data.upprPrgrmNm);
-					}
-					jQuery("#viewPrgrmid").text(data.prgrmid);
-					jQuery("#prgrmid").val(data.prgrmid);
-					jQuery("#prgrmNm").val(data.nm);
-					jQuery("#tmpPrgrmNm").val(data.nm);
-					jQuery("input:radio[name=typeCd]:input[value='"+data.typeCd+"']").prop("checked", true);
-					jQuery("input:radio[name=loginYn]:input[value='"+data.loginYn+"']").prop("checked", true);
-					if(data.typeCd != '01') {
-					    jQuery("#url").prop("disabled", false);
-					}
-					jQuery("#url").val(data.url);
-					jQuery("#prgrmExpln").val(data.dc);
-					
-					if(type == "reg"){
-				    	fn_Clean();
-						jQuery("#upprPrgrmid").val(jQuery("#prgrmid").val());
-						jQuery("#viewUpprPrgrmid").text(jQuery("#prgrmid").val());
-						jQuery("#uprPrgrmNm").text(jQuery("#tmpPrgrmNm").val());
-						jQuery("#prgrmNm").val("");
-						jQuery("#prgrmid").val("");
-					}
-    		        closeWorkProgress();
-				}
-			});
-		}
-	}
-	
-	// 프로그램 삭제
-	function fn_prgrmDelete(){
-		if(displayWorkProgress()){
-			jQuery.ajax({
-				url : deletePrgrmUrl,
-				type:'post',
-				cache : false,
-				dataType:'json',
-				data : {			
-					prgrmid :  jQuery("#prgrmid").val(),
-					upprPrgrmid : jQuery("#upprPrgrmid").val()
-				},
-				success : function(data){
-					if(prgrmTree != null){
-						jQuery("#prgrmTree").dynatree("destroy");
-					}
-					jQuery("#doCancle").click();
-					$('#selPrgrmNm').text('');
-					prgrm_tree();
-					alert(data.msg);
-					closeWorkProgress();
-				}
-			});
-		}
-	}
-	
-	function fn_prgrm_reOrder(node, sourceNode,hitMode){
-		var uprPrgrmId = node.parent.data.key;
-		if(hitMode == "over"){
-			uprPrgrmId = node.data.key;
-		}
-		jQuery.ajax({
-			url : orderUrl,
-			cache:false,
-			dataType : 'json',
-			data : {
-				tprgrmid : sourceNode.data.key,
-				prgrmid : node.data.key,
-				upprPrgrmid : uprPrgrmId,	
-				hitMode : hitMode
-			},
-			success:function(data){
-			}
-			
-		});
-	}
-	
-	// 유효성검증기
-	function validate(){
-		$("#form1").validate({
-		    rules: { 
-		    	nm: {
-		    		required: true
-		       	   ,maxlength: 60
-		    	},
-		    	dc: {
-		       	    maxlength: 130
-		    	},
-		    	url: {
-		       	    maxlength: 160
-		    	}
-		    },
-		    messages: { 
-		    	nm: {
-		            required: "프로그램명을 입력해주십시오"
-		           ,maxlength: "프로그램명은 60자를 넘을 수 없습니다."
-		        },
-		        dc: {
-		            maxlength: "프로그램설명은 130자를 넘을 수 없습니다."
-		        },
-		        url: {
-		            maxlength: "URL은 160자를 넘을 수 없습니다."
-		        }
-		    }
-		});
-	}
+    jQuery(document).ready(function(){
+        prgrm_tree();
+        
+        // 프로그램 저장
+        jQuery("#doSave").bind("click",function(){
+            fn_Save();
+        });
+        
+        // 유효성검증기 바인드
+        validate();
+        
+        jQuery("input[name='typeCd']").change(function(obj) {
+          if(jQuery("input[name='typeCd']:checked").val() == '01') {
+              jQuery("#url").prop("disabled", true);  
+          }else {
+              jQuery("#url").prop("disabled", false);
+          }
+        });
+    });
+    
+    // 초기화
+    function fn_Clean(){
+        jQuery("#viewPrgrmid").val("");
+        //jQuery("#viewPrgrmNm").text("");
+        jQuery("#url").val("").prop("disabled", true);
+        
+        jQuery("#prgrmExpln").val("");
+        jQuery("input:radio[name=typeCd]:input[value=01]").prop("checked", true);
+    }
+    
+    function prgrm_tree(){
+        
+        prgrmTree = jQuery("#prgrmTree").dynatree({
+            title: "",
+            autoFocus: true,
+            cache: false,
+            minExpandLevel: 2,
+            generateIds : true,
+            initAjax: {
+                url: treeUrl,
+                type: 'post',
+                dataType:'json',
+                beforeSend: function(xhr) {
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    xhr.setRequestHeader("AJAX", true);
+                    xhr.setRequestHeader(header, token);
+                }
+            },
+            onClick: function(node, event) {
+                
+                if( jQuery(".contextMenu:visible").length > 0 ){
+                    jQuery(".contextMenu").hide();
+                }
+                                
+                if(node.data.key != "0"){
+                    jQuery("#prgrmid").val(node.data.key);
+                    //jQuery("#selPrgrmNm").text(node.data.title);
+                    node_view(node.data.key);
+                }else{
+                    fn_Clean();
+                    jQuery("#prgrmid").val("");
+                    jQuery("#upprPrgrmid").val("0");
+                    jQuery("#viewUpprPrgrmid").val("0");
+                    jQuery("#viewPrgrmid").val("");
+                    jQuery("#prgrmNm").val("");
+                    jQuery("#uprPrgrmNm").val("");
+                    //jQuery("#selPrgrmNm").text("");
+                }
+            },
+            onCreate: function(node, span){
+                if(node.data.key != "0" ){
+                    bindContextMenu(span);
+                }
+                
+                jQuery(span).attr('id','prgrm_'+node.data.key);
+                if(jQuery("#prgrmid").val() != ""){
+                    jQuery("#prgrmTree").dynatree("getTree").activateKey(jQuery("#prgrmid").val());
+                }else if(jQuery("#upprPrgrmid").val() != "0"){
+                    jQuery("#prgrmTree").dynatree("getTree").activateKey(jQuery("#upprPrgrmid").val());
+                }               
+            },
+            autoExpandMS: 1000,
+            preventVoidMoves: true,
+            dnd: {
+                onDragStart: function(node) {
+                    selfMove = true;
+                    logMsg("tree.onDragStart(%o)", node);
+                    var ptype = node.data.menuicon;
+                    return true;
+                },
+                onDragEnter: function(node, sourceNode) {
+                    logMsg("tree.onDragEnter(%o, %o)", node, sourceNode);
+                    return true;
+                },
+                onDragOver: function(node, sourceNode, hitMode) {
+                    logMsg("tree.onDragOver(%o, %o, %o)", node, sourceNode, hitMode);
+                },
+                onDrop: function(node, sourceNode, hitMode, ui, draggable) {
+                    logMsg("tree.onDrop(%o, %o)", node, sourceNode);
+                    if(selfMove) {
+                        sourceNode.move(node, hitMode);
+                    }
+                    node.tree.redraw();
+                    
+                    fn_prgrm_reOrder(node, sourceNode,hitMode);
+                },
+                onDragLeave: function(node, sourceNode) {
+                  logMsg("tree.onDragLeave(%o, %o)", node, sourceNode);
+                }
+            }
+            
+        });
+    }
+    
+    // 저장
+    function fn_Save(){ 
+        if(!confirm("저장하시겠습니까?")){
+            return;
+        }
+        
+        if($('#viewUpprPrgrmid').val() == ''){
+            alert('상위프로그램을 선택해 주십시오.');
+            return;
+        }
+        if(!$('#form1').valid()) return;
+        
+        if(displayWorkProgress()){
+            jQuery.ajax({
+                    url : saveUrl,
+                    type: 'post',
+                    cache : false,
+                    dataType: 'json',
+                    data : jQuery("#form1").serialize(),
+                    success : function(data){
+                        if(prgrmTree != null){
+                            jQuery("#prgrmTree").dynatree("destroy");
+                        }
+                        prgrm_tree();
+                        alert(data.msg);
+                        closeWorkProgress();
+                    }       
+            });
+        }
+    }
+    
+    // 상세보기
+    function node_view(key, type){
+        fn_Clean();
+        if(displayWorkProgress()){
+            jQuery.ajax({
+                url: detailUrl,
+                cache: false,
+                dataType: 'json',
+                data: {
+                    prgrmid: key
+                },
+                success: function(data){
+                    // 상세 
+                    jQuery("#viewUpprPrgrmid").val(data.upprPrgrmid);
+                    if(data.upprPrgrmNm == null){
+                        jQuery("#uprPrgrmNm").val('');
+                    }else{
+                        jQuery("#uprPrgrmNm").val(data.upprPrgrmNm);
+                    }
+                    jQuery("#viewPrgrmid").val(data.prgrmid);
+                    jQuery("#prgrmid").val(data.prgrmid);
+                    jQuery("#prgrmNm").val(data.nm);
+                    jQuery("#tmpPrgrmNm").val(data.nm);
+                    jQuery("input:radio[name=typeCd]:input[value='"+data.typeCd+"']").prop("checked", true);
+                    jQuery("input:radio[name=loginYn]:input[value='"+data.loginYn+"']").prop("checked", true);
+                    if(data.typeCd != '01') {
+                        jQuery("#url").prop("disabled", false);
+                    }
+                    jQuery("#url").val(data.url);
+                    jQuery("#prgrmExpln").val(data.dc);
+                    
+                    if(type == "reg"){
+                        fn_Clean();
+                        jQuery("#upprPrgrmid").val(jQuery("#prgrmid").val());
+                        jQuery("#viewUpprPrgrmid").val(jQuery("#prgrmid").val());
+                        jQuery("#uprPrgrmNm").val(jQuery("#tmpPrgrmNm").val());
+                        jQuery("#prgrmNm").val("");
+                        jQuery("#prgrmid").val("");
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    
+    // 프로그램 삭제
+    function fn_prgrmDelete(){
+        if(displayWorkProgress()){
+            jQuery.ajax({
+                url : deletePrgrmUrl,
+                type:'post',
+                cache : false,
+                dataType:'json',
+                data : {            
+                    prgrmid :  jQuery("#prgrmid").val(),
+                    upprPrgrmid : jQuery("#upprPrgrmid").val()
+                },
+                success : function(data){
+                    if(prgrmTree != null){
+                        jQuery("#prgrmTree").dynatree("destroy");
+                    }
+                    fn_Clean();
+                    jQuery("#prgrmid").val("");
+                    jQuery("#prgrmNm").val("");
+                    jQuery("#viewUpprPrgrmid").val("0");
+                    jQuery("#uprPrgrmNm").val("");
+                    jQuery("#upprPrgrmid").val("0");
+                    //$('#selPrgrmNm').text('');
+                    prgrm_tree();
+                    alert(data.msg);
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    
+    function fn_prgrm_reOrder(node, sourceNode,hitMode){
+        var uprPrgrmId = node.parent.data.key;
+        if(hitMode == "over"){
+            uprPrgrmId = node.data.key;
+        }
+        jQuery.ajax({
+            url : orderUrl,
+            cache:false,
+            dataType : 'json',
+            data : {
+                tprgrmid : sourceNode.data.key,
+                prgrmid : node.data.key,
+                upprPrgrmid : uprPrgrmId,   
+                hitMode : hitMode
+            },
+            success:function(data){
+            }
+            
+        });
+    }
+    
+    // 유효성검증기
+    function validate(){
+        $("#form1").validate({
+            rules: { 
+                nm: {
+                    required: true
+                   ,maxlength: 200
+                },
+                dc: {
+                    maxlength: 400
+                },
+                url: {
+                    maxlength: 500
+                }
+            },
+            messages: { 
+                nm: {
+                    required: "프로그램명을 입력해주십시오"
+                   ,maxlength: "프로그램명은 200자를 넘을 수 없습니다."
+                },
+                dc: {
+                    maxlength: "프로그램설명은 400자를 넘을 수 없습니다."
+                },
+                url: {
+                    maxlength: "URL은 500자를 넘을 수 없습니다."
+                }
+            }
+        });
+    }
 </script>
-<form id="form1" name="form1" method="post" action="" class="form-horizontal row-border">
-	<input type="hidden" name="prgrmid" id="prgrmid" value="" />
-	<input type="hidden" name="upprPrgrmid" id="upprPrgrmid" value="0" />
-	
-	<!-- tree context -->	
-	<ul id="roleContext" class="contextMenu">
-	    <li class="edit"><a href="#regist">하위 등록</a></li>
-	    <th:block sec:authorize-url="/mng/prgrm/deletePrgrm.do"><li class="delete"><a href="#delete">삭제</a></li></th:block>
-	</ul>
-	
-	<div class="row no-gutter">
-		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div class="panel panel-default" style="padding-left:10px;">
-				<h5>
-					디렉토리:<img src="/images/mng/folder.png">
-					메뉴:<img src="/images/mng/layout_header.png">
-					메뉴상세:<img src="/images/mng/tabnavigator.png">
-					기능:<img src="/images/mng/widgets.png">
-					팝업:<img src="/images/mng/application_double.png">
-				</h5>
-			</div>
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4>프로그램명  :  <span id="selPrgrmNm"></span></h4>
-				</div>
-				<div class="panel-body">
-					<div>
-						<div class="tree thumbnail img-responsive" id="prgrmTree"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6 col-sm-6 col-xs-12">
-			<div style="margin-bottom:58px;">
-			    <button type="button" class="btn btn-sm btn-warning pull-right" id="reg">등록</button>
-			</div>
-			<div class="panel panel-default">
-	        	<div class="panel-heading">
-					<h4>프로그램정보</h4>
-				</div>
-	            <div class="panel-body">
-	            	<div class="form-group">
-	                	<label class="col-md-2 control-label">상위프로그램 ID</label>
-	                  	<div class="col-md-10 form-control-static" id="viewUpprPrgrmid"></div>
-	                </div>
-	                <div class="form-group">
-	                  	<label class="col-md-2 control-label">상위프로그램명</label>
-	                  	<div class="col-md-10 form-control-static" id="uprPrgrmNm"></div>
-	                </div>
-	                <div class="form-group">
-	                	<label class="col-md-2 control-label">프로그램ID</label>
-	                  	<div class="col-md-10 form-control-static" id="viewPrgrmid"></div>
-	                </div>
-	                <div class="form-group">
-	                  	<label class="col-md-2 control-label"><span class="text-danger">*</span> 프로그램명</label>
-	                  	<div class="col-md-10 form-control-static">
-		                    <input type="text" name="nm" id="prgrmNm" class="form-control input-sm">
-							<input type="hidden" name="tmpNm" id="tmpPrgrmNm" value="" />
-	                  	</div>
-	                </div>
-	                <div class="form-group">
-	                	<label class="col-md-2 control-label">프로그램설명</label>
-	                  	<div class="col-md-10 form-control-static">
-	                    	<textarea name="dc" rows="3" id="prgrmExpln" class="form-control"></textarea>
-	                  	</div>
-	                </div>
-	                <div class="form-group">
-	                  	<label for="labelfor" class="col-md-2 control-label">URL</label>
-	                  	<div class="col-md-10 form-control-static">
-		                    <input type="text" name="url" id="url" class="form-control input-sm" disabled>
-		                </div>
-	                </div>
-	                <div class="form-group">
-	                	<label class="col-md-2 control-label">프로그램 유형</label>
-	                  	<div class="col-md-10 form-control-static">
-							<label class="radio-inline">
-								<input type="radio" name="typeCd" value="01" checked> 디렉토리
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="typeCd" value="02"> 메뉴
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="typeCd" value="03"> 메뉴상세
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="typeCd" value="04"> 기능
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="typeCd" value="05"> 팝업
-							</label>
-	                  	</div>
-	                </div>
-	                <div class="form-group">
-	                	<label class="col-md-2 control-label">로그인 여부</label>
-                  		<div class="col-md-10 form-control-static">
-							<label class="radio-inline">
-								<input type="radio" name="loginYn" value="Y" checked> 사용
-							</label>
-							<label class="radio-inline">
-								<input type="radio" name="loginYn" value="N"> 사용안함
-							</label>
-                  		</div>
-	                </div>
-                    <div class="pull-right">
-                    	<th:block sec:authorize-url="/mng/prgrm/savePrgrm.do"><button type="button" class="btn btn-sm btn-primary" id="doSave">저장</button></th:block>
-                    	<button type="button" class="btn btn-sm btn-default" id="doCancle">취소</button>
-                	</div>
-	    		</div>
-			</div>
-		</div>
-	</div>
-</form>
+    <form id="form1" name="form1" method="post" action="" class="form-horizontal row-border">
+        <input type="hidden" name="prgrmid" id="prgrmid" value="" />
+        <input type="hidden" name="upprPrgrmid" id="upprPrgrmid" value="0" />
+        
+        <!-- tree context -->   
+        <ul id="roleContext" class="contextMenu">
+            <li class="edit"><a href="#regist">하위 등록</a></li>
+            <th:block sec:authorize-url="/mng/prgrm/deletePrgrm.do"><li class="delete"><a href="#delete">삭제</a></li></th:block>
+        </ul>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <ul>
+                            <li class="d-inline-block m-r-10">
+                                디렉토리 : <img src="/images/mng/folder.png">
+                            </li>
+                            <li class="d-inline-block m-r-10">
+                                메뉴 : <img src="/images/mng/layout_header.png">
+                            </li>
+                            <li class="d-inline-block m-r-10">
+                                메뉴상세 : <img src="/images/mng/tabnavigator.png">
+                            </li>
+                            <li class="d-inline-block m-r-10">
+                                기능 : <img src="/images/mng/widgets.png">
+                            </li>
+                            <li class="d-inline-block">
+                                팝업 : <img src="/images/mng/application_double.png">
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12 col-xl-4">
+                                <h5 class="mb-3">
+                                    <strong>프로그램구조</strong>
+                                </h5>
+                                <div class="card">
+                                    <div class="card-block-small" id="prgrmTree">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-8">
+                                <h5 class="mb-3">
+                                    <strong>프로그램정보</strong>
+                                </h5>
+                                <div class="card">
+                                    <div class="card-block-small">
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewUpprPrgrmid"><strong>상위프로그램ID</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="viewUpprPrgrmid" id="viewUpprPrgrmid" readonly=""/>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="uprPrgrmNm"><strong>상위프로그램명</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="uprPrgrmNm" id="uprPrgrmNm" readonly=""/>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewPrgrmid"><strong>프로그램ID</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="viewPrgrmid" id="viewPrgrmid" readonly=""/>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row required">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>프로그램명</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="nm" id="prgrmNm" maxlength="200" />
+                                                <input type="hidden" name="tmpNm" id="tmpPrgrmNm" value="" />
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmExpln"><strong>프로그램설명</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="dc" id="prgrmExpln" maxlength="400" />
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="programUrl"><strong>프로그램URL</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="url" id="url" disabled  maxlength="500" />
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>프로그램 유형</strong></div>
+                                            <div class="col-sm-12">
+                                                <div class="form-radio">
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="typeCd" checked="checked" value="01">
+                                                            <i class="helper"></i>디렉토리
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="typeCd" value="02">
+                                                            <i class="helper"></i>메뉴
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="typeCd" value="03">
+                                                            <i class="helper"></i>메뉴상세
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="typeCd" value="04">
+                                                            <i class="helper"></i>기능
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="typeCd" value="05">
+                                                            <i class="helper"></i>팝업
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>로그인여부</strong></div>
+                                            <div class="col-sm-12">
+                                                <div class="form-radio">
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="loginYn" checked="checked" value="Y">
+                                                            <i class="helper"></i>사용
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="loginYn" value="N">
+                                                            <i class="helper"></i>사용안함
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-0 mt-4 form-group row">
+                                            <div class="col-sm-12">
+                                                <th:block sec:authorize-url="/mng/prgrm/savePrgrm.do"><button type="button" class="btn btn-primary" id="doSave">저장</button></th:block>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 </body>
 </html>
