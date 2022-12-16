@@ -49,6 +49,8 @@ public class EnveduVo extends ParentRequestVo {
     /** 제목 */
     @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
+    /** 유형 코드 */
+    private String typeCd;
     /** URL */
     private String url;
     /** 썸네일_파일아이디 */
