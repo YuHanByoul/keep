@@ -189,10 +189,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String styYn;
 
     /**숙박_밤 */
-	private int  styNight;
+	private int styNight;
 
     /**숙박_낮 */
-	private int  styDaytm;
+	private int styDaytm;
 
     /**운영_형태_코드 */
 	private String operFrmCd;
@@ -346,6 +346,12 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /**심사_일시 */
     private Date srngDt;
+
+    /**심사위원_ID */
+    private String jdgsid;
+
+    /**안전관리 사전인증여부 */
+    private String sftyMngYn;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

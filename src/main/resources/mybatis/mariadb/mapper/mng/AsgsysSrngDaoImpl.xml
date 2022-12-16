@@ -442,13 +442,13 @@
         <include refid="PaginationMapper.header"/>
             SELECT
                  A.PRGRMID
+               , A.JDGSID
                , B.PRGRM_NM
                , B.INST_NM
                , A.SRNG_STTS_CD
-               , A.REG_DT    /*배정일*/
-               , C.STY_YN    /*숙박여부*/
-               , D.SRNG_DT       /* 심사일 */
-               , A.JDGSID
+               , A.REG_DT          /*배정일*/
+               , C.STY_YN          /*숙박여부*/
+               , D.SRNG_DT         /* 심사일 */
                , A.MDFCN_DT
                , A.MDFRID
                , A.RGTRID
@@ -488,6 +488,33 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-
-
+    <select id="selectJdgsSrngDetail" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+    /* AsgsysSrngDao.selectJdgsSrngDetail */
+            SELECT
+                 A.PRGRMID
+               , A.JDGSID
+               , B.PRGRM_NM
+               , B.INST_NM
+               , C.STY_YN    /*숙박여부*/
+               , C.STY_NIGHT
+               , C.STY_DAYTM
+               , C.OPER_FRM_CD
+               , NULLIF(E.PRGRMID,'N') AS SFTY_MNG_YN
+    --         , '첨부파일'
+    --         , '증빙서류'
+               , A.SRNG_STTS_CD
+               , A.REG_DT    /*배정일*/
+            FROM
+                TB_ASS_PRGRM_JDGS A
+            INNER JOIN
+                TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
+            WHERE 1=1
+            AND A.JDGSID = #{jdgsid}
+    </select>
 </mapper>

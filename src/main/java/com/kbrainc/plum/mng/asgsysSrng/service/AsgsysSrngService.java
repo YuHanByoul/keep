@@ -136,6 +136,29 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	* @return void
 	*/
-	void jdgsSrngMainExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+	public void jdgsSrngMainExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
+	/**
+	* 심사위원심사 상세 조회
+	*
+	* @Title : getSelectDsgnAplyInfo
+	* @Description : 심사위원심사 상세 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo객체
+	* @throws Exception 예외
+	*/
+	public AsgsysSrngVo selectJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 심사위원심사 등록
+	 *
+	 * @Title       : insertJdgsSrngDetail
+	 * @Description : 회원등록
+	 * @param memberVo MemberVo , TeacherVo TeacherVo객체
+	 * @param user 사용자세션정보
+	 * @return Map<String,Object> 응답결과객체
+	 * @throws Exception 예외
+	 */
+	public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

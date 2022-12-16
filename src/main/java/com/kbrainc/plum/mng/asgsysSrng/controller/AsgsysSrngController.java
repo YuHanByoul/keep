@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
+import com.kbrainc.plum.front.member.model.TeacherVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -428,5 +429,51 @@ public class AsgsysSrngController {
 	public void jdgsSrngMainExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
 		asgsysSrngService.jdgsSrngMainExcelDownList(asgsysSrngVo, response, request);
 	}
+
+	///mng/asgsysSrng/jdgsSrngForm.html
+	/**
+     * @Title : dsgnSrngDetailForm
+     * @Description : 심사위원심사 상세 화면이동
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+
+	//심사신청의 심사위언심사 탭과 name이 중복되어 Detail추가
+    @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngDetailForm.html")
+    public String jdgsSrngDetailForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+    	model.addAttribute("jdgsSrngInfo", asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo));
+    	return "mng/asgsysSrng/jdgsSrngForm";
+    }
+
+
+    /**
+     * 심사위원심사 등록
+     *
+     * @Title       : insertJdgsSrngDetail
+     * @Description : 회원등록
+     * @param memberVo MemberVo , TeacherVo TeacherVo객체
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    //심사신청의 심사위언심사 탭과 name이 중복되어 Detail추가
+    @RequestMapping(value = "/front/member/updateJdgsSrngDetail.do")
+    @ResponseBody
+    public Map<String, Object> updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<>();
+    	List<AsgsysSrngVo> result = null;
+
+    	asgsysSrngVo.setSttsCd("2");
+
+    	int checkDuplicationID = asgsysSrngService.updateJdgsSrngDetail(asgsysSrngVo);
+    	if(checkDuplicationID > 0) {
+    		resultMap.put("result", true);
+    	}else {
+    		resultMap.put("result", false);
+    	}
+    	return resultMap;
+    }
 
 }

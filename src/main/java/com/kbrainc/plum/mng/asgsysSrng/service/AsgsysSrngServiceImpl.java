@@ -430,4 +430,38 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
 	}
 
+
+	/**
+	* 심사위원심사 상세 조회
+	*
+	* @Title : getSelectDsgnAplyInfo
+	* @Description : 심사위원심사 상세 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo객체
+    * @throws Exception 예외
+	*/
+    @Override
+	public AsgsysSrngVo selectJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selectJdgsSrngDetail(asgsysSrngVo);
+	}
+
+    /**
+     * 심사위원심사 수정
+     *
+     * @Title       : insertJdgsSrngDetail
+     * @Description : 회원등록
+     * @param memberVo MemberVo , TeacherVo TeacherVo객체
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
+        int retVal = 0;
+        //retVal += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
+
+        return retVal;
+	}
+
 }
