@@ -90,4 +90,36 @@ public interface AsgsysSrngDao {
 	*/
 	public List<AsgsysSrngVo> selectSplmntDmndList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 프로그램 우수성 조회
+	*
+	* @Title : selectPrgrmDstnctn
+	* @Description : 프로그램 우수성 조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+    /**
+	* 프로그램 평가 조회
+	*
+	* @Title : selectPrgrmEduSbjct
+	* @Description : 프로그램 평가 조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+    /**
+    * @Title : dsgnSrngMainForm
+    * @Description : 심사위원심사 목록조회
+    * @param AsgsysSrngVo객체
+    * @throws Exception 예외
+    * @return List<AsgsysSrngVo>
+    */
+	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo)throws Exception;
+
 }

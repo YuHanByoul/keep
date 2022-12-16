@@ -64,18 +64,6 @@ public class AsgsysSrngController {
         return "mng/asgsysSrng/dsgnAplyMain";
     }
 
-	/**
-     * @Title : dsgnSrngForm
-     * @Description : 지정심사 화면이동
-     * @throws Exception :
-     * @return String 이동화면경로
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/asgsysSrng/dsgnSrngForm.html")
-    public String dsgnSrngForm() throws Exception {
-        return "mng/asgsysSrng/dsgnSrngForm";
-    }
-
     /**
      * @Title : dsgnSrngForm
      * @Description : 지정신청 목록조회
@@ -114,7 +102,7 @@ public class AsgsysSrngController {
     	//String sttsCd = asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo);
     	model.addAttribute("sttsCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
 
-    	return "mng/asgsysSrng/dsgnAplyDetailForm";
+    	return "mng/asgsysSrng/dsgnAplyDetail";
     }
 
     /**
@@ -163,7 +151,7 @@ public class AsgsysSrngController {
     public String aplyInfoForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
     	model.addAttribute("dsgnAplyInfo", asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo));
-        return "mng/asgsysSrng/aplyInfoForm";
+        return "mng/asgsysSrng/aplyInfo";
     }
 
     /**
@@ -177,7 +165,7 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSprtgrpAltmntForm.html")
     public String jdgsSprtgrpAltmntForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	return "mng/asgsysSrng/jdgsSprtgrpAltmntForm";
+    	return "mng/asgsysSrng/jdgsSprtgrpAltmnt";
     }
 
     /**
@@ -232,6 +220,14 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctn.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
+    	model.addAttribute("prgrmDstnctnInfo", asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo));
+
+    	//프로그램 운영일정 목록 조회 tb_ass_prgrm_schdl
+    	//대처계획 목록 조회    ASS_비상_조치_계획	TB_ASS_EMRGCY_ACTN_PLAN
+
+    	//관련 교육과정 목록 조회 ASS_프로그램_교육_주제	tb_ass_prgrm_edu_sbjct	TB_ASS_PRGRM_EDU_SBJCT
+
     	return "mng/asgsysSrng/prgrmDstnctn";
     }
 
@@ -259,6 +255,7 @@ public class AsgsysSrngController {
     */
     @RequestMapping(value = "/mng/asgsysSrng/prgrmEvl.html")
     public String prgrmEvlForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	model.addAttribute("prgrmEvlInfo", asgsysSrngService.selectPrgrmEvl(asgsysSrngVo));
 
     	return "mng/asgsysSrng/prgrmEvl";
     }
@@ -393,5 +390,32 @@ public class AsgsysSrngController {
    public String jdgsSrngMainForm() throws Exception {
        return "mng/asgsysSrng/jdgsSrngMain";
    }
+
+   /**
+   * @Title : dsgnSrngMainForm
+   * @Description : 심사위원심사 목록조회
+   * @param AsgsysSrngVo객체
+   * @return Map<String,Object> 응답결과객체
+   * @throws Exception 예외
+   */
+  @RequestMapping(value = "/mng/asgsysSrng/selectJdgsSrngList.do")
+  @ResponseBody
+  public Map<String, Object> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+	   Map<String, Object> resultMap = new HashMap<>();
+      List<AsgsysSrngVo> result = null;
+
+      //심사위원심사 목록조회
+	   result = asgsysSrngService.selectJdgsSrngList(asgsysSrngVo);
+
+      if (result.size() > 0) {
+          resultMap.put("totalCount", (result.get(0).getTotalCount()));
+      } else {
+          resultMap.put("totalCount", 0);
+      }
+
+      resultMap.put("list", result);
+
+      return resultMap;
+  }
 
 }

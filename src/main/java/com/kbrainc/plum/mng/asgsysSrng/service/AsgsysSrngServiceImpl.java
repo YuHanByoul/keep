@@ -259,4 +259,45 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.selectSplmntDmndList(asgsysSrngVo);
 	}
 
+	/**
+	* 프로그램 우수성 조회
+	*
+	* @Title : selectPrgrmDstnctn
+	* @Description : 프로그램 우수성 조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	@Override
+	public AsgsysSrngVo selectPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectPrgrmDstnctn(asgsysSrngVo);
+	}
+
+	/**
+	* 프로그램 평가 조회
+	*
+	* @Title : selectPrgrmEduSbjct
+	* @Description : 프로그램 평가 조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	@Override
+	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectPrgrmEvl(asgsysSrngVo);
+	}
+
+    /**
+    * @Title : dsgnSrngMainForm
+    * @Description : 심사위원심사 목록조회
+    * @param AsgsysSrngVo객체
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+	@Override
+	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		//
+		return asgsysSrngDao.selectJdgsSrngList(asgsysSrngVo);
+	}
+
 }

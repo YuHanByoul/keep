@@ -7,7 +7,6 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao">
 
-
     <!-- 지정신청 목록 조회. -->
     <select id="selectDsgnAplyList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectDsgnAplyList */
@@ -51,10 +50,6 @@
         <!-- 키워드.기관명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
             AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
-        </if>
-        <!-- 키워드.사업자번호 -->
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchBrno'">
-            AND D.BRNO LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <!-- 진행상태  -->
         <if test="searchSttsCd != null and searchSttsCd != ''">
@@ -202,6 +197,90 @@
     WHERE 1=1
     AND PRGRMID = #{prgrmid}
 
+    </select>
+
+    <!-- 프로그램 우수성 조회. -->
+    <select id="selectPrgrmDstnctn" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            A.PRGRMID                /* 프로그램아이디           */
+          , A.PRGRM_NM               /* 프로그램이름             */
+<!-- 컨설팅 진행여부 -->
+          , B.STY_YN                 /* 숙박_여부                */
+          , B.STY_NIGHT              /* 숙박_밤                  */
+          , B.STY_DAYTM              /* 숙박_낮                  */
+          , B.OPER_FRM_CD            /* 운영_형태_코드           */
+          , B.JAN                    /* 1월                      */
+          , B.FEB                    /* 2월                      */
+          , B.MAR                    /* 3월                      */
+          , B.APR                    /* 4월                      */
+          , B.MAY                    /* 5월                      */
+          , B.JUNE                   /* 6월                      */
+          , B.JULY                   /* 7월                      */
+          , B.AUG                    /* 8월                      */
+          , B.SEPT                   /* 9월                      */
+          , B.OCT                    /* 10월                     */
+          , B.NOV                    /* 11월                     */
+          , B.DCM                    /* 12월                     */
+          , B.WHOL_MM                /* 전체_월                  */
+          , B.INFNT                  /* 유아                     */
+          , B.SCHBOY                 /* 초등학생                 */
+          , B.MSKLSD                 /* 중학생                   */
+          , B.HGSCHST                /* 고등학생                 */
+          , B.ADULT                  /* 성인                     */
+          , B.WHOL_AGE               /* 전체_연령                */
+          , B.EDU_PLC                /* 교육_장소                */
+          , B.EDU_NOPE               /* 교육_인원수              */
+          , B.EDU_CNT                /* 교육_횟수                */
+          , B.EDU_HR                 /* 교육_시간                */
+          , B.EDU_MNT                /* 교육_분                  */
+          , B.PCHRG_YN               /* 유료_여부                */
+          , B.ETRFEE                 /* 참가비                   */
+          , B.EDU_PRPS               /* 교육_목적                */
+          , B.APPRO                  /* 적절성                   */
+          , B.DSTNCTN                /* 우수성                   */
+          , B.EDU_CN                 /* 교육_내용                */
+          , B.WETHER_STTN            /* 기상_상황                */
+          , B.ACTN_MTHD              /* 조치_방법                */
+          , B.EDU_PHOTO_FILEGRPID    /* 교육_사진_파일그룹아이디 */
+          , B.MDFCN_DT               /* 수정_일시                */
+          , B.MDFRID                 /* 수정자아이디             */
+          , B.REG_DT                 /* 등록_일시                */
+          , B.RGTRID                 /* 등록자아이디             */
+          , (SELECT GROUP_CONCAT(EDU_SBJCT_CD SEPARATOR',') FROM TB_ASS_PRGRM_EDU_SBJCT WHERE PRGRMID = #{prgrmid}) AS EDU_SBJCT_CD
+        FROM
+            TB_ASS_PRGRM A
+        /*프로그램 우수성*/
+        INNER JOIN
+            TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 프로그램 평가 조회 -->
+    <select id="selectPrgrmEvl" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            PRGRMID
+          , EVL_PRPS
+          , BFR_LDR_EVL_ARTCL
+          , BFR_LDR_EVL_TL
+          , AFTR_LDR_EVL_ARTCL
+          , AFTR_LDR_EVL_TL
+          , BFR_PRTPNT_EVL_ARTCL
+          , BFR_PRTPNT_EVL_TL
+          , AFTR_PRTPNT_EVL_ARTCL
+          , AFTR_PRTPNT_EVL_TL
+          , BFR_GDR_EVL_ARTCL
+          , AFTR_GDR_EVL_TL
+          , DATABASE_WRT_YN
+          , CLSJRNL_WRT_YN
+          , ETC_YN
+          , ETC_CN
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_PRGRM_EVL
+        WHERE PRGRMID = #{prgrmid}
     </select>
 
     <!-- 지정제 프로그램 등록 -->
@@ -354,6 +433,61 @@
         AND PRGRMID = #{prgrmid}
         <include refid="PaginationMapper.footer"/>
     </select>
+
+
+    <!-- 심사위원심사 -->
+    <!-- 심사위원심사 목록조회-->
+    <select id="selectJdgsSrngList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectJdgsSrngList*/
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                 A.PRGRMID
+               , B.PRGRM_NM
+               , B.INST_NM
+               , A.SRNG_STTS_CD
+               , A.REG_DT    /*배정일*/
+               , C.STY_YN    /*숙박여부*/
+               , D.SRNG_DT       /* 심사일 */
+               , A.JDGSID
+               , A.MDFCN_DT
+               , A.MDFRID
+               , A.RGTRID
+            FROM
+                TB_ASS_PRGRM_JDGS A
+            INNER JOIN
+                TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
+            WHERE 1=1
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 심사진행상태  -->
+        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
+            AND A.SRNG_STTS_CD = #{searchSrngSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT >= #{searchRegStartDt}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
 
 
 </mapper>

@@ -81,7 +81,7 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	* @return void
 	*/
-	void aplyExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+	public void aplyExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
 
 	/**
 	* 보완요청 목록조회
@@ -92,6 +92,37 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	* @return List<AsgsysSrngVo>
 	*/
-	List<AsgsysSrngVo> selectSplmntDmndList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectSplmntDmndList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램 우수성 조회
+	*
+	* @Title : selectPrgrmDstnctn
+	* @Description : 프로그램 우수성 조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램 평가 조회
+	*
+	* @Title : selectPrgrmEduSbjct
+	* @Description : 프로그램 평가 조회
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+    /**
+    * @Title : dsgnSrngMainForm
+    * @Description : 심사위원심사 목록조회
+    * @param AsgsysSrngVo객체
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }
