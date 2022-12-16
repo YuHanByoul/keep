@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.prgrm.model;
 import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -38,18 +39,19 @@ public class PrgrmVo {
 
     /** 이름 */
     @NotEmpty(message = "프로그램명을 입력해 주십시오.")
-    @Size(max = 60, message = "프로그램명은 60자를 넘을 수 없습니다.")
+    @Size(max = 60, message = "프로그램명은 200자를 넘을 수 없습니다.")
     private String nm;
 
     /** 타입 */
+    @Pattern(regexp="01|02|03|04|05")
     private String typeCd;
 
     /** 설명 */
-    @Size(max = 130, message = "프로그램설명은 130자를 넘을 수 없습니다.")
+    @Size(max = 130, message = "프로그램설명은 400자를 넘을 수 없습니다.")
     private String dc;
 
     /** URL */
-    @Size(max = 160, message = "URL은 160자를 넘을 수 없습니다.")
+    @Size(max = 160, message = "URL은 500자를 넘을 수 없습니다.")
     private String url;
 
     /** 상위_프로그램아이디 */
@@ -59,6 +61,7 @@ public class PrgrmVo {
     private String upprPrgrmNm;
 
     /** 로그인_여부 */
+    @Pattern(regexp="[YN]")
     private String loginYn;
 
     /** 순서 */
