@@ -125,4 +125,17 @@ public interface AsgsysSrngService {
     */
 	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 심사위원심사 엑셀 다운로드
+	*
+	* @Title : jdgsSrngMainExcelDownList
+	* @Description : 심사위원심사 엑셀 다운로드
+	* @param memberVo
+	* @param response
+	* @param request
+	* @throws Exception
+	* @return void
+	*/
+	void jdgsSrngMainExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
 }

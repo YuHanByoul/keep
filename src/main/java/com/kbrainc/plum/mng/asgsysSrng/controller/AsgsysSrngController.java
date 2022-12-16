@@ -418,4 +418,15 @@ public class AsgsysSrngController {
       return resultMap;
   }
 
+  /**
+   * @Title : jdgsSrngMain
+   * @Description : 심사위원심사 목록 엑셀 다운로드
+   * @param AsgsysSrngVo객체
+   * @throws Exception 예외
+   */
+	@RequestMapping(value = "/mng/asgsysSrng/jdgsSrngMainExcelDownList.do")
+	public void jdgsSrngMainExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+		asgsysSrngService.jdgsSrngMainExcelDownList(asgsysSrngVo, response, request);
+	}
+
 }
