@@ -5220,18 +5220,29 @@
     *
     */
     function toggleSwitch(switch_elem, on) {
-    if (on){ // turn it on
-        if ($(switch_elem)[0].checked){ // it already is so do 
-            // nothing
-        }else{
-            $(switch_elem).trigger('click').attr("checked", "checked"); // it was off, turn it on
-        }
-    }else{ // turn it off
-        if ($(switch_elem)[0].checked){ // it's already on so 
-            $(switch_elem).trigger('click').removeAttr("checked"); // turn it off
-        }else{ // otherwise 
-            // nothing, already off
+        if (on){ // turn it on
+            if ($(switch_elem)[0].checked){ // it already is so do 
+                // nothing
+            }else{
+                $(switch_elem).trigger('click').attr("checked", "checked"); // it was off, turn it on
+            }
+        }else{ // turn it off
+            if ($(switch_elem)[0].checked){ // it's already on so 
+                $(switch_elem).trigger('click').removeAttr("checked"); // turn it off
+            }else{ // otherwise 
+                // nothing, already off
+            }
         }
     }
-}
+    /**
+    * 수동 validate 체크시 에러 마크 표출
+    *
+    * @Description : 수동 validate 체크시 에러 마크 표출
+    * @param showErrorMark 스위치 엘리먼트
+    *
+    */
+    function showErrorMark($el) {
+        $($el).css("border","2px solid #ff0000");
+        setTimeout(function() { $($el).css("border","")}, 1000);
+    }
 	

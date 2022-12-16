@@ -223,53 +223,15 @@
 	    	    ,aprvSttsCd :   { required: "승인상태를 선택해주십시오." }
 		    	,telno      :   { number  : "숫자만 입력가능합니다." , maxlength:"전화 번호는 12자리 이하여야 합니다."}
 		    }
-		})
+	})
     
-	//아이디 중복 체크 
- 	function fn_checkIdYn(){
-	 	
- 		if($('#acnt').val().length >20){
-			alert("아이디는 20자 이하여야 합니다.");
-			
-            $(borderEl).css("border","2px solid #ff0000").animate({}, 500);//#B0371D : 진한빨강 ,
-            setTimeout(function() { $(borderEl).css("border","")}, 1000);
-			
-			return;
- 		}
- 		
-        if(displayWorkProgress()){
-			$.ajax({
-				url : "/mng/member/checkIdYn.do",
-				type: 'POST',
-				cache : false,
-				dataType: 'json',
-				data : { acnt: $("#acnt").val() },
-				success : function (data){
-					if(data.result=="fail"){
-						alert("에러 발생 다시 시도 해주십시오.");
-					}else{
-						if(data.result!="N"){
-							alert("이미 사용중인 아이디입니다.")
-							checkId = "";
-							isDuplicatedId=true;
-						}else{
-							checkId = $("#acnt").val();
-							isDuplicatedId=false;
-						}
-					}
-					closeWorkProgress();
-				}
-			});
-		}
-	}
-	        
  	function fn_insertInst(){
  	 	
 	 	if(!($("#instFrm").valid())) return;
 	 	
   	 	if(!confirm("저장하시겠습니까?")) return;
   	 	
-  	 	let  data =  $("#instFrm").serialize() ;
+  	 	let data =  $("#instFrm").serialize() ;
   	 	let tailStr = "&useYn="+($('#useYnChk').is(':checked'))?"Y":"N";
   	 	let useYn = ( $('#useYnChk').is(':checked') )? "Y" : "N" ;
   	 	data = data+"&useYn="+useYn;
@@ -410,14 +372,9 @@
     }
 
     var deleteLogoFile = (fileid,fileIdntfcKey) =>{
-    	console.log(fileid);
     	$("#logo_img_"+fileid).remove();
         $("#imgPreview").attr('src', "/images/mng/default_logo.png");
     	fn_deleteFile(fileid, fileIdntfcKey);
     }
-
-
     
-	
-	
 </script>

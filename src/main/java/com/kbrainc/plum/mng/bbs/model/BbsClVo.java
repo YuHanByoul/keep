@@ -32,7 +32,7 @@ public class BbsClVo extends ParentRequestVo {
     private UserVo user;
     /** **/
 
-    private int bbsClid;
+    private Integer bbsClid;
     /** **/
     private Integer bbsid;
     /** **/

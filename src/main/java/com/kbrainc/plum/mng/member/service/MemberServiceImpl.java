@@ -97,10 +97,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         //간편로그인 차후 필요시 사용
         //memberDao.deletetEsylgn(memberVo);
         
-       if(memberVo.getEnvfldCds()!=null) {
+       if(memberVo.getEnvfldCds()!=null & memberVo.getEnvfldCds().length > 0) {
            retVal += memberDao.insertEnvfld(memberVo);
        }
-       if(memberVo.getItrstfldCds()!=null) {
+       if(memberVo.getItrstfldCds()!=null & memberVo.getItrstfldCds().length > 0) {
            retVal += memberDao.insertItrstfld(memberVo);
        }
        //간편로그인 차후 필요시 사용
