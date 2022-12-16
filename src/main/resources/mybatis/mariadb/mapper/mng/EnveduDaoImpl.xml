@@ -18,7 +18,9 @@
         	, CONCAT(A.YR, '-' ,A.MM) AS YRMM
             , A.YR
         	, A.MM
+            , A.QU
         	, A.TTL
+            , A.TYPE_CD
         	, A.URL
         	, A.THMBN_FILEID
             , C.FILEGRPID
@@ -35,6 +37,9 @@
             LEFT OUTER JOIN TB_CMM_FILE C ON A.THMBN_FILEID = C.FILEID
         WHERE 
             1=1
+            <if test="clsfCd != null and clsfCd != ''">
+            AND A.CLSF_CD = #{clsfCd}
+            </if>
             <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
             AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
@@ -58,7 +63,9 @@
             , ENVEDU_SE_CD
             , YR
             , MM
+            , QU
             , TTL
+            , TYPE_CD
             <if test="url != null and url != ''">
             , URL
             </if>
@@ -78,7 +85,9 @@
             ,#{enveduSeCd}
             ,#{yr}
             ,#{mm}
+            ,#{qu}
             ,#{ttl}
+            ,#{typeCd}
             <if test="url != null and url != ''">
             ,#{url}
             </if>
@@ -105,7 +114,9 @@
         	, A.ENVEDU_SE_CD
             , A.YR
         	, A.MM
+            , A.QU
         	, A.TTL
+            , A.TYPE_CD
         	, A.URL
         	, A.THMBN_FILEID
             , B.FILEGRPID
@@ -122,10 +133,12 @@
     <update id="updateEnvedu" parameterType="EnveduVo" keyProperty="EnveduVo">
         /* EnveduDao.updateEnvedu */
         UPDATE TB_CMM_WBZN_ENVEDU SET
-                ENVEDU_SE_CD              = #{enveduSeCd}
+                ENVEDU_SE_CD            = #{enveduSeCd}
                 ,YR                     = #{yr} 
-                ,MM                     = #{mm} 
-                ,TTL                    = #{ttl} 
+                ,MM                     = #{mm}
+                ,QU                     = #{qu}
+                ,TTL                    = #{ttl}
+                ,TYPE_CD                = #{typeCd} 
                 ,THMBN_FILEID           = #{thmbnFileid}
                 <if test="url != null and url != ''">
                 ,url                    = #{url}
