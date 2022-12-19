@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -287,6 +288,20 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.selectPrgrmEvl(asgsysSrngVo);
 	}
 
+	/**
+	* 프로그램 안전관리 조회
+	*
+	* @Title : selectSftyMng
+	* @Description : 프로그램 안전관리 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo객체
+    * @throws Exception 예외
+	*/
+	@Override
+	public AsgsysSrngVo selectSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSftyMng(asgsysSrngVo);
+	}
+
     /**
     * @Title : dsgnSrngMainForm
     * @Description : 심사위원심사 목록조회
@@ -462,6 +477,22 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
         //retVal += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
 
         return retVal;
+	}
+
+    /**
+    * [메소드 요약].
+    *
+    * @Title : updateSftyMng
+    * @Description : 안전관리 수정
+    * @param asgsysSrngVo
+    * @return int
+    */
+    @Override
+    @Transactional
+	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception{
+    	int retVal = 0;
+    	retVal += asgsysSrngDao.updateSftyMng(asgsysSrngVo);
+		return retVal;
 	}
 
 }
