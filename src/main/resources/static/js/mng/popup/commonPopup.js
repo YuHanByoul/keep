@@ -90,7 +90,7 @@ function fn_openModal(item,bakcdrop){
 function fn_setPopupCookie(id){
    if($("#checkCookie"+id).is(":checked")){
       $.cookie("commonPop_cookie_"+id, "Y", 365);
-      $("#layer"+id).hide();
+      $("#layer"+id).modal("hide");
    }else{ 
       $.cookie("commonPop_cookie_"+id, "N", 365);   
    }
