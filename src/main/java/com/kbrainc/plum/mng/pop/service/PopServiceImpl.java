@@ -10,6 +10,7 @@ import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.mng.pop.model.PopDao;
 import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
+import com.kbrainc.plum.mng.role.model.RoleVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -137,4 +138,15 @@ public class PopServiceImpl extends PlumAbstractServiceImpl implements PopServic
 
 		return returnList;
 	};
+	
+    /**
+     * @Title : selectPopUpNtcRoleList
+     * @Description : 등록/수정 폼 역할 리스트 호출
+     * @param RoleVo 타입의 인자
+     * @throws Exception
+     * @return List
+     */
+    public List<RoleVo> selectPopUpNtcRoleList(PopUpNtcVo popUpNtcVo) throws Exception{
+        return popDao.selectPopUpNtcRoleList(popUpNtcVo);
+    }
 }

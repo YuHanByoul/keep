@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
 import com.kbrainc.plum.mng.pop.service.PopServiceImpl;
+import com.kbrainc.plum.mng.role.model.RoleVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -35,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * </pre> 
  *
  * @ClassName : PopController
- * @Description : 팝업 곤지사항 관리 컨트롤러
+ * @Description : 팝업 공지사항 관리 컨트롤러
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 
@@ -62,21 +65,25 @@ public class PopController {
     public String popupForm(SiteVo site, Model model) throws Exception {
         List<SiteVo> siteList = commonService.selectSiteList(site);
         model.addAttribute("siteList", siteList);
-        return "mng/pop/popupForm";
+        return "mng/pop/popupList";
     }
 
     /**
      * @Title : popupInsertForm
-     * @Description : user관리 리스트화면 이동
+     * @Description : 팝업공지 사항 등록폼  이동
      * @param
      * @throws Exception
      * @return String 이동화면경로
      */
     @RequestMapping(value = "/mng/pop/popupInsertForm.html")
-    public String popupInsertForm(SiteVo site, Model model) throws Exception {
+    public String popupInsertForm(SiteVo site,PopUpNtcVo popUpNtcVo, Model model, @UserInfo UserVo user) throws Exception {
+        
         List<SiteVo> siteList = commonService.selectSiteList(site);
+        popUpNtcVo.setUser(user);
+        List<RoleVo> roleList = popService.selectPopUpNtcRoleList(popUpNtcVo);
         model.addAttribute("siteList", siteList);
-        return "mng/pop/popupInsert";
+        model.addAttribute("roleList", roleList);
+        return "mng/pop/popupInsertForm";
     }
 
     /**
@@ -118,7 +125,7 @@ public class PopController {
      */
     @RequestMapping(value = "/mng/pop/insertPopUpNtc.do")
     @ResponseBody
-    public Map<String, Object> insertPopUpNtc(PopUpNtcVo paramVO, BindingResult bindingResult, @UserInfo UserVo user)
+    public Map<String, Object> insertPopUpNtc(@Valid PopUpNtcVo paramVO, BindingResult bindingResult, @UserInfo UserVo user)
             throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
 
@@ -155,7 +162,7 @@ public class PopController {
      */
     @RequestMapping(value = "/mng/pop/updatePopUpNtc.do")
     @ResponseBody
-    public Map<String, Object> updatePopUpNtc(PopUpNtcVo paramVO, BindingResult bindingResult, @UserInfo UserVo user)
+    public Map<String, Object> updatePopUpNtc(@Valid PopUpNtcVo paramVO, BindingResult bindingResult, @UserInfo UserVo user)
             throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
 
@@ -191,11 +198,15 @@ public class PopController {
      * @return String 이동화면경로
      */
     @RequestMapping(value = "/mng/pop/popupUpdateForm.html")
-    public String popupUpdateForm(PopUpNtcVo paramVO, Model model, SiteVo site) throws Exception {
+    public String popupUpdateForm(PopUpNtcVo popUpNtcVo, Model model, SiteVo site, @UserInfo UserVo user) throws Exception {
         List<SiteVo> siteList = commonService.selectSiteList(site);
         model.addAttribute("siteList", siteList);
-        model.addAttribute("paramVO", popService.selectPopUpNtc(paramVO));
-        return "mng/pop/popupModify";
+        model.addAttribute("paramVO", popService.selectPopUpNtc(popUpNtcVo));
+        popUpNtcVo.setUser(user);
+        List<RoleVo> roleList = popService.selectPopUpNtcRoleList(popUpNtcVo);
+        model.addAttribute("roleList", roleList);
+        
+        return "mng/pop/popupUpdate";
     }
 
     /**
@@ -235,7 +246,7 @@ public class PopController {
      */
     @RequestMapping(value = "/mng/pop/openPop.html")
     public String openMenuAndRolPopup() throws Exception {
-        return "mng/pop/popntcPopUp";
+        return "mng/pop/popupPopUp";
     }
     
     /**
@@ -269,5 +280,6 @@ public class PopController {
     	model.addAttribute("item", popService.selectPopUpNtc(paramVO));
         return "layout/mng/commonPopup";
     }
+    
 
 }

@@ -33,19 +33,37 @@
 	var mngManagertUrl ="/mng/inst/instManager.html?instid="+instid;
 	
 	 $(function(){
-		 
+
        if(mode == "I"){
     	   $("#manager_tab").remove();
            $("#tab_content_area").load(insertUrl);
        }else{
            $("#tab_content_area").load(updateUrl);
        }
-       setTimeout(function(){scrollIntoView('contentPanel');},50 )  
-    });
-
-	var moveTab =(mode)=>{
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )
+       
+   });
+	   
+   function initTab() {
+         var tabFlag = false;
+         /*[# sec:authorize-url="/mng/inst/instForm.html"]*/
+         if(tabFlag == false) {
+        	 moveTab("inst");
+             tabFlag = true;
+         }
+         /*[/]*/
+         /*[# sec:authorize-url="/mng/inst/instManager.html"]*/
+         if(tabFlag == false) {
+        	 moveTab("manager");
+             tabFlag = true;
+         }
+         /*[/]*/
+   }
+   
+   var moveTab =(mode)=>{
 		
-		if(mode==currentTab)return;
+		//if(mode==currentTab)return;
+		
 		$(".nav-link").removeClass("active");
 		
 		if(mode=="inst"){
@@ -56,7 +74,7 @@
 			$("#tab_content_area").load(mngManagertUrl);
 		}
 		$("."+currentTab).addClass("active");
-       setTimeout(function(){scrollIntoView('contentPanel');},50 )  
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )  
 
 	}
 	    

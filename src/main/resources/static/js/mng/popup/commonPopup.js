@@ -1,18 +1,16 @@
-
+var obj = {};
 
 function fn_chooseCommonPopup(list){
 	if(list.length > 0){
 		for( i= 0; i < list.length ; i++){
 			if($.cookie("commonPop_cookie_"+list[i].popupntcid) != "Y") {  
 				if(list[i].popupTypeCd =="P")fn_openCommonPopup(list[i]); //팝업
-				else if(list[i].popupTypeCd =="L")fn_openCommonModal(list[i]); //레이어 모달
-				else fn_openCommonLayerPopup(list[i]); // 딥 모달  ---> function name 주의 
+				else if(list[i].popupTypeCd =="L")fn_openModal(list[i],'false'); //레이어 모달
+				else fn_openModal(list[i],'static'); // 딥 모달  ---> function name 주의 
 			}
 	  }
 	}
 }
-
-var obj = {};
 
 function fn_openCommonPopup(item){
   var popupOption  ="scrollbars=yes,resizable=no,menubar=no , location=no" ;
@@ -49,96 +47,53 @@ function fn_neverShow(id,isChecked){
   (isChecked)? $.cookie("commonPop_cookie_"+id, "Y", 365) :$.cookie("commonPop_cookie_"+id, "N", 365);
 }
 
-function getLayerStr(item){
+function getLayerStr(item,bakcdrop){
+      
+       var layerStr = '<div class="modal fade" id="layer'+item.popupntcid+'"   aria-hidden="true" data-bs-backdrop="'+bakcdrop+'"  >'
+        layerStr += '  <div class="modal-dialog modal-lg" role="document" style="width:'+item.widthSize+'px;height:'+item.vrticlSize+'px; left:'+item.leftLc+';top:'+item.topLc+';" >'
+        layerStr += '    <div class="modal-content type_2">'
+        layerStr += '        <div class="modal-header" id="layer'+item.popupntcid+'header" >'
+        layerStr += '            <h4 class="modal-title">'+item.title+'</h4>'
+        layerStr += '            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">'
+        layerStr += '                <span aria-hidden="true"></span>'
+        layerStr += '            </button>'
+        layerStr += '        </div>'
+        layerStr += '        <div class="modal-body">'
+        layerStr += '            <div class="card m-b-10">'
+        layerStr += '                <div class="card-block-small" >'
+        layerStr += '                     '+item.cntnts+'';
+        layerStr += '                </div>'
+        layerStr += '            </div>'
+        layerStr += '        </div>'
+        layerStr += '        <div class="modal-footer text-left" style="display:block;">'
+        layerStr += '         <div class="border-checkbox-section text-left">'                                                                        
+        layerStr += '           <div class="border-checkbox-group border-checkbox-group-inverse text-left">'                                                                        
+        layerStr += '                 <input type="checkbox" class="border-checkbox text-left" id="checkCookie'+item.popupntcid+'"  onchange=fn_setPopupCookie('+item.popupntcid+')>'
+        layerStr += '                 <label class="form-label border-checkbox-label" for="checkCookie'+item.popupntcid+'">다시 보지 않기</label>'                                                 
+        layerStr += '           </div>'
+        layerStr += '          </div>'
+        layerStr += '        </div>'
+        layerStr += '    </div>'
+        layerStr += '</div>'
+        layerStr += '</div>'
+	    return layerStr;
+}
+
+function fn_openModal(item,bakcdrop){
+	$("#layerPopupSapn").append(getLayerStr(item,bakcdrop));
+	new bootstrap.Modal("#layer"+item.popupntcid).show();
 	
-	var layerStr = '    <div id="layer'+item.popupntcid+'"  class="pop-layer" style="cursor:move; overflow:auto; width:'+item.widthSize+'px; height:'+item.vrticlSize+'px;">';
-	    layerStr += '        <div class="panel panel-default">';
-	    layerStr += '	      <div class="panel-heading"  id="layer'+item.popupntcid+'header">';
-	    layerStr += '		    <h4>'+item.title+'</h4>';
-	    layerStr += '		     <ul class="links">';
-	    layerStr += '		    	<li>';
-	    layerStr += '		    	  <a class="glyphicon glyphicon-remove modal-close " aria-hidden="true" style="cursor:pointer;"></a>';
-	    layerStr += '		    	</li>';
-	    layerStr += '		     </ul>';
-	    layerStr += '		   </div>';
-	    layerStr += '           <div class="pop-conts row col-xs-12">';
-	    layerStr += '                     '+item.cntnts+'';
-	    layerStr += '           </div>';
-	    layerStr += '            <div  class="col-xs-12 pop-footer" style="border-top :1px solid #cae1ef ; margin:0px; bottom:0;  position:absolute; " >';
-	    layerStr += '		       <h6><label class=""   style="cursor:pointer;"><input type="checkbox"  id="checkCookie'+item.popupntcid+'" onclick=fn_setPopupCookie('+item.popupntcid+') style="cursor:pointer;" /> 다시 보지 않기</label></h6>';
-	    layerStr += '            </div>';
-	    layerStr += '        </div>';
-	    layerStr += '    </div>';
-	    return layerStr;
+	//dragable 사용 X
+	//dragElement($("#layer"+item.popupntcid));
 }
 
-function getDeepLayerStr(item){
-	var str = getLayerStr(item);
-	var layerStr  = "";
-	    layerStr += '<div class="dim-layer dim-layer-'+item.popupntcid+'" id="dim-layer-'+item.popupntcid+'">';
-	    layerStr += '   <div class="dimBg"></div>';
-	    layerStr += str;  
-	    layerStr += '</div>';
-	    return layerStr;
-}
-
-function fn_openCommonLayerPopup(item){
-	$("#layerPopupSapn").append(getDeepLayerStr(item));
-	layer_popup("#layer"+item.popupntcid,item);
-}
-
-
-function fn_openCommonModal(item){
-	$("#layerPopupSapn").append(getLayerStr(item));
-	layer_popup("#layer"+item.popupntcid,item);
-}
-
-function layer_popup(el,item){
-    
-    var $el = $(el);        //레이어의 id를 $el 변수에 저장
-    var isDim = $el.prev().hasClass('dimBg');   //dimmed 레이어를 감지하기 위한 boolean 변수
-
-    //isDim ? $('.dim-layer').fadeIn() : $el.fadeIn();
-    isDim ? $("#dim-layer-"+item.popupntcid).fadeIn() : $el.fadeIn();
-
-    //var $elWidth = ~~($el.outerWidth()),
-    //    $elHeight = ~~($el.outerHeight()),
-    //    docWidth = $(document).width(),
-    //    docHeight = $(document).height();
-
-    //if(item.left_lc != 0 || item.top_lc != 0 ){
-	//    $el.css({top: item.top_lc,left: item.left_lc})
-    //}else if ($elHeight < docHeight || $elWidth < docWidth) {  // 화면의 중앙에 레이어를 띄운다.
-    //    $el.css({ marginTop: -$elHeight/2, marginLeft: -$elWidth/2})
-    //} else {
-    //    $el.css({top: 0, left: 0});
-    //}
-
-    $el.css({top: item.topLc,left: item.leftLc})
-
-    $el.find('a.modal-close').click(function(){
-        //isDim ? $('.dim-layer').fadeOut() : $el.fadeOut(); // 닫기 버튼을 클릭하면 레이어가 닫힌다.
-        isDim ? $("#dim-layer-"+item.popupntcid).fadeOut() : $el.fadeOut(); 
-        return false;
-    });
-
-    $('.layer .dimBg').click(function(){
-        //$('.dim-layer').fadeOut();
-        $("#dim-layer-"+item.popupntcid).fadeOut();
-        return false;
-    });
-    
-    dragElement($el);
-    
- }
-
-  function fn_setPopupCookie(id){
+function fn_setPopupCookie(id){
    if($("#checkCookie"+id).is(":checked")){
       $.cookie("commonPop_cookie_"+id, "Y", 365);
-   }else{
+      $("#layer"+id).hide();
+   }else{ 
       $.cookie("commonPop_cookie_"+id, "N", 365);   
    }
-    
 }
 
 //2022-10-24 modal draggable  기능 추가
