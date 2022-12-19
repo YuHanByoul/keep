@@ -101,7 +101,7 @@ public class MemberVo extends ParentRequestVo {
     private String email2;
 
     /** 생년월일 */
-    @Size(max = 10, message = "전화번호는 40자를 넘을 수 없습니다.")
+    @Size(max = 10, message = "생년월일은 40자를 넘을 수 없습니다.")
     private String brdt;
     
     /** 성별 */
@@ -184,19 +184,19 @@ public class MemberVo extends ParentRequestVo {
     /** 접속 실패 횟수  */
     private Integer lgnFailCnt;
     
-    /** 등록_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date regDt;
-    
-    /** 등록자아이디 */
-    private int rgtrid;
-    
     /**  수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
     
     /** 수정자아이디 */
     private int mdfrid;
+    
+    /** 등록_일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date regDt;
+    
+    /** 등록자아이디 */
+    private int rgtrid;
     
     /** 회원 역할 아이디 */
     private Integer roleid;

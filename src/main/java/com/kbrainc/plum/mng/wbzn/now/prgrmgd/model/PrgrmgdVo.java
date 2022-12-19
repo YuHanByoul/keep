@@ -41,8 +41,6 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;
-    /** 분기 */
-    private String qu;
     /** 월 */
     @NotEmpty(message = "월을 선택해주십시오.")
     private String mm;
@@ -50,7 +48,10 @@ public class PrgrmgdVo extends ParentRequestVo {
     @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
     /** 일시 */
+    @NotEmpty(message = "일시를 입력해주십시오.")
     private String dt;
+    /** 유형 */
+    private String typeCd;
     /** URL */
     private String url;
     /** 썸네일_파일아이디 */

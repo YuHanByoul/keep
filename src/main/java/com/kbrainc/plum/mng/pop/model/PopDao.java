@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.role.model.RoleVo;
+
 /**
  * 
  * 팝업공지관리 DAO 인터페이스
@@ -77,7 +79,13 @@ public interface PopDao {
      */
     public List<PopUpNtcVo> getDataForCommnonPopup(PopUpNtcVo paramVO) throws Exception;
     
-    
-    
+    /**
+     * @Title : selectPopUpNtcRoleList
+     * @Description : 등록/수정 폼 역할 리스트 호출
+     * @param RoleVo 타입의 인자
+     * @throws Exception
+     * @return List
+     */
+    public List<RoleVo> selectPopUpNtcRoleList(PopUpNtcVo popUpNtcVo) throws Exception;
 
 }

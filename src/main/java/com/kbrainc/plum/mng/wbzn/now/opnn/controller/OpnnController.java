@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -43,9 +42,9 @@ public class OpnnController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/opnn/opnnForm.html")
-    public String opnnForm() throws Exception {
-        return "mng/wbzn/now/opnn/opnnForm";
+    @RequestMapping(value = "/mng/wbzn/now/opnn/opnnListForm.html")
+    public String opnnListForm() throws Exception {
+        return "mng/wbzn/now/opnn/opnnList";
     }
     
     /**
@@ -53,7 +52,7 @@ public class OpnnController {
     *
     * @Title : selectOpnnList
     * @Description : 독자소리 게시글 목록 조회
-    * @param OpnnVo 독자소리 객체
+    * @param CarbonOpnnVo 독자소리 객체
     * @throws Exception
     * @return Map<String,Object>
     */

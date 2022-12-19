@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CarbonReaderDaoImpl.xml
+	Description : 탄소중립환경교육 -> 구독자
+-->
+<mapper namespace="com.kbrainc.plum.mng.wbzn.carbon.reader.model.CarbonReaderDao">
+    
+    <!-- 환경교육관리 게시글 목록 조회 -->
+    <select id="selectReaderList" parameterType="CarbonReaderVo" resultType="CarbonReaderVo">
+        /* CarbonReaderDao.selectReaderList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        	  READERID
+        	, CLSF_CD
+        	, NM
+            , MOBLPHON
+        	, EML
+        	, CR
+            , JOIN_DT
+        FROM 
+            TB_CMM_WBZN_READER
+        WHERE 
+            1=1
+            <if test="clsfCd != null and clsfCd != ''">
+            AND CLSF_CD = #{clsfCd}
+            </if>            
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+            AND NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'moblphon'">
+            AND MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'eml'">
+            AND EML LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>  
+</mapper>

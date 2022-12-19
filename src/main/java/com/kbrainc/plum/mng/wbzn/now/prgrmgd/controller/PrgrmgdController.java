@@ -52,8 +52,8 @@ public class PrgrmgdController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/prgrmgdForm.html")
-    public String prgrmgdForm(Model model, HttpServletRequest request) throws Exception {
+    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/prgrmgdListForm.html")
+    public String prgrmgdListForm(Model model, HttpServletRequest request) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
@@ -62,6 +62,9 @@ public class PrgrmgdController {
         }
         model.addAttribute("years", years);
         
+        int curMonth = Integer.valueOf(DateTimeUtil.getMonth());
+        model.addAttribute("curMonth", curMonth);
+        
         String[] Month = new String[12];
         
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
@@ -69,7 +72,7 @@ public class PrgrmgdController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/now/prgrmgd/prgrmgdForm";
+        return "mng/wbzn/now/prgrmgd/prgrmgdList";
     }
     
     /**
@@ -98,7 +101,7 @@ public class PrgrmgdController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/now/prgrmgd/prgrmgdInsert";
+        return "mng/wbzn/now/prgrmgd/prgrmgdInsertForm";
     }
     
     /**

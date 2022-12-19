@@ -1,4 +1,5 @@
 <form id ="prgrmgdInsertForm">
+<input type="hidden" id=clsfCd name="clsfCd" value="탄소중립환경교육">
 		<!-- INSERT -->
 		<div class="card-header p-b-0">
         	<h3 class="sub-title"><strong>등록</strong></h3>
@@ -29,7 +30,6 @@
 		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>연도</strong></div>
 		                    <div class="col-sm-12">
 		                        <select name="yr" id="yr" class="form-select form-select-sm form-control-sm">
-			                        <option value="">- 선택 -</option>
 									<th:block th:each="year : ${years}">
 									<option th:value="${year}"><th:block th:text="${year}" /></option>
 									</th:block>
@@ -39,12 +39,15 @@
 		            </div>
 		            <div class="col-12 col-lg-3">
 		                <div class="mb-0 form-group required">
-		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>월</strong></div>
+		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분기</strong></div>
 		                    <div class="col-sm-12">
-		                        <select name="mm" id="mm" class="form-select form-select-sm form-control-sm">
+		                        <select name="qu" id="qu" class="form-select form-select-sm form-control-sm">
 			                        <option value="">- 선택 -</option>
-									<th:block th:each="month : ${month}">
-									<option th:value="${month}"><th:block th:text="${month}" /></option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="특별호">특별호</option>
 		                        </select>
 		                    </div>
 		                </div>
@@ -59,23 +62,22 @@
 		        <div class="mb-2 form-group row required">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dt"><strong>일시</strong></label>
 		            <div class="col-auto">
-		                <input class="form-control form-control-sm" type="date" name="dt" id="dt"/>
-		                <input class="form-control form-control-sm" type="time" name="tm" id="tm"/>
+		                <input class="form-control form-control-sm" type="datetime-local" name="dt" id="dt"/>
 		            </div>
 		        </div>
 		        <div class="mb-2 form-group row">
 		            <div class="mb-0 form-group">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="environmentEduThumbnailImg"><strong>썸네일이미지</strong></label>
-		                <div class="mb-2 row">
-		                    <div class="col-auto">
-		                        <div id="fileUploadSuccess">
-		                        </div>
-		                    </div>
-		                </div>
 		                <div class="col-sm-12">
 		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
                             <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" value="0">
                             <input type="hidden" name="thmbnFileid" id="thmbnFileid" value="0">		                    
+		                </div>
+		                <div class="mt-2 row">
+		                    <div class="col-auto">
+		                        <div id="fileUploadSuccess">
+		                        </div>
+		                    </div>
 		                </div>
 		            </div>
 		        </div>
@@ -85,13 +87,13 @@
 		                <div class="form-radio">
 		                    <div class="radio radio-inline">
 		                        <label class="mb-0 form-label">
-		                            <input type="radio" name="clsfCd" id="clsfCd1" value="html" checked/>
+		                            <input type="radio" name="typeCd" id="typeCd1" value="html" checked/>
 		                            <i class="helper"></i>HTML
 		                        </label>
 		                    </div>
 		                    <div class="radio radio-inline">
 		                        <label class="mb-0 form-label">
-		                            <input type="radio" name="clsfCd" id="clsfCd2" value="url"/>
+		                            <input type="radio" name="typeCd" id="typeCd2" value="url"/>
 		                            <i class="helper"></i>URL
 		                        </label>
 		                    </div>
@@ -113,7 +115,7 @@
 		        <div class="mb-0 form-group row cn">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
 		            <div class="col-12">
-		                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용" name="cn" id="cn"></textarea>
+		                <textarea class="form-control form-control-sm" name="cn" id="cn"></textarea>
 		            </div>
 		        </div>
 		    </div>
@@ -126,8 +128,16 @@
 </form>
 
 <script th:inline="javascript">
-	$("input[name='clsfCd']").change(function(){
-		if($("input[name='clsfCd']:checked").val() == 'html') {
+	init();
+
+	var editor;
+	
+	$(function () {
+	    editor = CKEDITOR.replace('cn');
+	});
+
+	$("input[name='typeCd']").change(function(){
+		if($("input[name='typeCd']:checked").val() == 'html') {
 			$(".url").hide();
 			$(".cnStyle").show();
 			$(".cn").show();
@@ -139,7 +149,6 @@
 	});
 	
 	$('#thmbnFile').change(function(event) {
-		console.log(1);
 	    var formData = new FormData();
 	    var objFile = event.target;
 	    var content = "";
@@ -171,9 +180,7 @@
 		    });
 		    $("#thmbnFile").val("");
 		}
-
 	    event.preventDefault();
-
 	});
 	
 	function fn_deleteFileList(fileid, fileIdntfcKey){
@@ -213,7 +220,8 @@
 		$(".cnStyle").hide();
 		$(".cn").hide();
 		
-		if($("input[name='clsfCd']").val() == 'html') {
+		if($("input[name='typeCd']").val() == 'html') {
+			console.log(1);
 			$(".url").hide();
 			$(".cnStyle").show();
 			$(".cn").show();
@@ -228,11 +236,14 @@
 	 	if(!($("#prgrmgdInsertForm").valid())) return;
 
   	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	
+  	 	var editorData = editor.getData();
+        $("#cn").val(editorData);
   	 	    
 	    var data =  $("#prgrmgdInsertForm").serialize();
 	    if(displayWorkProgress()){
 			$.ajax({
-				url : "/mng/wbzn/now/prgrmgd/insertPrgrmgd.do",
+				url : "/mng/wbzn/carbon/prgrmgd/insertPrgrmgd.do",
 				type: 'POST',
 				cache : false,
 				dataType: 'json',

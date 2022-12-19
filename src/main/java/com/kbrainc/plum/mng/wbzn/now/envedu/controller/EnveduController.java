@@ -52,8 +52,8 @@ public class EnveduController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/envedu/enveduForm.html")
-    public String enveduForm(Model model, HttpServletRequest request) throws Exception {
+    @RequestMapping(value = "/mng/wbzn/now/envedu/enveduListForm.html")
+    public String enveduListForm(Model model, HttpServletRequest request) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
         
@@ -69,7 +69,7 @@ public class EnveduController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/now/envedu/enveduForm";
+        return "mng/wbzn/now/envedu/enveduList";
     }
     
     /**
@@ -93,12 +93,15 @@ public class EnveduController {
         
         String[] Month = new String[12];
         
+        int curMonth = Integer.valueOf(DateTimeUtil.getMonth());
+        model.addAttribute("curMonth", curMonth);
+        
         for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
             Month[j] = String.format( "%1$02d" , i );
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/now/envedu/enveduInsert";
+        return "mng/wbzn/now/envedu/enveduInsertForm";
     }
     
     /**

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CarbonOpnnDaoImpl.xml
+	Description : 탄소중립환경교육 -> 독자소리
+-->
+<mapper namespace="com.kbrainc.plum.mng.wbzn.carbon.opnn.model.CarbonOpnnDao">
+    
+    <!-- 프로그램안내관리 게시글 목록 조회 -->
+    <select id="selectOpnnList" parameterType="CarbonOpnnVo" resultType="CarbonOpnnVo">
+        /* CarbonOpnnDao.selectOpnnList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        	  OPNNID
+        	, CLSF_CD
+        	, TTL
+            , VOLUM
+        	, CN
+        	, WRTR_NM
+            , REG_DT
+        FROM 
+            TB_CMM_READER_OPNN
+        WHERE 
+            1=1
+            <if test="clsfCd != null and clsfCd != ''">
+            AND CLSF_CD = #{clsfCd}
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
+            AND TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cn'">
+            AND CN LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

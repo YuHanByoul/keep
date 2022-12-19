@@ -61,7 +61,12 @@
 		        <div class="mb-2 form-group row">
 		            <div class="mb-0 form-group">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="environmentEduThumbnailImg"><strong>썸네일이미지</strong></label>
-		                <div class="mb-2 row">
+		                <div class="col-sm-12">
+		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
+                            <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${envedu.filegrpid}">
+                            <input type="hidden" name="thmbnFileid" id="thmbnFileid" th:value="${envedu.thmbnFileid}">		                    
+		                </div>
+		                <div class="mt-2 row">
 		                    <div class="col-auto">
 		                    	<th:block th:if="${fileBtn}">
 		                        <div id="fileUploadSuccess" th:utext="${fileBtn}">
@@ -72,11 +77,6 @@
 		                        </div>
 		                        </th:block>
 		                    </div>
-		                </div>
-		                <div class="col-sm-12">
-		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
-                            <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${envedu.filegrpid}">
-                            <input type="hidden" name="thmbnFileid" id="thmbnFileid" th:value="${envedu.thmbnFileid}">		                    
 		                </div>
 		            </div>
 		        </div>
@@ -114,7 +114,7 @@
 		        <div class="mb-0 form-group row cn">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
 		            <div class="col-12">
-		                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용" name="cn" id="cn" th:value="${envedu.cn}" th:text="${envedu.cn}"></textarea>
+		                <textarea class="form-control form-control-sm" name="cn" id="cn"><th:block th:text="${envedu.cn}"></th:block></textarea>
 		            </div>
 		        </div>
 		    </div>
@@ -128,6 +128,12 @@
 
 <script type="text/javascript">
 	init();
+	
+	var editor;
+	
+	$(function () {
+	    editor = CKEDITOR.replace('cn');
+	});
 	
 	$("input[name='typeCd']").change(function(){
 		if($("input[name='typeCd']:checked").val() == 'html') {
@@ -232,7 +238,10 @@
 	 	if(!($("#enveduUpdateForm").valid())) return;
 
   	 	if(!confirm("저장하시겠습니까?")) return;
-  	 	    
+  	 	
+  	 	var editorData = editor.getData();
+        $("#cn").val(editorData);
+  	 	
 	    var data =  $("#enveduUpdateForm").serialize();
 	    if(displayWorkProgress()){
 			$.ajax({

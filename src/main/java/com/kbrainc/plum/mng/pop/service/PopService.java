@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
+import com.kbrainc.plum.mng.role.model.RoleVo;
 
 /**
  * 
@@ -77,6 +78,13 @@ public interface PopService {
 	 */
 	public List<PopUpNtcVo> getDataForCommnonPopup(PopUpNtcVo paramVO, UserVo user) throws Exception;
 	
-	
+    /**
+     * @Title : selectPopUpNtcRoleList
+     * @Description : 등록/수정 폼 역할 리스트 호출
+     * @param RoleVo 타입의 인자
+     * @throws Exception
+     * @return List
+     */
+    public List<RoleVo> selectPopUpNtcRoleList(PopUpNtcVo popUpNtcVo) throws Exception;
 	
 }

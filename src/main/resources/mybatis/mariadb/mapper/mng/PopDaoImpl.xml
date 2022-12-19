@@ -4,6 +4,7 @@
 <mapper namespace="com.kbrainc.plum.mng.pop.model.PopDao">
 
     <insert id="insertPopUpNtc" parameterType="PopUpNtcVo">
+        /* PopDaoImpl.insertPopUpNtc */
         INSERT into TB_CMM_POPUPNTC
         (
             title            
@@ -50,6 +51,7 @@
     </insert>
     
    <update id="updatePopUpNtc" parameterType="PopUpNtcVo">
+        /* PopDaoImpl.updatePopUpNtc */
         UPDATE TB_CMM_POPUPNTC
           SET
             title             =  #{title           } 
@@ -74,6 +76,7 @@
     
     
  <select id="selectPopUpNtcList"  parameterType="PopUpNtcVo" resultType="PopUpNtcVo" >
+    /* PopDaoImpl.selectPopUpNtcList */
    <include refid="PaginationMapper.header"/>
     SELECT 
       A.POPUPNTCID                 popupntcid   
@@ -107,33 +110,35 @@
     TB_CMM_USER B
    WHERE 1=1
          AND A.MDFRID = B.USERID
-        <if test="siteid != null and siteid!='' ">
-         AND A.SITEID = #{siteid}
+        <if test="serachSiteid != null and serachSiteid !='' ">
+         AND A.SITEID = #{serachSiteid}
         </if>
-        <if test="expsrLcCd != null and expsrLcCd.trim()!= ''">
-         AND A.expsr_lc_cd = #{expsrLcCd}
+        <if test="searchExpsrLcCd != null and searchExpsrLcCd.trim()!= ''">
+         AND A.EXPSR_LC_CD = #{searchExpsrLcCd}
         </if>
-        <if test="searchType != null and searchType.trim() == 'titile' and searchKeyword !='' "> 
+        
+        <if test="searchType != null and searchType.trim() == 'title' and searchKeyword !='' "> 
          AND A.TITLE LIKE '%'+#{searchKeyword}+'%'
         </if>
+        
         <if test="searchType != null and searchType.trim() == 'cntnts' and searchKeyword !='' ">
          AND A.CNTNTS LIke '%'+#{searchKeyword}+'%'
         </if>
-         AND ( 1=2 
-            <if test="popSts1 != null and popSts1 != ''">
-               or CONVERT(NOW(), CHAR(10)) BETWEEN STRT_DT AND END_DT 
-            </if>
-            <if test="popSts2 != null and popSts2 != ''">
-               or STRT_DT <![CDATA[> ]]>  CONVERT(NOW(), CHAR(10))
-            </if>       
-            <if test="popSts3 != null and popSts3 != ''">
-              or END_DT  <![CDATA[< ]]>  CONVERT(NOW(), CHAR(10))
-            </if>       
-           )
+        
+        <if test='searchTermSttsCd != null and searchTermSttsCd == "1"'>
+          AND CONVERT(NOW(), CHAR(10)) BETWEEN STRT_DT AND END_DT 
+        </if>
+        <if test='searchTermSttsCd != null and searchTermSttsCd == "2"'>
+          AND STRT_DT <![CDATA[> ]]>  CONVERT(NOW(), CHAR(10)) 
+        </if>
+        <if test='searchTermSttsCd != null and searchTermSttsCd == "3"'>
+          AND END_DT  <![CDATA[< ]]>  CONVERT(NOW(), CHAR(10)) 
+        </if>
     <include refid="PaginationMapper.footer"/>
    </select>
    
    <select id="selectPopUpNtc"  parameterType="PopUpNtcVo" resultType="PopUpNtcVo" > 
+         /* PopDaoImpl.selectPopUpNtc */
           SELECT
             title            
             ,cntnts           
@@ -166,11 +171,13 @@
    </select>
    
    <delete id="deletePopUpNtc"  parameterType="PopUpNtcVo">
+   /* PopDaoImpl.deletePopUpNtc */
       DELETE FROM TB_CMM_POPUPNTC
       WHERE POPUPNTCID = #{popupntcid}
   </delete>
    
   <select id="getDataForCommnonPopup"  parameterType="PopUpNtcVo" resultType="PopUpNtcVo" >
+         /* PopDaoImpl.getDataForCommnonPopup */
           SELECT
             title            
             ,cntnts           
@@ -191,6 +198,7 @@
           FROM 
             TB_CMM_POPUPNTC a
           WHERE 1=1
+            AND (NTC_TRGT_CD ='T' OR (NTC_TRGT_CD ='R' AND NTC_TRGT_ROLEID = #{user.roleInfo.roleid})) 
             AND STRT_DT <![CDATA[<= ]]> CONVERT(NOW(), CHAR(10))
             AND END_DT  <![CDATA[>= ]]> CONVERT(NOW(), CHAR(10))
             AND SITEID = #{siteid} 
@@ -201,4 +209,23 @@
              AND menuid = #{menuid}
 	        </if>
   </select>
+  
+  <select id="selectPopUpNtcRoleList"  parameterType="PopUpNtcVo" resultType="RoleVo" >
+        /* PopDaoImpl.selectPopUpNtcRoleList */
+        <![CDATA[
+            SELECT
+                A.ROLEID ,  
+                A.NM  ,
+                A.TRGT_INST_CD ,
+                A.TRGT_RGN_CD 
+            FROM TB_CMM_ROLE A
+            WHERE 1=1
+        ]]>
+        <if test='user.roleInfo.trgtInstCd == "S"'>
+            AND TRGT_INST_CD != 'A'
+        </if>
+        ORDER BY ORD
+   </select>
+  
+  
 </mapper>

@@ -35,7 +35,7 @@ public class ReaderServiceImpl extends PlumAbstractServiceImpl implements Reader
     *
     * @Title : selectReaderList
     * @Description : 구독자 게시글 목록 조회
-    * @param ReaderVo 구독자 객체
+    * @param CarbonReaderVo 구독자 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */

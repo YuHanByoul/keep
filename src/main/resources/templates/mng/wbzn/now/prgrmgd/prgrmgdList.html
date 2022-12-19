@@ -15,14 +15,12 @@
 		
 		<div class="page-body">
 			<div class="row">
-
+			
 				<form name="searchFrm" id="searchFrm" th:action="@{/}" onsubmit="return false;" class="card">
-				<input type="hidden" id=clsfCd name="clsfCd" value="환경교육NOW">
-					<!-- 필터 부분 -->
 					<div class="card-block-small">
 						<!-- 키워드 filter -->
 						<div class="row">
-							<div class="col-lg-3 mb-2">
+							<div class="col-lg-3 mb-2 mb-lg-0">
 								<div class="mb-0 form-group row">
 									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 										<strong>키워드</strong>
@@ -36,27 +34,25 @@
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-3 mb-2">
+							<div class="col-lg-3 mb-2 mb-lg-0">
 								<div class="mb-0 form-group row">
 									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
-										<strong>환경교육구분</strong>
+										<strong>지역구분</strong>
 									</div>
 									<div class="col-sm-12">
 										<select name="searchSeCd" id="searchSeCd" class="form-select form-select-sm form-control-sm">
 											<option value="">- 전체 -</option>
-											<option value="현장">현장</option>
-											<option value="환경시사">환경시사</option>
-											<option value="전문자료">전문자료</option>
-											<option value="교육자료">교육자료</option>
-											<option value="환경문화">환경문화</option>
-											<option value="환경소식">환경소식</option>
-											<option value="행사정보">행사정보</option>
-											<option value="채용공모">채용공모</option>
+											<option value="서울">서울</option>
+											<option value="경기/인천">경기/인천</option>
+											<option value="강원/제주">강원/제주</option>
+											<option value="호남권">호남권</option>
+											<option value="충청권">충청권</option>
+											<option value="영남권">영남권</option>
 										</select>
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-3 mb-2">
+							<div class="col-lg-3 mb-2 mb-lg-0">
 								<div class="mb-0 form-group row">
 									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 										<strong>연도</strong>
@@ -65,13 +61,14 @@
 										<select name="searchYr" id="searchYr" class="form-select form-select-sm form-control-sm">
 											<option value="">- 전체 -</option>
 											<th:block th:each="year : ${years}">
-												<option th:value="${year}"><th:block th:text="${year}" /></option>
+												<option th:value="${year}"><th:block
+														th:text="${year}" /></option>
 											</th:block>
 										</select>
 									</div>
 								</div>
 							</div>
-							<div class="col-lg-3 mb-2">
+							<div class="col-lg-3">
 								<div class="mb-0 form-group row">
 									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 										<strong>월</strong>
@@ -80,7 +77,8 @@
 										<select name="searchMm" id="searchMm" class="form-select form-select-sm form-control-sm">
 											<option value="">- 전체 -</option>
 											<th:block th:each="month : ${month}">
-												<option th:value="${month}"><th:block th:text="${month}" /></option>
+												<option th:value="${month}"><th:block
+														th:text="${month}" /></option>
 											</th:block>
 										</select>
 									</div>
@@ -96,11 +94,12 @@
 					</div>
 				</form>
 
+
 				<div class="card">
 					<div class="row p-20 p-b-0">
 						<div class="col-12 col-md-6">
 							<h5>
-								<strong>환경교육관리 검색결과</strong>
+								<strong>프로그램안내 검색결과</strong>
 							</h5>
 						</div>
 						<div class="col-12 col-md-6 text-right">
@@ -133,11 +132,17 @@
 			});
 
 			function fn_goInsertForm() {
-				var insertUrl = "/mng/wbzn/now/envedu/enveduInsertForm.html";
+				var insertUrl = "/mng/wbzn/now/prgrmgd/prgrmgdInsertForm.html";
 				gridHelper1.loadContent(insertUrl);
 			}
 
 			function fn_searchForm() {
+	            var searchType = $("#searchType").val();
+	            var searchKeyword = $("#searchKeyword").val();
+	            if(searchType != '' && searchKeyword == ""){
+	                alert('검색어를 입력해 주십시오.');
+	                return;
+	            }
 				gridHelper1.resetListContent();
 			}
 
@@ -147,7 +152,7 @@
 				$("#searchSeCd").val('');
 				$("#searchYr").val('');
 				$("#searchMm").val('');
-				gridHelper1.resetListContent();
+				gridHelper1.resetListContent(); 
 			}
 
 			function writeJsGridData() {
@@ -190,7 +195,7 @@
 		                    $.ajax({
 		                        type: "GET",
 		                        contentType: "application/json; charset=utf-8",
-		                        url: "/mng/wbzn/now/envedu/selectEnveduList.do",
+		                        url: "/mng/wbzn/now/prgrmgd/selectPrgrmgdList.do",
 		                        dataType: "json",
 		                        data: formData,
 		                      }).done(function(response){
@@ -201,26 +206,24 @@
 		                        data.resolve(da);
 		                      });
 		                      return data.promise();
-		                  },				
-					},
-					
-					fields : [
-						{ name : 'enveduid', css : 'hide' }
-					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
-					  , { title : '연-월', name : 'yrMm', type : "text", width : "150", align : "center" }
-					  , { title : '환경교육구분', name : 'enveduSeCd', type : "text", width : "150", align : "center" }
-					  , { title : '제목', name : 'ttl', type : "text", width : "auto" }
-					  , { title : '작성자', name : 'nm', type : "text", width : "150", align : "center" }
-					  , { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center"} 
-					],
-					
+		                  },
+		              },
+		              fields : [ 
+		            	  { name : 'prgrmid', css : 'hide' }
+		            	, { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
+		            	, { title : '연-월', name : 'yrMm', type : "text", width : "150", align : "center" }
+		            	, { title : '지역구분', name : 'rgnCd', type : "text", width : "150", align : "center" }
+		            	, { title : '제목', name : 'ttl', type : "text", width : "auto" }
+		            	, { title : '작성자', name : 'nm', type : "text", width : "150", align : "center" }
+		            	, { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center" } 
+		            ],
 					rowClick : function(args) {
 						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 						var detailUrl = "";
 						if (args.item.thmbnFileid != null && args.item.filegrpid != null) {
-							detailUrl = "/mng/wbzn/now/envedu/enveduUpdateForm.html?enveduid=" + args.item.enveduid + "&thmbnFileid=" + args.item.thmbnFileid + "&filegrpid=" + args.item.filegrpid;
+							detailUrl = "/mng/wbzn/now/prgrmgd/prgrmgdUpdateForm.html?prgrmid=" + args.item.prgrmid + "&thmbnFileid=" + args.item.thmbnFileid + "&filegrpid=" + args.item.filegrpid;
 						} else {
-							detailUrl = "/mng/wbzn/now/envedu/enveduUpdateForm.html?enveduid=" + args.item.enveduid;
+							detailUrl = "/mng/wbzn/now/prgrmgd/prgrmgdUpdateForm.html?prgrmid=" + args.item.prgrmid;
 						}
 						gridHelper1.loadContent(detailUrl);
 						gridHelper1.rowClick(args);
