@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
-import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
-
 /**
 * 환경교육NOW -> 독자소리 Dao 클래스
 *

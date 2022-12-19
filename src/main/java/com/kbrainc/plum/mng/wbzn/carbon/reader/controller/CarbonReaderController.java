@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.wbzn.now.reader.controller;
+package com.kbrainc.plum.mng.wbzn.carbon.reader.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,29 +9,30 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.mng.wbzn.carbon.reader.model.CarbonReaderVo;
+import com.kbrainc.plum.mng.wbzn.carbon.reader.service.CarbonReaderService;
 import com.kbrainc.plum.mng.wbzn.now.reader.model.ReaderVo;
-import com.kbrainc.plum.mng.wbzn.now.reader.service.ReaderService;
 
 /**
-* 환경교육NOW -> 구독자 컨트롤러 클래스
+* 탄소중립환경교육 -> 구독자 컨트롤러 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.reader.controller
+* com.kbrainc.plum.mng.wbzn.carbon.reader.controller
 * - ReaderController.java
 * </pre>
 *
-* @ClassName : ReaderController
-* @Description : 환경교육NOW -> 구독자 컨트롤러 클래스
+* @ClassName : CarbonReaderController
+* @Description : 탄소중립환경교육 -> 구독자 컨트롤러 클래스
 * @author : JD
 * @date : 2022. 12. 13.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Controller
-public class ReaderController {
+public class CarbonReaderController {
     
     @Autowired
-    private ReaderService readerService;
+    private CarbonReaderService readerService;
     
     /**
     * 구독자 리스트화면으로 이동
@@ -41,9 +42,9 @@ public class ReaderController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/reader/readerListForm.html")
+    @RequestMapping(value = "/mng/wbzn/carbon/reader/readerListForm.html")
     public String readerForm() throws Exception {
-        return "mng/wbzn/now/reader/readerList";
+        return "mng/wbzn/carbon/reader/readerList";
     }
     
     /**
@@ -55,11 +56,11 @@ public class ReaderController {
     * @throws Exception
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/wbzn/now/reader/selectReaderList.do")
+    @RequestMapping(value = "/mng/wbzn/carbon/reader/selectReaderList.do")
     @ResponseBody
-    public Map<String, Object> selectReaderList(ReaderVo readerVo) throws Exception {
+    public Map<String, Object> selectReaderList(CarbonReaderVo readerVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<ReaderVo> result = null;
+        List<CarbonReaderVo> result = null;
         
         result =  readerService.selectReaderList(readerVo);
         
