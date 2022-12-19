@@ -61,7 +61,7 @@ public class MenuPrintImpl2 {
     * @return boolean 인가여부
     * @throws Exception 예외
     */
-    private boolean isMenuAuth(String url) throws Exception {
+    public boolean isMenuAuth(String url) throws Exception {
         if ("".equals(StringUtil.nvl(url))) {
             return true;
         }
