@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.wbzn.now.prgrmgd.model;
+package com.kbrainc.plum.mng.wbzn.carbon.envedu.model;
 
 import java.util.Date;
 
@@ -11,45 +11,44 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 VO 클래스
+* 환경교육NOW -> 환경교육관리 VO 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
-* - PrgrmgdVo.java
+* com.kbrainc.plum.mng.envedu.model
+* - EnveduVo.java
 * </pre>
 *
-* @ClassName : PrgrmgdVo
-* @Description : 환경교육NOW -> 프로그램안내관리 VO 클래스
+* @ClassName : EnveduVo
+* @Description : 환경교육NOW -> 환경교육관리 VO 클래스
 * @author : JD
-* @date : 2022. 12. 9.
+* @date : 2022. 12. 7.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class PrgrmgdVo extends ParentRequestVo {
+public class CarbonEnveduVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보*/
     private UserVo user;
     
-    /** 프로그램안내아이디 */
-    private int prgrmid;
+    /** 환경교육아이디 */
+    private int enveduid;
     /** 분류_코드 */
     private String clsfCd;
-    /** 지역구분_코드 */
-    @NotEmpty(message = "지역구분을 선택해주십시오.")
-    private String rgnCd;
+    /** 환경교육_구분_코드 */
+    @NotEmpty(message = "환경교육구분을 선택해주십시오.")
+    private String enveduSeCd;
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;
-    /** 월 */
-    @NotEmpty(message = "월을 선택해주십시오.")
-    private String mm;
+    /** 분기 */
+    @NotEmpty(message = "분기를 선택해주십시오.")
+    private String qu;
     /** 제목 */
     @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
-    /** 일시 */
-    @NotEmpty(message = "일시를 입력해주십시오.")
-    private String dt;
+    /** 유형 코드 */
+    private String typeCd;
     /** URL */
     private String url;
     /** 썸네일_파일아이디 */
@@ -69,10 +68,10 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 등록자아이디 */
     private int rgtrid;
     
-    /** 연-월*/
-    private String yrMm;
+    /** 연-분기 */
+    private String yrQu;
     
-    /** 첨부파일 관련*/
+    /** 첨부파일 관련 */
     private String filegrpid;
     private String fileIdntfcKey;
     private String orginlFileNm;
@@ -80,8 +79,8 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 작성자 */
     private String nm;
     
-    /** 검색 관련*/
-    private String searchRgnCd;
+    /** 검색 관련 */
+    private String searchSeCd;
     private String searchYr;
-    private String searchMm;
+    private String searchQu;
 }

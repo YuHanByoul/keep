@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.wbzn.now.prgrmgd.model;
+package com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.model;
 
 import java.util.Date;
 
@@ -11,7 +11,7 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 VO 클래스
+* 탄소중립환경교육 -> 프로그램안내관리 VO 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
@@ -26,7 +26,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class PrgrmgdVo extends ParentRequestVo {
+public class CarbonPrgrmgdVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보*/
     private UserVo user;
@@ -41,15 +41,17 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;
-    /** 월 */
-    @NotEmpty(message = "월을 선택해주십시오.")
-    private String mm;
+    /** 분기 */
+    @NotEmpty(message = "분기를 선택해주십시오.")
+    private String qu;
     /** 제목 */
     @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
     /** 일시 */
     @NotEmpty(message = "일시를 입력해주십시오.")
     private String dt;
+    /** 유형 */
+    private String typeCd;
     /** URL */
     private String url;
     /** 썸네일_파일아이디 */
@@ -69,8 +71,8 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 등록자아이디 */
     private int rgtrid;
     
-    /** 연-월*/
-    private String yrMm;
+    /** 연-분기 */
+    private String yrQu;
     
     /** 첨부파일 관련*/
     private String filegrpid;
@@ -83,5 +85,5 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 검색 관련*/
     private String searchRgnCd;
     private String searchYr;
-    private String searchMm;
+    private String searchQu;
 }

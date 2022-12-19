@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.wbzn.now.prgrmgd.controller;
+package com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +15,15 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
-import com.kbrainc.plum.mng.wbzn.now.prgrmgd.service.PrgrmgdService;
+import com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.model.CarbonPrgrmgdVo;
+import com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.service.CarbonPrgrmgdService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
-* 환경교육NOW -> 프로그램안내관리 컨트롤러 클래스
+* 탄소중립환경교육 -> 프로그램안내관리 컨트롤러 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.wbzn.now.prgrmgd.controller
@@ -38,21 +38,21 @@ import com.kbrainc.plum.rte.util.DateTimeUtil;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Controller
-public class PrgrmgdController {
+public class CarbonPrgrmgdController {
     
     @Autowired
-    private PrgrmgdService prgrmgdService;
+    private CarbonPrgrmgdService prgrmgdService;
     
     /**
     * 프로그램안내관리 리스트화면으로 이동
     *
-    * @Title : prgrmgdForm
+    * @Title : prgrmgdListForm
     * @Description : 프로그램안내관리 리스트 화면으로 이동
     * @param model 객체
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/prgrmgdListForm.html")
+    @RequestMapping(value = "/mng/wbzn/carbon/prgrmgd/prgrmgdListForm.html")
     public String prgrmgdListForm(Model model, HttpServletRequest request) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
@@ -72,7 +72,7 @@ public class PrgrmgdController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/now/prgrmgd/prgrmgdList";
+        return "mng/wbzn/carbon/prgrmgd/prgrmgdList";
     }
     
     /**
@@ -84,7 +84,7 @@ public class PrgrmgdController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/prgrmgdInsertForm.html")
+    @RequestMapping(value = "/mng/wbzn/carbon/prgrmgd/prgrmgdInsertForm.html")
     public String prgrmgdInsertForm(Model model) throws Exception {
         int curYear = Integer.valueOf(DateTimeUtil.getYear());
         Integer[] years = new Integer[4];
@@ -101,7 +101,7 @@ public class PrgrmgdController {
         }
         model.addAttribute("month", Month);
         
-        return "mng/wbzn/now/prgrmgd/prgrmgdInsertForm";
+        return "mng/wbzn/carbon/prgrmgd/prgrmgdInsertForm";
     }
     
     /**
@@ -114,9 +114,9 @@ public class PrgrmgdController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/prgrmgdUpdateForm.html")
-    public String prgrmgdUpdateForm(PrgrmgdVo prgrmgdVo, Model model) throws Exception {
-        PrgrmgdVo result = null;
+    @RequestMapping(value = "/mng/wbzn/carbon/prgrmgd/prgrmgdUpdateForm.html")
+    public String prgrmgdUpdateForm(CarbonPrgrmgdVo prgrmgdVo, Model model) throws Exception {
+        CarbonPrgrmgdVo result = null;
         result = prgrmgdService.selectPrgrmgdInfo(prgrmgdVo);
         model.addAttribute("prgrmgd", result);
         
@@ -143,7 +143,7 @@ public class PrgrmgdController {
             model.addAttribute("fileBtn", fileBtn);
         }
         
-        return "mng/wbzn/now/prgrmgd/prgrmgdUpdate";
+        return "mng/wbzn/carbon/prgrmgd/prgrmgdUpdate";
     }
    
     
@@ -156,11 +156,11 @@ public class PrgrmgdController {
     * @throws Exception
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/selectPrgrmgdList.do")
+    @RequestMapping(value = "/mng/wbzn/carbon/prgrmgd/selectPrgrmgdList.do")
     @ResponseBody
-    public Map<String, Object> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception {
+    public Map<String, Object> selectPrgrmgdList(CarbonPrgrmgdVo prgrmgdVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<PrgrmgdVo> result = null;
+        List<CarbonPrgrmgdVo> result = null;
         
         result =  prgrmgdService.selectPrgrmgdList(prgrmgdVo);
         
@@ -185,9 +185,9 @@ public class PrgrmgdController {
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/insertPrgrmgd.do")
+    @RequestMapping(value = "/mng/wbzn/carbon/prgrmgd/insertPrgrmgd.do")
     @ResponseBody
-    public Map<String, Object> insertPrgrmgd(@Valid PrgrmgdVo prgrmgdVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertPrgrmgd(@Valid CarbonPrgrmgdVo prgrmgdVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -226,9 +226,9 @@ public class PrgrmgdController {
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/wbzn/now/prgrmgd/updatePrgrmgd.do")
+    @RequestMapping(value = "/mng/wbzn/carbon/prgrmgd/updatePrgrmgd.do")
     @ResponseBody
-    public Map<String, Object> updatePrgrmgd(@Valid PrgrmgdVo prgrmgdVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updatePrgrmgd(@Valid CarbonPrgrmgdVo prgrmgdVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {

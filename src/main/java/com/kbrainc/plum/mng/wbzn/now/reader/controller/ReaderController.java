@@ -45,9 +45,9 @@ public class ReaderController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/reader/readerForm.html")
+    @RequestMapping(value = "/mng/wbzn/now/reader/readerListForm.html")
     public String readerForm() throws Exception {
-        return "mng/wbzn/now/reader/readerForm";
+        return "mng/wbzn/now/reader/readerList";
     }
     
     /**

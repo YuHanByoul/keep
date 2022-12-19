@@ -43,9 +43,9 @@ public class OpnnController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/wbzn/now/opnn/opnnForm.html")
-    public String opnnForm() throws Exception {
-        return "mng/wbzn/now/opnn/opnnForm";
+    @RequestMapping(value = "/mng/wbzn/now/opnn/opnnListForm.html")
+    public String opnnListForm() throws Exception {
+        return "mng/wbzn/now/opnn/opnnList";
     }
     
     /**

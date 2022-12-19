@@ -9,7 +9,7 @@
 		        <div class="mb-2 row">
 		            <div class="col-12 col-lg-3 mb-2 mb-lg-0">
 		                <div class="mb-0 form-group required">
-		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>환경교육구분</strong></div>
+		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역구분</strong></div>
 		                    <div class="col-sm-12">
 		                        <select name="rgnCd" id="rgnCd" class="form-select form-select-sm form-control-sm">
 		                        	<option value="">- 선택 -</option>
@@ -56,27 +56,31 @@
 		            </div>
 		        </div>
 		        <div class="mb-2 form-group row required">
-		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="wrtDe"><strong>일시</strong></label>
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dt"><strong>일시</strong></label>
 		            <div class="col-auto">
-		                <input class="form-control form-control-sm" type="date" name="dt" id="dt" th:value="${prgrmgd.dt}"/>
+		                <input class="form-control form-control-sm" type="datetime-local" name="dt" id="dt" th:value="${prgrmgd.dt}"/>
 		            </div>
 		        </div>		        
 		        <div class="mb-2 form-group row">
 		            <div class="mb-0 form-group">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="environmentEduThumbnailImg"><strong>썸네일이미지</strong></label>
-		                <div class="mb-2 row">
-		                    <div class="col-auto">
-		                    	<th:block th:if="${fileBtn}">
-		                        <div id="fileUploadSuccess" th:utext="${fileBtn}">
-		                        </div>
-		                        </th:block>
-		                    </div>
-		                </div>
 		                <div class="col-sm-12">
 		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
                             <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${prgrmgd.filegrpid}">
                             <input type="hidden" name="thmbnFileid" id="thmbnFileid" th:value="${prgrmgd.thmbnFileid}">		                    
 		                </div>
+		                <div class="mt-2 row">
+		                    <div class="col-auto">
+		                    	<th:block th:if="${fileBtn}">
+		                        <div id="fileUploadSuccess" th:utext="${fileBtn}">
+		                        </div>
+		                        </th:block>
+                		        <th:block th:unless="${fileBtn}">
+		                        <div id="fileUploadSuccess">
+		                        </div>
+		                        </th:block>
+		                    </div>
+		                </div>		                
 		            </div>
 		        </div>
 		        <div class="mb-2 form-group row">
@@ -85,13 +89,13 @@
 		                <div class="form-radio">
 		                    <div class="radio radio-inline">
 		                        <label class="mb-0 form-label">
-		                            <input type="radio" name="clsfCd" id="clsfCd1" value="html" th:checked="${prgrmgd.clsfCd eq 'html'}"/>
+		                            <input type="radio" name="typeCd" id="typeCd1" value="html" th:checked="${prgrmgd.typeCd eq 'html'}"/>
 		                            <i class="helper"></i>HTML
 		                        </label>
 		                    </div>
 		                    <div class="radio radio-inline">
 		                        <label class="mb-0 form-label">
-		                            <input type="radio" name="clsfCd" id="clsfCd2" value="url" th:checked="${prgrmgd.clsfCd eq 'url'}"/>
+		                            <input type="radio" name="typeCd" id="typeCd2" value="url" th:checked="${prgrmgd.typeCd eq 'url'}"/>
 		                            <i class="helper"></i>URL
 		                        </label>
 		                    </div>
@@ -113,14 +117,14 @@
 		        <div class="mb-0 form-group row cn">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
 		            <div class="col-12">
-		                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용" name="cn" id="cn" th:value="${prgrmgd.cn}" th:text="${prgrmgd.cn}"></textarea>
+		                <textarea class="form-control form-control-sm" name="cn" id="cn"><th:block th:text="${prgrmgd.cn}"></th:block></textarea>
 		            </div>
 		        </div>
 		    </div>
 		</div>
 	    <div class="card-block-small">
-	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertMmnws" onclick="gridHelper1.toggleContent()">취소</button>
-	        <th:block sec:authorize-url="/mng/wbzn/now/prgrmgd/updatePrgrmgd.do"><button type="button" class="btn btn-primary" id="updateEnvedu" onclick="fn_updateEnvedu()">저장</button></th:block>
+	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertPrgrmgd" onclick="gridHelper1.toggleContent()">취소</button>
+	        <th:block sec:authorize-url="/mng/wbzn/now/prgrmgd/updatePrgrmgd.do"><button type="button" class="btn btn-primary" id="updatePrgrmgd" onclick="fn_updatePrgrmgd()">저장</button></th:block>
 	    </div>
 		<!-- Tab Container End -->
 </form>
@@ -128,8 +132,14 @@
 <script type="text/javascript">
 	init();
 	
-	$("input[name='clsfCd']").change(function(){
-		if($("input[name='clsfCd']:checked").val() == 'html') {
+	var editor;
+	
+	$(function () {
+	    editor = CKEDITOR.replace('cn');
+	});
+	
+	$("input[name='typeCd']").change(function(){
+		if($("input[name='typeCd']:checked").val() == 'html') {
 			$(".url").hide();
 			$(".cnStyle").show();
 			$(".cn").show();
@@ -141,7 +151,6 @@
 	});
  	
 	$('#thmbnFile').change(function(event) {
-		console.log(1);
 	    var formData = new FormData();
 	    var objFile = event.target;
 	    var content = "";
@@ -173,9 +182,7 @@
 		    });
 		    $("#thmbnFile").val("");
 		}
-
 	    event.preventDefault();
-
 	});
 	
 	function fn_deleteFileList(fileid, fileIdntfcKey){
@@ -215,7 +222,7 @@
 		$(".cnStyle").hide();
 		$(".cn").hide();
 		
-		if($("input[name='clsfCd']").val() == 'html') {
+		if($("input[name='typeCd']").val() == 'html') {
 			$(".url").hide();
 			$(".cnStyle").show();
 			$(".cn").show();
@@ -227,10 +234,13 @@
 		console.log();
  	}
  	
- 	function fn_updateEnvedu(){
+ 	function fn_updatePrgrmgd(){
 	 	if(!($("#prgrmgdUpdateForm").valid())) return;
 
   	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	
+  	 	var editorData = editor.getData();
+        $("#cn").val(editorData);
   	 	    
 	    var data =  $("#prgrmgdUpdateForm").serialize();
 	    if(displayWorkProgress()){

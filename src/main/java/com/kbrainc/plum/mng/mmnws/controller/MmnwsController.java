@@ -50,9 +50,9 @@ public class MmnwsController {
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/mmnws/mmnwsForm.html")
-    public String mmnwsForm() throws Exception {
-        return "mng/mmnws/mmnwsForm";
+    @RequestMapping(value = "/mng/mmnws/mmnwsListForm.html")
+    public String mmnwsListForm() throws Exception {
+        return "mng/mmnws/mmnwsList";
     }
     
     /**
@@ -65,7 +65,7 @@ public class MmnwsController {
     */
     @RequestMapping(value = "/mng/mmnws/mmnwsInsertForm.html")
     public String mmnwsInsertForm() throws Exception {
-        return "mng/mmnws/mmnwsInsert";
+        return "mng/mmnws/mmnwsInsertForm";
     }
     
     /**
