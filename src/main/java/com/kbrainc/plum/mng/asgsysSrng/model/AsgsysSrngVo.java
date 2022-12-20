@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.asgsysSrng.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -91,13 +92,13 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String vstMnt;
 
     /** 프로그램아이디 */
-	private int prgrmid;
+	private Integer prgrmid;
 
     /** 기관아이디 */
-	private int instid;
+	private Integer instid;
 
     /** 신청자아이디 */
-	private int aplcntid;
+	private Integer aplcntid;
 
     /** 신청자_이름 */
 	private String aplcntNm;
@@ -136,7 +137,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String instDtladdr;
 
     /** 파일그룹아이디 */
-	private int filegrpid;
+	private Integer filegrpid;
 
     /** 상태_코드 */
 	private String sttsCd;
@@ -154,10 +155,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String dsgnEndDe;
 
     /** 승인자아이디 */
-	private int autzrid;
+	private Integer autzrid;
 
     /** 체크리스트아이디 */
-	private int chklstid;
+	private Integer chklstid;
 
     /** 신청_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
@@ -168,17 +169,17 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private Date  mdfcnDt;
 
     /** 수정자아이디 */
-	private int mdfrid;
+	private Integer mdfrid;
 
     /** 등록_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
 	private Date  regDt;
 
     /** 등록자아이디 */
-	private int rgtrid;
+	private Integer rgtrid;
 
 	/** 보완요청아이디 */
-	private int splmntdmndid;
+	private Integer splmntdmndid;
 
 	/** 의견내용 */
 	private  String opnnCn;
@@ -189,10 +190,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String styYn;
 
     /**숙박_밤 */
-	private int styNight;
+	private Integer styNight;
 
     /**숙박_낮 */
-	private int styDaytm;
+	private Integer styDaytm;
 
     /**운영_형태_코드 */
 	private String operFrmCd;
@@ -258,16 +259,16 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String eduPlc;
 
     /**교육_인원수 */
-	private int eduNope;
+	private Integer eduNope;
 
     /**교육_횟수 */
-	private int  eduCnt;
+	private Integer  eduCnt;
 
     /**교육_시간 */
-	private int  eduHr;
+	private Integer  eduHr;
 
     /**교육_분 */
-	private int  eduMnt;
+	private Integer  eduMnt;
 
     /**유료_여부 */
 	private String pchrgYn;
@@ -297,7 +298,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String eduSbjctCd;
 
     /**교육_사진_파일그룹아이디 */
-	private int  eduPhotoFilegrpid;
+	private Integer  eduPhotoFilegrpid;
 
     /**평가_목적 */
     private String evlPrps;
@@ -345,10 +346,14 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String etcCn;
 
     /**심사_일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
     private Date srngDt;
 
     /**심사위원_ID */
     private String jdgsid;
+
+    /** 심사 위원 이름 */
+    private String jdgsNm;
 
     /**안전관리 사전인증여부 */
     private String sftyMngYn;
@@ -375,7 +380,70 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String bfrCertYn;
 
     /** 사전_인증_파일그룹아이디 */
-    private int bfrCertFilegrpid;
+    private Integer bfrCertFilegrpid;
+
+    /** (심사)양식_id */
+    private Integer formid;
+
+    /** (심사)합계 점수 */
+    private Integer sumScr;
+
+    /** 심사 의견 */
+    private String srngOpnn;
+
+    /** 심사 결과 ID */
+    private String rsltid;
+
+	/** 참가비_수입 */
+	private BigDecimal etrfeeIncm;
+
+	/** 기타_수입 */
+	private BigDecimal etcIncm;
+
+	/** 자부담 */
+	private String slfpy;
+
+	/** 운영_이전_홍보_시기 */
+	private String operBfrPrmtnSess;
+
+	/** 운영_이전_홍보_방법 */
+	private String operBfrPrmtnMthd;
+
+	/** 운영_중간_홍보_시기 */
+	private String operMdlPrmtnSess;
+
+	/** 운영_중간_홍보_방법 */
+	private String operMdlPrmtnMthd;
+
+	/** 운영_이후_홍보_시기 */
+	private String operAftrPrmtnSess;
+
+	/** 운영_이후_홍보_방법 */
+	private String operAftrPrmtnMthd;
+
+	/** 전화_접수_여부 */
+	private String telRcptYn;
+
+	/** 신청서_접수_여부 */
+	private String aplfrmRcptYn;
+
+	/** 온라인_신청_여부 */
+	private String onlnAplyYn;
+
+	/** 교구_시설_ID */
+	private String tchaidfcltid;
+
+	/** 세부_프로그램_이름 */
+    private String dtlPrgrmNm  ;
+
+    /** 세부_프로그램_교구 */
+    private String tchaid;
+
+    /** 수량 */
+    private String qnty;
+
+
+
 
 
     /** 로그인사용자정보 */

@@ -1,4 +1,8 @@
 <form id="jdgsSrngInfoFrm" >
+<input type="hidden" id="prgrmid" name="prgrmid" th:value="${jdgsSrngInfo.prgrmid}"><!-- 프로그램id -->
+<input type="hidden" id="rsltid" name="rsltid" th:value="${jdgsSrngInfo.rsltid}"><!-- 결과id -->
+<input type="hidden" id="jdgsid" name="jdgsid" th:value="${jdgsSrngInfo.jdgsid}"><!-- 심사위원id -->
+<input type="hidden" id="formid" name="formid" th:value="${jdgsSrngInfo.formid}"><!-- 심사양식id -->
 	<div class="row">
 		<div class="card">
 			<div class="card-header p-b-0">
@@ -179,9 +183,8 @@
 			</div>
 			<div class="card-block-small p-t-0">
 				<div class="mb-0 form-group row">
-	<!-- 				<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="judgeJudgingJudgeComment1"><strong>심사의견</strong></label> -->
 					<div class="col-12">
-						<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="judgeJudgingJudgeComment1" name="judgeJudgingJudgeComment1"></textarea>
+						<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="srngOpnn" name="srngOpnn"><th:block th:text="${jdgsSrngInfo.srngOpnn}"></th:block></textarea>
 					</div>
 				</div>
 			</div>
@@ -226,14 +229,14 @@ function changeOperFrmCd() {
 
 function fn_insertJdgsSrngInfo() {
 
-	
 	if(!confirm("저장하시겠습니까?")) return;
-	var data =  $("#jdgsSrngInfoFrm").serialize() ;
 
+	var data =  $("#jdgsSrngInfoFrm").serialize() ;
+debugger;
 	if(displayWorkProgress()){
         $.ajax({
 
-            url : "/mng/asgsysSrng/updateJdgsSrng.do",
+            url : "/mng/asgsysSrng/updateJdgsSrngDetail.do",
             type: 'POST',
             cache : false,
             dataType: 'json',
@@ -241,7 +244,7 @@ function fn_insertJdgsSrngInfo() {
             success : function (data){
                 if(data.result=="success"){
                     alert(data.msg);
-                    gridHelper1.resetListContent();
+                    //gridHelper1.resetListContent();
                 }else{
                     alert(data.msg);
                 }

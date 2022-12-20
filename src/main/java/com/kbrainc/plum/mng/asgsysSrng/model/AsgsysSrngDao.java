@@ -6,8 +6,6 @@ import javax.validation.Valid;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.member.model.MemberVo;
-
 /**
 * 지정제심사관리 DAO클래스.
 *
@@ -146,16 +144,26 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
     /**
-    * 심사위원심사 등록
+    * 심사위원심사 수정
     *
-    * @Title       : insertJdgsSrngDetail
-    * @Description : 회원등록
-    * @param memberVo MemberVo , TeacherVo TeacherVo객체
-    * @param user 사용자세션정보
-    * @return Map<String,Object> 응답결과객체
+    * @Title       : updateJdgsSrngDetail
+    * @Description : 심사위원심사 수정
+	* @param asgsysSrngVo
+	* @return int
     * @throws Exception 예외
     */
 	public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 심사위원심사 등록
+	 *
+	 * @Title : insertJdgsSrngDetail
+	 * @Description : 심사위원심사 등록
+	 * @param asgsysSrngVo
+	 * @return int
+     * @throws Exception 예외
+	 */
+	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo);
 
 	/**
 	* 안전관리 수정
@@ -166,6 +174,52 @@ public interface AsgsysSrngDao {
 	* @return int
     * @throws Exception 예외
 	*/
-	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public int updateSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사위원심사 목록 엑셀 다운
+	*
+	* @Title : jdgsSrngListExcelDown
+	* @Description : 심사위원심사 목록 엑셀 다운
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> jdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램 운영관리 조회
+	*
+	* @Title : selectPrgrmOperMng
+	* @Description : 프로그램 운영관리 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo
+	* @throws Exception
+	*/
+	public AsgsysSrngVo selectPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 조회
+	*
+	* @Title : selecttchaidFcltList
+	* @Description : 교구 및 시설목록 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selecttchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램운영관리 수정
+	*
+	* @Title : updatePrgrmOperMng
+	* @Description : 프로그램운영관리 수정
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 }

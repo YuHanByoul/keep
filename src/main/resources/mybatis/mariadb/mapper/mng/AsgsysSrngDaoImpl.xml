@@ -255,8 +255,81 @@
         WHERE A.PRGRMID = #{prgrmid}
     </select>
 
+    <!-- 프로그램 운영관리 조회 -->
+    <select id="selectPrgrmOperMng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectPrgrmOperMng */
+        SELECT
+            PRGRMID
+          , ETRFEE_INCM
+          , ETC_INCM
+          , SLFPY
+          , OPER_BFR_PRMTN_SESS
+          , OPER_BFR_PRMTN_MTHD
+          , OPER_MDL_PRMTN_SESS
+          , OPER_MDL_PRMTN_MTHD
+          , OPER_AFTR_PRMTN_SESS
+          , OPER_AFTR_PRMTN_MTHD
+          , TEL_RCPT_YN
+          , APLFRM_RCPT_YN
+          , ONLN_APLY_YN
+          , ETC_YN
+          , ETC_CN
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_PRGRM_OPER_MNG
+        WHERE PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 프로그램운영관리 수정 -->
+    <update id="updatePrgrmOperMng" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.updatePrgrmOperMng */
+        UPDATE
+            TB_ASS_PRGRM_OPER_MNG
+        SET
+            ETRFEE_INCM            = #{etrfeeIncm }
+          , ETC_INCM               = #{etcIncm }
+          , SLFPY                  = #{slfpy }
+          , OPER_BFR_PRMTN_SESS    = #{operBfrPrmtnSess }
+          , OPER_BFR_PRMTN_MTHD    = #{operBfrPrmtnMthd }
+          , OPER_MDL_PRMTN_SESS    = #{operMdlPrmtnSess }
+          , OPER_MDL_PRMTN_MTHD    = #{operMdlPrmtnMthd }
+          , OPER_AFTR_PRMTN_SESS   = #{operAftrPrmtnSess }
+          , OPER_AFTR_PRMTN_MTHD   = #{operAftrPrmtnMthd }
+          , TEL_RCPT_YN            = #{telRcptYn }
+          , APLFRM_RCPT_YN         = #{aplfrmRcptYn }
+          , ONLN_APLY_YN           = #{onlnAplyYn }
+          , ETC_YN                 = #{etcYn }
+          , ETC_CN                 = #{etcCn }
+          , MDFCN_DT               = NOW()
+          , MDFRID                 = #{user.userid}
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 교구 및 시설목록조회 -->
+    <select id="selecttchaidFcltList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selecttchaidFcltList */
+        SELECT
+            TCHAIDFCLTID
+          , PRGRMID
+          , DTL_PRGRM_NM
+          , EDU_PLC
+          , TCHAID
+          , QNTY
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_TCHAID_FCLT
+        WHERE PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 프로그램 평가 조회 -->
     <select id="selectPrgrmEvl" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectPrgrmEvl*/
         SELECT
             PRGRMID
           , EVL_PRPS
@@ -394,7 +467,6 @@
     WHERE PRGRMID = #{prgrmid}
     </update>
 
-
     <!-- 지정신청 진행상태 조회 -->
     <select id="selectPrgrmSttsCd" parameterType="AsgsysSrngVo" resultType="String">
     SELECT
@@ -485,6 +557,7 @@
             SELECT
                  A.PRGRMID
                , A.JDGSID
+               , '' AS JDGS_NM
                , B.PRGRM_NM
                , B.INST_NM
                , A.SRNG_STTS_CD
@@ -503,6 +576,10 @@
             LEFT OUTER JOIN
                 TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
             WHERE 1=1
+        <!-- 키워드.전체 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+            AND (B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+        </if>
         <!-- 키워드.프로그램명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
             AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
@@ -530,11 +607,68 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-    <select id="selectJdgsSrngDetail" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
-    /* AsgsysSrngDao.selectJdgsSrngDetail */
+
+    <select id="jdgsSrngListExcelDown" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.jdgsSrngListExcelDown */
             SELECT
                  A.PRGRMID
                , A.JDGSID
+               , '' AS JDGS_NM
+               , B.PRGRM_NM
+               , B.INST_NM
+               , A.SRNG_STTS_CD
+               , A.REG_DT          /*배정일*/
+               , C.STY_YN          /*숙박여부*/
+               , D.SRNG_DT         /* 심사일 */
+               , A.MDFCN_DT
+               , A.MDFRID
+               , A.RGTRID
+            FROM
+                TB_ASS_PRGRM_JDGS A
+            INNER JOIN
+                TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
+            WHERE 1=1
+        <!-- 키워드.전체 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+            AND (B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%'))
+        </if>
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 심사진행상태  -->
+        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
+            AND A.SRNG_STTS_CD = #{searchSrngSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT >= #{searchRegStartDt}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+    </select>
+
+    <select id="selectJdgsSrngDetail" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectJdgsSrngDetail */
+            SELECT
+                 A.PRGRMID
+               , A.JDGSID
+               , G.FORMID       /*양식ID*/
+               , F.RSLTID
                , B.PRGRM_NM
                , B.INST_NM
                , C.STY_YN    /*숙박여부*/
@@ -546,6 +680,8 @@
     --         , '증빙서류'
                , A.SRNG_STTS_CD
                , A.REG_DT    /*배정일*/
+               , F.SRNG_OPNN    /*심사의견*/
+               , G.FORMID       /*양식ID*/
             FROM
                 TB_ASS_PRGRM_JDGS A
             INNER JOIN
@@ -556,7 +692,57 @@
                 TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
             LEFT OUTER JOIN
                 TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_RSLT F ON A.PRGRMID = F.PRGRMID
+            INNER JOIN
+                TB_ASS_SRNG_FORM G ON G.FORMID = F.FORMID
             WHERE 1=1
             AND A.JDGSID = #{jdgsid}
     </select>
+
+
+    <!-- 심사위원심사 등록 -->
+    <insert id="insertJdgsSrngDetail" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.insertJdgsSrngDetail */
+    INSERT INTO TB_ASS_SRNG_RSLT (
+        PRGRMID
+      , FORMID
+      , JDGSID
+      , SRNG_DT
+      , SUM_SCR
+      , SRNG_OPNN
+      , MDFCN_DT
+      , MDFRID
+      , REG_DT
+      , RGTRID
+    ) VALUES (
+        #{prgrmid }
+      , #{formid  }
+      , #{jdgsid  }
+      , #{srngDt  }
+      , #{sumScr  }
+      , #{srngOpnn}
+      , NOW()
+      , #{user.userid}
+      , NOW()
+      , #{user.userid}
+    )
+    </insert>
+
+    <!-- 심사위원심사 상세 수정-->
+    <update id="updateJdgsSrngDetail" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.updateJdgsSrngDetail*/
+    UPDATE
+        TB_ASS_SRNG_RSLT
+    SET
+        FORMID      = #{formid}
+      , JDGSID      = #{jdgsid}
+      , SRNG_DT     = NOW()
+      , SUM_SCR     = #{sumScr}
+      , SRNG_OPNN   = #{srngOpnn}
+      , MDFCN_DT    = NOW()
+      , MDFRID      = #{user.userid}
+    WHERE
+        RSLTID = #{rsltid}
+    </update>
 </mapper>

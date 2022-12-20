@@ -148,7 +148,7 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	* @return void
 	*/
-	public void jdgsSrngMainExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+	public void jdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
 
 	/**
 	* 심사위원심사 상세 조회
@@ -181,6 +181,50 @@ public interface AsgsysSrngService {
 	* @param asgsysSrngVo
 	* @return int
 	*/
-	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public int updateSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사위원심사 등록
+	*
+	* @Title : insertJdgsSrngDetail
+	* @Description : 심사위원심사 등록
+	* @param asgsysSrngVo
+	* @return
+	* @return int
+	*/
+	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 프로그램운영 관리 조회
+	 *
+	 * @Title : selectPrgrmOperMng
+	 * @Description : 프로그램운영 관리 조회
+	 * @param asgsysSrngVo
+	 * @return AsgsysSrngVo객체
+	 * @throws Exception 예외
+	 */
+	public AsgsysSrngVo selectPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 조회
+	*
+	* @Title       : selectDsgnAplyList
+	* @Description : 교구 및 시설목록 조회
+	* @param memberVo AsgsysAplyVo객체
+	* @return List<AsgsysSrngVo>
+	* @throws Exception 예외
+	*/
+	 public List<AsgsysSrngVo> selecttchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램운영관리 수정
+	*
+	* @Title : updatePrgrmOperMng
+	* @Description : 프로그램운영관리 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

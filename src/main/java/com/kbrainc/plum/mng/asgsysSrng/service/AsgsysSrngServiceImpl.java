@@ -129,7 +129,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		String realName = "";
 		AsgsysSrngVo modelVo = null;
 
-		realName = "aplyExcelList.xls";
+		realName = "jdgsSrngList.xls";
 		HSSFWorkbook workbook = new HSSFWorkbook();
 		//Font 설정.
 		HSSFFont font = workbook.createFont();
@@ -187,7 +187,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.aplyExcelDownList(asgsysSrngVo);
+		list = asgsysSrngDao.jdgsSrngListExcelDown(asgsysSrngVo);
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
 
@@ -318,7 +318,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	/**
 	* 심사위원심사 엑셀 다운로드
 	*
-	* @Title : jdgsSrngMainExcelDownList
+	* @Title : jdgsSrngListExcelDown
 	* @Description : 심사위원심사 엑셀 다운로드
 	* @param memberVo
 	* @param response
@@ -327,7 +327,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	* @return void
 	*/
 	@Override
-	public void jdgsSrngMainExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception{
+	public void jdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception{
 		List<AsgsysSrngVo> list = null;
 		String realName = "";
 		AsgsysSrngVo modelVo = null;
@@ -365,6 +365,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
 		String [] titleArr = {
 				"프로그램명"
+				,"심사위원"
 				,"기관명"
 				,"심사진행상태"
 				,"배정일"
@@ -389,7 +390,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			cell.setCellStyle(titlestyle);
 		}
 
-		list = asgsysSrngDao.aplyExcelDownList(asgsysSrngVo);
+		list = asgsysSrngDao.selectJdgsSrngList(asgsysSrngVo);
 
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
 
@@ -405,6 +406,10 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 			    /*프로그램명*/
 			    cell = row.createCell(cellnum++);
 			    cell.setCellValue(StringUtil.nvl(modelVo.getPrgrmNm(), ""));
+			    cell.setCellStyle(style);
+			    /*심사위원명*/
+			    cell = row.createCell(cellnum++);
+			    cell.setCellValue(StringUtil.nvl(modelVo.getJdgsid(), ""));    /*todo 심사원명으로 수정*/
 			    cell.setCellStyle(style);
 				/*기관명*/
 			    cell = row.createCell(cellnum++);
@@ -464,34 +469,97 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
      * 심사위원심사 수정
      *
      * @Title       : insertJdgsSrngDetail
-     * @Description : 회원등록
+     * @Description : 심사위원심사 수정
      * @param memberVo MemberVo , TeacherVo TeacherVo객체
-     * @param user 사용자세션정보
-     * @return Map<String,Object> 응답결과객체
+     * @param asgsysSrngVo
+     * @return int
      * @throws Exception 예외
      */
     @Override
     @Transactional
     public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
         int retVal = 0;
-        //retVal += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
+        retVal += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
 
         return retVal;
 	}
 
     /**
-    * [메소드 요약].
+    * 심사위원심사 등록
+    *
+    * @Title : insertJdgsSrngDetail
+    * @Description : 심사위원심사 등록
+    * @param asgsysSrngVo
+    * @return int
+    * @throws Exception 예외
+    */
+    @Override
+    @Transactional
+    public int insertJdgsSrngDetail(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	int retVal = 0;
+        retVal += asgsysSrngDao.insertJdgsSrngDetail(asgsysSrngVo);
+        return retVal;
+	}
+
+    /**
+    * 안전관리 수정
     *
     * @Title : updateSftyMng
     * @Description : 안전관리 수정
     * @param asgsysSrngVo
     * @return int
+    * @throws Exception 예외
     */
     @Override
     @Transactional
 	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception{
     	int retVal = 0;
     	retVal += asgsysSrngDao.updateSftyMng(asgsysSrngVo);
+		return retVal;
+	}
+
+    /**
+     * 프로그램운영 관리 조회
+     *
+     * @Title : selectPrgrmOperMng
+     * @Description : 프로그램운영 관리 조회
+     * @param asgsysSrngVo
+     * @return AsgsysSrngVo객체
+     * @throws Exception 예외
+     */
+    @Override
+	public AsgsysSrngVo selectPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.selectPrgrmOperMng(asgsysSrngVo);
+	}
+
+    /**
+    * 교구 및 시설목록 조회
+    *
+    * @Title       : selectDsgnAplyList
+    * @Description : 교구 및 시설목록 조회
+    * @param memberVo AsgsysAplyVo객체
+    * @return List<AsgsysSrngVo>
+    * @throws Exception 예외
+    */
+    @Override
+	public List<AsgsysSrngVo> selecttchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selecttchaidFcltList(asgsysSrngVo);
+	}
+
+    /**
+    * 프로그램운영관리 수정
+    *
+    * @Title : updatePrgrmOperMng
+    * @Description : 프로그램운영관리 수정
+    * @param asgsysSrngVo
+    * @return int
+    * @throws Exception
+    */
+    @Override
+    @Transactional
+	public int updatePrgrmOperMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	int retVal = 0;
+    	retVal += asgsysSrngDao.updatePrgrmOperMng(asgsysSrngVo);
 		return retVal;
 	}
 
