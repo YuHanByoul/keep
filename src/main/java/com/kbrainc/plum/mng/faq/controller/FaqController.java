@@ -1,25 +1,23 @@
 package com.kbrainc.plum.mng.faq.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.kbrainc.plum.mng.faq.model.FaqClVo;
+import com.kbrainc.plum.mng.faq.model.FaqVo;
+import com.kbrainc.plum.mng.faq.service.FaqService;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.mng.faq.model.FaqClVo;
-import com.kbrainc.plum.mng.faq.model.FaqVo;
-import com.kbrainc.plum.mng.faq.service.FaqService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -43,21 +41,16 @@ public class FaqController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    FaqService faqService;
+    private FaqService faqService;
 
-    @RequestMapping(value = "/mng/faq/list.html")
+    @RequestMapping(value = "/mng/faq/faqForm.html")
     public String getListPage(@UserInfo UserVo user) {
-        return "mng/faq/list";
+        return "mng/faq/faqForm";
     }
 
-    @RequestMapping(value = "/mng/faq/reg.html")
-    public String regFaqPage() {
-        return "mng/faq/reg";
-    }
-
-    @RequestMapping(value = "/mng/faq/clList.html")
+    @RequestMapping(value = "/mng/faq/faqClForm.html")
     public String getClListPage() {
-        return "mng/faq/clList";
+        return "mng/faq/faqClForm";
     }
 
     /**
@@ -72,10 +65,11 @@ public class FaqController {
      * @return JSON 목록
      * @throws Exception : 예외
      */
-    @RequestMapping(value = "/mng/faq/faqList.do")
+    @RequestMapping(value = "/mng/faq/selectFaqList.do")
     @ResponseBody
-    public Map<String, Object> getList(FaqVo faqVoParam) throws Exception {
+    public Map<String, Object> selectFaqList(FaqVo faqVoParam, @UserInfo UserVo user) throws Exception {
 
+        faqVoParam.setUser(user);
         List<FaqVo> list = faqService.getList(faqVoParam);
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -104,49 +98,75 @@ public class FaqController {
      * @return :
      * @throws Exception :
      */
-    @RequestMapping(value = "/mng/faq/read.html")
-    public String getFaq(FaqVo faqVo, Model model) throws Exception {
+    @RequestMapping(value = "/mng/faq/faqDetailForm.html")
+    public String faqDetailForm(FaqVo faqVo, Model model) throws Exception {
+        FaqVo faqInfo = faqService.getFaq(faqVo);
+        if(faqInfo == null) {
+            faqInfo = new FaqVo();
+            faqInfo.setSiteid(faqVo.getSiteid());
+        }
 
-        FaqVo info = faqService.getFaq(faqVo);
-        // info.setCntnts(HtmlEscape.unescapeHtml(info.getCntnts()).replaceAll("\n",
-        // "<br />"));
-        // info.setCntnts(info.getCntnts().replaceAll("\n", "<br />"));
-        // logger.info("Data ==> " + info.getCntnts());
-
-        model.addAttribute("info", info);
-
-        return "mng/faq/read";
+        model.addAttribute("faqInfo",faqInfo);
+        return "mng/faq/faqDetailForm.html";
     }
 
-    @RequestMapping(value = "/mng/faq/add.do", method = RequestMethod.POST)
-    public @ResponseBody boolean insertFaq(@UserInfo UserVo user, @RequestBody FaqVo faqVo) throws Exception {
-        faqVo.setRgtrid(Integer.parseInt(user.getUserid()));
-        // FaqVo.setCntnts(HtmlEscape.escapeHtml5(FaqVo.getCntnts()));
-        faqVo.setUser(user);
-        return faqService.addFaq(faqVo);
-    }
+    @RequestMapping(value = "/mng/faq/insertFaq.do", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> insertFaq( FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String,Object> resultMap = new HashMap<>();
 
-    @RequestMapping(value = "/mng/faq/delete.do", method = RequestMethod.DELETE)
-    public @ResponseBody boolean deleteFaq(@RequestParam(value = "faqid", required = true) int faqid) throws Exception {
-
-        // TODO: 권한 체크 필요
-        FaqVo faqVo = new FaqVo();
-        faqVo.setFaqid(faqid);
-
-        return faqService.deleteFaq(faqVo);
-    }
-
-    @RequestMapping(value = "/mng/faq/update.do", method = RequestMethod.POST)
-    public @ResponseBody boolean updateFaq(@UserInfo UserVo user, @RequestBody FaqVo faqVo) throws Exception {
-        logger.info("[SKYJOB]FAQ Update Data : " + faqVo);
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
 
         faqVo.setUser(user);
-        faqVo.setRgtrid(Integer.parseInt(user.getUserid()));
-        // FaqVo.setCntnts(HtmlEscape.escapeHtml5(FaqVo.getCntnts()));
-        return faqService.updateFaq(faqVo);
+
+        int retVal = 0;
+        retVal += faqService.insertFaq(faqVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+        return resultMap;
     }
 
-    @RequestMapping(value = "/mng/faq/faqClList.do")
+    @RequestMapping(value = "/mng/faq/updateFaq.do", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> updateFaq(FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String,Object> resultMap = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        faqVo.setUser(user);
+
+        int retVal = 0;
+        retVal += faqService.updateFaq(faqVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+        return resultMap;
+    }
+
+    @RequestMapping(value = "/mng/faq/selectFaqClList.do")
     public @ResponseBody Map<String, Object> selectClList(FaqClVo faqClVoParam, @UserInfo UserVo user) throws Exception {
 
         faqClVoParam.setUser(user);
@@ -165,19 +185,10 @@ public class FaqController {
         return response;
     }
 
-    @RequestMapping(value = "/mng/faq/addCl.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/mng/faq/insertCl.do", method = RequestMethod.POST)
     @ResponseBody
     public boolean insertFaqCl(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
         return faqService.addFaqCl(faqClVo);
-    }
-
-    @RequestMapping(value = "/mng/faq/deleteCl.do", method = RequestMethod.DELETE)
-    public @ResponseBody boolean deleteFaqCl(@RequestParam(value = "clid", required = true) int clid) throws Exception {
-
-        // TODO: 권한 체크 필요
-        FaqClVo faqClVO = new FaqClVo();
-        faqClVO.setClid(clid);
-        return faqService.deleteFaqCl(faqClVO);
     }
 
     @RequestMapping(value = "/mng/faq/updateCl.do", method = RequestMethod.POST)
@@ -185,16 +196,9 @@ public class FaqController {
         faqClVo.setUser(user);
         return faqService.updateFaqCl(faqClVo);
     }
-
     @RequestMapping(value = "/mng/faq/modifyFaqOrd.do", method = RequestMethod.POST)
-    public @ResponseBody boolean updateFaqOrd(@RequestParam(name = "mode", required = true) String mode,
-            @UserInfo UserVo user, FaqVo faqVo) throws Exception {
-        // logger.info("[SKYJOB]FAQ Update Data : " + faqClVo);
-        if ("OD".equals(mode)) { //ORD down 
-            return faqService.modifyFaqOrdDown(faqVo);
-        } else { //ord up 
-            return faqService.modifyFaqOrdUp(faqVo);
-        }
+    public @ResponseBody boolean updateFaqOrd(@UserInfo UserVo user, FaqVo faqVo, @RequestBody HashMap<String,Object> parameter) throws Exception {
+        return faqService.modifyFaqOrd(parameter);
     }
 
     @RequestMapping(value = "/mng/faq/modifyFaqClOrd.do", method = RequestMethod.POST)

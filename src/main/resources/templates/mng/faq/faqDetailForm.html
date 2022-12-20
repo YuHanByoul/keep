@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<form id="faqForm" name="faqForm" method="post" onsubmit="return false;">
+  <input type="hidden" id="faqid" name="faqid" th:value = "${faqInfo.faqid}" >
+  <input type="hidden" id="useYn" name="useYn" th:value="Y">
+  <div class="card">
+    <div class="card-header p-b-0">
+      <h3 class="sub-title"><strong>기본정보</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+      <div class="mb-2 row">
+        <div class="col-12 col-lg-6">
+          <div class="mb-0 form-group required">
+            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+            <div class="col-sm-12">
+              <th:block kattr:select_site="siteid" sysSeCd="U" firstOptTxt="- 선택 -" firstOptVal="" th:attr="selectedId=${faqInfo.siteid}" isAdmin="true"></th:block>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2 row">
+        <div class="col-12 col-lg-6">
+          <div class="mb-0 form-group required">
+            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+            <div class="col-sm-12">
+              <th:block kattr:faq-category-list="clid" isAdmin="true" th:value="${faqInfo.clid}"></th:block>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2 form-group row required">
+        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="title"><strong>제목</strong></label>
+        <div class="col-sm-12">
+          <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${faqInfo.title}"/>
+        </div>
+      </div>
+
+      <div class="mb-2 form-group row required">
+        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cntnts"><strong>내용</strong></label>
+        <div class="col-12">
+          <textarea rows="5" cols="5" class="form-control form-control-sm" id="cntnts" name="cntnts"> <th:block th:text="${faqInfo.cntnts}"></th:block></textarea>
+        </div>
+
+      </div>
+      <div class="mb-2 form-group row">
+        <div class="col-sm-12">
+          <th:block kattr:switch_yn="faqUseYn" label="사용여부" th:attr="defaultVal=${faqInfo.useYn == null ? 'Y' : faqInfo.useYn}" onchange="faqSwitch" isAdmin="true"></th:block>
+        </div>
+      </div>
+    </div>
+    <div class="card-block-small">
+      <button class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+      <th:block sec:authorize-url="/mng/faq/insertFaq.do">
+        <button class="btn btn-primary" onclick="saveFaq()">저장</button>
+      </th:block>
+    </div>
+  </div>
+</form>
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+<script th:inline="javascript">
+  var faqInsertUrl = "/mng/faq/insertFaq.do";
+  var faqUpdateUrl = "/mng/faq/updateFaq.do";
+  var editor;
+
+  $(function () {
+    getClSelectBoxData();
+
+    $('#selectSitesiteid').change(function () {
+      getClSelectBoxData();
+    })
+
+    editor = CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
+    validateFaq();
+
+    if($('#siteid').val() == null || $('#siteid').val().trim() ==''){
+        $('#siteid').val($('#searchSite').val());
+    }
+  });
+
+  function faqSwitch() {
+    if ($("#faqUseYn").is(":checked")) {
+      $('#faqForm').find('#useYn').val("Y");
+    } else {
+      $('#faqForm').find('#useYn').val("N");
+    }
+  }
+
+  function writeClSelectBox(data) {
+    var seledctedCD = "";
+    if ($("#faqForm #clid").val() != null && $("#faqForm #clid").val() != '') {
+      seledctedCD = $("#faqForm #clid").val();
+    }
+    var optionStr = "<option value=''>- 선택 -</optipon>";
+    for (var i = 0; i < data.length; i++) {
+      optionStr += "<option value='" + data[i].clid + "'";
+      if (seledctedCD == data[i].clid) {
+        optionStr += " selected "
+      }
+      optionStr += ">" + data[i].clNm + "</option>"
+    }
+    $("#faqForm #clid").html(optionStr);
+  }
+
+  function getClSelectBoxData() {
+    var selectSitesiteid = $('#selectSitesiteid').val().trim()
+    var params = {
+      "siteid": (selectSitesiteid == null || selectSitesiteid == '' ? 0 : selectSitesiteid)
+      , "useYn": 'Y'
+    }
+
+    $.ajax({
+      url: "/mng/faq/selectClList.do",
+      contentType: "application/json; charset=utf-8",
+      type: 'POST',
+      cache: false,
+      dataType: 'json',
+      data: JSON.stringify(params),
+      success: function (data) {
+        writeClSelectBox(data.list);
+      },
+      error: function (error) {
+      }
+    });
+  }
+
+  function saveFaq() {
+    var url = faqInsertUrl;
+    if ($('#faqid').val() != '') {
+      url = faqUpdateUrl;
+    }
+
+    if (url == faqInsertUrl) {
+      var isSec = false;
+      /*[# sec:authorize-url="/mng/faq/insertFaq.do"]*/
+      isSec = true;
+      /*[/]*/
+      if (!isSec) {
+        alert('접근권한이 없습니다.');
+        return;
+      }
+    }
+    else if (url == faqUpdateUrl) {
+      var isSec = false;
+      /*[# sec:authorize-url="/mng/faq/updateFaq.do"]*/
+      isSec = true;
+      /*[/]*/
+      if (!isSec) {
+        alert('접근권한이 없습니다.');
+        return;
+      }
+    }
+
+    if (!$("#faqForm").valid()) return;
+
+    var editorData = editor.getData();
+    $("#cntnts").val(editorData);
+
+    if (displayWorkProgress()) {
+      $.ajax({
+        url: url,
+        cache: false,
+        dataType: 'json',
+        type: 'post',
+        data:  $("#faqForm").serialize(),
+        success: function (data) {
+          alert(data.msg);
+          closeWorkProgress();
+          gridHelper1.resetListContent();
+        }
+      });
+    }
+  }
+
+  function validateFaq() {
+    $("#faqForm").validate({
+      onsubmit: false,
+      rules: {
+        siteid: {required: true}
+        , clid: {required: true}
+        , title: {required: true, maxlength: 250}
+        , cntnts: {required: true}
+      },
+      messages: {
+        siteid: {required: "사이트를 선택해 주십시오."}
+        , clid: {required: "분류를 선택해 주십시오."}
+        , title: {required: "제목을 입력해 주십시오.", maxlength: "제목은 250자를 넘을 수 없습니다."}
+        , cntnts: {required: "내용을 입력해 주십시오."}
+      }
+    });
+  }
+</script>
+
+</html>

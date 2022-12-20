@@ -9,6 +9,9 @@
 		.jsgrid-grid-body {
 			max-height:500px;
 		}
+		.hide{
+			display:none;
+		}
 	</style>
 
 	<div class="row">
@@ -16,7 +19,7 @@
 			<div class="card">
 				<div class="card-block-small">
 					<div class="mb-0 form-group row">
-						<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트선택</strong></div>
+						<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
 						<th:block kattr:select_site="searchSite" witdh="100%" firstOptTxt="- 선택 - " firstOptVal="" isAdmin="true"></th:block>
 					</div>
 				</div>
@@ -45,7 +48,7 @@
 									<strong>FAQ 분류 정보</strong>
 								</h5>
 								<div class="text-right">
-									<th:block sec:authorize-url="/mng/faq/addCl.do">
+									<th:block sec:authorize-url="/mng/faq/insertCl.do">
 										<button class="btn btn-primary" onclick="addFaqCl()">등록</button>
 									</th:block>
 								</div>
@@ -76,7 +79,7 @@
 										</div>
 										<div class="mb-0 mt-4 form-group row">
 											<div class="col-sm-12">
-												<th:block sec:authorize-url="/mng/faq/addCl.do">
+												<th:block sec:authorize-url="/mng/faq/insertCl.do">
 													<button type="button" class="btn btn-primary" onclick="saveFaqCl()" >저장</button>
 												</th:block>
 											</div>
@@ -92,7 +95,7 @@
 	</div>
 
 	<script>
-		var faqClInsertUrl = "/mng/faq/addCl.do";
+		var faqClInsertUrl = "/mng/faq/insertCl.do";
 		var faqClUpdateUrl = "/mng/faq/updateCl.do";
 		/**
 		 * faqCl
@@ -103,7 +106,7 @@
 					"clNm": item.clNm,
 					"ord": item.ord,
 					"useYn": item.useYn,
-					"siteId": $("#selectSitesearchSite").val()
+					"siteid": $("#selectSitesearchSite").val()
 				};
 
 				if(displayWorkProgress()){
@@ -205,7 +208,7 @@
 						$.ajax({
 							type: "GET",
 							contentType: "application/json; charset=utf-8",
-							url: "/mng/faq/faqClList.do",
+							url: "/mng/faq/selectFaqClList.do",
 							data: params,
 							dataType: "json"
 						}).done(function (response) {
@@ -228,6 +231,7 @@
 					}
 				},
 				fields: [
+					{name:'siteid',css:'hide'},
 					{name: 'clNm', title: "분류명", type: "text", width: "200"},
 					{
 						name: 'clid',
@@ -311,11 +315,13 @@
 					return;
 				}
 				checkValidation();
+				if (($("#faqClForm").valid() == false)) return;
+
 				executeFaqClFunction("update");
 
 			} else {
 				var isSec = false;
-				/*[# sec:authorize-url="/mng/faq/addCl.do"]*/
+				/*[# sec:authorize-url="/mng/faq/insertCl.do"]*/
 				isSec = true;
 				/*[/]*/
 				if(!isSec){
@@ -323,6 +329,8 @@
 					return;
 				}
 				checkValidation();
+				if (($("#faqClForm").valid() == false)) return;
+
 				executeFaqClFunction("insert");
 			}
 		}
@@ -333,7 +341,7 @@
 				, clNm: $("#clNm").val()
 				, ord: $("#ord").val()
 				, useYn: $("#useYn").val()
-				, siteId: $("#selectSitesearchSite").val()
+				, siteid: $("#selectSitesearchSite").val()
 			}
 
 			if(mode == "insert") {
@@ -355,14 +363,14 @@
 				rules: {clNm: {required: true, maxlength: 100}},
 				messages: {clNm: {required: "분류명을 입력해주십시오.", maxlength: "분류명은 100자를 넘을 수 없습니다."}}
 			})
-
-			if (($("#faqClForm").valid() == false)) return;
 		}
 
 		function changeOrd(mode, item) {
+			console.log(item.siteid);
 			var params = {
 				"clid": item.clid,
 				"ord": item.ord,
+				"siteid": item.siteid,
 				"mode": mode
 			}
 			var updUrl = "/mng/faq/modifyFaqClOrd.do";

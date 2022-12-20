@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ReaderDaoImpl.xml
+	Description : 환경교육 NOW -> 구독자
+-->
+<mapper namespace="com.kbrainc.plum.mng.blcklst.model.BlcklstDsctnDao">
+    
+    <!-- 환경교육관리 게시글 목록 조회 -->
+    <select id="selectBlcklstDsctnList" parameterType="BlcklstDsctnVo" resultType="BlcklstDsctnVo">
+        /* ReaderDao.selectBlcklstDsctnList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        	  A.BLCKLSTID
+            , B.NM AS USER_NM
+            , B.ACNT AS USER_ACNT
+            , A.BLCKLST_YN
+            , C.NM AS RGTR_NM
+            , C.ACNT RGTR_ACNT   
+        	, A.REG_DT
+        	, A.BLCKLST_RSN
+        FROM 
+            TB_CMM_USER_BLCKLST_DSCTN A
+            LEFT OUTER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+            LEFT OUTER JOIN TB_CMM_USER C ON A.RGTRID = C.USERID
+        WHERE 
+            1=1
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'userNm'">
+            AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'userid'">
+            AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'rgtrNm'">
+            AND C.NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="blcklstYn != null and blcklstYn != ''">
+            AND A.BLCKLST_YN = #{blcklstYn}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>  
+</mapper>

@@ -17,7 +17,7 @@ var FAQ_CL = {
 			$.ajax({
                 type: "POST",
                 contentType: "application/json; charset=utf-8",
-                url: "/mng/faq/addCl.do",
+                url: "/mng/faq/insertCl.do",
                 data: JSON.stringify(data),
                 dataType: "json"
               }).done(function(response){

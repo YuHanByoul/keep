@@ -1,60 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout/front/popupLayout">
-<head>
-<meta charset="utf-8" />
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport"
-	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
-<title><th:block th:text="${item.title}"></title>
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/popupLayout">
+    
+    
+ <div layout:fragment="content">
 
-
-
-</head>
-<body >
-<div layout:fragment="content">
-<span th:replace="layout/front/jsCommon"></span>
-
-    <div class="panel panel-default" id="popPanel" style="margin:0px; ">
-		
-		<div class="panel-heading">
-			<h4><th:block th:text="${item.title}"></h4>
-			<ul class="links">
-				<li><a href="javascript:this.close()"> <span
-						class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-				</a></li>
-			</ul>
-		</div>
-			
-		<div class="panel-body"  >
-		   <div th:remove="tag" th:utext="${item.cntnts}"></div>
-		</div>
-		
-       <div class=" col-xs-12"  style="border-top :1px solid #cae1ef ;  margin:0px; bottom:0;  position:absolute; " >
-	     <h6><label class=""><input type="checkbox" th:attr="id=${item.popupntcid}" onclick="javascript:fn_setCookie(this.id)"/> 다시 보지 않기</label></h6>
-       </div>
-       
-    </div>
-	 
+         <div class="modal-content type_2">
+                <div class="modal-header">
+                    <h4 class="modal-title"><th:block th:text="${item.title}"></h4>
+                    <a type="button" class="btn-close" href="javascript:this.close()" >
+                        <span aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div class="modal-body">
+                    <div class="card m-b-10">
+                        <div class="card-block-small" >
+                            <div th:remove="tag" th:utext="${item.cntnts}"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-footer text-left" style="display:block;">
+                   <div class="border-checkbox-section text-left">                                                                        
+                     <div class="border-checkbox-group border-checkbox-group-inverse text-left">                                                                        
+                           <input type="checkbox" class="border-checkbox text-left" th:id="'checkCookie'+${item.popupntcid}"  onclick="fn_setCookie(this.id)">
+                           <label class="form-label border-checkbox-label" th:for="'checkCookie'+${item.popupntcid}">다시 보지 않기</label>                                                 
+                     </div>
+                    </div>
+                  </div>
+              </div>
+     
  <script type="text/javascript">
  var width = '[[${item.widthSize}]]';
  var height = '[[${item.vrticlSize}]]';
 
  $(document).ready(function(){
-   $("#popPanel").css("height",height-12);   
- });
+     
+  });
  
  function fn_setCookie(id){
-	 var ischecked = false;
-	 ( $("#"+id).is(":checked") )? ischecked = true: ischecked = false ;
-	 opener.fn_neverShow(id,ischecked );
+       if($("#"+id).is(":checked")){
+              $.cookie("commonPop_cookie_"+id, "Y", 365);
+              this.close();
+       }else{ 
+              $.cookie("commonPop_cookie_"+id, "N", 365);   
+       }
  }
- 
-
  </script>
-
-</div>	
-</body>
+ 
+ </div>
 </html>

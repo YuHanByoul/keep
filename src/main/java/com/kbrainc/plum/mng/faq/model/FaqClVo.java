@@ -16,13 +16,13 @@ public class FaqClVo extends ParentRequestVo {
     /** 로그인사용자정보 */
 	private UserVo user;/** **/
 	
-	private int clid;
+	private Integer clid;
 
     @NotEmpty(message= "분류명을 입력해 주십시오.")
     @Size(max = 100, message = "분류명은 100자를 넘을 수 없습니다.")
 	private String clNm;
 
-	private int siteId;
+	private Integer siteid;
 
 	private Integer ord;
 

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+ 	layout:decorator="layout/mng/mainLayout">
+<body>
+	<div layout:fragment="content">
+		<style>
+			.hide {
+				display: none;
+			}
+		</style>
+	<!-- Page-body start -->
+	<div class="page-body">
+		<div class="row">
+			<!-- 필터 부분 -->
+			<div class="col-12">
+				<div class="card">
+					<div class="card-block-small">
+						<!-- 키워드 filter -->
+						<form name="searchForm" id="searchForm" method="post" onsubmit="return false;">
+							<div class="row">
+								<div class="col-lg-3 mb-2 mb-lg-0">
+									<div class="mb-0 form-group row">
+										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+										<div class="input-group input-group-sm input-group-dropdown mb-0">
+											<select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+												<option value="">- 선택 -</option>
+												<option value="title">제목</option>
+												<option value="cntnts">내용</option>
+											</select>
+											<input type="text" class="form-control form-control-sm" name="searchKeyword" id="searchKeyword"aria-label="Text input with dropdown button">
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-3 mb-2 mb-lg-0">
+									<div class="mb-0 form-group row">
+										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+										<th:block kattr:select_site="searchSite" sysSeCd="U" witdh="100%" firstOptTxt="- 선택 - " firstOptVal="" isAdmin="true"></th:block>
+									</div>
+								</div>
+								<div class="col-12 col-lg-3">
+									<div class="mb-0 form-group row">
+										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+										<div class="col-sm-12">
+											<th:block kattr:faq-category-list="clid" isAdmin="true"  />
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- //키워드 filter -->
+							<!-- 키워드 filter-btn -->
+							<div class="m-t-20 text-center">
+								<button type='button' class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+								<button type='button' class="btn btn-primary" onclick="searchFaq()">검색</button>
+							</div>
+						</form>
+
+					</div>
+				</div>
+			</div>
+			<!-- //필터 부분 -->
+			<!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+			<div class="col-12">
+				<div class="card">
+					<div class="row p-20 p-b-0">
+						<div class="col-12 col-md-6">
+							<h5><strong>FAQ 검색결과</strong></h5>
+						</div>
+						<div class="col-12 col-md-6 text-right">
+							<th:block sec:authorize-url="/mng/faq/faqDetailForm.html">
+								<button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertFaq()">등록</button>
+							</th:block>
+						</div>
+					</div>
+					<div class="card-block-small">
+						<div class="dt-responsive table-responsive">
+							<div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+								<table id="jsGrid" class="table-responsive"></table>
+								<div id="listPager" class="text-center"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+			<!-- insert 부분 -->
+			<div id="contentPanel" class="card"></div>
+			<!-- //insert 부분 -->
+		</div>
+	</div>
+	<!-- Page-body end -->
+	<script th:inline="javascript">
+
+		var faqListUrl = "/mng/faq/selectFaqList.do";
+		var faqDetailUrl = "/mng/faq/faqDetailForm.html";
+		var gridHelper1;
+
+		function writeClSearchSelectBox(data){
+			var seledctedCD ="";
+			$searchFormClid = $("#searchForm #clid");
+			if($searchFormClid.val()!=null && $searchFormClid.val()!= ''){
+				seledctedCD =$searchFormClid.val();
+			}
+			var optionStr="<option value=''>- 전체 -</optipon>";
+			for(var i=0 ;i < data.length; i++){
+				optionStr += "<option value='" +data[i].clid +"'";
+				if(seledctedCD == data[i].clid){
+					optionStr += " selected "
+				}
+				optionStr += ">"+data[i].clNm+"</option>"
+			}
+			$searchFormClid.html(optionStr);
+		}
+
+		function getClSearchSelectBoxData(){
+			var $searchSite = $('#searchSite').val().trim();
+			var params ={
+				"siteid" : ($searchSite == null || $searchSite == '' ? 0 : $searchSite)
+				,"useYn" :'Y'
+			}
+
+			$.ajax({
+				url : "/mng/faq/selectClList.do",
+				contentType: "application/json; charset=utf-8",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data :JSON.stringify(params),
+				success : function (data){
+					writeClSearchSelectBox(data.list);
+				},
+				error : function (error){
+				}
+			});
+		}
+
+		$(function(){
+			gridHelper1 = new GridHelper('jsGrid','contentPanel');
+
+			getClSearchSelectBoxData();
+
+			$('#selectSitesearchSite').on('change', function(){
+				getClSearchSelectBoxData();
+				writeJsGridData();
+			})
+		})
+
+		function insertFaq() {
+
+			if ($("#searchSite").val() == null || $("#searchSite").val().trim() == '') {
+				alert('등록할 사이트를 선택해 주십시오.');
+				return;
+			}
+			gridHelper1.loadContent(faqDetailUrl);
+		}
+
+		function writeJsGridData() {
+			$("#jsGrid").jsGrid({
+				height: "auto",
+				width: "100%",
+				autoload: true,
+				sorting: true,
+				paging: true,
+				pagerContainer: "#listPager",
+				pagerFormat: "{first} {prev} {pages} {next} {last}",
+				pagePrevText: "이전",
+				pageNextText: "다음",
+				pageFirstText: " < 처음 ㅣ",
+				pageLastText: " | 마지막 >",
+				pageSize: 10,
+				pageButtonCount: 10,
+				pageLoading: true,
+				pageIndex: 1,
+				noDataContent: "데이터가 없습니다.",
+
+				controller: {
+					loadData: function (filter) {
+						var data = $.Deferred();
+
+						var formData = $('#searchForm').serializeArray();
+						var params = [
+							{name: "pageNumber", value: filter.pageIndex},
+							{name: "rowPerPage", value: filter.pageSize},
+							{name:"orderDirection", value: "asc"}
+						]
+
+						if(filter.sortField != undefined){
+							params.push({name: "orderField", value: filter.sortField});
+							params.push({name: "orderDirection", value: filter.sortOrder});
+						}else{
+							params.push({name: "orderField", value: 'ord'});
+
+						}
+						formData = formData.concat(params);
+
+						$.ajax({
+							type: "GET",
+							contentType: "application/json; charset=utf-8",
+							url: faqListUrl,
+							dataType: "json",
+							data: formData,
+						}).done(function(response){
+							var da = {
+								data : escapeGridData(response.list)
+								,itemsCount : response.totalCount
+							};
+							data.resolve(da);
+						});
+						return data.promise();
+					},
+				},
+				fields: [
+					{ name: 'faqid', css: 'hide' }
+					,{ title: 'No.'   ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+					,{ title: '분류'  ,name: 'clNm'      ,type: "text" , width: "150"}
+					,{ title: '제목'   ,name: 'title'    ,type: "text" , width: "250"}
+					,{ title: '순서'  ,name: 'ord'   ,type: "number" , width: "100" ,align:"center", itemTemplate: function (value, item) {
+							var firstObj = $("<a class='btn btn-xs btn-info' />").text("▲").on("click", function () {
+								changeOrd(item, item.totalCount - item.rowNumber - 1);
+								return false;
+							}).add("<span>&nbsp;</span>");
+							var lastObj = $("<a class='btn btn-xs btn-info' />").text("▼").on("click", function () {
+								changeOrd(item, item.totalCount - item.rowNumber + 1);
+								return false;
+							});
+
+							if (item.totalCount == 1) {
+								return "-";
+							} else if (item.rowNumber == 1) {
+								return firstObj;
+							} else if (item.rowNumber == item.totalCount) {
+								return lastObj
+							} else {
+								return firstObj.add(lastObj);
+							}
+						}
+					}
+					,{ title: '사용여부' ,name: 'useYn' ,type: "text" , width: "100", align:"center"
+						,itemTemplate: function(value, item){ if(value=='Y'){return "사용";}else if(value=='N'){return "미사용";}}
+					}
+					,{ title: '작성자'   ,name: 'nm' ,type: "text" , width:"100", align:"center"}
+					,{ title: '등록일'  ,name: 'regDt' ,type: "text" , width: "100", align:"center" }
+				],
+
+				/*[# sec:authorize-url="/mng/faq/faqDetailForm.html"]*/
+				rowClick: function (args) {
+					if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+					var detailUrl = faqDetailUrl + "?faqid=" + args.item.faqid;
+					gridHelper1.loadContent(detailUrl);
+					gridHelper1.rowClick(args);
+				},
+				/*[/]*/
+				onPageChanged: function (args) {
+					selectedItems = [];
+				}
+			})
+		}
+
+		function searchInit(){
+			$("#searchType").val('');
+			$("#searchKeyword").val('');
+			$("#searchSite").val('')
+			$("#clid").val('');
+		}
+
+		function searchFaq(){
+			var searchType = $("#searchType").val();
+			var searchKeyword = $("#searchKeyword").val();
+			if(searchType != '' && searchKeyword == ""){
+				alert('검색어를 입력해 주십시오.');
+				return;
+			}
+
+			if ($("#searchSite").val() == null || $("#searchSite").val().trim() =='') {
+				alert('검색할 사이트를 선택해 주십시오.');
+				return;
+			}
+
+			gridHelper1.resetListContent();
+		}
+
+		function changeOrd(item, index){
+			var $targetRowData = $("#jsGrid").jsGrid("option","data")[index];
+			var data = {};
+			data["targetFaq"] = {"faqid":$targetRowData.faqid, "ord":$targetRowData.ord};
+			data["sourceFaq"] = {"faqid":item.faqid, "ord":item.ord};
+
+			var modifyFaqOrd = "/mng/faq/modifyFaqOrd.do";
+			if(displayWorkProgress()){
+				$.ajax({
+					url : modifyFaqOrd,
+					type: 'POST',
+					cache : false,
+					dataType: 'json',
+					contentType : 'application/json',
+					data : JSON.stringify(data),
+					success : function (data){
+						if(data){
+							gridHelper1.resetListContent();
+							closeWorkProgress();
+						}else{
+							alert("정렬이 실패하였습니다. 다시한번 시도해주십시오.");
+						}
+					},
+					error : function (error){
+					}
+				});
+			}
+		}
+	</script>
+	<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>
