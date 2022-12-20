@@ -11,7 +11,7 @@
     <select id="getList" parameterType="FaqClVo" resultType="FaqClVo">
         <include refid="PaginationMapper.header"/>
         SELECT
-            CLID, CL_NM, ORD, USE_YN
+            CLID, CL_NM, ORD, USE_YN, SITEID
         FROM
             TB_CMM_FAQ_CL AS TCFC
         WHERE 1=1
@@ -25,15 +25,18 @@
     <!-- 모든 리스트 가져옴 -->
     <select id="getAllList" parameterType="FaqClVo" resultType="FaqClVo">
         SELECT
-              CLID, CL_NM, USER_SE_CD, ORD, USE_YN
+              CLID, CL_NM, SITEID, ORD, USE_YN
         FROM
               TB_CMM_FAQ_CL
         WHERE 1=1
          <if test=' useYn.equalsIgnoreCase("Y") or useYn.equalsIgnoreCase("N")' >
           AND USE_YN = UPPER(#{useYn})
         </if>
-        <if test=' userSeCd !=null' >
-          AND USER_SE_CD =  #{userSeCd}
+        <if test=" siteid != null"  >
+          AND SITEID =  #{siteid}
+        </if>
+        <if test=" clid != null" >
+            AND CLID = #{clid}
         </if>
     </select>
 
@@ -44,12 +47,12 @@
 		     IFNULL (Max(ORD),0) +1
 		   from TB_CMM_FAQ_CL
 		    WHERE 1=1
-		     AND SITEID = #{siteId}
+		     AND SITEID = #{siteid}
 	     </selectKey>
     	INSERT INTO TB_CMM_FAQ_CL
     		(SITEID, CL_NM, ORD, USE_YN)
     	VALUES 
-    		(#{siteId}, #{clNm}, #{ord}, #{useYn})
+    		(#{siteid}, #{clNm}, #{ord}, #{useYn})
     </insert>
     
     <!-- 분류 수정 -->
@@ -65,28 +68,17 @@
     <!-- 분류 삭제 -->
     <delete id="deleteFaqCl"  parameterType="FaqClVo">
         DELETE FROM TB_CMM_FAQ_CL
-        WHERE 
+        WHERE
             CLID = #{clid}
     </delete>
-        
-    <!-- 
-    <delete id="deleteFaq"  parameterType="FaqVo">
-        UPDATE TB_CMM_FAQ
-        SET 
-           USE_YN = #{useYn} ,
-           MDFCN_DT = NOW(),
-           RGTRID= #{user.userid} 
-        WHERE 
-            CLID = #{clid}
-    </delete> -->    
-    
+
     <!-- 분류순서 수정(UP) -->
     <update id="modifyFaqClOrdUp" parameterType="FaqClVo">
 		 UPDATE TB_CMM_FAQ_CL
 		   SET 
 		    ORD = ORD + 1
 		  WHERE ORD   = #{newOrd} 
-		    <!-- AND USER_SE_CD  = #{userSeCd} -->
+		     AND SITEID  = #{siteid}
 	</update>
 	
 	<!-- 분류순서 수정(DOWN) -->
@@ -94,9 +86,9 @@
 		 UPDATE TB_CMM_FAQ_CL
 		   SET 
 		    ORD = ORD - 1
-		  WHERE ORD   = #{newOrd} 
-		    <!-- AND USER_SE_CD  = #{userSeCd} -->
-	</update>
+		  WHERE ORD   = #{newOrd}
+            AND SITEID  = #{siteid}
+    </update>
     
     <!-- 분류순서 수정 -->
     <update id="modifyFaqClOrdByfaqid" parameterType="FaqClVo" >
@@ -104,5 +96,6 @@
            SET 
             ORD =  #{newOrd}
           WHERE CLID  = #{clid}
+            AND SITEID = #{siteid}
     </update>    
 </mapper>

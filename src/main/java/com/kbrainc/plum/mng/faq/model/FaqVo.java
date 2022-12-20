@@ -1,5 +1,7 @@
 package com.kbrainc.plum.mng.faq.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -8,29 +10,32 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class FaqVo extends ParentRequestVo {
-
     private UserVo user;
-
     private Integer clid;
-    private int faqid;
+    private Integer faqid;
     private String title;
     private String cntnts;
-    private String userSeCd;
+    private Integer siteid;
     private Integer ord;
     private Integer newOrd;
     private String useYn;
     private String mdfcnDt;
     private int mdfrid;
-    private String regDt;
+    private String nm;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date regDt;
     private int rgtrid;
-    
     private String clNm;
+    private String searchSite;
 
+    private Integer[] ordFaqid;
     /**
      * 
      * Desc : Constructor of FaqVo.java class

@@ -1,6 +1,7 @@
 package com.kbrainc.plum.rte.customattr;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -43,32 +44,78 @@ public class FaqCategoryListTagProcessor extends AbstractAttributeTagProcessor {
             final AttributeName attributeName, final String attributeValue,
             final IElementTagStructureHandler structureHandler) {
         structureHandler.setAttribute("name", attributeValue);
-        String value = tag.getAttributeValue("value");
-        if (value == null) {
-            value = "0";
+        String value = "";
+        String isAdmin = "";
+        String applyClass = "";
+        String addClass = "";
+        String addStyle ="";
+        String selectedCd ="";
+
+        StringBuilder strOpt = new StringBuilder();
+        List<FaqClVo> faqClList = new ArrayList<>();
+
+        if (tag.hasAttribute("value")) {
+           value = tag.getAttribute("value").getValue();
+        }
+
+        if(tag.hasAttribute("selectedCd")) {
+            selectedCd = tag.getAttribute("selectedCd").getValue();
+        }
+        if (tag.hasAttribute("addClass")) {
+            addClass = tag.getAttribute("addClass").getValue();
+        }
+
+        if (tag.hasAttribute("addStyle")) {
+            addStyle = tag.getAttribute("addStyle").getValue();
         }
 
         FaqClDao faqClDao = ApplicationContextProvider.getApplicationContext().getBean(FaqClDao.class);
 
-        String strOpt = "";
-        strOpt += "<option value=\"\">-전체-</option>";
+        if (tag.hasAttribute("isAdmin")) {
+            isAdmin = tag.getAttribute("isAdmin").getValue();
+            applyClass = (isAdmin.equals("true"))? "form-select form-select-sm form-control-sm  ":" ";
+        }else {
+            //사용자 class 적용 할것
+            applyClass = " ";
+        }
+
+
         try {
             FaqClVo param = new FaqClVo();
             param.setUseYn("A");
-            List<FaqClVo> list = faqClDao.getAllList(param);
-            for (FaqClVo item : list) {
+            param.setClid(value.equals("") ? 0 : Integer.valueOf(value));
 
-                strOpt += "<option value=\"" + item.getClid() + "\" "
-                        + (item.getClid() == Integer.parseInt(value) ? "selected" : "") + ">" + item.getClNm()
-                        + "</option>";
-            }
+            List<FaqClVo> list = faqClDao.getAllList(param);
+                strOpt.append("<select  class ='").append(applyClass+" ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
+                if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
+                    String changeFunction = tag.getAttribute("onchange").getValue();
+                    strOpt.append("    onchange ='").append(changeFunction).append("()' ");
+                }
+                strOpt.append(" >").append("\n");
+
+                strOpt.append("<option value=\"\">- 전체 - </option>");
+
+                for (FaqClVo item : list) {
+                    if (value != null && !(value.trim()).equals("") && item.getClid().equals(Integer.valueOf(value))) {
+                        strOpt.append("<option value='").append(item.getClid()).append("' selected>").append(item.getClNm()).append("</option>")
+                                .append("\n");
+                    } else {
+                        strOpt.append("<option value='").append(item.getClid()).append("' >").append(item.getClNm()).append("</option>")
+                                .append("\n");
+                    }
+                }
+                strOpt.append("</select> ").append("\n");
+
         } catch (SQLException e) {
             LOGGER.error("doProcess.SQLException.65L");
         } catch (Exception e) {
             LOGGER.error("doProcess.Exception.65L");
         }
 
-        structureHandler.setBody(strOpt, false);
+        structureHandler.replaceWith(
+                // structureHandler.setBody(
+                // HtmlEscape.escapeHtml5(result.toString()) , false
+                strOpt.toString(), false);
 
     }
 

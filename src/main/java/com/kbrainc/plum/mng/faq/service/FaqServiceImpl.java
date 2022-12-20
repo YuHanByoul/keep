@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.faq.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,17 +33,12 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
     }
 
     @Override
-    public boolean addFaq(FaqVo param) throws Exception {
-        return faqDao.addFaq(param);
+    public int insertFaq(FaqVo param) throws Exception {
+        return faqDao.insertFaq(param);
     }
 
     @Override
-    public boolean deleteFaq(FaqVo param) throws Exception {
-        return faqDao.deleteFaq(param);
-    }
-
-    @Override
-    public boolean updateFaq(FaqVo param) throws Exception {
+    public int updateFaq(FaqVo param) throws Exception {
         return faqDao.updateFaq(param);
     }
 
@@ -64,24 +60,6 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
     @Override
     public boolean updateFaqCl(FaqClVo param) throws Exception {
         return faqClDao.updateFaqCl(param);
-    }
-
-   // @Transactional
-    @Override
-    public boolean modifyFaqOrdUp(FaqVo param) {
-        param.setNewOrd(param.getOrd() - 1);
-        faqDao.modifyFaqOrdUp(param);
-        faqDao.modifyFaqOrdByfaqid(param);
-        return true;
-    }
-
-   // @Transactional
-    @Override
-    public boolean modifyFaqOrdDown(FaqVo param) {
-        param.setNewOrd(param.getOrd() + 1);
-        faqDao.modifyFaqOrdDown(param);
-        faqDao.modifyFaqOrdByfaqid(param);
-        return true;
     }
 
     @Transactional
@@ -106,6 +84,14 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
     public List<FaqClVo> getAllList(FaqClVo param) throws Exception{
     	return faqClDao.getAllList(param);
     }
-    
 
+    @Override
+    public boolean modifyFaqOrd(Map<String, Object> faqInfo) {
+        Map<String,Integer> sourceFaq = (Map<String,Integer>)faqInfo.get("sourceFaq");
+        Map<String,Integer> targetFaq = (Map<String,Integer>)faqInfo.get("targetFaq");
+        faqDao.changeFaqOrd(sourceFaq.get("faqid"), targetFaq.get("ord"));
+        faqDao.changeFaqOrd(targetFaq.get("faqid"), sourceFaq.get("ord"));
+
+        return true;
+    }
 }

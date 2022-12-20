@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.faq.model;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 @Mapper
@@ -10,16 +11,11 @@ public interface FaqDao {
 
     public FaqVo getFaq(FaqVo param);
 
-    public boolean addFaq(FaqVo param);
+    public int insertFaq(FaqVo param);
 
-    public boolean deleteFaq(FaqVo param);
+    public int updateFaq(FaqVo param);
 
-    public boolean updateFaq(FaqVo param);
+    public int changeFaqOrd(@Param("faqid")Integer faqid, @Param("ord")Integer ord);
 
-    public boolean modifyFaqOrdUp(FaqVo param);
-
-    public boolean modifyFaqOrdByfaqid(FaqVo param);
-
-    public boolean modifyFaqOrdDown(FaqVo param);
-
+    public int selectSiteid(FaqVo param);
 }
