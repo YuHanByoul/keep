@@ -23,6 +23,8 @@ import java.util.ArrayList;
 */
 @Data
 public class HelpDeskModalUserVo extends ParentRequestVo {
+    /** 로그인 사용자 정보 */
+    private UserVo user;
     /** 담당자 이름  */
     private String nm;
     /** 담당자 아이디 */
