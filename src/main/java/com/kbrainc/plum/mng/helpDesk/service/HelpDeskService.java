@@ -9,65 +9,135 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import java.util.List;
 
+/**
+* 탄소중립헬프데스크 서비스 인터페이스
+*
+* <pre>
+* com.kbrainc.plum.mng.helpDesk.service
+* - HelpDeskService.java
+* </pre>
+*
+* @ClassName   : HelpDeskService
+* @Description : TODO
+* @author      : KBRAINC_DEV
+* @date        : 2022. 12. 20.
+* @Version     :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 public interface HelpDeskService {
+
     /**
-     * @param inqryVO 1:1문의VO 클래스
-     * @return List<InqryVo> 1:1문의 목록
-     * @throws Exception
-     * @Title : selectInqryList
-     * @Description : 1:1문의 리스트 가져옴
-     */
+    * 문의 목록 조회
+    *
+    * @Title       : selectHelpDeskList 
+    * @Description : TODO
+    * @param helpDeskVO
+    * @return
+    * @throws Exception
+    * @return List<HelpDeskVo> 
+    */
     public List<HelpDeskVo> selectHelpDeskList(HelpDeskVo helpDeskVO) throws Exception;
 
+    
     /**
-     * @param inqryVO 1:1문의VO 클래스
-     * @return InqryVo 1:1문의 정보
-     * @throws Exception
-     * @Title : selectInqryInfo
-     * @Description : 1:1문의 정보를 가져온다.
-     */
+    * 문의 정보 조회
+    *
+    * @Title       : selectHelpDeskInfo 
+    * @Description : TODO
+    * @param helpDeskVO
+    * @return
+    * @throws Exception
+    * @return HelpDeskVo 
+    */
     public HelpDeskVo selectHelpDeskInfo(HelpDeskVo helpDeskVO) throws Exception;
 
+   
     /**
-     * @param inqryVO 1:1문의답변VO 클래스
-     * @return InqryAnswrVo 1:1문의답변 정보
-     * @throws Exception
-     * @Title : selectInqryAnswrInfo
-     * @Description : 1:1문의답변 정보를 가져온다.
-     */
+    * 답변 정보 조회
+    *
+    * @Title       : selectHelpDeskAnswrInfo 
+    * @Description : TODO
+    * @param helpDeskVO
+    * @return
+    * @throws Exception
+    * @return HelpDeskAnswrVo 
+    */
     public HelpDeskAnswrVo selectHelpDeskAnswrInfo(HelpDeskVo helpDeskVO) throws Exception;
 
+    
     /**
-     * @param inqryAnswrVO 1:1문의답변VO 클래스
-     * @return int 등록 로우수
-     * @throws Exception
-     * @Title : insertInqryAnswr
-     * @Description : 1:1문의답변 등록
-     */
+    * 답변 등록
+    *
+    * @Title       : insertHelpDeskAnswr 
+    * @Description : TODO
+    * @param helpDeskAnswrVo
+    * @return
+    * @throws Exception
+    * @return int 
+    */
     public int insertHelpDeskAnswr(HelpDeskAnswrVo helpDeskAnswrVo) throws Exception;
 
+    
     /**
-     * @param inqryAnswrVO 1:1문의답변VO 클래스
-     * @return int 수정 로우수
-     * @throws Exception
-     * @Title : updateInqryAnswr
-     * @Description : 1:1문의답변 수정
-     */
+    * 답변 수정
+    *
+    * @Title       : updateHelpDeskAnswr 
+    * @Description : TODO
+    * @param helpDeskAnswrVo
+    * @return
+    * @throws Exception
+    * @return int 
+    */
     public int updateHelpDeskAnswr(HelpDeskAnswrVo helpDeskAnswrVo) throws Exception;
 
+    
     /**
-     * @param FileVo
-     * @return FileVo
-     * @throws Exception
-     * @Title : selectAttachFileList
-     * @Description :첨부파일 리스트 호출
-     */
+    * 문의글 파일정보 조회
+    *
+    * @Title       : selectAttachFileList 
+    * @Description : TODO
+    * @param fileVo
+    * @return
+    * @throws Exception
+    * @return List<FileVo> 
+    */
     public List<FileVo> selectAttachFileList(FileVo fileVo) throws Exception;
 
+    /**
+    * 문의 삭제
+    *
+    * @Title       : deleteHelpDesk 
+    * @Description : TODO
+    * @param deleteHelpDeskIds
+    * @param userVo
+    * @return
+    * @throws Exception
+    * @return int 
+    */
     public int deleteHelpDesk(String[] deleteHelpDeskIds, UserVo userVo) throws Exception;
 
+    /**
+    * 지정된 담당자 정보 조회
+    *
+    * @Title       : selectHelpDeskManagerList 
+    * @Description : TODO
+    * @param helpDeskVo
+    * @return
+    * @throws Exception
+    * @return List<HelpDeskManagerVo> 
+    */
     public List<HelpDeskManagerVo> selectHelpDeskManagerList(HelpDeskVo helpDeskVo) throws Exception;
 
+    /**
+    * 담당자 검색모달 담당자 정보 조회
+    *
+    * @Title       : selectUserList 
+    * @Description : TODO
+    * @param helpDeskModalUserVo
+    * @return
+    * @throws Exception
+    * @return List<HelpDeskModalUserVo> 
+    */
     public List<HelpDeskModalUserVo> selectUserList(HelpDeskModalUserVo helpDeskModalUserVo) throws Exception;
 
 
