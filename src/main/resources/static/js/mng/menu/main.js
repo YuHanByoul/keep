@@ -12,9 +12,9 @@
 	var menuDeleteInfoUrl = "/mng/menu/menuDeleteInfo.do";
 	var menuHompageScreenInfoUrl = "/mng/menu/menuHompageScreenInfo.do";
 	var selectBbsMasterListUrl = "/mng/bbs/selectBbsMasterList.do";
-	var refMenuIdPopupUrl = "/mng/menu/refMenuIdPopup.html";
+	var selectChildMenuListUrl = "/mng/menu/selectChildMenuList.do";
 	var menuTree = null;
-	var menuLayout = null;
+	//var menuLayout = null;
 	var prgmTree = null;
 	var innerLayout = null;
 	var bbsList = null;
@@ -28,15 +28,13 @@
 	    var node = $.ui.dynatree.getNode(el);
 	    switch(action) {
 	    case "folderRegist":
-	    	if($("#siteid").val() == ""){
-				alert("사이트를 선택해 주십시오.");
-				return;
-			}
+			if(!$("#searchForm").valid()) return;
+			
 			$("#menuid").val(node.data.key);
 			if(isFlag && isSave){
 				fn_InitMenuForm('C');
 			}else if(!isFlag ){
-				alert('프로그램 Pool이 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
+				alert('프로그램구조가 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
 				return;
 			}else if(!isSave ){
 				alert('먼저 메뉴구조를 저장해야 합니다.');
@@ -46,7 +44,7 @@
 	    case "delete":
 	    	
 	    	if(!isFlag){
-	    		alert('프로그램 Pool이 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
+	    		alert('프로그램구조가 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
 				return;
 			}
 			if(!isSave){
@@ -67,6 +65,8 @@
 	    case "reflash":
 	    	if(menuTree != null){
 				$("#tree").dynatree("destroy");
+				$("#tree").empty();
+                menuTree = null;
 			}
 	    	fn_menuTreeList();
 			break;
@@ -86,18 +86,19 @@
 	};
 	$(document).ready(function(){
 		fn_getSiteList();
-		fn_menuLayout();
+		//fn_menuLayout();
 		fn_prgmTreeList();
-		$("input[name='popupYn']").each(function(key,val){
-			$(this).bind('click',function(){
-				if(key == 1){					
-					$("input[name='popupWd']").val('');
-					$("input[name='popupHg']").val('');
-					$("input[name='popupWd']").attr('disabled',true);
-					$("input[name='popupHg']").attr('disabled',true);
-				}else{					
+		fn_InitMenuForm('');
+		$("input[name='popupYn']").each(function(key,el){
+			$(this).bind('change',function(){
+				if(el.checked){					
 					$("input[name='popupWd']").attr('disabled',false);
-					$("input[name='popupHg']").attr('disabled',false);
+                    $("input[name='popupHg']").attr('disabled',false);
+				}else{					
+					$("input[name='popupWd']").val('');
+                    $("input[name='popupHg']").val('');
+                    $("input[name='popupWd']").attr('disabled',true);
+                    $("input[name='popupHg']").attr('disabled',true);
 				}
 			});
 		});
@@ -105,10 +106,7 @@
 		
 		
 		$("#doEdit").bind('click',function(){
-			if($("#siteid").val() == ""){
-				alert("사이트명을 선택하십시오.");
-				return;
-			}
+			if(!$("#searchForm").valid()) return;
 			
 			if($("#menuid").val() == "" && $("#mode").val() == "U"){
 				alert("메뉴를 선택해야 합니다.");
@@ -118,7 +116,7 @@
 			if(isFlag && isSave){
 				fn_menuEdit();
 			}else if(!isFlag){
-				alert('프로그램 Pool이 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
+				alert('프로그램구조가 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
 				return;
 			}else if(!isSave){
 				alert('먼저 메뉴구조를 저장해야 합니다.');
@@ -126,39 +124,36 @@
 			}
 		});	
 		
-		$("#doCancel").bind('click', function(){
-			fn_InitMenuForm('C');
-		});
-		
 		$("#menuSave").bind('click', function(){
 			
-			if($("#siteid").val() == ""){
-				alert("사이트를 선택해 주십시오.");
-				return;
-			}	
+			if(!$("#searchForm").valid()) return;
 
 			if(isFlag){
-				menuLayout.open("west");
+				//menuLayout.open("west");
+				isFlag = false;
+                isSave = false;
 				$("#menuSave").html("메뉴구성 저장후 닫기");
 				$("#menuCancel").show();
 				$("#layoutMenuInfo").hide();
 				$("#layoutMenuCompose").show();
-				$("#tabhide").hide();
+				//$("#tabhide").hide();
 			}else{	
 				fn_treeSave();
 				isSave = true;
-				menuLayout.close("west");
+				//menuLayout.close("west");
+				isFlag = true;
 				$("#menuSave").html("메뉴구성");
 				$("#menuCancel").hide();
 				$("#layoutMenuInfo").show();
-				$("#tabhide").show();
+				$("#layoutMenuCompose").hide();
+				//$("#tabhide").show();
 			}		
 		});
 		
-		$("#menuDelete").bind('click', function(){
+		/*$("#menuDelete").bind('click', function(){
 			
 			if(!isFlag){
-				alert('프로그램 Pool이 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
+				alert('프로그램구조가 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
 				return;
 			}
 			
@@ -177,25 +172,37 @@
 			}
 			
 			fn_menuDelete();
-		})
+		});*/
 		
 		// 메뉴구성 취소
-		$("#menuCancel").bind("click", function(){
-			isSave = true;			
-			menuLayout.close( "west" );
-			$("#menuSave").html("메뉴구성");
-			$("#menuCancel").hide();
-			$("#layoutMenuInfo").show();
-			$("#layoutMenuCompose").hide();	
-			$("#tabhide").show();
-			if(menuTree != null){
-				$("#tree").dynatree("destroy");
-			}
-			fn_menuTreeList();
-		});		
+        $("#menuCancel").bind("click", function(){
+            isSave = true;          
+            //menuLayout.close( "west" );
+            isFlag = true;
+            $("#menuSave").html("메뉴구성");
+            $("#menuCancel").hide();
+            $("#layoutMenuInfo").show();
+            $("#layoutMenuCompose").hide(); 
+            //$("#tabhide").show();
+            if(menuTree != null){
+                $("#tree").dynatree("destroy");
+                $("#tree").empty();
+                menuTree = null;
+            }
+            fn_menuTreeList();
+        });
+            
+		$("#searchForm").validate({
+              rules: {
+                   siteid : { required: true }
+              },
+              messages: {
+                  siteid  : { required: "사이트를 선택해 주십시오." }
+              }
+        })
 	});
 	
-	function fn_menuLayout(){
+	/*function fn_menuLayout(){
 		menuLayout=$('#menuLayout').layout({
 				slidable: true
 			,	closable: true
@@ -235,7 +242,7 @@
 		$(".ui-layout-resizer-east").unbind("click");
 		$(".ui-layout-resizer-east").unbind("dblclick");
 		$(".ui-layout-resizer-east .menuViewClose").unbind("click");
-	}
+	}*/
 	
 	function fn_menuTreeList(){
 		menuTree = $("#tree").dynatree({
@@ -246,14 +253,19 @@
 				dataType:'json',
 				data: {	
 					siteid: $("#siteid").val(),
-					siteNm: $("#siteid option:selected").text(),
-					srchUrl: $("#srchUrl").val()
+					siteNm: $("#siteid option:selected").text()
+					//srchUrl: $("#srchUrl").val()
 	            }
 			},
 	    	onActivate: function(node) {
 	    		if(isFlag && isSave){
-	  	  			$("#menuid").val(node.data.key);
-	  	  			fn_getMenuInfo();
+                    if(node.data.key == 0){
+                        $("#menuid").val('');
+                        fn_InitMenuForm('');
+	  	  			}else{
+	  	  			   $("#menuid").val(node.data.key);
+	  	  			   fn_getMenuInfo();
+	  	  			}
 	    		} 
 	    		node.expand(true);
 	    	},
@@ -262,11 +274,11 @@
 	    	onCreate: function(node, span){
 	    		$(span).attr('id','menu_'+node.data.key);
 	    		bindContextMenu(span);
-	    		if($("#menuid").val() != ""){
+	    		/*if($("#menuid").val() != ""){
 	    			$("#tree").dynatree("getTree").activateKey($("#menuid").val());
 	    		}else if($("#upprMenuid").val() != "0"){
 	    			$("#tree").dynatree("getTree").activateKey($("#upprMenuid").val());
-	    		}
+	    		}*/
 	    		
 	    	},
 	    	dnd: {
@@ -382,7 +394,7 @@
             }
 	  	});  
 	}
-	
+	var siteInfoMap = new Map();
 	function fn_getSiteList(){
 		$.ajax({
 			url : getSiteListUrl,
@@ -390,6 +402,9 @@
 			cache : false,
 			dataType: 'json',
 			success : function (data){
+                for(var i = 0; i< data.length; i++) {
+                    siteInfoMap.set(String(data[i].siteid), data[i]);
+                }
 				selectbox_insertlist2("siteid", data, "siteNm", "siteid");
 			},
 			error : function (error){
@@ -408,7 +423,7 @@
 			data : {
 				menuid :  $("#menuid").val()
 			},
-			success : function (data){
+			success : function (data){                
 				$("#mode").val('U');
 				fn_setMenuForm(data);
 			},
@@ -421,51 +436,55 @@
 	
 	function fn_treeSave(){
 		$("#layoutMenuCompose").hide();
-		displayWorkProgress();
-		var saveTreeData = [];
-		$("#tree").dynatree("getRoot").visit(function(node) {
-			var order   = 1;
-            var preNode = node;
-            while ((preNode=preNode.getPrevSibling()) != null) {
-                order++;
-            }
-
-			if((node.data.key).substr(0,1) =="_"){
-				saveTreeData.push({
-					key:node.data.key,
-					parent_key:node.parent.data.key,
-					title:node.data.title,
-					order:order
-				});
-			}
-		});				
-		$.ajax({
-			url : saveMenuTreeListUrl,
-			cache : false,
-			type : 'POST',
-			dataType : 'json',
-			data : {
-				siteid:  $("#siteid").val(),
-				saveData: saveTreeData,
-				datalen: saveTreeData.length
-			},
-			success : function (data){
-				alert(data.msg);
-				if(menuTree != null){
-					$("#tree").dynatree("destroy");
-				}
-				fn_menuTreeList();
-				closeWorkProgress(); 
-			},
-			error : function(err){
-			}
-		})
+		if(displayWorkProgress()){
+    		var saveTreeData = [];
+    		$("#tree").dynatree("getRoot").visit(function(node) {
+    			var order   = 1;
+                var preNode = node;
+                while ((preNode=preNode.getPrevSibling()) != null) {
+                    order++;
+                }
+    
+    			if((node.data.key).substr(0,1) =="_"){
+    				saveTreeData.push({
+    					key:node.data.key,
+    					parent_key:node.parent.data.key,
+    					title:node.data.title,
+    					order:order
+    				});
+    			}
+    		});				
+    		$.ajax({
+    			url : saveMenuTreeListUrl,
+    			cache : false,
+    			type : 'POST',
+    			dataType : 'json',
+    			data : {
+    				siteid:  $("#siteid").val(),
+    				saveData: saveTreeData,
+    				datalen: saveTreeData.length
+    			},
+    			success : function (data){
+    				alert(data.msg);
+    				if(menuTree != null){
+    					$("#tree").dynatree("destroy");
+    					$("#tree").empty();
+                        menuTree = null;
+    				}
+    				fn_menuTreeList();
+    				closeWorkProgress(); 
+    			},
+    			error : function(err){
+    			}
+    		});
+    	}
 	}
 	
 	function fn_menu_reOrder(node, sourceNode, hitMode){
 		var uprMenuId = sourceNode.parent.data.key;
 		var menuArr  = new Array();
 		var child = node.parent.getChildren();
+		
 		if(hitMode == 'over'){
 			uprMenuId = node.data.key;
 			child = node.getChildren();
@@ -507,18 +526,18 @@
 		 
         $("#form1").validate({
               rules: {
-                   nm : { required: true,maxlength : [100]}
+                   nm : { required: true,maxlength : [200]}
                   ,dc : { maxlength : [400] }
               },
               messages: {
-                  nm  : { required: "메뉴명을 입력해 주십시오.",maxlength : "메뉴명은 100자를 넘을 수 없습니다."}  
+                  nm  : { required: "메뉴명을 입력해 주십시오.",maxlength : "메뉴명은 200자를 넘을 수 없습니다."}  
                   ,dc : { maxlength : "메뉴 설명은 400자를 넘을 수 없습니다."}
               }
         })
 		
 		if(!$("#form1").valid()) return;
 		
-		if(getRadioValue(f,"popupYn") == "Y"){
+		if($("input[name='popupYn']").is(":checked")){
 			if($("input[name='popupWd']").val() == "" || $("input[name='popupHg']").val() == ""){
 				alert("팝업크기를 지정해야 합니다.");
 				return;
@@ -554,85 +573,103 @@
 			return
 		}
 		
-		displayWorkProgress();
-		$.ajax({
-			url : menuRegistInfoUrl,
-			type: 'post',
-			cache : false,
-			dataType: 'json',
-			data : $("#form1").serialize(),
-			success : function(data){
-				alert(data.msg);
-				if(menuTree != null){
-					$("#tree").dynatree("destroy");
-				}
-				fn_menuTreeList();
-				closeWorkProgress(); 
-			}				
-		});
+		if(displayWorkProgress()){
+    		$.ajax({
+    			url : menuRegistInfoUrl,
+    			type: 'post',
+    			cache : false,
+    			dataType: 'json',
+    			data : $("#form1").serialize() + "&siteid=" + $("#siteid", '#searchForm').val(),
+    			success : function(data){
+    				alert(data.msg);
+    				if(menuTree != null){
+    					$("#tree").dynatree("destroy");
+    					$("#tree").empty();
+                        menuTree = null;
+    				}
+    				fn_menuTreeList();
+    				closeWorkProgress(); 
+    			}				
+    		});
+    	}
 	}
 	
 	function fn_menuDelete(){
-		displayWorkProgress();
-		$.ajax({
-			url : menuDeleteInfoUrl,
-			type:'post',
-			cache : false,
-			dataType:'json',
-			data : {
-				siteid :  $("#siteid").val(),
-				menuid :  $("#menuid").val(),
-				upprMenuid : $("#upprMenuid").val()
-			},
-			success : function(data){
-				alert(data.msg);
-				if(menuTree != null){
-					$("#tree").dynatree("destroy");
-					fn_InitMenuForm('D');
-				}
-				fn_menuTreeList();
-				closeWorkProgress(); 
-			}
-		})
+		if(displayWorkProgress()){
+    		$.ajax({
+    			url : menuDeleteInfoUrl,
+    			type:'post',
+    			cache : false,
+    			dataType:'json',
+    			data : {
+    				siteid :  $("#siteid").val(),
+    				menuid :  $("#menuid").val(),
+    				upprMenuid : $("#upprMenuid").val()
+    			},
+    			success : function(data){
+    				alert(data.msg);
+    				if(menuTree != null){
+    					$("#tree").dynatree("destroy");
+    					$("#tree").empty();
+                        menuTree = null;
+                        $("#menuid").val('');
+    					fn_InitMenuForm('');
+    				}
+    				fn_menuTreeList();
+    				closeWorkProgress(); 
+    			}
+    		});
+    	}
 	}
 	
 	function fn_setMenuForm(data){
 		
+		$('input', '#form1').prop('disabled', false);
+        $('input[name="httpsUseYn"]:checkbox', '#form1').prop('disabled', true);
+        $('select', '#form1').prop('disabled', false);
+        $('textarea', '#form1').prop('disabled', false);
+        $('#doEdit', '#form1').prop('disabled', false);
+            
 		$("#upprMenuid").val(data.upprMenuid);
 		if(data.menuid != undefined){
 			if(data.prgrmid == undefined){
 				data.prgrmid = "없음";
 			}
-			$("#viewMenuid").html(data.menuid+"("+data.prgrmid+")");
+			$("#viewMenuid").val(data.menuid+"("+data.prgrmid+")");
 		}else{
-			$("#viewMenuid").html("");
+			$("#viewMenuid").val("");
 		}
 		$("#menuNm").val(data.nm);
 		$("#menuExpln").val(data.dc);
+		$("#classNm").val(data.classNm);
 		
 		if(data.typeCd == 'D'){		//디렉토리
 			$("#urlView").show();
 			$("#newMenutype").hide();
 			$("#menutype").show();
 			//$("#viewRefMenuid").show();
-			$("#refMenuid").html(data.refMenuid);
-			$("input[name='refMenuid']").val(data.refMenuid);
+			var siteInfo = siteInfoMap.get($("#siteid").val());
+        
+            if(siteInfo != undefined && "U" == siteInfo.sysSeCd) {
+			    fn_jsRefMenu(data.refMenuid);
+			}
+			
 			$("#viewPrgmurl").hide();
-			$("#viewPrgrmTypeCd").hide();
-			$("input[name='popupYn']").eq(1).trigger('click');
+			//$("#viewPrgrmTypeCd").hide();
+			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
 			$("input[name='popupYn']").attr('disabled',true);
 		}else {
 			//$("#viewRefMenuid").hide();
-			$("#refMenuid").html('');
-			$("input[name='refMenuid']").val('');
+			fn_jsRefMenuInit();
+			$("select[name='refMenuid']").val('');
 			$("#mode").val('U');			
 			$("#urlView").show();
 			$("#newMenutype").hide();
 			$("#menutype").show();
 			$("#viewPrgmurl").show();
-			$("#viewPrgrmTypeCd").show();
+			//$("#viewPrgrmTypeCd").show();
 			$("input[name='popupYn']").attr('disabled',false);
-			$("input[name='popupYn']:radio:input[value='"+data.popupYn+"']").prop("checked", true);
+			$("input[name='popupYn']:checkbox").prop("checked", data.popupYn=="N"?false:true);
 			$("input[name='popupWd']").val(data.popupWd);
 			$("input[name='popupHg']").val(data.popupHg);
 		}
@@ -651,56 +688,55 @@
 			$("#url").val("");
 		}
 		
-		$("input[name='httpsUseYn']:radio:input[value='"+data.httpsUseYn+"']").prop("checked", true);
+		$("input[name='httpsUseYn']:checkbox").prop("checked", data.httpsUseYn=="N"?false:true);
 		$("input[name='typeCd']").attr("disabled", true);
 		$("input[name='typeCd']:radio:input[value='"+data.typeCd+"']").prop("checked", true).attr("disabled", false);
 				
 			
 		$("input[name='popupTrgtCd']:radio:input[value='"+data.popupTrgtCd+"']").prop("checked", true);
 		$("input[name='nmExpsrTrgtCd']:radio:input[value='"+data.nmExpsrTrgtCd+"']").prop("checked", true);
-		$("input[name='loginYn']:radio:input[value='"+data.loginYn+"']").prop("checked", true);		
-		$("input[name='hideYn']:radio:input[value='"+data.hideYn+"']").prop("checked", true);
-		$("input[name='gstYn']:radio:input[value='"+data.gstYn+"']").prop("checked", true);
+		$("input[name='loginYn']:checkbox").prop("checked", data.loginYn=="N"?false:true);		
+		$("input[name='hideYn']:checkbox").prop("checked", data.hideYn=="N"?false:true);
+		//$("input[name='gstYn']:radio:input[value='"+data.gstYn+"']").prop("checked", true);
 		var prgrm_type = ""
 		if(data.ptypeCd == "01"){
 			prgrm_type = "디렉토리";
-			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
 			$("input[name='popupYn']").attr('disabled',true);
 		}else if(data.ptypeCd == "02"){
 			prgrm_type = "메뉴";
 		}else if(data.ptypeCd == "03"){
 			prgrm_type = "메뉴상세";
-			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
             $("input[name='popupYn']").attr('disabled',true);
 		}else if(data.ptypeCd == "04"){
 			prgrm_type = "기능";
-			$("input[name='popupYn']").eq(1).trigger('click');
+			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
 			$("input[name='popupYn']").attr('disabled',true);
 		}else if(data.ptypeCd == "05"){
 			prgrm_type = "팝업";
-            $("input[name='popupYn']").eq(1).trigger('click');
+            $("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
             $("input[name='popupYn']").attr('disabled',true);
 		}
 		
-		$("#prgrmTypeCd").html(prgrm_type);
-		$("#prgmurl").html(data.purl);
+		$("#prgrmTypeCd").val(prgrm_type);
+		$("#prgmurl").val(data.purl);
 	}
 	
 	function fn_InitMenuForm(gubun){
-        // gubun C:디렉토리등록, D:삭제
+        // gubun C:디렉토리등록
 		$("#mode").val(gubun);
 		if(gubun =='C' && $("#menuid").val() != ""){
 			$("#upprMenuid").val($("#menuid").val());
 		}else{
-			if(gubun != 'D'){
-				$("#upprMenuid").val(0);
-			}
+			$("#upprMenuid").val(0);
 		}
 		$("#menuid").val('');		
-		$("#viewMenuid").html('');
+		$("#viewMenuid").val('');
 		$("#menuNm").val('');
 		$("#menuExpln").val('');
-		$("#url").val('');
+		$("#classNm").val('');
+		$("#prgmurl").val('');
 		if(gubun =='W'){
 			$("#urlView").show();
 		}else{
@@ -708,8 +744,8 @@
 		}
 		
 		//$("#viewRefMenuid").hide();
-		$("#refMenuid").html('');
-		$("inpput[name='refMenuid']").val('');
+		fn_jsRefMenuInit();
+		$("select[name='refMenuid']").val('');
 		$("input[name='popupYn']").attr('disabled',false);
 		
 		if(gubun =='C'){ //디렉토리등록
@@ -724,52 +760,102 @@
 			$("#newMenutype").hide();
 			$("#menutype").show();
 		}		
-		$("input[name='loginYn']:radio:input[value='Y']").prop("checked", true);
-		$("input[name='hideYn']:radio:input[value='N']").prop("checked", true);
-		$("input[name='httpsUseYn']:radio:input[value='Y']").prop("checked", true);
-		$("input[name='popupYn']:radio:input[value='Y']").prop("checked", true);
+		$("input[name='loginYn']:checkbox").prop("checked", true);
+		$("input[name='hideYn']:checkbox").prop("checked", false);
+		$("input[name='httpsUseYn']:checkbox").prop("checked", true);
+		$("input[name='popupYn']:checkbox").prop("checked", true);
 		
 		$("input[name='popupWd']").val('');
 		$("input[name='popupHg']").val('');
 		if(gubun =='C'){
-			$("input[name='popupYn']").eq(1).trigger('click');
+            $("input[name='popupYn']:checkbox").prop("checked", false);
+			$("input[name='popupYn']").trigger('change');
 			$("input[name='popupYn']").attr('disabled',true);			
 		}else{
-			$("input[name='popupYn']").eq(0).trigger('click');			
+            $("input[name='popupYn']:checkbox").prop("checked", true);
+			$("input[name='popupYn']").trigger('change');			
 		}
 		
 		$("input[name='popupTrgtCd']:radio:input[value='P']").prop("checked", true);
 		$("#viewPrgmurl").hide();
-		$("#viewPrgrmTypeCd").hide();
+		//$("#viewPrgrmTypeCd").hide();
+		$("#prgrmTypeCd").val('');
+		
+		if(gubun == 'C'){
+		    $('input', '#form1').prop('disabled', false);
+		    $('input[name="httpsUseYn"]:checkbox', '#form1').prop('disabled', true);
+		    $('select', '#form1').prop('disabled', false);
+		    $('textarea', '#form1').prop('disabled', false);
+		    $('#doEdit', '#form1').prop('disabled', false);
+		}else{
+            $('input', '#form1').prop('disabled', true);
+            $('select', '#form1').prop('disabled', true);
+            $('textarea', '#form1').prop('disabled', true);
+            $('#doEdit', '#form1').prop('disabled', true);
+        }
 	}
 	
 	function goSearch(){
+        var siteInfo = siteInfoMap.get($("#siteid").val());
+        
+        if(siteInfo != undefined && "A" == siteInfo.sysSeCd) {
+            $("#viewRefMenuid").hide();
+            $("#refMenuid").val('');
+        }else{
+            $("#refMenuid").val('');
+            $("#viewRefMenuid").show();
+        }
+        $("#menuid").val('');
+        fn_InitMenuForm('');
+        
 		if( $("#layoutMenuCompose").css("display") != "none" ){
 			$("#menuCancel").click();
 		}
 		
-		if($("#siteid").val() == ""){
-			alert("사이트명을 선택하십시오.");
-			return;
-		}
+		//if(!$("#searchForm").valid()) return;
+		
 		if(menuTree != null){
 			$("#tree").dynatree("destroy");
+			$("#tree").empty();
+			menuTree = null;
 		}
-		$("#srchUrl").val($.trim($("#srchUrl").val()));
-		fn_menuTreeList();
+		//$("#srchUrl").val($.trim($("#srchUrl").val()));
+		if($("#siteid").val() != ''){
+		    fn_menuTreeList();
+		}
 	}
 	
-	function fn_jsRefMenuPopup(){
-		var f= document.form1;
-		if($("#mode").val() != "U"){
-			alert("참조메뉴는 메뉴를 등록후 지정할 수 있습니다.");
-			return;
-		}
-		Center_Fixed_Popup2(refMenuIdPopupUrl+"?siteid="+f.siteid.value+"&menuid="+f.menuid.value, "refMenuIdPopup", 500, 700, "yes");	
+	function fn_setRefMenu(data) {
+        fn_jsRefMenuInit();
+        for(var i = 0; i < data.length; i++) {
+            $("#refMenuid").append('<option value="' + data[i].menuid + '">' + data[i].nm + '</option>');
+        }
+    }
+    
+	function fn_jsRefMenu(selectedVal){
+        if(!$("#searchForm").valid()) return;
+
+		displayWorkProgress();
+        $.ajax({
+            url : selectChildMenuListUrl,
+            cache : false,
+            dataType: 'json',
+            data : {
+                menuid :  $("#menuid").val(),
+                siteid : $("#siteid", "#searchForm").val()
+            },
+            success : function (data){
+                fn_setRefMenu(data);
+                if(selectedVal != null){
+                    $("#refMenuid").val(selectedVal);
+                }
+            }
+        });
+        closeWorkProgress(); 
 	}
     
-    function fn_jsRefMenuCancel() {
-        $("#refMenuid").html('');
-        $("input[name='refMenuid']").val('');
+    function fn_jsRefMenuInit() {
+        $("#refMenuid").html('<option value="">- 사용안함 -</option>');
+        $("select[name='refMenuid']").val('');
     }
 	

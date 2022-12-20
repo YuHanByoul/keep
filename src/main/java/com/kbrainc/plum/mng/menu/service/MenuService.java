@@ -3,6 +3,8 @@ package com.kbrainc.plum.mng.menu.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import com.kbrainc.plum.mng.menu.model.MenuVo;
 import com.kbrainc.plum.rte.lib.tree.TreeItem;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -112,4 +114,15 @@ public interface MenuService {
     * @throws Exception 예외
     */
     public List<MenuVo> selectMenuChildTreeList(MenuVo menu) throws Exception;
+    
+    /**
+    * 현재 폴더의 하위메뉴 목록을 조회한다.
+    *
+    * @Title : selectChildMenuList
+    * @Description : 현재 폴더의 하위메뉴 목록을 조회한다
+    * @param menu MenuVo객체
+    * @return List<MenuVo> 하위메뉴 목록
+    * @throws Exception 예외
+    */
+    public List<MenuVo> selectChildMenuList(MenuVo menu) throws Exception;
 }

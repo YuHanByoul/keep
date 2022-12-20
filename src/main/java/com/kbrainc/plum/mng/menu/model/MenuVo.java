@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -30,6 +31,36 @@ import lombok.Data;
 * @date : 2021. 2. 26.
 * @Version : 
 * @Company : Copyright KBRAIN Company. All Rights Reserved
+*/
+/**
+* [클래스 요약].
+*
+* <pre>
+* com.kbrainc.plum.mng.menu.model
+* - MenuVo.java
+* </pre>
+*
+* @ClassName : MenuVo
+* @Description : TODO
+* @author : user
+* @date : 2022. 12. 19.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
+/**
+* [클래스 요약].
+*
+* <pre>
+* com.kbrainc.plum.mng.menu.model
+* - MenuVo.java
+* </pre>
+*
+* @ClassName : MenuVo
+* @Description : TODO
+* @author : user
+* @date : 2022. 12. 19.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
 public class MenuVo {
@@ -57,7 +88,7 @@ public class MenuVo {
 
     /** 메뉴명 */
     @NotEmpty(message = "메뉴명을 입력해 주십시오.")
-    @Size(max = 100, message = "메뉴명은 100자를 넘을 수 없습니다.")
+    @Size(max = 200, message = "메뉴명은 200자를 넘을 수 없습니다.")
     private String nm;
 
     /** 메뉴설명 */
@@ -65,6 +96,7 @@ public class MenuVo {
     private String dc;
 
     /** 메뉴타입코드(P:프로그램, D:디렉토리) */
+    @Pattern(regexp="[DP]")
     private String typeCd;
     private String typeStr;
 
@@ -75,11 +107,16 @@ public class MenuVo {
     /** 상위메뉴아이디 */
     private Integer upprMenuid;
 
+    /** css class */
+    @Size(max = 200, message = "style class는 200자를 넘을 수 없습니다.")
+    private String classNm;
+    
     /** 참조메뉴아이디 */
     private Integer refMenuid;
 
     /** 팝업여부 */
-    private String popupYn;
+    @Pattern(regexp="[YN]")
+    private String popupYn = "N";
 
     /** 팝업종류 */
     private String popupKnd;
@@ -93,18 +130,23 @@ public class MenuVo {
     private Integer popupWd;
 
     /** 팝업_대상_코드 */
+    @Pattern(regexp="[PN]")
     private String popupTrgtCd;
 
     /** 로그인여부 */
-    private String loginYn;
+    @Pattern(regexp="[YN]")
+    private String loginYn = "N";
 
     /** 숨김여부 */
-    private String hideYn;
+    @Pattern(regexp="[YN]")
+    private String hideYn = "N";
 
     /** HTTPS사용여부 */
-    private String httpsUseYn;
+    @Pattern(regexp="[YN]")
+    private String httpsUseYn = "Y";
 
-    /** 메뉴명 노출 대상 N: 모두 A: 로그인 사용자(Auth) */    
+    /** 메뉴명 노출 대상 N: 모두 A: 로그인 사용자(Auth) */   
+    @Pattern(regexp="[AN]")
     private String nmExpsrTrgtCd;
 
     /** 깊이 */

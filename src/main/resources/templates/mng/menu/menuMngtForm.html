@@ -13,37 +13,35 @@
 	
 
 <form id='hiddenForm' name='hiddenForm' style='display:none' target='hiddenFrame'></form>
+<form id="searchForm" name="searchForm" action="" class="form-horizontal row-border">
+<div class="row">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group" style="margin-bottom: 0px;"> 
+                <label class="col-md-1 control-label">사이트 선택<span class="text-danger">*</span> </label>
+                <div class="col-md-3 form-group form-control-static ">
+                    <select id="siteid" name="siteid" onchange="goSearch()" class="form-control input-sm" >
+                        <option value="">- 선택 -</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>
+</form>
 <form id="form1" name="form1" method="post" action="" class="form-horizontal row-border">
 	<input type="hidden" name="menuid" id="menuid" />
 	<input type="hidden" name="upprMenuid" id="upprMenuid" />	
 	<input type="hidden" name="mode" id="mode" />
-	
+
 	<ul id="menuContext" class="contextMenu">
-		<li class="edit"><a href="#folderRegist">디렉토리등록</a></li>
+		<th:block sec:authorize-url="/mng/menu/menuRegistInfo.do"><li class="edit"><a href="#folderRegist">디렉토리등록</a></li></th:block>
 	    <!-- <li class="edit"><a href="#directRegist">직접 등록 </a></li> -->
-	    <li class="delete"><a href="#delete">삭제</a></li>
+	    <th:block sec:authorize-url="/mng/menu/menuDeleteInfo.do"><li class="delete"><a href="#delete">삭제</a></li></th:block>
 	    <li class="paste"><a href="#reflash">새로고침</a></li>
 	    <li class="paste"><a href="#allExpend">전체열기</a></li>
 	    <li class="quit"><a href="#allClose">전체닫기</a></li>
 	</ul>
-	
-	<div class="row">
-		<div class="panel panel-default">
-				<div class="panel-body">
-					<div class="form-group" style="margin-bottom: 0px;"> 
-		                <label class="col-md-1 control-label">사이트 <span class="text-danger">*</span> </label>
-	                	<div class="col-md-3 form-group form-control-static ">
-		                	<select id="siteid" name="siteid" onchange="goSearch()" class="form-control input-sm" >
-		                     	<option value="">- 선택 -</option>
-		                    </select>
-		                </div>
-		                <div class="col-md-8 form-group form-control-static text-right">
-		                	<button type="button" class="btn btn-sm btn-primary" onclick="goSearch()">검색</button>
-		                </div>
-	                </div>
-				</div>
-			</div>	
-	</div>
 				
 	<div class="row no-gutter">
 		<div class="col-md-5 col-sm-5 col-xs-12">
@@ -53,7 +51,7 @@
 					<h4>메뉴구조</h4>
 					<div class="pull-right">
 						<button type="button" id="menuSave" class="btn btn-xs btn-warning">메뉴구성</button>
-		           		<button type="button" id="menuCancel" class="btn btn-xs btn-default" style="display:none">취소</button>
+						<button type="button" id="menuCancel" class="btn btn-xs btn-default" style="display:none">취소</button>
 					</div>
 				</div>
 				<div class="panel-body">
@@ -65,9 +63,9 @@
 		</div>
 		<div class="col-md-7 col-sm-7 col-xs-12" style="height:900px;">
 			<div id="menuLayout" style="height:100%;">
-				<div class="ui-layout-west panel panel-default" id="layout_menuCompose">
+				<div class="ui-layout-west panel panel-default" id="layoutMenuCompose" style="display:none">
 					<div class="panel-heading">
-						<h4>메뉴구성</h4>
+						<h4>프로그램구조</h4>
 					</div>
 					<div class="panel-body">
 		    			<div>
@@ -83,18 +81,18 @@
 					<div class="panel-body">
 		            	<div class="form-group">
 		                	<label class="col-md-2 control-label">메뉴ID(프로그램ID)</label>
-		                	<div class="col-md-10" id="viewMenuid"></div> 
+		                	<input id="viewMenuid" readonly> 
 		                </div>
 						<div class="form-group">
 		                  	<label class="col-md-2 control-label"><span class="text-danger">*</span> 메뉴명</label>
 		                  	<div class="col-md-10 form-control-static">
-			                    <input type="text" name="nm" id="menuNm"  class="form-control input-sm">
+			                    <input type="text" name="nm" id="menuNm"  class="form-control input-sm" maxlength="200">
 		                  	</div>
 		                </div>
 				        <div class="form-group">
 		                	<label class="col-md-2 control-label">메뉴설명</label>
 		                  	<div class="col-md-10 form-control-static">
-		                    	<textarea name="dc" rows="3"  id="menuExpln" class="form-control"></textarea>
+		                    	<textarea name="dc" rows="3"  id="menuExpln" class="form-control" maxlength="400"></textarea>
 		                  	</div>
 		                </div>        
 				        <div class="form-group">
@@ -108,19 +106,21 @@
 								</label>
 		                  	</div>
 		                </div>
-		                <div class="form-group" id="viewRefMenuid" style="display:none">
-		                	<label class="col-md-2 control-label">참조메뉴 선택</label>
-		                  	<div class="col-md-10 form-control-static">ID : <span id="refMenuid"></span><input type="hidden" name="refMenuid" > <button type="button" onclick="fn_jsRefMenuPopup()" id="refMenu" class="btn btn-xs btn-warning">참조메뉴 선택</button> (폴더 클릭시 실행 할 프로그램) <button type="button" onclick="fn_jsRefMenuCancel()" class="btn btn-xs btn-default">취소</button></div>
+		                <div class="form-group" id="viewRefMenuid">
+		                	<label class="col-md-2 control-label">참조메뉴 선택(디렉토리 클릭시 이동할 메뉴</label>
+		                  	<div class="col-md-10 form-control-static">
+		                  	   <select id="refMenuid" name="refMenuid">
+		                  	       <option value="" selected>- 사용안함 -</option>
+		                  	   </select>
+		                  	   <!--ID : <span id="refMenuid"></span><input type="hidden" name="refMenuid" > <button type="button" onclick="fn_jsRefMenuPopup()" id="refMenu" class="btn btn-xs btn-warning">참조메뉴 선택</button> (폴더 클릭시 실행 할 프로그램) <button type="button" onclick="fn_jsRefMenuCancel()" class="btn btn-xs btn-default">취소</button -->
+		                  	</div>
 		                </div>
 				        <div class="form-group">
 					        <div class="col-md-6">
 			                	<label class="col-md-4 control-label">https 지원</label>
 			                  	<div class="col-md-8 form-control-static">
 									<label class="radio-inline">
-										<input type="radio" name="httpsUseYn" value="N" disabled> 미지원
-									</label>
-									<label class="radio-inline">
-										<input type="radio" name="httpsUseYn" value="Y" checked> 지원
+										<input type="checkbox" name="httpsUseYn" value="Y" checked disabled>
 									</label>
 								</div>
 							</div>
@@ -128,10 +128,7 @@
 			                	<label class="col-md-4 control-label">로그인 필요 여부</label>
 			                  	<div class="col-md-8 form-control-static">
 									<label class="radio-inline">
-										<input type="radio" name="loginYn" value="Y" checked> 사용
-									</label>
-									<label class="radio-inline">
-										<input type="radio" name="loginYn" value="N"> 사용안함
+										<input type="checkbox" name="loginYn" value="Y" checked>
 									</label>
 								</div>
 							
@@ -143,10 +140,7 @@
 			                	<label class="col-md-4 control-label">숨김여부</label>
 			                  	<div class="col-md-8 form-control-static">
 									<label class="radio-inline">
-										<input type="radio" name="hideYn" value="Y"> 사용
-									</label>
-									<label class="radio-inline">
-										<input type="radio" name="hideYn" value="N" checked> 사용안함
+										<input type="checkbox" name="hideYn" value="Y">
 									</label>
 								</div>
 							</div>
@@ -154,10 +148,7 @@
 			                	<label class="col-md-4 control-label">팝업 사용 여부</label>
 			                  	<div class="col-md-8 form-control-static">
 									<label class="radio-inline">
-										<input type="radio" name="popupYn" value="Y" checked> 사용
-									</label>
-									<label class="radio-inline">
-										<input type="radio" name="popupYn" value="N"> 사용안함
+										<input type="checkbox" name="popupYn" value="Y" checked>
 									</label>
 								</div>							
 							</div>
@@ -198,21 +189,23 @@
 							</div>
 						</div>
 						<div class="form-group">
-
+                            <label class="col-md-2 control-label">style class</label>
+                            <div class="col-md-10 form-control-static">
+                                <input type="text" name="classNm" id="classNm"  class="form-control input-sm" mexlength="200">
+                            </div>
 						</div>
 
-				        <div class="form-group" id="viewPrgrmTypeCd">
+				        <div class="form-group">
 		                	<label class="col-md-2 control-label">프로그램 유형</label>
-		                	<div class="col-md-10 form-control-static pt7" id="prgrmTypeCd"></div>
+		                	<input id="prgrmTypeCd" readonly>
 		                </div>
-		                <div class="form-group" id="view_prgmurl">
+		                <div class="form-group" id="viewPrgmurl">
 		                	<label class="col-md-2 control-label">프로그램URL</label>
-		                	<div class="col-md-10 form-control-static pt7" id="prgmurl"></div>
+		                	<input id="prgmurl" readonly>
 		                </div>
 		                
 						<div class="pull-right">
-							<button type="button" id="doEdit" class="btn btn-primary">저장</button>
-							<button type="button" id="doCancel" class="btn btn-default">취소</button>
+							<th:block sec:authorize-url="/mng/menu/menuRegistInfo.do"><button type="button" id="doEdit" class="btn btn-primary">저장</button></th:block>
 						</div>
 					</div>
 				</div>
