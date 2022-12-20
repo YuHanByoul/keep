@@ -4,17 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.wbzn.now.reader.model.ReaderVo;
 import com.kbrainc.plum.mng.wbzn.now.reader.service.ReaderService;
-import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
 * 환경교육NOW -> 구독자 컨트롤러 클래스
@@ -55,7 +51,7 @@ public class ReaderController {
     *
     * @Title : selectReaderList
     * @Description : 구독자 게시글 목록 조회
-    * @param ReaderVo 구독자 객체
+    * @param CarbonReaderVo 구독자 객체
     * @throws Exception
     * @return Map<String,Object>
     */

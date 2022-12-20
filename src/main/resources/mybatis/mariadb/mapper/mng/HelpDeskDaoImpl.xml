@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : HelpDeskDaoImpl.xml
+	Description : 탄소중립헬프데스크
+-->
+<mapper namespace="com.kbrainc.plum.mng.helpDesk.model.HelpDeskDao">
+    <insert id="insertHelpDeskAnswr" parameterType="HelpDeskAnswrVo">
+        INSERT INTO TB_CMM_HELPDESK_ANS(
+            INQRYID
+            ,TTL
+            ,CN
+            ,FILEGRPID
+            ,PRCRID
+            ,RLS_YN
+            ,ANSCMPTN_DT
+            ,ANS_DE
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+        ) VALUES(
+            #{inqryid}
+            ,#{ttl}
+            ,#{cn}
+            ,#{filegrpid}
+            ,#{prcrid}
+            ,#{rlsYn}
+            <choose>
+                <when test="sttsCd == '113104' or sttdCd == '113103' ">
+                    ,NOW()
+                    ,DATE_FORMAT(NOW(), '%Y-%m%d')
+                </when>
+                <otherwise>
+                    ,NULL
+                    ,NULL
+                </otherwise>
+            </choose>
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+    <insert id="insertHelpDeskManager">
+        INSERT INTO TB_CMM_HELPDESK_PIC(
+            INQRYID, USERID, MDFCN_DT, MDFRID, REG_DT, RGTRID
+        ) VALUES
+        <foreach item="item" collection="helpDeskManager"  separator=",">
+            (
+            #{inqryid}
+            ,#{item}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateHelpDeskAnswr" parameterType="HelpDeskAnswrVo">
+        UPDATE TB_CMM_HELPDESK_ANS SET
+           TTL = #{ttl}
+           ,CN = #{cn}
+           ,RLS_YN = #{rlsYn}
+           ,MDFCN_DT = NOW()
+           ,MDFRID = #{user.userid}
+        WHERE ANSID= #{ansid}
+    </update>
+
+    <update id="updateHelpDeskSttsCd" parameterType="HelpDeskAnswrVo">
+            UPDATE TB_CMM_HELPDESK
+            SET STTS_CD = #{sttsCd}
+            WHERE INQRYID = #{inqryid}
+    </update>
+
+    <delete id="deleteHelpDesk">
+        DELETE FROM TB_CMM_HELPDESK
+        WHERE
+        INQRYID IN
+        (
+        <foreach item="helpDeskId" collection="deleteHelpDeskIds"  separator=",">
+            #{helpDeskId}
+        </foreach>
+        )
+    </delete>
+    <delete id="deleteHelpDeskManager">
+        DELETE FROM TB_CMM_HELPDESK_PIC
+        WHERE
+            INQRYID = #{inqryid}
+    </delete>
+
+    <select id="selectHelpDeskList" resultType="HelpDeskVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT A.INQRYID
+                ,A.TTL
+                ,C.CD_NM AS CLSF_NM
+                ,B.NM
+                ,A.REG_DT
+                ,F.CD AS STTS_CD
+                ,F.CD_NM AS STTS_CD_NM
+                ,E.NM AS PRCR_NM
+        FROM TB_CMM_HELPDESK A
+        INNER JOIN(SELECT USERID, NM, ACNT FROM TB_CMM_USER) B
+            ON B.USERID = A.USERID
+        INNER JOIN(SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{clsfCdgrpid}) C
+            ON C.CD = A.CLSF_CD
+        INNER JOIN(SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{sttsCdgrpid}) F
+            ON F.CD = A.STTS_CD
+        LEFT OUTER JOIN(SELECT INQRYID, PRCRID FROM TB_CMM_HELPDESK_ANS) D
+            ON D.INQRYID = A.INQRYID
+        LEFT OUTER JOIN (SELECT USERID, NM FROM TB_CMM_USER) E
+            ON D.PRCRID = E.USERID
+        WHERE 1=1
+
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchType == 'title'">
+                AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchType == 'cn'">
+                AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType == 'nm'">
+                AND B.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType == 'id'">
+                AND B.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+        </if>
+
+        <if test="sttsCd != null and sttsCd != ''">
+            AND A.STTS_CD = #{sttsCd}
+        </if>
+
+        <if test="clsfCd != null and clsfCd != ''">
+            AND C.CD = #{clsfCd}
+        </if>
+        /* searchType */
+        <include refid="PaginationMapper.footer">
+        </include>
+    </select>
+    <select id="selectHelpDeskInfo" resultType="HelpDeskVo">
+        SELECT A.TTL
+            ,D.INST_NM
+            ,B.NM
+            ,B.ACNT
+            ,A.REG_DT
+            ,A.CN
+            ,A.FILEGRPID
+            ,A.INQRYID
+            ,C.CD AS CLSF_CD
+            ,C.CD_NM AS CLSF_NM
+            ,E.CD AS STTS_CD
+            ,E.CD_NM AS STTS_CD_NM
+        FROM TB_CMM_HELPDESK A
+            INNER JOIN(SELECT USERID, INSTID,  NM, ACNT FROM TB_CMM_USER) B ON B.USERID = A.USERID
+            INNER JOIN(SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{clsfCdgrpid}) C ON C.CD = A.CLSF_CD
+            INNER JOIN(SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{sttsCdgrpid}) E ON E.CD = A.STTS_CD
+            LEFT OUTER JOIN (SELECT INSTID, INST_NM FROM TB_CMM_INST) D ON D.INSTID = A.INSTID
+        WHERE A.INQRYID = #{inqryid}
+    </select>
+    <select id="selectHelpDeskAnswrInfo" resultType="HelpDeskAnswrVo">
+        SELECT A.INQRYID
+            , A.ANSID
+            , A.TTL
+            , A.CN
+            , A.ANS_DE
+            , A.RLS_YN
+            FROM TB_CMM_HELPDESK_ANS A
+    </select>
+    <select id="selectHelpDeskManagerList" resultType="HelpDeskManagerVo">
+        SELECT A.INQRYID
+            , A.USERID
+            , C.NM
+        FROM TB_CMM_HELPDESK_PIC A
+        INNER JOIN TB_CMM_HELPDESK B
+            ON A.INQRYID = B.INQRYID
+        INNER JOIN TB_CMM_USER C
+            ON A.USERID = C.USERID
+        WHERE A.INQRYID = #{inqryid}
+    </select>
+
+    <resultMap id="userInfo" type="HelpDeskModalUserVo">
+        <result property="nm" column="NM"/>
+        <result property="acnt" column="ACNT"/>
+        <result property="instNm" column="INST_NM"/>
+        <result property="userid" column="USERID"/>
+        <collection property="roleNm" javaType="java.util.List" resultMap="roleInfo"/>
+    </resultMap>
+    <resultMap id="roleInfo" type="string">
+        <result property="roleNm" column="ROLE_NM"/>
+    </resultMap>
+
+    <select id="selectUserList" resultMap="userInfo">
+            /*사용자 소속기관 역할*/
+            SELECT A.NM
+                , A.ACNT
+                , B.INST_NM
+                , A.USERID
+                , A.REG_DT
+                , D.NM AS ROLE_NM
+            FROM TB_CMM_USER A
+            LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+            INNER JOIN
+                TB_CMM_ROLE_USER C ON C.USERID = A.USERID
+            INNER JOIN TB_CMM_ROLE D ON C.ROLEID = D.ROLEID
+            WHERE 1=1
+    </select>
+
+    <select id="selectUserRoleList" resultType="integer">
+        SELECT TB_CMM_ROLE.NM
+        FROM TB_CMM_ROLE_USER
+        INNER JOIN TB_CMM_ROLE ON TB_CMM_ROLE.ROLEID = TB_CMM_ROLE_USER.ROLEID
+        WHERE TB_CMM_ROLE_USER.USERID = #{USERID}
+    </select>
+    <select id="selectAttachFileList" resultType="FileVo">
+        SELECT
+            A.FILEID,
+            A.FILEGRPID,
+            A.FILE_IDNTFC_KEY,
+            A.FILE_PATH,
+            A.SAVE_FILE_NM,
+            A.ORGINL_FILE_NM,
+            A.FILE_EXTSN,
+            A.FILE_SIZE,
+            A.ORD,
+            A.REG_DT,
+            A.RGTRID
+        FROM TB_CMM_FILE A
+        WHERE 1=1
+          AND A.FILEGRPID = #{filegrpid}
+    </select>
+
+</mapper>

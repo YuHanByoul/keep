@@ -1,26 +1,37 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.front.member.model.TeacherVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngService;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
+import com.kbrainc.plum.mng.bbs.model.BbsClVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -212,7 +223,7 @@ public class AsgsysSrngController {
 
     /**
     * @Title : prgrmDstnctn
-    * @Description : 심사위원/지원단-프로그램우수성 탭
+    * @Description : 지정신청-프로그램우수성 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
@@ -234,7 +245,7 @@ public class AsgsysSrngController {
 
     /**
     * @Title : prgrmOperMng
-    * @Description : 심사위원/지원단-프로그램운영관리 탭
+    * @Description : 지정신청-프로그램운영관리 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
@@ -248,7 +259,7 @@ public class AsgsysSrngController {
 
     /**
     * @Title : prgrmEvl
-    * @Description : 심사위원/지원단-프로그램평가 탭
+    * @Description : 지정신청-프로그램평가 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
@@ -276,22 +287,52 @@ public class AsgsysSrngController {
     }
 
     /**
-    * @Title : sftyMng
-    * @Description : 심사위원/지원단-프로그램 안전관리 탭
+    * @Title : sftyMngForm
+    * @Description : 지정신청-프로그램 안전관리 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/asgsysSrng/sftyMng.html")
+    @RequestMapping(value = "/mng/asgsysSrng/sftyMngForm.html")
     public String sftyMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
-
-    	return "mng/asgsysSrng/sftyMng";
+    	model.addAttribute("sftyMngInfo", asgsysSrngService.selectSftyMng(asgsysSrngVo));
+    	return "mng/asgsysSrng/sftyMngForm";
     }
 
+
+    /**
+     * @Title : 안전관리 수정
+     * @Description : user insert
+     * @param UserTempVo
+     * @throws Exception
+     * @return String Y or N
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/updateSftyMng.do")
+    @ResponseBody
+    public Map<String, Object> updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.updateSftyMng(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
     /**
     * @Title : prgrmDstnctn
-    * @Description : 심사위원/지원단-체크리스트 탭
+    * @Description : 지정신청-체크리스트 탭
     * @param AsgsysSrngVo객체
     * @param model 모델객체
     * @return String 이동화면경로
@@ -445,7 +486,6 @@ public class AsgsysSrngController {
     	model.addAttribute("jdgsSrngInfo", asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo));
     	return "mng/asgsysSrng/jdgsSrngForm";
     }
-
 
     /**
      * 심사위원심사 등록

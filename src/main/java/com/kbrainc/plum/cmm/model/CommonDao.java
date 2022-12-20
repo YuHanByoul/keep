@@ -38,7 +38,6 @@ public interface CommonDao {
     * @throws Exception 예외
     */
     public List<SiteVo> selectSiteList(SiteVo site) throws Exception;
-    
     /**
     * 현재 사용자의 접근가능한 기관목록을 반환한다.
     *

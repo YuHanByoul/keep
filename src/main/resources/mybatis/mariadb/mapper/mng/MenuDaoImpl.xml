@@ -11,20 +11,29 @@
 	<select id="selectMenuTreeSearchList" parameterType="java.util.Map" resultType="com.kbrainc.plum.rte.lib.tree.TreeItem">
 		/* MenuDao.selectMenuTreeSearchList */
 		<![CDATA[
-		SELECT 
-			A.MENUID 'KEY',
-			A.UPPR_MENUID PKEY,
-			A.NM TITLE,
-			IFNULL((SELECT TYPE_CD FROM TB_CMM_PRGRM WHERE PRGRMID = A.PRGRMID),(CASE WHEN A.TYPE_CD = 'D' THEN '01' END)) ext2		
-		FROM TB_CMM_MENU A INNER JOIN TB_CMM_SITE B
-		ON A.SITEID = B.SITEID
+        SELECT 
+          *
+          FROM 
+          (
+    		SELECT 
+    			A.MENUID 'KEY',
+    			A.UPPR_MENUID PKEY,
+    			A.NM TITLE,
+    			IFNULL((SELECT TYPE_CD FROM TB_CMM_PRGRM WHERE PRGRMID = A.PRGRMID),(CASE WHEN A.TYPE_CD = 'D' THEN '01' END)) ext2,
+                A.ORD		
+    		FROM TB_CMM_MENU A INNER JOIN TB_CMM_SITE B
+    		ON A.SITEID = B.SITEID
 		]]>
-		WHERE 1=1
+        WHERE 1=1
 		<if test="siteid != null and siteid != ''">
 			AND	B.SITEID = #{siteid}
 		</if>
+        ) AA
+		WHERE 1=1
+        <if test='srchType != null and srchType != "" and  srchType ="menuModal" '>
+            AND AA.ext2 in ( '01','02','03')
+        </if>
 		ORDER BY ORD ASC
-		
 	</select>
 	
 	<!-- 사이트별 메뉴트리 url검색 -->
@@ -178,7 +187,7 @@
 				#{loginYn},
 				#{hideYn}, 
 				#{httpsUseYn},
-                #{nm_expsrTrgtCd},
+                #{nmExpsrTrgtCd},
 				(SELECT ORD FROM(SELECT IFNULL(MAX(A.ORD),0)+1 AS ORD FROM TB_CMM_MENU A WHERE A.UPPR_MENUID = #{upprMenuid}
 				<if test="siteid != null and siteid != ''">
 				AND SITEID = #{siteid}

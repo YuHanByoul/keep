@@ -50,6 +50,8 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 일시 */
     @NotEmpty(message = "일시를 입력해주십시오.")
     private String dt;
+    /** 유형 */
+    private String typeCd;
     /** URL */
     private String url;
     /** 썸네일_파일아이디 */

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -116,6 +117,17 @@ public interface AsgsysSrngService {
 	*/
 	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 프로그램 안전관리 조회
+	*
+	* @Title : selectSftyMng
+	* @Description : 프로그램 안전관리 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo객체
+    * @throws Exception 예외
+	*/
+	public AsgsysSrngVo selectSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
     /**
     * @Title : dsgnSrngMainForm
     * @Description : 심사위원심사 목록조회
@@ -160,5 +172,15 @@ public interface AsgsysSrngService {
 	 * @throws Exception 예외
 	 */
 	public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* updateSftyMng
+	*
+	* @Title : updateSftyMng
+	* @Description : 안전관리 수정
+	* @param asgsysSrngVo
+	* @return int
+	*/
+	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

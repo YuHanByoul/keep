@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnDao;
 import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnVo;
-import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdDao;
-import com.kbrainc.plum.mng.wbzn.now.prgrmgd.model.PrgrmgdVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -37,7 +35,7 @@ public class OpnnServiceImpl extends PlumAbstractServiceImpl implements OpnnServ
     *
     * @Title : selectOpnnList
     * @Description : 독자소리 게시글 목록 조회
-    * @param OpnnVo 프로그램안내관리 객체
+    * @param CarbonOpnnVo 프로그램안내관리 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */

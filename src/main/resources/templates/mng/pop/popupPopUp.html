@@ -1,0 +1,138 @@
+  <form id="popForm" >
+		<!-- tree context -->
+        <!-- <input type="hidden" name="menuid" id="menuid" />
+        <input type="hidden" name="upprMenuid" id="upprMenuid" /> -->
+        <input type="hidden" name="mode" id="mode" />
+        
+        <ul id="menuContext" class="contextMenu">
+            <li class="edit"><a href="#chooseMenu">메뉴선택</a></li>
+            <li class="paste"><a href="#reflash">새로고침</a></li>
+            <li class="paste"><a href="#allExpend">전체열기</a></li>
+            <li class="quit"><a href="#allClose">전체닫기</a></li>
+        </ul>
+  	
+	</form>
+  	
+   <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">메뉴 선택</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small" >
+						<div class="tree thumbnail img-responsive  col-xs-12" id="tree"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="chooseMenu()">선택</button>
+            </div>
+        </div>
+    </div>
+  	
+  	
+   	<script type="text/javascript">
+	  $(function(){
+		  
+      	  $("#popTitle").text("메뉴선택");
+		  fn_selectMenuByTree();
+	   })
+	   
+	  	var menuTree = null;
+	  	var menuLayout = null;
+	  	var innerLayout = null;
+	  	var isFlag = true;
+	  	var isSave = true;
+	  	
+	  	// Contextmenu helper
+	  	function bindContextMenu(span) {
+		  	
+	  	  $(span).contextMenu({menu: "menuContext"}, function(action, el, pos) {
+	  	    var node = $.ui.dynatree.getNode(el);
+	  	    switch(action) {
+	  	    case "chooseMenu":
+	  	    	if(!confirm(node.data.title+" 메뉴를 선택하시겠습니까?")) return;
+	  	    	$("#menuid").val(node.data.key);
+	  	    	$("#menuNm").val(node.data.title);
+	  	    	menuModal.hide();
+	  	    case "reflash":
+	  	    	if(menuTree != null){
+	  				$("#tree").dynatree("destroy");
+	  			}
+	  	    	fn_selectMenuByTree();
+	  			break;
+	  	    case "allExpend":
+	  	    	menuTree.dynatree("getRoot").visit(function(node){
+	  	   	    	node.expand(true);
+	  	   	    });	   	    
+	  	    	break;
+	  	    case "allClose":
+	  	    	menuTree.dynatree("getRoot").visit(function(node){
+	  	    		node.expand(false);
+	  	   	    });	  
+	  	    	break;
+	  	    	
+	  	    default:
+	  	    	
+	  	    }
+	  	  });
+	  	};
+
+        var menuTreeSearchListUrl = "/mng/menu/menuTreeSearchList.do";
+        
+	  	function fn_selectMenuByTree(){
+
+	  		var params = {   
+                siteid : $("#insertPopUp #siteid").val(),
+                siteNm : $("#select2-selectSitesiteid-container").text(),
+                srchUrl: $("#srchUrl").val(),
+                srchType: "menuModal"
+            }
+            
+	  		menuTree = $("#tree").dynatree({
+	  	    	autoFocus: true,
+	  	    	minExpandLevel: 2,
+	  	    	initAjax: {
+	  				url: menuTreeSearchListUrl,
+	  				dataType:'json',
+	  				data: params
+	  			},
+	  	    	onActivate: function(node) {
+	  	    		node.expand(true);
+	  	    	},
+	  	    	onClick: function(node, event) {
+		  	    	
+	  	    	},
+                onDblClick : function(node) {
+	                if(!confirm(node.data.title+" 메뉴를 선택하시겠습니까?")) return;
+	                $("#menuid").val(node.data.key);
+	                $("#menuNm").val(node.data.title);
+	                menuModal.hide();
+	            },
+	            
+	  	    	onCreate: function(node, span){
+	  	    		//$(span).attr('id','menu_'+node.data.key);
+	  	    		//bindContextMenu(span);
+	  	    		//if($("#menuid").val() != ""){
+	  	    		//	$("#tree").dynatree("getTree").activateKey($("#menuid").val());
+	  	    		//}else if($("#upprMenuid").val() != "0"){
+	  	    		//	$("#tree").dynatree("getTree").activateKey($("#upprMenuid").val());
+	  	    		//}
+	  	    	}
+	  	  	});  
+	  	}
+	  	
+	  	chooseMenu = () =>{
+	  		var node = $("#tree").dynatree("getActiveNode");
+            if(!confirm(node.data.title+" 메뉴를 선택하시겠습니까?")) return;
+            $("#menuid").val(node.data.key);
+            $("#menuNm").val(node.data.title);
+            menuModal.hide();
+		}
+	  	
+</script>
+	

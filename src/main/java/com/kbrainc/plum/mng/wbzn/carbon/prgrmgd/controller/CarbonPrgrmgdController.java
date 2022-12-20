@@ -128,13 +128,6 @@ public class CarbonPrgrmgdController {
         }
         model.addAttribute("years", years);
         
-        String[] Month = new String[12];
-        
-        for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
-        }
-        model.addAttribute("month", Month);
-        
         if(prgrmgdVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
             fileBtn.append("<div class ='label label-inverse text-white' id='" + prgrmgdVo.getThmbnFileid() + "'>");

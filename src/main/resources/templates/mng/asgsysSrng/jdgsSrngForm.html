@@ -31,15 +31,15 @@
 						</div>
 						<div class="col-12 row align-items-center">
 							<div class="col-12 col-lg-auto mb-2 mb-lg-0">
-	                            <span kattr:radio_yn="styYn" label1="숙박" label2="비숙박" th:attr="defaultVal=${jdgsSrngInfo.styYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeStyYn"></span>
+	                            <span kattr:radio_yn="styYn" label1="숙박" label2="비숙박" th:attr="defaultVal=${jdgsSrngInfo.styYn == null ? 'N':jdgsSrngInfo.styYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeStyYn" readonly></span>
 							</div>
 							<div class="col-12 col-lg-auto row align-items-center">
 								<div class="col-auto">
-									<input type="text" class="form-control form-control-sm" name="styNight" id="styNight" placeholder="Text Input Validation" th:value=${jdgsSrngInfo.styNight} style="width: 40px;">
+									<input type="text" class="form-control form-control-sm" name="styNight" id="styNight" placeholder="Text Input Validation" th:value=${jdgsSrngInfo.styNight} style="width: 40px;" readonly>
 								</div>
 								<div class="col-auto p-l-0">박</div>
 								<div class="col-auto">
-									<input type="text" class="form-control form-control-sm" name="styDaytm" id="styDaytm" placeholder="Text Input Validation" th:value=${jdgsSrngInfo.styDaytm} style="width: 40px;">
+									<input type="text" class="form-control form-control-sm" name="styDaytm" id="styDaytm" placeholder="Text Input Validation" th:value=${jdgsSrngInfo.styDaytm} style="width: 40px;" readonly>
 								</div>
 								<div class="col-auto p-l-0">일</div>
 							</div>
@@ -55,7 +55,7 @@
 						<div class="col-12">
 							<div class="form-radio">
 								<div class="radio radio-inline">
-	                                <span kattr:radio_code="operFrmCd" grpCd="120" th:attr="defaultVal=${jdgsSrngInfo.operFrmCd}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeOperFrmCd" isAdmin="true"></span>
+                                    <span id="operFrmCd" kattr:radio_code="operFrmCd" th:attr="grpCd=120, selectedCd=${jdgsSrngInfo.operFrmCd}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" readonly>
 				                 </div>
 						    </div>
 					   </div>
@@ -70,7 +70,7 @@
 							<div class="col-12">
 								<div class="form-radio">
 									<div class="radio radio-inline">
-									    <span kattr:radio_yn="sftyMngYn" label1="예" label2="아니오" th:attr="defaultVal=${jdgsSrngInfo.sftyMngYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeSftyMngYn"></span>
+									    <span kattr:radio_yn="sftyMngYn" label1="예" label2="아니오" th:attr="selectedCd=${jdgsSrngInfo.sftyMngYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeSftyMngYn"></span>
 									</div>
 								</div>
 							</div>
@@ -110,7 +110,7 @@
 								<strong>진행상태</strong>
 							</div>
 							<div class="col-12">
-				                         <span id="srngSttsCd" name="srngSttsCd" kattr:select_code="srngSttsCd" grpCd="111" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+				                <span kattr:select_code="srngSttsCd" th:attr="grpCd=119,selectedCd=${jdgsSrngInfo.srngSttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
 							</div>
 						</div>
 					</div>
@@ -195,6 +195,13 @@
 
 <script type="text/javascript">
 
+function fn_jdgsSrngInfoFrmInit(){
+	console.log("fn_jdgsSrngInfoFrmInit #### ");
+
+	//$("#operFrmCd").addAttribute("readonly");
+	$("#operFrmCd").prop("disabled", true);
+}
+
 //숙박여부
 function changeStyYn() {
 
@@ -219,7 +226,7 @@ function changeOperFrmCd() {
 
 function fn_insertJdgsSrngInfo() {
 
-	//if(!($("#jdgsSrngInfoFrm").valid())) return;
+	
 	if(!confirm("저장하시겠습니까?")) return;
 	var data =  $("#jdgsSrngInfoFrm").serialize() ;
 
@@ -245,4 +252,6 @@ function fn_insertJdgsSrngInfo() {
 
 }
 
+
+fn_jdgsSrngInfoFrmInit();
 </script>

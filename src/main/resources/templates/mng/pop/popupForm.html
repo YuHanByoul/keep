@@ -6,113 +6,6 @@
 >
 <body>
 <div layout:fragment="content">
-
-<script th:inline="javascript">
-	$(function(){
-		
-		$("#jsGrid").jsGrid({
-	        height: "auto",
-	        width: "100%",
-	        autoload: true,
-	        sorting: false,
-	        paging: true,
-	        pagerContainer: "#listPager",
-	        pagerFormat: "{first} {prev} {pages} {next} {last}",
-	        pagePrevText: "이전",
-	        pageNextText: "다음",
-	        pageFirstText: "< 처음ㅣ",
-	        pageLastText: "ㅣ 마지막 >",
-	        pageSize: 10,
-	        pageButtonCount: 10,
-	        pageLoading: true,
-	        pageIndex: 1,
-	        noDataContent: "데이터가 없습니다.",
-	        
-	        controller: {
-	            loadData: function (filter) {
-	            	var data = $.Deferred();
-	            	
-	            	var formData = $('#searchFrm').serializeArray();
-	            	
-	            	var params = [
-	            			{name: "pageNumber", value: filter.pageIndex},
-	            			{name: "rowPerPage", value: filter.pageSize},
-	            			{name: "orderField", value: "mdfcn_dt"},
-	            			{name: "orderDirection", value: "desc"}
-	            	]
-	            	formData = formData.concat(params);
-	            	
-	                $.ajax({
-	                  type: "GET",
-	                  contentType: "application/json; charset=utf-8",
-	                  url: "/mng/pop/selectPopUpNtcList.do",
-	                  data: formData,
-	                  dataType: "json"
-	                }).done(function(response){
-	                	var da = {
-	                            data: escapeGridData(response.list),
-	                            itemsCount: response.totalCount
-	                        };
-	                  data.resolve(da);
-	                });
-	                return data.promise();
-	            },
-	        },
-	        fields: [ 
-	        	{ title:'번호'      ,name: 'rowNumber'    , type: "number", width: "3%", align:"center", sorting: false },
-	        	{ title:'공지대상'   ,name: 'ntcTrgtCd'  , type: "text"  , width: "5%" ,align:"center"
-	        		,itemTemplate:function(value, item){ 
-	        		return item.ntcTrgtCd=='T' ? '전체':'역할';
-	        		}
-	        	},
-	            { title:'제목'      ,name: 'title'        , type: "text"  , width: "15%"}, 
-	            { title:'노출위치'   ,name: 'expsrLcCd'  , type: "text"  , width: "5%" , itemTemplate:function(value, item){ return item.expsrLcCd=='M'? '메인':'메뉴'; } ,align:"center"},
-	            { title:'팝업사용기간',type: "text"  , itemTemplate:function(value, item){ return item.strtDt.substring(0, 10)+" ~ "+item.endDt.substring(0, 10) }, width: "10%" ,align:"center"},
-	            { title:'상태'      ,name: 'popSts'      , type: "text" ,width:"5%" ,align:"center"},
-	            { title:'최종수정자'  ,name: 'updNm'      , type: "text"  ,width:"5%" ,align:"center"},
-	            { title:'최종수정월일',name: 'mdfcnDt'     , type: "text"  ,width:"5%" ,align:"center"},
-	        ]
-	        
-	        /*[# sec:authorize-url="/mng/pop/popupInsertForm.html"]*/
-	        ,rowClick: function(args) { loadContent("/mng/pop/popupUpdateForm.html?popupntcid="+args.item.popupntcid); },
-	        /*[/]*/
-	        
-	    });
-		
-	});
-
-	function formSearch(){
-		resetListContent();
-	}
-	
-    function fn_goInsertForm(){
-   	    var insertUrl ="/mng/pop/popupInsertForm.html";
-   	    loadContent(insertUrl);
-    }
-    
-   var Pop = "";
-   function fn_openPopUp(mode){
-	   
-	   $("#popupMode").val(mode);
-	   var popUrl ="/mng/pop/openPop.html";
-	   
-	   if(mode =="menu"){
-		   if($("#insertPopUp [id=siteid]").val()==""){
-				alert("사이트를 선택해야 합니다."); return;
-			}
-	   };
-	   var popOpt="location=no,left=300,top=100,width=500, height=500, toolbar=no"
-	   if(typeof Pop === 'object'){ 
-		   Pop.close();
-		   Pop = window.open(popUrl, "pop", popOpt);
-	   }else{
-		   Pop = window.open(popUrl, "pop", popOpt);
-	   }
-   }
-   
-	
-</script>
-      
 <form name="searchFrm" id="searchFrm" action="" method="POST" class="form-inline" onsubmit="return false;">
   <input type="hidden" id="popupMode"/>
   
@@ -214,6 +107,113 @@
 		<div id="contentPanel" class="panel panel-default" style="display:none"></div>
 	</div>
    <script src="/js/ckeditor/ckeditor.js"></script>
+   <script th:inline="javascript">
+    $(function(){
+        
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: "< 처음ㅣ",
+            pageLastText: "ㅣ 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    
+                    var formData = $('#searchFrm').serializeArray();
+                    
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "orderField", value: "mdfcn_dt"},
+                            {name: "orderDirection", value: "desc"}
+                    ]
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/pop/selectPopUpNtcList.do",
+                      data: formData,
+                      dataType: "json"
+                    }).done(function(response){
+                        var da = {
+                                data: escapeGridData(response.list),
+                                itemsCount: response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [ 
+                { title:'번호'      ,name: 'rowNumber'    , type: "number", width: "3%", align:"center", sorting: false },
+                { title:'공지대상'   ,name: 'ntcTrgtCd'  , type: "text"  , width: "5%" ,align:"center"
+                    ,itemTemplate:function(value, item){ 
+                    return item.ntcTrgtCd=='T' ? '전체':'역할';
+                    }
+                },
+                { title:'제목'      ,name: 'title'        , type: "text"  , width: "15%"}, 
+                { title:'노출위치'   ,name: 'expsrLcCd'  , type: "text"  , width: "5%" , itemTemplate:function(value, item){ return item.expsrLcCd=='M'? '메인':'메뉴'; } ,align:"center"},
+                { title:'팝업사용기간',type: "text"  , itemTemplate:function(value, item){ return item.strtDt.substring(0, 10)+" ~ "+item.endDt.substring(0, 10) }, width: "10%" ,align:"center"},
+                { title:'상태'      ,name: 'popSts'      , type: "text" ,width:"5%" ,align:"center"},
+                { title:'최종수정자'  ,name: 'updNm'      , type: "text"  ,width:"5%" ,align:"center"},
+                { title:'최종수정월일',name: 'mdfcnDt'     , type: "text"  ,width:"5%" ,align:"center"},
+            ]
+            
+            /*[# sec:authorize-url="/mng/pop/popupInsertForm.html"]*/
+            ,rowClick: function(args) { loadContent("/mng/pop/popupUpdateForm.html?popupntcid="+args.item.popupntcid); },
+            /*[/]*/
+            
+        });
+        
+    });
+
+    function formSearch(){
+        resetListContent();
+    }
+    
+    function fn_goInsertForm(){
+        var insertUrl ="/mng/pop/popupInsertForm.html";
+        loadContent(insertUrl);
+    }
+    
+   var Pop = "";
+   function fn_openPopUp(mode){
+       
+       $("#popupMode").val(mode);
+       var popUrl ="/mng/pop/openPop.html";
+       
+       if(mode =="menu"){
+           if($("#insertPopUp [id=siteid]").val()==""){
+                alert("사이트를 선택해야 합니다."); return;
+            }
+       };
+       var popOpt="location=no,left=300,top=100,width=500, height=500, toolbar=no"
+       if(typeof Pop === 'object'){ 
+           Pop.close();
+           Pop = window.open(popUrl, "pop", popOpt);
+       }else{
+           Pop = window.open(popUrl, "pop", popOpt);
+       }
+   }
+   
+    
+</script>
+   
+   
 	
  </form>
 </div>	
