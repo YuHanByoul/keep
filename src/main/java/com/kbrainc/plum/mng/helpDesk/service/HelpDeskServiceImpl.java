@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.helpDesk.service;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.helpDesk.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +26,7 @@ import java.util.List;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Service
-public class HelpDeskServiceImpl implements HelpDeskService {
+public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements HelpDeskService {
 
     @Autowired
     private HelpDeskDao helpDeskDao;

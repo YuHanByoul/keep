@@ -4,6 +4,7 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.employ.model.EmployDao;
 import com.kbrainc.plum.mng.employ.model.EmployVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EmployServiceImpl implements EmployService{
+public class EmployServiceImpl extends PlumAbstractServiceImpl implements EmployService{
 
     private final EmployDao employDao;
 
