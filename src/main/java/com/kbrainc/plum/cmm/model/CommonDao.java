@@ -73,15 +73,15 @@ public interface CommonDao {
     public int insertLoginDescription(Map<String, String> param) throws Exception;
     
     /**
-    * 로그인 실패 횟수를 0으로 수정한다.
+    * 로그인 실패 횟수를 0으로 수정하고 로그인일시를 수정한다.
     *
-    * @Title : updateLgnFailCntZero
-    * @Description : 로그인 실패 횟수를 0으로 수정한다.
+    * @Title : updateUserLgnInfo
+    * @Description : 로그인 실패 횟수를 0으로 수정하고 로그인일시를 수정한다.
     * @param userid 사용자아이디
     * @return int update로우수
     * @throws Exception 예외
     */
-    public int updateLgnFailCntZero(String userid) throws Exception;
+    public int updateUserLgnInfo(String userid) throws Exception;
     
     /**
     * 로그인 실패 이력을 저장한다.
