@@ -91,6 +91,11 @@ public class BlcklstDsctnVo extends ParentRequestVo {
     /** 블래리스트 적용 및 해제 CRUD 코드 **/
     private String  updtCd;
     
+    private String userNm;
+    private String userAcnt;
+    private String rgtrNm;
+    private String rgtrAcnt;
+    
     
     
     
