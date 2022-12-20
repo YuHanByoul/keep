@@ -196,18 +196,18 @@ public class FaqController {
         faqClVo.setUser(user);
         return faqService.updateFaqCl(faqClVo);
     }
-    @RequestMapping(value = "/mng/faq/modifyFaqOrd.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/mng/faq/updateFaqOrd.do", method = RequestMethod.POST)
     public @ResponseBody boolean updateFaqOrd(@UserInfo UserVo user, FaqVo faqVo, @RequestBody HashMap<String,Object> parameter) throws Exception {
-        return faqService.modifyFaqOrd(parameter);
+        return faqService.updateFaqOrd(parameter);
     }
 
-    @RequestMapping(value = "/mng/faq/modifyFaqClOrd.do", method = RequestMethod.POST)
+    @RequestMapping(value = "/mng/faq/updateFaqClOrd.do", method = RequestMethod.POST)
     public @ResponseBody boolean updateFaqClOrd(@RequestParam(name = "mode", required = true) String mode,
             @UserInfo UserVo user, FaqClVo faqClVo) throws Exception {
         if ("OD".equals(mode)) {
-            return faqService.modifyFaqClOrdDown(faqClVo);
+            return faqService.updateFaqClOrdDown(faqClVo);
         } else {
-            return faqService.modifyFaqClOrdUp(faqClVo);
+            return faqService.updateFaqClOrdUp(faqClVo);
         }
     }
     

@@ -17,10 +17,10 @@ public interface FaqClDao {
 
     public List<FaqClVo> getAllList(FaqClVo param) throws Exception;
 
-    public boolean modifyFaqClOrdUp(FaqClVo param);
+    public boolean updateFaqClOrdUp(FaqClVo param);
 
-    public boolean modifyFaqClOrdByfaqid(FaqClVo param);
+    public boolean updateFaqClOrdByfaqid(FaqClVo param);
 
-    public boolean modifyFaqClOrdDown(FaqClVo param);
+    public boolean updateFaqClOrdDown(FaqClVo param);
 
 }

@@ -133,7 +133,7 @@ function fn_changeOrd(mode,item){
 			"ord": item.ord,
 			"mode": mode
 	}
-	var updUrl = "/mng/faq/modifyFaqOrd.do";
+	var updUrl = "/mng/faq/updateFaqOrd.do";
 	$.ajax({
 		url : updUrl,
 		type: 'POST',

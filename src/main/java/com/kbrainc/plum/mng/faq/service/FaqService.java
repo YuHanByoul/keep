@@ -24,11 +24,11 @@ public interface FaqService {
     
     boolean updateFaqCl(FaqClVo param) throws Exception;
 
-    public boolean modifyFaqOrd(Map<String,Object> faqInfo);
+    public boolean updateFaqOrd(Map<String,Object> faqInfo);
 
-    public boolean modifyFaqClOrdUp(FaqClVo param);
+    public boolean updateFaqClOrdUp(FaqClVo param);
     
-    public boolean modifyFaqClOrdDown(FaqClVo param);
+    public boolean updateFaqClOrdDown(FaqClVo param);
     
     public List<FaqClVo> getAllList(FaqClVo param) throws Exception;
 }

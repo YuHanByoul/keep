@@ -64,19 +64,19 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
 
     @Transactional
     @Override
-    public boolean modifyFaqClOrdUp(FaqClVo param) {
+    public boolean updateFaqClOrdUp(FaqClVo param) {
         param.setNewOrd(param.getOrd() - 1);
-        faqClDao.modifyFaqClOrdUp(param);
-        faqClDao.modifyFaqClOrdByfaqid(param);
+        faqClDao.updateFaqClOrdUp(param);
+        faqClDao.updateFaqClOrdByfaqid(param);
         return true; 
     }
 
     @Transactional
     @Override
-    public boolean modifyFaqClOrdDown(FaqClVo param) {
+    public boolean updateFaqClOrdDown(FaqClVo param) {
         param.setNewOrd(param.getOrd() + 1);
-        faqClDao.modifyFaqClOrdDown(param);
-        faqClDao.modifyFaqClOrdByfaqid(param);
+        faqClDao.updateFaqClOrdDown(param);
+        faqClDao.updateFaqClOrdByfaqid(param);
         return true;
     }
     
@@ -86,7 +86,7 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
     }
 
     @Override
-    public boolean modifyFaqOrd(Map<String, Object> faqInfo) {
+    public boolean updateFaqOrd(Map<String, Object> faqInfo) {
         Map<String,Integer> sourceFaq = (Map<String,Integer>)faqInfo.get("sourceFaq");
         Map<String,Integer> targetFaq = (Map<String,Integer>)faqInfo.get("targetFaq");
         faqDao.changeFaqOrd(sourceFaq.get("faqid"), targetFaq.get("ord"));
