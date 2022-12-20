@@ -182,8 +182,8 @@
                              <div id="fileListArea">
                              
                                  <th:block th:if = "${fileMap} != null ">
-			                      <div  th:each="item:${fileMap}" >
-			                        <span class ='label label-inverse mb-2' th:id="'instFile_'+${item.fileid}">
+			                      <!-- <div  th:each="item:${fileMap}" > -->
+			                        <span th:each="item:${fileMap}" class ='label label-inverse mb-2' th:id="'instFile_'+${item.fileid}">
 			                            <th:block th:text="${item.orginlFileNm}"></th:block>
 			                            &nbsp;&nbsp;
 				                        <a  class = 'btn text-white' href="javascript:void(0);"
@@ -191,7 +191,7 @@
 				                                         th:fileIdntfcKey ="${item.fileIdntfcKey}" 
 				                                     onclick ="fn_deleteInstFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"> X</a>
 			                         </span>
-			                       </div>
+			                       <!-- </div> -->
                                   </th:block> 
                                   
                              </div>
@@ -224,7 +224,7 @@
     
     <input type="hidden" id="logoFilegrpid" name="logoFilegrpid" value="0"/>
     <input type="hidden" id="logoFileid" name="logoFileid" th:value="${inst.logoFileid}"/>
-    <input type="hidden" id="filegrpid" name="filegrpid" th:value="${inst.filegrpid}"/>
+    <input type="hidden" id="filegrpid" name="filegrpid" th:value="${inst.filegrpid == null or inst.filegrpid == ''}? 0: ${inst.filegrpid}"/>
     <input type="hidden" id="instid" name="instid" th:value="${inst.instid}"/>
     
 </form>
@@ -368,6 +368,9 @@
            formData.append("files", objFile.files[i]);
            uploadFileCnt++;
        }
+
+       var filegrpid = $("#filegrpid").val();
+
        formData.append("filegrpid", $("#filegrpid").val());
        formData.append("filegrpNm", "biz_file");
        
@@ -384,8 +387,8 @@
                    }
                    
                    for(i = 0 ;i < response.length; i++ ){
-                       content = "<div><span class ='label label-inverse mb-2' id='instFile_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
-                       content +="&nbsp;&nbsp;  <a  class = 'btn text-white' href = javascript:fn_deleteInstFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span></div>";
+                       content = "<span class ='label label-inverse mb-2' id='instFile_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                       content +="&nbsp;&nbsp;  <a  class = 'btn text-white' href = javascript:fn_deleteInstFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
                        $('#fileListArea').append(content);
                    }
                }
@@ -401,7 +404,7 @@
     
     var fn_deleteInstFile = (fileid,fileIdntfcKey)=>{
         
-    	if(!confirm("파일을 삭제 하시겠습니까?")){return;}
+    	//if(!confirm("파일을 삭제 하시겠습니까?")){return;}
     	$("#instFile_"+fileid).remove();
     	fn_deleteFile(fileid, fileIdntfcKey);
     }

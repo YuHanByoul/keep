@@ -56,7 +56,7 @@ public class PopController {
 
     /**
      * @Title : popupForm
-     * @Description : user관리 리스트화면 이동
+     * @Description : 팝업공지 관리 리스트화면 이동
      * @param
      * @throws Exception
      * @return String 이동화면경로
