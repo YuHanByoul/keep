@@ -121,7 +121,7 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         param.put("ipAddr", CommonUtil.getClientIp(request));
         
         retVal = commonDao.insertLoginDescription(param);
-        retVal += commonDao.updateLgnFailCntZero(userid);
+        retVal += commonDao.updateUserLgnInfo(userid);
         
         return retVal;
     }

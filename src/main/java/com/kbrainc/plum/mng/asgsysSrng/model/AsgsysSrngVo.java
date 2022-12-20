@@ -353,6 +353,31 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /**안전관리 사전인증여부 */
     private String sftyMngYn;
 
+    /** 지도자_교육_시기 */
+	private String ldrEduSess;
+
+    /** 지도자_교육_담당자 */
+    private String ldrEduPic;
+
+    /** 지도자_교육_내용 */
+    private String ldrEduCn;
+
+    /** 참가자_교육_시기 */
+    private String prtcpntEduSess;
+
+    /** 참가자_교육_담당자 */
+    private String prtcpntEduPic;
+
+    /** 참가자_교육_내용 */
+    private String prtcpntEduCn;
+
+    /** 사전_인증_여부 */
+    private String bfrCertYn;
+
+    /** 사전_인증_파일그룹아이디 */
+    private int bfrCertFilegrpid;
+
+
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
         UserVo clone = (UserVo) SerializationUtils.clone(user);

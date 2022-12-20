@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.asgsysSrng.model;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -112,6 +114,16 @@ public interface AsgsysSrngDao {
 	*/
 	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 프로그램 안전관리 조회
+	*
+	* @Title : selectSftyMng
+	* @Description : 프로그램 안전관리 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo객체
+    * @throws Exception 예외
+	*/
+	public AsgsysSrngVo selectSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
     /**
     * @Title : dsgnSrngMainForm
@@ -144,5 +156,16 @@ public interface AsgsysSrngDao {
     * @throws Exception 예외
     */
 	public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 안전관리 수정
+	*
+	* @Title : updateSftyMng
+	* @Description : 안전관리 수정
+	* @param asgsysSrngVo
+	* @return int
+    * @throws Exception 예외
+	*/
+	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }
