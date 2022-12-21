@@ -253,4 +253,18 @@ public class MenuServiceImpl extends PlumAbstractServiceImpl implements MenuServ
     public List<MenuVo> selectMenuChildTreeList(MenuVo menuVo) throws Exception {
         return menuDao.selectMenuChildTreeList(menuVo);
     }
+    
+    /**
+    * 현재 폴더의 하위메뉴 목록을 조회한다.
+    *
+    * @Title : selectChildMenuList
+    * @Description : 현재 폴더의 하위메뉴 목록을 조회한다
+    * @param menu MenuVo객체
+    * @return List<MenuVo> 하위메뉴 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<MenuVo> selectChildMenuList(MenuVo menu) throws Exception {
+        return menuDao.selectChildMenuList(menu);
+    }
 }

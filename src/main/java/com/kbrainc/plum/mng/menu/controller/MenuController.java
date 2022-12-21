@@ -226,7 +226,7 @@ public class MenuController {
     }
 
     /**
-    * 폴더 참조 메뉴 설정 팝업.
+    * 폴더 참조 메뉴 설정 팝업(삭제예정).
     * 
     * @Title : refMenuIdPopup
     * @Description : 폴더 참조 메뉴 설정 팝업
@@ -242,5 +242,22 @@ public class MenuController {
         List<MenuVo> list = menuService.selectMenuChildTreeList(menu);
         model.addAttribute("underMenuList", list);
         return "mng/menu/refMenuIdPopup";
+    }
+    
+    /**
+    * 현재 폴더의 하위메뉴 목록을 조회한다(참조메뉴용).
+    *
+    * @Title : selectChildMenuList
+    * @Description : 현재 폴더의 하위메뉴 목록을 조회한다
+    * @param menu MenuVo객체
+    * @return List<MenuVo> 하위메뉴 목록
+    * @throws Exception 예외
+    */
+    @RequestMapping("/mng/menu/selectChildMenuList.do")
+    @ResponseBody
+    public List<MenuVo> selectChildMenuList(MenuVo menu) throws Exception {
+        // menuid, siteid 필수
+        List<MenuVo> list = menuService.selectChildMenuList(menu);
+        return list;
     }
 }

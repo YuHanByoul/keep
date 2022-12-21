@@ -1,9 +1,6 @@
-package com.kbrainc.plum.mng.qestnr.model;
+package com.kbrainc.plum.mng.cmnty.model;
 
 import java.util.Date;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -15,60 +12,34 @@ import lombok.Data;
 
 /**
  * 
- * 설문지Vo 클래스
+ * 커뮤니티카테고리Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.qestnr.model
- * - QestnrVo.java
+ * com.kbrainc.plum.mng.cmnty.model
+ * - CmntyVo.java
  * </pre> 
  *
- * @ClassName : QestnrVo
- * @Description : 설문지Vo 클래스 
+ * @ClassName : CmntyVo
+ * @Description : 커뮤니티카테고리Vo 클래스 
  * @author : KBRAINC
- * @date : 2022. 11. 29.
+ * @date : 2022. 12. 16.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class QestnrVo extends ParentRequestVo {
+public class CmntyCtgryVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
     
-    /** 설문지 아이디 */
-    private int qestnrid;
+    /** 커뮤니티 아이디 */
+    private int cmntyid;
     
-    /** 사이트 아이디 */
-    private int siteid;
+    /** 커뮤니티 게시판 템플릿 아이디 */
+    private int cmntyBbsTmplatid;
     
-    /** 설문지 종류 코드 */
-    @NotEmpty(message = "설문지 종류를 선택해주세요.")
-    private String qestnrKndCd;
-    
-    /** 설문지 종류 코드명 */
-    private String qestnrKndCdNm;
-    
-    /** 설문지 이름 */
-    @NotEmpty(message = "설문지명을 입력해주세요.")
-    @Size(max = 20, message = "설문지명은 20자 이하여야 합니다.")
-    private String qestnrNm;
-    
-    /** 설명 */
-    @NotEmpty(message = "설문지 설명을 입력해주세요.")
-    @Size(max = 400, message = "설문지 설명은 400자 이하여야 합니다.")
-    private String expln;
-    
-    /** 사용 여부 */
-    private String useYn;
-    
-    /** 문항수 */
-    private int qitemCnt;
-    
-    /** 검색 사이트 아이디 */
-    private String searchSiteid;
-    
-    /** 검색 설문 종류 */
-    private String searchQestnrKndCd;
+    /** 게시판 순서 */
+    private String ordr;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -77,14 +48,14 @@ public class QestnrVo extends ParentRequestVo {
     /** 수정자 아이디 */
     private String mdfrid;
     
-    /** 등록일시 */
+    /** 등록 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     
     /** 등록자 아이디 */
     private String rgtrid;
     
-    /** 수정일자 정보 */
+    /** 수정 일자 정보 */
     public Date getMdfcnDt() {
         return mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
@@ -93,7 +64,7 @@ public class QestnrVo extends ParentRequestVo {
         this.mdfcnDt = mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
     }
     
-    /** 등록일자 정보 */
+    /** 등록 일자 정보 */
     public Date getRegDt() {
         return regDt != null ? (Date) regDt.clone() : null;
     }

@@ -4,18 +4,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.cmnty.model.CmntyCmntVo;
+import com.kbrainc.plum.mng.cmnty.model.CmntyCtgryVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyMbrVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyPstVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyVo;
 import com.kbrainc.plum.mng.cmnty.service.CmntyServiceImpl;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
@@ -41,9 +46,6 @@ public class CmntyController {
     @Autowired
     private CmntyServiceImpl cmntyService;
     
-    @Autowired
-    private FileService fileService;
-    
     /**
      * 커뮤니티 목록 화면
      *
@@ -54,7 +56,7 @@ public class CmntyController {
      */
     @RequestMapping(value = "/mng/cmnty/cmntyForm.html")
     public String cmntyForm() throws Exception {
-        return "mng/cmnty/cmnty";
+        return "mng/cmnty/cmntyList";
     }
     
     /**
@@ -66,15 +68,15 @@ public class CmntyController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/cmnty/cmntyDetailForm.html")
-    public String cmntyDetailForm(CmntyVo cmntyVo, Model model) throws Exception {
-        model.addAttribute("cmnty", cmntyService.selectCmntyInfo(cmntyVo));
+    public String cmntyDetailForm(CmntyCtgryVo cmntyCtgryVo, Model model) throws Exception {
+        model.addAttribute("ctgryList", cmntyService.selectCmntyCtgryList(cmntyCtgryVo));
         return "mng/cmnty/cmntyDetail";
     }
     
     /**
-     * 커뮤니티 수정 화면
+     * 커뮤니티 정보 화면
      *
-     * @Title : qestnrUpdateForm
+     * @Title : cmntyUpdateForm
      * @Description : 커뮤니티 수정 화면
      * @param cmntyVo CmntyVo 객체
      * @param model 모델객체
@@ -84,15 +86,8 @@ public class CmntyController {
      */
     @RequestMapping(value = "/mng/cmnty/cmntyUpdateForm.html")
     public String cmntyUpdateForm(CmntyVo cmntyVo, Model model, @UserInfo UserVo user) throws Exception {
-        cmntyVo.setUser(user);
-        CmntyVo resultVo = cmntyService.selectCmntyInfo(cmntyVo);
-        if(resultVo.getCmntyLogoFileid() != null && resultVo.getCmntyLogoFileid() != 0) {
-            FileVo fileVo = new FileVo();
-            fileVo.setFileid(resultVo.getCmntyLogoFileid());
-            fileVo.setUser(user);
-            model.addAttribute("logoFile", fileService.getFileInfo(fileVo));
-        }
-        model.addAttribute("cmnty", resultVo);
+        model.addAttribute("cmnty", cmntyService.selectCmntyInfo(cmntyVo));
+        
         return "mng/cmnty/cmntyUpdate";
     }
     
@@ -106,7 +101,41 @@ public class CmntyController {
      */
     @RequestMapping(value = "/mng/cmnty/cmntyMbrForm.html")
     public String cmntyMbrForm() throws Exception {
-        return "mng/cmnty/cmntyMbr";
+        return "mng/cmnty/cmntyMbrList";
+    }
+    
+    /**
+     * 커뮤니티 게시글 목록 화면
+     *
+     * @Title : cmntyPstForm
+     * @Description : 커뮤니티 게시글 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/cmntyPstForm.html")
+    public String cmntyPstForm() throws Exception {
+        return "mng/cmnty/cmntyPstList";
+    }
+    
+    /**
+     * 커뮤니티 게시글 정보 화면
+     *
+     * @Title : cmntyPstUpdateForm
+     * @Description : 커뮤니티 게시글 정보 화면
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @param model 모델객체
+     * @param user 사용자 세션 정보
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/cmntyPstUpdateForm.html")
+    public String cmntyPstUpdateForm(CmntyPstVo cmntyPstVo, Model model, @UserInfo UserVo user) throws Exception {
+        model.addAttribute("cmntyPst", cmntyService.selectCmntyPstInfo(cmntyPstVo));
+        cmntyPstVo.setOrderField("CMNT_GRP DESC, SORTORDR");
+        cmntyPstVo.setOrderDirection(CmntyPstVo.ORDER_DIRECTION_ASC);
+        model.addAttribute("cmntyCmntList", cmntyService.selectCmntyCmntList(cmntyPstVo));
+        
+        return "mng/cmnty/cmntyPstUpdate";
     }
     
     /**
@@ -180,6 +209,84 @@ public class CmntyController {
             resultMap.put("totalCount", 0);
         }
         resultMap.put("list", result);
+            
+        return resultMap;
+    }
+    
+    /**
+     * 커뮤니티 게시글 삭제
+     *
+     * @Title : deleteCmntyPst
+     * @Description : 커뮤니티 게시글 삭제
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @param bindingResult cmntyPstVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/deleteCmntyPst.do")
+    @ResponseBody
+    public Map<String, Object> deleteCmntyPst(@Valid CmntyPstVo cmntyPstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        cmntyPstVo.setUser(user);
+        retVal = cmntyService.deleteCmntyPst(cmntyPstVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제에 실패하였습니다");
+        }
+            
+        return resultMap;
+    }
+    
+    /**
+     * 커뮤니티 댓글 삭제
+     *
+     * @Title : deleteQitem
+     * @Description : 커뮤니티 댓글 삭제
+     * @param cmntyCmntVo CmntyCmntVo 객체
+     * @param bindingResult cmntyPstVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/deleteCmntyCmnt.do")
+    @ResponseBody
+    public Map<String, Object> deleteCmntyCmnt(@Valid CmntyCmntVo cmntyCmntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        cmntyCmntVo.setUser(user);
+        retVal = cmntyService.deleteCmntyCmnt(cmntyCmntVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제에 실패하였습니다");
+        }
             
         return resultMap;
     }

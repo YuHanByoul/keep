@@ -25,9 +25,15 @@
         LEFT OUTER JOIN
             TB_CMT_CMNTY_MBR B ON (B.CMNTYID = A.CMNTYID)
         INNER JOIN (
-            SELECT USERID, ACNT, NM FROM TB_CMM_USER
-        ) C ON C.USERID = A.ESTERID 
-        WHERE 1 = 1
+            SELECT 
+                USERID
+                , ACNT
+                , NM 
+            FROM 
+                TB_CMM_USER
+        ) C ON (C.USERID = A.ESTERID) 
+        WHERE 
+            1 = 1
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cmntyNm'">
             AND A.CMNTY_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
@@ -58,13 +64,25 @@
             , A.SRCH_EXPSR_YN
             , A.OPER_YN
             , A.CMNTY_LOGO_FILEID
-            , A.NTCMTTR_YN
-            , A.INFOBBS_YN
-            , A.RECSROOM_YN
-            , A.ENVOBSERVACTVT_YN
         FROM
             TB_CMT_CMNTY A
-        WHERE CMNTYID = #{cmntyid}
+        WHERE 
+            A.CMNTYID = #{cmntyid}
+    </select>
+    
+    <!-- 커뮤니티 게시판 템플릿 목록 조회 -->
+    <select id="selectCmntyCtgryList" parameterType="CmntyCtgryVo" resultType="CmntyCtgryVo">
+        /* CmntyDao.selectCmntyCtgryList */
+        SELECT
+            A.CMNTYID
+            , A.CMNTY_BBS_TMPLATID
+            , A.ORDR
+        FROM
+            TB_CMT_CMNTY_CTGRY A
+        WHERE 
+            A.CMNTYID = #{cmntyid}
+        ORDER BY 
+            A.ORDR
     </select>
     
     <!-- 커뮤니티 회원 목록 조회 -->
@@ -85,20 +103,38 @@
         FROM
             TB_CMT_CMNTY_MBR A            
         INNER JOIN (
-            SELECT USERID, ACNT, NM FROM TB_CMM_USER
-        ) B ON B.USERID = A.USERID
+            SELECT 
+                USERID
+                , ACNT
+                , NM 
+            FROM 
+                TB_CMM_USER
+        ) B ON (B.USERID = A.USERID)
         INNER JOIN (
-            SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = 118
-        ) C ON C.CD = A.MBR_STTS_CD
+            SELECT 
+                CD
+                , CD_NM 
+            FROM 
+                TB_CMM_CD 
+            WHERE 
+                CDGRPID = 118
+        ) C ON (C.CD = A.MBR_STTS_CD)
         INNER JOIN (
-            SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = 117
-        ) D ON D.CD = A.AUTHRT_CD
-        WHERE A.CMNTYID = #{cmntyid}
+            SELECT 
+                CD
+                , CD_NM 
+            FROM 
+                TB_CMM_CD 
+            WHERE 
+                CDGRPID = 117
+        ) D ON (D.CD = A.AUTHRT_CD)
+        WHERE 
+            A.CMNTYID = #{cmntyid}
         <include refid="PaginationMapper.footer"/>
     </select>
     
     <!-- 커뮤니티 게시글 목록 조회 -->
-    <select id="selectCmntyPstList" parameterType="BbsVo" resultType="BbsVo">
+    <select id="selectCmntyPstList" parameterType="CmntyPstVo" resultType="CmntyPstVo">
         /* CmntyDao.selectCmntyPstList */
         <include refid="PaginationMapper.header"/>
         SELECT 
@@ -112,10 +148,115 @@
         FROM 
             TB_CMT_CMNTY_PST A
         INNER JOIN (
-            SELECT USERID, ACNT, NM FROM TB_CMM_USER
-        ) B ON B.USERID = A.RGTRID
-        WHERE BBSID = #{bbsid}
+            SELECT 
+                USERID
+                , ACNT
+                , NM 
+            FROM 
+                TB_CMM_USER
+        ) B ON (B.USERID = A.RGTRID)
+        WHERE
+            A.DEL_YN = 'N' 
+            AND A.BBSID = (
+                SELECT 
+                    BBSID 
+                FROM 
+                    TB_CMT_CMNTY_BBS 
+                WHERE CMNTYID = #{cmntyid} 
+                    AND CMNTY_BBS_TMPLATID = #{cmntyBbsTmplatid}
+            )
         <include refid="PaginationMapper.footer"/>
     </select>
+    
+    <!-- 커뮤니티 게시글 정보 조회 -->
+    <select id="selectCmntyPstInfo"  parameterType="CmntyPstVo" resultType ="CmntyPstVo" >
+        /* CmntyDao.selectCmntyPstInfo */
+        SELECT 
+            A.PSTID
+            , A.BBSID
+            , A.BBS_CLSFID
+            , A.TTL
+            , A.CN
+            , A.PARNTS_PSTID
+            , A.GRP
+            , A.DPTH
+            , A.SORTORDR
+            , A.HITS
+            , A.FX_NTC_YN
+            , A.FX_NTC_BGNG_DT
+            , A.FX_NTC_END_DT
+            , A.LGN_YN
+            , A.FILEGRPID
+            , B.ACNT
+            , B.NM
+        FROM
+            TB_CMT_CMNTY_PST A
+        INNER JOIN (
+            SELECT 
+                USERID
+                , ACNT
+                , NM 
+            FROM 
+                TB_CMM_USER
+        ) B ON (B.USERID = A.RGTRID)    
+        WHERE 
+            A.PSTID = #{pstid}
+    </select>
+    
+    <!-- 커뮤니티 게시글 삭제(논리) -->
+    <update id="deleteCmntyPst" parameterType="CmntyPstVo">
+        /* QestnrDao.deleteCmntyPst */
+        UPDATE TB_CMT_CMNTY_PST SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            PSTID IN
+        <foreach item="item" collection="deletePstids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+    
+    <!-- 커뮤니티 댓글 목록 조회 -->
+    <select id="selectCmntyCmntList" parameterType="CmntyPstVo" resultType="CmntyCmntVo">
+        /* CmntyDao.selectCmntyCmntList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+              A.CMNTID
+              , A.CN
+              , A.PARNTS_CMNTID
+              , A.CMNT_GRP
+              , A.DPTH
+              , A.SORTORDR
+              , A.RLS_YN
+              , A.DEL_YN
+              , A.REG_DT
+              , B.ACNT
+              , B.NM
+        FROM 
+            TB_CMT_CMNTY_CMNT A
+        INNER JOIN (
+            SELECT 
+                USERID
+                , ACNT
+                , NM 
+            FROM 
+                TB_CMM_USER
+        ) B ON (B.USERID = A.RGTRID)
+        WHERE
+            A.PSTID = #{pstid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+        <!-- 커뮤니티 댓글 삭제(논리) -->
+    <update id="deleteCmntyCmnt" parameterType="CmntyCmntVo">
+        /* QestnrDao.deleteCmntyCmnt */
+        UPDATE TB_CMT_CMNTY_CMNT SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            CMNTID = #{cmntid}
+    </update>
     
 </mapper>

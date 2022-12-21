@@ -16,7 +16,7 @@ import lombok.Data;
  *
  * <pre>
  * com.kbrainc.plum.mng.cmnty.model
- * - QestnrVo.java
+ * - CmntyPstVo.java
  * </pre> 
  *
  * @ClassName : CmntyPstVo
@@ -38,6 +38,12 @@ public class CmntyPstVo extends ParentRequestVo {
     /** 게시판 아이디 */
     private int bbsid;
     
+    /** 커뮤니티 아이디 */
+    private int cmntyid;
+    
+    /** 게시판 템플릿 아이디 */
+    private int cmntyBbsTmplatid;
+    
     /** 게시판 분류 아이디 */
     private String bbsClsfid;
     
@@ -48,19 +54,19 @@ public class CmntyPstVo extends ParentRequestVo {
     private String cn;
     
     /** 부모 게시글 아이디 */
-    private String parntsPstid;
+    private int parntsPstid;
     
     /** 그룹 */
-    private String grp;
+    private int grp;
     
     /** 깊이 */
-    private String dpth;
+    private int dpth;
     
     /** 정렬순서 */
-    private String sortordr;
+    private int sortordr;
     
     /** 조회수 */
-    private String hits;
+    private int hits;
     
     /** 고정 공지 여부 */
     private String fxNtcYn;
@@ -69,13 +75,16 @@ public class CmntyPstVo extends ParentRequestVo {
     private String lgnYn;
     
     /** 파일 그룹 아이디 */
-    private String filegrpid;
+    private Integer filegrpid;
     
     /** 작성자 계정 */
     private String acnt;
     
     /** 작성자 명 */
     private String nm;
+    
+    /** 삭제 게시글 아이디 목록 */
+    private String[] deletePstids;
     
     
     /** 고정 공지 시작 일시 */

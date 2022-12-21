@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.qestnr.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -44,6 +46,7 @@ public class QitemExVo extends ParentRequestVo {
     private int exNo;
     
     /** 내용 */
+    @Size(max = 400, message = "보기내용은 400자 이하여야 합니다.")
     private String cn;
     
     /** 점수 */

@@ -190,4 +190,15 @@ public interface MenuDao {
     * @throws Exception 예외
     */
     public int deleteRoleMenuAuth(MenuVo menu) throws Exception;
+    
+    /**
+    * 현재 폴더의 하위메뉴 목록을 조회한다.
+    *
+    * @Title : selectChildMenuList
+    * @Description : 현재 폴더의 하위메뉴 목록을 조회한다
+    * @param menu MenuVo객체
+    * @return List<MenuVo> 하위메뉴 목록
+    * @throws Exception 예외
+    */
+    public List<MenuVo> selectChildMenuList(MenuVo menu) throws Exception;
 }
