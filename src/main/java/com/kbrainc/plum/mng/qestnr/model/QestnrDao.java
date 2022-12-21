@@ -10,7 +10,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
  *
  * <pre>
  * com.kbrainc.plum.mng.qestnr.model
- * - MemberDao.java
+ * - QestnrDao.java
  * </pre> 
  *
  * @ClassName : QestnrDao

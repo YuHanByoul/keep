@@ -54,20 +54,20 @@ public class CmntyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/cmnty/cmntyForm.html")
+    @RequestMapping(value = "/mng/cmnty/cmntyMng.html")
     public String cmntyForm() throws Exception {
         return "mng/cmnty/cmntyList";
     }
     
     /**
-     * 커뮤니티 상세 화면
+     * 커뮤니티 상세 탭 화면
      *
      * @Title : cmntyDetailForm
-     * @Description : 커뮤니티 상세 화면
+     * @Description : 커뮤니티 상세 탭 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/cmnty/cmntyDetailForm.html")
+    @RequestMapping(value = "/mng/cmnty/cmntyDetail.html")
     public String cmntyDetailForm(CmntyCtgryVo cmntyCtgryVo, Model model) throws Exception {
         model.addAttribute("ctgryList", cmntyService.selectCmntyCtgryList(cmntyCtgryVo));
         return "mng/cmnty/cmntyDetail";
@@ -99,7 +99,7 @@ public class CmntyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/cmnty/cmntyMbrForm.html")
+    @RequestMapping(value = "/mng/cmnty/cmntyMbr.html")
     public String cmntyMbrForm() throws Exception {
         return "mng/cmnty/cmntyMbrList";
     }
@@ -112,7 +112,7 @@ public class CmntyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/cmnty/cmntyPstForm.html")
+    @RequestMapping(value = "/mng/cmnty/cmntyPst.html")
     public String cmntyPstForm() throws Exception {
         return "mng/cmnty/cmntyPstList";
     }

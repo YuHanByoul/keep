@@ -52,29 +52,29 @@ public class QestnrController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/qestnr/qestnrForm.html")
-    public String qestnrForm() throws Exception {
-        return "mng/qestnr/qestnr";
+    @RequestMapping(value = "/mng/qestnr/qestnrMng.html")
+    public String qestnrMng() throws Exception {
+        return "mng/qestnr/qestnrList";
     }
     
     /**
-     * 설문지 등록 화면
+     * 설문지 등록 탭 화면
      *
      * @Title : qestnrForm
-     * @Description : 설문지 등록 화면
+     * @Description : 설문지 등록 탭 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/qestnr/qestnrRegistForm.html")
+    @RequestMapping(value = "/mng/qestnr/qestnrRegist.html")
     public String qestnrRegistForm() throws Exception {
         return "mng/qestnr/qestnrRegist";
     }
      
      /**
-      * 설문지 정보 등록 화면
+      * 설문지 등록 화면
       *
       * @Title : qestnrForm
-      * @Description : 설문지 정보 등록 화면
+      * @Description : 설문지 등록 화면
       * @return String 화면경로
       * @throws Exception 예외
       */
@@ -84,15 +84,15 @@ public class QestnrController {
     }
      
     /**
-     * 설문지 상세 화면
+     * 설문지 상세 탭 화면
      *
      * @Title : qestnrDetailForm
-     * @Description : 설문지 상세 화면
+     * @Description : 설문지 상세 탭 화면
      * @param qestnrVo QestnrVo 객체
      * @return  String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/qestnr/qestnrDetailForm.html")
+    @RequestMapping(value = "/mng/qestnr/qestnrDetail.html")
     public String qestnrDetailForm(QestnrVo qestnrVo, Model model) throws Exception {
         return "mng/qestnr/qestnrDetail";
     }
@@ -123,9 +123,9 @@ public class QestnrController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/qestnr/qitemForm.html")
+    @RequestMapping(value = "/mng/qestnr/qitem.html")
     public String qitemForm(QestnrVo qestnrVo, Model model) throws Exception {
-        return "mng/qestnr/qitem";
+        return "mng/qestnr/qitemList";
     }
        
     /**

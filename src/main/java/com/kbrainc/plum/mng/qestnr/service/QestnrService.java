@@ -36,12 +36,12 @@ public interface QestnrService {
     public int insertQestnr(QestnrVo qestnrVo) throws Exception;
     
     /**
-     * 설문지 정보 등록
+     * 설문지 목록 조회
      *
-     * @Title : insertQestnr 
-     * @Description : 설문지 정보 등록
+     * @Title : selectQestnrList 
+     * @Description : 설문지 목록 조회
      * @param qestnrVo QestnrVo객체
-     * @return int qestrnid
+     * @return List<QestnrVo> 설문지 목록
      * @throws Exception 예외
      */
     public List<QestnrVo> selectQestnrList(QestnrVo qestnrVo) throws Exception;
