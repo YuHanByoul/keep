@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.cmnty.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -64,18 +65,6 @@ public class CmntyVo extends ParentRequestVo {
     
     /** 로고 파일 아이디 */
     private Integer cmntyLogoFileid;
-    
-    /** 공지사항 여부 */
-    private String ntcmttrYn;
-    
-    /** 정보게시판 여부 */
-    private String infobbsYn;
-    
-    /** 자료실 여부 */
-    private String recsroomYn;
-    
-    /** 환경관찰활동 여부 */
-    private String envobservactvtYn;
     
     /** 회원수 */
     private int mbrCnt;

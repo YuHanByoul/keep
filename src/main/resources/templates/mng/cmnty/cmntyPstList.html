@@ -1,0 +1,190 @@
+<div class="tab-pane active" id="cmntyPst" role="tabpanel">
+    <div class="row p-20 p-t-0 p-b-0">
+        <div class="col-12 col-md-6">
+            <h5><strong id="cmntyCtrgyNm"></strong></h5>
+        </div>
+        <div class="col-12 col-md-6 text-right">
+            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="cmntyPst.onDelete();">삭제</button>
+        </div>
+    </div>
+    
+    <div id="cmntyPstGridPanel" class="card-block-small">
+        <table id="cmntyPstGrid" class="table-responsive"></table>
+        <div id="cmntyPstPager" class="text-center"></div>
+    </div>
+    <div id="cmntyPstContentPanel" class="col-12" style="display: none;">
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var cmntyPst = {
+        listUrl: "/mng/cmnty/selectCmntyPstList.do",
+        cmntyBbsTmplatid: /*[[${param.cmntyBbsTmplatid}]]*/,
+        selectedItems: [],
+        
+        init: function() {
+            var tmplatid = this.cmntyBbsTmplatid[0]; 
+            $("#cmntyCtrgyNm").text(tmplatid == 1 ? "공지사항" : tmplatid == 2 ? "정보게시판" : tmplatid == 3 ? "자료실" : "환경관찰활동");
+            cmntyPstGrid = new GridHelper("cmntyPstGrid", "cmntyPstContentPanel");
+            this.setGrid();
+            this.registEvent();    
+        },
+        
+        registEvent: function() {
+            // TODO
+        },
+        
+        setGrid: function() {
+            $("#cmntyPstGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#cmntyPstPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "데이터가 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+                        var params = {
+                            "cmntyid": cmntyDetail.cmntyid[0],
+                            "cmntyBbsTmplatid": cmntyPst.cmntyBbsTmplatid[0],
+                            "searchType": "",
+                            "searchKeyword": "",
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": "REG_DT",
+                            "orderDirection": "desc"
+                        };
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: cmntyPst.listUrl,
+                          data: params,
+                          dataType: "json"
+                        }).done(function(response) {
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    {
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
+                               cmntyPst.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                            });
+                        },
+                        itemTemplate: function(value, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("pstid", item.pstid).prop("checked", $.inArray(item, cmntyPst.selectedItems) > -1).on("change", function() {
+                                $(this).is(":checked") ? cmntyPst.selectItem($(this).attr("pstid")) : cmntyPst.unselectItem($(this).attr("pstid"));
+                            });
+                        },
+                        align: "center", width: "30", sorting: false
+                    },
+                    {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                    {title: "제목", name: "ttl", type: "text", width: "400"},
+                    {title: "작성자", name: "nm", type: "text", key: true, width: "100", align: "center"},
+                    {title: "등록일", name: "regDt", type: "text", width: "100", align: "center"},
+                ],
+                rowClick: function(args) { 
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    var detailUrl = "/mng/cmnty/cmntyPstUpdateForm.html?pstid=" + args.item.pstid;
+                    cmntyPstGrid.loadContent(detailUrl);
+                    cmntyPstGrid.rowClick(args);
+                }
+            });
+        },
+        
+        allSelectItem: function(isChecked) {
+            this.selectedItems = [];
+            if(isChecked) {
+                $('.singleCheckbox').each(function() {
+                    this.checked = true;
+                    cmntyPst.selectItem($(this).attr("pstid"));           
+                }); 
+            } else {
+                $('.singleCheckbox').each(function() {
+                    this.checked = false; 
+                    cmntyPst.unselectItem($(this).attr("pstid"));
+                });  
+                this.selectedItems = [];
+            }
+        },
+        
+        selectItem: function(pstid) {
+            this.selectedItems.push(pstid);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        },
+        
+        unselectItem: function(pstid) {
+            this.selectedItems = $.grep(this.selectedItems, function(i) {
+                return i !== pstid;
+            });
+            if(this.selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr("checked", false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        },
+        
+        onDelete: function() {
+            if(this.selectedItems.length == 0) {
+                alert("선택한 게시글이 없습니다.");
+                return false;
+            }
+            if(!confirm("삭제하시겠습니까?")) {
+                return false;
+            }
+            
+            var param = {deletePstids: this.selectedItems.join(",")};
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/cmnty/deleteCmntyPst.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            cmntyPstGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        
+        resetGrid: function() {
+            cmntyPstGrid.resetListContent();
+        }        
+    };
+    
+    $(function() {
+        cmntyPst.init();
+    });
+</script>

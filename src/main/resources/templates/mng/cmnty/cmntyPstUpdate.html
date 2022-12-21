@@ -1,0 +1,97 @@
+<form id="cmntyPstUpdateForm">
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>기본정보</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="mb-2 form-group row">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="communityNoticeTitle"><strong>제목</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="ttl" id="ttl" th:value="${cmntyPst.cmntyPstInfo.ttl}" readonly/>
+            </div>
+        </div>
+        <div class="mb-2 form-group row">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="nm"><strong>작성자</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="nm" id="nm" th:value="${cmntyPst.cmntyPstInfo.nm} + '(' + ${cmntyPst.cmntyPstInfo.acnt} + ')'" readonly/>
+            </div>
+        </div>
+        <div class="mb-0 form-group row">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
+            <div class="col-sm-12">
+                <textarea rows="5" cols="5" class="form-control form-control-sm" id="cn" name="cn" th:text="${cmntyPst.cmntyPstInfo.cn}" readonly></textarea>
+            </div>
+        </div>
+        <th:block th:if ="${cmntyPst.fileList != null}">
+            <div class="mt-2 row">
+                <ul>
+                    <li th:each="file: ${cmntyPst.fileList}" th:id="${file.fileid}">
+                        <a th:fileid='${file.fileid}' th:fileIdntfcKey="${file.fileIdntfcKey}" th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'));" href="javascript:void(0);">
+                            <i class="ion-paperclip f-18"></i> <th:block th:text="${file.orginlFileNm}" />(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(file.fileSize)}" />)
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </th:block>
+    </div>
+    
+    <th:block th:if="not ${cmntyCmntList.isEmpty()}">
+        <div class="card-header p-t-0 p-b-0">
+            <h3 class="sub-title"><strong>댓글 <th:block th:text="${cmntyCmntList[0].totalCount}" /></strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <ul class="basic-list">
+                <li th:each="cmntyCmnt: ${cmntyCmntList}" th:style="'margin-left: ' + ${(cmntyCmnt.dpth - 1) * 15 + 'px;'}">
+                    <div class="col-12 mb-2 row align-items-center">
+                        <div class="col-11">
+                            <th:block th:if="${cmntyCmnt.dpth == 1}">
+                                <h6 class="m-b-0" th:text="${cmntyCmnt.nm} + ' ' + ${#dates.format(cmntyCmnt.regDt, 'yyyy.MM.dd HH:mm:ss')}"></h6>
+                            </th:block>
+                            <th:block th:unless="${cmntyCmnt.dpth == 1}">
+                                <h6 class="m-b-0" th:text="'ㄴ ' + ${cmntyCmnt.nm} + ' ' + ${#dates.format(cmntyCmnt.regDt, 'yyyy.MM.dd HH:mm:ss')}"></h6>
+                            </th:block>
+                        </div>
+                        <div class="col-1 text-right btn-group-sm p-r-0">
+                            <a href="javascript:void(0);" class="btn btn-inverse" th:cmntid="${cmntyCmnt.cmntid}" onclick="cmntyPstUpdate.onDelete(this.getAttribute('cmntid'));">삭제</a>
+                        </div>
+                    </div>
+                    <p th:text=${cmntyCmnt.cn}></p>
+                </li>
+            </ul>
+            <ul class="m-t-10 pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </th:block>
+</form>
+
+<script th:inline="javascript">
+    var cmntyPstUpdate = {
+        init: function() {
+            // TODO
+        },
+        
+        registEvent: function() {
+            // TODO
+        },
+        
+        onDelete: function(cmntid) {
+            console.log("onDelete: " + cmntid);
+        }
+    };
+    
+    cmntyPstUpdate.init();
+</script>

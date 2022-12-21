@@ -2,32 +2,20 @@
     <ul class="nav nav-tabs  tabs" role="tablist">
         <th:block sec:authorize-url="/mng/cmnty/cmntyUpdateForm.html">
             <li class="nav-item">
-                <a id="cmntyTab" class="nav-link active" data-bs-toggle="tab" href="#cmnty" role="tab"><strong>기본설정</strong></a>
+                <a id="cmntyTab" class="nav-link active" tmplatid="0" data-bs-toggle="tab" href="#cmnty" role="tab"><strong>기본설정</strong></a>
             </li>
             <li class="nav-item">
-                <a id="mbrTab" class="nav-link" data-bs-toggle="tab" href="#mbr" role="tab"><strong>회원</strong></a>
+                <a id="mbrTab" class="nav-link" tmplatid="0" data-bs-toggle="tab" href="#mbr" role="tab"><strong>회원</strong></a>
             </li>
-        </th:block>
-        <th:block th:if="${cmnty.ntcmttrYn == 'Y'}">
-            <li class="nav-item">
-                <a id="ntcmttrTab" class="nav-link" data-bs-toggle="tab" href="#ntcmttr" role="tab"><strong>공지사항</strong></a>
+            <li class="nav-item" th:each="ctgry: ${ctgryList}">
+                <th:block th:switch="${ctgry.cmntyBbsTmplatid}">
+                    <th:block th:case="1"><a id="ntcmttrTab" class="nav-link" tmplatid="1" data-bs-toggle="tab" href="#cmntyPst" role="tab"><strong>공지사항</strong></a></th:block>
+                    <th:block th:case="2"><a id="infobbsTab" class="nav-link" tmplatid="2" data-bs-toggle="tab" href="#cmntyPst" role="tab"><strong>정보게시판</strong></a></th:block>
+                    <th:block th:case="3"><a id="recsroomTab" class="nav-link" tmplatid="3" data-bs-toggle="tab" href="#cmntyPst" role="tab"><strong>자료실</strong></a></th:block>
+                    <th:block th:case="4"><a id="envobservactvtTab" class="nav-link" tmplatid="4" data-bs-toggle="tab" href="#cmntyPst" role="tab"><strong>환경관찰활동</strong></a></th:block>
+                </th:block>
             </li>
-        </th:block>
-        <th:block th:if="${cmnty.infobbsYn == 'Y'}">
-            <li class="nav-item">
-                <a id="infobbsTab" class="nav-link" data-bs-toggle="tab" href="#infobbs" role="tab"><strong>정보게시판</strong></a>
-            </li>
-        </th:block>
-        <th:block th:if="${cmnty.recsroomYn == 'Y'}">
-            <li class="nav-item">
-                <a id="recsroomTab" class="nav-link" data-bs-toggle="tab" href="#recsroom" role="tab"><strong>자료실</strong></a>
-            </li>
-        </th:block>
-        <th:block th:if="${cmnty.envobservactvtYn == 'Y'}">
-            <li class="nav-item">
-                <a id="envobservactvtTab" class="nav-link" data-bs-toggle="tab" href="#envobservactvt" role="tab"><strong>환경관찰활동</strong></a>
-            </li>
-        </th:block>
+        </th:block>    
     </ul>
 </div>
 <div id="tabContent" class="tab-content tabs p-t-20">
@@ -36,6 +24,8 @@
 <script th:inline="javascript">
     var cmntyDetail = {
         cmntyid: /*[[${param.cmntyid}]]*/,
+        ctgryList: /*[[${ctgryList}]]*/,
+        tmplatid: 0,
         
         init: function() {
             this.setTab();
@@ -45,11 +35,11 @@
         setTab: function() {
             var tabFlag = false;
             if(tabFlag == false) {
-                this.selectTab("cmntyTab");
+                this.selectTab("cmntyTab", 0);
                 tabFlag = true;
             }
             if(tabFlag == false) {
-                this.selectTab("mbrTab");
+                this.selectTab("mbrTab", 0);
                 tabFlag = true;
             }
         },
@@ -58,24 +48,26 @@
             var _this = this;
             $(".nav-tabs a").on("show.bs.tab", function(event) {
                 var tabId = event.currentTarget.attributes.id.value;
-                _this.selectTab(tabId);
+                var tmplatid = event.currentTarget.attributes.tmplatid.value;
+                _this.selectTab(tabId, tmplatid);
             });
         },
         
-        selectTab: function(tabId) {
-            var uri; 
+        selectTab: function(tabId, tmplatid) {
+            var uri = "";
             if(tabId == "cmntyTab") {
                 uri = "/mng/cmnty/cmntyUpdateForm.html";
             } else if(tabId == "mbrTab") {
                 uri = "/mng/cmnty/cmntyMbrForm.html";
-            }  else if(tabId == "mbrTab") {
-                uri = "/mng/qestnr/qitemForm.html";
-            }  else if(tabId == "mbrTab") {
-                uri = "/mng/qestnr/qitemForm.html";
-            }  else if(tabId == "mbrTab") {
-                uri = "/mng/qestnr/qitemForm.html";
+            }  else {
+                uri = "/mng/cmnty/cmntyPstForm.html";
             }
-            this.loadTabContent(uri + "?cmntyid=" + this.cmntyid);
+            uri += "?cmntyid=" + this.cmntyid;
+            if(tmplatid != 0) {
+                uri += "&cmntyBbsTmplatid=" + tmplatid;
+            }
+            this.tmplatid = tmplatid;            
+            this.loadTabContent(uri);
             $("#" + tabId).parent().addClass("active");
         },
         
@@ -86,7 +78,7 @@
                 type: "GET",
                 async: "false",
                 dataType: "html",
-                success: function(result) { //요청이 성공했을때 실행되는 콜백 함수
+                success: function(result) { // 요청이 성공했을때 실행되는 콜백 함수
                     $("#tabContent").html(result);
                     scrollIntoView("contentPanel");
                 }

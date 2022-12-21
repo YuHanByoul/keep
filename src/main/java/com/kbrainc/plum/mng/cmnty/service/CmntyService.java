@@ -1,7 +1,10 @@
 package com.kbrainc.plum.mng.cmnty.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.kbrainc.plum.mng.cmnty.model.CmntyCmntVo;
+import com.kbrainc.plum.mng.cmnty.model.CmntyCtgryVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyMbrVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyPstVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyVo;
@@ -41,10 +44,21 @@ public interface CmntyService {
      * @Title : selectCmntyInfo
      * @Description : 커뮤니티 정보 조회
      * @param cmntyVo CmntyVo 객체
-     * @return CmntyVo CmntyVo 객체
+     * @return Map<String, Object> 객체
      * @throws Exception 예외
      */
-    public CmntyVo selectCmntyInfo(CmntyVo cmntyVo) throws Exception;
+    public Map<String, Object> selectCmntyInfo(CmntyVo cmntyVo) throws Exception;
+    
+    /**
+     * 커뮤니티 게시판 템플릿 목록 조회
+     *
+     * @Title : selectCmntyCtgryList
+     * @Description : 커뮤니티 게시판 템플릿 목록 조회
+     * @param cmntyCtgryVo CmntyCtgryVo 객체
+     * @return List<CmntyCtgryVo> 커뮤니티 게시판 템플릿 목록
+     * @throws Exception 예외
+     */
+    public List<CmntyCtgryVo> selectCmntyCtgryList(CmntyCtgryVo cmntyCtgryVo) throws Exception;
     
     /**
      * 커뮤니티 회원 목록 조회
@@ -67,5 +81,38 @@ public interface CmntyService {
      * @throws Exception 예외
      */
     public List<CmntyPstVo> selectCmntyPstList(CmntyPstVo cmntyPstVo) throws Exception;
+    
+    /**
+     * 커뮤니티 게시글 정보 조회
+     *
+     * @Title : selectCmntyPstInfo
+     * @Description : 커뮤니티 게시글 정보 조회
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @return Map<String, Object> 객체
+     * @throws Exception 예외
+     */
+    public Map<String, Object> selectCmntyPstInfo(CmntyPstVo cmntyPstVo) throws Exception;
+    
+    /**
+     * 커뮤니티 게시글 삭제
+     *
+     * @Title : deleteCmntyPst
+     * @Description : 커뮤니티 게시글 삭제
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    public int deleteCmntyPst(CmntyPstVo cmntyPstVo) throws Exception;
+    
+    /**
+     * 커뮤니티 댓글 목록 조회
+     *
+     * @Title : selectCmntyCmntList
+     * @Description : 커뮤니티 댓글 목록 조회
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @return List<CmntyCmntVo> 커뮤니티 댓글 목록
+     * @throws Exception 예외
+     */
+    public List<CmntyCmntVo> selectCmntyCmntList(CmntyPstVo cmntyPstVo) throws Exception;
     
 }
