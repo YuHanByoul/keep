@@ -223,7 +223,7 @@
         <include refid="PaginationMapper.header"/>
         SELECT 
               A.CMNTID
-              , CASE WHEN A.DEL_YN = 'N' THEN CN ELSE '삭제된 댓글입니다' END AS CN
+              , A.CN
               , A.PARNTS_CMNTID
               , A.CMNT_GRP
               , A.DPTH
@@ -245,9 +245,18 @@
         ) B ON (B.USERID = A.RGTRID)
         WHERE
             A.PSTID = #{pstid}
-<!--         ORDER BY -->
-<!--             A.SORTORDR -->
         <include refid="PaginationMapper.footer"/>
     </select>
+    
+        <!-- 커뮤니티 댓글 삭제(논리) -->
+    <update id="deleteCmntyCmnt" parameterType="CmntyCmntVo">
+        /* QestnrDao.deleteCmntyCmnt */
+        UPDATE TB_CMT_CMNTY_CMNT SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            CMNTID = #{cmntid}
+    </update>
     
 </mapper>

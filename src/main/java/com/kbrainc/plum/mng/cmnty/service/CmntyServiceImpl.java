@@ -182,4 +182,22 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
         return cmntyDao.selectCmntyCmntList(cmntyPstVo);
     }
     
+    /**
+     * 커뮤니티 댓글 삭제
+     *
+     * @Title : deleteCmntyPst
+     * @Description : 커뮤니티 게시글 삭제
+     * @param cmntyPstVo CmntyPstVo 객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int deleteCmntyCmnt(CmntyCmntVo cmntyCmntVo) throws Exception {
+        int retVal = 0;
+        retVal = cmntyDao.deleteCmntyCmnt(cmntyCmntVo);
+        
+        return retVal;
+    }
+    
 }

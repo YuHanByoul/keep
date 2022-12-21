@@ -14,13 +14,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.cmnty.model.CmntyCmntVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyCtgryVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyMbrVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyPstVo;
 import com.kbrainc.plum.mng.cmnty.model.CmntyVo;
 import com.kbrainc.plum.mng.cmnty.service.CmntyServiceImpl;
-import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -217,7 +216,7 @@ public class CmntyController {
     /**
      * 커뮤니티 게시글 삭제
      *
-     * @Title : deleteQitem
+     * @Title : deleteCmntyPst
      * @Description : 커뮤니티 게시글 삭제
      * @param cmntyPstVo CmntyPstVo 객체
      * @param bindingResult cmntyPstVo 유효성 검증결과
@@ -241,6 +240,45 @@ public class CmntyController {
         int retVal = 0;
         cmntyPstVo.setUser(user);
         retVal = cmntyService.deleteCmntyPst(cmntyPstVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제에 실패하였습니다");
+        }
+            
+        return resultMap;
+    }
+    
+    /**
+     * 커뮤니티 댓글 삭제
+     *
+     * @Title : deleteQitem
+     * @Description : 커뮤니티 댓글 삭제
+     * @param cmntyCmntVo CmntyCmntVo 객체
+     * @param bindingResult cmntyPstVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/cmnty/deleteCmntyCmnt.do")
+    @ResponseBody
+    public Map<String, Object> deleteCmntyCmnt(@Valid CmntyCmntVo cmntyCmntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        cmntyCmntVo.setUser(user);
+        retVal = cmntyService.deleteCmntyCmnt(cmntyCmntVo);
         
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

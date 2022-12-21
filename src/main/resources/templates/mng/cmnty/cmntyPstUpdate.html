@@ -1,4 +1,5 @@
 <form id="cmntyPstUpdateForm">
+    <input type="hidden" name="pstid" id="pstid" th:value="${cmntyPst.cmntyPstInfo.pstid}" /> 
     <div class="card-header p-b-0">
         <h3 class="sub-title"><strong>기본정보</strong></h3>
     </div>
@@ -44,17 +45,29 @@
                     <div class="col-12 mb-2 row align-items-center">
                         <div class="col-11">
                             <th:block th:if="${cmntyCmnt.dpth == 1}">
-                                <h6 class="m-b-0" th:text="${cmntyCmnt.nm} + ' ' + ${#dates.format(cmntyCmnt.regDt, 'yyyy.MM.dd HH:mm:ss')}"></h6>
+                                <th:block th:if="${cmntyCmnt.delYn == 'N'}">
+                                    <h6 class="m-b-0" th:text="${cmntyCmnt.nm} + ' ' + ${#dates.format(cmntyCmnt.regDt, 'yyyy.MM.dd HH:mm:ss')}"></h6>
+                                </th:block>
+                                <th:block th:unless="${cmntyCmnt.delYn == 'N'}">
+                                    <h6 class="m-b-0">삭제된 댓글입니다.</h6>
+                                </th:block>
                             </th:block>
                             <th:block th:unless="${cmntyCmnt.dpth == 1}">
-                                <h6 class="m-b-0" th:text="'ㄴ ' + ${cmntyCmnt.nm} + ' ' + ${#dates.format(cmntyCmnt.regDt, 'yyyy.MM.dd HH:mm:ss')}"></h6>
+                                <th:block th:if="${cmntyCmnt.delYn == 'N'}">
+                                    <h6 class="m-b-0" th:text="'ㄴ ' + ${cmntyCmnt.nm} + ' ' + ${#dates.format(cmntyCmnt.regDt, 'yyyy.MM.dd HH:mm:ss')}"></h6>
+                                </th:block>
+                                <th:block th:unless="${cmntyCmnt.delYn == 'N'}">
+                                    <h6 class="m-b-0">ㄴ 삭제된 댓글입니다.</h6>
+                                </th:block>
                             </th:block>
                         </div>
-                        <div class="col-1 text-right btn-group-sm p-r-0">
-                            <a href="javascript:void(0);" class="btn btn-inverse" th:cmntid="${cmntyCmnt.cmntid}" onclick="cmntyPstUpdate.onDelete(this.getAttribute('cmntid'));">삭제</a>
-                        </div>
+                        <th:block sec:authorize-url="/mng/cmnty/deleteCmntyCmnt.do" th:if="${cmntyCmnt.delYn == 'N'}">
+                            <div class="col-1 text-right btn-group-sm p-r-0">
+                                <a href="javascript:void(0);" class="btn btn-inverse" th:cmntid="${cmntyCmnt.cmntid}" onclick="cmntyPstUpdate.onDelete(this.getAttribute('cmntid'));">삭제</a>
+                            </div>
+                        </th:block>
                     </div>
-                    <p th:text=${cmntyCmnt.cn}></p>
+                    <p th:if="${cmntyCmnt.delYn == 'N'}" th:text=${cmntyCmnt.cn}></p>
                 </li>
             </ul>
             <ul class="m-t-10 pagination justify-content-center">
@@ -89,7 +102,28 @@
         },
         
         onDelete: function(cmntid) {
-            console.log("onDelete: " + cmntid);
+            if(confirm("삭제하시겠습니까?")) {
+                var param = {cmntid: cmntid};
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url : "/mng/cmnty/deleteCmntyCmnt.do",
+                        type: "POST",
+                        cache: false,
+                        dataType: "json",
+                        data: param,
+                        success: function(response) {
+                            if(response.result == "success") {
+                                alert(response.msg);
+                                var detailUrl = "/mng/cmnty/cmntyPstUpdateForm.html?pstid=" + $("#pstid").val();
+                                cmntyPstGrid.loadContent(detailUrl);
+                            } else {
+                                alert(response.msg);
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }                
+            }
         }
     };
     

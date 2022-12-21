@@ -113,4 +113,15 @@ public interface CmntyDao {
      */
     public List<CmntyCmntVo> selectCmntyCmntList(CmntyPstVo cmntyPstVo) throws Exception;
     
+    /**
+     * 커뮤니티 댓글 삭제
+     *
+     * @Title : deleteCmntyCmnt
+     * @Description : 커뮤니티 댓글 삭제
+     * @param cmntyCmntVo CmntyCmntVo 객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    public int deleteCmntyCmnt(CmntyCmntVo cmntyCmntVo) throws Exception;
+    
 }
