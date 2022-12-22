@@ -1,10 +1,8 @@
-package com.kbrainc.plum.mng.qestnr.service;
+package com.kbrainc.plum.mng.srvy.service;
 
 import java.util.List;
 
-import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
-import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
-import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 
 /**
  * 
@@ -15,14 +13,14 @@ import com.kbrainc.plum.mng.qestnr.model.QitemVo;
  * - QestnrService.java
  * </pre> 
  *
- * @ClassName : QestnrService
- * @Description : 설문지관리 서비스 인터페이스 
+ * @ClassName : SrvyService
+ * @Description : 설문관리 서비스 인터페이스 
  * @author : KBRAINC
- * @date : 2022. 11. 29.
+ * @date : 2022. 12. 21.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
-public interface QestnrService {
+public interface SrvyService {
     
     /**
      * 설문지 정보 등록
@@ -33,18 +31,18 @@ public interface QestnrService {
      * @return int qestrnid
      * @throws Exception 예외
      */
-    public int insertQestnr(QestnrVo qestnrVo) throws Exception;
+    //public int insertQestnr(QestnrVo qestnrVo) throws Exception;
     
     /**
-     * 설문지 목록 조회
+     * 대상자설문 목록 조회
      *
-     * @Title : selectQestnrList 
-     * @Description : 설문지 목록 조회
-     * @param qestnrVo QestnrVo객체
-     * @return List<QestnrVo> 설문지 목록
+     * @Title : selectTrprSrvyList 
+     * @Description : 대상자설문 목록 조회
+     * @param srvyVo SrvyVo객체
+     * @return List<SrvyVo> 설문 목록
      * @throws Exception 예외
      */
-    public List<QestnrVo> selectQestnrList(QestnrVo qestnrVo) throws Exception;
+    public List<SrvyVo> selectTrprSrvyList(SrvyVo srvyVo) throws Exception;
      
     /**
      * 설문지 정보 조회
@@ -55,7 +53,7 @@ public interface QestnrService {
      * @return QestnrVo QestnrVo 객체
      * @throws Exception 예외
      */
-    public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
+    //public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
      
     /**
      * 설문지 정보 업데이트
@@ -66,7 +64,7 @@ public interface QestnrService {
      * @return int update 로우수
      * @throws Exception 예외
      */
-    public int updateQestnr(QestnrVo qestnrVo) throws Exception;
+    //public int updateQestnr(QestnrVo qestnrVo) throws Exception;
      
     /**
      * 설문지 문항 목록 조회
@@ -77,7 +75,7 @@ public interface QestnrService {
      * @return List<QitemVo> 설문지 문항 목록
      * @throws Exception 예외
      */
-    public List<QitemVo> selectQitemList(QitemVo qitemVo) throws Exception;
+    //public List<QitemVo> selectQitemList(QitemVo qitemVo) throws Exception;
       
     /**
      * 설문지 문항 등록
@@ -88,7 +86,7 @@ public interface QestnrService {
      * @return int insert 로우수
      * @throws Exception 예외
      */
-    public int insertQitem(QitemVo qitemVo) throws Exception;
+    //public int insertQitem(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 정보 조회
@@ -99,7 +97,7 @@ public interface QestnrService {
      * @return QitemVo QitemVo 객체
      * @throws Exception 예외
      */
-    public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
+    //public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 보기 목록 조회
@@ -110,7 +108,7 @@ public interface QestnrService {
      * @return List<QitemExVo> 설문지 문항 보기 목록
      * @throws Exception 예외
      */
-    public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception;
+    //public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 정보 업데이트
@@ -121,7 +119,7 @@ public interface QestnrService {
      * @return int update 로우수
      * @throws Exception 예외
      */
-    public int updateQitem(QitemVo qitemVo) throws Exception;
+    //public int updateQitem(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 순서 업데이트
@@ -132,7 +130,7 @@ public interface QestnrService {
      * @return int update 로우수
      * @throws Exception 예외
      */
-    public int updateQitemOrdr(QitemVo qitemVo) throws Exception;
+    //public int updateQitemOrdr(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 삭제
@@ -143,6 +141,6 @@ public interface QestnrService {
      * @return int delete 로우수
      * @throws Exception 예외
      */
-    public int deleteQitem(QitemVo qitemVo) throws Exception;
+    //public int deleteQitem(QitemVo qitemVo) throws Exception;
     
 }

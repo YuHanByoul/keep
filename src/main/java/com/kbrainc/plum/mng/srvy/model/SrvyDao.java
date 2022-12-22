@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.qestnr.model;
+package com.kbrainc.plum.mng.srvy.model;
 
 import java.util.List;
 
@@ -6,22 +6,22 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 /**
  * 
- * 설문지관리 DAO
+ * 설문관리 DAO
  *
  * <pre>
- * com.kbrainc.plum.mng.qestnr.model
- * - QestnrDao.java
+ * com.kbrainc.plum.mng.srvy.model
+ * - SrvyDao.java
  * </pre> 
  *
- * @ClassName : QestnrDao
- * @Description : 설문지관리 DAO 
+ * @ClassName : SrvyDao
+ * @Description : 설문관리 DAO 
  * @author : KBRAINC
- * @date : 2022. 11. 29.
+ * @date : 2022. 12. 21.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Mapper
-public interface QestnrDao {
+public interface SrvyDao {
     
     /**
      * 설문지 정보 등록
@@ -32,18 +32,18 @@ public interface QestnrDao {
      * @return int insert 로우수
      * @throws Exception 예외
      */
-    public int insertQestnr(QestnrVo qestnrVo) throws Exception;
+    //public int insertQestnr(QestnrVo qestnrVo) throws Exception;
     
     /**
-     * 설문지 목록 조회
+     * 대상자설문 목록 조회
      *
-     * @Title : selectQestnrList
-     * @Description : 설문지 목록 조회
-     * @param qestnrVo QestnrVo 객체
-     * @return List<QestnrVo> 설문지 목록
+     * @Title : selectTrprSrvyList
+     * @Description : 대상자설문 목록 조회
+     * @param srvyVo SrvyVo 객체
+     * @return List<SrvyVo> 설문지 목록
      * @throws Exception 예외
      */
-    public List<QestnrVo> selectQestnrList(QestnrVo qestnrVo) throws Exception;
+    public List<SrvyVo> selectTrprSrvyList(SrvyVo srvyVo) throws Exception;
     
     /**
      * 설문지 정보 조회
@@ -54,7 +54,7 @@ public interface QestnrDao {
      * @return QestnrVo QestnrVo 객체
      * @throws Exception 예외
      */
-    public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
+    //public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
     
     /**
      * 설문지 정보 업데이트
@@ -65,7 +65,7 @@ public interface QestnrDao {
      * @return int update 로우수
      * @throws Exception 예외
      */
-    public int updateQestnr(QestnrVo qestnrVo) throws Exception;
+    //public int updateQestnr(QestnrVo qestnrVo) throws Exception;
     
     /**
      * 설문지 문항 조회
@@ -76,7 +76,7 @@ public interface QestnrDao {
      * @return List<QitemVo> 설문지 목록
      * @throws Exception 예외
       */
-    public List<QitemVo> selectQitemList(QitemVo qitemVo) throws Exception;
+    //public List<QitemVo> selectQitemList(QitemVo qitemVo) throws Exception;
      
     /**
      * 설문지 문항 정보 등록
@@ -87,7 +87,7 @@ public interface QestnrDao {
      * @return int insert 로우수
      * @throws Exception 예외
      */
-    public int insertQitem(QitemVo qitemVo) throws Exception;
+    //public int insertQitem(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 보기 정보 등록
@@ -98,7 +98,7 @@ public interface QestnrDao {
      * @return int insert 로우수
      * @throws Exception 예외
      */
-    public int insertQitemEx(QitemExVo qitemExVo) throws Exception;
+    //public int insertQitemEx(QitemExVo qitemExVo) throws Exception;
 
     /**
      * 설문지 문항 정보 조회
@@ -109,7 +109,7 @@ public interface QestnrDao {
      * @return QitemVo QitemVo 객체
      * @throws Exception 예외
      */
-    public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
+    //public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 보기 목록 조회
@@ -120,7 +120,7 @@ public interface QestnrDao {
      * @return List<QitemExVo> 설문지 문항 보기 목록
      * @throws Exception 예외
      */
-    public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception;
+    //public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 정보 업데이트
@@ -131,7 +131,7 @@ public interface QestnrDao {
      * @return int update 로우수
      * @throws Exception 예외
      */
-    public int updateQitem(QitemVo qitemVo) throws Exception;
+    //public int updateQitem(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 다음 문항 정보 조회
@@ -142,7 +142,7 @@ public interface QestnrDao {
      * @return QitemVo QitemVo 객체
      * @throws Exception 예외
      */
-    public QitemVo selectNextQitemInfo(QitemVo qitemVo) throws Exception;
+    //public QitemVo selectNextQitemInfo(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 이전 문항 정보 조회
@@ -153,7 +153,7 @@ public interface QestnrDao {
      * @return QitemVo QitemVo 객체
      * @throws Exception 예외
      */
-    public QitemVo selectPrevQitemInfo(QitemVo qitemVo) throws Exception;
+    //public QitemVo selectPrevQitemInfo(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 순서 업데이트
@@ -164,7 +164,7 @@ public interface QestnrDao {
      * @return int update 로우수
      * @throws Exception 예외
      */
-    public int updateQitemOrdr(QitemVo qitemVo) throws Exception;
+    //public int updateQitemOrdr(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 삭제
@@ -175,7 +175,7 @@ public interface QestnrDao {
      * @return int delete 로우수
      * @throws Exception 예외
      */
-    public int deleteQitem(QitemVo qitemVo) throws Exception;
+    //public int deleteQitem(QitemVo qitemVo) throws Exception;
     
     /**
      * 설문지 문항 보기 삭제
@@ -186,6 +186,6 @@ public interface QestnrDao {
      * @return int delete 로우수
      * @throws Exception 예외
      */
-    public int deleteQitemEx(QitemVo qitemVo) throws Exception;
+    //public int deleteQitemEx(QitemVo qitemVo) throws Exception;
     
 }

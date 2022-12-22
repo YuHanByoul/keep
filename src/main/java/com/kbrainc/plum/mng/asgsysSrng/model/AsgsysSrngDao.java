@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.member.model.MemberVo;
+
 /**
 * 지정제심사관리 DAO클래스.
 *
@@ -18,6 +20,21 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 * @Description : 지정제심사관리 DAO클래스.
 * @author : kbrain
 * @date : 2022. 12. 7.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
+/**
+* [클래스 요약].
+*
+* <pre>
+* com.kbrainc.plum.mng.asgsysSrng.model
+* - AsgsysSrngDao.java
+* </pre>
+*
+* @ClassName : AsgsysSrngDao
+* @Description : TODO
+* @author : kbrain
+* @date : 2022. 12. 21.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -207,7 +224,7 @@ public interface AsgsysSrngDao {
 	* @return List<AsgsysSrngVo>
 	* @throws Exception
 	*/
-	public List<AsgsysSrngVo> selecttchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정
@@ -221,5 +238,48 @@ public interface AsgsysSrngDao {
 	*/
 	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 지원단심사 목록 조회
+	*
+	* @Title : selectSprtgrpSrngList
+	* @Description : 지원단심사 목록 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 상세 조회
+	*
+	* @Title : selectSprtgrpSrng
+	* @Description : 지원단심사 상세 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo
+	* @throws Exception
+	*/
+	public AsgsysSrngVo selectSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 등록
+	*
+	* @Title : insertSprtgrpSrng
+	* @Description : 지원단심사 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 지원단심사 심사의견 수정
+	 *
+	 * @Title : updateSprtgrpSrng
+	 * @Description : 지원단심사 심사의견 수정
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

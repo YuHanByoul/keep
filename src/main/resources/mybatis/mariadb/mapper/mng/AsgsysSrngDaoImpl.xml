@@ -23,6 +23,7 @@
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
+          , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
         FROM
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
@@ -309,7 +310,7 @@
     </update>
 
     <!-- 교구 및 시설목록조회 -->
-    <select id="selecttchaidFcltList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+    <select id="selectTchaidFcltList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selecttchaidFcltList */
         SELECT
             TCHAIDFCLTID
@@ -607,7 +608,6 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-
     <select id="jdgsSrngListExcelDown" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.jdgsSrngListExcelDown */
             SELECT
@@ -662,6 +662,7 @@
         </if>
     </select>
 
+    <!-- 심사위원 심사 상세 조회 -->
     <select id="selectJdgsSrngDetail" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectJdgsSrngDetail */
             SELECT
@@ -745,4 +746,124 @@
     WHERE
         RSLTID = #{rsltid}
     </update>
+
+    <!-- 지원단심사 목록 조회 -->
+    <select id="selectSprtgrpSrngList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSprtgrpSrngList*/
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.PRGRMID
+              , A.SPRTGRPID
+              , B.PRGRM_NM        /* 프로그램명 */
+              , B.INST_NM         /* 기관명 */
+              , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
+              , A.REG_DT          /* 배정일 */
+              , A.VST_DE          /* (현장점검) 방문일 */
+              , A.VST_HR          /* (현장점검) 방문시 */
+              , A.VST_MNT         /* (현장점검) 방문분 */
+              , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
+              , C.STY_YN          /* 숙박여부 */
+              , A.SPLMNT_DMND_OPNN
+              , A.SRNG_OPNN
+              , A.MDFCN_DT
+              , A.MDFRID
+              , A.RGTRID
+        FROM
+            TB_ASS_SPRTGRP_SRNG A
+        INNER JOIN
+            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+        WHERE 1=1
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+            AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- (지원단)진행상태  -->
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.SRGN_STTS_CD = #{searchSrgnSttsCd}
+        </if>
+        <!-- 배정일 검색시작일  -->
+        <if test="searchRegStartDt != null and searchRegStartDt != ''">
+            AND A.REG_DT >= #{searchRegStartDt}
+        </if>
+        <!-- 배정일 검색종료일  -->
+        <if test="searchRegEndDt != null and searchRegEndDt != ''">
+            AND A.REG_DT  <![CDATA[<]]> CAST(CONCAT(#{searchRegEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 현장점검지정일 시작일-->
+        <if test="searchChckDsgnStartDt != null and searchChckDsgnStartDt != ''">
+            AND A.VST_DE >= #{searchChckDsgnStartDt}
+        </if>
+        <!-- 현장점검지정일 종료일-->
+        <if test="searchChckDsgnEndDt != null and searchChckDsgnEndDt != ''">
+            AND A.VST_DE <![CDATA[<]]> CAST(CONCAT(#{searchChckDsgnEndDt},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 숙박여부-->
+        <if test="searchStyYn!= null and searchStyYn != ''">
+            AND C.STY_YN = #{searchStyYn}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 지원단심사 상세 조회 -->
+    <select id="selectSprtgrpSrng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSprtgrpSrng*/
+        SELECT
+                A.PRGRMID
+              , A.SPRTGRPID
+              , B.PRGRM_NM        /* 프로그램명 */
+              , B.INST_NM         /* 기관명 */
+              , A.SRGN_STTS_CD    /* (지원단)심사 진행상태 */
+              , A.REG_DT          /* 배정일 */
+              , C.STY_YN          /* 숙박여부 */
+              , A.SPLMNT_DMND_OPNN
+              , A.SRNG_OPNN
+              , A.MDFCN_DT
+              , A.MDFRID
+              , A.RGTRID
+              , G.FORMID       /*양식ID*/
+              , F.RSLTID
+              , C.STY_NIGHT
+              , C.STY_DAYTM
+              , C.OPER_FRM_CD
+              , IFNULL(E.PRGRMID,'N') AS SFTY_MNG_YN
+    --        , '첨부파일'
+    --        , '증빙서류'
+        FROM
+            TB_ASS_SPRTGRP_SRNG A
+        INNER JOIN
+            TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_SRNG_RSLT F ON A.PRGRMID = F.PRGRMID
+        INNER JOIN
+            TB_ASS_SRNG_FORM G ON G.FORMID = F.FORMID
+        WHERE 1=1
+        AND  A.SPRTGRPID= #{sprtgrpid}
+    </select>
+
+    <!-- 지원단심사 등록 -->
+
+    <!-- 지원단심사의견 수정 -->
+    <update id="updateSprtgrpOpnn" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSprtgrpOpnn */
+        UPDATE
+            TB_ASS_SPRTGRP_SRNG
+        SET
+            SRNG_OPNN = #{srngOpnn}
+          , MDFCN_DT  = NOW()
+          , MDFRID    = #{user.userid}
+        WHERE SPRTGRPID= #{sprtgrpid}
+    </update>
+
 </mapper>
