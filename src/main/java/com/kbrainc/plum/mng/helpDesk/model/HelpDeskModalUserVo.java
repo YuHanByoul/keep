@@ -29,10 +29,14 @@ public class HelpDeskModalUserVo extends ParentRequestVo {
     private String nm;
     /** 담당자 아이디 */
     private String acnt;
+    /** 담당자 기관 일련번호*/
+    private Integer instid;
     /** 담당자 기관명 */
     private String instNm;
     /** 담당자 일련번호 */
     private Integer userid;
     /** 담당자 역할 정보  */
-    private ArrayList<String> roleNm;
+    private String roleNm;
+    /** 기관 검색 정보 */
+    private String searchInst;
 }

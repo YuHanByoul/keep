@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.helpDesk.model;
 
+import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
@@ -20,8 +21,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class HelpDeskAnswrVo {
-    
+public class HelpDeskAnswrVo extends ParentRequestVo {
     /** 로그인사용자 정보 */
     private UserVo user;
     /** 문의 일련번호 */
@@ -46,4 +46,6 @@ public class HelpDeskAnswrVo {
     private String[] helpDeskManager;
     /** 문의 상태코드 */
     private String sttsCd;
+    /** 이전 문의 상태코드*/
+    private String oldSttsCd;
 }

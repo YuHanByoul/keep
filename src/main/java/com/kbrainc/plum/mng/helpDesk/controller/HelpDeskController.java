@@ -2,7 +2,7 @@ package com.kbrainc.plum.mng.helpDesk.controller;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrVo;
-import com.kbrainc.plum.mng.helpDesk.model.HelpDeskManagerVo;
+import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrManagerVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskModalUserVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskVo;
 import com.kbrainc.plum.mng.helpDesk.service.HelpDeskService;
@@ -73,8 +73,8 @@ public class HelpDeskController {
     */
     @RequestMapping(value = "/mng/helpDesk/selectHelpDeskList.do")
     @ResponseBody
-    public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo) throws Exception {
-
+    public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo, @UserInfo UserVo user) throws Exception {
+        helpDeskVo.setUser(user);
         List<HelpDeskVo> list = helpDeskService.selectHelpDeskList(helpDeskVo);
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -106,7 +106,7 @@ public class HelpDeskController {
 
         HelpDeskVo helpDeskInfo = helpDeskService.selectHelpDeskInfo(helpDeskVo);
         HelpDeskAnswrVo helpDeskAnswrInfo = helpDeskService.selectHelpDeskAnswrInfo(helpDeskVo);
-        List<HelpDeskManagerVo> helpDeskManagerInfo = helpDeskService.selectHelpDeskManagerList(helpDeskVo);
+        List<HelpDeskAnswrManagerVo> helpDeskManagerInfo = helpDeskService.selectHelpDeskManagerList(helpDeskVo);
 
         if (helpDeskAnswrInfo == null) {
             helpDeskAnswrInfo = new HelpDeskAnswrVo();
@@ -242,7 +242,7 @@ public class HelpDeskController {
     /**
     * 답변 모달화면
     *
-    * @Title       : helpDeskManagerSearchPopup 
+    * @Title       : helpDeskManagerSearchModal 
     * @Description : TODO
     * @param model
     * @param user
@@ -250,11 +250,23 @@ public class HelpDeskController {
     * @throws Exception
     * @return String 
     */
-    @RequestMapping(value = "/mng/helpDesk/helpDeskManagerSearchPopup.html")
-    public String helpDeskManagerSearchPopup(Model model, @UserInfo UserVo user) throws Exception {
-        return "mng/helpDesk/helpDeskManagerSearchPopup";
+    @RequestMapping(value = "/mng/helpDesk/helpDeskManagerSearchModal.html")
+    public String helpDeskManagerSearchModal(Model model, @UserInfo UserVo user) throws Exception {
+
+        return "mng/helpDesk/helpDeskManagerSearchModal";
     }
 
+    /**
+     * 모달 회원 검색
+     *
+     * @Title       : selectUserList
+     * @Description : TODO
+     * @param helpManagerVo
+     * @param user
+     * @return
+     * @throws Exception
+     * @return Map<String,Object>
+     */
     @RequestMapping(value = "/mng/helpDesk/selectUserInfoList.do")
     @ResponseBody
     public Map<String, Object> selectUserList(HelpDeskModalUserVo helpManagerVo, @UserInfo UserVo user) throws Exception {

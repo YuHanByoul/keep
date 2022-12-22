@@ -2,7 +2,7 @@ package com.kbrainc.plum.mng.helpDesk.service;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrVo;
-import com.kbrainc.plum.mng.helpDesk.model.HelpDeskManagerVo;
+import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrManagerVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskModalUserVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -124,9 +124,9 @@ public interface HelpDeskService {
     * @param helpDeskVo
     * @return
     * @throws Exception
-    * @return List<HelpDeskManagerVo> 
+    * @return List<HelpDeskAnswrManagerVo>
     */
-    public List<HelpDeskManagerVo> selectHelpDeskManagerList(HelpDeskVo helpDeskVo) throws Exception;
+    public List<HelpDeskAnswrManagerVo> selectHelpDeskManagerList(HelpDeskVo helpDeskVo) throws Exception;
 
     /**
     * 담당자 검색모달 담당자 정보 조회

@@ -46,6 +46,7 @@
     <form action="post" name="helpDeskAnswrForm" id="helpDeskAnswrForm" onsubmit="return false;">
         <input type="hidden" name="inqryid" id="inqryid" th:value="${helpDeskInfo.inqryid }" />
         <input type="hidden" name="ansid" id="ansid" th:value="${helpDeskAnswrInfo.ansid}" />
+        <input type="hidden" name="oldSttsCd" id="oldSttsCd" th:value="${helpDeskInfo.sttsCd}"/>
         <div class="card">
 
             <div class="card-header p-b-0">
@@ -83,7 +84,7 @@
                     <div class="mt-2 row">
                         <div class="col-auto" id="managerList">
                             <th:block th:each="helpDeskManager : ${helpDeskManagerInfo}">
-                            <span class="label label-inverse " th:id="|managerId${helpDeskManager.userid}|" name="designatedMangerSpan" th:data-id="${helpDeskManager.userid}">
+                            <span class="label label-inverse " th:id="|managerId${helpDeskManager.userid}|" name="managerInfo" th:data-id="${helpDeskManager.userid}">
                                     [[${helpDeskManager.nm}]] <a href="javascript:void(0)" th:onclick="|removeManagerInfo(${helpDeskManager.userid})|" class="text-white">X</a>
                             </span>
                             </th:block>
@@ -134,24 +135,20 @@
     var insertHelpDeskAnswrUrl = "/mng/helpDesk/insertHelpDeskAnswr.do";
     var updateHelpDeskAnswrUrl = "/mng/helpDesk/updateHelpDeskAnswr.do";
     var managerSearchModal;
-    var selectedMangerInfo = [];
 
     var openHelpDeskManagerSearchModal =()=> {
-        var url = "/mng/helpDesk/helpDeskManagerSearchPopup.html";
-        $("#helpDeskManagerSearchPopup").load(url, function(response, status, xhr) {
+        var url = "/mng/helpDesk/helpDeskManagerSearchModal.html";
+        $("#helpDeskManagerSearchModal").load(url, function(response, status, xhr) {
             if (status == "success") {
-                managerSearchModal = new bootstrap.Modal($('#helpDeskManagerSearchPopup'));
+                managerSearchModal = new bootstrap.Modal($('#helpDeskManagerSearchModal'));
                 managerSearchModal.show();
             }
         });
     }
     $(function(){
         checkValidation();
-
         addClassRequired();
-
         $("#helpDeskAnswrForm #sttsCd").change(function(){
-            console.log('changed');
             addClassRequired();
         })
     })
@@ -178,7 +175,6 @@
     }
 
     function addClassRequired() {
-
         if($('#helpDeskAnswrForm #sttsCd option:selected').val() == '113104') {
                 $('#ttl').closest('.form-group').addClass('required');
                 $('#cn').closest('.form-group').addClass('required');
@@ -258,7 +254,7 @@
         var formData = $('#helpDeskAnswrForm').serializeArray();
         var helpDeskManagerIds = [];
 
-        $("[name=designatedMangerSpan]").each(function(index,item){
+        $("[name=managerInfo]").each(function(index,item){
             helpDeskManagerIds.push($(this).data('id'));
         });
 

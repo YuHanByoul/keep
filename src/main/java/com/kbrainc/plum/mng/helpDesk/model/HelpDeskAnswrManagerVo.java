@@ -7,10 +7,10 @@ import lombok.Data;
 *
 * <pre>
 * com.kbrainc.plum.mng.helpDesk.model
-* - HelpDeskManagerVo.java
+* - HelpDeskAnswrVo.java
 * </pre>
 *
-* @ClassName   : HelpDeskManagerVo
+* @ClassName   : HelpDeskAnswrVo
 * @Description : TODO
 * @author      : KBRAINC_DEV
 * @date        : 2022. 12. 20.
@@ -18,7 +18,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class HelpDeskManagerVo {
+public class HelpDeskAnswrManagerVo {
     /** 문의 일련번호 */
     private Integer inqryid;
     /** 담당자 일련번호 */

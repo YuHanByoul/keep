@@ -25,12 +25,12 @@
             ,#{ttl}
             ,#{cn}
             ,#{filegrpid}
-            ,#{prcrid}
+            ,#{user.userid}
             ,#{rlsYn}
             <choose>
-                <when test="sttsCd == '113104' or sttdCd == '113103' ">
+                <when test="sttsCd == '113104'">
                     ,NOW()
-                    ,DATE_FORMAT(NOW(), '%Y-%m%d')
+                    ,DATE_FORMAT(NOW(), '%Y-%m-%d')
                 </when>
                 <otherwise>
                     ,NULL
@@ -66,10 +66,14 @@
            ,RLS_YN = #{rlsYn}
            ,MDFCN_DT = NOW()
            ,MDFRID = #{user.userid}
+           <if test="oldSttsCd == '113103' and sttsCd == '113104'">
+           ,ANSCMPTN_DT = NOW()
+           ,ANS_DE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+           </if>
         WHERE ANSID= #{ansid}
     </update>
 
-    <update id="updateHelpDeskSttsCd" parameterType="HelpDeskAnswrVo">
+    <update id="updateHelpDeskSttsCd" parameterType="HelpDeskAnswrManagerVo">
         UPDATE TB_CMM_HELPDESK
         SET STTS_CD = #{sttsCd}
         WHERE INQRYID = #{inqryid}
@@ -101,6 +105,7 @@
                 ,F.CD AS STTS_CD
                 ,F.CD_NM AS STTS_CD_NM
                 ,E.NM AS PRCR_NM
+                , CASE WHEN D.PRCRID = #{user.userid} THEN 'Y' ELSE 'N' END AS ASSIGN_YN
         FROM TB_CMM_HELPDESK A
         INNER JOIN(SELECT USERID, NM, ACNT FROM TB_CMM_USER) B
             ON B.USERID = A.USERID
@@ -167,9 +172,10 @@
             , A.CN
             , A.ANS_DE
             , A.RLS_YN
-            FROM TB_CMM_HELPDESK_ANS A
+        FROM TB_CMM_HELPDESK_ANS A
+        WHERE A.INQRYID = #{inqryid}
     </select>
-    <select id="selectHelpDeskManagerList" resultType="HelpDeskManagerVo">
+    <select id="selectHelpDeskManagerList" resultType="HelpDeskAnswrManagerVo">
         SELECT A.INQRYID
             , A.USERID
             , C.NM
@@ -181,38 +187,37 @@
         WHERE A.INQRYID = #{inqryid}
     </select>
 
-    <resultMap id="userInfo" type="HelpDeskModalUserVo">
-        <result property="nm" column="NM"/>
-        <result property="acnt" column="ACNT"/>
-        <result property="instNm" column="INST_NM"/>
-        <result property="userid" column="USERID"/>
-        <collection property="roleNm" javaType="java.util.List" resultMap="roleInfo"/>
-    </resultMap>
-    <resultMap id="roleInfo" type="string">
-        <result property="roleNm" column="ROLE_NM"/>
-    </resultMap>
-
-    <select id="selectUserList" resultMap="userInfo">
-        SELECT A.NM
-            , A.ACNT
-            , B.INST_NM
-            , A.USERID
-            , A.REG_DT
-            , D.NM AS ROLE_NM
-        FROM TB_CMM_USER A
-        LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
-        INNER JOIN
-            TB_CMM_ROLE_USER C ON C.USERID = A.USERID
-        INNER JOIN TB_CMM_ROLE D ON C.ROLEID = D.ROLEID
+    <select id="selectUserList" resultType="HelpDeskModalUserVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+             GROUP_CONCAT(A.NM) ROLE_NM
+             , A.ROLEID
+             , C.USERID
+             , C.NM
+             , C.INSTID
+             , C.REG_DT
+        FROM
+            TB_CMM_ROLE A
+        INNER JOIN TB_CMM_ROLE_USER B ON A.ROLEID = B.ROLEID
+        INNER JOIN TB_CMM_USER C ON B.USERID = C.USERID
         WHERE 1=1
+        AND C.DEL_YN = 'N'
+        AND C.STTS_CD <![CDATA[<>]]>  '9'
+        <choose>
+            <when test='searchInst == "N"'>
+                AND C.INSTID IS NULL
+            </when>
+            <otherwise>
+                <bind name="searchInstValue" value="searchInst" />
+                <include refid="SearchMapper.instLmtCondition">
+                    <property name="tableAlias" value="C" />
+                </include>
+            </otherwise>
+        </choose>
+         GROUP BY C.USERID
+        <include refid="PaginationMapper.footer"/>
     </select>
 
-    <select id="selectUserRoleList" resultType="string">
-        SELECT TB_CMM_ROLE.NM
-        FROM TB_CMM_ROLE_USER
-        INNER JOIN TB_CMM_ROLE ON TB_CMM_ROLE.ROLEID = TB_CMM_ROLE_USER.ROLEID
-        WHERE TB_CMM_ROLE_USER.USERID = #{USERID}
-    </select>
     <select id="selectAttachFileList" resultType="FileVo">
         SELECT
             A.FILEID,

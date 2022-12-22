@@ -105,9 +105,9 @@ public interface HelpDeskDao {
     * @param helpDeskVo
     * @return
     * @throws Exception
-    * @return List<HelpDeskManagerVo> 
+    * @return List<HelpDeskAnswrManagerVo>
     */
-    public List<HelpDeskManagerVo> selectHelpDeskManagerList(HelpDeskVo helpDeskVo) throws Exception;
+    public List<HelpDeskAnswrManagerVo> selectHelpDeskManagerList(HelpDeskVo helpDeskVo) throws Exception;
 
     /**
     * 문의 삭제
@@ -133,18 +133,6 @@ public interface HelpDeskDao {
     * @return List<HelpDeskModalUserVo> 
     */
     public List<HelpDeskModalUserVo> selectUserList(HelpDeskModalUserVo helpDeskModalUserVo) throws Exception;
-
-    /**
-    * 담당자 역할 조회
-    *
-    * @Title       : selectUserRoleList 
-    * @Description : TODO
-    * @param helpDeskModalUserVo
-    * @return
-    * @throws Exception
-    * @return ArrayList<String> 
-    */
-    public ArrayList<String> selectUserRoleList(HelpDeskModalUserVo helpDeskModalUserVo) throws Exception;
 
     /**
     * 문의글 상태코드 수정

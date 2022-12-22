@@ -15,7 +15,7 @@
                                 <div class="mb-0 form-group">
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                     <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                        <select name="searchType" class="form-select form-control form-control-sm form-control-primary form-bg-primary">
+                                        <select name="searchType" id='searchType' class="form-select form-control form-control-sm form-control-primary form-bg-primary">
                                             <option value="">- 선택 -</option>
                                             <option value="nm">이름</option>
                                             <option value="acnt">아이디</option>
@@ -25,9 +25,9 @@
                                 </div>
                             </div>
                             <div class="col-12 col-lg-6">
-                                <div class="mb-0 form-group">
+                                <div class="mb-0 form-group" >
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관</strong></div>
-                                    <th:block kattr:select_inst="searchInst" selectedId="N" firstOptTxt="- 전체 -" firstOptVal="" secondOptTxt="- 소속없음 -" secondOptVal="N"></th:block>
+                                    <th:block kattr:select_inst="searchInst" selectedId="N" firstOptTxt="- 전체 -" firstOptVal="" secondOptTxt="- 소속없음 -" secondOptVal="N" ></th:block>
                                 </div>
                             </div>
                         </div>
@@ -60,22 +60,31 @@
 </div>
 
 <script th:inline="javascript">
-    var modalSelectedItems;
+    var managerSelectedItems;
     $(function() {
-        writeHelpDeskModalData()
-        modalSelectedItems = [];
+        writeHelpDeskModalData();
+        managerSelectedItems = [];
     });
 
     function helpDeskModalSearchInit() {
-
+        $('#helpDeskModalSearchForm #searchKeyword').val('');
+        $('#helpDeskModalSearchForm #searchType').val('');
+        $('#helpDeskModalSearchForm #searchInst').val('');
     }
 
     function helpDeskModalSearch() {
+        if($('#helpDeskModalSearchForm #searchKeyword').val() != '' && $('#helpDeskModalSearchForm #searchType').val() == '') {
+            alert('검색어를 입력해 주십시오.');
+            return;
+        }
+        if($('#helpDeskModalSearchForm #searchKeyword').val() == '' && $('#helpDeskModalSearchForm #searchType').val() != ''){
+            alert('검색조건을 선택해 주십시오.');
+        }
 
+        $("#jsGrid2").jsGrid("reset");
     }
 
     function writeHelpDeskModalData() {
-
         $("#jsGrid2").jsGrid({
             height: "auto",
             width: "100%",
@@ -88,7 +97,7 @@
             pageNextText: "다음",
             pageFirstText: " < 처음 ㅣ",
             pageLastText: " | 마지막 >",
-            pageSize: 10,
+            pageSize: 1,
             pageButtonCount: 10,
             pageLoading: true,
             pageIndex: 1,
@@ -98,7 +107,7 @@
                 loadData: function (filter) {
                     var data = $.Deferred();
 
-                    var formData = $('#searchForm').serializeArray();
+                    var formData = $('#helpDeskModalSearchForm').serializeArray();
                     var params = [
                         {name: "pageNumber", value: filter.pageIndex},
                         {name: "rowPerPage", value: filter.pageSize},
@@ -109,10 +118,7 @@
                         params.push({name: "orderDirection", value: filter.sortOrder});
                     }else{
                         params.push({name: "orderField", value: 'reg_dt'});
-
                     }
-                    /*배정된 문의 asc, 등록일 desc*/
-
                     formData = formData.concat(params);
 
                     $.ajax({
@@ -131,18 +137,19 @@
                     return data.promise();
                 },
             },
-            /*사용자 소속기관 역할*/
             fields: [
                 {
                     headerTemplate: function() {
-                        return $("<input>").attr("type", "checkbox").attr("id", "modalmodalSelectAllCheckBox")
+                        return $("<input>").attr("type", "checkbox").attr("id", "managerSelectAllCheckBox")
                     },
                     itemTemplate: function(_, item) {
-                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-                            //.prop("checked", $.inArray(String(item.userid), modalSelectedItems) > -1)
-                            .prop("checked", $.inArray(item, modalSelectedItems) > -1)
+                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid)
+                            //.prop("checked", $.inArray(String(item.userid), managerSelectedItems) > -1)
+                            .prop("checked", $.inArray(item, managerSelectedItems) > -1)
                             .on("change", function () {
-                                $(this).is(":checked") ? modalSelectItem($(this).parent().next().text(), $(this).parent().next().next().text() ) : modalUnselectItem($(this).parent().next().text(), $(this).parent().next().next().text());
+                                $(this).is(":checked") ?
+                                    managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text())
+                                    : managerUnselectItem($(this).parent().next().text(), $(this).parent().next().next().text());
                             });
                     },
                     align: "center",
@@ -152,74 +159,73 @@
                 { name: 'userid', css:'hide'},
                 { title:'사용자', name: 'nm', type: "text" , width: "150"},
                 { title:'소속기관', name: 'instNm', type: "text" , width: "150", sorting: false},
-                { title:'역할', name: 'roleNm', type: "text" , width: "120", align:"center",
-                    itemTemplate:function(_,item) {
-                        return item.roleNm.join(",");
-                    }}
+                { title:'역할', name: 'roleNm', type: "text" , width: "120", align:"center"}
             ],
-            /*[# sec:authorize-url="/mng/helpDesk/helpDeskDetailForm.html]*/
             rowClick: function (args) {
-                gridHelper1.loadContent(helpDeskDetailUrl + '?inqryid=' + args.item.inqryid);
+                if($("#userid-"+args.item.userid).is(":checked")){
+                    managerUnselectItem(args.item.id, args.item.name);
+                } else {
+                    managerSelectItem(args.item.id, args.item.name);
+                }
             },
-            /*[/]*/
             onPageChanged: function (args) {
-                modalSelectedItems = [];
+                $('#managerSelectAllCheckBox').prop('checked',false);
             }
         });
 
-        var modalSelectItem = function(id, name) {
-            var index = modalSelectedItems.findIndex(item => item.userid === id);
+        var managerSelectItem = function(id, name) {
+            var index = managerSelectedItems.findIndex(item => item.userid === id);
             if(index == -1) {
-                modalSelectedItems.push({"userid": id, "nm" : name});
+                managerSelectedItems.push({"userid": id, "nm" : name});
             }
 
-            if($("#helpDeskManagerSearchPopup.singleCheckbox").length == $("#helpDeskManagerSearchPopup.singleCheckbox:checked").length) {
-                $("#modalSelectAllCheckBox").prop("checked", true);
+            if($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
+                $("#managerSelectAllCheckBox").prop("checked", true);
             } else {
-                $("#modalSelectAllCheckBox").prop("checked", false);
+                $("#managerSelectAllCheckBox").prop("checked", false);
             }
         };
 
-        var modalUnselectItem = function(id, name) {
-            modalSelectedItems = $.grep(modalSelectedItems, function(i) {
+        var managerUnselectItem = function(id, name) {
+            managerSelectedItems = $.grep(managerSelectedItems, function(i) {
                 return i.userid !== id;
             });
-            if(modalSelectedItems.length == 0) {
-                $('#modalSelectAllCheckBox').attr('checked', false);
+            if(managerSelectedItems.length == 0) {
+                $('#managerSelectAllCheckBox').attr('checked', false);
             }
-            if($("#helpDeskManagerSearchPopup.singleCheckbox").length == $("#helpDeskManagerSearchPopup.singleCheckbox:checked").length) {
-                $("#modalSelectAllCheckBox").prop("checked", true);
+            if($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
+                $("#managerSelectAllCheckBox").prop("checked", true);
             } else {
-                $("#modalSelectAllCheckBox").prop("checked", false);
+                $("#managerSelectAllCheckBox").prop("checked", false);
             }
         };
 
-        $("#modalSelectAllCheckBox").click(function(id, name) {
-            modalSelectedItems = [];
+        $("#managerSelectAllCheckBox").click(function(item) {
+            managerSelectedItems = [];
             if(this.checked) { // check select status
-                $('#helpDeskManagerSearchPopup.singleCheckbox').each(function() {
+                $('#helpDeskManagerSearchModal .singleCheckbox').each(function() {
                     this.checked = true;
-                    modalSelectItem($(this).parent().next().text());
+                    managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text());
                 });
             }else {
-                $('#helpDeskManagerSearchPopup.singleCheckbox').each(function() {
+                $('#helpDeskManagerSearchModal .singleCheckbox').each(function() {
                     this.checked = false;
-                    modalUnselectItem(id);
+                    managerUnselectItem(item);
                 });
-                modalSelectedItems = [];
+                managerSelectedItems = [];
             }
         });
     }
 
     function saveManagerInfo(){
         var duplicate = false;
-        for(var item of modalSelectedItems) {
-            if($("#managerId"+item.userid).length > 0  ) {
+
+        for(var item of managerSelectedItems) {
+            if($("#managerId-"+item.userid).length > 0  ) {
                 duplicate = true;
             } else {
-                var content = "<span class='label label-inverse' name='designatedMangerSpan' id='managerId" + item.userid + "' data-id='"+item.userid+"'>" + item.nm + "&nbsp; <a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
+                var content = "<span class='label label-inverse' id='managerId-" + item.userid + "' name='managerInfo' data-id='"+item.userid+"'>" + item.nm + "&nbsp; <a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
                 $("#managerList").append(content);
-                selectedMangerInfo.push(item);
             }
         }
         if(duplicate) {

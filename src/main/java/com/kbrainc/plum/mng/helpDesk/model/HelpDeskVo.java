@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.helpDesk.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 import java.util.Date;
@@ -27,6 +28,8 @@ public class HelpDeskVo extends ParentRequestVo {
     private String clsfCdgrpid = "112";
     /** 상태코드 그룹아이디 */
     private String sttsCdgrpid = "113";
+    /** 로그인 사용자 정보 */
+    private UserVo user;
     /** 문의 일련번호 */
     private Integer inqryid;
     /** 분류코드 */
@@ -54,5 +57,7 @@ public class HelpDeskVo extends ParentRequestVo {
     private Date regDt;
     /** 처리자명 */
     private String prcrNm;
+    /** 본인 처리 여부*/
+    private String assignYn;
 
 }
