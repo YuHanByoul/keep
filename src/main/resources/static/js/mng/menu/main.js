@@ -14,7 +14,6 @@
 	var selectBbsMasterListUrl = "/mng/bbs/selectBbsMasterList.do";
 	var selectChildMenuListUrl = "/mng/menu/selectChildMenuList.do";
 	var menuTree = null;
-	//var menuLayout = null;
 	var prgmTree = null;
 	var innerLayout = null;
 	var bbsList = null;
@@ -86,25 +85,8 @@
 	};
 	$(document).ready(function(){
 		fn_getSiteList();
-		//fn_menuLayout();
 		fn_prgmTreeList();
-		fn_InitMenuForm('');
-		$("input[name='popupYn']").each(function(key,el){
-			$(this).bind('change',function(){
-				if(el.checked){					
-					$("input[name='popupWd']").attr('disabled',false);
-                    $("input[name='popupHg']").attr('disabled',false);
-				}else{					
-					$("input[name='popupWd']").val('');
-                    $("input[name='popupHg']").val('');
-                    $("input[name='popupWd']").attr('disabled',true);
-                    $("input[name='popupHg']").attr('disabled',true);
-				}
-			});
-		});
-		
-		
-		
+
 		$("#doEdit").bind('click',function(){
 			if(!$("#searchForm").valid()) return;
 			
@@ -129,61 +111,32 @@
 			if(!$("#searchForm").valid()) return;
 
 			if(isFlag){
-				//menuLayout.open("west");
 				isFlag = false;
                 isSave = false;
 				$("#menuSave").html("메뉴구성 저장후 닫기");
 				$("#menuCancel").show();
 				$("#layoutMenuInfo").hide();
 				$("#layoutMenuCompose").show();
-				//$("#tabhide").hide();
 			}else{	
 				fn_treeSave();
 				isSave = true;
-				//menuLayout.close("west");
 				isFlag = true;
 				$("#menuSave").html("메뉴구성");
 				$("#menuCancel").hide();
 				$("#layoutMenuInfo").show();
 				$("#layoutMenuCompose").hide();
-				//$("#tabhide").show();
 			}		
 		});
 		
-		/*$("#menuDelete").bind('click', function(){
-			
-			if(!isFlag){
-				alert('프로그램구조가 열린 상태에서는 메뉴구조를 변경할 수 없습니다.');
-				return;
-			}
-			
-			if(!isSave){
-				alert('먼저 메뉴구조를 저장해야 합니다.');
-				return;
-			}
-			
-			if($("#menuid").val() == ""){
-				alert("삭제할 메뉴를 선택해 주십시오.");
-				return;
-			}
-			
-			if(!confirm("삭제 할경우 하위 메뉴까지 삭제가 진행됩니다. 삭제 하시겠습니까?")){
-				return
-			}
-			
-			fn_menuDelete();
-		});*/
-		
 		// 메뉴구성 취소
         $("#menuCancel").bind("click", function(){
-            isSave = true;          
-            //menuLayout.close( "west" );
+            isSave = true;
             isFlag = true;
             $("#menuSave").html("메뉴구성");
             $("#menuCancel").hide();
             $("#layoutMenuInfo").show();
             $("#layoutMenuCompose").hide(); 
-            //$("#tabhide").show();
+
             if(menuTree != null){
                 $("#tree").dynatree("destroy");
                 $("#tree").empty();
@@ -199,51 +152,27 @@
               messages: {
                   siteid  : { required: "사이트를 선택해 주십시오." }
               }
-        })
+        });
+        
+        $("input[name='popupYn']").each(function(key,el){
+            $(this).bind('change',function(){
+                if(el.checked){                 
+                    $("input[name='popupWd']").attr('disabled',false);
+                    $("input[name='popupHg']").attr('disabled',false);
+                }else{                  
+                    $("input[name='popupWd']").val('');
+                    $("input[name='popupHg']").val('');
+                    $("input[name='popupWd']").attr('disabled',true);
+                    $("input[name='popupHg']").attr('disabled',true);
+                }
+            });
+        });
+            
+        switchCherryCallback = function() {
+            fn_InitMenuForm('');
+        }
 	});
-	
-	/*function fn_menuLayout(){
-		menuLayout=$('#menuLayout').layout({
-				slidable: true
-			,	closable: true
-			,	resizable: true
-			,east: {
-				initClosed:	true
-				,	togglerClass: "menuViewClose"
-				,	size: $("#menuLayout").width()
-				,   spacing_closed: 0
-				,   spacing_open: 0
-				,	minSize: '40%'
-				,	maxSize: .99 // 50% of layout width
-				, 	onopen : function(){
-
-				}
-			}
-			,west: {
-				initClosed:	true
-				,	togglerClass: "menuView"
-				,	size: $("#menuLayout").width()
-				,	minSize: '40%'
-				,	maxSize: .99 // 50% of layout width	
-				,   spacing_closed: 0
-				,   spacing_open: 0
-				, 	onopen : function(){
-					isFlag = false;
-					isSave = false;
-				}
-				, 	onclose : function(){
-					isFlag = true;
-				}
-				
-			} 
-			,stateManagement__enabled:	false	
-			});
 		
-		$(".ui-layout-resizer-east").unbind("click");
-		$(".ui-layout-resizer-east").unbind("dblclick");
-		$(".ui-layout-resizer-east .menuViewClose").unbind("click");
-	}*/
-	
 	function fn_menuTreeList(){
 		menuTree = $("#tree").dynatree({
 	    	autoFocus: true,
@@ -254,7 +183,6 @@
 				data: {	
 					siteid: $("#siteid").val(),
 					siteNm: $("#siteid option:selected").text()
-					//srchUrl: $("#srchUrl").val()
 	            }
 			},
 	    	onActivate: function(node) {
@@ -514,12 +442,7 @@
 		});	
 		
 	}
-	
-	function validate(f){
-		//$(f).validate();
-		return true;
-	}
-    
+	    
 	function fn_menuEdit(){
         
 		var f= document.form1;
@@ -622,13 +545,20 @@
     	}
 	}
 	
-	function fn_setMenuForm(data){
-		
+	function fn_setMenuForm(data){		
+		switchCherryArr["loginYn"].enable();
+        switchCherryArr["popupYn"].enable();
+        switchCherryArr["hideYn"].enable();
 		$('input', '#form1').prop('disabled', false);
-        $('input[name="httpsUseYn"]:checkbox', '#form1').prop('disabled', true);
+		
+		// 아래세줄 set로 처리해야함(중요!!)
+		switchCherryArr["httpsUseYn"].enable();
+        toggleSwitch($("#httpsUseYn"), true);
+		switchCherryArr["httpsUseYn"].disable();
+		
         $('select', '#form1').prop('disabled', false);
         $('textarea', '#form1').prop('disabled', false);
-        $('#doEdit', '#form1').prop('disabled', false);
+        $('#doEdit', '#form1').removeClass('disabled', false);
             
 		$("#upprMenuid").val(data.upprMenuid);
 		if(data.menuid != undefined){
@@ -646,8 +576,7 @@
 		if(data.typeCd == 'D'){		//디렉토리
 			$("#urlView").show();
 			$("#newMenutype").hide();
-			$("#menutype").show();
-			//$("#viewRefMenuid").show();
+			
 			var siteInfo = siteInfoMap.get($("#siteid").val());
         
             if(siteInfo != undefined && "U" == siteInfo.sysSeCd) {
@@ -655,21 +584,16 @@
 			}
 			
 			$("#viewPrgmurl").hide();
-			//$("#viewPrgrmTypeCd").hide();
-			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
-			$("input[name='popupYn']").attr('disabled',true);
+			toggleSwitch("#popupYn", false);
+            switchCherryArr["popupYn"].disable();
 		}else {
-			//$("#viewRefMenuid").hide();
 			fn_jsRefMenuInit();
 			$("select[name='refMenuid']").val('');
 			$("#mode").val('U');			
 			$("#urlView").show();
 			$("#newMenutype").hide();
-			$("#menutype").show();
 			$("#viewPrgmurl").show();
-			//$("#viewPrgrmTypeCd").show();
-			$("input[name='popupYn']").attr('disabled',false);
-			$("input[name='popupYn']:checkbox").prop("checked", data.popupYn=="N"?false:true);
+			toggleSwitch("#popupYn", data.popupYn=="N"?false:true);
 			$("input[name='popupWd']").val(data.popupWd);
 			$("input[name='popupHg']").val(data.popupHg);
 		}
@@ -688,35 +612,33 @@
 			$("#url").val("");
 		}
 		
-		$("input[name='httpsUseYn']:checkbox").prop("checked", data.httpsUseYn=="N"?false:true);
 		$("input[name='typeCd']").attr("disabled", true);
 		$("input[name='typeCd']:radio:input[value='"+data.typeCd+"']").prop("checked", true).attr("disabled", false);
 				
 			
 		$("input[name='popupTrgtCd']:radio:input[value='"+data.popupTrgtCd+"']").prop("checked", true);
 		$("input[name='nmExpsrTrgtCd']:radio:input[value='"+data.nmExpsrTrgtCd+"']").prop("checked", true);
-		$("input[name='loginYn']:checkbox").prop("checked", data.loginYn=="N"?false:true);		
-		$("input[name='hideYn']:checkbox").prop("checked", data.hideYn=="N"?false:true);
-		//$("input[name='gstYn']:radio:input[value='"+data.gstYn+"']").prop("checked", true);
+		toggleSwitch($("#loginYn"), data.loginYn=="N"?false:true);
+		toggleSwitch($("#hideYn"), data.hideYn=="N"?false:true);
 		var prgrm_type = ""
 		if(data.ptypeCd == "01"){
 			prgrm_type = "디렉토리";
-			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
-			$("input[name='popupYn']").attr('disabled',true);
+			toggleSwitch("#popupYn", false);
+			switchCherryArr["popupYn"].disable();
 		}else if(data.ptypeCd == "02"){
 			prgrm_type = "메뉴";
 		}else if(data.ptypeCd == "03"){
 			prgrm_type = "메뉴상세";
-			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
-            $("input[name='popupYn']").attr('disabled',true);
+			toggleSwitch("#popupYn", false);
+            switchCherryArr["popupYn"].disable();
 		}else if(data.ptypeCd == "04"){
 			prgrm_type = "기능";
-			$("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
-			$("input[name='popupYn']").attr('disabled',true);
+			toggleSwitch("#popupYn", false);
+            switchCherryArr["popupYn"].disable();
 		}else if(data.ptypeCd == "05"){
 			prgrm_type = "팝업";
-            $("input[name='popupYn']:checkbox").prop("checked", false).trigger('change');
-            $("input[name='popupYn']").attr('disabled',true);
+            toggleSwitch("#popupYn", false);
+            switchCherryArr["popupYn"].disable();
 		}
 		
 		$("#prgrmTypeCd").val(prgrm_type);
@@ -724,6 +646,8 @@
 	}
 	
 	function fn_InitMenuForm(gubun){
+        $('input', '#form1').prop('disabled', false);
+        
         // gubun C:디렉토리등록
 		$("#mode").val(gubun);
 		if(gubun =='C' && $("#menuid").val() != ""){
@@ -737,62 +661,57 @@
 		$("#menuExpln").val('');
 		$("#classNm").val('');
 		$("#prgmurl").val('');
+		
 		if(gubun =='W'){
 			$("#urlView").show();
 		}else{
 			$("#urlView").hide();
 		}
 		
-		//$("#viewRefMenuid").hide();
 		fn_jsRefMenuInit();
 		$("select[name='refMenuid']").val('');
 		$("input[name='popupYn']").attr('disabled',false);
-		
-		if(gubun =='C'){ //디렉토리등록
-			//$("#viewRefMenuid").show();
-			$("input[name='typeCd']").attr('disabled',true);
-			$("input[name='typeCd']:radio:input[value='D']").prop("checked", true).attr("disabled",false);			
-			$("#newMenutype").hide();		
-			$("#menutype").show();
-		}else{ //초기화
-			$("input[name='typeCd']").attr('disabled',false);
-			$("input[name='typeCd']:radio:input[value='P']").prop("checked", true);
-			$("#newMenutype").hide();
-			$("#menutype").show();
-		}		
-		$("input[name='loginYn']:checkbox").prop("checked", true);
-		$("input[name='hideYn']:checkbox").prop("checked", false);
-		$("input[name='httpsUseYn']:checkbox").prop("checked", true);
-		$("input[name='popupYn']:checkbox").prop("checked", true);
-		
-		$("input[name='popupWd']").val('');
-		$("input[name='popupHg']").val('');
-		if(gubun =='C'){
-            $("input[name='popupYn']:checkbox").prop("checked", false);
-			$("input[name='popupYn']").trigger('change');
-			$("input[name='popupYn']").attr('disabled',true);			
-		}else{
-            $("input[name='popupYn']:checkbox").prop("checked", true);
-			$("input[name='popupYn']").trigger('change');			
-		}
-		
-		$("input[name='popupTrgtCd']:radio:input[value='P']").prop("checked", true);
-		$("#viewPrgmurl").hide();
-		//$("#viewPrgrmTypeCd").hide();
-		$("#prgrmTypeCd").val('');
-		
-		if(gubun == 'C'){
-		    $('input', '#form1').prop('disabled', false);
-		    $('input[name="httpsUseYn"]:checkbox', '#form1').prop('disabled', true);
-		    $('select', '#form1').prop('disabled', false);
-		    $('textarea', '#form1').prop('disabled', false);
-		    $('#doEdit', '#form1').prop('disabled', false);
-		}else{
+
+		switchCherryArr["loginYn"].enable();
+        toggleSwitch($("#loginYn"), true);
+        switchCherryArr["hideYn"].enable();
+        toggleSwitch($("#hideYn"), false);
+        switchCherryArr["httpsUseYn"].enable();
+        toggleSwitch($("#httpsUseYn"), true);
+        switchCherryArr["popupYn"].enable();
+        toggleSwitch($("#popupYn"), false);
+
+        $("input[name='typeCd']").attr('disabled',true);
+        
+        if(gubun =='C'){ //디렉토리등록
+            $("input[name='typeCd']:radio:input[value='D']").prop("checked", true).attr("disabled",false);
+            switchCherryArr["httpsUseYn"].disable();
+            switchCherryArr["loginYn"].enable();
+            switchCherryArr["hideYn"].enable();
+            switchCherryArr["popupYn"].disable();
+            $('select', '#form1').prop('disabled', false);
+            $('textarea', '#form1').prop('disabled', false);
+            $('#doEdit', '#form1').removeClass('disabled', false);          
+        }else{ //초기화
+            $("input[name='typeCd']:radio:input[value='P']").prop("checked", true);
+            switchCherryArr["httpsUseYn"].disable();
+            switchCherryArr["loginYn"].disable();
+            switchCherryArr["hideYn"].disable();
+            switchCherryArr["popupYn"].disable();
             $('input', '#form1').prop('disabled', true);
             $('select', '#form1').prop('disabled', true);
             $('textarea', '#form1').prop('disabled', true);
-            $('#doEdit', '#form1').prop('disabled', true);
-        }
+            $('#doEdit', '#form1').addClass('disabled', true);
+        }       
+        		
+		$("input[name='popupWd']").val('');
+        $("input[name='popupHg']").val('');
+        $("input[name='popupWd']").attr('disabled',true);
+        $("input[name='popupHg']").attr('disabled',true);
+		
+		$("input[name='popupTrgtCd']:radio:input[value='P']").prop("checked", true);
+		$("#viewPrgmurl").hide();
+		$("#prgrmTypeCd").val('');
 	}
 	
 	function goSearch(){
@@ -811,15 +730,13 @@
 		if( $("#layoutMenuCompose").css("display") != "none" ){
 			$("#menuCancel").click();
 		}
-		
-		//if(!$("#searchForm").valid()) return;
-		
+
 		if(menuTree != null){
 			$("#tree").dynatree("destroy");
 			$("#tree").empty();
 			menuTree = null;
 		}
-		//$("#srchUrl").val($.trim($("#srchUrl").val()));
+
 		if($("#siteid").val() != ''){
 		    fn_menuTreeList();
 		}
