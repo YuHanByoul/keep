@@ -6,8 +6,11 @@ import java.util.Date;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -79,8 +82,14 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 심사상태코드 */
 	private String srgnSttsCd;
 
+	/** 심사상태코드_명 */
+	private String srgnSttsCdNm;
+
 	/** 지원단상태코드*/
 	private String srngSttsCd;
+
+	/** 지원단상태코드_명*/
+	private String srngSttsCdNm;
 
 	/** 방문일자 */
 	private String vstDe;
@@ -90,6 +99,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
 	/** 방문분 */
 	private String vstMnt;
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+	/** 방문일시 */
+	private String vstDt;
 
     /** 프로그램아이디 */
 	private Integer prgrmid;
@@ -141,6 +154,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 상태_코드 */
 	private String sttsCd;
+
+	/** 상태_코드_명 */
+	private String sttsCdNm;
 
     /** 지정_번호 */
 	private String dsgnNo;
@@ -442,9 +458,11 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 수량 */
     private String qnty;
 
+    /** 지원단 ID */
+    private String sprtgrpid;
 
-
-
+    /** 보완요청 ID */
+    private String splmntDmndOpnn;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
@@ -455,4 +473,66 @@ public class AsgsysSrngVo extends ParentRequestVo {
         UserVo clone = (UserVo) SerializationUtils.clone(this.user);
         return  clone;
     }
+
+    /** 상태코드 */
+	public void setSttsCd(String sttsCd) throws Exception{
+
+        this.sttsCd = sttsCd;
+
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.sttsCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.sttsCd);
+                this.sttsCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+             }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+             }
+        }
+	}
+	/** 심사위원 상태코드 */
+	public void setSrgnSttsCd(String srgnSttsCd) throws Exception{
+
+		this.srgnSttsCd = srgnSttsCd;
+
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.srgnSttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.srgnSttsCd);
+				this.srgnSttsCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return ;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return ;
+			}
+		}
+	}
+	/** 지원단 상태코드 */
+	public void setSrngSttsCd(String srngSttsCd) throws Exception{
+
+		this.srngSttsCd = srngSttsCd;
+
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.srngSttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.srngSttsCd);
+				this.srngSttsCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return ;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return ;
+			}
+		}
+	}
+
 }

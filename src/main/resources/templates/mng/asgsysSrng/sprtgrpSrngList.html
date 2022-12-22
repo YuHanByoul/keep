@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/mainLayout"
+>
+
+<body>
+<div layout:fragment="content">
+<style>
+.hide{ display:none; }
+</style>
+
+<!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+
+            <div class="col-12">
+	            <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+	            <!-- 필터 부분 -->
+	                <div class="card-block-small">
+	                    <div class="row">
+	                    <!-- 키워드 filter -->
+	                        <div class="col-lg-3 mb-2">
+	                            <div class="mb-0 form-group row">
+	                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+	                                <div class="input-group input-group-sm input-group-dropdown mb-0">
+	                                    <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+	                                       <option value="">- 전체 -</option>
+	                                       <option value="searchPrgrmNm">프로그램명</option>
+	                                       <option value="searchInstNm">기관명</option>
+	                                    </select>
+	                                    <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-lg-3 mb-2">
+	                            <div class="mb-0 form-group row">
+	                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+	                                    <strong>심사 진행상태</strong></div>
+	                                <div class="col-sm-12">
+	                                    <span id="searchSrngSttsCd" name="searchSrngSttsCd" kattr:select_code="searchSrngSttsCd" grpCd="119" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-lg-3 mb-2">
+	                            <div class="mb-0 form-group row">
+	                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartAssignDate">
+	                                  <strong>배정일 - 검색시작일</strong>
+	                                </label>
+	                                <div class="col-12">
+	                                    <input class="form-control form-control-sm" type="date" name="searchRegStartDt" id="searchRegStartDt"/>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-lg-3 mb-2">
+	                            <div class="mb-0 form-group row">
+	                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartAssignDate">
+	                                  <strong>배정일 - 검색종료일</strong>
+	                                </label>
+	                                <div class="col-12">
+	                                    <input class="form-control form-control-sm" type="date" name="searchRegEndDt" id="searchRegEndDt"/>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="col-lg-3">
+	                            <div class="mb-0 form-group row">
+	                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+	                                    <strong>숙박여부</strong></div>
+	                                <div class="col-12">
+	                                    <span kattr:radio_yn="searchStyYn" label1="숙박" label2="비숙박" addStyle="margin-top:4px" addClass="col-sm-3" />
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                    <!-- //키워드 filter -->
+	                    <!-- 키워드 filter-btn -->
+	                    <div class="m-t-20 text-center">
+	                        <button class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
+	                        <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
+	                    </div>
+	                </div>
+	            </form>
+            </div>
+            <!-- //필터 부분 -->
+
+            <!-- 그리드 부분 -->
+            <div class="col-12">
+	            <div class="card">
+	                <div class="row p-20 p-b-0">
+	                    <div class="col-12 col-md-6">
+	                        <h5><strong>지원단심사 검색결과</strong></h5>
+	                    </div>
+	                    <div class="col-12 col-md-6 text-right">
+	                        <button type="button" class="btn btn-primary" onclick="fn_excelDownload()">엑셀다운로드</button>
+	                    </div>
+	                </div>
+	                <div class="card-block-small">
+	                    <div class="dt-responsive table-responsive">
+	                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+	                            <table id="jsGrid" class="table-responsive"></table>
+	                            <div id="listPager" class="text-center"></div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+            <!-- Content Area -->
+            <div id="contentPanel" class="panel panel-default" style="display:none"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+    var userid = /*[[${param.userid}]]*/null;
+
+    var selectedItems = [];
+    var gridHelper1;
+
+
+    $(function(){
+
+        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+        writeJsGridData();
+
+
+// 총괄관리자, 우수프로그램 지정제 운영자 계정으로 접속
+// 심사위원 배정된 전체 프로그램 노출
+// 프로그램 심사 불가, 조회만 가능
+
+// 심사위원으로 배정된 계정으로 접속
+// 배정된 프로그램 노출
+// 심사위원으로 배정된 계정만 심사 가능
+
+// 그 외 계정 접속
+// 프로그램 노출 안됨
+// 심사 불가
+
+
+        if(userid != null){
+            //
+        }
+
+    });
+
+    //초기화 버튼
+    function fn_init() {
+        $("#searchType").val("searchPrgrmNm");
+        $("#searchKeyword").val('');
+        $("#searchSrngSttsCd").val('');
+        $("#searchRegStartDt").val('');
+        $("#searchRegEndDt").val('');
+        $("#searchStyYn").val('');
+    }
+
+    //검색버튼
+    function fn_searchForm(){
+        gridHelper1.resetListContent();
+    }
+
+    /* 엑셀 다운로드 */
+    function fn_excelDownload(){
+        var f = document.searchFrm;
+        f.action ="/mng/asgsysSrng/jdgsSrngListExcelDown.do";
+        f.submit();
+    }
+
+    //목록
+        function writeJsGridData(){
+            $("#jsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var formData = $('#searchFrm').serializeArray();
+                        var params = [
+                                {name: "pageNumber", value: filter.pageIndex},
+                                {name: "rowPerPage", value: filter.pageSize},
+                        ]
+
+                        if(filter.sortField != undefined){
+                            params.push({name: "orderField", value: filter.sortField});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        }else{
+                            params.push({name: "orderField", value: 'sprtgrpid, reg_dt'});
+                        }
+
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: "/mng/asgsysSrng/selectSprtgrpSrngList.do",
+                          dataType: "json",
+                          data: formData
+                        }).done(function(response){
+        console.log("@@@@@1");
+        //
+        console.log("@@@@@2");
+                            var da = {
+                                    data : escapeGridData(response.list)
+                                    ,itemsCount : response.totalCount
+                                };
+                          data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                     { name: 'prgrmid', css:'hide'}
+                    ,{ name: 'sprtgrpid', css:'hide'}
+                    ,{ title: 'No.'                 ,name: 'rowNumber',    type: "number", width : "80", align:"center",  sorting :false }
+                    ,{ title: '프로그램명'          ,name: 'prgrmNm',    type: "text", width: "100", aline:"left"}
+                    ,{ title: '기관명'              ,name: 'instNm', type: "text", width: "100", aline:"left"}
+                    ,{ title: '심사진행상태'        ,name: 'srngSttsCdNm',   type: "text", width: "100", aline:"center"}
+                    ,{ title: '배정일'              ,name: 'regDt',  type: "text", align:"center" }
+                    ,{ title: '숙박여부'            ,name: 'styYn',   type: "text", width: "100", align:"center" }
+                    ,{ title: '현장점검 지정일시'   ,name: 'srngDt',  type: "text", align:"center" }
+                ],
+
+                rowClick: function(args) {
+
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+
+                    var detailUrl = "/mng/asgsysSrng/sprtgrpSrngInsertForm.html?sprtgrpid=" + args.item.sprtgrpid
+debugger;
+                    gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                },
+                onPageChanged: function(args) {
+                    selectedItems = [];
+                }
+            });
+
+            var selectItem = function(item) {
+                selectedItems.push(item);
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            var unselectItem = function(item) {
+                selectedItems = $.grep(selectedItems, function(i) {
+                return i !== item;
+                });
+                if(selectedItems.length == 0) {
+                    $('#selectAllCheckbox').attr('checked', false);
+                }
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            $("#selectAllCheckbox").click(function(item) {
+                selectedItems = [];
+                if(this.checked) { // check select status
+                    $('.singleCheckbox').each(function() {
+                        this.checked = true;
+                        selectItem($(this).parent().next().text());
+                    });
+                }else {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = false;
+                        unselectItem(item);
+                    });
+                    selectedItems = [];
+                }
+            });
+        }
+
+
+    </script>
+</div>
+</body>
+</html>

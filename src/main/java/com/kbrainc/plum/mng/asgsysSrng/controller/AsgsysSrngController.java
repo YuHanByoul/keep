@@ -19,9 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
+import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -247,7 +249,7 @@ public class AsgsysSrngController {
     	//프로그램 운영관리 조회
     	model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo));
     	//교구 및 시설 조회
-    	model.addAttribute("tchaidFcltList", asgsysSrngService.selecttchaidFcltList(asgsysSrngVo));
+    	model.addAttribute("tchaidFcltList", asgsysSrngService.selectTchaidFcltList(asgsysSrngVo));
 
 
     	return "mng/asgsysSrng/prgrmOperMngForm";
@@ -509,7 +511,6 @@ public class AsgsysSrngController {
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-
 	//심사신청의 심사위언심사 탭과 name이 중복되어 Detail추가
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngDetailForm.html")
     public String jdgsSrngDetailForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
@@ -519,7 +520,6 @@ public class AsgsysSrngController {
     }
 
     /**
-     * ㅊ
      *
      * @Title       : updateJdgsSrngDetail
      * @Description : asgsysSrng
@@ -558,5 +558,107 @@ public class AsgsysSrngController {
         }
     	return resultMap;
     }
+
+
+    /**********************************************************************************
+     * 지원단심사
+     **********************************************************************************/
+
+    /**
+    * 지원단심사 목록 화면 이동
+    *
+    * @Title       : sprtgrpSrngListForm
+    * @Description : 지원단심사 목록 화면 이동
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngListForm.html")
+    public String sprtgrpSrngListForm() throws Exception {
+        return "mng/asgsysSrng/sprtgrpSrngList";
+    }
+
+    /**
+    * 지원단심사 목록 조회
+    *
+    * @Title       : selectMemberList
+    * @Description : 지원단심사 목록 조회
+    * @param AsgsysSrngVo
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/selectSprtgrpSrngList.do")
+    @ResponseBody
+    public Map<String, Object> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<AsgsysSrngVo> result = null;
+
+        result = asgsysSrngService.selectSprtgrpSrngList(asgsysSrngVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+
+        return resultMap;
+    }
+
+
+    /**
+    * 지원단심사 등록 화면 이동
+    *
+    * @Title       : sprtgrpSrngInsertForm
+    * @Description : 지원단심사 등록 화면 이동
+    * @param model 모델객체
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngInsertForm.html")
+    public String sprtgrpSrngInsertForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+    	model.addAttribute("sprtgrpSrngInfo", asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo));
+        return "mng/asgsysSrng/sprtgrpSrngInsertForm";
+    }
+
+    /**
+    * 지원단심사 등록
+    *
+    * @Title : insertSprtgrpSrng
+    * @Description : 지원단심사 등록
+    * @param asgsysSrngVo
+    * @param user
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
+    @ResponseBody
+    public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	if(null == asgsysSrngVo.getRsltid()) {
+    		retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);
+    		logger.info("insert 심사 #####################"  );
+    	}else {
+    		logger.info("asgsysSrngVo.getRgtrid : " + asgsysSrngVo.getRgtrid() );
+    		retVal = asgsysSrngService.updateSprtgrpSrng(asgsysSrngVo);
+    	}
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "저장에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
 
 }
