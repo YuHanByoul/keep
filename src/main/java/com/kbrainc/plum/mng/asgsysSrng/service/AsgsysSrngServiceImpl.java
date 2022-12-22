@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
@@ -542,8 +543,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     * @throws Exception 예외
     */
     @Override
-	public List<AsgsysSrngVo> selecttchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception {
-		return asgsysSrngDao.selecttchaidFcltList(asgsysSrngVo);
+	public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selectTchaidFcltList(asgsysSrngVo);
 	}
 
     /**
@@ -562,5 +563,69 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	retVal += asgsysSrngDao.updatePrgrmOperMng(asgsysSrngVo);
 		return retVal;
 	}
+
+    /**
+    * 지원단심사 목록 조회
+    *
+    * @Title : selectSprtgrpSrngList
+    * @Description : 지원단심사 목록 조회
+    * @param asgsysSrngVo
+    * @return List<AsgsysSrngVo>
+    * @throws Exception
+    */
+    @Override
+    public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.selectSprtgrpSrngList(asgsysSrngVo);
+	}
+
+    /**
+    * 지원단심사 상세 조회
+    *
+    * @Title : selectSprtgrpSrng
+    * @Description : 지원단심사 상세 조회
+    * @param asgsysSrngVo
+    * @return AsgsysSrngVo
+    * @throws Exception
+    */
+    @Override
+    public AsgsysSrngVo selectSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selectSprtgrpSrng(asgsysSrngVo);
+	}
+
+    /**
+    * 지원단심사 등록
+    *
+    * @Title : insertSprtgrpSrng
+    * @Description : 지원단심사 등록
+    * @param asgsysSrngVo
+    * @return int
+    * @throws Exception
+    */
+    @Override
+    @Transactional
+	public int insertSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
+
+    	int ret=0;
+    	//심사결과insert asgsysSrngDao.insertSprtgrpSrng(asgsysSrngVo)
+    	//심사의견 update
+    	ret = asgsysSrngDao.updateSprtgrpSrng(asgsysSrngVo);
+
+		return ret;
+	}
+
+    /**
+     * 지원단심사 수정
+     *
+     * @Title : updateSprtgrpSrng
+     * @Description : 지원단심사 등록
+     * @param asgsysSrngVo
+     * @return int
+     * @throws Exception
+     */
+    @Override
+    @Transactional
+    public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.updateSprtgrpSrng(asgsysSrngVo);
+    }
 
 }

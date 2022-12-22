@@ -1,228 +1,257 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout/mng/subLayout"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/mainLayout"
 >
 <head>
 <meta charset="utf-8" />
 <body>
-	<div layout:fragment="content">
-	<script src="/js/common/common_mng.js"></script>
-	<script src="/js/common/common.js"></script>
-	<script src="/js/mng/menu/main.js"></script>
-	
+    <div layout:fragment="content" class="page-body">
+    <script type="text/javascript" charset="utf-8" src="/js/common/jquery/jquery.js"></script>
+    <script src="/js/common/common_mng.js"></script>
+    <script src="/js/common/common.js"></script>
+    <script src="/js/mng/menu/main.js"></script>
 
-<form id='hiddenForm' name='hiddenForm' style='display:none' target='hiddenFrame'></form>
-<form id="searchForm" name="searchForm" action="" class="form-horizontal row-border">
-<div class="row">
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="form-group" style="margin-bottom: 0px;"> 
-                <label class="col-md-1 control-label">사이트 선택<span class="text-danger">*</span> </label>
-                <div class="col-md-3 form-group form-control-static ">
-                    <select id="siteid" name="siteid" onchange="goSearch()" class="form-control input-sm" >
-                        <option value="">- 선택 -</option>
-                    </select>
+    <form id='hiddenForm' name='hiddenForm' style='display:none' target='hiddenFrame'></form>
+
+        <div class="row">
+        <form id="searchForm" name="searchForm" action="">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="mb-0 form-group row required">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트 선택</strong></div>
+                            <div class="col-sm-12">
+                                <select id="siteid" name="siteid" onchange="goSearch()" class="form-select form-select-sm form-control-sm">
+                                    <option value="">- 선택 -</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>  
-</div>
-</form>
-<form id="form1" name="form1" method="post" action="" class="form-horizontal row-border">
-	<input type="hidden" name="menuid" id="menuid" />
-	<input type="hidden" name="upprMenuid" id="upprMenuid" />	
-	<input type="hidden" name="mode" id="mode" />
-
-	<ul id="menuContext" class="contextMenu">
-		<th:block sec:authorize-url="/mng/menu/menuRegistInfo.do"><li class="edit"><a href="#folderRegist">디렉토리등록</a></li></th:block>
-	    <!-- <li class="edit"><a href="#directRegist">직접 등록 </a></li> -->
-	    <th:block sec:authorize-url="/mng/menu/menuDeleteInfo.do"><li class="delete"><a href="#delete">삭제</a></li></th:block>
-	    <li class="paste"><a href="#reflash">새로고침</a></li>
-	    <li class="paste"><a href="#allExpend">전체열기</a></li>
-	    <li class="quit"><a href="#allClose">전체닫기</a></li>
-	</ul>
-				
-	<div class="row no-gutter">
-		<div class="col-md-5 col-sm-5 col-xs-12">
-			
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h4>메뉴구조</h4>
-					<div class="pull-right">
-						<button type="button" id="menuSave" class="btn btn-xs btn-warning">메뉴구성</button>
-						<button type="button" id="menuCancel" class="btn btn-xs btn-default" style="display:none">취소</button>
-					</div>
-				</div>
-				<div class="panel-body">
-					<div>
-						<div class="tree thumbnail img-responsive" id="tree"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-7 col-sm-7 col-xs-12" style="height:900px;">
-			<div id="menuLayout" style="height:100%;">
-				<div class="ui-layout-west panel panel-default" id="layoutMenuCompose" style="display:none">
-					<div class="panel-heading">
-						<h4>프로그램구조</h4>
-					</div>
-					<div class="panel-body">
-		    			<div>
-							<div class="tree thumbnail img-responsive" id="prgmTree"></div>
-						</div>
-					</div>
-	            </div>
-	              	
-	            <div class="ui-layout-center panel panel-default" id="layoutMenuInfo">
-	            	<div class="panel-heading">
-				    	<h4>메뉴정보</h4>
-				    </div>
-					<div class="panel-body">
-		            	<div class="form-group">
-		                	<label class="col-md-2 control-label">메뉴ID(프로그램ID)</label>
-		                	<input id="viewMenuid" readonly> 
-		                </div>
-						<div class="form-group">
-		                  	<label class="col-md-2 control-label"><span class="text-danger">*</span> 메뉴명</label>
-		                  	<div class="col-md-10 form-control-static">
-			                    <input type="text" name="nm" id="menuNm"  class="form-control input-sm" maxlength="200">
-		                  	</div>
-		                </div>
-				        <div class="form-group">
-		                	<label class="col-md-2 control-label">메뉴설명</label>
-		                  	<div class="col-md-10 form-control-static">
-		                    	<textarea name="dc" rows="3"  id="menuExpln" class="form-control" maxlength="400"></textarea>
-		                  	</div>
-		                </div>        
-				        <div class="form-group">
-		                	<label class="col-md-2 control-label">메뉴유형</label>
-		                  	<div class="col-md-10 form-control-static" id="menutype">
-								<label class="radio-inline">
-									<input type="radio" name="typeCd" value="D"> 디렉토리
-								</label>
-								<label class="radio-inline">
-									<input type="radio" name="typeCd" value="P" checked> 프로그램
-								</label>
-		                  	</div>
-		                </div>
-		                <div class="form-group" id="viewRefMenuid">
-		                	<label class="col-md-2 control-label">참조메뉴 선택(디렉토리 클릭시 이동할 메뉴</label>
-		                  	<div class="col-md-10 form-control-static">
-		                  	   <select id="refMenuid" name="refMenuid">
-		                  	       <option value="" selected>- 사용안함 -</option>
-		                  	   </select>
-		                  	   <!--ID : <span id="refMenuid"></span><input type="hidden" name="refMenuid" > <button type="button" onclick="fn_jsRefMenuPopup()" id="refMenu" class="btn btn-xs btn-warning">참조메뉴 선택</button> (폴더 클릭시 실행 할 프로그램) <button type="button" onclick="fn_jsRefMenuCancel()" class="btn btn-xs btn-default">취소</button -->
-		                  	</div>
-		                </div>
-				        <div class="form-group">
-					        <div class="col-md-6">
-			                	<label class="col-md-4 control-label">https 지원</label>
-			                  	<div class="col-md-8 form-control-static">
-									<label class="radio-inline">
-										<input type="checkbox" name="httpsUseYn" value="Y" checked disabled>
-									</label>
-								</div>
-							</div>
-							<div class="col-md-6">
-			                	<label class="col-md-4 control-label">로그인 필요 여부</label>
-			                  	<div class="col-md-8 form-control-static">
-									<label class="radio-inline">
-										<input type="checkbox" name="loginYn" value="Y" checked>
-									</label>
-								</div>
-							
-							
-							</div>
-						</div>   
-						<div class="form-group">
-							<div class="col-md-6">
-			                	<label class="col-md-4 control-label">숨김여부</label>
-			                  	<div class="col-md-8 form-control-static">
-									<label class="radio-inline">
-										<input type="checkbox" name="hideYn" value="Y">
-									</label>
-								</div>
-							</div>
-							<div class="col-md-6">
-			                	<label class="col-md-4 control-label">팝업 사용 여부</label>
-			                  	<div class="col-md-8 form-control-static">
-									<label class="radio-inline">
-										<input type="checkbox" name="popupYn" value="Y" checked>
-									</label>
-								</div>							
-							</div>
-						</div>
-				        <div class="form-group">
-				        	<div class="col-md-6">
-			                	<label class="col-md-4 control-label">타겟</label>
-			                  	<div class="col-md-8 form-control-static">
-									<label class="radio-inline">
-										<input type="radio" name="popupTrgtCd" value="P" checked> 현재 창
-									</label>
-									<label class="radio-inline">
-										<input type="radio" name="popupTrgtCd" value="N"> 새 창
-									</label>
-								</div>
-							</div>
-							<div class="col-md-6">
-			                  	<label class="col-md-4 control-label">팝업크기</label>
-			                  	<div class="col-md-2 form-control-static">가로(px)</div>
-			                  	<div class="col-md-2 form-control-static">
-				                	<input type="text" name="popupWd" class="form-control input-sm" style="padding: 5px; font-size: 12px;">
-			                  	</div>
-			                  	<div class="col-md-2 form-control-static">세로(px)</div>
-			                  	<div class="col-md-2 form-control-static">
-				                	<input type="text" name="popupHg" class="form-control input-sm" style="padding: 5px; font-size: 12px;">
-			                  	</div>							
-							</div>
-						</div>        
-						<div class="form-group">
-		                	<label class="col-md-2 control-label">메뉴명 노출 대상</label>
-		                  	<div class="col-md-10 form-control-static">
-								<label class="radio-inline">
-									<input type="radio" name="nmExpsrTrgtCd" value="A"> 로그인 사용자
-								</label>
-								<label class="radio-inline">
-									<input type="radio" name="nmExpsrTrgtCd" value="N" checked> 모두
-								</label>
-							</div>
-						</div>
-						<div class="form-group">
-                            <label class="col-md-2 control-label">style class</label>
-                            <div class="col-md-10 form-control-static">
-                                <input type="text" name="classNm" id="classNm"  class="form-control input-sm" mexlength="200">
+        </form>
+        <form id="form1" name="form1" method="post" action="">
+            <input type="hidden" name="menuid" id="menuid" />
+            <input type="hidden" name="upprMenuid" id="upprMenuid" />   
+            <input type="hidden" name="mode" id="mode" />
+            
+            <ul id="menuContext" class="contextMenu">
+                <th:block sec:authorize-url="/mng/menu/menuRegistInfo.do"><li class="edit"><a href="#folderRegist">디렉토리등록</a></li></th:block>
+                <!-- <li class="edit"><a href="#directRegist">직접 등록 </a></li> -->
+                <th:block sec:authorize-url="/mng/menu/menuDeleteInfo.do"><li class="delete"><a href="#delete">삭제</a></li></th:block>
+                <li class="paste"><a href="#reflash">새로고침</a></li>
+                <li class="paste"><a href="#allExpend">전체열기</a></li>
+                <li class="quit"><a href="#allClose">전체닫기</a></li>
+            </ul>
+        
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12 col-xl-4">
+                                <div class="col-12 mb-3 d-flex align-items-center">
+                                    <div class="col-4">
+                                        <h5>
+                                            <strong>메뉴구조</strong>
+                                        </h5>
+                                    </div>
+                                    <div class="col-8 text-right p-r-0 btn-group-sm">
+                                        <button type="button" id="menuCancel" class="btn btn-inverse" style="display:none">취소</button>
+                                        <button type="button" id="menuSave" class="btn btn-primary">메뉴구성</button>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-block-small" id="tree">
+                                    </div>
+                                </div>
                             </div>
-						</div>
-
-				        <div class="form-group">
-		                	<label class="col-md-2 control-label">프로그램 유형</label>
-		                	<input id="prgrmTypeCd" readonly>
-		                </div>
-		                <div class="form-group" id="viewPrgmurl">
-		                	<label class="col-md-2 control-label">프로그램URL</label>
-		                	<input id="prgmurl" readonly>
-		                </div>
-		                
-						<div class="pull-right">
-							<th:block sec:authorize-url="/mng/menu/menuRegistInfo.do"><button type="button" id="doEdit" class="btn btn-primary">저장</button></th:block>
-						</div>
-					</div>
-				</div>
-
-		 </div><!-- //menuLayout -->
-	  </div>
-	</div>
-	
-</form>
-
-<script type="text/javascript" charset="utf-8" src="/js/common/dynatree/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/common/dynatree/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/common/dynatree/jquery-ui.custom.min.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/common/dynatree/jquery.cookie.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/common/dynatree/jquery.dynatree.js"></script>
-<script type="text/javascript" charset="utf-8" src="/js/common/dynatree/jquery.contextMenu-custom.js"></script>				
-	
-	</div>
+                            <div class="col-12 col-xl-8" id="layoutMenuInfo">
+                                <h5 class="mb-3">
+                                    <strong>메뉴정보</strong>
+                                </h5>
+                                <div class="card">
+                                    <div class="card-block-small">
+                                        <div class="row mb-2">
+                                            <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                                <div class="mb-0 form-group row">
+                                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="menuID"><strong>메뉴ID(프로그램ID)</strong></label>
+                                                    <div class="col-sm-12">
+                                                        <input type="text" class="form-control form-control-sm" id="viewMenuid" readonly="" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-0 form-group row required">
+                                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="menuName"><strong>메뉴명</strong></label>
+                                                    <div class="col-sm-12">
+                                                        <input type="text" class="form-control form-control-sm" name="nm" id="menuNm" maxlength="200" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="menuDescription"><strong>메뉴설명</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" name="dc" id="menuExpln" maxlength="400" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-12 col-md-6 mb-2 mb-md-0">
+                                                <div class="mb-0 form-group row">
+                                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>메뉴유형</strong></div>
+                                                    <div class="col-sm-12">
+                                                        <div class="form-radio" id="menutype">
+                                                            <div class="radio radio-inline">
+                                                                <label class="mb-0 form-label">
+                                                                    <input type="radio" name="typeCd" value="D">
+                                                                    <i class="helper"></i>디렉토리
+                                                                </label>
+                                                            </div>
+                                                            <div class="radio radio-inline">
+                                                                <label class="mb-0 form-label">
+                                                                    <input type="radio" name="typeCd" value="P" checked="checked">
+                                                                    <i class="helper"></i>프로그램
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-0 form-group row">
+                                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>타겟</strong></div>
+                                                    <div class="col-sm-12">
+                                                        <div class="form-radio">
+                                                            <div class="radio radio-inline">
+                                                                <label class="mb-0 form-label">
+                                                                    <input type="radio" name="popupTrgtCd" value="P" checked="checked">
+                                                                    <i class="helper"></i>현재 창
+                                                                </label>
+                                                            </div>
+                                                            <div class="radio radio-inline">
+                                                                <label class="mb-0 form-label">
+                                                                    <input type="radio" name="popupTrgtCd" value="N">
+                                                                    <i class="helper"></i>새 창
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <div class="col-auto">
+                                                <input type="hidden" class="js-single"/>
+                                                <input type="checkbox" class="js-single-small" name="httpsUseYn" id="httpsUseYn" value="Y" checked />
+                                                <label id="httpsUseYnLabel" for="httpsUseYn" class="v-middle">HTTPS지원</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <input type="checkbox" class="js-single-small" name="loginYn" id="loginYn" value="Y" checked />
+                                                <label id="loginYnLabel" for="loginYn" class="v-middle">로그인 필요</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <input type="checkbox" class="js-single-small" name="popupYn" id="popupYn" value="Y" checked />
+                                                <label id="popupYnLabel" for="popupYn" class="v-middle">팝업사용</label>
+                                            </div>
+                                            <div class="col-auto">
+                                                <input type="checkbox" class="js-single-small" name="hideYn" id="hideYn" value="Y" />
+                                                <label id="hideYnLabel" for="hideYn" class="v-middle">숨김</label>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>팝업크기</strong></div>
+                                            <div class="col-12 row">
+                                                <div class="col-12 col-lg-auto input-group input-group-sm">
+                                                    <div class="input-group-text">
+                                                        <span class="text-white" id="basic-addon1">가로(px)</span></div>
+                                                    <input type="text" name="popupWd" class="form-control form-control-sm">
+                                                </div>
+                                                <div class="col-12 col-lg-auto input-group input-group-sm">
+                                                    <div class="input-group-text">
+                                                        <span class="text-white" id="basic-addon1">세로(px)</span></div>
+                                                    <input type="text" name="popupHg" class="form-control form-control-sm">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>메뉴명 노출 대상</strong></div>
+                                            <div class="col-12">
+                                                <div class="form-radio">
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="nmExpsrTrgtCd" value="A">
+                                                            <i class="helper"></i>로그인 사용자
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio radio-inline">
+                                                        <label class="mb-0 form-label">
+                                                            <input type="radio" name="nmExpsrTrgtCd" value="N" checked="checked">
+                                                            <i class="helper"></i>모두
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-0 form-group row">
+                                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="styleClass"><strong>style class</strong></label>
+                                                    <div class="col-sm-12">
+                                                        <input type="text" name="classNm" id="classNm" class="form-control form-control-sm" mexlength="200"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-12 col-md-6 mb-2 mb-md-0" id="viewRefMenuid">
+                                                <div class="mb-0 form-group row">
+                                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>참조메뉴 선택(디렉토리 클릭 시 실행할 프로그램)</strong></div>
+                                                    <div class="col-sm-12">
+                                                        <select id="refMenuid" name="refMenuid" class="form-select form-select-sm form-control-sm">
+                                                            <option value="" selected>- 사용안함 -</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6">
+                                                <div class="mb-0 form-group row">
+                                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="programCategory"><strong>프로그램 유형</strong></label>
+                                                    <div class="col-sm-12">
+                                                        <input type="text" class="form-control form-control-sm" id="prgrmTypeCd" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-2 form-group row">
+                                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="programUrl"><strong>프로그램URL</strong></label>
+                                            <div class="col-sm-12">
+                                                <input type="text" class="form-control form-control-sm" id="prgmurl" readonly />
+                                            </div>
+                                        </div>
+                                        <div class="mb-0 mt-4 form-group row">
+                                            <div class="col-sm-12">
+                                                <th:block sec:authorize-url="/mng/menu/menuRegistInfo.do"><button type="button" id="doEdit" class="btn btn-primary">저장</button></th:block>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-xl-8" id="layoutMenuCompose" style="display:none">
+                                <h5 class="mb-3">
+                                    <strong>프로그램구조</strong>
+                                </h5>
+                                <div class="card">
+                                    <div class="card-block-small" id="prgmTree">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+    </div>
 </body>
 </html>

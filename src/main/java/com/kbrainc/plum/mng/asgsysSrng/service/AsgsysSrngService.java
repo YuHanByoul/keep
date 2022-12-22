@@ -214,7 +214,7 @@ public interface AsgsysSrngService {
 	* @return List<AsgsysSrngVo>
 	* @throws Exception 예외
 	*/
-	 public List<AsgsysSrngVo> selecttchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	 public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정
@@ -226,5 +226,49 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	*/
 	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 목록 조회
+	*
+	* @Title : selectSprtgrpSrngList
+	* @Description : 지원단심사 목록 조회
+	* @param asgsysSrngVo
+	* @return List<MemberVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSprtgrpSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 상세 조회
+	*
+	* @Title : selectSprtgrpSrng
+	* @Description : 지원단심사 상세 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo
+	* @throws Exception
+	*/
+	public AsgsysSrngVo selectSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단심사 등록
+	*
+	* @Title : insertSprtgrpSrng
+	* @Description : 지원단심사 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 지원단심사 수정
+	 *
+	 * @Title : updateSprtgrpSrng
+	 * @Description : 지원단심사 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }
