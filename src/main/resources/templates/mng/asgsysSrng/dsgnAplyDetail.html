@@ -6,79 +6,16 @@
 	    <div class="card-block-small p-t-0">
 	        <div class="row justify-content-center">
 	            <div class="col-auto row align-items-center m-l-0 m-r-0" id="divSttsBar">
-	                <div class="col-auto label label-inverse-info-border" th:classappend="111101 == ${sttsCd} ? 'bg-primary'">
-	                    <span class="f-14 text-white">
-	                       <a th:classappend="111101 == ${sttsCd} ? 'text-white'" href="#btnSel1" onclick="fnUpdateSttsCd(111101)">작성중</a>
-	                   </span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border" th:classappend="111102 == ${sttsCd} ? 'bg-primary'">
-	                    <span class="f-14 text-white">
-	                       <a th:classappend="111102 == ${sttsCd} ? 'text-white'" href="#btnSel1" onclick="fnUpdateSttsCd(111102)">신청완료</a>
-	                   </span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">요건검토중</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">서류요청</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">서류보완</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">심사위원심사</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">지원단심사</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">보완요청</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">보완완료</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">결과보고</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">지정승인</span>
-	                </div>
-	                <div class="col-auto text-primary fs-5">
-	                    <i class="ion-arrow-right-c"></i>
-	                </div>
-	                <div class="col-auto label label-inverse-info-border">
-	                    <span class="f-14">지정탈락</span>
-	                </div>
+                    <th:block th:each="item, no: ${sttsCdList}">
+		               <div class="col-auto label label-inverse-info-border" th:classappend="${item.cd} == ${sttsCd} ? 'bg-primary'" >
+		                   <a th:id="${item.cd}" th:classappend="${item.cd} == ${sttsCd} ? 'text-white'" th:href="'#btnSel'+${no.count}" onclick="fnUpdateSttsCd(this.id)"><th:block th:text="${item.cdNm}"></th:block></a>
+	                   </div>
+	                   <th:block th:if="!${no.last}">
+		                   <div class="col-auto text-primary fs-5">
+			                   <i class="ion-arrow-right-c"></i>
+			               </div>
+                        </th:block>
+                    </th:block>
 	            </div>
 	        </div>
 	    </div>
@@ -86,16 +23,9 @@
 	        <ul class="nav nav-tabs tabs" role="tablist">
 	            <th:block sec:authorize-url="/mng/asgsysSrng/aplyInfoForm.html">
 		            <li class="nav-item">
-		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon1" role="tab" id="tabCon1Link"><strong>신청정보</strong></a>
+		                <a class="nav-link active" data-bs-toggle="tab" href="#tabCon1" role="tab" id="tabCon1Link"><strong>신청정보</strong></a>
 		            </li>
 	            </th:block>
-	            <!-- 심사위원/지원단 배정 탭 제거
-	            <th:block sec:authorize-url="/mng/asgsysSrng/jdgsSprtgrpAltmntForm.html">
-		            <li class="nav-item">
-		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon2" role="tab" id="tabCon2Link"><strong>심사위원/지원단 배정</strong></a>
-		            </li>
-	            </th:block>
-	            -->
 	            <th:block sec:authorize-url="/mng/asgsysSrng/jdgsSrngForm.html">
 		            <li class="nav-item">
 		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon3" role="tab" id="tabCon3Link"><strong>심사위원심사</strong></a>
@@ -119,7 +49,9 @@
 </div>
 <script th:inline="javascript">
 
-    var prgrmid = [[${param.prgrmid}]];
+    /*<![CDATA[*/
+    var prgrmid = /*[[${param.prgrmid}]]*/null;
+    /*]]>*/
 
     $('.nav-tabs a').on('show.bs.tab', function(event) {
 
@@ -133,8 +65,6 @@
     function selectTab(tabId) {
         if(tabId == "tabCon1Link") {
             loadTabContent("/mng/asgsysSrng/aplyInfoForm.html?prgrmid=" + prgrmid);
-//         } else if(tabId == "tabCon2Link") {
-//             loadTabContent("/mng/asgsysSrng/jdgsSprtgrpAltmntForm.html?prgrmid=" + prgrmid);
         } else if(tabId == "tabCon3Link") {
             loadTabContent("/mng/asgsysSrng/jdgsSrngForm.html?prgrmid=" + prgrmid);
         } else if(tabId == "tabCon4Link") {
@@ -146,8 +76,6 @@
     }
 
     function loadTabContent(uri){
-        //$('#myTabContent').load(uri);
-
         $.ajax({
             cache   : false
           , url     : uri
@@ -163,8 +91,6 @@
     }
 
     function initTab() {
-
-    	console.log("dsgnAplyDetailForm start");
 
         var tabFlag = false;
 

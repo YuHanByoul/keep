@@ -464,6 +464,27 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 보완요청 ID */
     private String splmntDmndOpnn;
 
+    /** 사용자 ID */
+    private String userid  ;
+
+    /** 이름 */
+    private String nm      ;
+
+    /** 이메일 */
+    private String eml     ;
+
+    /** 전화번호 */
+    private String telno   ;
+
+    /** 자격증명 */
+    private String crtfctNm;
+
+    /** 주제코드 */
+    private String sbjctCd ;
+
+    /** 지역코드 */
+    private String rgnCd   ;
+
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
         UserVo clone = (UserVo) SerializationUtils.clone(user);

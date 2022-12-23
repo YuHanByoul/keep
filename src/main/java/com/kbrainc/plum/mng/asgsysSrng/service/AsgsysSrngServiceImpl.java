@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -110,7 +111,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return updateCnt;
 
 	}
-
 
 	/**
 	* 지정신청목록 엑셀다운로드
@@ -245,6 +245,20 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		workbook.write(fileOutput);
 		fileOutput.flush();
 		fileOutput.close();
+	}
+
+    /**
+    * 증빙서류 파일목록 조회
+    *
+    * @Title : selectEvdncdcmntFileList
+    * @Description : 증빙서류 파일목록 조회
+    * @param fileVo
+    * @throws Exception
+    * @return List<FileVo>
+    */
+    @Override
+	public List<FileVo> selectEvdncDcmntFileList(FileVo fileVo) throws Exception{
+		return asgsysSrngDao.selectEvdncDcmntFileList(fileVo);
 	}
 
 	/**
@@ -627,5 +641,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	return asgsysSrngDao.updateSprtgrpSrng(asgsysSrngVo);
     }
+
+    /**
+    * 담당자 목록조회
+    *
+    * @Title : selectPicList
+    * @Description : 담당자 목록조회
+    * @param asgsysSrngVo
+    * @return List<AsgsysSrngVo>
+    * @throws Exception
+    */
+    @Override
+	public List<AsgsysSrngVo> selectPicList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.selectPicList(asgsysSrngVo);
+	}
 
 }
