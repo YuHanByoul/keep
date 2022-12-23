@@ -3,9 +3,9 @@ package com.kbrainc.plum.mng.inqry.service;
 import java.util.List;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.inqry.model.InqryAnswrVo;
-import com.kbrainc.plum.mng.inqry.model.InqryVo;
+import com.kbrainc.plum.mng.inqry.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
@@ -80,5 +80,17 @@ public interface InqryService {
     public List<FileVo> selectAttachFileList(FileVo fileVo) throws Exception;
 
     public int deleteInqryInfo(String[] deleteInqryIds, UserVo userVo) throws Exception;
+
+    public List<TelInqryVo> selectTelInqryList(TelInqryVo telInqryVo) throws Exception;
+
+    public TelInqryVo selectTelInqryInfo(TelInqryVo telInqryVo) throws Exception;
+
+    public int insertTelInqry(TelInqryVo telInqryVo) throws Exception;
+
+    public int updateTelInqry(TelInqryVo telInqryVo) throws Exception;
+
+    public List<PopupMemberVo> selectMemberList(TelInqryVo telInqryVo) throws Exception;
+
+    public List<ManagerVo> selectManagerList(Object inqryVo) throws Exception;
 
 }

@@ -1,0 +1,239 @@
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content type_2">
+    <div class="modal-header">
+      <h4 class="modal-title">담당자 검색</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-block-small">
+          <form name="managerSearchForm" id="managerSearchForm" onsubmit="return false;">
+            <div class="row">
+              <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                <div class="mb-0 form-group">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                  <div class="input-group input-group-sm input-group-dropdown mb-0">
+                    <select name="searchType" id="searchType" class="form-select form-control form-control-sm form-control-primary form-bg-primary">
+                      <option value="">- 선택 -</option>
+                      <option value="">이름</option>
+                      <option value="">아이디</option>
+                    </select>
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-lg-6">
+                <div class="mb-0 form-group">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관</strong></div>
+                  <th:block kattr:select_inst="searchInst" selectedId="" firstOptTxt="- 전체 -" firstOptVal="" secondOptTxt="- 소속없음 -" secondOptVal="N" ></th:block>
+                </div>
+              </div>
+            </div>
+            <div class="m-t-20 text-center">
+              <button class="btn btn-disabled m-r-5" onclick="managerSearchInit()">초기화</button>
+              <button class="btn btn-primary" onclick="managerSearch()">검색</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="card m-b-10">
+        <div class="card-block-small">
+          <div class="row">
+            <div class="col-12">
+              <!-- 그리드 부분(임의로 넣어둠) -->
+              <table id="managerJsGrid" class="table-responsive"></table>
+              <div id="managerListPager" class="text-center"></div>
+              <!-- //그리드 부분(임의로 넣어둠) -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary waves-effect waves-light" onclick="saveManagerInfo()">선택</button>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  var managerSelectedItems;
+  var managerGridHelpr;
+
+  $(function() {
+    managerGridHelpr = new GridHelper('managerJsGrid')
+    writeHelpDeskModalData()
+    managerSelectedItems = [];
+  });
+
+  function managerSearchInit() {
+    $('#managerSearchForm #searchType').val('');
+    $('#managerSearchForm #searchKeyword').val('');
+    $('#managerSearchForm #searchSite').val('');
+  }
+
+  function managerSearch() {
+    if($('#managerSearchForm #searchType').val() != '' && $('#managerSearchForm #searchKeyword').val() == ""){
+      alert('검색어를 입력해 주십시오.');
+      return;
+    }
+    managerGridHelpr.resetListContent();
+  }
+
+  function writeHelpDeskModalData() {
+    $("#managerJsGrid").jsGrid({
+      height: "auto",
+      width: "100%",
+      autoload: true,
+      sorting: true,
+      paging: true,
+      pagerContainer: "#managerListPager",
+      pagerFormat: "{first} {prev} {pages} {next} {last}",
+      pagePrevText: "이전",
+      pageNextText: "다음",
+      pageFirstText: " < 처음 ㅣ",
+      pageLastText: " | 마지막 >",
+      pageSize: 10,
+      pageButtonCount: 10,
+      pageLoading: true,
+      pageIndex: 1,
+      noDataContent: "데이터가 없습니다.",
+
+      controller: {
+        loadData: function (filter) {
+          var data = $.Deferred();
+
+          var formData = $('#managerSearchForm').serializeArray();
+          var params = [
+            {name: "pageNumber", value: filter.pageIndex},
+            {name: "rowPerPage", value: filter.pageSize},
+          ]
+
+          if(filter.sortField != undefined){
+            params.push({name: "orderField", value: filter.sortField});
+            params.push({name: "orderDirection", value: filter.sortOrder});
+          }else{
+            params.push({name: "orderField", value: 'reg_dt'});
+          }
+
+          formData = formData.concat(params);
+
+          $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "/mng/helpDesk/selectUserInfoList.do",
+            dataType: "json",
+            data: formData,
+          }).done(function(response){
+            var da = {
+              data : escapeGridData(response.list)
+              ,itemsCount : response.totalCount
+            };
+            data.resolve(da);
+          });
+          return data.promise();
+        },
+      },
+      fields: [
+        {
+          headerTemplate: function() {
+            return $("<input>").attr("type", "checkbox").attr("id", "managerSelectAllCheckBox")
+          },
+          itemTemplate: function(_, item) {
+            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                    //.prop("checked", $.inArray(String(item.userid), modalSelectedItems) > -1)
+                    .prop("checked", $.inArray(item, managerSelectedItems) > -1)
+                    .on("change", function () {
+                      $(this).is(":checked") ?
+                              managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text() )
+                              : managerUnselectItem($(this).parent().next().text(), $(this).parent().next().next().text());
+                    });
+          },
+          align: "center",
+          width: "50",
+          sorting: false
+        },
+        { name: 'userid', css:'hide'},
+        { title:'사용자', name: 'nm', type: "text" , width: "150"},
+        { title:'소속기관', name: 'instNm', type: "text" , width: "150", sorting: false},
+        { title:'역할', name: 'roleNm', type: "text" , width: "120", align:"center"}
+      ],
+      rowClick: function (args) {
+        if($("#userid-"+args.item.userid).is(":checked")){
+          managerUnselectItem(args.item.id, args.item.name);
+        } else {
+          managerSelectItem(args.item.id, args.item.name);
+        }
+      },
+      onPageChanged: function (args) {
+        $('#managerSelectAllCheckBox').prop('checked',false);
+      }
+    });
+
+    var managerSelectItem = function(id, name) {
+      var index = managerSelectedItems.findIndex(item => item.userid === id);
+      if(index == -1) {
+        managerSelectedItems.push({"userid": id, "nm" : name});
+      }
+
+      if($("#managerPopup .singleCheckbox").length == $("#managerPopup .singleCheckbox:checked").length) {
+        $("#managerSelectAllCheckBox").prop("checked", true);
+      } else {
+        $("#managerSelectAllCheckBox").prop("checked", false);
+      }
+    };
+
+    var managerUnselectItem = function(id, name) {
+      managerSelectedItems = $.grep(managerSelectedItems, function(i) {
+        return i.userid !== id;
+      });
+      if(managerSelectedItems.length == 0) {
+        $('#managerSelectAllCheckBox').attr('checked', false);
+      }
+      if($("#managerPopup .singleCheckbox").length == $("#managerPopup .singleCheckbox:checked").length) {
+        $("#managerSelectAllCheckBox").prop("checked", true);
+      } else {
+        $("#managerSelectAllCheckBox").prop("checked", false);
+      }
+    };
+
+    $("#managerSelectAllCheckBox").click(function(item) {
+      managerSelectedItems = [];
+      if(this.checked) { // check select status
+        $('#managerPopup .singleCheckbox').each(function() {
+          this.checked = true;
+          managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text() );
+        });
+      }else {
+        $('#managerPopup .singleCheckbox').each(function() {
+          this.checked = false;
+          managerUnselectItem($(this).parent().next().text(), $(this).parent().next().next().text() );
+        });
+        managerSelectedItems = [];
+      }
+    });
+  }
+
+  function saveManagerInfo(){
+    var duplicate = false;
+    for(var item of managerSelectedItems) {
+      if($("#managerId-"+item.userid).length > 0  ) {
+        duplicate = true;
+      } else {
+        var content = "<span class='label label-inverse' name='managerInfo' id='managerId-" + item.userid + "' data-id='"+item.userid+"'>" + item.nm + "&nbsp; <a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
+        $("#managerList").append(content);
+      }
+    }
+    if(duplicate) {
+      alert('이미 등록한 담당자를 제외하고 추가하였습니다.')
+    }
+
+    managerPopup.hide();
+  }
+
+  function removeManagerInfo(userid) {
+    $("#managerId-"+userid).remove();
+  }
+
+</script>

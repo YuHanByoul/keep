@@ -1,0 +1,219 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div class="modal-dialog modal-lg" role="document">
+    <form name="telInqryDetailForm" id="telInqryDetailForm" method="post" action="">
+      <input type="hidden" id="userid" name="userid" th:value="${telInqryInfo?.userid}">
+      <input type="hidden" id="oldSttsCd" name="oldSttsCd" th:value="${telInqryInfo?.oldSttsCd}">
+      <input type="hidden" id="telinqryid" name="telinqryid" th:value="${telInqryInfo?.telinqryid}">
+
+    <div class="modal-content type_2">
+      <div class="modal-header">
+        <h4 class="modal-title">전화문의 등록/수정</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <div class="card-block-small">
+            <div class="mb-2 form-group row">
+              <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+              <div class="col-12">
+                <th:block kattr:select_code="clsfCd" th:attr="grpCd=122,selectedCd=${telInqryInfo.clsfCd}"  upprCd="0" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
+              </div>
+            </div>
+            <div class="mb-2 form-group row">
+              <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>회원검색</strong></div>
+              <div class="col-sm-12 btn-group-sm">
+                <a href="#" class="btn btn-inverse" onclick="openMemberSearchPopup()">회원검색</a>
+              </div>
+            </div>
+            <div class="mb-2 row">
+              <div class="col-12 col-lg-6 mb-2 mb-lg-0 form-group required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                       for="userNm"><strong>회원명</strong></label>
+                <input type="text" class="form-control form-control-sm" name="userNm" id="userNm" placeholder="회원명" th:value="${telInqryInfo.userNm}">
+              </div>
+              <div class="col-12 col-sm-6 mb-0 form-group">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                       for="rcptDt"><strong>문의 접수일시</strong></label>
+                <input class="form-control form-control-sm" type="text" name="rcptDt" id="rcptDt"
+                       th:value="${telInqryInfo.rcptDt == null ? #dates.format(#dates.createNow() , 'yyyy-MM-dd HH:mm:ss'): #dates.format(telInqryInfo.rcptDt, 'yyyy-MM-dd HH:mm:ss') } " readonly/>
+              </div>
+            </div>
+            <div class="mb-2 row">
+              <div class="col-12 col-lg-6 mb-2 mb-lg-0 form-group">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                       for="cntct"><strong>연락처</strong></label>
+                <input type="text" class="form-control form-control-sm" name="cntct" id="cntct" placeholder="연락처" th:value="${telInqryInfo.cntct}">
+              </div>
+              <div class="col-12 col-sm-6 mb-0 form-group">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eml"><strong>이메일</strong></label>
+                <input type="text" class="form-control form-control-sm" name="eml" id="eml" placeholder="이메일" th:value="${telInqryInfo.eml}">
+              </div>
+            </div>
+            <div class="mb-2 form-group row">
+              <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+              <div class="col-12">
+                <th:block kattr:select_code="sttsCd" th:attr="grpCd=123,selectedCd=${telInqryInfo.sttsCd}" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card m-b-10">
+          <div class="card-block-small">
+            <div class="mb-2 form-group row required">
+              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>문의</strong></label>
+              <div class="col-sm-12">
+                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="문의 내용" id="cn" name="cn" th:utext="${telInqryInfo.cn}"></textarea>
+              </div>
+            </div>
+            <div class="mb-2 form-group row">
+              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ans">
+                <strong>
+                  답변 <th:block th:if="${telInqryInfo.anscmptnDt != null}">- [[${telInqryInfo.picNm}]] <th:block th:text="${#dates.format(telInqryInfo.anscmptnDt,'yyyy-MM-dd HH:mm:ss')}"/> </th:block>
+                </strong>
+              </label>
+              <div class="col-sm-12">
+                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="답변 내용" id="ans" name="ans" th:utext="${telInqryInfo.ans}"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card m-b-10">
+          <div class="card-block-small">
+            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 지정</strong></div>
+            <div class="col-sm-12 btn-group-sm">
+              <button type="button" class="btn btn-inverse" onclick="openManagerSearchPopup()">담당자 검색</button>
+            </div>
+            <div class="mt-2 row">
+              <div class="col-auto" id="managerList">
+                <th:block th:each="manager : ${managerInfo}">
+                            <span class="label label-inverse " th:id="|managerId-${manager.userid}|" name="managerInfo" th:data-id="${manager.userid}">
+                                    [[${manager.nm}]] <a href="javascript:void(0)" th:onclick="|removeManagerInfo(${manager.userid})|" class="text-white">X</a>
+                            </span>
+                </th:block>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <th:block sec:authorize-url="/mng/inqry/insertTelInqry.do">
+          <button type="button" class="btn btn-primary waves-effect waves-light" onclick="saveTelInqry()">저장</button>
+        </th:block>
+      </div>
+    </div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+  var telInqryInsertUrl = "/mng/inqry/insertTelInqry.do";
+  var telInqryUpdateUrl = "/mng/inqry/updateTelInqry.do";
+  function openMemberSearchPopup() {
+    var url = "/mng/inqry/telInqryMemberSearchPopup.html";
+    $("#telInqryMemberSearchPopup").load(url, function (response, status, xhr) {
+      if (status == "success") {
+        telInqryMemberSearchModal = new bootstrap.Modal($('#telInqryMemberSearchPopup'));
+        telInqryMemberSearchModal.show();
+      }
+    });
+  }
+
+  function openManagerSearchPopup() {
+    var url = "/mng/inqry/managerSearchPopup.html";
+    $("#managerPopup").load(url, function (response, status, xhr) {
+      if (status == "success") {
+        managerPopup = new bootstrap.Modal($('#managerPopup'));
+        managerPopup.show();
+      }
+    });
+  }
+
+  function saveTelInqry() {
+    var url = telInqryInsertUrl;
+    if ($('#telinqryid').val() != '') {
+      url = telInqryUpdateUrl;
+    }
+
+    if (url == telInqryInsertUrl) {
+      var isSec = false;
+      /*[# sec:authorize-url="/mng/inqry/insertTelInqry.do"]*/
+      isSec = true;
+      /*[/]*/
+      if (!isSec) {
+        alert('접근권한이 없습니다.');
+        return;
+      }
+    } else if (url == telInqryUpdateUrl) {
+      var isSec = false;
+      /*[# sec:authorize-url="/mng/inqry/updateTelInqry.do"]*/
+      isSec = true;
+      /*[/]*/
+      if (!isSec) {
+        alert('접근권한이 없습니다.');
+        return;
+      }
+    }
+
+    if (!$("#telInqryDetailForm").valid()) {
+      return;
+    }
+    var formData = $('#telInqryDetailForm').serializeArray();
+    var managerIds = [];
+
+    $("[name=managerInfo]").each(function(index,item){
+      managerIds.push($(this).data('id'));
+    });
+
+    formData = formData.concat({name:"managerId", value:managerIds});
+    if (displayWorkProgress()) {
+      $.ajax({
+        url: url,
+        type: 'POST',
+        cache: false,
+        dataType: 'json',
+        data: formData,
+        success: function (data) {
+          if (data.result == "success") {
+            alert(data.msg);
+            telInqryDetailModal.hide();
+            $("#jsGrid").jsGrid("reset");
+          } else {
+            alert(data.msg);
+          }
+          closeWorkProgress();
+        }
+      });
+    }
+  }
+
+  $(function () {
+    validateInqryDetailForm();
+  })
+
+  function validateInqryDetailForm() {
+    $("#telInqryDetailForm").validate({
+      onsubmit: false,
+      rules: {
+        clsfCd: {required: true},
+        userNm: {required: true, maxlength: 30},
+        sttsCd: {required: true},
+        cn: {required: true, maxlength: 1000},
+        ans: {maxlength: 1000}
+      },
+      messages: {
+        clsfCd: {required: "분류를 선택해 주십시오.",},
+        userNm: {required: "회원명을 입력해 주십시오.", maxlength: "회원명은 30자를 넘을 수 없습니다."},
+        sttsCd: {required: "상태를 선택해 주십시오."},
+        cn: {required: "문의 내용을 입력해 주십시오.", maxlength: '문의내용은 1000자를 넘을 수 없습니다.'},
+        ans: {maxlength: '답변 내용은 1000자를 넘을 수 없습니다.'}
+      }
+    });
+
+  }
+  function removeManagerInfo(userid) {
+    $("#managerId-"+userid).remove();
+  }
+</script>
+</html>

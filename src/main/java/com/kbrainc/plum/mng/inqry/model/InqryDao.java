@@ -81,7 +81,22 @@ public interface InqryDao {
      */
     public List<FileVo> selectAttachFileList(FileVo fileVo) throws Exception;
 
-    public int deleteInqryInfo(@Param("deleteInqryIds") String[] deleteInqryIds, @Param("userVo") UserVo userVo);
+    public int deleteInqryInfo(@Param("deleteInqryIds") String[] deleteInqryIds, @Param("userVo") UserVo userVo) throws Exception;
 
-    public int updateInqrySttsCd(InqryAnswrVo inqryAnswrVo);
+    public int updateInqrySttsCd(InqryAnswrVo inqryAnswrVo) throws Exception;
+
+    public List<TelInqryVo> selectTelInqryList(TelInqryVo telInqryVo) throws Exception;
+    public TelInqryVo selectTelInqryInfo(TelInqryVo telInqryVo) throws Exception;
+    public int insertTelInqry(TelInqryVo telInqryVo) throws Exception;
+    public int updateTelInqry(TelInqryVo telInqryVo) throws Exception;
+    public List<PopupMemberVo> selectMemberList(TelInqryVo telInqryVo) throws Exception;
+    public List<ManagerVo> selectInqryManagerList(InqryVo inqryVo) throws Exception;
+    public List<ManagerVo> selectTelInqryManagerList(TelInqryVo telInqryVo)throws Exception;
+    public int insertInqryManager(InqryAnswrVo inqryAnswrVo) throws Exception;
+    public int insertTelInqryManager(TelInqryVo telInqryVo) throws Exception;
+    public int deleteInqryManager(InqryAnswrVo inqryAnswrVo) throws Exception;
+    public int deleteTelInqryManager(TelInqryVo telInqryVo) throws Exception;
+
+
+
 }
