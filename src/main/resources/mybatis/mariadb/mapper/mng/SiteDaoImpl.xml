@@ -12,22 +12,48 @@
         /* SiteDao.selectSiteList */
         <include refid="PaginationMapper.header"/>
         SELECT
-            SITEID,
-            SITE_NM,
-            SYS_SE_CD,
-            USE_YN,
-            MDFCN_DT,
+            S.SITEID,
+            S.SITE_NM,
+            S.SYS_SE_CD,
+            S.USE_YN,
+            S.REG_DT,
+            S.MDFCN_DT,
+            S.INSTID,
+            I.INST_NM,
+            I.INST_CD,
             (SELECT GROUP_CONCAT(DMN) FROM TB_CMM_SITE_DMN WHERE SITEID = S.SITEID) AS DOMAINS
         FROM 
-            TB_CMM_SITE S
+            TB_CMM_SITE S INNER JOIN TB_CMM_INST I ON S.INSTID = I.INSTID
+            <if test='searchType != null and searchType != "" and searchKeyword != null and searchKeyword != ""'>
+                <if test='searchType == "instnm"'>
+                AND I.INST_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+                <if test='searchType == "instcd"'>
+                AND I.INST_CD LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+            </if>
         WHERE 
             1=1
-            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty( searchType )'>
-            AND SYS_SE_CD = #{searchType}
+            <if test='useYn != null and useYn != ""'>
+            AND S.USE_YN = #{useYn}
             </if>
-                
-            <if test='@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty( searchKeyword )'>
-            AND SITE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            <if test='sysSeCd != null and sysSeCd != ""'>
+            AND S.SYS_SE_CD = #{sysSeCd}
+            </if>
+            <if test='searchType != null and searchType != "" and searchKeyword != null and searchKeyword != ""'>
+                <if test='searchType == "sitenm"'>
+                AND S.SITE_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>
+                <if test='searchType == "dmn"'>
+                AND S.SITEID IN(
+                    SELECT 
+                        SITEID
+                    FROM
+                        TB_CMM_SITE_DMN
+                    WHERE
+                        DMN LIKE CONCAT('%', #{searchKeyword}, '%')
+                )
+                </if>
             </if>
 
         <include refid="PaginationMapper.footer"/>    
