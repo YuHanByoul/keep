@@ -1,0 +1,178 @@
+<div class="modal-dialog modal-lg" role="document">
+  <div class="modal-content type_2">
+    <div class="modal-header">
+      <h4 class="modal-title">회원검색</h4>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true"></span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="card">
+        <div class="card-block-small">
+          <form name="memberSearchForm" id="memberSearchForm" onsubmit="return false;">
+            <div class="row">
+              <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                <div class="mb-0 form-group">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                  <div class="input-group input-group-sm input-group-dropdown mb-0">
+                    <select name="searchType" id="searchType" class="form-select form-control form-control-sm form-control-primary form-bg-primary">
+                      <option value="">- 선택 -</option>
+                      <option value="nm">이름</option>
+                      <option value="acnt">아이디</option>
+                      <option value="eml">이메일</option>
+                      <option value="moblphon">휴대폰</option>
+                    </select>
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-lg-6">
+                <div class="mb-0 form-group">
+                  <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관</strong></div>
+                  <th:block kattr:select_inst="searchInst2" selectedId="" firstOptTxt="- 전체 -" firstOptVal="" secondOptTxt="- 소속없음 -" secondOptVal="N" ></th:block>
+                </div>
+              </div>
+            </div>
+            <div class="m-t-20 text-center">
+              <button class="btn btn-disabled m-r-5"onclick="popupSearchInit()">초기화</button>
+              <button class="btn btn-primary" onclick="popupSearchMember()">검색</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="card m-b-10">
+        <div class="card-block-small">
+          <div class="row">
+            <div class="col-12">
+              <!-- 그리드 부분(임의로 넣어둠) -->
+                <table id="memberJsGrid" class="table-responsive"></table>
+                <div id="memberListPager" class="text-center"></div>
+              <!-- //그리드 부분(임의로 넣어둠) -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertMemberInfo()">선택</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  var memberGridHelper;
+
+  $(function() {
+    memberGridHelper = new GridHelper('memberJsGrid');
+    writememberJsGridData();
+  });
+
+  function popupSearchInit() {
+    $('#memberSearchForm #searchType').val('');
+    $('#memberSearchForm #searchKeyword').val('');
+    $('#memberSearchForm #searchInst2').val('');
+  }
+
+  function popupSearchMember() {
+    var searchType = $("#memberSearchForm #searchType").val();
+    var searchKeyword = $("#memberSearchForm #searchKeyword").val();
+
+    if(searchType != '' && searchKeyword == ""){
+      alert('검색어를 입력해 주십시오.');
+      return;
+    }
+
+    memberGridHelper.resetListContent();
+  }
+
+  function writememberJsGridData() {
+    $("#memberJsGrid").jsGrid({
+      height: "auto",
+      width: "100%",
+      autoload: true,
+      sorting: true,
+      paging: true,
+      pagerContainer: "#memberListPager",
+      pagerFormat: "{first} {prev} {pages} {next} {last}",
+      pagePrevText: "이전",
+      pageNextText: "다음",
+      pageFirstText: " < 처음 ㅣ",
+      pageLastText: " | 마지막 >",
+      pageSize: 10,
+      pageButtonCount: 10,
+      pageLoading: true,
+      pageIndex: 1,
+      noDataContent: "데이터가 없습니다.",
+
+      controller: {
+        loadData: function (filter) {
+          var data = $.Deferred();
+
+          var formData = $('#memberSearchForm').serializeArray();
+          var params = [
+            {name: "pageNumber", value: filter.pageIndex},
+            {name: "rowPerPage", value: filter.pageSize},
+          ]
+
+          if(filter.sortField != undefined){
+            params.push({name: "orderField", value: filter.sortField});
+            params.push({name: "orderDirection", value: filter.sortOrder});
+          }else{
+            params.push({name: "orderField", value: 'reg_dt'});
+
+          }
+          formData = formData.concat(params);
+
+          $.ajax({
+            type: "GET",
+            contentType: "application/json; charset=utf-8",
+            url: "/mng/inqry/selectMemberList.do",
+            dataType: "json",
+            data: formData,
+          }).done(function(response){
+            var da = {
+              data : escapeGridData(response.list)
+              ,itemsCount : response.totalCount
+            };
+            data.resolve(da);
+          });
+          return data.promise();
+        },
+      },
+      fields: [
+        {
+          itemTemplate: function(_, item) {
+            return $("<input>").attr("type", "radio").attr("class", "singleCheckbox3").attr("name","memchk")
+                    .attr("id","memchk_"+item.userid).attr("data-id",item.userid).attr('data-nm', item.nm).attr('data-eml',item.eml).attr('data-moblphon',item.moblphon);
+          },
+          align: "center",
+          width: "30",
+          sorting: false
+        },
+        { name: 'userid', css:'hide'},
+        { title:'사용자', name: 'nm', type: "text" , width: "200"
+          ,itemTemplate:function(value,item){return item.nm +" ( "+item.acnt+" )" }
+        },
+        { title:'휴대폰', name: 'moblphon', type: "text" , width: "150", align:"center"},
+        { title:'이메일', name: 'eml', type: "text" , width: "200", },
+      ],
+      rowClick: function (args) {
+        $("#memchk_"+args.item.userid).prop("checked",true);
+      },
+    });
+  }
+
+  function insertMemberInfo() {
+    if($('input[name=memchk]:checked').length <= 0){
+      alert("회원을 선택해주세요");
+      return;
+    }
+
+    var $checkedUserInfo = $('input[name=memchk]:checked');
+    $('#userid').val($checkedUserInfo.data('id'));
+    $('#userNm').val($checkedUserInfo.data('nm'))
+    $('#cntct').val($checkedUserInfo.data('moblphon'))
+    $('#eml').val($checkedUserInfo.data('eml'))
+    telInqryMemberSearchModal.hide();
+  }
+</script>

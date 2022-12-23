@@ -48,6 +48,7 @@
         <form name="inqryAnswrFrm" id="inqryAnswrFrm" action="" method="POST" onsubmit="return false;">
             <input type="hidden" name="inqryid" id="inqryid" th:value="${inqryInfo.inqryid}" />
             <input type="hidden" name="answrid" id="answrid" th:value="${inqryAnswrInfo.answrid}" />
+            <input type="hidden" name="oldInqrySttsCd" id="oldInqrySttsCd" th:value="${inqryInfo.inqrySttsCd}"/>
 
             <div class="card-header p-b-0">
                 <h4 class="sub-title"><strong>답변</strong></h4>
@@ -64,6 +65,21 @@
                            for="title"><strong>답변 제목</strong></label>
                     <div class="col-sm-12">
                         <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${inqryAnswrInfo.title}"/>
+                    </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 지정</strong></div>
+                    <div class="col-sm-12 btn-group-sm">
+                        <button type="button" class="btn btn-inverse" onclick="openManagerSearchPopup()">담당자 검색</button>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto" id="managerList">
+                            <th:block th:each="manager : ${managerInfo}">
+                            <span class="label label-inverse " th:id="|managerId-${manager.userid}|" name="managerInfo" th:data-id="${manager.userid}">
+                                    [[${manager.nm}]] <a href="javascript:void(0)" th:onclick="|removeManagerInfo(${manager.userid})|" class="text-white">X</a>
+                            </span>
+                            </th:block>
+                        </div>
                     </div>
                 </div>
                 <div class="mb-2 form-group row">
@@ -87,14 +103,15 @@
                     <div class="col-12 col-lg-6">
                         <div class="mb-0 form-group">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
-                                   for="regDt"><strong>답변일자</strong></label>
+                                   for="ansDe"><strong>답변일자</strong></label>
                             <div class="col-sm-12">
-                                <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" readonly
-                                       th:value="${inqryAnswrInfo.regDt != null ? #dates.format(inqryAnswrInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+                                <input type="text" class="form-control form-control-sm" name="ansDe" id="ansDe" readonly
+                                       th:value="${inqryAnswrInfo.ansDe != null ? inqryAnswrInfo.ansDe : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="p-t-0 card-block-small">
                 <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
@@ -103,7 +120,6 @@
                 </th:block>
             </div>
         </form>
-
     </div>
 </div>
 
@@ -111,6 +127,15 @@
     var inqryAnswrInsertUrl = "/mng/inqry/insertInqryAnswr.do";
     var inqryAnswrUpdateUrl = "/mng/inqry/updateInqryAnswr.do";
 
+    function openManagerSearchPopup() {
+        var url = "/mng/inqry/managerSearchPopup.html";
+        $("#managerPopup").load(url, function (response, status, xhr) {
+            if (status == "success") {
+                managerPopup = new bootstrap.Modal($('#managerPopup'));
+                managerPopup.show();
+            }
+        });
+    }
     $(function(){
         validate();
     })
@@ -199,18 +224,30 @@
 
         if (!$('#inqryAnswrFrm').valid()) return;
 
+        var formData = $('#inqryAnswrFrm').serializeArray();
+        var managerIds = [];
+
+        $("[name=managerInfo]").each(function(index,item){
+            managerIds.push($(this).data('id'));
+        });
+
+        formData = formData.concat({name:"managerId", value:managerIds});
         if (displayWorkProgress()) {
             $.ajax({
                 url: url,
+                type: 'POST',
                 cache: false,
                 dataType: 'json',
-                data: $("#inqryAnswrFrm").serialize(),
+                data: formData,
                 success: function (data) {
                     alert(data.msg);
                     closeWorkProgress();
-                    resetListContent();
+                    gridHelper1.resetListContent();
                 }
             });
         }
+    }
+    function removeManagerInfo(userid) {
+        $("#managerId-"+userid).remove();
     }
 </script>

@@ -67,13 +67,20 @@ public class InqryAnswrVo extends ParentRequestVo {
 
     /** 등록_일시 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date regDt;
 
     /** 등록자아이디 */
     private Integer rgtrid;
 
     private String inqrySttsCd;
+
+    private String oldInqrySttsCd;
+
+    private String ansDe;
+
+    private Date anscmptnDt;
+
+    private Integer[] managerId;
 
     public void setRegDt(Date regDt) {
         this.regDt = regDt != null ? (Date) regDt.clone() : null;

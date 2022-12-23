@@ -18,6 +18,7 @@
 		      ,C.CD_NM AS INQRY_CL_NM /*분류*/
 		      ,A.REG_DT AS REG_DT /*작성일*/
 			  ,D.NM AS OPETR_NM /*처리자*/
+			  ,CASE WHEN B.OPETRID = #{user.userid} THEN 'Y' ELSE 'N' END ASSIGN_YN
         FROM TB_CMM_INQRY A
             LEFT OUTER JOIN TB_CMM_INQRY_ANSWR B ON A.INQRYID = B.INQRYID
             LEFT OUTER JOIN TB_CMM_USER D ON B.OPETRID = D.USERID
@@ -81,12 +82,14 @@
 	<!-- 1:1문의 답변정보를 가져옴 -->
 	<select id="selectInqryAnswrInfo" parameterType="InqryAnswrVo" resultType="InqryAnswrVo">
 		/* InqryDao.selectInqryAnswrInfo */
-		SELECT A.INQRYID
-		      ,A.ANSWRID
-			  ,A.TITLE
-			  ,A.CNTNTS
-			  ,B.NM AS OPETR_NM
-			  ,A.REG_DT
+		SELECT
+		    A.INQRYID
+		    ,A.ANSWRID
+			,A.TITLE
+			,A.CNTNTS
+			,B.NM AS OPETR_NM
+			,A.REG_DT
+			,A.ANS_DE
         FROM TB_CMM_INQRY_ANSWR A
     		LEFT OUTER JOIN TB_CMM_USER B ON A.OPETRID = B.USERID
         WHERE A.INQRYID = #{inqryid}
@@ -97,25 +100,36 @@
 	<insert id="insertInqryAnswr" parameterType="InqryAnswrVo">
 		/* InqryDao.insertInqryAnswr */
 		INSERT INTO TB_CMM_INQRY_ANSWR
-		           (INQRYID
-		           ,TITLE
-		           ,CNTNTS
-		           ,OPETRID
-		           ,MDFCN_DT
-		           ,MDFRID
-		           ,REG_DT
-		           ,RGTRID)
-		     VALUES
-		           (#{inqryid}
-		           ,#{title}
-		           ,#{cntnts}
-		           ,#{user.userid}
-		           ,NOW()
-		           ,#{user.userid}
-		           ,NOW()
-		           ,#{user.userid})
+		( INQRYID
+		, TITLE
+		, CNTNTS
+		, OPETRID
+		, MDFCN_DT
+		, MDFRID
+		, REG_DT
+		, RGTRID
+		, OPETRID
+		<if test="inqrySttsCd == '103104'">
+		, ANSCMPTN_DT
+		, ANS_DE
+		</if>
+		) VALUES(
+		 #{inqryid}
+	     ,#{title}
+	     ,#{cntnts}
+	     ,#{user.userid}
+	     ,NOW()
+	     ,#{user.userid}
+	     ,NOW()
+	     ,#{user.userid}
+	     ,#{user.userid}
+ 		 <if test="inqrySttsCd == '103104'">
+ 		 ,NOW()
+		 ,DATE_FORMAT(NOW(), '%Y-%m-%d')
+		 </if>
+	   )
 	</insert>
-	
+
 	<!-- 1:1문의답변 수정 -->
 	<update id="updateInqryAnswr" parameterType="InqryAnswrVo">
 		/* InqryDao.updateInqryAnswr */
@@ -125,6 +139,10 @@
 		      ,CNTNTS = #{cntnts}
 		   	  ,MDFCN_DT = NOW()
 		   	  ,MDFRID =  #{user.userid}
+		   <if test="oldInqrySttsCd == '103103' and inqrySttsCd == '103104'">
+			  ,ANSCMPTN_DT = NOW()
+			  ,ANS_DE = DATE_FORMAT(NOW(),'%Y-%m-%d')
+		   </if>
 		 WHERE ANSWRID = #{answrid}
 	</update>
 
@@ -147,6 +165,7 @@
 	  	 AND A.FILEGRPID = #{filegrpid}
 	</select>
 
+
 	<update id="deleteInqryInfo">
 		UPDATE TB_CMM_INQRY
 			SET DEL_YN = 'Y'
@@ -165,5 +184,266 @@
 			SET STTS_CD = #{inqrySttsCd}
 		WHERE INQRYID = #{inqryid}
 	</update>
+
+	<select id="selectTelInqryList" resultType="TelInqryVo">
+		<include refid="PaginationMapper.header"/>
+		SELECT
+			TELINQRYID
+			, A.CLSF_CD
+			, B.CD_NM AS CLSF_CD_NM
+			, A.USERID
+			, A.PICID
+			, D.NM AS PICNM
+			, A.USER_NM
+			, A.CNTCT
+			, A.EML
+			, A.RCPT_DT
+			, A.STTS_CD
+			, C.CD_NM AS STTS_CD_NM
+			, A.CN
+			, A.ANS
+			, A.MDFCN_DT
+			, A.MDFRID
+			, A.REG_DT
+			, A.RGTRID
+			, CASE WHEN A.PICID = #{user.userid} THEN 'Y' ELSE 'N' END ASSIGN_YN
+		FROM TB_CMM_TELINQRY A
+			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{clsfCdGrpid}) B ON A.CLSF_CD = B.CD
+			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{sttsCdGrpid}) C ON A.STTS_CD = C.CD
+			LEFT OUTER JOIN TB_CMM_USER D ON D.USERID = A.PICID
+			LEFT OUTER JOIN TB_CMM_USER E ON E.USERID = A.USERID
+		WHERE 1=1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			<if test="searchType == 'cn'">
+				AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+			</if>
+			<if test="searchType == 'ans'">
+				AND A.ANS LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchType == 'nm'">
+				AND A.USER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchType == 'acnt'">
+				AND E.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+		</if>
+		<if test="clsfCd != null and clsfCd != ''">
+			AND A.CLSF_CD = #{clsfCd}
+		</if>
+		<if test="sttsCd != null and sttsCd != ''">
+			AND A.STTS_CD = #{sttsCd}
+		</if>
+		<include refid="PaginationMapper.footer"/>
+	</select>
+
+	<select id="selectTelInqryInfo" resultType="TelInqryVo">
+		SELECT TELINQRYID
+			 , A.CLSF_CD
+			 , B.CD_NM AS CLSF_CD_NM
+			 , A.USERID
+			 , A.PICID
+			 , D.NM AS PICNM
+			 , A.USER_NM
+			 , A.CNTCT
+			 , A.EML
+			 , A.RCPT_DT
+			 , A.STTS_CD
+			 , B.CD_NM AS STTS_CD_NM
+			 , A.CN
+			 , A.ANS
+			 , A.MDFCN_DT
+			 , A.MDFRID
+			 , A.REG_DT
+			 , A.RGTRID
+			 , A.STTS_CD AS OLD_STTS_CD
+			 , A.ANSCMPTN_DT
+		FROM TB_CMM_TELINQRY A
+			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{clsfCdGrpid}) B ON A.CLSF_CD = B.CD
+			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{sttsCdGrpid}) C ON A.STTS_CD = C.CD
+			LEFT OUTER JOIN TB_CMM_USER D ON D.USERID = A.PICID
+			LEFT OUTER JOIN TB_CMM_USER E ON E.USERID = A.USERID
+		WHERE TELINQRYID = #{telinqryid}
+	</select>
+
+	<insert id="insertTelInqry" useGeneratedKeys="true" keyProperty="telinqryid" parameterType="TelInqryVo">
+		INSERT INTO TB_CMM_TELINQRY(
+			CLSF_CD
+			<if test="#{userid} != null">
+			,USERID
+			</if>
+			,PICID
+			,USER_NM
+			,CNTCT
+			,EML
+			,RCPT_DT
+			,STTS_CD
+			,CN
+			,ANS
+			,MDFCN_DT
+			,MDFRID
+			,REG_DT
+			,RGTRID
+			<if test="sttsCd == '123102'">
+			,ANSCMPTN_DT
+			,ANS_DE
+			</if>
+		) VALUES(
+			#{clsfCd}
+			<if test="#{userid} != null">
+			,#{userid}
+			</if>
+			,#{user.userid}
+			,#{userNm}
+			,#{cntct}
+			,#{eml}
+			,#{rcptDt}
+			,#{sttsCd}
+			,#{cn}
+			,#{ans}
+			,NOW()
+			,#{user.userid}
+			,NOW()
+			,#{user.userid}
+			<if test="sttsCd == '123102'">
+			,NOW()
+			,DATE_FORMAT(NOW(),'%Y-%m-%d')
+			</if>
+		)
+	</insert>
+
+	<update id="updateTelInqry">
+		UPDATE TB_CMM_TELINQRY
+		SET
+		    CLSF_CD = #{clsfCd}
+			, USERID = #{userid}
+			, USER_NM = #{userNm}
+			, CNTCT = #{cntct}
+			, EML = #{eml}
+			, STTS_CD = #{sttsCd}
+			, CN = #{cn}
+		  	, ANS = #{ans}
+			<if test="oldSttsCd == '123101' and sttsCd == '123102'">
+			,ANSCMPTN_DT = NOW()
+			,ANS_DE = DATE_FORMAT(NOW(),'%Y-%m-%d')
+			</if>
+			,MDFCN_DT = NOW()
+			,MDFRID = #{user.userid}
+		WHERE
+		    TELINQRYID = #{telinqryid}
+	</update>
+
+	<select id="selectMemberList" resultType="PopupMemberVo">
+		<include refid="PaginationMapper.header"/>
+		SELECT
+		    A.USERID
+			,A.NM
+			,A.ACNT
+			,A.MOBLPHON
+			,A.EML
+			,A.REG_DT
+		FROM TB_CMM_USER A
+		WHERE 1=1
+		  AND A.DEL_YN = 'N'
+		  AND A.STTS_CD <![CDATA[<>]]>  '9'
+		<if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+			AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+		</if>
+		<if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
+			AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+		</if>
+		<if test="searchKeyword != null and searchKeyword != '' and searchType == 'moblphon'">
+			AND A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
+		</if>
+		<if test="searchKeyword != null and searchKeyword != '' and searchType == 'eml'">
+			AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
+		</if>
+		<choose>
+			<when test='searchInst2 == "N"'>
+				AND A.INSTID IS NULL
+			</when>
+			<otherwise>
+				<bind name="searchInstValue" value="searchInst2" />
+				<include refid="SearchMapper.instLmtCondition">
+					<property name="tableAlias" value="A" />
+				</include>
+			</otherwise>
+		</choose>
+		<include refid="PaginationMapper.footer"/>
+
+	</select>
+	<!--1:1문의 담당자 목록-->
+	<select id="selectInqryManagerList" resultType="ManagerVo">
+		SELECT
+			A.INQRYID
+			 ,A.USERID
+			 ,B.NM
+		FROM TB_CMM_INQRY_PIC A
+				 INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+		WHERE INQRYID = #{inqryid}
+	</select>
+
+	<!--전화문의 담당자 목록-->
+	<select id="selectTelInqryManagerList" resultType="ManagerVo">
+		SELECT
+			A.TELINQRYID
+			 ,A.USERID
+			 ,B.NM
+		FROM TB_CMM_TELINQRY_PIC A
+				 INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+		WHERE TELINQRYID = #{telinqryid}
+	</select>
+
+	<!--1:1문의 담당자 지정 등록-->
+	<insert id="insertInqryManager" parameterType="InqryAnswrVo">
+		INSERT INTO TB_CMM_INQRY_PIC(
+		INQRYID,
+		USERID,
+		MDFCN_DT,
+		MDFRID,
+		REG_DT,
+		RGTRID
+		) VALUES
+		<foreach item="id" collection="managerId"  separator=",">
+			(
+			#{inqryid}
+			,#{id}
+			,NOW()
+			,#{user.userid}
+			,NOW()
+			,#{user.userid}
+			)
+		</foreach>
+	</insert>
+
+	<!--전화문의 담당자 지정 등록-->
+	<insert id="insertTelInqryManager" parameterType="TelInqryVo">
+		INSERT INTO TB_CMM_TELINQRY_PIC(
+		TELINQRYID,
+		USERID,
+		MDFCN_DT,
+		MDFRID,
+		REG_DT,
+		RGTRID
+		) VALUES
+		<foreach item="id" collection="managerId"  separator=",">
+			(
+			#{telinqryid}
+			,#{id}
+			,NOW()
+			,#{user.userid}
+			,NOW()
+			,#{user.userid}
+			)
+		</foreach>
+	</insert>
+
+	<delete id="deleteInqryManager">
+		DELETE FROM TB_CMM_INQRY_PIC WHERE INQRYID = #{inqryid}
+	</delete>
+
+	<delete id="deleteTelInqryManager">
+		DELETE FROM TB_CMM_TELINQRY_PIC WHERE TELINQRYID=#{telinqryid}
+	</delete>
+
 
 </mapper>

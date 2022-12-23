@@ -2,15 +2,14 @@ package com.kbrainc.plum.mng.inqry.service;
 
 import java.util.List;
 
+import com.kbrainc.plum.mng.inqry.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.inqry.model.InqryAnswrVo;
-import com.kbrainc.plum.mng.inqry.model.InqryDao;
-import com.kbrainc.plum.mng.inqry.model.InqryVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -85,6 +84,9 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
 
         retVal += inqryDao.insertInqryAnswr(inqryAnswrVO);
         retVal += inqryDao.updateInqrySttsCd(inqryAnswrVO);
+        if (inqryAnswrVO.getManagerId().length >= 1) {
+            retVal += inqryDao.insertInqryManager(inqryAnswrVO);
+        }
 
         return retVal;
     }
@@ -103,6 +105,10 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
 
         retVal += inqryDao.updateInqryAnswr(inqryAnswrVO);
         retVal += inqryDao.updateInqrySttsCd(inqryAnswrVO);
+        retVal += inqryDao.deleteInqryManager(inqryAnswrVO);
+        if (inqryAnswrVO.getManagerId().length >= 1) {
+            retVal += inqryDao.insertInqryManager(inqryAnswrVO);
+        }
 
         return retVal;
     }
@@ -122,5 +128,52 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
     @Transactional
     public int deleteInqryInfo(String[] deleteInqryIds, UserVo userVo) throws Exception {
         return inqryDao.deleteInqryInfo(deleteInqryIds, userVo);
+    }
+
+    @Override
+    public List<TelInqryVo> selectTelInqryList(TelInqryVo telInqryVo) throws Exception {
+        return inqryDao.selectTelInqryList(telInqryVo);
+    }
+
+    @Override
+    public TelInqryVo selectTelInqryInfo(TelInqryVo telInqryVo) throws Exception {
+        return inqryDao.selectTelInqryInfo(telInqryVo);
+    }
+
+    @Override
+    public int insertTelInqry(TelInqryVo telInqryVo) throws Exception {
+        int retVal = 0;
+
+        retVal += inqryDao.insertTelInqry(telInqryVo);
+        if (telInqryVo.getManagerId().length >= 1) {
+            retVal += inqryDao.insertTelInqryManager(telInqryVo);
+        }
+        return retVal;
+    }
+
+    @Override
+    public int updateTelInqry(TelInqryVo telInqryVo) throws Exception {
+        int retVal = 0;
+
+        retVal += inqryDao.updateTelInqry(telInqryVo);
+        retVal += inqryDao.deleteTelInqryManager(telInqryVo);
+        if (telInqryVo.getManagerId().length >= 1) {
+            retVal += inqryDao.insertTelInqryManager(telInqryVo);
+        }
+        return retVal;
+    }
+
+    @Override
+    public List<PopupMemberVo> selectMemberList(TelInqryVo telInqryVo) throws Exception {
+        return inqryDao.selectMemberList(telInqryVo);
+    }
+
+    @Override
+    public List<ManagerVo> selectManagerList(Object inqryVo) throws Exception {
+        if(inqryVo instanceof InqryVo) {
+            return inqryDao.selectInqryManagerList((InqryVo)inqryVo);
+        } else {
+            return inqryDao.selectTelInqryManagerList((TelInqryVo)inqryVo);
+        }
     }
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
@@ -25,10 +26,15 @@ import lombok.Data;
  */
 @Data
 public class InqryVo extends ParentRequestVo {
-	
 	/** 코드그룹 아이디 */
 	private String cdgrpid = "102";
-	
+
+	/** 로그인 사용자 정보*/
+	private UserVo user;
+
+	/*본인 처리 여부*/
+	private String assignYn;
+
 	/** 문의아이디 */
 	private Integer inqryid;
 	
