@@ -5,32 +5,32 @@
         <div class="card-block-small p-t-0">
             <div class="row">
                 <div class="col-lg-6">
-                    <div class="mb-2 form-group row">
+                    <div class="mb-2 form-group row ">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>게시판 코드</strong></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm"  readonly/>
                         </div>
                     </div>
-                    <div class="mb-2 form-group row">
+                    <div class="mb-2 form-group row required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="boardName"><strong>게시판명</strong></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm" name="nm" id="nm"  placeholder="게시판명"/>
                         </div>
                     </div>
-                    <div class="mb-0 form-group row">
+                    <div class="mb-0 form-group row required">
                         <div class="col-auto">
                             <input type="hidden" class="js-single"/>
                             <input type="checkbox" class="js-single-small" name="nloginDwnldPermYnChk" id="nloginDwnldPermYnChk"/>
-                            <label for="nloginDwnldPermYn" class="v-middle">비로그인 파일다운로드</label>
+                            <label for="nloginDwnldPermYn" class="v-middle form-label">비로그인 파일다운로드</label>
                         </div>
                         <div class="col-auto">
                             <input type="checkbox" class="js-single-small" name="useYnChk" id="useYnChk" checked/>
-                            <label for="useYn" class="v-middle">게시판 사용</label>
+                            <label for="useYn" class="v-middle form-label">게시판 사용</label>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="mb-2 form-group row">
+                    <div class="mb-2 form-group row required">
                         <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>게시판유형</strong></span>
                         <div class="col-sm-12">
                             <select id="clCd"  name="clCd" class="form-select form-select-sm form-control-sm" onchange="fn_validationCl">
@@ -39,7 +39,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mb-0 form-group row">
+                    <div class="mb-0 form-group row ">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dc"><strong>게시판설명</strong></label>
                         <div class="col-sm-12">
                             <input class="form-control form-control-sm" type="text" name="dc" id="dc" />
@@ -53,7 +53,7 @@
             <h4 class="sub-title"><strong>기능정보</strong></h4>
         </div>
         <div class="card-block-small p-t-0">
-            <div class="mb-2 form-group row">
+            <div class="mb-2 form-group row required">
                 <div class="col-auto">
                     <label  class="form-label col-sm-12 col-form-label p-t-0 pb-1" >분류사용</label>
                     <input type="checkbox" class="js-single-small" name="clUseYnChk" id="clUseYnChk"/>
@@ -128,10 +128,10 @@
                             <input type="text" class="form-control form-control-sm" name="newIndictDaycnt" id="newIndictDaycnt" placeholder="new 표시일수"/>
                         </div>
                     </div>
-                    <div class="mb-0 form-group row">
+                    <div class="mb-0 form-group row required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pagePstCnt"><strong>페이지 게시글 수</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" name="pagePstCnt" id="pagePstCnt"  placeholder="페이지 게시글 개수 "/>
+                            <input type="text" class="form-control form-control-sm" name="pagePstCnt" id="pagePstCnt"  placeholder="페이지 게시글 개수 " value="10"/>
                         </div>
                     </div>
                 </div>
@@ -143,6 +143,8 @@
         </div>
    <!--hidden 변수 저장  -->
    <input type="hidden" id="userid" th:if ="${paramMap} != null"  th:value = "${paramMap.userid}" >
+   
+   <span id="appendForm"></span>
 </form>
 
 <script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
@@ -266,6 +268,8 @@
                 //jquery 밸리데이션 체크 
                 if($("#bbsInsertForm").valid() == false) return;
 
+                $("#appendForm").html("");
+
                 $("input[type=checkbox]").each((index,item)=>{
                     
                     let ckbId = $(item).attr("id");
@@ -273,7 +277,7 @@
                     if(!$("#"+ckbId).is(":disabled")){
                         let value = ($("#"+ckbId).is(":checked"))?"Y":"N";
                         let input_html = "<input type='hidden' id='"+ckbId.replaceAll("Chk","")+"' name='"+ckbId.replaceAll("Chk","")+"' value='"+value+ "'   '/>"  
-                        $("#bbsInsertForm").append(input_html);
+                        $("#appendForm").append(input_html);
                     }
                 })
                 
