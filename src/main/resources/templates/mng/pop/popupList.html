@@ -190,7 +190,7 @@
                 },
             },
             fields: [ 
-                { title:'번호'      ,name: 'rowNumber'    , type: "number", width: "3%", align:"center", sorting: false },
+                { title:'No.'      ,name: 'rowNumber'    , type: "number", width: "3%", align:"center", sorting: false },
                 { title:'공지대상'   ,name: 'ntcTrgtCd'  , type: "text"  , width: "5%" ,align:"center"
                     ,itemTemplate:function(value, item){ 
                     return item.ntcTrgtCd=='T' ? '전체':'역할';
@@ -206,8 +206,12 @@
                 },
             ]
             
-            /*[# sec:authorize-url="/mng/pop/popupInsertForm.html"]*/
-            ,rowClick: function(args) { loadContent("/mng/pop/popupUpdateForm.html?popupntcid="+args.item.popupntcid); },
+            /*[# sec:authorize-url="/mng/pop/popupUpdateForm.html"]*/
+            ,rowClick: function(args) { 
+	            if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                gridHelper1.loadContent("/mng/pop/popupUpdateForm.html?popupntcid="+args.item.popupntcid); 
+	            gridHelper1.rowClick(args);
+            },
             /*[/]*/
         });
     }

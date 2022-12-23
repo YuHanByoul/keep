@@ -92,67 +92,11 @@
         )
     </insert>
   
-    <!-- 게시물을 추가한다. -->
-    <insert id="insertPst" parameterType="PstVo">
-        /* BbsDao.insertPst */
-        INSERT INTO TB_CMM_PST (
-            BBSID,
-            TITLE,
-            CNTNTS,
-            PRNTS_PSTID,
-            GRP,
-            DPTH,
-            ORD,
-            HITS,
-            BBS_CLID,
-            FXD_NTC_YN,
-            FXD_NTC_STRT_DT,
-            FXD_NTC_END_DT,
-            LOGIN_YN,
-            FILEGRPID,
-            MDFCN_DT,
-            MDFRID,
-            REG_DT,
-            RGTRID
-        )VALUES(
-            #{bbsid         },
-            #{title         },
-            #{cntnts        },
-            #{prntsPstid   },
-            #{grp           },
-            #{dpth          },
-            #{ord           },
-            #{hits          },
-            #{bbsClid      },
-            #{fxdNtcYn    },
-            <choose>
-	            <when test='fxdNtcYn == "Y" '>
-	            FXD_NTC_STRT_DT= #{fxdNtcStrtDt},
-	            FXD_NTC_END_DT = #{fxdNtcEndDt },
-	            </when>
-	            <otherwise>
-	            FXD_NTC_STRT_DT= null,
-	            FXD_NTC_END_DT = null,
-	            </otherwise>
-            </choose>
-            #{loginYn      },
-            #{filegrpid     },
-            NOW(),
-            #{user.userid },
-            NOW(),
-            #{user.userid }
-        )
-    </insert>
-  
-    <sql id="selectBbs">
 
-    </sql>
-  
-    <!-- 게시물을 목록을 가져온다. -->
+    <!-- 게시판 목록을 가져온다. -->
     <select id="getBbsList" parameterType="BbsVo" resultType="BbsVo">
         /* BbsDao.getBbsList */
         <include refid="PaginationMapper.header"/>
-        <include refid="selectBbs"/>
         SELECT 
             A.BBSID,
             A.CL_CD,
@@ -175,7 +119,7 @@
         <include refid="PaginationMapper.footer"/>
     </select> 
 
-    <!-- 게시물을 정보를 가져온다. -->
+    <!-- 게시판 정보를 가져온다. -->
     <select id="selectOneBbs" parameterType="BbsVo" resultType="BbsVo">
         /* BbsDao.selectOneBbs */
         SELECT
@@ -251,33 +195,6 @@
         WHERE 
             BBS_CLID     = #{bbsClid}   
     </update>
- 
-    <!-- 게시물을 수정한다. -->
-    <update id="updatePst" parameterType="PstVo">
-        /* BbsDao.updatePst */
-        UPDATE TB_CMM_PST SET     
-            TITLE          = #{title         },
-            CNTNTS         = #{cntnts        },
-            BBS_CLID       = #{bbsClid      },
-            FILEGRPID      = #{filegrpid     },
-            MDFCN_DT        = NOW(),
-            MDFRID     = #{user.userid   },
-            FXD_NTC_YN     = #{fxdNtcYn    },
-            <choose>
-	            <when test='fxdNtcYn == "Y" '>
-	            FXD_NTC_STRT_DT= #{fxdNtcStrtDt},
-	            FXD_NTC_END_DT = #{fxdNtcEndDt },
-	            </when>
-	            <otherwise>
-	            FXD_NTC_STRT_DT= null,
-	            FXD_NTC_END_DT = null,
-	            </otherwise>
-            </choose>
-            LOGIN_YN       = #{loginYn      }
-        WHERE 
-            PSTID = #{pstid}     
-    </update>
-
     <!-- 게시판 분류를 정보를 가져온다. -->
     <select id="selectBbsCl"  parameterType="BbsClVo" resultType="BbsClVo">
         /* BbsDao.selectBbsCl */
@@ -289,11 +206,10 @@
             USE_YN,
             ORD,
             MDFCN_DT mdfcn_dt
-        FROM 
+          FROM 
             TB_CMM_BBS_CL  
-        WHERE 
-            1=1 
-            AND BBSID = #{bbsid}
+         WHERE 1=1 
+           AND BBSID = #{bbsid}
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -312,6 +228,9 @@
         WHERE 
             1=1 
             AND BBSID = #{bbsid}
+            <if test="useYn != null and useYn != '' ">
+            AND USE_YN = #{useYn}
+            </if>
     </select>
     
     <!-- 사용중인 게시판 분류 목록을 가져온다. -->
@@ -332,37 +251,6 @@
             AND  A.CL_USE_YN ='Y'
             </if>
     </select>
-    
-    <!-- 게시물 목록을 가져온다. -->
-    <select id="selectPstList"  parameterType="PstVo" resultType ="PstVo" >
-        /* BbsDao.selectPstList */
-        <include refid="PaginationMapper.header"/>
-        SELECT 
-            PSTID,
-            TITLE,
-            IFNULL(B.FILECNT,0) file_cnt,
-            CONVERT(A.REG_DT, CHAR(10)) REG_DT,
-            CONVERT(A.MDFCN_DT, CHAR(10)) MDFCN_DT
-        FROM 
-            TB_CMM_PST A 
-            LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-        WHERE 1=1
-            AND A.PRNTS_PSTID IS NULL
-            <if test="bbsid != null and bbsid != 0">
-            AND BBSID= #{bbsid}
-            </if>
-            <if test="searchType != null and searchType == 'nm' ">
-            AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
-            </if>         
-            <if test="searchType != null and searchType == 'cntnts' ">
-            AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
-            </if>
-            <if test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchType) and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)">
-            AND (A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%'))
-            </if>
-        <include refid="PaginationMapper.footer"/>
-    </select>
-    
     <!-- 게시판 순서를 바꾼다.(UP) -->
     <update id="modifybbsClOrdUp" parameterType="BbsClVo" >
         /* BbsDao.modifybbsClOrdUp */
@@ -393,37 +281,162 @@
             AND ORD   = #{ord}
     </update>
     
+    <!--*************** 게시물 관리***************-->
+    <!-- 게시물을 추가한다. -->
+    <insert id="insertPst" parameterType="PstVo">
+        /* BbsDao.insertPst */
+        INSERT INTO TB_CMM_PST (
+            BBSID,
+            SITEID,
+            TITLE,
+            CNTNTS,
+            PRNTS_PSTID,
+            GRP,
+            DPTH,
+            ORD,
+            HITS,
+            BBS_CLID,
+            FXD_NTC_YN,
+            FXD_NTC_STRT_DT,
+            FXD_NTC_END_DT,
+            LOGIN_YN,
+            DEL_YN,
+            FILEGRPID,
+            MDFCN_DT,
+            MDFRID,
+            REG_DT,
+            RGTRID
+        )VALUES(
+            #{bbsid         },
+            #{siteid         },
+            #{title         },
+            #{cntnts        },
+            #{prntsPstid   },
+            IFNULL(#{grp }, (SELECT  IFNULL(MAX(A.GRP),0) +1 FROM TB_CMM_PST A)),
+            IFNULL(#{dpth}, 0),
+            IFNULL(#{ord  }, 1),
+            #{hits          },
+            #{bbsClid      },
+            #{fxdNtcYn    },
+            <choose>
+                <when test='fxdNtcYn == "Y" '>
+                #{fxdNtcStrtDt},
+                #{fxdNtcEndDt },
+                </when>
+                <otherwise>
+                null,
+                null,
+                </otherwise>
+            </choose>
+            #{loginYn      },
+            'N',
+            #{filegrpid     },
+            NOW(),
+            #{user.userid },
+            NOW(),
+            #{user.userid }
+        )
+    </insert>
+    
+    <!-- 게시물 목록을 가져온다. -->
+    <select id="selectPstList"  parameterType="PstVo" resultType ="PstVo" >
+        /* BbsDao.selectPstList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            A.PSTID,
+            A.SITEID,
+            A.TITLE,
+            A.DEL_YN,
+            A.GRP,
+            A.ORD,
+            A.DPTH,
+            IFNULL(B.FILECNT,0) file_cnt,
+            CONVERT(A.REG_DT, CHAR(10)) REG_DT,
+            CONVERT(A.MDFCN_DT, CHAR(10)) MDFCN_DT
+        FROM 
+            TB_CMM_PST A 
+            LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
+        WHERE 1=1
+            <if test="bbsid != null and bbsid != 0">
+            AND BBSID= #{bbsid}
+            </if>
+            <if test="searchType != null and searchType == 'nm' ">
+            AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>         
+            <if test="searchType != null and searchType == 'cntnts' ">
+            AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchType) and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)">
+            AND (A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%'))
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 게시물을 수정한다. -->
+    <update id="updatePst" parameterType="PstVo">
+        /* BbsDao.updatePst */
+        UPDATE TB_CMM_PST SET     
+            TITLE          = #{title         },
+            CNTNTS         = #{cntnts        },
+            <if test="siteid != null and siteid != 0">
+            SITEID         = #{siteid        },
+            </if>
+            BBS_CLID       = #{bbsClid      },
+            FILEGRPID      = #{filegrpid     },
+            MDFCN_DT        = NOW(),
+            MDFRID     = #{user.userid   },
+            FXD_NTC_YN     = #{fxdNtcYn    },
+            <choose>
+                <when test='fxdNtcYn == "Y" '>
+                FXD_NTC_STRT_DT= #{fxdNtcStrtDt},
+                FXD_NTC_END_DT = #{fxdNtcEndDt },
+                </when>
+                <otherwise>
+                FXD_NTC_STRT_DT= null,
+                FXD_NTC_END_DT = null,
+                </otherwise>
+            </choose>
+            LOGIN_YN       = #{loginYn      }
+        WHERE 
+            PSTID = #{pstid}     
+    </update>
+    
     <!-- 게시물 정보를 가져온다. -->
     <select id="selectPst"  parameterType="PstVo" resultType ="PstVo" >
         /* BbsDao.selectPst */
         SELECT 
-            A.PSTID      as pstid,
-            B.BBSID      as bbsid,
-            B.NM         as nm,
-            A.rgtrid  as userid,
-            C.NM    as user_nm,
-            A.REG_DT     as reg_dt,
-            IFNULL(A.HITS,0)   as hits,
-            A.TITLE               as title,
-            A.CNTNTS              as cntnts,
-            A.MDFCN_DT             as mdfcn_dt,
-            A.fxd_ntc_yn,
-            A.fxd_ntc_strt_dt,
-            A.fxd_ntc_end_dt, 
-            A.login_yn,
-            A.BBS_CLID            as bbs_clid,
-            IFNULL(a.FILEGRPID,0) as filegrpid,
-            B.hot_use_yn,
-            b.atchfile_use_yn     as atchfile_use_yn,
-            b.atchfile_cnt        as atchfile_cnt,
-            b.atchfile_size       as atchfile_size,
-            B.cmnt_use_yn         as cmnt_use_yn,
-            B.rply_use_yn         as rply_use_yn,
-            B.cl_use_yn           as cl_use_yn,
-            B.fxd_ntc_use_yn      as fxd_ntc_use_yn,
-            B.FXD_NTC_CNT         as fxd_ntc_cnt,
-            D.CL_NM               as cl_nm,
-            (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMM_PST E WHERE A.BBSID = E.BBSID ) cur_fxd_ntc_cnt
+            A.PSTID             
+           ,A.SITEID            
+           ,B.BBSID             
+           ,B.NM                
+           ,A.rgtrid            
+           ,C.NM                
+           ,A.REG_DT            
+           ,IFNULL(A.HITS,0) AS HITS   
+           ,A.TITLE             
+           ,A.CNTNTS            
+           ,A.MDFCN_DT          
+           ,A.fxd_ntc_yn
+           ,A.fxd_ntc_strt_dt
+           ,A.fxd_ntc_end_dt 
+           ,A.login_yn
+           ,A.del_yn
+           ,A.BBS_CLID            
+           ,A.ORD                 
+           ,A.GRP                 
+           ,A.DPTH                
+           ,IFNULL(a.FILEGRPID,0) AS FILEGRPID 
+           ,B.hot_use_yn
+           ,b.atchfile_use_yn     
+           ,b.atchfile_cnt        
+           ,b.atchfile_size       
+           ,B.cmnt_use_yn         
+           ,B.rply_use_yn         
+           ,B.cl_use_yn           
+           ,B.fxd_ntc_use_yn      
+           ,B.FXD_NTC_CNT         
+           ,D.CL_NM               
+          --  (SELECT  SUM( CASE WHEN fxd_ntc_yn = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMM_PST E WHERE A.BBSID = E.BBSID ) as cur_fxd_ntc_cnt
         FROM
             TB_CMM_PST A
             LEFT OUTER JOIN TB_CMM_BBS_CL D ON (A.BBS_CLID = D.BBS_CLID),
@@ -439,18 +452,75 @@
     <!-- 게시물을 삭제한다. -->
     <delete id="deletePst" parameterType="PstVo" >
         /* BbsDao.deletePst */
-        DELETE FROM TB_CMM_PST 
-        WHERE 
-            PSTID =#{pstid}
+        <!-- DELETE FROM TB_CMM_PST --> 
+        UPDATE TB_CMM_PST 
+           SET DEL_YN    = #{delYn}
+               ,MDFCN_DT = NOW()
+               ,MDFRID   = #{user.userid }
+        WHERE 1=1
+        <choose>
+           <when test="delPstids != null and delPstids != '' ">
+              AND PSTID IN
+               (
+                 <foreach item="item" collection="delPstids"  separator=",">
+                    #{item}
+                 </foreach>
+               )  
+           </when>
+           <otherwise>
+              AND PSTID =#{pstid}
+           </otherwise>
+        </choose>
     </delete>
+    
+    <!-- 게시물 댓글 순서를 수정한다. -->
+    <update  id="updatePstOrd" parameterType="CmntVo" >
+        /* BbsDao.updatePstOrd */
+        UPDATE TB_CMM_PST SET
+            ORD           = #{ord}, 
+            MDFCN_DT       = NOW(),
+            MDFRID    = #{user.userid}
+        WHERE 
+           pstid = #{pstid} 
+    </update>
+  
+    <!-- 게시물 댓글 순서를 수정한다. -->
+    <update  id="updatePstOrdElse" parameterType="CmntVo" >
+        /* BbsDao.updatePstOrdElse */
+        <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
+        SELECT 
+            CASE 
+                WHEN
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_PST  WHERE GRP= #{grp} AND DPTH = #{dpth}+1 ) = 0
+                    THEN 
+                        #{ord}+1
+                ELSE
+                    (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_PST  WHERE GRP= #{grp}  AND DPTH = #{dpth}+1 )+1
+            END
+        </selectKey>
+        UPDATE TB_CMM_PST SET
+            ORD      = ORD +1
+            ,MDFCN_DT = NOW()
+            ,MDFRID   = #{user.userid}
+        WHERE 1=1
+          AND GRP = #{grp}
+          AND ORD >= #{ord} 
+    </update>
+    
+    
+    <!--******************* 댓글 SQL START ***************************  -->
   
     <!-- 게시물 댓글을 삭제한다. -->
     <delete id="deleteCmnt" parameterType="PstVo" >
         /* BbsDao.deleteCmnt */
-        DELETE FROM TB_CMM_CMNT
-        WHERE 
-            PSTID =#{pstid}
-  </delete>
+<!--         DELETE FROM TB_CMM_CMNT -->
+            UPDATE TB_CMM_CMNT 
+               SET DEL_YN    = #{delYn}
+                   ,MDFCN_DT = NOW()
+                   ,MDFRID   = #{user.userid }
+            WHERE 1=1
+              AND PSTID =#{pstid}
+    </delete>
   
   <!-- 게시물 댓글 목록을 가져온다. -->
   <select id="selectCmntList" parameterType="CmntVo"  resultType ="CmntVo">
@@ -614,6 +684,17 @@
             ORDER BY A.MDFCN_DT DESC 
     </select>
     
-    
+    <!-- 게시물 답글 정보를 가져온다 -->
+    <select id="selectNtcPstCnt"  parameterType="PstVo" resultType ="PstVo" >
+      /* BbsDao.selectReplyPstList */
+      SELECT 
+        COUNT(pstid) AS fxdNtcCnt
+       FROM
+         TB_CMM_PST
+       WHERE 1=1
+        AND SITEID = #{siteid}
+        AND BBSID  = #{bbsid}
+        AND FXD_NTC_YN = 'Y'
+    </select>
     
 </mapper>

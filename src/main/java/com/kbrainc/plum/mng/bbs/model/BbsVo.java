@@ -122,6 +122,10 @@ public class BbsVo extends ParentRequestVo {
     
     /** 등록_아이디 **/
     private Integer rgtrid;
+    
+    /** 답글_여부 **/
+    @Pattern(regexp="[YN]")
+    private String rplyYn;
 
     private Integer pstCnt; // 추가 :게시글 수
     

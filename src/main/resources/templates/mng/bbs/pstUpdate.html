@@ -1,0 +1,732 @@
+ <form class="form-inline form-horizontal row-border" role="form" id ="pstUpdateForm" >
+ 
+       <!-- insert 부분 -->
+        <div class="col-12">
+                <div class="card-header p-b-0">
+                    <h3 class="sub-title"><strong>기본정보</strong></h3>
+                </div>
+                
+                <div class="card-block-small p-t-0">
+                
+                    <div class="mb-2 row">
+                        <div class="col-12 col-lg-6">
+                            <div class="mb-0 form-group required required">
+                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+                                <div class="col-12">
+                                   <th:block kattr:select_site="siteid" sysSeCd=""  firstOptTxt="- 선택 -" firstOptVal=""  th:attr="selectedId=${result.paramMap.siteid}" ></th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-2 form-group row required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>로그인 여부</strong></div>
+                        <div class="col-12">
+                            <div class="form-radio">
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 ">
+                                        <input type="radio" name="loginYn" value="Y"  th:checked ="${result.paramMap.loginYn}=='Y'">
+                                        <i class="helper"></i>로그인전
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline">
+                                    <label class="mb-0 ">
+                                        <input type="radio" name="loginYn" value="N" th:checked ="${result.paramMap.loginYn}=='N'">
+                                        <i class="helper"></i>로그인후
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <th:block th:if="${result.paramMap.fxdNtcUseYn}=='Y'">
+                    <div class="mb-2 row">
+                        <div class="col-12 col-lg-auto mb-2 mb-lg-0">
+                            <div class="mb-0 form-group required">
+                                <div class="form-label col-sm-12  p-t-0 pb-1 ">
+                                    <strong class="col-form-label ">고정공지 여부</strong>
+                                    <span id="fixedNtcMsg"></span>
+                                </div>
+                                
+                                <div class="col-12 "  >
+                                    <div class="form-radio">
+                                        <div class="radio radio-inline">
+                                            <label class="mb-0 ">
+                                                <input type="radio" name="fxdNtcYn" id="fxdNtcYnY" value="Y" th:checked = "${result.paramMap.fxdNtcYn =='Y'}" >
+                                                <i class="helper"></i>사용
+                                            </label>
+                                        </div>
+                                        <div class="radio radio-inline">
+                                            <label class="mb-0 ">
+                                                <input type="radio" name="fxdNtcYn" id="fxdNtcYnN" value="N" th:checked = "${result.paramMap.fxdNtcYn =='N'}">
+                                                <i class="helper"></i>사용안함
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-lg-auto mb-2 mb-lg-0 fxdNtcYncheck">
+                            <div class="mb-0 form-group">
+                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>고정공지 시작일</strong></label>
+                                <div class="col-12">
+                                    <input type="date" class="form-control form-control-sm" name="fxdNtcStrtDt" id="fxdNtcStrtDt" 
+                                           th:value="${ #strings.substring(result.paramMap.fxdNtcStrtDt, 0,10)}"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-lg-auto fxdNtcYncheck">
+                            <div class="mb-0 form-group">
+                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>고정공지 종료일</strong></label>
+                                <div class="col-12">
+                                    <input type="date" class="form-control form-control-sm" name="fxdNtcEndDt" id="fxdNtcEndDt" 
+                                           th:value="${ #strings.substring(result.paramMap.fxdNtcEndDt, 0,10)}"/>
+                                </div>
+                            </div>
+                        </div>
+                        
+                     </div>
+                    </th:block>
+                    
+                    <th:block th:if="${result.paramMap.clUseYn} == 'Y'">
+                       <div class="mb-2 row">
+                           <div class="col-12 col-lg-6">
+                               <div class="mb-0 form-group required">
+                                   <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>글분류</strong></div>
+                                   <div class="col-12">
+                                       <select id="bbsClid" name="bbsClid" class="form-select form-select-sm form-control-sm">
+                                            <option value=""> - 전체 -</option>
+                                            <option th:each="item : ${clList}" th:value="${item.bbsClid}" th:text="${item.clNm} "
+                                                    th:selected="${item.bbsClid == result.paramMap.bbsClid}"
+                                            ></option>
+                                       </select>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                    </th:block>
+                    
+                    <div class="mb-2 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="title"><strong>제목</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" name="title" id="title" placeholder="제목" 
+                            th:value="${result.paramMap.title}"/>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-2 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="contents"><strong>내용</strong></label>
+                        <div class="col-12">
+                            <textarea rows="5" cols="5" class="form-control form-control-sm"  id="cntnts" name="cntnts">
+                            <th:block th:text="${result.paramMap.cntnts}"></th:block>
+                            </textarea>
+                        </div>
+                    </div>
+                    
+                  <th:block th:if="${result.paramMap.atchfileUseYn}=='Y'">
+                    <div class="mb-0 form-group row">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
+                            <div class="col-sm-12">
+                                <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
+                            </div>
+                            <div class="mt-2 row">
+                                <div class="col-auto">
+                                    <div id="multipleFileUploadError"></div>
+                                    <div id="multipleFileUploadSuccess">
+                                        <th:block th:if="${result.fileMap}">
+                                            <th:block th:each="item : ${result.fileMap}" th:id="${item.fileid}">
+		                                        <span class ='label label-inverse mb-2' th:id="'pst_'+${item.fileid}">
+		                                            <th:block th:text="${item.orginlFileNm}"/>
+		                                        <a  class = 'btn text-white' href = "javascript:void(0)"
+		                                           th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" 
+		                                           th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)"
+		                                           >X</a>&nbsp;&nbsp;
+		                                        </span>
+                                               <!-- <a th:fileid ='${item.fileid}' th:fileIdntfcKey = "${item.fileIdntfcKey}"
+                                                  th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                  href ="javascript:void(0)" >
+                                                <th:block th:text="${item.orginlFileNm}" />(<th:block th:text="${T(com.kbrainc.plum.rte.util.FileUtil).readableFileSize(item.fileSize)}" />)
+                                               </a> -->
+                                            </th:block>
+                                        </th:block>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                    
+			         <input type="hidden" id = "filegrpid"    name ="filegrpid"   th:value = "${(result.paramMap.filegrpid=='' or result.paramMap.filegrpid==null)? 0:result.paramMap.filegrpid} " />
+			         <input type="hidden" id = "atchfileCnt"  name ="atchfileCnt" th:value = "${result.paramMap.atchfileCnt}" >
+			         <input type="hidden" id = "atchfileSize" name="atchfileSize" th:value = "${result.paramMap.atchfileSize}">
+                  </th:block>
+                  
+                </div>
+                
+                <div class="card-block-small">
+                
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.resetListContent()">취소</button>
+                    
+                    <th:block th:if="${bbsInfo.rplyUseYn} == 'Y' and ${result.paramMap.dpth < 2}">
+                        <button type="button" class="btn btn-inverse m-r-5" onclick="goRelpyInsertForm()">답글</button>
+                    </th:block>
+                    
+                    <button type="button" class="btn btn-primary" onclick="fn_updatePst()">저장</button>
+                    
+                </div>
+        </div>
+      <!-- //insert 부분 -->
+      
+      <!--hidden 변수 저장  -->
+      <input type="hidden" id="fxdNtcCntOverYn" name="fxdNtcCntOverYn" >
+      <input type="hidden" id="fxdNtcCnt"       name="fxdNtcCnt"     th:value = "${result.paramMap.fxdNtcCnt}" >
+      <input type="hidden" id="bbsid"           name="bbsid"         th:value = "${result.paramMap.bbsid}" >
+      <input type="hidden" id="atchfileUseYn"   name="atchfileUseYn" th:value = "${result.paramMap.atchfileUseYn}" >
+      <input type="hidden" id="pstid"           name="pstid"         th:value = "${result.paramMap.pstid}" >
+      <input type="hidden" id="dpth"            name="dpth"          th:value = "${result.paramMap.dpth}" >
+      <input type="hidden" id="ord"             name="ord"           th:value = "${result.paramMap.ord}" >
+   </form>
+   
+   <!-- 댓글 사용시-->
+   <th:block th:if="${result.paramMap.cmntUseYn} == 'Y' ">
+	  <div class="panel panel-default">
+	  
+		<div class="panel-heading" >
+			<h4 >> 댓글</h4>
+		</div>
+		    	
+	    <div class="panel-body">
+	         
+	      <form id="cmntForm" >
+	         <div class="table-responsive input-group-sm">
+	            <div class="form-group">
+		            <label class="col-md-2 control-label">댓글</label>
+		            <div class="col-md-9 form-control-static">
+		             <textarea id="cmntCntnts" name="cmntCntnts" class = "form-control"  ></textarea>
+		            </div>
+		            <div class="col-md-1 form-control-static">
+		               <input type="button" class="btn btn-sm btn-primary"  onclick="fn_insertCmnt()" value="댓글등록"/>
+		            </div>
+	            </div>
+	           </div>
+	      </form>     
+               
+        <div class="form-group col-md-12 " >
+            <th:block th:if="not ${cmntList.isEmpty()}">
+              <div class="col-md-2 form-group" ></div>
+                <div class="col-md-10 form-group">
+                
+	                 <div th:each="item : ${cmntList}" class="col-md-12" style="padding:10px; border-bottom:1px solid #cae1ef !important">
+	                 
+                       <form   th:id="replyForm+${item.cmntid}" >      
+		                 <input type="hidden" id= "pstid"    name= "pstid"      th:value="${item.pstid}">
+		                 <input type="hidden" id= "cmntid"   name= "cmntid"     th:value="${item.cmntid}">
+		                 <input type="hidden" id= "dpth"     name= "dpth"       th:value="${item.dpth}">
+		                 <input type="hidden" id= "ord"     name= "ord"       th:value="${item.ord}">
+		                 <input type="hidden" id= "cmntGrp" name= "cmntGrp"   th:value="${item.cmntGrp}">
+		                 
+		                  <div th:if="${item.delYn} =='Y' " class="col-md-12 form-group text-left">
+			                 <div class="col-md-10 form-group col-xs-8">
+			                  <label><th:block th:utext="${item.dpthStr}"></th:block><th:block th:text="${item.nm}"></th:block> ( <th:block th:text="${item.acnt}"></th:block> )</label>
+			                 </div>
+			                 
+			                 <div class="col-md-10 form-group col-xs-8">
+	                         <h6><label><th:block th:utext="${item.paddingStr}"></th:block>삭제된 게시물입니다.</label></h6>
+	                         </div>
+	                      </div>
+		                 
+		                 <th:block th:if="${item.delYn} =='N'">
+	 	                     <span  th:id="normalForm+${item.cmntid}">
+	 	                     
+			                 <div class="col-md-10 form-group col-xs-8" th:attr="style='padding-left:#{item.dpth}*10px;'">
+			                  <label><th:block th:utext="${item.paddingStr}"></th:block><th:block th:utext="${item.dpthStr}"></th:block><th:block th:text="${item.nm}"></th:block> ( <th:block th:text="${item.acnt}"></th:block> )</label>
+			                 </div>
+			                 
+			                 <div class="form-group col-md-2 col-xs-4 text-right">
+			                   <input type="button" class="btn btn-xs btn-primary"  th:id="${item.cmntid}"  onclick="fn_openModifytReplyForm(this.id)" value="수정 "/>
+			                   <input type="button" class="btn btn-xs btn-danger"   th:id="${item.cmntid}"  onclick="fn_deleteCmntReply(this.id)"value="삭제"/>
+			                 </div>
+		 	                  <div class="col-md-12 form-group " >
+		 	                    <h6><th:span th:utext="${item.paddingStr}"></th:span><th:block th:text="${item.cntnts}"></th:block></h6>
+		 	                  </div>
+		 	                  <th:block th:if="${result.paramMap.rplyUseYn} == 'Y' ">
+		 	                  <div class="col-md-12 form-group">
+			                    <th:block th:utext="${item.paddingStr}"></th:block><input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_openReplyForm(this.id)" value="답글"/>
+		 	                  </div>
+		 	                  </th:block>
+		 	                 </span>
+		 	                  
+		 	                  <span  th:id="modifyForm+${item.cmntid}" style="display:none;">
+				                 <div class="col-md-12 form-group " >
+				                  <th:span th:utext="${item.paddingStr}"></th:span><label><th:block th:utext="${item.dpthStr}"></th:block><th:block th:text="${item.nm}">
+				                  </th:block> ( <th:block th:text="${item.acnt}"></th:block> )</label>
+				                 </div>
+			 	                  <div class="col-md-12  form-group" >
+			 	                    <th:span th:utext="${item.paddingStr}"></th:span><textarea class = "form-control"  name="modifyReplyCntnts" id="modifyReplyCntnts" ><th:block th:text="${item.cntnts}"></th:block></textarea>
+			 	                  </div>
+			 	                  <div class="form-group col-md-12 col-xs-12 ">
+				                    <input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_modifyCmntReply(this.id)" value="수정등록"/>
+				                    <input type="button" class="btn btn-xs btn-primary" th:id="${item.cmntid}" onclick="fn_closeModifyReplyForm(this.id)" value="취소"/>
+			 	                  </div>
+		 	                  </span>
+		 	                  
+		 	              </th:block>    
+	 	                  
+	 	                  
+	 	                  <div th:id ="replyCntntsForm+${item.cmntid}" class="col-md-12 form-group"  style="padding-left:0px;display:none">
+	 	                    <div class="col-md-12 form-group ">
+				              <textarea id="cntnts" name="cntnts" class = "form-control"  ></textarea>
+				            </div>
+				            <div class="col-md-12 form-control-static">
+				               <input type="button" class="btn btn-xs btn-primary"  th:id="${item.cmntid}" onclick="fn_insertReply(this.id)"  value="답글등록"/>
+				               <input type="button" class="btn btn-xs btn-primary"  th:id="${item.cmntid}" onclick="fn_cnacelInsertReply(this.id)"  value="취소 "/>
+				            </div>
+	 	                 </div>
+	 	               </form>
+                    </div> 
+                </div>
+            </th:block> 
+            </div>
+            
+            <th:block th:if="not ${cmntList.isEmpty()}">
+		 	    <input type="hidden" id="pageNumber" name="pageNumber" th:value="${cmntList[0].pageNumber} ">
+		 	    <input type="hidden" id="totalPage" name="totalPage" th:value="${cmntList[0].totalPage}">
+		 	    <div class="text-center" >
+	               <th:block th:if="${cmntList[0].pageNumber} != 1 and ${cmntList[0].totalPage} > 1">
+			 	       <span class="jsgrid-pager-nav-button"><a onclick="fn_paging(1)"> &lt; 처음 ㅣ</a></span>
+			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].pageNumber} - 1" onclick="fn_paging(this.name)">이전</a></span>
+	               </th:block>
+	               <th:block th:if="${cmntList[0].totalPage} > 1">
+			 	     <th:block th:each="idx,item:${#numbers.sequence(1,cmntList[0].totalPage)}">
+			 	       <span th:id="pager+${idx}" class="jsgrid-pager-nav-button "><a th:name="${idx}"  onclick="fn_paging(this.name)"><th:block th:text="${idx}"></th:block></a></span>
+			 	     </th:block>
+		 	       </th:block>
+	               <th:block th:if="${cmntList[0].pageNumber} != ${cmntList[0].totalPage} and ${cmntList[0].totalPage} > 1">
+			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].pageNumber} + 1" onclick="fn_paging(this.name)">다음</a></span>
+			 	       <span class="jsgrid-pager-nav-button"><a th:name="${cmntList[0].totalPage}"      onclick="fn_paging(this.name)">| 마지막 &gt;</a></span>
+		 	       </th:block>
+		 	    </div>
+ 	     </th:block>
+ 	     
+   </div>
+ </div>
+</th:block>
+
+<script th:inline="javascript" >
+	
+	 /*<![CDATA[*/
+	 var pstInfo = /*[[ ${result.paramMap} ]]*/null;
+	 // var bbsClid = /*[[ ${result.paramMap.bbsClid} ]]*/;
+	 /*]]>*/
+	 
+	 /*<![CDATA[*/
+	 var currentFileCnt = /*[[ ${result.currentFileCnt} ]]*/null;
+	 /*]]>*/
+	 
+	 var atchfileCnt = 0;
+	 var atchfileSize = 0;
+	 var editor = null;
+	 var formData = new FormData();
+	 var uploadFileCnt = 0;
+	 
+	 $(function(){
+	
+	     $("[name=fxdNtcYn]").click(function () {
+	         disableFxdNtcDt();
+	     })
+	
+	     if ($("#pageNumber").val() != null) {
+	         $("#pager" + $("#pageNumber").val()).addClass(" jsgrid-pager-current-page ")
+	     }
+	
+	     if ($("#atchfileCnt").val() != null && $("#atchfileCnt").val() != '0') {
+	         atchfileCnt = $("#atchfileCnt").val();
+	     }
+	     if ($("#atchfileSize").val() != null && $("#atchfileSize").val() != '0') {
+	         atchfileSize = $("#atchfileSize").val();
+	     }
+	
+	     if (currentFileCnt > 0) uploadFileCnt = currentFileCnt;
+	
+	     //editor = CKEDITOR.replace("cntnts");
+	     //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
+	     editor = CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
+	     validate();
+	
+	     $("#selectSitesiteid").bind("change",function(){
+	         checkNtcPstCntLimit();
+	     })
+	     
+	     $("[name=fxdNtcYn]").click(function(){
+	         disableFxdNtcDt();
+	     })
+	     getNtcPstCnt();
+	     disableFxdNtcDt();
+	})
+	 
+    $('#multiFileInput').on("change", function (event) {
+
+         var objFile = document.querySelector('#multiFileInput');
+         var formData = new FormData();
+         var content = "";
+
+         for (i = 0; i < objFile.files.length; i++) {
+             if (objFile.files[i].size > (atchfileSize * 1024 * 1024)) {
+                 alert(atchfileSize + "MG 초과하는 파일은 업로드 하실수 없습니다.  : " + objFile.files[i].name);
+             } else if (uploadFileCnt  >= atchfileCnt) {
+                 alert("첨부파일은  " + atchfileCnt + " 개 까지 가능합니다.");
+                 break;
+             } else {
+                 formData.append("files", objFile.files[i]);
+                 uploadFileCnt++;
+             }
+         }
+
+         formData.append("filegrpid", $("#filegrpid").val());
+         formData.append("filegrpNm", "bbs");
+         formData.append("bbsid", $("#bbsid").val());
+
+         if (atchfileCnt > 0) {
+             $.ajax({
+                 url: '/uploadMultipleFiles.do',
+                 processData: false,
+                 contentType: false,
+                 data: formData,
+                 type: 'POST',
+                 success: function (response) {
+                     if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                         $("#filegrpid").val(response[0].filegrpid);
+                     }
+                     for(i = 0 ;i < response.length; i++ ){
+                         content = "<span class ='label label-inverse mb-2' id='pst_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                         content +="&nbsp;&nbsp;  <a  class = 'btn text-white' href = javascript:fn_deleteFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a>&nbsp;&nbsp;</span>";
+                         $('#multipleFileUploadSuccess').append(content);
+                     }
+                 }
+             })
+
+             if (detectBrowser() == "other") {
+                 $("#multiFileInput").val("");
+             } else {
+                 $("#multiFileInput").replaceWith($("#multiFileInput").clone(true))
+             }
+         }
+ });
+ 
+ function validate() {
+
+     $("#pstUpdateForm").validate({
+         ignore: [],
+         rules: {  
+             title      : { required: true , maxlength:200  }
+            ,siteid     : { required: true }
+            ,cntnts     : { required: true }
+            ,bbsClid    : { required: true }
+       },
+       messages: {  
+             title      : { required: "제목을 입력해 주십시오."  , maxlength : "게시판 제목은 200자를 넘을 수 없습니다."  }
+            ,siteid     : { required: "사이트를 선택해야 해주십시오." }
+            ,cntnts     : { required: "게시글 내용을 입력해 주십시오."  }
+            ,bbsClid    : { required:"게시글 분류를 선택해주십시오 "}
+       }
+     })
+ }
+
+ function fn_updatePst() {
+     $('#cntnts').val(editor.getData());
+
+     if (!$('#pstUpdateForm').valid()) return;
+
+
+     var fxdNtcYn = $("input[name='fxdNtcYn']:checked").val();
+
+     if (fxdNtcYn == 'Y') {
+
+         var fxdNtcStrtDt = $("#fxdNtcStrtDt").val();
+         var fxdNtcEndDt = $("#fxdNtcEndDt").val();
+
+         if (fxdNtcStrtDt == null || fxdNtcStrtDt == "" || fxdNtcEndDt == null || fxdNtcEndDt == "") {
+             alert("고정공지 기간을 입력해주세요");
+             showErrorMark("#fxdNtcStrtDt");
+             showErrorMark("#fxdNtcEndDt");
+             return;
+         } else {
+             var strtDt = fxdNtcStrtDt.replaceAll("-", "");
+             var endDt = fxdNtcEndDt.replaceAll("-", "");
+             if (strtDt > endDt) {
+                 alert("고정공지 종료일이 시작일보다 작습니다.");
+                 showErrorMark("#fxdNtcStrtDt");
+                 showErrorMark("#fxdNtcEndDt");
+                 return;
+             }
+         }
+     } else {
+         $("#fxdNtcStrtDt").val('');
+         $("#fxdNtcEndDt").val('');
+     }
+
+     $.ajax({
+         url: "/bbs/updatePst.do",
+         type: 'POST',
+         cache: false,
+         dataType: 'json',
+         data: $("#pstUpdateForm").serialize(),
+         success: function (data) {
+             if (data.result == "success") {
+                 alert("저장이 완료 되었습니다.");
+                 gridHelper1.resetListContent();
+             } else {
+                 alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+             }
+          }
+        })
+  }
+ 
+  function disableFxdNtcDt(){
+	  
+        var fxdNtcYn=$("input[name='fxdNtcYn']:checked").val();
+        
+        if(fxdNtcYn == 'Y'){
+            
+            if($("#siteid").val() == ""){
+                alert("사이트를 먼저 선택해주십시오.");
+                $("input:radio[name='fxdNtcYn']:radio[value='N']").prop('checked', true); // 선택하기
+                return;
+            }
+            if($("#fxdNtcCntOverYn").val() == "Y"  && pstInfo.fxdNtcYn != 'Y' ){
+                alert("해당 사이트의 고정공지 수가 이미 초과 하였습니다.");
+                $("input:radio[name='fxdNtcYn']:radio[value='N']").prop('checked', true); // 선택하기
+                return;
+            }
+            
+            $("#fxdNtcStrtDt").prop("disabled",false);
+            $("#fxdNtcEndDt").prop("disabled",false);
+        }else{
+            //$("#fxdNtcStrtDt").val("");
+            //$("#fxdNtcEndDt").val("");
+            $("#fxdNtcStrtDt").prop("disabled",true);
+            $("#fxdNtcEndDt").prop("disabled",true);
+        }
+    }
+
+    getNtcPstCnt =() =>{
+        
+        if($("#siteid").val()=="" || $("#siteid").val()== null){
+            return;
+        }
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/bbs/selectNtcPstCnt.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : {
+                    bbsid  : $("#bbsid").val(),
+                    siteid : $("#siteid").val()
+                },
+                success : function (data){
+                    
+                    $("#fixedNtcMsg").html("");
+                    var currentCnt = 0;
+                    
+                    if(data.cntVo.fxdNtcCnt !=null && data.cntVo.fxdNtcCnt != 0){currentCnt =  Number(data.cntVo.fxdNtcCnt);}
+                    var fixedCnt =  Number($("#fxdNtcCnt").val());
+                    
+                    if(currentCnt >= fixedCnt){
+                           //고정공지 게시글 수가 이미 초과일시 고정공지 사용 불가
+                           //$("#fxdNtcYnY").prop("disabled",true);
+                           $("#fxdNtcCntOverYn").val("Y");
+                           $("#fixedNtcMsg").html("<span style='color:red;' >고정공지 수 초과 ( "+currentCnt+"/"+fixedCnt+" ) </span>");
+                           
+                    }else{
+                           //$("#fxdNtcYnY").prop("disabled",false);
+                           $("#fxdNtcCntOverYn").val("N");
+                           $("#fixedNtcMsg").html("<span> ("+currentCnt+"/"+fixedCnt+")</span>");
+                    }
+
+                    if(pstInfo.siteid== $("#siteid").val() &&pstInfo.fxdNtcYn == 'Y' && pstInfo.fxdNtcStrtDt != null && pstInfo.fxdNtcEndDt != null ){
+                    	$("input:radio[name='fxdNtcYn']:radio[value='Y']").prop('checked', true); // 선택하기
+                        $("#fxdNtcStrtDt").val(pstInfo.fxdNtcStrtDt.substring(0,10));
+                        $("#fxdNtcEndDt").val(pstInfo.fxdNtcEndDt.substring(0,10));
+                        disableFxdNtcDt();
+                    }
+                    closeWorkProgress();
+                    
+                },
+                error : function (error){
+                } 
+            });
+       }
+    }
+    
+    checkNtcPstCntLimit = ()=>{
+        $("#fixedNtcMsg").html("");
+        $("input:radio[name='fxdNtcYn']:radio[value='N']").prop('checked', true); // 선택하기 
+        $("#fxdNtcStrtDt").val("");
+        $("#fxdNtcEndDt").val("");
+        $("#fxdNtcStrtDt").prop("disabled",true);
+        $("#fxdNtcEndDt").prop("disabled",true);
+        getNtcPstCnt();
+    }
+
+    goRelpyInsertForm = () =>{
+        var relpyInsertUrl = "/bbs/bbsPstRplyInsertForm.html?pstid="+$("#pstid").val()+"&bbsid="+$("#bbsid").val();
+        gridHelper1.loadContent(relpyInsertUrl);
+    }
+    
+  /**************수정 END **************************************************************************************/
+  
+	 function fn_paging(pageNum) {
+		if (pageNum != $("#pageNumber").val()) {
+			$("#pageNumber").val(pageNum);
+			goModifyForm();
+		}
+	 }
+
+	 function fn_cnacelInsertReply(cmntid) {
+		 $("#replyForm" + cmntid + "  #cntnts").val("");
+		 $("#replyCntntsForm" + cmntid).css("display", "none");
+		 $("#normalForm" + cmntid).css("display", "block");
+		 $("#modifyForm" + cmntid).css("display", "none");
+	 }
+	
+	 function fn_closeModifyReplyForm(cmntid) {
+		 $("#replyCntntsForm" + cmntid).css("display", "none");
+		 $("#normalForm" + cmntid).css("display", "block");
+		 $("#modifyForm" + cmntid).css("display", "none");
+	 }
+	
+	 function fn_openModifytReplyForm(cmntid) {
+		 $("#replyCntntsForm" + cmntid).css("display", "none");
+		 $("#normalForm" + cmntid).css("display", "none");
+		 $("#modifyForm" + cmntid).css("display", "block");
+	 }
+	
+	 function fn_openReplyForm(cmntid) {
+		 $("#replyCntntsForm" + cmntid).css("display", "block");
+	 }
+	
+	 function fn_modifyCmntReply(cmntid) {
+		 var cmntValidator = $("#replyForm" + cmntid).validate({
+			 rules: {modifyReplyCntnts: {required: true}},
+			 messages: {modifyReplyCntnts: {required: "답글 내용을 입력해 주십시오."}}
+	
+		 })
+		 if ($("#replyForm" + cmntid).valid() == false) return;
+		 var data = {
+			 cntnts: $("#replyForm" + cmntid + " #modifyReplyCntnts").val(),
+			 cmntid: $("#replyForm" + cmntid + " #cmntid").val(),
+		 }
+		 if (!confirm("답글을 수정 하시겠습니까?")) return;
+		 var url = "/mng/bbs/updateCmnt.do";
+		 fn_postAjax(url, data, updateMessage);
+	 }
+	
+	 function fn_deleteCmntReply(cmntid) {
+		 var data = {
+			 cmntid: $("#replyForm" + cmntid + " #cmntid").val(),
+			 delYn: 'Y'
+		 }
+		 if (!confirm("답글을 삭제 하시겠습니까?")) return;
+		 var url = "/mng/bbs/updateCmntReplyDelYn.do";
+		 fn_postAjax(url, data, updateMessage);
+	 }
+	
+	
+	 function goModifyForm() {
+		 var modifyUrl = "/bbs/pstUpdateForm.html?pstid=" + $("#pstid").val() + "&pageNumber=" + $("#pageNumber").val();
+		 loadContent(modifyUrl);
+	 }
+	
+	 var insertMessage = function (data) {
+		 if (data.result == "success") {
+			 alert("등록이 완료 되었습니다.");
+			 goModifyForm()
+		 } else {
+			 alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+		 }
+	 }
+	
+	 var updateMessage = function (data) {
+		 if (data.result == "success") {
+			 alert("저장이 완료 되었습니다.");
+			 goModifyForm()
+		 } else {
+			 alert("수정중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+		 }
+	 }
+	
+	 //답글
+	 function fn_insertReply(cmntid) {
+	
+		 var cmntValidator = $("#replyForm" + cmntid).validate({
+			 rules: {cntnts: {required: true}},
+			 messages: {cntnts: {required: "답글 내용을 입력해 주십시오."}}
+		 })
+		 if ($("#replyForm" + cmntid).valid() == false) return;
+		 if (!confirm("답글을 저장하시겠습니까?")) return;
+		 var dpth = $("#replyForm" + cmntid + "  #dpth").val();
+		 var data = {
+			 pstid: $("#replyForm" + cmntid + "  #pstid").val(),
+			 cntnts: $("#replyForm" + cmntid + "  #cntnts").val(),
+			 dpth: (dpth == null || dpth == '0' || dpth == '') ? 0 : Number(dpth),
+			 prnts_cmntid: $("#replyForm" + cmntid + "  #cmntid").val(),
+			 cmntGrp: $("#replyForm" + cmntid + "  #cmntGrp").val(),
+			 ord: $("#replyForm" + cmntid + "  #ord").val()
+		 }
+		 var url = "/mng/bbs/insertCmntReply.do";
+		 fn_postAjax(url, data, insertMessage);
+	 }
+	 //댓글 입력
+	 function fn_insertCmnt() {
+		 var cmntValidator = $("#cmntForm").validate({
+			 rules: {cmntCntnts: {required: true}},
+			 messages: {cmntCntnts: {required: "댓글 내용을 입력해 주십시오."}}
+		 })
+		 if ($("#cmntForm").valid() == false) return;
+		 if (!confirm("저장하시겠습니까?")) return;
+		 var data = {
+			 pstid: $("#pstid").val(),
+			 cntnts: $("#cmntCntnts").val()
+		 }
+		 var url = "/bbs/insertCmnt.do";
+		 fn_postAjax(url, data, function (data) {
+			 if (data.result == "success") {
+				 alert("등록이 완료 되었습니다.");
+				 var modifyUrl = "/bbs/pstUpdateForm.html?pstid=" + $("#pstid").val();
+				 loadContent(modifyUrl);
+			 } else {
+				 alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+			 }
+		 });
+	 }
+	
+	 var deleteMessage = function (data) {
+		 if (data.result == "success") {
+			 alert("삭제가  완료 되었습니다.");
+			 //fn_searchForm();
+			 resetListContent();
+		 } else {
+			 alert("에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+		 }
+	 }
+	
+	 //게시판 글 삭제
+	 function fn_deletePst() {
+		 if (!confirm("삭제 하시겠습니까?")) {
+			 return;
+		 }
+		 var data = $("#pstUpdateForm").serialize();
+		 var url = "/bbs/deletePst.do";
+		 fn_postAjax(url, data, deleteMessage);
+	 }
+ 
+ </script> 
+ 	   
+

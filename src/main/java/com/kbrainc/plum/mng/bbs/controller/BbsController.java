@@ -23,6 +23,7 @@ import com.kbrainc.plum.mng.bbs.model.BbsVo;
 import com.kbrainc.plum.mng.bbs.model.CmntVo;
 import com.kbrainc.plum.mng.bbs.model.PstVo;
 import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +52,8 @@ public class BbsController {
     private BbsServiceImpl bbsService;
 
     /**
-     * @Title : userTempListForm
-     * @Description : user관리 리스트화면 이동
+     * @Title : bbsForm
+     * @Description : 게시판 관리 리스트화면 이동
      * @throws Exception :
      * @return String 이동화면경로
      */
@@ -60,10 +61,9 @@ public class BbsController {
     public String userTempListForm() throws Exception {
         return "mng/bbs/bbsList";
     }
-
     /**
-     * @Title : userTempInsertForm
-     * @Description : user 관리 인서트 및 업데이트 트화면 이동
+     * @Title : bbsInsertForm
+     * @Description : 게시판 화면 이동
      * @throws Exception :
      * @return String 이동화면경로
      */
@@ -71,10 +71,9 @@ public class BbsController {
     public String userTempInsertForm() throws Exception {
         return "mng/bbs/bbsInsertForm";
     }
-
     /**
-     * @Title : insertUserTemp
-     * @Description : user insert
+     * @Title : insertBbs
+     * @Description : 게시판 화면 이동
      * @param bbsVO :
      * @param user :
      * @throws Exception :
@@ -98,14 +97,12 @@ public class BbsController {
 
         Map<String, String> resultMap = new HashMap<String, String>();
         resultMap.put("result", resultMsg);
-
         return resultMap;
     }
-
     /**
      * 게시판 가져오기.
      * 
-     * @Title : selectUserTmepList
+     * @Title : getBbsList
      * @Description : 게시판 가져오기
      * @param paramVO :
      * @throws Exception :
@@ -130,21 +127,20 @@ public class BbsController {
         }
         return resultMap;
     }
-
+    
     /**
-     * 
-     * user 관리 업데이트 트화면 이동.
+     * 게시판 관리 업데이트 화면 이동.
      *
-     * @Title       : userTempmodifyForm 
+     * @Title       : bbsUpdateForm 
      * @Description : TODO
      * @param bbsid :
      * @param model :
      * @param paramVO :
      * @return String :
      * @throws Exception :
-     */
+     **/
     @RequestMapping(value = "/bbs/bbsUpdateForm.html")
-    public String userTempmodifyForm(@RequestParam(value = "bbsid", required = true) int bbsid, Model model,
+    public String bbsUpdateForm(@RequestParam(value = "bbsid", required = true) int bbsid, Model model,
             BbsVo paramVO) throws Exception {
 
         paramVO.setBbsid(bbsid);
@@ -199,8 +195,8 @@ public class BbsController {
 
     /**
      * @Title : updateBbs
-     * @Description : user insert
-     * @param UserTempVo
+     * @Description : 게시판 정보 업데이트
+     * @param BbsVo
      * @throws Exception
      * @return String Y or N
      */
@@ -224,7 +220,7 @@ public class BbsController {
 
     /**
      * @Title : insertBbsCl
-     * @Description : user insert
+     * @Description : 게시판 분류 등록
      * @param UserTempVo
      * @throws Exception
      * @return String Y or N
@@ -269,18 +265,17 @@ public class BbsController {
      * @return String 이동화면경로
      */
     @RequestMapping(value = "/bbs/bbsPstForm.html")
-    public String bbsPstForm(@RequestParam(name = "bbsid", required = false) String bbsid, Model model, BbsVo paramVO)
+    public String bbsPstForm(@RequestParam(name = "bbsid", required = false) String bbsid, Model model, BbsClVo bbsClVo ,BbsVo paramVO)
             throws Exception {
-
         paramVO.setSearchKeyword("All");
         model.addAttribute("codeMap", bbsService.selectBbsbyClUseYn(paramVO));
         model.addAttribute("bbsid", bbsid);
-        return "mng/bbs/pstForm";
+        return "mng/bbs/pstList";
     }
 
     /**
      * @Title : bbsPstInsertForm
-     * @Description : 게시물 관리창 화면 이동
+     * @Description : 게시물 등록창 화면 이동
      * @param UserTempVo
      * @throws Exception
      * @return String 이동화면경로
@@ -291,10 +286,26 @@ public class BbsController {
             BbsClVo bbsClVo ) throws Exception {
 
     	bbsClVo.setBbsid(Integer.parseInt(bbsid));
-    	model.addAttribute("clList", bbsService.selectBbsCl(bbsClVo));
+    	bbsClVo.setUseYn("Y");
+    	
+    	model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
         paramVO.setSearchKeyword("All");
         model.addAttribute("paramMap", bbsService.selectOneBbs(paramVO));
-        return "mng/bbs/pstInsert";
+        return "mng/bbs/pstInsertForm";
+    }
+    
+    /**
+     * @Title : bbsPstRplyInsertForm
+     * @Description : 게시물 답글 등록창 화면 이동
+     * @param PstVo
+     * @throws Exception
+     * @return String 이동화면경로
+     */
+    @RequestMapping(value = "/bbs/bbsPstRplyInsertForm.html")
+    public String bbsPstRplyInsertForm(BbsVo paramVO ,PstVo pstVO, Model model) throws Exception {
+        model.addAttribute("paramMap", bbsService.selectOneBbs(paramVO));
+        model.addAttribute("pstVo", bbsService.selectPst(pstVO));
+        return "mng/bbs/pstRplyInsertForm";
     }
 
     /**
@@ -309,10 +320,17 @@ public class BbsController {
 
         Map<String, String> resultMap = new HashMap<>();
         String resultMsg = Constant.REST_API_RESULT_FAIL;
+        Integer resVal = 0 ;
+        
         paramVO.setUser(user);
-
         try {
-            if (bbsService.insertPst(paramVO) == 1) {
+            
+            if(!CommonUtil.isEmpty(paramVO.getRplyYn()) && paramVO.getRplyYn().equals("Y")) {
+                resVal = bbsService.insertReplyPst(paramVO);
+            }else {
+                resVal = bbsService.insertPst(paramVO);
+            }
+            if ( resVal > 0 ) {
                 resultMsg = Constant.REST_API_RESULT_SUCCESS;
             }
         } catch (SQLException e) {
@@ -337,6 +355,8 @@ public class BbsController {
         Map<String, Object> resultMap = new HashMap<>();
         List<PstVo> result = new ArrayList<PstVo>();
         try {
+            
+            paramVO.setOrderField("GRP DESC,ORD ");
             result = bbsService.selectPstList(paramVO);
             if (result.size() > 0) {
                 resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -353,11 +373,11 @@ public class BbsController {
     }
 
     /**
+     * @Title : pstUpdateForm
+     * @Description : 게시물 업데이트 화면 이동
      * @param PstVo
      * @return String 이동화면경로
      * @throws Exception
-     * @Title : pstUpdateForm
-     * @Description : 게시물 업데이트 트화면 이동
      */
     @RequestMapping(value = "/bbs/pstUpdateForm.html")
     public String pstUpdateForm(@RequestParam(value = "pstid", required = true) int pstid, Model model, PstVo paramVO,CmntVo cmntVO,
@@ -375,6 +395,7 @@ public class BbsController {
         //bbsClVo.setBbsid(Integer.parseInt(paramVO.getBbsid()));
         if(!StringUtil.nvl(tmpParamVO.getBbsid()).equals("")) {
         	bbsClVo.setBbsid(tmpParamVO.getBbsid());
+        	bbsClVo.setUseYn("Y");
         }
         
         BbsVo bbsVo = new BbsVo();
@@ -387,7 +408,7 @@ public class BbsController {
         model.addAttribute("cmntList", bbsService.selectCmntList(cmntVO));
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
-        return "mng/bbs/pstModify";
+        return "mng/bbs/pstUpdate";
     }
 
     /**
@@ -577,5 +598,34 @@ public class BbsController {
         }
         return resultMap;
     }
+    
+    /**
+     * 
+     * selectNtcPstCnt
+     *
+     * @Title       : selectNtcPstCnt 
+     * @Description : TODO
+     * @param paramVO :
+     * @param user :
+     * @return Map String,String 
+     * @throws Exception :
+     */
+    @RequestMapping(value = "/bbs/selectNtcPstCnt.do")
+    public @ResponseBody Map<String, Object> selectNtcPstCnt(PstVo pstVO, @UserInfo UserVo user) throws Exception {
+        
+        PstVo resVo = new PstVo();
+        Map<String, Object> resultMap = new HashMap<>();
+        pstVO.setUser(user);
+        try {
+            resVo = bbsService.selectNtcPstCnt(pstVO);
+            resultMap.put("cntVo", resVo);
+        } catch (SQLException e) {
+            log.error("deletePst.SQLException.548L");
+        } catch (Exception e) {
+            log.error("deletePst.Exception.548L");
+        }
+        return resultMap;
+    }
+    
     
 }
