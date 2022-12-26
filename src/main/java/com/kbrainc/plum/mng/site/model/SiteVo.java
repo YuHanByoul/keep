@@ -1,8 +1,10 @@
 package com.kbrainc.plum.mng.site.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 
 import lombok.Data;
@@ -33,13 +35,24 @@ public class SiteVo extends ParentRequestVo {
 	private String sysSeCd; //시스템 구분 코드
 	private String sysSeNm; //시스템 구분 이름
 	private String useYn; //사용유무
-	private String mdfcnDt; //수정일시
 	private Integer mdfrid; //수정자 아이디
-	private String regDt; //등록일시
+	
+    /** 등록일 */
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+	private Date regDt;
 	private Integer rgtrid; //등록자 아이디
 	
 	private String domains; //등록된 도메인들의 목록 문자열
 	private List<SiteDomainVo> siteDomainList = new ArrayList(); //등록된 도메인 list
+	
+	/** 기관아이디 */
+	private String instid;
+	
+	/** 기관_이름 */
+	private String instNm;
+	
+	/** 기관_코드 */
+	private String instCd;
 	
 	/**
 	 * 

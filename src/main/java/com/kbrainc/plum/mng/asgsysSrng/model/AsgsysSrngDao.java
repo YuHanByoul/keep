@@ -297,12 +297,23 @@ public interface AsgsysSrngDao {
 	/**
 	* 담당자 목록 조회
 	*
-	* @Title : selectPicList
-	* @Description : 담당자 목록 조회
+	* @Title : selectjdgsPicList
+	* @Description : 담당자(지원단) 목록 조회
 	* @param asgsysSrngVo
 	* @return List<AsgsysSrngVo>
 	* @throws Exception
 	*/
-	public List<AsgsysSrngVo> selectPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectSprtgrpPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 목록 조회
+	 *
+	 * @Title : selectjdgsPicList
+	 * @Description : 담당자(심사위원) 목록 조회
+	 * @param asgsysSrngVo
+	 * @return List<AsgsysSrngVo>
+	 * @throws Exception
+	 */
+	public List<AsgsysSrngVo> selectjdgsPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

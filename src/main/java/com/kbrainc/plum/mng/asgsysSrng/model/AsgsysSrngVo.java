@@ -46,6 +46,45 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 검색 진행상태 */
     private String searchSttsCd;
 
+    /** 검색 자격증명 */
+    private String searchCrtfctNm;
+
+    /** 검색 전문분야(환경주제) */
+    private String searchSbjctCd;
+
+    /** 검색 활동가능지역 */
+    private String searchRgnCd;
+
+    /** 검색 그룹ID */
+    private String grpId;
+
+    /** 검색 그룹 명 */
+    private String grpNm;
+
+    /** 검색 계정 명 */
+    private String acnt;
+
+    /** 검색 사용여부 */
+    private String useYn;
+
+    /** 검색 등록전문가 수 */
+    private String regExprtCnt;
+
+    /** 검색 사용자ID(계정명) 그룹*/
+    private String userAcntGrp;
+
+    /** 검색 사용자ID(userid) 그룹*/
+    private String useridGrp;
+
+    /** 검색 사용자 명 그룹*/
+    private String userNmGrp;
+
+    /** 검색 사용자 이메일 그룹 */
+    private String userEmlGrp;
+
+    /** 검색 사용자 모바일 그룹 */
+    private String userMoblphonGrp;
+
     /** 검색 숙박여부 */
     private String searchStyYn;
 
@@ -450,7 +489,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String tchaidfcltid;
 
 	/** 세부_프로그램_이름 */
-    private String dtlPrgrmNm  ;
+    private String dtlPrgrmNm;
 
     /** 세부_프로그램_교구 */
     private String tchaid;
@@ -465,25 +504,31 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String splmntDmndOpnn;
 
     /** 사용자 ID */
-    private String userid  ;
+    private String userid;
 
     /** 이름 */
-    private String nm      ;
+    private String nm;
 
     /** 이메일 */
-    private String eml     ;
+    private String eml;
 
     /** 전화번호 */
-    private String telno   ;
+    private String telno;
 
     /** 자격증명 */
     private String crtfctNm;
 
     /** 주제코드 */
-    private String sbjctCd ;
+    private String sbjctCd;
+
+    /** 주제코드 명*/
+    private String sbjctCdNm;
 
     /** 지역코드 */
-    private String rgnCd   ;
+    private String rgnCd;
+
+    /** 지역코드 */
+    private String rgnCdNm;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
@@ -508,13 +553,14 @@ public class AsgsysSrngVo extends ParentRequestVo {
                 this.sttsCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
                 //e.printStackTrace();
-                return ;
+                return;
              }catch(Exception e) {
                 //e.printStackTrace();
-                return ;
+                return;
              }
         }
 	}
+
 	/** 심사위원 상태코드 */
 	public void setSrgnSttsCd(String srgnSttsCd) throws Exception{
 
@@ -528,13 +574,14 @@ public class AsgsysSrngVo extends ParentRequestVo {
 				this.srgnSttsCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
-				return ;
+				return;
 			}catch(Exception e) {
 				//e.printStackTrace();
-				return ;
+				return;
 			}
 		}
 	}
+
 	/** 지원단 상태코드 */
 	public void setSrngSttsCd(String srngSttsCd) throws Exception{
 
@@ -548,10 +595,52 @@ public class AsgsysSrngVo extends ParentRequestVo {
 				this.srngSttsCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
-				return ;
+				return;
 			}catch(Exception e) {
 				//e.printStackTrace();
-				return ;
+				return;
+			}
+		}
+	}
+
+	/** 전문분야 코드 */
+	public void setSbjctcd(String sbjctCd) throws Exception{
+
+		this.sbjctCd = sbjctCd;
+
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.sbjctCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.sbjctCd);
+				this.sbjctCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	/** (활동가능) 지역 코드 */
+	public void setRgnCd(String rgnCd) throws Exception{
+
+		this.rgnCd = rgnCd;
+
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.rgnCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.rgnCd);
+				this.rgnCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
 			}
 		}
 	}

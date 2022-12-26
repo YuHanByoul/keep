@@ -213,8 +213,17 @@ public class AsgsysSrngController {
   	   Map<String, Object> resultMap = new HashMap<>();
         List<AsgsysSrngVo> result = null;
 
-        //심사위원심사 목록조회
-  	   result = asgsysSrngService.selectPicList(asgsysSrngVo);
+        String se = picSe;
+
+        if("Y".equals(se)) {
+        	// 지원단 목록조회
+        	result = asgsysSrngService.selectSprtgrpPicList(asgsysSrngVo);
+
+        }else {
+        	// 심사위원심사 목록조회
+        	result = asgsysSrngService.selectjdgsPicList(asgsysSrngVo);
+        }
+
 
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
