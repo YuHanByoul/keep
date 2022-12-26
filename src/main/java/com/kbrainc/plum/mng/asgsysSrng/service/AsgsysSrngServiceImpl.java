@@ -643,17 +643,31 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     }
 
     /**
-    * 담당자 목록조회
+    * 담당자(지원단) 목록조회
     *
     * @Title : selectPicList
-    * @Description : 담당자 목록조회
+    * @Description : 담당자(지원단) 목록조회
     * @param asgsysSrngVo
     * @return List<AsgsysSrngVo>
     * @throws Exception
     */
     @Override
-	public List<AsgsysSrngVo> selectPicList(AsgsysSrngVo asgsysSrngVo) throws Exception {
-    	return asgsysSrngDao.selectPicList(asgsysSrngVo);
+	public List<AsgsysSrngVo> selectSprtgrpPicList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.selectSprtgrpPicList(asgsysSrngVo);
+	}
+
+    /**
+    * 담당자(심사위원) 목록조회
+    *
+    * @Title : selectPicList
+    * @Description : 담당자(심사위원) 목록조회
+    * @param asgsysSrngVo
+    * @return List<AsgsysSrngVo>
+    * @throws Exception
+    */
+    @Override
+	public List<AsgsysSrngVo> selectjdgsPicList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.selectjdgsPicList(asgsysSrngVo);
 	}
 
 }
