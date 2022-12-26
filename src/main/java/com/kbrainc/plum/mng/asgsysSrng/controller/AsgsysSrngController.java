@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +15,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
-import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.mng.code.model.CodeVo;
+import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.DateTimeUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,6 +55,9 @@ public class AsgsysSrngController {
 
 	@Autowired
     private AsgsysSrngServiceImpl asgsysSrngService;
+
+	@Autowired
+    private CodeServiceImpl codeServiceImpl;
 
 
 	/**********************************************************************************
@@ -103,8 +110,12 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/dsgnAplyDetailForm.html")
     public String dsgnAplyDetailForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	//String sttsCd = asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo);
+    	CodeVo codeVo = new CodeVo();
+
+    	codeVo.setCdgrpid("111");    //신청진행상태코드
+
     	model.addAttribute("sttsCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("sttsCdList", codeServiceImpl.selectCodeList(codeVo));
 
     	return "mng/asgsysSrng/dsgnAplyDetail";
     }
@@ -138,8 +149,6 @@ public class AsgsysSrngController {
         	resultMap.put("msg", "지정지원 진행상태 변경을 실패 했습니다.");
         }
 
-    	//model.addAttribute("sttsCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
-
     	return resultMap;
     }
 
@@ -154,8 +163,68 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/aplyInfoForm.html")
     public String aplyInfoForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	model.addAttribute("dsgnAplyInfo", asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo));
+    	AsgsysSrngVo dsgnAplyInfo = asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo);
+
+        if (dsgnAplyInfo == null) {
+            dsgnAplyInfo = new AsgsysSrngVo();
+        }
+        model.addAttribute("dsgnAplyInfo", dsgnAplyInfo);
+
+        if (!StringUtil.nvl(dsgnAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(dsgnAplyInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(dsgnAplyInfo.getFilegrpid());
+
+            model.addAttribute("fileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));    //증빙서류파일목록
+
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
+        }
+
         return "mng/asgsysSrng/aplyInfo";
+    }
+
+
+    /**
+     * @Title : picAltmntPopup
+     * @Description : 담당자 배정 팝업
+     * @param AsgsysSrngVo객체
+     * @param model 모델객체
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/picAltmntPopup.html")
+    public String picAltmntPopup(@RequestParam(value ="mode",required = false) String mode, AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+    	model.addAttribute("mode",mode);
+
+    	return "mng/asgsysSrng/picAltmntPopup";
+    }
+
+    /**
+     * @Title : selectPicList
+     * @Description : 담당자배정 목록조회
+     * @param AsgsysSrngVo객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/selectPicList.do")
+    @ResponseBody
+    public Map<String, Object> selectPicList(@RequestParam(value ="picSe" ,required = false) String picSe, AsgsysSrngVo asgsysSrngVo) throws Exception {
+  	   Map<String, Object> resultMap = new HashMap<>();
+        List<AsgsysSrngVo> result = null;
+
+        //심사위원심사 목록조회
+  	   result = asgsysSrngService.selectPicList(asgsysSrngVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+
+        resultMap.put("picList", result);
+
+        return resultMap;
     }
 
     /**
@@ -198,6 +267,7 @@ public class AsgsysSrngController {
 
     	return "mng/asgsysSrng/sprtgrpSrng";
     }
+
     /**
      * @Title : rsltRpt
      * @Description : 결과보고 화면 이동

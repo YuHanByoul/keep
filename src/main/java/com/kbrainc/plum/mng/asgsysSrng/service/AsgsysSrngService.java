@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 
@@ -270,5 +271,27 @@ public interface AsgsysSrngService {
 	 * @throws Exception
 	 */
 	public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 증빙서류 파일목록 조회
+	*
+	* @Title : selectEvdncdcmntFileList
+	* @Description : 증빙서류 파일목록 조회
+	* @param fileVo
+	* @return Object
+	* @throws Exception
+	*/
+	public List<FileVo> selectEvdncDcmntFileList(FileVo fileVo) throws Exception;
+
+	/**
+	* 담당자 목록조회
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

@@ -383,4 +383,29 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         
     	return list;
     }
+    
+    /**
+     * @Title : selectNtcPstCnt
+     * @Description : 사이트 별 고정 게시글 수 가져오기
+     * @param paramVO PstVo 타입의 인자
+     * @throws Exception :
+     * @return PstVo
+     */
+    public PstVo selectNtcPstCnt(PstVo paramVO) throws Exception{
+      return bbsDao.selectNtcPstCnt(paramVO);        
+    }
+    
+    /**
+     * @Title : insertReplyPst
+     * @Description : 댓글 ord 업데이트
+     * @param paramVO CmntVo 타입의 인자
+     * @return List
+     * @throws Exception :
+     */
+    public int insertReplyPst(PstVo paramVO) throws Exception{
+
+        bbsDao.updatePstOrdElse(paramVO);
+        paramVO.setDpth(paramVO.getDpth() + 1);
+        return bbsDao.insertPst(paramVO);
+    }
 }

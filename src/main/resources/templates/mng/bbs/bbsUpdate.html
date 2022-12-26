@@ -5,34 +5,34 @@
         <div class="card-block-small p-t-0">
             <div class="row">
                 <div class="col-lg-6">
-                    <div class="mb-2 form-group row">
+                    <div class="mb-2 form-group row ">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" ><strong>게시판 코드</strong></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm"  th:value="${paramMap.bbsid}" readonly/>
                         </div>
                     </div>
-                    <div class="mb-2 form-group row">
+                    <div class="mb-2 form-group row required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="boardName"><strong>게시판명</strong></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm" name="nm" id="nm" th:value="${paramMap.nm}" placeholder="게시판명"/>
                         </div>
                     </div>
-                    <div class="mb-0 form-group row">
+                    <div class="mb-0 form-group row required">
                         <div class="col-auto">
                             <input type="hidden" class="js-single"/>
                             <input type="checkbox" class="js-single-small" name="nloginDwnldPermYnChk" id="nloginDwnldPermYnChk"
                             th:checked = "${paramMap.nloginDwnldPermYn == 'Y' }"/>
-                            <label for="nloginDwnldPermYn" class="v-middle">비로그인 파일다운로드</label>
+                            <label for="nloginDwnldPermYn" class="v-middle form-label">비로그인 파일다운로드</label>
                         </div>
                         <div class="col-auto">
                             <input type="checkbox" class="js-single-small" name="useYnChk" id="useYnChk" 
                             th:checked = "${paramMap.useYn == 'Y' }" />
-                            <label for="useYn" class="v-middle">게시판 사용</label>
+                            <label for="useYn" class="v-middle form-label">게시판 사용</label>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="mb-2 form-group row">
+                    <div class="mb-2 form-group row required">
                         <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>게시판유형</strong></span>
                         <div class="col-sm-12">
                             <select id="clCd"  name="clCd" class="form-select form-select-sm form-control-sm" onchange="fn_validationCl">
@@ -41,7 +41,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mb-0 form-group row">
+                    <div class="mb-0 form-group row ">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dc"><strong>게시판설명</strong></label>
                         <div class="col-sm-12">
                             <input class="form-control form-control-sm" type="text" name="dc" id="dc" th:value="${paramMap.dc}"/>
@@ -55,7 +55,7 @@
             <h4 class="sub-title"><strong>기능정보</strong></h4>
         </div>
         <div class="card-block-small p-t-0">
-            <div class="mb-2 form-group row">
+            <div class="mb-2 form-group row required">
                 <div class="col-auto">
                     <label  class="form-label col-sm-12 col-form-label p-t-0 pb-1" >분류사용</label>
                     <input type="checkbox" class="js-single-small" name="clUseYnChk" id="clUseYnChk" 
@@ -141,7 +141,7 @@
                             th:value="${paramMap.newIndictDaycnt}" placeholder="new 표시일수"/>
                         </div>
                     </div>
-                    <div class="mb-0 form-group row">
+                    <div class="mb-0 form-group row required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pagePstCnt"><strong>페이지 게시글 수</strong></label>
                         <div class="col-sm-12">
                             <input type="text" class="form-control form-control-sm" name="pagePstCnt" id="pagePstCnt" 
@@ -157,6 +157,8 @@
         </div>
    <!--hidden 변수 저장  -->
    <input type="hidden"  id="bbsid" name="bbsid"  th:value = "${paramMap.bbsid}" >
+   
+   <span id="appendForm"></span>
 </form>
 
 <script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
@@ -280,6 +282,8 @@
 		 	    //jquery 밸리데이션 체크 
    	 	        if($("#bbsUpdateForm").valid() == false) return;
 
+   	 	        $("#appendForm").html("");
+		 	    
    	 	        $("input[type=checkbox]").each((index,item)=>{
    	   	 	        
                     let ckbId = $(item).attr("id");
@@ -287,7 +291,7 @@
 	                if(!$("#"+ckbId).is(":disabled")){
                         let value = ($("#"+ckbId).is(":checked"))?"Y":"N";
                         let input_html = "<input type='hidden' id='"+ckbId.replaceAll("Chk","")+"' name='"+ckbId.replaceAll("Chk","")+"' value='"+value+ "'   '/>"  
-	                	$("#bbsUpdateForm").append(input_html);
+	                	$("#appendForm").append(input_html);
 	                }
    	   	 	    })
    	   	 	    
@@ -308,6 +312,7 @@
 						}else{
 							alert("수정 등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
 						}
+						closeWorkProgress();
 					},
 				 	error : function (error){
 					} 
