@@ -196,4 +196,13 @@ public interface BbsService {
      */
     public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception;
     
+    /**
+     * @Title : selectNtcPstCnt
+     * @Description : 사이트 별 고정 게시글 수 가져오기
+     * @param paramVO PstVo 타입의 인자
+     * @throws Exception :
+     * @return PstVo
+     */
+    public PstVo selectNtcPstCnt(PstVo paramVO) throws Exception;
+    
 }

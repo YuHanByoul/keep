@@ -407,5 +407,7 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         
     	return list;	
     }
+    
+
 
 }

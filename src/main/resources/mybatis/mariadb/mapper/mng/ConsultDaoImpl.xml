@@ -5,40 +5,47 @@
 	SQL File Name : SiteApplyDaoImpl.xml
 	Description : 사이트 신청 관리
 -->
-<mapper namespace="com.kbrainc.plum.mng.siteApply.model.SiteApplyDao">
+<mapper namespace="com.kbrainc.plum.mng.consult.model.ConsultDao">
 
     <!-- 기관정보 목록 조회 -->
-    <select id="selectSiteApplyList" parameterType="SiteApplyVo" resultType="SiteApplyVo">
-        /* SiteApplyDao.selectSiteApplyList */
+    <select id="selectConsultList" parameterType="ConsultVo" resultType="ConsultVo">
+        /* ConsultDao.selectConsultList */
         <include refid="PaginationMapper.header"/>
-              SELECT 
-                A.APLYID
-                ,A.INSTID
-                ,A.INST_NM
-                ,A.INST_CNTCT
-                ,A.INST_EML
-                ,A.USERID
-                ,A.APLCNT_NM
-                ,A.ZIP
-                ,A.ADDR
-                ,A.ADDR_DTL
-                ,A.DOMN
-                ,A.CN
-                ,A.CPYRHT
-                ,A.APLY_DT
-                ,A.APLY_STTS_CD
-                ,A.AUTZRID
-                ,A.LOGO_FILEID
-                ,A.MDFCN_DT
-                ,A.MDFRID
-                ,A.REG_DT
-                ,A.RGTRID
-                ,B.INST_CD 
-              FROM 
-                TB_CMM_SITE_APLY A
-                INNER JOIN TB_CMM_INST B
-                ON A.INSTID = B.INSTID 
-              WHERE 1=1
+                SELECT 
+                   A.CNSLTNGID
+                   ,A.INSTID
+                   ,A.USERID
+                   ,A.USER_NM
+                   ,A.PRGRM_NM
+                   ,A.CNSLTNG_KND_CD
+                   ,A.HOPE_DE1
+                   ,A.HOPE_DE1_AM_PM_CD
+                   ,A.HOPE_DE2
+                   ,A.HOPE_DE2_AM_PM_CD
+                   ,A.PRGRM
+                   ,A.LDR
+                   ,A.SFTYMNG
+                   ,A.ETC
+                   ,A.FILEGRPID
+                   ,A.CNSTNTID
+                   ,A.STTS_CD
+                   ,A.SRVYID
+                   ,A.MDFCN_DT
+                   ,A.MDFRID
+                   ,A.REG_DT
+                   ,A.RGTRID
+                   ,B.INST_NM  AS instnm
+                   ,C.NM AS cnsltngNm
+                   ,D.VST_DE +' '+D.VST_BGNG_DT+'~'+D.VST_END_DT AS visitDt
+                  FROM
+                    TB_ASS_CNSLTNG A
+                    INNER JOIN TB_CMM_INST B
+                    ON A.INSTID = B.INSTID 
+                    INNER JOIN TB_CMM_USER C
+                    ON A.CNSLTNGID = A.USERID
+                    LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT D
+                    ON A.CNSLTNGID  =D.CNSLTNGID 
+                 WHERE 1=1
                 <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
                    AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
                 </if>
@@ -55,8 +62,8 @@
     </select>
     
     <!-- 사이트 신청 정보 상세 조회 -->
-    <select id="selectSiteApplyInfo" parameterType="SiteApplyVo" resultType="SiteApplyVo">
-           /* SiteApplyDao.selectSiteApplyInfo */
+    <select id="selectConsultInfo" parameterType="ConsultVo" resultType="ConsultVo">
+           /* ConsultDao.selectConsultInfo */
                SELECT 
                 A.APLYID
                 ,A.INSTID
@@ -64,7 +71,7 @@
                 ,A.INST_CNTCT
                 ,A.INST_EML
                 ,A.USERID
-                ,A.APLCNT_NM
+                ,D.NM AS APLCNT_NM
                 ,A.ZIP
                 ,A.ADDR
                 ,A.ADDR_DTL
@@ -87,13 +94,15 @@
                 ON A.INSTID = B.INSTID
                 LEFT OUTER JOIN TB_CMM_FILE C
                 ON A.LOGO_FILEID = C.FILEID
+                INNER JOIN TB_CMM_USER D
+                ON A.USERID = D.USERID 
               WHERE 1=1    
                 AND A.APLYID = #{aplyid}  
     </select>
     
     <!-- 신청 승인 상태 수정--> 
-    <update id="updateSiteApplyStatus" parameterType="SiteApplyVo" >
-         /* SiteApplyDao.updateSiteApplyStatus */
+    <update id="updateConsultStatus" parameterType="ConsultVo" >
+         /* ConsultDao.updateSiteApplyStatus */
         UPDATE TB_CMM_SITE_APLY 
            SET
                APLY_STTS_CD       = #{aplySttsCd}                     
@@ -104,34 +113,6 @@
            AND APLYID = #{aplyid}
     </update>
     
-    <!-- 사이트 신청 메뉴 조회 -->
-    <select id="selectSiteApplyMenuList" parameterType="SiteApplyVo" resultType="SiteApplyMenuVo">
-         /* SiteApplyDao.selectSiteApplyMenuList */
-           SELECT
-              A.APLYID 
-              ,A.APLY_MENU_CD 
-              ,B.CD_NM AS aplyMenuCdNm
-              ,B.OPTN1
-              ,IF (B.OPTN2 = 'required','Y','N') AS requiredYn
-              ,IF (B.OPTN3 = 'show','Y','N') AS showYn
-             FROM
-              TB_CMM_SITE_APLY_MENU A
-              INNER JOIN (
-                 SELECT 
-                   CD
-                   ,CD_NM
-                   ,OPTN1
-                   ,OPTN2
-                   ,OPTN3
-                  FROM
-                   TB_CMM_CD 
-                 WHERE 1=1
-                   AND CDGRPID = 124
-                   AND OPTN3 ='show'  
-              ) B ON A.APLY_MENU_CD = B.CD
-              WHERE 1=1 
-                AND A.APLYID = #{aplyid}
-               ORDER BY A.APLY_MENU_CD  
-    </select>            
+            
         
 </mapper>

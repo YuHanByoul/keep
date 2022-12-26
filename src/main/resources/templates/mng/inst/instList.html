@@ -116,7 +116,6 @@
   /*<![CDATA[*/ 
      var userid = /*[[${param.userid}]]*/null;
   /*]]>*/
-    var selectedItems = [];
     var gridHelper1;         
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
@@ -220,50 +219,10 @@
             },
             /*[/]*/
             onPageChanged: function(args) {
-                //selectedItems = [];
             }
         });
         
-    }
-
-  var popupUrl = "/mng/member/blcklstDsctnPopup.html";
-  var userAddModal;
-  
-  fn_clearBlackList =()=>{
-
-	  if(selectedItems.length <=0 ){
-	        alert("블랙리스트 해제 대상을 선택해주십시오.");
-	        return;
-	  }
-	  
-      if(!confirm("선택하신 사용자들을 블랙리스트에서 해지처리 하시겠습니까"))return;
-	  
-	  var blcklstIds = selectedItems.join(",")
-	  
-      var params ={
-              blcklstIds : blcklstIds
-              ,blcklstYn : "N"
-              ,blcklstRsn : "관리자 블랙리스트 해제"
-      }
-      
-      if(displayWorkProgress()){
-          $.ajax({
-              url : "/mng/member/updatetBlcklstDsctn.do",
-              type: 'POST',
-              cache : false,
-              dataType: 'json',
-              data : params,
-              success : function (data){
-                  alert(data.msg);
-                  gridHelper1.resetListContent();
-                  selectedItems = [];
-                  closeWorkProgress();
-              }
-          });
-      }
   }
-
-
   function fn_deleteFile(fileid, fileIdntfcKey){
       
         var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
@@ -278,14 +237,7 @@
           } 
        })
   };
-
-
-
-  
 </script>
-
-<script src="/js/ckeditor/ckeditor.js"></script>
-
 </div> 
 </body>
 </html>

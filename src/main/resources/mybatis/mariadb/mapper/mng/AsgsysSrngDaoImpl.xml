@@ -834,6 +834,7 @@
               , IFNULL(E.PRGRMID,'N') AS SFTY_MNG_YN
     --        , '첨부파일'
     --        , '증빙서류'
+              , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
         FROM
             TB_ASS_SPRTGRP_SRNG A
         INNER JOIN
@@ -865,5 +866,52 @@
           , MDFRID    = #{user.userid}
         WHERE SPRTGRPID= #{sprtgrpid}
     </update>
+
+    <!-- 파일목록 조회 -->
+    <select id="selectEvdncDcmntFileList" resultType="FileVo">
+    SELECT
+        B.FILEID
+      , A.FILEGRPID
+      , B.FILE_IDNTFC_KEY
+      , B.FILE_PATH
+      , B.SAVE_FILE_NM
+      , B.ORGINL_FILE_NM
+      , B.FILE_EXTSN
+      , B.FILE_SIZE
+      , B.ORD
+    FROM
+        TB_CMM_FILEGRP A
+    LEFT OUTER JOIN
+        TB_CMM_FILE B ON A.FILEGRPID = B.FILEGRPID
+    WHERE 1=1
+    AND   A.FILEGRPID = #{filegrpid}
+    </select>
+
+    <!-- 담당자 목록 조회-->
+    <select id="selectPicList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.USERID
+          , B.NM
+          , B.EML
+          , B.TELNO
+--           , C.CRTFCT_NM
+          , D.SBJCT_CD
+          , E.RGN_CD
+        FROM
+            TB_ASS_EXPRT A
+        LEFT OUTER JOIN
+            TB_CMM_USER B ON A.USERID = B.USERID
+--        LEFT OUTER JOIN    /*전문가 자격증*/
+--            TB_ASS_EXPRT_CRTFCT C ON A.EXPRT_CRTFCT_ID = C.EXPRT_CRTFCT_ID
+        LEFT OUTER JOIN    /* 전문가 주제? */
+            TB_ASS_EXPRT_SBJCT D ON A.USERID = D.USERID
+        LEFT OUTER JOIN    /* 전문가 범위 */
+            TB_ASS_EXPRT_ACTVT_SCOPE E ON A.USERID = E.USERID
+        WHERE 1=1
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
 
 </mapper>

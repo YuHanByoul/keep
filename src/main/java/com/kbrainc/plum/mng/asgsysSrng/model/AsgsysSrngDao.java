@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 
 /**
@@ -281,5 +282,27 @@ public interface AsgsysSrngDao {
 	 * @throws Exception
 	 */
 	public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 증빙서류 파일목록 조회
+	*
+	* @Title : selectEvdncdcmntFileList
+	* @Description : 증빙서류 파일목록 조회
+	* @param fileVo
+	* @return List<FileVo>
+	* @throws Exception
+	*/
+	public List<FileVo> selectEvdncDcmntFileList(FileVo fileVo) throws Exception;
+
+	/**
+	* 담당자 목록 조회
+	*
+	* @Title : selectPicList
+	* @Description : 담당자 목록 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }
