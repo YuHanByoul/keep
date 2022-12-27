@@ -342,23 +342,37 @@
     <select id="selectPstList"  parameterType="PstVo" resultType ="PstVo" >
         /* BbsDao.selectPstList */
         <include refid="PaginationMapper.header"/>
-        SELECT 
-            A.PSTID,
-            A.SITEID,
-            A.TITLE,
-            A.DEL_YN,
-            A.GRP,
-            A.ORD,
-            A.DPTH,
-            IFNULL(B.FILECNT,0) file_cnt,
-            CONVERT(A.REG_DT, CHAR(10)) REG_DT,
-            CONVERT(A.MDFCN_DT, CHAR(10)) MDFCN_DT
-        FROM 
-            TB_CMM_PST A 
-            LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-        WHERE 1=1
+            SELECT 
+                A.PSTID,
+                A.SITEID,
+                A.TITLE,
+                A.DEL_YN,
+                A.GRP,
+                A.ORD,
+                A.DPTH,
+                A.FXD_NTC_YN,
+                IFNULL(A.HITS,0) AS HITS,
+                B.FXD_NTC_USE_YN, 
+                IFNULL(C.cmntcnt,0) cmnt_cnt,
+                A.REG_DT,
+                A.MDFCN_DT
+            FROM 
+                TB_CMM_PST A
+                INNER JOIN 
+                TB_CMM_BBS B 
+                ON A.BBSID = B.BBSID
+                LEFT OUTER JOIN (
+                    SELECT 
+                         PSTID
+                         ,COUNT(Cmntid) cmntCnt 
+                      FROM 
+                         TB_CMM_CMNT 
+                     GROUP BY PSTID
+                ) C ON  A.PSTID =C.PSTID
+            WHERE 1=1
+             AND A.DEL_YN = 'N'
             <if test="bbsid != null and bbsid != 0">
-            AND BBSID= #{bbsid}
+            AND A.BBSID= #{bbsid}
             </if>
             <if test="searchType != null and searchType == 'nm' ">
             AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -369,6 +383,13 @@
             <if test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchType) and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)">
             AND (A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%'))
             </if>
+            <if test='user.roleInfo.trgtInstCd == "S"'>
+             AND GRP IN(
+               SELECT GRP FROM TB_CMM_PST WHERE DPTH = 0 AND SITEID = #{user.instid} 
+             ) 
+            </if>
+            
+            
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -527,7 +548,6 @@
     
     
     <!--******************* 댓글 SQL START ***************************  -->
-  
     <!-- 댓글을 삭제한다. -->
     <delete id="deleteCmnt" parameterType="PstVo" >
         /* BbsDao.deleteCmnt */

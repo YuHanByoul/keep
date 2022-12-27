@@ -1,5 +1,7 @@
 package com.kbrainc.plum.mng.bbs.model;/** **/
 
+import javax.validation.constraints.NotEmpty;
+
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -29,22 +31,31 @@ public class CmntVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** **/
+    /** 댓글 아이디 **/
     private int cmntid;
-    /** **/
-    private Integer pstid; 
-    /** **/
+    
+    /**게시글 아이디 **/
+    private Integer pstid;
+    
+    /**내용 **/
+    @NotEmpty(message = "댓글 내용을 입력해주십시오.")
     private String cntnts;
-    /** **/
+    
+    /** 부모 댓글 아이디**/
     private Integer prntsCmntid;
-    /** **/
+    
+    /**댓글 그룹 **/
     private Integer cmntGrp;
-    /** **/
+    
+    /**깊이 **/
     private Integer dpth;
-    /** **/
+    
+    /**순서 **/
     private Integer ord;
+    
     /** **/
     private String opnYn;
+    
     /** **/
     private String mdfcnDt;
     /** 수정_일시 **/
@@ -54,16 +65,18 @@ public class CmntVo extends ParentRequestVo {
     /** 등록_일시 **/
     private int rgtrid; /** 등록_아이디 **/
 
+    /** 삭제 여부  **/
     private String delYn;
     
+    /*******추가*********/
+    /** 작성자 계정  **/
     private String acnt;
+    /** 작성자 이름  **/
     private String nm;
-    
+    /** 여백 (depth 에 따른)  **/
     private String paddingStr;
+    /** 여백 문자(깊이)  **/
     private String dpthStr;
-    
-    //public int totalPage;
-    //public int pageNumber;
     
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

@@ -110,14 +110,12 @@
     var clickedItem ;
    
     $(function(){
-    	 
+        
  		$("#bbsSearchForm select[name='bbsCl']").val(bbsid);
-		 //writeJsGridData();
-           
-		 if($("#bbsSearchForm #bbsCl").val() != null && $("#bbsSearchForm #bbsCl").val() != ""){
+		if($("#bbsSearchForm #bbsCl").val() != null && $("#bbsSearchForm #bbsCl").val() != ""){
 			 writeJsGridData();
-		 }
-		 gridHelper1 = new GridHelper('jsGrid','contentPanel');
+		}
+		gridHelper1 = new GridHelper('jsGrid','contentPanel');
 	 })
 	 
 	 function fn_init() {
@@ -226,25 +224,27 @@
 	                    ,{ title: '번호'     ,name: 'rowNumber' ,type: "number" , width: "5%" , align:"center", sorting :false}
 	                    ,{ title: '제목'     ,name: 'title'     ,type: "text"   , width: "40%" 
 	                    	,itemTemplate: function(value, item){
-                                var returnStr = "";
-                                var seprateStr = "&nbsp;&nbsp";
+                                let cmntStr = (Number(item.cmntCnt) > 0 )? " ("+item.cmntCnt+") ":"";
+                                let returnStr = "";
+                                let seprateStr = "&nbsp;&nbsp";
                                 if(item.dpth > 0){
                                      for(let i = 0; i<item.dpth;i++){
                                     	 returnStr += seprateStr;
                                      }
                                      returnStr = returnStr+"ㄴ"; 
                                 }
-                                return returnStr+item.title;
+                                return returnStr+item.title+cmntStr;
                             }
 		                 }
-	                    ,{ title: '첨부파일수' ,name: 'fileCnt'  ,type: "text"   , width: "10%" , align:"center"}
-	                    ,{ title: '삭제여부'  ,name: 'delYn'  ,type: "text"   , width: "10%" , align:"center"}
-	                    ,{ title: '등록일'    ,name: 'regDt'    ,type: "text"   , width: "10%" , align:"center"
+	                    ,{ title: '고정공지여부' ,name: 'fxdNtcYn' ,type:"text", width: "10%" , align:"center", visible: false
+	                    	,itemTemplate: function(value, item){
+		                    	return (item.fxdNtcYn == 'Y')? "고정":"-"; 
+		                    }
+		                 }
+	                    ,{ title: '조회수'     ,name: 'hits'     ,type: "text"   , width: "10%" , align:"center"}
+	                    ,{ title: '등록일'     ,name: 'regDt'    ,type: "text"   , width: "10%" , align:"center"
 	                    	,itemTemplate: function(value, item){return value.substring(0,10)}
 		                  }
-	                    ,{ title: '수정일'    ,name: 'mdfcnDt'   ,type: "text"   , width: "10%" , align:"center"
-	                    	,itemTemplate: function(value, item){return value.substring(0,10)}
-		                 }
 	    	        ]
     	         ,
     	        /*[# sec:authorize-url="/bbs/pstUpdateForm.html"]*/
@@ -258,8 +258,14 @@
     	        /*[/]*/
     	        onPageChanged: function(args) {
     	        	 selectedItems = [];
-                }
-    	    });
+                },
+         	    onDataLoaded: function(args) {
+         	    	if(args.grid.data == null || args.grid.data.length == 0) return;
+        	        if(args.grid.data[0].fxdNtcUseYn =='Y'){
+	        	        $("#jsGrid").jsGrid("fieldOption", "fxdNtcYn", "visible", true);
+            	    }
+        	    }
+    	    })
             
             var selectItem = function(item) {
                 selectedItems.push(item);
@@ -304,7 +310,6 @@
     	var clPop = "";
     		    	
     	function fn_goClUse(bbsid){
-    		console.log(clPop);
     		if(clPop == null || clPop == "undefined" || clPop == ""){
 	    		fn_bbsPop(bbsid);
     		}else{
@@ -342,7 +347,6 @@
 				cache : false,
 				dataType: 'json',
 				success : function (data){
-					console.log(data);
 					if(data.result=="success"){
 						
 						$("#pst_"+fileid).remove();
@@ -377,7 +381,7 @@
     	        alert("삭제할 게시물을 선택해주십시오.");
     	        return;
     	   }
-    	   
+    	   if(!confirm("선택한 게시글을 삭제하시겠습니까?")){return;}
     	   var delPstids = selectedItems.join(",")
 
            if(displayWorkProgress()){
@@ -393,7 +397,8 @@
                    success : function (data){
                 	   if(data.result =='success'){
                     	   alert("게시글이 삭제 되었습니다.");
-	                	   writeJsGridData();
+	                	   gridHelper1.resetListContent();
+	                	   selectedItems = [];
                        }else{
                     	   alert("게시글이 삭제에 실패 하였습니다.");
                        }
@@ -403,18 +408,9 @@
                    } 
                });
           }
-
-
-
       }
-
-
-
-       
-	   </script> 
-   	   
-		</div>
-	</body>
-	
-	
+	</script>
+	 
+ </div>
+</body>
 </html>
