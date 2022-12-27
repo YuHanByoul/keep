@@ -111,7 +111,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                String instid = (String) resultMap.get("INSTID");
+                Integer instid = (Integer) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
                 if (instid == null) {
                     roleMap = new HashMap<String, Object>();
@@ -159,7 +159,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                String instid = (String) resultMap.get("INSTID");
+                Integer instid = (Integer) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
                 if (resultList == null) {
                     resultList = new ArrayList<Map<String, Object>>();
