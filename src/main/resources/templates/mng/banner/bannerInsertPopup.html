@@ -1,0 +1,137 @@
+<form id="bannerInsertFrm">	
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content type_2">
+			<div class="modal-header">
+				<h4 class="modal-title">배너 등록</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true"></span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="card m-b-10">
+					<div class="card-block-small">
+						<div class="mb-2 form-group row required">
+							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+							<div class="col-sm-12">
+								<select name="siteid" id="siteid" class="form-select form-select-sm form-control-sm">
+									<option value="0">- 선택 -</option>
+									<th:block th:each="siteList : ${siteList}">
+									<option th:value="${siteList.siteid}"><th:block th:text="${siteList.siteNm}" /></option>
+									</th:block>
+								</select>
+							</div>
+						</div>
+						<div class="mb-2 form-group row required">
+							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bannerInsertTitle"><strong>제목</strong></label>
+							<div class="col-sm-12">
+								<input type="text" class="form-control form-control-sm" name="bannerTtl" id="bannerTtl" placeholder="Text Input Validation" />
+							</div>
+						</div>
+						<div class="mb-0 form-group row required">
+							<div class="mb-0 form-group">
+								<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>배너 이미지</strong></label>
+								<div class="col-sm-12 mb-2">
+									<input type="file" class="form-control form-control-sm" id="bannerFile" name="bannerFile"/>
+		                            <input type="hidden" name="bannerFilegrpid" id="bannerFilegrpid" value="0">
+		                            <input type="hidden" name="bannerFileid" id="bannerFileid" value="0">
+								</div>
+								<div class="mb-2 row">
+									<div class="col-auto">
+										<div id="fileUploadSuccess">
+		                        		</div>
+									</div>
+								</div>
+								<p class="text-warning m-b-0">* 사이즈 가로 000px, 세로 000px. png, jpg 포맷</p>
+							</div>
+						</div>
+						<div class="mb-0 form-group row">
+							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+								for="bannerInsertLinkUrl"><strong>링크 URL</strong></label>
+							<div class="col-sm-12">
+								<input type="text" class="form-control form-control-sm" name="url" id="url" placeholder="Text Input Validation" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-inverse" onclick="insertModal_close();">취소</button>
+				<button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertBanner();">등록</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+<script th:inline="javascript">
+	
+   /*  var validator= $("#blcklstFrm").validate({
+        rules: {
+        	blcklstRsn : { required: true , maxlength: 1000 }
+        },
+        messages: {
+        	blcklstRsn : { required:"블랙리스트 사유를 입력해주십시오"   , maxlength:  "블랙리스트 사유는 1,000자 이하여야 합니다."}
+        }
+    }) */
+    
+	$('#bannerFile').change(function(event) {
+	    var formData = new FormData();
+	    var objFile = event.target;
+	    var content = "";
+
+	    formData.append("file", objFile.files[0]);
+	    formData.append("filegrpNm", "banner_file");
+	    if($('#thmbnFilegrpid').val() != '')
+	        formData.append("filegrpid", $('#bannerFilegrpid').val());
+
+	    if(displayWorkProgress()){
+		    $.ajax({
+		        url : '/uploadFile.do',
+		        processData : false,
+		        contentType : false,
+		        data : formData,
+		        type : 'POST',
+		        success : function(response) {
+		            if(response.result == 'fail'){
+				        alert(response.msg);
+				    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+				        $("#bannerFilegrpid").val(response.filegrpid);
+				        $("#bannerFileid").val(response.fileid);
+				        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
+	                    content +="<a href=javascript:fn_deleteFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+	                    $('#fileUploadSuccess').html(content);
+				    }
+				    closeWorkProgress();
+		        }
+		    });
+		    $("#bannerFile").val("");
+		}
+
+	    event.preventDefault();
+
+	});
+	
+	function fn_deleteFileList(fileid, fileIdntfcKey){
+	    if(!confirm("파일을 삭제하시겠습니까?")){return;}
+	    fn_deleteFile(fileid, fileIdntfcKey);
+	    $("#"+fileid).remove();
+	    $('#thmbnFile').val('');
+	}
+	
+	function insertBanner() {
+
+        /* if(!($("#blcklstFrm").valid())) return; */
+        $.ajax({
+            url : "/mng/banner/insertBanner.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : $('#bannerInsertFrm').serialize(),
+            success : function (data){
+				alert(data.msg);
+				insertAddModal.hide();
+				banner.selectBannerList();
+            }
+        });
+	}
+	
+</script>

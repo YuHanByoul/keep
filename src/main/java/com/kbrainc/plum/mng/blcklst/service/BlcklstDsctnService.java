@@ -26,9 +26,9 @@ public interface BlcklstDsctnService {
     *
     * @Title : selectBlcklstDsctnList
     * @Description : 구독자 게시글 목록 조회
-    * @param BlcklstDsctnVo 블랙리스트 내역 객체
+    * @param BannerVo 블랙리스트 내역 객체
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
-    public List<BlcklstDsctnVo> selectBlcklstDsctnList(BlcklstDsctnVo readerVo) throws Exception;
+    public List<BlcklstDsctnVo> selectBlcklstDsctnList(BlcklstDsctnVo blcklstDsctnVo) throws Exception;
 }

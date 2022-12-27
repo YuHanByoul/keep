@@ -44,7 +44,9 @@
                 <h5><strong>설문 검색 결과</strong></h5>
             </div>
             <div class="col-12 col-md-6 text-right">
-                <button type="button" class="btn btn-primary waves-effect waves-light">등록</button>
+                <th:block sec:authorize-url="/mng/srvy/trprSrvyInsertForm.html">
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="trprSrvy.onInsertForm();">등록</button>
+                </th:block>
             </div>
         </div>
         <div class="card-block-small">
@@ -54,11 +56,7 @@
     </div>
 </div>
 <div class="col-12">
-    <div class="row">
-        <div class="col-12 col-lg-6">
-            <div id="contentPanel" class="card" style="display: none;">
-            </div>
-        </div>
+    <div class="row" id="contentPanel" style="display: none;">
     </div>
 </div>
 
@@ -136,12 +134,16 @@
                     },
                     fields: [
                         {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                        {title: "설문명", name: "srvyNm", type: "text" , width: "200"},
-                        {title: "설문지명", name: "qestnrNm", type: "text" , width: "200"},
-                        {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "80"},
-                        {title: "기간", name: "", type: "number", align: "center" , width: "80"},
-                        {title: "대상자수", name: "trprCnt", type: "number", align: "center" , width: "80"},
-                        {title: "사용여부", name: "useYn", type: "number", align: "center" , width: "80"},
+                        {title: "설문명", name: "srvyNm", type: "text", width: "200"},
+                        {title: "설문지명", name: "qestnrNm", type: "text", width: "200"},
+                        {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "60"},
+                        {title: "기간", name: "", type: "number", align: "center", width: "150", itemTemplate: function(value, item) {
+                            return item.bgngDe + " ~ " + item.endDe;
+                        }},
+                        {title: "대상자수", name: "trprCnt", type: "number", align: "center" , width: "60"},
+                        {title: "사용여부", name: "useYn", type: "number", align: "center" , width: "80", itemTemplate: function(value, item) {
+                            return value == "Y" ? "사용" : "미사용";
+                        }},
                         {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
                             return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
                                 alert("설문지 미리보기");
@@ -151,7 +153,7 @@
                     ],
                     rowClick: function(args) { 
                         if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                        var detailUrl = "/mng/qestnr/qestnrDetailForm.html?qestnrid=" + args.item.qestnrid; 
+                        var detailUrl = "/mng/srvy/trprSrvyUpdateForm.html?srvyid=" + args.item.srvyid; 
                         srvyGrid.loadContent(detailUrl);
                         srvyGrid.rowClick(args);
                     }
@@ -182,6 +184,11 @@
                     scrollIntoView("contentPanel");
                 }
             });
+        },
+        
+        onInsertForm() {
+            var insertUrl = "/mng/srvy/trprSrvyInsertForm.html";
+            srvyGrid.loadContent(insertUrl);
         }
     };
     

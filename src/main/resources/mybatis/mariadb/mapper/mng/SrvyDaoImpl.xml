@@ -7,26 +7,28 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.srvy.model.SrvyDao">
     
-    <!-- 설문지 정보 등록 -->
-    <insert id="insertQestnr" parameterType="QestnrVo" useGeneratedKeys="true" keyProperty="qestnrid">
-        /* QestnrDao.insertQestnr */
-        INSERT INTO TB_CMM_QESTNR (
-            QESTNRID
-            , SITEID
-            , QESTNR_KND_CD
-            , QESTNR_NM
+    <!-- 대상자설문 등록 -->
+    <insert id="insertTrprSrvy" parameterType="SrvyVo" useGeneratedKeys="true" keyProperty="srvyid">
+        /* SrvyDao.insertTrprSrvy */
+        INSERT INTO TB_CMM_SRVY (
+            SRVYID
+            , QESTNRID
+            , SRVY_NM
             , EXPLN
+            , BGNG_DE
+            , END_DE
             , USE_YN
             , MDFCN_DT
             , MDFRID
             , REG_DT
             , RGTRID
         ) VALUES (
-            #{qestnrid}
-            , #{siteid}
-            , #{qestnrKndCd}
-            , #{qestnrNm}
+            #{srvyid}
+            , #{qestnrid}
+            , #{srvyNm}
             , #{expln}
+            , #{bgngDe}
+            , #{endDe}
             , #{useYn}
             , NOW()
             , #{user.userid}
@@ -34,6 +36,57 @@
             , #{user.userid}
         )
     </insert>
+    
+    <!-- 개인회원 전체 대상 설문 대상자 등록 -->
+    <insert id="insertIndvdlMbrSrvyUser" parameterType="SrvyUserVo" >
+        /* SrvyDao.insertIndvdlMbrSrvyUser */
+        INSERT INTO TB_CMM_SRVY_USER (
+            SRVYID
+            , USERID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        SELECT
+            #{srvyid}
+            , A.USERID
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        FROM
+            TB_CMM_USER A
+        LEFT OUTER JOIN
+            TB_CMM_ROLE_USER B ON (B.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_CMM_ROLE C ON (C.ROLEID = B.ROLEID)
+        WHERE
+            A.STTS_CD = 1
+            AND A.DEL_YN = 'N'
+            AND A.BLCKLST_YN = 'N'
+            AND (C.KND_CD = 'U' OR C.KND_CD IS NULL)
+    </insert>
+    
+    <!-- 설문지 목록 조회 -->
+    <select id="selectQestnrList" parameterType="SrvyVo" resultType="QestnrVo">
+        /* SrvyDao.selectQestnrList */
+        SELECT
+          A.QESTNRID
+          , A.QESTNR_NM
+          , COUNT(B.QESTNRID) AS QITEM_CNT
+        FROM
+          TB_CMM_QESTNR A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM B ON (B.QESTNRID = A.QESTNRID)  
+        WHERE
+          A.QESTNR_KND_CD = #{qestnrKndCd}
+          AND A.USE_YN = 'Y'
+        GROUP BY
+            A.QESTNRID
+        ORDER BY
+          A.REG_DT DESC
+    </select>
     
     <!-- 대상자설문 목록 조회 -->
     <select id="selectTrprSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
@@ -45,9 +98,11 @@
             , A.SRVY_NM
             , A.USE_YN
             , A.REG_DT
+            , A.BGNG_DE
+            , A.END_DE
             , B.QESTNR_NM
             , COUNT(C.QESTNRID) AS QITEM_CNT
-            , D.TRPR_CNT
+            , IFNULL(D.TRPR_CNT, 0) AS TRPR_CNT
         FROM
             TB_CMM_SRVY A
         LEFT OUTER JOIN
@@ -64,243 +119,177 @@
                 SRVYID
         ) D ON (D.SRVYID = A.SRVYID)
         WHERE 
-            1 = 1
+            B.QESTNR_KND_CD = '110100'
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
             AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         GROUP BY
-            A.QESTNRID
+            A.SRVYID, A.QESTNRID
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 설문지 정보 조회 -->
-    <select id="selectQestnrInfo" parameterType="QestnrVo" resultType="QestnrVo">
-        /* QestnrDao.selectQestnrInfo */
+    <!-- 설문 정보 조회 -->
+    <select id="selectSrvyInfo" parameterType="SrvyVo" resultType="SrvyVo">
+        /* SrvyDao.selectSrvyInfo */
         SELECT
-            A.QESTNRID
+            A.SRVYID
             , A.SITEID
-            , A.QESTNR_KND_CD
-            , A.QESTNR_NM
+            , A.QESTNRID
+            , A.SRVY_NM
             , A.EXPLN
+            , A.SRVY_PRD_CD
+            , A.BGNG_DE
+            , A.END_DE
+            , A.AFTR_DAYCNT
+            , A.BFR_DAYCNT
             , A.USE_YN
         FROM
-            TB_CMM_QESTNR A
+            TB_CMM_SRVY A
         WHERE 
-            QESTNRID = #{qestnrid}
+            SRVYID = #{srvyid}
     </select>
     
-    <!-- 설문지 업데이트 -->
-    <update id="updateQestnr" parameterType="QestnrVo">
-        /* QestnrDao.updateQestnr */
-        UPDATE TB_CMM_QESTNR SET
-            SITEID = #{siteid}
-            , QESTNR_KND_CD = #{qestnrKndCd}
-            , QESTNR_NM = #{qestnrNm}
-            , EXPLN = #{expln}
-            , USE_YN = #{useYn}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
-        WHERE 
-            QESTNRID = #{qestnrid}
-    </update>
-    
-    <!-- 설문지 문항 목록 조회 -->
-    <select id="selectQitemList" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectQitemList */
+    <!-- 설문 대상자 목록 조회 -->
+    <select id="selectTrprList"  parameterType="SrvyUserVo" resultType="SrvyUserVo">
+        /* SrvyDao.selectTrprList */
         <include refid="PaginationMapper.header"/>
         SELECT
-            A.QITEMID
-            , A.QESTNRID
-            , A.QITEM_TYPE_CD 
-            , B.CD_NM AS QITEM_TYPE_CD_NM 
-            , A.CN
-            , A.ORDR
+            A.SRVYID
+            , A.USERID
+            , B.NM
+            , B.ACNT
+            , C.INST_NM
+            , A.REG_DT
         FROM
-            TB_CMM_QESTNR_QITEM A
-        INNER JOIN (
-            SELECT 
-                CD
-                , CD_NM 
-            FROM 
-                TB_CMM_CD 
-            WHERE 
-                CDGRPID = 107
-        ) B ON (B.CD = A.QITEM_TYPE_CD)
-        WHERE 
-            1 = 1
-            AND A.QESTNRID = #{qestnrid}
+            TB_CMM_SRVY_USER A
+        LEFT OUTER JOIN
+            TB_CMM_USER B ON (B.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_CMM_INST C ON (C.INSTID = B.INSTID)
+        WHERE
+            SRVYID = #{srvyid}
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 설문지 문항 정보 등록 -->
-    <insert id="insertQitem" parameterType="QitemVo" useGeneratedKeys="true" keyProperty="qitemid">
-        /* QestnrDao.insertQestnr */
-        INSERT INTO TB_CMM_QESTNR_QITEM (
-            QITEMID
-            , QESTNRID
-            , QITEM_TYPE_CD
-            , CN
-            , EX_CNT
-            , SCALE
-            , ORDR
-            , USE_YN
+    <!-- 회원 목록 조회 -->
+    <select id="selectUserList"  parameterType="SrvyUserVo" resultType="SrvyUserVo">
+        /* SrvyDao.selectUserList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.USERID
+            , A.NM
+            , A.ACNT
+            , D.INST_NM
+            , A.REG_DT
+        FROM
+            TB_CMM_USER A
+        LEFT OUTER JOIN
+            TB_CMM_ROLE_USER B ON (B.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_CMM_ROLE C ON (C.ROLEID = B.ROLEID)
+        LEFT OUTER JOIN
+            TB_CMM_INST D ON (D.INSTID = A.INSTID)
+        WHERE
+            A.STTS_CD = 1
+            AND A.DEL_YN = 'N'
+            AND A.BLCKLST_YN = 'N'
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+            AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
+            AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            AND D.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="indvdlMbrYn != null and indvdlMbrYn != '' and indvdlMbrYn.equalsIgnoreCase('Y')">
+            AND (C.KND_CD = 'U' OR C.KND_CD IS NULL)
+        </if>
+        <if test="indvdlMbrYn != null and indvdlMbrYn != '' and indvdlMbrYn.equalsIgnoreCase('N')">
+            AND C.KND_CD = '-1'
+        </if>
+        GROUP BY
+            A.USERID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 설문 대상자 등록 -->
+    <insert id="insertTrpr" parameterType="SrvyUserVo">
+        /* SrvyDao.insertTrpr */
+        INSERT INTO TB_CMM_SRVY_USER (
+            SRVYID
+            , USERID
             , MDFCN_DT
             , MDFRID
             , REG_DT
             , RGTRID
-        ) VALUES (
-            #{qitemid}
-            , #{qestnrid}
-            , #{qitemTypeCd}
-            , #{cn}
-            , #{exCnt}
-            , #{scale}
-            , #{ordr}
-            , #{useYn}
+        ) VALUES 
+        <foreach item="item" collection="insertUserids"  separator=",">
+        (
+            #{srvyid}
+            , #{item}
             , NOW()
             , #{user.userid}
             , NOW()
             , #{user.userid}
         )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            , REG_DT = NOW()
+            , RGTRID = #{user.userid}
     </insert>
     
-    <!-- 설문지 문항 보기 등록 -->
-    <insert id="insertQitemEx" parameterType="QitemExVo" useGeneratedKeys="true" keyProperty="exid">
-        /* QestnrDao.insertQitemEx */
-        INSERT INTO TB_CMM_QESTNR_QITEM_EX (
-            EXID
-            , QITEMID
-            , EX_NO
-            , CN
-            , SCR
-            , ETC_YN
-            , MDFCN_DT
-            , MDFRID
-            , REG_DT
-            , RGTRID
-        ) VALUES (
-            #{exid}
-            , #{qitemid}
-            , #{exNo}
-            , #{cn}
-            , #{scr}
-            , #{etcYn}
-            , NOW()
-            , #{user.userid}
-            , NOW()
-            , #{user.userid}
-        )
-    </insert>
+    <!-- 설문 대상자 삭제 -->
+    <delete id="deleteTrpr" parameterType="SrvyUserVo">
+        /* SrvyDao.deleteTrpr */
+        DELETE 
+            FROM TB_CMM_SRVY_USER
+        WHERE
+            SRVYID = #{srvyid} 
+            AND USERID IN
+        <foreach item="item" collection="deleteUserids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
     
-    <!-- 설문지 문항 정보 조회 -->
-    <select id="selectQitemInfo" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectQitemInfo */
+    <!-- 회원 존재 여부 확인 -->
+    <select id="isExistUser" parameterType="SrvyUserVo" resultType="SrvyUserVo">
+        /* SrvyDao.isExistUser */
         SELECT
-            A.QITEMID
-            , A.QESTNRID
-            , A.QITEM_TYPE_CD
-            , A.CN
-            , A.EX_CNT
-            , A.ORDR
-            , A.USE_YN
+          CASE WHEN COUNT(USERID) = 0 THEN 'N' ELSE 'Y' END AS IS_EXIST
+          , A.USERID
+          , A.ACNT
+          , A.NM
+          , B.INST_NM
         FROM
-            TB_CMM_QESTNR_QITEM A
-        WHERE 
-            QITEMID = #{qitemid}
+          TB_CMM_USER A
+      LEFT OUTER JOIN
+        TB_CMM_INST B ON (B.INSTID = A.INSTID)
+        WHERE
+          A.STTS_CD = 1
+          AND A.DEL_YN = 'N'
+          AND A.BLCKLST_YN = 'N'
+          AND A.ACNT = #{acnt}
+          AND A.NM = #{nm}
     </select>
     
-    <!-- 설문지 문항 보기 목록 조회 -->
-    <select id="selectQitemExList" parameterType="QitemVo" resultType="QitemExVo">
-        /* QestnrDao.selectQitemExList */
-        SELECT
-            A.EXID
-            , A.QITEMID
-            , A.EX_NO
-            , A.CN
-            , A.SCR
-            , A.ETC_YN
-        FROM
-            TB_CMM_QESTNR_QITEM_EX A
-        WHERE 
-            A.QITEMID = #{qitemid}
-        ORDER BY 
-            A.EX_NO
-    </select>
-    
-    <!-- 설문지 문항 정보 업데이트 -->
-    <update id="updateQitem" parameterType="QitemVo">
-        /* QestnrDao.updateQitem */
-        UPDATE TB_CMM_QESTNR_QITEM SET
-            QITEM_TYPE_CD = #{qitemTypeCd}
-            , CN = #{cn}
-            , EX_CNT = #{exCnt}
-            , ORDR = #{ordr}
+    <!-- 대상자설문 업데이트 -->
+    <update id="updateTrprSrvy" parameterType="SrvyVo">
+        /* SrvyDao.updateQestnr */
+        UPDATE TB_CMM_SRVY SET
+            SRVYID = #{srvyid}
+            , QESTNRID = #{qestnrid}
+            , SRVY_NM = #{srvyNm}
+            , EXPLN = #{expln}
+            , BGNG_DE = #{bgngDe}
+            , END_DE = #{endDe}
             , USE_YN = #{useYn}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
         WHERE 
-            QITEMID = #{qitemid}
+            SRVYID = #{srvyid}
     </update>
-    
-    <!-- 설문지 다음 문항 정보 조회 -->
-    <select id="selectNextQitemInfo" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectNextQitemInfo */
-        SELECT
-            A.QITEMID
-            , A.ORDR
-        FROM
-            TB_CMM_QESTNR_QITEM A
-        WHERE 
-            A.QESTNRID = #{qestnrid}
-            AND A.ORDR = #{ordr} + 1
-    </select>
-    
-    <!-- 설문지 이전 문항 정보 조회 -->
-    <select id="selectPrevQitemInfo" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectNextQitemInfo */
-        SELECT
-            A.QITEMID
-            , A.ORDR
-        FROM
-            TB_CMM_QESTNR_QITEM A
-        WHERE 
-            A.QESTNRID = #{qestnrid}
-            AND A.ORDR = #{ordr} - 1
-    </select>    
-    
-    <!-- 설문지 문항 순서 업데이트 -->
-    <update id="updateQitemOrdr" parameterType="QitemVo">
-        /* QestnrDao.updateQitemOrdr */
-        UPDATE TB_CMM_QESTNR_QITEM SET
-            ORDR = #{ordr}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
-        WHERE 
-            QITEMID = #{qitemid}
-    </update>
-    
-    <!-- 설문지 문항 삭제 -->
-    <delete id="deleteQitem" parameterType="QitemVo">
-        /* QestnrDao.deleteQitemOrdr */
-        DELETE 
-            FROM TB_CMM_QESTNR_QITEM
-        WHERE 
-            QITEMID IN
-        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-    </delete>
-    
-    <!-- 설문지 문항 보기 삭제 -->
-    <delete id="deleteQitemEx" parameterType="QitemVo">
-        /* QestnrDao.deleteQitemEx */
-        DELETE 
-            FROM TB_CMM_QESTNR_QITEM_EX
-        WHERE 
-            QITEMID IN
-        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-    </delete>
     
 </mapper>

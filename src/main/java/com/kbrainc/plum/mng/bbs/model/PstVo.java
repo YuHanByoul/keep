@@ -116,6 +116,10 @@ public class PstVo extends ParentRequestVo {
     private String rplyYn;
     
     // 이후 추가
+    /** 댓글수 **/
+    private int cmntCnt;
+    
+    // 이후 추가
     private int fileCnt;
     
     //BBS 정보  

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+		<style>
+		.hide
+		{
+		   display:none;
+		}
+		</style>
+		
+	<form name="searchFrm" id="searchFrm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
+		<div class="page-body">
+			<div class="row">
+				<div class="card">
+					<div class="card-block-small">
+						<!-- 키워드 filter -->
+						<div class="row">
+	                        <div class="card-block-small">
+	                            <div class="mb-0 form-group row">
+	                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트 선택</strong></div>
+	                                <div class="col-sm-12">
+	                                    <select name="siteid" id="siteid" class="form-select form-select-sm form-control-sm">
+	                                        <option value="0">- 선택 -</option>
+											<th:block th:each="siteList : ${siteList}">
+												<option th:value="${siteList.siteid}"><th:block th:text="${siteList.siteNm}" /></option>
+											</th:block>
+	                                    </select>
+	                                </div>
+	                            </div>
+	                        </div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="card">
+					<div class="card-header p-b-0">
+						<ul class="nav nav-tabs  tabs" role="tablist">
+							<li class="nav-item"><a class="nav-link active"
+								data-bs-toggle="tab" href="#mainBanner" role="tab"><strong>메인배너</strong></a>
+							</li>
+							<li class="nav-item"><a class="nav-link"
+								data-bs-toggle="tab" href="#subBanner1" role="tab"><strong>서브배너1</strong></a>
+							</li>
+							<li class="nav-item"><a class="nav-link"
+								data-bs-toggle="tab" href="#subBanner2" role="tab"><strong>서브배너2</strong></a>
+							</li>
+						</ul>
+					</div>
+					<div class="tab-content tabs p-t-20">
+						<div class="tab-pane active" id="mainBanner" role="tabpanel">
+							<input type="hidden" class="js-single" />
+							<div class="card-block-small p-t-0">
+								<div class="col-12 row m-0">
+									<div class="col-12 col-lg-8 mb-10 mb-lg-0 p-l-0">
+										<div class="col-12 row p-0 p-b-10 sub-title m-l-0 m-r-0">
+											<div class="col-12 col-md-10 p-l-0">
+												<span class="d-inline-block mt-1"><strong>배너 목록</strong></span>
+											</div>
+											<div class="col-12 col-md-2 text-right p-r-0">
+												<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_openBannerInsertModal();">등록</button>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col-12 col-lg-6" id="LeftBanner">
+												
+											</div>
+											<div class="col-12 col-lg-6" id="RightBanner">
+											
+											</div>
+										</div>
+										<!-- paging -->
+									    <div class="paging"></div>
+									    
+										<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+										<input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="ASC"> 
+										<input type="hidden" id="orderField" name="orderField" value="BANNERID ASC, REG_DT">
+									</div>
+									<div class="col-12 col-lg-4">
+                                        <div class="col-12 row p-0 p-b-20 sub-title m-l-0 m-r-0">
+                                            <div class="col-12 p-l-0">
+                                                <span class="d-inline-block mt-1"><strong>노출배너 목록</strong></span>
+                                            </div>
+                                        </div>
+										<div class="row">
+											<div class="col-12 column">
+												
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="tab-pane" id="subBanner1" role="tabpanel"></div>
+						<div class="tab-pane" id="subBanner2" role="tabpanel"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		
+		<div class="modal fade" id="bannerInsertPopup" data-bs-backdrop="static">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content type_2">
+					<div class="modal-header">
+						<h4 class="modal-title">배너 등록</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true"></span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="card m-b-10">
+							<div class="card-block-small">
+								<div class="mb-2 form-group row required">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+	                                <div class="col-sm-12">
+	                                    <select name="siteid" id="siteid" class="form-select form-select-sm form-control-sm">
+	                                        <option value="0">- 선택 -</option>
+											<th:block th:each="siteList : ${siteList}">
+												<option th:value="${siteList.siteid}"><th:block th:text="${siteList.siteNm}" /></option>
+											</th:block>
+	                                    </select>
+	                                </div>
+								</div>
+								<div class="mb-2 form-group row required">
+									<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bannerInsertTitle"><strong>제목</strong></label>
+									<div class="col-sm-12">
+										<input type="text" class="form-control form-control-sm" name="bannerTtl" id="bannerTtl" placeholder="Text Input Validation" />
+									</div>
+								</div>
+								<div class="mb-0 form-group row required">
+									<div class="mb-0 form-group">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>배너 이미지</strong></label>
+										<div class="col-sm-12 mb-2">
+											<input type="file" class="form-control form-control-sm" />
+										</div>
+										<div class="mb-2 row">
+											<div class="col-auto">
+												<span class="label label-inverse"> sampleFile.pptx <a href="javascript:void(0)" class="text-white">X</a></span>
+											</div>
+										</div>
+										<p class="text-warning m-b-0">* 사이즈 가로 000px, 세로 000px. png, jpg 포맷</p>
+									</div>
+								</div>
+								<div class="mb-0 form-group row">
+									<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+										for="bannerInsertLinkUrl"><strong>링크 URL</strong></label>
+									<div class="col-sm-12">
+										<input type="text" class="form-control form-control-sm" name="url" id="url" placeholder="Text Input Validation" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-inverse" onclick="insertModal_close();">취소</button>
+						<button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertBanner();">등록</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="bannerUpdatePopup" data-bs-backdrop="static">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content type_2">
+					<div class="modal-header">
+						<h4 class="modal-title">배너 수정</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true"></span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="card m-b-10">
+							<div class="card-block-small">
+								<div class="mb-2 form-group row required">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+									<div class="col-sm-12">
+										<select name="bannerInsertStieSelect"
+											class="form-select form-select-sm form-control-sm">
+											<option value="opt1">Select One Value Only</option>
+											<option value="opt2">Type 2</option>
+											<option value="opt3">Type 3</option>
+											<option value="opt4">Type 4</option>
+											<option value="opt5">Type 5</option>
+											<option value="opt6">Type 6</option>
+											<option value="opt7">Type 7</option>
+											<option value="opt8">Type 8</option>
+										</select>
+									</div>
+								</div>
+								<div class="mb-2 form-group row required">
+									<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bannerInsertTitle"><strong>제목</strong></label>
+									<div class="col-sm-12">
+										<input type="text" class="form-control form-control-sm" name="bannerTtl" id="bannerTtl" placeholder="Text Input Validation" />
+									</div>
+								</div>
+								<div class="mb-0 form-group row required">
+									<div class="mb-0 form-group">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>배너 이미지</strong></label>
+										<div class="col-sm-12 mb-2">
+											<input type="file" class="form-control form-control-sm" />
+										</div>
+										<div class="mb-2 row">
+											<div class="col-auto">
+												<span class="label label-inverse"> sampleFile.pptx <a href="javascript:void(0)" class="text-white">X</a></span>
+											</div>
+										</div>
+										<p class="text-warning m-b-0">* 사이즈 가로 000px, 세로 000px. png, jpg 포맷</p>
+									</div>
+								</div>
+								<div class="mb-0 form-group row">
+									<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+										for="bannerInsertLinkUrl"><strong>링크 URL</strong></label>
+									<div class="col-sm-12">
+										<input type="text" class="form-control form-control-sm" name="url" id="url" placeholder="Text Input Validation" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-inverse" onclick="updateModal_close();">삭제</button>
+						<button type="button" class="btn btn-primary waves-effect waves-light" onclick="updateBanner();">저장</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="bannerInsertPopup" data-bs-backdrop="static"></div>
+		<div class="modal fade" id="bannerUpdatePopup" data-bs-backdrop="static"></div>
+
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+		
+		
+		<script th:inline="javascript">
+			var columns = document.querySelectorAll(".column");
+			var leftHtml = "";
+			var rightHtml = "";
+			var columnHtml = "";
+			
+
+			
+			
+			var insertPopupUrl = "/mng/banner/bannerInsertPopup.html";
+			var insertAddModal;
+			
+			$(document).ready(function(){
+				switchCherryCallback = function() {
+					
+				}
+			});
+			
+			fn_openBannerInsertModal = () => {
+				console.log(1)
+				$("#bannerInsertPopup").load(insertPopupUrl, function(response, status, xhr) {
+					if (status == "success") {
+						insertAddModal = new bootstrap.Modal($('#bannerInsertPopup'));
+						insertAddModal.show();
+					}
+				});
+			}
+			
+			function insertModal_close(){
+				insertModal.hide();
+			}
+			
+			var updatePopupUrl = "/mng/banner/bannerUpdatePopup.html";
+			var updateAddModal;
+			
+			fn_openBannerUpdateModal = () => {
+				var blcklstIds = selectedItems.join(",")
+				var url = popupUrl+"?blcklstIds="+blcklstIds;
+				 
+				$("#bannerInsertPopup").load(updatePopupUrl, function(response, status, xhr) {
+					if (status == "success") {
+						insertAddModal = new bootstrap.Modal($('#bannerInsertPopup'));
+						insertAddModal.show();
+					}
+				});
+			}
+			
+			function updateModal_init(){
+				insertModal = new bootstrap.Modal($('#bannerUpdatePopup'));
+				insertModal.show();
+			}
+			
+			function updateModal_close(){
+				insertModal.hide();
+			}
+			
+
+		var banner = {
+			init : function() {
+				// drag&drop event
+				columns.forEach((column) => {
+				    var sortbale = new Sortable(column, {
+				        group: "shared",
+				        animation: 150,
+				        ghostClass: "blue-background-class",
+				        dataIdAttr: 'data-id',
+				        
+					    onEnd: function (evt) {
+					    	var bannerid = sortbale.toArray();
+						    var dataList = new Array();
+						    for(var i = 1; i <= bannerid.length; i++){
+						    	var data = new Object();
+						    	data["bannerid"] = bannerid[i-1];
+						    	data["ordr"] = i;
+						    	dataList.push(data);
+						    }
+						    console.log(dataList)
+						    var params = new Object();
+						    params["bannerVoList"] = dataList;
+	 						if (displayWorkProgress()){
+								$.ajax({
+									url : "/mng/banner/updateExpsrBannerSort.do",
+									cache : false,
+									dataType : 'json',
+									data : JSON.stringify(params),
+									type : 'POST',
+									contentType: "application/json; charset=utf-8",
+									success : function(data) {
+										closeWorkProgress();
+									}
+								});
+							}
+					    }
+				    });
+				    
+				});
+				
+				this.registEvent();
+				
+			},
+		
+
+		
+			registEvent : function() {
+				$('#siteid').change(function(event) {
+					$("#RightBanner").html("");
+					$("#LeftBanner").html("");
+					$(".column").html("");
+					leftHtml = "";
+					rightHtml = "";
+					columnHtml = "";
+					
+					banner.selectBannerList();
+				})
+			},
+			
+			selectBannerList: function() {
+				if (displayWorkProgress()){
+					$.ajax({
+						url : "/mng/banner/selectBannerList.do",
+						cache : false,
+						dataType : 'json',
+						data : $("#searchFrm").serialize(),
+						type : 'POST',
+						success : function(data) {
+							leftHtml = "";
+							rightHtml = "";
+							columnHtml = "";
+							$("#LeftBanner").children().remove();
+							$("#RightBanner").children().remove();
+							$("#LeftBanner").html("<script type='text/javascript' src='/files/assets/pages/advance-elements/swithces.js'>"+"</"+"script>");
+							
+							if(data.list.length == null || data.list.length <= 0){
+								$("#LeftBanner").addClass("text-right")
+								$("#LeftBanner").html('<span> 데이터가 없습니다. </span>');
+							}
+							for(var i = 0; i < data.list.length; i++){
+								if(i % 2 == 1){
+									$("#RightBanner").html(banner.fn_makeListRightHtml(data.list[i], i));
+								}else{
+									$("#LeftBanner").html(banner.fn_makeListLeftHtml(data.list[i], i));
+								}
+							}
+							
+							$(".column").html(banner.fn_makeListColumnHtml(data.expsrBannerList));
+							$(".paging").html(data.pagination);
+							banner.swicthBtnChange();
+							closeWorkProgress();
+						}
+					})
+				}
+			},
+			
+			fn_makeListRightHtml : function(list, index) {
+				rightHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
+				rightHtml += '<div class="mb-2 row">'
+				rightHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
+				rightHtml += '<div class="p-l-0 col-2 text-right">'
+				rightHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
+				rightHtml += '</div>'
+				rightHtml += '</div>'
+				rightHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="updateModal_init();"/>'
+				rightHtml += '</div>'
+				return rightHtml;
+			},
+			
+			fn_makeListLeftHtml : function(list, index) {
+				leftHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
+				leftHtml += '<div class="mb-2 row">'
+				leftHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
+				leftHtml += '<div class="p-l-0 col-2 text-right">'
+				leftHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
+			    leftHtml += '</div>'
+			    leftHtml += '</div>'
+			    leftHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="updateModal_init();"/>'
+			    leftHtml += '</div>'
+				return leftHtml;
+			},
+			
+			fn_makeListColumnHtml : function(list) {
+				if (list == null || list.length <= 0) {
+					$(".column").addClass("text-center");
+					columnHtml += '<span> 데이터가 없습니다. </span>'
+				} else {
+					list.forEach(function(item, index) {
+						columnHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + item.bannerid + '" draggable="true" data-id="' + item.bannerid + '">'
+						columnHtml += '<div class="mb-2 row">'
+						columnHtml += '<div class="col-10">' + item.bannerTtl + '</div>'
+						columnHtml += '</div>'
+					    columnHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey + '" alt="banner image"/>'
+					    columnHtml += '</div>'
+					})
+				}
+				return columnHtml;
+			},
+			
+			swicthBtnChange : function() {
+				$(':checkbox[name="banner"]').on({
+				    change: function() {
+				    	if($(this).is(':checked')) {
+				    		if($(".column").children('span').length == 1){
+				    			$(".column").removeClass("text-center");
+				    			$(".column").children('span').remove();
+				    		}
+				    		var clone = $(".banner"+this.id).clone();
+				    		var inputTagDelete = clone[0].querySelector("input");
+				    		$(".column").append(clone);
+				    		inputTagDelete.parentNode.innerHTML = "";
+				    		clone[0].querySelector("img").removeAttribute("onclick");
+				    		
+				    		if (displayWorkProgress()){
+								$.ajax({
+									url : "/mng/banner/updateExpsrBanner.do",
+									cache : false,
+									dataType : 'json',
+									data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
+									type : 'POST',
+									contentType: "application/json; charset=utf-8",
+									success : function(data) {
+										closeWorkProgress();
+									}
+								});
+							}
+				    	}else {
+				    		console.log(1);
+				    		var bannerid = this.id;
+				    		if (displayWorkProgress()){
+				    			console.log(1);
+								$.ajax({
+									url : "/mng/banner/updateExpsrBanner.do",
+									cache : false,
+									dataType : 'json',
+									data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : null, expsrYn : 'N'}),
+									type : 'POST',
+									contentType: "application/json; charset=utf-8",
+									success : function(data) {
+										$(".column").find($('.banner'+bannerid)).remove();
+										console.log(bannerid);
+										closeWorkProgress();
+									}
+								});
+							}	
+				    	}
+				    }
+				});
+			},
+			
+		}
+		
+        $(function() {
+            banner.init();
+        });
+		
+		//공통 Pagination 사용시 function name 일괄 적용 할것
+		function goPage(page) {
+			$("#pageNumber").val(page);
+			
+			$("#RightBanner").html("");
+			$("#LeftBanner").html("");
+			$(".column").html("");
+			leftHtml = "";
+			rightHtml = "";
+			columnHtml = "";
+			
+			banner.selectBannerList();
+		}
+		</script>
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>

@@ -342,23 +342,37 @@
     <select id="selectPstList"  parameterType="PstVo" resultType ="PstVo" >
         /* BbsDao.selectPstList */
         <include refid="PaginationMapper.header"/>
-        SELECT 
-            A.PSTID,
-            A.SITEID,
-            A.TITLE,
-            A.DEL_YN,
-            A.GRP,
-            A.ORD,
-            A.DPTH,
-            IFNULL(B.FILECNT,0) file_cnt,
-            CONVERT(A.REG_DT, CHAR(10)) REG_DT,
-            CONVERT(A.MDFCN_DT, CHAR(10)) MDFCN_DT
-        FROM 
-            TB_CMM_PST A 
-            LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-        WHERE 1=1
+            SELECT 
+                A.PSTID,
+                A.SITEID,
+                A.TITLE,
+                A.DEL_YN,
+                A.GRP,
+                A.ORD,
+                A.DPTH,
+                A.FXD_NTC_YN,
+                IFNULL(A.HITS,0) AS HITS,
+                B.FXD_NTC_USE_YN, 
+                IFNULL(C.cmntcnt,0) cmnt_cnt,
+                A.REG_DT,
+                A.MDFCN_DT
+            FROM 
+                TB_CMM_PST A
+                INNER JOIN 
+                TB_CMM_BBS B 
+                ON A.BBSID = B.BBSID
+                LEFT OUTER JOIN (
+                    SELECT 
+                         PSTID
+                         ,COUNT(Cmntid) cmntCnt 
+                      FROM 
+                         TB_CMM_CMNT 
+                     GROUP BY PSTID
+                ) C ON  A.PSTID =C.PSTID
+            WHERE 1=1
+             AND A.DEL_YN = 'N'
             <if test="bbsid != null and bbsid != 0">
-            AND BBSID= #{bbsid}
+            AND A.BBSID= #{bbsid}
             </if>
             <if test="searchType != null and searchType == 'nm' ">
             AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -369,6 +383,13 @@
             <if test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchType) and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)">
             AND (A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%'))
             </if>
+            <if test='user.roleInfo.trgtInstCd == "S"'>
+             AND GRP IN(
+               SELECT GRP FROM TB_CMM_PST WHERE DPTH = 0 AND SITEID = #{user.instid} 
+             ) 
+            </if>
+            
+            
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -488,7 +509,7 @@
     <update  id="updatePstOrdElse" parameterType="CmntVo" >
         /* BbsDao.updatePstOrdElse */
         <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
-        SELECT 
+<!--         SELECT 
             CASE 
                 WHEN
                     (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_PST  WHERE GRP= #{grp} AND DPTH = #{dpth}+1 ) = 0
@@ -496,7 +517,25 @@
                         #{ord}+1
                 ELSE
                     (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_PST  WHERE GRP= #{grp}  AND DPTH = #{dpth}+1 )+1
-            END
+            END -->
+           WITH RECURSIVE CTE AS (
+                   SELECT 
+                      #{prntsPstid} AS PSTID
+                   UNION ALL
+                   SELECT
+                      A.PSTID AS PSTID
+                     FROM TB_CMM_PST A
+                     INNER JOIN  CTE B
+                     ON (A.PRNTS_PSTID  = B.PSTID) 
+             )
+                SELECT 
+                   IFNULL(MAX(A.ORD),0) + 1 AS ord
+                  FROM 
+                   TB_CMM_PST A
+                 WHERE 1=1 
+                   AND PSTID IN (
+                       SELECT PSTID FROM CTE   
+                   )
         </selectKey>
         UPDATE TB_CMM_PST SET
             ORD      = ORD +1
@@ -509,8 +548,7 @@
     
     
     <!--******************* 댓글 SQL START ***************************  -->
-  
-    <!-- 게시물 댓글을 삭제한다. -->
+    <!-- 댓글을 삭제한다. -->
     <delete id="deleteCmnt" parameterType="PstVo" >
         /* BbsDao.deleteCmnt */
 <!--         DELETE FROM TB_CMM_CMNT -->
@@ -522,7 +560,7 @@
               AND PSTID =#{pstid}
     </delete>
   
-  <!-- 게시물 댓글 목록을 가져온다. -->
+  <!-- 댓글 목록을 가져온다. -->
   <select id="selectCmntList" parameterType="CmntVo"  resultType ="CmntVo">
         /* BbsDao.selectCmntList */
         <include refid="PaginationMapper.header"/>
@@ -548,12 +586,10 @@
         WHERE 
             1=1
             AND a.RGTRID = b.USERID
-            -- AND a.del_yn = 'N'
             AND PSTID = #{pstid}
             <if test="prntsCmntid != null and prntsCmntid != 0 ">
             AND PRNTS_CMNTID = #{prntsCmntid}
             </if>         
-            -- ORDER BY CMNT_GRP, PRNTS_CMNTID,DPTH,ORD
         <include refid="PaginationMapper.footer"/>
     </select>
   
@@ -579,7 +615,7 @@
             cmntid = #{cmntid} 
     </update>
   
-    <!-- 게시물 댓글 순서를 수정한다. -->
+    <!-- 댓글 순서를 수정한다. -->
     <update  id="updateCmntOrd" parameterType="CmntVo" >
         /* BbsDao.updateCmntOrd */
         UPDATE TB_CMM_CMNT SET
@@ -589,12 +625,12 @@
         WHERE 
            cmntid = #{cmntid} 
     </update>
-  
-    <!-- 게시물 댓글 순서를 수정한다. -->
+    
+    <!-- 댓글 순서를 수정한다. -->
     <update  id="updateCmntOrdElse" parameterType="CmntVo" >
         /* BbsDao.updateCmntOrdElse */
         <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
-        SELECT 
+     <!-- SELECT 
             CASE 
                 WHEN
                     (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_CMNT  WHERE CMNT_GRP= #{cmntGrp} AND DPTH = #{dpth}+1 ) = 0
@@ -602,7 +638,25 @@
                         #{ord}+1
                 ELSE
                     (SELECT  IFNULL(MAX(ORD),0)  FROM  TB_CMM_CMNT  WHERE CMNT_GRP= #{cmntGrp}  AND DPTH = #{dpth}+1 )+1
-            END
+            END -->
+             WITH RECURSIVE CTE AS (
+                   SELECT 
+                      #{prntsCmntid} AS CMNTID
+                   UNION ALL
+                   SELECT
+                      A.CMNTID AS CMNTID
+                     FROM TB_CMM_CMNT A
+                     INNER JOIN  CTE B
+                     ON (A.PRNTS_CMNTID  = B.CMNTID) 
+             )
+            SELECT 
+               IFNULL(MAX(A.ORD),0) + 1 AS ord
+              FROM 
+               TB_CMM_CMNT A
+             WHERE 1=1 
+               AND CMNTID IN (
+                   SELECT CMNTID FROM CTE   
+               )
         </selectKey>
         update tb_cmm_cmnt set
             ord = ord +1

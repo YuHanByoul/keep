@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <!-- 필터 부분 -->
+                <div class="card">
+                    <div class="card-block-small">
+                        <form name="searchForm" id="searchForm" action="" method="get" onsubmit="return false;">
+                            <!-- 키워드 filter -->
+                            <div class="row">
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchKeyword"><strong>심사위원 그룹명</strong></label>
+                                        <div class="col-12">
+                                            <input type="text" class="form-control form-control-sm" id="searchKeyword" name="searchKeyword" aria-label="Text input with dropdown button" placeholder="심사위원 그룹명">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
+                                        <div class="col-sm-12">
+                                            <select name="searchUseYn" id="searchUseYn" class="form-select form-select-sm form-control-sm">
+                                                <option value="">- 전체 -</option>
+                                                <option value="Y">사용</option>
+                                                <option value="N">미사용</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //키워드 filter -->
+                            <!-- 키워드 filter-btn -->
+                            <div class="m-t-20 text-center" >
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="jdgGrpList.searchInit()">초기화</button>
+                                <button type="button" class="btn btn-primary" onclick="jdgGrpList.search()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- //필터 부분 -->
+            </div>
+
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6 mb-2 mb-md-0">
+                            <h5><strong>심사위원 그룹 검색결과</strong></h5>
+                        </div>
+                        <th:block sec:authorize-url="/mng/ass/jdgGrpDetail.html">
+                            <div class="col-12 col-md-6 text-right">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="jdgGrpList.insertForm()">등록</button>
+                            </div>
+                        </th:block>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="jsGrid" class="table-responsive"></table>
+                        <div id="listPager" class="text-center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="contentPanel" class="row" ></div>
+    <!-- Page-body end -->
+    </div>
+    <div class="modal fade" id="expertSearchModal" aria-hidden="true" data-bs-backdrop="static">
+    </div>
+
+    <script th:inline="javascript">
+        var jdgGrpList = {
+            listUrl: "/mng/ass/selectJdgGrpList.do",
+            detailUrl: "/mng/ass/jdgGrpDetail.html",
+
+            init: function() {
+                gridHelper = new GridHelper('jsGrid','contentPanel');
+                this.writeJsGridData();
+            },
+
+            writeJsGridData : function() {
+                $('#jsGrid').jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#listPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchKeyword": $('#searchKeyword').val(),
+                                "useYn": $('#searchUseYn').val(),
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize,
+                                "orderField": "REG_DT",
+                                "orderDirection": "desc"
+                            };
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: jdgGrpList.listUrl,
+                                data: params,
+                                dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                        {title: "심사위원 그룹명", name: "grpNm", type: "text", width: "200"},
+                        {title: "등록 전문가 수", name: "exprtCnt", type: "number", width: "100", align: "center"},
+                        {title: "사용여부", name: "useYn", type: "text" , width: "100" , align: "center"},
+                        {title: "등록일", name: "regDt", type: "text", align: "center" , width: "80"},
+                    ],
+                    /* [# sec:authorize-url="/mng/ass/jdgGrpDetail.html"] */
+                    rowClick: function(args) {
+                        gridHelper.rowClick(args);
+
+                        var url = jdgGrpList.detailUrl + "?grpId=" + args.item.grpId;
+                        gridHelper.loadContent(url);
+                    }
+                    /* [/] */
+                });
+            },
+
+            search: function() {
+                gridHelper.resetListContent();
+            },
+
+            searchInit: function() {
+                $('#searchKeyword, #searchUseYn').val('');
+            },
+
+            insertForm: function() {
+                gridHelper.loadContent(jdgGrpList.detailUrl);
+            }
+
+        }
+
+        $(function(){
+            jdgGrpList.init();
+        })
+    </script>
+</div>
+
+</body>
+</html>

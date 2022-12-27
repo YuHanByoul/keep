@@ -8,19 +8,23 @@
 <mapper namespace="com.kbrainc.plum.rte.model.ResSiteDao">
 	
     <!-- 사이트정보를 가지고 온다. -->
-	<select id="selectSiteInfo" resultType="SiteInfoVo" parameterType="java.util.Map">
-		 /* ResSiteDao.selectSiteInfo */
-		    SELECT /* 사이트아이디 */
-		            SITEID
-				   /* 사이트명 */
-				   ,SITE_NM
-                   /* 시스템_구분_코드 */
-                   ,SYS_SE_CD
-				   /* 도메인 */
-				   ,#{p_dmn} AS DMN
-		      FROM  TB_CMM_SITE
-		     WHERE  SITEID = (SELECT SITEID FROM TB_CMM_SITE_DMN WHERE DMN = #{p_dmn})
-		       AND  USE_YN = 'Y'
+    <select id="selectSiteInfo" resultType="SiteInfoVo" parameterType="java.util.Map">
+	    /* ResSiteDao.selectSiteInfo */
+		SELECT 
+            SITEID,
+			SITE_NM,
+            SYS_SE_CD,
+            SYS_KND_CD,
+            INSTID,
+            LOGO_FILEID,
+            CPYRHT,				   
+			#{p_dmn} AS DMN,
+            (SELECT FILE_IDNTFC_KEY FROM TB_CMM_FILE WHERE FILEID = S.LOGO_FILEID) AS LOGO_FILE_IDNTFC_KEY
+        FROM 
+            TB_CMM_SITE S
+		WHERE
+            SITEID = (SELECT SITEID FROM TB_CMM_SITE_DMN WHERE DMN = #{p_dmn})
+		AND USE_YN = 'Y'
 	</select>
 	
 	<!-- 사용중인 사이트아이디 목록을 가지고 온다. -->

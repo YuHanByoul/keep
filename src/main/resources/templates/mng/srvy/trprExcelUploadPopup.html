@@ -1,0 +1,211 @@
+<!-- <form class="form-inline form-horizontal row-border" role="form" id ="trprExcelForm" name="trprExcelForm" > -->
+<form id ="trprExcelForm" name="trprExcelForm" >
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">대상자 일괄 등록</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="m-b-20 row align-items-end">
+                            <div class="col-9">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="trprExcelFile">일괄등록파일 업로드</label>
+                                    <div class="col-sm-12">
+                                        <input type="file" id="trprExcelFile" class="form-control form-control-sm" name="trprExcelFile" value="" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3 btn-group-sm">
+                                <button type="button" class="btn btn-primary" onclick="trprExcelUpload.onValid();">데이터 정합성 체크</button>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <p><strong>&#8251; 주의사항</strong></p>
+                            <p>1. 엑셀파일 저장 시 엑셀 형식으로 저장하여 사용할 것.</p>
+                            <p>2. 샘플 양식 폼을 변경할 시 치명적인 오류가 발생합니다.</p>
+                            <p class="mb-0">3. 샘플 파일을 참고하여 작성하여 주십시오. (<a href="javascript:void(0);" class="text-danger" onclick="trprExcelUpload.onDownloadSample('srvyTrprUploadSample.xls', 'srvyTrprUploadSample.xls', '/sample');">샘플파일 다운로드</a>)</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- 그리드 부분(임의로 넣어둠) -->
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <table id="resultGrid" class="table-responsive"></table>
+                        <div id="resultPager" class="text-center"></div>
+                    </div>
+                </div>
+                <!-- //그리드 부분(임의로 넣어둠) -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light disabled" id="submitBtn" onclick="trprExcelUpload.onSubmit();">일괄등록</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+    var trprExcelUpload = {
+        listUrl: "/mng/srvy/selectUserList.do",
+        uploadDataList: null,
+        
+        init: function() {
+            resultGrid = new GridHelper("resultGrid");
+            this.setGrid([], "N");
+            this.registEvent();
+        },
+        
+        registEvent: function() {
+           // TODO
+        },
+        
+        onDownloadSample: function(downloadFileName, fileName, filePath) {
+            var downloadUrl = "/excelSampleDownload?rFileName=" + downloadFileName + "&sFileName=" + fileName + "&filePath=" + filePath;
+            hiddenFrame.location.href = downloadUrl;
+        },
+        
+        onValid: function() {
+            if(!this.isValid()) return false;
+            /*            
+            var form = $('#trprExcelForm')[0];
+            var formData = new FormData(form);
+            $.ajax({
+                enctype: 'multipart/form-data',
+                url : "/mng/srvy/trprExcelDataCheck.do",
+                processData: false,
+                contentType: false,
+                type: "POST",
+                cache: false,
+                dataType: "json",
+                data: formData,
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(response) {
+                    console.log(response);
+                }
+            });
+            return false;
+            */
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var param = $("#trprExcelForm").serialize();
+            var options = {
+                url: "/mng/srvy/trprExcelDataCheck.do",
+                type: "POST",
+                cache: false,
+                dataType: "json",
+                data: param,
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function(response) {
+                    trprExcelUpload.setGrid(response.checkList, response.validYn);
+                },
+                error: function(response) {
+                    // console.log(response);
+                }
+            };
+            $("#trprExcelForm").ajaxSubmit(options);
+        },
+        
+        isValid: function() {
+            var form = document.trprExcelForm;
+            var fileValue = form.trprExcelFile.value; 
+            if(fileValue =="" || fileValue == undefined ) {
+                alert("파일을 등록해 주세요.");
+                return false;
+            }
+            fileValue.slice(fileValue.indexOf(".") + 1).toLowerCase();
+            var regex = /\.(xls|xlsx)$/;
+            if(!regex.test(fileValue)) {                
+                alert('엑셀 파일만 등록 가능합니다.');
+                return false; 
+            }
+            
+            return true;
+        },
+        
+        setGrid: function(list, validYn) {
+            var dataList = [];
+            for(var i = 0, len = list.length; i < len; i++) {
+                var data = list[i];
+                dataList.push({
+                    acnt: data[0]
+                    , nm: data[1]
+                    , userid: data[2]
+                    , instNm: !data[3] ? "-" : data[3]
+                    , result: data[4]
+                });
+            }
+            
+            $("#resultGrid").jsGrid({
+                data: dataList,
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#resultPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "데이터가 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                fields: [
+                    {title: "아이디", name: "acnt", type: "number", width: "150", align: "center"},
+                    {title: "이름", name: "nm", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
+                        return value ? value : "-";
+                    }},
+                    {title: "소속", name: "instNm", type: "text", width: "150", align: "center", itemTemplate: function(value, item) {
+                        return value ? value : "-";
+                    }},
+                    {title: "결과", name: "result", type: "text", width: "300", align: "center"}
+                ]
+            });
+            
+            if(validYn == "Y") {
+                this.uploadDataList = dataList;
+                $("#submitBtn").removeClass("disabled");
+            }
+        },
+        
+        onSubmit: function() {
+            var param = {srvyid: trprSrvyUpdate.srvyid};
+            $(this.uploadDataList).each(function(index, item) {
+                param["insertUserids[" + index + "]"] = item.userid;
+            });
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/srvy/insertTrpr.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            trprExcelUploadModal.hide();
+                            alert(response.msg);
+                            $("#srvyGrid").jsGrid("loadData");
+                            trprGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+    };
+    
+    trprExcelUpload.init();
+</script>

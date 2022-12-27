@@ -15,16 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.mng.bbs.model.BbsClVo;
 import com.kbrainc.plum.mng.bbs.model.BbsVo;
 import com.kbrainc.plum.mng.bbs.model.CmntVo;
 import com.kbrainc.plum.mng.bbs.model.PstVo;
 import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
  * @ClassName : BbsController
  * @Description : BBS Controller
  * @author : KBRAINC
- * @date : 2021. 2. 26.
+ * @date : 2022. 12. 27
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
@@ -254,9 +255,8 @@ public class BbsController {
         return resultMap;
     }
 
+    
     /*************** 게시물 관리 *********************/
-    /*************** 게시물 관리 *********************/
-
     /**
      * @Title : bbsPstForm
      * @Description : 게시물 관리창 화면 이동
@@ -310,10 +310,10 @@ public class BbsController {
 
     /**
      * @Title : insertPst
-     * @Description : insertPst
+     * @Description : 게시물 등록
      * @param UserTempVo
      * @throws Exception
-     * @return String Y or N
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/bbs/insertPst.do")
     public @ResponseBody Map<String, String> insertPst(@Valid PstVo paramVO, @UserInfo UserVo user) throws Exception {
@@ -348,14 +348,15 @@ public class BbsController {
      * @Description : 게시글 목록 가져오기
      * @param BbsVo
      * @throws Exception
-     * @return
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/bbs/getPstList.do")
-    public @ResponseBody Map<String, Object> getPstList(PstVo paramVO) throws Exception {
+    public @ResponseBody Map<String, Object> getPstList(PstVo paramVO, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<PstVo> result = new ArrayList<PstVo>();
         try {
             
+            paramVO.setUser(user);
             paramVO.setOrderField("GRP DESC,ORD ");
             result = bbsService.selectPstList(paramVO);
             if (result.size() > 0) {
@@ -381,14 +382,10 @@ public class BbsController {
      */
     @RequestMapping(value = "/bbs/pstUpdateForm.html")
     public String pstUpdateForm(@RequestParam(value = "pstid", required = true) int pstid, Model model, PstVo paramVO,CmntVo cmntVO,
-                                BbsClVo bbsClVo) throws Exception {
+                                BbsClVo bbsClVo, @UserInfo UserVo user) throws Exception {
     	
+        paramVO.setUser(user);
         paramVO.setPstid(pstid);
-        cmntVO.setPstid(pstid);
-        //cmntVO.setOrderField(" PSTID, CMNT_GRP,ORD ");
-        cmntVO.setOrderField("CMNT_GRP DESC,ORD ");
-        
-        cmntVO.setOrderDirection(CmntVo.ORDER_DIRECTION_ASC);
         Map<String, Object> resultMap = bbsService.selectPst(paramVO);
         
         PstVo tmpParamVO = (PstVo) resultMap.get("paramMap");
@@ -399,13 +396,13 @@ public class BbsController {
         }
         
         BbsVo bbsVo = new BbsVo();
+        bbsVo.setUser(user);
         bbsVo.setBbsid(tmpParamVO.getBbsid());
         model.addAttribute("bbsInfo", bbsService.selectOneBbs(bbsVo));
 
         tmpParamVO.setPrntsPstid(pstid);
         model.addAttribute("result", bbsService.selectPst(tmpParamVO));
-        model.addAttribute("replyList", bbsService.selectReplyPstList(tmpParamVO));
-        model.addAttribute("cmntList", bbsService.selectCmntList(cmntVO));
+        //model.addAttribute("replyList", bbsService.selectReplyPstList(tmpParamVO));
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
         return "mng/bbs/pstUpdate";
@@ -416,7 +413,7 @@ public class BbsController {
      * @Description : updatePst
      * @param paramVO
      * @throws Exception
-     * @return String Y or N
+     * @return  Map<String, String>
      */
     @RequestMapping(value = "/bbs/updatePst.do")
     public @ResponseBody Map<String, String> updatePst(PstVo paramVO, @UserInfo UserVo user) throws Exception {
@@ -440,7 +437,7 @@ public class BbsController {
      * @Description : deleteFile DB
      * @param paramVO
      * @throws Exception
-     * @return String Y or N
+     * @return  Map<String, String>
      */
     @RequestMapping(value = "/deleteFileByFileId.do")
     public @ResponseBody Map<String, String> deleteFileByFileId(
@@ -467,7 +464,7 @@ public class BbsController {
      * @Description : TODO
      * @param paramVO :
      * @param user :
-     * @return Map String,String : 
+     * @return Map<String, Object> : 
      * @throws Exception :
      */
     @RequestMapping(value = "/bbs/insertCmnt.do")
@@ -493,9 +490,8 @@ public class BbsController {
      *
      * @Title       : insertCmnt 
      * @Description : TODO
-     * @param paramVO :
-     * @param user :
-     * @return Map String,String : 
+     * @param paramVO 
+     * @return Map<String, Object>
      * @throws Exception :
      */
     @RequestMapping(value = "/mng/bbs/insertCmntReply.do")
@@ -523,7 +519,7 @@ public class BbsController {
      * @Description : TODO
      * @param paramVO :
      * @param user :
-     * @return Map String,String 
+     * @return Map<String, Object>
      * @throws Exception :
      */
     @RequestMapping(value = "/mng/bbs/updateCmnt.do")
@@ -551,7 +547,7 @@ public class BbsController {
      * @Description : TODO
      * @param paramVO :
      * @param user :
-     * @return Map String,String 
+     * @return Map<String, Object> 
      * @throws Exception :
      */
     @RequestMapping(value = "/mng/bbs/updateCmntReplyDelYn.do")
@@ -579,7 +575,7 @@ public class BbsController {
      * @Description : TODO
      * @param paramVO :
      * @param user :
-     * @return Map String,String 
+     * @return Map<String, Object>
      * @throws Exception :
      */
     @RequestMapping(value = "/bbs/deletePst.do")
@@ -607,7 +603,7 @@ public class BbsController {
      * @Description : TODO
      * @param paramVO :
      * @param user :
-     * @return Map String,String 
+     * @return Map<String, Object>
      * @throws Exception :
      */
     @RequestMapping(value = "/bbs/selectNtcPstCnt.do")
@@ -627,5 +623,36 @@ public class BbsController {
         return resultMap;
     }
     
+    /**
+     * @Title : selectCmntList
+     * @Description : 댓글 리스트 호출
+     * @param PstVo
+     * @return Map<String, Object>
+     * @throws Exception
+     */
+    @RequestMapping(value = "/bbs/selectCmntList.do")
+    public @ResponseBody Map<String, Object> selectCmntList(CmntVo cmntVO) throws Exception {
+        
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CmntVo> result = new ArrayList<CmntVo>();
+        cmntVO.setOrderField("CMNT_GRP DESC,ORD ");
+        cmntVO.setOrderDirection(CmntVo.ORDER_DIRECTION_ASC);
+        
+        try {
+            result = bbsService.selectCmntList(cmntVO);
+            if (result.size() > 0) {
+                resultMap.put("totalCount", (result.get(0).getTotalCount()));
+                resultMap.put("pagination", PaginationUtil.getPagingHtml(result.get(0).getTotalPage(),result.get(0).getPageNumber(),10));
+            } else {
+                resultMap.put("totalCount", 0);
+            }
+            resultMap.put("list", result);
+        } catch (SQLException e) {
+            log.error("selectBbsCl.SQLException.188L");
+        } catch (Exception e) {
+            log.error("selectBbsCl.Exception.188L");
+        }
+        return resultMap;
+    }
     
 }

@@ -2,6 +2,9 @@ package com.kbrainc.plum.rte.model;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import lombok.Data;
 
 /**
@@ -25,14 +28,29 @@ public class SiteInfoVo extends ParentVo implements Serializable {
 
     private static final long serialVersionUID = -6600639997454113104L;
 
-    // 사이트정보
     /** 사이트아이디 */
     private String siteid = null;
+
     /** 사이트명 */
     private String siteNm = null;
     
     /** 시스템_구분_코드 */
     private String sysSeCd = null;
+    
+    /** 시스템 종류 코드 */
+    private String sysKndCd;
+    
+    /** 기관아이디 */
+    private Integer instid;
+    
+    /** 로고 파일아이디 */
+    private Integer logoFileid;
+    
+    /** 로고 파일 식별 키 */
+    private String logoFileIdntfcKey;
+    
+    /** 카피라이트 */
+    private String cpyrht;
     
     /** 도메인 */
     private String dmn = null;

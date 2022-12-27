@@ -57,11 +57,11 @@ public class BlcklstDsctnController {
     */
     @RequestMapping(value = "/mng/blcklst/selectBlcklstDsctnList.do")
     @ResponseBody
-    public Map<String, Object> selectBlcklstDsctnList(BlcklstDsctnVo readerVo) throws Exception {
+    public Map<String, Object> selectBlcklstDsctnList(BlcklstDsctnVo blcklstDsctnVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<BlcklstDsctnVo> result = null;
         
-        result =  blcklstDsctnService.selectBlcklstDsctnList(readerVo);
+        result =  blcklstDsctnService.selectBlcklstDsctnList(blcklstDsctnVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));

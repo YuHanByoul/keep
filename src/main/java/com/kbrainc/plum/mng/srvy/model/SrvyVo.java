@@ -53,6 +53,7 @@ public class SrvyVo extends ParentRequestVo {
     /** 대상자수 */
     private int trprCnt;
     
+    
     /** 설문명 */
     @NotEmpty(message = "설문명을 입력해주세요.")
     @Size(max = 20, message = "설문명은 20자 이하여야 합니다.")
@@ -67,9 +68,11 @@ public class SrvyVo extends ParentRequestVo {
     private String srvyPrdCd;
     
     /** 시작 일자 */
+    @NotEmpty(message = "설문 시작일을 입력해주세요.")
     private String bgngDe;
     
     /** 종료 일자 */
+    @NotEmpty(message = "설문 종료일을 입력해주세요.")
     private String endDe;
     
     /** 이후 일수 */
@@ -80,6 +83,9 @@ public class SrvyVo extends ParentRequestVo {
     
     /** 사용여부 */
     private String useYn;
+    
+    /** 설문지 종류 코드 */
+    private String qestnrKndCd;
     
     
     /** 수정일시 */
