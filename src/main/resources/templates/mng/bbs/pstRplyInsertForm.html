@@ -41,24 +41,23 @@
                 <input type="hidden" id="atchfileCnt" name="atchfileCnt"   th:value = "${paramMap.atchfileCnt}" >
                 <input type="hidden" id="atchfileSize" name="atchfileSize"   th:value = "${paramMap.atchfileSize}" >
               </th:block>
-                
-                
+              
             </div>
+            
             <div class="card-block-small">
                 <button type="button" class="btn btn-disabled m-r-5" onclick="backToParentPst()">취소</button>
                 <button type="button" class="btn btn-primary" onclick="fn_insertPst()">저장</button>
-            </div>
+           </div>
             
-      <input type="hidden" id="bbsid"       name="bbsid"       th:value = "${paramMap.bbsid}" >
-      <input type="hidden" id="dpth"        name="dpth"        th:value = "${pstVo.paramMap.dpth}" >
-      <input type="hidden" id="siteid"      name="siteid"      th:value = "${pstVo.paramMap.siteid}">
-      <input type="hidden" id="prntsPstid"  name="prntsPstid"  th:value = "${pstVo.paramMap.pstid}"  >
-      <input type="hidden" id="grp"         name="grp"         th:value = "${pstVo.paramMap.grp}" >
-      <input type="hidden" id="bbsClid"     name="bbsClid"     th:value = "${pstVo.paramMap.bbsClid}" >
-      <input type="hidden" id="loginYn"     name="loginYn"     th:value = "${pstVo.paramMap.loginYn}" >
-      <input type="hidden" id="ord"         name="ord"         th:value = "${pstVo.paramMap.ord}" >
-      <input type="hidden" id="rplyYn"      name="rplyYn"       value = "Y" >
-      
+	      <input type="hidden" id="bbsid"      name="bbsid"      th:value = "${paramMap.bbsid}"   >
+	      <input type="hidden" id="dpth"       name="dpth"       th:value = "${pstVo.paramMap.dpth}" >
+	      <input type="hidden" id="siteid"     name="siteid"     th:value = "${pstVo.paramMap.siteid}">
+	      <input type="hidden" id="prntsPstid" name="prntsPstid" th:value = "${pstVo.paramMap.pstid}"  >
+	      <input type="hidden" id="grp"        name="grp"        th:value = "${pstVo.paramMap.grp}" >
+	      <input type="hidden" id="bbsClid"    name="bbsClid"    th:value = "${pstVo.paramMap.bbsClid}" >
+	      <input type="hidden" id="loginYn"    name="loginYn"    th:value = "${pstVo.paramMap.loginYn}" >
+	      <input type="hidden" id="ord"        name="ord"        th:value = "${pstVo.paramMap.ord}" >
+	      <input type="hidden" id="rplyYn"     name="rplyYn"     value = "Y" >
   </form>
   
   <script th:inline="javascript" >
@@ -67,7 +66,7 @@
 		  var atchfileSize = 0;
 	      var editor ;
 		  var uploadFileCnt = 0 ;
-
+		  
 	      $(function(){
 			   
 			   $("#title").val("RE:" + $("#title").val());
@@ -80,7 +79,14 @@
 			    editor = CKEDITOR.replace('cntnts', {enterMode: CKEDITOR.ENTER_BR});
 	     })
 	     
-	     var validate = $("#pstInsertForm").validate({
+	    function backToParentPst(){
+             var modifyUrl = "/bbs/pstUpdateForm.html?pstid="+$("#prntsPstid").val()+"&siteid="+$("#siteid").val();
+             gridHelper1.loadContent(modifyUrl);
+             gridHelper1.removeHighlight();
+             var $row = $("#"+gridHelper1.jsGridId).jsGrid("rowByItem", clickedItem)
+             $row.toggleClass("highlight");
+	  	}
+	    var validate = $("#pstInsertForm").validate({
 	       	    ignore: [],
 	 		    rules: {  
 	 		    	  title      : { required: true , maxlength:200  }

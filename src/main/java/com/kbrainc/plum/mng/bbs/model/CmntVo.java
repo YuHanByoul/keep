@@ -62,8 +62,8 @@ public class CmntVo extends ParentRequestVo {
     private String paddingStr;
     private String dpthStr;
     
-    public int totalPage;
-    public int pageNumber;
+    //public int totalPage;
+    //public int pageNumber;
     
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
