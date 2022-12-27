@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.kbrainc.plum.mng.example.excel.service.ExcelService;
+import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.mng.srvy.service.SrvyServiceImpl;
@@ -447,6 +448,45 @@ public class SrvyController {
         Map<String, Object> result = srvyService.trprExcelDataCheck(excelList);
         resultMap.put("checkList", (ArrayList) result.get("checkList"));
         resultMap.put("validYn", (String) result.get("validYn"));
+            
+        return resultMap;
+    }
+    
+    /**
+     * 대상자설문 업데이트
+     *
+     * @Title : updateTrprSrvy
+     * @Description : 대상자설문 업데이트
+     * @param srvyVo SrvyVo 객체
+     * @param bindingResult srvyVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/updateTrprSrvy.do")
+    @ResponseBody
+    public Map<String, Object> updateTrprSrvy(@Valid SrvyVo srvyVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        srvyVo.setUser(user);
+        retVal = srvyService.updateTrprSrvy(srvyVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
             
         return resultMap;
     }
