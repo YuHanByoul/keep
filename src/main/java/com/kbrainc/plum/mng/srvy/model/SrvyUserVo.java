@@ -15,14 +15,14 @@ import lombok.Data;
 
 /**
  * 
- * 설문Vo 클래스
+ * 설문회원Vo 클래스
  *
  * <pre>
  * com.kbrainc.plum.mng.srvy.model
- * - SrvyVo.java
+ * - TrprVo.java
  * </pre> 
  *
- * @ClassName : SrvyVo
+ * @ClassName : SrvyUserVo
  * @Description : 설문Vo 클래스 
  * @author : KBRAINC
  * @date : 2022. 12. 21.
@@ -30,7 +30,7 @@ import lombok.Data;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class SrvyVo extends ParentRequestVo {
+public class SrvyUserVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
@@ -38,54 +38,32 @@ public class SrvyVo extends ParentRequestVo {
     /** 설문 아이디 */
     private int srvyid;
     
-    /** 사이트 아이디 */
-    private int siteid;
+    /** 사용자 아이디 */
+    private int userid;
     
-    /** 설문지 아이디 */
-    private int qestnrid;
+    /** 계정 */
+    private String acnt;
     
-    /** 설문지명 */
-    private String qestnrNm;
+    /** 이름 */
+    private String nm;
     
-    /** 문항수 */
-    private int qitemCnt;
+    /** 소속 */
+    private String instNm;
     
-    /** 대상자수 */
-    private int trprCnt;
+    /** 개인회원 전체 대상 여부 */
+    private String indvdlMbrYn;
     
+    /** 회원 존재 여부 */
+    private String isExist;
     
-    /** 설문명 */
-    @NotEmpty(message = "설문명을 입력해주세요.")
-    @Size(max = 20, message = "설문명은 20자 이하여야 합니다.")
-    private String srvyNm;
+    /** 회원 유형 */
+    private String kndCd;
     
-    /** 설명 */
-    @NotEmpty(message = "설문 설명을 입력해주세요.")
-    @Size(max = 400, message = "설문 설명은 400자 이하여야 합니다.")
-    private String expln;
+    /** 대상자 추가 회원 아이디 목록 */
+    private String[] insertUserids;
     
-    /** 설문기간 코드 */
-    private String srvyPrdCd;
-    
-    /** 시작 일자 */
-    @NotEmpty(message = "설문 시작일을 입력해주세요.")
-    private String bgngDe;
-    
-    /** 종료 일자 */
-    @NotEmpty(message = "설문 종료일을 입력해주세요.")
-    private String endDe;
-    
-    /** 이후 일수 */
-    private int aftrDaycnt;
-    
-    /** 이전 일수 */
-    private int bfrDaycnt;
-    
-    /** 사용여부 */
-    private String useYn;
-    
-    /** 설문지 종류 코드 */
-    private String qestnrKndCd;
+    /** 대상자 삭제 회원 아이디 목록 */
+    private String[] deleteUserids;
     
     
     /** 수정일시 */

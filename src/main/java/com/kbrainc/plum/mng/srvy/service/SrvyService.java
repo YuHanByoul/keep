@@ -1,7 +1,11 @@
 package com.kbrainc.plum.mng.srvy.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 
 /**
@@ -23,15 +27,26 @@ import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 public interface SrvyService {
     
     /**
-     * 설문지 정보 등록
+     * 대상자설문 등록
      *
-     * @Title : insertQestnr 
-     * @Description : 설문지 정보 등록
-     * @param qestnrVo QestnrVo객체
-     * @return int qestrnid
+     * @Title : insertTrprSrvy 
+     * @Description : 대상자설문 등록
+     * @param srvyUserVo SrvyUserVo객체
+     * @return int srvyid
      * @throws Exception 예외
      */
-    //public int insertQestnr(QestnrVo qestnrVo) throws Exception;
+    public int insertTrprSrvy(SrvyVo srvyVo, SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 설문지 목록 조회
+     *
+     * @Title : selectQestnrList 
+     * @Description : 설문지 목록 조회
+     * @param srvyVo SrvyVo객체
+     * @return List<QestnrVo> 설문지 목록
+     * @throws Exception 예외
+     */
+    public List<QestnrVo> selectQestnrList(SrvyVo srvyVo) throws Exception;
     
     /**
      * 대상자설문 목록 조회
@@ -39,21 +54,91 @@ public interface SrvyService {
      * @Title : selectTrprSrvyList 
      * @Description : 대상자설문 목록 조회
      * @param srvyVo SrvyVo객체
-     * @return List<SrvyVo> 설문 목록
+     * @return List<SrvyVo> 대상자설문 목록
      * @throws Exception 예외
      */
     public List<SrvyVo> selectTrprSrvyList(SrvyVo srvyVo) throws Exception;
-     
+    
     /**
-     * 설문지 정보 조회
+     * 설문 정보 조회
      *
-     * @Title : selectQestnrInfo
-     * @Description : 설문지 정보 조회
-     * @param qestnrVo QestnrVo 객체
-     * @return QestnrVo QestnrVo 객체
+     * @Title : selectSrvyInfo
+     * @Description : 설문 정보 조회
+     * @param srvyVo SrvyVo 객체
+     * @return SrvyVo SrvyVo 객체
      * @throws Exception 예외
      */
-    //public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception;
+    public SrvyVo selectSrvyInfo(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 설문 대상자 목록 조회
+     *
+     * @Title : selectTrprList
+     * @Description : 설문 대상자 목록 조회
+     * @param srvyUserVo SrvyUserVo 객체
+     * @return List<SrvyUserVo> 설문 대상자 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyUserVo> selectTrprList(SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 회원 목록 조회
+     *
+     * @Title : selectUserList
+     * @Description : 회원 목록 조회
+     * @param srvyUserVo SrvyUserVo 객체
+     * @return List<SrvyUserVo> 회원 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyUserVo> selectUserList(SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 개인회원 전체 대상 설문 대상자 등록
+     *
+     * @Title : insertIndvdlMbrSrvyUser 
+     * @Description : 개인회원 전체 대상 설문 대상자 등록
+     * @param srvyUserVo SrvyUserVo 객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertIndvdlMbrSrvyUser(SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 설문 대상자 등록
+     *
+     * @Title : insertTrpr 
+     * @Description : 설문 대상자 등록
+     * @param srvyUserVo SrvyUserVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertTrpr(SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 설문 대상자 삭제
+     *
+     * @Title : deleteTrpr 
+     * @Description : 설문 대상자 삭제
+     * @param srvyUserVo SrvyUserVo객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    public int deleteTrpr(SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 대상자 엑셀 데이터 정합성 체크
+     *
+     * @Title : trprExcelDataCheck 
+     * @Description : 대상자 엑셀 데이터 정합성 체크
+     * @param list ArrayList 엑셀 데이터
+     * @return List<SrvyUserVo> 엑셀 데이터 정합성 체크 목록
+     * @throws Exception 예외
+     */
+    public Map<String, Object> trprExcelDataCheck(ArrayList list) throws Exception;
+    
+    
+    
+
      
     /**
      * 설문지 정보 업데이트
