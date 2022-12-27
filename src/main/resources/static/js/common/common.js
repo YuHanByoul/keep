@@ -5138,18 +5138,9 @@
 
 	    return resultString + '원';
 	}
-	
-   function downloadBbsFileByFileid(fileId, fileIdntfcKey){
-     downloadFileByFileid(fileId, fileIdntfcKey, true);
-   }
-    
-   function downloadFileByFileid(fileId, fileIdntfcKey, isBbs){
-     var downloadUrl = "/downloadFileByFileid.do";
-     if(!!isBbs) {
-        downloadUrl = "/downloadBbsFileByFileid.do";
-     }
-     
-	 $.fileDownload(downloadUrl + '?fileid='+fileId + '&file_idntfc_key=' + fileIdntfcKey, { 
+
+   function downloadFileByFileid(fileId, fileIdntfcKey){
+	 $.fileDownload('/downloadFileByFileid.do?fileid='+fileId + '&file_idntfc_key=' + fileIdntfcKey, { 
 	    //successCallback: function (url) {},
 	    failCallback: function(html, url) {
 	    	if(html=='404'){

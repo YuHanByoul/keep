@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 
@@ -30,12 +34,39 @@ public class SiteVo extends ParentRequestVo {
 	private static final String SYSTEM_SE_NAME_ADMIN = "관리자";
 	private static final String SYSTEM_SE_NAME_USER = "사용자";
 
-	private Integer siteid;	//사이트 아이디
-	private String siteNm; //사이트 이름 
-	private String sysSeCd; //시스템 구분 코드
-	private String sysSeNm; //시스템 구분 이름
-	private String useYn; //사용유무
-	private Integer mdfrid; //수정자 아이디
+	/** 사이트 아이디 */
+	private Integer siteid;
+	
+	/** 사이트 이름 */
+	@NotEmpty(message = "사이트 이름을 입력해주십시오.")
+    @Size(max = 20, message = "사이트 이름은 20자를 넘을 수 없습니다.")
+	private String siteNm; 
+	
+	/** 시스템 구분 코드 */
+	@Pattern(regexp="[AU]")
+	private String sysSeCd;
+	
+	/** 시스템 구분 이름 */
+	private String sysSeNm;
+	
+	/** 시스템 종류 코드 */
+	@Pattern(regexp="[APT]")
+	private String sysKndCd;
+	
+	/** 로고 파일아이디 */
+	private Integer logoFileid;
+	
+	/** 카피라이트 */
+	@NotEmpty(message = "카피라이트를 입력해주십시오.")
+    @Size(max = 2000, message = "카피라이트는 2000자를 넘을 수 없습니다.")
+	private String cpyrht;
+	
+	/** 사용 여부 */
+	@Pattern(regexp="[YN]")
+	private String useYn = "N";
+	
+	/** 수정자아이디 */
+	private Integer mdfrid;
 	
     /** 등록일 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
@@ -46,6 +77,7 @@ public class SiteVo extends ParentRequestVo {
 	private List<SiteDomainVo> siteDomainList = new ArrayList(); //등록된 도메인 list
 	
 	/** 기관아이디 */
+	@NotEmpty(message = "기관아이디를 입력해주십시오.")
 	private String instid;
 	
 	/** 기관_이름 */
@@ -55,14 +87,14 @@ public class SiteVo extends ParentRequestVo {
 	private String instCd;
 	
 	/**
-	 * 
-	 * 시스템 코드 입력시 관리되지 않는 코드로 이름을 자동 입력한다.
-	 *
-	 * @Title : setSysSeCd
-	 * @Description : 시스템 코드 입력시 관리되지 않는 코드로 이름을 자동 입력한다.
-	 * @param sysSeCd 시스템 구분 코드
-	 * @return void
-	 */
+	* 
+	* 시스템 코드 입력시 관리되지 않는 코드로 이름을 자동 입력한다.
+	*
+	* @Title : setSysSeCd
+	* @Description : 시스템 코드 입력시 관리되지 않는 코드로 이름을 자동 입력한다.
+	* @param sysSeCd 시스템 구분 코드
+	* @return void
+	*/
 	public void setSysSeCd(String sysSeCd) {
 		this.sysSeCd = sysSeCd;
 		if( "A".equals(sysSeCd) ) {
@@ -74,8 +106,4 @@ public class SiteVo extends ParentRequestVo {
     public void setSiteDomainList(List<SiteDomainVo> siteDomainList) {
         this.siteDomainList.addAll(siteDomainList);
     }
-	
-	
-	
-	
 }

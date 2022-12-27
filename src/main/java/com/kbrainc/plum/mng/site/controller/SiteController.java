@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.site.model.SiteDomainVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.mng.site.service.SiteService;
@@ -46,7 +48,10 @@ public class SiteController {
     
     @Autowired
     SiteService siteService;
-
+    
+    @Autowired
+    private FileService fileService;
+    
     @Autowired
     private ResMenuService resMenuService;
     
@@ -84,6 +89,18 @@ public class SiteController {
         if(siteid != null && CommonUtils.isNotEmpty(siteid.toString())) {
             siteInfo = siteService.selectSiteInfo(siteid);
             logger.info("Site Info : {}", siteInfo);
+            
+            FileVo fileVo = new FileVo();
+            
+            if (siteInfo.getLogoFileid() != null && !siteInfo.getLogoFileid().equals(0)) {
+                fileVo.setFileid(Integer.parseInt(siteInfo.getLogoFileid().toString()));
+                
+                FileVo logoVo= fileService.getFileInfo(fileVo);
+                
+                model.addAttribute("logoFile",logoVo );
+            } else {
+                model.addAttribute("logoFile", null);
+            }
             
         }
         
