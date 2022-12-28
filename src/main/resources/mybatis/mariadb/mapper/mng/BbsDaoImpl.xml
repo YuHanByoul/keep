@@ -370,7 +370,7 @@
                      GROUP BY PSTID
                 ) C ON  A.PSTID =C.PSTID
             WHERE 1=1
-             AND A.DEL_YN = 'N'
+           -- AND A.DEL_YN = 'N'
             <if test="bbsid != null and bbsid != 0">
             AND A.BBSID= #{bbsid}
             </if>
@@ -420,6 +420,38 @@
             LOGIN_YN       = #{loginYn      }
         WHERE 
             PSTID = #{pstid}     
+    </update>
+    
+    <!-- 게시물 답글 일괄 수정 -->
+    <update id="updatePstReply" parameterType="PstVo">
+        /* BbsDao.updatePstReply */
+        UPDATE TB_CMM_PST SET     
+            <if test="siteid != null and siteid != 0">
+            SITEID        = #{siteid        },
+            </if>
+            TITLE         =  (CASE WHEN LOCATE('RE:RE:',TITLE) > 0 THEN concat('RE:RE:', #{title})
+                                   WHEN LOCATE('RE:',TITLE) > 0 THEN concat('RE:', #{title})
+                                   ELSE #{title}
+                               END 
+                              ),
+            BBS_CLID      = #{bbsClid      },
+            MDFCN_DT      = NOW(),
+            MDFRID        = #{user.userid   },
+            FXD_NTC_YN    = #{fxdNtcYn    },
+            LOGIN_YN      = #{loginYn      }
+        WHERE PSTID IN(
+            WITH RECURSIVE CTE AS (
+                 SELECT 
+                    #{pstid} AS PSTID
+                 UNION ALL
+                 SELECT
+                    A.PSTID AS PSTID
+                   FROM TB_CMM_PST A
+                   INNER JOIN  CTE B
+                   ON (A.PRNTS_PSTID  = B.PSTID) 
+            )
+            SELECT PSTID FROM CTE WHERE PSTID != #{pstid}
+        )     
     </update>
     
     <!-- 게시물 정보를 가져온다. -->

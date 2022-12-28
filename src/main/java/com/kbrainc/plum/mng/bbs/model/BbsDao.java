@@ -258,7 +258,6 @@ public interface BbsDao {
      * @return List
      */
     public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception;
-    
     /**
      * @Title : selectNtcPstCnt
      * @Description : 사이트 별 고정 게시글 수 가져오기
@@ -271,7 +270,7 @@ public interface BbsDao {
      * @Title : updatePstOrdElse
      * @Description : 게시글 ord 업데이트
      * @param PstVo PstVo 타입의 인자
-     * @return List
+     * @return int
      * @throws Exception :
      */
     public int updatePstOrdElse(PstVo paramVO) throws Exception; 
@@ -279,10 +278,16 @@ public interface BbsDao {
      * @Title : updatePstOrd
      * @Description : 게시글 ord 업데이트
      * @param PstVo PstVo 타입의 인자
-     * @return List
+     * @return int
      * @throws Exception :
      */
     public int updatePstOrd(PstVo paramVO) throws Exception;
-    
-    
+    /**
+     * @Title : updatePstReply
+     * @Description : 게시글 답글을 부모 정보에 따라 일괄 업데이트 한다.
+     * @param PstVo PstVo 타입의 인자
+     * @return int
+     * @throws Exception :
+     */
+    public int updatePstReply(PstVo paramVO) throws Exception;
 }

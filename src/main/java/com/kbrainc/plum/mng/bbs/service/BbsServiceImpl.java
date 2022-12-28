@@ -225,12 +225,9 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
             resultMap.put("fileMap", null);
             resultMap.put("currentFileCnt", 0);
         }
-        
-        
         resultMap.put("paramMap", pstVo);
         return resultMap;
     };
-
     /**
      * @Title : updatePst
      * @Description : 게시판 글 업데이트
@@ -239,9 +236,11 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
      * @return List
      */
     public int updatePst(PstVo paramVO) throws Exception {
-        return bbsDao.updatePst(paramVO);
+        Integer retVal = 0;
+        retVal+=bbsDao.updatePst(paramVO);
+        retVal+= bbsDao.updatePstReply(paramVO);
+        return retVal; 
     }
-
     /**
      * @Title : updatePst
      * @Description : 게시판 글 업데이트
@@ -254,7 +253,6 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         fileVo.setFileid(fileId);
         return fileDao.deleteFile(fileVo);
     }
-
     /**
      * @Title : insertCmnt
      * @Description : 게시판 글 업데이트
