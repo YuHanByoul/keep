@@ -35,6 +35,21 @@
         )
     </insert>
     
+    <!-- 사이트 목록 조회 -->
+    <select id="selectSiteList" parameterType="QestnrVo" resultType="QestnrVo">
+        /* QestnrDao.selectSiteList */
+        SELECT
+            A.SITEID
+            , A.SITE_NM
+            , B.INST_NM
+        FROM
+            TB_CMM_SITE A
+        INNER JOIN
+            TB_CMM_INST B ON (B.INSTID = A.INSTID)
+        WHERE
+            A.USE_YN = 'Y'
+    </select>
+    
     <!-- 설문지 목록 조회 -->
     <select id="selectQestnrList" parameterType="QestnrVo" resultType="QestnrVo">
         /* QestnrDao.selectQestnrList */
@@ -48,6 +63,8 @@
             , A.EXPLN
             , A.USE_YN
             , A.REG_DT
+            , D.SITE_NM
+            , E.INST_NM
             , COUNT(B.QESTNRID) AS QITEM_CNT
         FROM
             TB_CMM_QESTNR A
@@ -61,7 +78,11 @@
                 TB_CMM_CD 
             WHERE 
                 CDGRPID = 110
-        ) C ON (C.CD = A.QESTNR_KND_CD) 
+        ) C ON (C.CD = A.QESTNR_KND_CD)
+        LEFT OUTER JOIN
+            TB_CMM_SITE D ON (D.SITEID = A.SITEID)
+        LEFT OUTER JOIN
+            TB_CMM_INST E ON (E.INSTID = D.INSTID)             
         WHERE 
             1 = 1
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'qestnrNm'">

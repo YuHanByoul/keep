@@ -53,6 +53,8 @@ public class SrvyVo extends ParentRequestVo {
     /** 대상자수 */
     private int trprCnt;
     
+    /** 기관수 */
+    private int instCnt; 
     
     /** 설문명 */
     @NotEmpty(message = "설문명을 입력해주세요.")
@@ -61,7 +63,7 @@ public class SrvyVo extends ParentRequestVo {
     
     /** 설명 */
     @NotEmpty(message = "설문 설명을 입력해주세요.")
-    @Size(max = 400, message = "설문 설명은 400자 이하여야 합니다.")
+    @Size(max = 400, message = "설문 설명은 1000자 이하여야 합니다.")
     private String expln;
     
     /** 설문기간 코드 */
@@ -86,6 +88,24 @@ public class SrvyVo extends ParentRequestVo {
     
     /** 설문지 종류 코드 */
     private String qestnrKndCd;
+    
+    /** 기관명 */
+    private String instNm;
+    
+    /** 기관 코드 */
+    private String instCd;
+    
+    /** 컨설팅만족도설문 기본 설문 여부 */
+    private String defaultSrvyYn;
+    
+    /** 컨설팅수 */
+    private String cnsltngCnt;
+    
+    /** 컨설팅 아이디 */
+    private int cnsltngid;
+    
+    /** 프로그램명 */
+    private String prgrmNm;
     
     
     /** 수정일시 */

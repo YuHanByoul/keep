@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.qestnr.model;
+package com.kbrainc.plum.mng.srvy.model;
 
 import java.util.Date;
 
@@ -15,66 +15,63 @@ import lombok.Data;
 
 /**
  * 
- * 설문지Vo 클래스
+ * 설문기관Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.qestnr.model
- * - QestnrVo.java
+ * com.kbrainc.plum.mng.srvy.model
+ * - TrprVo.java
  * </pre> 
  *
- * @ClassName : QestnrVo
- * @Description : 설문지Vo 클래스 
+ * @ClassName : SrvyInstVo
+ * @Description : 설문기관Vo 클래스 
  * @author : KBRAINC
- * @date : 2022. 11. 29.
+ * @date : 2022. 12. 27.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class QestnrVo extends ParentRequestVo {
+public class SrvyInstVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
     
-    /** 설문지 아이디 */
-    private int qestnrid;
+    /** 설문 아이디 */
+    private int srvyid;
     
-    /** 사이트 아이디 */
-    private int siteid;
+    /** 기관 아이디 */
+    private int instid;
     
-    /** 사이트명 */
-    private String siteNm;
+    /** 기관 코드 */
+    private String instCd;
     
     /** 기관명 */
     private String instNm;
     
-    /** 설문지 종류 코드 */
-    @NotEmpty(message = "설문지 종류를 선택해주세요.")
-    private String qestnrKndCd;
+    /** 지역명 */
+    private String rgnNm;
     
-    /** 설문지 종류 코드명 */
-    private String qestnrKndCdNm;
+    /** 기관 유형 */
+    private String instType;
     
-    /** 설문지 이름 */
-    @NotEmpty(message = "설문지명을 입력해주세요.")
-    @Size(max = 20, message = "설문지명은 20자 이하여야 합니다.")
-    private String qestnrNm;
     
-    /** 설명 */
-    @NotEmpty(message = "설문지 설명을 입력해주세요.")
-    @Size(max = 400, message = "설문지 설명은 400자 이하여야 합니다.")
-    private String expln;
+    /** 기관 전체 대상 여부 */
+    private String instYn;
     
-    /** 사용 여부 */
-    private String useYn;
+    /** 기관 존재 여부 */
+    private String isExist;
     
-    /** 문항수 */
-    private int qitemCnt;
+    /** 대상기관 추가 아이디 목록 */
+    private String[] insertInstids;
     
-    /** 검색 사이트 아이디 */
-    private String searchSiteid;
+    /** 대상기관 삭제 아이디 목록 */
+    private String[] deleteInstids;
     
-    /** 검색 설문 종류 */
-    private String searchQestnrKndCd;
+    /** 검색 기관 유형 코드 */
+    private String searchInstTypeCd;
+    
+    /** 검색 지역 코드 */
+    private String searchRgnCd;
+    
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

@@ -1,5 +1,5 @@
 <div class="col-12 col-lg-6">
-    <form id="trprSrvyUpdateForm">
+    <form id="instSrvyUpdateForm">
         <input type="hidden" name="srvyid" th:value="${srvyInfo.srvyid}" />
         <div class="card">
             <!--//임시 그리드-->
@@ -46,13 +46,13 @@
                     </div>
                 </div>
                 <div class="mb-2 row">
-                    <div class="col-6 d-none" id="indvdlMbrRow">
+                    <div class="col-6 d-none" id="instRow">
                         <div class="mb-0 form-group">
                             <div class="border-checkbox-section">
                                 <div class="border-checkbox-group border-checkbox-group-inverse">
-                                    <input class="border-checkbox" type="checkbox" name="indvdlMbrYn" id="indvdlMbrYn" onclick="trprSrvyUpdate.onChangeIndvdlMbr();">
-                                    <label class="form-label border-checkbox-label mb-0" for="indvdlMbrYn">
-                                        개인회원 전체 대상
+                                    <input class="border-checkbox" type="checkbox" name="instYn" id="instYn" onclick="instSrvyUpdate.onChangeInst();">
+                                    <label class="form-label border-checkbox-label mb-0" for="instYn">
+                                        기관 전체 대상
                                     </label>
                                 </div>
                             </div>
@@ -69,8 +69,8 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <button type="button" class="btn btn-disabled m-r-5" onclick="trprSrvyUpdate.offInsertSrvy();">취소</button>
-                    <th:block sec:authorize-url="/mng/srvy/updateTrprSrvy.do"><button type="button" class="btn btn-primary" onclick="trprSrvyUpdate.onUpdateSrvy();">저장</button></th:block>
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="instSrvyUpdate.offUpdateSrvy();">취소</button>
+                    <th:block sec:authorize-url="/mng/srvy/updateInstSrvy.do"><button type="button" class="btn btn-primary" onclick="instSrvyUpdate.onUpdateSrvy();">저장</button></th:block>
                 </div>
             </div>
         </div>
@@ -83,14 +83,14 @@
                         <strong>대상자</strong>
                     </div>
                     <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm">
-                        <button type="button" class="btn btn-disabled m-r-5" onclick="trprSrvyUpdate.onDeleteTrpr();">삭제</button>
-                        <button type="button" class="btn btn-primary m-r-5" onclick="trprSrvyUpdate.onTrprExcelUploadPopup();">일괄등록</button>
-                        <button type="button" class="btn btn-primary" onclick="trprSrvyUpdate.onUserListPopup();">추가</button>
+                        <button type="button" class="btn btn-disabled m-r-5" onclick="instSrvyUpdate.onDeleteInst();">삭제</button>
+                        <button type="button" class="btn btn-primary m-r-5" onclick="instSrvyUpdate.onInstExcelUploadPopup();">일괄등록</button>
+                        <button type="button" class="btn btn-primary" onclick="instSrvyUpdate.onInstListPopup();">추가</button>
                     </div>
                 </div>
                 <div class="col-12">
-                    <table id="trprGrid" class="table-responsive"></table>
-                    <div id="trprPager" class="text-center"></div>
+                    <table id="srvyInstGrid" class="table-responsive"></table>
+                    <div id="srvyInstPager" class="text-center"></div>
                 </div>
             </div>
         </div>
@@ -98,14 +98,13 @@
 </div>
 
 <!-- 회원목록 팝업 -->
-<div class="modal fade" id="userListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+<div class="modal fade" id="instListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <!-- 일괄등록 팝업 -->
-<div class="modal fade" id="trprExcelUploadPopup"></div>
-
+<div class="modal fade" id="instExcelUploadPopup"></div>
 
 <script th:inline="javascript">
-    var trprSrvyUpdate = {
-        listUrl: "/mng/srvy/selectTrprList.do",
+    var instSrvyUpdate = {
+        listUrl: "/mng/srvy/selectSrvyInstList.do",
         selectedItems: [],
         srvyid: 0,
         
@@ -118,7 +117,7 @@
            toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
            
            this.srvyid = $("input[name='srvyid']").val();
-           trprGrid = new GridHelper("trprGrid");
+           srvyInstGrid = new GridHelper("srvyInstGrid");
            this.setGrid();
            this.registEvent();
            this.setValid();
@@ -129,13 +128,13 @@
         },
         
         setGrid: function() {
-            $("#trprGrid").jsGrid({
+            $("#srvyInstGrid").jsGrid({
                 height: "auto",
                 width: "100%",
                 autoload: true,
                 sorting: false,
                 paging: true,
-                pagerContainer: "#trprPager",
+                pagerContainer: "#srvyInstPager",
                 pagerFormat: "{first} {prev} {pages} {next} {last}",
                 pagePrevText: "이전",
                 pageNextText: "다음",
@@ -152,25 +151,25 @@
                         var params = {
                             "searchType": "",
                             "searchKeyword": "",
-                            "srvyid": trprSrvyUpdate.srvyid,
+                            "srvyid": instSrvyUpdate.srvyid,
                             "pageNumber": filter.pageIndex,
                             "rowPerPage": filter.pageSize,
-                            "orderField": "NM",
+                            "orderField": "INST_NM",
                             "orderDirection": "asc"
                         };
                         $.ajax({
                           type: "GET",
                           contentType: "application/json; charset=utf-8",
-                          url: trprSrvyUpdate.listUrl,
+                          url: instSrvyUpdate.listUrl,
                           data: params,
                           dataType: "json"
                         }).done(function(response) {
-                            if(response.list.length == 0) { // 대상자 설정이 없는 경우에만 개인회원 전체 대상 활성화
-                                $("#indvdlMbrRow").removeClass("d-none");
-                            } else {
-                                $("#indvdlMbrRow").addClass("d-none");
-                            }
                             $("#selectAllCheckbox").prop("checked", false);
+                            if(response.list.length == 0) { // 대상기관 설정이 없는 경우에만 기관 전체 대상 활성화
+                                $("#instRow").removeClass("d-none");
+                            } else {
+                                $("#instRow").addClass("d-none");
+                            }
                             var da = {
                                 data : escapeGridData(response.list),
                                 itemsCount : response.totalCount
@@ -185,37 +184,35 @@
                     {
                         headerTemplate: function() {
                             return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
-                               trprSrvyUpdate.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                               instSrvyUpdate.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
                             });
                         },
                         itemTemplate: function(value, item) {
-                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('userid', item.userid).prop("checked", $.inArray(item, trprSrvyUpdate.selectedItems) > -1).on("change", function() {
-                                $(this).is(":checked") ? trprSrvyUpdate.selectItem($(this).attr("userid")) : trprSrvyUpdate.unselectItem($(this).attr("userid"));
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('instid', item.instid).prop("checked", $.inArray(item, instSrvyUpdate.selectedItems) > -1).on("change", function() {
+                                $(this).is(":checked") ? instSrvyUpdate.selectItem($(this).attr("instid")) : instSrvyUpdate.unselectItem($(this).attr("instid"));
                             });
                         },
                         align: "center", width: "30", sorting: false
                     },
                     {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                    {title: "대상자", name: "nm", type: "number", width: "100", align: "left", itemTemplate: function(value, item) {
-                        return value + "(" + item.acnt + ")";
+                    {title: "대상기관", name: "instNm", type: "number", width: "100", align: "left", itemTemplate: function(value, item) {
+                        return value + "(" + item.instCd + ")";
                     }},
-                    {title: "소속", name: "instNm", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
+                    {title: "지역", name: "rgnNm", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
                         return value ? value : "-";
                     }},
-                    {title: "가입일", name: "regDt", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
-                        return value.split(" ")[0];
-                    }}
+                    {title: "기관유형", name: "instType", type: "text", width: "100", align: "center"}
                 ]
             });
         },
         
-        onChangeIndvdlMbr: function() {
-            if(!(confirm("개인회원 전체를 설문 대상자에 추가 하시겠습니까?"))) return false;
+        onChangeInst: function() {
+            if(!(confirm("기관 전체를 설문 대상기관에 추가 하시겠습니까?"))) return false;
             
             var param = {srvyid: this.srvyid};
             if(displayWorkProgress()) {
                 $.ajax({
-                    url : "/mng/srvy/insertIndvdlMbrSrvyUser.do",
+                    url : "/mng/srvy/insertInstTrgtSrvyInst.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
@@ -223,8 +220,9 @@
                     success: function(response) {
                         if(response.result == "success") {
                             alert(response.msg);
-                            $("#srvyGrid").jsGrid("loadData");
-                            trprGrid.resetListContent();
+                            srvyInstGrid.resetListContent();
+                            srvyGrid.resetPageContent();
+                            srvyGrid.showContent();
                         } else {
                             alert(response.msg);
                         }
@@ -239,12 +237,12 @@
             if(isChecked) {
                 $('.singleCheckbox').each(function() {
                     this.checked = true;
-                    trprSrvyUpdate.selectItem($(this).attr("userid"));           
+                    instSrvyUpdate.selectItem($(this).attr("instid"));           
                 }); 
             } else {
                 $('.singleCheckbox').each(function() {
                     this.checked = false; 
-                    trprSrvyUpdate.unselectItem($(this).attr("userid"));
+                    instSrvyUpdate.unselectItem($(this).attr("instid"));
                 });  
                 this.selectedItems = [];
             }
@@ -273,21 +271,21 @@
             }
         },
         
-        onDeleteTrpr: function() {
+        onDeleteInst: function() {
             if(this.selectedItems.length == 0) {
-                alert("선택한 대상자가 없습니다.");
+                alert("선택한 대상기관이 없습니다.");
                 return false;
             }
             if(!confirm("삭제 하시겠습니까?")) return false; 
             
-            var param = {srvyid: trprSrvyUpdate.srvyid};
+            var param = {srvyid: instSrvyUpdate.srvyid};
             $(this.selectedItems).each(function(index, item) {
-                param["deleteUserids[" + index + "]"] = item;
+                param["deleteInstids[" + index + "]"] = item;
             });
             
             if(displayWorkProgress()) {
                 $.ajax({
-                    url : "/mng/srvy/deleteTrpr.do",
+                    url : "/mng/srvy/deleteSrvyInst.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
@@ -295,8 +293,9 @@
                     success: function(response) {
                         if(response.result == "success") {
                             alert(response.msg);
-                            srvyGrid.resetListContent();
-                            trprGrid.resetListContent();
+                            srvyInstGrid.resetListContent();
+                            srvyGrid.resetPageContent();
+                            srvyGrid.showContent();
                             $("#contentPanel").show();
                         } else {
                             alert(response.msg);
@@ -307,36 +306,36 @@
             }
         },
         
-        onTrprExcelUploadPopup: function() {
+        onInstExcelUploadPopup: function() {
             if(this.srvyid == 0) {
                 alert("설문 기본정보 저장 이후에 진행해주세요.");
                 return false;
             }
-            var url = "/mng/srvy/trprExcelUploadPopup.html";
-            $("#trprExcelUploadPopup").load(url, function(response, status, xhr) {
+            var url = "/mng/srvy/instExcelUploadPopup.html";
+            $("#instExcelUploadPopup").load(url, function(response, status, xhr) {
                 if(status == "success") {
-                    trprExcelUploadModal = new bootstrap.Modal($('#trprExcelUploadPopup'));
-                    trprExcelUploadModal.show();
+                    instExcelUploadModal = new bootstrap.Modal($('#instExcelUploadPopup'));
+                    instExcelUploadModal.show();
                 }
             });
         },
         
-        onUserListPopup: function() {
+        onInstListPopup: function() {
             if(this.srvyid == 0) {
                 alert("설문 기본정보 저장 이후에 진행해주세요.");
                 return false;
             }
-            var url = "/mng/srvy/userListPopup.html";
-            $("#userListPopup").load(url, function(response, status, xhr) {
+            var url = "/mng/srvy/instListPopup.html";
+            $("#instListPopup").load(url, function(response, status, xhr) {
                 if(status == "success") {
-                    userListModal = new bootstrap.Modal($('#userListPopup'));
-                    userListModal.show();
+                    instListModal = new bootstrap.Modal($('#instListPopup'));
+                    instListModal.show();
                 }
             });
         },
         
         setValid: function() {
-            var validator = $('#trprSrvyUpdateForm').validate({
+            var validator = $('#instSrvyUpdateForm').validate({
                 rules: {
                     qestnrid: {required: true},
                     srvyNm: {required: true, maxlength: 20},
@@ -355,18 +354,18 @@
         },
         
         onUpdateSrvy: function() {
-            if(!($("#trprSrvyUpdateForm").valid())) return;
+            if(!($("#instSrvyUpdateForm").valid())) return;
             if($("#bgngDe").val() > $("#endDe").val()) {
                 alert("설문 시작일은 설문 종료일보다 작아야 합니다.");
                 return false;
             }
             
             $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
-            $("input[name='indvdlMbrYn']").val($("#indvdlMbrYn").is(":checked") ? "Y" : "N");
-            var param = $("#trprSrvyUpdateForm").serialize();
+            $("input[name='instYn']").val($("#instYn").is(":checked") ? "Y" : "N");
+            var param = $("#instSrvyUpdateForm").serialize();
             if(displayWorkProgress()) {
                 $.ajax({
-                    url : "/mng/srvy/updateTrprSrvy.do",
+                    url : "/mng/srvy/updateInstSrvy.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
@@ -374,7 +373,7 @@
                     success: function(response) {
                         if(response.result == "success") {
                             alert(response.msg);
-                            srvyGrid.resetListContent();
+                            srvyGrid.resetPageContent();
                         } else {
                             alert(response.msg);
                         }
@@ -385,14 +384,14 @@
         },
         
         onUpdateForm: function() {
-            var detailUrl = "/mng/srvy/trprSrvyUpdateForm.html?srvyid=" + this.srvyid; 
+            var detailUrl = "/mng/srvy/instSrvyUpdateForm.html?srvyid=" + this.srvyid; 
             srvyGrid.loadContent(detailUrl);
         },
         
-        offInsertSrvy: function() {
+        offUpdateSrvy: function() {
             srvyGrid.toggleContent();
         }
     };
     
-    trprSrvyUpdate.init();
+    instSrvyUpdate.init();
 </script>

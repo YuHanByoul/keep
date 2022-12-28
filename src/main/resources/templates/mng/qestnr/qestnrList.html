@@ -36,10 +36,7 @@
                                         <div class="col-sm-12">
                                             <select name="searchSiteid" id="searchSiteid" class="form-select form-select-sm form-control-sm">
                                                 <option value="">- 전체 -</option>
-                                                <option value="1">SITE1</option>
-                                                <option value="2">SITE2</option>
-                                                <option value="3">SITE3</option>
-                                                <option value="4">SITE4</option>
+                                                <option th:each="site: ${siteList}" th:value="${site.siteid}" th:text="${site.siteNm + ' (' + site.instNm + ')'}"></option>
                                             </select>
                                         </div>
                                     </div>
@@ -164,8 +161,10 @@
                     },
                     fields: [
                         {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                        {title: "사이트(기관)", name: "siteid", type: "number", width: "200", align: "center"},
-                        {title: "설문지 종류", name: "qestnrKndCdNm", type: "text", width: "100", align: "center"},
+                        {title: "사이트(기관)", name: "siteNm", type: "number", width: "200", align: "center", itemTemplate: function(value, item) {
+                            return value + " (" + item.instNm + ")";
+                        }},
+                        {title: "설문지 종류", name: "qestnrKndCdNm", type: "text", width: "100", align: "left"},
                         {title: "설문지명", name: "qestnrNm", type: "text" , width: "200"},
                         {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "80"},
                         {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
@@ -189,7 +188,7 @@
             },
             
             onInsertForm() {
-                var insertUrl = "/mng/qestnr/qestnrRegistForm.html";
+                var insertUrl = "/mng/qestnr/qestnrRegist.html";
                 qestnrGrid.loadContent(insertUrl);
             }
         };

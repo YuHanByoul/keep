@@ -14,7 +14,7 @@
             </ul>
         </div>
         <div class="tab-content tabs p-t-20">
-            <div class="tab-pane active" id="trprSrvy" role="tabpanel">
+            <div class="tab-pane active" id="cnsltngDgstfnSrvy" role="tabpanel">
                 <div class="card-block-small">
                     <div class="col-12 col-lg-6">
                         <div class="mb-0 form-group">
@@ -29,8 +29,8 @@
                         </div>
                     </div>
                     <div class="m-t-20 text-center">
-                        <button class="btn btn-disabled m-r-5">초기화</button>
-                        <button class="btn btn-primary">검색</button>
+                        <button type="submit" class="btn btn-disabled m-r-5" onclick="cnsltngDgstfnSrvy.initSearch();">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="cnsltngDgstfnSrvy.onSearch();">검색</button>
                     </div>
                 </div>
             </div>
@@ -44,7 +44,9 @@
                 <h5><strong>설문 검색 결과</strong></h5>
             </div>
             <div class="col-12 col-md-6 text-right">
-                <button type="button" class="btn btn-primary waves-effect waves-light">등록</button>
+                <th:block sec:authorize-url="/mng/srvy/cnsltngDgstfnSrvyInsertForm.html">
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="cnsltngDgstfnSrvy.onInsertForm();">등록</button>
+                </th:block>
             </div>
         </div>
         <div class="card-block-small">
@@ -54,17 +56,17 @@
     </div>
 </div>
 <div class="col-12">
-    <div class="row">
-        <div class="col-12 col-lg-6">
-            <div id="contentPanel" class="card" style="display: none;">
-            </div>
-        </div>
+    <div class="row" id="contentPanel" style="display: none;">
     </div>
 </div>
 
 <script th:inline="javascript">
     var cnsltngDgstfnSrvy = {
+        listUrl: "/mng/srvy/selectCnsltngDgstfnSrvyList.do",
+        
         init: function() {
+            srvyGrid = new GridHelper("srvyGrid", "contentPanel");
+            this.setGrid();
             this.registEvent();
         },
         
@@ -76,14 +78,96 @@
             });
         },
         
+        initSearch: function() {
+             $("#searchType, #searchKeyword").val('');
+        },
+        
+        onSearch: function() {
+            srvyGrid.resetListContent();
+        },
+        
+        setGrid: function() {
+                $("#srvyGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#srvyPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchType": $('#searchType').val(),
+                                "searchKeyword": $('#searchKeyword').val(),
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize,
+                                "orderField": "BGNG_DE",
+                                "orderDirection": "desc"
+                            };
+                            $.ajax({
+                              type: "GET",
+                              contentType: "application/json; charset=utf-8",
+                              url: cnsltngDgstfnSrvy.listUrl,
+                              data: params,
+                              dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                        {title: "설문명", name: "srvyNm", type: "text", width: "200"},
+                        {title: "설문지명", name: "qestnrNm", type: "text", width: "200"},
+                        {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "60"},
+                        {title: "기간", name: "", type: "number", align: "center", width: "150", itemTemplate: function(value, item) {
+                            return "컨설팅완료일에 따른 기간확인";
+                        }},
+                        {title: "컨설팅수", name: "cnsltngCnt", type: "number", align: "center" , width: "60"},
+                        {title: "사용여부", name: "useYn", type: "number", align: "center" , width: "80", itemTemplate: function(value, item) {
+                            return value == "Y" ? "사용" : "미사용";
+                        }},
+                        {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
+                            return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
+                                alert("설문지 미리보기");
+                                return false; 
+                            });
+                        }}
+                    ],
+                    rowClick: function(args) { 
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var detailUrl = "/mng/srvy/cnsltngDgstfnSrvyUpdateForm.html?srvyid=" + args.item.srvyid; 
+                        srvyGrid.loadContent(detailUrl);
+                        srvyGrid.rowClick(args);
+                    }
+                });
+            },
+        
         selectTab: function(tabId) {
             var uri; 
             if(tabId == "trprSrvy") {
-                uri = "/mng/srvy/trprSrvy.html";
+                uri = "/mng/srvy/trprSrvyListForm.html";
             } else if(tabId == "instSrvy") {
-                uri = "/mng/srvy/instSrvy.html";
+                uri = "/mng/srvy/instSrvyListForm.html";
             } else if(tabId == "cnsltngDgstfnSrvy") {
-                uri = "/mng/srvy/cnsltngDgstfnSrvy.html";
+                uri = "/mng/srvy/cnsltngDgstfnSrvyListForm.html";
             }
             this.loadTabContent(uri);
         },
@@ -100,6 +184,11 @@
                     scrollIntoView("contentPanel");
                 }
             });
+        },
+        
+        onInsertForm() {
+            var insertUrl = "/mng/srvy/cnsltngDgstfnSrvyInsertForm.html";
+            srvyGrid.loadContent(insertUrl);
         }
     };
     

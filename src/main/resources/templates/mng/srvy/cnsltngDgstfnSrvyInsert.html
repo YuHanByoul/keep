@@ -1,5 +1,5 @@
 <div class="col-12 col-lg-6">
-    <form id="trprSrvyInsertForm">
+    <form id="cnsltngDgstfnSrvyInsertForm">
         <div class="card">
             <!--//임시 그리드-->
             <div class="card-block-small">
@@ -46,22 +46,20 @@
                 </div>
                 <div class="mb-2 row">
                     <div class="col-6">
-                        <div class="mb-0 form-group">
-                            <div class="border-checkbox-section">
-                                <div class="border-checkbox-group border-checkbox-group-inverse">
-                                    <input type="hidden" name="indvdlMbrYn" />
-                                    <input class="border-checkbox" type="checkbox" id="indvdlMbrYn" onclick="trprSrvyInsert.onChangeIndvdlMbr();">
-                                    <label class="form-label border-checkbox-label mb-0" for="indvdlMbrYn">
-                                        개인회원 전체 대상
-                                    </label>
-                                </div>
+                        <div class="mb-0 form-group row">
+                            <div class="col-12">
+                                <input type="hidden" name="defaultSrvyYn"/>
+                                <input type="hidden" name="aftrDaycnt" value="10"/>
+                                <input type="hidden" name="bfrDaycnt" value="10"/>
+                                <input type="checkbox" class="js-single-small" id="defaultSrvyYn" />
+                                <label for="defaultSrvyYn" class="v-middle">컨설팅 기본 설문</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="mb-0 form-group row">
                             <div class="col-12">
-                                <input type="hidden" name="useYn" class="js-single"/>
+                                <input type="hidden" name="useYn"/>
                                 <input type="checkbox" class="js-single-small" id="useYn" checked/>
                                 <label for="useYn" class="v-middle">설문 사용</label>
                             </div>
@@ -69,8 +67,8 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <button type="button" class="btn btn-disabled m-r-5" onclick="trprSrvyInsert.offInsertSrvy();">취소</button>
-                    <th:block sec:authorize-url="/mng/srvy/insertTrprSrvy.do"><button type="button" class="btn btn-primary" onclick="trprSrvyInsert.onInsertSrvy();">저장</button></th:block>
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="cnsltngDgstfnSrvyInsert.offInsertSrvy();">취소</button>
+                    <th:block sec:authorize-url="/mng/srvy/insertCnsltngDgstfnSrvy.do"><button type="button" class="btn btn-primary" onclick="cnsltngDgstfnSrvyInsert.onInsertSrvy();">저장</button></th:block>
                 </div>
             </div>
         </div>
@@ -80,17 +78,12 @@
             <div class="card-block-small">
                 <div class="sub-title row m-l-0 m-r-0 align-items-center">
                     <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
-                        <strong>대상자</strong>
-                    </div>
-                    <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm">
-                        <button type="button" class="btn btn-disabled m-r-5" onclick="trprSrvyInsert.onDeleteTrpr();">삭제</button>
-                        <button type="button" class="btn btn-primary m-r-5" onclick="trprSrvyInsert.onExcelSubmitPopup();">일괄등록</button>
-                        <button type="button" class="btn btn-primary" onclick="trprSrvyInsert.onUserListPopup();">추가</button>
+                        <strong>대상기관</strong>
                     </div>
                 </div>
                 <div class="col-12">
-                    <table id="trprGrid" class="table-responsive"></table>
-                    <div id="trprPager" class="text-center"></div>
+                    <table id="cnsltngGrid" class="table-responsive"></table>
+                    <div id="cnsltngPager" class="text-center"></div>
                 </div>
             </div>
         </div>
@@ -100,8 +93,8 @@
 <div class="modal fade" id="userListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
-    var trprSrvyInsert = {
-        listUrl: "/mng/srvy/selectUserList.do",
+    var cnsltngDgstfnSrvyInsert = {
+        listUrl: "/mng/srvy/selectCnsltngList.do",
         selectedItems: [],
         srvyid: 0,
         
@@ -112,7 +105,7 @@
            }
            $(".js-example-basic-single").select2();
            
-           trprGrid = new GridHelper("trprGrid");
+           cnsltngGrid = new GridHelper("cnsltngGrid");
            this.setGrid();
            this.registEvent();
            this.setValid();
@@ -123,19 +116,19 @@
         },
         
         setGrid: function() {
-            $("#trprGrid").jsGrid({
+            $("#cnsltngGrid").jsGrid({
                 height: "auto",
                 width: "100%",
                 autoload: false,
                 sorting: false,
                 paging: true,
-                pagerContainer: "#trprPager",
+                pagerContainer: "#cnsltngPager",
                 pagerFormat: "{first} {prev} {pages} {next} {last}",
                 pagePrevText: "이전",
                 pageNextText: "다음",
                 pageFirstText: "< 처음 ㅣ",
                 pageLastText: "ㅣ 마지막 >",
-                noDataContent: "대상자가 없습니다.",
+                noDataContent: "대상기관이 없습니다.",
                 pageSize: 10,
                 pageButtonCount: 10,
                 pageLoading: true,
@@ -146,16 +139,15 @@
                         var params = {
                             "searchType": "",
                             "searchKeyword": "",
-                            "indvdlMbrYn": $("#indvdlMbrYn").is(":checked") ? "Y" : "N",
                             "pageNumber": filter.pageIndex,
                             "rowPerPage": filter.pageSize,
-                            "orderField": "NM",
-                            "orderDirection": "asc"
+                            "orderField": "MDFCN_DT",
+                            "orderDirection": "desc"
                         };
                         $.ajax({
                           type: "GET",
                           contentType: "application/json; charset=utf-8",
-                          url: trprSrvyInsert.listUrl,
+                          url: cnsltngDgstfnSrvyInsert.listUrl,
                           data: params,
                           dataType: "json"
                         }).done(function(response) {
@@ -170,144 +162,65 @@
                     }
                 },
                 fields: [
+                    /*
                     {
                         headerTemplate: function() {
                             return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
-                               trprSrvyInsert.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                               cnsltngDgstfnSrvyInsert.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
                             });
                         },
                         itemTemplate: function(value, item) {
-                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('userid', item.userid).prop("checked", $.inArray(item, trprSrvyInsert.selectedItems) > -1).on("change", function() {
-                                $(this).is(":checked") ? trprSrvyInsert.selectItem($(this).attr("userid")) : trprSrvyInsert.unselectItem($(this).attr("userid"));
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('userid', item.userid).prop("checked", $.inArray(item, cnsltngDgstfnSrvyInsert.selectedItems) > -1).on("change", function() {
+                                $(this).is(":checked") ? cnsltngDgstfnSrvyInsert.selectItem($(this).attr("userid")) : cnsltngDgstfnSrvyInsert.unselectItem($(this).attr("userid"));
                             });
                         },
                         align: "center", width: "30", sorting: false
                     },
+                    */
                     {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                    {title: "대상자", name: "nm", type: "number", width: "100", align: "left", itemTemplate: function(value, item) {
-                        return value + "(" + item.acnt + ")";
+                    {title: "대상기관", name: "instNm", type: "number", width: "100", align: "left", itemTemplate: function(value, item) {
+                        return value + "(" + item.instCd + ")";
                     }},
-                    {title: "소속", name: "instNm", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
-                        return value ? value : "-";
-                    }},
-                    {title: "가입일", name: "regDt", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
-                        return value.split(" ")[0];
+                    {title: "프로그램명", name: "prgrmNm", type: "text", width: "100", align: "center"},
+                    {title: "컨설팅완료일", name: "mdfcnDt", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
+                        return item.sttsCd == "131105" ? value.split(" ")[0] : "-";
                     }}
                 ]
             });
         },
         
-        onChangeIndvdlMbr: function() {
-            trprGrid.resetListContent();
-        },
-        
-        allSelectItem: function(isChecked) {
-            this.selectedItems = [];
-            if(isChecked) {
-                $('.singleCheckbox').each(function() {
-                    this.checked = true;
-                    trprSrvyInsert.selectItem($(this).attr("userid"));           
-                }); 
-            } else {
-                $('.singleCheckbox').each(function() {
-                    this.checked = false; 
-                    trprSrvyInsert.unselectItem($(this).attr("userid"));
-                });  
-                this.selectedItems = [];
-            }
-        },
-        
-        selectItem: function(qitemid) {
-            this.selectedItems.push(qitemid);
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        },
-        
-        unselectItem: function(qitemid) {
-            this.selectedItems = $.grep(this.selectedItems, function(i) {
-                return i !== qitemid;
-            });
-            if(this.selectedItems.length == 0) {
-                $('#selectAllCheckbox').attr("checked", false);
-            }
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        },
-        
-        onDeleteTrpr: function() {
-            if(this.srvyid == 0) {
-                alert("설문 기본정보 저장 이후에 진행해주세요.");
-                return false;
-            }
-            if(this.selectedItems.length == 0) {
-                alert("선택한 대상자가 없습니다.");
-                return false;
-            }
-            if(!confirm("삭제하시겠습니까?")) {
-                return false;
-            }
-            // TODO
-        },
-        
-        onExcelSubmitPopup: function() {
-            if(this.srvyid == 0) {
-                alert("설문 기본정보 저장 이후에 진행해주세요.");
-                return false;
-            }
-        },
-        
-        onUserListPopup: function() {
-            if(this.srvyid == 0) {
-                alert("설문 기본정보 저장 이후에 진행해주세요.");
-                return false;
-            }
-            var url = "/mng/srvy/userListPopup.html";
-            $("#userListPopup").load(url, function(response, status, xhr) {
-                if(status == "success") {
-                    userListModal = new bootstrap.Modal($('#userListPopup'));
-                    userListModal.show();
-                }
-            });
-        },
-        
         setValid: function() {
-            var validator = $('#trprSrvyInsertForm').validate({
+            var validator = $('#cnsltngDgstfnSrvyInsertForm').validate({
                 rules: {
                     qestnrid: {required: true},
                     srvyNm: {required: true, maxlength: 20},
                     expln: {required: true, maxlength: 1000},
-                    bgngDe: {required: true},
-                    endDe: {required: true}
+                    //bgngDe: {required: true},
+                    //endDe: {required: true}
                 },
                 messages: {
                     qestnrid: {required: "설문지를 선택해주세요."},
                     srvyNm: {required: "설문명을 입력해주세요.", maxlength: "설문명은 20자 이하여야 합니다."},
                     expln: {required: "설문 설명을 입력해주세요.", maxlength: "설문 설명은 1000자 이하여야 합니다."},
-                    bgngDe: {required: "설문 시작일을 입력해주세요."},
-                    endDe: {required: "설문 종료일을 입력해주세요."},
+                    //bgngDe: {required: "설문 시작일을 입력해주세요."},
+                    //endDe: {required: "설문 종료일을 입력해주세요."},
                 }
             });
         },
         
         onInsertSrvy: function() {
-            if(!($("#trprSrvyInsertForm").valid())) return;
+            if(!($("#cnsltngDgstfnSrvyInsertForm").valid())) return;
             if($("#bgngDe").val() > $("#endDe").val()) {
                 alert("설문 시작일은 설문 종료일보다 작아야 합니다.");
                 return false;
             }
             
             $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
-            $("input[name='indvdlMbrYn']").val($("#indvdlMbrYn").is(":checked") ? "Y" : "N");
-            var param = $("#trprSrvyInsertForm").serialize();
+            $("input[name='defaultSrvyYn']").val($("#defaultSrvyYn").is(":checked") ? "Y" : "N");
+            var param = $("#cnsltngDgstfnSrvyInsertForm").serialize();
             if(displayWorkProgress()) {
                 $.ajax({
-                    url : "/mng/srvy/insertTrprSrvy.do",
+                    url : "/mng/srvy/insertCnsltngDgstfnSrvy.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
@@ -315,9 +228,9 @@
                     success: function(response) {
                         if(response.result == "success") {
                             alert(response.msg);
-                            $("#srvyGrid").jsGrid("loadData");
-                            trprSrvyInsert.srvyid = response.srvyid;
-                            trprSrvyInsert.onUpdateForm();
+                            srvyGrid.resetListContent();
+                            //cnsltngDgstfnSrvyInsert.srvyid = response.srvyid;
+                            //cnsltngDgstfnSrvyInsert.onUpdateForm();
                         } else {
                             alert(response.msg);
                         }
@@ -328,7 +241,7 @@
         },
         
         onUpdateForm: function() {
-            var detailUrl = "/mng/srvy/trprSrvyUpdateForm.html?srvyid=" + this.srvyid; 
+            var detailUrl = "/mng/srvy/cnsltngDgstfnSrvyUpdateForm.html?srvyid=" + this.srvyid; 
             srvyGrid.loadContent(detailUrl);
         },
         
@@ -337,5 +250,5 @@
         }
     };
     
-    trprSrvyInsert.init();
+    cnsltngDgstfnSrvyInsert.init();
 </script>

@@ -1,0 +1,257 @@
+<div class="col-12 col-lg-6">
+    <form id="cnsltngDgstfnSrvyUpdateForm">
+        <input type="hidden" name="srvyid" th:value="${srvyInfo.srvyid}" />
+        <div class="card">
+            <!--//임시 그리드-->
+            <div class="card-block-small">
+                <h3 class="sub-title mt-2 p-b-15"><strong>기본정보</strong></h3>
+                <div class="mb-2 form-group required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                        <strong>설문지선택</strong></div>
+                    <div class="col-12">
+                        <select name="qestnrid" id="qestnrid" class="js-example-basic-single col-sm-12 sm">
+                            <option value="">- 설문지명(문항수) -</option>
+                            <option th:each="qestnr: ${qestnrList}" th:value="${qestnr.qestnrid}" th:text="${qestnr.qestnrNm + ' (' + qestnr.qitemCnt + ')'}" th:selected="${qestnr.qestnrid == srvyInfo.qestnrid}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-2 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="srvyNm"><strong>설문명</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" name="srvyNm" id="srvyNm" placeholder="설문명을 입력해주세요." th:value="${srvyInfo.srvyNm}">
+                    </div>
+                </div>
+                <div class="mb-2 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="expln"><strong>설문 설명</strong></label>
+                    <div class="col-sm-12">
+                        <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="설문 설명을 입력해주세요." id="expln" name="expln" th:text="${srvyInfo.expln}"></textarea>
+                    </div>
+                </div>
+                <div class="mb-2 row">
+                    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                        <div class="mb-0 form-group required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bgngDe"><strong>설문 시작일</strong></label>
+                            <div class="col-12">
+                                <input type="date" class="form-control form-control-sm" name="bgngDe" id="bgngDe" placeholder="설문 시작일을 입력해주세요." th:value="${srvyInfo.bgngDe}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="mb-0 form-group required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="endDe"><strong>설문 종료일</strong></label>
+                            <div class="col-12">
+                                <input type="date" class="form-control form-control-sm" name="endDe" id="endDe" placeholder="설문 종료일을 입력해주세요." th:value="${srvyInfo.endDe}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2 row">
+                    <div class="col-6">
+                        <div class="mb-0 form-group row">
+                            <div class="col-12">
+                                <input type="hidden" name="defaultSrvyYn"/>
+                                <input type="hidden" name="aftrDaycnt" th:value="${srvyInfo.aftrDaycnt}"/>
+                                <input type="hidden" name="bfrDaycnt" th:value="${srvyInfo.bfrDaycnt}"/>
+                                <input type="checkbox" class="js-single-small" id="defaultSrvyYn"/>
+                                <label for="defaultSrvyYn" class="v-middle">컨설팅 기본 설문</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="mb-0 form-group row">
+                            <div class="col-12">
+                                <input type="hidden" class="js-single"/>
+                                <input type="checkbox" class="js-single-small" name="useYn" id="useYn" th:value="${srvyInfo.useYn}"/>
+                                <label for="useYn" class="v-middle">설문 사용</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="cnsltngDgstfnSrvyUpdate.offUpdateSrvy();">취소</button>
+                    <th:block sec:authorize-url="/mng/srvy/updateCnsltngDgstfnSrvy.do"><button type="button" class="btn btn-primary" onclick="cnsltngDgstfnSrvyUpdate.onUpdateSrvy();">저장</button></th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="card">
+            <div class="card-block-small">
+                <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                    <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                        <strong>대상기관</strong>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <table id="cnsltngGrid" class="table-responsive"></table>
+                    <div id="cnsltngPager" class="text-center"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="userListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
+<script th:inline="javascript">
+    var cnsltngDgstfnSrvyUpdate = {
+        listUrl: "/mng/srvy/selectCnsltngList.do",
+        selectedItems: [],
+        srvyid: 0,
+        
+        init: function() {
+            var elemsingleSmallList = document.querySelectorAll('.js-single-small');
+            for(var i = 0; i < elemsingleSmallList.length; i++) {
+                new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
+           }
+           $(".js-example-basic-single").select2();
+           toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
+           
+           cnsltngGrid = new GridHelper("cnsltngGrid");
+           this.setGrid();
+           this.registEvent();
+           this.setValid();
+        },
+        
+        registEvent: function() {
+            // TODO
+        },
+        
+        setGrid: function() {
+            $("#cnsltngGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#cnsltngPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "대상기관이 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+                        var params = {
+                            "searchType": "",
+                            "searchKeyword": "",
+                            "srvyid": $("input[name='srvyid']").val(),
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": "MDFCN_DT",
+                            "orderDirection": "desc"
+                        };
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: cnsltngDgstfnSrvyUpdate.listUrl,
+                          data: params,
+                          dataType: "json"
+                        }).done(function(response) {
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    /*
+                    {
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
+                               cnsltngDgstfnSrvyUpdate.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                            });
+                        },
+                        itemTemplate: function(value, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('userid', item.userid).prop("checked", $.inArray(item, cnsltngDgstfnSrvyUpdate.selectedItems) > -1).on("change", function() {
+                                $(this).is(":checked") ? cnsltngDgstfnSrvyUpdate.selectItem($(this).attr("userid")) : cnsltngDgstfnSrvyUpdate.unselectItem($(this).attr("userid"));
+                            });
+                        },
+                        align: "center", width: "30", sorting: false
+                    },
+                    */
+                    {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                    {title: "대상기관", name: "instNm", type: "number", width: "100", align: "left", itemTemplate: function(value, item) {
+                        return value + "(" + item.instCd + ")";
+                    }},
+                    {title: "프로그램명", name: "prgrmNm", type: "text", width: "100", align: "center"},
+                    {title: "컨설팅완료일", name: "mdfcnDt", type: "text", width: "100", align: "center", itemTemplate: function(value, item) {
+                        return item.sttsCd == "131105" ? value.split(" ")[0] : "-";
+                    }}
+                ]
+            });
+        },
+        
+        setValid: function() {
+            var validator = $('#cnsltngDgstfnSrvyUpdateForm').validate({
+                rules: {
+                    qestnrid: {required: true},
+                    srvyNm: {required: true, maxlength: 20},
+                    expln: {required: true, maxlength: 1000},
+                    //bgngDe: {required: true},
+                    //endDe: {required: true}
+                },
+                messages: {
+                    qestnrid: {required: "설문지를 선택해주세요."},
+                    srvyNm: {required: "설문명을 입력해주세요.", maxlength: "설문명은 20자 이하여야 합니다."},
+                    expln: {required: "설문 설명을 입력해주세요.", maxlength: "설문 설명은 1000자 이하여야 합니다."},
+                    //bgngDe: {required: "설문 시작일을 입력해주세요."},
+                    //endDe: {required: "설문 종료일을 입력해주세요."},
+                }
+            });
+        },
+        
+        onUpdateSrvy: function() {
+            if(!($("#cnsltngDgstfnSrvyUpdateForm").valid())) return;
+            if($("#bgngDe").val() > $("#endDe").val()) {
+                alert("설문 시작일은 설문 종료일보다 작아야 합니다.");
+                return false;
+            }
+            
+            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
+            $("input[name='defaultSrvyYn']").val($("#defaultSrvyYn").is(":checked") ? "Y" : "N");
+            var param = $("#cnsltngDgstfnSrvyUpdateForm").serialize();
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/srvy/updateCnsltngDgstfnSrvy.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            srvyGrid.resetListContent();
+                            //cnsltngDgstfnSrvyUpdate.srvyid = response.srvyid;
+                            //cnsltngDgstfnSrvyUpdate.onUpdateForm();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        
+        onUpdateForm: function() {
+            var detailUrl = "/mng/srvy/cnsltngDgstfnSrvyUpdateForm.html?srvyid=" + this.srvyid; 
+            srvyGrid.loadContent(detailUrl);
+        },
+        
+        offUpdateSrvy: function() {
+            srvyGrid.toggleContent();
+        }
+    };
+    
+    cnsltngDgstfnSrvyUpdate.init();
+</script>
