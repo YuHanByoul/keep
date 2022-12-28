@@ -4,12 +4,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.jasypt.commons.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -151,16 +155,26 @@ public class SiteController {
      */
     @ResponseBody
     @RequestMapping(value = "/insertSite.do", method = RequestMethod.POST)
-    public Map<String, Object> insertSite(@UserInfo UserVo user, @RequestBody SiteVo siteVo) throws Exception {
+    public Map<String, Object> insertSite(@UserInfo UserVo user, @RequestBody @Valid SiteVo siteVo, BindingResult bindingResult) throws Exception {
         Map<String, Object> response = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            response.put("msg", fieldError.getDefaultMessage());
+            return response;
+        }
+        
         response.put("result", Constant.REST_API_RESULT_SUCCESS);
+        response.put("msg", "등록에 성공하였습니다.");
         siteVo.setRgtrid(Integer.parseInt(user.getUserid()));
         siteVo.setMdfrid(Integer.parseInt(user.getUserid()));
         Boolean res = siteService.insertSite(siteVo);
         
         if(!res) {
             response.put("result", Constant.REST_API_RESULT_FAIL);
+            response.put("msg", "등록에 실패하였습니다.");
         } else {
+            response.put("siteid", siteVo.getSiteid());
             resMenuService.putCacheForSiteid(String.valueOf(siteVo.getSiteid()));
         }
         
@@ -182,120 +196,60 @@ public class SiteController {
     public Map<String, Object> updateSite(@UserInfo UserVo user, @RequestBody SiteVo siteVo) throws Exception {
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("result", Constant.REST_API_RESULT_SUCCESS);
+        response.put("msg", "수정에 성공하였습니다.");
         
         siteVo.setMdfrid(Integer.parseInt(user.getUserid()));
         Boolean res = siteService.updateSite(siteVo);
         
         if(!res) {
             response.put("result", Constant.REST_API_RESULT_FAIL);
-        }
-        
-        return response;
-    }
-    
-    /**
-     * 
-     * 사이트 삭제.
-     *
-     * @Title : deleteSite
-     * @Description : 사이트 삭제.
-     * @param siteid
-     * @throws Exception
-     * @return Map<String,Object>
-     */
-    @ResponseBody
-    @RequestMapping(value = "/deleteSite.do")
-    public Map<String, Object> deleteSite(Integer siteid) throws Exception {
-        Map<String, Object> response = new HashMap<String, Object>();
-        response.put("result", Constant.REST_API_RESULT_SUCCESS);
-        
-        Boolean res = siteService.deleteSite(siteid);
-        
-        if(!res) {
-            response.put("result", Constant.REST_API_RESULT_FAIL);
+            response.put("msg", "수정에 실패하였습니다.");
         }
         
         return response;
     }
 
     /**
-     * 
-     * 사이트 도메인 추가.
-     *
-     * @Title : insertSiteDomain
-     * @Description : 사이트 도메인 추가.
-     * @param siteDomainVo
-     * @throws Exception
-     * @return Map<String,Object>
-     */
+    * 사이트 도메인 저장.
+    *
+    * @Title : insertSiteDomains
+    * @Description : 사이트 도메인 저장.
+    * @param user 사용자세션정보
+    * @param siteDomainVo SiteDomainVo객체
+    * @param bindingResult siteDomainVo 유효성검증결과
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @ResponseBody
-    @RequestMapping(value = "/insertSiteDomain.do", method = RequestMethod.POST)
-    public Map<String, Object> insertSiteDomain(@UserInfo UserVo user, @RequestBody SiteDomainVo siteDomainVo) throws Exception {
+    @RequestMapping(value = "/insertSiteDomains.do", method = RequestMethod.POST)
+    public Map<String, Object> insertSiteDomains(@UserInfo UserVo user, @Valid SiteDomainVo siteDomainVo, BindingResult bindingResult) throws Exception {
         Map<String, Object> response = new HashMap<String, Object>();
-        response.put("result", Constant.REST_API_RESULT_SUCCESS);
         
-        siteDomainVo.setRgtrid(Integer.parseInt(user.getUserid()));
-        siteDomainVo.setMdfrid(Integer.parseInt(user.getUserid()));
-        Boolean res = siteService.insertSiteDomain(siteDomainVo);
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            response.put("msg", fieldError.getDefaultMessage());
+            return response;
+        }
         
-        if(!res) {
+        siteDomainVo.setUser(user);
+        
+        SiteDomainVo siteDomainInfo = siteService.selectSameSiteDomains(siteDomainVo);
+        if (siteDomainInfo != null) {
+            StringBuffer sb = new StringBuffer();
+            response.put("msg", sb.append("도메인이 중복되어 저장에 실패하였습니다.\n(").append(siteDomainInfo.getDomains()).append(")").toString());
+            return response;
+        }
+        
+        int retVal = siteService.saveSiteDomain(siteDomainVo);
+        
+        if (retVal > 0) {
+            response.put("result", Constant.REST_API_RESULT_SUCCESS);
+            response.put("msg", "저장에 성공하였습니다.");
+        } else {
             response.put("result", Constant.REST_API_RESULT_FAIL);
-        }else {
-            response.put("siteid", siteDomainVo.getSiteid());
+            response.put("msg", "저장에 실패하였습니다.");
         }
         
         return response;
     }
-
-    /**
-     * 
-     * 사이트 도메인 수정.
-     *
-     * @Title : updateSiteDomain
-     * @Description : 사이트 도메인 수정.
-     * @param siteDomainVo
-     * @throws Exception
-     * @return Map<String,Object>
-     */
-    @ResponseBody
-    @RequestMapping(value = "/updateSiteDomain.do", method = RequestMethod.POST)
-    public Map<String, Object> updateSiteDomain(@UserInfo UserVo user, @RequestBody SiteDomainVo siteDomainVo) throws Exception {
-        Map<String, Object> response = new HashMap<String, Object>();
-        response.put("result", Constant.REST_API_RESULT_SUCCESS);
-        
-        siteDomainVo.setMdfrid(Integer.parseInt(user.getUserid()));
-        Boolean res = siteService.updateSiteDomain(siteDomainVo);
-        
-        if(!res) {
-            response.put("result", Constant.REST_API_RESULT_FAIL);
-        }
-        
-        return response;
-    }
-
-    /**
-     * 
-     * 사이트 도메인 삭제.
-     *
-     * @Title : deleteSiteDomain
-     * @Description : 사이트 도메인 삭제.
-     * @param siteDomainVo
-     * @throws Exception
-     * @return Map<String,Object>
-     */
-    @ResponseBody
-    @RequestMapping(value = "/deleteSiteDomain.do")
-    public Map<String, Object> deleteSiteDomain(@RequestBody SiteDomainVo siteDomainVo) throws Exception {
-        Map<String, Object> response = new HashMap<String, Object>();
-        response.put("result", Constant.REST_API_RESULT_SUCCESS);
-        
-        Boolean res = siteService.deleteSiteDomain(siteDomainVo);
-        
-        if(!res) {
-            response.put("result", Constant.REST_API_RESULT_FAIL);
-        }
-        
-        return response;
-    }
-
 }

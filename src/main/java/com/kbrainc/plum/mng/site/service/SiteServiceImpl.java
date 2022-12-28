@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.site.model.SiteDao;
 import com.kbrainc.plum.mng.site.model.SiteDomainVo;
@@ -64,39 +65,37 @@ public class SiteServiceImpl extends PlumAbstractServiceImpl implements SiteServ
         return true;
     }
 
+    /**
+    * 사이트 도메인정보 저장.
+    *
+    * @Title : saveSiteDomain
+    * @Description : 사이트 도메인정보 저장
+    * @param siteDomainVo SiteDomainVo객체
+    * @return int deleteInsert로우수
+    * @throws Exception 예외
+    */
     @Override
-    public Boolean deleteSite(Integer siteid) throws Exception {
-        siteDao.deleteSite(siteid);
-        return true;
-    }
-
-    @Override
-    public Boolean insertSiteDomain(SiteDomainVo siteDomainVo) throws Exception {
-        try {
-            siteDao.insertSiteDomain(siteDomainVo);
-        }catch(DataIntegrityViolationException e) { //도메인 중복.
-            //e.printStackTrace();
-            return false;
-        }
+    @Transactional
+    public int saveSiteDomain(SiteDomainVo siteDomainVo) throws Exception {
+        int retVal = 0;
+        retVal += siteDao.deleteSiteDomain(siteDomainVo);
+        retVal += siteDao.insertSiteDomains(siteDomainVo);
         
-        return true;
+        return retVal;
     }
 
+    /**
+    * 동일한 도메인이 있는지 조회한다.
+    *
+    * @Title : selectSameSiteDomains
+    * @Description : 동일한 도메인이 있는지 조회한다
+    * @param siteDomainVo SiteDomainVo객체
+    * @return SiteDomainVo 중복도메인정보(domains)
+    * @throws Exception 예외
+    */
     @Override
-    public Boolean updateSiteDomain(SiteDomainVo siteDomainVo) throws Exception {
-        try {
-            siteDao.updateSiteDomain(siteDomainVo);
-        }catch(DataIntegrityViolationException e) { //도메인 중복.
-            //e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public Boolean deleteSiteDomain(SiteDomainVo siteDomainVo) throws Exception {
-        siteDao.deleteSiteDomain(siteDomainVo);
-        return true;
+    public SiteDomainVo selectSameSiteDomains(SiteDomainVo siteDomainVo) throws Exception {
+        return siteDao.selectSameSiteDomains(siteDomainVo);
     }
 
 }
