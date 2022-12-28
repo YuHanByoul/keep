@@ -1,5 +1,14 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<style>
+    .hide {
+        display: none;
+    }
+
+    #expertSearchJsGrid .jsgrid-grid-body {
+        max-height: 385px;
+    }
+</style>
 <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content type_2">
         <div class="modal-header">
@@ -11,7 +20,7 @@
         <div class="modal-body">
             <div class="card">
                 <div class="card-block-small">
-                    <form name="expertModalSearchForm" id="expertModalSearchForm" onsubmit="return false;">
+                    <form name="expertModalSearchForm" id="expertModalSearchForm">
                         <div class="row">
                             <div class="col-12 col-lg-3 mb-2 mb-lg-0">
                                 <div class="mb-0 form-group">
@@ -56,9 +65,6 @@
                     <div class="col-12 col-md-6">
                         <h5><strong>전문가 검색결과</strong></h5>
                     </div>
-                    <div class="col-12 col-md-6 text-right">
-                        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="jdgGrpMngExpertModal.insert()">등록</button>
-                    </div>
                 </div>
                 <div class="card-block-small">
                     <table id="expertSearchJsGrid" class="table-responsive"></table>
@@ -66,17 +72,20 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary waves-effect waves-light " onclick="jdgGrpMngExpertModal.insert()">선택</button>
+        </div>
     </div>
 </div>
 <script th:inline="javascript">
     var jdgGrpMngExpertModal = {
         expertSearchList: "/mng/ass/selectJdgGrpMngExpertSearchList.do",
+        expertInsertUrl: "/mng/ass/insertJdgGrpExpert.do",
 
-
-        init : function() {
+        init: function () {
             expertSearchGridHelper = new GridHelper('expertSearchJsGrid');
-            managerSelectedItems =[];
-            testdata = [];
+            expertSelectedItems = [];
             this.writeExpertSearchJsGridData();
         },
 
@@ -85,7 +94,7 @@
                 height: "auto",
                 width: "100%",
                 autoload: true,
-                sorting: false,
+                sorting: true,
                 paging: true,
                 pagerContainer: "#expertSearchListPager",
                 pagerFormat: "{first} {prev} {pages} {next} {last}",
@@ -94,34 +103,38 @@
                 pageFirstText: "< 처음 ㅣ",
                 pageLastText: "ㅣ 마지막 >",
                 noDataContent: "데이터가 없습니다.",
-                pageSize: 10,
+                pageSize: 100,
                 pageButtonCount: 10,
                 pageLoading: true,
                 pageIndex: 1,
 
                 controller: {
-                    loadData: function(filter) {
+                    loadData: function (filter) {
                         var data = $.Deferred();
-                        var params = {
-                            "pageNumber": filter.pageIndex,
-                            "rowPerPage": filter.pageSize,
-                            "orderField": "REG_DT",
-                            "orderDirection": "desc"
-                        };
+                        var params = [
+                            {"name": "pageNumber", "value": filter.pageIndex},
+                            {"name": "rowPerPage", "value": filter.pageSize},
+                        ];
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'reg_dt'});
+                        }
+
                         var formData = $('#expertModalSearchForm').serializeArray();
                         formData = formData.concat(params);
-                        console.log('loaddata');
                         $.ajax({
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
                             url: jdgGrpMngExpertModal.expertSearchList,
                             data: formData,
                             dataType: "json"
-                        }).done(function(response) {
-                            testdata.push(response.list);
+                        }).done(function (response) {
                             var da = {
-                                data : escapeGridData(response.list),
-                                itemsCount : response.totalCount
+                                data: escapeGridData(response.list),
+                                itemsCount: response.totalCount
                             };
                             data.resolve(da);
                         });
@@ -132,79 +145,45 @@
                 fields: [
                     {
                         headerTemplate: function () {
-                            return $("<input>").attr("type", "checkbox").attr("id", "expertSelectAllCheckbox")
+                            return "선택";
                         },
                         itemTemplate: function (_, item) {
                             return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id", "userid-" + item.userid)
-                                //.prop("checked", $.inArray(String(item.userid), managerSelectedItems) > -1)
-                                .prop("checked", $.inArray(item, managerSelectedItems) > -1)
+                                .prop("checked", $.inArray(item, expertSelectedItems) > -1)
                                 .on("change", function () {
                                     $(this).is(":checked") ?
-                                        managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text())
-                                        : managerUnselectItem($(this).parent().next().text(), $(this).parent().next().next().text());
+                                        expertSelectItem($(this).parent().next().text())
+                                        : expertUnselectItem($(this).parent().next().text());
                                 });
                         },
                         align: "center",
                         width: "50",
                         sorting: false
                     },
+                    {name: 'userid', type: 'number', css: 'hide'},
                     {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                    {title: "아이디", name: "acnt", type: "text", width: "200", align: "center"},
-                    {title: "이름", name: "nm", type: "text", width: "150", align: "center"},
+                    {title: "아이디", name: "acnt", type: "text", width: "150", align: "center"},
+                    {title: "이름", name: "nm", type: "text", width: "120", align: "center"},
                     {title: "이메일", name: "eml", type: "text", width: "200"},
-                    {title: "전화번호", name: "moblphon", type: "text", width: "150", align: "center"},
-                    {title: "자격증명", name: "crtfctNm", type: "text", cellRenderer: jdgGrpMngExpertModal.cellRendererCrtfctNm, width: "130", sorting: false},
-                    {title: "전문분야", name: "sbjctCdNm", type: "text", width: "200", cellRenderer: jdgGrpMngExpertModal.cellRendererSbjctCdNm, align: "center", sorting: false},
-                    {title: "활동가능지역", name: "rgnCdNm", type: "text", width: "150", cellRenderer: jdgGrpMngExpertModal.cellRendererRgnCdNm, align: "center", sorting: false},
-                ],
-                rowClick: function(args) {
-                    console.log(args);
-                }
+                    {
+                        title: "전화번호", name: "moblphon", type: "text", width: "150", align: "center",
+                        itemTemplate: function (value) {
+                            return value.substring(0, 3) + "-" + value.substring(3, 7) + "-" + value.substring(7, 11);
+                        }
+                    },
+                    {title: "자격증명", name: "crtfctNm", type: "text", cellRenderer: jdgGrpMngExpertModal.cellRendererCrtfctNm, width: "130"},
+                    {title: "전문분야", name: "sbjctCdNm", type: "text", width: "150", cellRenderer: jdgGrpMngExpertModal.cellRendererSbjctCdNm, align: "center"},
+                    {title: "활동가능지역", name: "rgnCdNm", type: "text", width: "150", cellRenderer: jdgGrpMngExpertModal.cellRendererRgnCdNm, align: "center"},
+                ]
             });
-
-            var managerSelectItem = function(id, name) {
-                var index = managerSelectedItems.findIndex(item => item.userid === id);
-                if(index == -1) {
-                    managerSelectedItems.push({"userid": id, "nm" : name});
-                }
-
-                if($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
-                    $("#managerSelectAllCheckBox").prop("checked", true);
-                } else {
-                    $("#managerSelectAllCheckBox").prop("checked", false);
-                }
+            var expertSelectItem = function (id) {
+                expertSelectedItems.push(id);
             };
-
-            var managerUnselectItem = function(id, name) {
-                managerSelectedItems = $.grep(managerSelectedItems, function(i) {
-                    return i.userid !== id;
+            var expertUnselectItem = function (id) {
+                expertSelectedItems = $.grep(expertSelectedItems, function (i) {
+                    return i !== id;
                 });
-                if(managerSelectedItems.length == 0) {
-                    $('#managerSelectAllCheckBox').attr('checked', false);
-                }
-                if($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
-                    $("#managerSelectAllCheckBox").prop("checked", true);
-                } else {
-                    $("#managerSelectAllCheckBox").prop("checked", false);
-                }
             };
-
-            $("#managerSelectAllCheckBox").click(function(item) {
-                managerSelectedItems = [];
-                if(this.checked) { // check select status
-                    $('#helpDeskManagerSearchModal .singleCheckbox').each(function() {
-                        this.checked = true;
-                        managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text());
-                    });
-                }else {
-                    $('#helpDeskManagerSearchModal .singleCheckbox').each(function() {
-                        this.checked = false;
-                        managerUnselectItem(item);
-                    });
-                    managerSelectedItems = [];
-                }
-            });
-
         },
 
         cellRendererCrtfctNm: function (value, item) {
@@ -223,20 +202,49 @@
         },
 
         searchInit: function () {
-            $('#acntOrNm , #crtfctNm, #sbjctCd, #rgnCdNm').val('');
+            $('#acntOrNm , #crtfctNm, #sbjctCd, #rgnCd').val('');
         },
 
-        search : function() {
+        search: function () {
             expertSearchGridHelper.resetListContent();
         },
 
-        insert : function() {
+        insert: function () {
 
+            if (expertSelectedItems.length <= 0) {
+                alert("전문가를 선택해주십시오.");
+                return;
+            }
+
+            var params = [
+                {name: "insertIds", value: expertSelectedItems},
+                {name: "grpId", value: $("#jdgGrpMngForm #grpId").val()}
+            ];
+
+            if (!confirm("전문가를 등록 하시겠습니까?"))
+                return;
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: jdgGrpMngExpertModal.expertInsertUrl,
+                    type: 'post',
+                    async: 'false',
+                    data: params,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.success) {
+                            $('#expertJsGrid').jsGrid("reset");
+                        }
+                        alert(result.msg)
+                        closeWorkProgress();
+                    }
+                });
+            }
             expertSearchModal.hide();
         }
     };
 
-    $(function(args){
+    $(function (args) {
         jdgGrpMngExpertModal.init();
     })
 </script>

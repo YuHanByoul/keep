@@ -86,12 +86,16 @@ class GridHelper {
         });
         this.showContent();
     }
-    resetListContent(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김)
+    resetListContent(){ // 검색/저장/삭제후 사용(컨텐츠영역 숨김)
+        //리셋하고 첫번째 페이지로 돌아간다.
+        var curPage = $("#"+this.jsGridId).jsGrid("option", "pageIndex");
+        $("#"+this.jsGridId).jsGrid("reset");
+        this.hideContent(); 
+    }
+    resetPageContent(){ // 수정후 사용(현재 페이지를 유지할 때 사용, 컨텐츠영역 숨김)
         //리셋하고 현재 페이지로 돌아간다.
         var curPage = $("#"+this.jsGridId).jsGrid("option", "pageIndex");
-        $("#"+this.jsGridId).jsGrid("reset").done(function(){
-            $("#"+this.jsGridId).jsGrid("openPage", curPage);
-        });
+        $("#"+this.jsGridId).jsGrid("openPage", curPage);
         this.hideContent(); 
     }
     toggleContent(){ // 컨텐츠영역에서 취소시 사용(컨텐츠 토글)
@@ -136,12 +140,17 @@ function toggleListContent(){
 	toggleList();*/	
 }
 
-function resetListContent(){ // 검색/저장/수정/삭제후 사용(컨텐츠영역 숨김, 그리드 노출)
+function resetListContent(){ // 검색/저장/삭제후 사용(컨텐츠영역 숨김, 그리드 노출)
+	//리셋하고 첫번째 페이지로 돌아간다.
+	var curPage = $("#jsGrid").jsGrid("option", "pageIndex");
+	$("#jsGrid").jsGrid("reset");
+	hideContent(); 
+	//showList();	
+}
+function resetPageContent(){ //수정 사용( 혀재 페이지 유지 할 떄 사용, 컨텐츠영역 숨김, 그리드 노출)
 	//리셋하고 현재 페이지로 돌아간다.
 	var curPage = $("#jsGrid").jsGrid("option", "pageIndex");
-	$("#jsGrid").jsGrid("reset").done(function(){
-		$("#jsGrid").jsGrid("openPage", curPage);
-	});
+	$("#jsGrid").jsGrid("openPage", curPage);
 	hideContent(); 
 	//showList();	
 }

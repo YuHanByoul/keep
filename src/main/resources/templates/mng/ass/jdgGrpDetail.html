@@ -22,7 +22,7 @@
             </div>
             <div class="mb-2 row">
                 <div class="col-12">
-                    <span kattr:switch_yn="useYn" label="사용여부" th:attr="defaultVal=${jdgGrpInfo.useYn == null ? 'Y':jdgGrpInfo.useYn }" isAdmin="true" />
+                    <span kattr:switch_yn="useYnChk" label="사용여부" th:attr="defaultVal=${jdgGrpInfo.useYn == null ? 'Y':jdgGrpInfo.useYn }" isAdmin="true"/>
                 </div>
             </div>
             <div class="mb-2 form-group row">
@@ -56,12 +56,8 @@
             </div>
         </div>
         <div class="card-block-small">
-            <div class="dt-responsive table-responsive">
-                <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                    <table id="expertJsGrid" class="table-responsive"></table>
-                    <div id="expertPager" class="text-center"></div>
-                </div>
-            </div>
+            <table id="expertJsGrid" class="table-responsive"></table>
+            <div id="expertPager" class="text-center"></div>
         </div>
     </div>
     <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
@@ -71,23 +67,25 @@
 <script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
 <script th:inline="javascript">
     var jdgGrpDetail = {
-        expertListUrl : "/mng/ass/selectExpertList.do",
-        insertUrl : "/mng/ass/insertJdgGrpInfo.do",
-        updateUrl : "/mng/ass/updateJdgGrpInfo.do",
+        expertListUrl: "/mng/ass/selectExpertList.do",
+        insertUrl: "/mng/ass/insertJdgGrpInfo.do",
+        updateUrl: "/mng/ass/updateJdgGrpInfo.do",
+        expertDeleteUrl: "/mng/ass/deleteJdgGrpExpert.do",
 
-        init : function() {
+        init: function () {
+            jdgGrpDetailGridHelper = new GridHelper('expertJsGrid');
             this.validateForm();
             this.writeExpertJsGridData();
-            selectedItems = []
         },
 
-        validateForm : function() {
+        validateForm: function () {
             $('#jdgGrpMngForm').validate({
+                onsubmit: false,
                 rules: {
-                    grpNm : {required : true, maxlength: 20}
+                    grpNm: {required: true, maxlength: 20}
                 },
                 messages: {
-                    grpNm : {required: '심사위원 그룹명을 입력해 주십시오.' , maxlength:'그룹명은 20자를 넘을 수 없습니다.'}
+                    grpNm: {required: '심사위원 그룹명을 입력해 주십시오.', maxlength: '그룹명은 20자를 넘을 수 없습니다.'}
                 }
             })
         },
@@ -107,7 +105,7 @@
                 height: "auto",
                 width: "100%",
                 autoload: true,
-                sorting: false,
+                sorting: true,
                 paging: true,
                 pagerContainer: "#expertPager",
                 pagerFormat: "{first} {prev} {pages} {next} {last}",
@@ -120,30 +118,59 @@
                 pageButtonCount: 10,
                 pageLoading: true,
                 pageIndex: 1,
+
+                deleteConfirm: function () {
+                    return "전문가를 삭제하시겠습니까?";
+                },
+
                 controller: {
-                    loadData: function(filter) {
+                    deleteItem: function (item) {
+                        item.grpId = $("#jdgGrpMngForm #grpId").val();
+
+                        if (displayWorkProgress()) {
+                            $.ajax({
+                                type: "POST",
+                                contentType: "application/json; charset=utf-8",
+                                url: jdgGrpDetail.expertDeleteUrl,
+                                data: JSON.stringify(item),
+                                dataType: "json"
+                            }).done(function (response) {
+                                if (response.success) {
+                                    $("#expertJsGrid").jsGrid("reset");
+                                }
+                                alert(response.msg);
+                                closeWorkProgress();
+                            });
+                        }
+                    },
+
+                    loadData: function (filter) {
                         var data = $.Deferred();
 
+                        var params = [
+                            {"name": "pageNumber", "value": filter.pageIndex},
+                            {"name": "rowPerPage", "value": filter.pageSize},
+                        ];
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'reg_dt'});
+                        }
+
                         var formData = $('#jdgGrpMngForm').serializeArray();
-                        var params = {
-                            "pageNumber": filter.pageIndex,
-                            "rowPerPage": filter.pageSize,
-                            "orderField": "REG_DT",
-                            "orderDirection": "desc"
-                        };
-
-                        formData.concat(params);
-
+                        formData = formData.concat(params);
                         $.ajax({
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
                             url: jdgGrpDetail.expertListUrl,
                             data: formData,
                             dataType: "json"
-                        }).done(function(response) {
+                        }).done(function (response) {
                             var da = {
-                                data : escapeGridData(response.list),
-                                itemsCount : response.totalCount
+                                data: escapeGridData(response.list),
+                                itemsCount: response.totalCount
                             };
                             data.resolve(da);
                         });
@@ -152,31 +179,45 @@
                     }
                 },
                 fields: [
-                    {name:"userid", css:'hide'},
+                    {name: "userid", css: 'hide'},
                     {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
                     {title: "아이디", name: "acnt", type: "text", width: "150", align: "center"},
-                    {title: "이름", name: "nm", type: "text", width: "150", align: "center"},
-                    {title: "이메일", name: "eml", type: "text" , width: "200"},
-                    {title: "전화번호", name: "moblphon", type: "number", align: "center" , width: "120"},
+                    {title: "이름", name: "nm", type: "text", width: "120", align: "center"},
+                    {title: "이메일", name: "eml", type: "text", width: "200"},
                     {
-                        itemTemplate:function(value,item) {
-                            console.log(item);
-                            return $("<input>").attr("type", "button").attr("class", "btn btn-xs btn-danger").attr("value", "삭제");
+                        title: "전화번호", name: "moblphon", type: "number", align: "center", width: "150",
+                        itemTemplate: function (value, item) {
+                            return value.substring(0, 3) + "-" + value.substring(3, 7) + "-" + value.substring(7, 11);
+                        }
+                    },
+                    {
+                        type: 'control',
+                        deleteButton: true,
+                        editButton: false,
+                        deleteButtonClass: 'btn btn-inverse',
+                        buttonClass: '',
+
+                        headerTemplate: function () {
+                            return "삭제";
                         },
-                        title: '삭제'
-                        , width: 100
-                        , align: 'center'
-                        , sorting: false
+
+                        itemTemplate: function (value, item) {
+                            var result = $([]);
+                            result = result.add(this._createDeleteButton(item));
+                            result.attr('value', '삭제');
+                            return result;
+                        },
+                        width: '80',
+                        align: 'center',
+                        sorting: false
                     }
-                    /*삭제버튼 */
-                ],
-                rowClick: function(args) {
-                }
+                ]
             });
         },
 
         insert : function() {
             var url = jdgGrpDetail.insertUrl;
+
             if ($('#grpId').val() != '') {
                 url = jdgGrpDetail.updateUrl;
             }
@@ -202,21 +243,31 @@
                 }
             }
 
-            if(!$('#jdgGrpMngForm').valid()) {
-                return ;
+            if (!$('#jdgGrpMngForm').valid()) {
+                return;
             }
 
+            $("input[type=checkbox]").each((index, item) => {
+                let ckbId = $(item).attr("id");
+                if (!$("#" + ckbId).is(":disabled")) {
+                    let value = ($("#" + ckbId).is(":checked")) ? "Y" : "N";
+                    let input_html = "<input type='hidden' id='" + ckbId.replaceAll("Chk", "") + "' name='" + ckbId.replaceAll("Chk", "") + "' value='" + value + "'   '/>"
+                    $("#jdgGrpMngForm").append(input_html);
+                }
+            })
+
+            var formData = $('#jdgGrpMngForm').serializeArray();
             if (displayWorkProgress()) {
                 $.ajax({
                     url: url,
                     cache: false,
                     dataType: 'json',
-                    type:'post',
-                    data: $('#jdgGrpMngForm').serializeArray(),
+                    type: 'post',
+                    data: formData,
                     success: function (data) {
                         alert(data.msg);
                         closeWorkProgress();
-                        gridHelper1.resetListContent();
+                        gridHelper.resetListContent();
                     }
                 });
             }
