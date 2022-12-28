@@ -37,4 +37,8 @@ public interface BannerDao {
     public int insertBanner(BannerVo bannerVo) throws Exception;
     
     public BannerVo selectBannerInfo(BannerVo bannerVo) throws Exception;
+    
+    public int updateBanner(BannerVo bannerVo) throws Exception;
+    
+    public int deleteBanner(BannerVo bannerVo) throws Exception;
 }

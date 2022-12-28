@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : DsgnPrgrmDaoImpl.xml
+    Description : 지정제심사 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao">
+
+
+    <!-- 지정프로그램 목록 조회. -->
+    <select id="selectDsgnPrgrmList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        /* DsgnPrgrmDao.selectDsgnPrgrmList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            DISTINCT A.PRGRMID
+          , A.INSTID
+          , A.DSGN_CYCL
+          , A.DSGN_NO
+          , A.PRGRM_NM
+          , A.INST_NM
+          , A.STTS_CD
+          , B.CHG_APLY_CNT
+          , C.OPER_RSLT_CNT
+          , D.IMPLMNT_IDNTY_CNT
+          , E.OBJC_INFO_CNT
+          , A.DSGN_BGNG_DE
+          , A.DSGN_END_DE
+          , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            (
+                SELECT
+                    BB.PRGRMID
+                  , BB.APLYID
+                  , CONCAT(COUNT(CASE WHEN BB.APLY_STTS_CD = '119104' THEN 1 END), "/", COUNT(BB.APLYID))    AS CHG_APLY_CNT
+                FROM
+                    TB_ASS_CHG_APLY BB
+                GROUP BY
+                    BB.PRGRMID
+            ) B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            (
+                SELECT
+                    CC.PRGRMID
+                  , CC.STTS_CD
+                  , CONCAT(COUNT(CASE WHEN CC.STTS_CD = '126103' THEN 1 END), "/", COUNT(CC.CYCLID ))    AS OPER_RSLT_CNT
+                FROM
+                    TB_ASS_OPER_RSLT_CYCL CC
+                GROUP BY
+                    CC.CYCLID
+            ) C ON A.PRGRMID =C.PRGRMID
+        LEFT OUTER JOIN
+            (
+                SELECT
+                    AA.PRGRMID
+                  , AA.CYCLID
+                  , CC.SRNGID
+                  , CONCAT(COUNT(CASE WHEN CC.FILEGRPID IS NOT NULL THEN 0 END), "/", COUNT(BB.CYCLID))    AS IMPLMNT_IDNTY_CNT
+                FROM
+                    TB_ASS_OPER_RSLT_CYCL AA
+                LEFT OUTER JOIN
+                    TB_ASS_OPER_RSLT BB ON AA.CYCLID = BB.CYCLID
+                LEFT OUTER JOIN
+                    TB_ASS_IMPLMNT_IDNTY_SRNG CC ON AA.CYCLID =CC.CYCLID
+            ) D ON A.PRGRMID = D.PRGRMID
+        LEFT OUTER JOIN
+            (
+                SELECT
+                    AA.PRGRMID
+                  , CONCAT(COUNT(AA.APLYID), "/", COUNT(CASE WHEN AA.APLY_STTS_CD = '129101' THEN 1 END)) AS OBJC_INFO_CNT
+                FROM
+                    TB_ASS_OBJC_APLY AA
+                GROUP BY
+                    AA.PRGRMID
+            ) E ON A.PRGRMID = E.PRGRMID
+        WHERE 1=1
+        <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'prgrmNm'">
+            AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.지정번호 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'dsgnNo'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 지정상태  -->
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.STTS_CD = #{searchSttsCd}
+        </if>
+        <!-- 지정일 검색시작일  -->
+        <if test="searchStartDsgnDe != null and searchStartDsgnDe != ''">
+            AND A.A.DSGN_BGNG_DE >= #{searchStartDsgnDe}
+        </if>
+        <!-- 지정일 검색종료일  -->
+        <if test="searchEndDsgnDe  != null and searchEndDsgnDe != ''">
+            AND A.DSGN_END_DE <![CDATA[<]]> CAST(CONCAT(#{searchEndDsgnDe},' 23:59:59') AS DATETIME)
+        </if>
+        <!-- 차수 -->
+        <if test="searchDsgnCycl != null and searchDsgnCycl != ''">
+            AND A.DSGN_CYCL = #{searchDsgnCycl}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 지정내역 목록 조회 -->
+    <select id="selectDsgnDsctnList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+
+        /* DsgnPrgrmDao.selectDsgnDsctnList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.HSTRYID
+          , A.PRGRMID
+          , A.DSGN_CYCL
+          , A.DSGN_NO
+          , A.DSGN_OBTAIN_DE
+          , A.DSGN_BGNG_DE
+          , A.DSGN_END_DE
+          , A.DSGN_CNCL_DE
+          , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
+          , A.STTS_CD
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , CONCAT( B.NM ,"(",B.ACNT,")" ) AS RGTR_NM
+        FROM
+            TB_ASS_DSGN_HSTRY A
+        LEFT OUTER JOIN
+            TB_CMM_USER B ON A.RGTRID = B.USERID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+</mapper>

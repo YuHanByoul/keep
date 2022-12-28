@@ -149,13 +149,11 @@
                                     <div id="multipleFileUploadSuccess">
                                         <th:block th:if="${result.fileMap}">
                                             <th:block th:each="item : ${result.fileMap}" th:id="${item.fileid}">
-		                                        <span class ='label label-inverse mb-2' th:id="'pst_'+${item.fileid}">
-		                                            <th:block th:text="${item.orginlFileNm}"/>
+		                                        <span class ='label label-inverse mb-2 mr-0' th:id="'pst_'+${item.fileid}" ><th:block th:text="${item.orginlFileNm}"/>
 		                                        <a  class = 'btn text-white' href = "javascript:void(0)"
 		                                           th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" 
-		                                           th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)"
-		                                           >X</a>&nbsp;&nbsp;
-		                                        </span>
+		                                           th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a></span>
+		                                           
                                                <!-- <a th:fileid ='${item.fileid}' th:fileIdntfcKey = "${item.fileIdntfcKey}"
                                                   th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
                                                   href ="javascript:void(0)" >
@@ -178,7 +176,7 @@
                 </div>
                 
                 <div class="card-block-small">
-                    <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.resetListContent()">취소</button>
+                    <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
                     
                     <th:block sec:authorize-url="/bbs/bbsPstRplyInsertForm.html">
 	                    <th:block th:if="${result.paramMap.rplyUseYn} == 'Y' and ${result.paramMap.dpth < 2}">
@@ -415,8 +413,8 @@
          data: $("#pstUpdateForm").serialize(),
          success: function (data) {
              if (data.result == "success") {
+                 gridHelper1.resetPageContent();
                  alert("저장이 완료 되었습니다.");
-                 gridHelper1.resetListContent();
              } else {
                  alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
              }
@@ -515,6 +513,8 @@
     goRelpyInsertForm = () =>{
         var relpyInsertUrl = "/bbs/bbsPstRplyInsertForm.html?pstid="+$("#pstid").val()+"&bbsid="+$("#bbsid").val();
         gridHelper1.loadContent(relpyInsertUrl);
+        var $row = $("#"+gridHelper1.jsGridId).jsGrid("rowByItem", clickedItem)
+        $row.toggleClass("highlight");
     }
   /**************게시글 수정 END ************************************************************************************/
   
@@ -698,7 +698,7 @@
 	 var updateMessage = function (data) {
 		 if (data.result == "success") {
 			 alert("저장이 완료 되었습니다.");
-			 goModifyForm();
+			 selectCmntList();
 		 } else {
 			 alert("수정중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
 		 }
@@ -708,7 +708,8 @@
 		  var insertMessage = function (data) {
 		         if (data.result == "success") {
 		             alert("등록이 완료 되었습니다.");
-		             goModifyForm();
+		             //goModifyForm();
+		             selectCmntList();
 		         } else {
 		             alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
 		         }
@@ -748,36 +749,11 @@
 		 fn_postAjax(url, data, function (data) {
 			 if (data.result == "success") {
 				 alert("등록이 완료 되었습니다.");
-				 var modifyUrl = "/bbs/pstUpdateForm.html?pstid=" + $("#pstid").val();
-				 gridHelper1.loadContent(modifyUrl);
-				 setTimeout(function(){scrollIntoView('comment_area'); console.log('comment_area');},100);
-				 
+		         cntnts: $("#cmntCntnts").val("");
+		         selectCmntList(); 
 			 } else {
 				 alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
 			 }
 		 });
 	 }
-	 
-	 //게시판 글 삭제
-	 function fn_deletePst() {
-		 
-		 var deleteMessage = function (data) {
-			 if (data.result == "success") {
-				 alert("삭제가  완료 되었습니다.");
-				 //fn_searchForm();
-				 gridHelper1.resetListContent();
-			 } else {
-				 alert("에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
-			 }
-		 }
-		 
-		 if (!confirm("삭제 하시겠습니까?")) {
-			 return;
-		 }
-		 
-		 var data = $("#pstUpdateForm").serialize();
-		 var url = "/bbs/deletePst.do";
-		 fn_postAjax(url, data, deleteMessage);
-	 }
-	 
  </script> 

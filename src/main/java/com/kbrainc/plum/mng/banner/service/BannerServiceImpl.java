@@ -59,4 +59,12 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     public BannerVo selectBannerInfo(BannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerInfo(bannerVo);
     }
+    
+    public int updateBanner(BannerVo bannerVo) throws Exception {
+        return bannerDao.updateBanner(bannerVo);
+    }
+    
+    public int deleteBanner(BannerVo bannerVo) throws Exception {
+        return bannerDao.deleteBanner(bannerVo);
+    }
 }

@@ -3,6 +3,8 @@ package com.kbrainc.plum.mng.banner.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -36,12 +38,13 @@ public class BannerVo extends ParentRequestVo {
     private int bannerid;
     
     /** 사이트 아이디 */
-    private int siteid;
+    private String siteid;
     
     /** 배너_위치_코드 */
     private String bannerPstnCd;
     
     /**  배너_제목 */
+    @NotEmpty(message = "제목을 입력해주십시오.")
     private String bannerTtl;
     
     /** 배너_파일아이디 */

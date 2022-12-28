@@ -35,14 +35,6 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 로그인사용자정보 */
 	private UserVo user;
 
-    /** 키워드.프로그램명 */
-    private String searchPrgrmNm;
-
-    /** 키워드.기관명 */
-    private String searchInstNm;
-
-    private String searchBrno;
-
     /** 검색 진행상태 */
     private String searchSttsCd;
 
@@ -199,6 +191,15 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 지정_번호 */
 	private String dsgnNo;
+
+	/** 지정_차수 */
+	private String dsgnCycl;
+
+	/** (지정)차수번호 */
+	private String cyclNo;
+
+	/** 지정_기간 */
+	private String dsgnPrd;
 
     /** 지정_일자 */
 	private String dsgnDe;
@@ -529,6 +530,13 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 지역코드 */
     private String rgnCdNm;
+
+    /** 제출ID */
+    private String sbmsnid;
+
+    /** 제출 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    private Date sbmsnDt;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
