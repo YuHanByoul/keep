@@ -1,5 +1,5 @@
 <form id="updateBannerFrm">
-<input type="text" id="bannerid" name="bannerid" th:value="${banner.bannerid}">
+<input type="hidden" id="bannerid" name="bannerid" th:value="${banner.bannerid}">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content type_2">
 			<div class="modal-header">
@@ -15,7 +15,7 @@
 							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
 							<div class="col-sm-12">
 								<select name="siteid" id="siteid" class="form-select form-select-sm form-control-sm">
-									<option value="0">- 선택 -</option>
+									<option value="">- 선택 -</option>
 									<th:block th:each="siteList : ${siteList}">
 									<option th:value="${siteList.siteid}" th:selected="${siteList.siteid} == ${banner.siteid}"><th:block th:text="${siteList.siteNm}" /></option>
 									</th:block>
@@ -71,14 +71,18 @@
 
 <script th:inline="javascript">
 
-	/*  var validator= $("#blcklstFrm").validate({
-	rules: {
-		blcklstRsn : { required: true , maxlength: 1000 }
-	},
-	messages: {
-		blcklstRsn : { required:"블랙리스트 사유를 입력해주십시오"   , maxlength:  "블랙리스트 사유는 1,000자 이하여야 합니다."}
-	}
-	}) */
+	var validator= $("#updateBannerFrm").validate({
+		rules: {
+			siteid : { required: true },
+			bannerTtl : { required: true },
+			bannerFile : { required: true }
+		},
+		messages: {
+			siteid : { required:"사이트를 선택해주십시오" },
+			bannerTtl : { required:"제목을 입력해주십시오" },
+			bannerFile : { required:"이미지 첨부해주십시오" }
+		}
+	})
 	
 	$('#bannerFile').change(function(event) {
 		var formData = new FormData();
@@ -110,7 +114,6 @@
 				    closeWorkProgress();
 		        }
 		    });
-		    $("#bannerFile").val("");
 		}
 		event.preventDefault();
 	});
@@ -119,7 +122,7 @@
 	    if(!confirm("파일을 삭제하시겠습니까?")){return;}
 	    fn_deleteFile(fileid, fileIdntfcKey);
 	    $("#"+fileid).remove();
-	    $('#thmbnFile').val('');
+	    $('#bannerFile').val('');
 	} 
 
 	function fn_deleteFile(fileid, fileIdntfcKey){
@@ -147,8 +150,8 @@
 	};
 		
 	function updateBanner() {
-	
-		/* if(!($("#blcklstFrm").valid())) return; */
+		if(!($("#updateBannerFrm").valid())) return;
+		
 		$.ajax({
 		    url : "/mng/banner/updateBanner.do",
 		    type: 'POST',
