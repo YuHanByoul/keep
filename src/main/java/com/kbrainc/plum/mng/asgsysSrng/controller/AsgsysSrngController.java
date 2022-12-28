@@ -486,9 +486,7 @@ public class AsgsysSrngController {
      * @return void
      */
     @RequestMapping(value = "/mng/asgsysSrng/splmntDmndPopup.html")
-    public String splmntDmndPopup(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
-
-
+    public String splmntDmndPopup(@RequestParam(value ="prgrmid",required = false) String prgrmid ,@RequestParam(value ="sttsCd",required = false) String sttsCd, AsgsysSrngVo asgsysSrngVo) throws Exception {
     	return "mng/asgsysSrng/splmntDmndPopup";
     }
 
@@ -661,7 +659,7 @@ public class AsgsysSrngController {
     *
     * @Title       : selectMemberList
     * @Description : 지원단심사 목록 조회
-    * @param AsgsysSrngVo
+    * @param dsgnPrgrmVo
     * @return Map<String,Object> 응답결과객체
     * @throws Exception 예외
     */
@@ -739,5 +737,6 @@ public class AsgsysSrngController {
         return resultMap;
     }
 
-
 }
+
+

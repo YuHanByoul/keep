@@ -194,6 +194,8 @@
       , MDFRID              /* 수정자아이디 */
       , REG_DT              /* 등록_일시 */
       , RGTRID              /* 등록자아이디 */
+      , CONCAT(DSGN_CYCL, "/", DSGN_NO)    AS CYCL_NO
+      , CONCAT(DSGN_BGNG_DE, " ~ ", DSGN_END_DE )   AS DSGN_PRD
     FROM TB_ASS_PRGRM
     WHERE 1=1
     AND PRGRMID = #{prgrmid}
@@ -562,9 +564,9 @@
                , B.PRGRM_NM
                , B.INST_NM
                , A.SRNG_STTS_CD
-               , A.REG_DT          /*배정일*/
-               , C.STY_YN          /*숙박여부*/
-               , D.SRNG_DT         /* 심사일 */
+               , A.REG_DT          /* 배정일*/
+               , C.STY_YN          /* 숙박여부*/
+               , D.SBMSN_DT        /* 심사일 */
                , A.MDFCN_DT
                , A.MDFRID
                , A.RGTRID
@@ -575,7 +577,8 @@
             LEFT OUTER JOIN
                 TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN
-                TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
+                /*TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID */
+                TB_ASS_SRNG_SBMSN D ON A.PRGRMID = D.PRGRMID
             WHERE 1=1
         <!-- 키워드.전체 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
@@ -619,7 +622,7 @@
                , A.SRNG_STTS_CD
                , A.REG_DT          /*배정일*/
                , C.STY_YN          /*숙박여부*/
-               , D.SRNG_DT         /* 심사일 */
+               , D.SBMSN_DT        /* 심사일 */
                , A.MDFCN_DT
                , A.MDFRID
                , A.RGTRID
@@ -630,7 +633,7 @@
             LEFT OUTER JOIN
                 TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN
-                TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
+                TB_ASS_SRNG_SBMSN D ON A.PRGRMID = D.PRGRMID
             WHERE 1=1
         <!-- 키워드.전체 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
@@ -669,7 +672,7 @@
                  A.PRGRMID
                , A.JDGSID
                , G.FORMID       /*양식ID*/
-               , F.RSLTID
+               , F.SBMSNID
                , B.PRGRM_NM
                , B.INST_NM
                , C.STY_YN    /*숙박여부*/
@@ -690,22 +693,19 @@
             LEFT OUTER JOIN
                 TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN
-                TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
-            LEFT OUTER JOIN
                 TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
             LEFT OUTER JOIN
-                TB_ASS_SRNG_RSLT F ON A.PRGRMID = F.PRGRMID
-            INNER JOIN
+                TB_ASS_SRNG_SBMSN F ON A.PRGRMID = F.PRGRMID
+            LEFT OUTER JOIN
                 TB_ASS_SRNG_FORM G ON G.FORMID = F.FORMID
             WHERE 1=1
             AND A.JDGSID = #{jdgsid}
     </select>
 
-
     <!-- 심사위원심사 등록 -->
     <insert id="insertJdgsSrngDetail" parameterType="AsgsysSrngVo" >
     /* AsgsysSrngDao.insertJdgsSrngDetail */
-    INSERT INTO TB_ASS_SRNG_RSLT (
+    INSERT INTO TB_ASS_SRNG_SBMSN (
         PRGRMID
       , FORMID
       , JDGSID
@@ -734,7 +734,7 @@
     <update id="updateJdgsSrngDetail" parameterType="AsgsysSrngVo" >
     /* AsgsysSrngDao.updateJdgsSrngDetail*/
     UPDATE
-        TB_ASS_SRNG_RSLT
+        TB_ASS_SRNG_SBMSN
     SET
         FORMID      = #{formid}
       , JDGSID      = #{jdgsid}
@@ -842,11 +842,9 @@
         LEFT OUTER JOIN
             TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID
-        LEFT OUTER JOIN
             TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_SRNG_RSLT F ON A.PRGRMID = F.PRGRMID
+            TB_ASS_SRNG_SBMSN F ON A.PRGRMID = F.PRGRMID
         INNER JOIN
             TB_ASS_SRNG_FORM G ON G.FORMID = F.FORMID
         WHERE 1=1

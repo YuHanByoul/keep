@@ -1,8 +1,8 @@
-<!-- <div class="modal fade" id="appointedApprovalPopup"> -->
+<form id="splmntDmndFrm">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
-                <h4 class="modal-title">지정승인</h4>
+                <h4 class="modal-title">보완요청</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true"></span>
                 </button>
@@ -13,64 +13,72 @@
                         <div class="mb-2 form-group row">
                             <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></div>
                             <div class="col-12">
-                                <select name="appointedApprovalPopupOperationStatusSelect" class="form-select form-select-sm form-control-sm" disabled="">
-                                    <option value="opt1">Select One Value Only</option>
-                                    <option value="opt2">Type 2</option>
-                                    <option value="opt3">Type 3</option>
-                                    <option value="opt4">Type 4</option>
-                                    <option value="opt5">Type 5</option>
-                                    <option value="opt6">Type 6</option>
-                                    <option value="opt7">Type 7</option>
-                                    <option value="opt8">Type 8</option>
-                                </select>
+                                <span kattr:select_code="splmntDmndSttsCd" th:value="${splmntDmndInfo.sttsCd}" name="sttsCd" th:attr="grpCd=111" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
                             </div>
                         </div>
                         <div class="mb-2 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupDegree"><strong>차수</strong></label>
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupDegree"><strong>내용</strong></label>
                             <div class="col-12">
-                                <input type="text" class="form-control form-control-sm" name="appointedApprovalPopupDegree" id="appointedApprovalPopupDegree" placeholder="Text Input Validation" value="keepgo" readonly="">
-                            </div>
-                        </div>
-                        <div class="mb-2 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupAppointedNum"><strong>지정번호</strong></label>
-                            <div class="col-12">
-                                <input type="text" class="form-control form-control-sm" name="appointedApprovalPopupAppointedNum" id="appointedApprovalPopupAppointedNum" placeholder="Text Input Validation" value="2023-005"/>
-                            </div>
-                        </div>
-                        <div class="mb-2 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupAppointedDate"><strong>지정 획득일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="appointedApprovalPopupAppointedDate" id="appointedApprovalPopupAppointedDate" placeholder="Text Input Validation" value="2023-005"/>
-                            </div>
-                        </div>
-                        <div class="mb-2 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupAppointedStartDate"><strong>유효지정 시작일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="appointedApprovalPopupAppointedStartDate" id="appointedApprovalPopupAppointedStartDate" placeholder="Text Input Validation" value="2023-005"/>
-                            </div>
-                        </div>
-                        <div class="mb-2 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="appointedApprovalPopupAppointedEndDate"><strong>유효지정 만료일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="appointedApprovalPopupAppointedEndDate" id="appointedApprovalPopupAppointedEndDate" placeholder="Text Input Validation" value="2023-005"/>
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="opnnCn" name="opnnCn"><th:block th:text="${splmntDmndInfo.opnnCn}"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary waves-effect waves-light ">저장</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light " onclick="saveSplmntDmnd()">저장</button>
             </div>
         </div>
     </div>
-<!-- </div> -->
+</form>
 <script th:inline="javascript">
 
 function fn_initSplmntDmndPopup() {
-	var prgrmid = [[${param.prgrmid}]];
-    debugger;
+
+	/*<![CDATA[*/
+    var prgrmid = /*[[${param.prgrmid}]]*/null;/*]]>*/
+
+    /*<![CDATA[*/
+    var sttsCd = /*[[${param.sttsCd}]]*/null;/*]]>*/
+
+    $("#splmntDmndSttsCd").val(""+sttsCd);
+
+    if($("#splmntDmndSttsCd").val != "") {
+    	$("#splmntDmndSttsCd").attr("disabled",true);
+    }
+
+
+
+
 }
 
+function saveSplmntDmnd() {
+
+	if(!confirm("저장 하시겠습니까?")){return;}
+
+    var data =  $("#splmntDmndFrm").serialize() ;
+
+    $.ajax({
+        url : "/mng/asgsysSrng/updateSplmntDmnd.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : data,
+        success : function (data){
+            if(data.result=="success"){
+                alert("수정이 완료 되었습니다.");
+                //loadJdsgTabContent("/mng/asgsysSrng/sftyMngForm.html?prgrmid=" + prgrmid);
+            }else{
+                alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error : function (error){
+        }
+    });
+
+};
+
 fn_initSplmntDmndPopup();
+
 
 </script>

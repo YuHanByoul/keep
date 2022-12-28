@@ -173,7 +173,7 @@
                 </div>
                 <div class="card-block-small">
                     <button type="button" class="btn btn-primary m-r-5" onclick="fn_updateSttsReqsRvw()"  >요건검토중 상태변경</button>
-                    <button type="button" class="btn btn-primary m-r-5" onclick="fn_openSplmntDmndPopup()">서류요청</button>
+                    <button type="button" class="btn btn-primary m-r-5" onclick="openSplmntDmndModal(111104)">서류요청</button>
                     <button type="button" class="btn btn-primary m-r-5" onclick="fn_jdgsSrngDmnd()"       >심사위원심사 요청</button>
                     <button type="button" class="btn btn-primary"       onclick="fn_sprtgrpSrngDmnd()"    >지원단심사 요청</button>
                 </div>
@@ -211,7 +211,7 @@
                             <strong>보완요청</strong>
                         </div>
                         <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#redeemInsertPopup">보완요청</button>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" onclick="openSplmntDmndModal()">보완요청</button>
                         </div>
                     </div>
                 </div>
@@ -256,13 +256,12 @@
 <!-- TAB CONTTENT -->
 <div id="jdgsSprtgrpAltmntTabContent" class="tab-content tabs p-t-20"></div>
 
-<!-- 담당자변경 회원검색 팝업 Start -->
+<!-- 담당자변경 회원검색 팝업 -->
 <div class="modal fade" id="picAltmntPopup" aria-hidden="true" data-bs-backdrop="static"></div>
-<!-- 담당자변경 회원검색 팝업 end  -->
 
 <!--서류요청(보완요청)팝업-->
 <div class="modal fade" id="splmntDmndPopup" aria-hidden="true" data-bs-backdrop="static"></div>
-<!--서류요청(보완요청)팝업-->
+
 
 <script th:inline="javascript">
 
@@ -368,18 +367,19 @@ function initAplyInfoForm(){
 function writeSplmntDmndGridData(){
 
     $("#splmntDmndGrid").jsGrid({
-        height: "auto",
+//         height: "auto",
+        height: "220px",
         width: "100%",
         autoload: true,
         sorting: true,
-        paging: true,
+        paging: false,
         pagerContainer: "#splmntDmndListPager",
         pagerFormat: "{first} {prev} {pages} {next} {last}",
         pagePrevText: "이전",
         pageNextText: "다음",
         pageFirstText: " < 처음 ㅣ",
         pageLastText: " | 마지막 >",
-        pageSize: 10,
+//         pageSize: 5,
         pageButtonCount: 10,
         pageLoading: true,
         pageIndex: 1,
@@ -389,7 +389,6 @@ function writeSplmntDmndGridData(){
             loadData: function (filter) {
                 var data = $.Deferred();
 
-                var formData = $('#searchFrm').serializeArray();
                 var formData = $('#searchFrm').serializeArray();
                 var params = [
                         {name: "pageNumber", value: filter.pageIndex},
@@ -542,13 +541,13 @@ var openPicChgModal = (modeYn) => {
 
 //서류요청(보완요청popup)
 var splmntDmndAddModal;
-fn_openSplmntDmndPopup = () => {
+var openSplmntDmndModal = (sttsCd) => {
 
     //var blcklstIds = selectedItems.join(",")
-
+var vSttsCd = sttsCd
     //데이터 보내기
     //var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid="+prgrmid + "&frmNm=aplyInfo";
-    var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid=111&sttsCd=111106";
+var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid=" + prgrmid + "&sttsCd=" + vSttsCd;
 
     $("#splmntDmndPopup").load(url, function(response, status, xhr) {
 
