@@ -8,20 +8,20 @@ import lombok.Data;
 import java.util.Date;
 
 /**
-* 탄소중립헬프데스크 문의글Vo 클래스
-*
-* <pre>
-* com.kbrainc.plum.mng.helpDesk.model
-* - HelpDeskVo.java
-* </pre>
-*
-* @ClassName   : HelpDeskVo
-* @Description : TODO
-* @author      : KBRAINC_DEV
-* @date        : 2022. 12. 20.
-* @Version     :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
+ * 탄소중립헬프데스크 문의글Vo 클래스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.helpDesk.model
+ * - HelpDeskVo.java
+ * </pre>
+ *
+ * @author : KBRAINC_DEV
+ * @ClassName : HelpDeskVo
+ * @Description : 탄소중립헬프데스크 문의글Vo 클래스
+ * @date : 2022. 12. 20.
+ * @Version :
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
 @Data
 public class HelpDeskVo extends ParentRequestVo {
     /** 분류코드 그룹아이디 */

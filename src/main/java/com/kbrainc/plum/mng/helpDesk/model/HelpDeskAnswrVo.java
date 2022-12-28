@@ -6,20 +6,20 @@ import lombok.Data;
 
 
 /**
-* 탄소중립헬프데스크 답변Vo 클래스
-*
-* <pre>
-* com.kbrainc.plum.mng.helpDesk.model
-* - HelpDeskAnswrVo.java
-* </pre>
-*
-* @ClassName   : HelpDeskAnswrVo
-* @Description : TODO
-* @author      : KBRAINC_DEV
-* @date        : 2022. 12. 20.
-* @Version     :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
+ * 탄소중립헬프데스크 답변Vo 클래스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.helpDesk.model
+ * - HelpDeskAnswrVo.java
+ * </pre>
+ *
+ * @author : KBRAINC_DEV
+ * @ClassName : HelpDeskAnswrVo
+ * @Description : 탄소중립헬프데스크 답변Vo 클래스
+ * @date : 2022. 12. 20.
+ * @Version :
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
 @Data
 public class HelpDeskAnswrVo extends ParentRequestVo {
     /** 로그인사용자 정보 */
