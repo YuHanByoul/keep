@@ -41,8 +41,30 @@ public interface DsgnPrgrmDao {
 	* @Description : 지정내역 목록조회
 	* @param dsgnPrgrmVo
 	* @return List<DsgnPrgrmVo>
-	* @throws Exception
+ㅊ
 	*/
 	public List<DsgnPrgrmVo> selectDsgnDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정내역 저장
+	*
+	* @Title : insertDsgnHstry
+	* @Description : 지정내역 저장
+	* @param dsgnPrgrmVo
+	* @return int
+    * @throws Exception;
+	*/
+	public int insertDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 상세 조회
+	*
+	* @Title : selectDsgnPrgrm
+	* @Description : 지정프로그램 상세 조회
+	* @param dsgnPrgrmVo
+	* @return DsgnPrgrmVo
+	* @throws Exception;
+	*/
+	public DsgnPrgrmVo selectDsgnPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }
