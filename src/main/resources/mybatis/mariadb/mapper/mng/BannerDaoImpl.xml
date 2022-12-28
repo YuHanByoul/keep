@@ -35,7 +35,7 @@
         LEFT OUTER JOIN TB_CMM_FILE B ON A.BANNER_FILEID = B.FILEID
         WHERE 
             1=1
-            <if test="siteid != null and siteid != ''">
+            <if test="siteid != null">
             AND A.SITEID = #{siteid}
             </if>
         <include refid="PaginationMapper.footer"/>
@@ -57,7 +57,7 @@
         WHERE 
             1=1
             AND A.EXPSR_YN = 'Y'
-            <if test="siteid != null and siteid != ''">
+            <if test="siteid != null">
             AND A.SITEID = #{siteid}
             </if>
         ORDER BY ORDR ASC
@@ -124,9 +124,12 @@
         /* BannerDao.selectBannerInfo */
         SELECT
         	  A.BANNERID
+            , A.SITEID
             , A.BANNER_TTL
             , A.BANNER_FILEID
             , B.FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM
+            , A.URL
             , A.EXPSR_YN
             , A.REG_DT
         FROM TB_CMM_BANNER A
@@ -134,4 +137,24 @@
        WHERE BANNERID = #{bannerid}
     </select>
     
+    <!-- 배너관리 노출배너 순서정렬 -->
+    <update id="updateBanner" parameterType="BannerVo">
+        /* BannerDao.updateBanner */
+        UPDATE TB_CMM_BANNER SET
+                SITEID                       = #{siteid}
+                , BANNER_TTL                 = #{bannerTtl}
+                , BANNER_FILEID              = #{bannerFileid}
+                , URL                        = #{url}
+                , MDFCN_DT                   = NOW()
+                , MDFRID                     = #{user.userid}
+         WHERE BANNERID = #{bannerid}
+    </update>
+    
+    <!-- 배너관리 노출배너 순서정렬 -->
+    <delete id="deleteBanner" parameterType="BannerVo">
+        /* BannerDao.updateBanner */
+        DELETE FROM TB_CMM_BANNER
+        WHERE BANNERID = #{bannerid}
+    </delete>  
+        
 </mapper>

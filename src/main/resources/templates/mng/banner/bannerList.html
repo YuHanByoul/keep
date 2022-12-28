@@ -246,9 +246,6 @@
 			var rightHtml = "";
 			var columnHtml = "";
 			
-
-			
-			
 			var insertPopupUrl = "/mng/banner/bannerInsertPopup.html";
 			var insertAddModal;
 			
@@ -268,35 +265,24 @@
 				});
 			}
 			
-			function insertModal_close(){
-				insertModal.hide();
-			}
-			
 			var updatePopupUrl = "/mng/banner/bannerUpdatePopup.html";
 			var updateAddModal;
 			
-			fn_openBannerUpdateModal = () => {
-				var blcklstIds = selectedItems.join(",")
-				var url = popupUrl+"?blcklstIds="+blcklstIds;
-				 
-				$("#bannerInsertPopup").load(updatePopupUrl, function(response, status, xhr) {
+			fn_openBannerUpdateModal = (bannerid) => {
+				var url = updatePopupUrl+"?bannerid="+bannerid;
+				
+				$("#bannerUpdatePopup").load(url, function(response, status, xhr) {
 					if (status == "success") {
-						insertAddModal = new bootstrap.Modal($('#bannerInsertPopup'));
-						insertAddModal.show();
+						updateAddModal = new bootstrap.Modal($('#bannerUpdatePopup'));
+						updateAddModal.show();
 					}
 				});
 			}
 			
-			function updateModal_init(){
-				insertModal = new bootstrap.Modal($('#bannerUpdatePopup'));
-				insertModal.show();
-			}
-			
 			function updateModal_close(){
-				insertModal.hide();
+				updateAddModal.hide();
 			}
 			
-
 		var banner = {
 			init : function() {
 				// drag&drop event
@@ -307,8 +293,8 @@
 				        ghostClass: "blue-background-class",
 				        dataIdAttr: 'data-id',
 				        
-					    onEnd: function (evt) {
-					    	var bannerid = sortbale.toArray();
+					    onEnd: function (evt) { // 배너를 drop 했을때 실행
+					    	var bannerid = sortbale.toArray(); // data-id값을 배열로 초기화하는 기능
 						    var dataList = new Array();
 						    for(var i = 1; i <= bannerid.length; i++){
 						    	var data = new Object();
@@ -316,9 +302,10 @@
 						    	data["ordr"] = i;
 						    	dataList.push(data);
 						    }
-						    console.log(dataList)
 						    var params = new Object();
 						    params["bannerVoList"] = dataList;
+						    
+						 	// 배너 id, 순서 수정
 	 						if (displayWorkProgress()){
 								$.ajax({
 									url : "/mng/banner/updateExpsrBannerSort.do",
@@ -336,6 +323,8 @@
 				    });
 				    
 				});
+				//페이지 진입시 리스트 조회
+				banner.selectBannerList();
 				
 				this.registEvent();
 				
@@ -344,18 +333,13 @@
 
 		
 			registEvent : function() {
+				// 사이트 선택시 리스트 초기화후 리스트 조회
 				$('#siteid').change(function(event) {
-					$("#RightBanner").html("");
-					$("#LeftBanner").html("");
-					$(".column").html("");
-					leftHtml = "";
-					rightHtml = "";
-					columnHtml = "";
-					
 					banner.selectBannerList();
 				})
 			},
 			
+			// 배너 리스트 조회 및 리스트 생성 기능
 			selectBannerList: function() {
 				if (displayWorkProgress()){
 					$.ajax({
@@ -365,22 +349,28 @@
 						data : $("#searchFrm").serialize(),
 						type : 'POST',
 						success : function(data) {
+							// 배너 리스트 초기화
+							$("#LeftBanner").children().remove();
+							$("#RightBanner").children().remove();
+							$(".paging").children().remove();
 							leftHtml = "";
 							rightHtml = "";
 							columnHtml = "";
-							$("#LeftBanner").children().remove();
-							$("#RightBanner").children().remove();
 							$("#LeftBanner").html("<script type='text/javascript' src='/files/assets/pages/advance-elements/swithces.js'>"+"</"+"script>");
 							
+							// 배너 리스트 생성
 							if(data.list.length == null || data.list.length <= 0){
 								$("#LeftBanner").addClass("text-right")
 								$("#LeftBanner").html('<span> 데이터가 없습니다. </span>');
-							}
-							for(var i = 0; i < data.list.length; i++){
-								if(i % 2 == 1){
-									$("#RightBanner").html(banner.fn_makeListRightHtml(data.list[i], i));
-								}else{
-									$("#LeftBanner").html(banner.fn_makeListLeftHtml(data.list[i], i));
+							}else {
+								$("#LeftBanner").removeClass("text-right");
+								$(".column").removeClass("text-center");
+								for(var i = 0; i < data.list.length; i++){
+									if(i % 2 == 1){
+										$("#RightBanner").html(banner.fn_makeListRightHtml(data.list[i], i));
+									}else{
+										$("#LeftBanner").html(banner.fn_makeListLeftHtml(data.list[i], i));
+									}
 								}
 							}
 							
@@ -393,6 +383,7 @@
 				}
 			},
 			
+			// 배너목록 오른쪽영역 배너 생성
 			fn_makeListRightHtml : function(list, index) {
 				rightHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
 				rightHtml += '<div class="mb-2 row">'
@@ -401,11 +392,12 @@
 				rightHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
 				rightHtml += '</div>'
 				rightHtml += '</div>'
-				rightHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="updateModal_init();"/>'
+				rightHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
 				rightHtml += '</div>'
 				return rightHtml;
 			},
 			
+			// 배너목록 왼쪽영역 배너 생성
 			fn_makeListLeftHtml : function(list, index) {
 				leftHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
 				leftHtml += '<div class="mb-2 row">'
@@ -414,11 +406,12 @@
 				leftHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
 			    leftHtml += '</div>'
 			    leftHtml += '</div>'
-			    leftHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="updateModal_init();"/>'
+			    leftHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
 			    leftHtml += '</div>'
 				return leftHtml;
 			},
 			
+			// 노출배너 목록에 배너 생성
 			fn_makeListColumnHtml : function(list) {
 				if (list == null || list.length <= 0) {
 					$(".column").addClass("text-center");
@@ -436,38 +429,41 @@
 				return columnHtml;
 			},
 			
+			// 스위치버튼을 눌렀을때 실행
 			swicthBtnChange : function() {
 				$(':checkbox[name="banner"]').on({
 				    change: function() {
-				    	if($(this).is(':checked')) {
-				    		if($(".column").children('span').length == 1){
+				    	if($(this).is(':checked')) { // 버튼은 on 했을경우
+				    		if($(".column").children('span').length == 1){ // 노출배너 목록에 <span> 데이터가 없습니다. </span>가 있을경우
 				    			$(".column").removeClass("text-center");
 				    			$(".column").children('span').remove();
+				    		}else{ // 없을경우 버튼을 누른 배너를 복사해 노출배너 영역에 붙여넣는 기능
+					    		var clone = $(".banner"+this.id).clone();
+					    		var inputTagDelete = clone[0].querySelector("input");
+					    		$(".column").append(clone);
+					    		inputTagDelete.parentNode.innerHTML = "";
+					    		clone[0].querySelector("img").removeAttribute("onclick");
+					    		
+					    		// 배너 순서, 노출 여부 수정
+					    		if (displayWorkProgress()){
+									$.ajax({
+										url : "/mng/banner/updateExpsrBanner.do",
+										cache : false,
+										dataType : 'json',
+										data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
+										type : 'POST',
+										contentType: "application/json; charset=utf-8",
+										success : function(data) {
+											closeWorkProgress();
+										}
+									});
+								}
 				    		}
-				    		var clone = $(".banner"+this.id).clone();
-				    		var inputTagDelete = clone[0].querySelector("input");
-				    		$(".column").append(clone);
-				    		inputTagDelete.parentNode.innerHTML = "";
-				    		clone[0].querySelector("img").removeAttribute("onclick");
-				    		
-				    		if (displayWorkProgress()){
-								$.ajax({
-									url : "/mng/banner/updateExpsrBanner.do",
-									cache : false,
-									dataType : 'json',
-									data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
-									type : 'POST',
-									contentType: "application/json; charset=utf-8",
-									success : function(data) {
-										closeWorkProgress();
-									}
-								});
-							}
-				    	}else {
-				    		console.log(1);
+				    	}else { // 버튼을 off 했을경우
 				    		var bannerid = this.id;
+				    	
+				    		// 해당하는 배너를 노출배너 목록에서 삭제 및 순서 초기화, 노출 여부를 수정
 				    		if (displayWorkProgress()){
-				    			console.log(1);
 								$.ajax({
 									url : "/mng/banner/updateExpsrBanner.do",
 									cache : false,
@@ -487,6 +483,10 @@
 				});
 			},
 			
+			insertModal_close : function(){
+				insertAddModal.hide();
+			}
+			
 		}
 		
         $(function() {
@@ -497,9 +497,6 @@
 		function goPage(page) {
 			$("#pageNumber").val(page);
 			
-			$("#RightBanner").html("");
-			$("#LeftBanner").html("");
-			$(".column").html("");
 			leftHtml = "";
 			rightHtml = "";
 			columnHtml = "";
@@ -511,3 +508,6 @@
 	</div>
 </body>
 </html>
+
+			
+			

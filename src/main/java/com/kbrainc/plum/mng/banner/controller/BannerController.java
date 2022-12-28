@@ -103,11 +103,11 @@ public class BannerController {
         result = bannerService.selectBannerInfo(bannerVo);
         model.addAttribute("banner", result);
         
-        if(bannerVo.getBannerFileid() != 0 && result.getFileIdntfcKey() != null) {
+        if(result.getBannerFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + bannerVo.getBannerFileid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + bannerVo.getBannerFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + bannerVo.getBannerFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            fileBtn.append("<div class ='label label-inverse text-white' id='" + result.getBannerFileid() + "'>");
+            fileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getBannerFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            fileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getBannerFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
             model.addAttribute("fileBtn", fileBtn);
         }
         
@@ -181,6 +181,88 @@ public class BannerController {
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+    
+    /**
+    * 배너관리 배너 수정 기능
+    *
+    * @Title : updateBanner
+    * @Description : 배너관리 배너 수정 기능
+    * @param bannerVo 배너관리 객체
+    * @param bindingResult 배너관리 유효성 검증결과
+    * @param user 사용자 세션정보
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/banner/updateBanner.do")
+    @ResponseBody
+    public Map<String, Object> updateBanner(@Valid BannerVo bannerVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        bannerVo.setUser(user);
+
+        int retVal = 0;
+                
+        retVal = bannerService.updateBanner(bannerVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "저장에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+    
+    /**
+    * 배너관리 배너 삭제 기능
+    *
+    * @Title : deleteBanner
+    * @Description : 배너관리 배너 삭제 기능
+    * @param bannerVo 배너관리 객체
+    * @param bindingResult 배너관리 유효성 검증결과
+    * @param user 사용자 세션정보
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/banner/deleteBanner.do")
+    @ResponseBody
+    public Map<String, Object> deleteBanner(@Valid BannerVo bannerVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        bannerVo.setUser(user);
+
+        int retVal = 0;
+                
+        retVal = bannerService.deleteBanner(bannerVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제에 실패했습니다.");
         }
 
         return resultMap;
