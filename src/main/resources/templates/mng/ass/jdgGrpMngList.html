@@ -12,14 +12,15 @@
                 <!-- 필터 부분 -->
                 <div class="card">
                     <div class="card-block-small">
-                        <form name="searchForm" id="searchForm" action="" method="get" onsubmit="return false;">
+                        <form name="searchForm" id="searchForm" method="get">
                             <!-- 키워드 filter -->
                             <div class="row">
                                 <div class="col-lg-3 mb-2 mb-lg-0">
                                     <div class="mb-0 form-group row">
                                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchKeyword"><strong>심사위원 그룹명</strong></label>
                                         <div class="col-12">
-                                            <input type="text" class="form-control form-control-sm" id="searchKeyword" name="searchKeyword" aria-label="Text input with dropdown button" placeholder="심사위원 그룹명">
+                                            <input type="text" class="form-control form-control-sm" id="searchKeyword" name="searchKeyword" aria-label="Text input with dropdown button"
+                                                   placeholder="심사위원 그룹명">
                                         </div>
                                     </div>
                                 </div>
@@ -38,7 +39,7 @@
                             </div>
                             <!-- //키워드 filter -->
                             <!-- 키워드 filter-btn -->
-                            <div class="m-t-20 text-center" >
+                            <div class="m-t-20 text-center">
                                 <button type="button" class="btn btn-disabled m-r-5" onclick="jdgGrpList.searchInit()">초기화</button>
                                 <button type="button" class="btn btn-primary" onclick="jdgGrpList.search()">검색</button>
                             </div>
@@ -67,28 +68,41 @@
                 </div>
             </div>
         </div>
-        <div id="contentPanel" class="row" ></div>
-    <!-- Page-body end -->
+        <div id="contentPanel" class="row"></div>
+        <!-- Page-body end -->
     </div>
     <div class="modal fade" id="expertSearchModal" aria-hidden="true" data-bs-backdrop="static">
     </div>
 
     <script th:inline="javascript">
+        function mapCamelCaseToUnderscore(sortField) {
+            var result = "";
+            for (var i = 0; i < sortField.length; i++) {
+                if (sortField[i] === sortField[i].toUpperCase()) {
+                    result += "_";
+                    result += sortField[i].toLowerCase();
+                } else {
+                    result += sortField[i];
+                }
+            }
+            return result;
+        }
+
         var jdgGrpList = {
             listUrl: "/mng/ass/selectJdgGrpList.do",
             detailUrl: "/mng/ass/jdgGrpDetail.html",
 
-            init: function() {
-                gridHelper = new GridHelper('jsGrid','contentPanel');
+            init: function () {
+                gridHelper = new GridHelper('jsGrid', 'contentPanel');
                 this.writeJsGridData();
             },
 
-            writeJsGridData : function() {
+            writeJsGridData: function () {
                 $('#jsGrid').jsGrid({
                     height: "auto",
                     width: "100%",
                     autoload: true,
-                    sorting: false,
+                    sorting: true,
                     paging: true,
                     pagerContainer: "#listPager",
                     pagerFormat: "{first} {prev} {pages} {next} {last}",
@@ -102,26 +116,32 @@
                     pageLoading: true,
                     pageIndex: 1,
                     controller: {
-                        loadData: function(filter) {
+                        loadData: function (filter) {
                             var data = $.Deferred();
-                            var params = {
-                                "searchKeyword": $('#searchKeyword').val(),
-                                "useYn": $('#searchUseYn').val(),
-                                "pageNumber": filter.pageIndex,
-                                "rowPerPage": filter.pageSize,
-                                "orderField": "REG_DT",
-                                "orderDirection": "desc"
-                            };
+                            var params = [
+                                {"name": "pageNumber", "value": filter.pageIndex},
+                                {"name": "rowPerPage", "value": filter.pageSize},
+                            ];
+
+                            if (filter.sortField != undefined) {
+                                params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                                params.push({name: "orderDirection", value: filter.sortOrder});
+                            } else {
+                                params.push({name: "orderField", value: 'reg_dt'});
+                            }
+
+                            var formData = $('#searchForm').serializeArray();
+                            formData = formData.concat(params);
                             $.ajax({
                                 type: "GET",
                                 contentType: "application/json; charset=utf-8",
                                 url: jdgGrpList.listUrl,
-                                data: params,
+                                data: formData,
                                 dataType: "json"
-                            }).done(function(response) {
+                            }).done(function (response) {
                                 var da = {
-                                    data : escapeGridData(response.list),
-                                    itemsCount : response.totalCount
+                                    data: escapeGridData(response.list),
+                                    itemsCount: response.totalCount
                                 };
                                 data.resolve(da);
                             });
@@ -132,14 +152,21 @@
                     fields: [
                         {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
                         {title: "심사위원 그룹명", name: "grpNm", type: "text", width: "200"},
-                        {title: "등록 전문가 수", name: "exprtCnt", type: "number", width: "100", align: "center"},
-                        {title: "사용여부", name: "useYn", type: "text" , width: "100" , align: "center"},
-                        {title: "등록일", name: "regDt", type: "text", align: "center" , width: "80"},
+                        {title: "등록 전문가 수", name: "exprtCnt", type: "number", width: "80", align: "center"},
+                        {
+                            title: "사용여부", name: "useYn", type: "text", width: "80", align: "center",
+                            itemTemplate(value) {
+                                if (value == 'Y')
+                                    return "사용";
+                                else
+                                    return "미사용";
+                            }
+                        },
+                        {title: "등록일", name: "regDt", type: "text", align: "center", width: "80"},
                     ],
                     /* [# sec:authorize-url="/mng/ass/jdgGrpDetail.html"] */
-                    rowClick: function(args) {
+                    rowClick: function (args) {
                         gridHelper.rowClick(args);
-
                         var url = jdgGrpList.detailUrl + "?grpId=" + args.item.grpId;
                         gridHelper.loadContent(url);
                     }
@@ -147,21 +174,21 @@
                 });
             },
 
-            search: function() {
+            search: function () {
                 gridHelper.resetListContent();
             },
 
-            searchInit: function() {
+            searchInit: function () {
                 $('#searchKeyword, #searchUseYn').val('');
             },
 
-            insertForm: function() {
+            insertForm: function () {
                 gridHelper.loadContent(jdgGrpList.detailUrl);
             }
 
         }
 
-        $(function(){
+        $(function () {
             jdgGrpList.init();
         })
     </script>

@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
     SQL File Name : JdgGrpMngDaoImpl.xml
     Description : 심사위원 그룹 관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpMngDao">
-    <insert id="insertJdgGrpInfo" useGeneratedKeys="true" keyProperty="grp_id" parameterType="JdgGrpVo">
-        INSERT INTO TB_ASS_EXPRT_GRP (
-             GRP_NM
-             , USE_YN
-             , MDFCN_DT
-             , MDFRID
-             , REG_DT
-             , RGTRID
-             )
-            VALUES (
-                #{grpNm}
-                , #{useYn}
-                , NOW()
-                , #{user.userid}
-                , NOW()
-                , #{user.userid}
-            )
+
+    <!--심사위원 그룹 등록-->
+    <insert id="insertJdgGrpInfo" useGeneratedKeys="true" keyProperty="grpId"
+            parameterType="JdgGrpVo">
+        INSERT INTO TB_ASS_EXPRT_GRP ( GRP_NM
+                                     , USE_YN
+                                     , MDFCN_DT
+                                     , MDFRID
+                                     , REG_DT
+                                     , RGTRID)
+        VALUES ( #{grpNm}
+               , #{useYn}
+               , NOW()
+               , #{user.userid}
+               , NOW()
+               , #{user.userid})
     </insert>
 
+    <!--심사위원 그룹 수정-->
     <update id="updateJdgGrpInfo" parameterType="JdgGrpVo">
         UPDATE
             TB_ASS_EXPRT_GRP
@@ -55,6 +56,7 @@
         <include refid="PaginationMapper.footer"></include>
     </select>
 
+    <!--심사위원 그룹 정보 조회-->
     <select id="selectJdgGrpInfo" resultType="JdgGrpVo">
         SELECT
             GRP_ID
@@ -65,50 +67,106 @@
         WHERE GRP_ID = #{grpId}
     </select>
 
+    <!--심사위원 그룹에 매핑된 전문가 조회-->
     <select id="selectJdgGrpExpertList" resultType="JdgGrpExpertVo">
         <include refid="PaginationMapper.header"></include>
         SELECT
-            C.USERID
-            ,C.ACNT
-            ,C.NM
-            ,C.EML
-            ,C.MOBLPHON
-            ,C.REG_DT
-            ,C.MDFCN_DT
+        C.USERID
+        ,C.ACNT
+        ,C.NM
+        ,C.EML
+        ,C.MOBLPHON
+        ,C.REG_DT
+        ,C.MDFCN_DT
         FROM TB_ASS_EXPRT_GRP A
         INNER JOIN TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
         INNER JOIN TB_CMM_USER C ON C.USERID = B.USERID
         WHERE A.GRP_ID = #{grpId}
         <include refid="PaginationMapper.footer"></include>
     </select>
-    <select id="selectJdgGrpMngExpertSearchList" resultType="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpExpertVo">
+
+    <!--전문가 모달 > 전문가 목록 조회-->
+    <select id="selectJdgGrpMngExpertSearchList"
+            resultType="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpExpertVo">
         <include refid="PaginationMapper.header"/>
         SELECT A.USERID,
-               A.ACNT,
-               A.NM,
-               A.EML,
-               A.MOBLPHON,
-               GROUP_CONCAT(B.CD_NM SEPARATOR', ') RGN_CD_NM,
-               GROUP_CONCAT(C.CD_NM SEPARATOR', ') SBJCT_CD_NM,
-               GROUP_CONCAT(D.CRTFCT_NM SEPARATOR', ') CRTFCT_NM,
-               A.REG_DT,
-               A.MDFCN_DT
+        A.ACNT,
+        A.NM,
+        A.EML,
+        A.MOBLPHON,
+        GROUP_CONCAT(B.CD_NM SEPARATOR', ') RGN_CD_NM,
+        GROUP_CONCAT(C.CD_NM SEPARATOR', ') SBJCT_CD_NM,
+        GROUP_CONCAT(D.CRTFCT_NM SEPARATOR', ') CRTFCT_NM,
+        A.REG_DT,
+        A.MDFCN_DT
         FROM TB_CMM_USER A
-            INNER JOIN TB_ASS_EXPRT E ON A.USERID = E.USERID
-            LEFT OUTER JOIN (
-                SELECT A.USERID, B.CD_NM
-                FROM TB_ASS_EXPRT_ACTVT_RGN A
-                INNER JOIN TB_CMM_CD B ON A.RGN_CD = B.CD
-             ) B
-            ON A.USERID = B.USERID
+        INNER JOIN TB_ASS_EXPRT E ON A.USERID = E.USERID
         LEFT OUTER JOIN (
-                SELECT A.USERID, B.CD_NM
-                FROM TB_ASS_EXPRT_SBJCT A
-                INNER JOIN TB_CMM_CD B ON A.SBJCT_CD = B.CD
-            ) C
-            ON A.USERID = C.USERID
+        SELECT A.USERID, B.CD_NM, B.CD
+        FROM TB_ASS_EXPRT_ACTVT_RGN A
+        INNER JOIN TB_CMM_CD B ON A.RGN_CD = B.CD
+        ) B
+        ON A.USERID = B.USERID
+        LEFT OUTER JOIN (
+        SELECT A.USERID, B.CD_NM, B.CD
+        FROM TB_ASS_EXPRT_SBJCT A
+        INNER JOIN TB_CMM_CD B ON A.SBJCT_CD = B.CD
+        ) C
+        ON A.USERID = C.USERID
         LEFT OUTER JOIN TB_ASS_EXPRT_CRTFCT D ON A.USERID = D.USERID
+        WHERE 1=1
+        <if test="acntOrNm !=null and acntOrNm != '' ">
+            AND A.ACNT LIKE CONCAT('%',#{acntOrNm},'%') OR A.NM LIKE
+            CONCAT('%',#{acntOrNm}, '%')
+        </if>
+        <if test="crtfctNm != null and crtfctNm != '' ">
+            AND D.CRTFCT_NM LIKE CONCAT('%', #{crtfctNm}, '%')
+        </if>
+        <if test="sbjctCd != null and sbjctCd != '' ">
+            AND C.CD = #{sbjctCd}
+        </if>
+        <if test="rgnCd != null and rgnCd != '' ">
+            AND B.CD = #{rgnCd}
+        </if>
         GROUP BY A.USERID
         <include refid="PaginationMapper.footer"/>
     </select>
+
+    <!--그룹에 속한 전문가 목록 조회-->
+    <select id="selectExistingExpertList" resultType="JdgGrpExpertVo">
+        SELECT USERID
+        FROM TB_ASS_EXPRT_GRP_MAPNG
+        WHERE GRP_ID = #{grpId}
+    </select>
+
+    <!--전문가 추가-->
+    <insert id="insertJdgGrpExpert" parameterType="JdgGrpExpertVo">
+        INSERT INTO TB_ASS_EXPRT_GRP_MAPNG(
+        GRP_ID
+        ,USERID
+        ,MDFCN_DT
+        ,MDFRID
+        ,REG_DT
+        ,RGTRID
+        ) VALUES
+        <foreach item="insertId" collection="insertIds" separator=",">
+            (
+            #{grpId}
+            ,#{insertId}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <!--전문가 삭제-->
+    <update id="deleteJdgGrpExpert" parameterType="JdgGrpExpertVo">
+        DELETE
+        FROM TB_ASS_EXPRT_GRP_MAPNG
+        WHERE GRP_ID = #{grpId}
+          AND USERID = #{userid}
+    </update>
+
 </mapper>
