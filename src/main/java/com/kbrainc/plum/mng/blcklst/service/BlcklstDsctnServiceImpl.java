@@ -39,7 +39,7 @@ public class BlcklstDsctnServiceImpl extends PlumAbstractServiceImpl implements 
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
-    public List<BlcklstDsctnVo> selectBlcklstDsctnList(BlcklstDsctnVo readerVo) throws Exception {
-        return blcklstDsctnDao.selectBlcklstDsctnList(readerVo);
+    public List<BlcklstDsctnVo> selectBlcklstDsctnList(BlcklstDsctnVo blcklstDsctnVo) throws Exception {
+        return blcklstDsctnDao.selectBlcklstDsctnList(blcklstDsctnVo);
     }
 }

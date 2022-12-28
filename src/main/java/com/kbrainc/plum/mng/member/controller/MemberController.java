@@ -674,7 +674,7 @@ public class MemberController {
     *
     * @Title       : updatetBlcklstDsctn 
     * @Description : 블랙리스트 지정 및 해제 처리
-    * @param BlcklstDsctnVo blcklstDsctnVo객체
+    * @param BannerVo blcklstDsctnVo객체
     * @param bindingResult 유효성검증결과
     * @param user 사용자세션정보
     * @return Map<String,Object> 응답결과객체

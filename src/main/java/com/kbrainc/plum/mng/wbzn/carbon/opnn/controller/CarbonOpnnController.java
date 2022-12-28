@@ -6,14 +6,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.wbzn.carbon.opnn.model.CarbonOpnnVo;
 import com.kbrainc.plum.mng.wbzn.carbon.opnn.service.CarbonOpnnService;
-import com.kbrainc.plum.mng.wbzn.now.opnn.model.OpnnVo;
-import com.kbrainc.plum.mng.wbzn.now.opnn.service.OpnnService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**

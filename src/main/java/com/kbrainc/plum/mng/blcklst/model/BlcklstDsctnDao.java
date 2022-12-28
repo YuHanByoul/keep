@@ -33,5 +33,5 @@ public interface BlcklstDsctnDao {
     * @throws Exception 예외
     * @return List<EnveduVo>
     */
-    public List<BlcklstDsctnVo> selectBlcklstDsctnList(BlcklstDsctnVo BlcklstDsctnVo) throws Exception;
+    public List<BlcklstDsctnVo> selectBlcklstDsctnList(BlcklstDsctnVo blcklstDsctnVo) throws Exception;
 }

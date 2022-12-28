@@ -281,7 +281,7 @@ public interface MemberDao {
      *
      * @Title       : deletetEsylgn 
      * @Description : 사용자수정.
-     * @param BlcklstDsctnVo BlcklstDsctnVo객체
+     * @param BannerVo BlcklstDsctnVo객체
      * @return int update로우수
      * @throws Exception 예외
      */
@@ -292,7 +292,7 @@ public interface MemberDao {
      *
      * @Title       : deletetEsylgn 
      * @Description : 사용자수정.
-     * @param BlcklstDsctnVo BlcklstDsctnVo객체
+     * @param BannerVo BlcklstDsctnVo객체
      * @return int update로우수
      * @throws Exception 예외
      */
