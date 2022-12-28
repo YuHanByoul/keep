@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
     SQL File Name : DsgnPrgrmDaoImpl.xml
@@ -113,27 +114,56 @@
         /* DsgnPrgrmDao.selectDsgnDsctnList*/
         <include refid="PaginationMapper.header"/>
         SELECT
-            A.HSTRYID
-          , A.PRGRMID
-          , A.DSGN_CYCL
-          , A.DSGN_NO
-          , A.DSGN_OBTAIN_DE
-          , A.DSGN_BGNG_DE
-          , A.DSGN_END_DE
-          , A.DSGN_CNCL_DE
-          , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
-          , A.STTS_CD
-          , A.MDFCN_DT
-          , A.MDFRID
-          , A.REG_DT
-          , CONCAT( B.NM ,"(",B.ACNT,")" ) AS RGTR_NM
+        A.HSTRYID
+        , A.PRGRMID
+        , A.DSGN_CYCL
+        , A.DSGN_NO
+        , A.DSGN_OBTAIN_DE
+        , A.DSGN_BGNG_DE
+        , A.DSGN_END_DE
+        , A.DSGN_CNCL_DE
+        , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE ) AS DSGN_PRD
+        , A.STTS_CD
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.REG_DT
+        , CONCAT( B.NM ,"(",B.ACNT,")" ) AS RGTR_NM
         FROM
-            TB_ASS_DSGN_HSTRY A
+        TB_ASS_DSGN_HSTRY A
         LEFT OUTER JOIN
-            TB_CMM_USER B ON A.RGTRID = B.USERID
+        TB_CMM_USER B ON A.RGTRID = B.USERID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 이의신청 목록 조회 -->
+    <select id="selectObjcList" parameterType="DsgnPrgrmVo"
+            resultType="DsgnPrgrmObjcVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        PRGRMID
+        , APLYID
+        , TTL
+        , CN
+        , APLY_STTS_CD
+        , REG_DT
+        , MDFCN_DT
+        FROM TB_ASS_OBJC_APLY
+        WHERE PRGRMID = #{prgrmid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 이의신청 정보 조회 -->
+    <select id="selectObjcInfo" resultType="DsgnPrgrmObjcVo">
+        SELECT PRGRMID
+             , APLYID
+             , TTL
+             , CN
+             , APLY_STTS_CD
+             , REG_DT
+             , MDFCN_DT
+        FROM TB_ASS_OBJC_APLY
+        WHERE APLYID = #{aplyid}
+    </select>
 </mapper>

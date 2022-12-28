@@ -1,14 +1,13 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.service;
 
-import java.util.List;
-
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
-import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import java.util.List;
 
 /**
  *
@@ -47,17 +46,44 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
-	* 지정내역 목록 조회
-	*
-	* @Title : selectDsgnDsctnList
-	* @Description : 지정내역 목록 조회
-	* @param dsgnPrgrmVo
-	* @return
-	* @return List<DsgnPrgrmVo>
-	*/
+	 * 지정내역 목록 조회
+	 *
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @return List<DsgnPrgrmVo>
+	 * @Title : selectDsgnDsctnList
+	 * @Description : 지정내역 목록 조회
+	 */
 	@Override
 	public List<DsgnPrgrmVo> selectDsgnDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectDsgnDsctnList(dsgnPrgrmVo);
 	}
 
+	/**
+	 * 이의신청 목록 조회
+	 *
+	 * @param dsgnPrgrmVo
+	 * @return list
+	 * @throws Exception
+	 * @Title : selectObjcList
+	 * @Description : 이의신청 목록 조회
+	 */
+	@Override
+	public List<DsgnPrgrmObjcVo> selectObjcList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectObjcList(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 이의신청 정보 조회
+	 *
+	 * @param dsgnPrgrmObjcVo
+	 * @return DsgnPrgrmObjcVo
+	 * @throws Exception
+	 * @Title : selectObjcInfo
+	 * @Description : 이의신청 정보 조회
+	 */
+	@Override
+	public DsgnPrgrmObjcVo selectObjcInfo(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception {
+		return dsgnPrgrmDao.selectObjcInfo(dsgnPrgrmObjcVo);
+	}
 }

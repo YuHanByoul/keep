@@ -1,9 +1,13 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
+import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +16,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
-import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
-import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -184,17 +183,60 @@ public class DsgnPrgrmController {
     }
 
     /**
+     * @return String 이동화면경로
+     * @throws Exception :
+     * @throws Exception 예외
      * @Title : implmntIdntySrngForm
      * @Description : 이의신청(탭) 화면이동
-     * @throws Exception :
-     * @return String 이동화면경로
-     * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoForm.html")
-    public String objcInfoForm() throws Exception {
-    	return "mng/dsgnPrgrm/objcInfoForm";
+    public String objcInfoForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+        model.addAttribute("dsgnAplyInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));
+        return "mng/dsgnPrgrm/objcInfoForm";
     }
 
+    /**
+     * 이의신청 목록 조회
+     *
+     * @param dsgnPrgrmVo
+     * @return map
+     * @throws Exception
+     * @Title : selectObjcList
+     * @Description : 이의신청 목록 조회
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectObjcList.do")
+    @ResponseBody
+    public Map<String, Object> selectObjcList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+
+        List<DsgnPrgrmObjcVo> list = dsgnPrgrmServiceImpl.selectObjcList(dsgnPrgrmVo);
+
+        if (list.size() > 0) {
+            result.put("totalCount", (list.get(0).getTotalCount()));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("list", list);
+
+        return result;
+    }
+
+    /**
+     * 이의신청 팝업 화면이동
+     *
+     * @param dsgnPrgrmObjcVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : objcInfoPopup
+     * @Description : 이의신청 팝업 화면이동
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoPopup.html")
+    public String objcInfoPopup(DsgnPrgrmObjcVo dsgnPrgrmObjcVo, Model model) throws Exception {
+        model.addAttribute("objcInfo", dsgnPrgrmServiceImpl.selectObjcInfo(dsgnPrgrmObjcVo));
+        return "mng/dsgnPrgrm/objcInfoPopup.html";
+    }
 }
 
 
