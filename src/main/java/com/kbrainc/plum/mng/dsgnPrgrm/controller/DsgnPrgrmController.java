@@ -190,7 +190,7 @@ public class DsgnPrgrmController {
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/dsgnPrgrm//mng/dsgnPrgrm/objcInfoForm.html")
+    @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoForm.html")
     public String objcInfoForm() throws Exception {
     	return "mng/dsgnPrgrm/objcInfoForm";
     }
