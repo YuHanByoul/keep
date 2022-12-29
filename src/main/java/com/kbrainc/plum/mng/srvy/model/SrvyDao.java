@@ -103,17 +103,6 @@ public interface SrvyDao {
     public List<SrvyUserVo> selectUserList(SrvyUserVo srvyUserVo) throws Exception;
     
     /**
-     * 설문 대상자 등록
-     *
-     * @Title : insertTrpr 
-     * @Description : 설문 대상자 등록
-     * @param srvyUserVo SrvyUserVo객체
-     * @return int insert 로우수
-     * @throws Exception 예외
-     */
-    public int insertTrpr(SrvyUserVo srvyUserVo) throws Exception;
-    
-    /**
      * 회원 존재 여부 확인
      *
      * @Title : isExistUser 
@@ -125,10 +114,21 @@ public interface SrvyDao {
     public SrvyUserVo isExistUser(SrvyUserVo srvyUserVo) throws Exception;
     
     /**
-     * 설문지 대상자 삭제
+     * 설문 대상자 등록
+     *
+     * @Title : insertTrpr 
+     * @Description : 설문 대상자 등록
+     * @param srvyUserVo SrvyUserVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertTrpr(SrvyUserVo srvyUserVo) throws Exception;
+    
+    /**
+     * 설문 대상자 삭제
      *
      * @Title : deleteTrpr
-     * @Description : 설문지 대상자 삭제
+     * @Description : 설문 대상자 삭제
      * @param srvyUserVo SrvyUserVo 객체
      * @return int delete 로우수
      * @throws Exception 예외
@@ -145,5 +145,148 @@ public interface SrvyDao {
      * @throws Exception 예외
      */
     public int updateTrprSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 기관설문 등록
+     *
+     * @Title : insertInstSrvy 
+     * @Description : 기관설문 등록
+     * @param srvyVo SrvyVo객체
+     * @return int srvyid
+     * @throws Exception 예외
+     */
+    public int insertInstSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 기관설문 목록 조회
+     *
+     * @Title : selectInstSrvyList
+     * @Description : 기관설문 목록 조회
+     * @param srvyVo SrvyVo 객체
+     * @return List<SrvyVo> 대상자설문 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyVo> selectInstSrvyList(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 기관설문 업데이트
+     *
+     * @Title : updateInstSrvy
+     * @Description : 기관설문 업데이트
+     * @param srvyVo SrvyVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateInstSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 기관 전체 대상 설문 대상기관 등록
+     *
+     * @Title : insertInstTrgtSrvyInst 
+     * @Description : 기관 전체 대상 설문 대상기관 등록
+     * @param srvyInstVo SrvyInstVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertInstTrgtSrvyInst(SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 설문 대상기관 등록
+     *
+     * @Title : insertSrvyInst 
+     * @Description : 설문 대상기관 등록
+     * @param srvyInstVo SrvyInstVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertSrvyInst(SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 기관 목록 조회
+     *
+     * @Title : selectInstList
+     * @Description : 기관 목록 조회
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyInstVo> 기관 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyInstVo> selectInstList(SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 설문 대상기관 목록 조회
+     *
+     * @Title : selectSrvyInstList
+     * @Description : 설문 대상기관 목록 조회
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyInstVo> 설문 대상기관 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyInstVo> selectSrvyInstList(SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 설문 대상기관 삭제
+     *
+     * @Title : deleteSrvyInst
+     * @Description : 설문 대상기관 삭제
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    public int deleteSrvyInst( SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 기관 존재 여부 확인
+     *
+     * @Title : isExistInst 
+     * @Description : 기관 존재 여부 확인
+     * @param srvyInstVo SrvyInstVo객체
+     * @return srvyInstVo SrvyInstVo 객체
+     * @throws Exception 예외
+     */
+    public SrvyInstVo isExistInst(SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 컨설팅만족도설문 등록
+     *
+     * @Title : insertCnsltngDgstfnSrvy 
+     * @Description : 컨설팅만족도설문 등록
+     * @param srvyVo SrvyVo객체
+     * @return int srvyid
+     * @throws Exception 예외
+     */
+    public int insertCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 컨설팅만족도설문 목록 조회
+     *
+     * @Title : selectCnsltngDgstfnSrvyList
+     * @Description : 컨설팅만족도설문 목록 조회
+     * @param srvyVo SrvyVo 객체
+     * @return List<SrvyVo> 대상자설문 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyVo> selectCnsltngDgstfnSrvyList(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 컨설팅만족도설문 컨설팅 목록 조회
+     *
+     * @Title : selectCnsltngList
+     * @Description : 컨설팅만족도설문 컨설팅 목록 조회
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyInstVo> 컨설팅만족도설문 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyInstVo> selectCnsltngList(SrvyInstVo srvyInstVo) throws Exception;
+    
+    /**
+     * 컨설팅만족도설문 업데이트
+     *
+     * @Title : updateCnsltngDgstfnSrvy
+     * @Description : 컨설팅만족도설문 업데이트
+     * @param srvyVo SrvyVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
     
 }

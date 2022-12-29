@@ -1,0 +1,94 @@
+    
+    
+  <div class="card-header p-b-0">
+	    <ul class="nav nav-tabs tabs" role="tablist">
+	    
+            <th:block sec:authorize-url="/mng/inst/instForm.html">
+	        <li class="nav-item" id="apply_tab">
+	            <a class="nav-link apply active" href="javascript:moveTab('apply')" ><strong>신청정보</strong></a>
+	        </li>
+	        </th:block>
+	        
+            <th:block sec:authorize-url="/mng/inst/instManager.html">
+		    <li class="nav-item" id="info_tab" >
+		        <a class="nav-link info "  href="javascript:moveTab('info')" ><strong>컨설팅정보</strong></a>
+		    </li>
+		    
+            <th:block sec:authorize-url="/mng/inst/instManager.html">
+		    <li class="nav-item" id="survey_tab" >
+		        <a class="nav-link survey "  href="javascript:moveTab('survey')" ><strong>컨설팅평가</strong></a>
+		    </li>
+		    </th:block>
+		    
+	    </ul>
+  </div>
+
+  <div class="tab-content tabs p-t-20" id="tab_content_area" >
+  </div>
+
+ <script th:inline="javascript">
+ 
+    var currentTab ="";
+
+  /*<![CDATA[*/ 
+  	var cnsltngid = /*[[${cnsltngVo.cnsltngid}]]*/null;
+   //var instid = /*[[${param.instid}]]*/null;
+  /*]]>*/
+	
+	var applyUrl ="/mng/cnsltng/cnsltngApplyInfo.html?cnsltngid="+cnsltngid;
+	var infoUrl ="/mng/cnsltng/consultResult.html?cnsltngid="+cnsltngid;
+    var surveyUrl ="/mng/cnsltng/cnsltngEval.html?cnsltngid="+cnsltngid;
+	
+    $(function(){
+       initTab();
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )
+    });
+    
+    function initTab() {
+	   
+         var tabFlag = false;
+         /*[# sec:authorize-url="/mng/inst/instForm.html"]*/
+         if(tabFlag == false) {
+        	 moveTab("apply");
+             tabFlag = true;
+         }
+         /*[/]*/
+         
+         /*[# sec:authorize-url="/mng/inst/instManager.html"]*/
+         if(tabFlag == false) {
+        	 moveTab("info");
+             tabFlag = true;
+         }
+         /*[/]*/
+         
+         /*[# sec:authorize-url="/mng/inst/instManager.html"]*/
+         if(tabFlag == false) {
+        	 moveTab("survey");
+             tabFlag = true;
+         }
+         /*[/]*/
+    }
+    
+    var moveTab = (tabid)=>{
+
+        console.log(tabid);
+
+	    if(currentTab == tabid) return;
+	   
+		$(".nav-link").removeClass("active");
+		currentTab = tabid;
+			
+		if(tabid=="apply"){
+			$("#tab_content_area").load(applyUrl);
+		}else if (tabid=="info"){
+			$("#tab_content_area").load(infoUrl);
+		}else{
+			$("#tab_content_area").load(surveyUrl);
+		}
+		$("."+currentTab).addClass("active");
+		
+       setTimeout(function(){scrollIntoView('contentPanel');},100 )  
+
+	}
+	    
+</script>

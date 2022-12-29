@@ -37,7 +37,6 @@
 					</div>
 				</div>
 
-
 				<div class="card">
 					<div class="card-header p-b-0">
 						<ul class="nav nav-tabs  tabs" role="tablist">
@@ -145,6 +144,19 @@
 			
 			var banner = {
 				init : function() {
+					//페이지 진입시 리스트 조회
+					banner.selectBannerList();
+					
+					this.registEvent();
+					
+				},
+				
+				registEvent : function() {
+					// 사이트 선택시 리스트 초기화후 리스트 조회
+					$('#siteid').change(function(event) {
+						banner.selectBannerList();
+					})
+					
 					// drag&drop event
 					columns.forEach((column) => {
 					    var sortbale = new Sortable(column, {
@@ -153,8 +165,8 @@
 					        ghostClass: "blue-background-class",
 					        dataIdAttr: 'data-id',
 					        
-						    onEnd: function (evt) { // 배너를 drop 했을때 실행
-						    	var bannerid = sortbale.toArray(); // data-id값을 배열로 초기화하는 기능
+						    onEnd : function(evt) { // 배너를 drop 했을때 실행
+						    	var bannerid = sortbale.toArray();
 							    var dataList = new Array();
 							    for(var i = 1; i <= bannerid.length; i++){
 							    	var data = new Object();
@@ -183,18 +195,6 @@
 					    });
 					    
 					});
-					//페이지 진입시 리스트 조회
-					banner.selectBannerList();
-					
-					this.registEvent();
-					
-				},
-				
-				registEvent : function() {
-					// 사이트 선택시 리스트 초기화후 리스트 조회
-					$('#siteid').change(function(event) {
-						banner.selectBannerList();
-					})
 				},
 				
 				// 배너 리스트 조회 및 리스트 생성 기능
@@ -295,32 +295,31 @@
 					    		if($(".column").children('span').length == 1){ // 노출배너 목록에 <span> 데이터가 없습니다. </span>가 있을경우
 					    			$(".column").removeClass("text-center");
 					    			$(".column").children('span').remove();
-					    		}else{ // 없을경우 버튼을 누른 배너를 복사해 노출배너 영역에 붙여넣는 기능
-						    		var clone = $(".banner"+this.id).clone();
-						    		var inputTagDelete = clone[0].querySelector("input");
-						    		$(".column").append(clone);
-						    		inputTagDelete.parentNode.innerHTML = "";
-						    		clone[0].querySelector("img").removeAttribute("onclick");
-						    		
-						    		// 배너 순서, 노출 여부 수정
-						    		if (displayWorkProgress()){
-										$.ajax({
-											url : "/mng/banner/updateExpsrBanner.do",
-											cache : false,
-											dataType : 'json',
-											data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
-											type : 'POST',
-											contentType: "application/json; charset=utf-8",
-											success : function(data) {
-												closeWorkProgress();
-											}
-										});
-									}
 					    		}
-					    	}else { // 버튼을 off 했을경우
-					    		var bannerid = this.id;
 					    	
-					    		// 해당하는 배너를 노출배너 목록에서 삭제 및 순서 초기화, 노출 여부를 수정
+					    		var clone = $(".banner"+this.id).clone();
+					    		var inputTagDelete = clone[0].querySelector("input");
+					    		$(".column").append(clone);
+					    		inputTagDelete.parentNode.innerHTML = "";
+					    		clone[0].querySelector("img").removeAttribute("onclick");
+					    		
+					    		// 배너 순서, 노출 여부 수정
+					    		if (displayWorkProgress()){
+									$.ajax({
+										url : "/mng/banner/updateExpsrBanner.do",
+										cache : false,
+										dataType : 'json',
+										data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
+										type : 'POST',
+										contentType: "application/json; charset=utf-8",
+										success : function(data) {
+											closeWorkProgress();
+										}
+									});
+								}
+					    	}else { // 버튼을 off 했을경우
+					    		var bannerid = this.id;	
+					    		// 해당하는 배너를 노출배너 목록에서 삭제 및 순서, 노출 여부를 수정
 					    		if (displayWorkProgress()){
 									$.ajax({
 										url : "/mng/banner/updateExpsrBanner.do",
@@ -331,11 +330,34 @@
 										contentType: "application/json; charset=utf-8",
 										success : function(data) {
 											$(".column").find($('.banner'+bannerid)).remove();
-											console.log(bannerid);
+											
+								    		var dataList = new Array();
+								    		for(var i = 0; i < $(".column").children().length; i++) {
+										    	var data = new Object();
+										    	data["bannerid"] = $(".column").find($(".column").children()[i]).attr('data-id');
+										    	data["ordr"] = i+1;
+										    	dataList.push(data);
+
+								    		}
+
+										    var params = new Object();
+										    params["bannerVoList"] = dataList;
+										    
+										 	// 배너 id, 순서 수정
+											$.ajax({
+												url : "/mng/banner/updateExpsrBannerSort.do",
+												cache : false,
+												dataType : 'json',
+												data : JSON.stringify(params),
+												type : 'POST',
+												contentType: "application/json; charset=utf-8",
+												success : function(data) {    
+												}
+											});
 											closeWorkProgress();
 										}
 									});
-								}	
+								}
 					    	}
 					    }
 					});

@@ -35,6 +35,17 @@ public interface QestnrDao {
     public int insertQestnr(QestnrVo qestnrVo) throws Exception;
     
     /**
+     * 사이트 목록 조회
+     *
+     * @Title : selectSiteList
+     * @Description : 사이트 목록 조회
+     * @param qestnrVo QestnrVo 객체
+     * @return List<QestnrVo> 사이트 목록
+     * @throws Exception 예외
+     */
+    public List<QestnrVo> selectSiteList(QestnrVo qestnrVo) throws Exception;
+    
+    /**
      * 설문지 목록 조회
      *
      * @Title : selectQestnrList

@@ -1,11 +1,11 @@
-package com.kbrainc.plum.mng.consult.model;
+package com.kbrainc.plum.mng.cnsltng.model;
 
 import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 @Mapper
-public interface ConsultDao {
+public interface CnsltngDao {
     
     /**
     * 사이트 신청 리스트 호출 
@@ -16,7 +16,7 @@ public interface ConsultDao {
     * @return List<SiteApplyVo>
     * @throws Exception 예외
     */
-    public List<ConsultVo> selectConsultList(ConsultVo consultVo) throws Exception;
+    public List<CnsltngVo> selectCnsltngList(CnsltngVo consultVo) throws Exception;
     /**
      * 사이트 신청 상세정보 호출 
      *
@@ -26,7 +26,7 @@ public interface ConsultDao {
      * @return SiteApplyVo
      * @throws Exception 예외
      */
-    public ConsultVo selectConsultInfo(ConsultVo consultVo) throws Exception;
+    public CnsltngVo selectConsultInfo(CnsltngVo consultVo) throws Exception;
     /**
      * 사이트 신청 상태 수정 
      *
@@ -36,5 +36,5 @@ public interface ConsultDao {
      * @return List<SiteApplyVo>
      * @throws Exception 예외
      */
-    public int updateConsultStatus(ConsultVo consultVo) throws Exception;
+    public int updateConsultStatus(CnsltngVo consultVo) throws Exception;
 }

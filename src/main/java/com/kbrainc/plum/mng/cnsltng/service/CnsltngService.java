@@ -1,14 +1,10 @@
-package com.kbrainc.plum.mng.consult.service;
+package com.kbrainc.plum.mng.cnsltng.service;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.consult.model.ConsultVo;
-import com.kbrainc.plum.mng.site.model.SiteDomainVo;
-import com.kbrainc.plum.mng.site.model.SiteVo;
-import com.kbrainc.plum.mng.siteApply.model.SiteApplyMenuVo;
-import com.kbrainc.plum.mng.siteApply.model.SiteApplyVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 
 /**
  * 
@@ -27,7 +23,7 @@ import com.kbrainc.plum.mng.siteApply.model.SiteApplyVo;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
-public interface ConsultService {
+public interface CnsltngService {
     
     /**
     * 컨설팅 리스트 호출 
@@ -38,7 +34,7 @@ public interface ConsultService {
     * @return List<ConsultVo>
     * @throws Exception 예외
     */
-    public List<ConsultVo> selectConsultList(ConsultVo consultVo) throws Exception;
+    public List<CnsltngVo> selectCnsltngList(CnsltngVo consultVo) throws Exception;
     
     /**
      * 컨설팅 상세정보 호출 
@@ -49,7 +45,7 @@ public interface ConsultService {
      * @return ConsultVo
      * @throws Exception 예외
      */
-    public ConsultVo selectConsultInfo(ConsultVo consultVo) throws Exception;
+    public CnsltngVo selectConsultInfo(CnsltngVo consultVo) throws Exception;
     /**
      * 컨설팅 신청 상태 수정 
      *
@@ -59,6 +55,6 @@ public interface ConsultService {
      * @return int
      * @throws Exception 예외
      */
-    public int updateConsultStatus(ConsultVo consultVo) throws Exception;
+    public int updateConsultStatus(CnsltngVo consultVo) throws Exception;
 
 }

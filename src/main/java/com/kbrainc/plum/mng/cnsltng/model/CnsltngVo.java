@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.consult.model;
+package com.kbrainc.plum.mng.cnsltng.model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,7 +33,7 @@ import lombok.Data;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Data
-public class ConsultVo extends ParentRequestVo {
+public class CnsltngVo extends ParentRequestVo {
     
     /** 로그인사용자정보 */
     private UserVo user;
@@ -44,7 +44,7 @@ public class ConsultVo extends ParentRequestVo {
     /** 기관 아이디 */
     private Integer instid;
     
-    /** 컨설턴트 이름  */
+    /** 기관 이름  */
     private String instNm;
     
     /** 사용자 아이디 */
@@ -61,6 +61,9 @@ public class ConsultVo extends ParentRequestVo {
     /** 컨성팅 종류 코드 */
     @Size(max = 20, message = "컨성팅 종류 코드은 20자를 넘을 수 없습니다.")
     private String cnsltngKndCd;
+    
+    /** 컨성팅 종류 코드 명 */
+    private String cnsltngKndCdNm;
     
     /** 희망일자1 */
     @Size(max = 10, message = "희망일자1은 20자를 넘을 수 없습니다.")
@@ -133,9 +136,40 @@ public class ConsultVo extends ParentRequestVo {
     /** 등록자아이디 */
     private int rgtrid;
     
-    /******************************************************/
     /** 방문 일시 */
-    private String visitDt;
+    private String vstDe;
+    
+    /** 방문 시작 시각 */
+    private String vstBgngDt;
+    
+    /** 방문 종료 시각 */
+    private String vstEndDt;
+    
+    /******** 검색용 ********/
+    /** 프로그램 명 */
+    private String SearchPrgrmNm;
+    
+    /** 기관명 */
+    private String SearchInstNm;
+    
+    /** 신청일 시작 일자 */
+    private String SearchRegStrtDt;
+    
+    /** 신청일 종료 일자 */
+    private String SearchRegEndDt;
+    
+    /** 컨설팅 유형 */
+    private String searchCsltngKndCd;
+    
+    /** 진행상태 */
+    private String searchSttsCd;
+    
+    /** 방문희망일 시작 일자 */
+    private String SearchHopeStrtDt;
+    
+    /** 방문희망일 종료 일자 */
+    private String SearchHopeEndDt;
+
     
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;
@@ -156,15 +190,14 @@ public class ConsultVo extends ParentRequestVo {
         }
     }
     
-    public void setHopeDe1AmPmCd(String hopeDe1AmPmCd) throws Exception{
-        this.hopeDe1AmPmCd = hopeDe1AmPmCd;
-        
+    public void setCnsltngKndCd(String cnsltngKndCd) throws Exception{
+        this.cnsltngKndCd = cnsltngKndCd;
         //이미 코드이름이 있다면, 무시.
-        if(CommonUtil.isEmpty(this.hopeDe1AmPmCdNm)) { 
+        if(CommonUtil.isEmpty(this.cnsltngKndCdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.hopeDe1AmPmCd);
-                this.hopeDe1AmPmCdNm = code.getCdNm();
+                CodeInfoVo code = resCodeService.getCodeInfo(this.cnsltngKndCd);
+                this.cnsltngKndCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return ;
@@ -174,27 +207,4 @@ public class ConsultVo extends ParentRequestVo {
             }
         }
     }
-    
-    public void setHopeDe2AmPmCd(String hopeDe2AmPmCd) throws Exception{
-        this.hopeDe2AmPmCd = hopeDe2AmPmCd;
-        
-        //이미 코드이름이 있다면, 무시.
-        if(CommonUtil.isEmpty(this.hopeDe2AmPmCdNm)) { 
-            try {
-                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.hopeDe2AmPmCd);
-                this.hopeDe2AmPmCdNm = code.getCdNm();
-            }catch(NoClassDefFoundError e) {
-                //e.printStackTrace();
-                return ;
-            }catch(Exception e) {
-                //e.printStackTrace();
-                return ;
-            }
-        }
-    }
-    
-    
-	
-	
 }

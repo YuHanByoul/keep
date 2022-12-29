@@ -52,6 +52,20 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
          return retVal;
      }
      
+     /**
+      * 사이트 목록 조회
+      *
+      * @Title : selectSiteList
+      * @Description : 사이트 목록 조회
+      * @param qestnrVo QestnrVo 객체
+      * @return List<QestnrVo> 사이트 목록
+      * @throws Exception 예외
+      */
+     @Override
+     public List<QestnrVo> selectSiteList(QestnrVo qestnrVo) throws Exception {
+         return qestnrDao.selectSiteList(qestnrVo);
+     }
+     
     /**
      * 설문지 목록 조회
      *
@@ -65,7 +79,7 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
     public List<QestnrVo> selectQestnrList(QestnrVo qestnrVo) throws Exception {
         return qestnrDao.selectQestnrList(qestnrVo);
     }
-      
+    
     /**
      * 설문지 정보 조회
      *
@@ -267,6 +281,20 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
         }
         
         return retVal;
+    }
+    
+    /**
+     * 설문지 문항, 보기 목록 조회
+     *
+     * @Title : selectQitemWithExList
+     * @Description : 설문지 목록 조회
+     * @param QitemVo qitemVo 객체
+     * @return List<QitemVo> 설문지 문항 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<QitemVo> selectQitemWithExList(QitemVo qitemVo) throws Exception {
+        return qestnrDao.selectQitemList(qitemVo);
     }
      
 }

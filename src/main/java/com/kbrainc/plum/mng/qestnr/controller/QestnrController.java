@@ -53,7 +53,8 @@ public class QestnrController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/qestnr/qestnrMng.html")
-    public String qestnrMng() throws Exception {
+    public String qestnrMng(QestnrVo qestnrVo, Model model) throws Exception {
+        model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
         return "mng/qestnr/qestnrList";
     }
     
@@ -79,7 +80,8 @@ public class QestnrController {
       * @throws Exception 예외
       */
     @RequestMapping(value = "/mng/qestnr/qestnrInsertForm.html")
-    public String qestnrInsertForm() throws Exception {
+    public String qestnrInsertForm(QestnrVo qestnrVo, Model model) throws Exception {
+        model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
         return "mng/qestnr/qestnrInsert";
     }
      
@@ -109,6 +111,7 @@ public class QestnrController {
      */
     @RequestMapping(value = "/mng/qestnr/qestnrUpdateForm.html")
     public String qestnrUpdateForm(QestnrVo qestnrVo, Model model) throws Exception {
+        model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
         model.addAttribute("qestnr", qestnrService.selectQestnrInfo(qestnrVo));
         return "mng/qestnr/qestnrUpdate";
     }
@@ -190,6 +193,7 @@ public class QestnrController {
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "등록에 성공하였습니다");
+            resultMap.put("qestnrid", qestnrVo.getQestnrid());
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "등록에 실패하였습니다");

@@ -1,14 +1,22 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.controller;
 
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
+import org.apache.commons.codec.binary.Hex;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,6 +26,10 @@ import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
+import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -114,9 +126,9 @@ public class DsgnPrgrmController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/dsgnInfoForm.html")
-    public String dsgnInfoForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    public String dsgnInfoForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 
-    	model.addAttribute("dsgnAplyInfo",asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));
+    	model.addAttribute("dsgnAplyInfo",dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnInfoForm";
     }
 
@@ -193,6 +205,98 @@ public class DsgnPrgrmController {
     @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoForm.html")
     public String objcInfoForm() throws Exception {
     	return "mng/dsgnPrgrm/objcInfoForm";
+    }
+
+    /**
+     * @Title : dsgnRtrcnPopup
+     * @Description : 지정취소팝업
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html")
+    public String dsgnRtrcnPopup() throws Exception {
+    	return "mng/dsgnPrgrm/dsgnRtrcnPopup";
+    }
+
+    /**
+     * @Title : dsgnPrgrmOutlPopup
+     * @Description : 지정프로그램 개요 보기
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/dsgnPrgrmOutlPopup.html")
+    public String dsgnPrgrmOutlPopup() throws Exception {
+    	return "mng/dsgnPrgrm/dsgnPrgrmOutlPopup";
+    }
+
+    /**
+     * @Title : dsgnInfoChgPopup
+     * @Description : 지정정보변경팝업
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html")
+    public String dsgnInfoChgPopup() throws Exception {
+    	return "mng/dsgnPrgrm/dsgnInfoChgPopup";
+    }
+
+    /**
+     * @Title : insertDsgnHstry
+     * @Description : 지정내역저장
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    /**
+     * 개인회원등록.
+     *
+     * @Title       : insertDsgnHstry
+     * @Description : 지정내역저장
+     * @param DsgnPrgrmVo객체
+     * @param bindingResult1 dsgnPrgrmVo 유효성검증결과
+     * @param dsgnPrgrmVo DsgnPrgrmVo객체
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/insertDsgnHstry.do")
+    @ResponseBody
+    public Map<String, Object> insertDsgnHstry(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+
+    	logger.info("DsgnPrgrmVo : " + dsgnPrgrmVo.toString());
+
+    	logger.info("bindingResult1 : " + bindingResult1.toString());
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.insertDsgnHstry(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+
+    	return resultMap;
     }
 
 }

@@ -279,12 +279,380 @@
     <update id="updateTrprSrvy" parameterType="SrvyVo">
         /* SrvyDao.updateQestnr */
         UPDATE TB_CMM_SRVY SET
-            SRVYID = #{srvyid}
-            , QESTNRID = #{qestnrid}
+            QESTNRID = #{qestnrid}
             , SRVY_NM = #{srvyNm}
             , EXPLN = #{expln}
             , BGNG_DE = #{bgngDe}
             , END_DE = #{endDe}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SRVYID = #{srvyid}
+    </update>
+    
+    <!-- 기관설문 등록 -->
+    <insert id="insertInstSrvy" parameterType="SrvyVo" useGeneratedKeys="true" keyProperty="srvyid">
+        /* SrvyDao.insertInstSrvy */
+        INSERT INTO TB_CMM_SRVY (
+            SRVYID
+            , QESTNRID
+            , SRVY_NM
+            , EXPLN
+            , BGNG_DE
+            , END_DE
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{srvyid}
+            , #{qestnrid}
+            , #{srvyNm}
+            , #{expln}
+            , #{bgngDe}
+            , #{endDe}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 기관 전체 대상 설문 대상기관 등록 -->
+    <insert id="insertInstTrgtSrvyInst" parameterType="SrvyInstVo" >
+        /* SrvyDao.insertInstTrgtSrvyInst */
+        INSERT INTO TB_CMM_SRVY_INST (
+            SRVYID
+            , INSTID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        SELECT
+            #{srvyid}
+            , A.INSTID
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        FROM
+            TB_CMM_INST A
+        WHERE
+            A.USE_YN = 'Y'
+    </insert>
+    
+    <!-- 기관 목록 조회 -->
+    <select id="selectInstList"  parameterType="SrvyInstVo" resultType="SrvyInstVo">
+        /* SrvyDao.selectInstList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.INSTID
+            , A.INST_NM
+            , A.INST_CD
+            , B.CD_NM AS RGN_NM
+            , C.CD_NM AS INST_TYPE
+        FROM
+            TB_CMM_INST A
+        LEFT OUTER JOIN
+            TB_CMM_RGN_CD B ON (B.RGN_CD = A.RGN_CD)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = 108
+        ) C ON (C.CD = A.INST_TYPE_CD)
+        WHERE
+            A.USE_YN = 'Y'
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchInstTypeCd != null and searchInstTypeCd != ''">
+            AND A.INST_TYPE_CD = #{searchInstTypeCd}
+        </if>
+        <if test="searchRgnCd != null and searchRgnCd != ''">
+            AND A.RGN_CD = #{searchRgnCd}
+        </if>
+        <if test="instYn != null and instYn != '' and instYn.equalsIgnoreCase('N')">
+            AND A.INSTID = -1
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 기관설문 목록 조회 -->
+    <select id="selectInstSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* SrvyDao.selectInstSrvyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , A.BGNG_DE
+            , A.END_DE
+            , B.QESTNR_NM
+            , COUNT(C.QESTNRID) AS QITEM_CNT
+            , IFNULL(D.INST_CNT, 0) AS INST_CNT
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM C ON (C.QESTNRID = B.QESTNRID)
+        LEFT OUTER JOIN (
+            SELECT
+                A.SRVYID
+                , B.INST_NM
+                , B.INST_CD
+                , COUNT(A.INSTID) AS INST_CNT
+            FROM
+                TB_CMM_SRVY_INST A
+            LEFT OUTER JOIN
+                TB_CMM_INST B ON (B.INSTID = A.INSTID)
+            WHERE
+                1 = 1    
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+                AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instCd'">
+                AND B.INST_CD LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            GROUP BY
+                A.SRVYID
+        ) D ON (D.SRVYID = A.SRVYID)
+        WHERE 
+            B.QESTNR_KND_CD = '110101'
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'inst'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 기관설문 업데이트 -->
+    <update id="updateInstSrvy" parameterType="SrvyVo">
+        /* SrvyDao.updateInstSrvy */
+        UPDATE TB_CMM_SRVY SET
+            QESTNRID = #{qestnrid}
+            , SRVY_NM = #{srvyNm}
+            , EXPLN = #{expln}
+            , BGNG_DE = #{bgngDe}
+            , END_DE = #{endDe}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SRVYID = #{srvyid}
+    </update>
+    
+    <!-- 설문 대상기관 등록 -->
+    <insert id="insertSrvyInst" parameterType="SrvyInstVo">
+        /* SrvyDao.insertSrvyInst */
+        INSERT INTO TB_CMM_SRVY_INST (
+            SRVYID
+            , INSTID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES 
+        <foreach item="item" collection="insertInstids"  separator=",">
+        (
+            #{srvyid}
+            , #{item}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+        </foreach>
+        ON DUPLICATE KEY UPDATE
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            , REG_DT = NOW()
+            , RGTRID = #{user.userid}
+    </insert>
+    
+    <!-- 설문 대상기관 목록 조회 -->
+    <select id="selectSrvyInstList"  parameterType="SrvyInstVo" resultType="SrvyInstVo">
+        /* SrvyDao.selectSrvyInstList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.INSTID
+            , B.INST_NM
+            , B.INST_CD
+            , C.CD_NM AS RGN_NM
+            , D.CD_NM AS INST_TYPE
+        FROM
+            TB_CMM_SRVY_INST A
+        LEFT OUTER JOIN
+            TB_CMM_INST B ON (B.INSTID = A.INSTID)
+        LEFT OUTER JOIN
+            TB_CMM_RGN_CD C ON (C.RGN_CD = B.RGN_CD)    
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = 108
+        ) D ON (D.CD = B.INST_TYPE_CD)    
+        WHERE
+            SRVYID = #{srvyid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 설문 대상기관 삭제 -->
+    <delete id="deleteSrvyInst" parameterType="SrvyInstVo">
+        /* SrvyDao.deleteSrvyInst */
+        DELETE 
+            FROM TB_CMM_SRVY_INST
+        WHERE
+            SRVYID = #{srvyid} 
+            AND INSTID IN
+        <foreach item="item" collection="deleteInstids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <!-- 기관 존재 여부 확인 -->
+    <select id="isExistInst" parameterType="SrvyInstVo" resultType="SrvyInstVo">
+        /* SrvyDao.isExistInst */
+        SELECT
+          CASE WHEN COUNT(INSTID) = 0 THEN 'N' ELSE 'Y' END AS IS_EXIST
+          , A.INSTID
+          , A.INST_NM
+          , A.INST_CD
+          , B.CD_NM AS RGN_NM
+        FROM
+          TB_CMM_INST A
+        LEFT OUTER JOIN
+            TB_CMM_RGN_CD B ON (B.RGN_CD = A.RGN_CD)  
+        WHERE
+            A.USE_YN = 'Y'
+            AND A.INST_CD = #{instCd}
+    </select>
+    
+    <!-- 컨설팅만족도설문 등록 -->
+    <insert id="insertCnsltngDgstfnSrvy" parameterType="SrvyVo" useGeneratedKeys="true" keyProperty="srvyid">
+        /* SrvyDao.insertCnsltngDgstSrvy */
+        INSERT INTO TB_CMM_SRVY (
+            SRVYID
+            , QESTNRID
+            , SRVY_NM
+            , EXPLN
+            , AFTR_DAYCNT
+            , BFR_DAYCNT
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{srvyid}
+            , #{qestnrid}
+            , #{srvyNm}
+            , #{expln}
+            , #{aftrDaycnt}
+            , #{bfrDaycnt}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 컨설팅만족도설문 목록 조회 -->
+    <select id="selectCnsltngDgstfnSrvyList" parameterType="SrvyVo" resultType="SrvyVo">
+        /* SrvyDao.selectCnsltngDgstSrvyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.USE_YN
+            , A.REG_DT
+            , A.BGNG_DE
+            , A.END_DE
+            , B.QESTNR_NM
+            , COUNT(C.QESTNRID) AS QITEM_CNT
+            , IFNULL(D.CNSLTNG_CNT, 0) AS CNSLTNG_CNT
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM C ON (C.QESTNRID = B.QESTNRID)
+        LEFT OUTER JOIN (
+            SELECT
+                SRVYID
+                , COUNT(CNSLTNGID) AS CNSLTNG_CNT
+            FROM
+                TB_ASS_CNSLTNG
+            WHERE
+                STTS_CD IN (131103, 131104, 131105)    
+            GROUP BY
+                SRVYID
+        ) D ON (D.SRVYID = A.SRVYID)
+        WHERE
+            B.QESTNR_KND_CD = '110102'
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'srvyNm'">
+            AND A.SRVY_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        GROUP BY
+            A.SRVYID, A.QESTNRID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 컨설팅만족도설문 컨설팅 목록 조회 -->
+    <select id="selectCnsltngList" parameterType="SrvyInstVo" resultType="SrvyInstVo">
+        /* SrvyDao.selectCnsltngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.CNSLTNGID
+            , C.INST_NM
+            , C.INST_CD
+            , A.PRGRM_NM
+            , A.STTS_CD
+            , B.REG_DT
+        FROM
+            TB_ASS_CNSLTNG A
+        LEFT OUTER JOIN
+            TB_ASS_CNSLTNG_RSLT B ON (B.CNSLTNGID = A.CNSLTNGID)
+        LEFT OUTER JOIN
+            TB_CMM_INST C ON (C.INSTID = A.INSTID)
+        WHERE
+            SRVYID = 35
+            AND A.STTS_CD IN (131103, 131104, 131105)
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 컨설팅만족도설문 업데이트 -->
+    <update id="updateCnsltngDgstfnSrvy" parameterType="SrvyVo">
+        /* SrvyDao.updateCnsltngDgstSrvy */
+        UPDATE TB_CMM_SRVY SET
+            QESTNRID = #{qestnrid}
+            , SRVY_NM = #{srvyNm}
+            , EXPLN = #{expln}
+            , AFTR_DAYCNT = #{aftrDaycnt}
+            , BFR_DAYCNT = #{bfrDaycnt}
             , USE_YN = #{useYn}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
