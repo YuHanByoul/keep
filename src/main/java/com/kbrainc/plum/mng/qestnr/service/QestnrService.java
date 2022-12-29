@@ -160,7 +160,7 @@ public interface QestnrService {
      * 설문지 문항, 보기 목록 조회
      *
      * @Title : selectQitemWithExList
-     * @Description : 설문지 목록 조회
+     * @Description : 설문지 문항, 보기 목록 조회
      * @param qitemVo QitemVo 객체
      * @return List<QitemVo> 설문지 문항, 보기 목록
      * @throws Exception 예외

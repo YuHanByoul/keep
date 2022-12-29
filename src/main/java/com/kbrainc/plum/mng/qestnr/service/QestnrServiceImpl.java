@@ -287,14 +287,26 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
      * 설문지 문항, 보기 목록 조회
      *
      * @Title : selectQitemWithExList
-     * @Description : 설문지 목록 조회
+     * @Description : 설문지 문항, 보기 목록 조회
      * @param QitemVo qitemVo 객체
-     * @return List<QitemVo> 설문지 문항 목록
+     * @return List<QitemVo> 설문지 문항, 보기 목록
      * @throws Exception 예외
      */
     @Override
     public List<QitemVo> selectQitemWithExList(QitemVo qitemVo) throws Exception {
-        return qestnrDao.selectQitemList(qitemVo);
+        List<QitemVo> qitemList = qestnrDao.selectQitemList(qitemVo);
+        if(qitemList != null && qitemList.size() > 0) {
+            for(int i = 0; i < qitemList.size(); i++) {
+                QitemVo qitem = qitemList.get(i);
+                int exCnt = qitem.getExCnt();
+                if(exCnt > 0) {
+                    List<QitemExVo> qitemExList = qestnrDao.selectQitemExList(qitem);
+                    qitem.setExampleList(qitemExList);
+                }
+            }
+        }
+        
+        return qitemList;
     }
      
 }

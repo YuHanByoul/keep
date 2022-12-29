@@ -55,6 +55,18 @@ public class QitemExVo extends ParentRequestVo {
     /** 기타 여부 */
     private String etcYn;
     
+    /** 설문 아이디 */
+    private int srvyid;
+    
+    /** 보기형 답변 */
+    private int ans;
+    
+    /** 응답자 수 */
+    private int ansCnt;
+    
+    /** 응답 척도 */
+    private int scale;
+    
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

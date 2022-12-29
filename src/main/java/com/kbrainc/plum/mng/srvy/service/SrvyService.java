@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
@@ -292,5 +293,16 @@ public interface SrvyService {
      * @throws Exception 예외
      */
     public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 설문결과 문항 목록 조회
+     *
+     * @Title : selectSrvyRsltQitmeList 
+     * @Description : 설문결과 문항 목록 조회
+     * @param qitemVo QitemVo객체
+     * @return List<QitemVo> 설문결과 문항 목록
+     * @throws Exception 예외
+     */
+    public List<QitemVo> selectSrvyRsltQitmeList(QitemVo qitemVo) throws Exception;
     
 }

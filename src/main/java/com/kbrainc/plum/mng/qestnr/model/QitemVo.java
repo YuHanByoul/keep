@@ -66,6 +66,9 @@ public class QitemVo extends ParentRequestVo {
     /** 사용 여부 */
     private String useYn;
     
+    /** 설문 아이디 */
+    private int srvyid;
+    
     /** 순서 변경 방향 */
     private String changeDir;
     
