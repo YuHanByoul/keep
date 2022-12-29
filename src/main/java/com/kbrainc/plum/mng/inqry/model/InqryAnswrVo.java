@@ -1,18 +1,13 @@
 package com.kbrainc.plum.mng.inqry.model;
 
-import java.util.Date;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
-
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.apache.commons.lang3.SerializationUtils;
+
+import javax.validation.constraints.Size;
+import java.util.Date;
 
 /**
  * 
@@ -73,8 +68,6 @@ public class InqryAnswrVo extends ParentRequestVo {
     private Integer rgtrid;
 
     private String inqrySttsCd;
-
-    private String oldInqrySttsCd;
 
     private String ansDe;
 

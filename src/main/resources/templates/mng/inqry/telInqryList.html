@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <!-- 필터 부분 -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form name="searchForm" id="searchForm" onsubmit="return false;">
+                            <!-- 키워드 filter -->
+                            <div class="row">
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                                <option value="">- 선택 -</option>
+                                                <option value="cn">내용</option>
+                                                <option value="ans">답변</option>
+                                                <option value="nm">작성자</option>
+                                                <option value="acnt">아이디</option>
+                                            </select>
+                                            <input type="text" class="form-control form-control-sm" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+                                        <div class="col-sm-12">
+                                            <th:block kattr:select_code="clsfCd" grpCd="122" upprCd="0" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                                        <div class="col-sm-12">
+                                            <span kattr:select_code="sttsCd" grpCd="123" firstOptTxt="- 전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //키워드 filter -->
+                            <!-- 키워드 filter-btn -->
+                            <div class="m-t-20 text-center">
+                                <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+                                <button class="btn btn-primary" onclick="searchTelInqry()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- //필터 부분 -->
+
+            <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>전화문의 검색결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/inqry/telInqryDelete.do">
+                                <button type="button" class="btn btn-inverse">삭제</button>
+                            </th:block>
+                            <th:block sec:authorize-url="/mng/inqry/telInqryForm.html">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="openTelInqryForm(telInqryFormUrl)">등록</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="jsGrid" class="table-responsive"></table>
+                        <div id="listPager" class="text-center"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+        </div>
+    </div>
+    <!-- Page-body end -->
+
+    <div class="modal fade" id="telInqryFormPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+    <div class="modal fade" id="telInqryMemberSearchPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+    <div class="modal fade" id="managerPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
+    <script th:inline="javascript">
+        var telInqryListUrl = "/mng/inqry/selectTelInqryList.do";
+        var telInqryFormUrl = "/mng/inqry/telInqryForm.html";
+        var gridHelper1;
+        var telInqryFormModal;
+        var telInqryMemberSearchModal;
+
+        $(function () {
+            gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+            writeJsGridData();
+        })
+
+        function searchInit() {
+            $('#searchType').val('');
+            $('#searchKeyword').val('');
+            $('#clsfCd').val('');
+            $('#sttsCd').val('');
+        }
+
+        function mapCamelCaseToUnderscore(sortField) {
+            var result = "";
+            for (var i = 0; i < sortField.length; i++) {
+                if (sortField[i] === sortField[i].toUpperCase()) {
+                    result += "_";
+                    result += sortField[i].toLowerCase();
+                } else {
+                    result += sortField[i];
+                }
+            }
+            return result;
+        }
+
+        function searchTelInqry() {
+            var searchType = $("#searchType").val();
+            var searchKeyword = $("#searchKeyword").val();
+
+            if (searchType != '' && searchKeyword == "") {
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            gridHelper1.resetListContent();
+        }
+
+        function writeJsGridData() {
+            $("#jsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var formData = $('#searchForm').serializeArray();
+                        var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                        ]
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'assign_yn desc, reg_dt'});
+
+                        }
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: telInqryListUrl,
+                            dataType: "json",
+                            data: formData,
+                        }).done(function (response) {
+                            var da = {
+                                data: escapeGridData(response.list)
+                                , itemsCount: response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {name: 'telinqryid', css: 'hide'},
+                    {title: 'No.', name: 'rowNumber', type: "number", width: "80", align: "center", sorting: false},
+                    {title: '문의 내용', name: 'cn', type: "text", width: "300", css: 'text-truncate'},
+                    {title: '분류', name: 'clsfCdNm', type: "text", width: "120", align: "center", sorting: false},
+                    {title: '상태', name: 'sttsCdNm', type: "text", width: "120", align: "center", sorting: false},
+                    {title: '접수자', name: 'picNm', type: "text", width: "120", align: "center"},
+                    {title: '문의자', name: 'userNm', type: "text", width: "120", align: "center"},
+                    {title: '문의일', name: 'regDt', type: "text", width: "120", align: "center"},
+                ],
+                /*[# sec:authorize-url="/mng/inqry/telInqryForm.html"]*/
+                rowClick: function (args) {
+                    url = telInqryFormUrl + "?telinqryid=" + args.item.telinqryid;
+                    openTelInqryForm(url);
+                },
+                /*[/]*/
+            });
+        }
+
+        function openTelInqryForm(url) {
+            $("#telInqryFormPopup").load(url, function (response, status, xhr) {
+                if (status == "success") {
+                    telInqryFormModal = new bootstrap.Modal($('#telInqryFormPopup'));
+                    telInqryFormModal.show();
+                }
+            });
+        }
+    </script>
+
+</div>
+
+</div>
+</body>
+</html>
