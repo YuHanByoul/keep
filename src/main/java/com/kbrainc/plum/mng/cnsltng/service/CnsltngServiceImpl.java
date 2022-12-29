@@ -1,14 +1,12 @@
-package com.kbrainc.plum.mng.consult.service;
+package com.kbrainc.plum.mng.cnsltng.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.consult.model.ConsultDao;
-import com.kbrainc.plum.mng.consult.model.ConsultVo;
-import com.kbrainc.plum.mng.siteApply.model.SiteApplyMenuVo;
-import com.kbrainc.plum.mng.siteApply.model.SiteApplyVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngDao;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -28,10 +26,10 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Service
-public class ConsultServiceImpl extends PlumAbstractServiceImpl implements ConsultService {
+public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements CnsltngService {
     
     @Autowired
-    private ConsultDao consultDao;
+    private CnsltngDao cnsltngDao;
 
     /**
     * 컨설팅 리스트 호출 
@@ -42,8 +40,8 @@ public class ConsultServiceImpl extends PlumAbstractServiceImpl implements Consu
     * @return List<ConsultVo>
     * @throws Exception 예외
     */
-    public List<ConsultVo> selectConsultList(ConsultVo consultVo) throws Exception{
-        return consultDao.selectConsultList(consultVo);
+    public List<CnsltngVo> selectCnsltngList(CnsltngVo consultVo) throws Exception{
+        return cnsltngDao.selectCnsltngList(consultVo);
     }
     
     /**
@@ -55,8 +53,8 @@ public class ConsultServiceImpl extends PlumAbstractServiceImpl implements Consu
      * @return ConsultVo
      * @throws Exception 예외
      */
-    public ConsultVo selectConsultInfo(ConsultVo consultVo) throws Exception{
-        return consultDao.selectConsultInfo(consultVo);
+    public CnsltngVo selectConsultInfo(CnsltngVo consultVo) throws Exception{
+        return cnsltngDao.selectConsultInfo(consultVo);
     }
     /**
      * 컨설팅 신청 상태 수정 
@@ -67,8 +65,8 @@ public class ConsultServiceImpl extends PlumAbstractServiceImpl implements Consu
      * @return int
      * @throws Exception 예외
      */
-    public int updateConsultStatus(ConsultVo consultVo) throws Exception{
-        return consultDao.updateConsultStatus(consultVo);
+    public int updateConsultStatus(CnsltngVo cnsltngVo) throws Exception{
+        return cnsltngDao.updateConsultStatus(cnsltngVo);
     }
 
 
