@@ -8,11 +8,20 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 public interface SiteDao {
     public List<SiteVo> selectSiteList(SiteVo siteVo) throws Exception;
     public SiteVo selectSiteInfo(Integer siteid) throws Exception;
-    public List<SiteDomainVo> selectSiteDomainList(SiteVo siteVo);
-    public void insertSite(SiteVo siteVo);
-    public void updateSite(SiteVo siteVo);
-    public void deleteSite(Integer siteid);
-    public void insertSiteDomain(SiteDomainVo siteDomainVo);
-    public void updateSiteDomain(SiteDomainVo siteDomainVo);
-    public void deleteSiteDomain(SiteDomainVo siteDomainVo);
+    public List<SiteDomainVo> selectSiteDomainList(SiteVo siteVo) throws Exception;
+    public void insertSite(SiteVo siteVo) throws Exception;
+    public void updateSite(SiteVo siteVo) throws Exception;
+    public int insertSiteDomains(SiteDomainVo siteDomainVo) throws Exception;
+    public int deleteSiteDomain(SiteDomainVo siteDomainVo);
+    
+    /**
+    * 동일한 도메인이 있는지 조회한다.
+    *
+    * @Title : selectSameSiteDomains
+    * @Description : 동일한 도메인이 있는지 조회한다
+    * @param siteDomainVo SiteDomainVo객체
+    * @return SiteDomainVo 중복도메인정보(domains)
+    * @throws Exception 예외
+    */
+    public SiteDomainVo selectSameSiteDomains(SiteDomainVo siteDomainVo) throws Exception;
 }

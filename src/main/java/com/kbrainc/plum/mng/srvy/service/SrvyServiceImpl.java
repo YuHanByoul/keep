@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyDao;
+import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -51,16 +52,15 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      @Transactional
      public int insertTrprSrvy(SrvyVo srvyVo, SrvyUserVo srvyUserVo) throws Exception {
          int retVal = 0;
-         
          // 1. 설문등록
-         srvyDao.insertTrprSrvy(srvyVo);
+         retVal += srvyDao.insertTrprSrvy(srvyVo);
          // 2. 개인회원 전체 대상인 경우 회원 등록
          if(srvyUserVo.getIndvdlMbrYn().equals("Y")) {
              srvyUserVo.setSrvyid(srvyVo.getSrvyid());
              retVal += srvyDao.insertIndvdlMbrSrvyUser(srvyUserVo);
          }
+         if(retVal != 0) retVal = srvyVo.getSrvyid();
          
-         retVal = srvyVo.getSrvyid();
          return retVal;
      }
      
@@ -91,7 +91,7 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     public List<SrvyVo> selectTrprSrvyList(SrvyVo srvyVo) throws Exception {
         return srvyDao.selectTrprSrvyList(srvyVo);
     }
-     
+    
     /**
      * 설문 정보 조회
      *
@@ -133,10 +133,10 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     }
     
     /**
-     * 설문 대상자 등록
+     * 개인회원 전체 대상 설문 대상자 등록
      *
      * @Title : insertIndvdlMbrSrvyUser 
-     * @Description : 설문 대상자 등록
+     * @Description : 개인회원 전체 대상 설문 대상자 등록
      * @param srvyUserVo SrvyUserVo 객체
      * @return int insert 로우수
      * @throws Exception 예외
@@ -162,7 +162,7 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     @Transactional
     public int insertTrpr(SrvyUserVo srvyUserVo) throws Exception {
         int retVal = 0;
-        retVal = srvyDao.insertTrpr(srvyUserVo);
+        retVal += srvyDao.insertTrpr(srvyUserVo);
         return retVal;
     }
     
@@ -179,17 +179,17 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     @Transactional
     public int deleteTrpr(SrvyUserVo srvyUserVo) throws Exception {
         int retVal = 0;
-        retVal = srvyDao.deleteTrpr(srvyUserVo);
+        retVal += srvyDao.deleteTrpr(srvyUserVo);
         return retVal;
     }
     
     /**
     * 대상자 엑셀 데이터 정합성 체크
     *
-    * @Title : selectSrvyList
+    * @Title : trprExcelDataCheck
     * @Description : 대상자 엑셀 데이터 정합성 체크
     * @param list ArrayList 엑셀 데이터
-    * @return List<SrvyUserVo> 설문지 목록
+    * @return Map<String, Object> 데이터 정합성 체크 결과
     * @throws Exception 예외
     */
     @Override
@@ -258,6 +258,255 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     public int updateTrprSrvy(SrvyVo srvyVo) throws Exception {
         int retVal = 0;
         retVal = srvyDao.updateTrprSrvy(srvyVo);        
+             
+        return retVal;
+    }
+    
+    /**
+     * 기관설문 등록
+     *
+     * @Title : insertInstSrvy 
+     * @Description : 기관설문 등록
+     * @param srvyVo SrvyVo 객체
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return int srvyid
+     * @throws Exception 예외
+     */
+     @Override
+     @Transactional
+     public int insertInstSrvy(SrvyVo srvyVo, SrvyInstVo srvyInstVo) throws Exception {
+         int retVal = 0;
+         // 1. 설문등록
+         retVal += srvyDao.insertInstSrvy(srvyVo);
+         // 2. 기관 전체 대상인 경우 대상기관 등록
+         if(srvyInstVo.getInstYn().equals("Y")) {
+             srvyInstVo.setSrvyid(srvyVo.getSrvyid());
+             retVal += srvyDao.insertInstTrgtSrvyInst(srvyInstVo);
+         }
+         if(retVal != 0) retVal = srvyVo.getSrvyid();
+         return retVal;
+     }
+    
+    /**
+     * 기관 목록 조회
+     *
+     * @Title : selectInstList
+     * @Description : 기관 목록 조회
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyInstVo> 기관 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyInstVo> selectInstList(SrvyInstVo srvyInstVo) throws Exception {
+        return srvyDao.selectInstList(srvyInstVo);
+    }
+    
+    /**
+     * 기관설문 목록 조회
+     *
+     * @Title : selectInstSrvyList
+     * @Description : 기관설문 목록 조회
+     * @param srvyVo SrvyVo 객체
+     * @return List<srvyVo> 대상자설문 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<SrvyVo> selectInstSrvyList(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectInstSrvyList(srvyVo);
+    }
+    
+    /**
+     * 기관설문 업데이트
+     *
+     * @Title : updateInstSrvy
+     * @Description : 기관설문 업데이트
+     * @param srvyVo SrvyVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    public int updateInstSrvy(SrvyVo srvyVo) throws Exception {
+        int retVal = 0;
+        retVal = srvyDao.updateInstSrvy(srvyVo);        
+             
+        return retVal;
+    }
+    
+    /**
+     * 기관 전체 대상 설문 대상기관 등록
+     *
+     * @Title : insertInstTrgtSrvyInst 
+     * @Description : 기관 전체 대상 설문 대상기관 등록
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int insertInstTrgtSrvyInst(SrvyInstVo srvyInstVo) throws Exception {
+        int retVal = 0;
+        retVal = srvyDao.insertInstTrgtSrvyInst(srvyInstVo);
+        return retVal;
+    }
+    
+    /**
+     * 설문 대상자 등록
+     *
+     * @Title : insertSrvyInst 
+     * @Description : 설문 대상자 등록
+     * @param srvyUserVo SrvyInstVo
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int insertSrvyInst(SrvyInstVo srvyInstVo) throws Exception {
+        int retVal = 0;
+        retVal = srvyDao.insertSrvyInst(srvyInstVo);
+        return retVal;
+    }
+    
+    /**
+     * 설문 대상기관 목록 조회
+     *
+     * @Title : selectSrvyInstList
+     * @Description : 설문 대상기관 목록 조회
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyInstVo> 설문 대상기관 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyInstVo> selectSrvyInstList(SrvyInstVo srvyInstVo) throws Exception {
+        return srvyDao.selectSrvyInstList(srvyInstVo);
+    }
+    
+    /**
+     * 설문 대상자 삭제
+     *
+     * @Title : deleteTrpr 
+     * @Description : 설문 대상자 삭제
+     * @param srvyVo SrvyUserVo
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int deleteSrvyInst(SrvyInstVo srvyInstVo) throws Exception {
+        int retVal = 0;
+        retVal = srvyDao.deleteSrvyInst(srvyInstVo);
+        return retVal;
+    }
+    
+    /**
+    * 대상기관 엑셀 데이터 정합성 체크
+    *
+    * @Title : instExcelDataCheck
+    * @Description : 대상기관 엑셀 데이터 정합성 체크
+    * @param list ArrayList 엑셀 데이터
+    * @return Map<String, Object> 데이터 정합성 체크 결과
+    * @throws Exception 예외
+    */
+    @Override
+    public Map<String, Object> instExcelDataCheck(ArrayList list) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        boolean isValid = true;
+        ArrayList checkList = new ArrayList();
+        String status = "정상";
+        String instCd = "";
+        
+        if(list != null) {
+            ArrayList data = null;
+            for(int i = 1; i < list.size(); i++) { // 헤더를 제외하기 위해 1부터 시작
+                data = (ArrayList) list.get(i);
+                instCd = (String) data.get(0);
+                data.add(0);
+                data.add("");
+                data.add("");
+                if((instCd == null || instCd == "")) {
+                    isValid = false;
+                    status = "기관코드가 입력되지 않았습니다.";
+                } else {
+                    // 기관 존재 여부 확인
+                    SrvyInstVo instVo = new SrvyInstVo();
+                    instVo.setInstCd(instCd);
+                    instVo = srvyDao.isExistInst(instVo);
+                    if(instVo.getIsExist().equals("Y")) {
+                        status = "정상";
+                        data.set(1,instVo.getInstid());
+                        data.set(2, instVo.getInstNm());
+                        data.set(3, instVo.getRgnNm());
+                    } else {
+                        isValid = false;
+                        status = "기관코드에 해당하는 기관이 없습니다.";
+                    }
+                }
+                data.add(status);
+                checkList.add(data);
+            }
+        }
+        result.put("validYn", isValid ? "Y" : "N");
+        result.put("checkList", checkList);
+        
+        return result;
+    }
+    
+    /**
+     * 컨설팅만족도설문 등록
+     *
+     * @Title : insertCnsltngDgstfnSrvy 
+     * @Description : 컨설팅만족도설문 등록
+     * @param srvyVo SrvyVo 객체
+     * @return int srvyid
+     * @throws Exception 예외
+     */
+     @Override
+     public int insertCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception {
+         int retVal = 0;
+         // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+         retVal += srvyDao.insertCnsltngDgstfnSrvy(srvyVo);
+         
+         return retVal;
+     }
+    
+    /**
+     * 컨설팅만족도설문 목록 조회
+     *
+     * @Title : selectCnsltngDgstfnSrvyList
+     * @Description : 컨설팅만족도설문 목록 조회
+     * @param srvyVo SrvyVo 객체
+     * @return List<srvyVo> 컨설팅만족도설문 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<SrvyVo> selectCnsltngDgstfnSrvyList(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectCnsltngDgstfnSrvyList(srvyVo);
+    }
+    
+    /**
+     * 컨설팅만족도설문 컨설팅 목록 조회
+     *
+     * @Title : selectCnsltngList
+     * @Description : 컨설팅만족도설문 컨설팅 목록 조회
+     * @param srvyVo SrvyVo 객체
+     * @return List<srvyVo> 컨설팅만족도설문 컨설팅 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<SrvyVo> selectCnsltngList(SrvyVo srvyVo) throws Exception {
+        return srvyDao.selectCnsltngList(srvyVo);
+    }
+    
+    /**
+     * 컨설팅만족도설문 업데이트
+     *
+     * @Title : updateCnsltngDgstfnSrvy
+     * @Description : 컨설팅만족도설문 업데이트
+     * @param srvyVo SrvyVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception {
+        int retVal = 0;
+        retVal = srvyDao.updateCnsltngDgstfnSrvy(srvyVo);        
              
         return retVal;
     }

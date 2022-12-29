@@ -3,6 +3,10 @@ package com.kbrainc.plum.mng.dsgnPrgrm.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.constraints.Size;
+
+import org.apache.commons.lang3.SerializationUtils;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -49,6 +53,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 검색.차수*/
     private String searchDsgnCycl;
 
+    /** 이력 ID*/
+    private int hstryid;
+
     /** 지정차수 */
     private int dsgnCycl;
 
@@ -84,6 +91,27 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 등록자 이름*/
     private String rgtrNm;
+
+    /** 지정획득일자*/
+    private String dsgnObtainDe;
+
+    @Size(max = 10, message = "지정시작일은 10자를 넘을 수 없습니다.")
+    /** 지정시작일자 */
+    private String dsgnBgngDe;
+
+    @Size(max = 10, message = "지정종료일은 10자를 넘을 수 없습니다.")
+    /** 지정종료일자 */
+    private String dsgnEndDe;
+
+    @Size(max = 10, message = "지정취소일은 10자를 넘을 수 없습니다.")
+    /** 지정취소일자 */
+    private String dsgnCnclDe;
+
+    /** 사업자등록번호 */
+    private String brno;
+
+    /** 지정 번호 차수 */
+    private String cyclNo;
 
 	/*******************************************************/
 
@@ -133,11 +161,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 기관아이디 */
     private int instid;
 
-
-
-    /** 지정종료일자 */
-    private String dsgnEndDe;
-
     /** 기관지역코드 */
     private String instRgnCd;
 
@@ -150,9 +173,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 신청자휴대폰 */
     private String aplcntMoblphon;
-
-    /** 지정시작일자 */
-    private String dsgnBgngDe;
 
     /** 컨설텅아이디 */
     private int cnsltngid;
@@ -421,6 +441,17 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private int splmntDmndid;
 
     /*------------------------------------------------------------------------------------------*/
+
+    /** 로그인사용자정보 */
+    public void setUser(UserVo user){
+        UserVo clone = (UserVo) SerializationUtils.clone(user);
+        this.user = clone;
+    }
+    public UserVo getUser(){
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return  clone;
+    }
+
     /** 상태코드 */
 	public void setSttsCd(String sttsCd) throws Exception{
 

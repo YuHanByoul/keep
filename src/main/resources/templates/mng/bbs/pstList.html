@@ -227,13 +227,14 @@
                                 let cmntStr = (Number(item.cmntCnt) > 0 )? " ("+item.cmntCnt+") ":"";
                                 let returnStr = "";
                                 let seprateStr = "&nbsp;&nbsp";
+                                let title = (item.delYn=='Y')?"삭제된 게시물입니다.":item.title;
                                 if(item.dpth > 0){
                                      for(let i = 0; i<item.dpth;i++){
                                     	 returnStr += seprateStr;
                                      }
                                      returnStr = returnStr+"ㄴ"; 
                                 }
-                                return returnStr+item.title+cmntStr;
+                                return returnStr+title+cmntStr;
                             }
 		                 }
 	                    ,{ title: '고정공지여부' ,name: 'fxdNtcYn' ,type:"text", width: "10%" , align:"center", visible: false
@@ -250,6 +251,7 @@
     	        /*[# sec:authorize-url="/bbs/pstUpdateForm.html"]*/
     	        rowClick: function(args) {
                     if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    if(args.item.delYn == 'Y'){alert("삭제된 게시물입니다."); return;}
     	        	var modifyUrl = "/bbs/pstUpdateForm.html?pstid="+args.item.pstid //+"&siteid="+args.item.siteid;
     	            gridHelper1.loadContent(modifyUrl);
     	            gridHelper1.rowClick(args);
@@ -397,7 +399,8 @@
                    success : function (data){
                 	   if(data.result =='success'){
                     	   alert("게시글이 삭제 되었습니다.");
-	                	   gridHelper1.resetListContent();
+	                	   var curPage = $("#jsGrid").jsGrid("option", "pageIndex");
+	                	   $("#jsGrid").jsGrid("openPage", curPage);
 	                	   selectedItems = [];
                        }else{
                     	   alert("게시글이 삭제에 실패 하였습니다.");

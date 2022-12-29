@@ -193,7 +193,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String dsgnNo;
 
 	/** 지정_차수 */
-	private String dsgnCycl;
+	private int dsgnCycl;
 
 	/** (지정)차수번호 */
 	private String cyclNo;

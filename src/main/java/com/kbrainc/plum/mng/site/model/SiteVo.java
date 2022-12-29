@@ -43,6 +43,7 @@ public class SiteVo extends ParentRequestVo {
 	private String siteNm; 
 	
 	/** 시스템 구분 코드 */
+	@NotEmpty(message = "시스템 구분 코드를 입력해주십시오.")
 	@Pattern(regexp="[AU]")
 	private String sysSeCd;
 	
@@ -50,6 +51,7 @@ public class SiteVo extends ParentRequestVo {
 	private String sysSeNm;
 	
 	/** 시스템 종류 코드 */
+	@NotEmpty(message = "시스템 종류 코드를 입력해주십시오.")
 	@Pattern(regexp="[APT]")
 	private String sysKndCd;
 	

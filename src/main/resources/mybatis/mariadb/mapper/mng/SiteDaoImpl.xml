@@ -15,6 +15,7 @@
             S.SITEID,
             S.SITE_NM,
             S.SYS_SE_CD,
+            S.SYS_KND_CD,
             S.USE_YN,
             S.REG_DT,
             S.MDFCN_DT,
@@ -39,6 +40,9 @@
             </if>
             <if test='sysSeCd != null and sysSeCd != ""'>
             AND S.SYS_SE_CD = #{sysSeCd}
+            </if>
+            <if test='sysKndCd != null and sysKndCd != ""'>
+            AND S.SYS_KND_CD = #{sysKndCd}
             </if>
             <if test='searchType != null and searchType != "" and searchKeyword != null and searchKeyword != ""'>
                 <if test='searchType == "sitenm"'>
@@ -128,55 +132,34 @@
         WHERE
             SITEID = #{siteid}
     </update>
-    
-    <!-- 사이트를 삭제한다. -->
-    <update id="deleteSite" parameterType="Integer">
-        /* SiteDao.deleteSite */
-        DELETE FROM TB_CMM_SITE WHERE SITEID = #{siteid}
-    </update>
-    
+
     <!-- 사이트 등록 -->
-    <insert id="insertSiteDomain" parameterType="SiteDomainVo" useGeneratedKeys="true">
+    <insert id="insertSiteDomains" parameterType="SiteDomainVo">
         /* SiteDao.insertSiteDomain */
         INSERT INTO TB_CMM_SITE_DMN (
             DMN,
-            SITEID,
-            DMN_DC,
+            SITEID,            
             MDFCN_DT,
             MDFRID,
             REG_DT,
             RGTRID
-        ) VALUES (
-            #{dmn},
+        ) VALUES
+        <foreach item="item" collection="dmns"  separator=",">
+        (
+            #{item},
             #{siteid},
-            #{dmnDc},
             NOW(),
-            #{mdfrid},
+            #{user.userid},
             NOW(),
-            #{rgtrid}
+            #{user.userid}
         )
+        </foreach>    
     </insert>
-    
-    <!-- 사이트 도메인 정보를 수정한다. -->
-    <update id="updateSiteDomain" parameterType="SiteDomainVo">
-        /* SiteDao.updateSiteDomain */
-        UPDATE 
-            TB_CMM_SITE_DMN
-        SET
-            DMN = #{dmn},
-            DMN_DC = #{dmnDc},
-            MDFCN_DT = NOW(),
-            MDFRID = #{mdfrid}
-        WHERE
-            SITEID = #{siteid}
-            AND DMN = #{dmnOrg}
-        
-    </update>
     
     <!-- 사이트 도메인을 삭제한다. -->
     <update id="deleteSiteDomain" parameterType="SiteDomainVo">
         /* SiteDao.deleteSiteDomain */
-        DELETE FROM TB_CMM_SITE_DMN WHERE SITEID = #{siteid} AND DMN = #{dmn}
+        DELETE FROM TB_CMM_SITE_DMN WHERE SITEID = #{siteid}
     </update>
     
     <!-- 사이트에 대한 도메인 목록을 구한다. -->
@@ -193,5 +176,19 @@
             TB_CMM_SITE_DMN
         WHERE
             SITEID = #{siteid}
-    </select>    
+    </select>   
+
+    <!-- 저장하려는 도메인과 중복되는 도메인을 조회한다. -->
+    <select id="selectSameSiteDomains" parameterType="SiteDomainVo" resultType="SiteDomainVo" >
+        /* SiteDao.selectSameSiteDomains */
+        SELECT GROUP_CONCAT(DMN) DOMAINS
+        FROM TB_CMM_SITE_DMN
+        WHERE SITEID != #{siteid}
+        AND DMN IN
+        <foreach item="item" collection="dmns" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select> 
+    
+      
 </mapper>

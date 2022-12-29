@@ -6,11 +6,15 @@
 >
 <body>
 	<div layout:fragment="content" class="page-body">
+<style>
+.hide{display:none;}
+</style>
 
 <script type="text/javascript">
     
     var listUrl = "/mng/site/siteList.do";
     var gridHelper1;
+    var regSiteid = null;
 
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
@@ -34,7 +38,19 @@
             pageLoading: true,
             pageIndex: 1,
             
+            onDataLoaded: function(args) {
+                    if(regSiteid == null || args.grid.data == null || args.grid.data.length == 0) return;
+                    for(var i = 0; i < args.grid.data.length; i++) {
+                        if(args.grid.data[i].siteid == regSiteid){
+                            var items = $("#jsGrid").jsGrid("option", "data");
+                            var $row = $("#"+gridHelper1.jsGridId).jsGrid("rowByItem", items[i]);
+                            $row.trigger('click');
+                        }    
+                    }
+            },
+                
             controller: {
+                
                 loadData: function (filter) {
                     var data = $.Deferred();
                     
@@ -48,8 +64,7 @@
                         params.push({name: "orderField", value: filter.sortField});
                         params.push({name: "orderDirection", value: filter.sortOrder});
                     }else{
-                        params.push({name: "orderField", value: 'SITEID'});
-                        params.push({name: "orderDirection", value: 'asc'});
+                        params.push({name: "orderField", value: 'REG_DT'});
                     }
 
                     formData = formData.concat(params);
@@ -81,22 +96,52 @@
                 },
             },
             fields: [ 
+                { name: 'siteid', key: true, visible: false },
                 { title:'No.', name: 'rowNumber', type: "number", width: "80", align : "center",sorting: false },
-                { title:'사이트 이름', name: 'siteNm', type: "text" , width:"200"},
-                { title:'시스템구분', name: 'sysSeNm', type: "text" , width:"100", align : "center"},
-                { title:'운영기관', name: 'instNm', type: "text" , width:"200", align : "center", itemTemplate: function(value, item) {
+                { title:'사이트 이름', name: 'siteNm', type: "text" , width:"120"},
+                { title:'시스템구분', name: 'sysSeNm', type: "text" , width:"60", align : "center"},
+                { title:'시스템종류', name: 'sysKndCd', type: "text" , width:"60", align : "center", itemTemplate: function(value, item) {
+                        if(value == 'A'){
+                            return '관리자';
+                        }else if(value == 'P'){
+                            return '포털';
+                        }else if(value == 'T'){
+                            return '분양';
+                        }
+                    }
+                },
+                { title:'운영기관', name: 'instNm', type: "text" , width:"150", align : "center", itemTemplate: function(value, item) {
                         return value + '(' + item.instCd + ')';
                     }
                 },
-                { title:'도메인', name: "domains", type: "text", cellRenderer: cellRendererDomains , width:"200", align : "center"},
-                { title:'운영상태', name: 'useYn', type: "text", width:"50", align : "center", itemTemplate: function(value, item) {
+                { title:'도메인', name: "domains", type: "text", cellRenderer: cellRendererDomains , width:"150", align : "center"},
+                { title:'운영상태', name: 'useYn', type: "text", width:"40", align : "center", itemTemplate: function(value, item) {
                         return value == 'Y'?'운영':'폐쇄';
                     }
                 },
                 { title:'등록일', name: 'regDt', type: "text" , width:"100", align : "center"}
             ],
             rowClick: function(args){
-                gridHelper1.loadContent("/mng/site/siteMngRegForm.html?siteid="+args.item.siteid);
+                if(regSiteid == null){
+                    gridHelper1.loadContent("/mng/site/siteMngRegForm.html?siteid="+args.item.siteid);
+                }else{
+                    var contentPanelId = gridHelper1.contentPanelId;
+                    gridHelper1.removeHighlight();
+                    $.ajax({
+                        cache: false,
+                        url: "/mng/site/siteMngRegForm.html?siteid="+args.item.siteid, 
+                        type: 'GET',
+                        async: 'false',
+                        dataType: 'html',
+                        success: function(result){
+                            regSiteid = null;
+                            $('#'+contentPanelId).html(result);
+                            scrollIntoView("domainForm");
+                        }
+                    });
+                    gridHelper1.showContent();
+                }
+        
                 gridHelper1.rowClick(args);
             },
         });
@@ -109,8 +154,8 @@
     function initSearch() {
         $("#searchType").val('');
         $("#searchKeyword").val('');
-        $("#useYn").val('');
-        $("#sysSeCd").val('');
+        $("#useYn", "#searchFrm").val('');
+        $("#sysSeCd", "#searchFrm").val('');
     }
 
     function cellRendererDomains(value, item){
@@ -180,6 +225,19 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-lg-3 mb-2 mb-lg-0">
+                                <div class="mb-0 form-group row">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>시스템종류</strong></div>
+                                    <div class="col-sm-12">
+                                        <select name="sysKndCd" id="sysKndCd" class="form-select form-select-sm form-control-sm">
+                                            <option value="">- 전체 -</option>
+                                            <option value="A">관리자</option>
+                                            <option value="P">포털</option>
+                                            <option value="T">분양</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="m-t-20 text-center">
                             <button type="button" class="btn btn-disabled m-r-5" onclick="initSearch()">초기화</button>
@@ -209,7 +267,7 @@
                     </div>
                 </div>
             </div>
-            <div id="contentPanel" class="row" style="display:none"></div>
+            <div id="contentPanel" style="display:none"></div>
         </div>
 	</div>
 </body>

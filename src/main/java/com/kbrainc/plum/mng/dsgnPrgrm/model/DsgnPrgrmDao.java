@@ -35,14 +35,14 @@ public interface DsgnPrgrmDao {
 	public List<DsgnPrgrmVo> selectDsgnPrgrmList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
-	 * 지정내역 목록 조회
-	 *
-	 * @param dsgnPrgrmVo
-	 * @return List<DsgnPrgrmVo>
-	 * @throws Exception
-	 * @Title : selectDsgnDsctnList
-	 * @Description : 지정내역 목록조회
-	 */
+	* 지정내역 목록 조회
+	*
+	* @Title : selectDsgnDsctnList
+	* @Description : 지정내역 목록조회
+	* @param dsgnPrgrmVo
+	* @return List<DsgnPrgrmVo>
+ㅊ
+	*/
 	public List<DsgnPrgrmVo> selectDsgnDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
@@ -77,5 +77,27 @@ public interface DsgnPrgrmDao {
 	 * @Description : 이의신청 답변 등록
 	 */
 	public int insertObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
+
+	/**
+	* 지정내역 저장
+	*
+	* @Title : insertDsgnHstry
+	* @Description : 지정내역 저장
+	* @param dsgnPrgrmVo
+	* @return int
+    * @throws Exception;
+	*/
+	public int insertDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 상세 조회
+	*
+	* @Title : selectDsgnPrgrm
+	* @Description : 지정프로그램 상세 조회
+	* @param dsgnPrgrmVo
+	* @return DsgnPrgrmVo
+	* @throws Exception;
+	*/
+	public DsgnPrgrmVo selectDsgnPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

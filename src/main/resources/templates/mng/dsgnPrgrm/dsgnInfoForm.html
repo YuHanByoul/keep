@@ -1,4 +1,11 @@
 <form id="dsgnInfoFrm">
+
+<input type="hidden" id="dsgnBgngDe" name="dsgnBgngDe" th:value="${dsgnAplyInfo.dsgnBgngDe}">
+<input type="hidden" id="dsgnEndDe" name="dsgnEndDe" th:value="${dsgnAplyInfo.dsgnEndDe}">
+<input type="hidden" id="dsgnCycl" name="dsgnCycl" th:value="${dsgnAplyInfo.dsgnCycl}">
+<input type="hidden" id="dsgnNo" name="dsgnNo" th:value="${dsgnAplyInfo.dsgnNo}">
+<input type="hidden" id="dsgnObtainDe" name="dsgnObtainDe" th:value="${dsgnAplyInfo.dsgnObtainDe}">
+
 	<div class="tab-pane active" id="assignInfo" role="tabpanel">
 		<div class="card-header p-t-0 p-b-0">
 		    <h3 class="sub-title"><strong>신청 정보</strong></h3>
@@ -50,9 +57,7 @@
 		                        <input type="text" class="form-control form-control-sm" name="applyInfoApplicant" id="applyInfoApplicant" placeholder="Text Input Validation" th:value="${dsgnAplyInfo.aplcntNm}" readonly/>
 		                    </div>
 		                    <div class="col-4 btn-group-sm">
-		                        <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#memberSearchPopup">
-		                            담당자 변경
-		                        </button>
+		                        <button type="button" class="btn btn-inverse" data-bs-toggle="modal" onclick="">담당자 변경</button>
 		                    </div>
 		                </div>
 		            </div>
@@ -172,7 +177,7 @@
 		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 		                    <strong>지정상태</strong></div>
 		                <div class="col-12">
-		                    <span kattr:select_code="sttsCd" th:attr="grpCd=111,selectedCd=${dsgnAplyInfo.sttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+		                    <span kattr:select_code="sttsCd" th:attr="grpCd=132,selectedCd=${dsgnAplyInfo.sttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
 		                </div>
 		            </div>
 		        </div>
@@ -199,11 +204,12 @@
 		<div class="card-header p-t-0 p-b-0">
 		    <div class="mb-2 row">
 		        <div class="col-12 btn-group-sm">
-		            <button type="button" class="col-auto btn btn-inverse m-r-5">목록</button>
-		            <button type="button" class="col-auto btn btn-disabled m-r-5" data-bs-toggle="modal" data-bs-target="#reAssignPopup">재지정</button>
-		            <button type="button" class="col-auto btn btn-disabled m-r-5" data-bs-toggle="modal" data-bs-target="#assignCancelPopup">지정취소</button>
+		            <button type="button" class="col-auto btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
+		            <button type="button" id="reDsgnBtn" >재지정</button>
+		            <button type="button" id="dsgnRtrcnBtn" onclick="openDsgnRtrcnModal()"class="col-auto btn btn-disabled m-r-5" >지정취소</button>
+
 		            <button type="button" class="col-auto btn btn-primary m-r-5">인쇄</button>
-		            <button type="button" class="col-auto btn btn-primary m-r-5" data-bs-toggle="modal" data-bs-target="#assignProgramIntroPopup">지정프로그램 개요보기</button>
+		            <button type="button" class="col-auto btn btn-primary m-r-5"  onclick="openDsgnPrgrmOutlModal()">지정프로그램 개요보기</button>
 		            <button type="button" class="col-auto btn btn-primary">지정프로그램 상세보기</button>
 		        </div>
 		    </div>
@@ -212,7 +218,7 @@
 		            <strong>지정 내역</strong>
 		        </div>
 		        <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm">
-		            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#assignUpdatePopup">지정정보 변경
+		            <button type="button" class="btn btn-primary" onclick="openDsgnInfoChgModal()">지정정보 변경
 		            </button>
 		        </div>
 		    </div>
@@ -279,6 +285,13 @@
 		</div>
 	</div>
 </form>
+
+<!-- 지정취소 팝업 -->
+<div class="modal fade" id="dsgnRtrcnPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+<!-- 지정프로그램 개요보기 팝업 -->
+<div class="modal fade" id="dsgnPrgrmOutlPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+<!-- 지정프로그램 상세보기 팝업 -->
+<div class="modal fade" id="dsgnInfoChgPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
 
@@ -374,21 +387,58 @@ console.log("@@@@@2");
 
 }
 
-//담당자변경
-var picAltmntModal;
-var openPicChgModal = (modeYn) => {
-    var mode = modeYn
-    var url = "/mng/asgsysSrng/picAltmntPopup.html?mode="+mode;
+//지정취소
+var dsgnRtrcnModal;
+var openDsgnRtrcnModal = () => {
 
-    $("#picAltmntPopup").load(url, function(response, status, xhr) {
+
+
+	var vPrgrmid = ""+prgrmid;
+	var vDsgnBgngDe = $("#dsgnBgngDe").val();
+	var vDsgnEndDe = $("#dsgnEndDe").val();
+debugger;
+    var url = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html?mode="+vPrgrmid+"&dsgnBgngDe="+vDsgnBgngDe+"&dsgnEndDe="+vDsgnEndDe;
+
+    $("#dsgnRtrcnPopup").load(url, function(response, status, xhr) {
         if (status == "success") {
-            picAltmntModal = new bootstrap.Modal($('#picAltmntPopup'));
-            picAltmntModal.show();
+        	dsgnRtrcnModal = new bootstrap.Modal($('#dsgnRtrcnPopup'));
+        	dsgnRtrcnModal.show();
+        }
+    });
+}
+
+//지정프로그램개요보기
+var dsgnPrgrmOutlModal;
+var openDsgnPrgrmOutlModal = () => {
+
+    var url = "/mng/dsgnPrgrm/dsgnPrgrmOutlPopup.html?mode="+prgrmid;
+
+    $("#dsgnPrgrmOutlPopup").load(url, function(response, status, xhr) {
+        if (status == "success") {
+        	dsgnPrgrmOutlModal = new bootstrap.Modal($('#dsgnPrgrmOutlPopup'));
+        	dsgnPrgrmOutlModal.show();
+        }
+    });
+}
+
+var dsgnInfoChgModal;
+var openDsgnInfoChgModal = () => {
+
+    var url = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html?mode="+prgrmid;
+
+    $("#dsgnInfoChgPopup").load(url, function(response, status, xhr) {
+        if (status == "success") {
+        	dsgnInfoChgModal = new bootstrap.Modal($('#dsgnInfoChgPopup'));
+        	dsgnInfoChgModal.show();
         }
     });
 }
 
 function initDsgnInfoFrm(){
+
+	$("#reDsgnBtn").hide();
+
+	//지정내역 목록 조회
 	writeSplmntDmndGridData();
 }
 

@@ -151,7 +151,18 @@ public class SelectSiteAttr extends AbstractAttributeTagProcessor {
                 if ("".equals(selectedId)) {
                     selectedId = " "; // id값은 공백일수 없음
                 }
-                result.append("$('#").append("selectSite").append(attributeValue).append("').val('").append(selectedId).append("').trigger('change');\n"); // 초기값이 있는 경우 선택
+                boolean isThereValue = false;
+                for (Map<String, Object> site : siteList) {
+                    if((site.get("SITEID").toString()).equals(selectedId)) {
+                        isThereValue = true;
+                        break;
+                    }
+                }
+                if(isThereValue) {
+                    result.append("$('#").append("selectSite").append(attributeValue).append("').val('").append(selectedId).append("').trigger('change');\n"); // 초기값이 있는 경우 선택
+                }else {
+                    result.append("$('#").append("selectSite").append(attributeValue).append("').val(selectSite").append(attributeValue).append("Data[0].id).trigger('change');\n"); // 초기값이 없는경우 첫번째 데이터 선택
+                }
             } else {
                 result.append("$('#").append("selectSite").append(attributeValue).append("').val(selectSite").append(attributeValue).append("Data[0].id).trigger('change');\n"); // 초기값이 없는경우 첫번째 데이터 선택
             }

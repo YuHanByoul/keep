@@ -10,7 +10,7 @@
                     <div class="col-12">
                         <select name="qestnrid" id="qestnrid" class="js-example-basic-single col-sm-12 sm">
                             <option value="">- 설문지명(문항수) -</option>
-                            <option th:each="qestnr: ${qestnrList}" th:value="${qestnr.qestnrid}" th:text="${qestnr.qestnrNm} "></option>
+                            <option th:each="qestnr: ${qestnrList}" th:value="${qestnr.qestnrid}" th:text="${qestnr.qestnrNm + ' (' + qestnr.qitemCnt + ')'}"></option>
                         </select>
                     </div>
                 </div>
@@ -49,7 +49,8 @@
                         <div class="mb-0 form-group">
                             <div class="border-checkbox-section">
                                 <div class="border-checkbox-group border-checkbox-group-inverse">
-                                    <input class="border-checkbox" type="checkbox" name="indvdlMbrYn" id="indvdlMbrYn" onclick="trprSrvyInsert.onChangeIndvdlMbr();">
+                                    <input type="hidden" name="indvdlMbrYn" />
+                                    <input class="border-checkbox" type="checkbox" id="indvdlMbrYn" onclick="trprSrvyInsert.onChangeIndvdlMbr();">
                                     <label class="form-label border-checkbox-label mb-0" for="indvdlMbrYn">
                                         개인회원 전체 대상
                                     </label>
@@ -60,8 +61,8 @@
                     <div class="col-6">
                         <div class="mb-0 form-group row">
                             <div class="col-12">
-                                <input type="hidden" class="js-single"/>
-                                <input type="checkbox" class="js-single-small" name="useYn" id="useYn" checked/>
+                                <input type="hidden" name="useYn" class="js-single"/>
+                                <input type="checkbox" class="js-single-small" id="useYn" checked/>
                                 <label for="useYn" class="v-middle">설문 사용</label>
                             </div>
                         </div>
@@ -240,6 +241,10 @@
         },
         
         onDeleteTrpr: function() {
+            if(this.srvyid == 0) {
+                alert("설문 기본정보 저장 이후에 진행해주세요.");
+                return false;
+            }
             if(this.selectedItems.length == 0) {
                 alert("선택한 대상자가 없습니다.");
                 return false;
@@ -276,14 +281,14 @@
                 rules: {
                     qestnrid: {required: true},
                     srvyNm: {required: true, maxlength: 20},
-                    expln: {required: true, maxlength: 400},
+                    expln: {required: true, maxlength: 1000},
                     bgngDe: {required: true},
                     endDe: {required: true}
                 },
                 messages: {
                     qestnrid: {required: "설문지를 선택해주세요."},
                     srvyNm: {required: "설문명을 입력해주세요.", maxlength: "설문명은 20자 이하여야 합니다."},
-                    expln: {required: "설문 설명을 입력해주세요.", maxlength: "설문 설명은 400자 이하여야 합니다."},
+                    expln: {required: "설문 설명을 입력해주세요.", maxlength: "설문 설명은 1000자 이하여야 합니다."},
                     bgngDe: {required: "설문 시작일을 입력해주세요."},
                     endDe: {required: "설문 종료일을 입력해주세요."},
                 }
@@ -313,7 +318,6 @@
                             $("#srvyGrid").jsGrid("loadData");
                             trprSrvyInsert.srvyid = response.srvyid;
                             trprSrvyInsert.onUpdateForm();
-                            // 설문 아이디에 따른 설문 정보 로드...(대상자가 있는 경우에 개인회원 전체 대상은 제거하도록 함)
                         } else {
                             alert(response.msg);
                         }

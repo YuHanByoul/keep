@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CnsltngDaoDaoImpl.xml
+	Description : 컨설팅 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.cnsltng.model.CnsltngDao">
+
+    <!-- 기관정보 목록 조회 -->
+    <select id="selectCnsltngList" parameterType="CnsltngVo" resultType="CnsltngVo">
+        /* ConsultDao.selectCnsltngList */
+        <include refid="PaginationMapper.header"/>
+                 SELECT 
+                    A.CNSLTNGID
+                    ,A.INSTID
+                    ,A.USERID
+                    ,A.USER_NM
+                    ,A.PRGRM_NM
+                    ,A.CNSLTNG_KND_CD
+                    ,A.HOPE_DE1
+                    ,A.HOPE_DE1_AM_PM_CD
+                    ,A.HOPE_DE2
+                    ,A.HOPE_DE2_AM_PM_CD
+                    ,A.PRGRM
+                    ,A.LDR
+                    ,A.SFTYMNG
+                    ,A.ETC
+                    ,A.FILEGRPID
+                    ,A.CNSTNTID
+                    ,A.STTS_CD
+                    ,A.SRVYID
+                    ,A.MDFCN_DT
+                    ,A.MDFRID
+                    ,A.REG_DT
+                    ,A.RGTRID
+                    ,B.INST_NM AS instNm
+                    ,C.NM AS cnstntNm
+                    ,D.VST_DE
+                    ,D.VST_BGNG_DT 
+                    ,D.VST_END_DT
+                 FROM 
+                    TB_ASS_CNSLTNG A
+                    INNER JOIN TB_CMM_INST B
+                    ON A.INSTID = B.INSTID 
+                    INNER JOIN TB_CMM_USER C
+                    ON A.cnstntid = C.USERID  
+                    LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT D
+                    ON A.CNSLTNGID = D.CNSLTNGID                     
+                 WHERE 1=1
+                <if test="SearchInstNm != null and SearchInstNm != '' ">
+                   AND B.INST_NM LIKE CONCAT('%',#{SearchInstNm},'%')
+                </if>
+                <if test="SearchPrgrmNm != null and SearchPrgrmNm != '' ">
+                   AND A.PRGRM_NM LIKE CONCAT('%',#{SearchPrgrmNm},'%')
+                </if>
+                
+                <if test="searchCsltngKndCd != null and searchCsltngKndCd != '' ">
+                   AND A.CNSLTNG_KND_CD = #{searchCsltngKndCd} 
+                </if>
+                <if test="searchSttsCd != null and searchSttsCd != '' ">
+                   AND A.STTS_CD = #{searchSttsCd}
+                </if>
+                <if test="SearchRegStrtDt != null and SearchRegStrtDt != ''">
+                    AND A.REG_DT >= #{SearchRegStrtDt}
+                </if>
+                <if test="SearchRegEndDt != null and SearchRegEndDt != ''">
+                    AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{SearchRegEndDt},' 23:59:59') AS DATETIME)
+                </if>
+                
+                <if test="SearchHopeStrtDt != null and SearchHopeStrtDt != ''">
+                    AND (A.HOPE_DE1 <![CDATA[>=]]> #{SearchRegStrtDt} or A.HOPE_DE2 <![CDATA[>=]]> #{SearchRegStrtDt})
+                </if>
+                <if test="SearchHopeEndDt != null and SearchHopeEndDt != ''">
+                    AND (A.HOPE_DE2 <![CDATA[<=]]> #{SearchRegStrtDt} or A.HOPE_DE2 <![CDATA[<=]]> #{SearchRegStrtDt})
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 사이트 신청 정보 상세 조회 -->
+    <select id="selectConsultInfo" parameterType="CnsltngVo" resultType="CnsltngVo">
+           /* ConsultDao.selectConsultInfo */
+               SELECT 
+                A.APLYID
+                ,A.INSTID
+                ,A.INST_NM
+                ,A.INST_CNTCT
+                ,A.INST_EML
+                ,A.USERID
+                ,D.NM AS APLCNT_NM
+                ,A.ZIP
+                ,A.ADDR
+                ,A.ADDR_DTL
+                ,A.DOMN
+                ,A.CN
+                ,A.CPYRHT
+                ,A.APLY_DT
+                ,A.APLY_STTS_CD
+                ,A.AUTZRID
+                ,A.LOGO_FILEID
+                ,A.MDFCN_DT
+                ,A.MDFRID
+                ,A.REG_DT
+                ,A.RGTRID
+                ,B.INST_CD 
+                ,C.FILE_IDNTFC_KEY
+              FROM 
+                TB_CMM_SITE_APLY A
+                INNER JOIN TB_CMM_INST B
+                ON A.INSTID = B.INSTID
+                LEFT OUTER JOIN TB_CMM_FILE C
+                ON A.LOGO_FILEID = C.FILEID
+                INNER JOIN TB_CMM_USER D
+                ON A.USERID = D.USERID 
+              WHERE 1=1    
+                AND A.APLYID = #{aplyid}  
+    </select>
+    
+    <!-- 신청 승인 상태 수정--> 
+    <update id="updateConsultStatus" parameterType="CnsltngVo" >
+         /* ConsultDao.updateSiteApplyStatus */
+        UPDATE TB_CMM_SITE_APLY 
+           SET
+               APLY_STTS_CD       = #{aplySttsCd}                     
+               ,AUTZRID           = #{user.userid}                         
+               ,MDFCN_DT          = NOW()                         
+               ,MDFRID            = #{user.userid}                
+         WHERE 1=1
+           AND APLYID = #{aplyid}
+    </update>
+    
+            
+        
+</mapper>

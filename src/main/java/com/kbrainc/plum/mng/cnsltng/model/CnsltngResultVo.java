@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.consult.model;
+package com.kbrainc.plum.mng.cnsltng.model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,7 +34,7 @@ import lombok.Data;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Data
-public class ConsultResultVo extends ParentRequestVo {
+public class CnsltngResultVo extends ParentRequestVo {
     
     /** 로그인사용자정보 */
     private UserVo user;

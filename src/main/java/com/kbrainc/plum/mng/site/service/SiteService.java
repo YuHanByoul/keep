@@ -35,12 +35,26 @@ public interface SiteService {
 
     public Boolean updateSite(SiteVo siteVo) throws Exception;
 
-    public Boolean deleteSite(Integer siteid) throws Exception;
-
-    public Boolean insertSiteDomain(SiteDomainVo siteDomainVo) throws Exception;
-
-    public Boolean updateSiteDomain(SiteDomainVo siteDomainVo) throws Exception;
-
-    public Boolean deleteSiteDomain(SiteDomainVo siteDomainVo) throws Exception;
+    /**
+    * 사이트 도메인정보 저장.
+    *
+    * @Title : saveSiteDomain
+    * @Description : 사이트 도메인정보 저장
+    * @param siteDomainVo SiteDomainVo객체
+    * @return int deleteInsert로우수
+    * @throws Exception 예외
+    */
+    public int saveSiteDomain(SiteDomainVo siteDomainVo) throws Exception;
+    
+    /**
+    * 동일한 도메인이 있는지 조회한다.
+    *
+    * @Title : selectSameSiteDomains
+    * @Description : 동일한 도메인이 있는지 조회한다
+    * @param siteDomainVo SiteDomainVo객체
+    * @return SiteDomainVo 중복도메인정보(domains)
+    * @throws Exception 예외
+    */
+    public SiteDomainVo selectSameSiteDomains(SiteDomainVo siteDomainVo) throws Exception;
 
 }
