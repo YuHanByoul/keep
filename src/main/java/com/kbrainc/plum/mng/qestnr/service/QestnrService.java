@@ -2,7 +2,6 @@ package com.kbrainc.plum.mng.qestnr.service;
 
 import java.util.List;
 
-import com.kbrainc.plum.mng.qestnr.model.QestnrSiteVo;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
@@ -41,8 +40,8 @@ public interface QestnrService {
      *
      * @Title : selectSiteList 
      * @Description : 사이트 목록 조회
-     * @param qestnrSiteVo QestnrSiteVo객체
-     * @return List<QestnrSiteVo> 사이트 목록
+     * @param qestnrVo QestnrVo객체
+     * @return List<QestnrVo> 사이트 목록
      * @throws Exception 예외
      */
     public List<QestnrVo> selectSiteList(QestnrVo qestnrVo) throws Exception;
