@@ -1,9 +1,8 @@
-<form id="updateBannerFrm">
-<input type="hidden" id="bannerid" name="bannerid" th:value="${banner.bannerid}">
+<form id="bannerInsertFrm">	
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content type_2">
 			<div class="modal-header">
-				<h4 class="modal-title">배너 수정</h4>
+				<h4 class="modal-title">배너 등록</h4>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true"></span>
 				</button>
@@ -12,20 +11,9 @@
 				<div class="card m-b-10">
 					<div class="card-block-small">
 						<div class="mb-2 form-group row required">
-							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
+							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bannerInsertTitle"><strong>제목</strong></label>
 							<div class="col-sm-12">
-								<select name="siteid" id="siteid" class="form-select form-select-sm form-control-sm">
-									<option value="">- 선택 -</option>
-									<th:block th:each="siteList : ${siteList}">
-									<option th:value="${siteList.siteid}" th:selected="${siteList.siteid} == ${banner.siteid}"><th:block th:text="${siteList.siteNm}" /></option>
-									</th:block>
-								</select>
-							</div>
-						</div>
-						<div class="mb-2 form-group row required">
-							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bannerUpdateTitle"><strong>제목</strong></label>
-							<div class="col-sm-12">
-								<input type="text" class="form-control form-control-sm" name="bannerTtl" id="bannerTtl" placeholder="제목" th:value="${banner.bannerTtl}"/>
+								<input type="text" class="form-control form-control-sm" name="bannerTtl" id="bannerTtl" placeholder="제목" />
 							</div>
 						</div>
 						<div class="mb-0 form-group row required">
@@ -37,16 +25,10 @@
 		                            <input type="hidden" name="bannerFileid" id="bannerFileid" value="0">
 								</div>
 								<div class="mb-2 row">
-				                    <div class="col-auto">
-				                    	<th:block th:if="${fileBtn}">
-				                        <div id="fileUploadSuccess" th:utext="${fileBtn}">
-				                        </div>
-				                        </th:block>
-		                		        <th:block th:unless="${fileBtn}">
-				                        <div id="fileUploadSuccess">
-				                        </div>
-				                        </th:block>
-				                    </div>
+									<div class="col-auto">
+										<div id="fileUploadSuccess">
+		                        		</div>
+									</div>
 								</div>
 								<p class="text-warning m-b-0">* 사이즈 가로 000px, 세로 000px. png, jpg 포맷</p>
 							</div>
@@ -55,23 +37,22 @@
 							<label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
 								for="bannerInsertLinkUrl"><strong>링크 URL</strong></label>
 							<div class="col-sm-12">
-								<input type="text" class="form-control form-control-sm" name="url" id="url" placeholder="링크 URL" th:value="${banner.url}"/>
+								<input type="text" class="form-control form-control-sm" name="url" id="url" placeholder="링크 URL" />
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-inverse" onclick="deleteBanner();">삭제</button>
-				<button type="button" class="btn btn-primary waves-effect waves-light" onclick="updateBanner();">저장</button>
+				<button type="button" class="btn btn-inverse" onclick="banner.insertModal_close();">취소</button>
+				<button type="button" class="btn btn-primary waves-effect waves-light" onclick="insertBanner();">등록</button>
 			</div>
 		</div>
 	</div>
 </form>
 
 <script th:inline="javascript">
-
-	var validator= $("#updateBannerFrm").validate({
+	var validator= $("#bannerInsertFrm").validate({
 		rules: {
 			siteid : { required: true },
 			bannerTtl : { required: true },
@@ -83,18 +64,18 @@
 			bannerFile : { required:"이미지 첨부해주십시오" }
 		}
 	})
-	
+    
 	$('#bannerFile').change(function(event) {
-		var formData = new FormData();
-		var objFile = event.target;
-		var content = "";
-		
-		formData.append("file", objFile.files[0]);
-		formData.append("filegrpNm", "banner_file");
-		if($('#bannerFilegrpid').val() != '')
-		    formData.append("filegrpid", $('#bannerFilegrpid').val());
-		
-		if(displayWorkProgress()){
+	    var formData = new FormData();
+	    var objFile = event.target;
+	    var content = "";
+
+	    formData.append("file", objFile.files[0]);
+	    formData.append("filegrpNm", "banner_file");
+	    if($('#bannerFilegrpid').val() != '')
+	        formData.append("filegrpid", $('#bannerFilegrpid').val());
+
+	    if(displayWorkProgress()){
 		    $.ajax({
 		        url : '/uploadFile.do',
 		        processData : false,
@@ -108,14 +89,14 @@
 				        $("#bannerFilegrpid").val(response.filegrpid);
 				        $("#bannerFileid").val(response.fileid);
 				        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
-		                content +="<a href=javascript:fn_deleteFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
-		                $('#fileUploadSuccess').html(content);
+	                    content +="<a href=javascript:fn_deleteFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+	                    $('#fileUploadSuccess').html(content);
 				    }
 				    closeWorkProgress();
 		        }
 		    });
 		}
-		event.preventDefault();
+	    event.preventDefault();
 	});
 	
 	function fn_deleteFileList(fileid, fileIdntfcKey){
@@ -148,39 +129,22 @@
 	        } 
 	     })
 	};
-		
-	function updateBanner() {
-		if(!($("#updateBannerFrm").valid())) return;
-		
-		$.ajax({
-		    url : "/mng/banner/updateBanner.do",
-		    type: 'POST',
-		    cache : false,
-		    dataType: 'json',
-		    data : $('#updateBannerFrm').serialize(),
-		    success : function (data){
-				alert(data.msg);
-				updateAddModal.hide();
-				banner.selectBannerList();
-		    }
-		});
-	}
 	
-	function deleteBanner() {
-		if(!confirm("삭제 하시겠습니까?"))return;
+	function insertBanner() {
+		if(!($("#bannerInsertFrm").valid())) return;
 		
-		$.ajax({
-		    url : "/mng/banner/deleteBanner.do",
-		    type: 'POST',
-		    cache : false,
-		    dataType: 'json',
-		    data : $('#updateBannerFrm').serialize(),
-		    success : function (data){
+        $.ajax({
+            url : "/mng/wbzn/now/banner/insertBanner.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : $('#bannerInsertFrm').serialize(),
+            success : function (data){
 				alert(data.msg);
-				updateAddModal.hide();
+				insertAddModal.hide();
 				banner.selectBannerList();
-		    }
-		});
+            }
+        });
 	}
 	
 </script>

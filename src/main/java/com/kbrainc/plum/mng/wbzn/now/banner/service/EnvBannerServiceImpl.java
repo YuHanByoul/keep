@@ -1,39 +1,34 @@
-package com.kbrainc.plum.mng.banner.model;
+package com.kbrainc.plum.mng.wbzn.now.banner.service;
 
 import java.util.List;
 
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.mng.wbzn.now.banner.model.EnvBannerDao;
+import com.kbrainc.plum.mng.wbzn.now.banner.model.EnvBannerVo;
+import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
-* 배너관리 Dao
+* 환경교육NOW -> 배너관리 서비스 구현 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.banner.model
-* - BannerDao.java
+* com.kbrainc.plum.mng.wbzn.now.banner.service
+* - EnvBannerServiceImpl.java
 * </pre>
 *
-* @ClassName : BannerDao
-* @Description : 배너관리 Dao
+* @ClassName : EnvBannerServiceImpl
+* @Description : 환경교육NOW -> 배너관리 서비스 구현 클래스
 * @author : JD
-* @date : 2022. 12. 22.
+* @date : 2022. 12. 29.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
-@Mapper
-public interface BannerDao {
+@Service
+public class EnvBannerServiceImpl extends PlumAbstractServiceImpl implements EnvBannerService{
     
-    /**
-    * 사이트 목록 조회(사용자 포털)
-    *
-    * @Title : selectSiteList
-    * @Description : 사이트 목록 조회(사용자 포털)
-    * @param siteVo 사이트정보 객체
-    * @throws Exception 예외
-    * @return List<SiteVo>
-    */
-    public List<SiteVo> selectSiteList(SiteVo siteVo) throws Exception;
+    @Autowired
+    private EnvBannerDao bannerDao;
     
     /**
     * 배너 목록 조회
@@ -44,7 +39,9 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return List<BannerVo>
     */
-    public List<BannerVo> selectBannerList(BannerVo bannerVo) throws Exception;
+    public List<EnvBannerVo> selectBannerList(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.selectBannerList(bannerVo);
+    }
     
     /**
     * 노출배너 목록 조회
@@ -55,7 +52,9 @@ public interface BannerDao {
     * @throws Exception
     * @return List<BannerVo>
     */
-    public List<BannerVo> selectExpsrBannerList(BannerVo bannerVo) throws Exception;
+    public List<EnvBannerVo> selectExpsrBannerList(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.selectExpsrBannerList(bannerVo);
+    }
     
     /**
     * 배너목록에서 노출배너로 등록
@@ -66,8 +65,10 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return int
     */
-    public int updateExpsrBanner(BannerVo bannerVo) throws Exception;
-    
+    public int updateExpsrBanner(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.updateExpsrBanner(bannerVo);
+    }
+
     /**
     * 노출배너 목록 순서정렬
     *
@@ -77,7 +78,9 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return int
     */
-    public int updateExpsrBannerSort(BannerVo bannerVo) throws Exception;
+    public int updateExpsrBannerSort(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.updateExpsrBannerSort(bannerVo);
+    }
     
     /**
     * 배너 등록
@@ -89,7 +92,9 @@ public interface BannerDao {
     * @throws Exception
     * @return int
     */
-    public int insertBanner(BannerVo bannerVo) throws Exception;
+    public int insertBanner(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.insertBanner(bannerVo);
+    }
     
     /**
     * 배너정보 상세보기
@@ -100,7 +105,9 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return BannerVo
     */
-    public BannerVo selectBannerInfo(BannerVo bannerVo) throws Exception;
+    public EnvBannerVo selectBannerInfo(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.selectBannerInfo(bannerVo);
+    }
     
     /**
     * 배너정보 수정
@@ -111,7 +118,9 @@ public interface BannerDao {
     * @throws Exception
     * @return int
     */
-    public int updateBanner(BannerVo bannerVo) throws Exception;
+    public int updateBanner(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.updateBanner(bannerVo);
+    }
     
     /**
     * 배너 삭제
@@ -122,5 +131,7 @@ public interface BannerDao {
     * @throws Exception 에외
     * @return int
     */
-    public int deleteBanner(BannerVo bannerVo) throws Exception;
+    public int deleteBanner(EnvBannerVo bannerVo) throws Exception {
+        return bannerDao.deleteBanner(bannerVo);
+    }
 }

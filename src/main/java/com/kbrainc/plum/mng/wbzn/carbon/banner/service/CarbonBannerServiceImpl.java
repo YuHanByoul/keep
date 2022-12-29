@@ -1,48 +1,34 @@
-package com.kbrainc.plum.mng.banner.service;
+package com.kbrainc.plum.mng.wbzn.carbon.banner.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.banner.model.BannerDao;
-import com.kbrainc.plum.mng.banner.model.BannerVo;
-import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.mng.wbzn.carbon.banner.model.CarbonBannerDao;
+import com.kbrainc.plum.mng.wbzn.carbon.banner.model.CarbonBannerVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
-* 배너관리 서비스 구현 클래스
+* 탄소중립환경교육 -> 배너관리 서비스 구현 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.banner.service
-* - BannerServiceImpl.java
+* com.kbrainc.plum.mng.wbzn.carbon.banner.service
+* - CarbonBannerServiceImpl.java
 * </pre>
 *
-* @ClassName : BannerServiceImpl
-* @Description : 배너관리 서비스 구현 클래스
+* @ClassName : CarbonBannerServiceImpl
+* @Description : 탄소중립환경교육 -> 배너관리 서비스 구현 클래스
 * @author : JD
-* @date : 2022. 12. 22.
+* @date : 2022. 12. 29.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Service
-public class BannerServiceImpl extends PlumAbstractServiceImpl implements BannerService{
+public class CarbonBannerServiceImpl extends PlumAbstractServiceImpl implements CarbonBannerService{
     
     @Autowired
-    private BannerDao bannerDao;
-    
-    /**
-    * 사이트 목록 조회(사용자 포털)
-    *
-    * @Title : selectSiteList
-    * @Description : 사이트 목록 조회(사용자 포털)
-    * @param siteVo 사이트정보 객체
-    * @throws Exception 예외
-    * @return List<SiteVo>
-    */
-    public List<SiteVo> selectSiteList(SiteVo siteVo) throws Exception {
-        return bannerDao.selectSiteList(siteVo);
-    }
+    private CarbonBannerDao bannerDao;
     
     /**
     * 배너 목록 조회
@@ -53,7 +39,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return List<BannerVo>
     */
-    public List<BannerVo> selectBannerList(BannerVo bannerVo) throws Exception {
+    public List<CarbonBannerVo> selectBannerList(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerList(bannerVo);
     }
     
@@ -66,7 +52,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception
     * @return List<BannerVo>
     */
-    public List<BannerVo> selectExpsrBannerList(BannerVo bannerVo) throws Exception {
+    public List<CarbonBannerVo> selectExpsrBannerList(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.selectExpsrBannerList(bannerVo);
     }
     
@@ -79,10 +65,10 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return int
     */
-    public int updateExpsrBanner(BannerVo bannerVo) throws Exception {
+    public int updateExpsrBanner(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.updateExpsrBanner(bannerVo);
     }
-    
+
     /**
     * 노출배너 목록 순서정렬
     *
@@ -92,7 +78,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return int
     */
-    public int updateExpsrBannerSort(BannerVo bannerVo) throws Exception {
+    public int updateExpsrBannerSort(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.updateExpsrBannerSort(bannerVo);
     }
     
@@ -106,7 +92,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception
     * @return int
     */
-    public int insertBanner(BannerVo bannerVo) throws Exception {
+    public int insertBanner(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.insertBanner(bannerVo);
     }
     
@@ -119,7 +105,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 예외
     * @return BannerVo
     */
-    public BannerVo selectBannerInfo(BannerVo bannerVo) throws Exception {
+    public CarbonBannerVo selectBannerInfo(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.selectBannerInfo(bannerVo);
     }
     
@@ -132,7 +118,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception
     * @return int
     */
-    public int updateBanner(BannerVo bannerVo) throws Exception {
+    public int updateBanner(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.updateBanner(bannerVo);
     }
     
@@ -145,7 +131,7 @@ public class BannerServiceImpl extends PlumAbstractServiceImpl implements Banner
     * @throws Exception 에외
     * @return int
     */
-    public int deleteBanner(BannerVo bannerVo) throws Exception {
+    public int deleteBanner(CarbonBannerVo bannerVo) throws Exception {
         return bannerDao.deleteBanner(bannerVo);
     }
 }

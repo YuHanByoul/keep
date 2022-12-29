@@ -269,10 +269,10 @@ public class BannerController {
     }
     
     /**
-    * 배너관리 노출배너에 등록 기능
+    * 배너목록에서 노출배너로 등록
     *
     * @Title : updateExpsrBanner
-    * @Description : 배너관리 노출배너에 등록 기능
+    * @Description : 배너목록에서 노출배너로 등록
     * @param bannerVo 배너관리 객체
     * @param user 사용자 세션정보
     * @throws Exception 예외
@@ -302,10 +302,10 @@ public class BannerController {
     
 
     /**
-    * 배너관리 노출배너 순서정렬 기능
-    *
+    * 노출배너 목록 순서정렬
+    * 
     * @Title : updateExpsrBannerSort
-    * @Description : 배너관리 노출배너 순서정렬 기능
+    * @Description : 노출배너 목록 순서정렬
     * @param bannerVo 배너관리 객체
     * @param user 사용자 세션정보
     * @throws Exception 예외

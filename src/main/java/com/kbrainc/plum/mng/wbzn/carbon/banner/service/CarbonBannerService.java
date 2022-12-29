@@ -1,39 +1,25 @@
-package com.kbrainc.plum.mng.banner.model;
+package com.kbrainc.plum.mng.wbzn.carbon.banner.service;
 
 import java.util.List;
 
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
-import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.mng.wbzn.carbon.banner.model.CarbonBannerVo;
 
 /**
-* 배너관리 Dao
+* 탄소중립환경교육 -> 배너관리 서비스 인터페이스
 *
 * <pre>
-* com.kbrainc.plum.mng.banner.model
-* - BannerDao.java
+* com.kbrainc.plum.mng.wbzn.carbon.banner.service
+* - CarbonBannerService.java
 * </pre>
 *
-* @ClassName : BannerDao
-* @Description : 배너관리 Dao
+* @ClassName : CarbonBannerService
+* @Description : 탄소중립환경교육 -> 배너관리 서비스 인터페이스
 * @author : JD
-* @date : 2022. 12. 22.
+* @date : 2022. 12. 29.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
-@Mapper
-public interface BannerDao {
-    
-    /**
-    * 사이트 목록 조회(사용자 포털)
-    *
-    * @Title : selectSiteList
-    * @Description : 사이트 목록 조회(사용자 포털)
-    * @param siteVo 사이트정보 객체
-    * @throws Exception 예외
-    * @return List<SiteVo>
-    */
-    public List<SiteVo> selectSiteList(SiteVo siteVo) throws Exception;
+public interface CarbonBannerService {
     
     /**
     * 배너 목록 조회
@@ -44,7 +30,7 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return List<BannerVo>
     */
-    public List<BannerVo> selectBannerList(BannerVo bannerVo) throws Exception;
+    public List<CarbonBannerVo> selectBannerList(CarbonBannerVo bannerVo) throws Exception;
     
     /**
     * 노출배너 목록 조회
@@ -55,8 +41,8 @@ public interface BannerDao {
     * @throws Exception
     * @return List<BannerVo>
     */
-    public List<BannerVo> selectExpsrBannerList(BannerVo bannerVo) throws Exception;
-    
+    public List<CarbonBannerVo> selectExpsrBannerList(CarbonBannerVo bannerVo) throws Exception;
+
     /**
     * 배너목록에서 노출배너로 등록
     *
@@ -66,8 +52,8 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return int
     */
-    public int updateExpsrBanner(BannerVo bannerVo) throws Exception;
-    
+    public int updateExpsrBanner(CarbonBannerVo bannerVo) throws Exception;
+
     /**
     * 노출배너 목록 순서정렬
     *
@@ -77,8 +63,8 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return int
     */
-    public int updateExpsrBannerSort(BannerVo bannerVo) throws Exception;
-    
+    public int updateExpsrBannerSort(CarbonBannerVo bannerVo) throws Exception;
+
     /**
     * 배너 등록
     *
@@ -89,8 +75,8 @@ public interface BannerDao {
     * @throws Exception
     * @return int
     */
-    public int insertBanner(BannerVo bannerVo) throws Exception;
-    
+    public int insertBanner(CarbonBannerVo bannerVo) throws Exception;
+
     /**
     * 배너정보 상세보기
     *
@@ -100,7 +86,7 @@ public interface BannerDao {
     * @throws Exception 예외
     * @return BannerVo
     */
-    public BannerVo selectBannerInfo(BannerVo bannerVo) throws Exception;
+    public CarbonBannerVo selectBannerInfo(CarbonBannerVo bannerVo) throws Exception;
     
     /**
     * 배너정보 수정
@@ -111,8 +97,8 @@ public interface BannerDao {
     * @throws Exception
     * @return int
     */
-    public int updateBanner(BannerVo bannerVo) throws Exception;
-    
+    public int updateBanner(CarbonBannerVo bannerVo) throws Exception;
+
     /**
     * 배너 삭제
     *
@@ -122,5 +108,5 @@ public interface BannerDao {
     * @throws Exception 에외
     * @return int
     */
-    public int deleteBanner(BannerVo bannerVo) throws Exception;
+    public int deleteBanner(CarbonBannerVo bannerVo) throws Exception;
 }
