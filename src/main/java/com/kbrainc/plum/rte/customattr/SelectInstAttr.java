@@ -176,7 +176,7 @@ public class SelectInstAttr extends AbstractAttributeTagProcessor {
                 }
                 boolean isThereValue = false;
                 for (Map<String, Object> inst : instList) {
-                    if((inst.get("SITEID").toString()).equals(selectedId)) {
+                    if((inst.get("INSTID").toString()).equals(selectedId)) {
                         isThereValue = true;
                         break;
                     }
