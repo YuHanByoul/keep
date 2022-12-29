@@ -81,4 +81,13 @@ public interface CommonService {
     */
     public int insertLoginFail(HttpServletRequest request, String userid) throws Exception;
     
+    /**
+    * 전체 지역목록을 반환한다.
+    *
+    * @Title : selectAllRgnList
+    * @Description : 전체 지역목록을 반환한다.
+    * @return List<Map<String,Object>> 지역목록
+    * @throws Exception 예외
+    */
+    public List<Map<String, Object>> selectAllRgnList() throws Exception;
 }
