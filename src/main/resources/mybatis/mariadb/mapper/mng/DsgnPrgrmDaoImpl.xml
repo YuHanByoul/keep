@@ -8,7 +8,6 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao">
 
-
     <!-- 지정프로그램 목록 조회. -->
     <select id="selectDsgnPrgrmList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         /* DsgnPrgrmDao.selectDsgnPrgrmList */
@@ -149,6 +148,7 @@
         , APLY_STTS_CD
         , REG_DT
         , MDFCN_DT
+        , ANS_DT
         FROM TB_ASS_OBJC_APLY
         WHERE PRGRMID = #{prgrmid}
         <include refid="PaginationMapper.footer"/>
@@ -163,7 +163,24 @@
              , APLY_STTS_CD
              , REG_DT
              , MDFCN_DT
+             , ANS_DT
+             , ANS
         FROM TB_ASS_OBJC_APLY
         WHERE APLYID = #{aplyid}
     </select>
+
+    <update id="insertObjcAns">
+        UPDATE TB_ASS_OBJC_APLY
+        SET
+        ANS = #{ans}
+        , APLY_STTS_CD = '129102'
+        , PICID = #{user.userid}
+        , MDFCN_DT = NOW()
+        , MDFRID = #{user.userid}
+        <if test="applySttsCd = '129101'">
+            , ANS_DT = DATE_FORMAT(NOW(),'%Y-%m-%d')
+        </if>
+        WHERE APLYID = #{aplyid}
+    </update>
+
 </mapper>

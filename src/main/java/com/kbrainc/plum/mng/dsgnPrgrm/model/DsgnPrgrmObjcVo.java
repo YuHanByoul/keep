@@ -3,10 +3,12 @@ package com.kbrainc.plum.mng.dsgnPrgrm.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 /**
@@ -26,6 +28,12 @@ import java.util.Date;
  */
 @Data
 public class DsgnPrgrmObjcVo extends ParentRequestVo {
+
+    /**
+     * 로그인 사용자 정보
+     */
+    private UserVo user;
+
     /**
      * 프로그램 아이디
      */
@@ -67,8 +75,22 @@ public class DsgnPrgrmObjcVo extends ParentRequestVo {
      */
     private Date mdfcnDt;
 
-    /*완료처리일 필요*/
+    /**
+     * 담당자 아이디
+     */
+    private Date picid;
 
+    /**
+     * 답변 일시
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date ansDt;
+
+    /**
+     * 답변
+     */
+    @NotEmpty(message = "답변 내용을 입력해 주십시오.")
+    private String ans;
 
     public void setAplySttsCd(String aplySttsCd) throws Exception {
         this.aplySttsCd = aplySttsCd;

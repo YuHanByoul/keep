@@ -66,4 +66,16 @@ public interface DsgnPrgrmDao {
 	 * @Description : 이의신청 정보 조회
 	 */
 	public DsgnPrgrmObjcVo selectObjcInfo(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
+
+	/**
+	 * 이의신청 답변 등록
+	 *
+	 * @param dsgnPrgrmObjcVo
+	 * @return int
+	 * @throws Exception
+	 * @Title : insertObjcAns
+	 * @Description : 이의신청 답변 등록
+	 */
+	public int insertObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
+
 }

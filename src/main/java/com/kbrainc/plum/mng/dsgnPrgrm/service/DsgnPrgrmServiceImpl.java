@@ -86,4 +86,18 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	public DsgnPrgrmObjcVo selectObjcInfo(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception {
 		return dsgnPrgrmDao.selectObjcInfo(dsgnPrgrmObjcVo);
 	}
+
+	/**
+	 * 이의신청 답변 등록
+	 *
+	 * @param dsgnPrgrmObjcVo
+	 * @return int
+	 * @throws Exception
+	 * @Title : insertObjcAns
+	 * @Description : 이의신청 답변 등록
+	 */
+	@Override
+	public int insertObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception {
+		return dsgnPrgrmDao.insertObjcAns(dsgnPrgrmObjcVo);
+	}
 }

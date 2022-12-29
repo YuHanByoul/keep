@@ -2,6 +2,10 @@
     .hide {
         display: none;
     }
+
+    #objcJsGrid .jsgrid-grid-body {
+        max-height: 200px;
+    }
 </style>
 
 <form id="objcInfoFrm">
@@ -60,21 +64,23 @@
     </div>
 </form>
 
-<div class="modal fade" id="objcInfoModal"/>
+<div class="modal fade" id="objcModal"/>
 
 <script th:inline="javascript">
-    var objcInfo = {
+    var objc = {
         selectListUrl: "/mng/dsgnPrgrm/selectObjcList.do",
         modalUrl: '/mng/dsgnPrgrm/objcInfoPopup.html',
+        modal: null,
+        gridHelper: null,
 
         init: function () {
-            modal = null;
-            objcInfo.writeObjcListData();
+            this.writeObjcListData();
+            this.gridHelper = new GridHelper('objcJsGrid');
         },
 
         writeObjcListData: function () {
             $('#objcJsGrid').jsGrid({
-                height: "260",
+                height: "auto",
                 width: "100%",
                 autoload: true,
                 sorting: true,
@@ -85,7 +91,7 @@
                 pageNextText: "다음",
                 pageFirstText: " < 처음 ㅣ",
                 pageLastText: " | 마지막 >",
-                pageSize: 1000,
+                pageSize: 500,
                 pageButtonCount: 10,
                 pageLoading: true,
                 pageIndex: 1,
@@ -93,10 +99,21 @@
                 controller: {
                     loadData: function (filter) {
                         var data = $.Deferred();
+
+                        params = [];
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'reg_dt'});
+                        }
+
                         $.ajax({
                             type: "GET",
-                            url: objcInfo.selectListUrl + "?prgrmid=" + prgrmid,
+                            url: objc.selectListUrl + "?prgrmid=" + prgrmid,
                             dataType: "json",
+                            data: params
                         }).done(function (response) {
                             var da = {
                                 data: escapeGridData(response.list)
@@ -116,24 +133,24 @@
                     {title: '완료처리일', name: 'ansDt', type: 'text', width: '120', align: 'center'}
                 ],
                 rowClick: function (args) {
-                    objcInfo.showPopup(args.item.aplyid);
+                    objc.showModal(args.item.aplyid);
                 }
             });
         },
 
-        showPopup: function (aplyid) {
-            var url = objcInfo.modalUrl + "?aplyid=" + aplyid;
-            $("#objcInfoModal").load(url, function (response, status, xhr) {
+        showModal: function (aplyid) {
+            var url = objc.modalUrl + "?aplyid=" + aplyid;
+            $("#objcModal").load(url, function (response, status, xhr) {
                 if (status == "success") {
-                    objcInfo.modal = new bootstrap.Modal($('#objcInfoModal'));
-                    objcInfo.modal.show();
+                    objc.modal = new bootstrap.Modal($('#objcModal'));
+                    objc.modal.show();
                 }
             });
         }
     }
 
     $(function () {
-        objcInfo.init();
+        objc.init();
     });
 </script>
 </div>

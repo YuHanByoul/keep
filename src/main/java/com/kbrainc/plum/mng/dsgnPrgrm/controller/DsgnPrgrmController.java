@@ -7,15 +7,21 @@ import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -236,6 +242,45 @@ public class DsgnPrgrmController {
     public String objcInfoPopup(DsgnPrgrmObjcVo dsgnPrgrmObjcVo, Model model) throws Exception {
         model.addAttribute("objcInfo", dsgnPrgrmServiceImpl.selectObjcInfo(dsgnPrgrmObjcVo));
         return "mng/dsgnPrgrm/objcInfoPopup.html";
+    }
+
+    /**
+     * 이의신청 답변 등록
+     *
+     * @param dsgnPrgrmObjcVo
+     * @param bindingResult
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : insertObjcAns
+     * @Description : 이의신청 답변 등록
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/insertObjcAns.do")
+    @ResponseBody
+    public Map<String, Object> insertObjcAns(@Valid DsgnPrgrmObjcVo dsgnPrgrmObjcVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                result.put("msg", fieldError.getDefaultMessage());
+            }
+            return result;
+        }
+
+        int retVal = 0;
+        dsgnPrgrmObjcVo.setUser(user);
+        retVal = dsgnPrgrmServiceImpl.insertObjcAns(dsgnPrgrmObjcVo);
+
+        if (retVal > 0) {
+            result.put("result", Constant.REST_API_RESULT_SUCCESS);
+            result.put("msg", "저장에 성공하였습니다.");
+        } else {
+            result.put("result", Constant.REST_API_RESULT_FAIL);
+            result.put("msg", "저장에 실패했습니다.");
+        }
+
+        return result;
     }
 }
 
