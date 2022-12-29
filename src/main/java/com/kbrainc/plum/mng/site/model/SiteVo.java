@@ -67,6 +67,9 @@ public class SiteVo extends ParentRequestVo {
 	@Pattern(regexp="[YN]")
 	private String useYn = "N";
 	
+	/** 수정전 사용 여부 */
+    private String oldUseYn;
+	
 	/** 수정자아이디 */
 	private Integer mdfrid;
 	

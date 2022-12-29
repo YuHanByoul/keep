@@ -54,14 +54,29 @@ public class SiteServiceImpl extends PlumAbstractServiceImpl implements SiteServ
     }
 
     @Override
+    @Transactional
     public Boolean insertSite(SiteVo siteVo) throws Exception {
         siteDao.insertSite(siteVo);
+        if ("T".equals(siteVo.getSysKndCd()) && "Y".equals(siteVo.getUseYn())) { // 분양사이트이면서 사용여부가 Y일때
+            // 기관회원의 기관관리자 역할 부여
+            siteDao.insertInstRoleUser(siteVo);
+        }
         return true;
     }
 
     @Override
+    @Transactional
     public Boolean updateSite(SiteVo siteVo) throws Exception {
         siteDao.updateSite(siteVo);
+        if ("T".equals(siteVo.getSysKndCd()) && !siteVo.getOldUseYn().equals(siteVo.getUseYn())) { // 분양사이트의 사용여부를 변경했을때
+            if ("Y".equals(siteVo.getUseYn())) {
+                // 기관회원의 기관관리자 역할 부여
+                siteDao.insertInstRoleUser(siteVo);
+            } else if("N".equals(siteVo.getUseYn())) {
+                // 기관회원의 기관관리자 역할 회수
+                siteDao.deleteInstRoleUser(siteVo);
+            }
+        }
         return true;
     }
 

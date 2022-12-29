@@ -139,7 +139,7 @@ var initSearch = function(){
                     align: "center",
                     width: "50"
                 },
-                { name: 'nm', title:"이름(기관)", type: "text", width: "200", itemTemplate: function(value, item) {
+                { name: 'nm', title:"이름(기관)", type: "text", width: "300", itemTemplate: function(value, item) {
                         if(item.instNm == null){
                             return item.nm;
                         }else{

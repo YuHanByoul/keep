@@ -272,11 +272,11 @@ public interface SrvyDao {
      *
      * @Title : selectCnsltngList
      * @Description : 컨설팅만족도설문 컨설팅 목록 조회
-     * @param srvyVo SrvyVo 객체
-     * @return List<SrvyVo> 컨설팅만족도설문 목록
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyInstVo> 컨설팅만족도설문 목록
      * @throws Exception 예외
      */
-    public List<SrvyVo> selectCnsltngList(SrvyVo srvyVo) throws Exception;
+    public List<SrvyInstVo> selectCnsltngList(SrvyInstVo srvyInstVo) throws Exception;
     
     /**
      * 컨설팅만족도설문 업데이트

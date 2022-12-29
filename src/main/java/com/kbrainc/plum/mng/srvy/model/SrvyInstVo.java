@@ -53,7 +53,6 @@ public class SrvyInstVo extends ParentRequestVo {
     /** 기관 유형 */
     private String instType;
     
-    
     /** 기관 전체 대상 여부 */
     private String instYn;
     
@@ -71,6 +70,15 @@ public class SrvyInstVo extends ParentRequestVo {
     
     /** 검색 지역 코드 */
     private String searchRgnCd;
+    
+    /** 컨설팅 아이디 */
+    private int cnsltngid;
+    
+    /** 컨설팅 상태 코드 */
+    private String sttsCd;
+    
+    /** 프로그램명 */
+    private String prgrmNm;
     
     
     /** 수정일시 */

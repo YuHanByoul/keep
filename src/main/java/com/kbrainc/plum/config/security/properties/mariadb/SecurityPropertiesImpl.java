@@ -35,6 +35,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "AND A.ACNT = :loginid "
             + "AND B.ROLE_STRT_DD <= NOW() "
             + "AND B.ROLE_END_DD >= NOW() "
+            + "AND C.USE_YN = 'Y' "
             + "AND B.ROLEID = C.ROLEID ";
 
     /**

@@ -24,4 +24,26 @@ public interface SiteDao {
     * @throws Exception 예외
     */
     public SiteDomainVo selectSameSiteDomains(SiteDomainVo siteDomainVo) throws Exception;
+    
+    /**
+    * 기관회원의 기관관리자 역할 부여.
+    *
+    * @Title : insertInstRoleUser
+    * @Description : 기관회원의 기관관리자 역할 부여
+    * @param siteVo SiteVo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertInstRoleUser(SiteVo siteVo) throws Exception;
+    
+    /**
+    * 기관회원의 기관관리자 역할 회수.
+    *
+    * @Title : deleteInstRoleUser
+    * @Description : 기관회원의 기관관리자 역할 회수
+    * @param siteVo SiteVo객체
+    * @return int delete로우수
+    * @throws Exception 예외
+    */
+    public int deleteInstRoleUser(SiteVo siteVo) throws Exception;
 }
