@@ -253,14 +253,92 @@ public class SrvyController {
     /**
      * 설문결과관리 화면
      *
-     * @Title : srvyRsltMng
+     * @Title : srvyRsltMngForm
      * @Description : 설문결과관리 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/srvy/srvyRsltMngForm.html")
-    public String srvyRsltMng() throws Exception {
+    public String srvyRsltMngForm() throws Exception {
         return "mng/srvy/srvyRsltMng";
+    }
+    
+    /**
+     * 대상자설문 결과 목록 화면
+     *
+     * @Title : trprSrvyRsltListForm
+     * @Description : 대상자설문 결과 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/trprSrvyRsltListForm.html")
+    public String trprSrvyRsltListForm() throws Exception {
+        return "mng/srvy/trprSrvyRsltList";
+    }
+    
+    /**
+     * 대상자설문 결과 상세 화면
+     *
+     * @Title : trprSrvyRsltDetailForm
+     * @Description : 대상자설문 결과 상세 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/trprSrvyRsltDetailForm.html")
+    public String trprSrvyRsltDetailForm() throws Exception {
+        return "mng/srvy/trprSrvyRsltDetail";
+    }
+    
+    /**
+     * 기관설문 결과 목록 화면
+     *
+     * @Title : instSrvyRsltListForm
+     * @Description : 기관설문 결과 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/instSrvyRsltListForm.html")
+    public String instSrvyRsltListForm() throws Exception {
+        return "mng/srvy/instSrvyRsltList";
+    }
+    
+    /**
+     * 기관설문 결과 상세 화면
+     *
+     * @Title : instSrvyRsltDetailForm
+     * @Description : 기관설문 결과 상세 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/instSrvyRsltDetailForm.html")
+    public String instSrvyRsltDetailForm() throws Exception {
+        return "mng/srvy/instSrvyRsltDetail";
+    }
+    
+    /**
+     * 컨설팅만족도설문 결과 목록 화면
+     *
+     * @Title : cnsltngDgstfnSrvyRsltListForm
+     * @Description : 컨설팅만족도설문 결과 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/cnsltngDgstfnSrvyRsltListForm.html")
+    public String cnsltngDgstfnSrvyRsltListForm() throws Exception {
+        return "mng/srvy/cnsltngDgstfnSrvyRsltList";
+    }
+    
+    /**
+     * 컨설팅만족도설문 결과 상세 화면
+     *
+     * @Title : cnsltngDgstfnSrvyRsltDetailForm
+     * @Description : 컨설팅만족도설문 결과 상세 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/cnsltngDgstfnSrvyRsltDetailForm.html")
+    public String cnsltngDgstfnSrvyRsltDetailForm() throws Exception {
+        return "mng/srvy/cnsltngDgstfnSrvyRsltDetail";
     }
     
     /**
@@ -963,15 +1041,15 @@ public class SrvyController {
      *
      * @Title : selectCnsltngList
      * @Description : 컨설팅만족도설문 컨설팅 목록 조회
-     * @param srvyVo SrvyVo 객체
+     * @param srvyInstVo SrvyInstVo 객체
      * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/srvy/selectCnsltngList.do")
     @ResponseBody
-    public Map<String, Object> selectCnsltngList(SrvyVo srvyVo) throws Exception {
+    public Map<String, Object> selectCnsltngList(SrvyInstVo srvyInstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<SrvyVo> result = srvyService.selectCnsltngList(srvyVo);
+        List<SrvyInstVo> result = srvyService.selectCnsltngList(srvyInstVo);
                     
         if(result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrDao;
-import com.kbrainc.plum.mng.qestnr.model.QestnrSiteVo;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
@@ -282,6 +281,20 @@ public class QestnrServiceImpl extends PlumAbstractServiceImpl implements Qestnr
         }
         
         return retVal;
+    }
+    
+    /**
+     * 설문지 문항, 보기 목록 조회
+     *
+     * @Title : selectQitemWithExList
+     * @Description : 설문지 목록 조회
+     * @param QitemVo qitemVo 객체
+     * @return List<QitemVo> 설문지 문항 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<QitemVo> selectQitemWithExList(QitemVo qitemVo) throws Exception {
+        return qestnrDao.selectQitemList(qitemVo);
     }
      
 }

@@ -471,8 +471,8 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      *
      * @Title : selectCnsltngDgstfnSrvyList
      * @Description : 컨설팅만족도설문 목록 조회
-     * @param srvyVo SrvyVo 객체
-     * @return List<srvyVo> 컨설팅만족도설문 목록
+     * @param srvyInstVo SrvyInstVo 객체
+     * @return List<SrvyVo> 컨설팅만족도설문 목록
      * @throws Exception 예외
      */
     @Override
@@ -485,13 +485,13 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      *
      * @Title : selectCnsltngList
      * @Description : 컨설팅만족도설문 컨설팅 목록 조회
-     * @param srvyVo SrvyVo 객체
+     * @param srvyInstVo SrvyInstVo 객체
      * @return List<srvyVo> 컨설팅만족도설문 컨설팅 목록
      * @throws Exception 예외
      */
     @Override
-    public List<SrvyVo> selectCnsltngList(SrvyVo srvyVo) throws Exception {
-        return srvyDao.selectCnsltngList(srvyVo);
+    public List<SrvyInstVo> selectCnsltngList(SrvyInstVo srvyInstVo) throws Exception {
+        return srvyDao.selectCnsltngList(srvyInstVo);
     }
     
     /**

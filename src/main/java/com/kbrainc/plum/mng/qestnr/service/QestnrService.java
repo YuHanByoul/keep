@@ -156,4 +156,15 @@ public interface QestnrService {
      */
     public int deleteQitem(QitemVo qitemVo) throws Exception;
     
+    /**
+     * 설문지 문항, 보기 목록 조회
+     *
+     * @Title : selectQitemWithExList
+     * @Description : 설문지 목록 조회
+     * @param qitemVo QitemVo 객체
+     * @return List<QitemVo> 설문지 문항, 보기 목록
+     * @throws Exception 예외
+     */
+    public List<QitemVo> selectQitemWithExList(QitemVo qitemVo) throws Exception;
+    
 }
