@@ -7,6 +7,7 @@
 <script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
 <form id="siteRegForm">
     <input type="hidden" id="siteid" name="siteid" th:value="${siteInfo.siteid}">
+    <input type="hidden" id="oldUseYn" name="oldUseYn" th:value="${siteInfo.useYn}">
     <input type="hidden" id="logoFilegrpid" name="logoFilegrpid" value="0"/>
     <input type="hidden" id="logoFileid" name="logoFileid" th:value="${siteInfo.logoFileid}" />
     
@@ -171,8 +172,32 @@
         </div>
     <div>
     
+    <script th:inline="javascript">
+        $(function(){
+            // 수정일때
+            /*[# th:if="${siteInfo.siteid}"]*/  
+            $("#selectInstinstid").prop("disabled", true);
+            $("input[name='useYn']").bind('change', changeUseYnEventHandler);
+            /*[/]*/
+        });
+    </script>
     <script>
-
+        function changeUseYnEventHandler(e, data) {
+            if(this.checked){                 
+                if(!confirm('사이트를 운영상태로 전환하시겠습니까?')){
+                    $(this).off('change');
+                    toggleSwitch($("input[name='useYn']"), false);
+                    $(this).on('change', changeUseYnEventHandler);
+                }
+            }else{                  
+                if(!confirm('사이트를 폐쇄상태로 전환하시겠습니까?')){
+                    $(this).off('change');
+                    toggleSwitch($("input[name='useYn']"), true);
+                    $(this).on('change', changeUseYnEventHandler);
+                }
+            }
+        }
+                
         /**======================================================
         도메인 관련 함수들 
         ======================================================**/
@@ -270,7 +295,8 @@
                 sysSeCd: $('#sysSeCd', "#siteRegForm").val(),
                 sysKndCd: $('#sysKndCd', "#siteRegForm").val(),
                 cpyrht: $('#cpyrht', "#siteRegForm").val(),
-                useYn: $("#useYn:checked", "#siteRegForm").val()
+                useYn: $("#useYn:checked", "#siteRegForm").val(),
+                oldUseYn: $('#oldUseYn', "#siteRegForm").val()
             }
 
             if(displayWorkProgress()){

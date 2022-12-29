@@ -123,7 +123,6 @@
             SITE_NM = #{siteNm},
             SYS_SE_CD = #{sysSeCd},
             SYS_KND_CD = #{sysKndCd},
-            INSTID = #{instid},
             LOGO_FILEID = #{logoFileid},
             CPYRHT = #{cpyrht},
             USE_YN = #{useYn},
@@ -190,5 +189,39 @@
         </foreach>
     </select> 
     
-      
+    <!-- 기관회원의 기관관리자 역할 부여 -->
+    <insert id="insertInstRoleUser" parameterType="SiteVo">
+        /* SiteDao.insertInstRoleUser */
+        INSERT INTO TB_CMM_ROLE_USER (ROLEID, USERID, ROLE_STRT_DD, ROLE_END_DD, MDFCN_DT, MDFRID, REG_DT, RGTRID)
+        SELECT
+            R.ROLEID, U.USERID, DATE_FORMAT(NOW(), '%Y-%m-%d'), '9999-12-31', NOW(), #{mdfrid}, NOW(), #{mdfrid}
+        FROM
+            TB_CMM_ROLE R CROSS JOIN TB_CMM_USER U ON U.INSTID = #{instid}
+            LEFT OUTER JOIN TB_CMM_ROLE_USER T ON R.ROLEID = T.ROLEID AND U.USERID = T.USERID
+        WHERE 
+            R.KND_CD = 'M'
+        AND R.USE_YN = 'Y'
+        AND T.ROLEID IS NULL
+    </insert>
+    
+    <!-- 기관회원의 기관관리자 역할 회수 -->
+    <delete id="deleteInstRoleUser" parameterType="SiteVo">
+        /* SiteDao.deleteInstRoleUser */
+        DELETE 
+            TB_CMM_ROLE_USER
+        FROM 
+            TB_CMM_ROLE_USER,
+            (
+                SELECT 
+                R.ROLEID, U.USERID
+            FROM
+                TB_CMM_ROLE R CROSS JOIN TB_CMM_USER U ON U.INSTID = #{instid}
+            WHERE
+                R.KND_CD = 'M'
+            ) B
+        WHERE 
+            TB_CMM_ROLE_USER.ROLEID = B.ROLEID
+        AND TB_CMM_ROLE_USER.USERID = B.USERID
+    </delete>
+    
 </mapper>
