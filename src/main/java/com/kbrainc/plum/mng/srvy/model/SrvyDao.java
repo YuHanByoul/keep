@@ -258,6 +258,17 @@ public interface SrvyDao {
     public int insertCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
     
     /**
+     * 컨설팅만족도설문 미사용 업데이트
+     *
+     * @Title : updateCnstlngDgsfnSrvyUseYn 
+     * @Description : 컨설팅만족도설문 미사용 업데이트
+     * @param srvyVo SrvyVo객체
+     * @return int update 수
+     * @throws Exception 예외
+     */
+    public void updateCnstlngDgsfnSrvyUseYn() throws Exception;
+    
+    /**
      * 컨설팅만족도설문 목록 조회
      *
      * @Title : selectCnsltngDgstfnSrvyList

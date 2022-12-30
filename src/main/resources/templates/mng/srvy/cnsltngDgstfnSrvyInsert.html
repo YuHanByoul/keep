@@ -27,35 +27,30 @@
                     </div>
                 </div>
                 <div class="mb-2 row">
-                    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
-                        <div class="mb-0 form-group required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bgngDe"><strong>설문 시작일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="bgngDe" id="bgngDe" placeholder="설문 시작일을 입력해주세요." value=""/>
-                            </div>
+                    <div class="mb-0 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="consultingSatisfactionSurveyStartDate"><strong>설문 기간</strong></label>
+                        <div class="col-12">
+                            컨설팅 완료일 부터 
+                            <input type="text" class="form-control form-control-sm d-inline-block v-middle" name="aftrDaycnt" id="aftrDaycnt" placeholder="" style="width: 50px;">
+                            일 후, 
+                            <input type="text" class="form-control form-control-sm d-inline-block v-middle m-l-5" name="bfrDaycnt" id="bfrDaycnt" placeholder="" style="width: 50px;"> 일 이전
+                            <input type="hidden" name="bgngDe" value="0000-00-00"/>
+                            <input type="hidden" name="endDe" value="0000-00-00"/>
                         </div>
-                    </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="mb-0 form-group required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="endDe"><strong>설문 종료일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="endDe" id="endDe" placeholder="설문 종료일을 입력해주세요." value=""/>
-                            </div>
-                        </div>
-                    </div>
+                    </div>    
                 </div>
                 <div class="mb-2 row">
                     <div class="col-6">
                         <div class="mb-0 form-group row">
                             <div class="col-12">
                                 <input type="hidden" name="defaultSrvyYn"/>
-                                <input type="hidden" name="aftrDaycnt" value="10"/>
-                                <input type="hidden" name="bfrDaycnt" value="10"/>
+                                <input type="hidden" name="useYn"/>
                                 <input type="checkbox" class="js-single-small" id="defaultSrvyYn" />
                                 <label for="defaultSrvyYn" class="v-middle">컨설팅 기본 설문</label>
                             </div>
                         </div>
                     </div>
+                    <!--
                     <div class="col-6">
                         <div class="mb-0 form-group row">
                             <div class="col-12">
@@ -65,6 +60,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                 </div>
                 <div class="col-12">
                     <button type="button" class="btn btn-disabled m-r-5" onclick="cnsltngDgstfnSrvyInsert.offInsertSrvy();">취소</button>
@@ -215,8 +211,8 @@
                 return false;
             }
             
-            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
             $("input[name='defaultSrvyYn']").val($("#defaultSrvyYn").is(":checked") ? "Y" : "N");
+            $("input[name='useYn']").val($("#defaultSrvyYn").is(":checked") ? "Y" : "N");
             var param = $("#cnsltngDgstfnSrvyInsertForm").serialize();
             if(displayWorkProgress()) {
                 $.ajax({
@@ -229,8 +225,6 @@
                         if(response.result == "success") {
                             alert(response.msg);
                             srvyGrid.resetListContent();
-                            //cnsltngDgstfnSrvyInsert.srvyid = response.srvyid;
-                            //cnsltngDgstfnSrvyInsert.onUpdateForm();
                         } else {
                             alert(response.msg);
                         }
