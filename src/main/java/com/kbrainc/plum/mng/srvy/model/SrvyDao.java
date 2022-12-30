@@ -5,6 +5,7 @@ import java.util.List;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 
 /**
  * 
@@ -288,5 +289,16 @@ public interface SrvyDao {
      * @throws Exception 예외
      */
     public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 보기형 문항 응답자 수 조회
+     *
+     * @Title : selectQitemExAnsCnt
+     * @Description : 보기형 문항 응답자 수 조회
+     * @param qitemExVo QitemExVo 객체
+     * @return int 응답자 수
+     * @throws Exception 예외
+     */
+    public int selectQitemExAnsCnt(QitemExVo qitemExVo) throws Exception;
     
 }

@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.kbrainc.plum.mng.example.excel.service.ExcelService;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
@@ -285,7 +286,8 @@ public class SrvyController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/srvy/trprSrvyRsltDetailForm.html")
-    public String trprSrvyRsltDetailForm() throws Exception {
+    public String trprSrvyRsltDetailForm(QitemVo qitemVo, Model model) throws Exception {
+        model.addAttribute("qitemList", srvyService.selectSrvyRsltQitmeList(qitemVo));
         return "mng/srvy/trprSrvyRsltDetail";
     }
     
