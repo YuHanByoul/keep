@@ -357,11 +357,29 @@ public class BbsController {
         try {
             
             paramVO.setUser(user);
-            paramVO.setOrderField("GRP DESC,ORD ");
+            
+            BbsVo paramBbsVo = new BbsVo();
+            paramBbsVo.setBbsid(paramVO.getBbsid());
+            BbsVo bbsVo = bbsService.selectOneBbs(paramBbsVo);
+            
+            paramVO.setFxdNtcUseYn(bbsVo.getFxdNtcUseYn());
+            
+            paramVO.setHotUseYn(bbsVo.getHotUseYn());
+            paramVO.setHotUseStdrHits(bbsVo.getHotUseStdrHits());
+            
+            paramVO.setNewUseYn(bbsVo.getNewUseYn());
+            paramVO.setNewIndictDaycnt(bbsVo.getNewIndictDaycnt());
+            
+            paramVO.setRowPerPage(bbsVo.getPagePstCnt());
+            
+            paramVO.setOrderField("FIXORDER ASC,GRP DESC,ORD ");
+            
             result = bbsService.selectPstList(paramVO);
             if (result.size() > 0) {
                 resultMap.put("totalCount", (result.get(0).getTotalCount()));
+                resultMap.put("pageSize", (result.get(0).getRowPerPage()));
             } else {
+                resultMap.put("pageSize", 10);
                 resultMap.put("totalCount", 0);
             }
             resultMap.put("list", result);
@@ -387,6 +405,9 @@ public class BbsController {
         paramVO.setUser(user);
         paramVO.setPstid(pstid);
         Map<String, Object> resultMap = bbsService.selectPst(paramVO);
+        
+        //게시글 조회수 증가 
+        bbsService.updatePstHitsCount(paramVO);
         
         PstVo tmpParamVO = (PstVo) resultMap.get("paramMap");
         //bbsClVo.setBbsid(Integer.parseInt(paramVO.getBbsid()));

@@ -465,9 +465,13 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      * @throws Exception 예외
      */
      @Override
+     @Transactional
      public int insertCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception {
          int retVal = 0;
-         // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+         if("Y".equals(srvyVo.getDefaultSrvyYn())) { // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+             srvyDao.updateCnstlngDgsfnSrvyUseYn();
+             srvyVo.setUseYn("Y");
+         }
          retVal += srvyDao.insertCnsltngDgstfnSrvy(srvyVo);
          
          return retVal;
@@ -511,8 +515,14 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      * @throws Exception 예외
      */
     @Override
+    @Transactional
     public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception {
         int retVal = 0;
+        
+        if("Y".equals(srvyVo.getDefaultSrvyYn())) { // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+            srvyDao.updateCnstlngDgsfnSrvyUseYn();
+            srvyVo.setUseYn("Y");
+        }
         retVal = srvyDao.updateCnsltngDgstfnSrvy(srvyVo);        
              
         return retVal;

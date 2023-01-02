@@ -91,8 +91,7 @@
             #{user.userid}
         )
     </insert>
-  
-
+    
     <!-- 게시판 목록을 가져온다. -->
     <select id="getBbsList" parameterType="BbsVo" resultType="BbsVo">
         /* BbsDao.getBbsList */
@@ -317,13 +316,14 @@
             IFNULL(#{ord  }, 1),
             #{hits          },
             #{bbsClid      },
-            #{fxdNtcYn    },
             <choose>
                 <when test='fxdNtcYn == "Y" '>
+                #{fxdNtcYn    },
                 #{fxdNtcStrtDt},
                 #{fxdNtcEndDt },
                 </when>
                 <otherwise>
+                null,
                 null,
                 null,
                 </otherwise>
@@ -354,7 +354,41 @@
                 IFNULL(A.HITS,0) AS HITS,
                 B.FXD_NTC_USE_YN, 
                 IFNULL(C.cmntcnt,0) cmnt_cnt,
-                A.REG_DT,
+                A.REG_DT, 
+                <choose>
+                    <when test='hotUseYn == "Y"'>
+                     CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN HITS
+                          ELSE 0
+                     END hot_order_num,
+                     CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN 'Y'
+                          ELSE 'N'
+                     END hot_yn,
+                    </when>
+                    <otherwise>
+                      0 hot_order_num,
+                     'N' hot_yn,
+                    </otherwise>
+                </choose>
+                <choose>
+                    <when test='hotUseYn == "Y" and newUseYn == "Y"'>
+                     CASE WHEN (FXD_NTC_YN = 'N' OR FXD_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hotUseStdrHits}
+                               AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY)
+                          THEN 'Y'
+                          ELSE 'N'
+                     END new_yn,
+                    </when>
+                    <when test='hotUseYn != "Y" and newUseYn == "Y"'>
+                     CASE WHEN  NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y'
+                          ELSE 'N'
+                     END new_yn,
+                    </when>
+                    <otherwise>
+                      'N' new_yn,
+                    </otherwise>
+                </choose>
+                 CASE WHEN FXD_NTC_YN = 'Y' THEN 1
+                      ELSE 2
+                  END AS FIXORDER ,
                 A.MDFCN_DT
             FROM 
                 TB_CMM_PST A
@@ -386,6 +420,17 @@
             <if test='user.roleInfo.trgtInstCd == "S"'>
             AND A.SITEID = #{user.instid}
             </if>
+
+            <!--관리자에서는 고정공지 기간이 지나도 보이도록-->            
+            <!-- <if test='fxdNtcUseYn == "Y"'>
+                 AND PRNTS_PSTID IS NULL
+                 AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
+                       WHEN FXD_NTC_YN ='Y' AND FXD_NTC_STRT_DT IS NULL AND FXD_NTC_END_DT IS NULL THEN 'Y'
+                       WHEN FXD_NTC_YN ='N' or FXD_NTC_YN IS NULL THEN 'Y'
+                       ELSE 'N' 
+                 END )= 'Y'
+             </if> -->
+             
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -402,13 +447,14 @@
             FILEGRPID      = #{filegrpid     },
             MDFCN_DT        = NOW(),
             MDFRID     = #{user.userid   },
-            FXD_NTC_YN     = #{fxdNtcYn    },
             <choose>
                 <when test='fxdNtcYn == "Y" '>
+                FXD_NTC_YN     = #{fxdNtcYn    },
                 FXD_NTC_STRT_DT= #{fxdNtcStrtDt},
                 FXD_NTC_END_DT = #{fxdNtcEndDt },
                 </when>
                 <otherwise>
+                FXD_NTC_YN     = null,
                 FXD_NTC_STRT_DT= null,
                 FXD_NTC_END_DT = null,
                 </otherwise>
@@ -497,7 +543,7 @@
             AND A.RGTRID = C.USERID
             AND A.PSTID = #{pstid}
     </select>
-  
+    
     <!-- 게시물을 삭제한다. -->
     <delete id="deletePst" parameterType="PstVo" >
         /* BbsDao.deletePst */
@@ -572,6 +618,19 @@
         WHERE 1=1
           AND GRP = #{grp}
           AND ORD >= #{ord} 
+    </update>
+    
+    <!-- 게시물  조회수 증가  -->
+    <update id="updatePstHitsCount" parameterType="front.PstVo" >
+        /* BbsDao.updatePstHitsCount */
+        UPDATE TB_CMM_PST SET
+             HITS        = IFNULL(HITS,0)+1 
+            ,MDFCN_DT     = NOW()
+            <if test="user != null and user.userid != null ">
+            ,MDFRID  = #{user.userid }
+            </if>
+        WHERE 
+            pstid = #{pstid}  
     </update>
     
     
@@ -778,5 +837,10 @@
         AND BBSID  = #{bbsid}
         AND FXD_NTC_YN = 'Y'
     </select>
+    
+
+    
+    
+    
     
 </mapper>

@@ -28,24 +28,23 @@ public interface CnsltngService {
     /**
     * 컨설팅 리스트 호출 
     *
-    * @Title       : selectConsultList 
-    * @Description : 컨설팅 리스트 호출 
-    * @param ConsultVo consultVo객체
-    * @return List<ConsultVo>
+    * @Title       : selectCnsltngList 
+    * @Description :컨설팅 리스트 호출 
+    * @param SiteApplyVo SiteApplyVo객체
+    * @return List<SiteApplyVo>
     * @throws Exception 예외
     */
     public List<CnsltngVo> selectCnsltngList(CnsltngVo consultVo) throws Exception;
-    
     /**
      * 컨설팅 상세정보 호출 
      *
-     * @Title       : selectSiteApplyInfo 
-     * @Description : 컨설팅 상세정보 호출
-     * @param ConsultVo ConsultVo객체
-     * @return ConsultVo
+     * @Title       : selectCnsltngtInfo 
+     * @Description : 컨설팅 상세정보 호출 
+     * @param SiteApplyVo SiteApplyVo객체
+     * @return SiteApplyVo
      * @throws Exception 예외
      */
-    public CnsltngVo selectConsultInfo(CnsltngVo consultVo) throws Exception;
+    public CnsltngVo selectCnsltngtInfo(CnsltngVo consultVo) throws Exception;
     /**
      * 컨설팅 신청 상태 수정 
      *

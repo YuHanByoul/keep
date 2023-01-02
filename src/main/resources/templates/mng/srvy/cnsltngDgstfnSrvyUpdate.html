@@ -28,35 +28,30 @@
                     </div>
                 </div>
                 <div class="mb-2 row">
-                    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
-                        <div class="mb-0 form-group required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bgngDe"><strong>설문 시작일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="bgngDe" id="bgngDe" placeholder="설문 시작일을 입력해주세요." th:value="${srvyInfo.bgngDe}"/>
-                            </div>
+                    <div class="mb-0 form-group row required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="consultingSatisfactionSurveyStartDate"><strong>설문 기간</strong></label>
+                        <div class="col-12">
+                            컨설팅 완료일 부터 
+                            <input type="text" class="form-control form-control-sm d-inline-block v-middle" name="aftrDaycnt" id="aftrDaycnt" th:value="${srvyInfo.aftrDaycnt}" placeholder="" style="width: 50px;">
+                            일 후, 
+                            <input type="text" class="form-control form-control-sm d-inline-block v-middle m-l-5" name="bfrDaycnt" id="bfrDaycnt" placeholder="" th:value="${srvyInfo.bfrDaycnt}" style="width: 50px;"> 일 이전
+                            <input type="hidden" name="bgngDe" th:value="${srvyInfo.bgngDe}"/>
+                            <input type="hidden" name="endDe" th:value="${srvyInfo.endDe}"/>
                         </div>
-                    </div>
-                    <div class="col-12 col-lg-6">
-                        <div class="mb-0 form-group required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="endDe"><strong>설문 종료일</strong></label>
-                            <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="endDe" id="endDe" placeholder="설문 종료일을 입력해주세요." th:value="${srvyInfo.endDe}"/>
-                            </div>
-                        </div>
-                    </div>
+                    </div>    
                 </div>
                 <div class="mb-2 row">
                     <div class="col-6">
                         <div class="mb-0 form-group row">
                             <div class="col-12">
                                 <input type="hidden" name="defaultSrvyYn"/>
-                                <input type="hidden" name="aftrDaycnt" th:value="${srvyInfo.aftrDaycnt}"/>
-                                <input type="hidden" name="bfrDaycnt" th:value="${srvyInfo.bfrDaycnt}"/>
+                                <input type="hidden" name="useYn" th:value="${srvyInfo.useYn}"/>
                                 <input type="checkbox" class="js-single-small" id="defaultSrvyYn"/>
                                 <label for="defaultSrvyYn" class="v-middle">컨설팅 기본 설문</label>
                             </div>
                         </div>
                     </div>
+                    <!--
                     <div class="col-6">
                         <div class="mb-0 form-group row">
                             <div class="col-12">
@@ -66,6 +61,7 @@
                             </div>
                         </div>
                     </div>
+                    -->
                 </div>
                 <div class="col-12">
                     <button type="button" class="btn btn-disabled m-r-5" onclick="cnsltngDgstfnSrvyUpdate.offUpdateSrvy();">취소</button>
@@ -105,7 +101,7 @@
                 new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
            }
            $(".js-example-basic-single").select2();
-           toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
+           //toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
            
            cnsltngGrid = new GridHelper("cnsltngGrid");
            this.setGrid();
@@ -216,13 +212,9 @@
         
         onUpdateSrvy: function() {
             if(!($("#cnsltngDgstfnSrvyUpdateForm").valid())) return;
-            if($("#bgngDe").val() > $("#endDe").val()) {
-                alert("설문 시작일은 설문 종료일보다 작아야 합니다.");
-                return false;
-            }
             
-            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
             $("input[name='defaultSrvyYn']").val($("#defaultSrvyYn").is(":checked") ? "Y" : "N");
+            $("input[name='useYn']").val($("#defaultSrvyYn").is(":checked") ? "Y" : "N");
             var param = $("#cnsltngDgstfnSrvyUpdateForm").serialize();
             if(displayWorkProgress()) {
                 $.ajax({
@@ -234,7 +226,7 @@
                     success: function(response) {
                         if(response.result == "success") {
                             alert(response.msg);
-                            srvyGrid.resetListContent();
+                            srvyGrid.resetPageContent();
                             //cnsltngDgstfnSrvyUpdate.srvyid = response.srvyid;
                             //cnsltngDgstfnSrvyUpdate.onUpdateForm();
                         } else {

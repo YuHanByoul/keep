@@ -135,9 +135,9 @@ public class InstVo extends ParentRequestVo {
     /** 수정자아이디 */
     private int mdfrid;
     
-    
     /*** 담당자명 ***/
     private String mngnms;
+    
     
     /*** 사용자아이디 (삭제용) ***/
     private String[] userids;

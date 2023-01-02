@@ -115,27 +115,50 @@ public class PstVo extends ParentRequestVo {
     @Pattern(regexp="[YN]")
     private String rplyYn;
     
-    // 이후 추가
+    /** HOT_사용_여부 **/
+    private String hotUseYn;
+    
+    /** HOT 게시글 여부  **/
+    private String hotYn;
+    
+    /** HOT_사용_기준_조회수 **/
+    private Integer hotUseStdrHits;
+    
+    /** NEW_사용_여부 **/
+    private String newUseYn;
+    
+    /** NEW_표시일수 **/
+    private Integer newIndictDaycnt;
+    
+    /** NEW 게시글 여부  **/
+    private String newYn;
+    
+    /** 고정_공지_사용_여부 **/
+    private String fxdNtcUseYn;
+    
+    /** 고정_공지_갯수 **/
+    private Integer fxdNtcCnt;
+    
     /** 댓글수 **/
     private int cmntCnt;
     
-    // 이후 추가
+    /** 첨부 파일 수 **/
     private int fileCnt;
+    
+    /** 페이지당 로우수 **/
+    private int pageSize;
     
     //BBS 정보  
     private String nm;
     private String userNm;
     private String userid;
     
-    private String atchfileUseYn;
+    private String  atchfileUseYn;
 	private Integer atchfileCnt;
 	private Integer atchfileSize;
-	private String cmntUseYn;
-	private String rplyUseYn;
-	private String clUseYn;
-	private String fxdNtcUseYn;
-	
-	private Integer fxdNtcCnt;
+	private String  cmntUseYn;
+	private String  rplyUseYn;
+	private String  clUseYn;
 	
 	//답글 리스트용 추가 
 	private ArrayList<FileVo> fileMap;
