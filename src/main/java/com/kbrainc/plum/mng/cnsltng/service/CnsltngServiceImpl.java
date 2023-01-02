@@ -53,8 +53,8 @@ public class CnsltngServiceImpl extends PlumAbstractServiceImpl implements Cnslt
      * @return ConsultVo
      * @throws Exception 예외
      */
-    public CnsltngVo selectConsultInfo(CnsltngVo consultVo) throws Exception{
-        return cnsltngDao.selectConsultInfo(consultVo);
+    public CnsltngVo selectCnsltngtInfo(CnsltngVo consultVo) throws Exception{
+        return cnsltngDao.selectCnsltngtInfo(consultVo);
     }
     /**
      * 컨설팅 신청 상태 수정 

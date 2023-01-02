@@ -170,6 +170,16 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
     public List<PstVo> selectPstList(PstVo paramVO) throws Exception {
         return bbsDao.selectPstList(paramVO);
     }
+    /**
+     * @Title : selectTotalPstList
+     * @Description : 게시글 목록 가져오기(고정,HOT,HIT,NEW 사용)
+     * @param paramVO BbsVO 타입의 인자
+     * @throws Exception :
+     * @return List
+     */
+    public List<PstVo> selectTotalPstList(PstVo paramVO) throws Exception{
+        return bbsDao.selectTotalPstList(paramVO);
+    }
 
     /**
      * @Title : modifybbsClOrdUp
@@ -406,4 +416,15 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         paramVO.setDpth(paramVO.getDpth() + 1);
         return bbsDao.insertPst(paramVO);
     }
+    /**
+     * @Title : updatePstHitsCount
+     * @Description : 게시물 조회수 증가 
+     * @param PstVo PstVo 타입의 인자
+     * @return int
+     * @throws Exception :
+     */
+    public int updatePstHitsCount(PstVo paramVO) throws Exception{
+        return bbsDao.updatePstHitsCount(paramVO);
+    }
+    
 }

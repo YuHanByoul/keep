@@ -108,6 +108,7 @@
 	/*]]>*/
     var selectedItems = [];
     var clickedItem ;
+    var isGridOptionChanged = false;
    
     $(function(){
         
@@ -132,13 +133,13 @@
 		 writeJsGridData();
 		 gridHelper1.resetListContent();
 	 }
-     function fn_goInsertForm(){
-    	    if($("#bbsCl").val() == null || $("#bbsCl").val() == ""){
-    	    	alert("등록할 게시판 종류를 선택해 주십시오.");
-    	    	return;
-    	    } 
-    	    var insertUrl ="/bbs/bbsPstInsertForm.html?bbsid="+$("#bbsCl").val()
-    	    gridHelper1.loadContent(insertUrl);
+    function fn_goInsertForm(){
+        if($("#bbsCl").val() == null || $("#bbsCl").val() == ""){
+            alert("등록할 게시판 종류를 선택해 주십시오.");
+    	    return;
+    	} 
+    	var insertUrl ="/bbs/bbsPstInsertForm.html?bbsid="+$("#bbsCl").val()
+    	gridHelper1.loadContent(insertUrl);
      }
      function fn_searchForm(){
     	 if($("#bbsSearchForm #bbsCl").val() == null || $("#bbsSearchForm #bbsCl").val() == ""){
@@ -146,12 +147,9 @@
     	    	return;
     	 } 
 		 $("#bbsid").val($("#bbsSearchForm  #bbsCl").val());
-		 //writeJsGridData();
 		 gridHelper1.resetListContent();
-		 //showList();
      }
-     
-        function writeJsGridData(){
+     function writeJsGridData(){
     		$("#jsGrid").jsGrid({
     	        height: "auto",
     	        width: "100%",
@@ -193,13 +191,13 @@
     	                  dataType: "json",
     	                  data: params
     	                }).done(function(response){
+    	                    //filter.pageSize = response.pageSize;
     	                	var da = {
                                     data : escapeGridData(response.list)
                                     ,itemsCount : response.totalCount
                                 };
     	                  data.resolve(da);
     	                });
-    	                
     	                return data.promise();
     	            }
     	        },
@@ -228,13 +226,23 @@
                                 let returnStr = "";
                                 let seprateStr = "&nbsp;&nbsp";
                                 let title = (item.delYn=='Y')?"삭제된 게시물입니다.":item.title;
+                                let prifix = "";
+
+                                if(item.fxdNtcUseYn == 'Y' && item.fxdNtcYn == 'Y'){
+                                	prifix ="<span style='color:blue;' >[필독]</span>&nbsp;&nbsp;"
+                                }else if(item.hotYn == 'Y'){
+                                	prifix ="<span style='color:red;' >[HOT]</span>&nbsp;&nbsp;"
+                                }else if(item.newYn == 'Y'){
+                                    prifix ="<span style='color:lightBlue;' >[NEW]</span>&nbsp;&nbsp;"
+                                }
+                                
                                 if(item.dpth > 0){
                                      for(let i = 0; i<item.dpth;i++){
                                     	 returnStr += seprateStr;
                                      }
                                      returnStr = returnStr+"ㄴ"; 
                                 }
-                                return returnStr+title+cmntStr;
+                                return returnStr+prifix+title+cmntStr;
                             }
 		                 }
 	                    ,{ title: '고정공지여부' ,name: 'fxdNtcYn' ,type:"text", width: "10%" , align:"center", visible: false
@@ -265,6 +273,11 @@
          	    	if(args.grid.data == null || args.grid.data.length == 0) return;
         	        if(args.grid.data[0].fxdNtcUseYn =='Y'){
 	        	        $("#jsGrid").jsGrid("fieldOption", "fxdNtcYn", "visible", true);
+            	    }
+            	    
+        	        if(!isGridOptionChanged){
+        	            $("#jsGrid").jsGrid("option", "pageSize", args.grid.data[0].pageSize);
+        	            isGridOptionChanged = true;
             	    }
         	    }
     	    })
@@ -307,25 +320,25 @@
                     selectedItems = [];
                 }
             });    	    
-   		}
+   	  }
 
-    	var clPop = "";
+      var clPop = "";
     		    	
-    	function fn_goClUse(bbsid){
-    		if(clPop == null || clPop == "undefined" || clPop == ""){
-	    		fn_bbsPop(bbsid);
-    		}else{
-    			clPop.close();
-    			fn_bbsPop(bbsid);
-    		}
+    function fn_goClUse(bbsid){
+        if(clPop == null || clPop == "undefined" || clPop == ""){
+	 		fn_bbsPop(bbsid);
+    	}else{
+    		clPop.close();
+    		fn_bbsPop(bbsid);
     	}
+    }
     	
-       function fn_bbsPop(bbsid){
-    	    var popUrl ="/bbs/bbsClPop.html?bbsid="+bbsid;
-    	    clPop = window.open(popUrl, "_blank", "scrollbars=yes,resizable=yes, top=200, left=500, width=500, height=500");
-       }
+    function fn_bbsPop(bbsid){
+        var popUrl ="/bbs/bbsClPop.html?bbsid="+bbsid;
+        clPop = window.open(popUrl, "_blank", "scrollbars=yes,resizable=yes, top=200, left=500, width=500, height=500");
+    }
        
-       function fn_postAjax(url, data,callBack){
+    function fn_postAjax(url, data,callBack){
 	       	$.ajax({
 				url : url,
 				type: 'POST',
@@ -338,12 +351,10 @@
 			 	error : function (error){
 				} 
 	    	});
-       }
-       
-       function fn_deleteFile(fileid, fileIdntfcKey){
-    	   
-        	var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
-		      $.ajax({
+    }
+    function fn_deleteFile(fileid, fileIdntfcKey){
+    	var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+        $.ajax({
 				url : deleteFileUrl,
 				type: 'GET',
 				cache : false,
@@ -364,20 +375,19 @@
 			 	error : function (error){
 				} 
              })
-        };
-  
-       function fn_disableTrue(id){
-    	   $("#"+id).attr("disabled","true");
-       }
-       function fn_disableFalse(id){
-    	   $("#"+id).removeAttr("disabled");
-       }
-       function fn_deleteFileList(fileid, fileIdntfcKey){
-	       if(!confirm("파일을 삭제하시겠습니까?")){return;}
+    };
+    function fn_disableTrue(id){
+   	   $("#"+id).attr("disabled","true");
+    }
+    function fn_disableFalse(id){
+       $("#"+id).removeAttr("disabled");
+    }
+    function fn_deleteFileList(fileid, fileIdntfcKey){
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
 	       fn_deleteFile(fileid, fileIdntfcKey);
 	       $("#inputFiles"+fileid).remove();
-       } 
-       fn_deletePsts = () =>{
+    } 
+    fn_deletePsts = () =>{
 
     	   if(selectedItems.length <=0 ){
     	        alert("삭제할 게시물을 선택해주십시오.");
@@ -395,8 +405,8 @@
                    data : {
                 	   delPstids  :delPstids
                 	   ,delYn  :'Y'
-                   },
-                   success : function (data){
+               },
+               success : function (data){
                 	   if(data.result =='success'){
                     	   alert("게시글이 삭제 되었습니다.");
 	                	   var curPage = $("#jsGrid").jsGrid("option", "pageIndex");
@@ -408,12 +418,11 @@
                        closeWorkProgress();
                    },
                    error : function (error){
-                   } 
-               });
+               } 
+            });
           }
-      }
-	</script>
-	 
+   }
+ </script>
  </div>
 </body>
 </html>
