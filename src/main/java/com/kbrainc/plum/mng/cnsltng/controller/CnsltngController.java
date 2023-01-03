@@ -13,8 +13,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.cnsltng.service.CnsltngService;
+import com.kbrainc.plum.mng.inst.model.InstVo;
+import com.kbrainc.plum.mng.inst.service.InstService;
 import com.kbrainc.plum.mng.siteApply.model.SiteApplyVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -47,6 +51,12 @@ public class CnsltngController {
     @Autowired
     private CnsltngService cnsltngService;
     
+    @Autowired
+    private FileService fileService;
+    
+    @Autowired
+    private InstService instService;
+    
     /**
      * @Title : cnsltngList
      * @Description : 컨설팅 관리 화면 이동
@@ -61,7 +71,7 @@ public class CnsltngController {
     
     /**
      * @Title : selectCnsltngList
-     * @Description : 컨설팅 가져오기
+     * @Description : 컨설팅 리스트 가져오기
      * @param CnsltngVo
      * @throws Exception
      * @return
@@ -92,13 +102,7 @@ public class CnsltngController {
      */
     @RequestMapping(value = "/mng/cnsltng/cnsltngDetailForm.html")
     public String cnsltngDetailForm(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
-        //cnsltngVo.setUser(user);
-        //SiteApplyVo result = siteApplyService.selectSiteApplyInfo(siteApplyVo);
-        //List<SiteApplyMenuVo> menuList = siteApplyService.selectSiteApplyMenuList(siteApplyVo);
-        
         model.addAttribute("cnsltngVo", cnsltngVo);
-        //model.addAttribute("siteApplyVo", result);
-        
         return "mng/cnsltng/cnsltngDetailForm";
     }
     
@@ -112,12 +116,24 @@ public class CnsltngController {
      */
     @RequestMapping(value = "/mng/cnsltng/cnsltngApplyInfo.html")
     public String cnsltngApplyInfo(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
-        cnsltngVo.setUser(user);
-        //SiteApplyVo result = siteApplyService.selectSiteApplyInfo(siteApplyVo);
-        //List<SiteApplyMenuVo> menuList = siteApplyService.selectSiteApplyMenuList(siteApplyVo);
         
-        //model.addAttribute("siteApplyMenuList", menuList);
-        //model.addAttribute("siteApplyVo", result);
+        cnsltngVo.setUser(user);
+        CnsltngVo resVo = new CnsltngVo();
+        resVo = cnsltngService.selectCnsltngtInfo(cnsltngVo);
+        model.addAttribute("cnsltngVo", resVo);
+        
+        InstVo instVo = new InstVo();
+        instVo.setInstid(resVo.getInstid());
+        model.addAttribute("instVo", instService.selectInstInfo(instVo));
+        
+        if (resVo.getFilegrpid() != null && !resVo.getFilegrpid().equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(resVo.getFilegrpid().toString()));
+            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+            model.addAttribute("fileList",fileList );
+        } else {
+            model.addAttribute("fileList", null);
+        }
         
         return "mng/cnsltng/cnsltngInfoForm";
     }
@@ -148,6 +164,9 @@ public class CnsltngController {
     public String cnsltngEval(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
         
         cnsltngVo.setUser(user);
+        
+
+        
         //SiteApplyVo result = siteApplyService.selectSiteApplyInfo(siteApplyVo);
         //List<SiteApplyMenuVo> menuList = siteApplyService.selectSiteApplyMenuList(siteApplyVo);
         //model.addAttribute("siteApplyMenuList", menuList);

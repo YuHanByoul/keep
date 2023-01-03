@@ -47,6 +47,15 @@ public class CnsltngVo extends ParentRequestVo {
     /** 기관 이름  */
     private String instNm;
     
+    /** 기관 담당자 이름*/
+    private String instManagerNm;
+    
+    /** 기관 담당자  전화번호 */
+    private String instManagerPhon;
+    
+    /**기관 담당자  이메일 */
+    private String instManagerEml;
+    
     /** 사용자 아이디 */
     private Integer userid;
     
@@ -66,7 +75,7 @@ public class CnsltngVo extends ParentRequestVo {
     private String cnsltngKndCdNm;
     
     /** 희망일자1 */
-    @Size(max = 10, message = "희망일자1은 20자를 넘을 수 없습니다.")
+    @Size(max = 10, message = "희망일자1은 10자를 넘을 수 없습니다.")
     private String hopeDe1;
     
     /** 희망일자1 오전 오후 코드 */
@@ -77,14 +86,14 @@ public class CnsltngVo extends ParentRequestVo {
     private String hopeDe1AmPmCdNm;
     
     /** 희망일자2 */
-    @Size(max = 10, message = "희망일자1은 20자를 넘을 수 없습니다.")
+    @Size(max = 10, message = "희망일자1은 10자를 넘을 수 없습니다.")
     private String hopeDe2;
     
-    /** 희망일자3 오전 오후 코드 */
+    /** 희망일자2 오전 오후 코드 */
     @Size(max = 20, message = "희망일자2 오전 오후 코드는 20자를 넘을 수 없습니다.")
     private String hopeDe2AmPmCd;
     
-    /** 희망일자3 오전 오후 코드 명*/
+    /** 희망일자2 오전 오후 코드 명*/
     private String hopeDe2AmPmCdNm;
     
     /** 프로그램 */
@@ -144,6 +153,15 @@ public class CnsltngVo extends ParentRequestVo {
     
     /** 방문 종료 시각 */
     private String vstEndDt;
+    
+    /** 담당자 계정 */
+    private String cnstntAcnt;
+    
+    /** 담당자 핸드폰 */
+    private String cnstntMoblphon;
+    
+    /** 담당자 이메일 */
+    private String cnstntEml;
     
     /******** 검색용 ********/
     /** 프로그램 명 */

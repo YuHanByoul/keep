@@ -122,7 +122,7 @@
              </div>
              <div class="mb-2 row">
                  <div class="col-12 col-lg-6 mb-2 mb-lg-0">
-                     <div class="mb-0 form-group">
+                     <div class="mb-0 form-group required">
                          <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>승인상태</strong></span>
                          <div class="col-sm-12">
                               <select id ="aprvSttsCd" name="aprvSttsCd" class="form-select form-select-sm form-control-sm">
@@ -135,7 +135,7 @@
                      </div>
                  </div>
                  <div class="col-12 col-lg-6">
-                     <div class="mb-0 form-group">
+                     <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="zip"><strong>우편번호</strong></label>
                          <div class="col-sm-12">
                              <input type="text" class="form-control form-control-sm" name="zip" id="zip" placeholder="우편번호"  readonly onclick="daumPostcode()" th:value="${inst.zip}"/>
@@ -144,8 +144,8 @@
                  </div>
              </div>
              <div class="mb-2 row">
-                 <div class="col-12 col-lg-6 mb-2 mb-lg-0">
-                     <div class="mb-0 form-group row">
+                 <div class="col-12 col-lg-6 mb-2 mb-lg-0 ">
+                     <div class="mb-0 form-group row required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addr"><strong>주소</strong></label>
                          <div class="col-sm-12">
                              <input type="text" class="form-control form-control-sm" name="addr" id="addr" placeholder="주소" onclick="daumPostcode()" readonly th:value="${inst.addr}"/>
@@ -164,7 +164,7 @@
              </div>
              
              <div class="mb-2 row">
-                 <div class="col-12 col-lg-6">
+                 <div class="col-12 col-lg-12">
                      <div class="mb-0 form-group row">
                          <label class="form-label col-sm-6 col-form-label p-t-0 pb-1" for="instFiles"><strong>파일첨부</strong></label>
                          <div class="col-sm-12">
@@ -175,26 +175,21 @@
             </div>
             
              <div class="mb-2 row">
-                 <div class="col-12 col-lg-6">
+                 <div class="col-12 col-lg-12">
                      <div class="mb-0 form-group row">
-                         <div class="col-auto">
+                         <div class="col-auto" >
+                             <span id="fileListArea">
                              <!-- 파일 명 및 삭제 버튼 영역-->
-                             <div id="fileListArea">
-                             
                                  <th:block th:if = "${fileMap} != null ">
 			                      <!-- <div  th:each="item:${fileMap}" > -->
-			                        <span th:each="item:${fileMap}" class ='label label-inverse mb-2' th:id="'instFile_'+${item.fileid}">
+			                        <span th:each="item:${fileMap}" class ='label label-inverse ' th:id="'instFile_'+${item.fileid}">
 			                            <th:block th:text="${item.orginlFileNm}"></th:block>
 			                            &nbsp;&nbsp;
-				                        <a  class = 'btn text-white' href="javascript:void(0);"
-				                                         th:fileid ="${item.fileid}" 
-				                                         th:fileIdntfcKey ="${item.fileIdntfcKey}" 
-				                                     onclick ="fn_deleteInstFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"> X</a>
-			                         </span>
+				                        <a  class = 'btn text-white' th:fileid ="${item.fileid}" th:fileIdntfcKey ="${item.fileIdntfcKey}" 
+				                                     href="javascript:fn_deleteInstFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">X</a></span>
 			                       <!-- </div> -->
-                                  </th:block> 
-                                  
-                             </div>
+                                  </th:block>
+                                  </span> 
                          </div>
                      </div>
                  </div>
@@ -221,7 +216,7 @@
      
     </div>
     <!-- 탭영역 end -->
-    
+    <input type="hidden" id="rgnCd" name="rgnCd" th:value="${inst.rgnCd}" />    
     <input type="hidden" id="logoFilegrpid" name="logoFilegrpid" value="0"/>
     <input type="hidden" id="logoFileid" name="logoFileid" th:value="${inst.logoFileid}"/>
     <input type="hidden" id="filegrpid" name="filegrpid" th:value="${inst.filegrpid == null or inst.filegrpid == ''}? 0: ${inst.filegrpid}"/>
@@ -244,9 +239,11 @@
 		    	instNm      :   { required: true , maxlength: 100 }
 		    	,instTypeCd :   { required: true }
 	            ,brno       :   { required: true ,number :true ,maxlength:10}
-		    	,rprsvNm    :   { required: true  }
+		    	,rprsvNm    :   { required: true }
 		    	,aprvSttsCd :   { required: true }
-		    	,telno      :   { number :true ,maxlength: 12}
+		    	,telno      :   { number  :true ,maxlength: 12}
+		    	,zip        :   { required: true }
+		    	,addr       :   { required: true }
 		    },
 		    messages: {
 		    	instNm      :   { required: "기관명을 입력해주십시오." , maxlength: "기관명은 100자 이하여야 합니다." }  
@@ -255,6 +252,8 @@
 		    	,rprsvNm    :   { required: "대표자명을 입력하세요"  }
 	    	    ,aprvSttsCd :   { required: "승인상태를 선택해주십시오." }
 		    	,telno      :   { number  : "숫자만 입력가능합니다." , maxlength:"전화 번호는 12자리 이하여야 합니다."}
+		    	,zip        :   { required: "우편번호를 입력해주십시오" }
+		    	,addr       :   { required: "주소를 입력해주십시오" }
 		    }
 	})
     
@@ -298,7 +297,7 @@
                 } else {
                     addr = data.jibunAddress;
                 }
-                //$('#areaCd').val(data.sigunguCode);
+                $('#rgnCd').val(data.sigunguCode);
                 $('#zip').val(data.zonecode);
                 $('#addr').val(addr);
                 $('#addrDtl').focus();
