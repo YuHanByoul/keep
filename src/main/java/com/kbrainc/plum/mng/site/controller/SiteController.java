@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.site.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +24,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.site.model.SiteDomainVo;
+import com.kbrainc.plum.mng.site.model.SiteMenuSetupVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.mng.site.service.SiteService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.service.ResAuthService;
 import com.kbrainc.plum.rte.service.ResMenuService;
 
 /**
@@ -60,32 +63,35 @@ public class SiteController {
     @Autowired
     private ResMenuService resMenuService;
     
+    @Autowired
+    private ResAuthService resAuthService;
+    
     /**
-     * 
-     * 사이트 관리 메인 UI
-     *
-     * @Title : siteMngMain
-     * @Description : TODO
-     * @param model
-     * @throws Exception
-     * @return String
-     */
+    * 
+    * 사이트 관리 메인 UI
+    *
+    * @Title : siteMngMain
+    * @Description : TODO
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/siteMngMain.html")
     public String siteMngMain(ModelMap model) throws Exception {
         return "mng/site/siteMngMain";
     }
     
     /**
-     * 
-     * 사이트 정보 수정 및 등록 폼 UI
-     *
-     * @Title : siteMngReg
-     * @Description : TODO
-     * @param model
-     * @param siteid
-     * @throws Exception
-     * @return String
-     */
+    * 
+    * 사이트 정보 수정 및 등록 폼 UI
+    *
+    * @Title : siteMngReg
+    * @Description : TODO
+    * @param model
+    * @param siteid
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/siteMngRegForm.html")
     public String siteMngReg(ModelMap model, Integer siteid) throws Exception {
         logger.info("Site ID : {}", siteid);
@@ -115,16 +121,16 @@ public class SiteController {
     
     
     /**
-     * 
-     * 사이트 목록.
-     *
-     * @Title : selectSiteList
-     * @Description : 사이트 목록.
-     * @param siteVo SiteVo객체
-     * @param request 요청객체
-     * @return Map<String,Object> 사이트목록정보
-     * @throws Exception 예외
-     */
+    * 
+    * 사이트 목록.
+    *
+    * @Title : selectSiteList
+    * @Description : 사이트 목록.
+    * @param siteVo SiteVo객체
+    * @param request 요청객체
+    * @return Map<String,Object> 사이트목록정보
+    * @throws Exception 예외
+    */
     @ResponseBody
     @RequestMapping(value = {"/siteList.do", "/siteAplyList.do"})
     public Map<String, Object> selectSiteList(SiteVo siteVo, HttpServletRequest request) throws Exception {
@@ -148,16 +154,16 @@ public class SiteController {
     }
     
     /**
-     * 
-     * 사이트 추가.
-     *
-     * @Title : insertSite
-     * @Description : 사이트 추가.
-     * @param siteVo
-     * @param bindingResult 유효성검증결과
-     * @return Map<String,Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 
+    * 사이트 추가.
+    *
+    * @Title : insertSite
+    * @Description : 사이트 추가.
+    * @param siteVo
+    * @param bindingResult 유효성검증결과
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @ResponseBody
     @RequestMapping(value = {"/insertSite.do", "/insertSiteAply.do"}, method = RequestMethod.POST)
     public Map<String, Object> insertSite(@UserInfo UserVo user, @RequestBody @Valid SiteVo siteVo, BindingResult bindingResult, HttpServletRequest request) throws Exception {
@@ -192,16 +198,16 @@ public class SiteController {
     }
 
     /**
-     * 
-     * 사이트 정보 수정.
-     *
-     * @Title : updateSite
-     * @Description : 사이트 정보 수정.
-     * @param siteVo
-     * @param bindingResult 유효성검증결과
-     * @return Map<String,Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 
+    * 사이트 정보 수정.
+    *
+    * @Title : updateSite
+    * @Description : 사이트 정보 수정.
+    * @param siteVo
+    * @param bindingResult 유효성검증결과
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @ResponseBody
     @RequestMapping(value = {"/updateSite.do", "/updateSiteAply.do"}, method = RequestMethod.POST)
     public Map<String, Object> updateSite(@UserInfo UserVo user, @RequestBody SiteVo siteVo, BindingResult bindingResult, HttpServletRequest request) throws Exception {
@@ -308,24 +314,108 @@ public class SiteController {
        
        SiteVo siteInfo =  new SiteVo();
        if(siteid != null && CommonUtils.isNotEmpty(siteid.toString())) {
-           siteInfo = siteService.selectSiteInfo(siteid);
-           logger.info("Site Info : {}", siteInfo);
-           
-           FileVo fileVo = new FileVo();
-           
-           if (siteInfo.getLogoFileid() != null && !siteInfo.getLogoFileid().equals(0)) {
-               fileVo.setFileid(Integer.parseInt(siteInfo.getLogoFileid().toString()));
-               
-               FileVo logoVo= fileService.getFileInfo(fileVo);
-               
-               model.addAttribute("logoFile",logoVo );
-           } else {
-               model.addAttribute("logoFile", null);
-           }
-           
-       }
-       
-       model.addAttribute("siteInfo", siteInfo);
-       return "mng/site/siteAplyMngRegForm";
-   }
+            siteInfo = siteService.selectSiteInfo(siteid);
+            logger.info("Site Info : {}", siteInfo);
+            
+            FileVo fileVo = new FileVo();
+            
+            if (siteInfo.getLogoFileid() != null && !siteInfo.getLogoFileid().equals(0)) {
+                fileVo.setFileid(Integer.parseInt(siteInfo.getLogoFileid().toString()));
+                
+                FileVo logoVo= fileService.getFileInfo(fileVo);
+                
+                model.addAttribute("logoFile", logoVo);
+            } else {
+                model.addAttribute("logoFile", null);
+            }
+            
+            String menuYn = siteService.selectSiteMenuYn(siteid);
+            model.addAttribute("menuYn", menuYn);
+            List<SiteMenuSetupVo> setupItemList = new ArrayList<SiteMenuSetupVo>();
+            
+            if ("Y".equals(menuYn)) { // 이미 메뉴를 구성한경우
+                setupItemList = siteService.selectSiteAplySetupMenuList(siteid);
+            } else { // 아직 메뉴를 구성하지않은 경우
+                setupItemList = siteService.selectSiteAplySetupPrgrmList();
+            }           
+            model.addAttribute("setupItemList", setupItemList);
+        }
+        
+        model.addAttribute("siteInfo", siteInfo);
+        return "mng/site/siteAplyMngRegForm";
+    }
+
+    /**
+    * 분양사이트 메뉴구성 저장.
+    *
+    * @Title : saveSiteAplyMenuSetup
+    * @Description : 분양사이트 메뉴구성 저장.
+    * @param user 사용자세션정보
+    * @param siteMenuSetupVo SiteMenuSetupVo객체
+    * @param bindingResult 유효성검증결과
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @ResponseBody
+    @RequestMapping(value = "/saveSiteAplyMenuSetup.do", method = RequestMethod.POST)
+    public Map<String, Object> saveSiteAplyMenuSetup(@UserInfo UserVo user, SiteMenuSetupVo siteMenuSetupVo, BindingResult bindingResult) throws Exception {
+        
+        Map<String, Object> response = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            response.put("msg", fieldError.getDefaultMessage());
+            return response;
+        }
+        
+        siteMenuSetupVo.setUser(user);
+        String menuYn = siteService.selectSiteMenuYn(siteMenuSetupVo.getSiteid());
+        
+        if("Y".equals(menuYn)) {
+            response.put("result", Constant.REST_API_RESULT_SUCCESS);
+            response.put("msg", "이미 메뉴구성이 되어있습니다.");
+            return response;
+        } else {            
+            siteService.saveSiteAplyMenuSetup(siteMenuSetupVo);
+            resMenuService.removeCacheForSiteid(String.valueOf(siteMenuSetupVo.getSiteid()));
+            resAuthService.removeCacheForAuth();
+            
+            response.put("result", Constant.REST_API_RESULT_SUCCESS);
+            response.put("msg", "저장에 성공하였습니다.");
+        }
+        
+        return response;
+    }
+    
+    /**
+    * 분양사이트 메뉴구성 초기화.
+    *
+    * @Title : initSiteAplyMenuSetup
+    * @Description : 분양사이트 메뉴구성 초기화.
+    * @param user 사용자세션정보
+    * @param siteMenuSetupVo SiteMenuSetupVo객체
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @ResponseBody
+    @RequestMapping(value = "/initSiteAplyMenuSetup.do", method = RequestMethod.POST)
+    public Map<String, Object> initSiteAplyMenuSetup(@UserInfo UserVo user, SiteMenuSetupVo siteMenuSetupVo) throws Exception {
+        
+        Map<String, Object> response = new HashMap<String, Object>();
+        
+        if (siteMenuSetupVo.getSiteid() == null) {
+            response.put("msg", "사이트아이디를 입력하세요.");
+            return response;
+        }
+        
+        siteMenuSetupVo.setUser(user);
+        siteService.initSiteAplyMenuSetup(siteMenuSetupVo.getSiteid());
+        resMenuService.removeCacheForSiteid(String.valueOf(siteMenuSetupVo.getSiteid()));
+        resAuthService.removeCacheForAuth();
+        
+        response.put("result", Constant.REST_API_RESULT_SUCCESS);
+        response.put("msg", "초기화에 성공하였습니다.");
+        
+        return response;
+    }
 }

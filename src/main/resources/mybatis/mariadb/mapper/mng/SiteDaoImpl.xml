@@ -213,15 +213,140 @@
             TB_CMM_ROLE_USER,
             (
                 SELECT 
-                R.ROLEID, U.USERID
-            FROM
-                TB_CMM_ROLE R CROSS JOIN TB_CMM_USER U ON U.INSTID = #{instid}
-            WHERE
-                R.KND_CD = 'M'
+                    R.ROLEID, U.USERID
+                FROM
+                    TB_CMM_ROLE R CROSS JOIN TB_CMM_USER U ON U.INSTID = #{instid}
+                WHERE
+                    R.KND_CD = 'M'
             ) B
         WHERE 
             TB_CMM_ROLE_USER.ROLEID = B.ROLEID
         AND TB_CMM_ROLE_USER.USERID = B.USERID
     </delete>
     
+    <!-- 사이트에 메뉴가 존재하는지 확인한다. -->
+    <select id="selectSiteMenuYn" parameterType="Integer" resultType="String">
+        /* SiteDao.selectSiteMenuYn */
+        SELECT 
+            CASE WHEN COUNT(1) = 1 THEN 'Y'
+                 ELSE 'N'
+            END AS MENU_EXISTS_YN
+        FROM DUAL
+        WHERE
+            EXISTS(
+                SELECT 
+                    MENUID
+                FROM
+                    TB_CMM_MENU
+                WHERE 
+                    SITEID = #{siteid}
+            )
+    </select>
+    
+    <!-- 분양사이트 메뉴구성을 위한 프로그램 목록을 조회한다. -->
+    <select id="selectSiteAplySetupPrgrmList" resultType="SiteMenuSetupVo">
+        /* SiteDao.selectSiteAplySetupPrgrmList */
+        SELECT 
+            C.CD_NM,
+            P.DC,
+            P.PRGRMID,
+            C.OPTN2,
+            C.OPTN3
+        FROM 
+            TB_CMM_CD C INNER JOIN TB_CMM_PRGRM P ON C.OPTN1 = P.PRGRMID
+        WHERE
+            C.CDGRPID = 124
+        AND C.USE_YN = 'Y'
+        ORDER BY C.ORD
+    </select>
+    
+    <!-- 분양사이트를 구성하는 메뉴의 프로그램 목록을 조회한다. -->
+    <select id="selectSiteAplySetupMenuList" parameterType="Integer" resultType="SiteMenuSetupVo">
+        /* SiteDao.selectSiteAplySetupMenuList */
+        SELECT 
+            C.CD_NM,
+            P.DC,
+            P.PRGRMID,
+            C.OPTN3,
+            CASE WHEN M.PRGRMID = P.PRGRMID THEN 'Y'
+                 ELSE 'N'
+            END AS USE_YN
+        FROM 
+            TB_CMM_CD C INNER JOIN TB_CMM_PRGRM P ON C.OPTN1 = P.PRGRMID
+            LEFT OUTER JOIN TB_CMM_MENU M ON M.SITEID = #{siteid} AND M.UPPR_MENUID = 0 AND P.PRGRMID = M.PRGRMID
+        WHERE
+            C.CDGRPID = 124
+        AND C.USE_YN = 'Y'
+        ORDER BY C.ORD
+    </select>    
+    
+    <!-- 특정 분양사이트 특정 구성요소의 프로그램 트리. -->
+    <select id="selectSiteAplyPrgrmTreeList" parameterType="Integer" resultType="com.kbrainc.plum.rte.lib.tree.TreeItem">
+        /* SiteDao.selectSiteAplyPrgrmTreeList */
+        WITH RECURSIVE PRGRM_CTE
+        AS (
+            SELECT 
+                IFNULL(UPPR_PRGRMID , '') PKEY,
+                PRGRMID `KEY`,
+            CONVERT(RIGHT(CONCAT('0000', ORD), 4), VARCHAR(255)) AS TREE_ORD,
+            0 AS EXT1
+            FROM 
+                TB_CMM_PRGRM
+            WHERE 
+                PRGRMID = #{prgrmid}
+            UNION ALL
+            SELECT              
+            IFNULL(UPPR_PRGRMID , '') PKEY,
+            PRGRMID `KEY`,
+            CONVERT(CONCAT(C.TREE_ORD, RIGHT(CONCAT('0000', P.ORD), 4)), VARCHAR(255)) AS TREE_ORD,
+            P.ORD AS EXT1
+            FROM TB_CMM_PRGRM P, PRGRM_CTE C
+            WHERE UPPR_PRGRMID = C.KEY
+        )
+        SELECT 
+            PKEY, 
+            `KEY`,
+            EXT1
+        FROM 
+            PRGRM_CTE
+        ORDER BY TREE_ORD
+    </select>
+    
+    <!-- 일반사용자역할 모든 메뉴 권한 부여. -->
+    <insert id="insertSiteAllMenuRoleForGeneralUser" parameterType="SiteMenuSetupVo">
+        /* SiteDao.insertSiteAllMenuRoleForGeneralUser */
+        INSERT INTO TB_CMM_ROLE_MENU (MENUID, ROLEID, MDFCN_DT, MDFRID, REG_DT, RGTRID)
+        SELECT
+            M.MENUID, R.ROLEID, NOW(), #{user.userid}, NOW(), #{user.userid}
+        FROM
+            TB_CMM_ROLE R CROSS JOIN TB_CMM_MENU M ON M.SITEID = #{siteid}
+        WHERE 
+            R.KND_CD = 'U'
+        AND R.USE_YN = 'Y'
+    </insert>
+    
+    <!-- 해당사이트 메뉴 역할 전체 삭제(초기화). -->
+    <delete id="deleteRoleMenuForSiteMenuInit" parameterType="Integer">
+        /* SiteDao.deleteRoleMenuForSiteMenuInit */
+        DELETE 
+            TB_CMM_ROLE_MENU
+        FROM 
+            TB_CMM_ROLE_MENU,
+            (
+            SELECT 
+                MENUID
+                FROM
+                TB_CMM_MENU
+                WHERE
+                SITEID = #{siteid}
+            ) B
+        WHERE 
+            TB_CMM_ROLE_MENU.MENUID = B.MENUID
+    </delete>
+    
+    <!-- 해당사이트 메뉴 전체 삭제(초기화). -->
+    <delete id="deleteMenuForSiteMenuInit" parameterType="Integer">
+        /* SiteDao.deleteMenuForSiteMenuInit */
+        DELETE FROM TB_CMM_MENU WHERE SITEID = #{siteid}
+    </delete>
 </mapper>
