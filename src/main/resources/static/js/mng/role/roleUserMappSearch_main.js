@@ -92,7 +92,7 @@ var initSearch = function(){
                     var data = $.Deferred();
                     
                     var params = {
-                            "roleid": jQuery("#roleid").val(),
+                            "roleid": jQuery("#roleid", "#mappingUserForm").val(),
                             "searchType": $('#searchType', "#searchPopupForm").val(),
                             "searchKeyword": $('#searchKeyword', "#searchPopupForm").val(),
                             "pageNumber": filter.pageIndex,
@@ -182,9 +182,7 @@ var addUser = function(){
 	
 	if(confirm("사용자를 추가 하시겠습니까?")){
 		addUserList(selectedItems, startDate, endDate);
-		self.close();
-		
-		return true;
+		return false;
 	}else{
 		return false;
 	}
