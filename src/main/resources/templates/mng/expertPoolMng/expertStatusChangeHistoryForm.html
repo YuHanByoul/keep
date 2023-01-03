@@ -1,0 +1,111 @@
+<div class="card-header p-t-0 p-b-0">
+    <h3 class="sub-title"><strong>상태변경/파일 다운로드 이력</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+    <div class="col-12 table-border-style">
+        <div class="col-12 table-responsive">
+            <table id="logJsGrid" class="table-responsive"/>
+            <div id="logListPager" class="text-center"></div>
+
+            <!--<table class="table table-framed table-bordered">
+                <thead>
+                <tr class="border-bottom-inverse">
+                    <th class="text-center v-middle" style="width: 60px;">번호</th>
+                    <th class="text-center v-middle">구분</th>
+                    <th class="text-center v-middle">처리일자</th>
+                    <th class="text-center v-middle">처리자</th>
+                    <th class="text-center v-middle" style="width: 120px;">사유확인</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center v-middle">9</td>
+                    <td class="text-center v-middle">전문가 승인</td>
+                    <td class="text-center v-middle">2022-10-23 12:23:21</td>
+                    <td class="text-center v-middle">keep001(OOO)</td>
+                    <td class="text-center v-middle">-</td>
+                </tr>
+                <tr>
+                    <td class="text-center v-middle">8</td>
+                    <td class="text-center v-middle">전문가 반려</td>
+                    <td class="text-center v-middle">2022-10-23 12:23:21</td>
+                    <td class="text-center v-middle">keep003(OOO)</td>
+                    <td class="text-center v-middle">
+                        <div class="btn-group-sm text-center">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateRecordExpertCompanionReasonPopup">
+                                확인
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>-->
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    $(function() {
+
+        $("logJsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#logListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: "< 처음 ㅣ",
+            pageLastText: "ㅣ 마지막 >",
+            noDataContent: "데이터가 없습니다.",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+
+                    var params = [
+                        {"name": "pageNumber", "value": filter.pageIndex},
+                        {"name": "rowPerPage", "value": filter.pageSize},
+                    ];
+
+                    if (filter.sortField != undefined) {
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    } else {
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        url: "/mng/expertPoolMng/selectExpertLogList.do",
+                        data: params,
+                        dataType: "json"
+                    }).done(function (response) {
+                        var da = {
+                            data: escapeGridData(response.list),
+                            itemsCount: response.totalCount
+                        };
+                        data.resolve(da);
+                    });
+                    return data.promise();
+                }
+            },
+            fields: [
+                {name: "userid", css: 'hide'},
+                {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                {title: "구분", name: "acnt", type: "text", width: "150", align: "center"},
+                {title: "처리일자", name: "nm", type: "text", width: "120", align: "center"},
+                {title: "처리자", name: "eml", type: "text", width: "200"},
+                /*사유확인*/
+            ]
+        });
+
+    });
+</script>
