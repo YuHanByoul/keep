@@ -307,9 +307,20 @@ public interface SrvyDao {
      * @Title : selectQitemExAnsCnt
      * @Description : 보기형 문항 응답자 수 조회
      * @param qitemExVo QitemExVo 객체
-     * @return int 응답자 수
+     * @return qitemExVo itemExVo 객체
      * @throws Exception 예외
      */
-    public int selectQitemExAnsCnt(QitemExVo qitemExVo) throws Exception;
+    public QitemExVo selectQitemExAnsInfo(QitemExVo qitemExVo) throws Exception;
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     *
+     * @Title : selectAnsList 
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     * @param srvyAnsVo SrvyAnsVo객체
+     * @return List<SrvyAnsVo> 답변 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyAnsVo> selectAnsList(SrvyAnsVo srvyAnsVo) throws Exception;
     
 }

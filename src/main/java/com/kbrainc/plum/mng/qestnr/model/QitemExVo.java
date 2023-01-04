@@ -61,8 +61,14 @@ public class QitemExVo extends ParentRequestVo {
     /** 보기형 답변 */
     private int ans;
     
+    /** 단답형, 서술형, 혼합형(기타) 답변 */
+    private String ansDscrp;
+    
     /** 응답자 수 */
     private int ansCnt;
+    
+    /** 응답자 비율 */
+    private String ansRate;
     
     /** 응답 척도 */
     private int scale;

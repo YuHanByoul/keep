@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.kbrainc.plum.mng.example.excel.service.ExcelService;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
@@ -341,6 +342,23 @@ public class SrvyController {
     @RequestMapping(value = "/mng/srvy/cnsltngDgstfnSrvyRsltDetailForm.html")
     public String cnsltngDgstfnSrvyRsltDetailForm() throws Exception {
         return "mng/srvy/cnsltngDgstfnSrvyRsltDetail";
+    }
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 팝업
+     *
+     * @Title : ansResultPopupForm
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 팝업
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/ansListPopup.html")
+    public String ansListPopup(SrvyAnsVo srvyAnsVo, Model model) throws Exception {
+        List<SrvyAnsVo> list = srvyService.selectAnsList(srvyAnsVo);
+        int totalCount = list.size();
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("ansList", list);
+        return "mng/srvy/ansListPopup";
     }
     
     /**

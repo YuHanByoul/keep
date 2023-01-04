@@ -679,10 +679,13 @@
             SRVYID = #{srvyid}
     </update>
     
-    <!-- 보기형 문항 응답자 수 조회 -->
-    <select id="selectQitemExAnsCnt" parameterType="QitemExVo" resultType="int">
+    <!-- 보기형 문항 답변 정보 조회 -->
+    <select id="selectQitemExAnsInfo" parameterType="QitemExVo" resultType="QitemExVo">
+        /* SrvyDao.selectQitemExAnsInfo */
         SELECT
-            COUNT(QITEMID) AS ANS_CNT
+            COUNT(*) AS TOTAL_COUNT
+            , COUNT(CASE WHEN ANS = #{exNo} THEN 1 END) AS ANS_CNT
+            , CAST(ROUND(COUNT(CASE WHEN ANS = #{exNo} THEN 1 END) / COUNT(*) * 100, 1) AS VARCHAR(20)) AS ANS_RATE
         FROM
             TB_CMM_SRVY_SBMSN_ANS
         WHERE
@@ -694,8 +697,39 @@
                 TB_CMM_SRVY_SBMSN
             WHERE
                 SRVYID = #{srvyid}
-                AND ANS = #{exNo}
         )
+    </select>
+    
+    <!-- 단답형, 서술형, 혼합형(기타) 답변 목록 조회 -->
+    <select id="selectAnsList" parameterType="SrvyAnsVo" resultType="SrvyAnsVo">
+        /* SrvyDao.selectAnsList */
+        SELECT
+            C.NM
+            , C.ACNT
+            , D.INST_NM
+            , A.MDFCN_DT
+            , A.ANS_DSCRP
+        FROM
+            TB_CMM_SRVY_SBMSN_ANS A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM_EX B ON (B.EX_NO = A.ANS)            
+        LEFT OUTER JOIN
+            TB_CMM_USER C ON (C.USERID = A.MDFRID)
+        LEFT OUTER JOIN
+            TB_CMM_INST D ON (D.INSTID = C.INSTID)
+        WHERE
+            A.QITEMID = #{qitemid}
+            AND SBMSNID IN (
+                SELECT 
+                    SBMSNID
+                FROM
+                    TB_CMM_SRVY_SBMSN
+                WHERE
+                    SRVYID = #{srvyid}
+            )
+        <if test="qitemTypeCd != null and qitemTypeCd != '' and qitemTypeCd == '107106'">
+            AND B.ETC_YN = 'Y'    
+        </if>
     </select>
     
 </mapper>
