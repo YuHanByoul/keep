@@ -13,6 +13,7 @@ import com.kbrainc.plum.mng.qestnr.model.QestnrDao;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyDao;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
@@ -554,7 +555,10 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
                         QitemExVo qitemEx = qitemExList.get(n);
                         qitemEx.setSrvyid(qitemVo.getSrvyid());
                         qitemEx.setAns(qitemEx.getExNo());
-                        qitemEx.setAnsCnt(srvyDao.selectQitemExAnsCnt(qitemEx));
+                        QitemExVo ansInfo = srvyDao.selectQitemExAnsInfo(qitemEx);
+                        qitemEx.setTotalCount(ansInfo.getTotalCount());
+                        qitemEx.setAnsCnt(ansInfo.getAnsCnt());
+                        qitemEx.setAnsRate(ansInfo.getAnsRate());
                     }
                     qitem.setExampleList(qitemExList);
                 }
@@ -562,6 +566,20 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
         }
         
         return qitemList;
+    }
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     *
+     * @Title : selectAnsList
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     * @param srvyAnsVo SrvyAnsVo 객체
+     * @return List<SrvyAnsVo> 설문결과 문항 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<SrvyAnsVo> selectAnsList(SrvyAnsVo srvyAnsVo) throws Exception {
+        return srvyDao.selectAnsList(srvyAnsVo);
     }
     
 }

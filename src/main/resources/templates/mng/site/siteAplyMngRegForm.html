@@ -44,7 +44,7 @@
                          </div>
                      </div>
                      <div class="mb-0 form-group">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1">로고선택 (관리자:150px X 30px, 사용자:180px X 45px)</label>
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1">로고선택 (가로 180px, 세로 45px)</label>
                          <div class="col-sm-12">
                              <input type="file" id="logoFile" name="logoFile" class="form-control form-control-sm" accept=".png, .gif, .jpg, .jpeg"/>
                          </div>
@@ -130,7 +130,45 @@
         </div>
         </form>
     </div>
-
+    
+    <div class="col-12" th:if="${siteInfo.siteid}" id="menuSetupForm">
+        <form id="setupForm">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h3 class="sub-title"><strong>메뉴구성</strong></h3>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <th:block th:each="setupItem, status : ${setupItemList}">
+                        <div class="col-12 m-0 mb-2 row border border-dark p-10 rounded" th:if="${setupItem.optn3 == 'show'}">
+                            <div class="col-10 p-0 m-0 row">
+                                <div class="col-12 mb-2 p-0">
+                                    <strong th:text="${setupItem.cdNm}"></strong>
+                                </div>
+                                <div class="col-12 p-0" th:text="${setupItem.dc}">
+                                </div>
+                            </div>
+                            <div class="col-2 p-0 m-0 form-group row">
+                                <div class="col-12 p-0 text-right">
+                                    <input type="checkbox" class="js-single-small" th:id="|prgrmid${status.index}|" name="prgrmids" th:checked="${menuYn == 'N' or setupItem.useYn == 'Y'}" th:value="${setupItem.prgrmid}" th:disabled="${setupItem.optn2 == 'required' or setupItem.optn2 == null}" th:disabledcheckbox="${setupItem.optn2 == 'required' or setupItem.optn2 == null}" />
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="prgrmids" th:if="${menuYn == 'N' and setupItem.optn3 == 'hidden'}" th:value="${setupItem.prgrmid}"/>
+                        <input type="hidden" name="hidePrgrmids" th:if="${menuYn == 'N' and setupItem.optn3 == 'hidden'}" th:value="${setupItem.prgrmid}"/>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <th:block sec:authorize-url="/mng/site/saveSiteAplyMenuSetup.do"><button type="button" class="btn btn-primary" th:if="${menuYn == 'N'}" onclick="saveSiteMenuSetup()">저장</button></th:block>
+                <th:block sec:authorize-url="/mng/site/initSiteAplyMenuSetup.do"><button type="button" class="btn btn-primary" th:if="${menuYn == 'Y'}" onclick="initSiteMenuSetup()">초기화</button></th:block>
+            </div>
+        </div>
+        </form>
+    </div>
+    
     <div id="addDomainTmp" style="display:none">
         <div class="mb-2 form-group row">
             <div class="input-group input-group-sm input-group-dropdown mb-0">
@@ -402,6 +440,72 @@
             $("#imgPreview").attr('src', "/images/mng/default_logo.png");
             fn_deleteFile(fileid, fileIdntfcKey);
             $("#logoFileid").val(0);
+        }
+        
+        /**======================================================
+        메뉴구성 관련 함수들 
+        ======================================================**/
+        
+        function saveSiteMenuSetup(){
+            var f = document.forms.siteRegForm;
+
+            if(!confirm('설정한 메뉴구성을 저장하시겠습니까?')) return ;
+            
+            for(var key in switchCherryArr) {
+                if(switchCherryArr[key].element.attributes.disabledcheckbox != undefined){
+                    if(switchCherryArr[key].element.attributes.disabledcheckbox.nodeValue == "true"){
+                        switchCherryArr[key].enable();
+                    }
+                }
+            }
+            var setupFormSerial = $("#setupForm").serialize();
+            for(var key in switchCherryArr) {
+                if(switchCherryArr[key].element.attributes.disabledcheckbox != undefined){
+                    if(switchCherryArr[key].element.attributes.disabledcheckbox.nodeValue == "true"){
+                        switchCherryArr[key].disable();
+                    }
+                }
+            }
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : "/mng/site/saveSiteAplyMenuSetup.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data :setupFormSerial + "&siteid=" + f.siteid.value,
+                    success : function (data){
+                        if(data.result == "success"){
+                            gridHelper1.resetPageContent();
+                        }
+                        alert(data.msg);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        
+        function initSiteMenuSetup(){
+            var f = document.forms.siteRegForm;
+
+            if(!confirm('초기화를 진행하시겠습니까?\n메뉴구성 정보가 모두 삭제됩니다.')) return ;
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : "/mng/site/initSiteAplyMenuSetup.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : { siteid : f.siteid.value },
+                    success : function (data){
+                        if(data.result == "success"){
+                            gridHelper1.resetPageContent();
+                        }
+                        alert(data.msg);
+                        closeWorkProgress();
+                    }
+                });
+            }
         }
     </script>
         

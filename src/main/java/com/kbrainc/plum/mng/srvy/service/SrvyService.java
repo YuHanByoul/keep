@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
@@ -304,5 +305,16 @@ public interface SrvyService {
      * @throws Exception 예외
      */
     public List<QitemVo> selectSrvyRsltQitmeList(QitemVo qitemVo) throws Exception;
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     *
+     * @Title : selectAnsList 
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     * @param srvyAnsVo SrvyAnsVo객체
+     * @return List<SrvyAnsVo> 답변 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyAnsVo> selectAnsList(SrvyAnsVo srvyAnsVo) throws Exception;
     
 }
