@@ -160,10 +160,11 @@
         </if>
     </select>
 
-    <!-- 지정신청상세 조회. -->
+    <!-- 지정프로그램상세 조회. -->
     <select id="selectDsgnAplyDtlInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
     SELECT
-        INSTID              /* 기관아이디 */
+        PRGRMID
+      , INSTID              /* 기관아이디 */
       , APLCNTID            /* 신청자아이디 */
       , APLCNT_NM           /* 신청자_이름 */
       , APLCNT_EML          /* 신청자_이메일 */
@@ -196,6 +197,7 @@
       , RGTRID              /* 등록자아이디 */
       , CONCAT(DSGN_CYCL, "/", DSGN_NO)    AS CYCL_NO
       , CONCAT(DSGN_BGNG_DE, " ~ ", DSGN_END_DE )   AS DSGN_PRD
+      , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = APLCNTID) AS ACNT
     FROM TB_ASS_PRGRM
     WHERE 1=1
     AND PRGRMID = #{prgrmid}
@@ -206,8 +208,10 @@
     <select id="selectPrgrmDstnctn" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
             A.PRGRMID                /* 프로그램아이디           */
+          , B.PRGRMID    AS DSTNCTN_KEY    /* 우수성_프로그램아이디           */
           , A.PRGRM_NM               /* 프로그램이름             */
-<!-- 컨설팅 진행여부 -->
+          , A.CNSLTNG_PRGRS_YN       /* 컨설팅 진행여부          */
+          , C.CNSLTNG_KND_CD         /* 컨설팅 종류코드          */
           , B.STY_YN                 /* 숙박_여부                */
           , B.STY_NIGHT              /* 숙박_밤                  */
           , B.STY_DAYTM              /* 숙박_낮                  */
@@ -253,37 +257,183 @@
         FROM
             TB_ASS_PRGRM A
         /*프로그램 우수성*/
-        INNER JOIN
+        LEFT OUTER JOIN
             TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN    /*컨설팅*/
+            TB_ASS_CNSLTNG C ON A.CNSLTNGID = C.CNSLTNGID
         WHERE A.PRGRMID = #{prgrmid}
     </select>
+
+    <!-- 프로그램우수성 등록 -->
+    <insert id="insertPrgrmDstnctn" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.insertPrgrmDstnctn */
+    INSERT
+        INTO TB_ASS_PRGRM_DSTNCTN (
+            PRGRMID
+          , STY_YN
+          , STY_NIGHT
+          , STY_DAYTM
+          , OPER_FRM_CD
+          , JAN
+          , FEB
+          , MAR
+          , APR
+          , MAY
+          , JUNE
+          , JULY
+          , AUG
+          , SEPT
+          , OCT
+          , NOV
+          , DCM
+          , WHOL_MM
+          , INFNT
+          , SCHBOY
+          , MSKLSD
+          , HGSCHST
+          , ADULT
+          , WHOL_AGE
+          , EDU_PLC
+          , EDU_NOPE
+          , EDU_CNT
+          , EDU_HR
+          , EDU_MNT
+          , PCHRG_YN
+          , ETRFEE
+          , EDU_PRPS
+          , APPRO
+          , DSTNCTN
+          , EDU_CN
+          , WETHER_STTN
+          , ACTN_MTHD
+          , EDU_PHOTO_FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+          ) VALUES (
+            #{prgrmid          }
+          , #{styYn            }
+          , #{styNight         }
+          , #{styDaytm         }
+          , #{operFrmCd        }
+          , #{jan              }
+          , #{feb              }
+          , #{mar              }
+          , #{apr              }
+          , #{may              }
+          , #{june             }
+          , #{july             }
+          , #{aug              }
+          , #{sept             }
+          , #{oct              }
+          , #{nov              }
+          , #{dcm              }
+          , #{wholMm           }
+          , #{infnt            }
+          , #{schboy           }
+          , #{msklsd           }
+          , #{hgschst          }
+          , #{adult            }
+          , #{wholAge          }
+          , #{eduPlc           }
+          , #{eduNope          }
+          , #{eduCnt           }
+          , #{eduHr            }
+          , #{eduMnt           }
+          , #{pchrgYn          }
+          , #{etrfee           }
+          , #{eduPrps          }
+          , #{appro            }
+          , #{dstnctn          }
+          , #{eduCn            }
+          , #{wetherSttn       }
+          , #{actnMthd         }
+          , #{eduPhotoFilegrpid}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+          )
+    </insert>
+
+    <!-- 프로그램우수성 등록 -->
+    <update id="updatePrgrmDstnctn" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.updatePrgrmDstnctn */
+        UPDATE
+            TB_ASS_PRGRM_DSTNCTN
+        SET
+            STY_YN                  = #{styYn            }
+          , STY_NIGHT               = #{styNight         }
+          , STY_DAYTM               = #{styDaytm         }
+          , OPER_FRM_CD             = #{operFrmCd        }
+          , JAN                     = #{jan              }
+          , FEB                     = #{feb              }
+          , MAR                     = #{mar              }
+          , APR                     = #{apr              }
+          , MAY                     = #{may              }
+          , JUNE                    = #{june             }
+          , JULY                    = #{july             }
+          , AUG                     = #{aug              }
+          , SEPT                    = #{sept             }
+          , OCT                     = #{oct              }
+          , NOV                     = #{nov              }
+          , DCM                     = #{dcm              }
+          , WHOL_MM                 = #{wholMm           }
+          , INFNT                   = #{infnt            }
+          , SCHBOY                  = #{schboy           }
+          , MSKLSD                  = #{msklsd           }
+          , HGSCHST                 = #{hgschst          }
+          , ADULT                   = #{adult            }
+          , WHOL_AGE                = #{wholAge          }
+          , EDU_PLC                 = #{eduPlc           }
+          , EDU_NOPE                = #{eduNope          }
+          , EDU_CNT                 = #{eduCnt           }
+          , EDU_HR                  = #{eduHr            }
+          , EDU_MNT                 = #{eduMnt           }
+          , PCHRG_YN                = #{pchrgYn          }
+          , ETRFEE                  = #{etrfee           }
+          , EDU_PRPS                = #{eduPrps          }
+          , APPRO                   = #{appro            }
+          , DSTNCTN                 = #{dstnctn          }
+          , EDU_CN                  = #{eduCn            }
+          , WETHER_STTN             = #{wetherSttn       }
+          , ACTN_MTHD               = #{actnMthd         }
+          , EDU_PHOTO_FILEGRPID     = #{eduPhotoFilegrpid}
+          , MDFCN_DT                = NOW()
+          , MDFRID                  = #{user.userid      }
+        WHERE
+            PRGRMID = #{prgrmid}
+    </update>
 
     <!-- 프로그램 운영관리 조회 -->
     <select id="selectPrgrmOperMng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectPrgrmOperMng */
         SELECT
-            PRGRMID
-          , ETRFEE_INCM
-          , ETC_INCM
-          , SLFPY
-          , OPER_BFR_PRMTN_SESS
-          , OPER_BFR_PRMTN_MTHD
-          , OPER_MDL_PRMTN_SESS
-          , OPER_MDL_PRMTN_MTHD
-          , OPER_AFTR_PRMTN_SESS
-          , OPER_AFTR_PRMTN_MTHD
-          , TEL_RCPT_YN
-          , APLFRM_RCPT_YN
-          , ONLN_APLY_YN
-          , ETC_YN
-          , ETC_CN
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.ETRFEE_INCM
+          , B.ETC_INCM
+          , B.SLFPY
+          , B.OPER_BFR_PRMTN_SESS
+          , B.OPER_BFR_PRMTN_MTHD
+          , B.OPER_MDL_PRMTN_SESS
+          , B.OPER_MDL_PRMTN_MTHD
+          , B.OPER_AFTR_PRMTN_SESS
+          , B.OPER_AFTR_PRMTN_MTHD
+          , B.TEL_RCPT_YN
+          , B.APLFRM_RCPT_YN
+          , B.ONLN_APLY_YN
+          , B.ETC_YN
+          , B.ETC_CN
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_PRGRM_OPER_MNG
-        WHERE PRGRMID = #{prgrmid}
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_OPER_MNG B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 프로그램운영관리 수정 -->
@@ -334,29 +484,31 @@
     <select id="selectPrgrmEvl" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectPrgrmEvl*/
         SELECT
-            PRGRMID
-          , EVL_PRPS
-          , BFR_LDR_EVL_ARTCL
-          , BFR_LDR_EVL_TL
-          , AFTR_LDR_EVL_ARTCL
-          , AFTR_LDR_EVL_TL
-          , BFR_PRTPNT_EVL_ARTCL
-          , BFR_PRTPNT_EVL_TL
-          , AFTR_PRTPNT_EVL_ARTCL
-          , AFTR_PRTPNT_EVL_TL
-          , BFR_GDR_EVL_ARTCL
-          , AFTR_GDR_EVL_TL
-          , DATABASE_WRT_YN
-          , CLSJRNL_WRT_YN
-          , ETC_YN
-          , ETC_CN
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.EVL_PRPS
+          , B.BFR_LDR_EVL_ARTCL
+          , B.BFR_LDR_EVL_TL
+          , B.AFTR_LDR_EVL_ARTCL
+          , B.AFTR_LDR_EVL_TL
+          , B.BFR_PRTPNT_EVL_ARTCL
+          , B.BFR_PRTPNT_EVL_TL
+          , B.AFTR_PRTPNT_EVL_ARTCL
+          , B.AFTR_PRTPNT_EVL_TL
+          , B.BFR_GDR_EVL_ARTCL
+          , B.AFTR_GDR_EVL_TL
+          , B.DATABASE_WRT_YN
+          , B.CLSJRNL_WRT_YN
+          , B.ETC_YN
+          , B.ETC_CN
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_PRGRM_EVL
-        WHERE PRGRMID = #{prgrmid}
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_EVL B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 지정제 프로그램 등록 -->
@@ -426,9 +578,9 @@
           , #{cnsltngid     }
           , #{aplyDt        }
           , NOW()
-          , #{mdfrid        }
+          , #{user.userid}
           , NOW()
-          , #{rgtrid        }
+          , #{user.userid}
     )
     </insert>
 
@@ -512,24 +664,26 @@
     <!-- 신청정보탭 안전관리 상세 조회 -->
     <select id="selectSftyMng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
-            PRGRMID
-          , FILEGRPID
-          , LDR_EDU_SESS
-          , LDR_EDU_PIC
-          , LDR_EDU_CN
-          , PRTCPNT_EDU_SESS
-          , PRTCPNT_EDU_PIC
-          , PRTCPNT_EDU_CN
-          , BFR_CERT_YN
-          , BFR_CERT_FILEGRPID
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.FILEGRPID
+          , B.LDR_EDU_SESS
+          , B.LDR_EDU_PIC
+          , B.LDR_EDU_CN
+          , B.PRTCPNT_EDU_SESS
+          , B.PRTCPNT_EDU_PIC
+          , B.PRTCPNT_EDU_CN
+          , B.BFR_CERT_YN
+          , B.BFR_CERT_FILEGRPID
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_SFTY_MNG
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG B ON A.PRGRMID = B.PRGRMID
         WHERE 1=1
-        AND PRGRMID = #{prgrmid}
+        AND A.PRGRMID = #{prgrmid}
 
     </select>
 
@@ -867,23 +1021,55 @@
 
     <!-- 파일목록 조회 -->
     <select id="selectEvdncDcmntFileList" resultType="FileVo">
-    SELECT
-        B.FILEID
-      , A.FILEGRPID
-      , B.FILE_IDNTFC_KEY
-      , B.FILE_PATH
-      , B.SAVE_FILE_NM
-      , B.ORGINL_FILE_NM
-      , B.FILE_EXTSN
-      , B.FILE_SIZE
-      , B.ORD
-    FROM
-        TB_CMM_FILEGRP A
-    LEFT OUTER JOIN
-        TB_CMM_FILE B ON A.FILEGRPID = B.FILEGRPID
-    WHERE 1=1
-    AND   A.FILEGRPID = #{filegrpid}
+        SELECT
+            B.FILEID
+          , A.FILEGRPID
+          , B.FILE_IDNTFC_KEY
+          , B.FILE_PATH
+          , B.SAVE_FILE_NM
+          , B.ORGINL_FILE_NM
+          , B.FILE_EXTSN
+          , B.FILE_SIZE
+          , B.ORD
+        FROM
+            TB_CMM_FILEGRP A
+        LEFT OUTER JOIN
+            TB_CMM_FILE B ON A.FILEGRPID = B.FILEGRPID
+        WHERE 1=1
+        AND   A.FILEGRPID = #{filegrpid}
     </select>
+
+    <!-- 회원목록 조회 -->
+    <select id="selectMbrList" resultType="MemberVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.USERID
+          , A.INSTID
+          , A.ACNT
+          , A.NM
+          , A.MOBLPHON
+          , A.EML
+          , B.INST_NM
+        FROM
+        TB_CMM_USER A
+        LEFT OUTER JOIN
+            TB_CMM_INST B ON A.INSTID = B.INSTID
+        WHERE 1=1
+<!--         AND A.INSTID = #{instid} -->
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 담당자 변경 -->
+    <update id="updateMbr" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.updateMbr*/
+        UPDATE
+            TB_ASS_PRGRM
+        SET
+            APLCNTID  = #{aplcntid}
+          , APLCNT_NM = #{aplcntNm}
+        WHERE
+            PRGRMID   = #{prgrmid}
+    </update>
 
     <!-- 담당자(지원단)배정 목록 조회-->
     <select id="selectSprtgrpPicList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
@@ -978,7 +1164,9 @@
             LEFT OUTER JOIN
                 TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
             LEFT OUTER JOIN
-                TB_CMM_USER C ON B.USERID = C.USERID ) AA
+                TB_CMM_USER C ON B.USERID = C.USERID
+            GROUP BY A.GRP_ID
+            ) AA
         WHERE 1=1
         <!-- 키워드.그룹명-->
         <if test="searchKeyword != null and searchKeyword != ''">

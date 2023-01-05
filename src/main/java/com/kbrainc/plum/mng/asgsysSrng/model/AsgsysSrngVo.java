@@ -138,6 +138,15 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 프로그램아이디 */
 	private Integer prgrmid;
 
+	/** 컨설팅 진행여부*/
+	private String cnsltngPrgrsYn;
+
+	/** 컨설팅 종류코드*/
+	private String cnsltngKndCd;
+
+	/** 우수성KEY */
+	private Integer dstnctnKey;
+
     /** 기관아이디 */
 	private Integer instid;
 

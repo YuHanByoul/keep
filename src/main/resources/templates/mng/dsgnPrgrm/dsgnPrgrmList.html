@@ -110,16 +110,11 @@
         <div class="col-12">
             <div id="contentPanel" style="display:none" class="card"></div>
        </div>
-       <!--블랙리스트 지정 팝업-->
-       <div class="modal fade" id="blackListAppointPopup" aria-hidden="true" data-bs-backdrop="static"></div>
-       <!--//블랙리스트 지정 팝업-->
     </div>
 </div>
 
-
-
-
-
+<!-- 지정정보 변경 팝업 -->
+<div class="modal fade" id="dsgnInfoChgListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
 	var gridHelper1;
@@ -153,6 +148,7 @@
             pageLoading: true,
             pageIndex: 1,
             noDataContent: "데이터가 없습니다.",
+            cellRenderer:true ,
 
             controller: {
                 loadData: function (filter) {
@@ -196,26 +192,60 @@ console.log("@@@@@2");
                  { name: 'prgrmid', css:'hide'}
                 ,{ name: 'hstryid', css:'hide'}
                 ,{ title: 'No.'           ,name: 'rowNumber',     type: "number", width : "80", align:"center",  sorting :false }
-                ,{ title: '차수'          ,name: 'dsgnCycl',      type: "number", width : "80", align:"center"}
-                ,{ title: '지정번호'      ,name: 'dsgnNo',        type: "text", width: "100", align:"center"}
+                ,{ title: '차수'          ,name: 'dsgnCycl',      type: "number", width : "40", align:"center"}
+                ,{ title: '지정번호'      ,name: 'dsgnNo',        type: "text", width: "60", align:"center"}
                 ,{ title: '프로그램명'    ,name: 'prgrmNm',       type: "text", width: "100", align:"left"}
                 ,{ title: '기관명'        ,name: 'instNm',        type: "text", width: "100", align:"left"}
-                ,{ title: '지정상태'      ,name: 'sttsCdNm',      type: "text", width: "100", align:"center"}
-                ,{ title: '변경신청'      ,name: 'chgAplyCnt',    type: "text", width: "100", align:"center"}
-                ,{ title: '운영결과'      ,name: 'operRsltCnt',   type: "text", width: "100", align:"center"}
-                ,{ title: '이행심사'      ,name: 'implmntIdntyCnt',  type: "text", width: "100", align:"center"}
-                ,{ title: '이의신청'      ,name: 'objcInfoCnt',   type: "text", width: "100", align:"center"}
+                ,{ title: '지정상태'      ,name: 'sttsCdNm',      type: "text", width: "60", align:"center"}
+                ,{ title: '변경신청'      ,name: 'chgAplyCnt',    type: "text", width: "60", align:"center"}
+                ,{ title: '운영결과'      ,name: 'operRsltCnt',   type: "text", width: "60", align:"center"}
+                ,{ title: '이행심사'      ,name: 'implmntIdntyCnt',  type: "text", width: "60", align:"center"}
+                ,{ title: '이의신청'      ,name: 'objcInfoCnt',   type: "text", width: "60", align:"center"}
                 ,{ title: '지정기간'      ,name: 'dsgnPrd',       type: "text", align:"center" }
             ],
 
             rowClick: function(args) {
-            	debugger;
+
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
                 var detailUrl = "/mng/dsgnPrgrm/dsgnPrgrmDetailForm.html?prgrmid=" + args.item.prgrmid+"&hstryid="+args.item.hstryid;
+                //프로그램명 클릭 - 상세전환
+                if(args.event.target.cellIndex==5){
+                	detailUrl+="&tabIndex=1";
+	                gridHelper1.loadContent(detailUrl);
+	                gridHelper1.rowClick(args);
+                }
 
-                gridHelper1.loadContent(detailUrl);
-                gridHelper1.rowClick(args);
+                //지정상태 클릭 - 지정정보 변경 모달 팝업
+                else if(args.event.target.cellIndex==7){
+
+                	openDsgnInfoChgModal(args);
+                }
+                //변경신청 클릭 - 변경신청 tab으로 화면 전환
+                else if(args.event.target.cellIndex==8){
+                	detailUrl+="&tabIndex=2";
+                	gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                }
+                //운영결과 클릭 - 운영결과 tab으로 화면 전환
+                else if(args.event.target.cellIndex==9){
+                	detailUrl+="&tabIndex=3";
+                	gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                }
+                //이행심사 클릭 - 이행심사 tab으로 화면 전환
+                else if(args.event.target.cellIndex==10){
+                	detailUrl+="&tabIndex=4";
+                	gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                }
+                //이의신청 클릭 - 이의신청 tab으로 화면 전환
+                else if(args.event.target.cellIndex==11){
+                	detailUrl+="&tabIndex=5";
+                	gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                }
+
             },
             onPageChanged: function(args) {
                 selectedItems = [];
@@ -258,6 +288,22 @@ console.log("@@@@@2");
                     unselectItem(item);
                 });
                 selectedItems = [];
+            }
+        });
+    }
+
+  //지정 정보 변경/재지정
+    var dsgnInfoChgListModal;
+    var openDsgnInfoChgModal = (args) => {
+
+    	var vPrgrmid = args.item.prgrmid;
+    	var vHstryid = args.item.hstryid;
+        var url ="/mng/dsgnPrgrm/dsgnInfoChgPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid+"&callSe=dsgnInfoChgA";
+
+        $("#dsgnInfoChgListPopup").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                dsgnInfoChgListModal = new bootstrap.Modal($('#dsgnInfoChgListPopup'));
+                dsgnInfoChgListModal.show();
             }
         });
     }
