@@ -52,7 +52,7 @@ public class SiteVo extends ParentRequestVo {
 	
 	/** 시스템 종류 코드 */
 	@NotEmpty(message = "시스템 종류 코드를 입력해주십시오.")
-	@Pattern(regexp="[APT]")
+	@Pattern(regexp="[APTM]")
 	private String sysKndCd ="T";
 	
 	/** 로고 파일아이디 */

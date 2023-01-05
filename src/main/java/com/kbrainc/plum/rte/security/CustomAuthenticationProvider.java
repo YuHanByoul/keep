@@ -3,6 +3,7 @@ package com.kbrainc.plum.rte.security;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         HttpSession session = request.getSession();
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
+        String siteid = siteInfo.getSiteid();
         request.setAttribute("loginid", loginid);
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
@@ -212,14 +214,16 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         boolean grantedRole = false;
         authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
         
+        
+        
         for (int i = 0; i < resultList.size(); i++) {
             if (!grantedRole) { // 허용된 역할중 1개만 적용한다.
-                if ("A".equals(sysSeCd) && "A".equals(resultList.get(i).get("SE_CD"))) { // 관리자사이트 & 관리자역할
+                if ("U".equals(sysSeCd) && "U".equals(resultList.get(i).get("SE_CD"))) { // 사용자사이트 & 사용자역할
                     authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
                     RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"), (String)resultList.get(i).get("TRGT_RGN_CD"));
                     user.setRoleInfo(roleInfo);
                     grantedRole = true;
-                } else if ("U".equals(sysSeCd) && "U".equals(resultList.get(i).get("SE_CD"))) { // 사용자사이트 & 사용자역할
+                }else if ("A".equals(sysSeCd) && "A".equals(resultList.get(i).get("SE_CD")) && Arrays.asList(String.valueOf(resultList.get(i).get("ALLOWED_SITEIDS")).split(",")).contains(siteid)) { // 관리자사이트 & 관리자역할 & 접근가능한 사이트
                     authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
                     RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"), (String)resultList.get(i).get("TRGT_RGN_CD"));
                     user.setRoleInfo(roleInfo);
@@ -232,6 +236,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             authority.put("se_cd", (String.valueOf(resultList.get(i).get("SE_CD")))); // 구분_코드
             authority.put("trgt_inst_cd", (String.valueOf(resultList.get(i).get("TRGT_INST_CD")))); // 대상_기관_코드
             authority.put("trgt_rgn_cd", (String.valueOf(resultList.get(i).get("TRGT_RGN_CD")))); // 대상_지역_코드
+            authority.put("allowed_siteids", (String.valueOf(resultList.get(i).get("ALLOWED_SITEIDS")))); // 접근이 가능한 사이트아이디들
             sessionAuthorities.add(authority);
         }
         user.setAuthorities(sessionAuthorities);
