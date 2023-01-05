@@ -145,7 +145,7 @@ public class FileController {
     * @return ResponseEntity Resource
      * @throws Exception 
     */
-    @GetMapping("/downloadFileByFileid.do")
+    @GetMapping(value = {"/downloadFileByFileid.do", "/downloadLogo.do"})
     public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey, HttpServletRequest request, @UserInfo UserVo user) throws Exception {        
         FileVo fileVo = new FileVo();
     	fileVo.setFileid(fileid);
@@ -162,6 +162,10 @@ public class FileController {
         }
         
         if ("bbs".equals(fileVo.getFilegrpNm()) && fileVo.getBbsid() == 0) { // 게시판전용 파일다운로드
+            throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
+        }
+        
+        if ("/downloadLogo.do".equals(request.getRequestURI()) && !"site_logo".equals(fileVo.getFilegrpNm())) {
             throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
         }
         
