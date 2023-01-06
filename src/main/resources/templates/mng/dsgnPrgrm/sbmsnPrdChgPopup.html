@@ -1,0 +1,73 @@
+<form id="sbmsnPrdChgPopupFrm">
+<input type="hidden" id="cyclid" name="cyclid" th:value="${sbmsnPrdChgInfo.cyclid}">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">운영결과서 제출기간 변경</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-2 form-group row required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultSubmissionPeriodUpdatePopupStartDate"><strong>운영결과서 제출기간 시작일</strong></label>
+                            <div class="col-12">
+                                <input type="date" class="form-control form-control-sm" name="sbmsnBgngDe" id="sbmsnBgngDe" th:value="${sbmsnPrdChgInfo.sbmsnBgngDe}">
+                            </div>
+                        </div>
+                        <div class="mb-0 form-group row required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultSubmissionPeriodUpdatePopupEndDate"><strong>운영결과서 제출기간 종료일</strong></label>
+                            <div class="col-12">
+                                <input type="date" class="form-control form-control-sm" name="sbmsnEndDe" id="sbmsnEndDe" th:value="${sbmsnPrdChgInfo.sbmsnEndDe}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="saveBtnSbmsnPrdChgPopup()"class="btn btn-primary">저장</button>
+            </div>
+        </div>
+    </div>
+
+</form>
+<script th:inline="javascript">
+
+function saveBtnSbmsnPrdChgPopup(){
+
+
+}
+
+var validator= $("#sbmsnPrdChgPopupFrm").validate({
+    rules: {
+    	sbmsnBgngDe : { required: true },
+        sbmsnEndDe : { required: true }
+
+    },
+    messages: {
+    	sbmsnBgngDe : { required:"운영결과서 제출기간 시작일을 선택해주십시오"},
+        sbmsnEndDe : { required:"운영결과서 제출기간 종료일을 선택해주십시오"}
+    }
+})
+
+function saveBtnSbmsnPrdChgPopup() {
+    if(!($("#sbmsnPrdChgPopupFrm").valid())) return;
+
+    $.ajax({
+        url : "/mng/dsgnPrgrm/updateSbmsnPrd.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : $('#sbmsnPrdChgPopupFrm').serialize(),
+        success : function (data){
+            alert(data.msg);
+            sbmsnPrdChgModal.hide();
+            operRsltGridHelper.resetListContent();
+        }
+    });
+}
+
+
+</script>
