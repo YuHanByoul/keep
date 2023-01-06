@@ -8,24 +8,66 @@
 <body>
 <div layout:fragment="content">
     <div class="page-body">
-        <div class="row" id="tabContent">
+        <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#trprSrvy" id="trprSrvy" role="tab"><strong>대상자 설문</strong></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#instSrvy" id="instSrvy" role="tab"><strong>기관 설문</strong></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#cnsltngDgstfnSrvy" id="cnsltngDgstfnSrvy" role="tab"><strong>컨설팅만족도 설문</strong></a>
+            </li>
+        </ul>
+        <div class="tab-content tabs" id="tabContent">
         </div>
     </div>
     <script th:inline="javascript">
         var srvyMng = {
             init: function() {
-                this.loadContent();
+                this.setTab();
                 this.registEvent();                
             },
             
             registEvent: function() {
-                // TODO
+                var _this = this;
+                $(".nav-tabs a").on("show.bs.tab", function(event) {
+                    var tabId = event.currentTarget.attributes.id.value;
+                    _this.selectTab(tabId);
+                });
             },
             
-            loadContent: function() {
+            setTab: function() {
+                var tabFlag = false;
+                if(tabFlag == false) {
+                    this.selectTab("trprSrvy");
+                    tabFlag = true;
+                }
+                if(tabFlag == false) {
+                    this.selectTab("instSrvy");
+                    tabFlag = true;
+                }
+                if(tabFlag == false) {
+                    this.selectTab("cnsltngDgstfnSrvy");
+                    tabFlag = true;
+                }
+            },
+            
+            selectTab: function(tabId) {
+                if(tabId == "trprSrvy") {
+                    this.loadTabContent("/mng/srvy/trprSrvyListForm.html");
+                } else if(tabId == "instSrvy") {
+                    this.loadTabContent("/mng/srvy/instSrvyListForm.html");
+                }  else if(tabId == "cnsltngDgstfnSrvy") {
+                    this.loadTabContent("/mng/srvy/cnsltngDgstfnSrvyListForm.html");
+                }
+                $("#" + tabId).parent().addClass("active");
+            },
+            
+            loadTabContent: function(uri) {
                 $.ajax({
                     cache: false,
-                    url: "/mng/srvy/trprSrvyListForm.html", 
+                    url: uri, 
                     type: "GET",
                     async: "false",
                     dataType: "html",

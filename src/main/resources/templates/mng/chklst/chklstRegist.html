@@ -1,0 +1,72 @@
+ <div class="card-header p-b-0">
+    <ul class="nav nav-tabs  tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/qestnr/qestnrInsertForm.html">
+            <li class="nav-item">
+                <a id="qestnrTab" class="nav-link active" data-bs-toggle="tab" href="#qestnrInsert" role="tab"><strong>설문지정보</strong></a>
+            </li>
+        </th:block>
+        <!--
+        <th:block sec:authorize-url="/mng/qestnr/qitemForm.html">
+            <li class="nav-item">
+                <a id="qitemTab" class="nav-link" data-bs-toggle="tab" href="#qitem" role="tab"><strong>문항정보</strong></a>
+            </li>
+        </th:block>
+        -->
+    </ul>
+</div>
+<div id="tabContent" class="tab-content tabs p-t-20">
+</div>
+
+<script th:inline="javascript">
+    var qestnrRegist = {
+        init: function() {
+            this.setTab();
+            this.registEvent();
+        },
+        
+        setTab: function() {
+            var tabFlag = false;
+            if(tabFlag == false) {
+                this.selectTab("qestnrTab");
+                tabFlag = true;
+            }
+            if(tabFlag == false) {
+                this.selectTab("qitemTab");
+                tabFlag = true;
+            }
+        },
+        
+        registEvent: function() {
+            var _this = this;
+            $(".nav-tabs a").on("show.bs.tab", function(event) {
+                var tabId = event.currentTarget.attributes.id.value;
+                _this.selectTab(tabId);
+            });
+        },
+        
+        selectTab: function(tabId) {
+            if(tabId == "qestnrTab") {
+                this.loadTabContent("/mng/qestnr/qestnrInsertForm.html");
+            } else if(tabId == "qitemTab") {
+                this.loadTabContent("/mng/qestnr/qitemForm.html");
+            }
+            $("#" + tabId).parent().addClass("active");
+        },
+        
+        loadTabContent: function(uri) {
+            $.ajax({
+                cache: false,
+                url: uri, 
+                type: "GET",
+                async: "false",
+                dataType: "html",
+                success: function(result) { //요청이 성공했을때 실행되는 콜백 함수
+                    $("#tabContent").html(result);
+                    scrollIntoView("contentPanel");
+                }
+            });
+        }
+    };
+
+    qestnrRegist.init();
+</script>
