@@ -24,7 +24,7 @@ public class Constant {
     
     // 사용자 구분 코드
     public static final String MEMBER_SE_CD_PERSONAL = "P"; //개인회원
-    public static final String MEMBER_SE_CD_COMPANY = "C";  //기업회원
+    public static final String MEMBER_SE_CD_COMPANY = "I";  //기업회원
     
     // 사용자 상태 코드
     public static final String MEMBER_STATE_CD_JOIN = "1";          //가입

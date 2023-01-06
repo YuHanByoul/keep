@@ -12,9 +12,12 @@
 
         <div class="login-box">
             <div class="login-input">
+            <span class="login-input-box">
+        <input type="radio" name="loginUserType" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == 'P'}"><label for="loginUserTypeP">개인회원</label> <input type="radio" name="loginUserType" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI">기관회원</label>
+            </span>
                 <span class="login-input-box">
                     <label for="id-id" class="ir">아이디</label>
-                    <input type="text" name="p_userid" id="p_userid" th:value="${param.loginid}" placeholder="아이디" class="input-text">
+                    <input type="text" name="p_userid" id="p_userid" th:value="${param.id}" placeholder="아이디" class="input-text">
                     <span class="form-msg" style="margin-left:0px;"></span>
                 </span>
 
@@ -25,7 +28,8 @@
                 </span>
             </div>
 
-            <button type="submit" class="btn-large btn-color1 btn-login" onclick="login()" style="margin-bottom:24px;">로그인</button>
+            <button type="submit" class="btn-large btn-color1 btn-login" style="margin-bottom:24px;">로그인</button>
+            <div style="margin-bottom:10px;"><input type="checkbox" name="idSave" id="idSave" value="Y"> <label for="idSave">아이디 저장</label></div>
             <th:block th:if="${param.msg}"><span class="form-msg" style="margin-left:0px;"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></span></th:block>
             <th:block th:unless="${param.msg}">
                 <th:block th:if="${param.error}"><span class="form-msg" style="margin-left:0px;">아이디 또는 비밀번호를 다시 확인해 주십시오.</span></th:block>
@@ -38,12 +42,13 @@
 
 	jQuery(document).ready(function(){		
 		var f = document.login_form;
-		//if(jQuery.cookie != null)
-		//{			
-		//	if(jQuery.cookie('userid') && jQuery.cookie('userid') != 'undefined' && jQuery.cookie('userid') != 'null'){
-		//		f.p_userid.value =jQuery.cookie('userid');
-		//	}
-		//}
+		if(jQuery.cookie != null)
+		{			
+			if(jQuery.cookie('luserid') && jQuery.cookie('luserid') != 'undefined' && jQuery.cookie('luserid') != 'null'){
+				f.p_userid.value =jQuery.cookie('luserid');
+				f.idSave.checked = true;
+			}
+		}
 		if(f.p_userid.value == ""){
 			jQuery("#p_userid").focus();
 		}else if(f.p_pswd.value == ""){
@@ -83,10 +88,13 @@
 
 	function login(){
 		var f = document.login_form;
+        
 		if(!$('#login_form').valid()) return false;
-		//if(f.p_userid.value){
-		//	jQuery.cookie('userid', f.p_userid.value, {expires:30});
-		//}
+		if(f.idSave.checked){
+			jQuery.cookie('luserid', f.p_userid.value, {expires:30});
+		}else{
+            jQuery.removeCookie('luserid');
+        }
 		return true;
 	}
 	
