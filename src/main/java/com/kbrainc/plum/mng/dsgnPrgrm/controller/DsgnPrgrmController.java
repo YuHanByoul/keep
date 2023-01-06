@@ -378,14 +378,15 @@ public class DsgnPrgrmController {
     }
 
     /**
-     * @Title : implmntIdntySrngForm
+     * @Title : objcInfoForm
      * @Description : 이의신청(탭) 화면이동
      * @throws Exception :
-     * @return String 이동화면경로
+     * @return String
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoForm.html")
-    public String objcInfoForm() throws Exception {
+    public String objcInfoForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+        model.addAttribute("dsgnAplyInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));
     	return "mng/dsgnPrgrm/objcInfoForm";
     }
 
