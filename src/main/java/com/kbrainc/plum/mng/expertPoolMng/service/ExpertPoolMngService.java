@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.expertPoolMng.service;
 
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertLogVo;
+import com.kbrainc.plum.mng.expertPoolMng.model.ExpertReviewHistoryVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertVo;
 import org.springframework.stereotype.Service;
 
@@ -59,12 +60,13 @@ public interface ExpertPoolMngService {
      * 전문가 상태 변경
      *
      * @param expertVo
+     * @param expertLogVo
      * @return boolean
      * @throws Exception
      * @Title : updateExpertStatus
      * @Description : 전문가 상태 변경
      */
-    public boolean updateExpertStatus(ExpertVo expertVo) throws Exception;
+    public boolean updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo) throws Exception;
 
     /**
      * 전문가 로그 생성
@@ -87,4 +89,26 @@ public interface ExpertPoolMngService {
      * @Description : 전문가 로그 조회
      */
     public List<ExpertLogVo> selectExpertLogList(ExpertLogVo expertLogVo) throws Exception;
+
+    /**
+     * 전문가 후기 이력 조회
+     *
+     * @param expertReviewHistoryVo
+     * @return list
+     * @throws Exception
+     * @Title : selectExpertReviewHistoryList
+     * @Description : 전문가 후기 이력 조회
+     */
+    public List<ExpertReviewHistoryVo> selectExpertReviewHistoryList(ExpertReviewHistoryVo expertReviewHistoryVo) throws Exception;
+
+    /**
+     * 전문가 후기 평균 별점 조회
+     *
+     * @param expertReviewHistoryVo
+     * @return double
+     * @throws Exception
+     * @Title : getExpertReviewScrAvg
+     * @Description : 전문가 후기 평균 별점 조회
+     */
+    public Double getExpertReviewScrAvg(ExpertReviewHistoryVo expertReviewHistoryVo) throws Exception;
 }

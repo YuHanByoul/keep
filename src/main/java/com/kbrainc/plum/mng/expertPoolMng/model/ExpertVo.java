@@ -161,6 +161,9 @@ public class ExpertVo extends ParentRequestVo {
     /**재직사항 리스트 */
     List<ExpertHdofVo> expertHdofList;
 
+    /** 검색용 필드 (전문분야) */
+    private String exprtField;
+
     public void setSttsCd(String sttsCd) {
         this.sttsCd = sttsCd;
 

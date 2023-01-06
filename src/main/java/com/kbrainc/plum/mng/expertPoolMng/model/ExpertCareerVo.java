@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.expertPoolMng.model;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import lombok.Data;
 
 /**
@@ -41,4 +42,8 @@ public class ExpertCareerVo {
     private Integer artclassFileid;
     /** 순서 */
     private Integer ordr;
+
+    private FileVo crtfFile;
+
+    private FileVo artClassFile;
 }

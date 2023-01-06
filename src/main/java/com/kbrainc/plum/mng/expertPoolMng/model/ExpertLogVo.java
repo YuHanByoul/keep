@@ -1,11 +1,14 @@
 package com.kbrainc.plum.mng.expertPoolMng.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 전문가 로그Vo 클래스
@@ -47,11 +50,22 @@ public class ExpertLogVo extends ParentRequestVo {
     /**
      * 등록일
      */
-    private String regDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date regDt;
     /**
      * 등록자 아이디
      */
     private Integer rgtrid;
+
+    /**
+     * 등록자 이름
+     */
+    private String nm;
+
+    /**
+     * 등록자 아이디
+     */
+    private String acnt;
 
     /**
      * 처리 구분 코드 이름

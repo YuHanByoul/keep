@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.expertPoolMng.model;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -44,6 +45,8 @@ public class ExpertHdofVo {
     private Integer hdofcrtfFileid;
     /** 순서 */
     private Integer ordr;
+
+    private FileVo hdofCrtfFile;
 
     public void setHdofSeCd(String hdofSeCd) {
         this.hdofSeCd = hdofSeCd;

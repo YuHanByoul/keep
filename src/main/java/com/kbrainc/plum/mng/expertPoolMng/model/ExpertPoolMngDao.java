@@ -87,4 +87,30 @@ public interface ExpertPoolMngDao {
      * @Description : 전문가 로그 조회
      */
     public List<ExpertLogVo> selectExpertLogList(ExpertLogVo expertLogVo) throws Exception;
+
+    /**
+     * 전문가 후기 이력 조회
+     *
+     * @param expertReviewHistoryVo
+     * @return list
+     * @throws Exception
+     * @Title : selectExpertReviewHistoryList
+     * @Description : 전문가 후기 이력 조회
+     */
+    public List<ExpertReviewHistoryVo> selectExpertReviewHistoryList(ExpertReviewHistoryVo expertReviewHistoryVo) throws Exception;
+
+    /**
+     * 전문가 후기 평균 별점 조회
+     *
+     * @param expertReviewHistoryVo
+     * @return double
+     * @throws Exception
+     * @Title : getExpertReviewScrAvg
+     * @Description : 전문가 후기 평균 별점 조회
+     */
+    public Double getExpertReviewScrAvg(ExpertReviewHistoryVo expertReviewHistoryVo) throws Exception;
+
+    public List<ExpertCareerVo> selectExpertCareerList(ExpertVo expertVo) throws Exception;
+    public List<ExpertCrtfctVo> selectExpertCrtfctList(ExpertVo expertVo) throws Exception;
+    public List<ExpertHdofVo> selectExpertHdofList(ExpertVo expertVo) throws Exception;
 }

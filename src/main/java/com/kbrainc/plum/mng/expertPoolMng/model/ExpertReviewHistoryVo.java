@@ -1,5 +1,11 @@
 package com.kbrainc.plum.mng.expertPoolMng.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.ParentRequestVo;
+import lombok.Data;
+
+import java.util.Date;
+
 /**
  * 전문가 후기이력 Vo 클래스
  *
@@ -15,5 +21,28 @@ package com.kbrainc.plum.mng.expertPoolMng.model;
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
-public class ExpertReviewHistoryVo {
+@Data
+public class ExpertReviewHistoryVo  extends ParentRequestVo {
+    /** 요청 일련번호 */
+    private Integer dmndid;
+    /** 전문가 일련번호 */
+    private Integer exprtid;
+    /** 사용자 일련번호 */
+    private Integer userid;
+    /** 사용자 이름 */
+    private String nm;
+    /** 사용자 아이디 */
+    private String acnt;
+    /** 제목 */
+    private String ttl;
+    /** 점수 */
+    private Integer scr;
+    /** 기타 의견 */
+    private String etcOpnn;
+    /** 등록일 */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date regDt;
+    /** 수정일 */
+    private Date mdfcnDt;
+
 }
