@@ -67,7 +67,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Value("${system.company.roleid}")
     private String sysCompanyRoleid;
     
-    private Map<String,Integer> usernameNotFoundMap = new HashMap<String,Integer>();
+    public Map<String,Integer> usernameNotFoundMap = new HashMap<String,Integer>();
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -316,20 +316,21 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     private Map<String, Object> getLoginFailMessage(Integer loginFailCnt) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         StringBuffer sb = new StringBuffer();
+        Integer failCnt = loginFailCnt;
         
-        if (loginFailCnt == null) {
-            loginFailCnt = 1;
+        if (failCnt == null) {
+            failCnt = 1;
         } else {
-            loginFailCnt += 1;
-            if (loginFailCnt > 5) {
-                loginFailCnt = 5;
+            failCnt += 1;
+            if (failCnt > 5) {
+                failCnt = 5;
             }
         }
         
-        sb.append("등록되지 않은 아이디이거나 또는 비밀번호를 잘못 입력하셨습니다. 로그인 5회 이상 실패시 정보 보호를 위해 서비스 이용이 차단 됩니다. (로그인 실패 ").append(loginFailCnt).append("회)");
+        sb.append("등록되지 않은 아이디이거나 또는 비밀번호를 잘못 입력하셨습니다. 로그인 5회 이상 실패시 정보 보호를 위해 서비스 이용이 차단 됩니다. (로그인 실패 ").append(failCnt).append("회)");
         
         resultMap.put("message", sb.toString());
-        resultMap.put("loginFailCnt", loginFailCnt);
+        resultMap.put("loginFailCnt", failCnt);
         
         return  resultMap;
     }
