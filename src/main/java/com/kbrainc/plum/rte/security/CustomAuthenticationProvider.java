@@ -95,10 +95,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String sysSeCd = siteInfo.getSysSeCd();
         String siteid = siteInfo.getSiteid();
         String loginUserType = request.getParameter("loginUserType"); // 개인회원(P), 기관회원(I)
+        String redirectUrl = request.getParameter("redirectUrl");
         Integer instid = null;
         String siteaplyUseYn = null;
         request.setAttribute("loginid", loginid);
         request.setAttribute("loginUserType", loginUserType);
+        request.setAttribute("redirectUrl", redirectUrl);
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
