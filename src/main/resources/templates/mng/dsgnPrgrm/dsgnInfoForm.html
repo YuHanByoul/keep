@@ -1,10 +1,12 @@
 <form id="dsgnInfoFrm">
-
 <input type="hidden" id="dsgnBgngDe" name="dsgnBgngDe" th:value="${dsgnAplyInfo.dsgnBgngDe}">
 <input type="hidden" id="dsgnEndDe" name="dsgnEndDe" th:value="${dsgnAplyInfo.dsgnEndDe}">
 <input type="hidden" id="dsgnCycl" name="dsgnCycl" th:value="${dsgnAplyInfo.dsgnCycl}">
 <input type="hidden" id="dsgnNo" name="dsgnNo" th:value="${dsgnAplyInfo.dsgnNo}">
 <input type="hidden" id="dsgnObtainDe" name="dsgnObtainDe" th:value="${dsgnAplyInfo.dsgnObtainDe}">
+<input type="hidden" id="dsgnCnclDe" name="dsgnCnclDe" th:value="${dsgnAplyInfo.dsgnCnclDe}">
+<input type="hidden" id="hstryid" name="hstryid" th:value="${dsgnAplyInfo.hstryid}">
+<input type="hidden" id="prgrmid" name="prgrmid" th:value="${dsgnAplyInfo.prgrmid}">
 
 	<div class="tab-pane active" id="assignInfo" role="tabpanel">
 		<div class="card-header p-t-0 p-b-0">
@@ -35,7 +37,7 @@
 		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 		                    <strong>기관유형</strong></div>
 		                <div class="col-12">
-		                    <span kattr:select_code="instTypeCd" th:attr="grpCd=108,selectedCd=${dsgnAplyInfo.instTypeCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" isDisable/>
+		                    <span kattr:select_code="instTypeCd" th:attr="grpCd=108,selectedCd=${dsgnAplyInfo.instTypeCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" />
 		                </div>
 		            </div>
 		        </div>
@@ -113,7 +115,8 @@
 		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 		                    <strong>지역</strong></div>
 		                <div class="col-12">
-		                    <span kattr:select_code="rgnCd" th:attr="grpCd=125,selectedCd=${dsgnAplyInfo.instRgnCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" isDisable>
+		                    <span kattr:select_code="rgnCd" th:attr="grpCd=125,selectedCd=${dsgnAplyInfo.instRgnCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" >
+<!--                             <th:block kattr:select_rgn="searchRgn" width="50%" th:selectedCd="${dsgnAplyInfo.instRgnCd}" firstOptTxt="- 선택 -" firstOptVal="" addClass="form-select form-select-sm form-control-sm" ></th:block> -->
 		                </div>
 		            </div>
 		        </div>
@@ -205,8 +208,8 @@
 		    <div class="mb-2 row">
 		        <div class="col-12 btn-group-sm">
 		            <button type="button" class="col-auto btn btn-inverse m-r-5" onclick="gridHelper1.toggleContent()">목록</button>
-		            <button type="button" id="reDsgnBtn" >재지정</button>
-		            <button type="button" id="dsgnRtrcnBtn" onclick="openDsgnRtrcnModal()"class="col-auto btn btn-disabled m-r-5" >지정취소</button>
+		            <button type="button" id="reDsgnBtn" onclick="openDsgnInfoChgModal(this.id)" class="col-auto btn btn-disabled m-r-5">재지정</button>
+		            <button type="button" id="dsgnRtrcnBtn" onclick="openDsgnRtrcnModal()" class="col-auto btn btn-disabled m-r-5" >지정취소</button>
 
 		            <button type="button" class="col-auto btn btn-primary m-r-5">인쇄</button>
 		            <button type="button" class="col-auto btn btn-primary m-r-5"  onclick="openDsgnPrgrmOutlModal()">지정프로그램 개요보기</button>
@@ -218,8 +221,7 @@
 		            <strong>지정 내역</strong>
 		        </div>
 		        <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm">
-		            <button type="button" class="btn btn-primary" onclick="openDsgnInfoChgModal()">지정정보 변경
-		            </button>
+		            <button type="button" class="btn btn-primary" onclick="openDsgnInfoChgModal()">지정정보 변경</button>
 		        </div>
 		    </div>
 		</div>
@@ -227,59 +229,6 @@
 		    <div class="col-12 table-border-style">
 		        <div class="table-responsive">
                     <table id="dsgnDsctnGrid" class="table-responsive"></table>
-                    <!--
-		            <table class="table">
-		                <thead>
-		                <tr>
-		                    <th class="text-center v-middle" style="width: 60px;">No.</th>
-		                    <th class="text-center v-middle" style="width: 120px;">지정상태
-		                    </th>
-		                    <th class="text-center v-middle" style="width: 60px;">차수</th>
-		                    <th class="text-center v-middle" style="width: 100px;">지정번호</th>
-		                    <th class="text-center v-middle" style="width: 100px;">지정획득일</th>
-		                    <th class="text-center v-middle" style="width: 100px;">지정취소일</th>
-		                    <th class="text-center v-middle">지정유효기간</th>
-		                    <th class="text-center v-middle" style="width: 120px;">등록일</th>
-		                    <th class="text-center v-middle">등록자</th>
-		                </tr>
-		                </thead>
-		                <tbody>
-		                <tr>
-		                    <td class="text-center v-middle">3</td>
-		                    <td class="text-center v-middle">지정승인</td>
-		                    <td class="text-center v-middle">5</td>
-		                    <td class="text-center v-middle">2023-005</td>
-		                    <td class="text-center v-middle">2023-05-07</td>
-		                    <td class="text-center v-middle">-</td>
-		                    <td class="text-center v-middle">2023-05-07 ~ 2023-05-07</td>
-		                    <td class="text-center v-middle">2023-05-07 10:00</td>
-		                    <td class="text-center v-middle">김운영(kimadm)</td>
-		                </tr>
-		                <tr>
-		                    <td class="text-center v-middle">2</td>
-		                    <td class="text-center v-middle">지정승인</td>
-		                    <td class="text-center v-middle">5</td>
-		                    <td class="text-center v-middle">2023-005</td>
-		                    <td class="text-center v-middle">2023-05-07</td>
-		                    <td class="text-center v-middle">-</td>
-		                    <td class="text-center v-middle">2023-05-07 ~ 2023-05-07</td>
-		                    <td class="text-center v-middle">2023-05-07 10:00</td>
-		                    <td class="text-center v-middle">김운영(kimadm)</td>
-		                </tr>
-		                <tr>
-		                    <td class="text-center v-middle">1</td>
-		                    <td class="text-center v-middle">지정승인</td>
-		                    <td class="text-center v-middle">5</td>
-		                    <td class="text-center v-middle">2023-005</td>
-		                    <td class="text-center v-middle">2023-05-07</td>
-		                    <td class="text-center v-middle">-</td>
-		                    <td class="text-center v-middle">2023-05-07 ~ 2023-05-07</td>
-		                    <td class="text-center v-middle">2023-05-07 10:00</td>
-		                    <td class="text-center v-middle">김운영(kimadm)</td>
-		                </tr>
-		                </tbody>
-		            </table>
-		             -->
 		        </div>
 		    </div>
 		</div>
@@ -291,6 +240,8 @@
 <!-- 지정프로그램 개요보기 팝업 -->
 <div class="modal fade" id="dsgnPrgrmOutlPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <!-- 지정프로그램 상세보기 팝업 -->
+
+<!-- 지정정보 변경 팝업 -->
 <div class="modal fade" id="dsgnInfoChgPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
@@ -366,7 +317,7 @@ console.log("@@@@@2");
             ,{ title: '지정번호'    ,name: 'dsgnNo',       type: "text", width: "100", align:"center" }
             ,{ title: '지정획득일'  ,name: 'dsgnObtainDe', type: "text", align:"center" }
             ,{ title: '지정취소일'  ,name: 'dsgnCnclDe',   type: "text", align:"center" }
-            ,{ title: '지정유효기관',name: 'cmptnPrcsDe',  type: "text", align:"center" }
+            ,{ title: '지정유효기간',name: 'dsgnPrd',      type: "text", align:"center" }
             ,{ title: '등록일'      ,name: 'regDt',        type: "text", align:"center" }
             ,{ title: '등록자'      ,name: 'rgtrNm',       type: "text", align:"center" }
         ],
@@ -392,12 +343,11 @@ var dsgnRtrcnModal;
 var openDsgnRtrcnModal = () => {
 
 
-
-	var vPrgrmid = ""+prgrmid;
-	var vDsgnBgngDe = $("#dsgnBgngDe").val();
-	var vDsgnEndDe = $("#dsgnEndDe").val();
+	var vHstryid= $("#hstryid").val();
+	var vPrgrmid= $("#prgrmid").val();
 debugger;
-    var url = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html?mode="+vPrgrmid+"&dsgnBgngDe="+vDsgnBgngDe+"&dsgnEndDe="+vDsgnEndDe;
+    //var url = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html?mode="+vPrgrmid+"&dsgnBgngDe="+vDsgnBgngDe+"&dsgnEndDe="+vDsgnEndDe;
+    var url = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid;
 
     $("#dsgnRtrcnPopup").load(url, function(response, status, xhr) {
         if (status == "success") {
@@ -421,10 +371,21 @@ var openDsgnPrgrmOutlModal = () => {
     });
 }
 
+//지정 정보 변경/재지정
 var dsgnInfoChgModal;
-var openDsgnInfoChgModal = () => {
+var openDsgnInfoChgModal = (id) => {
 
-    var url = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html?mode="+prgrmid;
+	var vHstryid= $("#hstryid").val();
+    var vPrgrmid= $("#prgrmid").val();
+
+	var url = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid;
+
+
+	if("reDsgnBtn"==id ){
+		url+="&callSe=reDsgn";
+	}else{
+		url+="&callSe=dsgnInfoChgB";
+	}
 
     $("#dsgnInfoChgPopup").load(url, function(response, status, xhr) {
         if (status == "success") {
@@ -434,9 +395,48 @@ var openDsgnInfoChgModal = () => {
     });
 }
 
+/*
+// 재지정
+var reDsgnModal;
+var openReDsgnModal= () => {
+
+debugger;
+    var vHstryid= $("#hstryid").val();
+    var vPrgrmid= $("#prgrmid").val();
+
+    var url = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid+"&callSe=reDsgn";
+
+
+    $("#sttsCd").val("");
+
+    $("#dsgnInfoChgPopup").load(url, function(response, status, xhr) {
+        if (status == "success") {
+            dsgnInfoChgModal = new bootstrap.Modal($('#dsgnInfoChgPopup'));
+            dsgnInfoChgModal.show();
+        }
+    });
+}
+*/
 function initDsgnInfoFrm(){
 
-	$("#reDsgnBtn").hide();
+	//지정상태가 지정 탈락인 경우 탈락일 표시
+	if($("#sttsCd").val() == "132102"){
+		$("#reDsgnBtn").show()
+		$("#dsgnRtrcnBtn").hide();
+
+		var vCnclDe = $("#dsgnCnclDe").val();
+		$("#sttsCd option:selected").text("지정탈락"+" (탈락일 : "+vCnclDe+")" );
+
+	}else{
+		$("#reDsgnBtn").hide();
+        $("#dsgnRtrcnBtn").show();
+	}
+
+	$("#rgnCd").attr("disabled",true);
+	$("#instTypeCd").attr("disabled",true);
+	$("#sttsCd").attr("disabled",true);
+
+
 
 	//지정내역 목록 조회
 	writeSplmntDmndGridData();

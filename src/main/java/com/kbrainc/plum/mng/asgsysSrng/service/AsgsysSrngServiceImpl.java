@@ -670,4 +670,64 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	return asgsysSrngDao.selectjdgsPicList(asgsysSrngVo);
 	}
 
+	/**
+	* 프로그램우수성 등록
+	*
+	* @Title : insertPrgrmDstnctn
+	* @Description : 프로그램우수성 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+    @Override
+    @Transactional
+	public int insertPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.insertPrgrmDstnctn(asgsysSrngVo);
+	}
+
+    /**
+     * 프로그램우수성 수정
+     *
+     * @Title : updatePrgrmDstnctn
+     * @Description : 프로그램우수성 수정
+     * @param asgsysSrngVo
+     * @return int
+     * @throws Exception
+     */
+    @Override
+    @Transactional
+    public int updatePrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	return asgsysSrngDao.updatePrgrmDstnctn(asgsysSrngVo);
+    }
+
+    /**
+    * 회원목록 조회
+    *
+    * @Title : selectMbrList
+    * @Description : 회원목록 조회
+    * @param asgsysSrngVo
+    * @return List<MemberVo>
+    * @throws Exception
+    */
+    @Override
+	public List<MemberVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selectMbrList(asgsysSrngVo);
+
+	}
+
+    /**
+    * 담당자 변경
+    *
+    * @Title : updateMbr
+    * @Description : 담당자 변경
+    * @param asgsysSrngVo
+    * @return int
+    * @throws Exception
+    */
+    @Override
+    @Transactional
+	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.updateMbr(asgsysSrngVo);
+	}
+
 }

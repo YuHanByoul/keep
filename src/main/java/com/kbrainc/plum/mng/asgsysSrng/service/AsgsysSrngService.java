@@ -305,4 +305,48 @@ public interface AsgsysSrngService {
 	*/
 	public List<AsgsysSrngVo> selectjdgsPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 프로그램우수성 등록
+	*
+	* @Title : insertPrgrmDstnctn
+	* @Description : 프로그램우수성 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 프로그램우수성 수정
+	 *
+	 * @Title : updatePrgrmDstnctn
+	 * @Description : 프로그램우수성 수정
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updatePrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 회원목록 조회
+	*
+	* @Title : selectMbrList
+	* @Description : 회원목록 조회
+	* @param asgsysSrngVo
+	* @return List<MemberVo>
+	* @throws Exception
+	*/
+	public List<MemberVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 변경
+	*
+	* @Title : updateMbr
+	* @Description : 담당자 변경
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 }

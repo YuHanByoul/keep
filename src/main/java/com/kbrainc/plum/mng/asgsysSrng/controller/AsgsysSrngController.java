@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,6 +26,7 @@ import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
+import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -185,6 +188,88 @@ public class AsgsysSrngController {
 
 
     /**
+     * @Title : mbrSrchPopup
+     * @Description : 회원검색 팝업
+     * @param AsgsysSrngVo객체
+     * @param model 모델객체
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/mbrSrchPopup.html")
+    public String mbrSrchPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	model.addAttribute("instid", asgsysSrngVo.getInstid());
+    	model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
+
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
+    	return "mng/asgsysSrng/mbrSrchPopup";
+    }
+
+    /**
+     * @Title : selectMbrList
+     * @Description : 회원목록 조회
+     * @param AsgsysSrngVo객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/selectMbrList.do")
+    @ResponseBody
+    public Map<String, Object> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+  	   Map<String, Object> resultMap = new HashMap<>();
+        List<MemberVo> result = null;
+
+        result = asgsysSrngService.selectMbrList(asgsysSrngVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+
+        resultMap.put("mbrList", result);
+
+        return resultMap;
+    }
+
+    /**
+     * 담당자 변경
+     *
+     * @Title       : updateMbr
+     * @Description : 담당자 변경
+     * @param asgsysSrngVo AsgsysSrngVo객체
+     * @param AsgsysSrngVo객체
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/updateMbr.do")
+    @ResponseBody
+    public Map<String, Object> updateMbr(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.updateMbr(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+    /**
      * @Title : picAltmntPopup
      * @Description : 담당자 배정 팝업
      * @param AsgsysSrngVo객체
@@ -261,6 +346,8 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngForm.html")
     public String jdgsSrngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	//model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo));
+
     	return "mng/asgsysSrng/jdgsSrng";
     }
     /**
@@ -312,6 +399,92 @@ public class AsgsysSrngController {
     	//관련 교육과정 목록 조회 ASS_프로그램_교육_주제	tb_ass_prgrm_edu_sbjct	TB_ASS_PRGRM_EDU_SBJCT
 
     	return "mng/asgsysSrng/prgrmDstnctn";
+    }
+
+    /**
+    * 프로그램 우수성 등록
+    *
+    * @Title       : insertPrgrmDstnctn
+    * @Description : 프로그램 우수성 등록
+    * @param asgsysSrngVo AsgsysSrngVo객체
+    * @param bindingResult1 asgsysSrngVo 유효성검증결과
+    * @param memberDtlVo MemberDtlVo객체
+    * @param bindingResult2 memberDtlVo 유효성검증결과
+    * @param user 사용자세션정보
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/insertPrgrmDstnctn.do")
+    @ResponseBody
+    public Map<String, Object> insertPrgrmDstnctn(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        asgsysSrngVo.setUser(user);
+
+        int retVal = 0;
+
+        retVal = asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 프로그램 우수성 수정
+     *
+     * @Title       : updatePrgrmDstnctn
+     * @Description : 프로그램 우수성 등록
+     * @param asgsysSrngVo AsgsysSrngVo객체
+     * @param bindingResult1 asgsysSrngVo 유효성검증결과
+     * @param memberDtlVo MemberDtlVo객체
+     * @param bindingResult2 memberDtlVo 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/updatePrgrmDstnctn.do")
+    @ResponseBody
+    public Map<String, Object> updatePrgrmDstnctn(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+    		FieldError fieldError = bindingResult1.getFieldError();
+    		if (fieldError != null) {
+    			resultMap.put("msg", fieldError.getDefaultMessage());
+    		}
+    		return resultMap;
+    	}
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
     }
 
     /**
@@ -600,7 +773,7 @@ public class AsgsysSrngController {
      *
      * @Title       : updateJdgsSrngDetail
      * @Description : asgsysSrng
-     * @param memberVo MemberVo , TeacherVo TeacherVo객체
+     * @param asgsysSrngVo AsgsysSrngVo , TeacherVo TeacherVo객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
