@@ -46,26 +46,25 @@ public class HelpDeskController {
     @Autowired
     private HelpDeskService helpDeskService;
 
-
     /**
-     * 문의 목록화면 이동
+     * 문의목록 화면 이동
      *
      * @return
      * @return String
      * @throws Exception
-     * @Title : helpDeskForm
-     * @Description : 문의 목록화면 이동
+     * @Title : helpDeskList
+     * @Description : 문의목록 화면 이동
      */
-    @RequestMapping("/mng/helpDesk/helpDeskForm.html")
-    public String helpDeskForm() throws Exception {
-        return "mng/helpDesk/helpDeskForm";
+    @RequestMapping("/mng/helpDesk/helpDeskList.html")
+    public String helpDeskList() throws Exception {
+        return "mng/helpDesk/helpDeskList";
     }
 
     /**
-     * 문의 목록 조회
+     * 문의목록 조회
      *
      * @Title       : selectHelpDeskList
-     * @Description : 문의 목록 조회
+     * @Description : 문의목록 조회
      * @param helpDeskVo
      * @return
      * @throws Exception
@@ -73,8 +72,7 @@ public class HelpDeskController {
      */
     @RequestMapping(value = "/mng/helpDesk/selectHelpDeskList.do")
     @ResponseBody
-    public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo, @UserInfo UserVo user) throws Exception {
-        helpDeskVo.setUser(user);
+    public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo) throws Exception {
         List<HelpDeskVo> list = helpDeskService.selectHelpDeskList(helpDeskVo);
 
         Map<String, Object> response = new HashMap<String, Object>();
@@ -91,18 +89,18 @@ public class HelpDeskController {
     }
 
     /**
-     * 문의 상세화면 이동
+     * 문의상세 화면 이동
      *
-     * @Title       : helpDeskDetailForm
-     * @Description : 문의 상세화면 이동
+     * @Title       : helpDeskForm
+     * @Description : 문의상세 화면 이동
      * @param helpDeskVo
      * @param model
      * @return
      * @throws Exception
      * @return String
      */
-    @RequestMapping(value = "/mng/helpDesk/helpDeskDetailForm.html")
-    public String helpDeskDetailForm(HelpDeskVo helpDeskVo, Model model) throws Exception {
+    @RequestMapping(value = "/mng/helpDesk/helpDeskForm.html")
+    public String helpDeskForm(HelpDeskVo helpDeskVo, Model model) throws Exception {
 
         HelpDeskVo helpDeskInfo = helpDeskService.selectHelpDeskInfo(helpDeskVo);
         HelpDeskAnswrVo helpDeskAnswrInfo = helpDeskService.selectHelpDeskAnswrInfo(helpDeskVo);
@@ -123,7 +121,7 @@ public class HelpDeskController {
             model.addAttribute("fileList", Collections.emptyList());
         }
 
-        return "mng/helpDesk/helpDeskDetailForm";
+        return "mng/helpDesk/helpDeskForm";
     }
 
     /**
@@ -139,7 +137,7 @@ public class HelpDeskController {
      */
     @RequestMapping(value = "/mng/helpDesk/deleteHelpDesk.do")
     @ResponseBody
-    public Map<String, Object> deleteHelpDesk(@RequestParam("deleteHelpDeskIds") String[] deleteHelpDeskIds, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> deleteHelpDesk(@RequestParam("deleteHelpDeskIds") Integer[] deleteHelpDeskIds, @UserInfo UserVo user) throws Exception {
         Map<String, Object> reseultMap = new HashMap<>();
         int retVal = 0;
 
@@ -242,18 +240,15 @@ public class HelpDeskController {
     /**
      * 답변 모달화면
      *
-     * @Title       : helpDeskManagerSearchModal
+     * @Title       : helpDeskManagerSearchPopup
      * @Description : 답변 모달화면
-     * @param model
-     * @param user
      * @return
      * @throws Exception
      * @return String
      */
-    @RequestMapping(value = "/mng/helpDesk/helpDeskManagerSearchModal.html")
-    public String helpDeskManagerSearchModal(Model model, @UserInfo UserVo user) throws Exception {
-
-        return "mng/helpDesk/helpDeskManagerSearchModal";
+    @RequestMapping(value = "/mng/helpDesk/helpDeskManagerSearchPopup.html")
+    public String helpDeskManagerSearchPopup() throws Exception {
+        return "mng/helpDesk/helpDeskManagerSearchPopup";
     }
 
     /**

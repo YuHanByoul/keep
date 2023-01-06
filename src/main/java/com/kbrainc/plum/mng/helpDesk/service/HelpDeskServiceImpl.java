@@ -118,7 +118,7 @@ public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements Help
         HelpDeskVo helpDeskVo = new HelpDeskVo();
         helpDeskVo.setInqryid(helpDeskAnswrVo.getInqryid());
 
-        retVal += helpDeskDao.deleteHelpDeskManager(helpDeskAnswrVo);
+        retVal += helpDeskDao.deleteHelpDeskManager(new Integer[]{helpDeskAnswrVo.getInqryid()});
         if (helpDeskAnswrVo.getHelpDeskManager().length >= 1) {
             retVal += helpDeskDao.insertHelpDeskManager(helpDeskAnswrVo);
         }
@@ -155,8 +155,12 @@ public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements Help
      * @return int
      */
     @Override
-    public int deleteHelpDesk(String[] deleteHelpDeskIds, UserVo userVo) throws Exception {
-        return helpDeskDao.deleteHelpDesk(deleteHelpDeskIds, userVo);
+    public int deleteHelpDesk(Integer[] deleteHelpDeskIds, UserVo userVo) throws Exception {
+        int retVal = 0;
+
+        retVal += helpDeskDao.deleteHelpDesk(deleteHelpDeskIds);
+
+        return retVal;
     }
 
     /**

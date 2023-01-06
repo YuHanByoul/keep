@@ -61,6 +61,20 @@
 
 <script th:inline="javascript">
     var managerSelectedItems;
+
+    function mapCamelCaseToUnderscore(sortField) {
+        var result = "";
+        for (var i = 0; i < sortField.length; i++) {
+            if (sortField[i] === sortField[i].toUpperCase()) {
+                result += "_";
+                result += sortField[i].toLowerCase();
+            } else {
+                result += sortField[i];
+            }
+        }
+        return result;
+    }
+
     $(function() {
         writeHelpDeskModalData();
         managerSelectedItems = [];
@@ -114,7 +128,7 @@
                     ]
 
                     if(filter.sortField != undefined){
-                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
                         params.push({name: "orderDirection", value: filter.sortOrder});
                     }else{
                         params.push({name: "orderField", value: 'reg_dt'});
@@ -158,10 +172,12 @@
                 },
                 { name: 'userid', css:'hide'},
                 { title:'사용자', name: 'nm', type: "text" , width: "150"},
-                { title:'소속기관', name: 'instNm', type: "text" , width: "150", sorting: false},
+                { title:'소속기관', name: 'instNm', type: "text" , width: "150"},
                 { title:'역할', name: 'roleNm', type: "text" , width: "120", align:"center"}
             ],
             rowClick: function (args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+
                 if($("#userid-"+args.item.userid).is(":checked")){
                     managerUnselectItem(args.item.id, args.item.name);
                 } else {

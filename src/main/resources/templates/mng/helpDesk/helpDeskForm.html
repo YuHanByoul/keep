@@ -1,297 +1,283 @@
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-      layout:decorator="layout/mng/mainLayout">
-<body>
-<div layout:fragment="content">
-    <style>
-        .hide {
-            display:none;
-        }
-    </style>
-    <script th:inline="javascript">
-        var helpDeskListUrl = "/mng/helpDesk/selectHelpDeskList.do";
-        var helpDeskDetailUrl = "/mng/helpDesk/helpDeskDetailForm.html";
-        var deleteHelpDeskUrl = "/mng/helpDesk/deleteHelpDesk.do";
-        var gridHelper1;
-        var selectedItems = [];
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-        $(function(){
-            gridHelper1 = new GridHelper('jsGrid','contentPanel');
-            writeJsGridData();
+<div class="col-12 col-lg-6 ">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h4 class="sub-title"><strong>문의</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <strong th:text="|[${helpDeskInfo.clsfNm}] ${helpDeskInfo.ttl}|">[분류] 제목</strong>
+            </p>
+            <p>
+                <th:block th:if="${not #strings.isEmpty(helpDeskInfo.instNm)}">
+                    <th:block th:text="${helpDeskInfo.instNm} "></th:block>
+                </th:block>
+
+                <th:block th:text="|${helpDeskInfo.nm}(${helpDeskInfo.acnt})|"></th:block><br/>
+                <th:block th:text="${#dates.format(helpDeskInfo.regDt, 'yyyy-MM-dd')}"/>
+            </p>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <h4 class="sub-title"><strong>문의 내용</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(helpDeskInfo.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </p>
+            <div class="mt-2 row">
+                <ul th:if="${fileList != null}">
+                    <th:block th:each="file : ${fileList}">
+                        <li>
+                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                <i class="ion-paperclip f-18"></i> [[${file.orginlFileNm}]]
+                            </a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12 col-lg-6">
+    <form action="post" name="helpDeskAnswrForm" id="helpDeskAnswrForm" onsubmit="return false;">
+        <input type="hidden" name="inqryid" id="inqryid" th:value="${helpDeskInfo.inqryid }" />
+        <input type="hidden" name="ansid" id="ansid" th:value="${helpDeskAnswrInfo.ansid}" />
+        <input type="hidden" name="oldSttsCd" id="oldSttsCd" th:value="${helpDeskInfo.sttsCd}"/>
+        <div class="card">
+
+            <div class="card-header p-b-0">
+                <h4 class="sub-title"><strong>답변</strong></h4>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="mb-2 form-group row required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                    <div class="col-sm-12">
+                        <span kattr:select_code="sttsCd" th:attr="grpCd=${helpDeskInfo.sttsCdgrpid},selectedCd=${helpDeskInfo.sttsCd}" isAdmin="true">
+                    </div>
+                </div>
+
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>답변 제목</strong></label>
+                    <div class="col-sm-12">
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="ttl" id="ttl" th:value="${helpDeskAnswrInfo.ttl}"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                           for="cn"><strong>답변 내용</strong></label>
+                    <div class="col-sm-12">
+                        <textarea rows="5" cols="5" class="form-control form-control-sm" id="cn" name="cn" th:utext="${helpDeskAnswrInfo.cn}" ></textarea>
+                    </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 지정</strong></div>
+                    <div class="col-sm-12 btn-group-sm">
+                        <button type="button" class="btn btn-inverse" onclick="openHelpDeskManagerSearchModal()">담당자 검색</button>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto" id="managerList">
+                            <th:block th:each="helpDeskManager : ${helpDeskManagerInfo}">
+                            <span class="label label-inverse " th:id="|managerId-${helpDeskManager.userid}|" name="managerInfo" th:data-id="${helpDeskManager.userid}">
+                                    [[${helpDeskManager.nm}]] <a href="javascript:void(0)" th:onclick="|removeManagerInfo(${helpDeskManager.userid})|" class="text-white">X</a>
+                            </span>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2 row">
+                    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                                   for="opetrNm"><strong>답변자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="opetrNm" id="opetrNm" readonly
+                                       th:value="${helpDeskAnswrInfo.prcrNm != null ? helpDeskAnswrInfo.prcrNm : session.user.nm}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                                   for="regDt"><strong>답변일자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="regDt" id="regDt" readonly
+                                       th:value="${helpDeskAnswrInfo.ansDe != null ? helpDeskAnswrInfo.ansDe : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-0 form-group row">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>답변공개</strong></div>
+                    <div class="col-12">
+                        <span kattr:radio_yn="rlsYn" label1="공개 " label2="비공개 " addClass=" form-control-static" th:attr="defaultVal=${helpDeskAnswrInfo.rlsYn == null ? 'Y':helpDeskAnswrInfo.rlsYn }" ></span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-t-0 card-block-small">
+                <button class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+                <th:block sec:authorize-url="/mng/helpDesk/insertHelpDeskAnswr.do">
+                    <button type="button" class="btn btn-primary" onclick="saveHelpDeskAnswr()">저장</button>
+                </th:block>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script th:inline="javascript">
+    var insertHelpDeskAnswrUrl = "/mng/helpDesk/insertHelpDeskAnswr.do";
+    var updateHelpDeskAnswrUrl = "/mng/helpDesk/updateHelpDeskAnswr.do";
+    var managerSearchModal;
+
+    var openHelpDeskManagerSearchModal =()=> {
+        var url = "/mng/helpDesk/helpDeskManagerSearchPopup.html";
+        $("#helpDeskManagerSearchModal").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                managerSearchModal = new bootstrap.Modal($('#helpDeskManagerSearchModal'));
+                managerSearchModal.show();
+            }
+        });
+    }
+    $(function(){
+        checkValidation();
+        addClassRequired();
+        $("#helpDeskAnswrForm #sttsCd").change(function(){
+            addClassRequired();
         })
+    })
 
-        function writeJsGridData() {
-            $("#jsGrid").jsGrid({
-                height: "auto",
-                width: "100%",
-                autoload: true,
-                sorting: true,
-                paging: true,
-                pagerContainer: "#listPager",
-                pagerFormat: "{first} {prev} {pages} {next} {last}",
-                pagePrevText: "이전",
-                pageNextText: "다음",
-                pageFirstText: " < 처음 ㅣ",
-                pageLastText: " | 마지막 >",
-                pageSize: 10,
-                pageButtonCount: 10,
-                pageLoading: true,
-                pageIndex: 1,
-                noDataContent: "데이터가 없습니다.",
-
-                controller: {
-                    loadData: function (filter) {
-                        var data = $.Deferred();
-
-                        var formData = $('#searchForm').serializeArray();
-                        var params = [
-                            {name: "pageNumber", value: filter.pageIndex},
-                            {name: "rowPerPage", value: filter.pageSize},
-                        ]
-
-                        if(filter.sortField != undefined){
-                            params.push({name: "orderField", value: filter.sortField});
-                            params.push({name: "orderDirection", value: filter.sortOrder});
-                        }else{
-                            params.push({name: "orderField", value: 'assign_yn desc, reg_dt'});
-                        }
-
-                        formData = formData.concat(params);
-
-                        $.ajax({
-                            type: "GET",
-                            contentType: "application/json; charset=utf-8",
-                            url: helpDeskListUrl,
-                            dataType: "json",
-                            data: formData,
-                        }).done(function(response){
-                            var da = {
-                                data : escapeGridData(response.list)
-                                ,itemsCount : response.totalCount
-                            };
-                            data.resolve(da);
-                        });
-                        return data.promise();
-                    },
+    function checkValidation(){
+        $("#helpDeskAnswrForm").validate({
+            rules: {
+                ttl: {
+                    maxlength: 50
                 },
-                fields: [
-                    {
-                        headerTemplate: function() {
-                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-                        },
-                        itemTemplate: function(_, item) {
-                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-                                .prop("checked", $.inArray(item, selectedItems) > -1)
-                                .on("change", function () {
-                                    $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-                                });
-                        },
-                        align: "center",
-                        width: "50",
-                        sorting: false
-                    },
-                    { name: 'inqryid', css:'hide'},
-                    { title:'No.', name: 'rowNumber', type: "number" , width: "80", align:"center", sorting: false},
-                    { title:'제목', name: 'ttl', type: "text" , width: "300"},
-                    { title:'분류', name: 'clsfNm', type: "text" , width: "150", align:"center", sorting: false},
-                    { title:'작성자', name: 'nm', type: "text" , width: "120", align:"center"},
-                    { title:'작성일', name: 'regDt', type: "text" , width: "150", align:"center"},
-                    { title:'상태', name: 'sttsCdNm', type: "text" ,width: "120", align:"center"},
-                    { title:'처리자', name: 'prcrNm', type: "text" ,width: "120", align:"center"}
-                ],
-                /*[# sec:authorize-url="/mng/helpDesk/helpDeskDetailForm.html"]*/
-                rowClick: function (args) {
-                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                    gridHelper1.loadContent(helpDeskDetailUrl + '?inqryid=' + args.item.inqryid);
+                cn: {
+                    maxlength: 2000
+                }
+            },
+            messages: {
+                ttl: {
+                    maxlength: "답변 제목은 50자를 넘을 수 없습니다."
                 },
-                /*[/]*/
-                onPageChanged: function (args) {
-                    selectedItems = [];
+                cn: {
+                    maxlength: "답변 내용은 2000자를 넘을 수 없습니다."
                 }
-            });
-
-            var selectItem = function(item) {
-                selectedItems.push(item);
-
-                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                    $("#selectAllCheckbox").prop("checked", true);
-                } else {
-                    $("#selectAllCheckbox").prop("checked", false);
-                }
-            };
-
-            var unselectItem = function(item) {
-                selectedItems = $.grep(selectedItems, function(i) {
-                    return i !== item;
-                });
-                if(selectedItems.length == 0) {
-                    $('#selectAllCheckbox').attr('checked', false);
-                }
-                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                    $("#selectAllCheckbox").prop("checked", true);
-                } else {
-                    $("#selectAllCheckbox").prop("checked", false);
-                }
-            };
-
-            $("#selectAllCheckbox").click(function(item) {
-                selectedItems = [];
-                if(this.checked) { // check select status
-                    $('.singleCheckbox').each(function() {
-                        this.checked = true;
-                        selectItem($(this).parent().next().text());
-                    });
-                }else {
-                    $('.singleCheckbox').each(function() {
-                        this.checked = false;
-                        unselectItem(item);
-                    });
-                    selectedItems = [];
-                }
-            });
-        }
-
-        function searchInit() {
-            $("#searchType").val('');
-            $("#searchKeyword").val('');
-            $("#clCd").val('');
-            $("#sttsCd").val('');
-        }
-        function searchHelpDesk() {
-            var searchType = $("#searchType").val();
-            var searchKeyword = $("#searchKeyword").val();
-
-            if(searchType != '' && searchKeyword == ""){
-                alert('검색어를 입력해 주십시오.');
-                return;
             }
+        });
+    }
 
-            gridHelper1.resetListContent();
+    function addClassRequired() {
+        if($('#helpDeskAnswrForm #sttsCd option:selected').val() == '113104') {
+                $('#ttl').closest('.form-group').addClass('required');
+                $('#cn').closest('.form-group').addClass('required');
+        }    else {
+            $('#ttl').closest('.form-group').removeClass('required');
+            $('#cn').closest('.form-group').removeClass('required');
+        }
+    }
+
+    function removeManagerInfo(userid) {
+        $("#managerId-"+userid).remove();
+    }
+
+    function saveHelpDeskAnswr() {
+        var url = insertHelpDeskAnswrUrl;
+        if ($('#ansid').val() != '') {
+            url = updateHelpDeskAnswrUrl;
         }
 
-        function deleteHelpDesk() {
-            if(selectedItems.length <=0 ){
-                alert("삭제할 문의글을 선택해주십시오.");
-                return;
-            }
-
-            if(!confirm("선택한 문의글들을 삭제하시겠습니까?"))return;
-
-            var deleteHelpDeskIds = selectedItems.join(",")
-            var url = deleteHelpDeskUrl+"?deleteHelpDeskIds="+deleteHelpDeskIds;
-
+        if (url == insertHelpDeskAnswrUrl) {
             var isSec = false;
-            /*[# sec:authorize-url="/mng/helpDesk/deleteHelpDesk.do"]*/
+            /*[# sec:authorize-url="/mng/helpDesk/insertHelpDeskAnswr.do"]*/
             isSec = true;
             /*[/]*/
             if (!isSec) {
                 alert('접근권한이 없습니다.');
                 return;
             }
-
-            if(displayWorkProgress()){
-                $.ajax({
-                    url : url,
-                    type: 'POST',
-                    cache : false,
-                    success : function (data){
-                        alert(data.msg);
-                        gridHelper1.resetListContent();
-                        selectedItems = [];
-                        closeWorkProgress();
-                    }
-                });
+        }
+        else if (url == updateHelpDeskAnswrUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/helpDesk/updateHelpDeskAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
             }
         }
-    </script>
-    <!-- Page-body start -->
-    <div class="page-body">
-        <div class="row">
-            <!-- 필터 부분 -->
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-block-small">
-                        <!-- 키워드 filter -->
-                        <form id="searchForm" name="searchForm" action="post" onsubmit="return false;">
-                            <div class="row">
-                                <div class="col-12 col-lg-3 mb-2 mb-lg-0">
-                                    <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
-                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                            <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
-                                                <option value="">- 선택 -</option>
-                                                <option value="ttl">제목</option>
-                                                <option value="cn">내용</option>
-                                                <option value="nm">작성자</option>
-                                                <option value="id">아이디</option>
-                                            </select>
-                                            <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-3 mb-2 mb-lg-0">
-                                    <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
-                                        <div class="col-sm-12">
-                                            <th:block kattr:select_code="clsfCd" grpCd="112" upprCd="0" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-lg-3">
-                                    <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
-                                        <div class="col-sm-12">
-                                            <span kattr:select_code="sttsCd" grpCd="113" firstOptTxt="- 전체 -" isAdmin="true">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="m-t-20 text-center">
-                                <button type="button" class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
-                                <button type="submit" class="btn btn-primary" onclick="searchHelpDesk()">검색</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- //필터 부분 -->
 
-            <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
-            <div class="col-12">
-                <div class="card">
-                    <div class="row p-20 p-b-0">
-                        <div class="col-12 col-md-6">
-                            <h5><strong>탄소중립 헬프데스크 검색결과</strong></h5>
-                        </div>
-                        <div class="col-12 col-md-6 text-right">
-                            <th:block sec:authorize-url="/mng/helpDesk/deleteHelpDesk.do">
-                                <button type="button" class="btn btn-inverse" onclick="deleteHelpDesk()">삭제</button>
-                            </th:block>
-                        </div>
-                    </div>
-                    <div class="card-block-small">
-                        <div class="dt-responsive table-responsive">
-                            <div id="order-table_wrapper"class="dataTables_wrapper dt-bootstrap4">
-                                <table id="jsGrid" class="table-responsive"></table>
-                                <div id="listPager" class="text-center"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+        var sttsCd = $('#helpDeskAnswrForm').find('#sttsCd').val();
 
-            <div id="contentPanel" class="row">
-            </div>
-        </div>
-    </div>
-    <!-- Page-body end -->
+        /*
+            - 답변 최초 등록 시 상태가 ＂접수완료“,”접수취소＂인 경우 답변으로 입력하지 않음.
+            - 답변 최초 등록 시 상태가 ＂답변중“,”답변완료＂인 경우만 답변으로 입력.
+        */
+        if (sttsCd == '113101' || sttsCd == '113102') {
+            alert('답변중 또는 답변완료 상태인 경우에만 입력이 가능합니다.');
+            return;
+        }
 
-    <!-- 담당자지정 회원검색 팝업 Start -->
-    <div class="modal fade" id="helpDeskManagerSearchModal" aria-hidden="true" data-bs-backdrop="static"></div>
-    <!-- 담당자지정 회원검색 팝업 end  -->
-</div>
-</body>
+        /*
+            - 상태가 “접수완료”인 경우 : 필수 없음.
+            - 상태가 “접수취소＂인 경우 : 필수 없음.
+            - 상태가 “답변중“ 인 경우 : 필수 없음.
+            - 상태가 “답변완료＂인 경우 : 답변제목, 답변내용 필수.
+        */
+        if (sttsCd == '113104') {
+            var $ttl = $("#ttl");
+            var $cn = $("#cn");
+            if($ttl.val() == '' || $ttl.val() == null){
+                alert('답변 제목을 입력해주십시오.');
+                $ttl.css("border","2px solid #ff0000");
+                setTimeout(function() { $ttl.css("border","")}, 1000);
+                return;
+            }
+            if($cn.val() == '' || $cn.val() == null) {
+                alert('답변 내용을 입력해주십시오.');
+                $cn.css("border","2px solid #ff0000");
+                setTimeout(function() { $cn.css("border","")}, 1000);
+                return;
+            }
+        }
+
+        if (!$('#helpDeskAnswrForm').valid()) return;
+
+        var formData = $('#helpDeskAnswrForm').serializeArray();
+        var helpDeskManagerIds = [];
+
+        $("[name=managerInfo]").each(function(index,item){
+            helpDeskManagerIds.push($(this).data('id'));
+        });
+        formData = formData.concat({name:"helpDeskManager", value:helpDeskManagerIds});
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                cache: false,
+                dataType: 'json',
+                type:'post',
+                data: formData,
+                success: function (data) {
+                    alert(data.msg);
+                    closeWorkProgress();
+                    gridHelper1.resetPageContent();
+                }
+            });
+        }
+
+    }
+
+
+</script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+
 </html>

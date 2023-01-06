@@ -114,7 +114,7 @@ public interface HelpDeskService {
      * @throws Exception
      * @return int
      */
-    public int deleteHelpDesk(String[] deleteHelpDeskIds, UserVo userVo) throws Exception;
+    public int deleteHelpDesk(Integer[] deleteHelpDeskIds, UserVo userVo) throws Exception;
 
     /**
      * 지정된 담당자 정보 조회
