@@ -4,23 +4,21 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
-import java.util.ArrayList;
-
 /**
-* 담당자 검색 모달Vo 클래스
-*
-* <pre>
-* com.kbrainc.plum.mng.helpDesk.model
-* - HelpDeskModalUserVo.java
-* </pre>
-*
-* @ClassName   : HelpDeskModalUserVo
-* @Description : TODO
-* @author      : KBRAINC_DEV
-* @date        : 2022. 12. 20.
-* @Version     :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
+ * 담당자 검색 모달Vo 클래스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.helpDesk.model
+ * - HelpDeskModalUserVo.java
+ * </pre>
+ *
+ * @author : KBRAINC_DEV
+ * @ClassName : HelpDeskModalUserVo
+ * @Description : 담당자 검색 모달Vo 클래스
+ * @date : 2022. 12. 20.
+ * @Version :
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
 @Data
 public class HelpDeskModalUserVo extends ParentRequestVo {
     /** 로그인 사용자 정보 */

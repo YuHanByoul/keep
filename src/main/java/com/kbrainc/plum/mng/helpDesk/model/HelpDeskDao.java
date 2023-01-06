@@ -4,24 +4,23 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
-* 탄소중립헬프데스크 DAO 클래스 
-*
-* <pre>
-* com.kbrainc.plum.mng.helpDesk.model
-* - HelpDeskDao.java
-* </pre>
-*
-* @ClassName   : HelpDeskDao
-* @Description : TODO
-* @author      : KBRAINC_DEV
-* @date        : 2022. 12. 20.
-* @Version     :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
+ * 탄소중립헬프데스크 DAO 클래스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.helpDesk.model
+ * - HelpDeskDao.java
+ * </pre>
+ *
+ * @author : KBRAINC_DEV
+ * @ClassName : HelpDeskDao
+ * @Description : 탄소중립헬프데스크 DAO 클래스
+ * @date : 2022. 12. 20.
+ * @Version :
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
 @Mapper
 public interface HelpDeskDao {
     

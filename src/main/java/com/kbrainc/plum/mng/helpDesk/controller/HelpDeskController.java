@@ -1,8 +1,8 @@
 package com.kbrainc.plum.mng.helpDesk.controller;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrManagerVo;
+import com.kbrainc.plum.mng.helpDesk.model.HelpDeskAnswrVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskModalUserVo;
 import com.kbrainc.plum.mng.helpDesk.model.HelpDeskVo;
 import com.kbrainc.plum.mng.helpDesk.service.HelpDeskService;
@@ -26,20 +26,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* 탄소중립헬프데스크 컨트롤러 클래스
-*
-* <pre>
-* com.kbrainc.plum.mng.helpDesk.controller
-* - HelpDeskController.java
-* </pre>
-*
-* @ClassName   : HelpDeskController
-* @Description : TODO
-* @author      : KBRAINC_DEV
-* @date        : 2022. 12. 20.
-* @Version     :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
+ * 탄소중립헬프데스크 컨트롤러 클래스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.helpDesk.controller
+ * - HelpDeskController.java
+ * </pre>
+ *
+ * @author : KBRAINC_DEV
+ * @ClassName : HelpDeskController
+ * @Description : 탄소중립헬프데스크 컨트롤러 클래스
+ * @date : 2022. 12. 20.
+ * @Version :
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
 @Controller
 public class HelpDeskController {
 
@@ -48,29 +48,29 @@ public class HelpDeskController {
 
 
     /**
-    * 문의 목록화면 이동
-    *
-    * @Title       : helpDeskForm 
-    * @Description : TODO
-    * @return
-    * @throws Exception
-    * @return String 
-    */
+     * 문의 목록화면 이동
+     *
+     * @return
+     * @return String
+     * @throws Exception
+     * @Title : helpDeskForm
+     * @Description : 문의 목록화면 이동
+     */
     @RequestMapping("/mng/helpDesk/helpDeskForm.html")
     public String helpDeskForm() throws Exception {
         return "mng/helpDesk/helpDeskForm";
     }
 
     /**
-    * 문의 목록 조회
-    *
-    * @Title       : selectHelpDeskList 
-    * @Description : TODO
-    * @param helpDeskVo
-    * @return
-    * @throws Exception
-    * @return Map<String,Object> 
-    */
+     * 문의 목록 조회
+     *
+     * @Title       : selectHelpDeskList
+     * @Description : 문의 목록 조회
+     * @param helpDeskVo
+     * @return
+     * @throws Exception
+     * @return Map<String, Object>
+     */
     @RequestMapping(value = "/mng/helpDesk/selectHelpDeskList.do")
     @ResponseBody
     public Map<String, Object> selectHelpDeskList(HelpDeskVo helpDeskVo, @UserInfo UserVo user) throws Exception {
@@ -91,16 +91,16 @@ public class HelpDeskController {
     }
 
     /**
-    * 문의 상세화면 이동
-    *
-    * @Title       : helpDeskDetailForm 
-    * @Description : TODO
-    * @param helpDeskVo
-    * @param model
-    * @return
-    * @throws Exception
-    * @return String 
-    */
+     * 문의 상세화면 이동
+     *
+     * @Title       : helpDeskDetailForm
+     * @Description : 문의 상세화면 이동
+     * @param helpDeskVo
+     * @param model
+     * @return
+     * @throws Exception
+     * @return String
+     */
     @RequestMapping(value = "/mng/helpDesk/helpDeskDetailForm.html")
     public String helpDeskDetailForm(HelpDeskVo helpDeskVo, Model model) throws Exception {
 
@@ -127,16 +127,16 @@ public class HelpDeskController {
     }
 
     /**
-    * 문의 삭제
-    *
-    * @Title       : deleteHelpDesk 
-    * @Description : TODO
-    * @param deleteHelpDeskIds
-    * @param user
-    * @return
-    * @throws Exception
-    * @return Map<String,Object> 
-    */
+     * 문의 삭제
+     *
+     * @Title       : deleteHelpDesk
+     * @Description : 문의 삭제
+     * @param deleteHelpDeskIds
+     * @param user
+     * @return
+     * @throws Exception
+     * @return Map<String, Object>
+     */
     @RequestMapping(value = "/mng/helpDesk/deleteHelpDesk.do")
     @ResponseBody
     public Map<String, Object> deleteHelpDesk(@RequestParam("deleteHelpDeskIds") String[] deleteHelpDeskIds, @UserInfo UserVo user) throws Exception {
@@ -157,17 +157,17 @@ public class HelpDeskController {
     }
 
     /**
-    * 답변 등록
-    *
-    * @Title       : insertHelpDeskAnswr 
-    * @Description : TODO
-    * @param helpDeskAnswrVo
-    * @param bindingResult
-    * @param user
-    * @return
-    * @throws Exception
-    * @return Map<String,Object> 
-    */
+     * 답변 등록
+     *
+     * @Title       : insertHelpDeskAnswr
+     * @Description : 답변 등록
+     * @param helpDeskAnswrVo
+     * @param bindingResult
+     * @param user
+     * @return
+     * @throws Exception
+     * @return Map<String, Object>
+     */
     @RequestMapping(value = "/mng/helpDesk/insertHelpDeskAnswr.do")
     @ResponseBody
     public Map<String, Object> insertHelpDeskAnswr(HelpDeskAnswrVo helpDeskAnswrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -199,17 +199,17 @@ public class HelpDeskController {
     }
 
     /**
-    * 답변 수정
-    *
-    * @Title       : updateHelpDeskAnswr 
-    * @Description : TODO
-    * @param helpDeskAnswrVo
-    * @param bindingResult
-    * @param user
-    * @return
-    * @throws Exception
-    * @return Map<String,Object> 
-    */
+     * 답변 수정
+     *
+     * @Title       : updateHelpDeskAnswr
+     * @Description : 답변 수정
+     * @param helpDeskAnswrVo
+     * @param bindingResult
+     * @param user
+     * @return
+     * @throws Exception
+     * @return Map<String, Object>
+     */
     @RequestMapping(value = "/mng/helpDesk/updateHelpDeskAnswr.do")
     @ResponseBody
     public Map<String, Object> updateHelpDeskAnswr(@Valid HelpDeskAnswrVo helpDeskAnswrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -240,16 +240,16 @@ public class HelpDeskController {
     }
 
     /**
-    * 답변 모달화면
-    *
-    * @Title       : helpDeskManagerSearchModal 
-    * @Description : TODO
-    * @param model
-    * @param user
-    * @return
-    * @throws Exception
-    * @return String 
-    */
+     * 답변 모달화면
+     *
+     * @Title       : helpDeskManagerSearchModal
+     * @Description : 답변 모달화면
+     * @param model
+     * @param user
+     * @return
+     * @throws Exception
+     * @return String
+     */
     @RequestMapping(value = "/mng/helpDesk/helpDeskManagerSearchModal.html")
     public String helpDeskManagerSearchModal(Model model, @UserInfo UserVo user) throws Exception {
 
@@ -260,12 +260,12 @@ public class HelpDeskController {
      * 모달 회원 검색
      *
      * @Title       : selectUserList
-     * @Description : TODO
+     * @Description : 모달 회원 검색
      * @param helpManagerVo
      * @param user
      * @return
      * @throws Exception
-     * @return Map<String,Object>
+     * @return Map<String, Object>
      */
     @RequestMapping(value = "/mng/helpDesk/selectUserInfoList.do")
     @ResponseBody

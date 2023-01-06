@@ -14,16 +14,14 @@
 		SELECT A.INQRYID /*문의글 일련번호*/
 		      ,A.TITLE /*제목*/
 		      ,E.NM /*작성자*/
-		      ,F.CD_NM AS INQRY_STTS_CD /*상태*/
-		      ,C.CD_NM AS INQRY_CL_NM /*분류*/
+			  ,A.INQRY_CL_CD /* 문의 분류 코드 */
+		      ,A.STTS_CD AS INQRY_STTS_CD /*상태*/
 		      ,A.REG_DT AS REG_DT /*작성일*/
 			  ,D.NM AS OPETR_NM /*처리자*/
 			  ,CASE WHEN B.OPETRID = #{user.userid} THEN 'Y' ELSE 'N' END ASSIGN_YN
         FROM TB_CMM_INQRY A
             LEFT OUTER JOIN TB_CMM_INQRY_ANSWR B ON A.INQRYID = B.INQRYID
             LEFT OUTER JOIN TB_CMM_USER D ON B.OPETRID = D.USERID
-		    INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) C ON A.INQRY_CL_CD = C.CD
-            INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = '103') F ON A.STTS_CD = F.CD
 		    INNER JOIN TB_CMM_USER E ON E.USERID = A.USERID
 		 WHERE 1=1 
 			AND A.DEL_YN = 'N'
@@ -43,11 +41,11 @@
 		</if>
 
 		<if test="inqrySttsCd != null and inqrySttsCd != ''">
-			AND F.CD = #{inqrySttsCd}
+			AND A.STTS_CD = #{inqrySttsCd}
 		</if>
 
 		<if test="inqryClCd != null and inqryClCd != ''">
-			AND C.CD = #{inqryClCd}
+			AND A.INQRY_CL_CD = #{inqryClCd}
 		</if>
 
 		<include refid="PaginationMapper.footer"/>
@@ -67,12 +65,11 @@
 			  ,F.FILEID
 			  ,F.ORGINL_FILE_NM AS FILE_NM
 			  ,F.FILE_SIZE
-			  ,B.CD_NM AS INQRY_CL_NM /*분류*/
+	          ,a.INQRY_CL_CD
 	    	  ,A.STTS_CD AS INQRY_STTS_CD
 	    	  ,A.REG_DT
         FROM TB_CMM_INQRY A
         	LEFT OUTER JOIN TB_CMM_FILE F ON A.FILEGRPID = F.FILEGRPID AND F.ORD=1
-            INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{cdgrpid}) B ON A.INQRY_CL_CD = B.CD
 		    INNER JOIN TB_CMM_USER C ON C.USERID = A.USERID
 			LEFT OUTER JOIN TB_CMM_INST D ON D.INSTID = C.INSTID
         WHERE
@@ -108,7 +105,6 @@
 		, MDFRID
 		, REG_DT
 		, RGTRID
-		, OPETRID
 		<if test="inqrySttsCd == '103104'">
 		, ANSCMPTN_DT
 		, ANS_DE
@@ -121,7 +117,6 @@
 	     ,NOW()
 	     ,#{user.userid}
 	     ,NOW()
-	     ,#{user.userid}
 	     ,#{user.userid}
  		 <if test="inqrySttsCd == '103104'">
  		 ,NOW()
@@ -139,9 +134,9 @@
 		      ,CNTNTS = #{cntnts}
 		   	  ,MDFCN_DT = NOW()
 		   	  ,MDFRID =  #{user.userid}
-		   <if test="oldInqrySttsCd == '103103' and inqrySttsCd == '103104'">
-			  ,ANSCMPTN_DT = NOW()
-			  ,ANS_DE = DATE_FORMAT(NOW(),'%Y-%m-%d')
+		   <if test="inqrySttsCd == '103104'">
+		      ,ANSCMPTN_DT = IFNULL(ANSCMPTN_DT, NOW())
+			  ,ANS_DE = IFNULL(ANS_DE, DATE_FORMAT(NOW(),'%Y-%m-%d'))
 		   </if>
 		 WHERE ANSWRID = #{answrid}
 	</update>
@@ -164,7 +159,6 @@
 	   WHERE 1=1
 	  	 AND A.FILEGRPID = #{filegrpid}
 	</select>
-
 
 	<update id="deleteInqryInfo">
 		UPDATE TB_CMM_INQRY
@@ -190,16 +184,14 @@
 		SELECT
 			TELINQRYID
 			, A.CLSF_CD
-			, B.CD_NM AS CLSF_CD_NM
 			, A.USERID
 			, A.PICID
-			, D.NM AS PICNM
+			, B.NM AS PIC_NM
 			, A.USER_NM
 			, A.CNTCT
 			, A.EML
 			, A.RCPT_DT
 			, A.STTS_CD
-			, C.CD_NM AS STTS_CD_NM
 			, A.CN
 			, A.ANS
 			, A.MDFCN_DT
@@ -208,10 +200,8 @@
 			, A.RGTRID
 			, CASE WHEN A.PICID = #{user.userid} THEN 'Y' ELSE 'N' END ASSIGN_YN
 		FROM TB_CMM_TELINQRY A
-			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{clsfCdGrpid}) B ON A.CLSF_CD = B.CD
-			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{sttsCdGrpid}) C ON A.STTS_CD = C.CD
-			LEFT OUTER JOIN TB_CMM_USER D ON D.USERID = A.PICID
-			LEFT OUTER JOIN TB_CMM_USER E ON E.USERID = A.USERID
+			LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.PICID
+			LEFT OUTER JOIN TB_CMM_USER C ON C.USERID = A.USERID
 		WHERE 1=1
 		<if test="searchKeyword != null and searchKeyword != ''">
 			<if test="searchType == 'cn'">
@@ -224,7 +214,7 @@
 				AND A.USER_NM LIKE CONCAT('%', #{searchKeyword}, '%')
 			</if>
 			<if test="searchType == 'acnt'">
-				AND E.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
+				AND C.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
 			</if>
 		</if>
 		<if test="clsfCd != null and clsfCd != ''">
@@ -239,16 +229,14 @@
 	<select id="selectTelInqryInfo" resultType="TelInqryVo">
 		SELECT TELINQRYID
 			 , A.CLSF_CD
-			 , B.CD_NM AS CLSF_CD_NM
 			 , A.USERID
 			 , A.PICID
-			 , D.NM AS PICNM
+			 , B.NM AS PICNM
 			 , A.USER_NM
 			 , A.CNTCT
 			 , A.EML
 			 , A.RCPT_DT
 			 , A.STTS_CD
-			 , B.CD_NM AS STTS_CD_NM
 			 , A.CN
 			 , A.ANS
 			 , A.MDFCN_DT
@@ -258,10 +246,7 @@
 			 , A.STTS_CD AS OLD_STTS_CD
 			 , A.ANSCMPTN_DT
 		FROM TB_CMM_TELINQRY A
-			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{clsfCdGrpid}) B ON A.CLSF_CD = B.CD
-			INNER JOIN (SELECT CD, CD_NM FROM TB_CMM_CD WHERE CDGRPID = #{sttsCdGrpid}) C ON A.STTS_CD = C.CD
-			LEFT OUTER JOIN TB_CMM_USER D ON D.USERID = A.PICID
-			LEFT OUTER JOIN TB_CMM_USER E ON E.USERID = A.USERID
+			LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.PICID
 		WHERE TELINQRYID = #{telinqryid}
 	</select>
 
@@ -322,12 +307,12 @@
 			, STTS_CD = #{sttsCd}
 			, CN = #{cn}
 		  	, ANS = #{ans}
-			<if test="oldSttsCd == '123101' and sttsCd == '123102'">
-			,ANSCMPTN_DT = NOW()
-			,ANS_DE = DATE_FORMAT(NOW(),'%Y-%m-%d')
+			<if test="sttsCd == '123102'">
+			, ANSCMPTN_DT = IFNULL(ANSCMPTN_DT, NOW())
+			, ANS_DE = IFNULL(ANS_DE, DATE_FORMAT(NOW(),'%Y-%m-%d'))
 			</if>
-			,MDFCN_DT = NOW()
-			,MDFRID = #{user.userid}
+			, MDFCN_DT = NOW()
+			, MDFRID = #{user.userid}
 		WHERE
 		    TELINQRYID = #{telinqryid}
 	</update>

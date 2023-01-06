@@ -1,285 +1,258 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-	  xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	  layout:decorator="layout/mng/mainLayout">
-<body>
-<div layout:fragment="content">
-	<style>
-		.hide {
-			display:none;
-		}
-	</style>
-	<div class="page-body">
-		<div class="row">
-			<div class="col-12">
-				<div class="card">
-					<div class="card-block-small">
-						<form id="searchForm" name="searchForm" action="post" onsubmit="return false;">
-							<div class="row">
-								<div class="col-12 col-lg-3 mb-2 mb-lg-0">
-									<div class="mb-0 form-group row">
-										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
-										<div class="input-group input-group-sm input-group-dropdown mb-0">
-											<select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
-												<option value="">- 선택 -</option>
-												<option value="title">제목</option>
-												<option value="cntnts">내용</option>
-												<option value="nm">작성자</option>
-												<option value="id">아이디</option>
-											</select>
-											<input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
-										</div>
-									</div>
-								</div>
-								<div class="col-12 col-lg-3 mb-2 mb-lg-0">
-									<div class="mb-0 form-group row">
-										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
-										<div class="col-sm-12">
-											<th:block kattr:select_code="inqryClCd" grpCd="102" upprCd="0" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
-										</div>
-									</div>
-								</div>
-								<div class="col-12 col-lg-3">
-									<div class="mb-0 form-group row">
-										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
-										<div class="col-sm-12">
-										<span kattr:select_code="inqrySttsCd" grpCd="103" firstOptTxt="- 전체 -" isAdmin="true">
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="m-t-20 text-center">
-								<button type="button" class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
-								<button type="submit" class="btn btn-primary" onclick="searchInqry()">검색</button>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
 
-			<div class="col-12">
-				<div class="card">
-					<div class="row p-20 p-b-0">
-						<div class="col-12 col-md-6 mb-2 mb-md-0">
-							<h5><strong>1:1 문의 검색결과</strong></h5>
-						</div>
-						<div class="col-12 col-md-6 text-right">
-							<th:block sec:authorize-url="/mng/inqry/deleteInqryInfo.do">
-								<button type="button" class="btn btn-inverse" onclick="deleteInqryInfo()">삭제</button>
-							</th:block>
-						</div>
-					</div>
-					<div class="card-block-small">
-						<table id="jsGrid" class="table-responsive"></table>
-						<div id="listPager" class="text-center"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- 콘텐츠 영역 -->
-		<div id="contentPanel" class="row"></div>
-	</div>
+<div class="col-12 col-lg-6 ">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h4 class="sub-title"><strong>문의</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <strong th:text="|[${inqryInfo.inqryClNm}] ${inqryInfo.title}|">[분류] 제목</strong>
+            </p>
+            <p>
+                <th:block th:if="${not #strings.isEmpty(inqryInfo.instNm)}">
+                    <th:block th:text="${inqryInfo.instNm} "></th:block>
+                </th:block>
 
-	<div class="modal fade" id="managerPopup" aria-hidden="true" data-bs-backdrop="static"></div>
-
-	<script th:inline="javascript">
-		var inqryListUrl = "/mng/inqry/selectInqryList.do";
-		var inqryDetailUrl = "/mng/inqry/inqryDetailForm.html";
-		var inqryDeleteUrl = "/mng/inqry/deleteInqryInfo.do";
-		var gridHelper1;
-		var selectedItems = [];
-		var managerPopup;
-
-		$(function(){
-			gridHelper1 = new GridHelper('jsGrid','contentPanel');
-
-			$("#jsGrid").jsGrid({
-				height: "auto",
-				width: "100%",
-				autoload: true,
-				sorting: true,
-				paging: true,
-				pagerContainer: "#listPager",
-				pagerFormat: "{first} {prev} {pages} {next} {last}",
-				pagePrevText: "이전",
-				pageNextText: "다음",
-				pageFirstText: " < 처음 ㅣ",
-				pageLastText: " | 마지막 >",
-				pageSize: 10,
-				pageButtonCount: 10,
-				pageLoading: true,
-				pageIndex: 1,
-				noDataContent: "데이터가 없습니다.",
-
-				controller: {
-					loadData: function (filter) {
-						var data = $.Deferred();
-
-						var formData = $('#searchForm').serializeArray();
-						var params = [
-							{name: "pageNumber", value: filter.pageIndex},
-							{name: "rowPerPage", value: filter.pageSize},
-						]
-
-						if(filter.sortField != undefined){
-							params.push({name: "orderField", value: filter.sortField});
-							params.push({name: "orderDirection", value: filter.sortOrder});
-						}else{
-							params.push({name: "orderField", value: 'assign_yn desc, reg_dt'});
-
-						}
-						formData = formData.concat(params);
-
-						$.ajax({
-							type: "GET",
-							contentType: "application/json; charset=utf-8",
-							url: inqryListUrl,
-							dataType: "json",
-							data: formData,
-						}).done(function(response){
-							var da = {
-								data : escapeGridData(response.list)
-								,itemsCount : response.totalCount
-							};
-							data.resolve(da);
-						});
-						return data.promise();
-					},
-				},
-				fields: [
-					{
-						headerTemplate: function() {
-							return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-						},
-						itemTemplate: function(_, item) {
-							return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-									//.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
-									.prop("checked", $.inArray(item, selectedItems) > -1)
-									.on("change", function () {
-										$(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-									});
-						},
-						align: "center",
-						width: "50",
-						sorting: false
-					},
-					{ name: 'inqryid', css:'hide'},
-					{ title:'No.', name: 'rowNumber', type: "number" , width: "80", align:"center", sorting: false},
-					{ title:'제목', name: 'title', type: "text" , width: "300"},
-					{ title:'분류', name: 'inqryClNm', type: "text" , width: "150", align:"center", sorting: false},
-					{ title:'작성자', name: 'nm', type: "text" , width: "120", align:"center"},
-					{ title:'작성일', name: 'regDt', type: "text" , width: "150", align:"center"},
-					{ title:'상태', name: 'inqrySttsCd', type: "text" ,width: "120", align:"center"},
-					{ title:'처리자', name: 'opetrNm', type: "text" ,width: "120", align:"center"},
-				],
-				/*[# sec:authorize-url="/mng/inqry/inqryDetailForm.html"]*/
-				rowClick: function (args) {
-					if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-					gridHelper1.loadContent(inqryDetailUrl + '?inqryid=' + args.item.inqryid);
-				},
-				/*[/]*/
-				onPageChanged: function (args) {
-					selectedItems = [];
-				}
-			});
-
-			var selectItem = function(item) {
-				selectedItems.push(item);
-
-				if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-					$("#selectAllCheckbox").prop("checked", true);
-				} else {
-					$("#selectAllCheckbox").prop("checked", false);
-				}
-			};
-
-			var unselectItem = function(item) {
-				selectedItems = $.grep(selectedItems, function(i) {
-					return i !== item;
-				});
-				if(selectedItems.length == 0) {
-					$('#selectAllCheckbox').attr('checked', false);
-				}
-				if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-					$("#selectAllCheckbox").prop("checked", true);
-				} else {
-					$("#selectAllCheckbox").prop("checked", false);
-				}
-			};
-
-			$("#selectAllCheckbox").click(function(item) {
-				selectedItems = [];
-				if(this.checked) { // check select status
-					$('.singleCheckbox').each(function() {
-						this.checked = true;
-						selectItem($(this).parent().next().text());
-					});
-				}else {
-					$('.singleCheckbox').each(function() {
-						this.checked = false;
-						unselectItem(item);
-					});
-					selectedItems = [];
-				}
-			});
-
-		});
-
-		function searchInqry() {
-			var searchType = $("#searchType").val();
-			var searchKeyword = $("#searchKeyword").val();
-
-			if(searchType != '' && searchKeyword == ""){
-				alert('검색어를 입력해 주십시오.');
-				return;
-			}
-
-			gridHelper1.resetListContent();
-		}
-
-		function searchInit() {
-			$("#searchType").val('');
-			$("#searchKeyword").val('');
-			$("#inqryClCd").val('');
-			$("#inqrySttsCd").val('');
-		}
-
-		function deleteInqryInfo() {
-			if(selectedItems.length <=0 ){
-				alert("삭제할 문의글을 선택해주십시오.");
-				return;
-			}
-
-			if(!confirm("선택한 문의글들을 삭제하시겠습니까?"))return;
-
-			var deleteInqryIds = selectedItems.join(",")
-			var url = inqryDeleteUrl+"?deleteInqryIds="+deleteInqryIds;
-
-			var isSec = false;
-			/*[# sec:authorize-url="/mng/inqry/deleteInqryInfo.do"]*/
-			isSec = true;
-			/*[/]*/
-			if (!isSec) {
-				alert('접근권한이 없습니다.');
-				return;
-			}
-
-			if(displayWorkProgress()){
-				$.ajax({
-					url : url,
-					type: 'POST',
-					cache : false,
-					success : function (data){
-						alert(data.msg);
-						gridHelper1.resetListContent();
-						selectedItems = [];
-						closeWorkProgress();
-					}
-				});
-			}
-		}
-	</script>
+                <th:block th:text="|${inqryInfo.nm}(${inqryInfo.acnt})|"></th:block>
+                <br/>
+                <th:block th:text="${#dates.format(inqryInfo.regDt, 'yyyy-MM-dd')}"/>
+            </p>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <h4 class="sub-title"><strong>문의 내용</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(inqryInfo.cntnts),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </p>
+            <div class="mt-2 row">
+                <ul th:if="${fileList != null}">
+                    <th:block th:each="file : ${fileList}">
+                        <li>
+                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                <i class="ion-paperclip f-18"></i> [[${file.orginlFileNm}]]
+                            </a>
+                        </li>
+                    </th:block>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
-</body>
-</html>
+<div class="col-12 col-lg-6 ">
+    <div class="card">
+        <form name="inqryAnswrFrm" id="inqryAnswrFrm" action="" method="POST" onsubmit="return false;">
+            <input type="hidden" name="inqryid" id="inqryid" th:value="${inqryInfo.inqryid}"/>
+            <input type="hidden" name="answrid" id="answrid" th:value="${inqryAnswrInfo.answrid}"/>
+
+            <div class="card-header p-b-0">
+                <h4 class="sub-title"><strong>답변</strong></h4>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="mb-2 form-group row required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                    <div class="col-sm-12">
+                        <span kattr:select_code="inqrySttsCd" th:attr="grpCd=103,selectedCd=${inqryInfo.inqrySttsCd}" isAdmin="true">
+                    </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                           for="title"><strong>답변 제목</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" name="title" id="title" th:value="${inqryAnswrInfo.title}"/>
+                    </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 지정</strong></div>
+                    <div class="col-sm-12 btn-group-sm">
+                        <button type="button" class="btn btn-inverse" onclick="openManagerSearchPopup()">담당자 검색</button>
+                    </div>
+                    <div class="mt-2 row">
+                        <div class="col-auto" id="managerList">
+                            <th:block th:each="manager : ${managerInfo}">
+                            <span class="label label-inverse " th:id="|managerId-${manager.userid}|" name="managerInfo" th:data-id="${manager.userid}">
+                                    [[${manager.nm}]] <a href="javascript:void(0)" th:onclick="|removeManagerInfo(${manager.userid})|" class="text-white">X</a>
+                            </span>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                           for="cntnts"><strong>답변 내용</strong></label>
+                    <div class="col-sm-12">
+                        <textarea rows="5" cols="5" class="form-control form-control-sm" id="cntnts" name="cntnts" th:utext="${inqryAnswrInfo.cntnts}"></textarea>
+                    </div>
+                </div>
+                <div class="mb-0 row">
+                    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                                   for="opetrNm"><strong>답변자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="opetrNm" id="opetrNm" readonly
+                                       th:value="${inqryAnswrInfo.opetrNm != null ? inqryAnswrInfo.opetrNm : session.user.nm}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="mb-0 form-group">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                                   for="ansDe"><strong>답변일자</strong></label>
+                            <div class="col-sm-12">
+                                <input type="text" class="form-control form-control-sm" name="ansDe" id="ansDe" readonly
+                                       th:value="${inqryAnswrInfo.ansDe != null ? inqryAnswrInfo.ansDe : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="p-t-0 card-block-small">
+                <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+                <th:block sec:authorize-url="/mng/inqry/insertInqryAnswr.do">
+                    <button type="button" class="btn btn-primary" onclick="saveInqryAnswr()">저장</button>
+                </th:block>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var inqryAnswrInsertUrl = "/mng/inqry/insertInqryAnswr.do";
+    var inqryAnswrUpdateUrl = "/mng/inqry/updateInqryAnswr.do";
+
+    function openManagerSearchPopup() {
+        var url = "/mng/inqry/managerSearchPopup.html";
+        $("#managerPopup").load(url, function (response, status, xhr) {
+            if (status == "success") {
+                managerPopup = new bootstrap.Modal($('#managerPopup'));
+                managerPopup.show();
+            }
+        });
+    }
+
+    $(function () {
+        validate();
+    })
+
+    function validate() {
+        $("#inqryAnswrFrm").validate({
+            rules: {
+                title: {
+                    maxlength: 200
+                },
+                cntnts: {
+                    maxlength: 4000
+                }
+            },
+            messages: {
+                title: {
+                    maxlength: "답변 제목은 200자를 넘을 수 없습니다."
+                },
+                cntnts: {
+                    maxlength: "답변 내용은 4000자를 넘을 수 없습니다."
+                }
+            }
+        });
+    }
+
+    function saveInqryAnswr() {
+        var url = inqryAnswrInsertUrl;
+        if ($('#answrid').val() != '') {
+            url = inqryAnswrUpdateUrl;
+        }
+
+        if (url == inqryAnswrInsertUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/inqry/insertInqryAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        } else if (url == inqryAnswrUpdateUrl) {
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/inqry/updateInqryAnswr.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+        }
+
+        var inqrySttsCd = $('#inqryAnswrFrm').find('#inqrySttsCd').val();
+
+        /*
+            - 답변 최초 등록 시 상태가 ＂접수완료“,”접수취소＂인 경우 답변으로 입력하지 않음.
+            - 답변 최초 등록 시 상태가 ＂답변중“,”답변완료＂인 경우만 답변으로 입력.
+        */
+        if (url == inqryAnswrInsertUrl && (inqrySttsCd == '103101' || inqrySttsCd == '103102')) {
+            alert('답변중 또는 답변완료 상태인 경우에만 입력이 가능합니다.');
+            return;
+        }
+
+        /*
+            - 상태가 “접수완료”인 경우 : 필수 없음.
+            - 상태가 “접수취소＂인 경우 : 필수 없음.
+            - 상태가 “답변중“ 인 경우 : 필수 없음.
+            - 상태가 “답변완료＂인 경우 : 답변제목, 답변내용 필수.
+        */
+        if (inqrySttsCd == '103104') {
+            var $title = $("#title");
+            var $cntnts = $("#cntnts");
+            if ($title.val() == '' || $title.val() == null) {
+                alert('답변 제목을 입력해주십시오.');
+                $title.css("border", "2px solid #ff0000");
+                setTimeout(function () {
+                    $title.css("border", "")
+                }, 1000);
+                return;
+            }
+            if ($cntnts.val() == '' || $cntnts.val() == null) {
+                alert('답변 내용을 입력해주십시오.');
+                $cntnts.css("border", "2px solid #ff0000");
+                setTimeout(function () {
+                    $cntnts.css("border", "")
+                }, 1000);
+                return;
+            }
+        }
+
+        if (!$('#inqryAnswrFrm').valid()) return;
+
+        var formData = $('#inqryAnswrFrm').serializeArray();
+        var managerIds = [];
+
+        $("[name=managerInfo]").each(function (index, item) {
+            managerIds.push($(this).data('id'));
+        });
+
+        formData = formData.concat({name: "managerId", value: managerIds});
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                dataType: 'json',
+                data: formData,
+                success: function (data) {
+                    alert(data.msg);
+                    closeWorkProgress();
+                    gridHelper1.resetPageContent();
+                }
+            });
+        }
+    }
+
+    function removeManagerInfo(userid) {
+        $("#managerId-" + userid).remove();
+    }
+</script>

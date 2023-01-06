@@ -1,0 +1,110 @@
+<div class="card-header p-t-0 p-b-0">
+    <h3 class="sub-title"><strong>상태변경/파일 다운로드 이력</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+    <div class="col-12 table-border-style">
+        <div class="col-12">
+            <table id="sttsChgHisJsGrid" class="table-responsive"/>
+            <div id="sttsChgHisListPager" class="text-center"></div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var sttsChgHis = {
+        listUrl: "/mng/expertPoolMng/selectExpertLogList.do",
+
+        init: function () {
+            this.writeJsGridData();
+        },
+
+        writeJsGridData: function () {
+            $("#sttsChgHisJsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#sttsChgHisListPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "데이터가 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var params = [
+                            {"name": "pageNumber", "value": filter.pageIndex},
+                            {"name": "rowPerPage", "value": filter.pageSize},
+                        ];
+
+                        if (filter.sortField != undefined) {
+                            params.push({name: "orderField", value: filter.sortField});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        } else {
+                            params.push({name: "orderField", value: 'reg_dt'});
+                        }
+
+                        params.push({name: "userid", value: userid});
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: sttsChgHis.listUrl,
+                            data: params,
+                            dataType: "json"
+                        }).done(function (response) {
+                            var da = {
+                                data: escapeGridData(response.list),
+                                itemsCount: response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    }
+                },
+                fields: [
+                    {name: "userid", css: 'hide'},
+                    {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                    {title: "구분", name: "prcsSeCdNm", type: "text", width: "150", align: "center", sorting: false},
+                    {title: "처리일자", name: "regDt", type: "text", width: "120", align: "center"},
+                    {title: "처리자", name: "nm", type: "text", width: "120", align: "center"},
+                    {
+                        headerTemplate: function () {
+                            return "사유확인";
+                        },
+                        itemTemplate: function (value, item) {
+                            if (item.rsnCn == null || item.rsnCn == '') return '-';
+
+                            var result = $('<div>').addClass('btn-group-sm text-center').append(
+                                $('<button>').attr('type', 'button').addClass('btn btn-primary btn-modal').attr('data-bs-toggle', 'modal')
+                                    .attr('data-bs-target', '#commonModal')
+                                    .attr('onclick', 'sttsChgHis.openModal("' + item.rsnCn + '", "' + item.prcsSeCdNm + '")').text('확인')
+                            );
+                            return result;
+                        },
+                        width: '50', align: 'center'
+                    }
+                ]
+            });
+        },
+
+        openModal: function (rsnCn, prcsSeCdNm) {
+            $('#commonModal .modal-title').text(prcsSeCdNm + " 사유");
+            $('#commonModal .modal-body').find('label').html('<strong> 사유 </strong>');
+            $('#commonModal #cn').val(rsnCn);
+        }
+    };
+    $(function () {
+        sttsChgHis.init();
+    });
+
+</script>
