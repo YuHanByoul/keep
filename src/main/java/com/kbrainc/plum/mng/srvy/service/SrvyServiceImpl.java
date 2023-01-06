@@ -9,11 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.qestnr.model.QestnrDao;
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyDao;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
+import com.kbrainc.plum.rte.model.ParentRequestVo.ORDER_DIRECTION;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -37,6 +42,9 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     
     @Autowired
     private SrvyDao srvyDao;
+    
+    @Autowired
+    private QestnrDao qestnrDao;
     
     /**
      * 대상자설문 등록
@@ -458,9 +466,13 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      * @throws Exception 예외
      */
      @Override
+     @Transactional
      public int insertCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception {
          int retVal = 0;
-         // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+         if("Y".equals(srvyVo.getDefaultSrvyYn())) { // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+             srvyDao.updateCnstlngDgsfnSrvyUseYn();
+             srvyVo.setUseYn("Y");
+         }
          retVal += srvyDao.insertCnsltngDgstfnSrvy(srvyVo);
          
          return retVal;
@@ -504,11 +516,70 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
      * @throws Exception 예외
      */
     @Override
+    @Transactional
     public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception {
         int retVal = 0;
+        
+        if("Y".equals(srvyVo.getDefaultSrvyYn())) { // 기본 설문 설정시 다른 컨설팅만족도설문은 미사용으로 등록
+            srvyDao.updateCnstlngDgsfnSrvyUseYn();
+            srvyVo.setUseYn("Y");
+        }
         retVal = srvyDao.updateCnsltngDgstfnSrvy(srvyVo);        
              
         return retVal;
+    }
+    
+    /**
+     * 설문결과 문항 목록 조회
+     *
+     * @Title : selectCnsltngList
+     * @Description : 설문결과 문항 목록 조회
+     * @param qitemVo QitemVo 객체
+     * @return List<QitemVo> 설문결과 문항 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<QitemVo> selectSrvyRsltQitmeList(QitemVo qitemVo) throws Exception {
+        qitemVo.setRowPerPage(100);
+        qitemVo.setOrderField("ORDR");
+        qitemVo.setOrderDirection(ORDER_DIRECTION.asc);
+        List<QitemVo> qitemList = qestnrDao.selectQitemList(qitemVo);
+        if(qitemList != null && qitemList.size() > 0) {
+            for(int i = 0; i < qitemList.size(); i++) {
+                QitemVo qitem = qitemList.get(i);
+                int exCnt = qitem.getExCnt();
+                if(exCnt > 0) {
+                    List<QitemExVo> qitemExList = qestnrDao.selectQitemExList(qitem);
+                    // 응답자 수 확인
+                    for(int n = 0; n < qitemExList.size(); n++) {
+                        QitemExVo qitemEx = qitemExList.get(n);
+                        qitemEx.setSrvyid(qitemVo.getSrvyid());
+                        qitemEx.setAns(qitemEx.getExNo());
+                        QitemExVo ansInfo = srvyDao.selectQitemExAnsInfo(qitemEx);
+                        qitemEx.setTotalCount(ansInfo.getTotalCount());
+                        qitemEx.setAnsCnt(ansInfo.getAnsCnt());
+                        qitemEx.setAnsRate(ansInfo.getAnsRate());
+                    }
+                    qitem.setExampleList(qitemExList);
+                }
+            }
+        }
+        
+        return qitemList;
+    }
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     *
+     * @Title : selectAnsList
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     * @param srvyAnsVo SrvyAnsVo 객체
+     * @return List<SrvyAnsVo> 설문결과 문항 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<SrvyAnsVo> selectAnsList(SrvyAnsVo srvyAnsVo) throws Exception {
+        return srvyDao.selectAnsList(srvyAnsVo);
     }
     
 }

@@ -8,25 +8,25 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 public interface CnsltngDao {
     
     /**
-    * 사이트 신청 리스트 호출 
+    * 컨설팅 리스트 호출 
     *
-    * @Title       : selectSiteApplyList 
-    * @Description :사이트 신청 리스트 호출
+    * @Title       : selectCnsltngList 
+    * @Description :컨설팅 리스트 호출 
     * @param SiteApplyVo SiteApplyVo객체
     * @return List<SiteApplyVo>
     * @throws Exception 예외
     */
     public List<CnsltngVo> selectCnsltngList(CnsltngVo consultVo) throws Exception;
     /**
-     * 사이트 신청 상세정보 호출 
+     * 컨설팅 상세정보 호출 
      *
-     * @Title       : selectSiteApplyInfo 
-     * @Description : 사이트 신청 상세정보 호출
+     * @Title       : selectCnsltngtInfo 
+     * @Description : 컨설팅 상세정보 호출 
      * @param SiteApplyVo SiteApplyVo객체
      * @return SiteApplyVo
      * @throws Exception 예외
      */
-    public CnsltngVo selectConsultInfo(CnsltngVo consultVo) throws Exception;
+    public CnsltngVo selectCnsltngtInfo(CnsltngVo consultVo) throws Exception;
     /**
      * 사이트 신청 상태 수정 
      *

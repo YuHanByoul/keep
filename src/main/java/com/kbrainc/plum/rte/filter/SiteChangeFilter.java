@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.http.HttpConnectTimeoutException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -21,6 +22,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResSiteService;
@@ -45,6 +47,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SiteChangeFilter implements Filter {
 
+    private static org.apache.commons.configuration.Configuration applicationConfig = ConfigurationFactory.getInstance().getApplicationConfig();
+
+    private static String sysCompanyRoleid = applicationConfig.getString("system.company.roleid");
+    
     private final ResSiteService resSiteService;
 
     public SiteChangeFilter(ResSiteService resSiteService) {
@@ -64,7 +70,8 @@ public class SiteChangeFilter implements Filter {
             try {
                 HttpSession session = req.getSession();
                 SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-                String sysSeCd = (siteInfo != null) ? siteInfo.getSysSeCd() : null;
+                //String sysSeCd = (siteInfo != null) ? siteInfo.getSysSeCd() : null;
+                //String sysKndCd = (siteInfo != null) ? siteInfo.getSysKndCd() : null;
                 String dmn = request.getServerName();
                 
                 if (siteInfo != null && !dmn.equals(siteInfo.getDmn())) {
@@ -72,21 +79,35 @@ public class SiteChangeFilter implements Filter {
                     
                     UserVo user = (UserVo) session.getAttribute("user");
                     if (user != null) { // 로그인 되어있는 상태에서 도메인 변경시
-                        // 시스템_구분_코드가 다를때
-                        if (!sysSeCd.equals(siteInfo.getSysSeCd())) {
-                            // 역할을 변경한다.
-                            for (Map<String, String> authority : user.getAuthorities()) {
-                                if (("A".equals(siteInfo.getSysSeCd()) && "A".equals(authority.get("se_cd"))) || ("U".equals(siteInfo.getSysSeCd()) && "U".equals(authority.get("se_cd")))) {
+                        // 역할을 변경한다.(포털인데 기관사용자역할이 있으면 해당역할로 변경 구현 필요!!) 
+                        for (Map<String, String> authority : user.getAuthorities()) {
+                            
+                            if ("P".equals(siteInfo.getSysKndCd()) && "I".equals(user.getLoginUserType())) { // 사용자포털사이트 & 기관회원역할
+                                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+                                authorities.add(new SimpleGrantedAuthority(sysCompanyRoleid));
+                                authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
+                                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                                break;
+                            } else if ("U".equals(siteInfo.getSysSeCd()) && "U".equals(authority.get("se_cd"))) { // 사용자사이트 & 사용자역할
+                                if (!sysCompanyRoleid.equals(authority.get("roleid"))) {
                                     ArrayList<GrantedAuthority> authorities = new ArrayList<>();
                                     authorities.add(new SimpleGrantedAuthority(authority.get("roleid")));
+                                    authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
                                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
                                     break;
                                 }
+                            } else if ("A".equals(siteInfo.getSysSeCd()) && "A".equals(authority.get("se_cd")) && Arrays.asList(authority.get("allowed_siteids").split(",")).contains(siteInfo.getSiteid())) { // 관리자사이트 & 관리자역할
+                                ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+                                authorities.add(new SimpleGrantedAuthority(authority.get("roleid")));
+                                authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
+                                SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                                break;
                             }
                         }
+
                     }
                     
-                    sysSeCd = siteInfo.getSysSeCd();
+                    //sysSeCd = siteInfo.getSysSeCd();
                 }
     
                 

@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.kbrainc.plum.mng.example.excel.service.ExcelService;
+import com.kbrainc.plum.mng.qestnr.model.QitemVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyAnsVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyInstVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyUserVo;
 import com.kbrainc.plum.mng.srvy.model.SrvyVo;
@@ -277,19 +279,6 @@ public class SrvyController {
     }
     
     /**
-     * 대상자설문 결과 상세 화면
-     *
-     * @Title : trprSrvyRsltDetailForm
-     * @Description : 대상자설문 결과 상세 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/srvy/trprSrvyRsltDetailForm.html")
-    public String trprSrvyRsltDetailForm() throws Exception {
-        return "mng/srvy/trprSrvyRsltDetail";
-    }
-    
-    /**
      * 기관설문 결과 목록 화면
      *
      * @Title : instSrvyRsltListForm
@@ -300,19 +289,6 @@ public class SrvyController {
     @RequestMapping(value = "/mng/srvy/instSrvyRsltListForm.html")
     public String instSrvyRsltListForm() throws Exception {
         return "mng/srvy/instSrvyRsltList";
-    }
-    
-    /**
-     * 기관설문 결과 상세 화면
-     *
-     * @Title : instSrvyRsltDetailForm
-     * @Description : 기관설문 결과 상세 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/srvy/instSrvyRsltDetailForm.html")
-    public String instSrvyRsltDetailForm() throws Exception {
-        return "mng/srvy/instSrvyRsltDetail";
     }
     
     /**
@@ -329,16 +305,34 @@ public class SrvyController {
     }
     
     /**
-     * 컨설팅만족도설문 결과 상세 화면
+     * 설문 결과 상세 화면
      *
-     * @Title : cnsltngDgstfnSrvyRsltDetailForm
-     * @Description : 컨설팅만족도설문 결과 상세 화면
+     * @Title : srvyRsltDetailForm
+     * @Description : 설문 결과 상세 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/srvy/cnsltngDgstfnSrvyRsltDetailForm.html")
-    public String cnsltngDgstfnSrvyRsltDetailForm() throws Exception {
-        return "mng/srvy/cnsltngDgstfnSrvyRsltDetail";
+    @RequestMapping(value = "/mng/srvy/srvyRsltDetailForm.html")
+    public String srvyRsltDetailForm(QitemVo qitemVo, Model model) throws Exception {
+        model.addAttribute("qitemList", srvyService.selectSrvyRsltQitmeList(qitemVo));
+        return "mng/srvy/srvyRsltDetail";
+    }
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 팝업
+     *
+     * @Title : ansResultPopupForm
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 팝업
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/srvy/ansListPopup.html")
+    public String ansListPopup(SrvyAnsVo srvyAnsVo, Model model) throws Exception {
+        List<SrvyAnsVo> list = srvyService.selectAnsList(srvyAnsVo);
+        int totalCount = list.size();
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("ansList", list);
+        return "mng/srvy/ansListPopup";
     }
     
     /**

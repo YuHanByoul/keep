@@ -78,42 +78,56 @@
     </select>
     
     <!-- 사이트 신청 정보 상세 조회 -->
-    <select id="selectConsultInfo" parameterType="CnsltngVo" resultType="CnsltngVo">
-           /* ConsultDao.selectConsultInfo */
+    <select id="selectCnsltngtInfo" parameterType="CnsltngVo" resultType="CnsltngVo">
+           /* ConsultDao.selectCnsltngtInfo */
                SELECT 
-                A.APLYID
-                ,A.INSTID
-                ,A.INST_NM
-                ,A.INST_CNTCT
-                ,A.INST_EML
-                ,A.USERID
-                ,D.NM AS APLCNT_NM
-                ,A.ZIP
-                ,A.ADDR
-                ,A.ADDR_DTL
-                ,A.DOMN
-                ,A.CN
-                ,A.CPYRHT
-                ,A.APLY_DT
-                ,A.APLY_STTS_CD
-                ,A.AUTZRID
-                ,A.LOGO_FILEID
-                ,A.MDFCN_DT
-                ,A.MDFRID
-                ,A.REG_DT
-                ,A.RGTRID
-                ,B.INST_CD 
-                ,C.FILE_IDNTFC_KEY
-              FROM 
-                TB_CMM_SITE_APLY A
-                INNER JOIN TB_CMM_INST B
-                ON A.INSTID = B.INSTID
-                LEFT OUTER JOIN TB_CMM_FILE C
-                ON A.LOGO_FILEID = C.FILEID
-                INNER JOIN TB_CMM_USER D
-                ON A.USERID = D.USERID 
-              WHERE 1=1    
-                AND A.APLYID = #{aplyid}  
+                   A.CNSLTNGID
+                   ,A.INSTID
+                   ,A.USERID
+                   ,A.USER_NM
+                   ,A.PRGRM_NM
+                   ,A.CNSLTNG_KND_CD
+                   ,A.HOPE_DE1
+                   ,A.HOPE_DE1_AM_PM_CD
+                   ,A.HOPE_DE2
+                   ,A.HOPE_DE2_AM_PM_CD
+                   ,A.PRGRM
+                   ,A.LDR
+                   ,A.SFTYMNG
+                   ,A.ETC
+                   ,A.FILEGRPID
+                   ,A.CNSTNTID
+                   ,A.STTS_CD
+                   ,A.SRVYID
+                   ,A.MDFCN_DT
+                   ,A.MDFRID
+                   ,A.REG_DT
+                   ,A.RGTRID
+                   ,B.INST_NM AS instNm
+                   ,C.NM AS cnstntNm
+                   ,C.Acnt AS cnstntAcnt
+                   ,C.MOBLPHON AS cnstntMoblphon
+                   ,C.EML AS cnstntEml
+                   ,D.VST_DE
+                   ,D.VST_BGNG_DT 
+                   ,D.VST_END_DT 
+                   ,F.NM    AS instManagerNm
+                   ,F.MOBLPHON AS instManagerPhon 
+                   ,F.EML  AS instManagerEml
+                FROM 
+                   TB_ASS_CNSLTNG A
+                   INNER JOIN TB_CMM_INST B
+                   ON A.INSTID = B.INSTID 
+                   INNER JOIN TB_CMM_USER C
+                   ON A.cnstntid = C.USERID
+                   LEFT OUTER JOIN TB_ASS_CNSLTNG_RSLT D
+                   ON A.CNSLTNGID = D.CNSLTNGID
+                   INNER JOIN TB_CMM_INST E
+                   ON A.INSTID = E.INSTID 
+                   LEFT OUTER JOIN TB_CMM_USER F
+                   ON (A.INSTID  = F.INSTID AND F.INSTPIC_ROLE_CD = '109101')   
+                WHERE 1=1
+                  AND A.CNSLTNGID = #{cnsltngid}  
     </select>
     
     <!-- 신청 승인 상태 수정--> 

@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
@@ -34,7 +35,6 @@ import lombok.Data;
 @Data
 public class DsgnPrgrmVo extends ParentRequestVo {
 
-
 	/** 로그인사용자정보 */
 	private UserVo user;
 
@@ -52,6 +52,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 검색.차수*/
     private String searchDsgnCycl;
+
+    /** 호출구분(팝업용)*/
+    private String callSe;
 
     /** 이력 ID*/
     private int hstryid;
@@ -113,6 +116,57 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 지정 번호 차수 */
     private String cyclNo;
 
+    /** 신청 ID*/
+    private String aplyid;
+
+    /** 변경 사유 */
+    private String chgRsn;
+
+    /** 신청상태코드 */
+    private String aplySttsCd;
+
+    /** 신청상태코드 이름*/
+    private String aplySttsCdNm;
+
+    /** 상태수정 일시 */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date sttsMdfcnDt;
+
+    /** 동일내용 여부 */
+    private String samenssYn;
+
+    /** 동일내용 */
+    private String samenssCn;
+
+    /** 프로그램변경 여부 */
+    private String prgrmChgYn;
+
+    /** 프로그램 변경 내용 */
+    private String prgrmChgCn;
+
+    /** 예산 변경 여부 */
+    private String bgtChgYn;
+
+    /** 예산 변경 내용 */
+    private String bgtChgCn;
+
+    /** 지도자 변경 여부 */
+    private String ldrChgYn;
+
+    /** 지도자 변경 내용 */
+    private String ldrChgCn;
+
+    /** 교육환경 변경 여부 */
+    private String eduEnvChgYn;
+
+    /** 교육환경 변경 내용 */
+    private String eduEnvChgCn;
+
+    /** 보완 요청 내용 */
+    @Size(max = 1000, message = "보완 요청 내용은 1000자를 넘을 수 없습니다.")
+    private String splmntDmndCn;
+
 	/*******************************************************/
 
     /** 신청자이메일 */
@@ -128,6 +182,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String instDtladdr;
 
     /** 지정번호 */
+    @Size(max = 20, message = "지정번호는 20자를 넘을 수 없습니다.")
     private String dsgnNo;
 
     /** 신청자이름 */
@@ -144,7 +199,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 수정자아이디 */
     private int mdfrid;
-
 
     /** 신청자아이디 */
     private int aplcntid;
@@ -165,22 +219,20 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String instRgnCd;
 
     /** 신청일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date aplyDt;
 
     /** 파일그룹아이디 */
-    private int filegrpid;
+    private Integer filegrpid;
 
     /** 신청자휴대폰 */
     private String aplcntMoblphon;
 
     /** 컨설텅아이디 */
-    private int cnsltngid;
+    private Integer cnsltngid;
 
     /** 기관유형코드 */
     private String instTypeCd;
-
-
 
     /** 우수성 */
     private String dstnctn;
@@ -192,7 +244,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String wholMm;
 
     /** 수정일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
 
     /** 2월 */
@@ -205,19 +257,19 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String july;
 
     /** 교육시간 */
-    private int eduHr;
+    private Integer eduHr;
 
     /** 적절성 */
     private String appro;
 
     /** 프로그램아이디 */
-    private int prgrmid;
+    private Integer prgrmid;
 
     /** 12월 */
     private String dcm;
 
     /** 교육사진파일그룹아이디 */
-    private int eduPhotoFilegrpid;
+    private Integer eduPhotoFilegrpid;
 
     /** 1월 */
     private String jan;
@@ -226,7 +278,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String hgschst;
 
     /** 교육횟수 */
-    private int eduCnt;
+    private Integer eduCnt;
 
     /** 6월 */
     private String june;
@@ -247,10 +299,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String operFrmCd;
 
     /** 교육인원수 */
-    private int eduNope;
+    private Integer eduNope;
 
     /** 등록자아이디 */
-    private int rgtrid;
+    private Integer rgtrid;
 
     /** 5월 */
     private String may;
@@ -268,7 +320,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String wetherSttn;
 
     /** 숙박낮 */
-    private int styDaytm;
+    private Integer styDaytm;
 
     /** 교육장소 */
     private String eduPlc;
@@ -289,7 +341,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String eduCn;
 
     /** 숙박밤 */
-    private int styNight;
+    private Integer styNight;
 
     /** 3월 */
     private String mar;
@@ -301,7 +353,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String aug;
 
     /** 교육분 */
-    private int eduMnt;
+    private Integer eduMnt;
 
     /** 교육주제코드 */
     private String eduSbjctCd;
@@ -319,7 +371,8 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String aftrLdrEvlArtcl;
 
     /** 등록일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date regDt;
 
     /** 사후참여자평가도구 */
@@ -359,7 +412,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String srngSttsCd;
 
     /** 심사위원아이디 */
-    private int jdgsid;
+    private Integer jdgsid;
 
     /** 업무내용 */
     private String taskCn;
@@ -371,7 +424,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String se;
 
     /** 지도자아이디 */
-    private int ldrid;
+    private Integer ldrid;
 
     /** 책임개발자여부 */
     private String snrstfdvlprYn;
@@ -410,19 +463,19 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String telRcptYn;
 
     /** 종료분 */
-    private int endMnt;
+    private Integer endMnt;
 
     /** 일정아이디 */
-    private int schdlid;
+    private Integer schdlid;
 
     /** 종료시간 */
-    private int endHr;
+    private Integer endHr;
 
     /** 시작분 */
-    private int bgngMnt;
+    private Integer bgngMnt;
 
     /** 시작시간 */
-    private int bgngHr;
+    private Integer bgngHr;
 
     /** 과정 */
     private String crs;
@@ -436,9 +489,103 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 의견내용 */
     private String opnnCn;
 
-
     /** 보완요청아이디 */
-    private int splmntDmndid;
+    private Integer splmntDmndid;
+
+    /** 차수아이디 */
+    private String cyclid;
+
+    /** 책임개발자_이름 */
+    private String snrstfdvlprNm;
+
+    /** 책임개발자_이메일 */
+    private String snrstfdvlprEml;
+
+    /** 책임개발자_전화번호 */
+    private String snrstfdvlprTelno;
+
+    /** 책임개발자_휴대폰번호 */
+    private String snrstfdvlprMoblphon;
+
+    /** 담당자_이름 */
+    private String picNm;
+
+    /** 담당자_이메일 */
+    private String picEml;
+
+    /** 담당자_전화번호 */
+    private String picTelno;
+
+    /** 담당자_휴대폰번호 */
+    private String picMoblphon;
+
+    /** 프로그램_유형_코드 */
+    private String prgrmTypeCd;
+
+    /** 보험_가입_여부 */
+    private String insrncJoinYn;
+
+    /** 보험_사유 */
+    private String insrncRsn;
+
+    /** 변경_여부 */
+    private String chgYn;
+
+    /** 활동_장소 */
+    private String actvtPlc;
+
+    /** 안전사고_유무 */
+    private String sftyacdntEnnc;
+
+    /** 발급_여부 */
+    private String issuYn;
+
+    /** 발급_건수 */
+    private String issuNocs;
+
+    /** 발급_합계 */
+    private String issuSum;
+
+    /** 프로그램_우수성 */
+    private String prgrmDstnctn;
+
+    /** 운영_관리 */
+    private String operMng;
+
+    /** 평가 */
+    private String evl;
+
+    /** 자격_배치 */
+    private String qlfcPostng;
+
+    /** 안전_관리 */
+    private String sftyMng;
+
+    /** 다음_연도_프로그램 */
+    private String nextYrPrgrm;
+
+    /** 다음_연도_지도자 */
+    private String nextYrLdr;
+
+    /** 다음_연도_교육_환경 */
+    private String nextYrEduEnv;
+
+    /** 차수           */
+    private String cycl;
+
+    /** 제출_시작_일자 */
+    private String sbmsnBgngDe;
+
+    /** 제출_종료_일자 */
+    private String sbmsnEndDe;
+
+    /** 제출_기간      */
+    private String sbmsnPrd;
+
+    /** 제출_상태_코드      */
+    private String sbmsnSttsCd;
+
+
 
     /*------------------------------------------------------------------------------------------*/
 
@@ -471,6 +618,28 @@ public class DsgnPrgrmVo extends ParentRequestVo {
                 return;
              }
         }
+	}
+
+
+	/** 변경신청 상태코드 */
+	public void setAplySttsCd(String aplySttsCd) throws Exception{
+
+		this.aplySttsCd = aplySttsCd;
+
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.aplySttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.aplySttsCd);
+				this.aplySttsCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
 	}
 
 

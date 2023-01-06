@@ -1,0 +1,154 @@
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="sub-title"><strong>설문결과</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 mb-4" th:each="qitem: ${qitemList}">
+                <h3 class="sub-title"><strong th:text="${qitem.ordr + '. ' + qitem.cn + ' (' + qitem.qitemTypeCdNm + ')'}"></strong></h3>
+                <div class="row align-items-end">
+                    <div class="col-12 col-lg-4">
+                        <div th:id="${'chart' + qitem.qitemid}"></div>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <div class="table-responsive">
+                            <table class="table table-sm border mb-0" th:if="${qitem.qitemTypeCd == '107100'} or ${qitem.qitemTypeCd == '107102'} or ${qitem.qitemTypeCd == '107103'} or ${qitem.qitemTypeCd == '107106'}">
+                                <thead>
+                                <tr>
+                                    <th class="table-active v-middle">번호</th>
+                                    <th class="table-active v-middle">보기</th>
+                                    <th class="table-active text-right v-middle" style="width: 100px;">응답자수(명)</th>
+                                    <th class="table-active text-right v-middle" style="width: 100px;">비율(%)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="ex: ${qitem.exampleList}">
+                                    <td class="v-middle" th:text="${ex.exNo}"></td>
+                                    <td class="v-middle" th:text="${ex.cn}"></td>
+                                    <td class="text-right v-middle" th:text="${ex.ansCnt}"></td>
+                                    <td class="text-right v-middle" th:text="${ex.ansCnt == 0 ? '0.0' : ex.ansRate}"></td>
+                                </tr>
+                                <tr th:each="ex: ${qitem.exampleList}" th:if=${exStat.last}>
+                                    <th class="table-active v-middle"colspan="2" >계</th>
+                                    <th class="table-active text-right v-middle" th:text="${ex.totalCount}"></th>
+                                    <th class="table-active text-right v-middle" th:text="${ex.totalCount == 0 ? '0.0' : '100.0'}"></th>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <table class="table table-sm border mb-0" th:if="${qitem.qitemTypeCd == '107101'}">
+                                <thead>
+                                <tr>
+                                    <th class="table-active v-middle">보기</th>
+                                    <th class="table-active text-right v-middle" style="width: 100px;">응답자수(명)</th>
+                                    <th class="table-active text-right v-middle" style="width: 100px;">비율(%)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="ex: ${qitem.exampleList}">
+                                    <td class="v-middle" th:text="${ex.cn}"></td>
+                                    <td class="text-right v-middle" th:text="${ex.ansCnt}"></td>
+                                    <td class="text-right v-middle" th:text="${ex.ansCnt == 0 ? '0.0' : ex.ansRate}"></td>
+                                </tr>
+                                <tr th:each="ex: ${qitem.exampleList}" th:if=${exStat.last}>
+                                    <th class="table-active v-middle" >계</th>
+                                    <th class="table-active text-right v-middle" th:text="${ex.totalCount}"></th>
+                                    <th class="table-active text-right v-middle" th:text="${ex.totalCount == 0 ? '0.0' : '100.0'}"></th>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="btn-group-sm" th:if="${qitem.qitemTypeCd == '107104'} or ${qitem.qitemTypeCd == '107105'} or ${qitem.qitemTypeCd == '107106'}">
+                    <button type="button" class="btn btn-primary" th:text="${qitem.qitemTypeCd == '107106' ? '기타내용보기' : '결과보기'}" th:qitemid="${qitem.qitemid}" th:qitemTypeCd="${qitem.qitemTypeCd}" 
+                      th:onclick="trprSrvyRslt.onAnsListPopup(this.getAttribute('qitemid'), this.getAttribute('qitemTypeCd'));"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 답변결과 목록 팝업 -->
+<div class="modal fade" aria-hidden="true" data-bs-backdrop="static" id="ansListPopup"></div>
+
+<script th:inline="javascript">
+    var trprSrvyRslt = {
+        srvyid:  /*[[${param.srvyid}]]*/,
+        qitemList: /*[[${qitemList}]]*/,
+        
+        init: function() {
+            google.charts.load("current", {packages: ["corechart"]});
+            google.charts.setOnLoadCallback(function() {
+                trprSrvyRslt.setData();
+            });
+            this.registEvent();
+        },
+        
+        registEvent: function() {
+            // TODO
+        },
+        
+        setData: function() {
+            for(var i = 0, len = this.qitemList.length; i < len; i++) {
+                var qitemInfo = this.qitemList[i];
+                var typeCd = qitemInfo.qitemTypeCd;
+                if(typeCd == "107100" || typeCd == "107102" || typeCd == "107103" || typeCd == "107106") { // 선택형, 복수형, 척도형 
+                    this.drawColumnChart(qitemInfo);
+                } else if(typeCd == "107101") { // OX형 
+                    this.drawPieChart(qitemInfo);
+                } 
+            }
+        },
+        
+        drawColumnChart: function(qitemInfo) {
+            var colorList = ["#4285F4", "#DB4437", "#F4B400", "#109618"];
+            var dataList = [];
+            dataList.push(["보기", "응답자수", {role: "style"}]);
+            for(var i = 0, len = qitemInfo.exampleList.length; i < len; i++) {
+                var ex = qitemInfo.exampleList[i];
+                dataList.push([ex.exNo + "", ex.ansCnt, colorList[i]]);
+            }
+            var data = google.visualization.arrayToDataTable(dataList);
+            var options = {
+                legend: {
+                    position: "none"
+                },
+                width: "100%",
+                height: 300
+            };
+            
+            var chart = new google.visualization.ColumnChart(document.getElementById("chart" + qitemInfo.qitemid));
+            chart.draw(data, options);
+        },
+        
+        drawPieChart: function(qitemInfo) {
+            var dataList = [];
+            dataList.push(["Example", "Answer per Example"]);
+            for(var i = 0, len = qitemInfo.exampleList.length; i < len; i++) {
+                var ex = qitemInfo.exampleList[i];
+                dataList.push([ex.cn, ex.ansCnt]);
+            }
+            var data = google.visualization.arrayToDataTable(dataList);
+            var options = {
+               pieHole: 0.4,
+               width: "100%",
+               height: 300
+            };
+            
+            var chart = new google.visualization.PieChart(document.getElementById("chart" + qitemInfo.qitemid));
+            chart.draw(data, options);
+        },
+        
+        onAnsListPopup: function(qitemid, qitemTypeCd) {
+            var url = "/mng/srvy/ansListPopup.html?srvyid=" + this.srvyid[0] + "&qitemid=" + qitemid + "&qitemTypeCd=" + qitemTypeCd;
+            $("#ansListPopup").load(url, function(response, status, xhr) {
+                if(status == "success") {
+                    instExcelUploadModal = new bootstrap.Modal($("#ansListPopup"));
+                    instExcelUploadModal.show();
+                }
+            });
+        }
+    };
+    
+    trprSrvyRslt.init();    
+</script>

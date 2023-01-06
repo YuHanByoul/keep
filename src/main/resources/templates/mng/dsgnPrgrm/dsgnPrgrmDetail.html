@@ -1,55 +1,48 @@
-<div class="col-12">
-	<div class="card">
-	    <div class="card-header p-b-0">
-	        <ul class="nav nav-tabs tabs" role="tablist">
-                <th:block sec:authorize-url="/mng/dsgnPrgrm/dsgnInfoForm.html">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#tabCon1" role="tab" id="tabCon1Link"><strong>지정정보</strong></a>
-                    </li>
-                </th:block>
-                <th:block sec:authorize-url="/mng/dsgnPrgrm/chgAplyForm.html">
-		            <li class="nav-item">
-		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon2" role="tab" id="tabCon2Link"><strong>변경신청</strong></a>
-		            </li>
-                </th:block>
-                <th:block sec:authorize-url="/mng/dsgnPrgrm/operRsltForm.html">
-		            <li class="nav-item">
-		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon3" role="tab" id="tabCon3Link"><strong>운영결과</strong></a>
-		            </li>
-                </th:block>
-                <th:block sec:authorize-url="/mng/dsgnPrgrm/implmntIdntySrngForm.html">
-		            <li class="nav-item">
-		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon4" role="tab" id="tabCon4Link"><strong>이행확인심사</strong></a>
-		            </li>
-                </th:block>
-                <th:block sec:authorize-url="/mng/dsgnPrgrm/objcInfoForm.html">
-		            <li class="nav-item">
-		                <a class="nav-link" data-bs-toggle="tab" href="#tabCon5" role="tab" id="tabCon5Link"><strong>이의신청</strong></a>
-		            </li>
-                </th:block>
-	        </ul>
-	    </div>
-	    <!-- TAB CONTTENT -->
-        <div id="myTabContent" class="tab-content tabs p-t-20"></div>
-	</div>
+
+<div class="card-header p-b-0">
+    <ul class="nav nav-tabs tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/dsgnInfoForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tabCon1" role="tab" id="tabCon1Link"><strong>지정정보</strong></a>
+            </li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/chgAplyForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tabCon2" role="tab" id="tabCon2Link"><strong>변경신청</strong></a>
+            </li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/operRsltForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tabCon3" role="tab" id="tabCon3Link"><strong>운영결과</strong></a>
+            </li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/implmntIdntySrngForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tabCon4" role="tab" id="tabCon4Link"><strong>이행확인심사</strong></a>
+            </li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/objcInfoForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tabCon5" role="tab" id="tabCon5Link"><strong>이의신청</strong></a>
+            </li>
+        </th:block>
+    </ul>
 </div>
+<!-- TAB CONTTENT -->
+<div id="myTabContent" class="tab-content tabs p-t-20"></div>
+
 
 <script th:inline="javascript">
 
 
-	/*<![CDATA[*/
-	var prgrmid = /*[[${param.prgrmid}]]*/null;
-	/*]]>*/
-	/*<![CDATA[*/
-	var hstryid = /*[[${param.hstryid}]]*/null;
-	/*]]>*/
+	/*<![CDATA[*/var prgrmid = /*[[${param.prgrmid}]]*/null;/*]]>*/
+	/*<![CDATA[*/var hstryid = /*[[${param.hstryid}]]*/null; /*]]>*/
+	/*<![CDATA[*/var tabIndex = /*[[${param.tabIndex}]]*/null; /*]]>*/
+
 	$('.nav-tabs a').on('show.bs.tab', function(event) {
-
-
 
 	    //tab set
 	    var tabId = event.currentTarget.attributes.id.value;
-	    console.log("############## tabId : " + tabId);
 	    selectTab(tabId);
 
 	});
@@ -57,7 +50,6 @@
 
 	function selectTab(tabId) {
 
-		debugger;
 	    if(tabId == "tabCon1Link") {
 	        loadTabContent("/mng/dsgnPrgrm/dsgnInfoForm.html?prgrmid=" + prgrmid+"&hstryid="+hstryid);
 	    } else if(tabId == "tabCon2Link") {
@@ -69,7 +61,9 @@
 	    } else if(tabId == "tabCon5Link") {
 	        loadTabContent("/mng/dsgnPrgrm/objcInfoForm.html?prgrmid=" + prgrmid);
 	    }
-	    $("#" + tabId).parent().addClass("active");
+
+	    $("a[id^='tabCon']").removeClass("active")
+	    $("#" + tabId).addClass("active");
 	}
 
 	function loadTabContent(uri){
@@ -89,37 +83,10 @@
 
 	function initTab() {
 
-        var tabFlag = false;
-
-        if(tabFlag == false) {
-            selectTab("tabCon1Link");
-            tabFlag = true;
+        if(tabIndex !=""){
+            selectTab("tabCon"+tabIndex+"Link");
         }
 
-        if(tabFlag == false) {
-            selectTab("tabCon2Link");
-            tabFlag = true;
-        }
-
-        if(tabFlag == false) {
-            selectTab("tabCon3Link");
-            tabFlag = true;
-        }
-
-        if(tabFlag == false) {
-            selectTab("tabCon4Link");
-            tabFlag = true;
-        }
-
-        if(tabFlag == false) {
-            selectTab("tabCon5Link");
-            tabFlag = true;
-        }
-
-        if(tabFlag == false) {
-            selectTab("tabCon6Link");
-            tabFlag = true;
-        }
 
     }
 

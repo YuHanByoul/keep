@@ -50,8 +50,6 @@ public class QitemVo extends ParentRequestVo {
     private String qitemTypeCdNm;
     
     /** 내용 */
-    @NotEmpty(message = "문항을 입력해주세요.")
-    @Size(max = 400, message = "문항은 400자 이하여야 합니다.")
     private String cn;
     
     /** 보기 개수 */
@@ -65,6 +63,9 @@ public class QitemVo extends ParentRequestVo {
     
     /** 사용 여부 */
     private String useYn;
+    
+    /** 설문 아이디 */
+    private int srvyid;
     
     /** 순서 변경 방향 */
     private String changeDir;

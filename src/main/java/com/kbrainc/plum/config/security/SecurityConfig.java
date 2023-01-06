@@ -112,6 +112,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/mng/monitor/reloadMenuInfo.do",
                 "/mng/monitor/reloadSecurityMetadataSource.do",
                 "/mng/monitor/reloadCodeInfo.do",
+                "/downloadLogo.do",
         		"/**/*.js", 
         		"/**/*.css", 
         		"/css/**/*", 

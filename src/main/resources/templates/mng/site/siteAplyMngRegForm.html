@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="utf-8" />
+<body>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<form id="siteRegForm">
+    <input type="hidden" id="siteid" name="siteid" th:value="${siteInfo.siteid}">
+    <input type="hidden" id="oldUseYn" name="oldUseYn" th:value="${siteInfo.useYn}">
+    <input type="hidden" id="logoFilegrpid" name="logoFilegrpid" value="0"/>
+    <input type="hidden" id="logoFileid" name="logoFileid" th:value="${siteInfo.logoFileid}" />
+    
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h3 class="sub-title"><strong>기본정보</strong></h3>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="mb-2 row align-items-end">
+                    <div class="col-12 col-lg-3 mb-2 mb-lg-0">
+                        <th:block th:if ="${logoFile != null}">
+                            <img id="imgPreview" class="img-fluid col-12" th:src="'/downloadFileByFileid.do?fileid='+${logoFile.fileid}+'&file_idntfc_key='+${logoFile.fileIdntfcKey}" alt="logo image" style="max-width:300px; height:auto;">
+                        </th:block>
+                        <th:block th:unless ="${logoFile != null}">
+                            <img id="imgPreview" class="img-fluid col-12" src="/images/mng/default_logo.png" alt="logo image" style="max-width:300px; height:auto;">
+                        </th:block>
+                    </div>
+                    <div class="col-12 col-lg-9 form-group mb-0">
+                        <div class="mb-2 row">
+                         <div class="col-auto">
+                             <!-- 파일 명 및 삭제 버튼 영역-->
+                             <span id="logoFileListArea">
+                                 <th:block th:if ="${logoFile != null}">
+                                     <span th:id="'logo_img_'+${logoFile.fileid}" class="label label-inverse">
+                                         <th:block th:text = "${logoFile.orginlFileNm}"></th:block>&nbsp;&nbsp;&nbsp;
+                                             <a href="javascript:void(0)"
+                                             th:fileid ="${logoFile.fileid}"
+                                             th:fileIdntfcKey ="${logoFile.fileIdntfcKey}"
+                                             onclick="deleteLogoFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))" class="text-white">X</a>
+                                     </span>
+                                 </th:block>
+                             </span>
+                         </div>
+                     </div>
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1">로고선택 (가로 180px, 세로 45px)</label>
+                         <div class="col-sm-12">
+                             <input type="file" id="logoFile" name="logoFile" class="form-control form-control-sm" accept=".png, .gif, .jpg, .jpeg"/>
+                         </div>
+                     </div>
+                    </div>
+                </div>
+                <div class="mb-2 row">
+                    <div class="col-lg-6 mb-2 mb-lg-0">
+                        <div class="mb-0 form-group row required">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관선택</strong></div>
+                            <div class="col-sm-12">
+                                <th:block kattr:select_inst="instid" th:attr="selectedId=${siteInfo.instid}" firstOptTxt="- 선택 -" firstOptVal="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2 form-group row required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="siteNm"><strong>사이트 이름</strong></label>
+                    <div class="col-sm-12">
+                        <input type="text" class="form-control form-control-sm" id="siteNm" name="siteNm" th:value="${siteInfo.siteNm}" maxlength="20" />
+                    </div>
+                </div>
+                <div class="mb-2 form-group row required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cpyrht"><strong>카피라이트</strong></label>
+                    <div class="col-sm-12">
+                        <textarea rows="5" cols="5" class="form-control form-control-sm" id="cpyrht" name="cpyrht" maxlength="2000" th:text="${siteInfo.cpyrht}"></textarea>
+                    </div>
+                </div>
+                <div class="mb-0 form-group row">
+                    <div class="col-12">
+                        <input type="hidden" class="js-single"/>
+                        <input type="checkbox" class="js-single-small" name="useYn" id="useYn" value="Y" th:checked="${siteInfo.useYn == 'Y'}" th:readonly="${siteInfo.sysKndCd != 'T' and siteInfo.useYn == 'Y'}" />
+                        <label for="useYn" class="v-middle">사이트 운영</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+                <th:block th:if="${@menuPrintImpl2.isMenuAuth('/mng/site/insertSiteAply.do') and siteInfo.siteid == null}">
+                <button type="button" class="btn btn-primary" onclick="handlerSiteForm()">저장</button>
+                </th:block>
+                <th:block th:if="${@menuPrintImpl2.isMenuAuth('/mng/site/updateSiteAply.do') and siteInfo.siteid != null}">
+                <button type="button" class="btn btn-primary" onclick="handlerSiteForm()">저장</button>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</form>
+    <div class="col-12" th:if="${siteInfo.siteid}" id="domainForm">
+        <form id="domainRegForm">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h3 class="sub-title"><strong>도메인</strong></h3>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="row">
+                    <div class="col-12 col-lg-6" id="domainList">
+                        <div class="mb-2 form-group row" th:each="dmnInfo : ${siteInfo.siteDomainList}">
+                            <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                <input type="text" name="dmns" maxlength="60" th:value="${dmnInfo.dmn}" class="form-control" aria-label="Text input with dropdown button"/>
+                                <div class="input-group-text btn btn-primary" th:if="${dmnInfoStat.index > 0}" onclick="handlerForRemoveSiteClick(this)">
+                                    -
+                                </div>
+                                <div class="input-group-text btn btn-primary" onclick="handlerForAddSiteClick()">
+                                    +
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-2 form-group row" th:if="${#lists.size(siteInfo.siteDomainList) == 0}">
+                            <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                <input type="text" name="dmns" maxlength="60" class="form-control" aria-label="Text input with dropdown button"/>
+                                <div class="input-group-text btn btn-primary" onclick="handlerForAddSiteClick()">
+                                    +
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <th:block sec:authorize-url="/mng/site/insertSiteAplyDomains.do"><button type="button" class="btn btn-primary" onclick="handlerSaveDmn()">저장</button></th:block>
+            </div>
+        </div>
+        </form>
+    </div>
+    
+    <div class="col-12" th:if="${siteInfo.siteid}" id="menuSetupForm">
+        <form id="setupForm">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h3 class="sub-title"><strong>메뉴구성</strong></h3>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <th:block th:each="setupItem, status : ${setupItemList}">
+                        <div class="col-12 m-0 mb-2 row border border-dark p-10 rounded" th:if="${setupItem.optn3 == 'show'}">
+                            <div class="col-10 p-0 m-0 row">
+                                <div class="col-12 mb-2 p-0">
+                                    <strong th:text="${setupItem.cdNm}"></strong>
+                                </div>
+                                <div class="col-12 p-0" th:text="${setupItem.dc}">
+                                </div>
+                            </div>
+                            <div class="col-2 p-0 m-0 form-group row">
+                                <div class="col-12 p-0 text-right">
+                                    <input type="checkbox" class="js-single-small" th:id="|prgrmid${status.index}|" name="prgrmids" th:checked="${menuYn == 'N' or setupItem.useYn == 'Y'}" th:value="${setupItem.prgrmid}" th:disabled="${setupItem.optn2 == 'required' or setupItem.optn2 == null}" th:disabledcheckbox="${setupItem.optn2 == 'required' or setupItem.optn2 == null}" />
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="prgrmids" th:if="${menuYn == 'N' and setupItem.optn3 == 'hidden'}" th:value="${setupItem.prgrmid}"/>
+                        <input type="hidden" name="hidePrgrmids" th:if="${menuYn == 'N' and setupItem.optn3 == 'hidden'}" th:value="${setupItem.prgrmid}"/>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <th:block sec:authorize-url="/mng/site/saveSiteAplyMenuSetup.do"><button type="button" class="btn btn-primary" th:if="${menuYn == 'N'}" onclick="saveSiteMenuSetup()">저장</button></th:block>
+                <th:block sec:authorize-url="/mng/site/initSiteAplyMenuSetup.do"><button type="button" class="btn btn-primary" th:if="${menuYn == 'Y'}" onclick="initSiteMenuSetup()">초기화</button></th:block>
+            </div>
+        </div>
+        </form>
+    </div>
+    
+    <div id="addDomainTmp" style="display:none">
+        <div class="mb-2 form-group row">
+            <div class="input-group input-group-sm input-group-dropdown mb-0">
+                <input type="text" name="dmns" maxlength="60" class="form-control" aria-label="Text input with dropdown button">
+                <div class="input-group-text btn btn-primary" onclick="handlerForRemoveSiteClick(this)">
+                    -
+                </div>
+                <div class="input-group-text btn btn-primary" onclick="handlerForAddSiteClick()">
+                    +
+                </div>
+            </div>
+        </div>
+    <div>
+    
+    <script th:inline="javascript">
+        $(function(){
+            // 수정일때
+            /*[# th:if="${siteInfo.siteid}"]*/  
+            $("#selectInstinstid").prop("disabled", true);
+            $("input[name='useYn']").bind('change', changeUseYnEventHandler);
+            /*[/]*/
+        });
+    </script>
+    <script>
+        function changeUseYnEventHandler(e, data) {
+            if(this.checked){                 
+                if(!confirm('사이트를 운영상태로 전환하시겠습니까?')){
+                    $(this).off('change');
+                    toggleSwitch($("input[name='useYn']"), false);
+                    $(this).on('change', changeUseYnEventHandler);
+                }
+            }else{                  
+                if(!confirm('사이트를 폐쇄상태로 전환하시겠습니까?')){
+                    $(this).off('change');
+                    toggleSwitch($("input[name='useYn']"), true);
+                    $(this).on('change', changeUseYnEventHandler);
+                }
+            }
+        }
+                
+        /**======================================================
+        도메인 관련 함수들 
+        ======================================================**/
+        
+        function chkDomain(el){
+            var result = true;
+            var dmn = el.value;
+        	if(dmn === undefined || dmn == null || dmn == "") {
+                alert("도메인을 입력해주십시오.");
+                result =  false;
+            } else if( /^http(s)*/i.test(dmn) ){
+                alert("http나 https를 제외하고 도메인만 등록해 주세요!");
+                result =  false;
+            } else if( /(\:[0-9]+)$/.test(dmn) ){
+                alert("도메인에 포트(port)를 추가하실 수 없습니다.");
+                result =  false;
+            }
+            
+            if(!result) {
+                $(el).css("border","2px solid #ff0000");//#B0371D : 진한빨강 ,  
+                setTimeout(function() { $(el).css("border","")}, 1000);
+            }
+                            
+            return result;
+        }
+        
+        function handlerSaveDmn(){
+            var isValid = true;
+            $("input[name=dmns]", "#domainRegForm").each(function(){
+                if(!chkDomain(this)){
+                    isValid = false;
+                    return false;
+                }  
+            });
+            
+            if(!isValid) return;
+           
+            var actionURL = "/mng/site/insertSiteAplyDomains.do";
+            
+            var formData = $('#domainRegForm').serializeArray();
+            var params = [
+                    {name: "siteid", value: $('#siteid', '#siteRegForm').val()}
+            ];
+            
+            formData = formData.concat(params);
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : actionURL,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data :formData,
+                    success : function (data){
+                        alert(data.msg);
+                        if(data.result == "success"){
+                            gridHelper1.resetPageContent();
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        /**======================================================
+        사이트 관련 함수들 
+        ======================================================**/
+        function handlerForAddSiteClick(){
+            $('#domainList').append($('#addDomainTmp .row').clone());
+        }
+        
+        function handlerForRemoveSiteClick(obj){
+            $(obj).parent().parent().remove();
+        }
+        
+        function handlerSiteForm(){
+            var f = document.forms.siteRegForm;
+            var actionURL = "";
+            
+            if(!chkSiteForm()) return;
+            
+            if(f.siteid.value == ''){
+                if(!confirm('등록하시겠습니까?')) return ;
+                actionURL = "/mng/site/insertSiteAply.do";
+            }else{
+                if(!confirm('수정하시겠습니까?')) return ;
+                actionURL = "/mng/site/updateSiteAply.do";
+            }
+            
+            var params = {
+                siteid: f.siteid.value,
+                logoFileid: $('#logoFileid', "#siteRegForm").val(),
+                instid: $('#instid', "#siteRegForm").val(),
+                siteNm: f.siteNm.value,
+                cpyrht: $('#cpyrht', "#siteRegForm").val(),
+                useYn: $("#useYn:checked", "#siteRegForm").val(),
+                oldUseYn: $('#oldUseYn', "#siteRegForm").val()
+            }
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : actionURL,
+                    contentType: "application/json; charset=utf-8",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data :JSON.stringify(params),
+                    success : function (data){
+                        if(data.result == "success"){
+                        	if(f.siteid.value == ''){
+                            	gridHelper1.resetListContent();
+                                if(data.siteid != undefined) {
+                                    regSiteid = data.siteid;
+                                }
+                            }else{
+                                gridHelper1.resetPageContent();
+                            }
+                            
+                        }
+                        alert(data.msg);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        
+        function chkSiteForm(){
+        	$("#siteRegForm").validate({
+                    rules: { //밸리데이션 옵션 설정
+                        instid: {
+                            required: true
+                        },
+                        siteNm: {
+                            required: true,
+                            maxlength: 20
+                        },
+                        cpyrht: {
+                            required: true,
+                            maxlength: 2000
+                        }
+                    },
+                    messages: {  //밸리데이션 메세지 설정 - 기재하지 않을 경우 jqeury.validate.setting.js 에 기재한 디폴트 값으로 alert 표출
+                        instid: {
+                            required: "기관을 선택해주십시오"
+                        }, 
+                        siteNm: {
+                            required: "사이트 이름을 입력해주십시오",
+                            maxlength:"사이트 이름 입력 값은 20자를 넘을 수 없습니다."
+                           
+                        },
+                        cpyrht: {
+                            required: "카피라이트를 입력해주십시오",
+                            maxlength:"카피라이트 입력 값은 2000자를 넘을 수 없습니다."
+                        }
+                    }
+            });
+        	
+        	return $("#siteRegForm").valid();
+        }
+        
+        // 로고 파일 첨부
+        $('#logoFile').on('change', function(event) {
+            var formData = new FormData();
+            var objFile = event.target;
+            
+            formData.append("file", objFile.files[0]);
+            formData.append("filegrpNm", "site_logo");
+            
+            if($('#logoFilegrpid').val() != '')
+                formData.append("filegrpid", $('#logoFilegrpid').val());
+    
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : '/uploadFile.do',
+                    processData : false,
+                    contentType : false,
+                    data : formData,
+                    type : 'POST',
+                    success : function(response) {
+                        
+                        if(response.result == 'fail'){
+                            alert(response.msg);
+                        }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                            $("#logoFilegrpid").val(response.filegrpid);
+                            $("#logoFileid").val(response.fileid);
+                            $("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.fileIdntfcKey);
+    
+                            let imageStr = '<span id="logo_img_'+response.fileid+'" class="label label-inverse">'+response.orginlFileNm
+                                           +' &nbsp;&nbsp;&nbsp;<a href="javascript:deleteLogoFile('+response.fileid+','+response.fileIdntfcKey+')" class="text-white">X</a>'
+                                           +'</span>'
+    
+                            $("#logoFileListArea").html(imageStr);
+    
+                            var agent = navigator.userAgent.toLowerCase();
+                                                               
+                            if ( (navigator.appName == 'Netscape' && navigator.userAgent.search('Trident') != -1) || (agent.indexOf("msie") != -1) ) {
+                               $("#logoFile").replaceWith($("#logoFile").clone(true));
+                            }else{
+                               $("#logoFile").val("");
+                            }
+                        
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+            event.preventDefault();
+        });
+        
+        function fn_deleteFile(fileid, fileIdntfcKey){
+            var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+            $.ajax({
+              url : deleteFileUrl,
+              type: 'GET',
+              cache : false,
+              dataType: 'json',
+              success : function (data){
+              },
+              error : function (error){
+              } 
+           })
+        };
+      
+        var deleteLogoFile = function (fileid,fileIdntfcKey){
+
+            if(!confirm("로고 파일을 삭제 하시겠습니까?")){return;}
+            
+            $("#logo_img_"+fileid).remove();
+            $("#imgPreview").attr('src', "/images/mng/default_logo.png");
+            fn_deleteFile(fileid, fileIdntfcKey);
+            $("#logoFileid").val(0);
+        }
+        
+        /**======================================================
+        메뉴구성 관련 함수들 
+        ======================================================**/
+        
+        function saveSiteMenuSetup(){
+            var f = document.forms.siteRegForm;
+
+            if(!confirm('설정한 메뉴구성을 저장하시겠습니까?')) return ;
+            
+            for(var key in switchCherryArr) {
+                if(switchCherryArr[key].element.attributes.disabledcheckbox != undefined){
+                    if(switchCherryArr[key].element.attributes.disabledcheckbox.nodeValue == "true"){
+                        switchCherryArr[key].enable();
+                    }
+                }
+            }
+            var setupFormSerial = $("#setupForm").serialize();
+            for(var key in switchCherryArr) {
+                if(switchCherryArr[key].element.attributes.disabledcheckbox != undefined){
+                    if(switchCherryArr[key].element.attributes.disabledcheckbox.nodeValue == "true"){
+                        switchCherryArr[key].disable();
+                    }
+                }
+            }
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : "/mng/site/saveSiteAplyMenuSetup.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data :setupFormSerial + "&siteid=" + f.siteid.value,
+                    success : function (data){
+                        if(data.result == "success"){
+                            gridHelper1.resetPageContent();
+                        }
+                        alert(data.msg);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        
+        function initSiteMenuSetup(){
+            var f = document.forms.siteRegForm;
+
+            if(!confirm('초기화를 진행하시겠습니까?\n메뉴구성 정보가 모두 삭제됩니다.')) return ;
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : "/mng/site/initSiteAplyMenuSetup.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : { siteid : f.siteid.value },
+                    success : function (data){
+                        if(data.result == "success"){
+                            gridHelper1.resetPageContent();
+                        }
+                        alert(data.msg);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+    </script>
+        
+</body>
+</html>

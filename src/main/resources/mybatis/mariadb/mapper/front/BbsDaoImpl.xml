@@ -27,7 +27,7 @@
                 FXD_NTC_STRT_DT,
                 FXD_NTC_END_DT,
                 IFNULL(B.FILECNT,0) file_cnt,
-                B.NM ,
+                C.NM ,
                 CONVERT(A.REG_DT, CHAR(10)) REG_DT,
                 CONVERT(A.MDFCN_DT, CHAR(10)) MDFCN_DT,
                 A.MDFCN_DT ord_DT,
@@ -35,7 +35,7 @@
             FROM 
                 TB_CMM_PST A 
                 LEFT OUTER JOIN (SELECT FILEGRPID, COUNT(FILEID) FILECNT FROM TB_CMM_FILE GROUP BY FILEGRPID) B ON  A.FILEGRPID =B.FILEGRPID
-                INNER JOIN TB_CMM_USER B ON(A.RGTRID = B.USERID)
+                INNER JOIN TB_CMM_USER C ON(A.RGTRID = C.USERID)
             WHERE 1=1
                  AND (CASE WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT <![CDATA[<=]]> NOW() AND DATE_ADD(FXD_NTC_END_DT, INTERVAL 1 DAY)  <![CDATA[>=]]> NOW() THEN 'Y'
                        WHEN FXD_NTC_YN ='Y' AND   FXD_NTC_STRT_DT = null AND FXD_NTC_END_DT = null THEN 'Y'

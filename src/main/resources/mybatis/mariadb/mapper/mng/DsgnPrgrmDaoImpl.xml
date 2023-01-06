@@ -20,7 +20,7 @@
           , A.DSGN_NO
           , A.PRGRM_NM
           , A.INST_NM
-          , A.STTS_CD
+          , ( SELECT STTS_CD FROM TB_ASS_DSGN_HSTRY WHERE PRGRMID = A.PRGRMID AND HSTRYID = Z.HSTRYID) AS STTS_CD
           , B.CHG_APLY_CNT
           , C.OPER_RSLT_CNT
           , D.IMPLMNT_IDNTY_CNT
@@ -120,7 +120,9 @@
     <!-- 지정프로그램 상세 조회 -->
     <select id="selectDsgnPrgrm" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
-            A.INSTID              /* 기관아이디 */
+            A.PRGRMID             /* 프로그램_아이디 */
+          , B.HSTRYID
+          , A.INSTID              /* 기관아이디 */
           , A.APLCNTID            /* 신청자아이디 */
           , A.APLCNT_NM           /* 신청자_이름 */
           , A.APLCNT_EML          /* 신청자_이메일 */
@@ -141,9 +143,9 @@
           , B.DSGN_NO             /* 지정_번호 */
           , B.DSGN_BGNG_DE        /* 지정_시작_일자 */
           , B.DSGN_END_DE         /* 지정_종료_일자 */
+          , B.DSGN_CNCL_DE        /* 지정_취소_일자 */
           , CONCAT(B.DSGN_CYCL, "/", B.DSGN_NO)    AS CYCL_NO
           , CONCAT(B.DSGN_BGNG_DE, " ~ ", B.DSGN_END_DE )   AS DSGN_PRD
-          , B.HSTRYID
           , B.DSGN_OBTAIN_DE      /* 지정획득일자*/
           , B.STTS_CD             /* 지정_상태_코드 */
           , (SELECT BRNO FROM TB_CMM_INST WHERE A.INSTID= INSTID) AS BRNO
@@ -266,5 +268,283 @@
           , #{user.userid}
         );
     </insert>
+
+    <!-- 지정정보 변경 -->
+    <update id="updateDsgnHstry" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.updateDsgnHstry*/
+        UPDATE
+            TB_ASS_DSGN_HSTRY
+        SET
+            DSGN_CYCL         = #{dsgnCycl    }
+          , DSGN_NO           = #{dsgnNo      }
+          , DSGN_OBTAIN_DE    = #{dsgnObtainDe}
+          , DSGN_BGNG_DE      = #{dsgnBgngDe  }
+          , DSGN_END_DE       = #{dsgnEndDe   }
+          , DSGN_CNCL_DE      = #{dsgnCnclDe  }
+          , STTS_CD           = #{sttsCd      }
+          , MDFCN_DT          = NOW()
+          , MDFRID            = #{user.userid}
+        WHERE
+            PRGRMID = #{prgrmid}
+        AND HSTRYID = #{hstryid}
+    </update>
+
+    <!-- 변경신청목록 조회-->
+    <select id="selectChgAplyList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRGRMID
+          , A.INSTID
+          , A.INST_NM
+          , A.DSGN_CYCL
+          , A.DSGN_NO
+          , CONCAT(DSGN_BGNG_DE, " ~ ", DSGN_END_DE ) AS DSGN_PRD    /* 지정유효기간 */
+          , B.APLYID
+          , B.SAMENSS_YN
+          , B.SAMENSS_CN
+          , B.PRGRM_CHG_YN
+          , B.PRGRM_CHG_CN
+          , B.BGT_CHG_YN
+          , B.BGT_CHG_CN
+          , B.LDR_CHG_YN
+          , B.LDR_CHG_CN
+          , B.EDU_ENV_CHG_YN
+          , B.EDU_ENV_CHG_CN
+          , B.CHG_RSN
+          , B.FILEGRPID
+          , B.APLCNTID
+          , B.APLY_STTS_CD
+          , B.SPLMNT_DMND_CN
+          , B.STTS_MDFCN_DT
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_CHG_APLY B ON A.PRGRMID = B.PRGRMID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectChgAplyDtl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            APLYID
+          , PRGRMID
+          , SAMENSS_YN
+          , SAMENSS_CN
+          , PRGRM_CHG_YN
+          , PRGRM_CHG_CN
+          , BGT_CHG_YN
+          , BGT_CHG_CN
+          , LDR_CHG_YN
+          , LDR_CHG_CN
+          , EDU_ENV_CHG_YN
+          , EDU_ENV_CHG_CN
+          , CHG_RSN
+          , FILEGRPID
+          , APLCNTID
+          , APLY_STTS_CD
+          , SPLMNT_DMND_CN
+          , STTS_MDFCN_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_CHG_APLY
+        WHERE
+            APLYID = #{aplyid}
+
+    </select>
+
+    <!-- 변경신청 상태 수정 -->
+    <update id="updateChgAplyStts" parameterType="DsgnPrgrmVo">
+        UPDATE
+            TB_ASS_CHG_APLY
+        SET
+            APLY_STTS_CD   = #{aplySttsCd  }
+         ,  SPLMNT_DMND_CN = #{splmntDmndCn}
+         ,  STTS_MDFCN_DT  = #{sttsMdfcnDt }
+         ,  MDFCN_DT       = NOW()
+         ,  MDFRID         = #{user.userid}
+        WHERE
+            APLYID         = #{aplyid      }
+    </update>
+
+    <!-- 지정프로그램-변경신청 등록-->
+    <insert id="insertChgAply" parameterType="DsgnPrgrmVo">
+    INSERT INTO
+        TB_ASS_CHG_APLY (
+            PRGRMID
+          , SAMENSS_YN
+          , SAMENSS_CN
+          , PRGRM_CHG_YN
+          , PRGRM_CHG_CN
+          , BGT_CHG_YN
+          , BGT_CHG_CN
+          , LDR_CHG_YN
+          , LDR_CHG_CN
+          , EDU_ENV_CHG_YN
+          , EDU_ENV_CHG_CN
+          , CHG_RSN
+          , FILEGRPID
+          , APLCNTID
+          , APLY_STTS_CD
+          , SPLMNT_DMND_CN
+          , STTS_MDFCN_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+          ) VALUES(
+            #{prgrmid     }
+          , #{samenssYn   }
+          , #{samenssCn   }
+          , #{prgrmChgYn  }
+          , #{prgrmChgCn  }
+          , #{bgtChgYn    }
+          , #{bgtChgCn    }
+          , #{ldrChgYn    }
+          , #{ldrChgCn    }
+          , #{eduEnvChgYn }
+          , #{eduEnvChgCn }
+          , #{chgRsn      }
+          , #{filegrpid   }
+          , #{aplcntid    }
+          , #{aplySttsCd  }
+          , #{splmntDmndCn}
+          , #{sttsMdfcnDt }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+          );
+    </insert>
+
+    <!-- 변경신청상세 수정 -->
+    <update id="updateChgAply" parameterType="DsgnPrgrmVo">
+        UPDATE
+            TB_ASS_CHG_APLY
+        SET
+            SAMENSS_YN     = #{samenssYn   }
+          , SAMENSS_CN     = #{samenssCn   }
+          , PRGRM_CHG_YN   = #{prgrmChgYn  }
+          , PRGRM_CHG_CN   = #{prgrmChgCn  }
+          , BGT_CHG_YN     = #{bgtChgYn    }
+          , BGT_CHG_CN     = #{bgtChgCn    }
+          , LDR_CHG_YN     = #{ldrChgYn    }
+          , LDR_CHG_CN     = #{ldrChgCn    }
+          , EDU_ENV_CHG_YN = #{eduEnvChgYn }
+          , EDU_ENV_CHG_CN = #{eduEnvChgCn }
+          , CHG_RSN        = #{chgRsn      }
+          , FILEGRPID      = #{filegrpid   }
+          , APLCNTID       = #{aplcntid    }
+          , APLY_STTS_CD   = #{aplySttsCd  }
+          , SPLMNT_DMND_CN = #{splmntDmndCn}
+          , STTS_MDFCN_DT  = NOW()
+          , MDFCN_DT       = NOW()
+          , MDFRID         = #{user.userid}
+        WHERE
+            APLYID         = #{aplyid}
+    </update>
+
+    <!-- 운영결과서 목록 조회 -->
+    <select id="selectOperRsltList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            CYCLID
+          , PRGRMID
+          , CYCL
+          , SBMSN_BGNG_DE
+          , SBMSN_END_DE
+          , CONCAT(SBMSN_BGNG_DE, " ~ ", SBMSN_END_DE) AS SBMSN_PRD    /* 제출기간 */
+          , STTS_CD    AS SBMSN_STTS_CD    /*제출상태코드*/
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_OPER_RSLT_CYCL
+        WHERE
+            PRGRMID = #{prgrmid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 운영결과상세 조회 -->
+    <select id="selectOperRsltDtl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            CYCLID
+          , SNRSTFDVLPR_NM
+          , SNRSTFDVLPR_EML
+          , SNRSTFDVLPR_TELNO
+          , SNRSTFDVLPR_MOBLPHON
+          , PIC_NM
+          , PIC_EML
+          , PIC_TELNO
+          , PIC_MOBLPHON
+          , PRGRM_TYPE_CD
+          , STY_YN
+          , INSRNC_JOIN_YN
+          , INSRNC_RSN
+          , CHG_YN
+          , INFNT
+          , SCHBOY
+          , MSKLSD
+          , HGSCHST
+          , ADULT
+          , WHOL_AGE
+          , EDU_NOPE
+          , ACTVT_PLC
+          , ETRFEE
+          , EDU_CNT
+          , EDU_HR
+          , EDU_MNT
+          , SFTYACDNT_ENNC
+          , JAN
+          , FEB
+          , MAR
+          , APR
+          , MAY
+          , JUNE
+          , JULY
+          , AUG
+          , SEPT
+          , OCT
+          , NOV
+          , DCM
+          , WHOL_MM
+          , ISSU_YN
+          , ISSU_NOCS
+          , ISSU_SUM
+          , PRGRM_DSTNCTN
+          , OPER_MNG
+          , EVL
+          , QLFC_POSTNG
+          , SFTY_MNG
+          , FILEGRPID
+          , NEXT_YR_PRGRM
+          , NEXT_YR_LDR
+          , NEXT_YR_EDU_ENV
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_OPER_RSLT
+        WHERE CYCLID = #{cyclid}
+    </select>
+
+    <!-- 운영결과 운영실적 조회 -->
+
+    <!-- 운영결과 운영성과 조회 -->
+
+
+
+
+
+
 
 </mapper>

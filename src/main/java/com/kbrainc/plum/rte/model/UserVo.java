@@ -32,6 +32,9 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     /** 기관담당자_역할_코드 */
     private String instpicRoleCd;
     
+    /** 포털로그인사용자타입(개인회원:P, 기관회원:I) */
+    private String loginUserType;
+    
     /** 현재적용된 역할정보 */
     private RoleInfoVo roleInfo;
     

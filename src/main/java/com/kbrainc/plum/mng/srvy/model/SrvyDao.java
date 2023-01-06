@@ -5,6 +5,7 @@ import java.util.List;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 
 /**
  * 
@@ -257,6 +258,17 @@ public interface SrvyDao {
     public int insertCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
     
     /**
+     * 컨설팅만족도설문 미사용 업데이트
+     *
+     * @Title : updateCnstlngDgsfnSrvyUseYn 
+     * @Description : 컨설팅만족도설문 미사용 업데이트
+     * @param srvyVo SrvyVo객체
+     * @return int update 수
+     * @throws Exception 예외
+     */
+    public void updateCnstlngDgsfnSrvyUseYn() throws Exception;
+    
+    /**
      * 컨설팅만족도설문 목록 조회
      *
      * @Title : selectCnsltngDgstfnSrvyList
@@ -288,5 +300,27 @@ public interface SrvyDao {
      * @throws Exception 예외
      */
     public int updateCnsltngDgstfnSrvy(SrvyVo srvyVo) throws Exception;
+    
+    /**
+     * 보기형 문항 응답자 수 조회
+     *
+     * @Title : selectQitemExAnsCnt
+     * @Description : 보기형 문항 응답자 수 조회
+     * @param qitemExVo QitemExVo 객체
+     * @return qitemExVo itemExVo 객체
+     * @throws Exception 예외
+     */
+    public QitemExVo selectQitemExAnsInfo(QitemExVo qitemExVo) throws Exception;
+    
+    /**
+     * 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     *
+     * @Title : selectAnsList 
+     * @Description : 단답형, 서술형, 혼합형(기타) 답변 목록 조회
+     * @param srvyAnsVo SrvyAnsVo객체
+     * @return List<SrvyAnsVo> 답변 목록
+     * @throws Exception 예외
+     */
+    public List<SrvyAnsVo> selectAnsList(SrvyAnsVo srvyAnsVo) throws Exception;
     
 }

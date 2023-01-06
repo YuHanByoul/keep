@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 
 /**
@@ -315,5 +316,49 @@ public interface AsgsysSrngDao {
 	 * @throws Exception
 	 */
 	public List<AsgsysSrngVo> selectjdgsPicList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램우수성 저장
+	*
+	* @Title : insertPrgrmDstnctn
+	* @Description : 프로그램우수성 저장
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 프로그램우수성 수정
+	 *
+	 * @Title : updatePrgrmDstnctn
+	 * @Description : 프로그램우수성 수정
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updatePrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 회원목록 조회
+	*
+	* @Title : selectMbrList
+	* @Description : 회원목록 조회
+	* @param asgsysSrngVo
+	* @return List<MemberVo>
+	* @throws Exception
+	*/
+	public List<MemberVo> selectMbrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 변경
+	*
+	* @Title : updateMbr
+	* @Description : 담당자 변경
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

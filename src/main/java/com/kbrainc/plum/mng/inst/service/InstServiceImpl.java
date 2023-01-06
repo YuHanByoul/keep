@@ -64,21 +64,6 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
     @Autowired
     private MemberDao memberDao;
 
-    /*
-     * @Autowired @Qualifier("MailService") private MailService mailService;
-     * 
-     * @Autowired private FileService fileService;
-     * 
-     * @Autowired private FileStorageService fileStorageService;
-     * 
-     * @Autowired private SmsService smsService;
-     * 
-     * //@Value("${front.server.host}") private String frontServerHost;
-     * 
-     * @Autowired private TemplateEngine templateEngine;
-     */
-    
-    
     /**
     * 기관정보 목록 리스트
     *

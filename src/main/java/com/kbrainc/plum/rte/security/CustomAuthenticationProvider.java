@@ -3,6 +3,7 @@ package com.kbrainc.plum.rte.security;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 //import org.springframework.session.FindByIndexNameSessionRepository; // REDIS_SESSION
 import org.springframework.stereotype.Component;
@@ -91,7 +93,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         HttpSession session = request.getSession();
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
+        String siteid = siteInfo.getSiteid();
+        String loginUserType = request.getParameter("loginUserType"); // 개인회원(P), 기관회원(I)
+        Integer instid = null;
+        String siteaplyUseYn = null;
         request.setAttribute("loginid", loginid);
+        request.setAttribute("loginUserType", loginUserType);
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
@@ -102,8 +109,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 }
                 if (!password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
-                    Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
-                    getLoginFailMessage(loginFailCnt);
+                    Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");                    
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
                     request.setAttribute("message", data.get("message"));
                     throw new BadCredentialsException("Login Error !!");
@@ -111,21 +117,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                Integer instid = (Integer) resultMap.get("INSTID");
+                instid = (Integer) resultMap.get("INSTID");
+                siteaplyUseYn = (String) resultMap.get("SITEAPLY_USE_YN"); // 분양사이트 사용여부
                 Map<String, Object> roleMap = null;
-                if (instid == null) {
-                    roleMap = new HashMap<String, Object>();
-                    roleMap.put("ROLEID", sysPersonRoleid);
-                    roleMap.put("NM", "개인회원");
-                    roleMap.put("SE_CD", "U");
-                    resultList.add(roleMap);
-                } else {
-                    roleMap = new HashMap<String, Object>();
-                    roleMap.put("ROLEID", sysCompanyRoleid);
-                    roleMap.put("NM", "기관회원");
-                    roleMap.put("SE_CD", "U");
-                    resultList.add(roleMap);
-                }
+                roleMap = new HashMap<String, Object>();
+                roleMap.put("ROLEID", sysPersonRoleid);
+                roleMap.put("NM", "개인회원");
+                roleMap.put("SE_CD", "U");
+                resultList.add(roleMap);
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
                 Integer loginFailCnt = usernameNotFoundMap.get(loginid);
                 if (loginFailCnt != null && loginFailCnt >= 5) {
@@ -151,7 +150,6 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 if (!password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
-                    getLoginFailMessage(loginFailCnt);
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
                     request.setAttribute("message", data.get("message"));
                     throw new BadCredentialsException("Login Error !!");
@@ -159,25 +157,40 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
                 // 사용자 역할까지 부여
-                Integer instid = (Integer) resultMap.get("INSTID");
+                instid = (Integer) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
+                String instUseYn = (String) resultMap.get("INST_USE_YN"); // 기관사용여부
+                String instAprvSttsCd = (String) resultMap.get("INST_APRV_STTS_CD"); // 기관승인상태코드(2: 승인)
+                
+                
                 if (resultList == null) {
                     resultList = new ArrayList<Map<String, Object>>();
                 }
                 
-                if (instid == null) {
-                    roleMap = new HashMap<String, Object>();
-                    roleMap.put("ROLEID", sysPersonRoleid);
-                    roleMap.put("NM", "개인회원");
-                    roleMap.put("SE_CD", "U");
-                    resultList.add(roleMap);
-                } else {
-                    roleMap = new HashMap<String, Object>();
-                    roleMap.put("ROLEID", sysCompanyRoleid);
-                    roleMap.put("NM", "기관회원");
-                    roleMap.put("SE_CD", "U");
-                    resultList.add(roleMap);
+                if ("I".equals(loginUserType) && instid != null) {
+                    if ("N".equals(instUseYn) || !"2".equals(instAprvSttsCd)) { // 기관이 미사용이거나 승인상태가 아닌경우
+                        request.setAttribute("message", "기관정보가 승인되지 않았습니다. 개인회원으로 다시 로그인 해주십시오.");
+                        throw new InternalAuthenticationServiceException("Login Error !!");
+                    } else {
+                        roleMap = new HashMap<String, Object>();
+                        roleMap.put("ROLEID", sysCompanyRoleid);
+                        roleMap.put("NM", "기관회원");
+                        roleMap.put("SE_CD", "U");
+                        resultList.add(roleMap);
+                    }
+                } else if ("I".equals(loginUserType) && instid == null) {
+                    // 회원은 맞으나 기관회원이 아님
+                    request.setAttribute("message", "기관회원이 아닙니다. 개인회원으로 다시 로그인 해주십시오.");
+                    throw new InternalAuthenticationServiceException("Login Error !!");
                 }
+                
+                // 개인회원 역할은 무조건 부여
+                roleMap = new HashMap<String, Object>();
+                roleMap.put("ROLEID", sysPersonRoleid);
+                roleMap.put("NM", "개인회원");
+                roleMap.put("SE_CD", "U");
+                resultList.add(roleMap);
+                
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
                 Integer loginFailCnt = usernameNotFoundMap.get(loginid);
                 if (loginFailCnt != null && loginFailCnt >= 5) {
@@ -204,36 +217,83 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         user.setNm((String) resultMap.get("NM"));
         user.setInstid((Integer)resultMap.get("INSTID"));
         user.setInstpicRoleCd((String)resultMap.get("INSTPIC_ROLE_CD"));
+        user.setLoginUserType(loginUserType);
         user.setData(resultMap);
 
         ArrayList<Map<String, String>> sessionAuthorities = new ArrayList<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         Map<String, String> authority = null;
         boolean grantedRole = false;
-        authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
+        boolean availableRole = false;
+        boolean availableSiteaply = true;
+        
+        String roleid = null; // 역할ID
+        String nm = null; // 역할명
+        String seCd = null; // 역할_구분_코드
+        String trgtInstCd = null; // 대상_기관_코드
+        String trgtRgnCd = null; // 대상_지역_코드
+        String allowedSiteids = null; // 접근이 가능한 사이트아이디들
+        String kndCd = null; // 역할_종류_코드
         
         for (int i = 0; i < resultList.size(); i++) {
+            availableRole = false;
+            roleid = String.valueOf(resultList.get(i).get("ROLEID"));
+            nm = String.valueOf(resultList.get(i).get("NM"));
+            seCd = String.valueOf(resultList.get(i).get("SE_CD"));
+            trgtInstCd = String.valueOf(resultList.get(i).get("TRGT_INST_CD"));
+            trgtRgnCd = String.valueOf(resultList.get(i).get("TRGT_RGN_CD"));
+            allowedSiteids = String.valueOf(resultList.get(i).get("ALLOWED_SITEIDS"));
+            kndCd = String.valueOf(resultList.get(i).get("KND_CD"));
+            
             if (!grantedRole) { // 허용된 역할중 1개만 적용한다.
-                if ("A".equals(sysSeCd) && "A".equals(resultList.get(i).get("SE_CD"))) { // 관리자사이트 & 관리자역할
-                    authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
-                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"), (String)resultList.get(i).get("TRGT_RGN_CD"));
-                    user.setRoleInfo(roleInfo);
+                if ("P".equals(siteInfo.getSysKndCd()) && "I".equals(user.getLoginUserType())) { // 사용자포털사이트 & 기관회원역할
+                    authorities.add(new SimpleGrantedAuthority(sysCompanyRoleid));
                     grantedRole = true;
-                } else if ("U".equals(sysSeCd) && "U".equals(resultList.get(i).get("SE_CD"))) { // 사용자사이트 & 사용자역할
-                    authorities.add(new SimpleGrantedAuthority(String.valueOf(resultList.get(i).get("ROLEID"))));
-                    RoleInfoVo roleInfo = new RoleInfoVo(String.valueOf(resultList.get(i).get("ROLEID")), (String)resultList.get(i).get("NM"), (String)resultList.get(i).get("SE_CD"), (String)resultList.get(i).get("TRGT_INST_CD"), (String)resultList.get(i).get("TRGT_RGN_CD"));
-                    user.setRoleInfo(roleInfo);
+                } else if ("U".equals(sysSeCd) && "U".equals(seCd)) { // 사용자포털사이트 & 사용자역할
+                    authorities.add(new SimpleGrantedAuthority(roleid));
                     grantedRole = true;
+                } else if ("A".equals(sysSeCd) && "A".equals(seCd) && Arrays.asList(allowedSiteids.split(",")).contains(siteid)) { // 관리자사이트 & 관리자역할 & 접근가능한 사이트
+                    if (!("N".equals(siteaplyUseYn) && "M".equals(kndCd))) { // 분양사이트 미사용이면서 역할종류가 기관관리자인 경우가 아닐때
+                        authorities.add(new SimpleGrantedAuthority(roleid));
+                        grantedRole = true;
+                    }
+                }
+                
+                if (grantedRole) {
+                    RoleInfoVo roleInfo = new RoleInfoVo(roleid, nm, seCd, trgtInstCd, trgtRgnCd);
+                    user.setRoleInfo(roleInfo);
                 }
             }
-            authority = new HashMap<String, String>();
-            authority.put("roleid", (String.valueOf(resultList.get(i).get("ROLEID")))); // 역할ID
-            authority.put("nm", (String.valueOf(resultList.get(i).get("NM")))); // 역할명
-            authority.put("se_cd", (String.valueOf(resultList.get(i).get("SE_CD")))); // 구분_코드
-            authority.put("trgt_inst_cd", (String.valueOf(resultList.get(i).get("TRGT_INST_CD")))); // 대상_기관_코드
-            authority.put("trgt_rgn_cd", (String.valueOf(resultList.get(i).get("TRGT_RGN_CD")))); // 대상_지역_코드
-            sessionAuthorities.add(authority);
+            
+            if ("A".equals(sysSeCd) && "A".equals(seCd)) { // 관리자사이트 & 관리자역할
+                if ("N".equals(siteaplyUseYn) && "M".equals(kndCd)) { // 분양사이트 미사용이면서 역할종류가 기관관리자인 경우
+                    availableRole = false;
+                    availableSiteaply = false;
+                } else {
+                    availableRole = true;
+                }
+            } else {
+                availableRole = true;
+            }
+            
+            if (availableRole) {
+                authority = new HashMap<String, String>();
+                authority.put("roleid", roleid); // 역할ID
+                authority.put("nm", nm); // 역할명
+                authority.put("se_cd", seCd); // 구분_코드
+                authority.put("trgt_inst_cd", trgtInstCd); // 대상_기관_코드
+                authority.put("trgt_rgn_cd", trgtRgnCd); // 대상_지역_코드
+                authority.put("allowed_siteids", allowedSiteids); // 접근이 가능한 사이트아이디들
+                sessionAuthorities.add(authority);
+            }
         }
+        
+        if (authorities.size() == 0 && !availableSiteaply) { // 부여받은 역할이 없으면서 분양사이트 미사용이면서 역할종류가 기관관리자인 경우일때
+            request.setAttribute("message", "사이트분양 이후 로그인이 가능합니다.");
+            throw new InternalAuthenticationServiceException("Login Error !!");
+        }
+        
+        authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
         user.setAuthorities(sessionAuthorities);
 
         session.setAttribute("user", user); // 세션에 사용자정보 객체 추가

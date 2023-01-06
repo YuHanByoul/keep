@@ -1,4 +1,11 @@
 <form id="dsgnRtrcnPopupFrm">
+
+<input type="hidden" id="dsgnRtrcnDsgnCycl"     name="dsgnCycl"     th:value="${dsgnRtrcnInfo.dsgnCycl}">
+<input type="hidden" id="dsgnRtrcnDsgnNo"       name="dsgnNo"       th:value="${dsgnRtrcnInfo.dsgnNo}">
+<input type="hidden" id="dsgnRtrcnDsgnObtainDe" name="dsgnObtainDe" th:value="${dsgnRtrcnInfo.dsgnObtainDe}">
+<input type="hidden" id="dsgnRtrcnHstryid"      name="hstryid"      th:value="${dsgnRtrcnInfo.hstryid}">
+<input type="hidden" id="dsgnRtrcnPrgrmid"      name="prgrmid"      th:value="${dsgnRtrcnInfo.prgrmid}">
+
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
@@ -13,19 +20,19 @@
                         <div class="mb-2 form-group row required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dsgnRtrcnPopupCancelDate"><strong>지정 취소일</strong></label>
                             <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="dsgnCnclDe" id="dsgnCnclDe" value=""/>
+                                <input type="date" class="form-control form-control-sm" name="dsgnCnclDe" id="dsgnRtrcnDsgnCnclDe" th:value="${dsgnRtrcnInfo.dsgnCnclDe}">
                             </div>
                         </div>
                         <div class="mb-2 form-group row required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dsgnRtrcnPopupAvailableStartDate"><strong>유효지정 시작일</strong></label>
                             <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="dsgnBgngDe" id="dsgnBgngDe" value=""/>
+                                <input type="date" class="form-control form-control-sm" name="dsgnBgngDe" id="dsgnRtrcnDsgnBgngDe" th:value="${dsgnRtrcnInfo.dsgnBgngDe}">
                             </div>
                         </div>
                         <div class="mb-0 form-group row required">
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dsgnRtrcnPopupAvailableEndDate"><strong>유효지정 만료일</strong></label>
                             <div class="col-12">
-                                <input type="date" class="form-control form-control-sm" name="dsgnEndDe" id="dsgnEndDe"  value=""/>
+                                <input type="date" class="form-control form-control-sm" name="dsgnEndDe" id="dsgnRtrcnDsgnEndDe" th:value="${dsgnRtrcnInfo.dsgnEndDe}">
                             </div>
                         </div>
                     </div>
@@ -58,15 +65,19 @@ function dsgnRtrcnSaveBtn(){
 
     var params ={
     	  prgrmid      : ""+prgrmid
-        , dsgnCycl     : $("#dsgnCycl").val()
-        , dsgnNo       : $("#dsgnNo").val()
-        , dsgnObtainDe : $("#dsgnObtainDe").val()
-        , dsgnCnclDe   : $("#dsgnCnclDe").val()
-		, dsgnBgngDe   : $("#dsgnBgngDe").val()
-		, dsgnEndDe    : $("#dsgnEndDe").val()
-		, sttsCd       : "111112"    //지정탈락
+
+        , dsgnCnclDe   : $("#dsgnRtrcnDsgnCnclDe").val()
+		, dsgnBgngDe   : $("#dsgnRtrcnDsgnBgngDe").val()
+		, dsgnEndDe    : $("#dsgnRtrcnDsgnEndDe").val()
+		, sttsCd       : "132102"    //지정상태코드- 지정탈락
+
+		, dsgnCycl     :$("#dsgnRtrcnDsgnCycl").val()
+		, dsgnNo       :$("#dsgnRtrcnDsgnNo").val()
+		, dsgnObtainDe :$("#dsgnRtrcnDsgnObtainDe").val()
+		, hstryid      :$("#dsgnRtrcnHstryid").val()
+		, prgrmid      :$("#dsgnRtrcnPrgrmid").val()
     }
-debugger;
+
     if(displayWorkProgress()){
         $.ajax({
             url : "/mng/dsgnPrgrm/insertDsgnHstry.do",
@@ -76,7 +87,7 @@ debugger;
             data : params,
             success : function (data){
                alert(data.msg);
-               //dsgnPrgrmOutlModal.hide();
+               dsgnRtrcnModal.hide();
                gridHelper1.resetListContent();
                closeWorkProgress();
             }

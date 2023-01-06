@@ -19,7 +19,7 @@ import lombok.Data;
  *
  * <pre>
  * com.kbrainc.plum.mng.srvy.model
- * - TrprVo.java
+ * - SrvyUserVo.java
  * </pre> 
  *
  * @ClassName : SrvyUserVo

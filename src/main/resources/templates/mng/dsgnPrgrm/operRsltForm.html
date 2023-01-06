@@ -1,4 +1,6 @@
 <form id="operRsltFrm">
+<input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmBscInfo.prgrmid}">
+<input type="hidden" id="instRgnCd" name="instRgnCd" th:value="${prgrmBscInfo.instRgnCd}">
 <div class="tab-pane" id="operationResult" role="tabpanel">
 	<div class="card-header p-t-0 p-b-0">
 	    <h3 class="sub-title"><strong>기본 정보</strong></h3>
@@ -9,7 +11,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultProgramName"><strong>프로그램명</strong></label>
 	                <div class="col-sm-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultProgramName" id="operationResultProgramName" placeholder="Text Input Validation" value="keepgo" readonly="">
+	                    <input type="text" class="form-control form-control-sm" name="operationResultProgramName" id="operationResultProgramName" placeholder="Text Input Validation" th:value="${prgrmBscInfo.prgrmNm}" readonly="">
 	                </div>
 	            </div>
 	        </div>
@@ -17,7 +19,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultAgencyName"><strong>기관명</strong></label>
 	                <div class="col-sm-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultAgencyName" id="operationResultAgencyName" placeholder="Text Input Validation" value="keepgo" readonly="">
+	                    <input type="text" class="form-control form-control-sm" name="operationResultAgencyName" id="operationResultAgencyName" placeholder="Text Input Validation" th:value="${prgrmBscInfo.instNm}" readonly="">
 	                </div>
 	            </div>
 	        </div>
@@ -28,17 +30,7 @@
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 	                    <strong>지역</strong></div>
 	                <div class="col-12">
-	                    <select name="operationResultRegionSelect" class="form-select form-select-sm form-control-sm" disabled="">
-	                        <option value="opt1">Select One Value Only
-	                        </option>
-	                        <option value="opt2">Type 2</option>
-	                        <option value="opt3">Type 3</option>
-	                        <option value="opt4">Type 4</option>
-	                        <option value="opt5">Type 5</option>
-	                        <option value="opt6">Type 6</option>
-	                        <option value="opt7">Type 7</option>
-	                        <option value="opt8">Type 8</option>
-	                    </select>
+                        <th:block kattr:select_rgn="rgnCd" selectedCd="${prgrmBscInfo.instRgnCd}" width="50%" firstOptTxt="- 선택 -" firstOptVal="" readonly>
 	                </div>
 	            </div>
 	        </div>
@@ -46,7 +38,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultAssignStatus"><strong>지정상태</strong></label>
 	                <div class="col-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultAssignStatus" id="operationResultAssignStatus" placeholder="Text Input Validation" value="keepgo" readonly/>
+	                    <input type="text" class="form-control form-control-sm" name="operationResultAssignStatus" id="operationResultAssignStatus" placeholder="Text Input Validation" th:value="${prgrmBscInfo.sttsCd}" readonly/>
 	                </div>
 	            </div>
 	        </div>
@@ -56,7 +48,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultDegree"><strong>차수 / 지정번호</strong></label>
 	                <div class="col-sm-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultDegree" id="operationResultDegree" placeholder="Text Input Validation" value="keepgo" readonly="">
+	                    <input type="text" class="form-control form-control-sm" name="operationResultDegree" id="operationResultDegree" placeholder="Text Input Validation" th:value="${prgrmBscInfo.cyclNo}" readonly="">
 	                </div>
 	            </div>
 	        </div>
@@ -64,7 +56,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultAssignAvailableDate"><strong>지정유효기간</strong></label>
 	                <div class="col-sm-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultAssignAvailableDate" id="operationResultAssignAvailableDate" placeholder="Text Input Validation" value="keepgo" readonly="">
+	                    <input type="text" class="form-control form-control-sm" name="operationResultAssignAvailableDate" id="operationResultAssignAvailableDate" placeholder="Text Input Validation" th:value="${prgrmBscInfo.dsgnPrd}" readonly="">
 	                </div>
 	            </div>
 	        </div>
@@ -76,6 +68,11 @@
 	<div class="card-block-small p-t-0">
 	    <div class="col-12 table-border-style">
 	        <div class="table-responsive">
+
+                <!-- 운영결과 목록 -->
+                <table id="operRsltGrid" class="table"></table>
+                <div id="listPager2" class="text-center"></div>
+<!--
 	            <table class="table">
 	                <thead>
 	                <tr>
@@ -110,9 +107,11 @@
 	                </tr>
 	                </tbody>
 	            </table>
+ -->
 	        </div>
 	    </div>
 	</div>
+<!--
 	<div class="card-header p-t-0 p-b-0">
 	    <h3 class="sub-title"><strong>운영결과서 확인 - 프로그램 개요</strong></h3>
 	</div>
@@ -122,7 +121,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultProgramIntroProgramName"><strong>프로그램명</strong></label>
 	                <div class="col-sm-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultProgramIntroProgramName" id="operationResultProgramIntroProgramName" placeholder="Text Input Validation" value="keepgo" readonly="">
+	                    <input type="text" class="form-control form-control-sm" name="operationResultProgramIntroProgramName" id="operationResultProgramIntroProgramName" placeholder="Text Input Validation" th:value="${prgrmBscInfo.prgrmNm}" readonly="">
 	                </div>
 	            </div>
 	        </div>
@@ -130,7 +129,7 @@
 	            <div class="mb-0 form-group">
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operationResultProgramIntroAgencyName"><strong>기관명</strong></label>
 	                <div class="col-sm-12">
-	                    <input type="text" class="form-control form-control-sm" name="operationResultProgramIntroAgencyName" id="operationResultProgramIntroAgencyName" placeholder="Text Input Validation" value="keepgo" readonly="">
+	                    <input type="text" class="form-control form-control-sm" name="operationResultProgramIntroAgencyName" id="operationResultProgramIntroAgencyName" placeholder="Text Input Validation" th:value="${prgrmBscInfo.prgrmNm}" readonly="">
 	                </div>
 	            </div>
 	        </div>
@@ -849,9 +848,103 @@
 	        <button class="btn btn-primary m-r-5" data-bs-toggle="modal" data-bs-target="#operationResultRequestStatusUpdatePopup">상태변경</button>
 	        <button class="btn btn-primary">수정</button>
 	    </div>
+-->
 </div>
 </form>
 <script th:inline="javascript">
+
+initOperRsltFrm();
+
+var operRsltGrid;
+
+function initOperRsltFrm() {
+
+    //$("#rgnCd").val($("#instRgnCd").val());
+    //operRsltGrid = new GridHelper('operRsltGrid','contentPanel');
+     writeOperRsltGridData();
+}
+
+//목록
+function writeOperRsltGridData(){
+    $("#operRsltGrid").jsGrid({
+        height: "auto",
+        width: "100%",
+        autoload: true,
+        sorting: true,
+        paging: false,
+        pagerContainer: "#listPager2",
+        pagerFormat: "{first} {prev} {pages} {next} {last}",
+        pagePrevText: "이전",
+        pageNextText: "다음",
+        pageFirstText: " < 처음 ㅣ",
+        pageLastText: " | 마지막 >",
+        pageSize: 10,
+        pageButtonCount: 10,
+        pageLoading: true,
+        pageIndex: 1,
+        noDataContent: "데이터가 없습니다.",
+
+        controller: {
+            loadData: function (filter) {
+                var data = $.Deferred();
+
+//                 var formData = $('#searchFrm').serializeArray();
+                var formData = $('#operRsltFrm').serializeArray();
+                var params = [
+                        {name: "pageNumber", value: filter.pageIndex},
+                        {name: "rowPerPage", value: filter.pageSize},
+                ]
+
+                if(filter.sortField != undefined){
+                    params.push({name: "orderField", value: filter.sortField});
+                    params.push({name: "orderDirection", value: filter.sortOrder});
+                }else{
+                    params.push({name: "orderField", value: 'cyclid'});
+                }
+
+                formData = formData.concat(params);
+
+                $.ajax({
+                  type: "GET",
+                  contentType: "application/json; charset=utf-8",
+                  url: "/mng/dsgnPrgrm/selectOperRsltList.do",
+                  dataType: "json",
+                  data: formData
+                }).done(function(response){
+
+
+                    var da = {
+                            data : escapeGridData(response.operRsltList)
+                            ,itemsCount : response.totalCount
+                        };
+                  data.resolve(da);
+                });
+                return data.promise();
+            },
+        },
+        fields: [
+             { name: 'cyclid', css:'hide'}
+            ,{ title: '회차'         ,name: 'cycl',          type: "number", width: "20",  align:"center"}
+            ,{ title: '제출기간'     ,name: 'sbmsnPrd',      type: "text",   width: "200", align:"center"}
+            ,{ title: '제출확인'     ,name: '',              type: "text",   width: "20", align:"center"}
+            ,{ title: '최종제출일시' ,name: '',              type: "text",   width: "20", align:"center" }
+            ,{ title: '제출상태'     ,name: 'sbmsnSttsCdNm', type: "text",   width: "20", align:"center" }
+        ],
+
+        rowClick: function(args) {
+
+            if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+
+            //var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + args.item.prgrmid;
+
+            //gridHelper1.loadContent(detailUrl);
+            //gridHelper1.rowClick(args);
+        },
+        onPageChanged: function(args) {
+            selectedItems = [];
+        }
+    });
+}
 
 </script>
 </div>

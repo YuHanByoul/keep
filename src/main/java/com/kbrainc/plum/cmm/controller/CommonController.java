@@ -26,8 +26,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
-import com.kbrainc.plum.mng.bbs.model.PstVo;
-import com.kbrainc.plum.mng.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.front.bbs.model.PstVo;
+import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
