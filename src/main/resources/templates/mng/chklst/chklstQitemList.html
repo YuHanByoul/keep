@@ -22,9 +22,7 @@
                                         <div class="input-group input-group-sm input-group-dropdown mb-0">
                                             <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
                                                 <option value="">- 선택 -</option>
-                                                <option value="instNm">기관명</option>
-                                                <option value="instCd">기관코드</option>
-                                                <option value="qestnrNm">설문지명</option>
+                                                <option value="cn">내용</option>
                                             </select>
                                             <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
                                         </div>
@@ -32,20 +30,12 @@
                                 </div>
                                 <div class="col-lg-3 mb-2 mb-lg-0">
                                     <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트(기관)</strong></div>
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>구분</strong></div>
                                         <div class="col-sm-12">
-                                            <select name="searchSiteid" id="searchSiteid" class="form-select form-select-sm form-control-sm">
+                                            <select name="searchSeCd" id="searchSeCd" class="form-select form-select-sm form-control-sm">
                                                 <option value="">- 전체 -</option>
-                                                <option th:each="site: ${siteList}" th:value="${site.siteid}" th:text="${site.siteNm + ' (' + site.instNm + ')'}"></option>
+                                                <option th:each="code: ${codeList}" th:if="${code.upprCd != '0'}" th:value="${code.cd}" th:text="${code.upprCdNm + ' > ' + code.cdNm}"></option>
                                             </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-lg-3 mb-2 mb-lg-0">
-                                    <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>설문지 종류</strong></div>
-                                        <div class="col-sm-12">
-                                            <th:block kattr:select_code="searchQestnrKndCd" grpCd="110" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
                                         </div>
                                     </div>
                                 </div>
@@ -54,8 +44,8 @@
                         <!-- //키워드 filter -->
                         <!-- 키워드 filter-btn -->
                         <div class="m-t-20 text-center">
-                            <button type="submit" class="btn btn-disabled m-r-5" onclick="qestnr.initSearch();">초기화</button>
-                            <button type="submit" class="btn btn-primary" onclick="qestnr.onSearch();">검색</button>
+                            <button type="submit" class="btn btn-disabled m-r-5" onclick="chklstQitem.initSearch();">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="chklstQitem.onSearch();">검색</button>
                         </div>
                     </div>
                 </div>
@@ -66,17 +56,17 @@
                 <div class="card">
                     <div class="row p-20 p-b-0">
                         <div class="col-12 col-md-6">
-                            <h5><strong>설문지 검색 결과</strong></h5>
+                            <h5><strong>체크리스트 문항 검색 결과</strong></h5>
                         </div>
                         <div class="col-12 col-md-6 text-right">
-                            <th:block sec:authorize-url="/mng/qestnr/qestnrInsertForm.html">
-                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="qestnr.onInsertForm();">등록</button>
+                            <th:block sec:authorize-url="/mng/chklst/chklstQitemInsertForm.html">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="chklstQitem.onInsertForm();">등록</button>
                             </th:block>
                         </div>
                     </div>
                     <div class="card-block-small">
-                        <table id="qestnrGrid" class="table-responsive"></table>
-                        <div id="qestnrPager" class="text-center"></div>
+                        <table id="chklstQitemGrid" class="table-responsive"></table>
+                        <div id="chklstQitemPager" class="text-center"></div>
                     </div>
                 </div>
                 <!-- //그리드 부분 -->
@@ -90,11 +80,11 @@
         </div>
     </div>
     <script th:inline="javascript">
-        var qestnr = {
-            listUrl: "/mng/qestnr/selectQestnrList.do",
+        var chklstQitem = {
+            listUrl: "/mng/chklst/selectChklstQitemList.do",
             
             init: function() {
-                qestnrGrid = new GridHelper("qestnrGrid", "contentPanel");
+                chklstQitemGrid = new GridHelper("chklstQitemGrid", "contentPanel");
                 this.setGrid();
                 this.registEvent();                
             },
@@ -108,17 +98,17 @@
             },
             
             onSearch: function() {
-                qestnrGrid.resetListContent();
+                chklstQitemGrid.resetListContent();
             },
             
             setGrid: function() {
-                $("#qestnrGrid").jsGrid({
+                $("#chklstQitemGrid").jsGrid({
                     height: "auto",
                     width: "100%",
                     autoload: true,
                     sorting: false,
                     paging: true,
-                    pagerContainer: "#qestnrPager",
+                    pagerContainer: "#chklstQitemPager",
                     pagerFormat: "{first} {prev} {pages} {next} {last}",
                     pagePrevText: "이전",
                     pageNextText: "다음",
@@ -135,8 +125,7 @@
                             var params = {
                                 "searchType": $('#searchType').val(),
                                 "searchKeyword": $('#searchKeyword').val(),
-                                "searchSiteid": $('#searchSiteid').val(),
-                                "searchQestnrKndCd": $('#searchQestnrKndCd').val(),
+                                "searchSeCd": $('#searchSeCd').val(),
                                 "pageNumber": filter.pageIndex,
                                 "rowPerPage": filter.pageSize,
                                 "orderField": "REG_DT",
@@ -145,7 +134,7 @@
                             $.ajax({
                               type: "GET",
                               contentType: "application/json; charset=utf-8",
-                              url: qestnr.listUrl,
+                              url: chklstQitem.listUrl,
                               data: params,
                               dataType: "json"
                             }).done(function(response) {
@@ -161,41 +150,35 @@
                     },
                     fields: [
                         {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                        {title: "사이트(기관)", name: "siteNm", type: "number", width: "200", align: "center", itemTemplate: function(value, item) {
-                            return value + " (" + item.instNm + ")";
+                        {title: "구분", name: "cdNm", type: "number", width: "180", align: "left", itemTemplate: function(value, item) {
+                            return item.upprCdNm + " > " + value;
                         }},
-                        {title: "설문지 종류", name: "qestnrKndCdNm", type: "text", width: "100", align: "left"},
-                        {title: "설문지명", name: "qestnrNm", type: "text" , width: "200"},
-                        {title: "문항수", name: "qitemCnt", type: "number", align: "center", width: "80"},
-                        {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
-                            if(item.qitemCnt == 0) return "-";
-                            return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
-                                alert("설문지 미리보기");
-                                return false; 
-                            });
-                        }}
+                        {title: "내용", name: "cn", type: "text", width: "300", align: "left"},
+                        {title: "배점", name: "altm", type: "text" , width: "80", align: "center"},
+                        {title: "수정일", name: "mdfcnDt", type: "number", align: "center", width: "100"},
+                        {title: "등록일", name: "regDt", type: "text", align: "center", width: "100"}
                     ],
                     rowClick: function(args) { 
                         if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                        var detailUrl = "/mng/qestnr/qestnrDetail.html?qestnrid=" + args.item.qestnrid; 
-                        qestnrGrid.loadContent(detailUrl);
-                        qestnrGrid.rowClick(args);
+                        var detailUrl = "/mng/chklst/chklstQitemUpdateForm.html?qitemid=" + args.item.qitemid; 
+                        chklstQitemGrid.loadContent(detailUrl);
+                        chklstQitemGrid.rowClick(args);
                     }
                 });
             },
             
             resetGrid: function() {
-                qestnrGrid.resetListContent();
+                chklstQitemGrid.resetListContent();
             },
             
             onInsertForm() {
-                var insertUrl = "/mng/qestnr/qestnrRegist.html";
-                qestnrGrid.loadContent(insertUrl);
+                var insertUrl = "/mng/chklst/chklstQitemInsertForm.html";
+                chklstQitemGrid.loadContent(insertUrl);
             }
         };
         
         $(function() {
-            qestnr.init();
+            chklstQitem.init();
         });
     </script>
 </div>
