@@ -33,6 +33,7 @@ import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  * 
@@ -97,8 +98,16 @@ public class CommonController {
             mav.setViewName("mng/login");
         } else { // 사용자 사이트
             if (timeout) {
-                mav.addObject("timeout", "true");
-                mav.setViewName("front/login");
+                if (CommonUtil.portalUrl.equals(request.getRequestURL().toString())) {
+                    mav.addObject("timeout", "true");
+                    mav.setViewName("front/login");  
+                } else {
+                    RedirectView redirectView = new RedirectView();
+                    redirectView.setUrl(CommonUtil.portalUrl + "?timeout=true");
+                    redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
+                    mav.setView(redirectView);
+                    return mav;
+                }
             } else if (error) {
                 mav.addObject("error", "true");
                 mav.setViewName("front/login");

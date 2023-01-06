@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <style>
+        .hide {
+            display:none;
+        }
+    </style>
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <!-- 필터 부분 -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <!-- 키워드 filter -->
+                        <form id="searchForm" name="searchForm" action="post" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-12 col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드 asd</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                                <option value="">- 선택 -</option>
+                                                <option value="ttl">제목</option>
+                                                <option value="cn">내용</option>
+                                                <option value="nm">작성자</option>
+                                                <option value="id">아이디</option>
+                                            </select>
+                                            <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+                                        <div class="col-sm-12">
+                                            <th:block kattr:select_code="clsfCd" grpCd="112" upprCd="0" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-lg-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                                        <div class="col-sm-12">
+                                            <span kattr:select_code="sttsCd" grpCd="113" firstOptTxt="- 전체 -" isAdmin="true">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="m-t-20 text-center">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="searchHelpDesk()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- //필터 부분 -->
+
+            <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>탄소중립 헬프데스크 검색결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/helpDesk/deleteHelpDesk.do">
+                                <button type="button" class="btn btn-inverse" onclick="deleteHelpDesk()">삭제</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <div class="dt-responsive table-responsive">
+                            <div id="order-table_wrapper"class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+
+            <div id="contentPanel" class="row">
+            </div>
+        </div>
+    </div>
+    <!-- Page-body end -->
+
+    <!-- 담당자지정 회원검색 팝업 Start -->
+    <div class="modal fade" id="helpDeskManagerSearchModal" aria-hidden="true" data-bs-backdrop="static"></div>
+    <!-- 담당자지정 회원검색 팝업 end  -->
+
+    <script th:inline="javascript">
+        var helpDeskListUrl = "/mng/helpDesk/selectHelpDeskList.do";
+        var helpDeskDetailUrl = "/mng/helpDesk/helpDeskForm.html";
+        var deleteHelpDeskUrl = "/mng/helpDesk/deleteHelpDesk.do";
+        var gridHelper1;
+        var selectedItems = [];
+
+        $(function(){
+            gridHelper1 = new GridHelper('jsGrid','contentPanel');
+            writeJsGridData();
+        })
+
+        function mapCamelCaseToUnderscore(sortField) {
+            var result = "";
+            for (var i = 0; i < sortField.length; i++) {
+                if (sortField[i] === sortField[i].toUpperCase()) {
+                    result += "_";
+                    result += sortField[i].toLowerCase();
+                } else {
+                    result += sortField[i];
+                }
+            }
+            return result;
+        }
+
+        function writeJsGridData() {
+            $("#jsGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: true,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+
+                controller: {
+                    loadData: function (filter) {
+                        var data = $.Deferred();
+
+                        var formData = $('#searchForm').serializeArray();
+                        var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                        ]
+
+                        if(filter.sortField != undefined){
+                            params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                            params.push({name: "orderDirection", value: filter.sortOrder});
+                        }else{
+                            params.push({name: "orderField", value: 'assign_yn desc, reg_dt'});
+                        }
+
+                        formData = formData.concat(params);
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: helpDeskListUrl,
+                            dataType: "json",
+                            data: formData,
+                        }).done(function(response){
+                            var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                            data.resolve(da);
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {
+                        headerTemplate: function() {
+                            return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                        },
+                        itemTemplate: function(_, item) {
+                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                                .prop("checked", $.inArray(item, selectedItems) > -1)
+                                .on("change", function () {
+                                    $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                                });
+                        },
+                        align: "center",
+                        width: "50",
+                        sorting: false
+                    },
+                    { name: 'inqryid', css:'hide'},
+                    { title:'No.', name: 'rowNumber', type: "number" , width: "80", align:"center", sorting: false},
+                    { title:'제목', name: 'ttl', type: "text" , width: "300"},
+                    { title:'분류', name: 'clsfNm', type: "text" , width: "150", align:"center", sorting: false},
+                    { title:'작성자', name: 'nm', type: "text" , width: "120", align:"center"},
+                    { title:'작성일', name: 'regDt', type: "text" , width: "150", align:"center"},
+                    { title:'상태', name: 'sttsCdNm', type: "text" ,width: "120", align:"center",sorting: false},
+                    { title:'처리자', name: 'prcrNm', type: "text" ,width: "120", align:"center"}
+                ],
+                /*[# sec:authorize-url="/mng/helpDesk/helpDeskForm.html"]*/
+                rowClick: function (args) {
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    gridHelper1.loadContent(helpDeskDetailUrl + '?inqryid=' + args.item.inqryid);
+                },
+                /*[/]*/
+                onPageChanged: function (args) {
+                    selectedItems = [];
+                }
+            });
+
+            var selectItem = function(item) {
+                selectedItems.push(item);
+
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            var unselectItem = function(item) {
+                selectedItems = $.grep(selectedItems, function(i) {
+                    return i !== item;
+                });
+                if(selectedItems.length == 0) {
+                    $('#selectAllCheckbox').attr('checked', false);
+                }
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            };
+
+            $("#selectAllCheckbox").click(function(item) {
+                selectedItems = [];
+                if(this.checked) { // check select status
+                    $('.singleCheckbox').each(function() {
+                        this.checked = true;
+                        selectItem($(this).parent().next().text());
+                    });
+                }else {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = false;
+                        unselectItem(item);
+                    });
+                    selectedItems = [];
+                }
+            });
+        }
+
+        function searchInit() {
+            $("#searchType").val('');
+            $("#searchKeyword").val('');
+            $("#clsfCd").val('');
+            $("#sttsCd").val('');
+        }
+        function searchHelpDesk() {
+            var searchType = $("#searchType").val();
+            var searchKeyword = $("#searchKeyword").val();
+
+            if(searchType != '' && searchKeyword == ""){
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            gridHelper1.resetListContent();
+        }
+
+        function deleteHelpDesk() {
+            if(selectedItems.length <=0 ){
+                alert("삭제할 문의글을 선택해주십시오.");
+                return;
+            }
+
+            if(!confirm("선택한 문의글들을 삭제하시겠습니까?"))return;
+
+            var deleteHelpDeskIds = selectedItems.join(",")
+            var url = deleteHelpDeskUrl+"?deleteHelpDeskIds="+deleteHelpDeskIds;
+
+            var isSec = false;
+            /*[# sec:authorize-url="/mng/helpDesk/deleteHelpDesk.do"]*/
+            isSec = true;
+            /*[/]*/
+            if (!isSec) {
+                alert('접근권한이 없습니다.');
+                return;
+            }
+
+            if(displayWorkProgress()){
+                $.ajax({
+                    url : url,
+                    type: 'POST',
+                    cache : false,
+                    success : function (data){
+                        alert(data.msg);
+                        gridHelper1.resetListContent();
+                        selectedItems = [];
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+    </script>
+</div>
+</body>
+</html>

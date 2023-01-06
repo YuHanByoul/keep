@@ -1,8 +1,9 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.service;
 
-import java.util.List;
-
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+
+import java.util.List;
 
 /**
  *
@@ -44,6 +45,38 @@ public interface DsgnPrgrmService {
 	*/
 	public List<DsgnPrgrmVo> selectDsgnDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	 * 이의신청 목록 조회
+	 *
+	 * @param dsgnPrgrmVo
+	 * @return list
+	 * @throws Exception
+	 * @Title : selectObjcList
+	 * @Description : 이의신청 목록 조회
+	 */
+	public List<DsgnPrgrmObjcVo> selectObjcList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 이의신청 정보 조회
+	 *
+	 * @param dsgnPrgrmObjcVo
+	 * @return DsgnPrgrmObjcVo
+	 * @throws Exception
+	 * @Title : selectObjcInfo
+	 * @Description : 이의신청 정보 조회
+	 */
+	public DsgnPrgrmObjcVo selectObjcInfo(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
+
+	/**
+	 * 이의신청 답변 등록
+	 *
+	 * @param dsgnPrgrmObjcVo
+	 * @return int
+	 * @throws Exception
+	 * @Title : insertObjcAns
+	 * @Description : 이의신청 답변 등록
+	 */
+	public int insertObjcAns(DsgnPrgrmObjcVo dsgnPrgrmObjcVo) throws Exception;
 	/**
 	* 지정내역 저장
 	*

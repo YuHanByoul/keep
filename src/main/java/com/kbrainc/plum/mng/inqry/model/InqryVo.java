@@ -1,12 +1,14 @@
 package com.kbrainc.plum.mng.inqry.model;
 
-import java.util.Date;
-
-import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import com.kbrainc.plum.rte.model.CodeInfoVo;
+import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 
@@ -26,8 +28,6 @@ import lombok.Data;
  */
 @Data
 public class InqryVo extends ParentRequestVo {
-	/** 코드그룹 아이디 */
-	private String cdgrpid = "102";
 
 	/** 로그인 사용자 정보*/
 	private UserVo user;
@@ -84,6 +84,44 @@ public class InqryVo extends ParentRequestVo {
 	/** 답변 상태 코드 */
 	private String inqrySttsCd;
 
+	/** 답변 상태 코드 이름*/
+	private String inqrySttsCdNm;
+
+	public void setInqryClCd(String inqryClCd) {
+		this.inqryClCd = inqryClCd;
+		//이미 코드이름이 있다면, 무시.
+		if (CommonUtil.isEmpty(this.inqryClNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.inqryClCd);
+				this.inqryClNm = code.getCdNm();
+			} catch (NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			} catch (Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	public void setInqrySttsCd(String inqrySttsCd) {
+		this.inqrySttsCd = inqrySttsCd;
+		//이미 코드이름이 있다면, 무시.
+		if (CommonUtil.isEmpty(this.inqrySttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.inqrySttsCd);
+				this.inqrySttsCdNm = code.getCdNm();
+			} catch (NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			} catch (Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
     public void setRegDt(Date regDt) {
         this.regDt = regDt != null ? (Date) regDt.clone() : null;
     }

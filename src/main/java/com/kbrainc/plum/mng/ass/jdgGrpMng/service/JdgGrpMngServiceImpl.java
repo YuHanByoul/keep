@@ -143,8 +143,11 @@ public class JdgGrpMngServiceImpl extends PlumAbstractServiceImpl implements Jdg
                 .filter(insertId -> existingExpertList.stream().noneMatch(expert -> insertId.equals(expert.getUserid())))
                 .toArray(size -> new Integer[size]);
 
-        jdgGrpExpertVo.setInsertIds(insertIds);
-        return jdgGrpMngDao.insertJdgGrpExpert(jdgGrpExpertVo);
+        if(insertIds.length == 0) return true;
+        else {
+            jdgGrpExpertVo.setInsertIds(insertIds);
+            return jdgGrpMngDao.insertJdgGrpExpert(jdgGrpExpertVo);
+        }
     }
 
     /**
