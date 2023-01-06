@@ -68,6 +68,9 @@
 
         WHERE 1=1
         <if test="searchKeyword != null and searchKeyword != ''">
+          <if test="searchType == 'all'">
+            AND B.NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+          </if>
             <if test="searchType == 'nm' ">
             AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
@@ -211,7 +214,7 @@
             , B.ACNT
         FROM TB_ASS_EXPRT_LOG A
         INNER JOIN TB_CMM_USER B
-            ON A.USERID = B.USERID
+            ON A.RGTRID = B.USERID
         WHERE
             A.USERID= #{userid}
         <include refid="PaginationMapper.footer"/>
@@ -253,6 +256,7 @@
             , ACTVT_BGNG_DE
             , ACTVT_END_DE
             , ACTVT_YN
+            , IF(ACTVT_YN= 'Y', CONCAT(ACTVT_BGNG_DE, ' ~ 활동중' ), CONCAT(ACTVT_BGNG_DE, ' ~ ' , ACTVT_END_DE )) AS ACTVT_DE
             , ACTVT_HR
             , IDNTY_INST_NM
             , ACTVT_CN
@@ -260,8 +264,9 @@
             , CRTF_FILEID
             , ARTCLASS_FILEID
             , ORDR
-            FROM TB_ASS_EXPRT_CAREER
-            WHERE USERID= #{userid}
+        FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+        ORDER BY ORDR
     </select>
 
     <!-- 전문가 자격증 조회 -->
@@ -276,8 +281,9 @@
             , ACQS_DE
             , CRTFCT_FILEID
             , ORDR
-            FROM TB_ASS_EXPRT_CRTFCT
-            WHERE USERID= #{userid}
+        FROM TB_ASS_EXPRT_CRTFCT
+        WHERE USERID= #{userid}
+        ORDER BY ORDR
     </select>
 
     <!-- 전문가 재직 조회 -->
@@ -292,10 +298,12 @@
             , HDOF_BGNG_DE
             , HDOF_END_DE
             , HDOF_YN
+            , IF(HDOF_YN= 'Y', CONCAT(HDOF_BGNG_DE, ' ~ 활동중' ), CONCAT(HDOF_BGNG_DE, ' ~ ' , HDOF_END_DE )) AS HDOF_DE
             , HDOFCRTF_FILEID
             , ORDR
         FROM TB_ASS_EXPRT_HDOF
         WHERE USERID= #{userid}
+        ORDER BY ORDR
     </select>
 
 </mapper>

@@ -39,6 +39,8 @@ public class ExpertHdofVo {
     private String hdofBgngDe;
     /** 재직 종료 일자 */
     private String hdofEndDe;
+    /**재직 기간*/
+    private String hdofDe;
     /** 재직 여부*/
     private String hdofYn;
     /** 재직증명서 파일아이디 */

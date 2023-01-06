@@ -26,6 +26,8 @@ public class ExpertCareerVo {
     private String actvtBgngDe;
     /** 활동 종료 일자 */
     private String actvtEndDe;
+    /** 활동 기간 */
+    private String actvtDe;
     /** 활동 여부 */
     private String actvtYn;
     /** 활동 시간 */
