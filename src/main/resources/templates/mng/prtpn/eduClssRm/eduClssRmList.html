@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+		<style>
+		.hide
+		{
+		   display:none;
+		}
+		</style>
+		
+		<div class="page-body">
+			<div class="row">
+
+				<form name="searchFrm" id="searchFrm" action="@{/}" onsubmit="return false;" class="card">
+					<!-- 필터 부분 -->
+					<div class="card-block-small">
+						<!-- 키워드 filter -->
+						<div class="row">
+							<div class="col-lg-3 mb-2">
+								<div class="mb-0 form-group row">
+	                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchKeyword"><strong>교육관명</strong></label>
+	                                <div class="col-12">
+	                                    <input type="text" class="form-control form-control-sm" id="searchKeyword" name="searchKeyword" aria-label="Text input with dropdown button">
+	                                </div>
+								</div>
+							</div>
+							<div class="col-lg-3 mb-2">
+								<div class="mb-0 form-group row">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+										<strong>교육관지역</strong>
+									</div>
+									<div class="col-sm-12">
+									    <th:block kattr:select_code="searchCtprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>									    
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3 mb-2">
+								<div class="mb-0 form-group row">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+										<strong>교육유형</strong>
+									</div>
+									<div class="col-sm-12">
+										<th:block kattr:select_code="searchEduTypeCd" grpCd="144" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3 mb-2">
+								<div class="mb-0 form-group row">
+									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+										<strong>위탁기관</strong>										
+									</div>
+									<div class="col-sm-12">
+                                        <th:block kattr:select_inst="searchCnsgnInstId" selectedCd="" width="100%" firstOptTxt="- 전체 -" firstOptVal="" addClass="form-select form-select-sm form-control-sm" isAdmin="true">									
+									</div>
+								</div>
+							</div>							
+						</div>
+						<!-- //키워드 filter -->
+						<!-- 키워드 filter-btn -->
+						<div class="m-t-20 text-center">
+							<button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+							<button type="submit" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+						</div>
+					</div>
+				</form>
+
+				<div class="card">
+					<div class="row p-20 p-b-0">
+						<div class="col-12 col-md-6">
+							<h5>
+								<strong>교육관 검색결과</strong>
+							</h5>
+						</div>
+						<div class="col-12 col-md-6 text-right">
+							<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">등록</button>
+						</div>
+					</div>
+					<div class="card-block-small">
+						<div class="dt-responsive table-responsive">
+							<div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+								<table id="jsGrid" class="table-responsive"></table>
+								<div id="listPager" class="text-center"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Content Area -->
+				<div id="contentPanel" style="display: none" class="card"></div>
+			</div>
+		</div>
+
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script th:inline="javascript">
+			var selectedItems = [];
+			var gridHelper1;
+			$(function() {
+				gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+				writeJsGridData();
+			});
+
+			function fn_goInsertForm() {
+				var insertUrl = "/mng/prtpn/eduClssRm/eduClssRmInsertForm.html";
+				gridHelper1.loadContent(insertUrl);
+			}
+
+			function fn_searchForm() {
+				gridHelper1.resetListContent();
+			}
+
+			function fn_init() {
+				$("#searchKeyword").val('');
+				$("#searchCtprvnCd").val('');
+				$("#searchEduTypeCd").val('');
+				$("#searchCnsgnInstId").val('');
+				gridHelper1.resetListContent();
+			}
+
+			function writeJsGridData() {
+		        $("#jsGrid").jsGrid({
+		            height: "auto",
+		            width: "100%",
+		            autoload: true,
+		            sorting: true,
+		            paging: true,
+		            pagerContainer: "#listPager",
+		            pagerFormat: "{first} {prev} {pages} {next} {last}",
+		            pagePrevText: "이전",
+		            pageNextText: "다음",
+		            pageFirstText: " < 처음 ㅣ",
+		            pageLastText: " | 마지막 >",
+		            pageSize: 10,
+		            pageButtonCount: 10,
+		            pageLoading: true,
+		            pageIndex: 1,
+		            noDataContent: "데이터가 없습니다.",
+
+		            controller: {
+		                loadData: function (filter) {
+		                    var data = $.Deferred();
+		                                            
+		                    var formData = $('#searchFrm').serializeArray();
+		                    var params = [
+		                            {name: "pageNumber", value: filter.pageIndex},
+		                            {name: "rowPerPage", value: filter.pageSize},
+		                    ]
+		                    
+		                    if(filter.sortField != undefined){
+		                        params.push({name: "orderField", value: filter.sortField});
+		                        params.push({name: "orderDirection", value: filter.sortOrder});
+		                    }else{
+		                        params.push({name: "orderField", value: 'reg_dt'});
+		                    }
+		                    formData = formData.concat(params);
+		                    
+		                    $.ajax({
+		                        type: "GET",
+		                        contentType: "application/json; charset=utf-8",
+		                        url: "/mng/prtpn/eduClssRm/selectEduClssRmList.do",
+		                        dataType: "json",
+		                        data: formData,
+		                      }).done(function(response){
+		                          var da = {
+		                                  data : escapeGridData(response.list)
+		                                  ,itemsCount : response.totalCount
+		                              };
+		                        data.resolve(da);
+		                      });
+		                      return data.promise();
+		                  },				
+					},
+					
+					fields : [
+						{ name : 'clssrmId', css : 'hide' }
+					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
+					  , { title : '교육관명', name : 'clssrmNm', type : "text", width : "200", align : "center" }
+					  , { title : '교육관지역', name : 'ctprvnNm', type : "text", width : "120", align : "center" }
+					  , { title : '교육유형', name : 'eduTypeNm', type : "text", width : "120", align : "center" }
+					  , { title : '접수시작일시', name : 'rcptBgngDt', type : "text", width : "150", align : "center"} 
+                      , { title : '접수종료일시', name : 'rcptEndDt', type : "text", width : "150", align : "center"}
+                      , { title : '위탁기관', name : 'cnsgnInstNm', type : "text", width : "170", align : "center"}
+                      
+					],
+					
+					rowClick : function(args) {
+						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+						var detailUrl = detailUrl = "/mng/prtpn/eduClssRm/eduClssRmUpdateForm.html?clssrmId=" + args.item.clssrmId;
+							
+						gridHelper1.loadContent(detailUrl);
+						gridHelper1.rowClick(args);
+					},
+					onPageChanged : function(args) {
+						selectedItems = [];
+					}
+				});
+			}
+		</script>
+
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>
