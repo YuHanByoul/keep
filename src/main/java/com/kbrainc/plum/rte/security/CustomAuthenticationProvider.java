@@ -171,7 +171,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 if ("I".equals(loginUserType) && instid != null) {
                     if ("N".equals(instUseYn) || !"2".equals(instAprvSttsCd)) { // 기관이 미사용이거나 승인상태가 아닌경우
-                        request.setAttribute("message", "기관정보가 승인되지 않았습니다. 개인회원으로 다시 로그인 해주십시오.");
+                        request.setAttribute("message", "기관정보가 승인되지 않았습니다. 개인회원으로는 로그인이 가능합니다.");
                         throw new InternalAuthenticationServiceException("Login Error !!");
                     } else {
                         roleMap = new HashMap<String, Object>();
