@@ -28,6 +28,7 @@ public class FileVo {
     private String regDt;
     private int rgtrid;
     private int bbsid;
+    private int dwnldCnt;
     
     /** 비로그인_파일다운로드_여부 */
     private String nloginDwnldPermYn;
