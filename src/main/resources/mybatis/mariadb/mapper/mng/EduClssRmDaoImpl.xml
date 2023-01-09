@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EduClssRmDaoImpl.xml
+	Description : 환경교육 NOW -> 교육관관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmDao">
+    
+    <!-- 교육관관리 게시글 목록 조회 -->
+    <select id="selectEduClssRmList" parameterType="EduClssRmVo" resultType="EduClssRmVo">
+        /* EduClssRmDao.selectEnveduList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        	  A.CLSSRMID
+            , A.CLSSRM_NM
+            , A.CTPRVN_CD
+            , D.CD_NM AS CTPRVN_NM
+            , A.EDU_TYPE_CD
+            , E.CD_NM AS EDU_TYPE_NM
+            , A.CNSGN_INSTID
+            , C.INST_NM AS CNSGN_INSTNM
+            , A.RCPT_BGNG_DT
+            , A.RCPT_END_DT
+            , A.CLSSRM_FYER_APLY_LMT_CNT
+            , A.CLSSRM_PRGRM_MAX_APLY_INST_CNT
+            , A.CLSSRM_VIEWNG_MAX_APLY_NOPE
+            , A.RCPT_PSBLTY_BFR_DAYCNT
+            , A.RMRK
+            , A.MDFCN_DT
+        	, A.MDFRID
+            , A.REG_DT
+            , A.RGTRID            
+            , B.NM
+        FROM 
+            TB_EDU_CLSSRM A
+            LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
+            LEFT OUTER JOIN TB_CMM_INST C ON A.CNSGN_INSTID = C.INSTID
+            LEFT OUTER JOIN TB_CMM_CD D ON A.CTPRVN_CD = D.CD
+            LEFT OUTER JOIN TB_CMM_CD E ON A.EDU_TYPE_CD = E.CD
+        WHERE 
+            1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+            AND A.CLSSRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchCtprvnCd != null and searchCtprvnCd != ''">
+            AND A.CTPRVN_CD = #{searchCtprvnCd}
+            </if>
+            <if test="searchEduTypeCd != null and searchEduTypeCd != ''">
+            AND A.EDU_TYPE_CD = #{searchEduTypeCd}
+            </if>
+            <if test="searchCnsgnInstId != null and searchCnsgnInstId != ''">
+            AND A.CNSGN_INSTID = #{searchCnsgnInstId}
+            </if>                        
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 교육관관리 게시글 등록 --> 
+    <insert id="insertEduClssRm" parameterType="EduClssRmVo" keyProperty="EduClssRmVo">
+        /* EnveduDao.insertEnvedu */
+        INSERT INTO TB_EDU_CLSSRM (
+            CLSSRM_NM
+            , CTPRVN_CD
+            , EDU_TYPE_CD
+            , CNSGN_INSTID
+            , RCPT_BGNG_DT
+            , RCPT_END_DT
+            , CLSSRM_FYER_APLY_LMT_CNT
+            , CLSSRM_PRGRM_MAX_APLY_INST_CNT
+            , CLSSRM_VIEWNG_MAX_APLY_NOPE
+            , RCPT_PSBLTY_BFR_DAYCNT
+            , RMRK
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )VALUES(
+            #{clssrmNm}
+            ,#{ctprvnCd}
+            ,#{eduTypeCd}
+            ,#{cnsgnInstId}
+            ,#{rcptBgngDt}
+            ,#{rcptEndDt}
+            ,#{clssrmFyerAplyLmtCnt}
+            ,#{clssrmPrgrmMaxAplyInstCnt}
+            ,#{clssrmViewngMaxAplyNope}
+            ,#{rcptPsbltyBfrDaycnt}
+            ,#{rmrk}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+    
+    <!-- 교육관관리 상세조회 -->
+    <select id="selectEduClssRmInfo" parameterType="EduClssRmVo" resultType="EduClssRmVo"> 
+        /* EnveduDao.selectEnveduInfo */
+        SELECT 
+        	  A.CLSSRMID
+        	, A.CLSSRM_NM
+        	, A.CTPRVN_CD
+            , A.EDU_TYPE_CD
+            , A.CNSGN_INSTID
+        	, A.RCPT_BGNG_DT
+            , A.RCPT_END_DT
+        	, A.CLSSRM_FYER_APLY_LMT_CNT
+        	, A.CLSSRM_PRGRM_MAX_APLY_INST_CNT
+            , A.CLSSRM_VIEWNG_MAX_APLY_NOPE
+            , A.RCPT_PSBLTY_BFR_DAYCNT
+            , A.RMRK
+            , D.CD_NM AS CTPRVN_NM
+            , E.CD_NM AS EDU_TYPE_NM
+            , C.INST_NM AS CNSGN_INSTNM            
+        FROM TB_EDU_CLSSRM A
+        LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C ON A.CNSGN_INSTID = C.INSTID
+        LEFT OUTER JOIN TB_CMM_CD D ON A.CTPRVN_CD = D.CD
+        LEFT OUTER JOIN TB_CMM_CD E ON A.EDU_TYPE_CD = E.CD        
+       WHERE CLSSRMID = #{clssrmId}
+    </select>
+    
+    <!-- 교육관관리 게시글 수정 -->
+    <update id="updateEduClssRm" parameterType="EduClssRmVo" keyProperty="EduClssRmVo">
+        /* EnveduDao.updateEnvedu */
+        UPDATE TB_EDU_CLSSRM SET
+                CLSSRM_NM                       = #{clssrmNm}
+                ,CTPRVN_CD                      = #{ctprvnCd}
+                ,EDU_TYPE_CD                    = #{eduTypeCd}
+                ,CNSGN_INSTID                   = #{cnsgnInstId}
+                ,RCPT_BGNG_DT                   = #{rcptBgngDt} 
+                ,RCPT_END_DT                    = #{rcptEndDt}
+                ,CLSSRM_FYER_APLY_LMT_CNT       = #{clssrmFyerAplyLmtCnt}
+                ,CLSSRM_PRGRM_MAX_APLY_INST_CNT = #{clssrmPrgrmMaxAplyInstCnt}
+                ,CLSSRM_VIEWNG_MAX_APLY_NOPE    = #{clssrmViewngMaxAplyNope}
+                ,RCPT_PSBLTY_BFR_DAYCNT         = #{rcptPsbltyBfrDaycnt}
+                ,RMRK                           = #{rmrk}
+                ,MDFCN_DT                       = NOW() 
+                ,MDFRID                         = #{user.userid}
+         WHERE CLSSRMID = #{clssrmId}
+    </update>    
+</mapper>
