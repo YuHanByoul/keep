@@ -55,21 +55,6 @@ public class EduClssRmController {
     @RequestMapping(value = "/mng/prtpn/eduClssRm/eduClssRmListForm.html")
     public String eduClssRmListForm(Model model, HttpServletRequest request) throws Exception {
         
-        int curYear = Integer.valueOf(DateTimeUtil.getYear());
-        Integer[] years = new Integer[4];
-        
-        for(int i = curYear, j = 0; i <= i+3 && j <= 3; i++, j++) {
-            years[j] = i;
-        }
-        model.addAttribute("years", years);
-        
-        String[] Month = new String[12];
-        
-        for(int i = 1, j = 0; i <= 12 && j < 12; i++, j++) {
-            Month[j] = String.format( "%1$02d" , i );
-        }
-        model.addAttribute("month", Month);
-        
         return "mng/prtpn/eduClssRm/eduClssRmList";
     }
     
