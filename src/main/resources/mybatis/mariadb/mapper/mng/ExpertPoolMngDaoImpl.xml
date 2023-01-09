@@ -68,9 +68,6 @@
 
         WHERE 1=1
         <if test="searchKeyword != null and searchKeyword != ''">
-          <if test="searchType == 'all'">
-            AND B.NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
-          </if>
             <if test="searchType == 'nm' ">
             AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
@@ -153,11 +150,19 @@
             , A.CAREER_RLS_YN
             , A.ENT_LCTR_DMND_RCPTN_YN
             , A.LCTR_GDNC_RCPTN_YN
+            , B.ACNT
+            , B.NM
+            , B.GNDR
+            , B.BRDT
+            , B.TELNO
+            , B.MOBLPHON
+            , B.EML
             , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{userid} ) AS EXPRT_TRGT /* 전문분야 대상 */
             , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{userid} ) AS EXPRT_SBJCT /* 전문분야 주제 */
             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_RGN /* 주요활동지역 */
             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_SCOPE /* 가능 활동범위 */
         FROM TB_ASS_EXPRT A
+        INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
         WHERE A.USERID = #{userid}
     </select>
 
