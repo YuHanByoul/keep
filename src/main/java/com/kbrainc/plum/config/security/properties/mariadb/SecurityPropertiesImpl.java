@@ -18,8 +18,9 @@ public class SecurityPropertiesImpl implements SecurityProperties {
      * 사용자 로그인 정보를 확인하기 위한 쿼리
      */
 	private final String DEF_USER_LOGIN_INFO_QUERY = 
-			"  SELECT  A.USERID, A.NM, A.PSWD, A.INSTID, A.INSTPIC_ROLE_CD, A.ACNT_LOCK_YN, A.LGN_FAIL_CNT, 'P' AS USER_SE_CD "
-			+ "FROM  TB_CMM_USER A "
+			"  SELECT  A.USERID, A.NM, A.PSWD, A.INSTID, A.INSTPIC_ROLE_CD, A.ACNT_LOCK_YN, A.LGN_FAIL_CNT, B.APRV_STTS_CD AS INST_APRV_STTS_CD, B.USE_YN AS INST_USE_YN, "
+	        + "NVL((SELECT USE_YN AS SITE_USE_YN FROM TB_CMM_SITE WHERE INSTID = A.INSTID AND SYS_KND_CD = 'T' AND USE_YN = 'Y' LIMIT 1), 'N') AS SITEAPLY_USE_YN "
+			+ "FROM  TB_CMM_USER A LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID "
             + "WHERE A.ACNT = :loginid "
             + "AND A.DEL_YN = 'N' ";
 
@@ -27,7 +28,7 @@ public class SecurityPropertiesImpl implements SecurityProperties {
      * 사용자에게 부여된 역할을 확인하기 위한 쿼리
      */
 	private final String DEF_GRANTED_AUTHORITY_QUERY = 
-			"  SELECT B.ROLEID, C.NM, C.SE_CD, C.TRGT_INST_CD, C.TRGT_RGN_CD, D.ALLOWED_SITEIDS "
+			"  SELECT B.ROLEID, C.NM, C.SE_CD, C.TRGT_INST_CD, C.TRGT_RGN_CD, D.ALLOWED_SITEIDS, C.KND_CD "
 			+ "FROM TB_CMM_USER A, "
             + "     TB_CMM_ROLE_USER B, "
             + "     TB_CMM_ROLE C, "

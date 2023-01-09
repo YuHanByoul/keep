@@ -61,6 +61,8 @@ public class CommonUtil {
 
     private static String[] wasIpport = applicationConfig.getStringArray("admin.was.ipport");
     
+    public static String portalUrl = applicationConfig.getString("system.portal.url");
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수

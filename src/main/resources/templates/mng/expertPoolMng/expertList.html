@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form name="searchForm" id="searchForm" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 mb-2">
+                                    <div class="mb-0 form-group row">
+                                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                                <option value="all">- 전체 - </option>
+                                                <option value="nm">이름</option>
+                                                <option value="acnt">아이디</option>
+                                            </select>
+                                            <input name="searchKeyword" id="searchKeyword" type="text" class="form-control" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>전문가 유형</strong></div>
+                                        <div class="col-12">
+                                            <span kattr:select_code="exprtTypeCd" grpCd="133" firstOptTxt="- 전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>전문분야</strong></div>
+                                        <div class="col-12">
+                                            <div class="col-12">
+                                                <select id="exprtField" name="exprtField" class="form-select form-select-sm form-control-sm">
+                                                    <option value="">- 전체 -</option>
+                                                    <option value="1">강의</option>
+                                                    <option value="2">기획</option>
+                                                    <option value="3">컨설팅</option>
+                                                    <option value="4">기타</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>전문분야(대상)</strong></div>
+                                        <div class="col-12">
+                                            <span kattr:select_code="exprtTrgt" grpCd="135" firstOptTxt="- 전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>전문분야(환경주제)</strong></div>
+                                        <div class="col-12">
+                                            <span kattr:select_code="exprtSbjct" grpCd="126" firstOptTxt="- 전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>가능 활동범위</strong></div>
+                                        <div class="col-12">
+                                            <span kattr:select_code="exprtActvtScope" grpCd="125" firstOptTxt="- 전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                    <div class="mb-0 form-group">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>회원상태</strong></div>
+                                        <div class="col-12">
+                                            <select id="userSttsCd" name="userSttsCd" class="form-select form-select-sm form-control-sm">
+                                                <option value="">- 전체 -</option>
+                                                <option value="1">가입</option>
+                                                <option value="2">대기</option>
+                                                <option value="9">탈퇴</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="mb-0 form-group">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>전문가상태</strong></div>
+                                        <div class="col-12">
+                                            <span kattr:select_code="sttsCd" grpCd="134" firstOptTxt="- 전체 -" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="m-t-20 text-center">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="expertList.searchInit()">초기화</button>
+                                <button type="button" class="btn btn-primary" onclick="expertList.search()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <h5><strong>전문가 풀 검색결과</strong></h5>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="expertJsGrid" class="table-responsive"></table>
+                        <div id="expertListPager" class="text-center"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div id="contentPanel" class="card" ></div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-body end -->
+
+    <div class="modal fade" id="commonModal" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content type_2">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card m-b-10">
+                        <div class="card-block-small">
+                            <div class="mb-0 form-group row">
+                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn">
+                                </label>
+                                <div class="col-12">
+                                    <textarea rows="5" cols="5" class="form-control form-control-sm" id="cn" name="cn" readonly></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 정보변경 불가 사유 모달 -->
+    <div class="modal fade" id="updateRecordExpertUpdateNotAllowReasonPopup" data-bs-backdrop="static" >
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content type_2">
+                <div class="modal-header">
+                    <h4 class="modal-title">정보변경 불가 사유</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card m-b-10">
+                        <div class="card-block-small">
+                            <div class="mb-0 form-group row">
+                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRecordExpertUpdateNotAllowReasonPopupReason"><strong>사유</strong></label>
+                                <div class="col-12">
+                                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="updateRecordExpertUpdateNotAllowReasonPopupReason"
+                                              name="updateRecordExpertUpdateNotAllowReasonPopupReason" readonly=""></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script th:inline="javascript">
+        var expertList = {
+            listUrl: '/mng/expertPoolMng/selectExpertList.do',
+            detailUrl: '/mng/expertPoolMng/expertDetail.html',
+            gridHelper: null,
+
+            init() {
+                this.gridHelper = new GridHelper('expertJsGrid', 'contentPanel');
+                this.writeJsGridData();
+            },
+
+            writeJsGridData() {
+                $('#expertJsGrid').jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: true,
+                    paging: true,
+                    pagerContainer: "#expertListPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function (filter) {
+                            var data = $.Deferred();
+                            var params = [
+                                {"name": "pageNumber", "value": filter.pageIndex},
+                                {"name": "rowPerPage", "value": filter.pageSize},
+                            ];
+
+                            if (filter.sortField != undefined) {
+                                params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                                params.push({name: "orderDirection", value: filter.sortOrder});
+                            } else {
+                                params.push({name: "orderField", value: 'aply_dt'});
+                            }
+
+                            var formData = $('#searchForm').serializeArray();
+                            formData = formData.concat(params);
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: expertList.listUrl,
+                                data: formData,
+                                dataType: "json"
+                            }).done(function (response) {
+                                var da = {
+                                    data: escapeGridData(response.list),
+                                    itemsCount: response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {name: 'userid', css: 'hide'},
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center"},
+                        {title: "전문가 유형", name: "expertTypeCdNm", type: "text", width: "120", align: "center"},
+                        {title: "아이디", name: "acnt", type: "text", width: "100", align: "center"},
+                        {title: "이름", name: "nm", type: "text", width: "80", align: "center"},
+                        {title: "전문분야", type: "text", width: "100", align: "center", cellRenderer: expertList.cellRendererExprtField},
+                        {title: "전문분야(대상)", name: "exprtTrgt", width: "125", align: "center", cellRenderer: expertList.cellRendererExprtTrgt},
+                        {title: "전문분야(환경주제)", name: "exprtSbjct", type: "text", width: "120", align: "center", cellRenderer: expertList.cellRendererExprtSbjct},
+                        {title: "가능 활동범위", name: "exprtActvtScope", type: "text", width: "100", align: 'center', cellRenderer: expertList.cellRendererExprtActvtScope},
+                        {
+                            title: "회원상태", name: "userSttsCd", type: "text", width: "100", align: 'center'
+                            , itemTemplate: function (value) {
+                                if (value == "1") return "가입";
+                                else if (value == "2") return "대기";
+                                else if (value == "9") return "탈퇴";
+                            }
+                        },
+                        {title: "전문가 상태", name: "expertSttsCdNm", type: "text", width: "100", align: 'center'},
+                        {title: "전문가 신청일", name: "aplyDt", type: "text", width: "120", align: "center"},
+                    ],
+                    /* [# sec:authorize-url="/mng/expertPoolMng/expertDetail.html"] */
+                    rowClick: function (args) {
+                        if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var url = expertList.detailUrl + "?userid=" + args.item.userid;
+                        expertList.gridHelper.loadContent(url);
+                        expertList.gridHelper.rowClick(args);
+                    }
+                    /* [/] */
+                });
+            },
+
+            searchInit() {
+                $('#searchKeyword, #exprtTypeCd, #exprtField, #exprtTrgt, #exprtSbjct, #exprtActvtScope, #userSttsCd, #sttsCd').val('');
+                $('#searchType').val('all');
+            },
+
+            search() {
+
+                if($('#searchType').val() != '' && $('#searchKeyword') == '') {
+                    alert('검색어를 입력해 주십시오.');
+                    return ;
+                }
+
+                $('#expertJsGrid').jsGrid('reset');
+            },
+
+            /* 전문분야 */
+            cellRendererExprtField: function (value, item) {
+
+                var result =[];
+                if(item.fldLctrYn == 'Y') result.push('강의');
+                if(item.fldPlanngYn == 'Y') result.push('기획');
+                if(item.fldCnsltngYn == 'Y') result.push('컨설팅');
+                if(item.fldEtcYn == 'Y') result.push('기타');
+
+                return "<td style='word-wrap: break-word;white-space: normal;'>" + result.join(', ') + '</td>';
+            },
+
+            /* 전문분야(대상) */
+            cellRendererExprtTrgt: function (value, item) {
+                if (isNull(item.exprtTrgt)) return '<td></td>';
+                return "<td style='word-wrap: break-word;white-space: normal;'>" + item.exprtTrgt + '</td>';
+            },
+
+            /* 전문분야(환경주제) */
+            cellRendererExprtSbjct: function (value, item) {
+                if (isNull(item.exprtSbjct)) return '<td></td>';
+                return "<td style='word-wrap: break-word;white-space: normal;'>" + item.exprtSbjct + '</td>';
+            },
+
+            /* 가능 활동범위 */
+            cellRendererExprtActvtScope: function (value, item) {
+                if (isNull(item.exprtActvtScope)) return '<td></td>';
+                return "<td style='word-wrap: break-word;white-space: normal;'>" + item.exprtActvtScope + '</td>';
+            }
+        }
+
+        $(function () {
+            expertList.init();
+        })
+    </script>
+</div>
+</body>
+</html>

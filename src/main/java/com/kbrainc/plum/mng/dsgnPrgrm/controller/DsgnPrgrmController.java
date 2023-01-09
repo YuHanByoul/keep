@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  *
- * 지정제심사관리 컨트롤러 클래스.
+ * 지정프로그램 컨트롤러 클래스.
  *
  * <pre>
- * com.kbrainc.plum.mng.asgsys.controller
- * - BbsController.java
+ * com.kbrainc.plum.mng.dsgnPrgrm.controller
+ * - DsgnPrgrmController.java
  * </pre>
  *
  * @ClassName : DsgnPrgrmController
@@ -365,9 +366,156 @@ public class DsgnPrgrmController {
     }
 
     /**
+     * @Title : selectOperRsltDetail
+     * @Description : 운영결과 상세 조회
+     * @param DsgnPrgrmVo객체
+     * @return DsgnPrgrmVo 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectOperRsltDetail.html")
+    public String selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo ,Model model) throws Exception {
+
+    	model.addAttribute("operRsltInfo", dsgnPrgrmServiceImpl.selectOperRsltDetail(dsgnPrgrmVo));
+
+        return "mng/dsgnPrgrm/operRsltDetail";
+    }
+
+    /**
+     * @Title : sbmsnPrdChgPopup
+     * @Description : (운영결과)제출상태 변경 팝업
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/sbmsnSttsChgPopup.html")
+    public String sbmsnSttsChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	//model.addAttribute("sbmsnPrdChgInfo", dsgnPrgrmServiceImpl.selectOperRsltCycl(dsgnPrgrmVo));
+    	return "mng/dsgnPrgrm/sbmsnSttsChgPopup";
+    }
+
+    /**
+     * 운영결과 수정
+     *
+     * @Title       : updateDsgnHstry
+     * @Description : 운영결과 수정
+     * @param DsgnPrgrmVo 객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateOperRslt.do")
+    @ResponseBody
+    public Map<String, Object> updateOperRslt(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.updateOperRslt(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+
+    	return resultMap;
+    }
+
+    /**
+     * 운영결과 삭제
+     *
+     * @Title       : deleteOperRslt
+     * @Description : 운영결과 삭제
+     * @param DsgnPrgrmVo 객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/deleteOperRslt.do")
+    @ResponseBody
+    public Map<String, Object> deleteOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	int retVal = 0;
+
+    	retVal = dsgnPrgrmServiceImpl.deleteOperRslt(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제에 실패했습니다.");
+        }
+
+    	return resultMap;
+    }
+
+    /**
+     * @Title : sbmsnPrdChgPopup
+     * @Description : (운영결과)제출기간 변경 팝업
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/sbmsnPrdChgPopup.html")
+    public String sbmsnPrdChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	model.addAttribute("sbmsnPrdChgInfo", dsgnPrgrmServiceImpl.selectOperRsltCycl(dsgnPrgrmVo));
+    	return "mng/dsgnPrgrm/sbmsnPrdChgPopup";
+    }
+
+    /**
+     * (운영결과서)제출기간 수정
+     *
+     * @Title       : updateSbmsnPrd
+     * @Description : (운영결과서)제출기간 수정
+     * @param DsgnPrgrmVo 객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateSbmsnPrd.do")
+    @ResponseBody
+    public Map<String, Object> updateSbmsnPrd(DsgnPrgrmVo dsgnPrgrmVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.updateSbmsnPrd(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+
+    	return resultMap;
+    }
+
+
+    /**
      * @Title : implmntIdntySrngForm
      * @Description : 이행확인심사(탭) 화면이동
-     * @throws Exception :
      * @return String 이동화면경로
      * @throws Exception 예외
      */
@@ -377,17 +525,99 @@ public class DsgnPrgrmController {
     }
 
     /**
-     * @Title : implmntIdntySrngForm
+     * @Title : objcInfoForm
      * @Description : 이의신청(탭) 화면이동
      * @throws Exception :
-     * @return String 이동화면경로
+     * @return String
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoForm.html")
-    public String objcInfoForm() throws Exception {
+    public String objcInfoForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+        model.addAttribute("dsgnAplyInfo", asgsysSrngServiceImpl.selectDsgnAplyDtlInfo(asgsysSrngVo));
     	return "mng/dsgnPrgrm/objcInfoForm";
     }
 
+    /**
+     * 이의신청 목록 조회
+     *
+     * @param dsgnPrgrmVo
+     * @return map
+     * @throws Exception
+     * @Title : selectObjcList
+     * @Description : 이의신청 목록 조회
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectObjcList.do")
+    @ResponseBody
+    public Map<String, Object> selectObjcList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+
+        List<DsgnPrgrmObjcVo> list = dsgnPrgrmServiceImpl.selectObjcList(dsgnPrgrmVo);
+
+        if (list.size() > 0) {
+            result.put("totalCount", (list.get(0).getTotalCount()));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("list", list);
+
+        return result;
+    }
+
+    /**
+     * 이의신청 팝업 화면이동
+     *
+     * @param dsgnPrgrmObjcVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : objcInfoPopup
+     * @Description : 이의신청 팝업 화면이동
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/objcInfoPopup.html")
+    public String objcInfoPopup(DsgnPrgrmObjcVo dsgnPrgrmObjcVo, Model model) throws Exception {
+        model.addAttribute("objcInfo", dsgnPrgrmServiceImpl.selectObjcInfo(dsgnPrgrmObjcVo));
+        return "mng/dsgnPrgrm/objcInfoPopup.html";
+    }
+
+    /**
+     * 이의신청 답변 등록
+     *
+     * @param dsgnPrgrmObjcVo
+     * @param bindingResult
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : insertObjcAns
+     * @Description : 이의신청 답변 등록
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/insertObjcAns.do")
+    @ResponseBody
+    public Map<String, Object> insertObjcAns(@Valid DsgnPrgrmObjcVo dsgnPrgrmObjcVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                result.put("msg", fieldError.getDefaultMessage());
+            }
+            return result;
+        }
+
+        int retVal = 0;
+        dsgnPrgrmObjcVo.setUser(user);
+        retVal = dsgnPrgrmServiceImpl.insertObjcAns(dsgnPrgrmObjcVo);
+
+        if (retVal > 0) {
+            result.put("result", Constant.REST_API_RESULT_SUCCESS);
+            result.put("msg", "저장에 성공하였습니다.");
+        } else {
+            result.put("result", Constant.REST_API_RESULT_FAIL);
+            result.put("msg", "저장에 실패했습니다.");
+        }
+
+        return result;
+    }
     /**
      * @Title : dsgnRtrcnPopup
      * @Description : 지정취소팝업

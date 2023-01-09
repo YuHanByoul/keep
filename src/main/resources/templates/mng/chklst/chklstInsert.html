@@ -1,0 +1,122 @@
+<form id ="qestnrInsertForm">
+    <div class="tab-pane active" id="qestnrInsert" role="tabpanel">
+        <div class="card-header p-t-0 p-b-0">
+            <h3 class="sub-title"><strong>기본정보</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="mb-2 row">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                    <div class="mb-0 form-group required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>설문지 종류</strong></div>
+                        <div class="col-sm-12">
+                            <th:block kattr:select_code="qestnrKndCd" grpCd="110" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="mb-0 form-group row required">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트(기관)</strong></div>
+                        <div class="col-sm-12">
+                            <select name="siteid" class="js-example-basic-single col-sm-12 sm">
+                                <option value="">- 선택 -</option>
+                                <option th:each="site: ${siteList}" th:value="${site.siteid}" th:text="${site.siteNm + ' (' + site.instNm + ')'}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-2 form-group row required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="qestnrNm"><strong>설문지명</strong></label>
+                <div class="col-sm-12">
+                    <input type="text" name="qestnrNm" id="qestnrNm" class="form-control form-control-sm" placeholder="설문지명을 입력해주세요."/>
+                </div>
+            </div>
+            <div class="mb-2 form-group row required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="expln"><strong>설문지 설명</strong></label>
+                <div class="col-sm-12">
+                    <textarea rows="5" cols="5" name="expln" id="expln" class="form-control form-control-sm" placeholder="설문지 설명을 입력해주세요."></textarea>
+                </div>
+            </div>
+            <div class="mb-0 form-group row">
+                <div class="col-12">
+                    <input type="hidden" name="useYn">
+                    <input type="checkbox" class="js-single-small" id="useYn" checked/>
+                    <label for="useYn" class="v-middle">설문지 사용</label>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <button type="button" class="btn btn-disabled m-r-5" onclick="qestnrInsert.offInsertQestnr();">취소</button>
+            <th:block sec:authorize-url="/mng/qestnr/insertQestnr.do"><button type="button" class="btn btn-primary" onclick="qestnrInsert.onInsertQestnr();">저장</button></th:block>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+    var qestnrInsert = {
+        init: function() {
+            var elemsingleSmallList = document.querySelectorAll('.js-single-small');
+            for(var i = 0; i < elemsingleSmallList.length; i++) {
+                new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
+           }
+           $(".js-example-basic-single").select2();
+           
+           this.registEvent();
+           this.setValid();
+        },
+        
+        registEvent: function() {
+            // TODO
+        },
+        
+        setValid: function() {
+            var validator = $('#qestnrInsertForm').validate({
+                rules: {
+                    qestnrKndCd: {required: true},
+                    siteid: {required: true},
+                    qestnrNm: {required: true, maxlength: 20},
+                    expln: {required: true, maxlength: 400}
+                },
+                messages: {
+                    qestnrKndCd: {required: "설문지 종류를 선택해주세요."},
+                    siteid: {required: "사이트(기관)을 선택해주세요."},
+                    qestnrNm: {required: "설문지명을 입력해주세요.", maxlength: "설문지명은 20자 이하여야 합니다."},
+                    expln: {required: "설문지 설명을 입력해주세요.", maxlength: "설문지 설명은 400자 이하여야 합니다."}
+                }
+            });
+        },
+        
+        onInsertQestnr: function() {
+            if(!($("#qestnrInsertForm").valid())) return;
+            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
+            var param = $("#qestnrInsertForm").serialize();
+            
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/qestnr/insertQestnr.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            qestnrGrid.resetListContent();
+                            var detailUrl = "/mng/qestnr/qestnrDetail.html?qestnrid=" + response.qestnrid; 
+                            qestnrGrid.loadContent(detailUrl);
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+        
+        offInsertQestnr: function() {
+            qestnrGrid.toggleContent();
+        }
+    };
+    
+    qestnrInsert.init();
+</script>

@@ -55,7 +55,7 @@ public class ChklstController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/chklst/chklstQitemList.html")
+    @RequestMapping(value = "/mng/chklst/chklstQitemListForm.html")
     public String chklstQitemListForm(CodeVo codeVo, Model model) throws Exception {
         model.addAttribute("codeList", chklstService.selectChklstQitemCdList(codeVo));
         return "mng/chklst/chklstQitemList";
@@ -92,6 +92,34 @@ public class ChklstController {
         model.addAttribute("codeList", chklstService.selectChklstQitemCdList(codeVo));
         return "mng/chklst/chklstQitemUpdate";
     }
+    
+    /**
+     * 체크리스트 관리 목록 화면
+     *
+     * @Title : chklstListForm
+     * @Description : 체크리스트 관리 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/chklst/chklstListForm.html")
+    public String chklstListForm(CodeVo codeVo, Model model) throws Exception {
+        return "mng/chklst/chklstList";
+    }
+    
+     /**
+      * 체크리스트 등록 화면
+      *
+      * @Title : chklstInsertForm
+      * @Description : 체크리스트 등록 화면
+      * @return String 화면경로
+      * @throws Exception 예외
+      */
+    @RequestMapping(value = "/mng/chklst/chklstInsertForm.html")
+    public String chklstInsertForm() throws Exception {
+        return "mng/chklst/chklstInsert";
+    }
+    
+    
     
     /**
      * 체크리스트 문항 등록

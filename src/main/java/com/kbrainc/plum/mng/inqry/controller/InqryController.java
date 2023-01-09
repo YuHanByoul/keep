@@ -7,7 +7,6 @@ import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,19 +23,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
- * 1:1문의 컨트롤러
+ * 문의 컨트롤러
  *
  * <pre>
  * com.kbrainc.plum.mng.inqry.controller
  * - InqryController.java
- * </pre> 
+ * </pre>
  *
- * @ClassName : InqryController
- * @Description : 1:1문의 컨트롤러
  * @author : KBRAINC
+ * @ClassName : InqryController
+ * @Description : 문의 컨트롤러
  * @date : 2021. 2. 26.
- * @Version : 
+ * @Version :
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
@@ -44,24 +42,24 @@ public class InqryController {
 
     @Autowired
     private InqryService inqryService;
-    
+
     /**
-     * @Title : inqryMgntForm
-     * @Description : 1:1문의 답변관리 화면 이동
-     * @throws Exception
      * @return String 이동화면경로
+     * @throws Exception
+     * @Title : inqryForm
+     * @Description : 1:1문의 답변관리 화면 이동
      */
-    @RequestMapping(value = "/mng/inqry/inqryForm.html")
-    public String inqryForm() throws Exception {
-        return "mng/inqry/inqryForm";
+    @RequestMapping(value = "/mng/inqry/inqryList.html")
+    public String inqryList() throws Exception {
+        return "mng/inqry/inqryList";
     }
 
     /**
-     * @Title : getInqryList
-     * @Description : 1:1문의 목록을 조회한다.
      * @param inqryVO 1:1문의VO 클래스
+     * @return Map<String, Object> 1:1문의 목록
      * @throws Exception
-     * @return Map<String,Object> 1:1문의 목록
+     * @Title : selectInqryList
+     * @Description : 1:1문의 목록을 조회한다.
      */
     @RequestMapping(value = "/mng/inqry/selectInqryList.do")
     @ResponseBody
@@ -83,13 +81,13 @@ public class InqryController {
     }
 
     /**
+     * @return String 이동화면경로
+     * @throws Exception
      * @Title : inqryDetailForm
      * @Description : 1:1문의 답변관리 상세화면 이동
-     * @throws Exception
-     * @return String 이동화면경로
      */
-    @RequestMapping(value = "/mng/inqry/inqryDetailForm.html")
-    public String inqryDetailForm(InqryVo inqryVO, Model model) throws Exception {
+    @RequestMapping(value = "/mng/inqry/inqryForm.html")
+    public String inqryForm(InqryVo inqryVO, Model model) throws Exception {
 
         InqryVo inqryInfo = inqryService.selectInqryInfo(inqryVO);
         InqryAnswrVo inqryAnswrInfo = inqryService.selectInqryAnswrInfo(inqryVO);
@@ -102,20 +100,20 @@ public class InqryController {
         model.addAttribute("inqryAnswrInfo", inqryAnswrInfo);
         model.addAttribute("managerInfo", managerInfo);
 
-        if(!StringUtil.nvl(inqryInfo.getFilegrpid()).equals("") && !StringUtil.nvl(inqryInfo.getFilegrpid()).equals(0)) {
-        	 FileVo fileVo = new FileVo();
-             fileVo.setFilegrpid(inqryInfo.getFilegrpid());
-             model.addAttribute("fileList",inqryService.selectAttachFileList(fileVo));
-        }else {
-        	 model.addAttribute("fileList", Collections.emptyList());
+        if (!StringUtil.nvl(inqryInfo.getFilegrpid()).equals("") && !StringUtil.nvl(inqryInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(inqryInfo.getFilegrpid());
+            model.addAttribute("fileList", inqryService.selectAttachFileList(fileVo));
+        } else {
+            model.addAttribute("fileList", Collections.emptyList());
         }
-        
-        return "mng/inqry/inqryDetailForm";
+
+        return "mng/inqry/inqryForm";
     }
 
-    @RequestMapping(value="/mng/inqry/deleteInqryInfo.do")
+    @RequestMapping(value = "/mng/inqry/deleteInqryInfo.do")
     @ResponseBody
-    public Map<String,Object> deleteInqryInfo(@RequestParam("deleteInqryIds") String[] deleteInqryIds, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> deleteInqryInfo(@RequestParam("deleteInqryIds") String[] deleteInqryIds, @UserInfo UserVo user) throws Exception {
         Map<String, Object> reseultMap = new HashMap<>();
         int retVal = 0;
 
@@ -133,18 +131,18 @@ public class InqryController {
     }
 
     /**
-     * @Title : insertInqryAnswr
-     * @Description : 1:1문의답변 등록
      * @param inqryAnswrVO  1:1문의답변VO 클래스
      * @param bindingResult 유효성검증결과
      * @param user          로그인사용자정보
+     * @return Map<String, Object> 1:1문의답변 등록 결과
      * @throws Exception
-     * @return Map<String,Object> 1:1문의답변 등록 결과
+     * @Title : insertInqryAnswr
+     * @Description : 1:1문의답변 등록
      */
     @RequestMapping(value = "/mng/inqry/insertInqryAnswr.do")
     @ResponseBody
     public Map<String, Object> insertInqryAnswr(InqryAnswrVo inqryAnswrVO, BindingResult bindingResult,
-            @UserInfo UserVo user) throws Exception {
+                                                @UserInfo UserVo user) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {
@@ -156,11 +154,11 @@ public class InqryController {
         }
 
         inqryAnswrVO.setUser(user);
-        
+
         int retVal = 0;
-        
+
         retVal = inqryService.insertInqryAnswr(inqryAnswrVO);
-        
+
         if (retVal > 0) {
             map.put("result", Constant.REST_API_RESULT_SUCCESS);
             map.put("msg", "등록에 성공하였습니다.");
@@ -173,13 +171,13 @@ public class InqryController {
     }
 
     /**
-     * @Title : updateInqryAnswr
-     * @Description : 1:1문의답변 수정
      * @param inqryAnswrVO  1:1문의답변VO 클래스
      * @param bindingResult 유효성검증결과
      * @param user          로그인사용자정보
+     * @return Map<String, Object> 1:1문의답변 수정 결과
      * @throws Exception
-     * @return Map<String,Object> 1:1문의답변 수정 결과
+     * @Title : updateInqryAnswr
+     * @Description : 1:1문의답변 수정
      */
     @RequestMapping(value = "/mng/inqry/updateInqryAnswr.do")
     @ResponseBody
@@ -211,21 +209,21 @@ public class InqryController {
         return map;
     }
 
-    @RequestMapping("/mng/inqry/telInqryForm.html")
-    public String telInqryForm() throws Exception{
-        return "mng/inqry/telInqryForm.html";
+    @RequestMapping("/mng/inqry/telInqryList.html")
+    public String telInqryList() throws Exception {
+        return "mng/inqry/telInqryList.html";
     }
 
-    @RequestMapping("/mng/inqry/telInqryDetailForm.html")
-    public String telInqryDetailForm(TelInqryVo telInqryVo, Model model, @UserInfo UserVo user) throws Exception{
+    @RequestMapping("/mng/inqry/telInqryForm.html")
+    public String telInqryForm(TelInqryVo telInqryVo, Model model, @UserInfo UserVo user) throws Exception {
         telInqryVo.setUser(user);
         TelInqryVo telInqryInfo = inqryService.selectTelInqryInfo(telInqryVo);
         List<ManagerVo> managerInfo = inqryService.selectManagerList(telInqryVo);
 
-        if(telInqryInfo == null) telInqryInfo = new TelInqryVo();
+        if (telInqryInfo == null) telInqryInfo = new TelInqryVo();
         model.addAttribute("telInqryInfo", telInqryInfo);
         model.addAttribute("managerInfo", managerInfo);
-        return "mng/inqry/telInqryDetailForm.html";
+        return "mng/inqry/telInqryForm.html";
     }
 
     @RequestMapping("/mng/inqry/telInqryMemberSearchPopup.html")
@@ -332,7 +330,7 @@ public class InqryController {
     }
 
     @RequestMapping("/mng/inqry/managerSearchPopup.html")
-    public String managerSearchPopup() throws Exception{
+    public String managerSearchPopup() throws Exception {
         return "/mng/inqry/managerSearchPopup.html";
     }
 

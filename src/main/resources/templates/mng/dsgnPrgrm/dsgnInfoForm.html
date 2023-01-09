@@ -246,6 +246,7 @@
 
 <script th:inline="javascript">
 
+var dsgnDsctnGridHelper = new GridHelper('dsgnDsctnGrid','contentPanel');
 //보완요청 그리드
 function writeSplmntDmndGridData(){
 
@@ -326,16 +327,11 @@ console.log("@@@@@2");
 
             if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
-            var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + args.item.prgrmid;
-
-            gridHelper1.loadContent(detailUrl);
-            gridHelper1.rowClick(args);
         },
         onPageChanged: function(args) {
             selectedItems = [];
         }
     });
-
 }
 
 //지정취소
@@ -345,8 +341,7 @@ var openDsgnRtrcnModal = () => {
 
 	var vHstryid= $("#hstryid").val();
 	var vPrgrmid= $("#prgrmid").val();
-debugger;
-    //var url = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html?mode="+vPrgrmid+"&dsgnBgngDe="+vDsgnBgngDe+"&dsgnEndDe="+vDsgnEndDe;
+
     var url = "/mng/dsgnPrgrm/dsgnRtrcnPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid;
 
     $("#dsgnRtrcnPopup").load(url, function(response, status, xhr) {
@@ -395,28 +390,6 @@ var openDsgnInfoChgModal = (id) => {
     });
 }
 
-/*
-// 재지정
-var reDsgnModal;
-var openReDsgnModal= () => {
-
-debugger;
-    var vHstryid= $("#hstryid").val();
-    var vPrgrmid= $("#prgrmid").val();
-
-    var url = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid+"&callSe=reDsgn";
-
-
-    $("#sttsCd").val("");
-
-    $("#dsgnInfoChgPopup").load(url, function(response, status, xhr) {
-        if (status == "success") {
-            dsgnInfoChgModal = new bootstrap.Modal($('#dsgnInfoChgPopup'));
-            dsgnInfoChgModal.show();
-        }
-    });
-}
-*/
 function initDsgnInfoFrm(){
 
 	//지정상태가 지정 탈락인 경우 탈락일 표시
@@ -435,8 +408,6 @@ function initDsgnInfoFrm(){
 	$("#rgnCd").attr("disabled",true);
 	$("#instTypeCd").attr("disabled",true);
 	$("#sttsCd").attr("disabled",true);
-
-
 
 	//지정내역 목록 조회
 	writeSplmntDmndGridData();

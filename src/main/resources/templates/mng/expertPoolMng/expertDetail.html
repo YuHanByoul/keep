@@ -1,0 +1,103 @@
+<div class="card-header p-b-0">
+    <ul class="nav nav-tabs tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/expertPoolMng/expertApplyInfoForm.html">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" id="expertApplyInfoForm"><strong>전문가 신청정보</strong></a>
+            </li>
+        </th:block>
+
+        <th:block sec:authorize-url="/mng/expertPoolMng/expertInfoForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" id="expertInfoForm"><strong>회원정보</strong></a>
+            </li>
+        </th:block>
+
+        <th:block sec:authorize-url="/mng/expertPoolMng/expertReviewHistoryForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" id="expertReviewHistoryForm"><strong>후기이력</strong></a>
+            </li>
+        </th:block>
+
+        <th:block sec:authorize-url="/mng/expertPoolMng/expertStatusChangeHistoryForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" id="expertStatusChangeHistoryForm"><strong>상태변경이력</strong></a>
+            </li>
+        </th:block>
+    </ul>
+</div>
+
+<div class="tab-content tabs p-t-20" id="tab_content_area">
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var userid = /*[[${expertInfo.userid}]]*/null;
+    /*]]>*/
+
+    var expertDetail = {
+        currentTab: 'expertApplyInfoForm',
+        expertApplyInfoFormUrl: '/mng/expertPoolMng/expertApplyInfoForm.html',
+        expertInfoFormUrl : '/mng/expertPoolMng/expertInfoForm.html',
+        expertReviewHistoryFormUrl:'/mng/expertPoolMng/expertReviewHistoryForm.html',
+        expertStatusChangeHistoryFormUrl:'/mng/expertPoolMng/expertStatusChangeHistoryForm.html',
+
+        init: function () {
+            expertDetail.tabEvent();
+            expertDetail.initTab()
+        },
+
+        moveTab: function (tabId) {
+            if(tabId == 'expertApplyInfoForm') {
+                $('#tab_content_area').load(expertDetail.expertApplyInfoFormUrl + "?userid="+ userid );
+            } else if(tabId == 'expertInfoForm') {
+                $('#tab_content_area').load(expertDetail.expertInfoFormUrl + "?userid="+ userid );
+            } else if(tabId == 'expertReviewHistoryForm') {
+                $('#tab_content_area').load(expertDetail.expertReviewHistoryFormUrl + "?userid="+ userid );
+            } else if(tabId == 'expertStatusChangeHistoryForm') {
+                $('#tab_content_area').load(expertDetail.expertStatusChangeHistoryFormUrl + "?userid="+ userid );
+            }
+            $('#'+tabId).parent().addClass('active');
+        },
+
+        tabEvent : function () {
+            $('.nav-tabs a').on('show.bs.tab', function (event) {
+                var tabId = event.currentTarget.attributes.id.value;
+                expertDetail.moveTab(tabId);
+            });
+        },
+
+        initTab: function () {
+            var tabFlag = false;
+            /*[# sec:authorize-url="/mng/expertPoolMng/expertApplyInfoForm.html"]*/
+            if (tabFlag == false) {
+                this.moveTab("expertApplyInfoForm");
+                tabFlag = true;
+            }
+            /*[/]*/
+            /*[# sec:authorize-url="/mng/member/expertInfo.html"]*/
+            if (tabFlag == false) {
+                this.moveTab("expertInfo");
+                tabFlag = true;
+            }
+            /*[/]*/
+            /*[# sec:authorize-url="/mng/member/expertReviewHistory.html"]*/
+            if (tabFlag == false) {
+                this.moveTab("expertReviewHistory");
+                tabFlag = true;
+            }
+            /*[/]*/
+            /*[# sec:authorize-url="/mng/member/expertStatusChangeHistory.html"]*/
+            if (tabFlag == false) {
+                this.moveTab("expertStatusChangeHistory");
+                tabFlag = true;
+            }
+            /*[/]*/
+
+        }
+    }
+
+    $(function () {
+        expertDetail.init();
+    })
+</script>

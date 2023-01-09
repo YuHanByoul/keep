@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * <pre>
  * com.kbrainc.plum.mng.asgsys.controller
- * - BbsController.java
+ * - AsgsysSrngController.java
  * </pre>
  *
  * @ClassName : AsgsysSrngController

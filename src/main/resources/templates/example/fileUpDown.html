@@ -143,14 +143,18 @@ $('#multiFileInput').on("change", function(event) {
                 data : formData,
                 type : 'POST',
                 success : function(response) {
-                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
-                        $("#filegrpid").val( response[0].filegrpid );
-                    }
-                    
-                    for(i = 0 ;i < response.length; i++ ){
-                        content = "<div class ='' id='inputFiles"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm +"</a>";
-                        content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =uploadFileCnt--;fn_deleteFileList('inputFiles"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>"; 
-                        $('#multipleFileUploadSuccess').append(content);
+                    if(response.result == 'fail'){
+                        alert(response.msg);
+                    }else{
+                        if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                            $("#filegrpid").val( response[0].filegrpid );
+                        }
+                        
+                        for(i = 0 ;i < response.length; i++ ){
+                            content = "<div class ='' id='inputFiles"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm +"</a>";
+                            content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =uploadFileCnt--;fn_deleteFileList('inputFiles"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>"; 
+                            $('#multipleFileUploadSuccess').append(content);
+                        }
                     }
                 }
             });

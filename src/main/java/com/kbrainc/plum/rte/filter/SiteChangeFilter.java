@@ -96,7 +96,7 @@ public class SiteChangeFilter implements Filter {
                                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
                                     break;
                                 }
-                            } else if ("A".equals(siteInfo.getSysSeCd()) && "A".equals(authority.get("se_cd")) && Arrays.asList(authority.get("allowed_siteids").split(",")).contains(siteInfo.getSiteid())) { // 관리자사이트 & 관리자역할 & 접근가능한 사이트
+                            } else if ("A".equals(siteInfo.getSysSeCd()) && "A".equals(authority.get("se_cd")) && Arrays.asList(authority.get("allowed_siteids").split(",")).contains(siteInfo.getSiteid())) { // 관리자사이트 & 관리자역할
                                 ArrayList<GrantedAuthority> authorities = new ArrayList<>();
                                 authorities.add(new SimpleGrantedAuthority(authority.get("roleid")));
                                 authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여

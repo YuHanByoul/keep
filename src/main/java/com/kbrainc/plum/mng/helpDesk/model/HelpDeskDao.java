@@ -2,26 +2,26 @@ package com.kbrainc.plum.mng.helpDesk.model;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
-* 탄소중립헬프데스크 DAO 클래스 
-*
-* <pre>
-* com.kbrainc.plum.mng.helpDesk.model
-* - HelpDeskDao.java
-* </pre>
-*
-* @ClassName   : HelpDeskDao
-* @Description : TODO
-* @author      : KBRAINC_DEV
-* @date        : 2022. 12. 20.
-* @Version     :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
+ * 탄소중립헬프데스크 DAO 클래스
+ *
+ * <pre>
+ * com.kbrainc.plum.mng.helpDesk.model
+ * - HelpDeskDao.java
+ * </pre>
+ *
+ * @author : KBRAINC_DEV
+ * @ClassName : HelpDeskDao
+ * @Description : 탄소중립헬프데스크 DAO 클래스
+ * @date : 2022. 12. 20.
+ * @Version :
+ * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+ */
 @Mapper
 public interface HelpDeskDao {
     
@@ -120,7 +120,7 @@ public interface HelpDeskDao {
     * @throws Exception
     * @return int 
     */
-    public int deleteHelpDesk(String[] deleteHelpDeskIds, UserVo userVo) throws Exception;
+    public int deleteHelpDesk(@Param("deleteHelpDeskIds") Integer[] deleteHelpDeskIds) throws Exception;
 
     /**
     * 담당자모달 담당자정보 조회
@@ -163,10 +163,21 @@ public interface HelpDeskDao {
     *
     * @Title       : deleteHelpDeskManager 
     * @Description : TODO
-    * @param helpDeskAnswrVo
+    * @param deleteHelpDeskIds
     * @return
     * @throws Exception
     * @return int 
     */
-    public int deleteHelpDeskManager(HelpDeskAnswrVo helpDeskAnswrVo) throws Exception;
+    public int deleteHelpDeskManager(@Param("deleteHelpDeskIds") Integer[] deleteHelpDeskIds) throws Exception;
+
+    /**
+     * 답변 삭제시 지정된 담당자 정보 삭제
+     *
+     * @param deleteHelpDeskIds
+     * @return int
+     * @throws Exception
+     * @Title : deleteHelpDeskManager
+     * @Description :
+     */
+
 }

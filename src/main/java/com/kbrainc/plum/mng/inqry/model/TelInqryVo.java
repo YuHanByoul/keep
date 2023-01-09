@@ -1,8 +1,11 @@
 package com.kbrainc.plum.mng.inqry.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -44,7 +47,7 @@ public class TelInqryVo extends ParentRequestVo {
     @Email(message = "이메일 형식이 올바르지않습니다.")
     private String eml;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date rcptDt;
 
     private String sttsCd;
@@ -70,8 +73,6 @@ public class TelInqryVo extends ParentRequestVo {
 
     private Date anscmptnDt;
 
-    private String oldSttsCd;
-
     private Integer[] managerId;
 
     private String assignYn;
@@ -79,4 +80,40 @@ public class TelInqryVo extends ParentRequestVo {
     private String searchInst;
 
     private String searchInst2;
+
+    public void setClsfCd(String clsfCd) {
+        this.clsfCd = clsfCd;
+        //이미 코드이름이 있다면, 무시.
+        if (CommonUtil.isEmpty(this.clsfCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.clsfCd);
+                this.clsfCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
+
+    public void setSttsCd(String sttsCd) {
+        this.sttsCd = sttsCd;
+        //이미 코드이름이 있다면, 무시.
+        if (CommonUtil.isEmpty(this.sttsCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.sttsCd);
+                this.sttsCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
 }
