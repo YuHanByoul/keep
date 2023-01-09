@@ -86,6 +86,20 @@ class GridHelper {
         });
         this.showContent();
     }
+    loadContentAgain(uri){ // 등록/수정 컨텐츠영역 로드시 사용(컨텐츠영역 노출)
+        var contentPanelId = this.contentPanelId;
+        $.ajax({
+            cache: false,
+            url: uri, 
+            type: 'GET',
+            async: 'false',
+            dataType: 'html',
+            success: function(result){
+                $('#'+contentPanelId).html(result);
+                scrollIntoView(contentPanelId);
+            }
+        });
+    }
     resetListContent(){ // 검색/저장/삭제후 사용(컨텐츠영역 숨김)
         //리셋하고 첫번째 페이지로 돌아간다.
         var curPage = $("#"+this.jsGridId).jsGrid("option", "pageIndex");

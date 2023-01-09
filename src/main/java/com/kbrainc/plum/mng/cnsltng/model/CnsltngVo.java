@@ -56,6 +56,21 @@ public class CnsltngVo extends ParentRequestVo {
     /**기관 담당자  이메일 */
     private String instManagerEml;
     
+    /** 기관 전화번호*/
+    private String instTelno;
+    
+    /** 기관 유형 코드*/
+    private String instTypeCd;
+    
+    /** 기관 유형 코드*/
+    private String instTypeCdNm;
+    
+    /** 기관 담당자  전화번호 */
+    private String picTelno;
+    
+    /**기관 담당자  이메일 */
+    private String picEml;
+    
     /** 사용자 아이디 */
     private Integer userid;
     
@@ -129,7 +144,7 @@ public class CnsltngVo extends ParentRequestVo {
     private String sttsCdNm;
     
     /** 설문아이디 */
-    private Integer srvid;
+    private Integer srvyid;
     
     /**  수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -163,18 +178,33 @@ public class CnsltngVo extends ParentRequestVo {
     /** 담당자 이메일 */
     private String cnstntEml;
     
+    /** 컨설턴트 ids */
+    private List<String> cnstntids;
+    
+    /** 컨설턴트 등록시 그룹 등록여부 확인용 */
+    private String grpYn;
+    
+    /** 컨설턴트 등록시 그룹 확인용 */
+    private Integer grpId;
+    
+    /** 기관 주소 */
+    private String addr;
+    
+    /** 기관 주소 상세 */
+    private String addrDtl;
+    
     /******** 검색용 ********/
     /** 프로그램 명 */
-    private String SearchPrgrmNm;
+    private String searchPrgrmNm;
     
     /** 기관명 */
-    private String SearchInstNm;
+    private String searchInstNm;
     
     /** 신청일 시작 일자 */
-    private String SearchRegStrtDt;
+    private String searchRegStrtDt;
     
     /** 신청일 종료 일자 */
-    private String SearchRegEndDt;
+    private String searchRegEndDt;
     
     /** 컨설팅 유형 */
     private String searchCsltngKndCd;
@@ -182,11 +212,11 @@ public class CnsltngVo extends ParentRequestVo {
     /** 진행상태 */
     private String searchSttsCd;
     
-    /** 방문희망일 시작 일자 */
-    private String SearchHopeStrtDt;
+    /** 방문일 시작 일자 */
+    private String searchHopeStrtDt;
     
-    /** 방문희망일 종료 일자 */
-    private String SearchHopeEndDt;
+    /** 방문일 종료 일자 */
+    private String searchHopeEndDt;
 
     
     public void setSttsCd(String sttsCd) throws Exception{
@@ -216,6 +246,24 @@ public class CnsltngVo extends ParentRequestVo {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
                 CodeInfoVo code = resCodeService.getCodeInfo(this.cnsltngKndCd);
                 this.cnsltngKndCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+    
+    public void setInstTypeCd(String instTypeCd) throws Exception{
+        this.instTypeCd = instTypeCd;
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.instTypeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instTypeCd);
+                this.instTypeCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return ;

@@ -1,28 +1,41 @@
 package com.kbrainc.plum.mng.cnsltng.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtGrpVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngResultVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.cnsltng.service.CnsltngService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
-import com.kbrainc.plum.mng.siteApply.model.SiteApplyVo;
+import com.kbrainc.plum.mng.srvy.model.SrvyVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -115,16 +128,19 @@ public class CnsltngController {
      * @return String 이동화면경로
      */
     @RequestMapping(value = "/mng/cnsltng/cnsltngApplyInfo.html")
-    public String cnsltngApplyInfo(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String cnsltngApplyInfo(CnsltngVo cnsltngVo, Model model, SrvyVo srvyVo,@UserInfo UserVo user) throws Exception {
         
         cnsltngVo.setUser(user);
         CnsltngVo resVo = new CnsltngVo();
         resVo = cnsltngService.selectCnsltngtInfo(cnsltngVo);
         model.addAttribute("cnsltngVo", resVo);
+        model.addAttribute("srvyList", cnsltngService.selectCnsltngSrvyList(srvyVo));
         
         InstVo instVo = new InstVo();
         instVo.setInstid(resVo.getInstid());
         model.addAttribute("instVo", instService.selectInstInfo(instVo));
+        
+        model.addAttribute("cnstntList", cnsltngService.selectCnstntList(cnsltngVo));
         
         if (resVo.getFilegrpid() != null && !resVo.getFilegrpid().equals(0)) {
             FileVo fileVo = new FileVo();
@@ -138,7 +154,154 @@ public class CnsltngController {
         return "mng/cnsltng/cnsltngInfoForm";
     }
     /**
-     * @Title : cnsltngApplyInfo
+     * @Title : cnsltngManagerPopup
+     * @Description : 컨설팅 담당자 등록 모달 팝업
+     * @param SiteApplyVo 인자
+     * @param Model      인자
+     * @throws Exception
+     * @return String 이동화면경로
+     */
+    @RequestMapping(value = "/mng/cnsltng/cnsltngManagerPopup.html")
+    public String cnsltngManagerPopup(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
+        Map<String,Object> paramMap = new HashMap();
+        model.addAttribute("cnsltngid", cnsltngVo.getCnsltngid());
+        model.addAttribute("sidoList", cnsltngService.selectAddrCtprvnList(paramMap));
+        return "mng/cnsltng/cnsltngUserSearchPopup";
+    }
+    
+    /**
+     * @Title : selectCnsltngExprtList
+     * @Description : 컨설팅 전문가 리스트 가져오기
+     * @param CnsltngVo
+     * @throws Exception
+     * @return
+     */
+    @RequestMapping(value = "/mng/cnsltng/selectExpertList.do")
+    public @ResponseBody Map<String, Object> selectCnsltngExprtList(CnsltngExprtVo cnsltngExprtVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CnsltngExprtVo> result = new ArrayList<CnsltngExprtVo>();
+        
+        result = cnsltngService.selectCnsltngExprtList(cnsltngExprtVo);
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+        
+        return resultMap;
+    }
+    
+    /**
+     * @Title : selectJudgeList
+     * @Description : 컨설팅 전문가 그룹 리스트 가져오기
+     * @param CnsltngExprtGrpVo
+     * @throws Exception
+     * @return
+     */
+    @RequestMapping(value = "/mng/cnsltng/selectJudgeList.do")
+    public @ResponseBody Map<String, Object> selectJudgeList(CnsltngExprtGrpVo cnsltngExprtGrpVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CnsltngExprtGrpVo> result = new ArrayList<CnsltngExprtGrpVo>();
+        
+        result = cnsltngService.selectCnsltngExprtGrpList(cnsltngExprtGrpVo);
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+        
+        return resultMap;
+    }
+    
+    /**
+     * @Title : insertConsultant
+     * @Description : 사이트 신청 상태 변경
+     * @param SiteApplyVo
+     * @param user          로그인사용자정보
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/cnsltng/insertConsultant.do")
+    @ResponseBody
+    public Map<String, Object> insertConsultant(CnsltngVo cnsltngVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        
+        int retVal = 0;
+        retVal = cnsltngService.insertCnsltnt(cnsltngVo);
+        if (retVal > 0) {
+            map.put("result", Constant.REST_API_RESULT_SUCCESS);
+            map.put("msg", "등록에 성공하였습니다.");
+        } else {
+            map.put("result", Constant.REST_API_RESULT_FAIL);
+            map.put("msg", "등록에 실패했습니다.");
+        }
+        return map;
+    }
+    
+    /**
+     * @Title : deleteCnsltnt
+     * @Description : 컨설팅 담당자 삭제 
+     * @param SiteApplyVo
+     * @param user          로그인사용자정보
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/cnsltng/deleteConsultant.do")
+    @ResponseBody
+    public Map<String, Object> deleteCnsltnt(CnsltngVo cnsltngVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        
+        int retVal = 0;
+        retVal = cnsltngService.deleteCnsltnt(cnsltngVo);
+        if (retVal > 0) {
+            map.put("result", Constant.REST_API_RESULT_SUCCESS);
+            map.put("msg", "삭제 성공하였습니다.");
+        } else {
+            map.put("result", Constant.REST_API_RESULT_FAIL);
+            map.put("msg", "삭제 실패했습니다.");
+        }
+        return map;
+    }
+    
+    /**
+     * @Title : updateCnsltng
+     * @Description : 컨설팅 정보 업데이트  
+     * @param CnsltngVo cnsltngVo
+     * @param user          로그인사용자정보
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/cnsltng/updateCnsltng.do")
+    @ResponseBody
+    @Transactional
+    public Map<String, Object> updateCnsltng(CnsltngVo cnsltngVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        
+        int retVal = 0;
+        
+        cnsltngVo.setUser(user);
+        
+        retVal = cnsltngService.insertCnsltntALL(cnsltngVo);
+        retVal += cnsltngService.updateCnsltng(cnsltngVo);
+        
+        if (retVal > 0) {
+            map.put("result", Constant.REST_API_RESULT_SUCCESS);
+            map.put("msg", "저장 성공하였습니다.");
+        } else {
+            map.put("result", Constant.REST_API_RESULT_FAIL);
+            map.put("msg", "저장 실패했습니다.");
+        }
+        return map;
+    }
+    
+    @RequestMapping(value = "/mng/cnsltng/downloadCnsltngExcelList.do")
+    public void downloadCnsltngExcelList(HttpServletRequest request, HttpServletResponse response, CnsltngVo cnsltngVo) throws Exception {
+        cnsltngService.cnstlngExcelDownList(cnsltngVo, response, request);
+    }
+    /**
+     * @Title : cnsltngResultInfo
      * @Description : 컨설팅 신청정보 상세화면 화면 이동
      * @param SiteApplyVo 인자
      * @param Model      인자
@@ -146,61 +309,110 @@ public class CnsltngController {
      * @return String 이동화면경로
      */
     @RequestMapping(value = "/mng/cnsltng/consultResult.html")
-    public String consultResult(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String consultResult(CnsltngResultVo cnsltngResultVo, Model model, @UserInfo UserVo user) throws Exception {
         
-        cnsltngVo.setUser(user);
-        return "mng/cnsltng/cnsltngResultForm";
+        cnsltngResultVo.setUser(user);
+        CnsltngResultVo resVo = cnsltngService.selectCnsltngtResult(cnsltngResultVo);
         
+        if (resVo.getFilegrpid() != null && !resVo.getFilegrpid().equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(resVo.getFilegrpid().toString()));
+            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+            model.addAttribute("fileList",fileList );
+        } else {
+            model.addAttribute("fileList", null);
+        }
+        model.addAttribute("resultVo", resVo);
+        return "mng/cnsltng/cnsltngresultForm";
     }
     /**
-     * @Title : cnsltngApplyInfo
-     * @Description : 컨설팅 신청정보 상세화면 화면 이동
-     * @param SiteApplyVo 인자
+     * @Title : insertCnsltngResult
+     * @Description : 컨설팅 결과 정보 등록  
+     * @param CnsltngResultVo cnsltngResultVo
+     * @param user          로그인사용자정보
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/cnsltng/insertCnsltngResult.do")
+    @ResponseBody
+    @Transactional
+    public Map<String, Object> insertCnsltngResult(@Valid CnsltngResultVo cnsltngResultVo,BindingResult bindingResult1,CnsltngVo cnsltngVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>();
+        
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                map.put("msg", fieldError.getDefaultMessage());
+            }
+            return map;
+        }
+        
+        int retVal = 0;
+        cnsltngResultVo.setUser(user);
+        
+        if(!CommonUtil.isEmpty(cnsltngResultVo.getVstBgngDt()) &&!CommonUtil.isEmpty(cnsltngResultVo.getVstEndDt())) {
+            SimpleDateFormat dtFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            cnsltngResultVo.setVstBgngDate(dtFormat.parse("1970-01-01 "+cnsltngResultVo.getVstBgngDt()));
+            cnsltngResultVo.setVstEndDate(dtFormat.parse("1970-01-01 "+cnsltngResultVo.getVstEndDt()));
+        }
+        
+        retVal = cnsltngService.mergeCnsltngRslt(cnsltngResultVo);
+        
+        if(cnsltngResultVo.getTmprSaveYn().equals("N")) {
+            cnsltngVo.setSttsCd("131103");
+        }else {
+            cnsltngVo.setSttsCd("131102");
+        }
+        cnsltngService.updateCnsltng(cnsltngVo);
+        
+        if (retVal > 0) {
+            map.put("result", Constant.REST_API_RESULT_SUCCESS);
+            map.put("msg", "저장 성공하였습니다.");
+        } else {
+            map.put("result", Constant.REST_API_RESULT_FAIL);
+            map.put("msg", "저장 실패했습니다.");
+        }
+        return map;
+    }
+    /**
+     * @Title : cnsltngEval
+     * @Description : 컨설팅 평가 탭 
+     * @param CnsltngVo 인자
      * @param Model      인자
      * @throws Exception
      * @return String 이동화면경로
      */
     @RequestMapping(value = "/mng/cnsltng/cnsltngEval.html")
-    public String cnsltngEval(CnsltngVo cnsltngVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String cnsltngEval(CnsltngVo cnsltngVo, CnsltngResultVo cnsltngResultVo, Model model, @UserInfo UserVo user) throws Exception {
+        
+        List<Map<String,Object>> list = new ArrayList();
+        List<Map<String,Object>> exlist = new ArrayList();
+        
+        CnsltngResultVo resVo = cnsltngService.selectCnsltngtResult(cnsltngResultVo);
+        model.addAttribute("resultVo", resVo);
+        
+        if(resVo.getSrvyid()!=null && resVo.getSrvyid() != 0) {
+            cnsltngVo.setSrvyid(resVo.getSrvyid());
+            list = cnsltngService.selectCnsltngtSrvyResult(cnsltngVo);
+            if(list != null && list.size() > 0 ) {
+                String[] exArr = (list.get(0).get("EXSTR")).toString().split(",");
+                for(String str : exArr) {
+                    String[] strArr = str.split("/");
+                    Map<String,Object> exMap = new HashMap();
+                    exMap.put("INDEX", strArr[0]);
+                    exMap.put("EX", strArr[1]);
+                    exlist.add(exMap);
+                }
+            }
+            model.addAttribute("exCnt", exlist.size());
+            model.addAttribute("exlist", exlist);
+            model.addAttribute("srvyList", list);
+        }else {
+            model.addAttribute("srvyList", null);
+        }
         
         cnsltngVo.setUser(user);
-        
-
-        
-        //SiteApplyVo result = siteApplyService.selectSiteApplyInfo(siteApplyVo);
-        //List<SiteApplyMenuVo> menuList = siteApplyService.selectSiteApplyMenuList(siteApplyVo);
-        //model.addAttribute("siteApplyMenuList", menuList);
-        //model.addAttribute("siteApplyVo", result);
         return "mng/cnsltng/cnsltngSurveyForm";
         
     }
-    
-    /**
-     * @Title : updateSiteApplyStatus
-     * @Description : 사이트 신청 상태 변경
-     * @param SiteApplyVo
-     * @param user          로그인사용자정보
-     * @throws Exception
-     * @return Map<String,Object>
-     */
-    @RequestMapping(value = "/mng/cnsltng/updateSiteApplyStatus.do")
-    @ResponseBody
-    public Map<String, Object> updateSiteApplyStatus(SiteApplyVo siteApplyVo, @UserInfo UserVo user) throws Exception {
-        
-        Map<String, Object> map = new HashMap<String, Object>();
-        
-        int retVal = 0;
-        siteApplyVo.setUser(user);
-        //retVal = siteApplyService.updateSiteApplyStatus(siteApplyVo);
-        
-        if (retVal > 0) {
-            map.put("result", Constant.REST_API_RESULT_SUCCESS);
-            map.put("msg", "상태 변경에 성공하였습니다.");
-        } else {
-            map.put("result", Constant.REST_API_RESULT_FAIL);
-            map.put("msg", "상태 변경에 실패했습니다.");
-        }
-        return map;
-    }
-    
 }
