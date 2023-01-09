@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.file.controller;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -104,6 +106,17 @@ public class FileController {
                 if (!uploadFileExtsn.containsValue(fileExt.toLowerCase(new Locale(fileExt)))) {
                     //throw new FileStorageException("파일확장자는 " + uploadFileExtsn.values() + "만 가능합니다.");
                     throw new FileStorageException("허용되지않는 파일형식입니다.");
+                }
+            }
+            
+            LinkedHashMap imageSizeMap = ((LinkedHashMap)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("imageSize"));
+            if (imageSizeMap != null) {
+                BufferedImage image = ImageIO.read(file.getInputStream());
+                Integer width = image.getWidth();
+                Integer height = image.getHeight();
+                StringBuffer sb = new StringBuffer().append(width).append("X").append(height);
+                if (!imageSizeMap.containsValue(sb.toString())) {
+                    throw new FileStorageException("허용되지않는 이미지사이즈입니다.");
                 }
             }
             
