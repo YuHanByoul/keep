@@ -12,11 +12,10 @@
 		   display:none;
 		}
 		</style>
-		
-	<form name="searchFrm" id="searchFrm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
-		<div class="page-body">
-			<div class="row">
-				<div class="card">
+	<div class="col-12">
+		<form name="searchFrm" id="searchFrm" th:action="@{/}" method="POST" class="card" onsubmit="return false;">
+			<div class="page-body">
+				<div class="row">
 					<div class="tab-content tabs p-t-20">
 						<div class="tab-pane active" id="mainBanner" role="tabpanel">
 							<input type="hidden" class="js-single" />
@@ -67,290 +66,290 @@
 					</div>
 				</div>
 			</div>
-		</div>
 		</form>
+	</div>
 		
-		<div class="modal fade" id="bannerInsertPopup" data-bs-backdrop="static"></div>
-		<div class="modal fade" id="bannerUpdatePopup" data-bs-backdrop="static"></div>
+	<div class="modal fade" id="bannerInsertPopup" data-bs-backdrop="static"></div>
+	<div class="modal fade" id="bannerUpdatePopup" data-bs-backdrop="static"></div>
 
-		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+	
+	<script th:inline="javascript">
+		var columns = document.querySelectorAll(".column");
+		var leftHtml = "";
+		var rightHtml = "";
+		var columnHtml = "";
 		
-		<script th:inline="javascript">
-			var columns = document.querySelectorAll(".column");
-			var leftHtml = "";
-			var rightHtml = "";
-			var columnHtml = "";
+		var updatePopupUrl = "/mng/wbzn/carbon/banner/bannerUpdatePopup.html";
+		var updateAddModal;
+		
+		var insertPopupUrl = "/mng/wbzn/carbon/banner/bannerInsertPopup.html";
+		var insertAddModal;
+		
+		fn_openBannerInsertModal = () => {
+			$("#bannerInsertPopup").load(insertPopupUrl, function(response, status, xhr) {
+				if (status == "success") {
+					insertAddModal = new bootstrap.Modal($('#bannerInsertPopup'));
+					insertAddModal.show();
+				}
+			});
+		},
+		
+		fn_openBannerUpdateModal = (bannerid) => {
+			var url = updatePopupUrl+"?bannerid="+bannerid;
 			
-			var updatePopupUrl = "/mng/wbzn/carbon/banner/bannerUpdatePopup.html";
-			var updateAddModal;
+			$("#bannerUpdatePopup").load(url, function(response, status, xhr) {
+				if (status == "success") {
+					updateAddModal = new bootstrap.Modal($('#bannerUpdatePopup'));
+					updateAddModal.show();
+				}
+			});
+		}
+		
+		var banner = {
+			init : function() {
+				//페이지 진입시 리스트 조회
+				banner.selectBannerList();
+				
+				this.registEvent();
+				
+			},
 			
-			var insertPopupUrl = "/mng/wbzn/carbon/banner/bannerInsertPopup.html";
-			var insertAddModal;
-			
-			fn_openBannerInsertModal = () => {
-				$("#bannerInsertPopup").load(insertPopupUrl, function(response, status, xhr) {
-					if (status == "success") {
-						insertAddModal = new bootstrap.Modal($('#bannerInsertPopup'));
-						insertAddModal.show();
-					}
+			registEvent : function() {
+				// 사이트 선택시 리스트 초기화후 리스트 조회
+				$('#siteid').change(function(event) {
+					banner.selectBannerList();
+				})
+				
+				// drag&drop event
+				columns.forEach((column) => {
+				    var sortbale = new Sortable(column, {
+				        group: "shared",
+				        animation: 150,
+				        ghostClass: "blue-background-class",
+				        dataIdAttr: 'data-id',
+				        
+					    onEnd : function(evt) { // 배너를 drop 했을때 실행
+					    	var bannerid = sortbale.toArray();
+						    var dataList = new Array();
+						    for(var i = 1; i <= bannerid.length; i++){
+						    	var data = new Object();
+						    	data["bannerid"] = bannerid[i-1];
+						    	data["ordr"] = i;
+						    	dataList.push(data);
+						    }
+						    var params = new Object();
+						    params["bannerVoList"] = dataList;
+						    
+						 	// 배너 id, 순서 수정
+	 						if (displayWorkProgress()){
+								$.ajax({
+									url : "/mng/wbzn/carbon/banner/updateExpsrBannerSort.do",
+									cache : false,
+									dataType : 'json',
+									data : JSON.stringify(params),
+									type : 'POST',
+									contentType: "application/json; charset=utf-8",
+									success : function(data) {
+										closeWorkProgress();
+									}
+								});
+							}
+					    }
+				    });
+				    
 				});
 			},
 			
-			fn_openBannerUpdateModal = (bannerid) => {
-				var url = updatePopupUrl+"?bannerid="+bannerid;
-				
-				$("#bannerUpdatePopup").load(url, function(response, status, xhr) {
-					if (status == "success") {
-						updateAddModal = new bootstrap.Modal($('#bannerUpdatePopup'));
-						updateAddModal.show();
-					}
-				});
-			}
-			
-			var banner = {
-				init : function() {
-					//페이지 진입시 리스트 조회
-					banner.selectBannerList();
-					
-					this.registEvent();
-					
-				},
-				
-				registEvent : function() {
-					// 사이트 선택시 리스트 초기화후 리스트 조회
-					$('#siteid').change(function(event) {
-						banner.selectBannerList();
-					})
-					
-					// drag&drop event
-					columns.forEach((column) => {
-					    var sortbale = new Sortable(column, {
-					        group: "shared",
-					        animation: 150,
-					        ghostClass: "blue-background-class",
-					        dataIdAttr: 'data-id',
-					        
-						    onEnd : function(evt) { // 배너를 drop 했을때 실행
-						    	var bannerid = sortbale.toArray();
-							    var dataList = new Array();
-							    for(var i = 1; i <= bannerid.length; i++){
-							    	var data = new Object();
-							    	data["bannerid"] = bannerid[i-1];
-							    	data["ordr"] = i;
-							    	dataList.push(data);
-							    }
-							    var params = new Object();
-							    params["bannerVoList"] = dataList;
-							    
-							 	// 배너 id, 순서 수정
-		 						if (displayWorkProgress()){
-									$.ajax({
-										url : "/mng/wbzn/carbon/banner/updateExpsrBannerSort.do",
-										cache : false,
-										dataType : 'json',
-										data : JSON.stringify(params),
-										type : 'POST',
-										contentType: "application/json; charset=utf-8",
-										success : function(data) {
-											closeWorkProgress();
-										}
-									});
-								}
-						    }
-					    });
-					    
-					});
-				},
-				
-				// 배너 리스트 조회 및 리스트 생성 기능
-				selectBannerList: function() {
-					if (displayWorkProgress()){
-						$.ajax({
-							url : "/mng/wbzn/carbon/banner/selectBannerList.do",
-							cache : false,
-							dataType : 'json',
-							data : $("#searchFrm").serialize(),
-							type : 'POST',
-							success : function(data) {
-								// 배너 리스트 초기화
-								$("#LeftBanner").children().remove();
-								$("#RightBanner").children().remove();
-								$(".paging").children().remove();
-								leftHtml = "";
-								rightHtml = "";
-								columnHtml = "";
-								$("#LeftBanner").html("<script type='text/javascript' src='/files/assets/pages/advance-elements/swithces.js'>"+"</"+"script>");
-								
-								// 배너 리스트 생성
-								if(data.list.length == null || data.list.length <= 0){
-									$("#LeftBanner").addClass("text-right")
-									$("#LeftBanner").html('<span> 데이터가 없습니다. </span>');
-								}else {
-									$("#LeftBanner").removeClass("text-right");
-									$(".column").removeClass("text-center");
-									for(var i = 0; i < data.list.length; i++){
-										if(i % 2 == 1){
-											$("#RightBanner").html(banner.fn_makeListRightHtml(data.list[i], i));
-										}else{
-											$("#LeftBanner").html(banner.fn_makeListLeftHtml(data.list[i], i));
-										}
+			// 배너 리스트 조회 및 리스트 생성 기능
+			selectBannerList: function() {
+				if (displayWorkProgress()){
+					$.ajax({
+						url : "/mng/wbzn/carbon/banner/selectBannerList.do",
+						cache : false,
+						dataType : 'json',
+						data : $("#searchFrm").serialize(),
+						type : 'POST',
+						success : function(data) {
+							// 배너 리스트 초기화
+							$("#LeftBanner").children().remove();
+							$("#RightBanner").children().remove();
+							$(".paging").children().remove();
+							leftHtml = "";
+							rightHtml = "";
+							columnHtml = "";
+							$("#LeftBanner").html("<script type='text/javascript' src='/files/assets/pages/advance-elements/swithces.js'>"+"</"+"script>");
+							
+							// 배너 리스트 생성
+							if(data.list.length == null || data.list.length <= 0){
+								$("#LeftBanner").addClass("text-right")
+								$("#LeftBanner").html('<span> 데이터가 없습니다. </span>');
+							}else {
+								$("#LeftBanner").removeClass("text-right");
+								$(".column").removeClass("text-center");
+								for(var i = 0; i < data.list.length; i++){
+									if(i % 2 == 1){
+										$("#RightBanner").html(banner.fn_makeListRightHtml(data.list[i], i));
+									}else{
+										$("#LeftBanner").html(banner.fn_makeListLeftHtml(data.list[i], i));
 									}
 								}
-								
-								$(".column").html(banner.fn_makeListColumnHtml(data.expsrBannerList));
-								$(".paging").html(data.pagination);
-								banner.swicthBtnChange();
-								closeWorkProgress();
 							}
-						})
-					}
-				},
-				
-				// 배너목록 오른쪽영역 배너 생성
-				fn_makeListRightHtml : function(list, index) {
-					rightHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
-					rightHtml += '<div class="mb-2 row">'
-					rightHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
-					rightHtml += '<div class="p-l-0 col-2 text-right">'
-					rightHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
-					rightHtml += '</div>'
-					rightHtml += '</div>'
-					rightHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
-					rightHtml += '</div>'
-					return rightHtml;
-				},
-				
-				// 배너목록 왼쪽영역 배너 생성
-				fn_makeListLeftHtml : function(list, index) {
-					leftHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
-					leftHtml += '<div class="mb-2 row">'
-					leftHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
-					leftHtml += '<div class="p-l-0 col-2 text-right">'
-					leftHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
-				    leftHtml += '</div>'
-				    leftHtml += '</div>'
-				    leftHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
-				    leftHtml += '</div>'
-					return leftHtml;
-				},
-				
-				// 노출배너 목록에 배너 생성
-				fn_makeListColumnHtml : function(list) {
-					if (list == null || list.length <= 0) {
-						$(".column").addClass("text-center");
-						columnHtml += '<span> 데이터가 없습니다. </span>'
-					} else {
-						list.forEach(function(item, index) {
-							columnHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + item.bannerid + '" draggable="true" data-id="' + item.bannerid + '">'
-							columnHtml += '<div class="mb-2 row">'
-							columnHtml += '<div class="col-10">' + item.bannerTtl + '</div>'
-							columnHtml += '</div>'
-						    columnHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey + '" alt="banner image"/>'
-						    columnHtml += '</div>'
-						})
-					}
-					return columnHtml;
-				},
-				
-				// 스위치버튼을 눌렀을때 실행
-				swicthBtnChange : function() {
-					$(':checkbox[name="banner"]').on({
-					    change: function() {
-					    	if($(this).is(':checked')) { // 버튼은 on 했을경우
-					    		if($(".column").children('span').length == 1){ // 노출배너 목록에 <span> 데이터가 없습니다. </span>가 있을경우
-					    			$(".column").removeClass("text-center");
-					    			$(".column").children('span').remove();
-					    		}
-					    	
-					    		var clone = $(".banner"+this.id).clone();
-					    		var inputTagDelete = clone[0].querySelector("input");
-					    		$(".column").append(clone);
-					    		inputTagDelete.parentNode.innerHTML = "";
-					    		clone[0].querySelector("img").removeAttribute("onclick");
-					    		
-					    		// 배너 순서, 노출 여부 수정
-					    		if (displayWorkProgress()){
-									$.ajax({
-										url : "/mng/wbzn/carbon/banner/updateExpsrBanner.do",
-										cache : false,
-										dataType : 'json',
-										data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
-										type : 'POST',
-										contentType: "application/json; charset=utf-8",
-										success : function(data) {
-											closeWorkProgress();
-										}
-									});
-								}
-					    	}else { // 버튼을 off 했을경우
-					    		var bannerid = this.id;	
-					    		// 해당하는 배너를 노출배너 목록에서 삭제 및 순서, 노출 여부를 수정
-					    		if (displayWorkProgress()){
-									$.ajax({
-										url : "/mng/wbzn/carbon/banner/updateExpsrBanner.do",
-										cache : false,
-										dataType : 'json',
-										data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : null, expsrYn : 'N'}),
-										type : 'POST',
-										contentType: "application/json; charset=utf-8",
-										success : function(data) {
-											$(".column").find($('.banner'+bannerid)).remove();
-											
-								    		var dataList = new Array();
-								    		for(var i = 0; i < $(".column").children().length; i++) {
-										    	var data = new Object();
-										    	data["bannerid"] = $(".column").find($(".column").children()[i]).attr('data-id');
-										    	data["ordr"] = i+1;
-										    	dataList.push(data);
-
-								    		}
-
-										    var params = new Object();
-										    params["bannerVoList"] = dataList;
-										    
-										 	// 배너 id, 순서 수정
-											$.ajax({
-												url : "/mng/wbzn/carbon/banner/updateExpsrBannerSort.do",
-												cache : false,
-												dataType : 'json',
-												data : JSON.stringify(params),
-												type : 'POST',
-												contentType: "application/json; charset=utf-8",
-												success : function(data) {    
-												}
-											});
-											closeWorkProgress();
-										}
-									});
-								}
-					    	}
-					    }
-					});
+							
+							$(".column").html(banner.fn_makeListColumnHtml(data.expsrBannerList));
+							$(".paging").html(data.pagination);
+							banner.swicthBtnChange();
+							closeWorkProgress();
+						}
+					})
 				}
-			}
+			},
 			
-	        $(function() {
-	            banner.init();
-	        });
+			// 배너목록 오른쪽영역 배너 생성
+			fn_makeListRightHtml : function(list, index) {
+				rightHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
+				rightHtml += '<div class="mb-2 row">'
+				rightHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
+				rightHtml += '<div class="p-l-0 col-2 text-right">'
+				rightHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
+				rightHtml += '</div>'
+				rightHtml += '</div>'
+				rightHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
+				rightHtml += '</div>'
+				return rightHtml;
+			},
 			
-			$(document).ready(function(){
-				switchCherryCallback = function() {
-					
+			// 배너목록 왼쪽영역 배너 생성
+			fn_makeListLeftHtml : function(list, index) {
+				leftHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + list.bannerid + '" draggable="true" data-id="' + list.bannerid + '">'
+				leftHtml += '<div class="mb-2 row">'
+				leftHtml += '<div class="col-10">' + list.bannerTtl + '</div>'
+				leftHtml += '<div class="p-l-0 col-2 text-right">'
+				leftHtml += '<input type="checkbox" class="js-single-small" name="banner" id="' + list.bannerid + '" bannerid="' + list.bannerid + '" ' + ((list.expsrYn=='Y') ? "checked" : "") + '/>'
+			    leftHtml += '</div>'
+			    leftHtml += '</div>'
+			    leftHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + list.bannerFileid + '&file_idntfc_key=' + list.fileIdntfcKey + '" alt="banner image" onclick="fn_openBannerUpdateModal(' + list.bannerid + ');"/>'
+			    leftHtml += '</div>'
+				return leftHtml;
+			},
+			
+			// 노출배너 목록에 배너 생성
+			fn_makeListColumnHtml : function(list) {
+				if (list == null || list.length <= 0) {
+					$(".column").addClass("text-center");
+					columnHtml += '<span> 데이터가 없습니다. </span>'
+				} else {
+					list.forEach(function(item, index) {
+						columnHtml += '<div class="col-12 mb-2 border border-dark p-10 rounded banner' + item.bannerid + '" draggable="true" data-id="' + item.bannerid + '">'
+						columnHtml += '<div class="mb-2 row">'
+						columnHtml += '<div class="col-10">' + item.bannerTtl + '</div>'
+						columnHtml += '</div>'
+					    columnHtml += '<img class="img-fluid col-12" src="/downloadFileByFileid.do?fileid=' + item.bannerFileid + '&file_idntfc_key=' + item.fileIdntfcKey + '" alt="banner image"/>'
+					    columnHtml += '</div>'
+					})
 				}
-			});
+				return columnHtml;
+			},
 			
-			//공통 Pagination 사용시 function name 일괄 적용 할것
-			function goPage(page) {
-				$("#pageNumber").val(page);
-				
-				leftHtml = "";
-				rightHtml = "";
-				columnHtml = "";
-				
-				banner.selectBannerList();
+			// 스위치버튼을 눌렀을때 실행
+			swicthBtnChange : function() {
+				$(':checkbox[name="banner"]').on({
+				    change: function() {
+				    	if($(this).is(':checked')) { // 버튼은 on 했을경우
+				    		if($(".column").children('span').length == 1){ // 노출배너 목록에 <span> 데이터가 없습니다. </span>가 있을경우
+				    			$(".column").removeClass("text-center");
+				    			$(".column").children('span').remove();
+				    		}
+				    	
+				    		var clone = $(".banner"+this.id).clone();
+				    		var inputTagDelete = clone[0].querySelector("input");
+				    		$(".column").append(clone);
+				    		inputTagDelete.parentNode.innerHTML = "";
+				    		clone[0].querySelector("img").removeAttribute("onclick");
+				    		
+				    		// 배너 순서, 노출 여부 수정
+				    		if (displayWorkProgress()){
+								$.ajax({
+									url : "/mng/wbzn/carbon/banner/updateExpsrBanner.do",
+									cache : false,
+									dataType : 'json',
+									data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : $(".column").children().length, expsrYn : 'Y'}),
+									type : 'POST',
+									contentType: "application/json; charset=utf-8",
+									success : function(data) {
+										closeWorkProgress();
+									}
+								});
+							}
+				    	}else { // 버튼을 off 했을경우
+				    		var bannerid = this.id;	
+				    		// 해당하는 배너를 노출배너 목록에서 삭제 및 순서, 노출 여부를 수정
+				    		if (displayWorkProgress()){
+								$.ajax({
+									url : "/mng/wbzn/carbon/banner/updateExpsrBanner.do",
+									cache : false,
+									dataType : 'json',
+									data : JSON.stringify({bannerid : $('.banner'+this.id).attr("data-id"), ordr : null, expsrYn : 'N'}),
+									type : 'POST',
+									contentType: "application/json; charset=utf-8",
+									success : function(data) {
+										$(".column").find($('.banner'+bannerid)).remove();
+										
+							    		var dataList = new Array();
+							    		for(var i = 0; i < $(".column").children().length; i++) {
+									    	var data = new Object();
+									    	data["bannerid"] = $(".column").find($(".column").children()[i]).attr('data-id');
+									    	data["ordr"] = i+1;
+									    	dataList.push(data);
+
+							    		}
+
+									    var params = new Object();
+									    params["bannerVoList"] = dataList;
+									    
+									 	// 배너 id, 순서 수정
+										$.ajax({
+											url : "/mng/wbzn/carbon/banner/updateExpsrBannerSort.do",
+											cache : false,
+											dataType : 'json',
+											data : JSON.stringify(params),
+											type : 'POST',
+											contentType: "application/json; charset=utf-8",
+											success : function(data) {    
+											}
+										});
+										closeWorkProgress();
+									}
+								});
+							}
+				    	}
+				    }
+				});
 			}
-		</script>
+		}
+		
+        $(function() {
+            banner.init();
+        });
+		
+		$(document).ready(function(){
+			switchCherryCallback = function() {
+				
+			}
+		});
+		
+		//공통 Pagination 사용시 function name 일괄 적용 할것
+		function goPage(page) {
+			$("#pageNumber").val(page);
+			
+			leftHtml = "";
+			rightHtml = "";
+			columnHtml = "";
+			
+			banner.selectBannerList();
+		}
+	</script>
 	</div>
 </body>
 </html>

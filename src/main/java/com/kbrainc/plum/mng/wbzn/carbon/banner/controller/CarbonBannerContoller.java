@@ -215,23 +215,14 @@ public class CarbonBannerContoller {
      * @Title : deleteBanner
      * @Description : 배너관리 배너 삭제 기능
      * @param bannerVo 배너관리 객체
-     * @param bindingResult 배너관리 유효성 검증결과
      * @param user 사용자 세션정보
      * @throws Exception 예외
      * @return Map<String,Object>
      */
      @RequestMapping(value = "/mng/wbzn/carbon/banner/deleteBanner.do")
      @ResponseBody
-     public Map<String, Object> deleteBanner(@Valid CarbonBannerVo bannerVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+     public Map<String, Object> deleteBanner(CarbonBannerVo bannerVo, @UserInfo UserVo user) throws Exception {
          Map<String, Object> resultMap = new HashMap<String, Object>();
-         
-         if (bindingResult.hasErrors()) {
-             FieldError fieldError = bindingResult.getFieldError();
-             if (fieldError != null) {
-                 resultMap.put("msg", fieldError.getDefaultMessage());
-             }
-             return resultMap;
-         }
          
          bannerVo.setUser(user);
 
