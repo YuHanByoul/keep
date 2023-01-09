@@ -51,7 +51,6 @@
 function fn_deleteFileList(fileid, fileIdntfcKey){
     if(!confirm("파일을 삭제하시겠습니까?")){return;}
     fn_deleteFile(fileid, fileIdntfcKey);
-    $("#"+fileid).remove();
 } 
 
 function fn_deleteFile(fileid, fileIdntfcKey){
@@ -113,8 +112,8 @@ $('#pfphotoFile').on('change', function(event) {
 
 });
 
-var atchfileCnt = 2 ;
-var uploadFileCnt = 0 ;
+//var atchfileCnt = 2 ;
+//var uploadFileCnt = 0 ;
 
 $('#multiFileInput').on("change", function(event) {
                     
@@ -122,7 +121,7 @@ $('#multiFileInput').on("change", function(event) {
         var formData = new FormData();
         var content = "";
         
-        for( i = 0 ; i < objFile.files.length ; i++) {
+        /*for( i = 0 ; i < objFile.files.length ; i++) {
         
                if(uploadFileCnt >= atchfileCnt){
                    alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
@@ -130,12 +129,17 @@ $('#multiFileInput').on("change", function(event) {
                    formData.append("files", objFile.files[i]);
                    uploadFileCnt++;
                }
+        }*/
+        
+        for( i = 0 ; i < objFile.files.length ; i++) {
+            formData.append("files", objFile.files[i]);
         }
         
         formData.append("filegrpid", $("#filegrpid").val());
         formData.append("filegrpNm", "contract");
         
-        if(uploadFileCnt >0 ){
+        //if(uploadFileCnt >0 ){
+        if(displayWorkProgress()){
             $.ajax({
                 url : '/uploadMultipleFiles.do',
                 processData : false,
@@ -151,15 +155,18 @@ $('#multiFileInput').on("change", function(event) {
                         }
                         
                         for(i = 0 ;i < response.length; i++ ){
-                            content = "<div class ='' id='inputFiles"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm +"</a>";
-                            content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =uploadFileCnt--;fn_deleteFileList('inputFiles"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>"; 
+                            content = "<div class ='' id='"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm +"</a>";
+                            //content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =uploadFileCnt--;fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>";
+                            content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>"; 
                             $('#multipleFileUploadSuccess').append(content);
                         }
                     }
+                    closeWorkProgress();
                 }
             });
            $("#multiFileInput").val("");
         }
+        //}
 });
 
 </script>

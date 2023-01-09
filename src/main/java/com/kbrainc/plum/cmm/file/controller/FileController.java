@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -123,16 +124,62 @@ public class FileController {
      */
     @PostMapping("/uploadMultipleFiles.do")
     public List<FileVo> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, FileGrpVo fileGrpVo, @UserInfo UserVo user) throws Exception {
-        return Arrays.asList(files)
-                .stream()
-                .map(file -> {
-                    try {
-                        return uploadFile(file, fileGrpVo, user, true);
-                    } catch (Exception e) {
-                        throw new FileStorageException(e.getMessage());
+        
+        if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
+            FileVo fileVo = new FileVo();
+            List<FileVo> fileList= new ArrayList<FileVo>();
+            long fileTotalSize = 0;
+            
+            if (fileGrpVo.getFilegrpid() != 0) {
+                fileVo.setFilegrpid(fileGrpVo.getFilegrpid());
+                fileList= fileService.getFileList(fileVo);
+                // 파일 총 사이즈 합산
+                for (FileVo file : fileList) {
+                    fileTotalSize += file.getFileSize();
+                }
+            }
+
+            for (MultipartFile file : files) {
+                fileTotalSize += file.getSize();
+            }
+            
+            Integer uploadFileCnt = (Integer) this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadFileCnt");
+            if (uploadFileCnt != null) {
+                if (uploadFileCnt < files.length + fileList.size()) {
+                    throw new FileStorageException("파일갯수는 " + uploadFileCnt + "개 까지만 가능합니다."); 
+                }
+            }
+            
+            Integer uploadFileTotalSize = (Integer) this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadFileTotalSize");
+            if (uploadFileTotalSize != null) {
+                // uploadFileTotalSize byte로 변환 
+                long fileSizeByte = uploadFileTotalSize * 1024 * 1024; // MB -> Byte로 변환 
+                if (fileSizeByte < fileTotalSize) {
+                    throw new FileStorageException("총파일사이즈는 " + uploadFileTotalSize + "MB 이하여야합니다."); 
+                }
+                
+            }
+            
+            List<FileVo> uploadFileList = new ArrayList<FileVo>();
+            
+            for (MultipartFile file : files) {
+                try {
+                    uploadFileList.add(uploadFile(file, fileGrpVo, user, true));
+                } catch (Exception e) {
+                    for (FileVo uploadFile : uploadFileList) {
+                        fileVo = fileService.selectFile(uploadFile);   
+                        fileStorageService.deleteFile(fileVo);
+                        fileService.deleteFileVo(fileVo);
                     }
-                })
-                .collect(Collectors.toList());
+                    String errorMsg = e.getMessage(); // 수정하지마시오.
+                    throw new FileStorageException(errorMsg); // 수정하지마시오.
+                }
+            }
+            
+            return uploadFileList;
+        } else {
+            return new ArrayList<FileVo>();
+        }
     }
     
     /**
