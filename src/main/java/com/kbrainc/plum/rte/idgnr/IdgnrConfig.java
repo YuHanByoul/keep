@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.kbrainc.plum.rte.crypto.CryptoAES256;
-
 /**
 * id generation을 서비스하는 bean을 생성.
 *
