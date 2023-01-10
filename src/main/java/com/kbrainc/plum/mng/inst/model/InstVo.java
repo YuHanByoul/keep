@@ -72,6 +72,15 @@ public class InstVo extends ParentRequestVo {
     /** 지역 코드 */
     private String rgnCd;
     
+    /** 시도 */
+    private String sidoNm;
+    
+    /** 시군구*/
+    private String signguNm;
+    
+    /** 시군구_코드*/
+    private String signguCd;
+    
     /** 사업자번호 */
     @Size(max = 10, message = "사업자번호는 10자를 넘을 수 없습니다.")
     private String brno;

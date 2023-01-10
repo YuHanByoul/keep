@@ -1,0 +1,118 @@
+<form id ="rgnEnveudCntrInsertForm">
+		<!-- INSERT -->
+		<div class="card-header p-b-0">
+        	<h3 class="sub-title"><strong>지역환경교육센터 등록</strong></h3>
+        </div>
+
+		<!-- Tab Container Start -->
+        <div class="card-block-small p-t-0">
+	        <div class="mb-2 row">
+	            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+	                <div class="mb-0 form-group required">
+	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>구분</strong></div>
+	                    <div class="col-12">
+	                        <select name="seCd" id="seCd" class="form-select form-select-sm form-control-sm">
+	                            <option value="">- 선택 -</option>
+								<th:block th:each="cmmCd : ${cmmCd}">
+									<option th:value="${cmmCd.cd}"><th:block th:text="${cmmCd.cdNm}"/></option>
+								</th:block>
+	                        </select>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-12 col-lg-6">
+	                <div class="mb-0 form-group required">
+	                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>시도</strong></div>
+	                    <div class="col-12">
+	                        <select name="rgnCd" id="rgnCd" class="form-select form-select-sm form-control-sm">
+	                            <option value="">- 선택 -</option>
+				                <th:block th:each="ctprvn : ${ctprvn}">
+									<option th:value="${ctprvn.ctprvnCd}"><th:block th:text="${ctprvn.ctprvnNm}" /></option>
+								</th:block>
+	                        </select>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="mb-2 row">
+	            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+	                <div class="mb-0 form-group required">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cntrNm"><strong>센터명</strong></label>
+	                    <div class="col-12">
+	                        <input type="text" class="form-control form-control-sm" name="cntrNm" id="cntrNm" placeholder="센터명"/>
+	                    </div>
+	                </div>
+	            </div>
+	            <div class="col-12 col-lg-6">
+	                <div class="mb-0 form-group required">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>기관명</strong></label>
+	                    <div class="col-12">
+	                        <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="기관명"/>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <div class="mb-0 row">
+	            <div class="col-12 col-lg-6">
+	                <div class="mb-0 form-group required">
+	                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="hmpg"><strong>홈페이지</strong></label>
+	                    <div class="col-12">
+	                        <input type="text" class="form-control form-control-sm" name="hmpg" id="hmpg" placeholder="’http://’ 포함하여 입력하십시오. 예시) http://www.keep.go.kr"/>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="card-block-small">
+	        <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertRgnEnveduCntr" onclick="gridHelper1.toggleContent()">취소</button>
+	        <th:block sec:authorize-url="/mng/rgnEnveduCntr/insertRgnEnveduCntr.do">
+	        	<button type="button" class="btn btn-primary" id="insertRgnEnveduCntr" onclick="fn_insertRgnEnveduCntr()">저장</button>
+	        </th:block>
+	    </div>
+		<!-- Tab Container End -->
+</form>
+
+<script th:inline="javascript">
+	var validator= $("#rgnEnveudCntrInsertForm").validate({
+	    rules: {
+	    	seCd	:   { required: true }  
+	    	,rgnCd  :   { required: true }  
+	    	,cntrNm : 	{ required: true }
+	    	,instNm : 	{ required: true }  
+	     	,hmpg   : 	{ required: true }
+	    },
+	    messages: {
+	    	seCd    :   { required: "구분을 선택해주십시오." }  
+	    	,rgnCd  :   { required: "시도를 선택해주십시오." }
+    	    ,cntrNm :   { required: "센터명을 입력해주십시오."  }
+	    	,instNm :   { required: "기관명을 입력해주십시오." }
+		    ,hmpg   :   { required: "홈페이지를 입력해주십시오." }
+	    }
+	})
+	
+ 	function fn_insertRgnEnveduCntr(){
+	 	if(!($("#rgnEnveudCntrInsertForm").valid())) return;
+
+  	 	if(!confirm("저장하시겠습니까?")) return;
+  	 	
+	    var data =  $("#rgnEnveudCntrInsertForm").serialize();
+	    if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/rgnEnveduCntr/insertRgnEnveduCntr.do",
+				type: 'POST',
+				cache : false,
+				dataType: 'json',
+				data : data,
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						gridHelper1.resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
+				}
+			});
+		}
+	}
+</script>

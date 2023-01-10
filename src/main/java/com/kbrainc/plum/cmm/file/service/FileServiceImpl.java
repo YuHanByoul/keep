@@ -164,7 +164,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
         if (this.filegrpName.containsKey(fileVo.getFilegrpNm())) {
             LinkedHashMap downloadChecker = ((LinkedHashMap)this.filegrpName.get(fileVo.getFilegrpNm()).get("downloadChecker"));
             
-            if ("bbs".equals(fileVo.getFilegrpNm())) {
+            if ("bbs".equals(fileVo.getFilegrpNm()) || "cmt_bbs".equals(fileVo.getFilegrpNm())) {
                 if ("N".equals(fileVo.getNloginDwnldPermYn()) && user.getUserid() == null) {
                     return false;
                 }
@@ -189,4 +189,16 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
         return fileDao.getFileInfo(fileVo);
     }
     
+    /**
+    * 파일다운로드 횟수를 증가시킨다.
+    *
+    * @Title : updateFileDwnldCntPlusOne
+    * @Description : 파일다운로드 횟수를 증가시킨다.
+    * @param fileVo FileVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateFileDwnldCntPlusOne(FileVo fileVo) throws Exception {
+        return fileDao.updateFileDwnldCntPlusOne(fileVo);
+    }
 }

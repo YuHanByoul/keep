@@ -34,6 +34,7 @@ import org.springframework.security.web.access.channel.RetryWithHttpsEntryPoint;
 import org.springframework.security.web.access.channel.SecureChannelProcessor;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import com.kbrainc.plum.rte.filter.SiteChangeFilter;
 import com.kbrainc.plum.rte.security.AjaxSessionTimeoutFilter;
@@ -170,6 +171,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAfter(new AjaxSessionTimeoutFilter(), ExceptionTranslationFilter.class); 
 
         // http.csrf().disable(); // 주석풀지마세요!!! csrf공격대응 기능을 기본적으로 사용함(보안강화)
+        http.csrf().csrfTokenRepository(new CookieCsrfTokenRepository());
 
         http.headers().frameOptions().disable(); // iframe사용가능
     }

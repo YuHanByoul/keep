@@ -585,7 +585,15 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 제출_상태_코드      */
     private String sbmsnSttsCd;
 
+    /** 제출_상태_이름      */
+    private String sbmsnSttsCdNm;
 
+    /** 제출_확인 */
+    private String sbmsnIdnty;
+
+    /** 최종_제출_일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date lastSbmsnDt;
 
     /*------------------------------------------------------------------------------------------*/
 
@@ -620,7 +628,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
         }
 	}
 
-
 	/** 변경신청 상태코드 */
 	public void setAplySttsCd(String aplySttsCd) throws Exception{
 
@@ -632,6 +639,27 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
 				CodeInfoVo code = resCodeService.getCodeInfo(this.aplySttsCd);
 				this.aplySttsCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	/** 제출 상태코드 */
+	public void setSbmsnSttsCd(String sbmsnSttsCd) throws Exception{
+
+		this.sbmsnSttsCd = sbmsnSttsCd;
+
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.sbmsnSttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.sbmsnSttsCd);
+				this.sbmsnSttsCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
 				return;

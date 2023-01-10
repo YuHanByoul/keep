@@ -43,14 +43,50 @@ public class CnsltngResultVo extends ParentRequestVo {
     private int cnsltngid;
     
     /** 방문일자 */
-    @Size(max = 10, message = "희망일자1은 20자를 넘을 수 없습니다.")
+    @Size(max = 10, message = "현장방문일은 10자를 넘을 수 없습니다.")
     private String vstDe;
     
+    @Size(max = 100, message = "프로그램명은 100자를 넘을 수 없습니다.")
+    private String prgrmNm;
+    
+    /** 컨성팅 종류 코드 */
+    @Size(max = 20, message = "컨성팅 종류 코드은 20자를 넘을 수 없습니다.")
+    private String cnsltngKndCd;
+    
+    /** 컨성팅 종류 코드 */
+    @Size(max = 20, message = "컨성팅 종류 코드은 20자를 넘을 수 없습니다.")
+    private String cnsltngKndCdNm;
+    
+    /** 희망일자1 */
+    @Size(max = 10, message = "희망일자1은 10자를 넘을 수 없습니다.")
+    private String hopeDe1;
+    
+    /** 희망일자2 */
+    @Size(max = 10, message = "희망일자1은 10자를 넘을 수 없습니다.")
+    private String hopeDe2;
+    
+    /** 신청일자 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date reqDt;
+    
+    /** 컨설턴트 이름  */
+    private String cnstntNm;
+    
     /** 방문일자 시작일시*/
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
     private String vstBgngDt;
     
     /** 방문일자 종료일시*/
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
     private String vstEndDt;
+    
+    /** 방문일자 시작일시*/
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
+    private Date vstBgngDate;
+    
+    /** 방문일자 종료일시*/
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="HH:mm")
+    private Date vstEndDate;
     
     /** 종합의견*/
     private String gnrlzopnn;
@@ -117,5 +153,31 @@ public class CnsltngResultVo extends ParentRequestVo {
     
     /** 등록자아이디 */
     private int rgtrid;
-	
+    
+    /** 신청 기관명  */
+    private String instNm;
+    
+    /** 신청자명 */
+    private String userNm;
+    
+    /** 설문아이디 */
+    private Integer srvyid;
+    
+    public void setCnsltngKndCd(String cnsltngKndCd) throws Exception{
+        this.cnsltngKndCd = cnsltngKndCd;
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.cnsltngKndCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.cnsltngKndCd);
+                this.cnsltngKndCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
 }

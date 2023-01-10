@@ -33,11 +33,17 @@
                  ,A.REG_DT
                  ,A.RGTRID
                  ,B.MNGNMS
+                 ,C.CTPRVN_NM AS SIDO_NM
+                 ,C.SIGNGU_CD
+                 ,C.SIGNGU_NM
                 FROM   
                  TB_CMM_INST A
                  LEFT OUTER JOIN(
                    SELECT INSTID, group_concat(NM) MNGNMS FROM TB_CMM_USER WHERE INSTID IS NOT NULL GROUP BY INSTID 
                  ) B ON A.INSTID = B.INSTID
+                 LEFT OUTER JOIN(
+                   SELECT TB1.SIGNGU_CD , TB1.SIGNGU_NM, TB2.CTPRVN_NM FROM TB_CMM_ADDR_SIGNGU TB1 LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN TB2 ON TB1.CTPRVN_CD = TB2.CTPRVN_CD
+                 ) C ON A.RGN_CD = C.SIGNGU_CD
                 WHERE 1=1 
                 <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
                    AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
@@ -59,6 +65,16 @@
                 <if test="searchApprovalSttsCd != null and searchApprovalSttsCd != '' ">
                    AND A.APRV_STTS_CD = #{searchApprovalSttsCd}
                 </if>
+                
+                <!-- 기관검색 -->
+                <if test="instNm != null and instNm != ''">
+                   AND A.INST_NM LIKE CONCAT('%',#{instNm},'%')
+                </if>
+                <if test="brno != null and brno != ''">
+                   AND A.BRNO LIKE CONCAT('%',#{brno},'%')
+                </if>
+                <!-- /기관검색 -->
+                                
         <include refid="PaginationMapper.footer"/>
     </select>
 

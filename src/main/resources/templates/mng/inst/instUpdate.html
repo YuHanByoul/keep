@@ -181,14 +181,14 @@
                              <span id="fileListArea">
                              <!-- 파일 명 및 삭제 버튼 영역-->
                                  <th:block th:if = "${fileMap} != null ">
-			                      <!-- <div  th:each="item:${fileMap}" > -->
 			                        <span th:each="item:${fileMap}" class ='label label-inverse ' th:id="'instFile_'+${item.fileid}">
 			                            <th:block th:text="${item.orginlFileNm}"></th:block>
 			                            &nbsp;&nbsp;
-				                        <a  class = 'btn text-white' th:fileid ="${item.fileid}" th:fileIdntfcKey ="${item.fileIdntfcKey}" 
-				                                     href="javascript:fn_deleteInstFile(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">X</a></span>
-			                       <!-- </div> -->
-                                  </th:block>
+			                            <a  class = 'text-white' href = "javascript:void(0)"
+                                                   th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" 
+                                                   th:onclick="fn_deleteInstFile(this.name, this.dataset.idntfcKey)">X</a>
+                                    </span>
+                                   </th:block>
                                   </span> 
                          </div>
                      </div>
@@ -380,15 +380,18 @@
                data : formData,
                type : 'POST',
                success : function(response) {
-                   
-                   if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
-                       $("#filegrpid").val( response[0].filegrpid );
-                   }
-                   
-                   for(i = 0 ;i < response.length; i++ ){
-                       content = "<span class ='label label-inverse mb-2' id='instFile_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
-                       content +="&nbsp;&nbsp;  <a  class = 'btn text-white' href = javascript:fn_deleteInstFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
-                       $('#fileListArea').append(content);
+                   if(response.result == 'fail'){
+                      alert(response.msg);
+                   }else{
+                       if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                           $("#filegrpid").val( response[0].filegrpid );
+                       }
+                       
+                       for(i = 0 ;i < response.length; i++ ){
+                           content = "<span class ='label label-inverse mb-2' id='instFile_"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                           content +="&nbsp;&nbsp;  <a  class = 'btn text-white' href = javascript:fn_deleteInstFile('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>X</a></span>&nbsp;&nbsp;";
+                           $('#fileListArea').append(content);
+                       }
                    }
                }
            })

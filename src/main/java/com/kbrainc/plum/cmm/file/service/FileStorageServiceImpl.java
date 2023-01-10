@@ -115,7 +115,7 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
             // Copy file to the target location (Replacing existing file with the same name)
             if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
                 String orginlUploadPath = fileStorageProperties.getUploadDir() + (String)this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadPath") + 
-                       (("bbs".equals(fileGrpVo.getFilegrpNm())) ? "/" + fileGrpVo.getBbsid() : "");
+                       (("bbs".equals(fileGrpVo.getFilegrpNm()) || ("cmt_bbs".equals(fileGrpVo.getFilegrpNm()))) ? "/" + fileGrpVo.getBbsid() : "");
                 Path uploadPath = Paths.get(orginlUploadPath).toAbsolutePath().normalize();
                 Files.createDirectories(uploadPath);
                 Files.copy(file.getInputStream(), uploadPath.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);

@@ -157,8 +157,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     throw new BadCredentialsException("Login Error !!");
                 }
                 
-                resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
-                // 사용자 역할까지 부여
+                //resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 관리자 역할 목록 조회
                 instid = (Integer) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
                 String instUseYn = (String) resultMap.get("INST_USE_YN"); // 기관사용여부
@@ -171,7 +170,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 
                 if ("I".equals(loginUserType) && instid != null) {
                     if ("N".equals(instUseYn) || !"2".equals(instAprvSttsCd)) { // 기관이 미사용이거나 승인상태가 아닌경우
-                        request.setAttribute("message", "기관정보가 승인되지 않았습니다. 개인회원으로 다시 로그인 해주십시오.");
+                        request.setAttribute("message", "기관정보가 승인되지 않았습니다. 개인회원으로는 로그인이 가능합니다.");
                         throw new InternalAuthenticationServiceException("Login Error !!");
                     } else {
                         roleMap = new HashMap<String, Object>();

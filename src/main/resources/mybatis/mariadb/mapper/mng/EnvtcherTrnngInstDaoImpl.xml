@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : InstMngImpl.xml
+	Description : 사용자관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstDao">
+    
+    <select id="selectEnvtcherTrnngInstList" parameterType="EnvtcherTrnngInstVo" resultType="EnvtcherTrnngInstVo">
+        /* EnvtcherTrnngInstDao.selectEnvtcherTrnngInstList */
+        <include refid="PaginationMapper.header"/>
+                SELECT
+                	A.ORDRID
+                  , C.CTPRVN_NM AS SIDO_NM
+                  , B.SIGNGU_NM
+                  , D.INST_NM
+                  , E.CD_NM AS GRD_CD
+                  , A.HMPG
+                  , A.DSGN_DE
+                  , A.REG_DT
+                FROM
+                	TB_CMM_ENVTCHER_TRNNG_INST A
+                	LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
+                	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
+                	LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
+                	LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
+                WHERE 1=1 
+                <!-- /기관검색 -->
+                                
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <select id="selectEnvtcherTrnngInstInfo" parameterType="EnvtcherTrnngInstVo" resultType="EnvtcherTrnngInstVo">
+           /* EnvtcherTrnngInstDao.TB_CMM_ENVTCHER_TRNNG_INST */
+                SELECT
+                	A.ORDRID
+                  , D.INST_NM
+                  , A.INSTID
+                  , C.CTPRVN_NM AS SIDO_NM
+                  , B.SIGNGU_NM
+                  , A.SIGNGU_CD
+                  , A.GRD_CD
+                  , A.DSGN_DE
+                  , F.CD_NM AS INST_TYPE_CD_NM
+                  , A.INST_TYPE_CD
+                  , A.HMPG
+                  , A.TELNO
+                  , A.FXNO
+                  , A.ADDR
+                  , A.ADDR_DTL
+                  , A.EXPLN
+                FROM
+                	TB_CMM_ENVTCHER_TRNNG_INST A
+                	LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
+                	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
+                	LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
+                	LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
+                	LEFT OUTER JOIN TB_CMM_CD F ON A.INST_TYPE_CD = F.CD
+               WHERE 1=1 
+                 AND ORDRID = #{ordrid}
+    </select>
+    
+    <!-- 기관 정보 저장 --> 
+    <insert id="insertEnvtcherTrnngInst" parameterType="EnvtcherTrnngInstVo">
+        /* EnvtcherTrnngInstDao.insertEnvtcherTrnngInst */
+        INSERT INTO TB_CMM_ENVTCHER_TRNNG_INST (
+              INSTID
+              ,GRD_CD
+              ,DSGN_DE
+              ,INST_TYPE_CD
+              ,HMPG
+              ,TELNO
+              ,FXNO
+              ,ADDR
+              ,ADDR_DTL
+              ,SIGNGU_CD
+              ,EXPLN
+              ,THMBN_FILEID
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+        )VALUES(
+               #{instid}
+              ,#{grdCd}
+              ,#{dsgnDe}
+              ,#{instTypeCd}
+              ,#{hmpg}
+              ,#{telno}
+              ,#{fxno}
+              ,#{addr}
+              ,#{addrDtl}
+              ,#{signguCd}
+              ,#{expln}
+              ,#{thmbnFileid}
+              ,NOW()
+              ,#{user.userid}
+              ,NOW()
+              ,#{user.userid}
+        )
+    </insert>
+    
+    <!-- 기관 정보 수정--> 
+    <update id="updateEnvtcherTrnngInst" parameterType="EnvtcherTrnngInstVo" >
+         /* EnvtcherTrnngInstDao.updateEnvtcherTrnngInst */
+          UPDATE TB_CMM_ENVTCHER_TRNNG_INST SET
+              INSTID            = #{instid}
+              ,GRD_CD           = #{grdCd}
+              ,DSGN_DE          = #{dsgnDe}
+              ,INST_TYPE_CD     = #{instTypeCd}
+              ,HMPG             = #{hmpg}
+              ,TELNO            = #{telno}
+              ,FXNO             = #{fxno}
+              ,ADDR             = #{addr}
+              ,ADDR_DTL         = #{addrDtl}
+              ,SIGNGU_CD        = #{signguCd}
+              ,EXPLN            = #{expln}
+              ,THMBN_FILEID     = #{thmbnFileid}
+              ,MDFCN_DT         = NOW()
+              ,MDFRID           = #{user.userid}
+           WHERE ORDRID = #{ordrid}
+    </update>
+    
+</mapper>

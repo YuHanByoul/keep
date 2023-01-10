@@ -168,17 +168,6 @@ public interface DsgnPrgrmService {
 	public int updateChgAplyStts(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
-	* 운영결과 상세 조회
-	*
-	* @Title : selectOperRsltDtl
-	* @Description : 운영결과 상세 조회
-	* @param dsgnPrgrmVo
-	* @return DsgnPrgrmVo
-	* @throws Exception;
-	*/
-	public DsgnPrgrmVo selectOperRsltDtl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
-
-	/**
 	 * 운영결과 목록 조회
 	 *
 	 * @Title : selectOperRsltList
@@ -188,5 +177,61 @@ public interface DsgnPrgrmService {
 	 * @throws Exception;
 	 */
 	public List<DsgnPrgrmVo> selectOperRsltList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 운영결과 차수 조회
+	 *
+	 * @Title : selectOperRsltCycl
+	 * @Description : 운영결과 차수 조회
+	 * @param dsgnPrgrmVo
+	 * @return DsgnPrgrmVo
+	 * @throws Exception
+	 */
+	public DsgnPrgrmVo selectOperRsltCycl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * (운영결과서)제출기간 수정
+	 *
+	 * @Title : updateSbmsnPrd
+	 * @Description : (운영결과서)제출기간 수정
+	 * @param dsgnPrgrmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateSbmsnPrd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 상세 조회
+	*
+	* @Title : selectOperRsltDetail
+	* @Description : 운영결과 상세 조회
+	* @param DsgnPrgrmVo
+	* @return DsgnPrgrmVo
+	* @throws Exception
+	*/
+	public DsgnPrgrmVo selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영결과 수정
+	*
+	* @Title : updateOperRslt
+	* @Description : 운영결과 수정
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 *
+	* 운영결과 삭제
+	*
+	* @Title : delteOperRslt
+	* @Description : 운영결과 삭제
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	public int deleteOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

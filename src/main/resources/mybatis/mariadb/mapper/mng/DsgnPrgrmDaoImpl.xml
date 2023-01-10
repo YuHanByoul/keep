@@ -455,89 +455,241 @@
     <select id="selectOperRsltList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         <include refid="PaginationMapper.header"/>
         SELECT
+            A.CYCLID
+          , A.PRGRMID
+          , A.CYCL
+          , A.SBMSN_BGNG_DE
+          , A.SBMSN_END_DE
+          , CONCAT(A.SBMSN_BGNG_DE, " ~ ", A.SBMSN_END_DE) AS SBMSN_PRD    /* 제출기간 */
+          , A.STTS_CD    AS SBMSN_STTS_CD    /*제출상태코드*/
+          , CASE WHEN B.CYCLID IS NOT NULL
+                 THEN '내용확인'
+                 WHEN A.STTS_CD = '128101'
+                 THEN '-'
+                 WHEN B.CYCLID IS NULL
+                 THEN '대기중'
+            END    AS SBMSN_IDNTY    /*제출 확인*/
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
+          , B.MDFCN_DT AS LAST_SBMSN_DT
+        FROM    /* 운영결과 차수*/
+            TB_ASS_OPER_RSLT_CYCL A
+        LEFT OUTER JOIN
+            TB_ASS_OPER_RSLT B ON A.CYCLID =B.CYCLID
+        WHERE
+            PRGRMID = #{prgrmid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectOperRsltCycl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
             CYCLID
           , PRGRMID
           , CYCL
           , SBMSN_BGNG_DE
           , SBMSN_END_DE
-          , CONCAT(SBMSN_BGNG_DE, " ~ ", SBMSN_END_DE) AS SBMSN_PRD    /* 제출기간 */
-          , STTS_CD    AS SBMSN_STTS_CD    /*제출상태코드*/
+          , STTS_CD
           , MDFCN_DT
           , MDFRID
           , REG_DT
           , RGTRID
         FROM
             TB_ASS_OPER_RSLT_CYCL
-        WHERE
-            PRGRMID = #{prgrmid}
-        <include refid="PaginationMapper.footer"/>
+        WHERE 1=1
+        AND CYCLID = #{cyclid}
     </select>
+
+
+
+    <update id="updateSbmsnPrd" parameterType="DsgnPrgrmVo" >
+        UPDATE
+            TB_ASS_OPER_RSLT_CYCL
+        SET
+            SBMSN_BGNG_DE = #{sbmsnBgngDe}
+          , SBMSN_END_DE  = #{sbmsnEndDe}
+          , MDFRID        = #{user.userid}
+          , MDFCN_DT      = NOW()
+        WHERE CYCLID      = #{cyclid}
+    </update>
 
     <!-- 운영결과상세 조회 -->
-    <select id="selectOperRsltDtl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+    <select id="selectOperRsltDetail" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
-            CYCLID
-          , SNRSTFDVLPR_NM
-          , SNRSTFDVLPR_EML
-          , SNRSTFDVLPR_TELNO
-          , SNRSTFDVLPR_MOBLPHON
-          , PIC_NM
-          , PIC_EML
-          , PIC_TELNO
-          , PIC_MOBLPHON
-          , PRGRM_TYPE_CD
-          , STY_YN
-          , INSRNC_JOIN_YN
-          , INSRNC_RSN
-          , CHG_YN
-          , INFNT
-          , SCHBOY
-          , MSKLSD
-          , HGSCHST
-          , ADULT
-          , WHOL_AGE
-          , EDU_NOPE
-          , ACTVT_PLC
-          , ETRFEE
-          , EDU_CNT
-          , EDU_HR
-          , EDU_MNT
-          , SFTYACDNT_ENNC
-          , JAN
-          , FEB
-          , MAR
-          , APR
-          , MAY
-          , JUNE
-          , JULY
-          , AUG
-          , SEPT
-          , OCT
-          , NOV
-          , DCM
-          , WHOL_MM
-          , ISSU_YN
-          , ISSU_NOCS
-          , ISSU_SUM
-          , PRGRM_DSTNCTN
-          , OPER_MNG
-          , EVL
-          , QLFC_POSTNG
-          , SFTY_MNG
-          , FILEGRPID
-          , NEXT_YR_PRGRM
-          , NEXT_YR_LDR
-          , NEXT_YR_EDU_ENV
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.CYCLID
+          , C.INSTID
+          , ( SELECT INST_TYPE_CD  FROM TB_CMM_INST WHERE INSTID = C.INSTID ) AS INST_TYPE_CD   /* 기업 유형 코드*/
+          , C.PRGRMID
+          , C.INST_NM
+          , C.PRGRM_NM
+          , A.SNRSTFDVLPR_NM
+          , A.SNRSTFDVLPR_EML
+          , A.SNRSTFDVLPR_TELNO
+          , A.SNRSTFDVLPR_MOBLPHON
+          , A.PIC_NM
+          , A.PIC_EML
+          , A.PIC_TELNO
+          , A.PIC_MOBLPHON
+          , A.PRGRM_TYPE_CD
+          , A.STY_YN
+          , A.INSRNC_JOIN_YN
+          , A.INSRNC_RSN
+          , A.CHG_YN
+          , A.INFNT
+          , A.SCHBOY
+          , A.MSKLSD
+          , A.HGSCHST
+          , A.ADULT
+          , A.WHOL_AGE
+          , A.EDU_NOPE
+          , A.ACTVT_PLC
+          , A.ETRFEE
+          , A.EDU_CNT
+          , A.EDU_HR
+          , A.EDU_MNT
+          , A.SFTYACDNT_ENNC
+          , A.JAN
+          , A.FEB
+          , A.MAR
+          , A.APR
+          , A.MAY
+          , A.JUNE
+          , A.JULY
+          , A.AUG
+          , A.SEPT
+          , A.OCT
+          , A.NOV
+          , A.DCM
+          , A.WHOL_MM
+          , A.ISSU_YN
+          , A.ISSU_NOCS
+          , A.ISSU_SUM
+          , A.PRGRM_DSTNCTN
+          , A.OPER_MNG
+          , A.EVL
+          , A.QLFC_POSTNG
+          , A.SFTY_MNG
+          , A.FILEGRPID
+          , A.NEXT_YR_PRGRM
+          , A.NEXT_YR_LDR
+          , A.NEXT_YR_EDU_ENV
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
+          , B.STTS_CD
         FROM
-            TB_ASS_OPER_RSLT
-        WHERE CYCLID = #{cyclid}
+            TB_ASS_OPER_RSLT A
+        INNER JOIN
+            TB_ASS_OPER_RSLT_CYCL B ON A.CYCLID = B.CYCLID
+        INNER JOIN
+            TB_ASS_PRGRM C ON B.PRGRMID = C.PRGRMID
+        WHERE A.CYCLID = #{cyclid}
     </select>
 
-    <!-- 운영결과 운영실적 조회 -->
+    <!-- 운영결과 수정-->
+    <update id="updateOperRslt" parameterType="DsgnPrgrmVo" >
+    /* DsgnPrgrmDao.updateOperRslt*/
+        UPDATE
+            TB_ASS_OPER_RSLT
+        SET
+            CYCLID                   = #{cyclid}
+          , SNRSTFDVLPR_NM           = #{snrstfdvlprNm}
+          , SNRSTFDVLPR_EML          = #{snrstfdvlprEml}
+          , SNRSTFDVLPR_TELNO        = #{snrstfdvlprTelno}
+          , SNRSTFDVLPR_MOBLPHON     = #{snrstfdvlprMoblphon}
+          , PIC_NM                   = #{picNm}
+          , PIC_EML                  = #{picEml}
+          , PIC_TELNO                = #{picTelno}
+          , PIC_MOBLPHON             = #{picMoblphon}
+          , PRGRM_TYPE_CD            = #{prgrmTypeCd}
+          , STY_YN                   = #{styYn}
+          , INSRNC_JOIN_YN           = #{insrncJoinYn}
+          , INSRNC_RSN               = #{insrncRsn}
+          , CHG_YN                   = #{chgYn}
+          , INFNT                    = #{infnt}
+          , SCHBOY                   = #{schboy}
+          , MSKLSD                   = #{msklsd}
+          , HGSCHST                  = #{hgschst}
+          , ADULT                    = #{adult}
+          , WHOL_AGE                 = #{wholAge}
+          , EDU_NOPE                 = #{eduNope}
+          , ACTVT_PLC                = #{actvtPlc}
+          , ETRFEE                   = #{etrfee}
+          , EDU_CNT                  = #{eduCnt}
+          , EDU_HR                   = #{eduHr}
+          , EDU_MNT                  = #{eduMnt}
+          , SFTYACDNT_ENNC           = #{sftyacdntEnnc}
+          , JAN                      = #{jan}
+          , FEB                      = #{feb}
+          , MAR                      = #{mar}
+          , APR                      = #{apr}
+          , MAY                      = #{may}
+          , JUNE                     = #{june}
+          , JULY                     = #{july}
+          , AUG                      = #{aug}
+          , SEPT                     = #{sept}
+          , OCT                      = #{oct}
+          , NOV                      = #{nov}
+          , DCM                      = #{dcm}
+          , WHOL_MM                  = #{wholMm}
+          , ISSU_YN                  = #{issuYn}
+          , ISSU_NOCS                = #{issuNocs}
+          , ISSU_SUM                 = #{issuSum}
+          , PRGRM_DSTNCTN            = #{prgrmDstnctn}
+          , OPER_MNG                 = #{operMng}
+          , EVL                      = #{evl}
+          , QLFC_POSTNG              = #{qlfcPostng}
+          , SFTY_MNG                 = #{sftyMng}
+          , FILEGRPID                = #{filegrpid}
+          , NEXT_YR_PRGRM            = #{nextYrPrgrm}
+          , NEXT_YR_LDR              = #{nextYrLdr}
+          , NEXT_YR_EDU_ENV          = #{nextYrEduEnv}
+          , MDFCN_DT                 = NOW()
+          , MDFRID                   = #{user.userid}
+        WHERE
+            CYCLID = #{cyclid}
+    </update>
+
+    <!-- 운영결과 삭제 -->
+
+    <delete id="deleteOperRslt" parameterType="DsgnPrgrmVo">
+        /* DsgnPrgrmDao.deleteOperRslt */
+
+        DELETE FROM TB_ASS_OPER_RSLT
+        WHERE CYCLID = #{cyclid}
+    </delete>
+
+
+
+    <!-- 운영결과 운영실적 목록조회 -->
+    <select id="selectOperRsltPrfmncList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            B.PRFMNCID
+          , A.CYCLID
+          , B.OPRTN_DE
+          , B.TRGT
+          , B.HR
+          , B.NOPE
+          , B.CNT
+          , B.WHOL_HR
+          , B.WHOL_NOPE
+          , B.LDR_POSTNG_RT
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
+        FROM
+            TB_ASS_OPER_RSLT A
+        LEFT OUTER JOIN
+            TB_ASS_OPER_RSLT_PRFMNC B ON A.CYCLID = B.CYCLID
+        WHERE 1=1
+        WHERE A.CYCLID = #{cyclid}
+        ORDER BY B.PRFMNCID
+    </select>
+
+
 
     <!-- 운영결과 운영성과 조회 -->
 

@@ -1,59 +1,44 @@
-<div class="col-12">
-    <div class="card">
-        <div class="card-header p-b-0">
-            <ul class="nav nav-tabs  tabs" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="tab" href="#trprSrvy" id="trprSrvy" role="tab"><strong>대상자 설문</strong></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="tab" href="#instSrvy" id="instSrvy" role="tab"><strong>기관 설문</strong></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="tab" href="#cnsltngDgstfnSrvy" id="cnsltngDgstfnSrvy" role="tab"><strong>컨설팅만족도 설문</strong></a>
-                </li>
-            </ul>
-        </div>
-        <div class="tab-content tabs p-t-20">
-            <div class="tab-pane active" id="instSrvy" role="tabpanel">
-                <div class="card-block-small">
-                    <div class="col-12 col-lg-6">
-                        <div class="mb-0 form-group">
-                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
-                            <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                <select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
-                                    <option value="">- 선택 -</option>
-                                    <option value="srvyNm">설문명</option>
-                                    <option value="instNm">대상기관명</option>
-                                    <option value="instCd">대상기관코드</option>
-                                </select>
-                                <input type="text" class="form-control" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button"/>
-                            </div>
+<div class="tab-pane active" id="instSrvy" role="tabpanel">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-block-small">
+                <div class="col-12 col-lg-3 col-md-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                            <select name="searchType" id="searchType" class="form-select form-control">
+                                <option value="">- 선택 -</option>
+                                <option value="srvyNm">설문명</option>
+                                <option value="instNm">대상기관명</option>
+                                <option value="instCd">대상기관코드</option>
+                            </select>
+                            <input type="text" class="form-control" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button"/>
                         </div>
                     </div>
-                    <div class="m-t-20 text-center">
-                        <button type="submit" class="btn btn-disabled m-r-5" onclick="instSrvy.initSearch();">초기화</button>
-                            <button type="submit" class="btn btn-primary" onclick="instSrvy.onSearch();">검색</button>
-                    </div>
+                </div>
+                <div class="mt-1 p-t-20 text-center border-top">
+                    <button type="submit" class="btn btn-disabled m-r-5" onclick="instSrvy.initSearch();">초기화</button>
+                        <button type="submit" class="btn btn-primary" onclick="instSrvy.onSearch();">검색</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="col-12">
-    <div class="card">
-        <div class="row p-20 p-b-0">
-            <div class="col-12 col-md-6">
-                <h5><strong>설문 검색 결과</strong></h5>
+    <div class="col-12">
+        <div class="card">
+            <div class="row p-20 p-b-0">
+                <div class="col-12 col-md-6">
+                    <h5><strong>설문 검색 결과</strong></h5>
+                </div>
+            </div>
+            <div class="card-block-small">
+                <table id="srvyGrid" class="table-responsive"></table>
+                <div id="srvyPager" class="text-center"></div>
             </div>
         </div>
-        <div class="card-block-small">
-            <table id="srvyGrid" class="table-responsive"></table>
-            <div id="srvyPager" class="text-center"></div>
-        </div>
     </div>
-</div>
-<div class="col-12">
-    <div class="row" id="contentPanel" style="display: none;">
+    <div class="col-12">
+        <div class="row" id="contentPanel" style="display: none;">
+        </div>
     </div>
 </div>
 
@@ -68,11 +53,7 @@
         },
         
         registEvent: function() {
-            var _this = this;
-            $(".nav-tabs a").on("show.bs.tab", function(event) {
-                var tabId = event.currentTarget.attributes.id.value;
-                _this.selectTab(tabId);
-            });
+            // TODO
         },
         
         initSearch: function() {
@@ -84,102 +65,76 @@
         },
         
         setGrid: function() {
-                $("#srvyGrid").jsGrid({
-                    height: "auto",
-                    width: "100%",
-                    autoload: true,
-                    sorting: false,
-                    paging: true,
-                    pagerContainer: "#srvyPager",
-                    pagerFormat: "{first} {prev} {pages} {next} {last}",
-                    pagePrevText: "이전",
-                    pageNextText: "다음",
-                    pageFirstText: "< 처음 ㅣ",
-                    pageLastText: "ㅣ 마지막 >",
-                    noDataContent: "데이터가 없습니다.",
-                    pageSize: 10,
-                    pageButtonCount: 10,
-                    pageLoading: true,
-                    pageIndex: 1,
-                    controller: {
-                        loadData: function(filter) {
-                            var data = $.Deferred();
-                            var params = {
-                                "searchType": $('#searchType').val(),
-                                "searchKeyword": $('#searchKeyword').val(),
-                                "pageNumber": filter.pageIndex,
-                                "rowPerPage": filter.pageSize,
-                                "orderField": "BGNG_DE",
-                                "orderDirection": "desc"
+            $("#srvyGrid").jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#srvyPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: "< 처음 ㅣ",
+                pageLastText: "ㅣ 마지막 >",
+                noDataContent: "데이터가 없습니다.",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                controller: {
+                    loadData: function(filter) {
+                        var data = $.Deferred();
+                        var params = {
+                            "searchType": $('#searchType').val(),
+                            "searchKeyword": $('#searchKeyword').val(),
+                            "pageNumber": filter.pageIndex,
+                            "rowPerPage": filter.pageSize,
+                            "orderField": "BGNG_DE",
+                            "orderDirection": "desc"
+                        };
+                        $.ajax({
+                          type: "GET",
+                          contentType: "application/json; charset=utf-8",
+                          url: instSrvy.listUrl,
+                          data: params,
+                          dataType: "json"
+                        }).done(function(response) {
+                            var da = {
+                                data : escapeGridData(response.list),
+                                itemsCount : response.totalCount
                             };
-                            $.ajax({
-                              type: "GET",
-                              contentType: "application/json; charset=utf-8",
-                              url: instSrvy.listUrl,
-                              data: params,
-                              dataType: "json"
-                            }).done(function(response) {
-                                var da = {
-                                    data : escapeGridData(response.list),
-                                    itemsCount : response.totalCount
-                                };
-                                data.resolve(da);
-                            });
-                            
-                            return data.promise();
-                        }
-                    },
-                    fields: [
-                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                        {title: "설문명", name: "srvyNm", type: "text", width: "200"},
-                        {title: "설문지명", name: "qestnrNm", type: "text", width: "200"},
-                        {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "60"},
-                        {title: "기간", name: "", type: "number", align: "center", width: "150", itemTemplate: function(value, item) {
-                            return item.bgngDe + " ~ " + item.endDe;
-                        }},
-                        {title: "기관수", name: "instCnt", type: "number", align: "center" , width: "60"},
-                        {title: "사용여부", name: "useYn", type: "number", align: "center" , width: "80", itemTemplate: function(value, item) {
-                            return value == "Y" ? "사용" : "미사용";
-                        }},
-                        {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
-                            if(item.qitemCnt == 0) return "-";
-                            return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
-                                alert("설문지 미리보기");
-                                return false; 
-                            });
-                        }}
-                    ],
-                    rowClick: function(args) { 
-                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                        var detailUrl = "/mng/srvy/srvyRsltDetailForm.html?srvyid=" + args.item.srvyid + "&qestnrid=" + args.item.qestnrid; 
-                        srvyGrid.loadContent(detailUrl);
-                        srvyGrid.rowClick(args);
+                            data.resolve(da);
+                        });
+                        
+                        return data.promise();
                     }
-                });
-            },
-        
-        selectTab: function(tabId) {
-            var uri; 
-            if(tabId == "trprSrvy") {
-                uri = "/mng/srvy/trprSrvyRsltListForm.html";
-            } else if(tabId == "instSrvy") {
-                uri = "/mng/srvy/instSrvyRsltListForm.html";
-            } else if(tabId == "cnsltngDgstfnSrvy") {
-                uri = "/mng/srvy/cnsltngDgstfnSrvyRsltListForm.html";
-            }
-            this.loadTabContent(uri);
-        },
-        
-        loadTabContent: function(uri) {
-            $.ajax({
-                cache: false,
-                url: uri, 
-                type: "GET",
-                async: "false",
-                dataType: "html",
-                success: function(result) { //요청이 성공했을때 실행되는 콜백 함수
-                    $("#tabContent").html(result);
-                    scrollIntoView("contentPanel");
+                },
+                fields: [
+                    {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                    {title: "설문명", name: "srvyNm", type: "text", width: "200"},
+                    {title: "설문지명", name: "qestnrNm", type: "text", width: "200"},
+                    {title: "문항수", name: "qitemCnt", type: "number", align: "center" , width: "60"},
+                    {title: "기간", name: "", type: "number", align: "center", width: "150", itemTemplate: function(value, item) {
+                        return item.bgngDe + " ~ " + item.endDe;
+                    }},
+                    {title: "기관수", name: "instCnt", type: "number", align: "center" , width: "60"},
+                    {title: "사용여부", name: "useYn", type: "number", align: "center" , width: "80", itemTemplate: function(value, item) {
+                        return value == "Y" ? "사용" : "미사용";
+                    }},
+                    {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
+                        if(item.qitemCnt == 0) return "-";
+                        return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
+                            alert("설문지 미리보기");
+                            return false; 
+                        });
+                    }}
+                ],
+                rowClick: function(args) { 
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    var detailUrl = "/mng/srvy/srvyRsltDetailForm.html?srvyid=" + args.item.srvyid + "&qestnrid=" + args.item.qestnrid; 
+                    srvyGrid.loadContent(detailUrl);
+                    srvyGrid.rowClick(args);
                 }
             });
         }

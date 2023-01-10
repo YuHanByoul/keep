@@ -265,20 +265,6 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
-	* 운영결과 상세 조회
-	*
-	* @Title : selectOperRsltDtl
-	* @Description : 운영결과 상세 조회
-	* @param dsgnPrgrmVo
-	* @return DsgnPrgrmVo
-	* @throws Exception;
-	*/
-	@Override
-	public DsgnPrgrmVo selectOperRsltDtl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
-		return dsgnPrgrmDao.selectOperRsltDtl(dsgnPrgrmVo);
-	}
-
-	/**
 	 * 운영결과 목록 조회
 	 *
 	 * @Title : selectOperRsltList
@@ -291,4 +277,79 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	public List<DsgnPrgrmVo> selectOperRsltList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		return dsgnPrgrmDao.selectOperRsltList(dsgnPrgrmVo);
 	}
+
+	/**
+	 * 운영결과 차수 조회
+	 *
+	 * @Title : selectOperRsltCycl
+	 * @Description : 운영결과 차수 조회
+	 * @param dsgnPrgrmVo
+	 * @return DsgnPrgrmVo
+	 * @throws Exception
+	 */
+	@Override
+	public DsgnPrgrmVo selectOperRsltCycl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectOperRsltCycl(dsgnPrgrmVo);
+	}
+
+	/**
+	 * (운영결과서)제출기간 수정
+	 *
+	 * @Title : updateSbmsnPrd
+	 * @Description : (운영결과서)제출기간 수정
+	 * @param dsgnPrgrmVo
+	 * @return int
+	 * @throws Exception
+	 */
+	@Override
+	@Transactional
+	public int updateSbmsnPrd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.updateSbmsnPrd(dsgnPrgrmVo);
+	}
+
+	/**
+	* 운영결과 상세 조회
+	*
+	* @Title : selectOperRsltDetail
+	* @Description : 운영결과 상세 조회
+	* @param DsgnPrgrmVo
+	* @return DsgnPrgrmVo
+	* @throws Exception
+	*/
+	@Override
+	public DsgnPrgrmVo selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectOperRsltDetail(dsgnPrgrmVo);
+	}
+
+	/**
+	* 운영결과 수정
+	*
+	* @Title : updateOperRslt
+	* @Description : 운영결과 수정
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	@Transactional
+	public int updateOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.updateOperRslt(dsgnPrgrmVo);
+	}
+
+	/**
+	* 운영결과 삭제
+	*
+	* @Title : delteOperRslt
+	* @Description : 운영결과 삭제
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	@Transactional
+	public int deleteOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+			return dsgnPrgrmDao.deleteOperRslt(dsgnPrgrmVo);
+	}
+
+
 }
