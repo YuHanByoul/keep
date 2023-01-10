@@ -76,6 +76,7 @@ public class SiteChangeFilter implements Filter {
                 
                 if (siteInfo != null && !dmn.equals(siteInfo.getDmn())) {
                     siteInfo = resSiteService.getSiteInfo(dmn);
+                    session.setAttribute("site", siteInfo);
                     
                     UserVo user = (UserVo) session.getAttribute("user");
                     if (user != null) { // 로그인 되어있는 상태에서 도메인 변경시
