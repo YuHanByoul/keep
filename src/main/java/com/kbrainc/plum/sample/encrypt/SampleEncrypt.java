@@ -9,6 +9,7 @@ import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.jasypt.salt.StringFixedSaltGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import groovyjarjarcommonscli.ParseException;
 
@@ -31,6 +32,9 @@ public class SampleEncrypt {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
+	@Value("${crypto.key}")
+    private String cryptoKey;
+	
 	@Resource(name="digestService")
 	EgovDigestService digestService;
 	
@@ -44,7 +48,7 @@ public class SampleEncrypt {
 		// RandomSaltGenerator를 사용하는 경우는 암호화된 결과 값이 매번 바뀜.
 		encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
 		
-		encryptor.setPassword("ILoveKeep2021!#%");
+		encryptor.setPassword(cryptoKey);
 		encryptor.setAlgorithm("PBEWithMD5AndDES");
 		
 		String str = "PlumFramework";
@@ -60,13 +64,13 @@ public class SampleEncrypt {
 		
 		logger.info("Hashed : {}", digested.toString());
 		
-//		String password = "ILoveKeep2021!#%";
-//    	EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
-//    	passwordEncoder.setAlgorithm("SHA-256");
-//    	String hashed = passwordEncoder.encryptPassword(password);
-//		
-//    	logger.info("Hashed : {}", hashed);
-    	
+		// crypto.hashed.password 생성시작
+		//String password = cryptoKey;
+    	//EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
+    	//passwordEncoder.setAlgorithm("SHA-256");
+    	//String hashed = passwordEncoder.encryptPassword(password);
+    	//logger.info("Hashed : {}", hashed);
+    	// crypto.hashed.password 생성끝
 	}
 	
 	public void ARIACryptoSample() {
@@ -77,7 +81,7 @@ public class SampleEncrypt {
 				"!@#$%^&*()_+|~{}:\"<>?-=\\`[];',./"
 		};
 		
-		String password = "ILoveKeep2021!#%";
+		String password = cryptoKey;
 		 
 		try {
 			for (String str : testString) {
