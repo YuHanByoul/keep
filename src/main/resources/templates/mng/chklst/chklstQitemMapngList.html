@@ -1,0 +1,136 @@
+<link rel="stylesheet" type="text/css" href="/files/assets/pages/nestable/nestable.css">
+<script src="/files/assets/pages/nestable/jquery.nestable.js"></script>
+<!--<script src="/files/assets/pages/nestable/custom-nestable.js"></script>-->
+<div class="card-block-small p-t-0">
+    <div class="mb-2 row">
+        <!--
+        <div id="nestable-menu" class="m-b-10">
+            <button type="button"
+                class="btn btn-primary waves-effect waves-light m-b-10 m-r-20"
+                data-action="expand-all">Expand All</button>
+            <button type="button"
+                class="btn btn-success waves-effect waves-light m-b-10"
+                data-action="collapse-all">Collapse All</button>
+        </div>
+        -->
+        <div class="col-12 btn-group-sm" id="nestableMenu">
+            <button type="button" class="col-auto btn btn-inverse m-r-5" data-action="expandAll">모두 펼치기</button>
+            <button type="button" class="col-auto btn btn-disabled m-r-5" data-action="collapseAll">모두 접기</button>
+            <button type="button" class="col-auto btn btn-primary" data-action="qitemLoad">문항 불러오기</button>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="cf nestable-lists">
+                <div class="dd" id="nestable">
+                    <ol class="dd-list">
+                        <li class="dd-item" data-id="1">
+                            <div class="dd-handle">Item 1</div>
+                        </li>
+                        <li class="dd-item" data-id="2">
+                            <div class="dd-handle">Item 2</div>
+                            <ol class="dd-list">
+                                <li class="dd-item" data-id="3">
+                                    <div class="dd-handle">Item 3
+                                    </div>
+                                </li>
+                                <li class="dd-item" data-id="4">
+                                    <div class="dd-handle">Item 4
+                                    </div>
+                                </li>
+                                <li class="dd-item" data-id="5" id="group5">
+                                    <div class="dd-handle">Item 5
+                                    </div>
+                                    <ol class="dd-list">
+                                        <li class="dd-item"
+                                            data-id="6">
+                                            <div class="dd-handle">
+                                                Item 6</div>
+                                        </li>
+                                        <li class="dd-item"
+                                            data-id="7">
+                                            <div class="dd-handle">
+                                                Item 7</div>
+                                        </li>
+                                        <li class="dd-item"
+                                            data-id="8">
+                                            <div class="dd-handle">
+                                                Item 8</div>
+                                        </li>
+                                    </ol>
+                                </li>
+                                <li class="dd-item" data-id="9">
+                                    <div class="dd-handle">Item 9
+                                    </div>
+                                </li>
+                                <li class="dd-item" data-id="10">
+                                    <div class="dd-handle">Item 10
+                                    </div>
+                                </li>
+                            </ol>
+                        </li>
+                        <li class="dd-item" data-id="11">
+                            <div class="dd-handle">Item 11</div>
+                        </li>
+                        <li class="dd-item" data-id="12">
+                            <div class="dd-handle">Item 12</div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-block-small">
+    <button class="btn btn-disabled m-r-5">취소</button>
+    <button class="btn btn-primary">저장</button>
+</div>
+
+<script th:inline="javascript">
+    var qitemMapng = {
+        init: function() {
+            this.setNestable();
+            this.registEvent();
+        },
+        
+        setNestable: function() {
+            var _this = this;
+            $('#nestable').nestable({
+                group: "group5"
+                , maxDepth: 3
+            }).on("change", function(e) {
+                _this.updateOutput(e);
+            });
+          
+            _this.updateOutput($('#nestable').data("output", $("#nestable-output")));
+        },
+        
+        updateOutput: function(e) {
+            var list = e.length ? e : $(e.target);
+            var output = list.data("output");
+            if(JSON) {
+                console.log(list.nestable("serialize"));
+                output.val(JSON.stringify(list.nestable("serialize")));
+            } else {
+                output.val("JSON browser support required for this demo.");
+            }
+        },
+            
+        registEvent: function() {
+            $("#nestableMenu").on("click", function(e) {
+                var target = $(e.target);
+                var action = target.data("action");
+                if(action == "qitemLoad") {
+                    alert("문항 검색 팝업");
+                } else {
+                    $(".dd").nestable(action);
+                }
+            });
+        }
+    };
+    
+    $(function() {
+        qitemMapng.init();
+    });
+</script>

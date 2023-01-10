@@ -160,9 +160,21 @@ public class ChklstController {
      */
     @RequestMapping(value = "/mng/chklst/chklstUpdateForm.html")
     public String chklstUpdateForm(ChklstVo chklstVo, Model model) throws Exception {
-//        model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
         model.addAttribute("chklstInfo", chklstService.selectChklstInfo(chklstVo));
         return "mng/chklst/chklstUpdate";
+    }
+    
+    /**
+     * 체크리스트 문항구성 목록 화면
+     *
+     * @Title : chklstQitemMapngListForm
+     * @Description : 체크리스트 문항구성 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/chklst/chklstQitemMapngListForm.html")
+    public String chklstQitemMapngListForm(CodeVo codeVo, Model model) throws Exception {
+        return "mng/chklst/chklstQitemMapngList";
     }
     
     /**
