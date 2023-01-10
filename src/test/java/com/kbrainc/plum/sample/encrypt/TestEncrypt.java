@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.aspectj.weaver.patterns.ParserException;
 import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
 import org.egovframe.rte.fdl.cryptography.EgovDigestService;
+import org.egovframe.rte.fdl.cryptography.EgovPasswordEncoder;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.StringFixedSaltGenerator;
 import org.junit.Test;
@@ -65,7 +66,7 @@ public class TestEncrypt {
 		// RandomSaltGenerator를 사용하는 경우는 암호화된 결과 값이 매번 바뀜.
 		encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
 		
-		encryptor.setPassword("password1234");
+		encryptor.setPassword("ILoveKeep2021!#%");
 		encryptor.setAlgorithm("PBEWithMD5AndDES");
 		
 		String str = "PlumFramework";
@@ -82,12 +83,14 @@ public class TestEncrypt {
 		
 		logger.info("Hashed : {}", digested.toString());
 		
-//		String password = "Plumframework";
-//    	EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
-//    	passwordEncoder.setAlgorithm("SHA-256");
-//    	String hashed = passwordEncoder.encryptPassword(password);
-//		
-//    	logger.info("Hashed : {}", hashed);
+		// crypto.hashed.password 생성시작
+		String password = "ILoveKeep2021!#%";
+    	EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
+    	passwordEncoder.setAlgorithm("SHA-256");
+    	String hashed = passwordEncoder.encryptPassword(password);
+		
+    	logger.info("Hashed : {}", hashed);
+    	// crypto.hashed.password 생성끝
     	
 		assertTrue(digestService.matches(data.getBytes(), digested));
 	}
@@ -101,7 +104,7 @@ public class TestEncrypt {
 				"!@#$%^&*()_+|~{}:\"<>?-=\\`[];',./"
 		};
 		
-		String password = "Plumframework";
+		String password = "ILoveKeep2021!#%";
 		 
 		try {
 			for (String str : testString) {

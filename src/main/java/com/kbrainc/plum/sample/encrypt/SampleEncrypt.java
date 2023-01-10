@@ -44,7 +44,7 @@ public class SampleEncrypt {
 		// RandomSaltGenerator를 사용하는 경우는 암호화된 결과 값이 매번 바뀜.
 		encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
 		
-		encryptor.setPassword("password1234");
+		encryptor.setPassword("ILoveKeep2021!#%");
 		encryptor.setAlgorithm("PBEWithMD5AndDES");
 		
 		String str = "PlumFramework";
@@ -60,7 +60,7 @@ public class SampleEncrypt {
 		
 		logger.info("Hashed : {}", digested.toString());
 		
-//		String password = "Plumframework";
+//		String password = "ILoveKeep2021!#%";
 //    	EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
 //    	passwordEncoder.setAlgorithm("SHA-256");
 //    	String hashed = passwordEncoder.encryptPassword(password);
@@ -77,7 +77,7 @@ public class SampleEncrypt {
 				"!@#$%^&*()_+|~{}:\"<>?-=\\`[];',./"
 		};
 		
-		String password = "Plumframework";
+		String password = "ILoveKeep2021!#%";
 		 
 		try {
 			for (String str : testString) {
