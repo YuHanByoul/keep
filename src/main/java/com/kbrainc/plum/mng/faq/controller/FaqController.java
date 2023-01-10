@@ -20,19 +20,18 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 
  * FAQ Controller.
  *
  * <pre>
  * com.kbrainc.plum.mng.faq.controller
  * - FaqController.java
- * </pre> 
+ * </pre>
  *
+ * @author : KBRAINC
  * @ClassName : FaqController
  * @Description : FAQ Controller.
- * @author : KBRAINC
  * @date : 2021. 3. 12.
- * @Version : 
+ * @Version :
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Controller
@@ -56,14 +55,14 @@ public class FaqController {
     /**
      * FAQ 목록을 JSON으로 출력한다.
      *
+     * @param faqVoParam FaqVo 파라미터
+     * @return JSON 목록
+     * @throws Exception : 예외
      * @MethodName : getList
      * @Date : 2019. 5. 10.
      * @author : KBRAINC
      * @Modify :
      * @Description :
-     * @param faqVoParam FaqVo 파라미터
-     * @return JSON 목록
-     * @throws Exception : 예외
      */
     @RequestMapping(value = "/mng/faq/selectFaqList.do")
     @ResponseBody
@@ -88,32 +87,32 @@ public class FaqController {
     /**
      * FAQ 상세 내용을 출력한다.
      *
+     * @param faqVo :
+     * @param model :
+     * @return :
+     * @throws Exception :
      * @MethodName : getFaq
      * @Date : 2019. 5. 10.
      * @author : KBRAINC
      * @Modify :
      * @Description :
-     * @param faqVo :
-     * @param model :
-     * @return :
-     * @throws Exception :
      */
     @RequestMapping(value = "/mng/faq/faqDetailForm.html")
     public String faqDetailForm(FaqVo faqVo, Model model) throws Exception {
         FaqVo faqInfo = faqService.getFaq(faqVo);
-        if(faqInfo == null) {
+        if (faqInfo == null) {
             faqInfo = new FaqVo();
             faqInfo.setSiteid(faqVo.getSiteid());
         }
 
-        model.addAttribute("faqInfo",faqInfo);
+        model.addAttribute("faqInfo", faqInfo);
         return "mng/faq/faqDetailForm.html";
     }
 
     @RequestMapping(value = "/mng/faq/insertFaq.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> insertFaq( FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-        Map<String,Object> resultMap = new HashMap<>();
+    public Map<String, Object> insertFaq(FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -140,8 +139,8 @@ public class FaqController {
 
     @RequestMapping(value = "/mng/faq/updateFaq.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> updateFaq(FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-        Map<String,Object> resultMap = new HashMap<>();
+    public Map<String, Object> updateFaq(FaqVo faqVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -196,29 +195,34 @@ public class FaqController {
         faqClVo.setUser(user);
         return faqService.updateFaqCl(faqClVo);
     }
+
     @RequestMapping(value = "/mng/faq/updateFaqOrd.do", method = RequestMethod.POST)
-    public @ResponseBody boolean updateFaqOrd(@UserInfo UserVo user, FaqVo faqVo, @RequestBody HashMap<String,Object> parameter) throws Exception {
-        return faqService.updateFaqOrd(parameter);
+    public @ResponseBody boolean updateFaqOrd(@RequestBody FaqVo faqVo, @UserInfo UserVo user) throws Exception {
+        if ("OD".equals(faqVo.getMode())) {
+            return faqService.updateFaqOrdDown(faqVo);
+        } else {
+            return faqService.updateFaqOrdUp(faqVo);
+        }
     }
 
     @RequestMapping(value = "/mng/faq/updateFaqClOrd.do", method = RequestMethod.POST)
     public @ResponseBody boolean updateFaqClOrd(@RequestParam(name = "mode", required = true) String mode,
-            @UserInfo UserVo user, FaqClVo faqClVo) throws Exception {
+                                                @UserInfo UserVo user, FaqClVo faqClVo) throws Exception {
         if ("OD".equals(mode)) {
             return faqService.updateFaqClOrdDown(faqClVo);
         } else {
             return faqService.updateFaqClOrdUp(faqClVo);
         }
     }
-    
+
     @RequestMapping(value = "/mng/faq/selectClList.do", method = RequestMethod.POST)
-    public @ResponseBody Map<String, Object>  selectClList(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
+    public @ResponseBody Map<String, Object> selectClList(@UserInfo UserVo user, @RequestBody FaqClVo faqClVo) throws Exception {
         faqClVo.setUser(user);
-        
+
         Map<String, Object> response = new HashMap<String, Object>();
         response.put("list", faqService.getAllList(faqClVo));
         return response;
-        
+
     }
 
 }

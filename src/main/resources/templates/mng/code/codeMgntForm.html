@@ -11,6 +11,216 @@
 				max-height:500px;
 		}
 	</style>
+
+	<div class="row">
+		<div class="card">
+			<div class="card-block-small">
+				<form id="searchForm" name="searchForm" action="" onsubmit="return false;" >
+					<div class="col-lg-3 col-md-6 mb-3">
+						<div class="mb-0 form-group row">
+							<span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+
+							<div class="input-group input-group-sm input-group-dropdown mb-0">
+								<select name="searchType" id="searchType" class="form-select form-control">
+									<option value="">- 선택 -</option>
+									<option value="CDGRP_NM">코드그룹명</option>
+									<option value="CDGRPID">코드그룹아이디</option>
+									<option value="CD">코드아이디</option>
+								</select>
+								<input name="searchKeyword" id="searchKeyword" type="text" class="form-control" aria-label="Text input with dropdown button">
+							</div>
+						</div>
+					</div>
+					<div class="mt-1 p-t-20 text-center border-top">
+						<button type="button" class="btn btn-disabled m-r-5" onclick="codeGrpSearchInit()">초기화</button>
+						<button type="submit" class="btn btn-primary" onclick="codeGrpSearch()">검색</button>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-block-small">
+				<div class="row">
+					<div class="col-12 col-md-6 col-xl-3">
+						<h5 class="mb-3">
+							<strong>코드그룹 목록</strong>
+						</h5>
+						<div class="card">
+							<div class="card-block-small">
+								<div class="col-12 mb-2 text-right">
+									<th:block sec:authorize-url="/mng/code/insertCodeGrpInfo.do">
+										<button class="btn btn-primary" onclick="addCdgrp()">등록</button>
+									</th:block>
+								</div>
+
+								<!--jsGrid-->
+								<table id="jsGrid" class="table-responsive"></table>
+								<div id="listPager" class="text-center"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6 col-xl-3">
+						<h5 class="mb-3">
+							<strong>코드그룹 정보</strong>
+						</h5>
+						<div class="card">
+							<div class="card-block-small">
+								<form name="cdgrpFrm" id="cdgrpFrm" action="" method="post" >
+									<input type="hidden" value="Y" name="useYn" id="useYn">
+									<div class="mb-2 form-group required row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpid"><strong>코드그룹ID</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cdgrpid" id="cdgrpid" readonly=""/>
+										</div>
+									</div>
+									<div class="mb-2 form-group required row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1 " for="cdgrpNm"><strong>코드그룹명</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm " name="cdgrpNm" id="cdgrpNm"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpDc"><strong>코드그룹설명</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cdgrpDc" id="cdgrpDc"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpOptn1"><strong>옵션1</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="optn1" id="cdgrpOptn1"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpOptn2"><strong>옵션2</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="optn2" id="cdgrpOptn2"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpUpdtUserNm"><strong>수정자</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cdgrpUpdtUserNm" id="cdgrpUpdtUserNm" readonly/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<div class="col-sm-12">
+											<span kattr:switch_yn="cdgrpUseYn" label="코드그룹 사용" defaultVal="Y" onchange="cdgrpSwitch" isAdmin="true"></span>
+										</div>
+									</div>
+									<div class="mb-0 mt-4 form-group row">
+										<div class="col-sm-12">
+											<th:block sec:authorize-url="/mng/code/insertCodeGrpInfo.do">
+												<button type="button"  class="btn btn-primary" onclick="saveCdgrpInfo()" >저장</button>
+											</th:block>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6 col-xl-3">
+						<h5 class="mb-3">
+							<strong>코드 구조</strong>
+						</h5>
+
+						<div class="card">
+							<div class="card-block-small">
+								<ul id="codeContext" class="contextMenu">
+									<li class="edit"><a href="#regist">하위 등록</a></li>
+									<!-- li class="quit"><a href="#quit">취소</a></li -->
+								</ul>
+								<div class="tree thumbnail img-responsive" id="codeTree"></div>
+							</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6 col-xl-3">
+						<h5 class="mb-3">
+							<strong>코드 정보</strong>
+						</h5>
+						<div class="card">
+							<div class="card-block-small">
+								<form name="cdFrm" id="cdFrm" action="" method="post">
+									<input type="hidden" value="Y" name="useYn" id="useYn">
+									<input type="hidden" name="cdgrpid" id="cdgrpid" value="" />
+									<input type="hidden" name="cdgrpNm" id="cdgrpNm" value="" />
+									<input type="hidden" name="upprCd" id="upprCd" value="" />
+
+									<div class="mb-2 form-group required row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cd"><strong>코드</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cd" id="cd"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group required row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdNm"><strong>코드명</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cdNm" id="cdNm"/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdDc"><strong>코드설명</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cdDc" id="cdDc" />
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewCdgrpid"><strong>코드그룹ID</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="viewCdgrpid" id="viewCdgrpid" readonly/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewUpprCd"><strong>상위코드</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="viewUpprCd" id="viewUpprCd" readonly/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn1"><strong>옵션1</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="optn1" id="cdOptn1" />
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn2"><strong>옵션2</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="optn2" id="cdOptn2" />
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn3"><strong>옵션3</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="optn3" id="cdOptn3" />
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdUpdtUserNm"><strong>수정자</strong></label>
+										<div class="col-sm-12">
+											<input type="text" class="form-control form-control-sm" name="cdUpdtUserNm" id="cdUpdtUserNm" readonly/>
+										</div>
+									</div>
+									<div class="mb-2 form-group row">
+										<div class="col-sm-12">
+											<span kattr:switch_yn="cdUseYn" label="코드 사용" defaultVal="Y" onchange="cdSwitch" isAdmin="true"></span>
+										</div>
+									</div>
+									<div class="mb-0 mt-4 form-group row">
+										<div class="col-sm-12">
+											<th:block sec:authorize-url="/mng/code/insertCodeInfo.do">
+												<button type="button" class="btn btn-primary" onclick="saveCdInfo()">저장</button>
+											</th:block>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script type="text/javascript" charset="utf-8" src="/js/common/jquery/jquery.js"></script>
 	<script th:inline="javascript">
 
@@ -49,10 +259,6 @@
 		function codeGrpSearchInit() {
 			$("#searchType").val('');
 			$("#searchKeyword").val('');
-
-			initCdgrpFrm();
-			destroyTree();
-			initCdFrm();
 		}
 
 		$(function(){
@@ -491,17 +697,17 @@
 		}
 
 		// 유효성검증기(코드)
-		function validateCode(){
+		function validateCode() {
 			$("#cdFrm").validate({
 				onsubmit: false,
 				rules: {
 					cd: {
 						required: true
-						,maxlength: 12
+						, maxlength: 12
 					},
 					cdNm: {
 						required: true
-						,maxlength: 200
+						, maxlength: 200
 					},
 					cdDc: {
 						maxlength: 200
@@ -519,11 +725,11 @@
 				messages: {
 					cd: {
 						required: "코드를 입력해주십시오"
-						,maxlength: "코드는 12자를 넘을 수 없습니다."
+						, maxlength: "코드는 12자를 넘을 수 없습니다."
 					},
 					cdNm: {
 						required: "코드명을 입력해주십시오"
-						,maxlength: "코드명은 200자를 넘을 수 없습니다."
+						, maxlength: "코드명은 200자를 넘을 수 없습니다."
 					},
 					cdDc: {
 						maxlength: "코드설명은 200자를 넘을 수 없습니다."
@@ -616,214 +822,5 @@
 			}
 		}
 	</script>
-
-	<div class="row">
-		<div class="card">
-			<div class="card-block-small">
-				<form id="searchForm" name="searchForm" action="" onsubmit="return false;" >
-					<div class="d-lg-inline-block">
-						<div class="mb-0 form-group row">
-							<span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
-
-							<div class="input-group input-group-sm input-group-dropdown mb-0">
-								<select name="searchType" id="searchType" class="form-select form-control form-control-primary form-bg-primary">
-									<option value="">- 선택 -</option>
-									<option value="CDGRP_NM">코드그룹명</option>
-									<option value="CDGRPID">코드그룹아이디</option>
-									<option value="CD">코드아이디</option>
-								</select>
-								<input name="searchKeyword" id="searchKeyword" type="text" class="form-control" aria-label="Text input with dropdown button">
-							</div>
-						</div>
-					</div>
-					<div class="m-t-20 text-center">
-						<button type="button" class="btn btn-disabled m-r-5" onclick="codeGrpSearchInit()">초기화</button>
-						<button type="submit" class="btn btn-primary" onclick="codeGrpSearch()">검색</button>
-					</div>
-				</form>
-			</div>
-		</div>
-		<div class="card">
-			<div class="card-block-small">
-				<div class="row">
-					<div class="col-12 col-md-6 col-xl-3">
-						<h5 class="mb-3">
-							<strong>코드그룹 목록</strong>
-						</h5>
-						<div class="card">
-							<div class="card-block-small">
-								<div class="col-12 mb-2 text-right">
-									<th:block sec:authorize-url="/mng/code/insertCodeGrpInfo.do">
-										<button class="btn btn-primary" onclick="addCdgrp()">등록</button>
-									</th:block>
-								</div>
-
-								<!--jsGrid-->
-								<table id="jsGrid" class="table-responsive"></table>
-								<div id="listPager" class="text-center"></div>
-							</div>
-						</div>
-					</div>
-					<div class="col-12 col-md-6 col-xl-3">
-						<h5 class="mb-3">
-							<strong>코드그룹 정보</strong>
-						</h5>
-						<div class="card">
-							<div class="card-block-small">
-								<form name="cdgrpFrm" id="cdgrpFrm" action="" method="post" >
-									<input type="hidden" value="Y" name="useYn" id="useYn">
-									<div class="mb-2 form-group required row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpid"><strong>코드그룹ID</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cdgrpid" id="cdgrpid" readonly=""/>
-										</div>
-									</div>
-									<div class="mb-2 form-group required row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1 " for="cdgrpNm"><strong>코드그룹명</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm " name="cdgrpNm" id="cdgrpNm"/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpDc"><strong>코드그룹설명</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cdgrpDc" id="cdgrpDc"/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpOptn1"><strong>옵션1</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="optn1" id="cdgrpOptn1"/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpOptn2"><strong>옵션2</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="optn2" id="cdgrpOptn2"/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdgrpUpdtUserNm"><strong>수정자</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cdgrpUpdtUserNm" id="cdgrpUpdtUserNm" readonly/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<div class="col-sm-12">
-											<span kattr:switch_yn="cdgrpUseYn" label="코드그룹 사용" defaultVal="Y" onchange="cdgrpSwitch" isAdmin="true"></span>
-										</div>
-									</div>
-									<div class="mb-0 mt-4 form-group row">
-										<div class="col-sm-12">
-											<th:block sec:authorize-url="/mng/code/insertCodeGrpInfo.do">
-												<button type="button"  class="btn btn-primary" onclick="saveCdgrpInfo()" >저장</button>
-											</th:block>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-					<div class="col-12 col-md-6 col-xl-3">
-						<h5 class="mb-3">
-							<strong>코드 구조</strong>
-						</h5>
-
-						<div class="card">
-							<div class="card-block-small">
-								<ul id="codeContext" class="contextMenu">
-									<li class="edit"><a href="#regist">하위 등록</a></li>
-									<!-- li class="quit"><a href="#quit">취소</a></li -->
-								</ul>
-								<div class="tree thumbnail img-responsive" id="codeTree"></div>
-							</div>
-						</div>
-					</div>
-					<div class="col-12 col-md-6 col-xl-3">
-						<h5 class="mb-3">
-							<strong>코드 정보</strong>
-						</h5>
-						<div class="card">
-							<div class="card-block-small">
-								<form name="cdFrm" id="cdFrm" action="" method="post">
-									<input type="hidden" value="Y" name="useYn" id="useYn">
-									<input type="hidden" name="cdgrpid" id="cdgrpid" value="" />
-									<input type="hidden" name="cdgrpNm" id="cdgrpNm" value="" />
-									<input type="hidden" name="upprCd" id="upprCd" value="" />
-
-									<div class="mb-2 form-group required row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cd"><strong>코드</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cd" id="cd"/>
-										</div>
-									</div>
-									<div class="mb-2 form-group required row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdNm"><strong>코드명</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cdNm" id="cdNm"/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdDc"><strong>코드설명</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cdDc" id="cdDc" />
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewCdgrpid"><strong>코드그룹ID</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="viewCdgrpid" id="viewCdgrpid" readonly/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="viewUpprCd"><strong>상위코드</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="viewUpprCd" id="viewUpprCd" readonly/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn1"><strong>옵션1</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="optn1" id="cdOptn1" />
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn2"><strong>옵션2</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="optn2" id="cdOptn2" />
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdOptn3"><strong>옵션3</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="optn3" id="cdOptn3" />
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cdUpdtUserNm"><strong>수정자</strong></label>
-										<div class="col-sm-12">
-											<input type="text" class="form-control form-control-sm" name="cdUpdtUserNm" id="cdUpdtUserNm" readonly/>
-										</div>
-									</div>
-									<div class="mb-2 form-group row">
-										<div class="col-sm-12">
-											<span kattr:switch_yn="cdUseYn" label="코드 사용" defaultVal="Y" onchange="cdSwitch" isAdmin="true"></span>
-										</div>
-									</div>
-									<div class="mb-0 mt-4 form-group row">
-										<div class="col-sm-12">
-											<th:block sec:authorize-url="/mng/code/insertCodeInfo.do">
-												<button type="button" class="btn btn-primary" onclick="saveCdInfo()">저장</button>
-											</th:block>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 </body>

@@ -1,17 +1,15 @@
 package com.kbrainc.plum.mng.faq.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.kbrainc.plum.mng.faq.model.FaqClDao;
 import com.kbrainc.plum.mng.faq.model.FaqClVo;
 import com.kbrainc.plum.mng.faq.model.FaqDao;
 import com.kbrainc.plum.mng.faq.model.FaqVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqService {
@@ -68,7 +66,7 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
         param.setNewOrd(param.getOrd() - 1);
         faqClDao.updateFaqClOrdUp(param);
         faqClDao.updateFaqClOrdByfaqid(param);
-        return true; 
+        return true;
     }
 
     @Transactional
@@ -79,19 +77,33 @@ public class FaqServiceImpl extends PlumAbstractServiceImpl implements FaqServic
         faqClDao.updateFaqClOrdByfaqid(param);
         return true;
     }
-    
+
     @Override
-    public List<FaqClVo> getAllList(FaqClVo param) throws Exception{
-    	return faqClDao.getAllList(param);
+    public List<FaqClVo> getAllList(FaqClVo param) throws Exception {
+        return faqClDao.getAllList(param);
     }
 
     @Override
-    public boolean updateFaqOrd(Map<String, Object> faqInfo) {
-        Map<String,Integer> sourceFaq = (Map<String,Integer>)faqInfo.get("sourceFaq");
-        Map<String,Integer> targetFaq = (Map<String,Integer>)faqInfo.get("targetFaq");
-        faqDao.changeFaqOrd(sourceFaq.get("faqid"), targetFaq.get("ord"));
-        faqDao.changeFaqOrd(targetFaq.get("faqid"), sourceFaq.get("ord"));
+    @Transactional
+    public boolean updateFaqOrdUp(FaqVo faqVo) {
+        int ord = faqVo.getOrd();
+        FaqVo updateFaq = faqDao.getUpdateFaq(faqVo);
+        faqVo.setOrd(updateFaq.getOrd());
+        faqDao.updateFaqOrdUp(faqVo);
+        updateFaq.setOrd(ord);
+        faqDao.updateFaqOrdDown(updateFaq);
+        return true;
+    }
 
+    @Override
+    @Transactional
+    public boolean updateFaqOrdDown(FaqVo faqVo) {
+        int ord = faqVo.getOrd();
+        FaqVo updateFaq = faqDao.getUpdateFaq(faqVo);
+        faqVo.setOrd(updateFaq.getOrd());
+        faqDao.updateFaqOrdDown(faqVo);
+        updateFaq.setOrd(ord);
+        faqDao.updateFaqOrdUp(updateFaq);
         return true;
     }
 }

@@ -75,7 +75,7 @@
         return result;
     }
 
-    $(function() {
+    $(function () {
         writeHelpDeskModalData();
         managerSelectedItems = [];
     });
@@ -87,11 +87,11 @@
     }
 
     function helpDeskModalSearch() {
-        if($('#helpDeskModalSearchForm #searchKeyword').val() != '' && $('#helpDeskModalSearchForm #searchType').val() == '') {
+        if ($('#helpDeskModalSearchForm #searchKeyword').val() != '' && $('#helpDeskModalSearchForm #searchType').val() == '') {
             alert('검색어를 입력해 주십시오.');
             return;
         }
-        if($('#helpDeskModalSearchForm #searchKeyword').val() == '' && $('#helpDeskModalSearchForm #searchType').val() != ''){
+        if ($('#helpDeskModalSearchForm #searchKeyword').val() == '' && $('#helpDeskModalSearchForm #searchType').val() != '') {
             alert('검색조건을 선택해 주십시오.');
         }
 
@@ -127,10 +127,10 @@
                         {name: "rowPerPage", value: filter.pageSize},
                     ]
 
-                    if(filter.sortField != undefined){
+                    if (filter.sortField != undefined) {
                         params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
                         params.push({name: "orderDirection", value: filter.sortOrder});
-                    }else{
+                    } else {
                         params.push({name: "orderField", value: 'reg_dt'});
                     }
                     formData = formData.concat(params);
@@ -141,10 +141,10 @@
                         url: "/mng/helpDesk/selectUserInfoList.do",
                         dataType: "json",
                         data: formData,
-                    }).done(function(response){
+                    }).done(function (response) {
                         var da = {
-                            data : escapeGridData(response.list)
-                            ,itemsCount : response.totalCount
+                            data: escapeGridData(response.list)
+                            , itemsCount: response.totalCount
                         };
                         data.resolve(da);
                     });
@@ -153,11 +153,11 @@
             },
             fields: [
                 {
-                    headerTemplate: function() {
+                    headerTemplate: function () {
                         return $("<input>").attr("type", "checkbox").attr("id", "managerSelectAllCheckBox")
                     },
-                    itemTemplate: function(_, item) {
-                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id","userid-"+item.userid)
+                    itemTemplate: function (_, item) {
+                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("id", "userid-" + item.userid)
                             //.prop("checked", $.inArray(String(item.userid), managerSelectedItems) > -1)
                             .prop("checked", $.inArray(item, managerSelectedItems) > -1)
                             .on("change", function () {
@@ -170,15 +170,15 @@
                     width: "50",
                     sorting: false
                 },
-                { name: 'userid', css:'hide'},
-                { title:'사용자', name: 'nm', type: "text" , width: "150"},
-                { title:'소속기관', name: 'instNm', type: "text" , width: "150"},
-                { title:'역할', name: 'roleNm', type: "text" , width: "120", align:"center"}
+                {name: 'userid', css: 'hide'},
+                {title: '사용자', name: 'nm', type: "text", width: "150"},
+                {title: '소속기관', name: 'instNm', type: "text", width: "150"},
+                {title: '역할', name: 'roleNm', type: "text", width: "120", align: "center", cellRenderer: cellRendererExprtRole, sorting: 'false'}
             ],
             rowClick: function (args) {
-                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
-                if($("#userid-"+args.item.userid).is(":checked")){
+                if ($("#userid-" + args.item.userid).is(":checked")) {
                     managerUnselectItem(args.item.id, args.item.name);
                 } else {
                     managerSelectItem(args.item.id, args.item.name);
@@ -189,42 +189,42 @@
             }
         });
 
-        var managerSelectItem = function(id, name) {
+        var managerSelectItem = function (id, name) {
             var index = managerSelectedItems.findIndex(item => item.userid === id);
-            if(index == -1) {
-                managerSelectedItems.push({"userid": id, "nm" : name});
+            if (index == -1) {
+                managerSelectedItems.push({"userid": id, "nm": name});
             }
 
-            if($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
+            if ($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
                 $("#managerSelectAllCheckBox").prop("checked", true);
             } else {
                 $("#managerSelectAllCheckBox").prop("checked", false);
             }
         };
 
-        var managerUnselectItem = function(id, name) {
-            managerSelectedItems = $.grep(managerSelectedItems, function(i) {
+        var managerUnselectItem = function (id, name) {
+            managerSelectedItems = $.grep(managerSelectedItems, function (i) {
                 return i.userid !== id;
             });
-            if(managerSelectedItems.length == 0) {
+            if (managerSelectedItems.length == 0) {
                 $('#managerSelectAllCheckBox').attr('checked', false);
             }
-            if($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
+            if ($("#helpDeskManagerSearchModal .singleCheckbox").length == $("#helpDeskManagerSearchModal .singleCheckbox:checked").length) {
                 $("#managerSelectAllCheckBox").prop("checked", true);
             } else {
                 $("#managerSelectAllCheckBox").prop("checked", false);
             }
         };
 
-        $("#managerSelectAllCheckBox").click(function(item) {
+        $("#managerSelectAllCheckBox").click(function (item) {
             managerSelectedItems = [];
-            if(this.checked) { // check select status
-                $('#helpDeskManagerSearchModal .singleCheckbox').each(function() {
+            if (this.checked) { // check select status
+                $('#helpDeskManagerSearchModal .singleCheckbox').each(function () {
                     this.checked = true;
                     managerSelectItem($(this).parent().next().text(), $(this).parent().next().next().text());
                 });
-            }else {
-                $('#helpDeskManagerSearchModal .singleCheckbox').each(function() {
+            } else {
+                $('#helpDeskManagerSearchModal .singleCheckbox').each(function () {
                     this.checked = false;
                     managerUnselectItem(item);
                 });
@@ -233,24 +233,30 @@
         });
     }
 
-    function saveManagerInfo(){
+    function cellRendererExprtRole(value, item) {
+        if (isNull(item.roleNm)) return '<td></td>';
+        return "<td style='word-wrap: break-word;white-space: normal;'>" + item.roleNm + '</td>';
+    }
+
+    function saveManagerInfo() {
         var duplicate = false;
 
-        for(var item of managerSelectedItems) {
-            if($("#managerId-"+item.userid).length > 0  ) {
+        for (var item of managerSelectedItems) {
+            if ($("#managerId-" + item.userid).length > 0) {
                 duplicate = true;
             } else {
-                var content = "<span class='label label-inverse' id='managerId-" + item.userid + "' name='managerInfo' data-id='"+item.userid+"'>" + item.nm + "&nbsp; <a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
+                var content = "<span class='label label-inverse' id='managerId-" + item.userid + "' name='managerInfo' data-id='" + item.userid + "'>" + item.nm + "&nbsp; <a href='javascript:void(0)' onclick='removeManagerInfo(" + item.userid + ")' class='text-white'>X</a> </span>";
                 $("#managerList").append(content);
             }
         }
-        if(duplicate) {
+        if (duplicate) {
             alert('이미 등록한 담당자를 제외하고 추가하였습니다.')
         }
 
         managerSearchModal.hide();
     }
+
     function removeManagerInfo(userid) {
-        $("#managerId-"+userid).remove();
+        $("#managerId-" + userid).remove();
     }
 </script>
