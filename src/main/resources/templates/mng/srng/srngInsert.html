@@ -1,0 +1,77 @@
+<form id="srngInsertForm">
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>기본정보</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="mb-2 row">
+            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                <div class="mb-0 form-group required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지정기준</strong></div>
+                    <div class="col-12">
+                        <span kattr:select_code="dsgncrtrCd" grpCd="149" firstOptTxt="- 전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="altm"><strong>배점</strong></label>
+                    <div class="col-12">
+                        <input type="text" class="form-control form-control-sm" name="altm" id="altm" placeholder="Text Input Validation" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2 form-group row required">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="idntyMttr"><strong>확인사항</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="idntyMttr" id="idntyMttr" placeholder="Text Input Validation" value="">
+            </div>
+        </div>
+    </div>
+    <div class="card-block-small">
+        <button type="button" class="btn btn-disabled m-r-5" onclick = "srngQitemJsGrid.toggleContent()" > 취소</button>
+        <button type="button" class="btn btn-primary" onclick="fn_insertAction()">저장</button>
+    </div>
+</form>
+<script th:inline="javascript">
+    var validator= $("#srngInsertForm").validate({
+        onsubmit: false,
+        rules: {
+            dsgncrtrCd: {required: true},
+            altm: {required: true, digits: true},
+            idntyMttr: {required: true, maxlength: 200},
+        },
+        messages: {
+            dsgncrtrCd: {required: "지정기준을 선택해주세요."},
+            altm: {required: "배점을 입력해주세요.", digits: "배점은 숫자만 입력가능합니다."},
+            idntyMttr: {required: "확인사항을 입력해주세요.", maxlength: "확인사항은 200자 이하여야 합니다."},
+        }
+    })
+
+    function fn_insertAction(){
+        if(!($("#srngInsertForm").valid())) return;
+
+        if(!confirm("저장하시겠습니까?")) return;
+
+        let data =  $("#srngInsertForm").serialize() ;
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/srng/insertSrng.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        srngQitemJsGrid.resetListContent();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+</script>
