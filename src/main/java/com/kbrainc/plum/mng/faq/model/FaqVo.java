@@ -1,16 +1,11 @@
 package com.kbrainc.plum.mng.faq.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
-
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.SerializationUtils;
 
 import java.util.Date;
 
@@ -35,10 +30,12 @@ public class FaqVo extends ParentRequestVo {
     private String clNm;
     private String searchSite;
 
-    private Integer[] ordFaqid;
+    /*순서 변경용*/
+    private String mode;
+
     /**
-     * 
      * Desc : Constructor of FaqVo.java class
+     *
      * @param clid
      * @param title
      * @param cntnts
@@ -59,17 +56,19 @@ public class FaqVo extends ParentRequestVo {
         this.orderDirection = ORDER_DIRECTION.asc;
 
     }
-    
-    /** 로그인사용자정보 */
-    public void setUser(UserVo user){
+
+    /**
+     * 로그인사용자정보
+     */
+    public void setUser(UserVo user) {
         UserVo clone = (UserVo) SerializationUtils.clone(user);
         this.user = clone;
     }
-    public UserVo getUser(){
-        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
-        return  clone;
-    }   
 
-    
+    public UserVo getUser() {
+        UserVo clone = (UserVo) SerializationUtils.clone(this.user);
+        return clone;
+    }
+
 
 }

@@ -15,7 +15,9 @@ public interface FaqDao {
 
     public int updateFaq(FaqVo param);
 
-    public int changeFaqOrd(@Param("faqid")Integer faqid, @Param("ord")Integer ord);
+    public FaqVo getUpdateFaq(FaqVo faqVo);
 
-    public int selectSiteid(FaqVo param);
+    public boolean updateFaqOrdUp(FaqVo faqVo);
+
+    public boolean updateFaqOrdDown(FaqVo faqVo);
 }

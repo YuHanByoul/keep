@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+    <!-- Page-body start -->
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form action="" name="searchForm" id="searchForm" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control ">
+                                                <option value="">- 전체 -</option>
+                                                <option value="nm">이름</option>
+                                                <option value="acnt">아이디</option>
+                                            </select>
+                                            <input name="searchKeyword" id="searchKeyword" type="text" class="form-control" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>전문가유형</strong></div>
+                                        <div class="col-12">
+                                            <th:block kattr:select_code="exprtTypeCd" th:attr="grpCd=133" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dmndid"><strong>요청번호</strong></label>
+                                        <div class="col-12">
+                                            <input class="form-control form-control-sm" name="dmndid" id="dmndid" type="text"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>진행상태</strong></div>
+                                        <div class="col-12">
+                                            <th:block kattr:select_code="dmndSttsCd" th:attr="grpCd=139" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-1 p-t-20 text-center border-top">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="expertRelation.searchInit()">초기화</button>
+                                <button type="button" class="btn btn-primary" onclick="expertRelation.search()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!--임시그리드-->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <h5><strong>전문가 섭외 현황 검색결과</strong></h5>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="expertRelationJsGrid" class="table-responsive"></table>
+                        <div id="expertRelationListPager"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div id="contentPanel" class="card"></div>
+            </div>
+        </div>
+    </div>
+    <!-- Page-body end -->
+    <script th:inline="javascript">
+        var expertRelation = {
+            listUrl: '/mng/expertPoolMng/selectExpertRelationList.do',
+            detailUrl: '/mng/expertPoolMng/expertRelationDetail.html',
+            gridHelper: null,
+
+            init: function () {
+                this.writeJsGridData();
+                this.gridHelper = new GridHelper('expertRelationJsGrid', 'contentPanel');
+            },
+
+            writeJsGridData: function () {
+                $('#expertRelationJsGrid').jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: true,
+                    paging: true,
+                    pagerContainer: "#expertRelationListPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function (filter) {
+                            var data = $.Deferred();
+                            var params = [
+                                {"name": "pageNumber", "value": filter.pageIndex},
+                                {"name": "rowPerPage", "value": filter.pageSize},
+                            ];
+
+                            if (filter.sortField != undefined) {
+                                params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                                params.push({name: "orderDirection", value: filter.sortOrder});
+                            } else {
+                                params.push({name: "orderField", value: 'update_dt'});
+                            }
+
+                            var formData = $('#searchForm').serializeArray();
+                            console.log(formData);
+                            formData = formData.concat(params);
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: expertRelation.listUrl,
+                                data: formData,
+                                dataType: "json"
+                            }).done(function (response) {
+                                var da = {
+                                    data: escapeGridData(response.list),
+                                    itemsCount: response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center"},
+                        {title: "요청번호", name: "dmndid", type: "text", width: "100", align: "center"},
+                        {title: "전문가유형", name: "exprtTypeCdNm", type: "text", width: "120", align: "center"},
+                        {title: "전문가ID", name: "exprtAcnt", type: "text", width: "100", align: "center"},
+                        {title: "전문가 이름", name: "exprtNm", type: "text", width: "80", align: "center"},
+                        {title: "요청자 ID", name: "userAcnt", width: "100", align: "center"},
+                        {title: "요청자 이름", name: "userNm", type: "text", width: "80", align: "center"},
+                        {title: "진행상태", name: "dmndSttsCdNm", type: "text", width: "100", align: 'center'},
+                        {title: "상태변경일", name: "updateDt", type: "text", width: "120", align: 'center'},
+                    ],
+                    /* [# sec:authorize-url="/mng/expertPoolMng/expertRelationDetail.html"] */
+                    rowClick: function (args) {
+                        if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var url = expertRelation.detailUrl + "?dmndid=" + args.item.dmndid;
+                        expertRelation.gridHelper.loadContent(url);
+                        expertRelation.gridHelper.rowClick(args);
+                    }
+                    /* [/] */
+                });
+            },
+
+            search: function () {
+
+                if ($('#searchType').val() != '' && $('#searchKeyword').val() == '') {
+                    alert('검색어를 입력해 주십시오.');
+                    return;
+                }
+
+                $('#expertRelationJsGrid').jsGrid("reset");
+            },
+
+            searchInit: function () {
+                $("#searchType, #searchKeyword, #exprtTypeCd, #dmndid, #dmndSttsCd").val('');
+            }
+        }
+        $(function () {
+            expertRelation.init();
+        })
+    </script>
+</div>
+</body>
+</html>
