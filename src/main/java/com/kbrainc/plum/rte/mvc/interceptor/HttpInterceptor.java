@@ -1,6 +1,9 @@
 package com.kbrainc.plum.rte.mvc.interceptor;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kbrainc.plum.rte.exception.PageNotFoundException;
@@ -35,6 +39,14 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     ResSiteService resSiteService;
     @Autowired
     ResMenuService resMenuService;
+    
+    @Autowired
+    LocaleResolver localeResolver;
+    
+    /** 다국어를 적요할 포털의 URL */
+    String[] localeAllowedPageUrls = {"/main.html", "/front/intro/introduceHJ.html"};
+    Set<String> localeAllowedPageUrlSet = new HashSet<String>(Arrays.asList(localeAllowedPageUrls));
+
 
     /**.
      * @Title : preHandle
@@ -71,6 +83,17 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             session.setAttribute("site", siteInfo);
         }
 
+        ////////////////////////////////////////////////////////////////////////////////////
+        // locale 초기화
+        ////////////////////////////////////////////////////////////////////////////////////
+        if ("P".equals(siteInfo.getSysKndCd()) && targetURI.endsWith(".html")) { // 포탈인 경우(화면호출시) 
+            if (!localeAllowedPageUrlSet.contains(targetURI)) {
+                localeResolver.setLocale(request, response, null);
+            }
+        } else if(!"P".equals(siteInfo.getSysKndCd())) { // 포탈이 아니면 locale 사용하지 않음.
+            localeResolver.setLocale(request, response, null);
+        }
+        
         ////////////////////////////////////////////////////////////////////////////////////
         // 메뉴정보
         ////////////////////////////////////////////////////////////////////////////////////

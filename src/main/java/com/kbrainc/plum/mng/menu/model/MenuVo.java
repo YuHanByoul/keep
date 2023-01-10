@@ -90,6 +90,10 @@ public class MenuVo {
     @NotEmpty(message = "메뉴명을 입력해 주십시오.")
     @Size(max = 200, message = "메뉴명은 200자를 넘을 수 없습니다.")
     private String nm;
+    
+    /** 영문 메뉴명 */
+    @Size(max = 200, message = "영문 메뉴명은 200자를 넘을 수 없습니다.")
+    private String nmEngl;
 
     /** 메뉴설명 */
     @Size(max = 400, message = "메뉴설명은 400자를 넘을 수 없습니다.")

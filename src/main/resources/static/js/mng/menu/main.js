@@ -450,10 +450,12 @@
         $("#form1").validate({
               rules: {
                    nm : { required: true,maxlength : [200]}
+                  ,nmEngl : { maxlength : [200]}
                   ,dc : { maxlength : [400] }
               },
               messages: {
-                  nm  : { required: "메뉴명을 입력해 주십시오.",maxlength : "메뉴명은 200자를 넘을 수 없습니다."}  
+                  nm  : { required: "메뉴명을 입력해 주십시오.",maxlength : "메뉴명은 200자를 넘을 수 없습니다."}
+                  ,nmEngl  : { maxlength : "영문 메뉴명은 200자를 넘을 수 없습니다."}  
                   ,dc : { maxlength : "메뉴 설명은 400자를 넘을 수 없습니다."}
               }
         })
@@ -570,6 +572,7 @@
 			$("#viewMenuid").val("");
 		}
 		$("#menuNm").val(data.nm);
+		$("#menuNmEngl").val(data.nmEngl);
 		$("#menuExpln").val(data.dc);
 		$("#classNm").val(data.classNm);
 		
@@ -658,6 +661,7 @@
 		$("#menuid").val('');		
 		$("#viewMenuid").val('');
 		$("#menuNm").val('');
+		$("#menuNmEngl").val('');
 		$("#menuExpln").val('');
 		$("#classNm").val('');
 		$("#prgmurl").val('');
@@ -719,10 +723,12 @@
         
         if(siteInfo != undefined && "A" == siteInfo.sysSeCd) {
             $("#viewRefMenuid").hide();
+            $("#viewNmEngl").hide();
             $("#refMenuid").val('');
         }else{
             $("#refMenuid").val('');
             $("#viewRefMenuid").show();
+            $("#viewNmEngl").show();
         }
         $("#menuid").val('');
         fn_InitMenuForm('');
