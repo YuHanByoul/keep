@@ -1,4 +1,5 @@
-<form id ="chklstInsertForm">
+<form id ="chklstUpdateForm">
+    <input type="hidden" name="chklstid" th:value="${chklstInfo.chklstid}">
     <div class="tab-pane active" id="chklstInsert" role="tabpanel">
         <!--
         <div class="card-header p-t-0 p-b-0">
@@ -11,7 +12,8 @@
                     <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영 형태</strong></div>
                         <div class="col-12">
-                            <th:block kattr:select_code="operFrmCd" grpCd="145" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                            <span  kattr:select_code="operFrmCd" th:attr="grpcd=145, selectedCd=${chklstInfo.operFrmCd}" isAdmin="true"></span>
+                            <!--<th:block kattr:select_code="operFrmCd" grpCd="145" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>-->
                         </div>
                     </div>
                 </div>
@@ -19,42 +21,42 @@
             <div class="mb-2 form-group row required">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="chklstNm"><strong>체크리스트 명</strong></label>
                 <div class="col-sm-12">
-                    <input type="text" class="form-control form-control-sm" name="chklstNm" id="chklstNm" placeholder="체크리스트 명을 입력해주세요." value="">
+                    <input type="text" class="form-control form-control-sm" name="chklstNm" id="chklstNm" placeholder="체크리스트 명을 입력해주세요." th:value="${chklstInfo.chklstNm}">
                 </div>
             </div>
             <div class="mb-2 form-group row">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="checkListExplanation"><strong>체크리스트 설명</strong></label>
                 <div class="col-12">
-                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="체크리스트 설명을 입력해주세요." id="chklstExpln" name="chklstExpln"></textarea>
+                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="체크리스트 설명을 입력해주세요." id="chklstExpln" name="chklstExpln" th:text="${chklstInfo.chklstExpln}"></textarea>
                 </div>
             </div>
             <div class="mb-0 form-group row">
                 <div class="col-12">
-                    <input type="hidden" name="useYn">
-                    <input type="checkbox" class="js-single-small" id="useYn"/>
+                    <input type="hidden" name="useYn" th:value="${chklstInfo.useYn}">
+                    <input type="checkbox" class="js-single-small" id="useYn" checked/>
                     <label for="useYn" class="v-middle">사용여부</label>
                 </div>
             </div>
         </div>
         <div class="card-block-small p-t-0">
-            <button type="button" class="btn btn-disabled m-r-5" onclick="chklstInsert.offInsertChklst();">취소</button>
-            <th:block sec:authorize-url="/mng/chklst/insertChklst.do"><button type="button" class="btn btn-primary" onclick="chklstInsert.onInsertChklst();">저장</button></th:block>
+            <button type="button" class="btn btn-disabled m-r-5" onclick="chklstUpdate.offUpdateChklst();">취소</button>
+            <th:block sec:authorize-url="/mng/chklst/updateChklst.do"><button type="button" class="btn btn-primary" onclick="chklstUpdate.onUpdateChklst();">저장</button></th:block>
         </div>
     </div>
 </form>
 
 <script th:inline="javascript">
-    var chklstInsert = {
+    var chklstUpdate = {
         init: function() {
-            
             var elemsingleSmallList = document.querySelectorAll('.js-single-small');
             for(var i = 0; i < elemsingleSmallList.length; i++) {
                 new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
-            }
-            $(".js-example-basic-single").select2();
-            $(".switchery").css({pointerEvents: "none"});
-            this.registEvent();
-            this.setValid();
+           }
+           $(".js-example-basic-single").select2();
+           toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
+           
+           this.registEvent();
+           this.setValid();
         },
         
         registEvent: function() {
@@ -62,7 +64,7 @@
         },
         
         setValid: function() {
-            var validator = $('#chklstInsertForm').validate({
+            var validator = $('#chklstUpdateForm').validate({
                 rules: {
                     operFrmCd: {required: true},
                     chklstNm: {required: true, maxlength: 40},
@@ -76,14 +78,14 @@
             });
         },
         
-        onInsertChklst: function() {
-            if(!($("#chklstInsertForm").valid())) return;
+        onUpdateChklst: function() {
+            if(!($("#chklstUpdateForm").valid())) return;
             $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
-            var param = $("#chklstInsertForm").serialize();
+            var param = $("#chklstUpdateForm").serialize();
             
             if(displayWorkProgress()) {
                 $.ajax({
-                    url : "/mng/chklst/insertChklst.do",
+                    url : "/mng/chklst/updateChklst.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
@@ -92,8 +94,6 @@
                         if(response.result == "success") {
                             alert(response.msg);
                             chklstGrid.resetListContent();
-                            var detailUrl = "/mng/chklst/chklstDetail.html?chklstid=" + response.chklstid; 
-                            chklstGrid.loadContent(detailUrl);
                         } else {
                             alert(response.msg);
                         }
@@ -103,10 +103,10 @@
             }
         },
         
-        offInsertChklst: function() {
+        offUpdateChklst: function() {
             chklstGrid.toggleContent();
         }
     };
     
-    chklstInsert.init();
+    chklstUpdate.init();
 </script>

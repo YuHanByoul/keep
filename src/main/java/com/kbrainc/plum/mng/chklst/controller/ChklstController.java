@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
+import com.kbrainc.plum.mng.chklst.model.ChklstVo;
 import com.kbrainc.plum.mng.chklst.service.ChklstServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
+import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -94,16 +96,29 @@ public class ChklstController {
     }
     
     /**
-     * 체크리스트 관리 목록 화면
+     * 체크리스트 목록 화면
      *
      * @Title : chklstListForm
-     * @Description : 체크리스트 관리 목록 화면
+     * @Description : 체크리스트 목록 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/chklst/chklstListForm.html")
     public String chklstListForm(CodeVo codeVo, Model model) throws Exception {
         return "mng/chklst/chklstList";
+    }
+    
+    /**
+     * 체크리스트 등록 탭 화면
+     *
+     * @Title : chklstRegistForm
+     * @Description : 체크리스트 등록 탭 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/chklst/chklstRegistForm.html")
+    public String chklstRegistForm() throws Exception {
+        return "mng/chklst/chklstRegist";
     }
     
      /**
@@ -119,7 +134,36 @@ public class ChklstController {
         return "mng/chklst/chklstInsert";
     }
     
+    /**
+     * 체크리스트 상세 탭 화면
+     *
+     * @Title : chklstDetailForm
+     * @Description : 체크리스트 상세 탭 화면
+     * @param qestnrVo QestnrVo 객체
+     * @return  String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/chklst/chklstDetailForm.html")
+    public String chklstDetailForm(ChklstVo chklstVo, Model model) throws Exception {
+        return "mng/chklst/chklstDetail";
+    }
     
+    /**
+     * 체크리스트 수정 화면
+     *
+     * @Title : chklstUpdateForm
+     * @Description : 설문지 수정 화면
+     * @param qestnrVo QestnrVo 객체
+     * @param model 모델객체
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/chklst/chklstUpdateForm.html")
+    public String chklstUpdateForm(ChklstVo chklstVo, Model model) throws Exception {
+//        model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
+        model.addAttribute("chklstInfo", chklstService.selectChklstInfo(chklstVo));
+        return "mng/chklst/chklstUpdate";
+    }
     
     /**
      * 체크리스트 문항 등록
@@ -224,239 +268,108 @@ public class ChklstController {
         return resultMap;
     }
     
-    
-    
-    
-    
-    
-    
-    
-      
     /**
-     * 설문지 문항 목록 화면
+     * 체크리스트 등록
      *
-     * @Title : qitemForm
-     * @Description : 설문지 문항 목록 화면
-     * @param qestnrVo QestnrVo 객체
-     * @param model 모델객체
-     * @return String 화면경로
+     * @Title : insertChklst
+     * @Description : 체크리스트 등록
+     * @param chklstVo ChklstVo 객체
+     * @param bindingResult chklstVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외
      */
-//    @RequestMapping(value = "/mng/qestnr/qitem.html")
-//    public String qitemForm(QestnrVo qestnrVo, Model model) throws Exception {
-//        return "mng/qestnr/qitemList";
-//    }
-       
-    /**
-     * 설문지 문항 정보 등록 화면
-     *
-     * @Title : qestnrForm
-     * @Description : 설문지 문항 정보 등록 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
-//    @RequestMapping(value = "/mng/qestnr/qitemInsertForm.html")
-//    public String qitemInsertForm() throws Exception {
-//        return "mng/qestnr/qitemInsert";
-//    }
+    @RequestMapping(value = "/mng/chklst/insertChklst.do")
+    @ResponseBody
+    public Map<String, Object> insertChklst(@Valid ChklstVo chklstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+                
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+                
+        int retVal = 0;
+        chklstVo.setUser(user);
+        retVal = chklstService.insertChklst(chklstVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다");
+            resultMap.put("chklstid", chklstVo.getChklstid());
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다");
+        }
+        
+        return resultMap;
+    }
     
     /**
-     * 설문지 문항 수정 화면
+     * 체크리스트 목록 조회
      *
-     * @Title : qitemUpdateForm
-     * @Description : 설문지문항 수정 화면
-     * @param qitemVo QitemVo 객체
-     * @param qitemExVo QitemExVo 객체
-     * @param model 모델객체
-     * @return String 화면경로
+     * @Title : selectChklstList
+     * @Description : 체크리스트 목록 조회
+     * @param chklstVo ChklstVo 객체
+     * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외
      */
-//    @RequestMapping(value = "/mng/qestnr/qitemUpdateForm.html")
-//    public String qitemUpdateForm(QitemVo qitemVo, QitemExVo qitemExVo, Model model) throws Exception {
-//        model.addAttribute("qitem", qestnrService.selectQitemInfo(qitemVo));
-//        model.addAttribute("qitemEx", qestnrService.selectQitemExList(qitemVo));
-//        return "mng/qestnr/qitemUpdate";
-//    }
-       
+    @RequestMapping(value = "/mng/chklst/selectChklstList.do")
+    @ResponseBody
+    public Map<String, Object> selectChklstList(ChklstVo chklstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<ChklstVo> result = chklstService.selectChklstList(chklstVo);
+             
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+         } else {
+             resultMap.put("totalCount", 0);
+         }
+        resultMap.put("list", result);
+        
+        return resultMap;
+    }
+    
     /**
-     * 설문지 등록
+     * 체크리스트 정보 업데이트
      *
-     * @Title : insertQestnr
-     * @Description : 설문지 등록
-     * @param qestnrVo QestnrVo 객체
+     * @Title : updateChklst
+     * @Description : 체크리스트 정보 업데이트
+     * @param chklstVo ChklstVo 객체
      * @param bindingResult qestnrVo 유효성 검증결과
      * @param user 사용자 세션 정보
      * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외
      */
-//    @RequestMapping(value = "/mng/qestnr/insertQestnr.do")
-//    @ResponseBody
-//    public Map<String, Object> insertQestnr(@Valid QestnrVo qestnrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<String, Object>();
-//                
-//        if(bindingResult.hasErrors()) {
-//            FieldError fieldError = bindingResult.getFieldError();
-//            if(fieldError != null) {
-//                resultMap.put("msg", fieldError.getDefaultMessage());
-//            }
-//            return resultMap;
-//        }
-//                
-//        int retVal = 0;
-//        qestnrVo.setUser(user);
-//        retVal = qestnrService.insertQestnr(qestnrVo);
-//        
-//        if(retVal > 0) {
-//            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-//            resultMap.put("msg", "등록에 성공하였습니다");
-//            resultMap.put("qestnrid", qestnrVo.getQestnrid());
-//        } else {
-//            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-//            resultMap.put("msg", "등록에 실패하였습니다");
-//        }
-//        
-//        return resultMap;
-//    }
-    
-    /**
-     * 설문지 목록 조회
-     *
-     * @Title : selectQestnrList
-     * @Description : 설문지 목록 조회
-     * @param qestnrVo QestnrVo 객체
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
-//    @RequestMapping(value = "/mng/qestnr/selectQestnrList.do")
-//    @ResponseBody
-//    public Map<String, Object> selectQestnrList(QestnrVo qestnrVo) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<>();
-//        List<QestnrVo> result = qestnrService.selectQestnrList(qestnrVo);
-//                    
-//        if(result.size() > 0) {
-//            resultMap.put("totalCount", (result.get(0).getTotalCount()));
-//        } else {
-//            resultMap.put("totalCount", 0);
-//        }
-//        resultMap.put("list", result);
-//            
-//        return resultMap;
-//    }
+    @RequestMapping(value = "/mng/chklst/updateChklst.do")
+    @ResponseBody
+    public Map<String, Object> updateChklst(@Valid ChklstVo chklstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
         
-    /**
-     * 설문지 정보 업데이트
-     *
-     * @Title : updateQestnr
-     * @Description : 설문지 정보 업데이트
-     * @param qestnrVo QestnrVo 객체
-     * @param bindingResult qestnrVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
-//    @RequestMapping(value = "/mng/qestnr/updateQestnr.do")
-//    @ResponseBody
-//    public Map<String, Object> updateQestnr(@Valid QestnrVo qestnrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<String, Object>();
-//            
-//        if(bindingResult.hasErrors()) {
-//            FieldError fieldError = bindingResult.getFieldError();
-//            if(fieldError != null) {
-//                resultMap.put("msg", fieldError.getDefaultMessage());
-//            }
-//            return resultMap;
-//        }
-//        
-//        int retVal = 0;
-//        qestnrVo.setUser(user);
-//        retVal = qestnrService.updateQestnr(qestnrVo);
-//        
-//        if(retVal > 0) {
-//            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-//            resultMap.put("msg", "수정에 성공하였습니다");
-//        } else {
-//            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-//            resultMap.put("msg", "수정에 실패하였습니다");
-//        }
-//            
-//        return resultMap;
-//    }
+        int retVal = 0;
+        chklstVo.setUser(user);
+        retVal = chklstService.updateChklst(chklstVo);
         
-    /**
-     * 설문지 문항 순서 업데이트
-     *
-     * @Title : updateQestnr
-     * @Description : 설문지 문항 순서 업데이트
-     * @param qestnrVo QestnrVo 객체
-     * @param bindingResult qitemVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
-//    @RequestMapping(value = "/mng/qestnr/updateQitemOrdr.do")
-//    @ResponseBody
-//    public Map<String, Object> updateQitemOrdr(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<String, Object>();
-//            
-//        if(bindingResult.hasErrors()) {
-//            FieldError fieldError = bindingResult.getFieldError();
-//            if(fieldError != null) {
-//                resultMap.put("msg", fieldError.getDefaultMessage());
-//            }
-//            return resultMap;
-//        }
-//        
-//        int retVal = 0;
-//        qitemVo.setUser(user);
-//        retVal = qestnrService.updateQitemOrdr(qitemVo);
-//        
-//        if(retVal > 0) {
-//            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-//            resultMap.put("msg", "순서 변경에 성공하였습니다");
-//        } else {
-//            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-//            resultMap.put("msg", "순서 변경에 실패하였습니다");
-//        }
-//            
-//        return resultMap;
-//    }
-    
-    /**
-     * 설문지 문항 삭제
-     *
-     * @Title : deleteQitem
-     * @Description : 설문지 문항 삭제
-     * @param qitemVo QitemVo 객체
-     * @param bindingResult qitemVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
-//    @RequestMapping(value = "/mng/qestnr/deleteQitem.do")
-//    @ResponseBody
-//    public Map<String, Object> deleteQitem(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<String, Object>();
-//            
-//        if(bindingResult.hasErrors()) {
-//            FieldError fieldError = bindingResult.getFieldError();
-//            if(fieldError != null) {
-//                resultMap.put("msg", fieldError.getDefaultMessage());
-//            }
-//            return resultMap;
-//        }
-//        
-//        int retVal = 0;
-//        retVal = qestnrService.deleteQitem(qitemVo);
-//        
-//        if(retVal > 0) {
-//            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-//            resultMap.put("msg", "삭제에 성공하였습니다");
-//        } else {
-//            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-//            resultMap.put("msg", "삭제에 실패하였습니다");
-//        }
-//            
-//        return resultMap;
-//    }
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
+            
+        return resultMap;
+    }
     
 }
