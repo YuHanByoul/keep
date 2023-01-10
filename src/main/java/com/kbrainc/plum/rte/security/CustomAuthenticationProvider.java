@@ -157,8 +157,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     throw new BadCredentialsException("Login Error !!");
                 }
                 
-                resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 역할 목록 조회
-                // 사용자 역할까지 부여
+                //resultList = securedObjectService.selectGrantedAuthority(loginid); // 사용자에게 부여된 관리자 역할 목록 조회
                 instid = (Integer) resultMap.get("INSTID");
                 Map<String, Object> roleMap = null;
                 String instUseYn = (String) resultMap.get("INST_USE_YN"); // 기관사용여부
