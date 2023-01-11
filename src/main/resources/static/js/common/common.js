@@ -5237,4 +5237,25 @@
         $($el).focus();
         setTimeout(function() { $($el).css("border","")}, 1000);
     }
+
+    /**
+     * jsGrid에서 sorting시 카멜케이스 포맷의 변수명을 언더스코어 포맷으로 변경
+     *
+     * @Description : jsGrid에서 sorting시 카멜케이스 포맷의 변수명을 언더스코어 포맷으로 변경
+     * @param sortField 정렬할 변수명
+     *
+     */
+    function mapCamelCaseToUnderscore(sortField) {
+        var result = "";
+        for (var i = 0; i < sortField.length; i++) {
+            if (sortField[i] === sortField[i].toUpperCase()) {
+                result += "_";
+                result += sortField[i].toLowerCase();
+            } else {
+                result += sortField[i];
+            }
+        }
+        return result;
+    }
+
 	
