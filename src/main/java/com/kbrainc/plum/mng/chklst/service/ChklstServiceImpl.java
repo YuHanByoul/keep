@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.mng.chklst.model.ChklstDao;
+import com.kbrainc.plum.mng.chklst.model.ChklstQitemMapngVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstVo;
 import com.kbrainc.plum.mng.code.model.CodeVo;
@@ -130,9 +131,9 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
       * 체크리스트 목록 조회
       *
       * @Title : selectChklstList
-      * @Description : 체크리스트 문항 구분코드 목록 조회
+      * @Description : 체크리스트 목록 조회
       * @param chklstVo ChklstVo 객체
-      * @return List<ChklstVo> 체크리스트 문항 목록
+      * @return List<ChklstVo> 체크리스트 목록
       * @throws Exception 예외
       */
      @Override
@@ -155,6 +156,20 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
      }
      
      /**
+      * 사용중인 체크리스트 여부 확인
+      *
+      * @Title : isUseChklst
+      * @Description : 사용중인 체크리스트 여부 확인
+      * @param chklstVo ChklstVo 객체
+      * @return ChklstVo ChklstVo 객체
+      * @throws Exception 예외
+      */
+     @Override
+     public ChklstVo isUseChklst(ChklstVo chklstVo) throws Exception {
+         return chklstDao.isUseChklst(chklstVo);
+     }
+     
+     /**
       * 체크리스트 업데이트
       *
       * @Title : updateChklst
@@ -169,6 +184,20 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
          retVal = chklstDao.updateChklst(chklstVo);        
               
          return retVal;
+     }
+     
+     /**
+      * 체크리스트 문항구성 목록 조회
+      *
+      * @Title : selectChklstQitemMapngList
+      * @Description : 체크리스트 문항구성 목록 조회
+      * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
+      * @return List<ChklstQitemMapngVo> 체크리스트 문항구성 목록
+      * @throws Exception 예외
+      */
+     @Override
+     public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
+         return chklstDao.selectChklstQitemMapngList(chklstQitemMapngVo);
      }
     
 }
