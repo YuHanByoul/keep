@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.model;
 import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -38,6 +39,8 @@ public class CarbonPrgrmgdVo extends ParentRequestVo {
     /** 지역구분_코드 */
     @NotEmpty(message = "지역구분을 선택해주십시오.")
     private String rgnCd;
+    /** 지역구분_코드명*/
+    private String rgnCdNm;
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;
@@ -59,7 +62,11 @@ public class CarbonPrgrmgdVo extends ParentRequestVo {
     /** 내용_STYLE */
     private String cnStyle;
     /** 내용 */
-    private String cn; 
+    private String cn;
+    /** 내용_요약 */
+    @NotEmpty(message = "요약 내용을 입력해주십시오.")
+    @Size(max = 200, message = "요약 내용은 200자 이하여야 합니다.")
+    private String cnSumry;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

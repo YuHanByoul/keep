@@ -9,12 +9,13 @@
     
     <!-- 프로그램안내관리 게시글 목록 조회 -->
     <select id="selectPrgrmgdList" parameterType="CarbonPrgrmgdVo" resultType="CarbonPrgrmgdVo">
-        /* PrgrmgdDao.selectPrgrmgdList */
+        /* CarbonPrgrmgdDao.selectPrgrmgdList */
         <include refid="PaginationMapper.header"/>
         SELECT
         	  A.PRGRMID
         	, A.CLSF_CD
         	, A.RGN_CD
+            , D.CD_NM AS RGNCDNM
         	, CONCAT(A.YR, '-' ,A.QU) AS YRQU
             , A.YR
             , A.QU
@@ -34,6 +35,7 @@
             TB_CMM_WBZN_PRGRM A
             LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
             LEFT OUTER JOIN TB_CMM_FILE C ON A.THMBN_FILEID = C.FILEID
+            LEFT OUTER JOIN TB_CMM_CD D ON A.RGN_CD = D.CD
         WHERE 
             1=1
             <if test="clsfCd != null and clsfCd != ''">
@@ -56,7 +58,7 @@
     
     <!-- 프로그램안내관리 게시글 등록 --> 
     <insert id="insertPrgrmgd" parameterType="CarbonPrgrmgdVo" keyProperty="CarbonPrgrmgdVo">
-        /* PrgrmgdDao.insertPrgrmgd */
+        /* CarbonPrgrmgdDao.insertPrgrmgd */
         INSERT INTO TB_CMM_WBZN_PRGRM (
             CLSF_CD
             , RGN_CD
@@ -75,6 +77,7 @@
             <if test="cn != null and cn != ''">
             , CN
             </if>
+            , CN_SUMRY
             , MDFCN_DT
             , MDFRID
             , REG_DT
@@ -97,6 +100,7 @@
             <if test="cn != null and cn != ''">
             ,#{cn}
             </if>
+            ,#{cnSumry}
             ,NOW()
             ,#{user.userid}
             ,NOW()
@@ -106,7 +110,7 @@
     
     <!-- 프로그램안내관리 상세조회 -->
     <select id="selectPrgrmgdInfo" parameterType="CarbonPrgrmgdVo" resultType="CarbonPrgrmgdVo"> 
-        /* PrgrmgdDao.selectPrgrmgdInfo */
+        /* CarbonPrgrmgdDao.selectPrgrmgdInfo */
         SELECT 
         	  A.PRGRMID
         	, A.CLSF_CD
@@ -123,6 +127,7 @@
             , A.TYPE_CD
         	, A.CN_STYLE
         	, A.CN
+            , A.CN_SUMRY
         FROM TB_CMM_WBZN_PRGRM A
         LEFT OUTER JOIN TB_CMM_FILE B ON A.THMBN_FILEID = B.FILEID
        WHERE PRGRMID = #{prgrmid}
@@ -130,7 +135,7 @@
     
     <!-- 프로그램안내관리 게시글 수정 -->
     <update id="updatePrgrmgd" parameterType="CarbonPrgrmgdVo" keyProperty="CarbonPrgrmgdVo">
-        /* PrgrmgdDao.updatePrgrmgd */
+        /* CarbonPrgrmgdDao.updatePrgrmgd */
         UPDATE TB_CMM_WBZN_PRGRM SET
                 RGN_CD              = #{rgnCd}
                 , YR                     = #{yr} 
@@ -148,6 +153,7 @@
                 <if test="cn != null and cn != ''">
                 , CN                     = #{cn}
                 </if>
+                , CN_SUMRY               = #{cnSumry}
                 , MDFCN_DT               = NOW() 
                 , MDFRID                 = #{user.userid}
          WHERE PRGRMID = #{prgrmid}

@@ -12,15 +12,7 @@
 		                <div class="mb-0 form-group required">
 		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>환경교육구분</strong></div>
 		                    <div class="col-sm-12">
-		                        <select name="rgnCd" id="rgnCd" class="form-select form-select-sm form-control-sm">
-		                        	<option value="">- 선택 -</option>
-			                        <option value="서울" th:selected="${prgrmgd.rgnCd == '서울'}">서울</option>
-			                        <option value="경기/인천" th:selected="${prgrmgd.rgnCd == '경기/인천'}">경기/인천</option>
-			                        <option value="강원/제주" th:selected="${prgrmgd.rgnCd == '강원/제주'}">강원/제주</option>
-			                        <option value="호남권" th:selected="${prgrmgd.rgnCd == '호남권'}">호남권</option>
-			                        <option value="충청권" th:selected="${prgrmgd.rgnCd == '충청권'}">충청권</option>
-			                        <option value="영남권" th:selected="${prgrmgd.rgnCd == '영남권'}">영남권</option>
-		                        </select>
+		                        <span kattr:select_code="rgnCd" name="rgnCd" id="rgnCd" grpCd="148" firstOptTxt="- 선택 -" th:attr="selectedCd=${prgrmgd.rgnCd}" addClass="input-sm" isAdmin="true">
 		                    </div>
 		                </div>
 		            </div>
@@ -115,10 +107,16 @@
 		                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용 style(css)" name="cnStyle" id="cnStyle" th:value="${prgrmgd.cnStyle}" th:text="${prgrmgd.cnStyle}"></textarea>
 		            </div>
 		        </div>
-		        <div class="mb-0 form-group row cn">
+		        <div class="mb-2 form-group row cn">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
 		            <div class="col-12">
 		                <textarea class="form-control form-control-sm" name="cn" id="cn"><th:block th:text="${prgrmgd.cn}"></th:block></textarea>
+		            </div>
+		        </div>
+		        <div class="mb-0 form-group row required">
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>요약 내용</strong></label>
+		            <div class="col-12">
+		                <input type="text" class="form-control form-control-sm" name="cnSumry" id="cnSumry" placeholder="요약 내용은 200자 이하여야 합니다." th:value="${prgrmgd.cnSumry}"/>
 		            </div>
 		        </div>
 		    </div>
@@ -132,6 +130,25 @@
 
 <script type="text/javascript">
 	init();
+	
+	var validator= $("#prgrmgdUpdateForm").validate({
+	    rules: {
+	    	rgnCd	   :	{ required: true }
+			,yr		   :	{ required: true }
+	    	,mm 	   :	{ required: true }  
+	     	,ttl   	   :	{ required: true }
+	     	,dt   	   : 	{ required: true }
+	     	,cnSumry   : 	{ required: true, maxlength: 200 }
+	    },
+	    messages: {
+	    	rgnCd  	 :   { required: "지역구분을 선택해주십시오." }
+	    	,yr		 :   { required: "연도를 선택해주십시오." }
+	    	,mm		 :   { required: "월을 선택해주십시오." }
+		    ,ttl   	 :   { required: "제목을 입력해주십시오." }
+		    ,dt   	 :   { required: "일시를 선택해주십시오." }
+		    ,cnSumry : 	 { required: "요약 내용을 입력해주십시오.", maxlength: "요약 내용은 200자 이하여야 합니다." }
+	    }
+	})
 	
 	var editor;
 	

@@ -8,7 +8,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import lombok.Data;
 
 /**
-* [클래스 요약].
+* 민간 환경교육단체 현황 Vo 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.pvtEnveduGrp.model
@@ -16,7 +16,7 @@ import lombok.Data;
 * </pre>
 *
 * @ClassName : PvtEnvEduGrpVo
-* @Description : TODO
+* @Description : 민간 환경교육단체 현황 Vo 클래스
 * @author : JD
 * @date : 2023. 1. 4.
 * @Version :
@@ -25,13 +25,21 @@ import lombok.Data;
 @Data
 public class PvtEnvEduGrpVo extends ParentRequestVo {
 
+    /** 기관 아이디 */
     private int instid;
+    /** 지역_코드 */
     private String rgnCd;
+    /** 기관명 */
     private String instNm;
+    /** 기관_유형 */
     private String cdNm;
+    /** 대표자명 */
     private String rprsvNm;
+    /** 전화번호 */
     private String telno;
+    /** 홈페이지 */
     private String hmpg;
+    /** 등록일 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
     

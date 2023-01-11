@@ -389,7 +389,8 @@
                  CASE WHEN FXD_NTC_YN = 'Y' THEN 1
                       ELSE 2
                   END AS FIXORDER ,
-                A.MDFCN_DT
+                A.MDFCN_DT,
+                D.NM
             FROM 
                 TB_CMM_PST A
                 INNER JOIN 
@@ -403,6 +404,9 @@
                          TB_CMM_CMNT 
                      GROUP BY PSTID
                 ) C ON  A.PSTID =C.PSTID
+                INNER JOIN
+                    TB_CMM_USER D
+                ON A.RGTRID = D.USERID
             WHERE 1=1
            -- AND A.DEL_YN = 'N'
             <if test="bbsid != null and bbsid != 0">
@@ -417,9 +421,13 @@
             <if test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchType) and @com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(searchKeyword)">
             AND (A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%'))
             </if>
+            <if test="searchSite != null and searchSite != ''">
+            AND A.SITEID = #{searchSite}
+            </if>
             <if test='user.roleInfo.trgtInstCd == "S"'>
             AND A.SITEID = #{user.instid}
             </if>
+
 
             <!--관리자에서는 고정공지 기간이 지나도 보이도록-->            
             <!-- <if test='fxdNtcUseYn == "Y"'>

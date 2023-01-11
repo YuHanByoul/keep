@@ -32,6 +32,7 @@ import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
@@ -75,9 +76,8 @@ public class CommonController {
     * @return ModelAndView 모델뷰객체
     */
     @GetMapping("/")
-    public ModelAndView login(HttpServletRequest request, HttpSession session, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout) {
+    public ModelAndView login(HttpServletRequest request, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout) {
         ModelAndView mav = new ModelAndView();
-        UserVo user = (UserVo) session.getAttribute("user");
 
         if (user != null) {
             String serverHttpPortStr = "";
@@ -91,8 +91,7 @@ public class CommonController {
             return mav;
         }   
         
-        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        String sysSeCd = siteInfo.getSysSeCd();
+        String sysSeCd = site.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             mav.setViewName("mng/login");
@@ -153,9 +152,8 @@ public class CommonController {
     * @return String 이동화면경로
     */
     @GetMapping("/main.html")
-    public String mainPage(Model model, PstVo pstVo, @UserInfo UserVo user, HttpSession session) {
-        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
-        String sysSeCd = siteInfo.getSysSeCd();
+    public String mainPage(Model model, PstVo pstVo, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, HttpSession session) {
+        String sysSeCd = site.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             return "mng/main";
@@ -217,7 +215,7 @@ public class CommonController {
                     ArrayList<GrantedAuthority> authorities = new ArrayList<>();
                     authorities.add(new SimpleGrantedAuthority(afterRoleid));
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
-                    RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("se_cd"), (String)authority.get("trgt_inst_cd"), (String)authority.get("trgt_rgn_cd"));
+                    RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("knd_cd"), (String)authority.get("se_cd"), (String)authority.get("trgt_inst_cd"), (String)authority.get("trgt_rgn_cd"));
                     user.setRoleInfo(roleInfo);
                     break;
                 }
