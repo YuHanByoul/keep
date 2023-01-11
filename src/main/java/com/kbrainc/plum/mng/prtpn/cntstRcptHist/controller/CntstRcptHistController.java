@@ -1,17 +1,23 @@
 package com.kbrainc.plum.mng.prtpn.cntstRcptHist.controller;
 
+import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstRcptHistVO;
+import com.kbrainc.plum.mng.prtpn.cntstRcptHist.service.CntstRcptHistService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * 공모전 접수 내역 컨트롤러
  *
  * <pre>
- * com.kbrainc.plum.mng.prtpn.cntstRcptHist.controller
+ * com.kbrainc.plum.mng.prtpn.cntst.controller
  * - CntstRcptHistController.java
  * </pre>
  *
@@ -22,100 +28,76 @@ import javax.servlet.http.HttpServletRequest;
  * @Version :
  * @Company : Copyright&copy; KBRAIN Company. All Rights Reserved
  */
+
 @Controller
 public class CntstRcptHistController {
 
+    @Autowired
+    CntstRcptHistService cntstRcptHistService;
+
+
     /**
-     * 공모전 등록
-     * Title : cntstListForm
-     * Description : 공모전 등록
+     * 공모전 접수내역
+     * Description : 공모전 접수내역
      *
-     * @param model
-     * @param request
      * @return string
-     * @throws Exception
      */
-    @RequestMapping(value = "/mng/prtpn/cntst/cntstListForm.html")
-    public String cntstListForm(Model model, HttpServletRequest request) throws Exception {
-        return "mng/prtpn/cntst/cntstList";
+    @RequestMapping(value = "/mng/prtpn/cntstRcptHist/cntstRcptHistListForm.html")
+    public String cntstRcptHistListForm() {
+        return "mng/prtpn/cntstRcptHist/cntstRcptHistList";
     }
 
     /**
-     * 공모전 목록 조회
-     * Title : selectCntstList
-     * Description : 공모전 목록 조회
+     * 공모전 접수내역 목록 조회
+     * Title : selectCntstRcptHistList
+     * Description : 공모전 접수내역 목록 조회
      *
-     * @param model
-     * @param request
-     * @return string
-     * @throws Exception
+     * @param cntstRcptHistVO
+     * @return map
      */
-    @RequestMapping(value = "/mng/prtpn/cntst/selectCntstList.do")
+    @RequestMapping(value = "/mng/prtpn/cntstRcptHist/selectCntstRcptHistList.do")
     @ResponseBody
-    public String selectCntstList(Model model, HttpServletRequest request) throws Exception {
-        return "";
+    public Map<String, Object> selectCntstRcptHistList(CntstRcptHistVO cntstRcptHistVO) {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<CntstRcptHistVO> result = null;
+        result =  cntstRcptHistService.selectCntstRcptHistList(cntstRcptHistVO);
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+        return resultMap;
     }
 
     /**
-     * 공모전 등록 화면
-     * Title : cntstInsertForm
-     * Description : 공모전 등록 화면
+     * 공모전 접수내역 목록 엑셀 다운
+     * Title : cntstRcptHistListExcelDown
+     * Description : 공모전 접수내역 목록 엑셀 다운
      *
-     * @param model
-     * @param request
      * @return string
-     * @throws Exception
      */
-    @RequestMapping(value = "/mng/prtpn/cntst/cntstInsertForm.html")
-    public String cntstInsertForm(Model model, HttpServletRequest request) throws Exception {
-        return "mng/prtpn/cntst/cntstForm";
-    }
-
-
-    /**
-     * 공모전 수정 화면
-     * Title : cntstUpdateForm
-     * Description : 공모전 수정 화면
-     *
-     * @param model
-     * @param request
-     * @return string
-     * @throws Exception
-     */
-    @RequestMapping(value = "/mng/prtpn/cntst/cntstUpdateForm.html")
-    public String cntstUpdateForm(Model model, HttpServletRequest request) throws Exception {
-        return "mng/prtpn/cntst/cntstUpdate";
-    }
-
-    /**
-     * 공모전 등록 기능
-     * Title : insertCntst
-     * Description : 공모전 등록 기능
-     *
-     * @param model
-     * @param request
-     * @return string
-     * @throws Exception
-     */
-    @RequestMapping(value = "/mng/prtpn/cntst/insertCntst.do")
+    @RequestMapping(value = "/mng/prtpn/cntstRcptHist/cntstRcptHistListExcelDown.do")
     @ResponseBody
-    public String insertCntst(Model model, HttpServletRequest request) throws Exception {
-        return "";
+    public Map<String, Object> cntstRcptHistListExcelDown() {
+        return null;
     }
 
     /**
-     * 공모전 수정 기능
-     * Title : updateCntst
-     * Description : 공모전 수정 기능
+     * 공모전 접수내역 조회
+     * Title : cntstRcptHistView
+     * Description : 공모전 접수내역 조회
      *
+     * @param aplyid
      * @param model
-     * @param request
      * @return string
-     * @throws Exception
      */
-    @RequestMapping(value = "/mng/prtpn/cntst/updateCntst.do")
-    @ResponseBody
-    public String updateCntst(Model model, HttpServletRequest request) throws Exception {
-        return "";
+    @RequestMapping(value = "/mng/prtpn/cntstRcptHist/cntstRcptHistView.html")
+    public String cntstRcptHistView(Integer aplyid, ModelMap model) {
+        CntstRcptHistVO cntstRcptHistVO = cntstRcptHistService.selectCntstRcptHistInfo(aplyid);
+        model.addAttribute("cntstRcptHistVO", cntstRcptHistVO);
+        return "mng/prtpn/cntstRcptHist/cntstRcptHistDetail";
     }
+
+
 }

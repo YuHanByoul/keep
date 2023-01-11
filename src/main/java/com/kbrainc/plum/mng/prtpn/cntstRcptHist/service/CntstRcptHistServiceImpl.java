@@ -1,7 +1,10 @@
 package com.kbrainc.plum.mng.prtpn.cntstRcptHist.service;
 
+import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstRcptHistVO;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 공모전 접수 이력 서비스 구현 클래스
@@ -20,4 +23,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CntstRcptHistServiceImpl extends PlumAbstractServiceImpl implements CntstRcptHistService {
+    @Override
+    public List<CntstRcptHistVO> selectCntstRcptHistList(CntstRcptHistVO cntstRcptHistVO) {
+        return null;
+    }
+
+    @Override
+    public CntstRcptHistVO selectCntstRcptHistInfo(Integer aplyid) {
+        return null;
+    }
 }
