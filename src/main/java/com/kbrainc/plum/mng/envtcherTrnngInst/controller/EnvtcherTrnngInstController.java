@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
 import com.kbrainc.plum.mng.envtcherTrnngInst.service.EnvtcherTrnngInstService;
-import com.kbrainc.plum.mng.pvtEnveduGrp.model.PvtEnvEduGrpVo;
-import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
-* [클래스 요약].
+* 환경교육사 양성기관 현황 컨트롤러 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.envtcherTrnngInst.controller
@@ -31,7 +31,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 * </pre>
 *
 * @ClassName : EnvtcherTrnngInstController
-* @Description : TODO
+* @Description : 환경교육사 양성기관 현황 컨트롤러 클래스
 * @author : JD
 * @date : 2023. 1. 6.
 * @Version :
@@ -43,33 +43,92 @@ public class EnvtcherTrnngInstController {
     @Autowired
     private EnvtcherTrnngInstService envtcherTrnngInstService;
     
+    /**
+    * 환경교육사 양성기관 현황으로 이동
+    *
+    * @Title : envtcherTrnngInstListForm
+    * @Description : 환경교육사 양성기관 현황으로 이동
+    * @param model 객체
+    * @param envtcherTrnngInstVo 객체
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/envtcherTrnngInstListForm.html")
-    public String envtcherTrnngInstListForm() throws Exception {
+    public String envtcherTrnngInstListForm(Model model, EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
+        List<EnvtcherTrnngInstVo> result = null;
+        result =  envtcherTrnngInstService.selectAddrCtpvnList(envtcherTrnngInstVo);
+        model.addAttribute("ctprvn", result);
         
         return "/mng/envtcherTrnngInst/envtcherTrnngInstList";
     }
     
+    /**
+    * 환경교육사 양성기관 등록으로 이동
+    *
+    * @Title : envtcherTrnngInstInsertForm
+    * @Description : 환경교육사 양성기관 등록으로 이동
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/envtcherTrnngInstInsertForm.html")
     public String envtcherTrnngInstInsertForm() throws Exception {
-        
         return "/mng/envtcherTrnngInst/envtcherTrnngInstInsertForm";
     }
     
+    /**
+    * 기관검색 팝업으로 이동
+    *
+    * @Title : instSearchPopup
+    * @Description : 기관검색 팝업으로 이동
+    * @param model 객체
+    * @param request 객체
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/instSearchPopup.html")
-    public String instSearchPopup() throws Exception {
+    public String instSearchPopup(Model model, HttpServletRequest request) throws Exception {
+        String instNm = request.getParameter("instNm");
+        model.addAttribute("instNm", instNm);
         
         return "mng/envtcherTrnngInst/instSearchPopup";
     }
     
+    /**
+    * 환경교육사 양성기관 수정화면으로 이동
+    *
+    * @Title : envtcherTrnngInstUpdateForm
+    * @Description : 환경교육사 양성기관 수정화면으로 이동
+    * @param model 객체
+    * @param envtcherTrnngInstVo 객체
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/envtcherTrnngInstUpdateForm.html")
     public String envtcherTrnngInstUpdateForm(Model model, EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
         EnvtcherTrnngInstVo result = null;
         result =  envtcherTrnngInstService.selectEnvtcherTrnngInstInfo(envtcherTrnngInstVo);
         model.addAttribute("envtcherTrnngInst", result);
         
+        if(envtcherTrnngInstVo.getThmbnFileid() != 0 && result.getFileIdntfcKey() != null) {
+            StringBuffer fileBtn = new StringBuffer();
+            fileBtn.append("<div class ='label label-inverse text-white' id='" + envtcherTrnngInstVo.getThmbnFileid() + "'>");
+            fileBtn.append("<a href=javascript:downloadFileByFileid('" + envtcherTrnngInstVo.getThmbnFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            fileBtn.append("<a href=javascript:fn_deleteFileList('" + envtcherTrnngInstVo.getThmbnFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            model.addAttribute("fileBtn", fileBtn);
+        }
+        
         return "/mng/envtcherTrnngInst/envtcherTrnngInstUpdate";
     }
     
+    /**
+    * 환경교육사 양성기관 목록 조회
+    *
+    * @Title : selectEnvtcherTrnngInstList
+    * @Description : 환경교육사 양성기관 목록 조회
+    * @param envtcherTrnngInstVo 객체
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/selectEnvtcherTrnngInstList.do")
     @ResponseBody
     public Map<String, Object> selectEnvtcherTrnngInstList(EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
@@ -88,6 +147,17 @@ public class EnvtcherTrnngInstController {
         return resultMap;
     }
     
+    /**
+    * 환경교육사 양성기관 등록 기능
+    *
+    * @Title : insertEnvtcherTrnngInst
+    * @Description : 환경교육사 양성기관 등록 기능
+    * @param envtcherTrnngInstVo 객체
+    * @param bindingResult 유효성 검증 결과
+    * @param user 유저 세션정보
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/insertEnvtcherTrnngInst.do")
     @ResponseBody
     public Map<String, Object> insertEnvtcherTrnngInst(@Valid EnvtcherTrnngInstVo envtcherTrnngInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -118,6 +188,17 @@ public class EnvtcherTrnngInstController {
         return resultMap;
     }
     
+    /**
+    * 환경교육사 양성기관 수정 기능
+    *
+    * @Title : updateEnvtcherTrnngInst
+    * @Description : 환경교육사 양성기관 수정 기능
+    * @param envtcherTrnngInstVo 객체
+    * @param bindingResult 유효성 검증 결과
+    * @param user 유저 세션정보
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/envtcherTrnngInst/updateEnvtcherTrnngInst.do")
     @ResponseBody
     public Map<String, Object> updateEnvtcherTrnngInst(@Valid EnvtcherTrnngInstVo envtcherTrnngInstVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -147,4 +228,20 @@ public class EnvtcherTrnngInstController {
 
         return resultMap;
     }
+    
+    /**
+    * 엑셀다운로드
+    *
+    * @Title : envtcherTrnngInstExcelDownload
+    * @Description : 엑셀다운로드
+    * @param request 객체
+    * @param response 객체
+    * @param envtcherTrnngInstVo 객체
+    * @throws Exception 예외
+    * @return void
+    */
+    @RequestMapping(value = "/mng/envtcherTrnngInst/envtcherTrnngInstExcelDownload.do")
+    public void envtcherTrnngInstExcelDownload(HttpServletRequest request, HttpServletResponse response, EnvtcherTrnngInstVo envtcherTrnngInstVo) throws Exception {
+        envtcherTrnngInstService.envtcherTrnngInstExcelDownload(request, response, envtcherTrnngInstVo);
+    } 
 }

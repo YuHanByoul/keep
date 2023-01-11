@@ -38,6 +38,8 @@ public class CarbonEnveduVo extends ParentRequestVo {
     /** 환경교육_구분_코드 */
     @NotEmpty(message = "환경교육구분을 선택해주십시오.")
     private String enveduSeCd;
+    /** 환경교육_구분_코드명 */
+    private String enveduSeCdNm;
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;

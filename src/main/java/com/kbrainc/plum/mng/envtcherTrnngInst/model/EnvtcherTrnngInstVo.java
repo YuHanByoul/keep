@@ -9,7 +9,7 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* [클래스 요약].
+* 환경교육사 양성기관 현황 Vo 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.envtcherTrnngInst.model
@@ -17,7 +17,7 @@ import lombok.Data;
 * </pre>
 *
 * @ClassName : EnvtcherTrnngInstVo
-* @Description : TODO
+* @Description : 환경교육사 양성기관 현황 Vo 클래스
 * @author : JD
 * @date : 2023. 1. 6.
 * @Version :
@@ -38,6 +38,8 @@ public class EnvtcherTrnngInstVo extends ParentRequestVo {
     private String instNm;
     /** 등급_코드 */
     private String grdCd;
+    /** 등급_코드명 */
+    private String grdCdNm;
     /** 지정_일자 */
     private String dsgnDe;
     /** 기관_유형_코드 */
@@ -78,12 +80,20 @@ public class EnvtcherTrnngInstVo extends ParentRequestVo {
     private int rgtrid;
     
     
-    /** 구분 코드(공통코드) */
-    private int cd;
-    private String cdNm;
-    
     /** 지역 코드(공통코드) */
     private int ctprvnCd;
     private String ctprvnNm;
+    
+    /** 첨부파일 관련 */
+    private String filegrpid;
+    private String fileIdntfcKey;
+    private String orginlFileNm;
+    
+    /** 검색 영역*/
+    private String searchSido;      //시도
+    private String searchInstNm;    //기관명
+    private String searchGrdCd;     //양성기관 등급
+    private String startDt;         //지정일-검색시작일
+    private String endDt;           //지정일-검색종료일
 
 }

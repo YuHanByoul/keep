@@ -11,12 +11,12 @@
 		        <div class="col-12 col-lg-6 mb-2 mb-lg-0">
 		            <div class="mb-0 form-group required">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>기관</strong></label>
-		                <div class="col-12 row">
-		                    <div class="col-8">
+		                <div class="d-flex">
+		                    <div class="col">
 		                        <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="기관" th:value="${envtcherTrnngInst.instNm}"/>
 		                        <input type="hidden" name="instid" id="instid" th:value="${envtcherTrnngInst.instid}"/>
 		                    </div>
-		                    <div class="col-4 btn-group-sm">
+		                    <div class="btn-group-sm ps-2">
 		                        <button type="button" class="btn btn-inverse" onclick="fn_openInstSearchModal();">
 		                            기관검색
 		                        </button>
@@ -123,9 +123,23 @@
 		            <label class="col-form-label p-t-0 pb-1"><strong>썸네일 이미지</strong></label>
 		            <strong>(권장 사이즈 : 000x000)</strong>
 		        </div>
-		        <div class="col-12">
-		            <input type="file" class="form-control form-control-sm"/>
-		        </div>
+				<div class="col-sm-12">
+				    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
+				    <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" th:value="${envtcherTrnngInst.filegrpid}">
+				    <input type="hidden" name="thmbnFileid" id="thmbnFileid" th:value="${envtcherTrnngInst.thmbnFileid}">		                    
+				</div>
+				<div class="mt-2 row">
+				    <div class="col-auto">
+	                   	<th:block th:if="${fileBtn}">
+	                       <div id="fileUploadSuccess" th:utext="${fileBtn}">
+	                       </div>
+                        </th:block>
+           		    	<th:block th:unless="${fileBtn}">
+	                       <div id="fileUploadSuccess">
+	                       </div>
+                    	</th:block>
+				    </div>
+				</div>
 		    </div>
 		</div>
 	    <div class="card-block-small">
@@ -139,10 +153,10 @@
 
 <div class="modal fade" id="instSearchPopup" data-bs-backdrop="static"></div>
 <script th:inline="javascript">
-	var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html";
 	var instSearchAddModal;
 	
 	fn_openInstSearchModal = () => {
+		var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html?instNm=" + $("#instNm").val();
 		$("#instSearchPopup").load(instSearchPopupUrl, function(response, status, xhr) {
 			if (status == "success") {
 				instSearchAddModal = new bootstrap.Modal($('#instSearchPopup'));
@@ -168,16 +182,16 @@
 	    }
 	})
 	
-		$('#thmbnFile').change(function(event) {
+	$('#thmbnFile').change(function(event) {
 	    var formData = new FormData();
 	    var objFile = event.target;
 	    var content = "";
-
+	
 	    formData.append("file", objFile.files[0]);
 	    formData.append("filegrpNm", "envtcher_thmbn_file");
 	    if($('#thmbnFilegrpid').val() != '')
 	        formData.append("filegrpid", $('#thmbnFilegrpid').val());
-
+	
 	    if(displayWorkProgress()){
 		    $.ajax({
 		        url : '/uploadFile.do',
@@ -200,7 +214,7 @@
 		    });
 		    $("#thmbnFile").val("");
 		}
-
+	
 	    event.preventDefault();
 
 	});
@@ -252,7 +266,7 @@
 				success : function (data){
 					if(data.result=="success"){
 						alert(data.msg);
-						gridHelper1.resetListContent();
+						gridHelper1.resetPageContent();
 					}else{
 						alert(data.msg);
 					}

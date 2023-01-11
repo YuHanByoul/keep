@@ -14,7 +14,8 @@
         SELECT
         	  A.ENVEDUID
         	, A.CLSF_CD
-        	, A.ENVEDU_SE_CD
+        	, A.ENVEDU_SE_CD AS ENVEDUSECD
+            , D.CD_NM AS ENVEDUSECDNM
             , CONCAT(A.YR, '-' ,A.QU) AS YRQU
             , A.YR
             , A.QU
@@ -27,13 +28,14 @@
         	, A.CN
         	, A.MDFCN_DT
         	, A.MDFRID
-        	, A.REG_DT
+        	, A.REG_DT AS REGDT
         	, A.RGTRID
             , B.NM
         FROM 
             TB_CMM_WBZN_ENVEDU A
             LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
             LEFT OUTER JOIN TB_CMM_FILE C ON A.THMBN_FILEID = C.FILEID
+            LEFT OUTER JOIN TB_CMM_CD D ON A.ENVEDU_SE_CD = D.CD
         WHERE 
             1=1
             <if test="clsfCd != null and clsfCd != ''">

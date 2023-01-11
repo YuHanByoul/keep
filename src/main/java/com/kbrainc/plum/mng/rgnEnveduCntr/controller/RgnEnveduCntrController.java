@@ -27,7 +27,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 *
 * <pre>
 * com.kbrainc.plum.mng.rgnEnveduCntr.controller
-* - EnveduCntrController.java
+* - RgnEnveduCntrController.java
 * </pre>
 *
 * @ClassName : RgnEnveduCntrController
