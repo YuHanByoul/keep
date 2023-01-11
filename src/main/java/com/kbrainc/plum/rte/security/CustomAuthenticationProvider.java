@@ -125,6 +125,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 roleMap = new HashMap<String, Object>();
                 roleMap.put("ROLEID", sysPersonRoleid);
                 roleMap.put("NM", "개인회원");
+                roleMap.put("KND_CD", "U");
                 roleMap.put("SE_CD", "U");
                 resultList.add(roleMap);
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
@@ -176,6 +177,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                         roleMap = new HashMap<String, Object>();
                         roleMap.put("ROLEID", sysCompanyRoleid);
                         roleMap.put("NM", "기관회원");
+                        roleMap.put("KND_CD", "O");
                         roleMap.put("SE_CD", "U");
                         resultList.add(roleMap);
                     }
@@ -189,6 +191,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 roleMap = new HashMap<String, Object>();
                 roleMap.put("ROLEID", sysPersonRoleid);
                 roleMap.put("NM", "개인회원");
+                roleMap.put("KND_CD", "U");
                 roleMap.put("SE_CD", "U");
                 resultList.add(roleMap);
                 
@@ -261,7 +264,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 }
                 
                 if (grantedRole) {
-                    RoleInfoVo roleInfo = new RoleInfoVo(roleid, nm, seCd, trgtInstCd, trgtRgnCd);
+                    RoleInfoVo roleInfo = new RoleInfoVo(roleid, nm, kndCd, seCd, trgtInstCd, trgtRgnCd);
                     user.setRoleInfo(roleInfo);
                 }
             }
@@ -281,6 +284,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 authority = new HashMap<String, String>();
                 authority.put("roleid", roleid); // 역할ID
                 authority.put("nm", nm); // 역할명
+                authority.put("knd_cd", kndCd); // 종류_코드
                 authority.put("se_cd", seCd); // 구분_코드
                 authority.put("trgt_inst_cd", trgtInstCd); // 대상_기관_코드
                 authority.put("trgt_rgn_cd", trgtRgnCd); // 대상_지역_코드

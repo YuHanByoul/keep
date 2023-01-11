@@ -28,6 +28,8 @@ public class RoleInfoVo extends ParentVo implements Serializable {
     private String roleid;
     /** 이름 */
     private String nm;
+    /** 종류_코드 */
+    private String kndCd;
     /** 구분_코드 */
     private String seCd;
     /** 대상_기관_코드 */
