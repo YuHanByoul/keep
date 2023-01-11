@@ -235,8 +235,10 @@ public class FileController {
 
         Resource resource = fileStorageService.loadFileAsResource(fileVo);
 
-        // 파일다운로드 횟수 udpate
-        fileService.updateFileDwnldCntPlusOne(fileVo);
+        if (!"/downloadLogo.do".equals(request.getRequestURI())) {
+            // 파일다운로드 횟수 udpate
+            fileService.updateFileDwnldCntPlusOne(fileVo);
+        }
         
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
