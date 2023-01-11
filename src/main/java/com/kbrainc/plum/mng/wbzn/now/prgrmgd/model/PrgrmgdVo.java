@@ -38,6 +38,8 @@ public class PrgrmgdVo extends ParentRequestVo {
     /** 지역구분_코드 */
     @NotEmpty(message = "지역구분을 선택해주십시오.")
     private String rgnCd;
+    /** 지역구분_코드명*/
+    private String rgnCdNm;
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;

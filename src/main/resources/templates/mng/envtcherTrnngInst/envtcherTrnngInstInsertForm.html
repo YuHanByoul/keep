@@ -7,15 +7,15 @@
 		<!-- Tab Container Start -->
 		<div class="card-block-small p-t-0">
 		    <div class="mb-2 row">
-		        <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+		        <div class="col-lg-6 mb-2 mb-lg-0">
 		            <div class="mb-0 form-group required">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>기관</strong></label>
-		                <div class="col-12 row">
-		                    <div class="col-8">
-		                        <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="기관"/>
+		                <div class="d-flex">
+		                    <div class="col">
+		                        <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="기관명"/>
 		                        <input type="hidden" name="instid" id="instid"/>
 		                    </div>
-		                    <div class="col-4 btn-group-sm">
+		                    <div class="btn-group-sm ps-2">
 		                        <button type="button" class="btn btn-inverse" onclick="fn_openInstSearchModal();">
 		                            기관검색
 		                        </button>
@@ -23,7 +23,7 @@
 		                </div>
 		            </div>
 		        </div>
-		        <div class="col-12 col-lg-6">
+		        <div class="col-lg-6">
 		            <div class="mb-0 form-group required">
 		                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역</strong></div>
 							<div class="row">
@@ -49,7 +49,7 @@
 		        </div>
 		        <div class="col-12 col-lg-6">
 		            <div class="mb-0 form-group required">
-		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="agencySelectDate"><strong>양성기관 지정일</strong></label>
+		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="dsgnDe"><strong>양성기관 지정일</strong></label>
 		                <div class="col-12">
 		                    <input type="date" class="form-control form-control-sm col-auto" name="dsgnDe" id="dsgnDe"/>
 		                </div>
@@ -61,7 +61,7 @@
 		            <div class="mb-0 form-group required">
 		                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instTypeCdNm"><strong>기관유형</strong></label>
 		                <div class="col-12">
-							<input type="text" class="form-control form-control-sm" name="instTypeNm" id="instTypeNm" placeholder="기관유형" readonly/>
+							<input type="text" class="form-control form-control-sm" name="instTypeCdNm" id="instTypeCdNm" placeholder="기관유형" readonly/>
 							<input type="hidden" name="instTypeCd" id="instTypeCd"/>
 		                </div>
 		            </div>
@@ -123,17 +123,17 @@
 		            <strong>(권장 사이즈 : 000x000)</strong>
 		        </div>
 		
-		                <div class="col-sm-12">
-		                    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
-                            <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid" value="0">
-                            <input type="hidden" name="thmbnFileid" id="thmbnFileid" value="0">		                    
-		                </div>
-		                <div class="mt-2 row">
-		                    <div class="col-auto">
-		                        <div id="fileUploadSuccess">
-		                        </div>
-		                    </div>
-		                </div>
+				<div class="col-sm-12">
+				    <input type="file" class="form-control form-control-sm" id="thmbnFile" name="thmbnFile"/>
+				    <input type="hidden" name="thmbnFilegrpid" id="thmbnFilegrpid">
+				    <input type="hidden" name="thmbnFileid" id="thmbnFileid">		                    
+				</div>
+				<div class="mt-2 row">
+				    <div class="col-auto">
+				        <div id="fileUploadSuccess">
+				        </div>
+				    </div>
+				</div>
 		    </div>
 		</div>
 	    <div class="card-block-small">
@@ -147,10 +147,10 @@
 
 <div class="modal fade" id="instSearchPopup" data-bs-backdrop="static"></div>
 <script th:inline="javascript">
-	var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html";
 	var instSearchAddModal;
 	
 	fn_openInstSearchModal = () => {
+		var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html?instNm=" + $("#instNm").val();
 		$("#instSearchPopup").load(instSearchPopupUrl, function(response, status, xhr) {
 			if (status == "success") {
 				instSearchAddModal = new bootstrap.Modal($('#instSearchPopup'));
@@ -161,31 +161,33 @@
 
 	var validator= $("#envtcherTrnngInstInsertForm").validate({
 	    rules: {
-	    	seCd	:   { required: true }  
-	    	,rgnCd  :   { required: true }  
-	    	,cntrNm : 	{ required: true }
-	    	,instNm : 	{ required: true }  
-	     	,hmpg   : 	{ required: true }
+	    	instNm		 :  { required: true }
+	    	,grdCd  	 :  { required: true }
+	    	,dsgnDe 	 :  { required: true }  
+	     	,hmpg   	 : 	{ required: true }
+	     	,fxno   	 : 	{ required: true }
+	     	,thmbnFile   : 	{ required: true }
 	    },
 	    messages: {
-	    	seCd    :   { required: "구분을 선택해주십시오." }  
-	    	,rgnCd  :   { required: "시도를 선택해주십시오." }
-    	    ,cntrNm :   { required: "센터명을 입력해주십시오."  }
-	    	,instNm :   { required: "기관명을 입력해주십시오." }
-		    ,hmpg   :   { required: "홈페이지를 입력해주십시오." }
+	    	instNm  	 :   { required: "기관명을 검색 후 선택해주십시오." }
+    	    ,grdCd		 :   { required: "양성기관 등급을 선택해주십시오." }
+	    	,dsgnDe		 :   { required: "양성기관 지정일를 선택해주십시오." }
+		    ,hmpg   	 :   { required: "홈페이지를 입력해주십시오." }
+		    ,fxno   	 :   { required: "팩스번호를 입력해주십시오." }
+		    ,thmbnFile   : 	 { required: "썸네일 이미지를 첨부해주십시오." }
 	    }
 	})
 	
-		$('#thmbnFile').change(function(event) {
+	$('#thmbnFile').change(function(event) {
 	    var formData = new FormData();
 	    var objFile = event.target;
 	    var content = "";
-
+	
 	    formData.append("file", objFile.files[0]);
 	    formData.append("filegrpNm", "envtcher_thmbn_file");
 	    if($('#thmbnFilegrpid').val() != '')
 	        formData.append("filegrpid", $('#thmbnFilegrpid').val());
-
+	
 	    if(displayWorkProgress()){
 		    $.ajax({
 		        url : '/uploadFile.do',
@@ -206,9 +208,8 @@
 				    closeWorkProgress();
 		        }
 		    });
-		    $("#thmbnFile").val("");
 		}
-
+	
 	    event.preventDefault();
 
 	});
@@ -245,6 +246,11 @@
 	};
 	
  	function fn_insertEnvtcherTrnngInst(){
+ 		if($("#instid").val() == '') {
+ 			$("#instNm").val('');
+ 			if(!($("#envtcherTrnngInstInsertForm").valid())) return;
+ 		}
+ 		
 	 	if(!($("#envtcherTrnngInstInsertForm").valid())) return;
 
   	 	if(!confirm("저장하시겠습니까?")) return;
