@@ -1,5 +1,11 @@
 package com.kbrainc.plum.rte.menu;
 
+import java.util.Locale;
+
+import org.springframework.context.i18n.LocaleContextHolder;
+
+import com.kbrainc.plum.rte.util.StringUtil;
+
 import lombok.Data;
 
 /**
@@ -44,6 +50,8 @@ public class MenuItem {
     private String prgrmid;
     /* 메뉴명 */
     private String nm;
+    /* 영문 메뉴명 */
+    private String nmEngl;
     /* 메뉴설명 */
     private String dc;
     /* 메뉴타입코드 */
@@ -84,4 +92,12 @@ public class MenuItem {
     private String ptypeCd;
     /** 메뉴아이콘 클래스명 */
     private String classNm;
+    
+    public String getNm() {
+        Locale locale = LocaleContextHolder.getLocale();
+        if (locale.toLanguageTag().equals("en") && !"".equals(StringUtil.nvl(this.nmEngl))) {
+            return this.nmEngl;
+        }
+        return nm;
+    }
 }

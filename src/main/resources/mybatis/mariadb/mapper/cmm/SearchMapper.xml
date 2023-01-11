@@ -8,6 +8,12 @@
 <mapper namespace="SearchMapper">
     <sql id="instLmtCondition">
         <choose>
+            <when test='user == null'><!-- 미로그인 -->
+                
+            </when>
+            <when test='user.roleInfo.kndCd == "U"'><!-- 개인회원(사용자) -->
+                AND ${tableAlias}.INSTID IS NULL
+            </when>
             <when test="@com.kbrainc.plum.rte.util.CommonUtil@isEmpty(searchInstValue)">
                 AND (${tableAlias}.INSTID IN(
                     SELECT 
@@ -18,6 +24,9 @@
                         USE_YN = 'Y'
                     AND APRV_STTS_CD = '2'
                 <choose>
+                    <when test='user.roleInfo.kndCd == "O"'><!-- 기관회원(사용자) -->
+                        AND INSTID = #{user.instid}
+                    </when>
                     <when test='user.roleInfo.trgtInstCd == "A"'>
                     </when>
                     <when test='user.roleInfo.trgtInstCd == "S"'>

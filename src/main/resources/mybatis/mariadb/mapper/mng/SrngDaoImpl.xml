@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SrngDaoImpl.xml
+	Description : 심사양식관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.srng.model.SrngDao">
+
+    <!-- 심사 문항 조회 -->
+    <select id="selectSrngList" parameterType="SrngQitemVO" resultType="SrngQitemVO">
+        /* SrngDao.selectSrngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.QITEMID
+            , A.DSGNCRTR_CD
+            , A.IDNTY_MTTR
+            , A.ALTM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_ASS_SRNG_QITEM A
+        WHERE
+        1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'idntyMttrStr'">
+            AND A.IDNTY_MTTR LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchDsgncrtrCd != null and searchDsgncrtrCd != '' ">
+            AND A.DSGNCRTR_CD = #{searchDsgncrtrCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 심사 문항 정보 조회 -->
+    <select id="selectSrng" parameterType="SrngQitemVO" resultType="SrngQitemVO">
+        /* SrngDao.selectSrng */
+        SELECT
+            QITEMID
+            , DSGNCRTR_CD
+            , IDNTY_MTTR
+            , ALTM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_ASS_SRNG_QITEM
+        WHERE
+            QITEMID = #{qitemid}
+    </select>
+
+    <!-- 심사 문항 등록 -->
+    <insert id="insertSrng" parameterType="SrngQitemVO" useGeneratedKeys="true" keyProperty="qitemid">
+        /* SrngDao.insertSrng */
+        INSERT INTO TB_ASS_SRNG_QITEM (
+            QITEMID
+            , DSGNCRTR_CD
+            , IDNTY_MTTR
+            , ALTM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{qitemid}
+            , #{dsgncrtrCd}
+            , #{idntyMttr}
+            , #{altm}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <!-- 심사 문항 수정 -->
+    <update id="updateSrng" parameterType="SrngQitemVO">
+        /* SrngDao.updateSrng */
+        UPDATE TB_ASS_SRNG_QITEM SET
+            DSGNCRTR_CD = #{dsgncrtrCd}
+            , IDNTY_MTTR = #{idntyMttr}
+            , ALTM = #{altm}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            , REG_DT = NOW()
+            , RGTRID = #{user.userid}
+        WHERE
+            QITEMID = #{qitemid}
+    </update>
+</mapper>
