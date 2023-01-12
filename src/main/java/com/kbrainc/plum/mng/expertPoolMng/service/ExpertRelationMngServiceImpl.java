@@ -2,7 +2,6 @@ package com.kbrainc.plum.mng.expertPoolMng.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.expertPoolMng.model.ExpertHdofVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertRelationMngDao;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertRelationVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;

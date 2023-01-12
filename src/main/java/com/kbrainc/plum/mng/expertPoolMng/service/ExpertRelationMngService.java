@@ -1,6 +1,5 @@
 package com.kbrainc.plum.mng.expertPoolMng.service;
 
-import com.kbrainc.plum.mng.expertPoolMng.model.ExpertRelationMngDao;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertRelationVo;
 
 import java.util.List;

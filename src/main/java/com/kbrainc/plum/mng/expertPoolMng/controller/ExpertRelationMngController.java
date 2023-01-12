@@ -35,7 +35,7 @@ import java.util.Map;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Controller
-public class ExpertLctrDmndController {
+public class ExpertRelationMngController {
 
     @Autowired
     private ExpertRelationMngService expertRelationMngService;
@@ -80,11 +80,11 @@ public class ExpertLctrDmndController {
 
     @RequestMapping("/mng/expertPoolMng/expertMatchForm.html")
     public String expertMatchForm(ExpertRelationVo expertRelationVo, Model model) throws Exception {
-        ExpertRelationVo expertRelationVos = expertRelationMngService.selectExpertRelationList(expertRelationVo).get(0);
+        ExpertRelationVo expertRelationInfo = expertRelationMngService.selectExpertRelationInfo(expertRelationVo);
 
-        model.addAttribute("expertLctrDmndInfo", expertRelationVos);
+        model.addAttribute("expertLctrDmndInfo", expertRelationInfo);
         ExpertVo expertVo = new ExpertVo();
-        expertVo.setUserid(expertRelationVos.getExprtid());
+        expertVo.setUserid(expertRelationInfo.getExprtid());
         ExpertVo expertInfo = expertPoolMngService.selectExpertApplyInfo(expertVo);
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         encryptor.setSaltGenerator(new RandomSaltGenerator());
@@ -95,7 +95,7 @@ public class ExpertLctrDmndController {
         model.addAttribute("expertInfo", expertInfo);
 
         MemberVo memberVo = new MemberVo();
-        memberVo.setUserid(expertRelationVos.getUserid());
+        memberVo.setUserid(expertRelationInfo.getUserid());
         MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
 
         model.addAttribute("memberInfo", memberInfo);
@@ -106,7 +106,7 @@ public class ExpertLctrDmndController {
     @RequestMapping("/mng/expertPoolMng/expertLctrDmndForm.html")
     public String expertLctrDmndForm(ExpertRelationVo expertRelationVo, Model model) throws Exception {
         ExpertRelationVo expertRelationInfo = expertRelationMngService.selectExpertRelationInfo(expertRelationVo);
-        model.addAttribute("expertLctrDmndInfo", expertRelationInfo);
+        model.addAttribute("expertRelationInfo", expertRelationInfo);
         return "mng/expertPoolMng/expertLctrDmndForm.html";
     }
 }
