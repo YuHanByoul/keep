@@ -102,8 +102,10 @@ public class CntstController {
     @RequestMapping(value = "/mng/prtpn/cntst/cntstUpdateForm.html")
     public String cntstUpdateForm(Integer cntstId, Model model) {
         CntstVO cntstInfo = cntstService.selectCntstInfo(cntstId);
+        List<String> cntstFldCdList = cntstService.selectCntstFldCdList(cntstId);
         model.addAttribute("cntstInfo", cntstInfo);
-        return "mng/prtpn/cntst/cntstUpdate";
+        model.addAttribute("cntstFldCdList", cntstFldCdList);
+        return "mng/prtpn/cntst/cntstForm";
     }
 
     /**
@@ -115,7 +117,7 @@ public class CntstController {
      */
     @RequestMapping(value = "/mng/prtpn/cntst/insertCntst.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> insertCntst(@UserInfo UserVo user, @Valid CntstVO cntstVO, BindingResult bindingResult){
+    public Map<String, Object> insertCntst(@UserInfo UserVo user, @Valid CntstVO cntstVO, BindingResult bindingResult, String[] cntstFldCdArr){
         Map<String, Object> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -123,9 +125,8 @@ public class CntstController {
             response.put("msg", fieldError.getDefaultMessage());
             return response;
         }
-        cntstVO.setRgtrid(user.getUserid());
-        cntstVO.setMdfrid(user.getUserid());
-        cntstService.insertCntst(cntstVO);
+        cntstVO.setUser(user);
+        cntstService.insertCntst(cntstVO, cntstFldCdArr);
         response.put("success", true);
         return response;
     }
@@ -142,7 +143,7 @@ public class CntstController {
      */
     @RequestMapping(value = "/mng/prtpn/cntst/updateCntst.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map<String, Object> updateCntst(@UserInfo UserVo user, @Valid CntstVO cntstVO, BindingResult bindingResult) {
+    public Map<String, Object> updateCntst(@UserInfo UserVo user, @Valid CntstVO cntstVO, BindingResult bindingResult, String[] cntstFldCdArr) {
         Map<String, Object> response = new HashMap<>();
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -150,8 +151,8 @@ public class CntstController {
             response.put("msg", fieldError.getDefaultMessage());
             return response;
         }
-        cntstVO.setMdfrid(user.getUserid());
-        cntstService.updateCntst(cntstVO);
+        cntstVO.setUser(user);
+        cntstService.updateCntst(cntstVO, cntstFldCdArr);
         response.put("success", true);
         return response;
     }

@@ -1,8 +1,9 @@
 package com.kbrainc.plum.mng.prtpn.cntst.service;
 
+import com.kbrainc.plum.mng.prtpn.cntst.model.CntstDao;
 import com.kbrainc.plum.mng.prtpn.cntst.model.CntstVO;
-import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,10 @@ import java.util.List;
  */
 @Service
 public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstService {
+
+    @Autowired
+    CntstDao cntstDao;
+
     /**
      * 공모전 등록 목록 조회
      * Title : selectCntstList
@@ -35,7 +40,7 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
      */
     @Override
     public List<CntstVO> selectCntstList(CntstVO cntstVO) {
-        return null;
+        return cntstDao.selectCntstList(cntstVO);
     }
 
     /**
@@ -44,22 +49,29 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
      * Description : 공모전 등록
      *
      * @param cntstVO
+     * @param cntstFldCdArr
      */
     @Override
     @Transactional
-    public void insertCntst(CntstVO cntstVO) {
+    public void insertCntst(CntstVO cntstVO, String[] cntstFldCdArr) {
+        int cntstid = cntstDao.insertCntst(cntstVO);
+        cntstDao.insertCntstFldMapng(cntstid, cntstFldCdArr, cntstVO.getUser());
     }
 
     /**
-     * 공모전 수정
-     * Title : updateCntst
-     * Description : 공모전 수정
+     * 공모전 등록
+     * Title : insertCntst
+     * Description : 공모전 등록
      *
      * @param cntstVO
+     * @param cntstFldCdArr
      */
     @Override
     @Transactional
-    public void updateCntst(CntstVO cntstVO) {
+    public void updateCntst(CntstVO cntstVO, String[] cntstFldCdArr) {
+        cntstDao.updateCntst(cntstVO);
+        cntstDao.deleteCntstFldMapng(cntstVO.getCntstid());
+        cntstDao.insertCntstFldMapng(cntstVO.getCntstid(), cntstFldCdArr, cntstVO.getUser());
     }
 
     /**
@@ -72,6 +84,20 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
      */
     @Override
     public CntstVO selectCntstInfo(Integer cntstId) {
-        return null;
+        return cntstDao.selectCntstInfo(cntstId);
+    }
+
+
+    /**
+     * 공모전 조회
+     * Title : selectCntstFldCdList
+     * Description : 공모전 분야 조회
+     *
+     * @param cntstId
+     * @return CntstVO
+     */
+    @Override
+    public List<String> selectCntstFldCdList(Integer cntstId) {
+        return cntstDao.selectCntstFldCdList(cntstId);
     }
 }

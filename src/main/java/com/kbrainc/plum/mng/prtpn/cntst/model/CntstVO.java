@@ -2,8 +2,11 @@ package com.kbrainc.plum.mng.prtpn.cntst.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
+
+import java.util.Date;
 
 /**
  * 공모전 VO
@@ -23,27 +26,34 @@ import org.apache.ibatis.type.Alias;
 @Data
 public class CntstVO extends ParentRequestVo {
 
+    private UserVo user;
 
     /** 공모전아이디*/
-    private String cntstid;
+    private Integer cntstid;
 
     /** 제목*/
     private String ttl;
 
     /** 썸네일_파일아이디*/
-    private String thmbnFileid;
+    private Integer thmbnFileid;
 
     /** 첨부_파일그룹아이디*/
-    private String atchFilegrpid;
+    private Integer atchFilegrpid;
+
 
     /** 신청_시작_일자*/
-    private String aplyBgngDe;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date aplyBgngDe;
+
 
     /** 신청_종료_일자*/
-    private String aplyEndDe;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date aplyEndDe;
+
 
     /** 발표_일자*/
-    private String prsntnDe;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date prsntnDe;
 
     /** 중복_가능_여부*/
     private String dpcnPsbltyYn;
@@ -62,17 +72,19 @@ public class CntstVO extends ParentRequestVo {
 
     /** 수정_일시*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private String mdfcnDt;
+    private Date mdfcnDt;
 
     /** 수정자아이디*/
-    private String mdfrid;
+    private Integer mdfrid;
 
     /** 등록_일시*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private String regDt;
+    private Date regDt;
 
     /** 등록자아이디*/
-    private String rgtrid;
+    private Integer rgtrid;
+
+
 
     /** 등록자이름*/
     private String rgtrNm;
@@ -81,8 +93,7 @@ public class CntstVO extends ParentRequestVo {
     private String rgtrAcnt;
 
     /** 공모전접수상태*/
-    private String csntstSttsCd;
-
+    private String cntstSttsCd;
 
 
     /** 검색 영역 */

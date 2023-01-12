@@ -4,32 +4,37 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 공모전 접수내역 VO
  *
  * <pre>
- * com.kbrainc.plum.mng.prtpn.cntst.model
- * - CntstVO.java
+ * com.kbrainc.plum.mng.prtpn.cntstRcptHist.model
+ * - CntstAplyVO.java
  * </pre>
  *
  * @author : JBH
- * @ClassName : CntstRcptHistVO
+ * @ClassName : CntstAplyVO
  * @Description : 공모전 접수내역  VO
  * @date : 2023. 01. 10.
  * @Version :
  * @Company : Copyright&copy; KBRAIN Company. All Rights Reserved
  */
 @Data
-public class CntstRcptHistVO extends ParentRequestVo {
+public class CntstAplyVO extends ParentRequestVo {
 
     /** 신청아이디 */
-    private String aplyid;
+    private Integer aplyid;
     /** 공모전아이디 */
-    private String cntstid;
+    private Integer cntstid;
+
+    /** 신청번호 */
+    private String aplyno;
     /** 사용자아이디 */
-    private String userid;
+    private Integer userid;
     /** 기관아이디 */
-    private String instid;
+    private Integer instid;
     /** 신청_구분_코드 */
     private String aplySeCd;
     /** 공모_분야_코드 */
@@ -63,13 +68,16 @@ public class CntstRcptHistVO extends ParentRequestVo {
     /** 약관_동의_여부 */
     private String trmsAgreYn;
     /** 수정_일시 */
-    private String mdfcnDt;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date mdfcnDt;
     /** 수정자아이디 */
     private String mdfrid;
     /** 등록_일시 */
-    private String regDt;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date regDt;
     /** 등록자아이디 */
     private String rgtrid;
+
     /** 사용자이름*/
     private String userNm;
 
@@ -79,6 +87,9 @@ public class CntstRcptHistVO extends ParentRequestVo {
     /** 기관명*/
     private String instNm;
 
+    /** 공모전 제목 */
+    private String cntstTtl;
+    private String cntstClsfCd;
 
     /** 검색 영역 */
     private String searchClsfCd;

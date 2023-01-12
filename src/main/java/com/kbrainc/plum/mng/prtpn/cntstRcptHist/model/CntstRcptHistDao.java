@@ -1,26 +1,25 @@
-package com.kbrainc.plum.mng.prtpn.cntstRcptHist.service;
+package com.kbrainc.plum.mng.prtpn.cntstRcptHist.model;
 
-import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplySchlVO;
-import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplyVO;
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
 
 /**
- * 공모전 접수 이력 서비스 인터페이스
- *
+ * 공모전 접수내역Dao 맵퍼 인터페이스.
  * <pre>
- * com.kbrainc.plum.mng.prtpn.cntstRcptHist.service
- * - CntstRcptHistService.java
+ * com.kbrainc.plum.mng.prtpn.cntstRcptHist.model
+ * - CntstRcptHistDao.java
  * </pre>
  *
  * @author : JBH
- * @ClassName : CntstRcptHistService
- * @Description : 공모전 접수 이력 서비스 인터페이스
- * @date : 2023. 01. 10.
+ * @ClassName : CntstRcptHistDao
+ * @Description : 공모전 접수내역Dao 맵퍼 인터페이스.
+ * @date : 2023. 01. 12.
  * @Version :
  * @Company : Copyright&copy; KBRAIN Company. All Rights Reserved
  */
-public interface CntstRcptHistService {
+@Mapper
+public interface CntstRcptHistDao {
 
     /**
      * 공모전 접수 이력 목록 조회
@@ -30,7 +29,7 @@ public interface CntstRcptHistService {
      * @param cntstAplyVO
      * @return list
      */
-    List<CntstAplyVO> selectCntstAplyList(CntstAplyVO cntstAplyVO);
+    List<CntstAplyVO> selectCntstRcptHistList(CntstAplyVO cntstAplyVO);
 
     /**
      * 공모전 접수 정보 조회

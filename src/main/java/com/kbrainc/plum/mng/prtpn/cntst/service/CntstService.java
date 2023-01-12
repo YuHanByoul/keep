@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.prtpn.cntst.service;
 
 import com.kbrainc.plum.mng.prtpn.cntst.model.CntstVO;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,8 +41,9 @@ public interface CntstService {
      * Description : 공모전 등록
      *
      * @param cntstVO
+     * @param cntstFldCdArr
      */
-    void insertCntst(CntstVO cntstVO);
+    void insertCntst(CntstVO cntstVO, String[] cntstFldCdArr);
 
     /**
      * 공모전 수정
@@ -49,8 +51,9 @@ public interface CntstService {
      * Description : 공모전 수정
      *
      * @param cntstVO
+     * @param cntstFldCdArr
      */
-    void updateCntst(CntstVO cntstVO);
+    void updateCntst(CntstVO cntstVO, String[] cntstFldCdArr);
 
     /**
      * 공모전 조회
@@ -61,4 +64,14 @@ public interface CntstService {
      * @return CntstVO
      */
     CntstVO selectCntstInfo(Integer cntstId);
+
+    /**
+     * 공모전 조회
+     * Title : selectCntstFldCdList
+     * Description : 공모전 분야 조회
+     *
+     * @param cntstId
+     * @return CntstVO
+     */
+    List<String> selectCntstFldCdList(Integer cntstId);
 }

@@ -1,7 +1,10 @@
 package com.kbrainc.plum.mng.prtpn.cntstRcptHist.service;
 
-import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstRcptHistVO;
+import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstRcptHistDao;
+import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplySchlVO;
+import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplyVO;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,13 +26,46 @@ import java.util.List;
  */
 @Service
 public class CntstRcptHistServiceImpl extends PlumAbstractServiceImpl implements CntstRcptHistService {
+
+    @Autowired
+    CntstRcptHistDao cntstRcptHistDao;
+
+    /**
+     * 공모전 접수 이력 목록 조회
+     * Title : selectCntstAplyList
+     * Description : 공모전 등록 목록 조회
+     *
+     * @param cntstAplyVO
+     * @return list
+     */
     @Override
-    public List<CntstRcptHistVO> selectCntstRcptHistList(CntstRcptHistVO cntstRcptHistVO) {
-        return null;
+    public List<CntstAplyVO> selectCntstAplyList(CntstAplyVO cntstAplyVO) {
+        return cntstRcptHistDao.selectCntstRcptHistList(cntstAplyVO);
     }
 
+    /**
+     * 공모전 접수 정보 조회
+     * Title : selectCntstAplyInfo
+     * Description : 공모전 접수 정보 조회
+     *
+     * @param aplyid
+     * @return CntstRcptHistVO
+     */
     @Override
-    public CntstRcptHistVO selectCntstRcptHistInfo(Integer aplyid) {
-        return null;
+    public CntstAplyVO selectCntstAplyInfo(Integer aplyid) {
+        return cntstRcptHistDao.selectCntstAplyInfo(aplyid);
+    }
+
+    /**
+     * 환경방학 일기장 프로젝트 접수 정보 조회
+     * Title : selectCntstAplySchlList
+     * Description : 환경방학 일기장 프로젝트 접수 정보 조회
+     *
+     * @param aplyid
+     * @return list
+     */
+    @Override
+    public List<CntstAplySchlVO> selectCntstAplySchlList(Integer aplyid) {
+        return cntstRcptHistDao.selectCntstAplySchlList(aplyid);
     }
 }
