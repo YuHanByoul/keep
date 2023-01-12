@@ -1,0 +1,105 @@
+<form id ="srngFormUpdateForm">
+    <div class="card-block-small p-t-0">
+        <div class="mb-2 row">
+            <div class="col-12 col-lg-6">
+                <div class="mb-0 form-group required">
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영 형태</strong></div>
+                    <div class="col-12">
+                        <th:block kattr:select_code="operFrmCd" grpCd="158" th:attr="grpcd=158, selectedCd=${srngFormInfo.operFrmCd}" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mb-2 form-group row required">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="formNm"><strong>심사양식 명</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="formNm" id="formNm" placeholder="심사양식 명을 입력해주세요." th:value="${srngFormInfo.formNm}">
+            </div>
+        </div>
+        <div class="mb-2 form-group row">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="formExpln"><strong>심사양식 설명</strong></label>
+            <div class="col-12">
+                <textarea rows="5" cols="5" class="form-control form-control-sm" id="formExpln" name="formExpln" placeholder="심사양식 설명을 입력해주세요." th:text="${srngFormInfo.formExpln}"></textarea>
+            </div>
+        </div>
+        <div class="mb-0 form-group row">
+            <div class="col-12">
+                <input type="hidden" name="useYn" th:value="${srngFormInfo.useYn}">
+                <input type="checkbox" class="js-single-small" id="useYn"/>
+                <label for="useYn" class="v-middle">사용여부</label>
+            </div>
+        </div>
+    </div>
+    <div class="card-block-small p-t-0">
+        <button type="button" class="btn btn-disabled m-r-5" onclick="srngUpdate.offUpdateSrngForm();">취소</button>
+        <th:block sec:authorize-url="/mng/srng/updateSrngForm.do"><button type="button" class="btn btn-primary" onclick="srngUpdate.onUpdateSrngForm();">저장</button></th:block>
+    </div>
+
+    <input type="hidden" id="formid" name="formid" th:value="${srngFormInfo.formid}" />
+</form>
+
+<script th:inline="javascript">
+    var srngUpdate = {
+        init: function() {
+            var elemsingleSmallList = document.querySelectorAll('.js-single-small');
+            for(var i = 0; i < elemsingleSmallList.length; i++) {
+                new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
+            }
+            $(".js-example-basic-single").select2();
+            toggleSwitch("#useYn", $("input[name='useYn']").val() == "Y" ? true : false);
+
+            this.registEvent();
+            this.setValid();
+        },
+
+        registEvent: function() {
+            // TODO
+        },
+
+        setValid: function() {
+            var validator = $('#srngFormUpdateForm').validate({
+                rules: {
+                    operFrmCd: {required: true},
+                    formNm: {required: true, maxlength: 60},
+                    formExpln: {maxlength: 100}
+                },
+                messages: {
+                    operFrmCd: {required: "운영 형태를 선택해주세요."},
+                    formNm: {required: "심사양식 명을 입력해주세요.", maxlength: "체크리스트 명은 60자 이하여야 합니다."},
+                    formExpln: {maxlength: "심사양식 설명은 100자 이하여야 합니다."}
+                }
+            });
+        },
+
+        onUpdateSrngForm: function() {
+            if(!($("#srngFormUpdateForm").valid())) return;
+            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
+            var data = $("#srngFormUpdateForm").serialize();
+
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/srng/updateSrngForm.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: data,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            srngFormJsGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        },
+
+        offUpdateSrngForm: function() {
+            srngFormJsGrid.toggleContent();
+        }
+    };
+
+    srngUpdate.init();
+</script>
