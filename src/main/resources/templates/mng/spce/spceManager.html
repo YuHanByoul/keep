@@ -1,0 +1,268 @@
+    <!--탭영역 start --> 
+    <div class="tab-content tabs p-t-20">
+    
+                <div class="row p-20 p-b-0">
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <h5><strong>담당자 정보</strong></h5>
+                    </div>
+                    <div class="col-12 col-md-6 text-right">
+                            <button type="button" class="btn btn-inverse m-r-5"  onclick='fn_deleteInstManager()'>삭제</button>
+                        <th:block sec:authorize-url="/mng/member/memberInsertForm.html">
+                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_openInstManagerSearchModal();" >등록</button>
+                        </th:block>
+                        
+                    </div>
+                </div>
+                <div class="card-block-small">
+                    <div class="dt-responsive table-responsive">
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="instMemGrid" class="table-responsive"></table>
+                                <div id="instMemListPager" class="text-center"></div>
+                       </div>
+                    </div>
+                </div>
+   </div>
+    
+<form id="searchManagerFrm" >
+   <input type="hidden" id="instid" name="instid" th:value="${param.instid}"/>
+</form>
+
+<!-- 담당자정보 회원검색 팝업 Start -->
+<div class="modal fade" id="managerInsertPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+<!-- 담당자정보 회원검색 팝업 end  -->
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+
+<script th:inline="javascript">
+
+    var selectedItems = [];
+    var gridHelper1;         
+    $(function(){
+        writeInstMemGridData();
+    });
+
+    function writeInstMemGridData(){
+        $("#instMemGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#instMemListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchManagerFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/inst/selectManagerList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     headerTemplate: function() {
+                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                     },
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                         //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                         .prop("checked", $.inArray(item, selectedItems) > -1)
+                         .on("change", function () {
+                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                         });
+                     },
+                     align: "center",
+                     width: "30",
+                     sorting: false
+                 }                  
+                ,{ name: 'userid', css: 'hide' }
+                ,{ name: 'nm', css: 'hide' }
+                ,{ title: 'No.'   ,name: 'rowNumber'       ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '이름'   ,name: 'nm'              ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '아이디'  ,name: 'acnt'            ,type: "text" , width: "200" }
+                ,{ title: '메일'   ,name: 'eml'             ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '역할'   ,name: 'instpicRoleCdNm' ,type: "text" , align:"center"
+                    ,itemTemplate: returnSelectRole
+                 }
+                ,{ title: '가입일'  ,name: 'regDt' ,type: "text" , width: "120", align:"center" }
+            ]
+        });
+        
+        var selectItem = function(item) {
+            selectedItems.push(item);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+         
+        var unselectItem = function(item) {
+            selectedItems = $.grep(selectedItems, function(i) {
+            return i !== item;
+            });
+            if(selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr('checked', false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+        
+        $("#selectAllCheckbox").click(function(item) {
+            selectedItems = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox').each(function() { 
+                    this.checked = true;   
+                    selectItem($(this).parent().next().text());           
+                }); 
+            }else {
+                $('.singleCheckbox').each(function() { 
+                    this.checked = false;      
+                    unselectItem(item);
+                });  
+                selectedItems = [];
+            }
+        });
+    }
+
+  var returnSelectRole = (_,item) =>{
+    let selectHtml ="";
+    	selectHtml +="<select id='manager_role_"+item.userid+"' name='"+item.instpicRoleCd+"' onchange=changeMngRole(this.id,this.name) class='form-select form-control form-bg-info'>";
+    	selectHtml +="<option value='109101' "
+    	selectHtml +=(item.instpicRoleCd == '109101')? "selected":""; 
+        selectHtml +=">마스터</option>";
+    	selectHtml +="<option value='109102' "
+    	selectHtml +=(item.instpicRoleCd == '109102')? "selected":"";
+    	selectHtml +=">일반</option>";
+    	selectHtml += "</select>";
+        return selectHtml;  	
+  }
+
+  var changeMngRole = (id,roleCd) =>{
+	  
+      let selected = $("#"+id).val();
+      
+      if(selected == "109101"){
+           if(!confirm("마스터 담당자를 변경하시겠습니까?")){
+        	   $("#"+id).val("109102");
+        	   return;
+            }
+      }
+      
+      let params ={
+    	      userid : id.replaceAll("manager_role_","")
+    	      ,instpicRoleCd : selected
+    	      ,instid:$("#searchManagerFrm #instid").val()
+      }
+      
+      if(displayWorkProgress()){
+          $.ajax({
+              url : "/mng/inst/updateMngRole.do",
+              type: 'POST',
+              cache : false,
+              dataType: 'json',
+              data : params,
+              success : function (data){
+                  if(data.result == "success"){
+	                  alert(data.msg);
+	                  //담당자 그리드 목록 리셋
+	                  $("#instMemGrid").jsGrid("reset");
+	                  selectedItems = [];
+                  }else{
+	                  alert(data.msg);
+                	  $("#"+id).val("109101");
+                  }
+	             closeWorkProgress();
+              }
+          });
+      }
+  }
+    
+  var popupUrl = "/mng/member/blcklstDsctnPopup.html";
+  var userAddModal;
+  var instManagerSearchModal;
+
+  //회원 검색 모달 오픈   
+  var fn_openInstManagerSearchModal =()=> {
+
+	  var url = "/mng/inst/instUserSearchPopup.html";
+      $("#managerInsertPopup").load(url, function(response, status, xhr) {
+          if (status == "success") {
+        	  instManagerSearchModal = new bootstrap.Modal($('#managerInsertPopup'));
+        	  instManagerSearchModal.show();
+          }
+      });
+  }
+     
+  var fn_deleteInstManager =()=>{
+	  
+      if(selectedItems.length <=0 ){
+            alert("삭제 대상을 선택해주십시오.");
+            return;
+      }
+      
+      if(!confirm("선택하신 담당자를 삭제 처리 하시겠습니까"))return;
+      
+      var userids = selectedItems.join(",")
+      var params ={
+    	      userids : userids
+    	      ,instid :$("#searchManagerFrm #instid").val()
+      }
+      if(displayWorkProgress()){
+          $.ajax({
+              url : "/mng/inst/deleteInstManager.do",
+              type: 'POST',
+              cache : false,
+              dataType: 'json',
+              data : params,
+              success : function (data){
+                  alert(data.msg);
+                  //담당자 그리드 목록 리셋
+                  $("#instMemGrid").jsGrid("reset");
+                  selectedItems = [];
+                  closeWorkProgress();
+              }
+          });
+      }
+  }
+</script>

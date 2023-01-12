@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+ <div layout:fragment="content">
+ <style>
+.hide{display:none;}
+</style>
+<!-- Page-body start -->
+  <div class="page-body">
+      <div class="row">
+          <div class="col-12">
+          <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+             <!-- 필터 부분 -->
+                 <div class="card-block-small">
+                     <!-- 키워드 filter -->
+                     <div class="row">
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관 키워드</strong></span>
+                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                     <select name="searchType" id="searchType" class="form-select form-control ">
+                                        <option value="">- 전체 -</option>
+                                        <option value="instNm">기관명</option>
+                                        <option value="fcltNm">시설명 </option>
+                                        <option value="spceNm">공간명 </option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>예약신청 방법</strong></span>
+                                 <div class="col-sm-12">
+                                     <span kattr:select_code="searchAplyMthdCd" grpCd="153" firstOptTxt="-선택 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역</strong></span>
+                                 <div class="col-sm-12">
+                                     <select id ="searchSiGunGuCd" name="searchSiGunGuCd" class="form-select form-select-sm form-control-sm">
+                                        <option value="">- 전체 -</option>
+                                        <option  th:each ="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:text="${item.CTPRVN_NM}" ></option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></span>
+                                 <div class="col-sm-12">
+                                     <select id ="searchUseYn" name="searchUseYn" class="form-select form-select-sm form-control-sm">
+                                        <option value="">- 전체 -</option>
+                                        <option value="Y">사용</option>
+                                        <option value="N">미사용</option>
+                                     </select>
+                                 </div>
+                             </div>
+                         </div>
+                         
+                     </div>
+                     <!-- //키워드 filter -->
+                     <!-- 키워드 filter-btn -->
+                     <div class="mt-1 p-t-20 text-center border-top">
+                         <button class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
+                         <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
+                     </div>
+                 </div>
+           </form>
+          </div>
+           
+          <!-- //필터 부분 -->
+          <div class="col-12">
+           <div class="card">
+                <div class="row p-20 p-b-0">
+                
+                    <div class="col-12 col-md-6 mb-2 mb-md-0">
+                        <h5><strong>공간 검색 결과</strong></h5>
+                    </div>
+                    
+                    <div class="col-12 col-md-6 text-right">
+	                    <th:block sec:authorize-url="/mng/inst/instDetail.html">
+	                        <button type="button" class="btn btn-disabled m-r-5" onclick="deleteSpce();" >삭제</button>
+	                    </th:block>
+                        <th:block sec:authorize-url="/mng/inst/instDetail.html">
+                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();" >등록</button>
+                        </th:block>
+                    </div>
+                    
+                </div>
+                <div class="card-block-small">
+                    <div class="dt-responsive table-responsive">
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                       </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+		  <!-- Content Area -->
+		  <div class="col-12">
+		  <div id="contentPanel" class="card"></div>
+		  </div>
+      </div>
+  </div>
+  
+ <!--팝업-->
+ <div class="modal fade" id="instSearchModal"  data-bs-backdrop="static"></div>
+ <!--팝업-->
+
+  <script th:inline="javascript">
+  
+  /*<![CDATA[*/ 
+     var userid = /*[[${param.userid}]]*/null;
+  /*]]>*/
+    var selectedInstItem;
+    var selectedItems;
+    var gridHelper1;
+             
+    $(function(){
+        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+        writeJsGridData();
+    });
+    
+    function fn_goInsertForm(){
+        var insertUrl = "/mng/spce/spceDetail.html?mode=I"
+            gridHelper1.loadContent(insertUrl);
+    }
+     
+    function fn_searchForm(){
+        gridHelper1.resetListContent();
+    }
+    
+    function fn_init() {
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+        $("#searchSiGunGuCd").val('');
+        $("#searchUseYn").val('');
+        $("#searchAplyMthdCd").val('');
+    }
+    
+    function writeJsGridData(){
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/spce/selectSpceList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     headerTemplate: function() {
+                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                     },
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                         .prop("checked", $.inArray(item, selectedItems) > -1)
+                         .on("change", function () {
+                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                         });
+                     },
+                     align: "center",
+                     width: "30",
+                     sorting: false
+                 }                  
+                ,{ name: 'spceid', css: 'hide' }
+                ,{ title: 'No.'   ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '운영기관'   ,name: 'instNm'    ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '시설'   ,name: 'fcltNm'    ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '공간'  ,name: 'spceNm'   ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '예약신청방법'  ,name: 'aplyMthdCdNm'   ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '지역'  ,name: 'ctprvnNm'   ,type: "text" , width: "150" ,align:"center"}
+                ,{ title: '사용여부'  ,name: 'useYn'   ,type: "text" , width: "100" ,align:"center"
+                    ,itemTemplate: function(value, item){ return (value=='Y')?"사용":"미사용";}
+                }
+                ,{ title: '등록일'  ,name: 'regDt' ,type: "text" , width: "100", align:"center" 
+                    ,itemTemplate: function(value, item){return value.substring(0,10)}
+                 }
+            ],
+            
+            /*[# sec:authorize-url="/mng/spce/spceDetail.html"]*/
+            rowClick: function(args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                var detailUrl = "/mng/spce/spceDetail.html?mode=U&spceid=" + args.item.spceid; 
+                gridHelper1.loadContent(detailUrl);
+                gridHelper1.rowClick(args);
+            },
+            /*[/]*/
+            onPageChanged: function(args) {
+                selectedItems = [];
+            }
+        });
+        
+        var selectItem = function(item) {
+            selectedItems.push(item);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+         
+        var unselectItem = function(item) {
+            selectedItems = $.grep(selectedItems, function(i) {
+            return i !== item;
+            });
+            if(selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr('checked', false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+        
+        $("#selectAllCheckbox").click(function(item) {
+            selectedItems = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox').each(function() { 
+                    this.checked = true;   
+                    selectItem($(this).parent().next().text());           
+                }); 
+            }else {
+                $('.singleCheckbox').each(function() { 
+                    this.checked = false;      
+                    unselectItem(item);
+                });  
+                selectedItems = [];
+            }
+        });
+    }
+    
+    //공간 삭제 
+    deleteSpce =()=>{
+        if(selectedItems.length <=0 ){
+              alert("삭제 대상을 선택해주십시오.");
+              return;
+        }
+        if(!confirm("선택하신 공간을 삭제처리 하시겠습니까?"))return;
+        var spceids = selectedItems.join(",")
+        var params ={
+        	spceids : spceids
+            ,useYn : "N"
+        }
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/spce/deleteSpce.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : params,
+                success : function (data){
+                    
+                    if(data.result == 'fail'){
+                       alert(data.msg);
+                       $('.singleCheckbox').each(function() { 
+                           this.checked = false;   
+                       });
+                       $('#selectAllCheckbox').prop("checked",false);
+	                   selectedItems = [];
+                    }else{
+                       alert(data.msg);
+	                   selectedItems = [];
+	                   gridHelper1.resetListContent();
+                    }
+	                closeWorkProgress();
+                }
+            });
+        }
+    }
+    //기관 검색 모달 오픈   
+    openSearchInstModal = () => {
+    	selectedInstItem = null;
+        var url = "/mng/spce/instSearchPopup.html";
+
+        $("#instSearchModal").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                instModal = new bootstrap.Modal($('#instSearchModal'));
+                instModal.show();
+            }
+        });
+    }
+    
+</script>
+</div> 
+</body>
+</html>

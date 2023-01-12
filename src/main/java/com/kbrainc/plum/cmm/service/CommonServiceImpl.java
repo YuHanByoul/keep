@@ -172,4 +172,15 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
     public List<Map<String, Object>> selectAllRgnList() throws Exception {
         return commonDao.selectAllRgnList();
     }
+    /**
+     * 시도 지역목록을 반환한다.
+     *
+     * @Title : selectCtprvnList
+     * @Description : 시도 지역목록을 반환한다.
+     * @return List<Map<String,Object>> 지역목록
+     * @throws Exception 예외
+     */
+    public List<Map<String, Object>> selectCtprvnList() throws Exception{
+        return commonDao.selectCtprvnList();
+    }
 }

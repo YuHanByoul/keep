@@ -22,6 +22,7 @@
 		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>연도</strong></div>
 		                    <div class="col-sm-12">
 		                        <select name="yr" id="yr" class="form-select form-select-sm form-control-sm">
+		                        	<option value="">- 선택 -</option>	                        
 									<th:block th:each="year : ${years}">
 									<option th:value="${year}"><th:block th:text="${year}" /></option>
 									</th:block>
@@ -34,6 +35,7 @@
 		                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>월</strong></div>
 		                    <div class="col-sm-12">
 		                        <select name="mm" id="mm" class="form-select form-select-sm form-control-sm">
+		                        	<option value="">- 선택 -</option>		                       
 									<th:block th:each="month : ${month}">
 									<option th:value="${month}" th:selected="${month} == ${curMonth}"><th:block th:text="${month}" /></option>
 									</th:block>
@@ -101,12 +103,18 @@
 		                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용 style(css)" name="cnStyle" id="cnStyle"></textarea>
 		            </div>
 		        </div>
-		        <div class="mb-0 form-group row cn">
+		        <div class="mb-2 form-group row cn">
 		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
 		            <div class="col-12">
 		                <textarea class="form-control form-control-sm" name="cn" id="cn"></textarea>
 		            </div>
 		        </div>
+		        <div class="mb-0 form-group row required">
+		            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>요약 내용</strong></label>
+		            <div class="col-12">
+		                <input type="text" class="form-control form-control-sm" name="cnSumry" id="cnSumry" placeholder="요약 내용은 200자 이하여야 합니다."/>
+		            </div>
+		        </div>		        
 		    </div>
 		</div>
 	    <div class="card-block-small">
@@ -119,6 +127,25 @@
 <script th:inline="javascript">
 	init();
 
+	var validator= $("#prgrmgdInsertForm").validate({
+	    rules: {
+	    	rgnCd	   :	{ required: true }
+			,yr 	   :	{ required: true }
+			,mm 	   :	{ required: true }
+	     	,ttl   	   :	{ required: true }
+	     	,dt   	   : 	{ required: true }
+	     	,cnSumry   : 	{ required: true, maxlength: 200 }
+	    },
+	    messages: {
+	    	rgnCd  	 :   { required: "지역구분을 선택해주십시오." }
+	    	,yr		 :   { required: "연도를 선택해주십시오." }
+	    	,mm		 :   { required: "월을 선택해주십시오." }
+		    ,ttl   	 :   { required: "제목을 입력해주십시오." }
+		    ,dt   	 :   { required: "일시를 선택해주십시오." }
+		    ,cnSumry : 	 { required: "요약 내용을 입력해주십시오.", maxlength: "요약 내용은 200자 이하여야 합니다." }
+	    }
+	})
+	
 	var editor;
 	
 	$(function () {

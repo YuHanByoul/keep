@@ -32,7 +32,7 @@
             <div class="mb-0 form-group row">
                 <div class="col-12">
                     <input type="hidden" name="useYn" th:value="${chklstInfo.useYn}">
-                    <input type="checkbox" class="js-single-small" id="useYn" checked/>
+                    <input type="checkbox" class="js-single-small" id="useYn" checked onchange="chklstUpdate.onChangeUseYn();"/>
                     <label for="useYn" class="v-middle">사용여부</label>
                 </div>
             </div>
@@ -46,7 +46,8 @@
 
 <script th:inline="javascript">
     var chklstUpdate = {
-        init: function() {
+        isInit: false
+        , init: function() {
             var elemsingleSmallList = document.querySelectorAll('.js-single-small');
             for(var i = 0; i < elemsingleSmallList.length; i++) {
                 new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
@@ -56,6 +57,7 @@
            
            this.registEvent();
            this.setValid();
+           this.isInit = true;
         },
         
         registEvent: function() {
@@ -75,6 +77,31 @@
                     expln: {maxlength: "체크리스트 설명은 60자 이하여야 합니다."}
                 }
             });
+        },
+        
+        onChangeUseYn: function() {
+            if(this.isInit) {
+                var param = {operFrmCd: $("#operFrmCd").val()};
+                if($("#useYn").is(":checked")) {
+                    if(displayWorkProgress()) {
+                        $.ajax({
+                            url : "/mng/chklst/isUseChklst.do",
+                            type: "POST",
+                            cache: false,
+                            dataType: "json",
+                            data: param,
+                            success: function(response) {
+                                var isUseChklst = response.chklstInfo.isUseChklst;
+                                closeWorkProgress();
+                                if(isUseChklst == "Y") {
+                                    toggleSwitch("#useYn", false);
+                                    alert("동일한 운영형태의 사용중인 체크리스트가 있습니다.\n사용중인 체크리스트를 사용안함 처리 후 진행해주세요.");
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         },
         
         onUpdateChklst: function() {

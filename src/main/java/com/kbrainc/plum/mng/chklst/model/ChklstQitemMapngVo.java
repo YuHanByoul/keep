@@ -35,6 +35,9 @@ public class ChklstQitemMapngVo extends ParentRequestVo {
     /** 로그인 사용자 정보 */
     private UserVo user;
     
+    /** 체크리스트 아이디 */
+    private int chklstid;
+    
     /** 문항 아이디 */
     private int qitemid;
     
@@ -46,6 +49,9 @@ public class ChklstQitemMapngVo extends ParentRequestVo {
     
     /** 구분 코드명 */
     private String cn;
+    
+    /** 트리 뎁스 */
+    private int treeOrd;
     
     /** 배점 */
     private int altm;
