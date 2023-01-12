@@ -181,13 +181,14 @@ public class ChklstController {
      *
      * @Title : userListPopup
      * @Description : 체크리스트 문항 목록 팝업
-     * @param chklstQitemVo ChklstQitemVo 객체
+     * @param codeVo CodeVo 객체
      * @param model 모델객체
      * @return String 화면경로
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/chklst/chklstQitemListPopup.html")
-    public String chklstQitemListPopup(ChklstQitemVo chklstQitemVo, Model model) throws Exception {
+    public String chklstQitemListPopup(CodeVo codeVo, Model model) throws Exception {
+        model.addAttribute("codeList", chklstService.selectChklstQitemCdList(codeVo));
         return "mng/chklst/chklstQitemListPopup";
     }
     
@@ -412,6 +413,45 @@ public class ChklstController {
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "수정에 실패하였습니다");
+        }
+            
+        return resultMap;
+    }
+    
+    /**
+     * 체크리스트 문항구성 업데이트
+     *
+     * @Title : updateChklstQitemMapng
+     * @Description : 체크리스트 문항구성 업데이트
+     * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
+     * @param bindingResult chklstQitemMapngVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/chklst/updateChklstQitemMapng.do")
+    @ResponseBody
+    public Map<String, Object> updateChklstQitemMapng(@Valid ChklstQitemMapngVo chklstQitemMapngVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+            
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        int retVal = 0;
+        chklstQitemMapngVo.setUser(user);
+        retVal = chklstService.updateChklstQitemMapng(chklstQitemMapngVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "문항구성 저장에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "문항구성 저장에 실패하였습니다");
         }
             
         return resultMap;

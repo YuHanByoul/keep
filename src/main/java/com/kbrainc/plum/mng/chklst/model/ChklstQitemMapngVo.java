@@ -1,9 +1,7 @@
 package com.kbrainc.plum.mng.chklst.model;
 
 import java.util.Date;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -55,6 +53,9 @@ public class ChklstQitemMapngVo extends ParentRequestVo {
     
     /** 배점 */
     private int altm;
+    
+    /** 문항 목록 */
+    private List<ChklstQitemVo> qitemList; 
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

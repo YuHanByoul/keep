@@ -146,4 +146,26 @@ public interface ChklstDao {
      */
     public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
     
+    /**
+     * 체크리스트 문항구성 등록
+     *
+     * @Title : insertChklstQitemMapng 
+     * @Description : 체크리스트 문항구성 등록
+     * @param chklstQitemVo ChklstQitemVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertChklstQitemMapng(ChklstQitemVo chklstQitemVo) throws Exception;
+    
+    /**
+     * 체크리스트 문항구성 업데이트
+     *
+     * @Title : updateChklstQitemMapng
+     * @Description : 체크리스트 문항 업데이트
+     * @param chklstQitemVo ChklstQitemVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateChklstQitemMapng(ChklstQitemVo chklstQitemVo) throws Exception;
+    
 }
