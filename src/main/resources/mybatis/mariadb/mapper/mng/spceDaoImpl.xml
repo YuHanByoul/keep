@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SpceDaoImpl.xml
+	Description : 사용자관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.spce.model.SpceDao">
+
+  <!-- 공간정보 저장 --> 
+  <insert id="insertSpce" parameterType="SpceVo" useGeneratedKeys="true" keyProperty="spceid">
+        /* SpceDao.insertSpce */
+        INSERT INTO TB_FCL_SPCE (
+              FCLTID
+              ,SPCE_NM
+              ,SPCE_NO
+              ,MAX_NOPE
+              ,SIZE
+              ,CHKIN_HR
+              ,CHCKT_HR
+              ,NXTY_CHCKT_YN
+              ,RSVT_PSBLTY_DAYCNT
+              ,TODAY_RSVT_PSBLTY_YN
+              ,USE_YN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+        )VALUES(
+               #{fcltid           }
+              ,#{spceNm           }
+              ,(SELECT concat(
+                       REPLACE(FCLT_NO,'FA','SP'),'-',
+                       (LPAD((SELECT IFNULL(MAX(SUBSTRING(A.SPCE_NO FROM -4 )),0)+1 FROM TB_FCL_SPCE A WHERE FCLTID = #{fcltid}),4,'0') )
+                       )
+                  FROM 
+                    TB_FCL_FCLT
+                  WHERE FCLTID = #{fcltid})
+              ,#{maxNope          }
+              ,#{size             }
+              ,#{chkinHour        }
+              ,#{chcktHour        }
+              ,#{nxtyChcktYn      }
+              ,#{rsvtPsbltyDaycnt }
+              ,#{todayRsvtPsbltyYn} 
+              ,#{useYn            }
+              ,NOW()
+              ,#{user.userid      }
+              ,NOW()
+              ,#{user.userid      }
+          )
+  </insert>
+    
+  <!-- 공간 예약일자 저장 --> 
+  <insert id="insertSpceRsvtde" parameterType="SpceRsvtdeVo" useGeneratedKeys="true" keyProperty="rsvtdeid">
+        /* SpceDao.insertSpceRsvtde */
+        INSERT INTO TB_FCL_SPCE_RSVTDE (
+               SPCEID
+              ,UTZTN_SE_CD
+              ,DE
+              ,BGNG_DT
+              ,END_DT
+              ,ALLDAY_YN
+              ,AMT
+              ,RSVT_PSBLTY_YN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+        )VALUES(
+               #{spceid      }
+              ,#{utztnSeCd   }
+              ,#{de          }
+              ,#{bgngDt      }
+              ,#{endDt       }
+              ,#{alldayYn    }
+              ,#{amt         }
+              ,#{rsvtPsbltyYn}
+              ,NOW()
+              ,#{user.userid  }
+              ,NOW()
+              ,#{user.userid  }
+          )
+    </insert>
+    
+    <!-- 공간 정보 목록 조회 -->
+    <select id="selectSpceList" parameterType="SpceVo" resultType="SpceVo">
+        /* SpceDao.selectSpceList */
+        <include refid="PaginationMapper.header"/>
+               SELECT
+                  A.FCLTID
+                  , A.SPCEID
+                  , A.SPCE_NM
+                  , A.SPCE_NO
+                  , A.MAX_NOPE
+                  , A.SIZE
+                  , A.CHKIN_HR
+                  , A.CHCKT_HR
+                  , A.NXTY_CHCKT_YN
+                  , A.RSVT_PSBLTY_DAYCNT
+                  , A.TODAY_RSVT_PSBLTY_YN
+                  , A.USE_YN
+                  , A.MDFCN_DT
+                  , A.MDFRID
+                  , A.REG_DT
+                  , A.RGTRID
+                  , B.FCLT_NM
+                  , B.RGN_CD
+                  , B.APLY_MTHD_CD 
+                  , C.INST_NM 
+                  , C.INSTID 
+                  , D.CTPRVN_NM 
+                FROM   
+                 TB_FCL_SPCE A
+                 INNER JOIN TB_FCL_FCLT B
+                 ON A.FCLTID = B.FCLTID 
+                 INNER JOIN TB_CMM_INST C
+                 ON B.INSTID = C.INSTID
+                 LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN D
+                 ON SUBSTRING( B.RGN_CD,1,2) = D.CTPRVN_CD 
+                WHERE 1=1
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+                   AND C.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'fcltNm'">
+                   AND B.FCLT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'spceNm'">
+                   AND A.SPCE_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchSiGunGuCd != null and searchSiGunGuCd != '' ">
+                   AND SUBSTRING( B.RGN_CD,1,2)  =  #{searchSiGunGuCd}
+                </if>
+                <if test="searchUseYn != null and searchUseYn != '' ">
+                   AND A.USE_YN = #{searchUseYn}
+                </if>
+                <if test="searchAplyMthdCd != null and searchAplyMthdCd != '' ">
+                   AND B.APLY_MTHD_CD = #{searchAplyMthdCd}
+                </if>
+                <if test='user.roleInfo.trgtInstCd == "S"'>
+                   AND C.INST_ID = #{user.instid}
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 기관 시설 목록 조회 -->
+    <select id="selectFcltList" parameterType="SpceVo" resultType="map">
+            /* SpceDao.selectFcltList */
+            SELECT 
+                A.FCLTID 
+                ,A.FCLT_NM 
+                ,A.FCLT_NO
+                ,IFNULL(A.ADDR,'') AS ADDR 
+                ,IFNULL(A.ADDR_DTL,' ') AS ADDR_DTL 
+                ,A.APLY_MTHD_CD
+              FROM 
+                TB_FCL_FCLT A
+             WHERE 1=1
+               AND A.INSTID  = #{instid}
+    </select>
+    
+    <!-- 공간 정보 수정--> 
+    <update id="updateSpce" parameterType="SpceVo" >
+          /* SpceDao.updateSpce */
+          UPDATE TB_FCL_SPCE 
+          SET
+              FCLTID                 = #{fcltid           }
+              ,SPCE_NO               = CASE WHEN FCLTID != #{fcltid} 
+                                            THEN  (SELECT concat(
+                                                           REPLACE(FCLT_NO,'FA','SP'),'-',
+                                                           (LPAD((SELECT IFNULL(MAX(SUBSTRING(A.SPCE_NO FROM -4 )),0)+1 FROM TB_FCL_SPCE A WHERE FCLTID = #{fcltid}),4,'0') )
+                                                           )
+                                                      FROM 
+                                                        TB_FCL_FCLT
+                                                      WHERE FCLTID = #{fcltid})
+                                            ELSE  SPCE_NO
+                                         END   
+              ,SPCE_NM               = #{spceNm           }    
+              ,MAX_NOPE              = #{maxNope          }    
+              ,SIZE                  = #{size             }    
+              ,CHKIN_HR              = #{chkinHour        }
+              ,CHCKT_HR              = #{chcktHour        }
+              ,NXTY_CHCKT_YN         = #{nxtyChcktYn      }    
+              ,RSVT_PSBLTY_DAYCNT    = #{rsvtPsbltyDaycnt }    
+              ,TODAY_RSVT_PSBLTY_YN  = #{todayRsvtPsbltyYn}    
+              ,USE_YN                = #{useYn            }    
+              ,MDFCN_DT              = NOW()                   
+              ,MDFRID                = #{user.userid      }
+           WHERE SPCEID = #{spceid}    
+    </update>
+    <!-- 공간 상세 정보 조회 -->
+    <select id="selectSpceInfo" parameterType="SpceVo" resultType="SpceVo">
+            /* SpceDao.selectSpceInfo */
+              SELECT
+                   A.SPCEID 
+                  , A.FCLTID
+                  , A.SPCE_NM
+                  , A.SPCE_NO
+                  , A.MAX_NOPE
+                  , A.SIZE
+                  , A.CHKIN_HR
+                  , A.CHCKT_HR
+                  , A.NXTY_CHCKT_YN
+                  , A.RSVT_PSBLTY_DAYCNT
+                  , A.TODAY_RSVT_PSBLTY_YN
+                  , A.USE_YN
+                  , A.MDFCN_DT
+                  , A.MDFRID
+                  , A.REG_DT
+                  , A.RGTRID
+                  , B.FCLTID 
+                  , B.FCLT_NM
+                  , B.FCLT_NO
+                  , B.ADDR
+                  , B.ADDR_DTL 
+                  , B.APLY_MTHD_CD 
+                  , C.INST_NM 
+                  , C.INSTID 
+                FROM   
+                 TB_FCL_SPCE A
+                 INNER JOIN TB_FCL_FCLT B
+                 ON A.FCLTID = B.FCLTID 
+                 INNER JOIN TB_CMM_INST C
+                 ON B.INSTID = C.INSTID
+               WHERE 1=1 
+                 AND A.SPCEID = #{spceid}
+    </select>
+    
+    <!-- 공간 예약 내역 여부 확인 -->
+    <select id="isThereSpceRsvt" parameterType="SpceVo" resultType="String">
+          /* SpceDao.deleteSpce */
+          SELECT 
+              CASE WHEN COUNT(A.APLYID ) > 0 THEN 'Y'
+                   ELSE 'N'
+              END 
+            FROM 
+             TB_FCL_APLY_RSVTDE A
+             INNER JOIN TB_FCL_SPCE_APLY B
+             ON A.APLYID = B.APLYID 
+           WHERE 1=1
+             AND RSVTDEID IN (
+               SELECT 
+                   A.RSVTDEID 
+                 FROM 
+                   TB_FCL_SPCE_RSVTDE A
+                WHERE A.SPCEID IN (
+                <foreach item="item" collection="spceids"  separator=",">
+                    #{item}
+                 </foreach>
+                )  
+            )
+    </select>
+    <!-- 공간 예약일자 삭제 --> 
+    <update id="deleteSpceRsvtde" parameterType="SpceVo" >
+          /* SpceDao.deleteSpceRsvtde */
+          DELETE FROM TB_FCL_SPCE_RSVTDE
+           WHERE SPCEID IN
+           (
+            <foreach item="item" collection="spceids"  separator=",">
+                #{item}
+             </foreach>
+            )
+    </update>
+    <!-- 공간삭제 --> 
+    <update id="deleteSpce" parameterType="SpceVo" >
+          /* SpceDao.deleteSpce */
+          DELETE FROM TB_FCL_SPCE
+           WHERE SPCEID IN
+           (
+            <foreach item="item" collection="spceids"  separator=",">
+                #{item}
+             </foreach>
+            )
+    </update>
+    
+    
+    
+</mapper>
