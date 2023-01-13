@@ -736,7 +736,7 @@ function fnAppendHidden(p_form, p_obj){
 * 트리구조 확장 / 접기 기능
 * */
 function fnExpendable($wrapper, option) {
-    var opt = jQuery.extend({
+    const opt = jQuery.extend({
 
         /* 확장 / 접기 대상 선택자 */
         expendableTargetSelector: 'li'
@@ -754,32 +754,30 @@ function fnExpendable($wrapper, option) {
         , expendableFixedTargetChildSelector: 'div'
     }, option);
 
-    var $targets = null;
-
+    let $targets = null;
+	$wrapper.addClass('expendable-wrapper');
     $wrapper.on('click', '.expendable-toggle-btn', function () {
         $(this).parent().parent().toggleClass('expendable-collapse')
     });
 
-    var refresh = function(){
-        $wrapper.addClass('expendable-wrapper');
+    const refresh = function(){
         $wrapper.find(".expendable-item").addClass('expendable-item-old')
         $targets = $wrapper.find(opt.expendableTargetSelector);
         $targets.each(function(){
-            var $item = $(this);
-            var $fixed = $item.children(opt.expendableFixedTargetChildSelector);
-            var $child = $item.children(opt.expendableTargetChildSelector);
-            var childContent = $child.html()
+            const $item = $(this);
+            const $fixed = $item.children(opt.expendableFixedTargetChildSelector);
+            const $child = $item.children(opt.expendableTargetChildSelector);
+            const childContent = $child.html()
             if (childContent && childContent.trim()) {
                 $item.removeClass('expendable-item-old').addClass('expendable-item')
                 $fixed.addClass("expendable-item-fixed")
                 $child.addClass("expendable-item-child")
-                if ($fixed && $fixed.children('.expendable-toggle-btn').length === 0) {
-                    $fixed.prepend($("<button/>").addClass("expendable-toggle-btn"))
+                if ($fixed.children('.expendable-toggle-btn').length === 0) {
+                    $fixed.prepend($("<button/>").attr({type : 'button' }).addClass("expendable-toggle-btn"))
                 }
             }
         });
 
-        console.log($wrapper.find('.expendable-item-old'));
         $wrapper
             .find('.expendable-item-old').removeClass('expendable-item expendable-item-old')
                 .children('.expendable-item-child').removeClass('expendable-item-child').end()
@@ -787,18 +785,18 @@ function fnExpendable($wrapper, option) {
                     .children('.expendable-toggle-btn').remove()
     }
 
-    var expendAll = function(){
+    const expendAll = () => {
         $targets.removeClass('expendable-collapse')
     }
-    var collapseAll = function(){
+    const collapseAll = () => {
         $targets.addClass('expendable-collapse')
     }
 
     refresh();
 
     return {
-        refresh: refresh,
-        expendAll: expendAll,
-        collapseAll: collapseAll,
+        refresh,
+        expendAll,
+        collapseAll,
     }
 }
