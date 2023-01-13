@@ -2,10 +2,14 @@ package com.kbrainc.plum.mng.asgsysSrng.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.mng.banner.model.BannerVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -138,6 +142,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 프로그램아이디 */
 	private Integer prgrmid;
 
+	/** 트리순서 */
+	private Integer treeOrd;
+
 	/** 컨설팅 진행여부*/
 	private String cnsltngPrgrsYn;
 
@@ -225,6 +232,39 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 체크리스트아이디 */
 	private Integer chklstid;
 
+	/** 체크리스트 1LV 이름 */
+	private String lv1key;
+
+	/** 체크리스트 2LV 코드 */
+	private String lv2key;
+
+	/** 체크리스트 1LV 이름 */
+	private String chkLv1Cd;
+
+	/** 체크리스트 2LV 코드 */
+	private String chkLv2Cd;
+
+	/** 체크리스트 내용 */
+	private String cn;
+
+	/** 체크리스트 결과 내용*/
+    private String chklstRsltCn;
+
+	/** 문항 id*/
+	private Integer qitemid;
+
+	/** 문항순서 */
+	private Integer ordr;
+
+	/** 점수 */
+	private Integer scr;
+
+	/** 제출상태코드 */
+	private String sbmsnSttsCd;
+
+	/** 배점 id*/
+	private String altm;
+
     /** 신청_일시 */
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
 	private Date  aplyDt;
@@ -244,10 +284,15 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private Integer rgtrid;
 
 	/** 보완요청아이디 */
-	private Integer splmntdmndid;
+	private Integer splmntDmndid;
 
 	/** 의견내용 */
+	@Size(max = 1000, message = "의견내용은 1000자를 넘을 수 없습니다.")
 	private  String opnnCn;
+
+	/** 팝업mode */
+	private  String mode;
+
 	/** 완료처리일자 */
 	private  String cmptnPrcsDe;
 

@@ -1,0 +1,116 @@
+<form id="dtlTabFrm">
+    <input type="hidden" id="cyclid" name="cyclid" th:value="${dtlInfo.cyclid}">
+    <input type="hidden" id="dmndid" name="dmndid" th:value="${dtlInfo.dmndid}">
+<div class="card-header p-t-0 p-b-0">
+    <h3 class="sub-title"><strong>지원단 정보</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+    <div class="mb-0 row">
+        <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+            <div class="mb-0 form-group required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="vstDe"><strong>현장방문일</strong></label>
+                <div class="col-sm-12">
+                    <input type="date" class="form-control form-control-sm" name="vstDe" id="vstDe" placeholder="" th:value="${dtlInfo.vstDe}"/>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="mb-0 form-group required">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="vstHr"><strong>현장방문 시작시간</strong></label>
+                <div class="col-sm-12">
+                    <input type="time" class="form-control form-control-sm" name="vstHr" id="vstHr" placeholder="시(간)분을 24시간제로 입력하세요" th:value="${dtlInfo.vstHr}"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card-header p-t-0 p-b-0">
+    <ul class="nav nav-tabs tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/splmntImprvForm.html">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#tab2Con1" role="tab" id="tab2Con1Link" ><strong>보완개선 요청서</strong></a>
+            </li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html">
+            <li class="nav-item">
+                <a class="nav-link " data-bs-toggle="tab" href="#tab2Con2" role="tab" id="tab2Con2Link" ><strong>보완개선 계획서</strong></a>
+            </li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/dsgnPrgrm/rsltRptlnForm.html">
+            <li class="nav-item">
+                <a class="nav-link " data-bs-toggle="tab" href="#tab2Con3" role="tab" id="tab2Con3Link" ><strong>결과보고서</strong></a>
+            </li>
+        </th:block>
+    </ul>
+</div>
+</form>
+<!-- TAB CONTTENT -->
+<div id="myTabContent2" class="tab-content tabs p-t-20"></div>
+<!-- TAB CONTTENT -->
+
+
+<script th:inline="javascript">
+
+    debugger;
+
+    var implmntIdntySrngDtl = {
+        init: function() {
+            this.setTab();
+            this.registEvent();
+        },
+
+        registEvent: function() {
+            var _this = this;
+            $(".nav-tabs a").on("show.bs.tab", function(event) {
+                var tabId = event.currentTarget.attributes.id.value;
+                _this.selectTab(tabId);
+            });
+        },
+
+        setTab: function() {
+            var tabFlag = false;
+            if(tabFlag == false) {
+                this.selectTab("tab2Con1Link");
+                tabFlag = true;
+            }
+            if(tabFlag == false) {
+                this.selectTab("tab2Con2Link");
+                tabFlag = true;
+            }
+            if(tabFlag == false) {
+                this.selectTab("tab2Con3Link");
+                tabFlag = true;
+            }
+        },
+
+        selectTab: function(tabId) {
+            if(tabId == "tab2Con1Link") {
+                this.loadTabContent("/mng/dsgnPrgrm/splmntImprvForm.html");
+            } else if(tabId == "tab2Con2Link") {
+                this.loadTabContent("/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html");
+            }  else if(tabId == "tab2Con3Link") {
+                this.loadTabContent("/mng/dsgnPrgrm/rsltRptlnForm.html");
+            }
+            $("#" + tabId).parent().addClass("active");
+        },
+
+        loadTabContent: function(uri) {
+        	var dmndid =$("#dmndid").val();
+            $.ajax({
+                cache: false,
+                url: uri + "?dmndid="+dmndid,
+                type: "GET",
+                async: "false",
+                dataType: "html",
+                success: function(result) { //요청이 성공했을때 실행되는 콜백 함수
+                    $("#myTabContent2").html(result);
+                }
+            });
+        }
+    };
+
+    $(function() {
+    	implmntIdntySrngDtl.init();
+    });
+</script>

@@ -492,6 +492,15 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 보완요청아이디 */
     private Integer splmntDmndid;
 
+    /** 요청아이디 */
+    private Integer dmndid;
+
+    /** 요청 내용 */
+    private String dmndCn;
+
+    /** 요청 서류 */
+    private String dmndDcmnt;
+
     /** 차수아이디 */
     private String cyclid;
 
@@ -588,8 +597,46 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 제출_상태_이름      */
     private String sbmsnSttsCdNm;
 
+
+
     /** 제출_확인 */
     private String sbmsnIdnty;
+    /** 심사아이디 */
+    private String srngid;
+
+    /** 담당자아이디 */
+    private String picid;
+
+    /** 방문_일자 */
+    private String vstDe;
+
+    /** 방문_시간 */
+    private String vstHr;
+
+    /** 방문_분 */
+    private String vstMnt;
+
+    /** 종합_의견 */
+    private String gnrlzOpnn;
+
+    /** 등급_코드 */
+    private String grdCd;
+
+    /** 작성자아이디 */
+    private String wrtrid;
+
+    /** 보완개선 요청서 */
+    private  String splmntImprvDmndln;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    /** 보완요청 완료일자 */
+    private  String dmndCmptnDe;
+
+    /** 보완요청 계획서 */
+    private  String splmntImprvWrtpln;
+
+    /** 보완요청 결과보고서 */
+    private  String splmntImprvltRptp;
 
     /** 최종_제출_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

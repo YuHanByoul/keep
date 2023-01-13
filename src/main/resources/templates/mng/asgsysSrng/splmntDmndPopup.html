@@ -1,4 +1,9 @@
 <form id="splmntDmndFrm">
+<input type="hidden" id="popPrgrmid" name="popPrgrmid" th:value="${splmntDmndInfo.prgrmid}">
+<input type="hidden" id="popSplmntDmndid" name="popSplmntDmndid" th:value="${splmntDmndInfo.splmntDmndid}">
+<input type="hidden" id="popSsttsCd" name="popSttsCd" th:value="${sttsCd}">
+<input type="hidden" id="mode" name="mode" th:value="${mode}">
+
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
             <div class="modal-header">
@@ -13,7 +18,7 @@
                         <div class="mb-2 form-group row">
                             <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></div>
                             <div class="col-12">
-                                <span kattr:select_code="splmntDmndSttsCd" th:value="${splmntDmndInfo.sttsCd}" name="sttsCd" th:attr="grpCd=111" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
+                                <span kattr:select_code="splmntDmndSttsCd" th:value="${splmntDmndInfo.sttsCd}" name="sttsCd" th:attr="grpCd=111,selectedCd=${splmntDmndInfo.sttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true">
                             </div>
                         </div>
                         <div class="mb-2 form-group row required">
@@ -26,48 +31,76 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary waves-effect waves-light " onclick="saveSplmntDmnd()">저장</button>
+                <button type="button" id="saveBtn" class="btn btn-primary waves-effect waves-light "   onclick="saveSplmntDmnd()">저장</button>
+                <button type="button" id="deleteBtn" class="btn btn-primary waves-effect waves-light " onclick="deleteSplmntDmnd()">삭제</button>
             </div>
         </div>
     </div>
 </form>
 <script th:inline="javascript">
 
+var url="/mng/asgsysSrng/";
+
 function fn_initSplmntDmndPopup() {
 
-	/*<![CDATA[*/
-    var prgrmid = /*[[${param.prgrmid}]]*/null;/*]]>*/
+    //서류요청
+    if("dcmntDmnd" == $("#mode").val()) {
 
-    /*<![CDATA[*/
-    var sttsCd = /*[[${param.sttsCd}]]*/null;/*]]>*/
-
-    $("#splmntDmndSttsCd").val(""+sttsCd);
-
-    if($("#splmntDmndSttsCd").val != "") {
     	$("#splmntDmndSttsCd").attr("disabled",true);
+    	if("" != $("#popSsttsCd").val()){
+    		$("#splmntDmndSttsCd").val($("#popSsttsCd").val());
+    		$("#deleteBtn").show();
+    	}
     }
+    //보완요청
+    else if("dcmntDmnd" == $("#mode").val()) {
 
-
-
-
+    }
+    else{
+    	$("#splmntDmndSttsCd").attr("disabled",false);
+    	$("#deleteBtn").hide();
+    }
 }
+
+var validator= $("#chgAplyDtlPopupFrm").validate(
+    {
+        rules    : { opnnCn : { required: true, maxlength: 400 } }
+      , messages : { opnnCn : { required:"변경사유를 입력해 주십시오." , maxlength: '의견 내용은 1000자를 넘을 수 없습니다.' } }
+    })
+
 
 function saveSplmntDmnd() {
 
+	var vUrl = "";
+	if("" == $("#popSplmntDmndid").val()){
+    	//insert
+		vUrl = url + "insertSplmntDmnd.do"
+	}else{
+		//update
+		vUrl = url +"updateSplmntDmnd.do"
+	}
 	if(!confirm("저장 하시겠습니까?")){return;}
 
-    var data =  $("#splmntDmndFrm").serialize() ;
+	var data = {
+            "prgrmid"      : $("#popPrgrmid").val()
+          , "splmntDmndid" : $("#popSplmntDmndid").val()
+          , "sttsCd"       : $("#sttsCd").val()
+          , "opnnCn"       : $("#opnnCn").val()
+    }
+
+    debugger;
 
     $.ajax({
-        url : "/mng/asgsysSrng/updateSplmntDmnd.do",
+        url : vUrl,
         type: 'POST',
         cache : false,
         dataType: 'json',
         data : data,
         success : function (data){
             if(data.result=="success"){
-                alert("수정이 완료 되었습니다.");
-                //loadJdsgTabContent("/mng/asgsysSrng/sftyMngForm.html?prgrmid=" + prgrmid);
+                alert("저장이 완료 되었습니다.");
+                splmntDmndAddModal.hide();
+                splmntDmndGridHelper.resetListContent();
             }else{
                 alert("저장중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
             }
@@ -75,8 +108,38 @@ function saveSplmntDmnd() {
         error : function (error){
         }
     });
-
 };
+
+function deleteSplmntDmnd(){
+	if(!confirm("삭제 하시겠습니까?")){return;}
+
+	var data = {
+            "prgrmid"      : $("#popPrgrmid").val()
+          , "splmntDmndid" : $("#popSplmntDmndid").val()
+          , "sttsCd"       : $("#sttsCd").val()
+          , "opnnCn"       : $("#opnnCn").val()
+    }
+
+    $.ajax({
+        url : url + "deleteSplmntDmnd.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : data,
+        success : function (data){
+            if(data.result=="success"){
+                alert("삭제가 완료 되었습니다.");
+                splmntDmndGridHelper.resetListContent();
+                splmntDmndAddModal.hide();
+            }else{
+                alert("삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error : function (error){
+        }
+    });
+
+}
 
 fn_initSplmntDmndPopup();
 

@@ -110,6 +110,51 @@ public interface AsgsysSrngDao {
 	public List<AsgsysSrngVo> selectSplmntDmndList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 보완요청 등록
+	*
+	* @Title : insertSplmntDmnd
+	* @Description : 보완요청 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 보완요청 수정
+	*
+	* @Title : updateSplmntDmnd
+	* @Description : 보완요청 수정
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 보완요청 삭제
+	 *
+	 * @Title : deleteSplmntDmnd
+	 * @Description : 보완요청 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 보완요청 조회
+	*
+	* @Title : selectSplmntDmnd
+	* @Description : 보완요청 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo
+	* @throws Exception
+	*/
+	public AsgsysSrngVo selectSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램 우수성 조회
 	*
 	* @Title : selectPrgrmDstnctn
@@ -263,6 +308,17 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 지원단심사 체크리스트 조회
+	*
+	* @Title : selectSprtgrpSrngList
+	* @Description : 지원단심사 체크리스트 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 지원단심사 등록
 	*
 	* @Title : insertSprtgrpSrng
@@ -276,8 +332,30 @@ public interface AsgsysSrngDao {
 	/**
 	 * 지원단심사 심사의견 수정
 	 *
-	 * @Title : updateSprtgrpSrng
+	 * @Title : updateSprtgrpOpnn
 	 * @Description : 지원단심사 심사의견 수정
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateSprtgrpOpnn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 체크리스트 제출 수정
+	 *
+	 * @Title : updateChklstSbmsn
+	 * @Description : 체크리스트 제출 수정
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int updateChklstSbmsn(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 지원단심사 심사 수정
+	 *
+	 * @Title : updateSprtgrpSrng
+	 * @Description : 지원단심사 심사 수정
 	 * @param asgsysSrngVo
 	 * @return int
 	 * @throws Exception
@@ -360,5 +438,14 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
+
+
+
+
+
 
 }

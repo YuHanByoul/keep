@@ -162,46 +162,55 @@
 
     <!-- 지정프로그램상세 조회. -->
     <select id="selectDsgnAplyDtlInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
-    SELECT
-        PRGRMID
-      , INSTID              /* 기관아이디 */
-      , APLCNTID            /* 신청자아이디 */
-      , APLCNT_NM           /* 신청자_이름 */
-      , APLCNT_EML          /* 신청자_이메일 */
-      , APLCNT_MOBLPHON     /* 신청자_휴대폰 */
-      , INST_NM             /* 기관_이름 */
-      , INST_EML            /* 기관_이메일 */
-      , INST_CNTCT          /* 기관_연락처 */
-      , INST_HMPG           /* 기관_홈페이지 */
-      , INST_TYPE_CD        /* 기관_유형_코드 */
-      , INST_RGN_CD         /* 기관_지역_코드 */
-      , INST_ZIP            /* 기관_우편번호 */
-      , INST_ADDR           /* 기관_주소 */
-      , INST_DTLADDR        /* 기관_상세주소 */
-      , PRGRM_NM            /* 프로그램_이름 */
-      , FILEGRPID           /* 파일그룹아이디 */
-      , STTS_CD             /* 상태_코드 */
-      , DSGN_CYCL           /* 지정_차수 */
-      , DSGN_NO             /* 지정_번호 */
-      , DSGN_DE             /* 지정_일자 */
-      , DSGN_BGNG_DE        /* 지정_시작_일자 */
-      , DSGN_END_DE         /* 지정_종료_일자 */
-      , AUTZRID             /* 승인자아이디 */
-      , CHKLSTID            /* 체크리스트아이디 */
-      , CNSLTNG_PRGRS_YN    /* 컨설팅__진행_여부 */
-      , CNSLTNGID           /* 컨설텅아이디 */
-      , APLY_DT             /* 신청_일시 */
-      , MDFCN_DT            /* 수정_일시 */
-      , MDFRID              /* 수정자아이디 */
-      , REG_DT              /* 등록_일시 */
-      , RGTRID              /* 등록자아이디 */
-      , CONCAT(DSGN_CYCL, "/", DSGN_NO)    AS CYCL_NO
-      , CONCAT(DSGN_BGNG_DE, " ~ ", DSGN_END_DE )   AS DSGN_PRD
-      , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = APLCNTID) AS ACNT
-    FROM TB_ASS_PRGRM
-    WHERE 1=1
-    AND PRGRMID = #{prgrmid}
-
+        SELECT
+            A.PRGRMID
+          , A.INSTID              /* 기관아이디 */
+          , A.APLCNTID            /* 신청자아이디 */
+          , A.APLCNT_NM           /* 신청자_이름 */
+          , A.APLCNT_EML          /* 신청자_이메일 */
+          , A.APLCNT_MOBLPHON     /* 신청자_휴대폰 */
+          , A.INST_NM             /* 기관_이름 */
+          , A.INST_EML            /* 기관_이메일 */
+          , A.INST_CNTCT          /* 기관_연락처 */
+          , A.INST_HMPG           /* 기관_홈페이지 */
+          , A.INST_TYPE_CD        /* 기관_유형_코드 */
+          , A.INST_RGN_CD         /* 기관_지역_코드 */
+          , A.INST_ZIP            /* 기관_우편번호 */
+          , A.INST_ADDR           /* 기관_주소 */
+          , A.INST_DTLADDR        /* 기관_상세주소 */
+          , A.PRGRM_NM            /* 프로그램_이름 */
+          , A.FILEGRPID           /* 파일그룹아이디 */
+          , A.STTS_CD             /* 상태_코드 */
+          , A.DSGN_CYCL           /* 지정_차수 */
+          , A.DSGN_NO             /* 지정_번호 */
+          , A.DSGN_DE             /* 지정_일자 */
+          , A.DSGN_BGNG_DE        /* 지정_시작_일자 */
+          , A.DSGN_END_DE         /* 지정_종료_일자 */
+          , A.AUTZRID             /* 승인자아이디 */
+          , A.CHKLSTID            /* 체크리스트아이디 */
+          , A.CNSLTNG_PRGRS_YN    /* 컨설팅__진행_여부 */
+          , A.CNSLTNGID           /* 컨설텅아이디 */
+          , A.APLY_DT             /* 신청_일시 */
+          , A.MDFCN_DT            /* 수정_일시 */
+          , A.MDFRID              /* 수정자아이디 */
+          , A.REG_DT              /* 등록_일시 */
+          , A.RGTRID              /* 등록자아이디 */
+          , CONCAT(A.DSGN_CYCL, "/", A.DSGN_NO)    AS CYCL_NO
+          , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
+          , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.APLCNTID) AS ACNT
+          , B.SPLMNT_DMNDID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+        (
+            SELECT
+                MAX(SPLMNT_DMNDID)    AS SPLMNT_DMNDID
+              , PRGRMID
+            FROM TB_ASS_PRGRM_SPLMNT_DMND
+            WHERE PRGRMID = #{prgrmid}
+        ) B ON A.PRGRMID = B.PRGRMID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 프로그램 우수성 조회. -->
@@ -661,6 +670,77 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 보완요청 조회 -->
+    <select id="selectSplmntDmnd" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSplmntDmnd */
+
+        SELECT
+            SPLMNT_DMNDID    /* 보완_요청아이디 */
+          , PRGRMID          /* 프로그램아이디 */
+          , STTS_CD          /* 상태_코드 */
+          , OPNN_CN          /* 의견_내용 */
+          , CMPTN_PRCS_DE    /* 완료_처리_일자 */
+          , MDFCN_DT         /* 수정_일시 */
+          , MDFRID           /* 수정자아이디 */
+          , REG_DT           /* 등록_일시 */
+          , RGTRID           /* 등록자아이디 */
+        FROM
+            TB_ASS_PRGRM_SPLMNT_DMND
+        WHERE 1=1
+        AND SPLMNT_DMNDID = #{splmntDmndid}
+
+    </select>
+
+    <!-- 보완요청 등록 -->
+    <insert id="insertSplmntDmnd" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.insertSplmntDmnd*/
+        INSERT INTO
+        TB_ASS_PRGRM_SPLMNT_DMND (
+            PRGRMID
+          , STTS_CD
+          , OPNN_CN
+          , CMPTN_PRCS_DE
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES (
+            #{prgrmid    }
+          , #{sttsCd     }
+          , #{opnnCn     }
+          , #{cmptnPrcsDe}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 보완요청 수정 -->
+    <update id="updateSplmntDmnd" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSplmntDmnd*/
+        UPDATE
+            TB_ASS_PRGRM_SPLMNT_DMND
+        SET
+            STTS_CD       = #{sttsCd}
+          , OPNN_CN       = #{opnnCn}
+          , CMPTN_PRCS_DE = #{cmptnPrcsDe}
+          , MDFCN_DT      = NOW()
+          , MDFRID        = #{user.userid}
+        WHERE
+            SPLMNT_DMNDID = #{splmntDmndid}
+
+    </update>
+
+    <!-- 보완요청 삭제 -->
+    <delete id="deleteSplmntDmnd" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.deleteSplmntDmnd*/
+        DELETE FROM
+            TB_ASS_PRGRM_SPLMNT_DMND
+        WHERE
+            SPLMNT_DMNDID = #{splmntDmndid}
+    </delete>
+
     <!-- 신청정보탭 안전관리 상세 조회 -->
     <select id="selectSftyMng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
@@ -980,8 +1060,6 @@
               , A.MDFCN_DT
               , A.MDFRID
               , A.RGTRID
-              , G.FORMID       /*양식ID*/
-              , F.SBMSNID
               , C.STY_NIGHT
               , C.STY_DAYTM
               , C.OPER_FRM_CD
@@ -989,6 +1067,10 @@
     --        , '첨부파일'
     --        , '증빙서류'
               , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
+              , B.CHKLSTID
+              , F.CHKLST_RSLT_CN
+              , F.SBMSNID
+              , F.SCR
         FROM
             TB_ASS_SPRTGRP_SRNG A
         LEFT OUTER JOIN
@@ -998,14 +1080,153 @@
         LEFT OUTER JOIN
             TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_SRNG_SBMSN F ON A.PRGRMID = F.PRGRMID
-        LEFT OUTER JOIN
-            TB_ASS_SRNG_FORM G ON G.FORMID= F.FORMID
+            TB_ASS_CHKLST_SBMSN F ON A.PRGRMID = F.PRGRMID
         WHERE 1=1
         AND  A.SPRTGRPID= #{sprtgrpid}
     </select>
 
+    <!-- 지원단심사 체크리스트 조회
+    <select id="selectCheckList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectCheckList*/
+        SELECT
+            A.CHKLSTID
+          , A.CHKLST_NM
+          , B.QITEMID
+          , B.ORDR
+          , C.SE_CD
+          , ( SELECT CD FROM TB_CMM_CD WHERE CD = CONCAT(LEFT(C.SE_CD, 4),'00') ) AS CHK_LV1_CD
+          , ( SELECT CD FROM TB_CMM_CD WHERE CD = C.SE_CD) AS CHK_LV2_CD
+          , ( SELECT CD_NM  FROM TB_CMM_CD WHERE CD = CONCAT(LEFT(C.SE_CD, 4),'00') ) AS CHK_LV1_NM
+          , ( SELECT CD_NM  FROM TB_CMM_CD WHERE CD = C.SE_CD) AS CHK_LV2_NM
+          , C.CN
+          , C.IDNTY_MTTR
+          , C.ALTM
+          , C.USE_YN
+        FROM
+            TB_ASS_CHKLST A
+        LEFT OUTER JOIN
+            TB_ASS_CHKLST_QITEM_MAPNG B ON A.CHKLSTID = B.CHKLSTID
+        LEFT OUTER JOIN
+            TB_ASS_CHKLST_QITEM C ON B.QITEMID = C.QITEMID
+        WHERE A.CHKLSTID = #{chklstid}
+        AND C.USE_YN = 'Y'
+        GROUP BY B.ORDR
+
+    </select>
+-->
+
+    <!-- 지원단심사 체크리스트 조회 -->
+    <select id="selectCheckList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectCheckList*/
+        WITH RECURSIVE CODE_CTE(LV1KEY, LV2KEY, TITLE, TREE_ORD, QITEMID) AS (
+            SELECT
+                IFNULL(UPPR_CD , '')  AS LV1KEY
+              , CD                    AS LV2KEY
+              , CONCAT(CD_NM)         AS TITLE
+              , CASE WHEN UPPR_CD  = 0  THEN 1 ELSE 2 END AS TREE_ORD
+              , 0 AS  QITEMID
+            FROM
+                TB_CMM_CD
+            WHERE 1=1
+                AND CDGRPID != 'G0001'
+                AND CDGRPID  = '140'
+            UNION ALL
+            SELECT
+                IFNULL(UPPR_CD , '') AS LV1KEY
+              , CD AS LV2KEY
+              , CD_NM AS TITLE
+              , 3 AS TREE_ORD
+              , D.QITEMID AS QITEMID
+            FROM
+                (
+                  SELECT
+                    (SELECT UPPR_CD FROM TB_CMM_CD WHERE C.SE_CD = CD) AS UPPR_CD
+                  , C.SE_CD     AS CD
+                  , C.CN        AS CD_NM
+                  , B.ORDR      AS ORD
+                  , C.QITEMID
+                FROM
+                    TB_ASS_CHKLST_QITEM_MAPNG B
+                LEFT OUTER JOIN
+                    TB_ASS_CHKLST_QITEM C ON B.QITEMID = C.QITEMID
+                WHERE 1=1
+                AND B.CHKLSTID = #{chklstid}
+                AND C.USE_YN = 'Y'
+                ) D,
+                CODE_CTE C
+            WHERE
+                UPPR_CD = C.LV2KEY
+        )
+        SELECT
+             A.LV1KEY
+           , A.LV2KEY
+           , A.TITLE    AS CN
+           , A.TREE_ORD
+           , A.QITEMID
+           , B.ALTM
+           , B.ORDR
+           , B.SCR
+        FROM
+            CODE_CTE A
+        LEFT OUTER JOIN
+            (
+                SELECT
+                    B.QITEMID
+                  , C.SE_CD
+                  , C.CN
+                  , C.IDNTY_MTTR
+                  , C.ALTM
+                  , C.USE_YN
+                  , C.MDFCN_DT
+                  , C.MDFRID
+                  , C.REG_DT
+                  , C.RGTRID
+                  , B.CHKLSTID
+                  , B.ORDR
+                  , D.SCR
+                FROM
+                    TB_ASS_CHKLST_QITEM_MAPNG B
+                LEFT OUTER JOIN
+                    TB_ASS_CHKLST_QITEM C ON B.QITEMID = C.QITEMID
+                LEFT OUTER JOIN
+                    TB_ASS_CHKLST_ANS D ON C.QITEMID = D.QITEMID
+            ) B ON A.QITEMID = B.QITEMID
+        ORDER BY LV2KEY, TREE_ORD, B.ORDR
+    </select>
+
+
     <!-- 지원단심사 등록 -->
+
+    <!-- 지원단심사 수정 -->
+    <update id="updateSprtgrpSrng" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSprtgrpSrng */
+        UPDATE
+            TB_ASS_SPRTGRP_SRNG
+        SET
+            SRNG_OPNN = #{srngOpnn}
+          , MDFCN_DT  = NOW()
+          , MDFRID    = #{user.userid}
+        WHERE SPRTGRPID= #{sprtgrpid}
+
+    </update>
+
+    <!-- 체크리스트 제출 수정 -->
+    <update id="updateChklstSbmsn" parameterType="AsgsysSrngVo" >
+
+        UPDATE
+            TB_ASS_CHKLST_SBMSN
+        SET
+            SCR             = #{scr}
+          , CHKLST_RSLT_CN  = #{chklstRsltCn}
+          /*, USER_IP         = ''*/
+          , SBMSN_STTS_CD   = #{sbmsnSttsCd}
+          , SBMSN_DT        = NOW()
+          , USERID          = #{user.userid}
+          , MDFCN_DT        = NOW()
+          , MDFRID          = #{user.userid}
+        WHERE SBMSNID       = #{sbmsnid}
+
+    </update>
 
     <!-- 지원단심사의견 수정 -->
     <update id="updateSprtgrpOpnn" parameterType="AsgsysSrngVo" >

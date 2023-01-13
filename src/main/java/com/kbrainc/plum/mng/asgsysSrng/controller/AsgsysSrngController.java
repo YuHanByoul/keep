@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -648,6 +649,17 @@ public class AsgsysSrngController {
     }
 
     /**
+     * @Title : prgrmDstnctn
+     * @Description : 지정신청목록 엑셀 다운로드
+     * @param AsgsysSrngVo객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/aplyExcelDownList.do")
+    public void aplyExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	asgsysSrngService.aplyExcelDownList(asgsysSrngVo, response, request);
+    }
+
+    /**
      * 보완요청 팝업 오픈
      *
      * @Title : splmntDmndPopup
@@ -659,20 +671,133 @@ public class AsgsysSrngController {
      * @return void
      */
     @RequestMapping(value = "/mng/asgsysSrng/splmntDmndPopup.html")
-    public String splmntDmndPopup(@RequestParam(value ="prgrmid",required = false) String prgrmid ,@RequestParam(value ="sttsCd",required = false) String sttsCd, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    public String splmntDmndPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	model.addAttribute("mode", asgsysSrngVo.getMode());
+    	model.addAttribute("sttsCd", asgsysSrngVo.getSttsCd());
+
+
+
+    	if(null != asgsysSrngVo.getSplmntDmndid()) {
+    		model.addAttribute("splmntDmndInfo", asgsysSrngService.selectSplmntDmnd(asgsysSrngVo));
+    	}else {
+    		AsgsysSrngVo splmntDmndInfo = new AsgsysSrngVo();
+
+    		splmntDmndInfo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+    		model.addAttribute("splmntDmndInfo", splmntDmndInfo);
+    	}
+
     	return "mng/asgsysSrng/splmntDmndPopup";
     }
 
-    /**
-    * @Title : prgrmDstnctn
-    * @Description : 지정신청목록 엑셀 다운로드
-    * @param AsgsysSrngVo객체
-    * @throws Exception 예외
-    */
-	@RequestMapping(value = "/mng/asgsysSrng/aplyExcelDownList.do")
-	public void aplyExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
-		asgsysSrngService.aplyExcelDownList(asgsysSrngVo, response, request);
+
+	/**
+	* 보완요청 등록
+	*
+	* @Title : insertSplmntDmnd
+	* @Description : 보완요청 등록
+	* @param asgsysSrngVo
+	* @param bindingResult1
+	* @param user
+	* @return Map<String,Object>
+	* @throws Exception
+	*/
+	@RequestMapping(value = "/mng/asgsysSrng/insertSplmntDmnd.do")
+	@ResponseBody
+	public Map<String, Object> insertSplmntDmnd(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+		Map<String, Object> resultMap = new HashMap<>();
+
+		int retVal = 0 ;
+
+		if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+		asgsysSrngVo.setUser(user);
+		retVal = asgsysSrngService.insertSplmntDmnd(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+		return resultMap;
+   }
+
+	/**
+	 * 보완요청 수정
+	 *
+	 * @Title : updateSplmntDmnd
+	 * @Description : 보완요청 수정
+	 * @param asgsysSrngVo
+	 * @param bindingResult1
+	 * @param user
+	 * @return Map<String,Object>
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/mng/asgsysSrng/updateSplmntDmnd.do")
+	@ResponseBody
+	public Map<String, Object> updateSplmntDmnd(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+		Map<String, Object> resultMap = new HashMap<>();
+
+		int retVal = 0 ;
+
+		if (bindingResult1.hasErrors()) {
+			FieldError fieldError = bindingResult1.getFieldError();
+			if (fieldError != null) {
+				resultMap.put("msg", fieldError.getDefaultMessage());
+			}
+			return resultMap;
+		}
+
+		asgsysSrngVo.setUser(user);
+		retVal = asgsysSrngService.updateSplmntDmnd(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+		return resultMap;
 	}
+
+	/**
+	 * 보완요청 삭제
+	 *
+	 * @Title : deleteSplmntDmnd
+	 * @Description : 보완요청 삭제
+	 * @param asgsysSrngVo
+	 * @param user
+	 * @return Map<String,Object>
+	 * @throws Exception
+	 */
+    @RequestMapping(value = "/mng/asgsysSrng/deleteSplmntDmnd.do")
+    @ResponseBody
+    public Map<String, Object> deleteSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<>();
+
+		int retVal = 0 ;
+
+		retVal = asgsysSrngService.deleteSplmntDmnd(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "삭제 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "삭제 실패했습니다.");
+		}
+		return resultMap;
+    }
 
     /**
      * @Title : dsgnSrngForm
@@ -854,7 +979,6 @@ public class AsgsysSrngController {
         return resultMap;
     }
 
-
     /**
     * 지원단심사 등록 화면 이동
     *
@@ -867,7 +991,13 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngInsertForm.html")
     public String sprtgrpSrngInsertForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	model.addAttribute("sprtgrpSrngInfo", asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo));
+
+    	AsgsysSrngVo asgsysSrngInfo = asgsysSrngService.selectSprtgrpSrng(asgsysSrngVo);
+
+    	model.addAttribute("sprtgrpSrngInfo", asgsysSrngInfo);
+
+    	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(asgsysSrngInfo));
+
         return "mng/asgsysSrng/sprtgrpSrngInsertForm";
     }
 
@@ -883,13 +1013,23 @@ public class AsgsysSrngController {
     */
     @RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
     @ResponseBody
-    public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertSprtgrpSrng(@RequestParam Map<String, Object> saveData, @Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    	logger.info("asgsysSrngVo : " + saveData.toString());
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
 
     	asgsysSrngVo.setUser(user);
 
     	int retVal = 0;
+
 
     	if(null == asgsysSrngVo.getRsltid()) {
     		retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);
