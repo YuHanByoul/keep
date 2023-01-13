@@ -166,8 +166,10 @@ public class PstVo extends ParentRequestVo {
 	
 	//현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer curFxdNtcCnt;
-	
-    
+
+    // 사이트 검색용
+    private String searchSite;
+
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
         UserVo clone = (UserVo) SerializationUtils.clone(user);

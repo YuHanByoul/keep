@@ -1,9 +1,7 @@
 package com.kbrainc.plum.mng.chklst.model;
 
 import java.util.Date;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -35,6 +33,9 @@ public class ChklstQitemMapngVo extends ParentRequestVo {
     /** 로그인 사용자 정보 */
     private UserVo user;
     
+    /** 체크리스트 아이디 */
+    private int chklstid;
+    
     /** 문항 아이디 */
     private int qitemid;
     
@@ -47,8 +48,14 @@ public class ChklstQitemMapngVo extends ParentRequestVo {
     /** 구분 코드명 */
     private String cn;
     
+    /** 트리 뎁스 */
+    private int treeOrd;
+    
     /** 배점 */
     private int altm;
+    
+    /** 문항 목록 */
+    private List<ChklstQitemVo> qitemList; 
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

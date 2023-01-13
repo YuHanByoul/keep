@@ -56,6 +56,8 @@ public class ExpertRelationVo extends ParentRequestVo {
     private Integer filegrpid;
     private String ttl;
     private List<FileVo> fileVo;
+    private Integer instid;
+    private String instNm;
 
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;

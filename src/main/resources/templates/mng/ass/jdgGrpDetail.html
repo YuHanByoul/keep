@@ -10,36 +10,37 @@
     <form id="jdgGrpMngForm" name="jdgGrpMngForm">
         <input type="hidden" name="grpId" id="grpId" th:value="${jdgGrpInfo.grpId}">
         <div class="card">
-        <div class="card-header p-b-0">
-            <h3 class="sub-title"><strong>기본정보</strong></h3>
-        </div>
-        <div class="card-block-small p-t-0">
-            <div class="mb-2 form-group row required">
-                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="grpNm"><strong>심사위원 그룹명</strong></label>
-                <div class="col-12">
-                    <input type="text" class="form-control form-control-sm" id="grpNm" name="grpNm" aria-label="Text input with dropdown button" placeholder="심사위원 그룹명" th:value="${jdgGrpInfo.grpNm}" >
+            <div class="card-header p-b-0">
+                <h3 class="sub-title"><strong>기본정보</strong></h3>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="mb-2 form-group row required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="grpNm"><strong>심사위원 그룹명</strong></label>
+                    <div class="col-12">
+                        <input type="text" class="form-control form-control-sm" id="grpNm" name="grpNm" aria-label="Text input with dropdown button" placeholder="심사위원 그룹명"
+                               th:value="${jdgGrpInfo.grpNm}">
+                    </div>
+                </div>
+                <div class="mb-2 row">
+                    <div class="col-12">
+                        <span kattr:switch_yn="useYnChk" label="사용여부" th:attr="defaultVal=${jdgGrpInfo.useYn == null ? 'Y':jdgGrpInfo.useYn }" isAdmin="true"/>
+                    </div>
+                </div>
+                <div class="mb-2 form-group row">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="regDt"><strong>등록일</strong></label>
+                    <div class="col-auto">
+                        <input type="text" class="form-control form-control-sm" id="regDt" name="regDt"
+                               th:value="${jdgGrpInfo.regDt != null ? #dates.format(jdgGrpInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly/>
+                    </div>
                 </div>
             </div>
-            <div class="mb-2 row">
-                <div class="col-12">
-                    <span kattr:switch_yn="useYnChk" label="사용여부" th:attr="defaultVal=${jdgGrpInfo.useYn == null ? 'Y':jdgGrpInfo.useYn }" isAdmin="true"/>
-                </div>
-            </div>
-            <div class="mb-2 form-group row">
-                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="regDt"><strong>등록일</strong></label>
-                <div class="col-auto">
-                    <input type="text" class="form-control form-control-sm" id="regDt" name="regDt"
-                           th:value="${jdgGrpInfo.regDt != null ? #dates.format(jdgGrpInfo.regDt, 'yyyy-MM-dd') : #dates.format(#dates.createNow(), 'yyyy-MM-dd')}" readonly />
-                </div>
+            <div class="card-block-small ">
+                <button type="button" class="btn btn-disabled m-r-5" onclick="jdgGrpDetail.cancel()">취소</button>
+                <th:block sec:authorize-url="/mng/ass/insertJdgGrpInfo.do">
+                    <button type="button" class="btn btn-primary" onclick="jdgGrpDetail.insert()">저장</button>
+                </th:block>
             </div>
         </div>
-        <div class="card-block-small ">
-            <button type="button" class="btn btn-disabled m-r-5" onclick="jdgGrpDetail.cancel()">취소</button>
-            <th:block sec:authorize-url="/mng/ass/insertJdgGrpInfo.do">
-                <button type="button" class="btn btn-primary" onclick="jdgGrpDetail.insert()">저장</button>
-            </th:block>
-        </div>
-    </div>
     </form>
 </div>
 <div class="col-12 col-lg-6">
@@ -51,7 +52,7 @@
             </div>
             <div class="col-12 col-md-6 text-right">
                 <div class="col-sm-12 btn-group-sm">
-                    <button type="button" id='exprtSearchBtn'class="btn btn-inverse" onclick="jdgGrpDetail.openExpertModal()">전문가 검색</button>
+                    <button type="button" id='exprtSearchBtn' class="btn btn-inverse" onclick="jdgGrpDetail.openExpertModal()">전문가 검색</button>
                 </div>
             </div>
         </div>
@@ -90,9 +91,9 @@
             })
         },
 
-        openExpertModal: function() {
+        openExpertModal: function () {
             var url = "/mng/ass/jdgGrpMngExpertModal.html";
-            $("#expertSearchModal").load(url, function(response, status, xhr) {
+            $("#expertSearchModal").load(url, function (response, status, xhr) {
                 if (status == "success") {
                     expertSearchModal = new bootstrap.Modal($('#expertSearchModal'));
                     expertSearchModal.show();
@@ -100,7 +101,7 @@
             });
         },
 
-        writeExpertJsGridData: function() {
+        writeExpertJsGridData: function () {
             $('#expertJsGrid').jsGrid({
                 height: "auto",
                 width: "100%",
@@ -216,7 +217,7 @@
             });
         },
 
-        insert : function() {
+        insert: function () {
             var url = jdgGrpDetail.insertUrl;
 
             if ($('#grpId').val() != '') {
@@ -232,8 +233,7 @@
                     alert('접근권한이 없습니다.');
                     return;
                 }
-            }
-            else if (url == jdgGrpDetail.updateUrl) {
+            } else if (url == jdgGrpDetail.updateUrl) {
                 var isSec = false;
                 /*[# sec:authorize-url="/mng/ass/updateJdgGrpInfo.do"]*/
                 isSec = true;
@@ -275,18 +275,18 @@
 
         },
 
-        cancel : function() {
+        cancel: function () {
             gridHelper.resetPageContent()
         }
     }
-    $(function() {
+    $(function () {
         jdgGrpDetail.init();
 
         /*<![CDATA[*/
         var grpId = /*[[${jdgGrpInfo.grpId}]]*/null;
         /*]]>*/
-        if(grpId == null) {
-            $('#exprtSearchBtn').attr('disabled',true);
+        if (grpId == null) {
+            $('#exprtSearchBtn').attr('disabled', true);
         }
     })
 </script>

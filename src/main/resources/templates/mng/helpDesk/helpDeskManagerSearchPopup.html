@@ -11,11 +11,11 @@
                 <div class="card-block-small">
                     <form id="helpDeskModalSearchForm" name="helpDeskModalSearchForm" onsubmit="return false;">
                         <div class="row">
-                            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                            <div class="col-lg-3 col-md-6 mb-3">
                                 <div class="mb-0 form-group">
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                     <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                        <select name="searchType" id='searchType' class="form-select form-control form-control-sm form-control-primary form-bg-primary">
+                                        <select name="searchType" id='searchType' class="form-select form-control form-control-sm">
                                             <option value="">- 선택 -</option>
                                             <option value="nm">이름</option>
                                             <option value="acnt">아이디</option>
@@ -24,14 +24,14 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-6">
+                            <div class="col-lg-3 col-md-6 mb-3">
                                 <div class="mb-0 form-group" >
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관</strong></div>
                                     <th:block kattr:select_inst="searchInst" selectedId="" firstOptTxt="- 전체 -" firstOptVal="" secondOptTxt="- 소속없음 -" secondOptVal="N" ></th:block>
                                 </div>
                             </div>
                         </div>
-                        <div class="m-t-20 text-center">
+                        <div class="mt-1 p-t-20 text-center border-top">
                             <button type="button" class="btn btn-disabled m-r-5" onclick="helpDeskModalSearchInit()">초기화</button>
                             <button type="button" class="btn btn-primary" onclick="helpDeskModalSearch()">검색</button>
                         </div>
@@ -61,20 +61,6 @@
 
 <script th:inline="javascript">
     var managerSelectedItems;
-
-    function mapCamelCaseToUnderscore(sortField) {
-        var result = "";
-        for (var i = 0; i < sortField.length; i++) {
-            if (sortField[i] === sortField[i].toUpperCase()) {
-                result += "_";
-                result += sortField[i].toLowerCase();
-            } else {
-                result += sortField[i];
-            }
-        }
-        return result;
-    }
-
     $(function () {
         writeHelpDeskModalData();
         managerSelectedItems = [];
@@ -128,7 +114,7 @@
                     ]
 
                     if (filter.sortField != undefined) {
-                        params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                        params.push({name: "orderField", value: filter.sortField});
                         params.push({name: "orderDirection", value: filter.sortOrder});
                     } else {
                         params.push({name: "orderField", value: 'reg_dt'});
@@ -172,8 +158,8 @@
                 },
                 {name: 'userid', css: 'hide'},
                 {title: '사용자', name: 'nm', type: "text", width: "150"},
-                {title: '소속기관', name: 'instNm', type: "text", width: "150"},
-                {title: '역할', name: 'roleNm', type: "text", width: "120", align: "center", cellRenderer: cellRendererExprtRole, sorting: 'false'}
+                {title: '소속기관', name: 'instNm', type: "text", width: "150", sorting: false},
+                {title: '역할', name: 'roleNm', type: "text", width: "120", align: "center", cellRenderer: cellRendererExprtRole, sorting: false}
             ],
             rowClick: function (args) {
                 if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
@@ -185,11 +171,13 @@
                 }
             },
             onPageChanged: function (args) {
+                $("#managerSelectAllCheckBox").prop("checked", false);
                 managerSelectedItems = [];
             }
         });
 
         var managerSelectItem = function (id, name) {
+            console.log('selected');
             var index = managerSelectedItems.findIndex(item => item.userid === id);
             if (index == -1) {
                 managerSelectedItems.push({"userid": id, "nm": name});
@@ -239,6 +227,7 @@
     }
 
     function saveManagerInfo() {
+
         var duplicate = false;
 
         for (var item of managerSelectedItems) {

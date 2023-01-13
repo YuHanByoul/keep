@@ -251,6 +251,7 @@ public class ExpertPoolMngController {
             contentType = "application/octet-stream";
         }
 
+        expertLogVo.setUser(user);
         expertPoolMngService.insertExpertLog(expertLogVo);
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))

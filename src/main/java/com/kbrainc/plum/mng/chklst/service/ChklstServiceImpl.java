@@ -4,11 +4,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.chklst.model.ChklstDao;
+import com.kbrainc.plum.mng.chklst.model.ChklstQitemMapngVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstVo;
 import com.kbrainc.plum.mng.code.model.CodeVo;
+import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -130,9 +133,9 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
       * 체크리스트 목록 조회
       *
       * @Title : selectChklstList
-      * @Description : 체크리스트 문항 구분코드 목록 조회
+      * @Description : 체크리스트 목록 조회
       * @param chklstVo ChklstVo 객체
-      * @return List<ChklstVo> 체크리스트 문항 목록
+      * @return List<ChklstVo> 체크리스트 목록
       * @throws Exception 예외
       */
      @Override
@@ -155,6 +158,20 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
      }
      
      /**
+      * 사용중인 체크리스트 여부 확인
+      *
+      * @Title : isUseChklst
+      * @Description : 사용중인 체크리스트 여부 확인
+      * @param chklstVo ChklstVo 객체
+      * @return ChklstVo ChklstVo 객체
+      * @throws Exception 예외
+      */
+     @Override
+     public ChklstVo isUseChklst(ChklstVo chklstVo) throws Exception {
+         return chklstDao.isUseChklst(chklstVo);
+     }
+     
+     /**
       * 체크리스트 업데이트
       *
       * @Title : updateChklst
@@ -168,6 +185,51 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
          int retVal = 0;
          retVal = chklstDao.updateChklst(chklstVo);        
               
+         return retVal;
+     }
+     
+     /**
+      * 체크리스트 문항구성 목록 조회
+      *
+      * @Title : selectChklstQitemMapngList
+      * @Description : 체크리스트 문항구성 목록 조회
+      * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
+      * @return List<ChklstQitemMapngVo> 체크리스트 문항구성 목록
+      * @throws Exception 예외
+      */
+     @Override
+     public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
+         return chklstDao.selectChklstQitemMapngList(chklstQitemMapngVo);
+     }
+     
+     /**
+      * 체크리스트 문항구성 업데이트
+      *
+      * @Title : updateChklstQitemMapng
+      * @Description : 체크리스트 문항구성 업데이트
+      * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
+      * @return int update 로우수
+      * @throws Exception 예외
+      */
+     @Override
+     @Transactional
+     public int updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
+         int retVal = 0;
+         
+         List<ChklstQitemVo> qitemList = chklstQitemMapngVo.getQitemList();
+         if(qitemList != null && qitemList.size() > 0) {
+             ChklstQitemVo qitemVo = null;
+             for(int i = 0 ; i < qitemList.size() ; i++) {
+                 qitemVo = qitemList.get(i);
+                 qitemVo.setUser(chklstQitemMapngVo.getUser());
+                 if("Y".equals(qitemVo.getNewYn())) { // 추가된 항목 insert
+                     retVal += chklstDao.insertChklstQitemMapng(qitemVo);
+                 } else { // 업데이트
+                     retVal += chklstDao.updateChklstQitemMapng(qitemVo);
+                 }
+             }
+         }
+         
          return retVal;
      }
     

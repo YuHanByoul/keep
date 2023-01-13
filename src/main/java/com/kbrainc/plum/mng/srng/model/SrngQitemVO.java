@@ -9,6 +9,7 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -44,9 +45,11 @@ public class SrngQitemVO extends ParentRequestVo {
 
     /** 확인_사항 */
     @NotEmpty(message = "확인사항을 입력해주세요.")
+    @Size(max = 200, message = "확인사항은 200자를 넘을 수 없습니다.")
     private String idntyMttr;
 
     /** 배점 */
+    @NotEmpty(message = "배점을 입력해주세요.")
     private int altm;
 
     /** 수정_일시 */
@@ -63,6 +66,7 @@ public class SrngQitemVO extends ParentRequestVo {
     /** 등록자아이디 */
     private int rgtrid;
 
+    /** 지정기준검색 */
     private String searchDsgncrtrCd;
 
     public void setDsgncrtrCd(String dsgncrtrCd) throws Exception{
