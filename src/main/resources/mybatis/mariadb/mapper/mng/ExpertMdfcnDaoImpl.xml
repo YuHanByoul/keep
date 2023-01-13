@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ExpertMdfcnDaoImpl.xml
+	Description : 전문가 정보변경 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.expertPoolMng.model.ExpertMdfcnDao">
+    <update id="updateSttsCd">
+        UPDATE TB_ASS_EXPRT_MDFCN_DMND
+        SET STTS_CD = #{sttsCd}
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+    </update>
+
+    <select id="selectExpertMdfcnList" resultType="ExpertMdfcnVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.MDFCN_DMND_ID
+            , A.USERID
+            , B.NM
+            , B.ACNT
+            , A.EXPRT_TYPE_CD
+            , A.STTS_CD
+            , A.REG_DT
+            , A.MDFCN_DT
+            , A.MDFRID
+            , C.NM AS MDFR_NM
+        FROM TB_ASS_EXPRT_MDFCN_DMND A
+            INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+            INNER JOIN TB_CMM_USER C ON A.MDFRID = C.USERID
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchType == 'nm' ">
+            AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchType == 'acnt' ">
+            AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        </if>
+        <if test="sttsCd != null and sttsCd != ''">
+            AND A.STTS_CD = #{sttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectExpertMdfcnInfo" resultType="ExpertVo">
+        SELECT
+            A.USERID
+             , A.STTS_CD
+             , A.ENV_EDU_CAREER_MM
+             , A.ENV_EDU_CAREER_YY
+             , A.EXPRT_TYPE_CD
+             , A.FLD_LCTR_YN
+             , A.FLD_PLANNG_YN
+             , A.FLD_CNSLTNG_YN
+             , A.FLD_ETC_YN
+             , A.MOBLPHON_RLS_YN
+             , A.EML_RLS_YN
+             , A.QLFC_RLS_YN
+             , A.HDOF_RLS_YN
+             , A.CAREER_RLS_YN
+             , A.ENT_LCTR_DMND_RCPTN_YN
+             , A.LCTR_GDNC_RCPTN_YN
+             , B.ACNT
+             , B.NM
+             , B.GNDR
+             , B.BRDT
+             , B.TELNO
+             , B.MOBLPHON
+             , B.EML
+             , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_TRGT  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_TRGT /* 전문분야 대상 */
+             , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_SBJCT  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_SBJCT /* 전문분야 주제 */
+             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_ACTVT_RGN  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_RGN /* 주요활동지역 */
+             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_ACTVT_SCOPE  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_SCOPE /* 가능 활동범위 */
+        FROM TB_ASS_EXPRT_MDFCN_DMND A
+                 INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+        WHERE A.USERID = #{userid}
+            AND A.MDFCN_DMND_ID = #{mdfcnDmndId}
+    </select>
+
+    <select id="selectExpertCareerList"
+            resultType="com.kbrainc.plum.mng.expertPoolMng.model.ExpertCareerVo">
+        SELECT
+            EXPRT_CAREER_ID
+             , FLD_NM
+             , ACTVT_BGNG_DE
+             , ACTVT_END_DE
+             , ACTVT_YN
+             , IF(ACTVT_YN= 'Y', CONCAT(ACTVT_BGNG_DE, ' ~ 활동중' ), CONCAT(ACTVT_BGNG_DE, ' ~ ' , ACTVT_END_DE )) AS ACTVT_DE
+             , ACTVT_HR
+             , IDNTY_INST_NM
+             , ACTVT_CN
+             , IDNTY_DE
+             , CRTF_FILEGRPID
+             , ARTCLASS_FILEGRPID
+             , ORDR
+        FROM TB_ASS_EXPRT_MDFCN_CAREER
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+        ORDER BY ORDR
+    </select>
+
+    <select id="selectExpertCrtfctList"
+            resultType="com.kbrainc.plum.mng.expertPoolMng.model.ExpertCrtfctVo">
+        SELECT
+            EXPRT_CRTFCT_ID
+             , CRTFCT_NM
+             , ACQS_INST
+             , ACQS_NO
+             , ACQS_GRD
+             , ACQS_DE
+             , CRTFCT_FILEGRPID
+             , ORDR
+        FROM TB_ASS_EXPRT_MDFCN_CRTFCT
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+        ORDER BY ORDR
+    </select>
+
+    <select id="selectExpertHdofList"
+            resultType="com.kbrainc.plum.mng.expertPoolMng.model.ExpertHdofVo">
+        SELECT
+            EXPRT_HDOF_ID
+             , HDOF_SE_CD
+             , INST_NM
+             , DEPT_NM
+             , JBGD_NM
+             , HDOF_BGNG_DE
+             , HDOF_END_DE
+             , HDOF_YN
+             , IF(HDOF_YN= 'Y', CONCAT(HDOF_BGNG_DE, ' ~ 활동중' ), CONCAT(HDOF_BGNG_DE, ' ~ ' , HDOF_END_DE )) AS HDOF_DE
+             , HDOFCRTF_FILEGRPID
+             , ORDR
+        FROM TB_ASS_EXPRT_MDFCN_HDOF
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+        ORDER BY ORDR
+    </select>
+    <select id="selectExpertMdfcn" resultType="ExpertMdfcnVo">
+        SELECT
+        A.MDFCN_DMND_ID
+        , A.USERID
+        , B.NM
+        , B.ACNT
+        , A.EXPRT_TYPE_CD
+        , A.STTS_CD
+        , A.REG_DT
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.INFO_MDFCN_RSN
+        , C.NM AS MDFR_NM
+        FROM TB_ASS_EXPRT_MDFCN_DMND A
+        INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+        INNER JOIN TB_CMM_USER C ON A.MDFRID = C.USERID
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+
+    </select>
+</mapper>

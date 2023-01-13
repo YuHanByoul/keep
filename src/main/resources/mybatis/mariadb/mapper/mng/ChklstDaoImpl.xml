@@ -74,17 +74,17 @@
                 , A.CD_NM
             FROM
                 TB_CMM_CD A
-            LEFT OUTER JOIN
+            JOIN
                 TB_CMM_CD B ON (B.CD = A.UPPR_CD)
             WHERE
                 A.CDGRPID = '140'
                 AND A.UPPR_CD != 0
-            <if test="useYn != null and useYn != ''">
-                AND A.USE_YN = #{useYn}
-            </if>                            
         ) B ON (B.CD = A.SE_CD)    
         WHERE 
             1 = 1
+         <if test="useYn != null and useYn != ''">
+            AND A.USE_YN = #{useYn}
+        </if>                               
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cn'">
             AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
@@ -252,13 +252,13 @@
                 AND CDGRPID  = '140'
             UNION ALL
             SELECT
-                IFNULL(UPPR_CD , '') AS LV1KEY
+                IFNULL(UPPR_CD, '') AS LV1KEY
                 , CD AS LV2KEY
                 , CD_NM AS TITLE
                 , 3 AS TREE_ORD
                 , D.QITEMID AS QITEMID
             FROM (
-                SELECT
+                SELECT  
                     (SELECT UPPR_CD FROM TB_CMM_CD WHERE C.SE_CD = CD) AS UPPR_CD
                     , C.SE_CD AS CD
                     , C.CN AS CD_NM
@@ -272,9 +272,11 @@
                     1 = 1
                     AND B.CHKLSTID = #{chklstid}
                     AND C.USE_YN = 'Y'
-                ) D, CODE_CTE C
-                WHERE
-                    UPPR_CD = C.LV2KEY
+            ) D
+            JOIN
+                CODE_CTE C
+            WHERE
+                UPPR_CD = C.LV2KEY
         )
         SELECT
             A.LV1KEY
@@ -283,6 +285,7 @@
             , A.TREE_ORD
             , A.QITEMID
             , B.ALTM
+            , 'N' AS NEW_YN
         FROM
             CODE_CTE A
         LEFT OUTER JOIN (
@@ -298,13 +301,50 @@
                 , C.REG_DT
                 , C.RGTRID
                 , B.CHKLSTID
+                , B.ORDR
             FROM
                 TB_ASS_CHKLST_QITEM_MAPNG B
             LEFT OUTER JOIN
                 TB_ASS_CHKLST_QITEM C ON (B.QITEMID = C.QITEMID)
+            WHERE
+                B.CHKLSTID = #{chklstid} 
         ) B ON (A.QITEMID = B.QITEMID)
         ORDER BY  
-            LV2KEY, TREE_ORD
+            A.LV2KEY, A.TREE_ORD, B.ORDR
     </select>
+    
+    <!-- 체크리스트 문항구성 등록 -->
+    <insert id="insertChklstQitemMapng" parameterType="ChklstQitemVo">
+        /* ChklstDao.insertChklstQitemMapng */
+        INSERT INTO TB_ASS_CHKLST_QITEM_MAPNG (
+            CHKLSTID
+            , QITEMID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{chklstid}
+            , #{qitemid}
+            , #{ordr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 체크리스트 문항구성 업데이트 -->
+    <update id="updateChklstQitemMapng" parameterType="ChklstQitemVo">
+        /* ChklstDao.updateChklstQitemMapng */
+        UPDATE TB_ASS_CHKLST_QITEM_MAPNG SET
+            ORDR = #{ordr}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            CHKLSTID = #{chklstid} 
+            AND QITEMID = #{qitemid}
+    </update>
     
 </mapper>

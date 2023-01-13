@@ -1,11 +1,15 @@
 package com.kbrainc.plum.mng.srng.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -34,14 +38,20 @@ public class SrngFormVO extends ParentRequestVo {
 
     /** 양식_이름 */
     @NotEmpty(message = "양식이름을 입력해주세요.")
+    @Size(max = 60, message = "양식이름은 60자를 넘을 수 없습니다.")
     private String formNm;
 
     /** 양식_설명 */
+    @NotEmpty(message = "양식설명을 입력해주세요.")
+    @Size(max = 100, message = "양식설명은 100자를 넘을 수 없습니다.")
     private String formExpln;
 
     /** 운영_형태_코드 */
     @NotEmpty(message = "운영형태코드를 선택해주세요.")
     private String operFrmCd;
+
+    /** 운영_형태_코드명 */
+    private String operFrmCdNm;
 
     /** 사용_여부 */
     private String useYn;
@@ -59,4 +69,31 @@ public class SrngFormVO extends ParentRequestVo {
 
     /** 등록자아이디 */
     private int rgtrid;
+
+    /** 등록/수정 구분코드 */
+    private String mode;
+
+    /** 심사양식 문항 수 */
+    private int srngFormQitemCnt;
+
+    /** 운영형태검색 */
+    private String searchOperFrmCd;
+
+    public void setOperFrmCd(String operFrmCd) throws Exception{
+        this.operFrmCd = operFrmCd;
+        if(CommonUtil.isEmpty(this.operFrmCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.operFrmCd);
+                this.operFrmCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+
+    }
 }

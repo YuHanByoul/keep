@@ -64,6 +64,15 @@ public class ChklstQitemVo extends ParentRequestVo {
     /** 검색 문항 구분코드 */
     private String searchSeCd;
     
+    /** 새로운 문항 여부 */
+    private String newYn;
+    
+    /** 문항 순서 */
+    private int chklstid;
+    
+    /** 문항 순서 */
+    private int ordr;
+    
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

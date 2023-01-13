@@ -3,16 +3,6 @@
 <!--<script src="/files/assets/pages/nestable/custom-nestable.js"></script>-->
 <div class="card-block-small p-t-0">
     <div class="mb-2 row">
-        <!--
-        <div id="nestable-menu" class="m-b-10">
-            <button type="button"
-                class="btn btn-primary waves-effect waves-light m-b-10 m-r-20"
-                data-action="expand-all">Expand All</button>
-            <button type="button"
-                class="btn btn-success waves-effect waves-light m-b-10"
-                data-action="collapse-all">Collapse All</button>
-        </div>
-        -->
         <div class="col-12 btn-group-sm" id="nestableMenu">
             <button type="button" class="col-auto btn btn-inverse m-r-5" data-action="expandAll">모두 펼치기</button>
             <button type="button" class="col-auto btn btn-disabled m-r-5" data-action="collapseAll">모두 접기</button>
@@ -24,81 +14,21 @@
         <div class="col-lg-12 col-sm-12">
             <div class="cf nestable-lists">
                 <div class="dd" id="nestable">
-                    <!--
-                    <li class="dd-item" data-id="1" th:each="qitem: ${qitemMapngList}">
-                        <div class="dd-handle">list</div>
-                    </li>
-                    -->
                     <ol class="dd-list">
-                        <!--
-                        <li class="dd-item" th:each="qitem: ${qitemMapngList}" th:if="${qitem.treeOrd == 1 or qitem.treeOrd == 2}" data-cd="${qitem.lv2key}">
-                            <div class="dd-handle" th:text="${qitem.cn}"></div>
-                        </li>
-                        -->
                     </ol>
-                    <!--
-                    <ol class="dd-list">
-                        <li class="dd-item" data-id="1">
-                            <div class="dd-handle">Item 1</div>
-                        </li>
-                        <li class="dd-item" data-id="2">
-                            <div class="dd-handle">Item 2</div>
-                            <ol class="dd-list">
-                                <li class="dd-item" data-id="3">
-                                    <div class="dd-handle">Item 3
-                                    </div>
-                                </li>
-                                <li class="dd-item" data-id="4">
-                                    <div class="dd-handle">Item 4
-                                    </div>
-                                </li>
-                                <li class="dd-item" data-id="5">
-                                    <div class="dd-handle">Item 5
-                                    </div>
-                                    <ol class="dd-list">
-                                        <li class="dd-item"
-                                            data-id="6">
-                                            <div class="dd-handle">
-                                                Item 6</div>
-                                        </li>
-                                        <li class="dd-item"
-                                            data-id="7">
-                                            <div class="dd-handle">
-                                                Item 7</div>
-                                        </li>
-                                        <li class="dd-item"
-                                            data-id="8">
-                                            <div class="dd-handle">
-                                                Item 8</div>
-                                        </li>
-                                    </ol>
-                                </li>
-                                <li class="dd-item" data-id="9">
-                                    <div class="dd-handle">Item 9
-                                    </div>
-                                </li>
-                                <li class="dd-item" data-id="10">
-                                    <div class="dd-handle">Item 10
-                                    </div>
-                                </li>
-                            </ol>
-                        </li>
-                        <li class="dd-item" data-id="11">
-                            <div class="dd-handle">Item 11</div>
-                        </li>
-                        <li class="dd-item" data-id="12">
-                            <div class="dd-handle">Item 12</div>
-                        </li>
-                    </ol>
-                    -->
                 </div>
             </div>
         </div>
     </div>
 </div>
 <div class="card-block-small">
-    <button class="btn btn-disabled m-r-5">취소</button>
-    <button class="btn btn-primary">저장</button>
+    <!--
+    <button type="button" class="btn btn-disabled m-r-5" onclick="chklstUpdate.offUpdateChklst();">취소</button>
+    <th:block sec:authorize-url="/mng/chklst/updateChklst.do"><button type="button" class="btn btn-primary" onclick="chklstUpdate.onUpdateChklst();">저장</button></th:block>
+    onInsertQitemMapngList
+    -->
+    <button class="btn btn-disabled m-r-5" onclick="qitemMapng.offQitemMapngList();">취소</button>
+    <button class="btn btn-primary" onclick="qitemMapng.onInsertQitemMapngList();">저장</button>
 </div>
 
 <div class="modal fade" id="qitemListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
@@ -106,6 +36,7 @@
 <script th:inline="javascript">
     var qitemMapng = {
         qitemMapngList: /*[[${qitemMapngList}]]*/
+        , chklstid: /*[[${param.chklstid}]]*/ 
         , init: function() {
             this.setNestable();
             this.registEvent();
@@ -148,13 +79,14 @@
             } else {
                 var parentLi = $("[data-cd=" + data.lv2key + "]");
                 var childLen = parentLi.find("> ol > li").length;
+                var newYn = data.newYn ? data.newYn : "N";
                 if(childLen == 0) { // 하위 li를 처음 생성하는 경우
                     parentLi.append(
-                        '<ol class="dd-list"><li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" data-qitemid="' + data.qitemid + '">' + data.cn + '</li></div></ol>'
+                        '<ol class="dd-list"><li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" data-newYn="' + newYn + '" data-qitemid="' + data.qitemid + '">' + data.cn + '</li></div></ol>'
                     );
                 } else {
                     parentLi.find(" > ol").append(
-                        '<li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" data-qitemid="' + data.qitemid + '">' + data.cn + '</li></div>'
+                        '<li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" data-newYn="' + newYn + '" data-qitemid="' + data.qitemid + '">' + data.cn + '</li></div>'
                     );
                 }
             }
@@ -164,7 +96,6 @@
             var list = e.length ? e : $(e.target);
             var output = list.data("output");
             if(JSON) {
-                console.log(list.nestable("serialize"));
                 output.val(JSON.stringify(list.nestable("serialize")));
             } else {
                 output.val("JSON browser support required for this demo.");
@@ -179,14 +110,79 @@
                     var url = "/mng/chklst/chklstQitemListPopup.html";
                     $("#qitemListPopup").load(url, function(response, status, xhr) {
                         if(status == "success") {
-                            userListModal = new bootstrap.Modal($('#qitemListPopup'));
-                            userListModal.show();
+                            qitemListModal = new bootstrap.Modal($('#qitemListPopup'));
+                            qitemListModal.show();
                         }
                     });
                 } else {
                     $(".dd").nestable(action);
                 }
             });
+        }
+        
+        , onInsertQitemMapngList: function() {
+            console.log($("[data-qitemid]").length);
+            var param = {};
+            var chklstid = this.chklstid[0];
+            
+            if($("[data-qitemid]").length == 0) {
+                alert("추가된 문항이 없습니다.");
+                return false;
+            }
+            
+            $("[data-qitemid]").each(function(index, item) {
+                param["qitemList[" + index + "].chklstid"] = chklstid;
+                param["qitemList[" + index + "].ordr"] = index + 1;
+                param["qitemList[" + index + "].qitemid"] = $(item).attr("data-qitemid");
+                param["qitemList[" + index + "].newYn"] = $(item).attr("data-newyn");
+            });
+            
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/chklst/updateChklstQitemMapng.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            chklstGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+            
+            return false;
+            if(!($("#chklstUpdateForm").valid())) return;
+            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
+            var param = $("#chklstUpdateForm").serialize();
+            
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/chklst/updateChklst.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: param,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            chklstGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        
+        , offQitemMapngList: function() {
+            chklstGrid.toggleContent();
         }
     };
     

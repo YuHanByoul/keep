@@ -1,0 +1,58 @@
+<div class="card-header p-b-0">
+  <ul class="nav nav-tabs tabs" role="tablist">
+
+    <th:block sec:authorize-url="/mng/srng/srngFormInsertForm.html">
+      <li class="nav-item" id="info_tab">
+        <a class="nav-link info active" href="javascript:moveTab('info')" ><strong>기본정보</strong></a>
+      </li>
+    </th:block>
+
+    <th:block sec:authorize-url="/mng/srng/srngFormUpdateForm.html">
+      <li class="nav-item" id="qitem_tab" >
+        <a class="nav-link qitem "  href="javascript:moveTab('qitem')" ><strong>문항구성</strong></a>
+      </li>
+    </th:block>
+
+  </ul>
+</div>
+
+<div class="tab-content tabs p-t-20" id="tab_content_area" >
+</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  var mode = /*[[${param.mode}]]*/null;
+  var formid = /*[[${param.formid}]]*/null;
+  /*]]>*/
+  var currentTab ="info";
+  var insertUrl ="/mng/srng/srngFormInsertForm.html";
+  var updateUrl ="/mng/srng/srngFormUpdateForm.html?formid="+formid;
+  var qitemUrl ="/mng/srng/srngFormQitemForm.html?formid="+formid;
+
+  $(function(){
+
+    if(mode == "I"){
+      $("#qitem_tab").remove();
+      $("#tab_content_area").load(insertUrl);
+    }else{
+      $("#tab_content_area").load(updateUrl);
+    }
+    setTimeout(function(){scrollIntoView('contentPanel');},100 )
+
+  });
+
+  var moveTab =(tab_mode)=>{
+    $(".nav-link").removeClass("active");
+
+    if(tab_mode == "info"){
+      currentTab = "info"
+      $("#tab_content_area").load(updateUrl);
+    }else{
+      currentTab = "qitem"
+      $("#tab_content_area").load(qitemUrl);
+    }
+    $("."+currentTab).addClass("active");
+    setTimeout(function(){scrollIntoView('contentPanel');},100 )
+  }
+
+</script>

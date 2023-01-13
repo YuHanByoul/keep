@@ -145,5 +145,16 @@ public interface ChklstService {
      * @throws Exception 예외
      */
     public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
+    
+    /**
+     * 체크리스트 문항구성 업데이트
+     *
+     * @Title : updateChklstQitemMapng
+     * @Description : 체크리스트 문항 업데이트
+     * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
      
 }

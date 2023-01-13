@@ -1,0 +1,752 @@
+<div class="col-12">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>기본정보</strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRequestDate"><strong>변경요청일시</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" th:value="${#dates.format(expertMdfcnInfo.regDt, 'yyyy-MM-dd HH:mm:ss')}" name="updateRequestDate" id="updateRequestDate" placeholder="Text Input Validation" value="keepgo" readonly/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>정보변경 처리상태</strong></div>
+                        <div class="col-12 p-t-5 p-b-5">
+                            [[${expertMdfcnInfo.sttsCdNm}]]
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>처리자ID</strong></div>
+                        <div class="col-12 p-t-5 p-b-5">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateProcessDate"><strong>처리일시</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" name="updateProcessDate" id="updateProcessDate" readonly/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [230112] 버튼위치 변경 -->
+        <th:block th:if="${expertMdfcnInfo.sttsCd == '152101'}">
+            <div class="card-block-small">
+                <button type="button" class="btn btn-primary m-r-5" onclick="expertMdfcnDetail.updateStts('152102')">변경승인 </button>
+                <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#updateCompanionReasonPopup">변경불가 </button>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- 재직사항 -->
+    <div class="card">
+        <div class="row p-20 p-b-0">
+            <h5><strong>재직사항</strong></h5>
+        </div>
+        <div class="card-header p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>[기존] 재직사항</strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed table-bordered">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center v-middle">재직구분</th>
+                            <th class="text-center v-middle">재직기관명</th>
+                            <th class="text-center v-middle">부서(소속)</th>
+                            <th class="text-center v-middle">지위(직급)</th>
+                            <th class="text-center v-middle">재직기간</th>
+                            <th class="text-center" style="width: 100px;">재직증명서</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="expertHdofInfo : ${existingExpertInfo.expertHdofList}">
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1Category"
+                                       th:value="${expertHdofInfo.hdofSeCdNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.instNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.deptNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.jbgdNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.hdofDe}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertHdofInfo.hdofCrtfFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertHdofInfo.hdofCrtfFile.fileid}' th:fileIdntfcKey="${expertHdofInfo.hdofCrtfFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-header pt-3 p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>[변경요청] 재직사항</strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed table-bordered">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center v-middle">재직구분</th>
+                            <th class="text-center v-middle">재직기관명</th>
+                            <th class="text-center v-middle">부서(소속)</th>
+                            <th class="text-center v-middle">지위(직급)</th>
+                            <th class="text-center v-middle">재직기간</th>
+                            <th class="text-center" style="width: 100px;">재직증명서</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="expertHdofInfo : ${newExpertInfo.expertHdofList}">
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1Category"
+                                       th:value="${expertHdofInfo.hdofSeCdNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.instNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.deptNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.jbgdNm}" readonly/>
+                            </td>
+
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                                       th:value="${expertHdofInfo.hdofDe}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertHdofInfo.hdofCrtfFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertHdofInfo.hdofCrtfFile.fileid}' th:fileIdntfcKey="${expertHdofInfo.hdofCrtfFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 자격취득사항 -->
+    <div class="card">
+        <div class="row p-20 p-b-0">
+            <h5><strong>자격취득사항</strong></h5>
+        </div>
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>[기존] 자격취득사항</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed table-bordered">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center v-middle">자격증명</th>
+                            <th class="text-center v-middle">취득기관</th>
+                            <th class="text-center v-middle">취득번호</th>
+                            <th class="text-center v-middle">취득등급</th>
+                            <th class="text-center v-middle">취득일</th>
+                            <th class="text-center" style="width: 100px;">자격증명서</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="expertCrtfctInfo : ${existingExpertInfo.expertCrtfctList}">
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.crtfctNm}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.acqsInst}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.acqsNo}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.acqsGrd}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.getAcqsDe()}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCrtfctInfo.crtfctFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertCrtfctInfo.crtfctFile.fileid}' th:fileIdntfcKey="${expertCrtfctInfo.crtfctFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-header pt-3 p-b-0">
+            <h3 class="sub-title"><strong>[변경요청] 자격취득사항</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed table-bordered">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center v-middle">자격증명</th>
+                            <th class="text-center v-middle">취득기관</th>
+                            <th class="text-center v-middle">취득번호</th>
+                            <th class="text-center v-middle">취득등급</th>
+                            <th class="text-center v-middle">취득일</th>
+                            <th class="text-center" style="width: 100px;">자격증명서</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="expertCrtfctInfo : ${newExpertInfo.expertCrtfctList}">
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.crtfctNm}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.acqsInst}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.acqsNo}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.acqsGrd}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                                       th:value="${expertCrtfctInfo.getAcqsDe()}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCrtfctInfo.crtfctFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertCrtfctInfo.crtfctFile.fileid}' th:fileIdntfcKey="${expertCrtfctInfo.crtfctFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 환경교육 경력(실적) 사항 -->
+    <div class="card">
+        <div class="row p-20 p-b-0">
+            <h5><strong>환경교육 경력(실적) 사항</strong></h5>
+        </div>
+        <div class="card-header p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>[기존] 환경교육 경력(실적) 사항</strong>
+                </div>
+                <div class="col-12 col-lg-6 text-right p-r-0">
+                    <strong>
+                        총 환경교육 경력 <span class="text-danger d-inline fs-6">[[${existingExpertInfo.envEduCareerYy}]]년 [[${existingExpertInfo.envEduCareerMm}]]개월</span>
+                    </strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed table-bordered">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center v-middle">활동분야</th>
+                            <th class="text-center v-middle">활동기간</th>
+                            <th class="text-center v-middle" style="width:120px;">활동시간</th>
+                            <th class="text-center v-middle">확인기관</th>
+                            <th class="text-center" style="width: 80px;">활동내용</th>
+                            <th class="text-center v-middle">확인일</th>
+                            <th class="text-center" style="width: 100px;">확인서</th>
+                            <th class="text-center" style="width: 100px;">정관</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="expertCareerInfo : ${existingExpertInfo.expertCareerList}">
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1Category"
+                                       id="expertRequestInfoEnvironmentEduRecord1Category" th:value="${expertCareerInfo.fldNm}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1ActivityDate"
+                                       id="expertRequestInfoEnvironmentEduRecord1ActivityDate" th:value="${expertCareerInfo.actvtDe}" readonly/>
+                            </td>
+                            <td>
+                                <div class="col-12 row m-0 align-items-center">
+                                    <div class="col-8 p-l-0">
+                                        <input type="text" class="form-control form-control-sm" name="expertRequestInfoEnvironmentEduRecord1ActivityTime"
+                                               id="expertRequestInfoEnvironmentEduRecord1ActivityTime"
+                                               th:value="${expertCareerInfo.actvtHr}" readonly/>
+                                    </div>
+                                    <div class="col-4 p-0">
+                                        시간
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1CertificateAgency"
+                                       id="expertRequestInfoEnvironmentEduRecord1CertificateAgency" th:value="${expertCareerInfo.idntyInstNm}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCareerInfo.actvtCn != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:actvtCn="${expertCareerInfo.actvtCn}"
+                                                data-bs-target="#commonModal" th:onclick="openModal(this.getAttribute('actvtCn'))">
+                                            확인
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1CertificateDate"
+                                       id="expertRequestInfoEnvironmentEduRecord1CertificateDate" th:value="${expertCareerInfo.idntyDe}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCareerInfo.crtfFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertCareerInfo.crtfFile.fileid}' th:fileIdntfcKey="${expertCareerInfo.crtfFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCareerInfo.artClassFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertCareerInfo.artClassFile.fileid}'
+                                                th:fileIdntfcKey="${expertCareerInfo.artClassFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="card-header pt-3 p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>[변경요청] 환경교육 경력(실적) 사항</strong>
+                </div>
+                <div class="col-12 col-lg-6 text-right p-r-0">
+                    <strong>
+                        총 환경교육 경력 <span class="text-danger d-inline fs-6">[[${newExpertInfo.envEduCareerYy}]]년 [[${newExpertInfo.envEduCareerMm}]]개월</span>
+                    </strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="col-12 table-border-style">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed table-bordered">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center v-middle">활동분야</th>
+                            <th class="text-center v-middle">활동기간</th>
+                            <th class="text-center v-middle" style="width:120px;">활동시간</th>
+                            <th class="text-center v-middle">확인기관</th>
+                            <th class="text-center" style="width: 80px;">활동내용</th>
+                            <th class="text-center v-middle">확인일</th>
+                            <th class="text-center" style="width: 100px;">확인서</th>
+                            <th class="text-center" style="width: 100px;">정관</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="expertCareerInfo : ${newExpertInfo.expertCareerList}">
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1Category"
+                                       id="expertRequestInfoEnvironmentEduRecord1Category" th:value="${expertCareerInfo.fldNm}" readonly/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1ActivityDate"
+                                       id="expertRequestInfoEnvironmentEduRecord1ActivityDate" th:value="${expertCareerInfo.actvtDe}" readonly/>
+                            </td>
+                            <td>
+                                <div class="col-12 row m-0 align-items-center">
+                                    <div class="col-8 p-l-0">
+                                        <input type="text" class="form-control form-control-sm" name="expertRequestInfoEnvironmentEduRecord1ActivityTime"
+                                               id="expertRequestInfoEnvironmentEduRecord1ActivityTime"
+                                               th:value="${expertCareerInfo.actvtHr}" readonly/>
+                                    </div>
+                                    <div class="col-4 p-0">
+                                        시간
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1CertificateAgency"
+                                       id="expertRequestInfoEnvironmentEduRecord1CertificateAgency" th:value="${expertCareerInfo.idntyInstNm}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCareerInfo.actvtCn != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:actvtCn="${expertCareerInfo.actvtCn}"
+                                                data-bs-target="#commonModal" th:onclick="openModal(this.getAttribute('actvtCn'))">
+                                            확인
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1CertificateDate"
+                                       id="expertRequestInfoEnvironmentEduRecord1CertificateDate" th:value="${expertCareerInfo.idntyDe}" readonly/>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCareerInfo.crtfFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertCareerInfo.crtfFile.fileid}' th:fileIdntfcKey="${expertCareerInfo.crtfFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                            <td>
+                                <th:block th:if="${expertCareerInfo.artClassFile != null}">
+                                    <div class="btn-group-sm text-center">
+                                        <button type="button" class="btn btn-primary" th:fileid='${expertCareerInfo.artClassFile.fileid}'
+                                                th:fileIdntfcKey="${expertCareerInfo.artClassFile.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))">
+                                            다운로드
+                                        </button>
+                                    </div>
+                                </th:block>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 전문분야 정보 -->
+    <div class="card">
+        <div class="row p-20 p-b-0">
+            <h5><strong>전문분야 정보</strong></h5>
+        </div>
+        <div class="card-header p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>[기존] 전문분야 정보</strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문가 유형</strong></div>
+                        <div class="col-12">
+                            <span kattr:radio_code="exprtTypeCd" th:attr="grpCd=133 ,selectedCd=${existingExpertInfo.exprtTypeCd}" isAdmin="true"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문분야</strong></div>
+                        <div class="border-checkbox-section">
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField1"
+                                       th:checked="${existingExpertInfo.fldLctrYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField1">
+                                    강의
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField2"
+                                       th:checked="${existingExpertInfo.fldPlanngYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField2">
+                                    기획
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField3"
+                                       th:checked="${existingExpertInfo.fldCnsltngYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField3">
+                                    사업자문 및 컨설팅
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField4"
+                                       th:checked="${existingExpertInfo.fldEtcYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField4">
+                                    기타
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문분야(대상)</strong></div>
+                        <span kattr:check_code_v="exprtTrgt" grpCd="135" th:attr="selectedCd=${existingExpertInfo.exprtTrgt}" isAdmin="true"/>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문분야(환경주제)</strong></div>
+                        <span kattr:check_code_v="exprtSbjct" grpCd="126" th:attr="selectedCd=${existingExpertInfo.exprtSbjct}" isAdmin="true"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>주요활동지역</strong></div>
+                        <span kattr:check_code_v="exprtActvtRgn" grpCd="125" th:attr="selectedCd=${existingExpertInfo.exprtActvtRgn}" isAdmin="true"/>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>가능 활동범위</strong></div>
+                        <span kattr:check_code_v="exprtActvtScope" grpCd="125" th:attr="selectedCd=${existingExpertInfo.exprtActvtScope}" isAdmin="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+                    <strong>[변경요청] 전문분야 정보</strong>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문가 유형</strong></div>
+                        <div class="col-12">
+                            <span kattr:radio_code="exprtTypeCd2" th:attr="grpCd=133 ,selectedCd=${newExpertInfo .exprtTypeCd}" isAdmin="true"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문분야</strong></div>
+                        <div class="border-checkbox-section">
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField1"
+                                       th:checked="${newExpertInfo.fldLctrYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField1">
+                                    강의
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField2"
+                                       th:checked="${newExpertInfo.fldPlanngYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField2">
+                                    기획
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField3"
+                                       th:checked="${newExpertInfo.fldCnsltngYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField3">
+                                    사업자문 및 컨설팅
+                                </label>
+                            </div>
+                            <div class="border-checkbox-group border-checkbox-group-inverse">
+                                <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField4"
+                                       th:checked="${newExpertInfo.fldEtcYn.equals('Y')}">
+                                <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField4">
+                                    기타
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문분야(대상)</strong></div>
+                        <span kattr:check_code_v="exprtTrgt2" grpCd="135" th:attr="selectedCd=${newExpertInfo.exprtTrgt}" isAdmin="true"/>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>전문분야(환경주제)</strong></div>
+                        <span kattr:check_code_v="exprtSbjct2" grpCd="126" th:attr="selectedCd=${newExpertInfo.exprtSbjct}" isAdmin="true"/>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>주요활동지역</strong></div>
+                        <span kattr:check_code_v="exprtActvtRgn2" grpCd="125" th:attr="selectedCd=${newExpertInfo.exprtActvtRgn}" isAdmin="true"/>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                            <strong>가능 활동범위</strong></div>
+                        <span kattr:check_code_v="exprtActvtScope2" grpCd="125" th:attr="selectedCd=${newExpertInfo.exprtActvtScope}" isAdmin="true"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 정보변경 사유 -->
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>정보변경 사유</strong></h3>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="mb-0 form-group row">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateReason"><strong>내용</strong></label>
+                <div class="col-12">
+                    <textarea rows="5" cols="5" th:text="${expertMdfcnInfo.infoMdfcnRsn}" class="form-control form-control-sm" id="updateReason" name="updateReason" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="updateCompanionReasonPopup" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">정보변경 불가 사유</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-0 form-group row">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateCompanionReasonPopupReason"><strong>사유</strong></label>
+                            <div class="col-12">
+                                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="정보변경 불가 사유" id="updateCompanionReasonPopupReason"
+                                              name="updateCompanionReasonPopupReason" ></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light " data-bs-dismiss="modal" onclick="expertMdfcnDetail.updateStts('152103')">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var expertMdfcnDetail = {
+        updateStts(sttsCd) {
+            if(sttsCd == '152102') {
+              if(!confirm('정보변경을 승인하시겠습니까?')) return;
+            /*mdfcnDmndid 삽입*/
+
+            }
+        }
+    }
+
+    $(function () {
+        $('.border-checkbox-group').each(function (index, item) {
+            if ($(item).next().is('br')) {
+                $(item).next().remove();
+            }
+        });
+
+        $('input:checkbox, input:radio').on('click', function () {
+            return false;
+        });
+    });
+</script>
