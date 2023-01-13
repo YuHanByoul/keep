@@ -18,7 +18,7 @@ import com.kbrainc.plum.mng.pvtEnveduGrp.service.PvtEnveduGrpService;
 import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 
 /**
-* [클래스 요약].
+* 민간 환경교육단체 현황 컨트롤러 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.pvtEnveduGrp.controller
@@ -26,7 +26,7 @@ import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 * </pre>
 *
 * @ClassName : PvtEnveduGrp
-* @Description : TODO
+* @Description : 민간 환경교육단체 현황 컨트롤러 클래스
 * @author : JD
 * @date : 2023. 1. 4.
 * @Version :
@@ -38,6 +38,16 @@ public class PvtEnveduGrpController {
     @Autowired
     private PvtEnveduGrpService pvtEnveduGrpService; 
     
+    /**
+    * 민간 환경교육단체 현황으로 이동
+    *
+    * @Title : pvtEnveduGrpListForm
+    * @Description : 민간 환경교육단체 현황으로 이동
+    * @param model 객체
+    * @param pvtEnvEduGrpVo 객체
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/pvtEnveduGrp/pvtEnveduGrpListForm.html")
     public String pvtEnveduGrpListForm(Model model, PvtEnvEduGrpVo pvtEnvEduGrpVo) throws Exception {
         List<PvtEnvEduGrpVo> result = null;
@@ -48,6 +58,15 @@ public class PvtEnveduGrpController {
         return "/mng/pvtEnveduGrp/pvtEnveduGrpList";
     }
     
+    /**
+    * 민간 환경교육단체 목록 조회
+    *
+    * @Title : selectPvtEnveduGrpList
+    * @Description : 민간 환경교육단체 목록 조회
+    * @param pvtEnvEduGrpVo 객체
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/pvtEnveduGrp/selectPvtEnveduGrpList.do")
     @ResponseBody
     public Map<String, Object> selectPvtEnveduGrpList(PvtEnvEduGrpVo pvtEnvEduGrpVo) throws Exception {
@@ -66,6 +85,17 @@ public class PvtEnveduGrpController {
         return resultMap;
     }
     
+    /**
+    * 엑셀다운로드
+    *
+    * @Title : pvtEnveduGrpExcelDownload
+    * @Description : 엑셀다운로드
+    * @param request 객체
+    * @param response 객체
+    * @param pvtEnvEduGrpVo 객체
+    * @throws Exception 예외
+    * @return void
+    */
     @RequestMapping(value = "/mng/pvtEnveduGrp/pvtEnveduGrpExcelDownload.do")
     public void pvtEnveduGrpExcelDownload(HttpServletRequest request, HttpServletResponse response, PvtEnvEduGrpVo pvtEnvEduGrpVo) throws Exception {
         pvtEnveduGrpService.selectPvtEnveduGrpExcelDownload(pvtEnvEduGrpVo, response, request);

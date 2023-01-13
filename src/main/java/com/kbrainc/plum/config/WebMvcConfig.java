@@ -17,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
+import com.kbrainc.plum.config.annotation.AnnotationSiteInfoArgumentResolver;
 import com.kbrainc.plum.config.annotation.AnnotationUserInfoArgumentResolver;
 
 
@@ -41,7 +42,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         logger.info("=========== Add Argument Resolvers ===========");
         resolvers.add(new AnnotationUserInfoArgumentResolver());
-
+        resolvers.add(new AnnotationSiteInfoArgumentResolver());
     }
     
     @Override

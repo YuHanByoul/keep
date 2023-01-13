@@ -1,0 +1,72 @@
+<div class="card-header p-b-0">
+    <ul class="nav nav-tabs tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/expertPoolMng/expertMatchForm.html">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" id="expertMatchForm"><strong>매칭정보</strong></a>
+            </li>
+        </th:block>
+
+        <th:block sec:authorize-url="/mng/expertPoolMng/expertLctrDmndForm.html">
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" id="expertLctrDmndForm"><strong>강의요청서</strong></a>
+            </li>
+        </th:block>
+    </ul>
+</div>
+
+<div class="tab-content tabs p-t-20" id="tab_content_area">
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var dmndid = /*[[${expertRelationInfo.dmndid}]]*/null;
+    /*]]>*/
+
+    var expertRelationDetail = {
+        expertMatchFormUrl: '/mng/expertPoolMng/expertMatchForm.html',
+        expertLctrDmndFormUrl: '/mng/expertPoolMng/expertLctrDmndForm.html',
+
+        init: function () {
+            expertRelationDetail.tabEvent();
+            expertRelationDetail.initTab()
+        },
+
+        moveTab: function (tabId) {
+            if (tabId == 'expertMatchForm') {
+                $('#tab_content_area').load(expertRelationDetail.expertMatchFormUrl + "?dmndid=" + dmndid);
+            } else if (tabId == 'expertLctrDmndForm') {
+                $('#tab_content_area').load(expertRelationDetail.expertLctrDmndFormUrl + "?dmndid=" + dmndid);
+            }
+            $('#' + tabId).parent().addClass('active');
+        },
+
+        tabEvent: function () {
+            $('.nav-tabs a').on('show.bs.tab', function (event) {
+                var tabId = event.currentTarget.attributes.id.value;
+                expertRelationDetail.moveTab(tabId);
+            });
+        },
+
+        initTab: function () {
+            var tabFlag = false;
+            /*[# sec:authorize-url="/mng/expertPoolMng/expertMatchForm.html"]*/
+            if (tabFlag == false) {
+                this.moveTab("expertMatchForm");
+                tabFlag = true;
+            }
+            /*[/]*/
+            /*[# sec:authorize-url="/mng/member/expertLctrDmndForm.html"]*/
+            if (tabFlag == false) {
+                this.moveTab("expertLctrDmndForm");
+                tabFlag = true;
+            }
+            /*[/]*/
+
+        }
+    }
+
+    $(function () {
+        expertRelationDetail.init();
+    })
+</script>

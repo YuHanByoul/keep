@@ -1,114 +1,148 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
     SQL File Name : FaqDaoImpl.xml
     Description : FAQ 관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.faq.model.FaqDao">
-    
+
     <!-- FAQ리스트 가져옴 -->
     <select id="getList" parameterType="FaqVo" resultType="FaqVo">
         /* FaqDao.getList */
         <include refid="PaginationMapper.header"/>
         SELECT
-            A.CLID
-            ,B.SITEID
-            ,A.FAQID
-            ,A.TITLE
-            ,A.CNTNTS
-            ,A.ORD
-            ,A.USE_YN
-            ,A.MDFCN_DT
-            ,A.REG_DT
-            ,B.CL_NM
-            ,C.NM
+        A.CLID
+        ,B.SITEID
+        ,A.FAQID
+        ,A.TITLE
+        ,A.CNTNTS
+        ,A.ORD
+        ,A.USE_YN
+        ,A.MDFCN_DT
+        ,A.REG_DT
+        ,B.CL_NM
+        ,C.NM
         FROM
-            TB_CMM_FAQ A
-            INNER JOIN TB_CMM_FAQ_CL B
-                ON A.CLID = B.CLID
-            INNER JOIN TB_CMM_USER C
-                ON C.USERID = A.RGTRID
+        TB_CMM_FAQ A
+        INNER JOIN TB_CMM_FAQ_CL B
+        ON A.CLID = B.CLID
+        INNER JOIN TB_CMM_USER C
+        ON C.USERID = A.RGTRID
         WHERE 1=1
-            <bind name="searchSiteValue" value="searchSite" />
-            <bind name="searchSiteSysSeCd" value="'U'" />
-            <include refid="SearchMapper.siteLmtCondition">
-                <property name="tableAlias" value="B" />
-            </include>
-            <if test='clid != null and clid !="" '>
+        <bind name="searchSiteValue" value="searchSite"/>
+        <bind name="searchSiteSysSeCd" value="'U'"/>
+        <include refid="SearchMapper.siteLmtCondition">
+            <property name="tableAlias" value="B"/>
+        </include>
+        <if test='clid != null and clid !="" '>
             AND A.CLID = #{clid}
-            </if> 
-            <if test="searchType != null and searchType.trim() == 'title' and searchKeyword !='' ">
+        </if>
+        <if test="searchType != null and searchType.trim() == 'TITLE' and searchKeyword !='' ">
             AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
-            </if>
-            <if test="searchType != null and searchType.trim() == 'cntnts' and searchKeyword !='' ">
+        </if>
+        <if test="searchType != null and searchType.trim() == 'CNTNTS' and searchKeyword !='' ">
             AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword}, '%')
-            </if>
+        </if>
 
         <include refid="PaginationMapper.footer"/>
     </select>
-    
+
     <!-- FAQ 내용을 가져옴 -->
     <select id="getFaq" parameterType="FaqVo" resultType="FaqVo">
         /* FaqDao.getFaq */
-    	SELECT
-            A.CLID
-    	     , A.FAQID
-    	     , A.TITLE
-    	     , A.CNTNTS
-    	     , A.ORD
-    	     , A.USE_YN
-    	     , A.MDFCN_DT
-    	     , A.REG_DT
-    	     , B.SITEID
-    	FROM
-    		TB_CMM_FAQ A
-    	INNER JOIN TB_CMM_FAQ_CL B
-    	    ON A.CLID = B.CLID
-    	WHERE
-    		FAQID = #{faqid}
+        SELECT A.CLID
+             , A.FAQID
+             , A.TITLE
+             , A.CNTNTS
+             , A.ORD
+             , A.USE_YN
+             , A.MDFCN_DT
+             , A.REG_DT
+             , B.SITEID
+        FROM TB_CMM_FAQ A
+                 INNER JOIN TB_CMM_FAQ_CL B
+                            ON A.CLID = B.CLID
+        WHERE A.FAQID = #{faqid}
     </select>
-    <select id="selectSiteid" resultType="int">
-        SELECT SITEID
-        FROM TB_CMM_FAQ_CL
-        WHERE CLID = #{clid}
+
+    <select id="getUpdateFaq"
+            resultType="com.kbrainc.plum.mng.faq.model.FaqVo">
+        SELECT A.CLID
+        , A.FAQID
+        , A.TITLE
+        , A.CNTNTS
+        , A.ORD
+        , A.USE_YN
+        , A.MDFCN_DT
+        , A.REG_DT
+        , B.SITEID
+        FROM TB_CMM_FAQ A
+            INNER JOIN TB_CMM_FAQ_CL B ON A.CLID = B.CLID
+        WHERE B.SITEID = #{siteid}
+            <if test="clid != null and clid != ''">
+                AND A.CLID = #{clid}
+            </if>
+
+            <if test="mode == 'OU'">
+                AND A.ORD <![CDATA[<]]> #{ord}
+                ORDER BY A.ORD DESC
+            </if>
+
+            <if test="mode == 'OD'">
+                AND A.ORD <![CDATA[>]]> #{ord}
+                ORDER BY A.ORD
+            </if>
+        LIMIT 1
     </select>
 
     <!-- FAQ 추가 -->
-    <insert id="insertFaq" useGeneratedKeys="true" keyProperty="faqid" parameterType="FaqVo">
+    <insert id="insertFaq" useGeneratedKeys="true" keyProperty="faqid"
+            parameterType="FaqVo">
         /* FaqDao.addFaq */
-	    <selectKey keyProperty="ord" resultType="Int" order="BEFORE"> 
-            SELECT 
-                IFNULL (Max(ORD),0) +1
-            FROM 
-                TB_CMM_FAQ A
-            INNER JOIN (SELECT CLID FROM TB_CMM_FAQ_CL WHERE SITEID = #{siteid}) B
-                ON A.CLID = B.CLID
+        <selectKey keyProperty="ord" resultType="Int" order="BEFORE">
+            SELECT
+            IFNULL (Max(ORD),0) +1
+            FROM
+            TB_CMM_FAQ A
+            INNER JOIN (SELECT CLID FROM TB_CMM_FAQ_CL WHERE SITEID = #{siteid})
+            B
+            ON A.CLID = B.CLID
             WHERE 1=1
         </selectKey>
-        INSERT INTO TB_CMM_FAQ 
-            (CLID, TITLE, CNTNTS, ORD, USE_YN, MDFCN_DT, REG_DT,MDFRID, RGTRID)
-        VALUES 
-            (#{clid}, #{title}, #{cntnts}, #{ord}, #{useYn}, NOW(), NOW(), #{user.userid} ,#{user.userid})
+        INSERT INTO TB_CMM_FAQ
+        (CLID, TITLE, CNTNTS, ORD, USE_YN, MDFCN_DT, REG_DT,MDFRID, RGTRID)
+        VALUES
+        (#{clid}, #{title}, #{cntnts}, #{ord}, #{useYn}, NOW(), NOW(),
+        #{user.userid} ,#{user.userid})
     </insert>
-    
+
     <!-- FAQ 수정 -->
     <update id="updateFaq" parameterType="FaqVo">
         /* FaqDao.updateFaq */
-    	UPDATE TB_CMM_FAQ SET
-    		CLID = #{clid},
-    		TITLE = #{title},
-    		CNTNTS = #{cntnts},
-    		USE_YN = #{useYn},
-    		MDFCN_DT = NOW(),
-    		MDFRID = #{user.userid}
-    	WHERE FAQID = #{faqid}
-
-    </update>
-
-    <update id="changeFaqOrd">
-        UPDATE TB_CMM_FAQ SET
-            ORD = #{ord}
+        UPDATE TB_CMM_FAQ
+        SET CLID     = #{clid},
+            TITLE    = #{title},
+            CNTNTS   = #{cntnts},
+            USE_YN   = #{useYn},
+            MDFCN_DT = NOW(),
+            MDFRID   = #{user.userid}
         WHERE FAQID = #{faqid}
     </update>
+
+    <update id="updateFaqOrdUp">
+        UPDATE
+            TB_CMM_FAQ
+        SET ORD = #{ord}
+        WHERE FAQID = #{faqid}
+    </update>
+
+    <update id="updateFaqOrdDown">
+        UPDATE
+            TB_CMM_FAQ
+        SET ORD = #{ord}
+        WHERE FAQID = #{faqid}
+    </update>
+
 </mapper>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<form id="faqForm" name="faqForm" method="post" onsubmit="return false;">
+<form id="faqForm" name="faqForm" onsubmit="return false;">
   <input type="hidden" id="faqid" name="faqid" th:value = "${faqInfo.faqid}" >
   <input type="hidden" id="useYn" name="useYn" th:value="Y">
   <div class="card">
@@ -55,7 +55,7 @@
     <div class="card-block-small">
       <button class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
       <th:block sec:authorize-url="/mng/faq/insertFaq.do">
-        <button class="btn btn-primary" onclick="saveFaq()">저장</button>
+        <button type="button" class="btn btn-primary" onclick="saveFaq()">저장</button>
       </th:block>
     </div>
   </div>
@@ -156,10 +156,9 @@
       }
     }
 
-    if (!$("#faqForm").valid()) return;
+    $("#cntnts").val(editor.getData().trim());
 
-    var editorData = editor.getData();
-    $("#cntnts").val(editorData);
+    if (!$("#faqForm").valid()) return;
 
     if (displayWorkProgress()) {
       $.ajax({
@@ -179,7 +178,6 @@
 
   function validateFaq() {
     $("#faqForm").validate({
-      onsubmit: false,
       rules: {
         siteid: {required: true}
         , clid: {required: true}

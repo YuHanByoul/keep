@@ -7,7 +7,6 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -130,9 +129,9 @@ public class ExpertPoolMngServiceImpl extends PlumAbstractServiceImpl implements
      */
     @Override
     public boolean updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo) throws Exception {
-        if(expertLogVo.getPrcsSeCd() != null && !expertLogVo.getPrcsSeCd().equals("")) {
+        if (expertLogVo.getPrcsSeCd() != null && !expertLogVo.getPrcsSeCd().equals("")) {
             return expertPoolMngDao.updateExpertStatus(expertVo) && expertPoolMngDao.insertExpertLog(expertLogVo);
-        } else{
+        } else {
             return expertPoolMngDao.updateExpertStatus(expertVo);
         }
     }
@@ -162,7 +161,7 @@ public class ExpertPoolMngServiceImpl extends PlumAbstractServiceImpl implements
      */
     @Override
     public List<ExpertLogVo> selectExpertLogList(ExpertLogVo expertLogVo) throws Exception {
-        return  expertPoolMngDao.selectExpertLogList(expertLogVo);
+        return expertPoolMngDao.selectExpertLogList(expertLogVo);
     }
 
     /**

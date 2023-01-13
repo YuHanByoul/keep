@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SrngDaoImpl.xml
+	Description : 심사양식관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.srng.model.SrngDao">
+
+    <!-- 심사 문항 조회 -->
+    <select id="selectSrngList" parameterType="SrngQitemVO" resultType="SrngQitemVO">
+        /* SrngDao.selectSrngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.QITEMID
+            , A.DSGNCRTR_CD
+            , A.IDNTY_MTTR
+            , A.ALTM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_ASS_SRNG_QITEM A
+        WHERE
+        1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'idntyMttrStr'">
+            AND A.IDNTY_MTTR LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchDsgncrtrCd != null and searchDsgncrtrCd != '' ">
+            AND A.DSGNCRTR_CD = #{searchDsgncrtrCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 심사 문항 정보 조회 -->
+    <select id="selectSrng" parameterType="SrngQitemVO" resultType="SrngQitemVO">
+        /* SrngDao.selectSrng */
+        SELECT
+            QITEMID
+            , DSGNCRTR_CD
+            , IDNTY_MTTR
+            , ALTM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_ASS_SRNG_QITEM
+        WHERE
+            QITEMID = #{qitemid}
+    </select>
+
+    <!-- 심사 문항 등록 -->
+    <insert id="insertSrng" parameterType="SrngQitemVO" useGeneratedKeys="true" keyProperty="qitemid">
+        /* SrngDao.insertSrng */
+        INSERT INTO TB_ASS_SRNG_QITEM (
+            QITEMID
+            , DSGNCRTR_CD
+            , IDNTY_MTTR
+            , ALTM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{qitemid}
+            , #{dsgncrtrCd}
+            , #{idntyMttr}
+            , #{altm}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <!-- 심사 문항 수정 -->
+    <update id="updateSrng" parameterType="SrngQitemVO">
+        /* SrngDao.updateSrng */
+        UPDATE TB_ASS_SRNG_QITEM SET
+            DSGNCRTR_CD = #{dsgncrtrCd}
+            , IDNTY_MTTR = #{idntyMttr}
+            , ALTM = #{altm}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            , REG_DT = NOW()
+            , RGTRID = #{user.userid}
+        WHERE
+            QITEMID = #{qitemid}
+    </update>
+
+    <!-- 심사양식 정보 조회 -->
+    <select id="selectSrngForm" parameterType="SrngFormVO" resultType="SrngFormVO">
+        /* SrngDao.selectSrngForm */
+        SELECT
+            FORMID
+            , FORM_NM
+            , FORM_EXPLN
+            , OPER_FRM_CD
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_ASS_SRNG_FORM
+        WHERE
+            FORMID = #{formid}
+    </select>
+
+    <!-- 심사양식 문항목록 조회 -->
+    <select id="selectSrngFormQitemList" parameterType="SrngFormQitemMapngVO" resultType="SrngFormQitemMapngVO">
+        /* SrngDao.selectSrngFormQitem */
+        SELECT
+            SFQM.FORMID
+             , SFQM.QITEMID
+             , SQ.DSGNCRTR_CD
+             , SQ.IDNTY_MTTR
+             , SFQM.ORDR QITEM_ORDR
+             , SFDO.ORDR DSGNCRTR_ORDR
+             , SFQM.CHKLST_SE_CD
+        FROM
+            TB_ASS_SRNG_FORM_QITEM_MAPNG SFQM
+        LEFT OUTER JOIN TB_ASS_SRNG_QITEM SQ
+            ON SQ.QITEMID = SFQM.QITEMID
+        LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+            ON SFDO.FORMID = SFQM.FORMID AND SQ.DSGNCRTR_CD = SFDO.DSGNCRTR_CD
+        WHERE
+            SFQM.FORMID = #{formid}
+        ORDER BY
+            SFDO.ORDR ASC, SFQM.ORDR ASC;
+    </select>
+
+    <!-- 체크리스트 구분 코드 조회 -->
+    <select id="selectChklstSeCdList" parameterType="CodeVo" resultType="CodeVo">
+        /* SrngDao.selectChklstSeCdList */
+        SELECT
+            A.CD
+             , B.CD_NM AS UPPR_CD_NM
+             , A.CD_NM
+        FROM
+            TB_CMM_CD A
+                LEFT OUTER JOIN
+            TB_CMM_CD B ON (B.CD = A.UPPR_CD)
+        WHERE
+            A.CDGRPID = '140'
+          AND A.UPPR_CD != '0'
+        ORDER BY
+            A.CD ASC
+    </select>
+
+    <!-- 심사양식 목록 조회 -->
+    <select id="selectSrngFormList" parameterType="SrngFormVO" resultType="SrngFormVO">
+        /* SrngDao.selectSrngFormList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.FORMID
+            , A.FORM_NM
+            , A.OPER_FRM_CD
+            , A.USE_YN
+            , (SELECT COUNT(1) FROM TB_ASS_SRNG_FORM_QITEM_MAPNG  WHERE FORMID = A.FORMID) SRNG_FORM_QITEM_CNT
+            , A.MDFCN_DT
+            , A.REG_DT
+        FROM
+            TB_ASS_SRNG_FORM A
+        WHERE
+            1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'formNmStr'">
+            AND A.FORM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'formExplnStr'">
+            AND A.FORM_EXPLN LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchOperFrmCd != null and searchOperFrmCd != '' ">
+            AND A.OPER_FRM_CD = #{searchOperFrmCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 심사양식 등록 -->
+    <insert id="insertSrngForm" parameterType="SrngFormVO" useGeneratedKeys="true" keyProperty="formid">
+        /* SrngDao.insertSrngForm */
+        INSERT INTO TB_ASS_SRNG_FORM (
+            FORMID
+            , FORM_NM
+            , FORM_EXPLN
+            , OPER_FRM_CD
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{formid}
+            , #{formNm}
+            , #{formExpln}
+            , #{operFrmCd}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <!-- 심사양식 같은 운영형태 사용여부 개수 -->
+    <select id="checkUseYnCnt" parameterType="SrngFormVO" resultType="int">
+        /* SrngDao.checkUseYnCnt */
+        SELECT
+            (CASE WHEN COUNT(1) = 0 OR (SELECT USE_YN FROM TB_ASS_SRNG_FORM WHERE FORMID = #{formid} ) = 'Y' THEN 0 ELSE 1 END)
+        FROM
+            TB_ASS_SRNG_FORM
+        WHERE
+            OPER_FRM_CD = #{operFrmCd}
+            AND USE_YN = 'Y';
+    </select>
+
+    <!-- 심사양식 수정 -->
+    <update id="updateSrngForm" parameterType="SrngFormVO">
+        /* SrngDao.updateSrngForm */
+        UPDATE TB_ASS_SRNG_FORM SET
+            FORM_NM = #{formNm}
+            , FORM_EXPLN = #{formExpln}
+            , OPER_FRM_CD = #{operFrmCd}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            , REG_DT = NOW()
+            , RGTRID = #{user.userid}
+        WHERE
+            FORMID = #{formid}
+    </update>
+
+    <!-- 심사양식 문항 목록 지정기준 삭제  -->
+    <delete id="deleteSrngFormDsgncrtrCdOrdr" parameterType="int">
+        /* SrngDao.deleteSrngFormDsgncrtrCdOrdr */
+        DELETE FROM TB_ASS_SRNG_FORM_DSGNCRTR_ORDR
+        WHERE
+            FORMID = #{formid}
+    </delete>
+
+    <!-- 심사양식 문항 목록 삭제  -->
+    <delete id="deleteSrngFormQitem" parameterType="int">
+        /* SrngDao.deleteSrngFormQitem */
+        DELETE FROM TB_ASS_SRNG_FORM_QITEM_MAPNG
+        WHERE
+            FORMID = #{formid}
+    </delete>
+
+    <!-- 심사양식 문항 목록 지정기준 등록  -->
+    <insert id="insertSrngFormDsgncrtrCdOrdr">
+        /* SrngDao.insertSrngFormDsgncrtrCdOrdr */
+        INSERT INTO TB_ASS_SRNG_FORM_DSGNCRTR_ORDR (
+            FORMID
+            , DSGNCRTR_CD
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach item="item" collection="dsgncrtrCds" open="(" close=")" separator="," index="index">
+            #{formid}
+            , #{item}
+            , #{index}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        </foreach>
+    </insert>
+
+    <!-- 심사양식 문항 목록 등록  -->
+    <insert id="insertSrngFormQitem">
+        /* SrngDao.insertSrngFormQitem */
+        INSERT INTO TB_ASS_SRNG_FORM_QITEM_MAPNG (
+            FORMID
+            , QITEMID
+            , ORDR
+            , CHKLST_SE_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach item="item" collection="srngFormQitemMapngVOs" open="(" close=")" separator="," index="index">
+            #{item.formid}
+            , #{item.qitemid}
+            , #{index}
+            , #{item.chklstSeCd}
+            , NOW()
+            , #{item.user.userid}
+            , NOW()
+            , #{item.user.userid}
+        </foreach>
+    </insert>
+</mapper>

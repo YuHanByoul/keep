@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <style>
+        .hide {
+            display: none;
+        }
+    </style>
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <form action="" id="searchForm" name="searchForm" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchType">
+                                            <strong>키워드</strong></label>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control">
+                                                <option value="">- 전체 -</option>
+                                                <option value="nm">이름</option>
+                                                <option value="acnt">아이디</option>
+                                            </select>
+                                            <input type="text" class="form-control form-control-sm" name="searchKeyword" id="searchKeyword" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>처리상태</strong></div>
+                                        <div class="col-12">
+                                            <th:block kattr:select_code="sttsCd" grpCd="152" firstOptTxt="- 전체 - " isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-1 p-t-20 text-center border-top">
+                                <button type='button' class="btn btn-disabled m-r-5" onclick="expertMdfcn.searchInit()">초기화</button>
+                                <button type='submit' class="btn btn-primary" onclick="expertMdfcn.search()">검색</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <h5><strong>정보변경 검색결과</strong></h5>
+                    </div>
+                    <div class="card-block-small">
+                        <div class="card-block-small">
+                            <table id="expertMdfcnJsGrid" class="table-responsive"></table>
+                            <div id="expertMdfcnListPager" class="text-center"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="contentPanel" class="row"></div>
+    </div>
+
+
+    <script th:inline="javascript">
+        var expertMdfcn = {
+            listUrl: '/mng/expertPoolMng/selectExpertMdfcnList.do',
+            detailUrl : '/mng/expertPoolMng/expertMdfcnDetail.html',
+            gridHelper: null,
+
+            init() {
+                this.gridHelper = new GridHelper('expertMdfcnJsGrid', 'contentPanel');
+                this.writeJsGridData();
+            },
+
+            writeJsGridData() {
+                $('#expertMdfcnJsGrid').jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: true,
+                    paging: true,
+                    pagerContainer: "#expertMdfcnListPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function (filter) {
+                            var data = $.Deferred();
+                            var params = [
+                                {"name": "pageNumber", "value": filter.pageIndex},
+                                {"name": "rowPerPage", "value": filter.pageSize},
+                            ];
+
+                            if (filter.sortField != undefined) {
+                                params.push({name: "orderField", value: mapCamelCaseToUnderscore(filter.sortField)});
+                                params.push({name: "orderDirection", value: filter.sortOrder});
+                            } else {
+                                params.push({name: "orderField", value: 'reg_dt'});
+                            }
+
+                            var formData = $('#searchForm').serializeArray();
+                            formData = formData.concat(params);
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: expertMdfcn.listUrl,
+                                data: formData,
+                                dataType: "json"
+                            }).done(function (response) {
+                                var da = {
+                                    data: escapeGridData(response.list),
+                                    itemsCount: response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {name: "mdfcnDmndId", css: 'hide'},
+                        {name: "userid", css: 'hide'},
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center"},
+                        {title: "변경요청일시", name: "regDt", type: "text", width: "120", align: "center"},
+                        {title: "전문가 아이디", name: "acnt", type: "text", width: "100", align: "center"},
+                        {title: "전문가 이름", name: "nm", type: "text", width: "80", align: "center"},
+                        /*{title: "처리자 ID", name: "mdfcnNm", type: "text", width: "100", align: "center"},*/
+                        {title: "처리상태", name: "sttsCdNm", type:"text", width: "125", align: "center"},
+                        {title: "처리일시", name: "mdfcnDt", type: "text", width: "120", align: "center"},
+                    ],
+                    /* [# sec:authorize-url="/mng/expertPoolMng/expertMdfcnDetail.html"] */
+                    rowClick: function (args) {
+                        if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var url = expertMdfcn.detailUrl + "?mdfcnDmndId=" + args.item.mdfcnDmndId + "&userid="+ args.item.userid;
+                        expertMdfcn.gridHelper.loadContent(url);
+                        expertMdfcn.gridHelper.rowClick(args);
+                    }
+                    /* [/] */
+                });
+            },
+            search() {
+
+                if ($('#searchType').val() != '' && $('#searchKeyword').val() == '') {
+                    alert('검색어를 입력해 주십시오.');
+                    return;
+                }
+
+                if ($('#searchType').val() == '' && $('#searchKeyword').val() != '') {
+                    alert('키워드를 선택해 주십시오.');
+                    return;
+                }
+
+                this.gridHelper.resetListContent();
+            },
+            searchInit() {
+                $("#searchType, #searchKeyword, #sttsCd").val('');
+            }
+        }
+
+        $(function () {
+            expertMdfcn.init()
+        })
+    </script>
+</div>
+</body>
+</html>

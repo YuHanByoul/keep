@@ -95,9 +95,9 @@ public interface ChklstDao {
      * 체크리스트 목록 조회
      *
      * @Title : selectChklstList
-     * @Description : 체크리스트 문항 조회
+     * @Description : 체크리스트 목록 조회
      * @param chklstVo  chklstVo 객체
-     * @return List<ChklstVo> 체크리스트 문항 목록
+     * @return List<ChklstVo> 체크리스트 목록
      * @throws Exception 예외
      */
     public List<ChklstVo> selectChklstList(ChklstVo chklstVo) throws Exception;
@@ -114,6 +114,17 @@ public interface ChklstDao {
     public ChklstVo selectChklstInfo(ChklstVo chklstVo) throws Exception;
     
     /**
+     * 사용중인 체크리스트 여부 확인
+     *
+     * @Title : isUseChklst 
+     * @Description : 사용중인 체크리스트 여부 확인
+     * @param chklstVo ChklstVo객체
+     * @return ChklstVo ChklstVo 객체
+     * @throws Exception 예외
+     */
+    public ChklstVo isUseChklst(ChklstVo chklstVo) throws Exception;
+    
+    /**
      * 체크리스트 업데이트
      *
      * @Title : updateChklst
@@ -123,5 +134,38 @@ public interface ChklstDao {
      * @throws Exception 예외
      */
     public int updateChklst(ChklstVo chklstVo) throws Exception;
+    
+    /**
+     * 체크리스트 문항구성 목록 조회
+     *
+     * @Title : selectChklstQitemMapngList
+     * @Description : 체크리스트 문항구성 목록 조회
+     * @param chklstQitemMapngVo  ChklstQitemMapngVo 객체
+     * @return List<ChklstQitemMapngVo> 체크리스트 문항구성 목록
+     * @throws Exception 예외
+     */
+    public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
+    
+    /**
+     * 체크리스트 문항구성 등록
+     *
+     * @Title : insertChklstQitemMapng 
+     * @Description : 체크리스트 문항구성 등록
+     * @param chklstQitemVo ChklstQitemVo객체
+     * @return int insert 로우수
+     * @throws Exception 예외
+     */
+    public int insertChklstQitemMapng(ChklstQitemVo chklstQitemVo) throws Exception;
+    
+    /**
+     * 체크리스트 문항구성 업데이트
+     *
+     * @Title : updateChklstQitemMapng
+     * @Description : 체크리스트 문항 업데이트
+     * @param chklstQitemVo ChklstQitemVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateChklstQitemMapng(ChklstQitemVo chklstQitemVo) throws Exception;
     
 }

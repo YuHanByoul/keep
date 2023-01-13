@@ -63,6 +63,8 @@ public class ChklstVo extends ParentRequestVo {
     /** 검색 운영형태 구분코드 */
     private String searchOperFrmCd;
     
+    /** 사용중인 체크리스트 여부 */
+    private String isUseChklst;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

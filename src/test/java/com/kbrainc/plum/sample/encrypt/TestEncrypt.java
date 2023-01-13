@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 import org.aspectj.weaver.patterns.ParserException;
 import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
 import org.egovframe.rte.fdl.cryptography.EgovDigestService;
+import org.egovframe.rte.fdl.cryptography.EgovPasswordEncoder;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.jasypt.salt.StringFixedSaltGenerator;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -51,6 +53,9 @@ public class TestEncrypt {
 	    ConfigurationFactory.profile = "local";
 	}
 	
+	@Value("${crypto.key}")
+    private String cryptoKey;
+	
 	@Resource(name="digestService")
 	EgovDigestService digestService;
 	
@@ -65,7 +70,7 @@ public class TestEncrypt {
 		// RandomSaltGenerator를 사용하는 경우는 암호화된 결과 값이 매번 바뀜.
 		encryptor.setSaltGenerator(new StringFixedSaltGenerator("someFixedSalt"));
 		
-		encryptor.setPassword("password1234");
+		encryptor.setPassword(cryptoKey);
 		encryptor.setAlgorithm("PBEWithMD5AndDES");
 		
 		String str = "PlumFramework";
@@ -82,12 +87,13 @@ public class TestEncrypt {
 		
 		logger.info("Hashed : {}", digested.toString());
 		
-//		String password = "Plumframework";
-//    	EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
-//    	passwordEncoder.setAlgorithm("SHA-256");
-//    	String hashed = passwordEncoder.encryptPassword(password);
-//		
-//    	logger.info("Hashed : {}", hashed);
+		// crypto.hashed.password 생성시작
+		String password = cryptoKey;
+    	EgovPasswordEncoder passwordEncoder = new EgovPasswordEncoder();
+    	passwordEncoder.setAlgorithm("SHA-256");
+    	String hashed = passwordEncoder.encryptPassword(password);
+    	logger.info("Hashed : {}", hashed);
+    	// crypto.hashed.password 생성끝
     	
 		assertTrue(digestService.matches(data.getBytes(), digested));
 	}
@@ -101,7 +107,7 @@ public class TestEncrypt {
 				"!@#$%^&*()_+|~{}:\"<>?-=\\`[];',./"
 		};
 		
-		String password = "Plumframework";
+		String password = cryptoKey;
 		 
 		try {
 			for (String str : testString) {
@@ -109,7 +115,7 @@ public class TestEncrypt {
 				logger.info("encrypted Text : {}", encrypted.toString());
 		 
 				byte[] decrypted = cryptoService.decrypt(encrypted, password);
-				logger.info("decrypted Text : {}", decrypted.toString());
+				logger.info("decrypted Text : {}", new String(decrypted, "UTF-8"));
 				assertEquals(str, new String(decrypted, "UTF-8"));
 			}
 		} catch (ParserException e) {

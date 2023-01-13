@@ -11,7 +11,7 @@
                 <div class="card-block-small">
                     <form name="managerSearchForm" id="managerSearchForm" onsubmit="return false;">
                         <div class="row">
-                            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                            <div class="col-lg-6 col-md-6 mb-3">
                                 <div class="mb-0 form-group">
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                     <div class="input-group input-group-sm input-group-dropdown mb-0">
@@ -24,16 +24,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-6">
+                            <div class="col-lg-6 col-md-6 mb-3">
                                 <div class="mb-0 form-group">
                                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관</strong></div>
                                     <th:block kattr:select_inst="searchInst" selectedId="" firstOptTxt="- 전체 -" firstOptVal="" secondOptTxt="- 소속없음 -" secondOptVal="N"></th:block>
                                 </div>
                             </div>
                         </div>
-                        <div class="m-t-20 text-center">
-                            <button class="btn btn-disabled m-r-5" onclick="managerSearchInit()">초기화</button>
-                            <button class="btn btn-primary" onclick="managerSearch()">검색</button>
+                        <div class="mt-1 p-t-20 text-center border-top">
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="managerSearchInit()">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="managerSearch()">검색</button>
                         </div>
                     </form>
                 </div>
@@ -74,24 +74,18 @@
     }
 
     function managerSearch() {
-        if ($('#managerSearchForm #searchType').val() != '' && $('#managerSearchForm #searchKeyword').val() == "") {
+        var searchType = $("#managerSearchForm #searchType").val();
+        var searchKeyword = $("#managerSearchForm #searchKeyword").val();
+        if (searchType != '' && searchKeyword == "") {
             alert('검색어를 입력해 주십시오.');
             return;
         }
-        managerGridHelpr.resetListContent();
-    }
-
-    function mapCamelCaseToUnderscore(sortField) {
-        var result = "";
-        for (var i = 0; i < sortField.length; i++) {
-            if (sortField[i] === sortField[i].toUpperCase()) {
-                result += "_";
-                result += sortField[i].toLowerCase();
-            } else {
-                result += sortField[i];
-            }
+        if(searchType == '' && searchKeyword != '') {
+            alert('키워드를 선택해 주십시오.');
+            return;
         }
-        return result;
+
+        managerGridHelpr.resetListContent();
     }
 
     function writeHelpDeskModalData() {
@@ -169,8 +163,8 @@
                 },
                 {name: 'userid', css: 'hide'},
                 {title: '사용자', name: 'nm', type: "text", width: "150"},
-                {title: '소속기관', name: 'instNm', type: "text", width: "150"},
-                {title: '역할', name: 'roleNm', type: "text", width: "120", align: "center"}
+                {title: '소속기관', name: 'instNm', type: "text", width: "150",sorting: false},
+                {title: '역할', name: 'roleNm', type: "text", width: "120", align: "center",sorting: false}
             ],
             rowClick: function (args) {
                 if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;

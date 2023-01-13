@@ -1,0 +1,227 @@
+<!-- 담당자정보 회원검색 팝업 -->
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">회원검색</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+			            <form id="searchManagerModalFrm" action="" onsubmit="return false;">
+			               
+<!--                     <th:block th:if="${user}">
+                        기관관리자용
+                        <div class="row">
+                            <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterManagerName"><strong>이름</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="filterManagerName" id="filterManagerName" placeholder="Text Input Validation"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-6">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterManagerPhoneNum"><strong>휴대폰</strong></label>
+                                    <div class="col-sm-12">
+                                        <input type="text" class="form-control form-control-sm" name="filterManagerPhoneNum" id="filterManagerPhoneNum" placeholder="Text Input Validation"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     </th:block> -->
+                        
+                        <!--협회관리자용-->
+                        <div class="row">
+                            <div class="col-12 col-lg-6">
+                                <div class="mb-0 form-group">
+                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                        <select id="searchType" name="searchType" class="form-select form-control form-control-primary form-bg-primary">
+                                            <option value="">- 선택 -</option>
+                                            <option value="nm">이름</option>
+                                            <option value="acnt">아이디</option>
+                                            <option value="moblphon">휴대폰</option>
+                                            <option value="eml">이메일</option>
+                                        </select>
+                                        <input type="text" id="searchKeyword" name="searchKeyword" class="form-control" aria-label="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       </form>
+                        
+                        <div class="m-t-20 text-center">
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="initSearchManager()">초기화</button>
+                            <button type="button" class="btn btn-primary" onclick="searchManagerList()">검색</button>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!--임시 그리드-->
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="dt-responsive table-responsive">
+                        
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="instManagerModalGrid" class="table-responsive"></table>
+                                <div id="listPager3" class="text-center"></div>
+                       </div>
+                        </div>
+                    </div>
+                </div>
+                <!--//임시 그리드-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="applyInstManager()">선택</button>
+            </div>
+        </div>
+  </div>
+  <!-- 담당자정보 회원검색 팝업 -->
+  <script th:inline="javascript">
+
+    var selectedItems = [];
+    var gridHelper1;         
+    $(function(){
+        //gridHelper1 = new GridHelper('subJsGrid','contentPanel');
+        writeManagerModalGridData();
+    });
+
+    searchManagerList = () =>{
+        $("#instManagerModalGrid").jsGrid("reset");
+    }
+    
+    initSearchManager = () =>{
+    	$("#searchManagerModalFrm #searchType").val("");
+    	$("#searchManagerModalFrm  #searchKeyword").val("");
+    }
+    
+    function writeManagerModalGridData(){
+        
+        $("#instManagerModalGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#listPager3",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchManagerModalFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+
+                    var paramid = {
+                    		name:"instid" ,value: $("#searchManagerFrm #instid").val()
+                    }
+
+                    formData = formData.concat(params);
+                    formData = formData.concat(paramid);
+
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/inst/selectInstUser.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "radio").attr("class", "singleCheckbox3").attr("name","memchk")
+                                .attr("value",item.userid).attr("id","memchk_"+item.userid)
+                     },
+                     align: "center",
+                     width: "30",
+                     sorting: false
+                 }   
+                ,{ name: 'userid', css: 'hide' }
+                ,{ name: 'nm', css: 'hide' }
+                ,{ title: '사용자'   ,name: 'nm'    ,type: "text" , width: "200" 
+                    ,itemTemplate:function(value,item){return item.nm +" ( "+item.eml+" )"                        }
+                    }
+                ,{ title: '핸드폰'  ,name: 'moblphon',type: "text" , width: "150" ,align:"center"}
+                ,{ title: '메일'   ,name: 'eml'     ,type: "text" , width: "200" }
+            ],
+            rowClick: function(args) {
+                $("#memchk_"+args.item.userid).prop("checked",true);
+                
+            }
+        });
+    }
+
+  var applyInstManager = () =>{
+	  
+      if($('input[name=memchk]:checked').length <= 0){
+          alert("담당자를 선택해주세요");
+          return;
+      }
+
+      if(!confirm("담당자로 등록 하시겠습니까?"))return; 
+      
+	  let chekcedUsrid = $('input[name=memchk]:checked').val();
+
+	  var params = {
+			  instid : $("#searchManagerFrm #instid").val(),
+			  userid : chekcedUsrid 	  
+	  }
+	  
+      if(displayWorkProgress()){
+          $.ajax({
+              url : "/mng/inst/updateInstUser.do",
+              type: 'POST',
+              cache : false,
+              dataType: 'json',
+              data : params,
+              success : function (data){
+                  alert(data.msg);
+			      //담당자 그리드 목록 리셋
+				  $("#instMemGrid").jsGrid("reset");
+				  instManagerSearchModal.hide();
+                  closeWorkProgress();
+              }
+          });
+      }
+  }
+  
+</script>
+<script src="/js/ckeditor/ckeditor.js"></script>
+
+</body>
+</html>

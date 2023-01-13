@@ -2,66 +2,94 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
-	SQL File Name : InstMngImpl.xml
-	Description : 사용자관리
+	SQL File Name : EnvtcherTrnngInstDaoImpl.xml
+	Description : 환경교육사 양성기관 현황
 -->
 <mapper namespace="com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstDao">
     
+    <!-- 환경교육사 양성기관 현황 목록 조회 -->
     <select id="selectEnvtcherTrnngInstList" parameterType="EnvtcherTrnngInstVo" resultType="EnvtcherTrnngInstVo">
         /* EnvtcherTrnngInstDao.selectEnvtcherTrnngInstList */
         <include refid="PaginationMapper.header"/>
-                SELECT
-                	A.ORDRID
-                  , C.CTPRVN_NM AS SIDO_NM
-                  , B.SIGNGU_NM
-                  , D.INST_NM
-                  , E.CD_NM AS GRD_CD
-                  , A.HMPG
-                  , A.DSGN_DE
-                  , A.REG_DT
-                FROM
-                	TB_CMM_ENVTCHER_TRNNG_INST A
-                	LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
-                	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
-                	LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
-                	LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
-                WHERE 1=1 
-                <!-- /기관검색 -->
-                                
+            SELECT
+                A.ORDRID
+                , C.CTPRVN_NM AS SIDONM
+                , B.SIGNGU_NM
+                , D.INST_NM AS INSTNM
+                , E.CD_NM AS GRDCDNM
+                , A.HMPG
+                , A.DSGN_DE AS DSGNDE
+                , A.THMBN_FILEID
+                , F.FILEGRPID
+                , A.REG_DT
+                , A.GRD_CD
+            FROM
+            	TB_CMM_ENVTCHER_TRNNG_INST A
+            	LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
+            	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
+            	LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
+            	LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
+                LEFT OUTER JOIN TB_CMM_FILE F ON A.THMBN_FILEID = F.FILEID
+            WHERE 1=1
+                <if test="searchSido != null and searchSido != ''">
+                   AND C.CTPRVN_CD = #{searchSido}
+                </if>                
+                <if test="searchInstNm != null and searchInstNm != ''">
+                   AND D.INST_NM LIKE CONCAT('%',#{searchInstNm},'%')
+                </if>
+                <if test="startDt != null and startDt != ''">
+                <![CDATA[
+                    AND A.DSGN_DE >= #{startDt}
+                ]]>
+                </if>
+                <if test="endDt != null and endDt != ''">
+                <![CDATA[
+                    AND A.DSGN_DE <= #{endDt}
+                ]]>
+                </if>
+                <if test="searchGrdCd != null and searchGrdCd != ''">
+                    AND A.GRD_CD = #{searchGrdCd}
+                </if>            
         <include refid="PaginationMapper.footer"/>
     </select>
     
+    <!-- 환경교육사 양성기관 상세 조회 -->
     <select id="selectEnvtcherTrnngInstInfo" parameterType="EnvtcherTrnngInstVo" resultType="EnvtcherTrnngInstVo">
            /* EnvtcherTrnngInstDao.TB_CMM_ENVTCHER_TRNNG_INST */
-                SELECT
-                	A.ORDRID
-                  , D.INST_NM
-                  , A.INSTID
-                  , C.CTPRVN_NM AS SIDO_NM
-                  , B.SIGNGU_NM
-                  , A.SIGNGU_CD
-                  , A.GRD_CD
-                  , A.DSGN_DE
-                  , F.CD_NM AS INST_TYPE_CD_NM
-                  , A.INST_TYPE_CD
-                  , A.HMPG
-                  , A.TELNO
-                  , A.FXNO
-                  , A.ADDR
-                  , A.ADDR_DTL
-                  , A.EXPLN
-                FROM
-                	TB_CMM_ENVTCHER_TRNNG_INST A
-                	LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
-                	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
-                	LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
-                	LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
-                	LEFT OUTER JOIN TB_CMM_CD F ON A.INST_TYPE_CD = F.CD
-               WHERE 1=1 
-                 AND ORDRID = #{ordrid}
+        SELECT
+            A.ORDRID
+            , D.INST_NM
+            , A.INSTID
+            , C.CTPRVN_NM AS SIDO_NM
+            , B.SIGNGU_NM
+            , A.SIGNGU_CD
+            , A.GRD_CD
+            , A.DSGN_DE
+            , F.CD_NM AS INST_TYPE_CD_NM
+            , A.INST_TYPE_CD
+            , A.HMPG
+            , A.TELNO
+            , A.FXNO
+            , A.ADDR
+            , A.ADDR_DTL
+            , A.EXPLN
+            , A.THMBN_FILEID
+            , G.FILEGRPID
+            , G.FILE_IDNTFC_KEY
+            , G.ORGINL_FILE_NM
+        FROM
+            TB_CMM_ENVTCHER_TRNNG_INST A
+            LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
+            LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
+            LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
+            LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
+            LEFT OUTER JOIN TB_CMM_CD F ON A.INST_TYPE_CD = F.CD
+            LEFT OUTER JOIN TB_CMM_FILE G ON A.THMBN_FILEID = G.FILEID
+        WHERE 1=1 
+         AND ORDRID = #{ordrid}
     </select>
     
-    <!-- 기관 정보 저장 --> 
+    <!-- 환경교육사 양성기관 등록 --> 
     <insert id="insertEnvtcherTrnngInst" parameterType="EnvtcherTrnngInstVo">
         /* EnvtcherTrnngInstDao.insertEnvtcherTrnngInst */
         INSERT INTO TB_CMM_ENVTCHER_TRNNG_INST (
@@ -101,7 +129,7 @@
         )
     </insert>
     
-    <!-- 기관 정보 수정--> 
+    <!-- 환경교육사 양성기관 수정 --> 
     <update id="updateEnvtcherTrnngInst" parameterType="EnvtcherTrnngInstVo" >
          /* EnvtcherTrnngInstDao.updateEnvtcherTrnngInst */
           UPDATE TB_CMM_ENVTCHER_TRNNG_INST SET
@@ -121,5 +149,56 @@
               ,MDFRID           = #{user.userid}
            WHERE ORDRID = #{ordrid}
     </update>
+    
+    <!-- 엑셀다운로드 목록 조회 -->
+    <select id="selectEnvtcherTrnngInstExcelDownload" parameterType="EnvtcherTrnngInstVo" resultType="EnvtcherTrnngInstVo">
+        /* EnvtcherTrnngInstDao.selectEnvtcherTrnngInstExcelDownload */
+        SELECT
+            A.ORDRID
+            , C.CTPRVN_NM AS SIDONM
+            , B.SIGNGU_NM
+            , D.INST_NM AS INSTNM
+            , E.CD_NM AS GRDCDNM
+            , A.HMPG
+            , A.DSGN_DE AS DSGNDE
+            , A.THMBN_FILEID
+            , F.FILEGRPID
+            , A.REG_DT
+            , A.GRD_CD
+        FROM
+            TB_CMM_ENVTCHER_TRNNG_INST A
+            LEFT OUTER JOIN TB_CMM_ADDR_SIGNGU B ON A.SIGNGU_CD = B.SIGNGU_CD
+            LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON B.CTPRVN_CD = C.CTPRVN_CD
+            LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
+            LEFT OUTER JOIN TB_CMM_CD E ON A.GRD_CD = E.CD
+            LEFT OUTER JOIN TB_CMM_FILE F ON A.THMBN_FILEID = F.FILEID
+        WHERE 1=1
+            <if test="searchInstNm != null and searchInstNm != ''">
+               AND D.INST_NM LIKE CONCAT('%',#{searchInstNm},'%')
+            </if>                
+            <if test="startDt != null and startDt != ''">
+            <![CDATA[
+                AND A.DSGN_DE >= #{startDt}
+            ]]>
+            </if>
+            <if test="endDt != null and endDt != ''">
+            <![CDATA[
+                AND A.DSGN_DE <= #{endDt}
+            ]]>
+            </if>
+            <if test="searchGrdCd != null and searchGrdCd != ''">
+                AND A.GRD_CD = #{searchGrdCd}
+            </if>
+    </select>
+    
+    <!-- 시도 목록 조회 -->
+    <select id="selectAddrCtpvnList" parameterType="EnvtcherTrnngInstVo" resultType="EnvtcherTrnngInstVo">
+        /* EnvtcherTrnngInstDao.selectAddrCtpvnList */
+        SELECT
+            CTPRVN_CD
+            ,CTPRVN_NM 
+        FROM 
+            TB_CMM_ADDR_CTPRVN 
+    </select>
     
 </mapper>

@@ -168,7 +168,7 @@ public class HelpDeskController {
      */
     @RequestMapping(value = "/mng/helpDesk/insertHelpDeskAnswr.do")
     @ResponseBody
-    public Map<String, Object> insertHelpDeskAnswr(HelpDeskAnswrVo helpDeskAnswrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertHelpDeskAnswr(@Valid HelpDeskAnswrVo helpDeskAnswrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
 
         if (bindingResult.hasErrors()) {

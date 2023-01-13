@@ -3,6 +3,7 @@ package com.kbrainc.plum.rte.model;
 import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * 
@@ -20,6 +21,7 @@ import lombok.AllArgsConstructor;
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
+@Data
 @AllArgsConstructor
 public class RoleInfoVo extends ParentVo implements Serializable {
 
@@ -28,6 +30,8 @@ public class RoleInfoVo extends ParentVo implements Serializable {
     private String roleid;
     /** 이름 */
     private String nm;
+    /** 종류_코드 */
+    private String kndCd;
     /** 구분_코드 */
     private String seCd;
     /** 대상_기관_코드 */

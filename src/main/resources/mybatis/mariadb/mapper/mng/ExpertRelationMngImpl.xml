@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ExpertPoolMngDaoImpl.xml
+	Description : 전문가 풀 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.expertPoolMng.model.ExpertRelationMngDao">
+
+    <select id="selectExpertRelationList" resultType="ExpertRelationVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.DMNDID
+             , A.EXPRTID
+             , A.TTL
+             , A.USERID
+             , B.NM AS EXPRT_NM
+             , B.ACNT AS EXPRT_ACNT
+             , C.NM AS USER_NM
+             , C.ACNT AS USER_ACNT
+             , C.MOBLPHON AS USER_MOBLPHON
+             , C.EML AS USER_EML
+             , A.DMND_STTS_CD
+             , A.LCTR_BGNG_DT
+             , A.LCTR_END_DT
+             , A.REG_DT
+             , A.ADDR
+             , A.ADDR_DTL
+             , A.EML
+             , A.DMND_CN
+             , A.FILEGRPID
+             , A.MDFCN_DT
+             , GREATEST(IFNULL(A.CNCL_DT, A.REG_DT), IFNULL(A.REJECT_DT, A.REG_DT), IFNULL(A.APRV_DT, A.REG_DT), IFNULL(A.CMPTN_DT, A.REG_DT), A.REG_DT) AS UPDATE_DT
+             , D.EXPRT_TYPE_CD
+        FROM TB_ASS_LCTR_DMND A
+                 INNER JOIN TB_CMM_USER B ON A.EXPRTID = B.USERID
+                 INNER JOIN TB_CMM_USER C ON A.USERID = C.USERID
+                 INNER JOIN TB_ASS_EXPRT D ON A.EXPRTID = D.USERID
+        WHERE 1=1
+            <if test="dmndid != null">
+                AND A.DMNDID= #{dmndid}
+            </if>
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <if test="searchType == 'acnt' ">
+                    AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchType =='nm' ">
+                    AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+            </if>
+            <if test="exprtTypeCd != null and exprtTypeCd != ''">
+                AND D.EXPRT_TYPE_CD = #{exprtTypeCd}
+            </if>
+            <if test="dmndid != null and dmndid != ''">
+                AND A.DMNDID = #{dmndid}
+            </if>
+            <if test="dmndSttsCd != null and dmndSttsCd != ''">
+                AND A.DMND_STTS_CD = #{dmndSttsCd}
+            </if>
+
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    <select id="selectExpertRelationInfo" resultType="ExpertRelationVo">
+        SELECT
+            A.DMNDID
+             , A.EXPRTID
+             , A.TTL
+             , A.USERID
+             , B.NM AS EXPRT_NM
+             , B.ACNT AS EXPRT_ACNT
+             , C.NM AS USER_NM
+             , C.ACNT AS USER_ACNT
+             , C.MOBLPHON AS USER_MOBLPHON
+             , C.EML AS USER_EML
+             , A.DMND_STTS_CD
+             , A.LCTR_BGNG_DT
+             , A.LCTR_END_DT
+             , A.REG_DT
+             , A.ADDR
+             , A.ADDR_DTL
+             , A.EML
+             , A.DMND_CN
+             , A.FILEGRPID
+             , A.MDFCN_DT
+             , GREATEST(IFNULL(A.CNCL_DT, A.REG_DT), IFNULL(A.REJECT_DT, A.REG_DT), IFNULL(A.APRV_DT, A.REG_DT), IFNULL(A.CMPTN_DT, A.REG_DT), A.REG_DT) AS UPDATE_DT
+             , D.EXPRT_TYPE_CD
+             , E.INSTID
+             , E.INST_NM
+        FROM TB_ASS_LCTR_DMND A
+             INNER JOIN TB_CMM_USER B ON A.EXPRTID = B.USERID
+             INNER JOIN TB_CMM_USER C ON A.USERID = C.USERID
+             INNER JOIN TB_ASS_EXPRT D ON A.EXPRTID = D.USERID
+             LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = C.INSTID
+        WHERE DMNDID = #{dmndid}
+    </select>
+</mapper>
