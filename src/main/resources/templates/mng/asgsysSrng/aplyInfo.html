@@ -2,6 +2,7 @@
 <input type="hidden" id="prgrmid" name="prgrmid" th:value="${dsgnAplyInfo.prgrmid}">
 <input type="hidden" id="instid" name="instid" th:value="${dsgnAplyInfo.instid}">
 <input type="hidden" id="acnt" name="acnt" th:value="${dsgnAplyInfo.acnt}">
+<input type="hidden" id="splmntDmndid" name="splmntDmndid" th:value="${dsgnAplyInfo.splmntDmndid}">
 
     <div class="tab-pane active" id="applyInfo" role="tabpanel">
         <div class="card-header p-t-0 p-b-0">
@@ -176,7 +177,7 @@
                 </div>
                 <div class="card-block-small">
                     <button type="button" class="btn btn-primary m-r-5" onclick="fn_updateSttsReqsRvw()"  >요건검토중 상태변경</button>
-                    <button type="button" class="btn btn-primary m-r-5" onclick="openSplmntDmndModal(111104)">서류요청</button>
+                    <button type="button" class="btn btn-primary m-r-5" id="dcmntDmnd" onclick="fn_reqSplmntDmndBtn(this.id)"   >서류요청</button>
                     <button type="button" class="btn btn-primary m-r-5" onclick="fn_jdgsSrngDmnd()"       >심사위원심사 요청</button>
                     <button type="button" class="btn btn-primary"       onclick="fn_sprtgrpSrngDmnd()"    >지원단심사 요청</button>
                 </div>
@@ -208,17 +209,18 @@
                         </div>
                     </div>
                 </div>
+                <!--
                 <div class="card-header p-t-0">
                     <div class="sub-title row m-l-0 m-r-0 m-b-0 align-items-center">
                         <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
                             <strong>보완요청</strong>
                         </div>
                         <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" onclick="openSplmntDmndModal()">보완요청</button>
+                            <button type="button" class="btn btn-primary" id="splmntDmnd" onclick="fn_reqSplmntDmndBtn(this.id)">보완요청</button>
                         </div>
                     </div>
                 </div>
-                <!-- 그리드-->
+
                 <div class="card-block-small p-t-0">
                     <div class="dt-responsive table-responsive">
                         <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -227,6 +229,7 @@
                         </div>
                     </div>
                 </div>
+                 -->
             </div>
         </div>
     </div>
@@ -277,11 +280,15 @@ $('.nav-pills a').on('show.bs.tab', function(event) {
     console.log("############## tabId : " + tabId);
 
     selectJdsgTab(tabId);
+
+
 });
 
 function initAplyInfoForm(){
 
-    writeSplmntDmndGridData();
+    //writeSplmntDmndGridData();
+
+    prgrmid = $("#prgrmid").val();
 
     $('#applyInfo').focus();
     $("#instTypeCd").attr("disabled", true);
@@ -291,7 +298,6 @@ function initAplyInfoForm(){
     $("#aplcntNm").val($("#aplcntNm").val()+"("+$("#acnt").val()+ ")");
 
 }
-
 
 function selectJdsgTab(tabId) {
 
@@ -322,7 +328,6 @@ function loadJdsgTabContent(uri){
       , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
                       $('#jdgsSprtgrpAltmntTabContent').html(result);
 
-      ;
                       scrollIntoView('jdgsSprtgrpAltmntTabContent');
                   }
     });
@@ -372,24 +377,14 @@ function initJdsgTab() {
 function writeSplmntDmndGridData(){
 
     $("#splmntDmndGrid").jsGrid({
-//         height: "auto",
-        height: "220px",
-        width: "100%",
-        autoload: true,
-        sorting: true,
-        paging: false,
-        pagerContainer: "#splmntDmndListPager",
-        pagerFormat: "{first} {prev} {pages} {next} {last}",
-        pagePrevText: "이전",
-        pageNextText: "다음",
-        pageFirstText: " < 처음 ㅣ",
-        pageLastText: " | 마지막 >",
-//         pageSize: 5,
-        pageButtonCount: 10,
-        pageLoading: true,
-        pageIndex: 1,
+        height       : "220px",
+        width        : "100%",
+        autoload     : true,
+        sorting      : true,
+        paging       : false,
+        pageLoading  : true,
+        pageIndex    : 1,
         noDataContent: "데이터가 없습니다.",
-
         controller: {
             loadData: function (filter) {
                 var data = $.Deferred();
@@ -398,16 +393,10 @@ function writeSplmntDmndGridData(){
                 var params = [
                         {name: "pageNumber", value: filter.pageIndex},
                         {name: "rowPerPage", value: filter.pageSize},
-                        {name: "prgrmid", value: prgrmid},
-
+                        {name: "prgrmid"   , value: prgrmid},
                 ]
 
-                if(filter.sortField != undefined){
-                    params.push({name: "orderField", value: filter.sortField});
-                    params.push({name: "orderDirection", value: filter.sortOrder});
-                }else{
-                    params.push({name: "orderField", value: 'reg_dt'});
-                }
+                params.push({name: "orderField", value: 'reg_dt'});
 
                 formData = formData.concat(params);
 
@@ -419,9 +408,6 @@ function writeSplmntDmndGridData(){
                   data: formData
                 }).done(function(response){
 
-console.log("@@@@@1");
-//
-console.log("@@@@@2");
                     var da = {
                             data : escapeGridData(response.splmntDmndList)
                             ,itemsCount : response.totalCount
@@ -432,64 +418,26 @@ console.log("@@@@@2");
             },
         },
         fields: [
-             { name: 'prgrmid', css:'hide'}
-            ,{ title: 'No.'           ,name: 'rowNumber',   type: "number", width : "80", align:"center",  sorting :false }
-            ,{ title: '등록 진행상태' ,name: 'sttsCd',      type: "text", width: "100", align:"center"}
-            ,{ title: '요청내용'      ,name: 'opnnCn',      type: "text", width: "100", align:"left"}
-            ,{ title: '요청일'        ,name: 'regDt',       type: "text", width: "100", align:"center" }
-            ,{ title: '완료처리일'    ,name: 'cmptnPrcsDe', type: "text", align:"center" }
+            { name : 'splmntDmndid', css:'hide'}
+          , { name : 'prgrmid',      css:'hide'}
+          , { title: 'No.'           ,name: 'rowNumber',   type: "number", width : "80", align:"center",  sorting :false }
+          , { title: '등록 진행상태' ,name: 'sttsCd',      type: "text"  , width: "100", align:"center"}
+          , { title: '요청내용'      ,name: 'opnnCn',      type: "text"  , width: "100", align:"left"}
+          , { title: '요청일'        ,name: 'regDt',       type: "text"  , width: "100", align:"center" }
+          , { title: '완료처리일'    ,name: 'cmptnPrcsDe', type: "text"  , align:"center" }
         ],
 
         rowClick: function(args) {
 
             if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
 
-            var detailUrl = "/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + args.item.prgrmid;
+            if(args.event.originalEvent.target.cellIndex == 4) {
 
-            gridHelper1.loadContent(detailUrl);
-            gridHelper1.rowClick(gridArgs);
-        },
-        onPageChanged: function(args) {
-            selectedItems = [];
-        }
-    });
+                var key = args.item.splmntdmndid;
+                var cd  = args.item.sttsCd;
+                openSplmntDmndModal(key, cd);
 
-    var selectItem = function(item) {
-        selectedItems.push(item);
-        if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-            $("#selectAllCheckbox").prop("checked", true);
-        } else {
-            $("#selectAllCheckbox").prop("checked", false);
-        }
-    };
-
-    var unselectItem = function(item) {
-        selectedItems = $.grep(selectedItems, function(i) {
-        return i !== item;
-        });
-        if(selectedItems.length == 0) {
-            $('#selectAllCheckbox').attr('checked', false);
-        }
-        if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-            $("#selectAllCheckbox").prop("checked", true);
-        } else {
-            $("#selectAllCheckbox").prop("checked", false);
-        }
-    };
-
-    $("#selectAllCheckbox").click(function(item) {
-        selectedItems = [];
-        if(this.checked) { // check select status
-            $('.singleCheckbox').each(function() {
-                this.checked = true;
-                selectItem($(this).parent().next().text());
-            });
-        }else {
-            $('.singleCheckbox').each(function() {
-                this.checked = false;
-                unselectItem(item);
-            });
-            selectedItems = [];
+            }
         }
     });
 }
@@ -503,7 +451,7 @@ function fn_updateSttsReqsRvw(){
 
     var data = {
             "sttsCd"  : '111103'    // 요건검토중
-          , "prgrmid" : ""+prgrmid
+          , "prgrmid" : prgrmid
     }
 
     $.ajax({
@@ -561,15 +509,35 @@ var openPicChgModal = (modeYn) => {
 }
 
 
-//서류요청(보완요청popup)
-var splmntDmndAddModal;
-var openSplmntDmndModal = (sttsCd) => {
+function fn_reqSplmntDmndBtn(id){
 
-    //var blcklstIds = selectedItems.join(",")
-var vSttsCd = sttsCd
-    //데이터 보내기
-    //var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid="+prgrmid + "&frmNm=aplyInfo";
-var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid=" + prgrmid + "&sttsCd=" + vSttsCd;
+	var key = $("#splmntDmndid").val();
+	var cd;
+	var mode;
+
+	//서류요청
+	if("dcmntDmnd"==id){
+		cd = "111104"
+		mode = "splmntDmnd"
+	}
+
+	openSplmntDmndModal(key, cd, mode)
+
+};
+
+//보완요청 팝업 호출
+var splmntDmndAddModal;
+var openSplmntDmndModal = ( key, cd, mode) => {
+
+    var vSttsCd = cd;
+    var vMode = mode;
+
+    var vKey1 = prgrmid;
+    var vKey2 = key;
+    debugger;
+    if(vSttsCd == null || vSttsCd == "undefined" || vSttsCd == "") vSttsCd = '';
+
+    var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid="+ vKey1+"&splmntDmndid=" + vKey2+ "&sttsCd="+vSttsCd+"&mode="+vMode;
 
     $("#splmntDmndPopup").load(url, function(response, status, xhr) {
 
@@ -596,7 +564,7 @@ function fn_jdgsSrngDmnd(){
 
     var data = {
             "sttsCd"  : '111106'    //심사위원심사
-          , "prgrmid" : ""+prgrmid
+          , "prgrmid" : prgrmid
     }
 
     $.ajax({
@@ -637,7 +605,7 @@ function fn_sprtgrpSrngDmnd(){
 
     var data = {
             "sttsCd"  : '111107'    //지원단심사
-          , "prgrmid" : ""+prgrmid
+          , "prgrmid" : prgrmid
     }
 
     $.ajax({
