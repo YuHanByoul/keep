@@ -1,6 +1,6 @@
 /*******************************************************************************
 	DHTML 관련 공통 유틸리티
-	
+
 *******************************************************************************/
 
 var browserType			= checkBrowserType();	// 사용자 브라우져 타입
@@ -140,7 +140,7 @@ function getWindowHeight() {
 	}
 	return winHeight;
 }
-    
+
 
 /**
  * 스크롤값(X) 구하기
@@ -164,7 +164,7 @@ function getScrollX() {
  */
 function getScrollY() {
 	var scrollY		= 0;
-    
+
 	if (browserType == "NE") {
         scrollY		= window.pageYOffset;
     }
@@ -282,7 +282,7 @@ function resizeObject(obj, newWidth, newHeight) {
 
 /**
  * 객체 높이 설정
- */  
+ */
 function resizeHeight(obj, newHeight) {
 	if (obj) {
 		obj.style.height	= newHeight+"px";
@@ -310,19 +310,19 @@ function moveObject(obj, topPosition, leftPosition) {
  */
 function getPosition(obj) {
 	var pos = { x:0, y:0 };
-	
+
 	if ( document.layers ) {
 		pos.x = obj.x;
 		pos.y = obj.y;
 	}
 	else {
-		do { 
+		do {
 			pos.x += parseInt( obj.offsetLeft );
 			pos.y += parseInt( obj.offsetTop );
 			obj = obj.offsetParent;
 		} while (obj);
 	}
-	
+
 	return pos;
 }
 
@@ -396,7 +396,7 @@ function getObjectId(obj) {
 /**
  * 객체를 맨 위로 위치하기
  */
-var makeOnTopCount = 0; 
+var makeOnTopCount = 0;
 function makeOnTop(obj) {
 	if (obj) {
 		var daiz;
@@ -442,7 +442,7 @@ function getAttributeValue(attr, name) {
 
 			}
 		}
-		
+
 	}
 	return value;
 }
@@ -472,7 +472,7 @@ function getDivideString(str, idx, divideChar) {
 	if (!result) {
 		result = "";
 	}
-	
+
 	return result;
 }
 
@@ -519,14 +519,14 @@ function getUrlDecode(url) {
  */
 function getFileExtention(fileName) {
 	var ext = "";
-	
+
 	if (nullToEmpty(fileName) != "") {
 		var idx = fileName.lastIndexOf(".");
 		if (idx > -1) {
 			ext = (fileName.substring(idx+1)).toLowerCase();
 		}
 	}
-	
+
 	return ext;
 }
 
@@ -546,40 +546,40 @@ function displayWorkProgress(hidden) {
     }else if (workProgressBox == null && hidden == undefined) {
 		var winWidth	= getWindowWidth();
 		var winHeight	= getWindowHeight();
-		
+
 		var winLeft		= (winWidth - workProgressBoxWidth) / 2;
 		/*
 		var winTop		= (winHeight - workProgressBoxHeight) / 2;
 		if (winTop < 0) {
 			winTop = 0;
 		}
-		
+
 		var scrollTop = document.body.scrollTop;
-		
+
 		if(scrollTop == undefined) scrollTop = 0;
-		
+
 		winTop = winTop + parseInt(scrollTop, 10);
 		*/
 		workProgressBox = document.createElement("div");
 		workProgressBox.style.position	= "absolute";
 		workProgressBox.style.display	= "block";
-		
+
 		workProgressBox.style.left		= winLeft + "px";
 		workProgressBox.style.top		= "50%";//winTop + "px";
-		
+
 		//workProgressBox.style.backgroundColor = "white";
 		//workProgressBox.style.border	= "1px solid #B8BDED";
-		workProgressBox.style.zIndex="9999";	
-        
+		workProgressBox.style.zIndex="9999";
+
 		var boxContent = ""
-			
+
 			+ " <div class='loadingBox'>"
 			+ " 	<img src=\"/images/mng/loading03.gif\" style=\"width:25%;height:25%\">"
 			+ " </div>";
-		
+
 		workProgressBox.innerHTML = boxContent;
-		document.body.appendChild(workProgressBox);	
-        return true;    
+		document.body.appendChild(workProgressBox);
+        return true;
 	}else {
 		//alert('처리중인 작업이 있습니다.');
         return false;
@@ -592,29 +592,29 @@ function displayWorkProgress2() {
 	//if (workProgressBox == null) {
 		var winWidth	= getWindowWidth();
 		var winHeight	= getWindowHeight();
-		
+
 		var winLeft		= (winWidth - workProgressBoxWidth) / 2;
 		var winTop		= (winHeight - workProgressBoxHeight) / 2;
 		if (winTop < 0) {
 			winTop = 0;
 		}
-		
+
 		var scrollTop = document.body.scrollTop;
-		
+
 		if(scrollTop == undefined) scrollTop = 0;
-		
+
 		winTop = winTop + parseInt(scrollTop, 10);
-		
+
 		workProgressBox2 = document.createElement("div");
 		workProgressBox2.style.position	= "absolute";
 		workProgressBox2.style.display	= "block";
 		workProgressBox2.style.left		= winLeft;
 		workProgressBox2.style.top		= winTop;
-		
+
 		workProgressBox2.style.backgroundColor = "white";
 		workProgressBox2.style.border	= "1px solid #B8BDED";
-		workProgressBox2.style.zIndex="99999999";	
-        
+		workProgressBox2.style.zIndex="99999999";
+
 		var boxContent = ""
 			+ "<table border=0 cellapcing=0 cellpadding=0>"
 			+ "<tr>"
@@ -637,9 +637,9 @@ function displayWorkProgress2() {
 			+ "  </td>"
 			+ "</tr>"
 			+ "</table>";
-		
+
 		workProgressBox2.innerHTML = boxContent;
-		document.body.appendChild(workProgressBox2);	
+		document.body.appendChild(workProgressBox2);
 	//}
 	//else {
 	//	onDisplay(workProgressBox);
@@ -725,8 +725,80 @@ function fnAppendHidden(p_form, p_obj){
 			return chk;
 		});
 		if(!chk){
-			hiddenTag += '<input type="hidden" name="'+index+'" id="'+index+'" value="'+value+'" />';	
+			hiddenTag += '<input type="hidden" name="'+index+'" id="'+index+'" value="'+value+'" />';
 		}
 	});
 	jQuery("[name="+p_form+"]").append(hiddenTag);
+}
+
+
+/*
+* 트리구조 확장 / 접기 기능
+* */
+function fnExpendable($wrapper, option) {
+    var opt = jQuery.extend({
+
+        /* 확장 / 접기 대상 선택자 */
+        expendableTargetSelector: 'li'
+
+        /*
+            확장 / 접기 시 숨겨지거나 보여질 대상 선택자
+            반드시 확장/접기 대상의 자식이여야함
+        */
+        , expendableTargetChildSelector: 'ol'
+
+        /* 확장 / 접기 시 고정으로 표시될 대상 선택자
+            - 반드시 확장/접기 대상의 자식이여야함
+            - 해당 대상 맨 앞에 확정 접기 버튼 생성
+        */
+        , expendableFixedTargetChildSelector: 'div'
+    }, option);
+
+    var $targets = null;
+
+    $wrapper.on('click', '.expendable-toggle-btn', function () {
+        $(this).parent().parent().toggleClass('expendable-collapse')
+    });
+
+    var refresh = function(){
+        $wrapper.addClass('expendable-wrapper');
+        $wrapper.find(".expendable-item").addClass('expendable-item-old')
+        $targets = $wrapper.find(opt.expendableTargetSelector);
+        $targets.each(function(){
+            var $item = $(this);
+            var $fixed = $item.children(opt.expendableFixedTargetChildSelector);
+            var $child = $item.children(opt.expendableTargetChildSelector);
+            var childContent = $child.html()
+            if (childContent && childContent.trim()) {
+                $item.removeClass('expendable-item-old').addClass('expendable-item')
+                $fixed.addClass("expendable-item-fixed")
+                $child.addClass("expendable-item-child")
+                if ($fixed && $fixed.children('.expendable-toggle-btn').length === 0) {
+                    $fixed.prepend($("<button/>").addClass("expendable-toggle-btn"))
+                }
+            }
+        });
+
+        console.log($wrapper.find('.expendable-item-old'));
+        $wrapper
+            .find('.expendable-item-old').removeClass('expendable-item expendable-item-old')
+                .children('.expendable-item-child').removeClass('expendable-item-child').end()
+                .children('.expendable-item-fixed').removeClass('expendable-item-fixed')
+                    .children('.expendable-toggle-btn').remove()
+    }
+
+    var expendAll = function(){
+        $targets.removeClass('expendable-collapse')
+    }
+    var collapseAll = function(){
+        $targets.addClass('expendable-collapse')
+    }
+
+    refresh();
+
+    return {
+        refresh: refresh,
+        expendAll: expendAll,
+        collapseAll: collapseAll,
+    }
 }
