@@ -20,7 +20,7 @@
         <th:block sec:authorize-url="/mng/srng/insertSrngFormQitem.do"><button type="button" class="btn btn-primary" onclick="srngFormQitem.onInsertForm();">저장</button></th:block>
     </div>
 
-    <ol id="cloneTemp" style="display: none">
+    <ol id="cloneTemp" style="display: none;">
         <li class="col-12 mb-2 parent">
             <div class="card-sub mb-2">
                 <div class="col-12 p-10">
@@ -32,23 +32,25 @@
                 </div>
             </div>
         </li>
-        <li class="col-12 mb-2 child">
-            <div class="card-sub mb-2">
-                <div class="col-12 p-10">
-                    <div class="row align-items-center justify-content-between">
-                        <div class="col-auto">
-                            <p class="card-text">환경교육적 적절성3</p>
-                        </div>
-                        <div class="col-auto">
-                            <select class="form-select form-select-sm form-control-sm">
-                                <option value="">- 선택 -</option>
-                                <option th:each="code: ${codeList}" th:value="${code.cd}" th:text="${code.upprCdNm + ' > ' + code.cdNm}"></option>
-                            </select>
+        <ol class="child">
+            <li class="col-12 mb-2">
+                <div class="card-sub mb-2">
+                    <div class="col-12 p-10">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col-auto">
+                                <p class="card-text">환경교육적 적절성3</p>
+                            </div>
+                            <div class="col-auto">
+                                <select class="form-select form-select-sm form-control-sm">
+                                    <option value="">- 선택 -</option>
+                                    <option th:each="code: ${codeList}" th:value="${code.cd}" th:text="${code.upprCdNm + ' > ' + code.cdNm}"></option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </li>
+            </li>
+        </ol>
     </ol>
 </form>
 
@@ -60,6 +62,9 @@
     var instManagerSearchModal;
     var srngFormQitemList = /*[[${srngFormQitemList}]]*/;
     var $listBody = $("#sortable > ol");
+    var $parentTemp = $("#cloneTemp .parent");
+    var $childTemp = $("#cloneTemp .child");
+
     var srngFormQitem = {
         init : function (){
             let list = srngFormQitemList;
@@ -68,23 +73,36 @@
         },
         // => this 값이 달라진다 일반적으로는 이벤트의 this를 가져온다 => 의 경우 상위 이벤트의 this를 가져온다
         setQitemList : function (list){
-            console.log(list);
-            let $parentTemp = $("#cloneTemp .parnt").clone(true);
-            let $childTemp = $("#cloneTemp .child").clone(true);
-
-            $(list).each(function (item , idx){
-                if(idx > 0 && item.dsgncrtrCd === item.dsgncrtrCd){
-                    //지정기준코드가 같을 시 item의 dsgncrtrCd값을 같은 dsgncrtrCd li 뒤에 append 해주고 select에 id name 추가 후 option 있으면 선택 없으면 미선택
-                    // $('#sortable > ol li').find().data(dsgncrtrCd).append( this.find('select').attr(id,name).end() -> this.find('#id option[value=userID]').prop('selected', 'selected').change() )
-                }else{
-                    $listBody.append(
-                        $parentTemp.clone()
-                            .find(".card-text").text(item.dsgncrtrCdNm).end()
-                    )
+            const parentMap = {}
+            for(const item of list) {
+                if (item.treeOrd === 1) {
+                    const $item = $parentTemp.clone(true);
+                    parentMap[item.dsgncrtrCd] = $item.children("ol");
+                    $listBody.append($item.find('.card-text').text(item.dsgncrtrCdNm).end());
+                    console.log($item);
+                    console.log(item.dsgncrtrCdNm);
+                } else {
+                    const $item = $childTemp.clone(true);
+                    parentMap[item.dsgncrtrCd].append($item);
+                    //item  세팅
                 }
-            });
+            }
 
-            $listBody.append()
+            // console.log(list);
+            // let $parentTemp = $("#cloneTemp .parnt").clone(true);
+            // let $childTemp = $("#cloneTemp .child").clone(true);
+            //
+            // $(list).each(function (item , idx){
+            //     if(idx > 0 && item.dsgncrtrCd === item.dsgncrtrCd){
+            //         //지정기준코드가 같을 시 item의 dsgncrtrCd값을 같은 dsgncrtrCd li 뒤에 append 해주고 select에 id name 추가 후 option 있으면 선택 없으면 미선택
+            //         //$('#sortable > ol li').find().data(dsgncrtrCd).append( this.find('select').attr(id,name).end() -> this.find('#id option[value=userID]').prop('selected', 'selected').change() )
+            //     }else{
+            //         $listBody.append(
+            //             $parentTemp.clone()
+            //                 .find(".card-text").text(item.dsgncrtrCdNm).end()
+            //         )
+            //     }
+            // });
         },
 
         onInsertForm : function (){
