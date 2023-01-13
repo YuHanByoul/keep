@@ -40,7 +40,7 @@ public class CntstRcptHistServiceImpl extends PlumAbstractServiceImpl implements
      */
     @Override
     public List<CntstAplyVO> selectCntstAplyList(CntstAplyVO cntstAplyVO) {
-        return cntstRcptHistDao.selectCntstRcptHistList(cntstAplyVO);
+        return cntstRcptHistDao.selectCntstAplyList(cntstAplyVO);
     }
 
     /**

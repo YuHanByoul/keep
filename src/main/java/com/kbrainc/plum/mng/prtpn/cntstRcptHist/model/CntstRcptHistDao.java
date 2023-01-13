@@ -29,7 +29,7 @@ public interface CntstRcptHistDao {
      * @param cntstAplyVO
      * @return list
      */
-    List<CntstAplyVO> selectCntstRcptHistList(CntstAplyVO cntstAplyVO);
+    List<CntstAplyVO> selectCntstAplyList(CntstAplyVO cntstAplyVO);
 
     /**
      * 공모전 접수 정보 조회

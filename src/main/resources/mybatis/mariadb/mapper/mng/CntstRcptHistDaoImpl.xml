@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CntstRcptHistDaoImpl.xml
+	Description : 공모전 접수내역
+-->
+<mapper namespace="com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstRcptHistDao">
+
+    <!-- 환경방학 일기장 프로젝트 접수 정보 조회  -->
+    <select id="selectCntstAplySchlList"
+            resultType="com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplySchlVO">
+        SELECT
+            APLY_SCHLID
+            , APLYID
+            , SCHL_NM
+            , TCHER_NM
+            , TCHER_GNDR
+            , TELNO
+            , PCNTST_FLD_CD
+            , STDNT_MALE
+            , STDNT_FEMALE
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM TB_CMM_CNTST_APLY_SCHL
+        WHERE APLYID = #{aplyid}
+    </select>
+
+    <!-- 공모전 신청 정보 조회  -->
+    <select id="selectCntstAplyInfo" resultType="com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplyVO">
+        SELECT
+            CCA.APLYID
+             , CCA.CNTSTID
+             , CCA.APLYNO
+             , CCA.USERID
+             , CCA.INSTID
+             , CCA.APLY_SE_CD
+             , CCA.PCNTST_FLD_CD
+             , CCA.APLY_PATH_CD
+             , CCA.RPRSV_NM
+             , CCA.BRDT
+             , CCA.RPRSV_MOBLPHON
+             , CCA.EML
+             , CCA.ZIP
+             , CCA.ADDR
+             , CCA.ADDR_DTL
+             , CCA.JNT_PRTCPNT_NM
+             , CCA.JNT_PRTCPNT_BRDT
+             , CCA.PRDCT_TTL
+             , CCA.PRDCT_EXPLN
+             , CCA.PRDCT_FILEGRPID
+             , CCA.TRMS_AGRE_YN
+             , CCA.MDFCN_DT
+             , CCA.MDFRID
+             , CCA.REG_DT
+             , CCA.RGTRID
+             , CU.NM USER_NM
+             , CU.ACNT USER_ACNT
+             , CI.INST_NM
+             , CC.TTL CNTST_TTL
+             , CC.CLSF_CD CNTST_CLSF_CD
+       FROM tb_cmm_cntst_aply CCA
+       INNER JOIN tb_cmm_cntst CC ON CCA.CNTSTID = CC.CNTSTID
+       INNER JOIN tb_cmm_user CU ON CCA.USERID = CU.USERID
+       LEFT OUTER JOIN tb_cmm_inst CI ON CCA.INSTID = CI.INSTID
+       WHERE APLYID = #{aplyid}
+    </select>
+
+    <!-- 공모전 신청 목록 조회  -->
+    <select id="selectCntstAplyList"
+            resultType="com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplyVO">
+        SELECT
+            CCA.APLYID
+            , CCA.CNTSTID
+            , CCA.APLYNO
+            , CCA.USERID
+            , CCA.INSTID
+            , CCA.APLY_SE_CD
+            , CCA.PCNTST_FLD_CD
+            , CCA.APLY_PATH_CD
+            , CCA.RPRSV_NM
+            , CCA.BRDT
+            , CCA.RPRSV_MOBLPHON
+            , CCA.EML
+            , CCA.ZIP
+            , CCA.ADDR
+            , CCA.ADDR_DTL
+            , CCA.JNT_PRTCPNT_NM
+            , CCA.JNT_PRTCPNT_BRDT
+            , CCA.PRDCT_TTL
+            , CCA.PRDCT_EXPLN
+            , CCA.PRDCT_FILEGRPID
+            , CCA.TRMS_AGRE_YN
+            , CCA.MDFCN_DT
+            , CCA.MDFRID
+            , CCA.REG_DT
+            , CCA.RGTRID
+            , CU.NM USER_NM
+            , CU.ACNT USER_ACNT
+            , CI.INST_NM
+            , CC.TTL CNTST_TTL
+            , CC.CLSF_CD CNTST_CLSF_CD
+        FROM tb_cmm_cntst_aply CCA
+        INNER JOIN tb_cmm_cntst CC ON CCA.CNTSTID = CC.CNTSTID
+        INNER JOIN tb_cmm_user CU ON CCA.USERID = CU.USERID
+        LEFT OUTER JOIN tb_cmm_inst CI ON CCA.INSTID = CI.INSTID
+        <if test="searchKeyword != null and searchKeyword != '' ">
+            <choose>
+                <when test="searchType == 'ttl'">
+                    AND CC.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                </when>
+                <when test="searchType == 'aplyno'">
+                    AND CCA.APLYNO LIKE CONCAT('%',#{searchKeyword},'%')
+                </when>
+                <otherwise>
+                    AND (
+                    CC.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                    OR CCA.APLYNO LIKE CONCAT('%',#{searchKeyword},'%')
+                    )
+                </otherwise>
+            </choose>
+        </if>
+        <if test="searchCntstClsfCd != null and searchCntstClsfCd != '' ">
+            AND CC.CLSF_CD = #{searchCntstClsfCd}
+        </if>
+        <if test="searchCntstSttsCd != null and searchCntstSttsCd != '' ">
+            AND (CASE
+            WHEN DATE_FORMAT(NOW(), '%Y%m%d') &lt; DATE_FORMAT(CC.APLY_BGNG_DT, '%Y%m%d') THEN '159101'
+            WHEN DATE_FORMAT(NOW(), '%Y%m%d') &gt; DATE_FORMAT(CC.APLY_END_DT, '%Y%m%d') THEN '159103'
+            ELSE '159102'
+            END) = #{searchCntstSttsCd}
+        </if>
+        ORDER BY CCA.APLYID DESC
+
+    </select>
+</mapper>

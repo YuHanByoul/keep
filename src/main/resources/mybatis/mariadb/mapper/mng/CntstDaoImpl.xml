@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CntstDaoImpl.xml
+	Description : 공모전 등록
+-->
+<mapper namespace="com.kbrainc.plum.mng.prtpn.cntst.model.CntstDao">
+    <!-- 공모전 분야 매핑 등록 -->
+    <insert id="insertCntstFldMapng">
+        INSERT INTO TB_CMM_CNTST_FLD_MAPNG (CNTSTID, FLD_CD, REG_DT, RGTRID) VALUES (
+        <foreach item="item" collection="cntstfldCdArr"  separator=",">
+            (
+            #{cntstid}
+            , #{item}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
+        )
+    </insert>
+    <!-- 공모전 등록 -->
+    <insert id="insertCntst" useGeneratedKeys="true" keyColumn="cntstid">
+        INSERT INTO TB_CMM_CNTST (
+            CNTSTID
+            , TTL
+            , THMBN_FILEID
+            , ATCH_FILEGRPID
+            , APLY_BGNG_DT
+            , APLY_END_DT
+            , PRSNTN_DT
+            , DPCN_PSBLTY_YN
+            , CLSF_CD
+            , GDNC
+            , TRMS
+            , CN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{cntstid}
+            , #{ttl}
+            , #{thmbnFileid}
+            , #{atchFilegrpid}
+            , #{aplyBgngDt}
+            , #{aplyEndDt}
+            , #{prsntnDt}
+            , #{dpcnPsbltyYn}
+            , #{clsfCd}
+            , #{gdnc}
+            , #{trms}
+            , #{cn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    <!-- 공모전 수정 -->
+    <update id="updateCntst">
+        UPDATE TB_CMM_CNTST SET
+            TTL = #{ttl}
+            , THMBN_FILEID = #{thmbnFileid}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , APLY_BGNG_DT = #{aplyBgngDt}
+            , APLY_END_DT = #{aplyEndDt}
+            , PRSNTN_DT = #{prsntnDt}
+            , DPCN_PSBLTY_YN = #{dpcnPsbltyYn}
+            , CLSF_CD = #{clsfCd}
+            , GDNC = #{gdnc}
+            , TRMS = #{trms}
+            , CN = #{cn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE CNTSTID = #{cntstid}
+    </update>
+
+    <!-- 공모전 분야 매핑 삭제 -->
+    <delete id="deleteCntstFldMapng">
+        DELETE FROM TB_CMM_CNTST_FLD_MAPNG
+        WHERE CNTSTID = #{cntstid}
+    </delete>
+
+    <!--공모전 목록 조회-->
+    <select id="selectCntstList" resultType="com.kbrainc.plum.mng.prtpn.cntst.model.CntstVO">
+        SELECT
+            CC.CNTSTID
+            , CC.TTL
+            , CC.THMBN_FILEID
+            , CC.ATCH_FILEGRPID
+            , CC.APLY_BGNG_DT
+            , CC.APLY_END_DT
+            , CC.PRSNTN_DT
+            , CC.DPCN_PSBLTY_YN
+            , CC.CLSF_CD
+            , CC.GDNC
+            , CC.TRMS
+            , CC.CN
+            , CC.MDFCN_DT
+            , CC.MDFRID
+            , CC.REG_DT
+            , CC.RGTRID
+            , CU.NM RGTR_NM
+            , CU.ACNT RGTR_ACNT
+            , (CASE
+                WHEN DATE_FORMAT(NOW(), '%Y%m%d') &lt; DATE_FORMAT(CC.APLY_BGNG_DT, '%Y%m%d') THEN '159101'
+                WHEN DATE_FORMAT(NOW(), '%Y%m%d') &gt; DATE_FORMAT(CC.APLY_END_DT, '%Y%m%d') THEN '159103'
+                ELSE '159102'
+              END) CNTST_STTS_CD
+        FROM TB_CMM_CNTST CC
+        INNER JOIN TB_CMM_USER CU ON CU.USERID = CC.RGTRID
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != '' ">
+          <choose>
+              <when test="searchType == 'ttl'">
+                  AND CC.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+              </when>
+              <when test="searchType == 'cn'">
+                  AND CC.CN LIKE CONCAT('%',#{searchKeyword},'%')
+              </when>
+              <otherwise>
+                AND (
+                    CC.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                    OR CC.CN LIKE CONCAT('%',#{searchKeyword},'%')
+                )
+              </otherwise>
+          </choose>
+        </if>
+        <if test="searchCntstClsfCd != null and searchCntstClsfCd != '' ">
+            AND CC.CLSF_CD = #{searchCntstClsfCd}
+        </if>
+        <if test="searchCntstSttsCd != null and searchCntstSttsCd != '' ">
+            AND (CASE
+            WHEN DATE_FORMAT(NOW(), '%Y%m%d') &lt; DATE_FORMAT(CC.APLY_BGNG_DT, '%Y%m%d') THEN '159101'
+            WHEN DATE_FORMAT(NOW(), '%Y%m%d') &gt; DATE_FORMAT(CC.APLY_END_DT, '%Y%m%d') THEN '159103'
+            ELSE '159102'
+            END) = #{searchCntstSttsCd}
+        </if>
+        ORDER BY CC.CNTSTID DESC
+    </select>
+    <!--공모전 분야 매핑 조회-->
+    <select id="selectCntstFldCdList" resultType="java.lang.String">
+        SELECT FLD_CD
+        FROM TB_CMM_CNTST_FLD_MAPNG
+        WHERE CNTSTID = #{cntstId}
+    </select>
+    <!--공모전 정보 조회-->
+    <select id="selectCntstInfo" resultType="com.kbrainc.plum.mng.prtpn.cntst.model.CntstVO">
+        SELECT
+            CC.CNTSTID
+             , CC.TTL
+             , CC.THMBN_FILEID
+             , CC.ATCH_FILEGRPID
+             , CC.APLY_BGNG_DT
+             , CC.APLY_END_DT
+             , CC.PRSNTN_DT
+             , CC.DPCN_PSBLTY_YN
+             , CC.CLSF_CD
+             , CC.GDNC
+             , CC.TRMS
+             , CC.CN
+             , CC.MDFCN_DT
+             , CC.MDFRID
+             , CC.REG_DT
+             , CC.RGTRID
+             , CU.NM RGTR_NM
+             , CU.ACNT RGTR_ACNT
+             , (CASE
+                    WHEN DATE_FORMAT(NOW(), '%Y%m%d') &lt; DATE_FORMAT(CC.APLY_BGNG_DT, '%Y%m%d') THEN '159101'
+                    WHEN DATE_FORMAT(NOW(), '%Y%m%d') &gt; DATE_FORMAT(CC.APLY_END_DT, '%Y%m%d') THEN '159103'
+                    ELSE '159102'
+            END) CNTST_STTS_CD
+        FROM TB_CMM_CNTST CC
+        INNER JOIN TB_CMM_USER CU ON CU.USERID = CC.RGTRID
+        WHERE CC.CNTSTID = #{cntstid}
+    </select>
+</mapper>

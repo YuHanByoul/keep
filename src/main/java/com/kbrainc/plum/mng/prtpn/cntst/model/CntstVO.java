@@ -43,17 +43,17 @@ public class CntstVO extends ParentRequestVo {
 
     /** 신청_시작_일자*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date aplyBgngDe;
+    private Date aplyBgngDt;
 
 
     /** 신청_종료_일자*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date aplyEndDe;
+    private Date aplyEndDt;
 
 
     /** 발표_일자*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date prsntnDe;
+    private Date prsntnDt;
 
     /** 중복_가능_여부*/
     private String dpcnPsbltyYn;
@@ -97,7 +97,7 @@ public class CntstVO extends ParentRequestVo {
 
 
     /** 검색 영역 */
-    private String searchClsfCd;
+    private String searchCntstClsfCd;
 
     private String searchCntstSttsCd;
 }
