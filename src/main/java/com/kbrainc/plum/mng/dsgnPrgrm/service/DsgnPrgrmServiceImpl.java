@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 /**
  *
  * 코드 관리 서비스 구현 클래스
@@ -351,5 +353,105 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 			return dsgnPrgrmDao.deleteOperRslt(dsgnPrgrmVo);
 	}
 
+	/**
+	 * 이행확인심사 목록 조회
+	 *
+	 * @Title : selectImplmntIdntySrngList
+	 * @Description : 이행확인심사 목록 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	@Override
+	public List<DsgnPrgrmVo> selectImplmntIdntySrngList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectImplmntIdntySrngList(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 이행확인심사(탭) 상세 조회
+	 *
+	 * @Title : selectImplmntIdntySrng
+	 * @Description : 이행확인심사 상세 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	@Override
+	public DsgnPrgrmVo selectImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectImplmntIdntySrng(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 이행확인심사 상세 조회
+	 *
+	 * @Title : selectImplmntIdntySrng
+	 * @Description : 이행확인심사 상세 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	@Override
+	public DsgnPrgrmVo selectImplmntIdntySrngDtl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+	}
+
+
+
+	/**
+	 * 보완 요청 조회
+	 *
+	 * @Title : selectSplmntDmnd
+	 * @Description : 보완 요청 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	@Override
+	public DsgnPrgrmVo selectSplmntDmnd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectSplmntDmnd(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 보완 계획 조회
+	 *
+	 * @Title : selectSplmntPlan
+	 * @Description : 보완 계획 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	@Override
+	public DsgnPrgrmVo selectSplmntPlan(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectSplmntPlan(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 결과보고서 조회
+	 *
+	 * @Title : selectRsltRptln
+	 * @Description : 결과보고서 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	@Override
+	public DsgnPrgrmVo selectRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectRsltRptln(dsgnPrgrmVo);
+	}
+
+	/**
+	* 보완요청 수정
+	*
+	* @Title : updateSplmntImprv
+	* @Description : 보완요청 수정
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	@Transactional
+	public int updateSplmntImprv(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.updateSplmntImprv (dsgnPrgrmVo);
+	}
 
 }

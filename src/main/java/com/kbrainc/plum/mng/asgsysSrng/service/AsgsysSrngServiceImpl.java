@@ -276,6 +276,68 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	}
 
 	/**
+	 * 보완요청 등록
+	 *
+	 * @Title : insertSplmntDmnd
+	 * @Description : 보완요청 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	@Override
+	@Transactional
+	public int insertSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.insertSplmntDmnd(asgsysSrngVo);
+	}
+
+	/**
+	* 보완요청 수정
+	*
+	* @Title : updateSplmntDmnd
+	* @Description : 보완요청 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	@Transactional
+	public int updateSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.updateSplmntDmnd(asgsysSrngVo);
+	}
+
+	/**
+	* 보완요청 삭제
+	*
+	* @Title : deleteSplmntDmnd
+	* @Description : 보완요청 삭제
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int deleteSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.deleteSplmntDmnd(asgsysSrngVo);
+	}
+
+	/**
+	* 보완요청 조회
+	*
+	* @Title : selectSplmntDmnd
+	* @Description : 보완요청 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo
+	* @throws Exception
+	*/
+	@Override
+	public AsgsysSrngVo selectSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSplmntDmnd(asgsysSrngVo);
+
+	}
+
+
+	/**
 	* 프로그램 우수성 조회
 	*
 	* @Title : selectPrgrmDstnctn
@@ -606,6 +668,20 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.selectSprtgrpSrng(asgsysSrngVo);
 	}
 
+	/**
+	* 지원단심사 체크리스트 조회
+	*
+	* @Title : selectSprtgrpSrngList
+	* @Description : 지원단심사 체크리스트 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+    @Override
+	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.selectCheckList(asgsysSrngVo);
+	}
+
     /**
     * 지원단심사 등록
     *
@@ -622,7 +698,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	int ret=0;
     	//심사결과insert asgsysSrngDao.insertSprtgrpSrng(asgsysSrngVo)
     	//심사의견 update
-    	ret = asgsysSrngDao.updateSprtgrpSrng(asgsysSrngVo);
+    	ret = asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
 
 		return ret;
 	}
@@ -639,7 +715,24 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
     @Transactional
     public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
-    	return asgsysSrngDao.updateSprtgrpSrng(asgsysSrngVo);
+
+
+    	int ret=0;
+
+    	//지원단심사 저장 심사의견 수정
+    	ret = asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
+
+    	//체크리스트 제출 저장
+    	ret += asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
+
+    	//updateSprtgrpSrng
+    	//sprtgrpSrng
+
+
+    	//체크리스트 답변목록 저장
+
+
+    	return ret;
     }
 
     /**
@@ -729,5 +822,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception {
 		return asgsysSrngDao.updateMbr(asgsysSrngVo);
 	}
+
 
 }

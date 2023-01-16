@@ -483,6 +483,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 운영결과차수 조회 -->
     <select id="selectOperRsltCycl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
             CYCLID
@@ -501,7 +502,157 @@
         AND CYCLID = #{cyclid}
     </select>
 
+    <!-- 이행확인심사 조회 -->
+    <select id="selectImplmntIdntySrng" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            A.PRGRMID
+          , B.CYCLID              /* 차수ID */
+          , A.INSTID              /* 기관아이디 */
+          , A.INST_NM             /* 기관_이름 */
+          , A.APLCNTID            /* 신청자아이디 */
+          , A.APLCNT_NM           /* 신청자_이름 */
+          , A.INST_TYPE_CD        /* 기관_유형_코드 */
+          , A.INST_RGN_CD         /* 기관_지역_코드 */
+          , A.PRGRM_NM            /* 프로그램_이름 */
+          , A.STTS_CD             /* 상태_코드 */
+          , A.DSGN_CYCL           /* 지정_차수 */
+          , A.DSGN_NO             /* 지정_번호 */
+          , A.DSGN_DE             /* 지정_일자 */
+          , A.DSGN_BGNG_DE        /* 지정_시작_일자 */
+          , A.DSGN_END_DE         /* 지정_종료_일자 */
+          , CONCAT(A.DSGN_CYCL, "/", A.DSGN_NO)    AS CYCL_NO
+          , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
+          , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.APLCNTID) AS ACNT
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+        (
+            SELECT
+                PRGRMID
+              , MAX(CYCLID) AS CYCLID
+            FROM
+                TB_ASS_OPER_RSLT_CYCL
+        ) B ON A.PRGRMID = B.PRGRMID
+        WHERE 1=1
+        AND   A.PRGRMID = #{prgrmid}
 
+    </select>
+
+    <!-- 이행확인심사 목록 조회 -->
+    <select id="selectImplmntIdntySrngList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.SRNGID       /* 심사아이디 */
+              , A.CYCLID       /* 차수아이디 */
+              , A.PICID        /* 담당자아이디 */
+              , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.PICID) AS ACNT
+              , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.PICID) AS PIC_NM
+              , C.CYCL         /* 차수 */
+              , A.VST_DE       /* 방문_일자 */
+              , A.VST_HR       /* 방문_시간 */
+              , A.VST_MNT      /* 방문_분 */
+              , '보완개선 요청서'        AS SPLMNT_IMPRV_DMNDLN
+              , B.DMND_CMPTN_DE /*보완요청 완료일 */
+              , '보완요청 계획서'        AS SPLMNT_IMPRV_WRTPLN
+              , '보완요청 결과보고서'    AS RSLT_RPTP
+              , A.REG_DT       /* 등록_일시 */
+              , A.RGTRID       /* 등록자아이디 */
+              , B.DMNDID
+            FROM
+                TB_ASS_IMPLMNT_IDNTY_SRNG A
+            LEFT OUTER JOIN    /* 보완 요청 */
+                TB_ASS_SPLMNT_DMND B ON A.SRNGID = B.SRNGID
+            LEFT OUTER JOIN
+                TB_ASS_OPER_RSLT_CYCL C ON A.CYCLID = C.CYCLID
+            WHERE A.CYCLID = #{cyclid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 이행확인심사 상세 조회 -->
+    <select id="selectImplmntIdntySrngDtl" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            A.SRNGID
+          , B.DMNDID
+          , A.CYCLID
+          , A.PICID
+          , A.VST_DE
+          , A.VST_HR
+          , A.VST_MNT
+          , A.GNRLZ_OPNN
+          , A.GRD_CD
+          , A.FILEGRPID
+          , A.WRTRID
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
+        FROM
+            TB_ASS_IMPLMNT_IDNTY_SRNG A
+        LEFT OUTER JOIN
+            TB_ASS_SPLMNT_DMND B ON A.SRNGID = B.SRNGID
+        WHERE
+            A.SRNGID = #{srngid}
+    </select>
+
+    <!-- 보완 요청 조회 -->
+    <select id="selectSplmntDmnd" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            DMNDID
+          , SRNGID
+          , DMND_CN
+          , DMND_DCMNT
+          , DMND_CMPTN_DE
+          , MDFCN_DT
+          , MDFR_ID
+          , REG_DT
+          , RGTR_ID
+        FROM
+            TB_ASS_SPLMNT_DMND
+        WHERE
+            DMNDID = #{dmndid}
+    </select>
+
+    <!-- 보완요청 수정-->
+    <update id="updateSplmntImprv" parameterType="DsgnPrgrmVo" >
+        UPDATE
+            TB_ASS_SPLMNT_DMND
+        SET
+            DMND_CN       = #{dmndCn     }
+          , DMND_DCMNT    = #{dmndDcmnt  }
+          , DMND_CMPTN_DE = #{dmndCmptnDe}
+          , MDFCN_DT      = NOW()
+          , MDFR_ID       = #{user.userid}
+        WHERE
+            DMNDID = #{dmndid}
+    </update>
+
+    <!-- 보완 계획 조회 -->
+    <select id="selectSplmntPlan" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            PLANID
+          , DMNDID
+          , SMRIZE_OPNN
+          , CN
+          , FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_SPLMNT_PLAN
+        WHERE
+            DMNDID = #{dmndid}
+    </select>
+
+    <!-- 결과보고서 조회 -->
+    <select id="selectRsltRptlnForm" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
+        SELECT
+            CYCLID
+        FROM
+            TB_ASS_IMPLMNT_IDNTY_SRNG A
+        WHERE
+            A.CYCLID = #{cyclid}
+    </select>
 
     <update id="updateSbmsnPrd" parameterType="DsgnPrgrmVo" >
         UPDATE
@@ -660,8 +811,6 @@
         DELETE FROM TB_ASS_OPER_RSLT
         WHERE CYCLID = #{cyclid}
     </delete>
-
-
 
     <!-- 운영결과 운영실적 목록조회 -->
     <select id="selectOperRsltPrfmncList" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">

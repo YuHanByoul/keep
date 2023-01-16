@@ -4,6 +4,8 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 /**
  *
  * 지정프로그램 DAO 클래스
@@ -232,5 +234,107 @@ public interface DsgnPrgrmDao {
 	* @throws Exception
 	*/
 	public int deleteOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 이행확인심사 조회
+	*
+	* @Title : selectOperRsltDetail
+	* @Description : 이행확인심사 조회
+	* @param dsgnPrgrmVo
+	* @return DsgnPrgrmVo
+	* @throws Exception
+	*/
+	public DsgnPrgrmVo selectimplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 이행확인심사 목록 조회
+	 *
+	 * @Title : selectImplmntIdntySrngList
+	 * @Description : 이행확인심사 목록 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	public List<DsgnPrgrmVo> selectImplmntIdntySrngList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 이행확인심사(탭) 상세 조회
+	 *
+	 * @Title : selectImplmntIdntySrng
+	 * @Description : 이행확인심사 상세 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	public DsgnPrgrmVo selectImplmntIdntySrng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 이행확인심사 상세 조회
+	 *
+	 * @Title : selectImplmntIdntySrngDtl
+	 * @Description : 이행확인심사 상세 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	public DsgnPrgrmVo selectImplmntIdntySrngDtl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 보완 요청 조회
+	 *
+	 * @Title : selectSplmntDmnd
+	 * @Description : 보완 요청 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	public DsgnPrgrmVo selectSplmntDmnd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 보완 계획 조회
+	 *
+	 * @Title : selectSplmntPlan
+	 * @Description : 보완 계획 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	public DsgnPrgrmVo selectSplmntPlan(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 결과보고서 조회
+	 *
+	 * @Title : selectRsltRptln
+	 * @Description : 결과보고서 조회
+	 * @param dsgnPrgrmVo
+	 * @return List<DsgnPrgrmVo>
+	 * @throws Exception;
+	 */
+	public DsgnPrgrmVo selectRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완요청 수정
+	*
+	* @Title : updateSplmntImprv
+	* @Description : 보완요청 수정
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

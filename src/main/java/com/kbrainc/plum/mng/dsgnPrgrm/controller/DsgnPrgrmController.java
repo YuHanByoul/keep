@@ -520,7 +520,10 @@ public class DsgnPrgrmController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/implmntIdntySrngForm.html")
-    public String implmntIdntySrngForm() throws Exception {
+    public String implmntIdntySrngForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+    	model.addAttribute("prgrmBscInfo", dsgnPrgrmServiceImpl.selectImplmntIdntySrng(dsgnPrgrmVo));    //프로그램 기본 정보
+
     	return "mng/dsgnPrgrm/implmntIdntySrngForm";
     }
 
@@ -743,7 +746,136 @@ public class DsgnPrgrmController {
     	return resultMap;
     }
 
+    /**
+     * 이행확인심사 목록 조회
+     *
+     * @param dsgnPrgrmVo
+     * @return map
+     * @Title : selectimplmntIdntySrngList
+     * @Description : 이행확인심사 목록 조회
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/selectImplmntIdntySrngList.do")
+    @ResponseBody
+    public Map<String, Object> selectImplmntIdntySrngList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+        Map<String, Object> result = new HashMap<>();
 
+        List<DsgnPrgrmVo> implmntIdntySrngList = dsgnPrgrmServiceImpl.selectImplmntIdntySrngList(dsgnPrgrmVo);
+
+        if (implmntIdntySrngList.size() > 0) {
+            result.put("totalCount", (implmntIdntySrngList.get(0).getTotalCount()));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("implmntIdntySrngList", implmntIdntySrngList);
+
+        return result;
+    }
+
+    /**
+     * @Title : implmntIdntySrngDetailForm
+     * @Description : 이행확인심사 상세 화면 이동
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/implmntIdntySrngDetailForm.html")
+    public String implmntIdntySrngDetailForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+    	DsgnPrgrmVo dtlInfo = new DsgnPrgrmVo();
+
+    	if(null != dsgnPrgrmVo.getDmndid()) {
+    		dtlInfo = dsgnPrgrmServiceImpl.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+    	}else {
+    		dtlInfo = dsgnPrgrmVo;
+    	}
+
+    	model.addAttribute("dtlInfo", dtlInfo);
+
+    	return "mng/dsgnPrgrm/implmntIdntySrngDetail";
+    }
+
+    /**
+     * @Title : splmntImprvForm
+     * @Description : 보안개선요청(탭) 화면이동
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/splmntImprvForm.html")
+    public String splmntImprvForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	model.addAttribute("splmntDmndInfo", dsgnPrgrmServiceImpl.selectSplmntDmnd(dsgnPrgrmVo));
+    	return "mng/dsgnPrgrm/splmntImprvForm";
+    }
+
+    /**
+     * 변경신청상태 수정
+     *
+     * @Title : updateSplmntImprv
+     * @Description : 보완요청 수정
+     * @param DsgnPrgrmVo 객체
+     * @param bindingResult 유효성검증결과
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/updateSplmntImprv.do")
+    @ResponseBody
+    public Map<String, Object> updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	retVal = dsgnPrgrmServiceImpl.updateSplmntImprv(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+
+    	return resultMap;
+    }
+
+    /**
+     * @Title : scrtyImprvPlanlnForm
+     * @Description : 보안계획서(탭)화면이동
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html")
+    public String scrtyImprvPlanlnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	model.addAttribute("splmntPlanInfo", dsgnPrgrmServiceImpl.selectSplmntPlan(dsgnPrgrmVo));
+    	return "mng/dsgnPrgrm/scrtyImprvPlanlnForm";
+    }
+
+    /**
+     * @Title : rsltRptlnForm
+     * @Description : 결과보고서(탭)화면이동
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/rsltRptlnForm.html")
+    public String rsltRptlnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	model.addAttribute("rsltRptlnInfo",dsgnPrgrmServiceImpl.selectImplmntIdntySrngDtl(dsgnPrgrmVo));
+    	return "mng/dsgnPrgrm/rsltRptlnForm";
+    }
 
 }
 

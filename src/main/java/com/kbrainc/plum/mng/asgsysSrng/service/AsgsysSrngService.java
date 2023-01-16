@@ -1,7 +1,6 @@
 package com.kbrainc.plum.mng.asgsysSrng.service;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -95,6 +94,40 @@ public interface AsgsysSrngService {
 	* @return List<AsgsysSrngVo>
 	*/
 	public List<AsgsysSrngVo> selectSplmntDmndList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 보완요청 등록
+	*
+	* @Title : insertSplmntDmnd
+	* @Description : 보완요청 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 보완요청 수정
+	*
+	* @Title : updateSplmntDmnd
+	* @Description : 보완요청 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 보완요청 조회
+	*
+	* @Title : selectSplmntDmnd
+	* @Description : 보완요청 조회
+	* @param asgsysSrngVo
+	* @return AsgsysSrngVo
+	* @throws Exception
+	*/
+	public AsgsysSrngVo selectSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 	/**
 	* 프로그램 우수성 조회
@@ -251,6 +284,17 @@ public interface AsgsysSrngService {
 	public AsgsysSrngVo selectSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 지원단심사 체크리스트 조회
+	*
+	* @Title : selectSprtgrpSrngList
+	* @Description : 지원단심사 체크리스트 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 지원단심사 등록
 	*
 	* @Title : insertSprtgrpSrng
@@ -348,5 +392,17 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	*/
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 보완요청 삭제
+	*
+	* @Title : deleteSplmntDmnd
+	* @Description : 보완요청 삭제
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int deleteSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 }
