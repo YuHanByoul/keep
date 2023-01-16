@@ -2,14 +2,14 @@
     <div class="card-block-small p-t-0">
         <div class="mb-2 row">
             <div class="col-12 btn-group-sm">
-                <button type="button" class="col-auto btn btn-inverse m-r-5">모두 펼치기</button>
-                <button type="button" class="col-auto btn btn-disabled m-r-5">모두 접기</button>
+                <button id="expendAllBtn" type="button" class="col-auto btn btn-inverse m-r-5">모두 펼치기</button>
+                <button id="collapseAllBtn" type="button" class="col-auto btn btn-disabled m-r-5">모두 접기</button>
                 <th:block sec:authorize-url="/mng/srng/srngQitemSearchPopup.html">
-                <button type="button" class="col-auto btn btn-primary" data-bs-toggle="modal" data-bs-target="#examinationFormExplanationPopup" onclick="fn_openSearchModal();">문항 불러오기</button>
+                <button id="refreshBtn" type="button" class="col-auto btn btn-primary" data-bs-toggle="modal" data-bs-target="#examinationFormExplanationPopup" onclick="fn_openSearchModal();">문항 불러오기</button>
                 </th:block>
             </div>
         </div>
-        <div class="col-12" id="sortable">
+        <div class="col-12" id="expendable">
             <ol>
                 <!-- js 처리-->
             </ol>
@@ -19,51 +19,55 @@
         <button type="button" class="btn btn-disabled m-r-5" onclick="srngFormQitem.offForm();">취소</button>
         <th:block sec:authorize-url="/mng/srng/insertSrngFormQitem.do"><button type="button" class="btn btn-primary" onclick="srngFormQitem.onInsertForm();">저장</button></th:block>
     </div>
+</form>
 
-    <ol id="cloneTemp" style="display: none;">
-        <li class="col-12 mb-2 parent">
-            <div class="card-sub mb-2">
-                <div class="col-12 p-10">
-                    <div class="row align-items-center justify-content-between">
-                        <div class="col-auto">
-                            <p class="card-text"></p>
-                        </div>
+<ol id="cloneTemp" style="display: none;">
+    <li class="col-12 mb-2 parent">
+        <div class="card-sub mb-2">
+            <div class="col-12 p-10">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-auto">
+                        <input type="hidden" name="dsgncrtrCds" />
+                        <p class="card-text"></p>
                     </div>
                 </div>
             </div>
-        </li>
-        <ol class="child">
-            <li class="col-12 mb-2">
-                <div class="card-sub mb-2">
-                    <div class="col-12 p-10">
-                        <div class="row align-items-center justify-content-between">
-                            <div class="col-auto">
-                                <p class="card-text">환경교육적 적절성3</p>
-                            </div>
-                            <div class="col-auto">
-                                <select class="form-select form-select-sm form-control-sm">
-                                    <option value="">- 선택 -</option>
-                                    <option th:each="code: ${codeList}" th:value="${code.cd}" th:text="${code.upprCdNm + ' > ' + code.cdNm}"></option>
-                                </select>
-                            </div>
-                        </div>
+        </div>
+        <ol></ol>
+    </li>
+    <li class="col-12 mb-2 child">
+        <div class="card-sub mb-2">
+            <div class="col-12 p-10">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-auto">
+                        <p class="card-text">환경교육적 적절성3</p>
+                    </div>
+                    <div class="col-auto">
+                        <select name="chklstSeCd" class="form-select form-select-sm form-control-sm">
+                            <option value="">- 선택 -</option>
+                            <option th:each="code: ${codeList}" th:value="${code.cd}" th:text="${code.upprCdNm + ' > ' + code.cdNm}"></option>
+                        </select>
                     </div>
                 </div>
-            </li>
-        </ol>
-    </ol>
-</form>
+            </div>
+        </div>
+    </li>
+</ol>
 
 <div class="modal fade" id="srngQitemSearchPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
-    var popupUrl = "/mng/srng/srngQitemSearchPopup.html";
+
+    var popupUrl = "/mng/srng/srngQitemSearchPopup.html?";
     var userAddModal;
     var instManagerSearchModal;
-    var srngFormQitemList = /*[[${srngFormQitemList}]]*/;
-    var $listBody = $("#sortable > ol");
+    var srngFormQitemList = /*[[${srngFormQitemList}]]*/null;
+    var dsgncrtrCdMap = /*[[${dsgncrtrCdMap}]]*/null;
+    var $listBody = $("#expendable > ol");
     var $parentTemp = $("#cloneTemp .parent");
     var $childTemp = $("#cloneTemp .child");
+    var expendable = fnExpendable($('#expendable'));
+    var qitemParam = "";
 
     var srngFormQitem = {
         init : function (){
@@ -71,42 +75,31 @@
             this.setQitemList(list);
             this.setSortAble();
         },
-        // => this 값이 달라진다 일반적으로는 이벤트의 this를 가져온다 => 의 경우 상위 이벤트의 this를 가져온다 크롬 모음자음
+        // => this 값이 달라진다 일반적으로는 이벤트의 this를 가져온다 => 의 경우 상위 이벤트의 this를 가져온다
         setQitemList : function (list){
             const parentMap = {}
             for(const item of list) {
                 if (item.treeOrd === 1) {
                     const $item = $parentTemp.clone(true);
                     parentMap[item.dsgncrtrCd] = $item.children("ol");
-                    $listBody.append($item.find('.card-text').text(item.dsgncrtrCdNm).end());
-                    console.log($item);
-                    console.log(item.dsgncrtrCdNm);
+                    $listBody.append(
+                        $item.find('.card-text').text(item.dsgncrtrCdNm).end()
+                            .find('input[name=dsgncrtrCds]').val(item.dsgncrtrCd).end()
+                    );
                 } else {
                     const $item = $childTemp.clone(true);
-                    parentMap[item.dsgncrtrCd].append($item);
-                    //item  세팅
+                    parentMap[item.dsgncrtrCd].append(
+                        $item.find('.card-text').text(item.idntyMttr).data('qitem-id',item.qitemid).end()
+                            .find('select[name=chklstSeCd]').val(item.chklstSeCd).end()
+                    );
+                    qitemParam += "&qitemArr="+item.qitemid;
                 }
             }
-
-            // console.log(list);
-            // let $parentTemp = $("#cloneTemp .parnt").clone(true);
-            // let $childTemp = $("#cloneTemp .child").clone(true);
-            //
-            // $(list).each(function (item , idx){
-            //     if(idx > 0 && item.dsgncrtrCd === item.dsgncrtrCd){
-            //         //지정기준코드가 같을 시 item의 dsgncrtrCd값을 같은 dsgncrtrCd li 뒤에 append 해주고 select에 id name 추가 후 option 있으면 선택 없으면 미선택
-            //         //$('#sortable > ol li').find().data(dsgncrtrCd).append( this.find('select').attr(id,name).end() -> this.find('#id option[value=userID]').prop('selected', 'selected').change() )
-            //     }else{
-            //         $listBody.append(
-            //             $parentTemp.clone()
-            //                 .find(".card-text").text(item.dsgncrtrCdNm).end()
-            //         )
-            //     }
-            // });
         },
 
         onInsertForm : function (){
-
+    ``      //select 값 체크
+            //insert 등록
         },
 
         offForm : function() {
@@ -114,14 +107,48 @@
         },
 
         setSortAble : function (){
-            $('#sortable ol').sortable({
+            $('#expendable ol').sortable({});
+        },
 
+        addQitem : function (){
+            const $modalBody = $("#qitemListBody");
+            const $checked = $modalBody.find("input[type=checkBox]:checked");
+
+            if ($checked.length === 0) {
+                alert("문항을 선택해주세요.");
+                return;
+            }
+
+            const parentMap = {};
+            $('#expendable > ol > li').each(function () {
+                const dsgncrtrCd = $(this).find("input[name=dsgncrtrCds]");
+                parentMap[dsgncrtrCd] = $(this);
             });
+
+            $checked.each(function () {
+                const {dsgncrtrCd, qitemid, idntyMttr} = $(this).data();
+                let $li = parentMap[dsgncrtrCd]
+                if (!$li) {
+                    $li = $parentTemp.clone(true);
+                    $listBody.append(
+                        $li.find('.card-text').text(dsgncrtrCdMap[dsgncrtrCd]).end()
+                            .find('input[name=dsgncrtrCds]').val(dsgncrtrCd).end()
+                    );
+                    parentMap[dsgncrtrCd] = $li;
+                }
+                const $item = $childTemp.clone(true);
+                $li.children('ol').append(
+                    $item.find('.card-text').text(idntyMttr).data('qitem-id',qitemid).end()
+                );
+                qitemParam += "&qitemArr="+qitemid;
+            });
+            instManagerSearchModal.hide();
+            expendable.refresh();
         }
     }
 
     var fn_openSearchModal =()=> {
-        var url = popupUrl;
+        var url = popupUrl + qitemParam;
         $("#srngQitemSearchPopup").load(url, function(response, status, xhr) {
             if (status == "success") {
                 instManagerSearchModal = new bootstrap.Modal($('#srngQitemSearchPopup'));
@@ -132,5 +159,17 @@
 
     $(function() {
         srngFormQitem.init();
+        $("#expendAllBtn").on('click', function(){
+            expendable.expendAll();
+        })
+        $("#collapseAllBtn").on('click', function(){
+            expendable.collapseAll();
+        })
+        $("#refreshBtn").on('click', function(){
+            expendable.refresh();
+        })
     });
+
+
+
 </script>
