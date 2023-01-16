@@ -8,6 +8,7 @@ import com.kbrainc.plum.mng.srng.service.SrngSerivceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.service.ResCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,9 @@ public class SrngController {
 
     @Autowired
     private SrngSerivceImpl srngSerivce;
+
+    @Autowired
+    private ResCodeService resCodeService;
 
     /**
      * 심사 문항 목록 화면
@@ -263,6 +267,7 @@ public class SrngController {
     public String srngFormQitemForm(CodeVo codeVo, SrngFormQitemMapngVO srngFormQitemMapngVO, Model model) throws Exception {
         model.addAttribute("srngFormQitemList",  srngSerivce.selectSrngFormQitemList(srngFormQitemMapngVO));
         model.addAttribute("codeList", srngSerivce.selectChklstSeCdList(codeVo));
+        model.addAttribute("dsgncrtrCdMap", resCodeService.getCodeMap("149"));
         return "mng/srng/srngFormQitemForm";
     }
 

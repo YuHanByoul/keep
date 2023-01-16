@@ -186,7 +186,7 @@ public class SrngSerivceImpl extends PlumAbstractServiceImpl implements SrngSeri
         if(srngDao.deleteSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVOs[0].getFormid())
                 && srngDao.insertSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVOs[0].getFormid(), dsgncrtrCds, user)
                 && srngDao.deleteSrngFormQitem(srngFormQitemMapngVOs[0].getFormid())
-                && srngDao.insertSrngFormQitem(srngFormQitemMapngVOs)){
+                && srngDao.insertSrngFormQitem(srngFormQitemMapngVOs, user)){
             result = true;
         }else{
             result = false;

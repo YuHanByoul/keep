@@ -65,6 +65,9 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
     /** 문항배열 */
     private String[] qitemArr;
 
+    /** 트리 뎁스 */
+    private int treeOrd;
+
     public void setDsgncrtrCd(String dsgncrtrCd) throws Exception{
         this.dsgncrtrCd = dsgncrtrCd;
         //이미 코드이름이 있다면, 무시.

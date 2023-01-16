@@ -178,9 +178,10 @@ public interface SrngDao {
      * Description : 심사양식 문항 목록 등록
      *
      * @param srngFormQitemMapngVOs
+     * @param user
      * @return boolean
      */
-    boolean insertSrngFormQitem(@Param("srngFormQitemMapngVOs") SrngFormQitemMapngVO[] srngFormQitemMapngVOs);
+    boolean insertSrngFormQitem(@Param("srngFormQitemMapngVOs") SrngFormQitemMapngVO[] srngFormQitemMapngVOs, @Param("user") UserVo user);
 
 
 }

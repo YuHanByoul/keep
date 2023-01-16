@@ -111,25 +111,70 @@
 
     <!-- 심사양식 문항목록 조회 -->
     <select id="selectSrngFormQitemList" parameterType="SrngFormQitemMapngVO" resultType="SrngFormQitemMapngVO">
-        /* SrngDao.selectSrngFormQitem */
+        /* SrngDao.selectSrngFormQitemList */
+        WITH RECURSIVE CODE_VIEW(DSGNCRTR_CD, IDNTY_MTTR, DSGNCRTR_ORDR, TREE_ORD, QITEMID, CHKLST_SE_CD)  AS (
+            SELECT
+                SFDO.DSGNCRTR_CD AS DSGNCRTR_CD
+                , CONCAT(CD_NM) AS IDNTY_MTTR
+                , SFDO.ORDR AS DSGNCRTR_ORDR
+                , 1 AS TREE_ORD
+                , 0 AS QITEMID
+                , 0 AS CHKLST_SE_CD
+            FROM
+                TB_CMM_CD CCD
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+                ON SFDO.DSGNCRTR_CD = CCD.CD
+            WHERE
+                1 = 1
+                AND CCD.CDGRPID != 'G0001'
+                AND CCD.CDGRPID  = '149'
+                AND SFDO.FORMID = #{formid}
+            UNION ALL
+            SELECT
+                C.DSGNCRTR_CD
+                , B.IDNTY_MTTR
+                , C.ORDR AS DSGNCRTR_ORDR
+                , 2 AS TREE_ORD
+                , A.QITEMID AS QITEMID
+                , A.CHKLST_SE_CD AS CHKLST_SE_CD
+            FROM
+                TB_ASS_SRNG_FORM_QITEM_MAPNG A
+            LEFT OUTER JOIN TB_ASS_SRNG_QITEM B
+                ON B.QITEMID = A.QITEMID
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C
+                ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+            WHERE
+                A.FORMID = #{formid}
+        )
         SELECT
-            SFQM.FORMID
-             , SFQM.QITEMID
-             , SQ.DSGNCRTR_CD
-             , SQ.IDNTY_MTTR
-             , SFQM.ORDR QITEM_ORDR
-             , SFDO.ORDR DSGNCRTR_ORDR
-             , SFQM.CHKLST_SE_CD
+            CV.DSGNCRTR_CD
+            , CV.IDNTY_MTTR
+            , CV.DSGNCRTR_ORDR
+            , CV.TREE_ORD
+            , CV.QITEMID
+            , CV.CHKLST_SE_CD
+            , BB.QITEM_ORDR
         FROM
-            TB_ASS_SRNG_FORM_QITEM_MAPNG SFQM
-        LEFT OUTER JOIN TB_ASS_SRNG_QITEM SQ
-            ON SQ.QITEMID = SFQM.QITEMID
-        LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
-            ON SFDO.FORMID = SFQM.FORMID AND SQ.DSGNCRTR_CD = SFDO.DSGNCRTR_CD
-        WHERE
-            SFQM.FORMID = #{formid}
-        ORDER BY
-            SFDO.ORDR ASC, SFQM.ORDR ASC;
+            CODE_VIEW CV
+        LEFT OUTER JOIN (
+            SELECT
+                SFQM.FORMID
+                , SQ.DSGNCRTR_CD
+                , SFQM.QITEMID
+                , SQ.IDNTY_MTTR
+                , SFQM.ORDR QITEM_ORDR
+                , SFDO.ORDR DSGNCRTR_ORDR
+                , SFQM.CHKLST_SE_CD
+            FROM
+                TB_ASS_SRNG_FORM_QITEM_MAPNG SFQM
+            LEFT OUTER JOIN TB_ASS_SRNG_QITEM SQ
+                ON SQ.QITEMID = SFQM.QITEMID
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+                ON SFDO.FORMID = SFQM.FORMID AND SQ.DSGNCRTR_CD = SFDO.DSGNCRTR_CD
+            WHERE
+                SFQM.FORMID = #{formid}
+        ) BB ON BB.QITEMID = CV.QITEMID
+        ORDER BY CV.TREE_ORD, CV.DSGNCRTR_ORDR, BB.QITEM_ORDR, CV.DSGNCRTR_CD
     </select>
 
     <!-- 체크리스트 구분 코드 조회 -->
@@ -240,14 +285,6 @@
             FORMID = #{formid}
     </delete>
 
-    <!-- 심사양식 문항 목록 삭제  -->
-    <delete id="deleteSrngFormQitem" parameterType="int">
-        /* SrngDao.deleteSrngFormQitem */
-        DELETE FROM TB_ASS_SRNG_FORM_QITEM_MAPNG
-        WHERE
-            FORMID = #{formid}
-    </delete>
-
     <!-- 심사양식 문항 목록 지정기준 등록  -->
     <insert id="insertSrngFormDsgncrtrCdOrdr">
         /* SrngDao.insertSrngFormDsgncrtrCdOrdr */
@@ -271,6 +308,14 @@
         </foreach>
     </insert>
 
+    <!-- 심사양식 문항 목록 삭제  -->
+    <delete id="deleteSrngFormQitem" parameterType="int">
+        /* SrngDao.deleteSrngFormQitem */
+        DELETE FROM TB_ASS_SRNG_FORM_QITEM_MAPNG
+        WHERE
+            FORMID = #{formid}
+    </delete>
+
     <!-- 심사양식 문항 목록 등록  -->
     <insert id="insertSrngFormQitem">
         /* SrngDao.insertSrngFormQitem */
@@ -290,9 +335,9 @@
             , #{index}
             , #{item.chklstSeCd}
             , NOW()
-            , #{item.user.userid}
+            , #{user.userid}
             , NOW()
-            , #{item.user.userid}
+            , #{user.userid}
         </foreach>
     </insert>
 </mapper>
