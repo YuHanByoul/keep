@@ -8,6 +8,7 @@ CKEDITOR.editorConfig = function( config ) {
 	// %REMOVE_START%
 	// The configuration options below are needed when running CKEditor from source files.
 	config.plugins = 'dialogui,dialog,about,a11yhelp,basicstyles,blockquote,notification,button,toolbar,clipboard,panel,floatpanel,menu,contextmenu,resize,elementspath,enterkey,entities,popup,filetools,filebrowser,floatingspace,listblock,richcombo,format,horizontalrule,htmlwriter,wysiwygarea,image,indent,indentlist,fakeobjects,link,list,magicline,maximize,pastetext,xml,ajax,pastetools,pastefromgdocs,pastefromlibreoffice,pastefromword,removeformat,showborders,sourcearea,specialchar,menubutton,scayt,stylescombo,tab,table,tabletools,tableselection,undo,lineutils,widgetselection,widget,notificationaggregator,uploadwidget,uploadimage,panelbutton,colorbutton,textwatcher,autocomplete,textmatch,emoji,font,smiley,tableresize,uicolor';
+	config.extraPlugins = 'youtube';
 	config.skin = 'moono-lisa';
 	// %REMOVE_END%
 
@@ -53,5 +54,10 @@ CKEDITOR.editorConfig = function( config ) {
 	//editor.
 	config.image_previewText = '이미지 미리보기 '
 	
+	// html태그를 필터링하지 않음
+	config.allowedContent = true;
 	
+	// youtube 관련
+	config.youtube_width = '640'; 	// 기본 너비
+	config.youtube_height = '480'; 	// 기본 높이
 };
