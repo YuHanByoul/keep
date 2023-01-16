@@ -43,7 +43,7 @@
 </div>
 
 <script th:inline="javascript">
-    var qitemArr = /*[[${qitemArr}]]*/;
+    var qitemArr = /*[[${qitemArr}]]*/null;
     var srngQitemPopup = {
         listUrl : "/mng/srng/selectSrngQitemList.do",
 
@@ -89,13 +89,19 @@
                 controller: {
                     loadData: function(filter) {
                         var data = $.Deferred();
-                        var params = {
-                            "searchDsgncrtrCd": $('#searchDsgncrtrCd').val(),
-                            "pageNumber": filter.pageIndex,
-                            "rowPerPage": filter.pageSize,
-                            "orderField": "REG_DT",
-                            "orderDirection": "asc"
-                        };
+                        var params = [
+                            {name: "searchDsgncrtrCd", value: $('#searchDsgncrtrCd').val()},
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "orderField", value: "REG_DT"},
+                            {name: "orderDirection", value: "asc"},
+                        ];
+                        if(qitemArr !== null){
+                            for (const qitemId of qitemArr) {
+                                params.push({name: "qitemArr", value: qitemId})
+                            }
+                        }
+
                         $.ajax({
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
@@ -103,6 +109,7 @@
                             data: params,
                             dataType: "json"
                         }).done(function(response) {
+                            log
                             var da = {
                                 data : escapeGridData(response.list),
                                 itemsCount : response.totalCount

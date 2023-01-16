@@ -1,7 +1,10 @@
 package com.kbrainc.plum.mng.srng.service;
 
 import com.kbrainc.plum.mng.code.model.CodeVo;
-import com.kbrainc.plum.mng.srng.model.*;
+import com.kbrainc.plum.mng.srng.model.SrngDao;
+import com.kbrainc.plum.mng.srng.model.SrngFormQitemMapngVO;
+import com.kbrainc.plum.mng.srng.model.SrngFormVO;
+import com.kbrainc.plum.mng.srng.model.SrngQitemVO;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +19,12 @@ public class SrngSerivceImpl extends PlumAbstractServiceImpl implements SrngSeri
     private SrngDao srngDao;
 
     /**
-     * 심사 문항 목록 조회
+     * 심사 문항 목록 (팝업) 조회
      * Title : selectSrngList
-     * Description : 심사 문항 목록 조회
+     * Description : 심사 문항 목록 (팝업) 조회
      *
      * @param srngQitemVO SrngQitemVO
-     * @return List<SrngQitemVO> 심사 문항 목록
+     * @return List<SrngQitemVO>   심사 문항 목록
      * @throws Exception
      */
     @Override

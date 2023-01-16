@@ -408,10 +408,11 @@ public class SrngController {
      */
     @RequestMapping(value = "/mng/srng/selectSrngQitemList.do")
     @ResponseBody
-    public Map<String, Object> selectSrngQitemList(SrngQitemVO srngQitemVO, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectSrngQitemList(String[] qitemArr, SrngQitemVO srngQitemVO, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<SrngQitemVO> result = null;
         srngQitemVO.setUser(user);
+        srngQitemVO.setQitemArr(qitemArr);
         result = srngSerivce.selectSrngList(srngQitemVO);
 
         if (result.size() > 0) {

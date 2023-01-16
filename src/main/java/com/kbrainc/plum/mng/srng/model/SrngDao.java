@@ -37,12 +37,12 @@ public interface SrngDao {
     SrngQitemVO selectSrng(SrngQitemVO srngQitemVO) throws Exception;
 
     /**
-     * 심사 문항 목록 조회
+     * 심사 문항 목록 (팝업) 조회
      * Title : selectSrngList
-     * Description : 심사 문항 목록 조회
+     * Description : 심사 문항 목록 (팝업) 조회
      *
      * @param srngQitemVO SrngQitemVO
-     * @return List<SrngQitemVO>  심사 문항 목록
+     * @return List<SrngQitemVO> 심사 문항 목록
      * @throws Exception
      */
     List<SrngQitemVO> selectSrngList(SrngQitemVO srngQitemVO) throws Exception;

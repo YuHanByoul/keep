@@ -69,6 +69,8 @@ public class SrngQitemVO extends ParentRequestVo {
     /** 지정기준검색 */
     private String searchDsgncrtrCd;
 
+    private String[] qitemArr;
+
     public void setDsgncrtrCd(String dsgncrtrCd) throws Exception{
         this.dsgncrtrCd = dsgncrtrCd;
         //이미 코드이름이 있다면, 무시.
