@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.inst.service.InstService;
+import com.kbrainc.plum.mng.spce.model.SpceRsvtdeVo;
 import com.kbrainc.plum.mng.spce.model.SpceVo;
 import com.kbrainc.plum.mng.spce.service.SpceService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -196,7 +196,6 @@ public class SpceController {
     @ResponseBody
     public Map<String, Object> selectFcltList(SpceVo spceVo,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        
         List< Map<String, Object>> result = null;
         spceVo.setUser(user);
         result = spceService.selectFcltList(spceVo);
@@ -368,6 +367,86 @@ public class SpceController {
         }
         
         return resultMap;
+    }
+    
+    
+    /*************************예약일자**********************************/
+    /**
+     * 공간 예약일자상세 화면
+     *
+     * @Title : spceRsvt
+     * @Description : 공간 예약일자상세 화면
+     * @param model 모델객체
+    ) * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/spceRsvt.html")
+    public String spceRsvt(SpceVo spceVo,InstVo instVo ,Model model,@UserInfo UserVo user) throws Exception {
+        model.addAttribute("user", user);
+        model.addAttribute("param", spceVo);
+        model.addAttribute("spceVo", spceService.selectSpceInfo(spceVo));
+        
+        return "mng/spce/spceRsvt";
+    }
+    /**
+     * 예약일자 리스트 호출  
+     *
+     * @Title       : selectSpceRsvtList 
+     * @Description : 예약일자 리스트 호출  
+     * @param param SpceVo SpceVo 객체
+     * @return List<SpceRsvtdeVo> 기관정보 목록
+     * @throws Exception 예외
+     */
+    @ResponseBody
+    @RequestMapping(value = "/mng/spce/selectSpceRsvtdeList.do")
+    public Map<String, Object> selectSpceRsvtdeList(SpceRsvtdeVo spceRsvtdeVo,InstVo instVo ,Model model,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List< SpceRsvtdeVo> result = null;
+        spceRsvtdeVo.setUser(user);
+        result = spceService.selectSpceRsvtdeList(spceRsvtdeVo);
+        resultMap.put("rsvtdelist", result);
+        return resultMap;
+    }
+    /**
+     * 예약일자 팝업 상세(탭 영역 호출  )  
+     *
+     * @Title       : detailPopup 
+     * @Description : 예약일자 리스트 호출  
+     * @param param SpceVo SpceVo 객체
+     * @return String 화면
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/detailPopup.html")
+    public String detailPopup(SpceVo spceVo,Model model,@UserInfo UserVo user) throws Exception {
+        model.addAttribute("user", user);
+        model.addAttribute("mode", spceVo.getMode());
+        
+        return "mng/spce/spceRsvtdetailPopup";
+    }
+    /**
+     * 예약일자 팝업 상세 호출
+     *
+     * @Title       : packageStayInfoPopup 
+     * @Description : 예약일자 팝업 상세 호출  
+     * @param param SpceVo SpceVo 객체
+     * @return String 화면
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/packageStayRsvtPopup.html")
+    public String packageStayInfoPopup(SpceVo spceVo,Model model,@UserInfo UserVo user) throws Exception {
+        
+        String target = "";
+        
+        if(spceVo.getMode().equals("PS")){ //일괄 숙박
+            target = "mng/spce/spcePackageStayRsvtPopup";
+        }else if (spceVo.getMode().equals("PR")){ //일괄 대여
+            target = "mng/spce/spcePackageRentRsvtPopup";
+        }else if (spceVo.getMode().equals("S")){ //숙박
+            target = "mng/spce/spceStayRsvtPopup";
+        }else if (spceVo.getMode().equals("R")){ //대여 
+            target = "mng/spce/spceRentRsvtPopup";
+        } 
+        return target;
     }
     
     
