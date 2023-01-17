@@ -1,0 +1,403 @@
+<style>
+
+	.fc-unthemed td .fc-day-top.fc-mon .fc-day-number, 
+	.fc-unthemed td .fc-day-top.fc-tue .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-wed .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-thu .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-fri .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-sat .fc-day-number,
+	   .fc-unthemed td .fc-day-top.fc-sun .fc-day-number
+	{
+	    width: calc(100% - 12px);
+	    font-size: 1.1em;
+	    margin: none; 
+	    padding:none;
+	} 
+	
+	   .fc-unthemed td .fc-day-top.fc-sat .fc-day-number{ 
+	    color:blue; 
+	}
+	   .fc-unthemed td .fc-day-top.fc-sun .fc-day-number{ 
+	    color:red; 
+	}
+	.border-checkbox-section{
+	    padding-right:10px;
+	}
+	.fc-CustomNextButton-button.fc-state-default.fc-corner-left,
+	.fc-CustomPrevButton-button.fc-state-default.fc-corner-left,
+	.fc-CustomNextButton-button.fc-state-default.fc-corner-left,
+	.fc-CustomPrevButton-button.fc-state-default.fc-corner-right{
+		     content: "";
+		     height: 35px;
+		     color: black;
+		     font-size:1.5em;
+		     background:white;
+		     border: none;
+	}
+	.fc-center {
+		    margin-left: 110px;
+	}
+	
+   /* 셀 영역 내 이벤트 조정  */ 
+   /*.fc-event-container > a {
+	    background-color: rgba( 255, 255, 255, 0 );
+	    border:none;
+	    padding-left:3px;
+	    margin-left:3px;
+	    font-size:0.6em;
+	} */
+	
+	/* 이벤트  텍스트 중앙정렬*/
+	.fc-event-container{
+	    padding-left :5px;
+	    float:center;
+	    text-align :center; 
+	}
+	
+	tr:first-child>td>.fc-day-grid-event {
+       color: white; 
+       padding-left: 3px;
+       background:  #3a87ad;
+       margin-left: 2px; 
+    }
+    
+    .fc-event-container a {
+         padding:1px;
+         font-size:0.75em;
+    }
+    .fc-event{
+         font-size:0.75em;
+    }
+    
+  </style>
+  
+      <!-- calender -->
+      <div class="card-header p-t-0 p-b-0 row">
+          <h3 class="sub-title"><strong>예약설정</strong></h3>
+      </div>
+      
+      <div class="card-block-small text-right">
+          <button class="btn btn-disabled m-r-5">선택일 삭제</button>
+          <button class="btn btn-inverse m-r-5"  onclick="openRsvtModal()">선택일 등록</button>
+          <button class="btn btn-primary m-r-5"  onclick="openPackageRsvtModal()">일괄 등록</button>
+      </div>
+      
+      <div class="card-block-small p-t-0">
+          <div class="calendar-wrap" >
+             <div class="calendar-contant" >
+             <div class="calendar-body" id="calendar">
+             </div>
+             </div>
+          </div>
+      </div>
+      
+      <div class="card-block-small">
+          <button class="btn btn-disabled m-r-5">운영중지</button>
+          <button class="btn btn-inverse m-r-5">운영재개</button>
+      </div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+    var spceVo = /*[[${spceVo}]]*/null;
+    /*]]>*/
+    var selectedItems = [];
+    var gridHelper1;
+    var limitDt ;
+    var today = moment();
+    var today = today.format('YYYYMMDD')
+    var checkDays =[];
+    
+    $(function(){
+        console.log(spceVo);
+    	initFullCalendar();
+    	makeCalendarEvent();
+    });
+
+    changeAllCheckDay=()=>{
+        
+        let checked = $("#checkAllDay").is(":checked");
+        if(checked){
+            $(".checkDay").prop("checked",true);    
+        }else{
+            $(".checkDay").prop("checked",false);   
+        }
+        
+    }
+    
+    getCheckedDays =()=> {
+    	checkDays=[];
+    	$(".checkDay").each(function(){
+    		if($(this).is(":checked")){
+        		checkDays.push($(this).val());
+        	}
+        })
+		console.log(checkDays);
+    }
+    
+    
+    function initFullCalendar(){
+        
+        $('#calendar').fullCalendar({
+            
+            plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
+            locale : 'ko',
+            defaultView : 'month',
+            defaultDate : moment(new Date()),
+            editable : false,
+            disable : false,
+            droppable: false,
+            eventLimit: 5,
+            displayEventTime: true,
+            firstDay: 0, 
+            fixedWeekCount :false ,
+            height: "auto",
+            //contentHeight    : "1500px", 
+            monthNames      : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+            monthNamesShort : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+            dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+            dayNamesShort   : ["일","월","화","수","목","금","토"],
+            header : {
+                
+                left   : '',
+                center : 'CustomPrevButton title CustomNextButton ',
+                right  : ''
+                    
+            }, 
+            views: {month: {titleFormat: 'YYYY년 M월'}},
+            
+            customButtons: {
+                CustomPrevButton: {
+                  click: function() {
+                      
+                        //var lmit_dt = min_dt.substring(0,6);
+                        ////makeCalendarEvent();
+                        //var year_month_str = moment($("#calendar").fullCalendar("getDate")).format("YYYYMM")
+                        //
+                        //if(min_dt ==null || min_dt ==""){return;}
+                        //if(lmit_dt == year_month_str){
+                        //   alert(firstStopMsg);
+                        //   return;  
+                        //}
+                        $('#calendar').fullCalendar("prev");
+                        makeCalendarEvent();
+                        
+                  },
+                  icon:"left-single-arrow",
+                },
+                CustomNextButton: {
+                  click: function() {
+                      
+                        //var year_month_str = moment($("#calendar").fullCalendar("getDate")).format("YYYYMM") 
+                        //var lmit_dt = max_dt.substring(0,6);
+                        //
+                        //if(max_dt ==null || max_dt ==""){return;}
+                        //if(lmit_dt == year_month_str){
+                        //   alert(lastStopMsg);
+                        //   return;  
+                        //}
+                        
+                        $('#calendar').fullCalendar("next");
+                        makeCalendarEvent();
+                  },
+                  icon:"right-single-arrow",
+                }
+            },
+            dayClick: function(date, jsEvent, view) {
+                console.log(jsEvent);
+/*                 alert('Clicked on: ' + date.format());
+                alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+                alert('Current view: ' + view.name); */
+                // change the day's background color just for fun
+               // $(this).css('background-color', 'red');
+                
+            },
+            eventRender:function (event,element){
+                
+               //element.find('.fc-title').html(element.find('.fc-title').text());
+               //$('#calendar').fullCalendar('render');
+            },
+            eventClick: function(calEvent, jsEvent, view) {
+                
+                console.log(calEvent);
+                
+            },
+            
+            dayRender: function(date, cell) {
+                
+            },
+            
+            //캘린더 렌더링 이후  
+            viewRender: function(view, element){
+
+                let rightHtml = '<div class="col-12 col-lg-12 text-right"><span class="d-inline-block bg-calendar-ing mt-0 v-middle mb-1" style="width: 15px; height: 15px;"></span> 운영중'
+                    rightHtml +='<span class="d-inline-block bg-calendar-stop mt-0 v-middle mb-1 m-l-5" style="width: 15px; height: 15px;"></span> 예약중지'
+                    rightHtml +='<span class="d-inline-block bg-calendar-end mt-0 v-middle mb-1 m-l-5" style="width: 15px; height: 15px;"></span> 운영종료</div>'
+                $(".fc-right").html(rightHtml)
+                
+                let leftHtml ='<div class="border-checkbox-section d-inline-block v-middle m-r-5" >'
+                    leftHtml +='<div class="border-checkbox-group border-checkbox-group-inverse" >'
+                    leftHtml +='    <input class="border-checkbox" type="checkbox" name="checkAllDay" id="checkAllDay" onclick="changeAllCheckDay()">'
+                    leftHtml +='    <label class="form-label border-checkbox-label m-r-0 m-b-0" for="checkAllDay">전체선택</label>'
+                    leftHtml +='</div></div>'
+                        
+                $(".fc-left").html(leftHtml)
+
+                var redirect_dt = "";
+                
+                element.find(".fc-day-number").each(function(item){
+                    
+                	var year_month_str = moment($("#calendar").fullCalendar("getDate")).format("YYYYMM")
+                	
+                    let cell_dt = $(this).parent().attr("data-date");
+                    let thisMonthDay =  moment(cell_dt).format("YYYYMM")
+                    let cellDay =  moment(cell_dt).format("YYYYMMDD")
+                    let day =  moment(cell_dt).format("D")
+                    
+                    let rsvtHtml ='   <div class="day-chk">'
+                        rsvtHtml +=    day
+                        rsvtHtml +='     <div class="border-checkbox-section">'
+                        rsvtHtml +='         <div class="border-checkbox-group">'
+                        rsvtHtml +='             <input class="border-checkbox checkDay" type="checkbox" name="calendarDay'+cell_dt+'" id="calendarDay'+cell_dt+'"  value="'+cell_dt+'">'
+                        rsvtHtml +='             <label class="form-label border-checkbox-label" for="calendarDay'+cell_dt+'"><span class="d-none">'+day+'</span></label>'
+                        rsvtHtml +='         </div>'
+                        rsvtHtml +='     </div>'
+                        rsvtHtml +='  </div>'
+                       	rsvtHtml +='  <input type="hidden" id="rsvt_stts'+cell_dt+'" value="N" />'
+
+                    let endHtml ='    <div class="day-chk">'
+                    	endHtml +=    day    
+                        endHtml +='   </div>'
+                        endHtml +='   <input type="hidden" id="rsvt_stts'+cell_dt+'" value="E" />'
+
+                        //rsvt_stts =>E:종료, S:중지, R:운영, N:미운영(스케줄 없음)
+
+                    if(year_month_str==thisMonthDay && today <= cellDay){
+                        $(this).html("<span>"+rsvtHtml+"</span>");
+                    }else{
+                        $(this).html("<span>"+endHtml+"</span>");
+                    	$("[data-date='"+cell_dt+"']").css("background-color","#f5f5f5");
+                    }
+                    
+                })
+                
+                /* var currentdate = view.intervalStart;
+                $('#datepicker').datepicker().datepicker('setDate', new Date(currentdate)); */
+                
+            }
+        });
+    }
+
+
+    function makeCalendarEvent(gotoMonth){
+        
+       $("#calendar").fullCalendar('removeEvents');
+       
+       var yymm_string = moment($("#calendar").fullCalendar("getDate")).format("YYYY-MM")
+       var lastDayOfMonth = moment(yymm_string, "YYYY-MM").daysInMonth(); 
+
+       var params = {
+    	   spceid  : spceVo.spceid
+           ,bgngDt : yymm_string+"-01"
+           ,endDt  : yymm_string+"-"+lastDayOfMonth
+       }
+
+       if(displayWorkProgress()){
+           $.ajax({
+               url : "/mng/spce/selectSpceRsvtdeList.do",
+               type: 'POST',
+               cache : false,
+               dataType: 'json',
+               data : params,
+               success : function (data){
+                   
+            	   let list = data.rsvtdelist;
+            	   
+                   if(list.length > 0){
+
+                       var schdul_events = { events: []};
+                       
+                       list.forEach(function(item){
+                           
+                           var title  = "";
+                           var background_color  = "";
+                           
+                           if(item.utztnSeCd == '169102'){//대여 
+                        	   title  +=  item.strtTm +' ~ '+ item.strtTm+' | '+item.amt+'원' 
+                           }else{//숙박
+                        	   title  +=  '숙박 | '+item.amt+'원' 
+                           }
+                           
+                           let elementColor = '#0ac282';
+                           let backgroundColor = '#effcee !important';
+                           
+                           //현재일자보다 이전 (운영종료)
+                           if(today > (item.de).replaceAll("-","")){
+                        	   elementColor = '#D8D8D8';
+                        	   backgroundColor = '#f5f5f5 !important;';
+                           //운영 중지 상태 	   
+                           }else if(item.rsvtPsbltyYn == 'N'){
+                        	   $("#rsvt_stts"+item.de).val("S");
+                        	   elementColor = '#FA5882';
+                               backgroundColor = '#fdf2f4 !important;';
+                           }else{
+                        	   $("#rsvt_stts"+item.de).val("R");
+                           }
+                           
+                           schdul_events.events.push({
+                               title:title 
+                               ,start:item.de
+                               ,borderColor:elementColor
+                               ,backgroundColor:elementColor
+                               ,textColor:'#fff'
+                               ,amt:item.amt
+                               ,de:item.de
+                               ,rsvtdeid:item.rsvtdeid
+                               ,rsvtPsbltyYn:item.rsvtPsbltyYn
+                               ,utztnSeCd:item.utztnSeCd
+                           })
+                           
+                           $("[data-date='"+item.de+"']").css("background-color",backgroundColor);
+                           
+                       })
+                       
+                       $("#calendar").fullCalendar('removeEventSources');
+                       $("#calendar").fullCalendar('addEventSource', schdul_events);
+                   }
+
+                   closeWorkProgress();
+               }
+           });
+       }
+    }
+
+
+    //예약일자 일괄 등록  모달 오픈   
+    openPackageRsvtModal = () => {
+        
+        var url = "/mng/spce/detailPopup.html?mode=PS";
+        
+        $("#spcePackageRsvtModal").load(url, function(response, status, xhr) {
+            if (status == "success") {
+            	spceModal = new bootstrap.Modal($('#spcePackageRsvtModal'));
+                spceModal.show();
+            }
+        });
+    }
+    
+    //예약일자 일괄 등록  모달 오픈   
+    openRsvtModal = () => {
+        var url = "/mng/spce/InsertStayInfoPopup.html";
+
+        $("#spceRsvtModal").load(url, function(response, status, xhr) {
+            if (status == "success") {
+            	spceModal = new bootstrap.Modal($('#spceRsvtModal'));
+                spceModal.show();
+            }
+        });
+    }
+
+
+    
+    
+</script>

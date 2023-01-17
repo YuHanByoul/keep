@@ -8,6 +8,7 @@ import com.kbrainc.plum.mng.srng.service.SrngSerivceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.service.ResCodeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,6 +45,9 @@ public class SrngController {
 
     @Autowired
     private SrngSerivceImpl srngSerivce;
+
+    @Autowired
+    private ResCodeService resCodeService;
 
     /**
      * 심사 문항 목록 화면
@@ -262,7 +266,9 @@ public class SrngController {
     @RequestMapping(value = "/mng/srng/srngFormQitemForm.html")
     public String srngFormQitemForm(CodeVo codeVo, SrngFormQitemMapngVO srngFormQitemMapngVO, Model model) throws Exception {
         model.addAttribute("srngFormQitemList",  srngSerivce.selectSrngFormQitemList(srngFormQitemMapngVO));
+        model.addAttribute("formid",srngFormQitemMapngVO.getFormid());
         model.addAttribute("codeList", srngSerivce.selectChklstSeCdList(codeVo));
+        model.addAttribute("dsgncrtrCdMap", resCodeService.getCodeMap("149"));
         return "mng/srng/srngFormQitemForm";
     }
 
@@ -424,19 +430,18 @@ public class SrngController {
      * Title : insertSrngFormQitem
      * Description : 심사양식 문항 목록 등록
      *
-     * @param dsgncrtrCds
-     * @param srngFormQitemMapngVOs
+     * @param srngFormQitemMapngVO
      * @param user
      * @return map
      * @throws Exception
      */
     @RequestMapping(value = "/mng/srng/insertSrngFormQitem.do")
     @ResponseBody
-    public Map<String, Object> insertSrngFormQitem(String[] dsgncrtrCds, SrngFormQitemMapngVO[] srngFormQitemMapngVOs, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         boolean result = false;
-
-        result = srngSerivce.insertSrngFormQitem(dsgncrtrCds, srngFormQitemMapngVOs, user);
+        srngFormQitemMapngVO.setUser(user);
+        result = srngSerivce.insertSrngFormQitem(srngFormQitemMapngVO);
 
         if(result){
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

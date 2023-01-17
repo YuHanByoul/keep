@@ -52,7 +52,7 @@ public class QestnrController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/qestnr/qestnrMng.html")
+    @RequestMapping(value = {"/mng/qestnr/qestnrMng.html", "/mng/srvyInvstg/qestnrListForm.html"})
     public String qestnrMng(QestnrVo qestnrVo, Model model) throws Exception {
         model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
         return "mng/qestnr/qestnrList";

@@ -1,20 +1,19 @@
 package com.kbrainc.plum.rte.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.kbrainc.plum.rte.model.CodeInfoVo;
+import com.kbrainc.plum.rte.model.ResCodeDao;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.rte.model.CodeInfoVo;
-import com.kbrainc.plum.rte.model.ResCodeDao;
-
-import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
 * 
@@ -215,5 +214,39 @@ public class ResCodeServiceImpl extends PlumAbstractServiceImpl implements ResCo
             }
             codeListMap.remove(cdgrpid + "|" + upprCd);
         }
+    }
+
+    /**
+     * 그룹코드아이디에 해당하는 1depth 코드 Map을 반환한다.
+     * Title : getCodeMap
+     * Description : 그룹코드아이디에 해당하는 1depth 코드 Map을 반환한다.
+     *
+     * @param cdgrpid
+     * @return map
+     * @throws Exception
+     */
+    @Override
+    public Map<String, String> getCodeMap(String cdgrpid) throws Exception {
+        return getCodeMap(cdgrpid,"0");
+    }
+
+    /**
+     * 그룹코드아이디에 해당하는 코드 목록을 반환한다.
+     * Title : getCodeMap
+     * Description : 그룹코드아이디에 해당하는 코드 목록을 반환한다.
+     *
+     * @param cdgrpid
+     * @param upprCd
+     * @return map
+     * @throws Exception
+     */
+    @Override
+    public Map<String, String> getCodeMap(String cdgrpid, String upprCd) throws Exception {
+        List<CodeInfoVo> codeList = getCodeList(cdgrpid, upprCd);
+        Map codeMap = new LinkedHashMap();
+        for (CodeInfoVo item : codeList) {
+            codeMap.put(item.getCd(), item.getCdNm());
+        }
+        return codeMap;
     }
 }

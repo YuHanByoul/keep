@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,8 +65,9 @@ public class ExpertPoolMngController {
     @Value("${crypto.key}")
     private String encryptKey;
 
-    @RequestMapping("/mng/expertPoolMng/expertList.html")
-    public String expertList() throws Exception {
+    @RequestMapping("/mng/expertPoolMng/{exprtTypeCd}/expertList.html")
+    public String expertList(@PathVariable String exprtTypeCd,Model model) throws Exception {
+        model.addAttribute("exprtTypeCd", exprtTypeCd);
         return "mng/expertPoolMng/expertList";
     }
 

@@ -13,7 +13,8 @@
                     <div class="mb-0 form-group">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRequestDate"><strong>변경요청일시</strong></label>
                         <div class="col-12">
-                            <input type="text" class="form-control form-control-sm" th:value="${#dates.format(expertMdfcnInfo.regDt, 'yyyy-MM-dd HH:mm:ss')}" name="updateRequestDate" id="updateRequestDate" placeholder="Text Input Validation" value="keepgo" readonly/>
+                            <input type="text" class="form-control form-control-sm" th:value="${#dates.format(expertMdfcnInfo.regDt, 'yyyy-MM-dd HH:mm:ss')}" name="updateRequestDate"
+                                   id="updateRequestDate" placeholder="Text Input Validation" value="keepgo" readonly/>
                         </div>
                     </div>
                 </div>
@@ -30,8 +31,7 @@
                 <div class="col-12 col-lg-6 mb-3">
                     <div class="mb-0 form-group">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>처리자ID</strong></div>
-                        <div class="col-12 p-t-5 p-b-5">
-
+                        <div class="col-12 p-t-5 p-b-5" th:text="${expertMdfcnInfo?.procAcnt}">
                         </div>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                     <div class="mb-0 form-group">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateProcessDate"><strong>처리일시</strong></label>
                         <div class="col-12">
-                            <input type="text" class="form-control form-control-sm" name="updateProcessDate" id="updateProcessDate" readonly/>
+                            <input type="text" class="form-control form-control-sm" name="updateProcessDate" id="updateProcessDate" th:value="${expertMdfcnInfo.procDt != null ? #dates.format(expertMdfcnInfo.procDt, 'yyyy-MM-dd HH:mm:ss') : null}" readonly/>
                         </div>
                     </div>
                 </div>
@@ -48,8 +48,8 @@
         <!-- [230112] 버튼위치 변경 -->
         <th:block th:if="${expertMdfcnInfo.sttsCd == '152101'}">
             <div class="card-block-small">
-                <button type="button" class="btn btn-primary m-r-5" onclick="expertMdfcnDetail.updateStts('152102')">변경승인 </button>
-                <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#updateCompanionReasonPopup">변경불가 </button>
+                <button type="button" class="btn btn-primary m-r-5" onclick="expertMdfcnDetail.updateStts('152102')">변경승인</button>
+                <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#updateCompanionReasonPopup">변경불가</button>
             </div>
         </th:block>
     </div>
@@ -81,7 +81,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="expertHdofInfo : ${existingExpertInfo.expertHdofList}">
+                        <tr th:each="expertHdofInfo : ${existingExpertInfo.expertHdofList}">
                             <td>
                                 <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1Category"
                                        th:value="${expertHdofInfo.hdofSeCdNm}" readonly/>
@@ -144,7 +144,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="expertHdofInfo : ${newExpertInfo.expertHdofList}">
+                        <tr th:each="expertHdofInfo : ${newExpertInfo.expertHdofList}">
                             <td>
                                 <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1Category"
                                        th:value="${expertHdofInfo.hdofSeCdNm}" readonly/>
@@ -209,7 +209,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="expertCrtfctInfo : ${existingExpertInfo.expertCrtfctList}">
+                        <tr th:each="expertCrtfctInfo : ${existingExpertInfo.expertCrtfctList}">
                             <td>
                                 <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
                                        th:value="${expertCrtfctInfo.crtfctNm}" readonly/>
@@ -264,7 +264,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="expertCrtfctInfo : ${newExpertInfo.expertCrtfctList}">
+                        <tr th:each="expertCrtfctInfo : ${newExpertInfo.expertCrtfctList}">
                             <td>
                                 <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
                                        th:value="${expertCrtfctInfo.crtfctNm}" readonly/>
@@ -336,7 +336,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="expertCareerInfo : ${existingExpertInfo.expertCareerList}">
+                        <tr th:each="expertCareerInfo : ${existingExpertInfo.expertCareerList}">
                             <td>
                                 <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1Category"
                                        id="expertRequestInfoEnvironmentEduRecord1Category" th:value="${expertCareerInfo.fldNm}" readonly/>
@@ -431,7 +431,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="expertCareerInfo : ${newExpertInfo.expertCareerList}">
+                        <tr th:each="expertCareerInfo : ${newExpertInfo.expertCareerList}">
                             <td>
                                 <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1Category"
                                        id="expertRequestInfoEnvironmentEduRecord1Category" th:value="${expertCareerInfo.fldNm}" readonly/>
@@ -697,7 +697,6 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="updateCompanionReasonPopup" data-bs-backdrop="static">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2">
@@ -714,14 +713,14 @@
                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateCompanionReasonPopupReason"><strong>사유</strong></label>
                             <div class="col-12">
                                     <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="정보변경 불가 사유" id="updateCompanionReasonPopupReason"
-                                              name="updateCompanionReasonPopupReason" ></textarea>
+                                              name="updateCompanionReasonPopupReason"></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary waves-effect waves-light " data-bs-dismiss="modal" onclick="expertMdfcnDetail.updateStts('152103')">등록</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light " onclick="expertMdfcnDetail.updateStts('152103')">등록</button>
             </div>
         </div>
     </div>
@@ -729,11 +728,52 @@
 
 <script th:inline="javascript">
     var expertMdfcnDetail = {
-        updateStts(sttsCd) {
-            if(sttsCd == '152102') {
-              if(!confirm('정보변경을 승인하시겠습니까?')) return;
-            /*mdfcnDmndid 삽입*/
+        /* <![CDATA[*/
+        mdfcnDmndId: /*[[${expertMdfcnInfo.mdfcnDmndId}]]*/ null,
+        /* ]]> */
+        /* <![CDATA[*/
+        userid: /*[[${expertMdfcnInfo.userid}]]*/ null,
+        /* ]]> */
+        updateSttsUrl: '/mng/expertPoolMng/updateMdfcnStts.do',
 
+        updateStts(sttsCd) {
+            let prcsSeCd = null;
+            let rsnCn = null;
+            if (sttsCd == '152102') {
+                if (!confirm('정보변경을 승인하시겠습니까?')) return;
+                prcsSeCd = '137104';
+
+            } else if (sttsCd == '152103') {
+                prcsSeCd = '137105';
+                let $rjctRsn = $('#updateCompanionReasonPopupReason');
+                rsnCn = $rjctRsn.val();
+                if (rsnCn == null || rsnCn == "") {
+                    alert('사유를 입력해주세요');
+                    showErrorMark('#updateCompanionReasonPopupReason');
+                    return;
+                }
+            }
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    type: 'post',
+                    url: expertMdfcnDetail.updateSttsUrl,
+                    data: {
+                        "userid": expertMdfcnDetail.userid,
+                        "sttsCd": sttsCd,
+                        "rsnCn": rsnCn,
+                        "prcsSeCd": prcsSeCd,
+                        "mdfcnDmndId": expertMdfcnDetail.mdfcnDmndId
+                    }, success: function (result) {
+                        if (result > 0) {
+                            alert('상태변경에 성공하였습니다.');
+                            $('#updateCompanionReasonPopup').modal('hide');
+                        } else {
+                            alert('변경상태를 변경하는데 실패하였습니다.');
+                        }
+                        closeWorkProgress();
+                    }
+                })
             }
         }
     }
