@@ -1,35 +1,43 @@
-<link rel="stylesheet" type="text/css" href="/files/assets/pages/nestable/nestable.css">
-<script src="/files/assets/pages/nestable/jquery.nestable.js"></script>
-<!--<script src="/files/assets/pages/nestable/custom-nestable.js"></script>-->
+<style>
+    #expendable ol {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    #expendable li ol {
+        margin-left: 15px;
+    }
+</style>
 <div class="card-block-small p-t-0">
     <div class="mb-2 row">
-        <div class="col-12 btn-group-sm" id="nestableMenu">
-            <button type="button" class="col-auto btn btn-inverse m-r-5" data-action="expandAll">모두 펼치기</button>
-            <button type="button" class="col-auto btn btn-disabled m-r-5" data-action="collapseAll">모두 접기</button>
-            <button type="button" class="col-auto btn btn-primary" data-action="qitemLoad">문항 불러오기</button>
+        <div class="col-12 btn-group-sm">
+            <button type="button" class="col-auto btn btn-inverse m-r-5" id="expandAllBtn">모두 펼치기</button>
+            <button type="button" class="col-auto btn btn-disabled m-r-5" id="collapseAllBtn">모두 접기</button>
+            <button type="button" class="col-auto btn btn-primary" id="qitemLoadBtn">문항 불러오기</button>
         </div>
     </div>
-    
-    <div class="row">
-        <div class="col-lg-12 col-sm-12">
-            <div class="cf nestable-lists">
-                <div class="dd" id="nestable">
-                    <ol class="dd-list">
-                    </ol>
-                </div>
-            </div>
-        </div>
+    <div class="col-12 expendable-wrapper" id="expendable">
+        <ol>
+        </ol>
     </div>
 </div>
 <div class="card-block-small">
-    <!--
-    <button type="button" class="btn btn-disabled m-r-5" onclick="chklstUpdate.offUpdateChklst();">취소</button>
-    <th:block sec:authorize-url="/mng/chklst/updateChklst.do"><button type="button" class="btn btn-primary" onclick="chklstUpdate.onUpdateChklst();">저장</button></th:block>
-    onInsertQitemMapngList
-    -->
     <button class="btn btn-disabled m-r-5" onclick="qitemMapng.offQitemMapngList();">취소</button>
     <button class="btn btn-primary" onclick="qitemMapng.onInsertQitemMapngList();">저장</button>
 </div>
+
+<ol id="itemTmplat" style="display: none;">
+    <li class="col-12 mb-2 item" style="min-height: 41px;">
+        <div class="card-sub mb-2 bg-white">
+            <div class="col-12 p-10">
+                <div class="row align-items-center justify-content-between">
+                    <div class="col-auto">
+                        <p class="card-text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <ol></ol>
+</ol>
 
 <div class="modal fade" id="qitemListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
@@ -37,91 +45,66 @@
     var qitemMapng = {
         qitemMapngList: /*[[${qitemMapngList}]]*/
         , chklstid: /*[[${param.chklstid}]]*/ 
-        , init: function() {
-            this.setNestable();
-            this.registEvent();
-        },
+        , expendable: null
         
-        setNestable: function() {
+        , init: function() {
+            this.expendable = fnExpendable($("#expendable"));
+            this.setItems();
+            this.setSortable();
+            this.expendable.refresh();
+            this.registEvent();
+        }
+        
+        , setItems: function() {
             var _this = this;
             var list = this.qitemMapngList;
             
             $(list).each(function(index, item) {
                 _this.addItem(item);
             });
-            
-            $('#nestable').nestable({
-                maxDepth: 3
-            }).on("change", function(e) {
-                _this.updateOutput(e);
-            });
-          
-            _this.updateOutput($('#nestable').data("output", $("#nestable-output")));
         }
         
         , addItem: function(data) {
-            if(data.treeOrd == 1) {
-                $("#nestable > ol").append(
-                    '<li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" style="pointer-events: none;">' + data.cn + '</li></div>'
-                );
-            } else if(data.treeOrd == 2) {
-                var parentLi = data.treeOrd == 2 ? $("[data-cd=" + data.lv1key + "]") : $("[data-cd=" + data.lv2key + "]"); // 상위 li
-                var childLen = parentLi.find("> ol > li").length;
-                if(childLen == 0) { // 하위 li를 처음 생성하는 경우
-                    parentLi.append(
-                        '<ol class="dd-list"><li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" style="pointer-events: none;">' + data.cn + '</li></div></ol>'
-                    );
-                } else {
-                    parentLi.find(" > ol").append(
-                        '<li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" style="pointer-events: none;">' + data.cn + '</li></div>'
-                    );
-                }
-            } else {
-                var parentLi = $("[data-cd=" + data.lv2key + "]");
-                var childLen = parentLi.find("> ol > li").length;
-                var newYn = data.newYn ? data.newYn : "N";
-                if(childLen == 0) { // 하위 li를 처음 생성하는 경우
-                    parentLi.append(
-                        '<ol class="dd-list"><li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" data-newYn="' + newYn + '" data-qitemid="' + data.qitemid + '">' + data.cn + '</li></div></ol>'
-                    );
-                } else {
-                    parentLi.find(" > ol").append(
-                        '<li class="dd-item" data-cd="' + data.lv2key + '"><div class="dd-handle" data-newYn="' + newYn + '" data-qitemid="' + data.qitemid + '">' + data.cn + '</li></div>'
-                    );
-                }
+            var item = $("#itemTmplat .item").clone(true);
+            var container = data.treeOrd == 1 ? $("#expendable > ol") : data.treeOrd == 2 ? $("[data-cd='" + data.lv1key + "'] > ol") : $("[data-cd='" + data.lv2key + "'] > ol").first();
+            var newYn = data.newYn ? data.newYn : "N";
+            container.append(
+                data.treeOrd == 3 ? item.find(".card-text").text(data.cn).end().attr("data-cd", data.lv2key).attr("data-qitemid", data.qitemid).attr("data-newYn", newYn) : item.find(".card-text").text(data.cn).end().attr("data-cd", data.lv2key) 
+            );
+            if(data.treeOrd == 3) { // 드래그 가능 뎁스 제한
+                container.addClass("draggable");
             }
         }
         
-        , updateOutput: function(e) {
-            var list = e.length ? e : $(e.target);
-            var output = list.data("output");
-            if(JSON) {
-                output.val(JSON.stringify(list.nestable("serialize")));
-            } else {
-                output.val("JSON browser support required for this demo.");
-            }
+        , setSortable: function() {
+            $("#expendable .draggable").sortable({
+                axis: "y"
+                , placeholder: "ui-state-highlight"
+            });
         }
-            
+        
         , registEvent: function() {
-            $("#nestableMenu").on("click", function(e) {
-                var target = $(e.target);
-                var action = target.data("action");
-                if(action == "qitemLoad") {
-                    var url = "/mng/chklst/chklstQitemListPopup.html";
-                    $("#qitemListPopup").load(url, function(response, status, xhr) {
-                        if(status == "success") {
-                            qitemListModal = new bootstrap.Modal($('#qitemListPopup'));
-                            qitemListModal.show();
-                        }
-                    });
-                } else {
-                    $(".dd").nestable(action);
-                }
+            var _this = this;
+            $("#expandAllBtn").on("click", function() {
+                _this.expendable.expendAll();
+            });
+            
+            $("#collapseAllBtn").on("click", function() {
+                _this.expendable.collapseAll();
+            });
+            
+            $("#qitemLoadBtn").on("click", function() {
+                var url = "/mng/chklst/chklstQitemListPopup.html";
+                $("#qitemListPopup").load(url, function(response, status, xhr) {
+                    if(status == "success") {
+                        qitemListModal = new bootstrap.Modal($("#qitemListPopup"));
+                        qitemListModal.show();
+                    }
+                });
             });
         }
         
         , onInsertQitemMapngList: function() {
-            console.log($("[data-qitemid]").length);
             var param = {};
             var chklstid = this.chklstid[0];
             
@@ -140,30 +123,6 @@
             if(displayWorkProgress()) {
                 $.ajax({
                     url : "/mng/chklst/updateChklstQitemMapng.do",
-                    type: "POST",
-                    cache: false,
-                    dataType: "json",
-                    data: param,
-                    success: function(response) {
-                        if(response.result == "success") {
-                            alert(response.msg);
-                            chklstGrid.resetListContent();
-                        } else {
-                            alert(response.msg);
-                        }
-                        closeWorkProgress();
-                    }
-                });
-            }
-            
-            return false;
-            if(!($("#chklstUpdateForm").valid())) return;
-            $("input[name='useYn']").val($("#useYn").is(":checked") ? "Y" : "N");
-            var param = $("#chklstUpdateForm").serialize();
-            
-            if(displayWorkProgress()) {
-                $.ajax({
-                    url : "/mng/chklst/updateChklst.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
