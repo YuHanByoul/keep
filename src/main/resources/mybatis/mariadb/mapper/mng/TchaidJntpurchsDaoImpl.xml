@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : TchaidJntpurchsDaoImpl.xml
+	Description : 설문지관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.tchaidJntpurchs.model.TchaidJntpurchsDao">
+    
+    <!-- 설문지 정보 등록 -->
+    <insert id="insertTchaidJntpurchs" parameterType="TchaidJntpurchsVo" useGeneratedKeys="true" keyProperty="jntpurchsid">
+        /* TchaidJntpurchsDao.insertTchaidJntpurchs */
+        INSERT INTO TB_THA_TCHAID_INTPURCHS (
+            JNTPURCHSNO
+            , JNTPURCHS_NM
+            , STTS_CD
+            , QNTY_WHOL
+            , QNTY_LMT
+            , QNTY_LMT_YN
+            , BGNG_DT
+            , END_DT
+            , DTL_CN
+            , MVP_URL
+            , MVP_PSTN_CD
+            , RPRS_IMG_FILEID
+            , DTL_IMG_FILEGRPID
+            , MAP_FILEGRPID
+            , EDU_PHOTO_FILEGRPID
+            , ATENT_MTTR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{jntpurchsno}
+            , #{jntpurchsNm}
+            , #{sttscd}
+            , #{qnlyWhol}
+            , #{qntyLmt}
+            , #{qntyLmtYn}
+            , #{bgngDt}
+            , #{endDt}
+            , #{dtlCn}
+            , #{mvpUrl}
+            , #{mvpPstnCd}
+            , #{rprsImgFileid}
+            , #{dtlImgFilegrpid}
+            , #{mapFilegrpid}
+            , #{eduPhotoFilegrpid}
+            , #{atentMttr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 사이트 목록 조회 -->
+    <select id="selectSiteList" parameterType="QestnrVo" resultType="QestnrVo">
+        /* QestnrDao.selectSiteList */
+        SELECT
+            A.SITEID
+            , A.SITE_NM
+            , B.INST_NM
+        FROM
+            TB_CMM_SITE A
+        INNER JOIN
+            TB_CMM_INST B ON (B.INSTID = A.INSTID)
+        WHERE
+            A.USE_YN = 'Y'
+    </select>
+    
+    <!-- 설문지 목록 조회 -->
+    <select id="selectQestnrList" parameterType="QestnrVo" resultType="QestnrVo">
+        /* QestnrDao.selectQestnrList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.QESTNRID
+            , A.SITEID
+            , A.QESTNR_KND_CD
+            , C.CD_NM AS QESTNR_KND_CD_NM
+            , A.QESTNR_NM
+            , A.EXPLN
+            , A.USE_YN
+            , A.REG_DT
+            , D.SITE_NM
+            , E.INST_NM
+            , COUNT(B.QESTNRID) AS QITEM_CNT
+        FROM
+            TB_CMM_QESTNR A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM B ON (B.QESTNRID = A.QESTNRID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM 
+                TB_CMM_CD 
+            WHERE 
+                CDGRPID = 110
+        ) C ON (C.CD = A.QESTNR_KND_CD)
+        LEFT OUTER JOIN
+            TB_CMM_SITE D ON (D.SITEID = A.SITEID)
+        LEFT OUTER JOIN
+            TB_CMM_INST E ON (E.INSTID = D.INSTID)             
+        WHERE 
+            1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'qestnrNm'">
+            AND A.QESTNR_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            AND E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instCd'">
+            AND E.INST_CD LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchSiteid != null and searchSiteid != ''">
+            AND A.SITEID = #{searchSiteid}
+        </if>
+        <if test="searchQestnrKndCd != null and searchQestnrKndCd != ''">
+            AND A.QESTNR_KND_CD = #{searchQestnrKndCd}
+        </if>
+        GROUP BY
+            A.QESTNRID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 설문지 정보 조회 -->
+    <select id="selectQestnrInfo" parameterType="QestnrVo" resultType="QestnrVo">
+        /* QestnrDao.selectQestnrInfo */
+        SELECT
+            A.QESTNRID
+            , A.SITEID
+            , A.QESTNR_KND_CD
+            , A.QESTNR_NM
+            , A.EXPLN
+            , A.USE_YN
+        FROM
+            TB_CMM_QESTNR A
+        WHERE 
+            QESTNRID = #{qestnrid}
+    </select>
+    
+    <!-- 설문지 업데이트 -->
+    <update id="updateQestnr" parameterType="QestnrVo">
+        /* QestnrDao.updateQestnr */
+        UPDATE TB_CMM_QESTNR SET
+            SITEID = #{siteid}
+            , QESTNR_KND_CD = #{qestnrKndCd}
+            , QESTNR_NM = #{qestnrNm}
+            , EXPLN = #{expln}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            QESTNRID = #{qestnrid}
+    </update>
+    
+    <!-- 설문지 문항 목록 조회 -->
+    <select id="selectQitemList" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectQitemList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.QITEMID
+            , A.QESTNRID
+            , A.QITEM_TYPE_CD 
+            , B.CD_NM AS QITEM_TYPE_CD_NM 
+            , A.CN
+            , A.ORDR
+            , A.EX_CNT
+            , A.MDFCN_DT
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        INNER JOIN (
+            SELECT 
+                CD
+                , CD_NM 
+            FROM 
+                TB_CMM_CD 
+            WHERE 
+                CDGRPID = 107
+        ) B ON (B.CD = A.QITEM_TYPE_CD)
+        WHERE 
+            1 = 1
+            AND A.QESTNRID = #{qestnrid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 설문지 문항 정보 등록 -->
+    <insert id="insertQitem" parameterType="QitemVo" useGeneratedKeys="true" keyProperty="qitemid">
+        /* QestnrDao.insertQestnr */
+        INSERT INTO TB_CMM_QESTNR_QITEM (
+            QITEMID
+            , QESTNRID
+            , QITEM_TYPE_CD
+            , CN
+            , EX_CNT
+            , SCALE
+            , ORDR
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{qitemid}
+            , #{qestnrid}
+            , #{qitemTypeCd}
+            , #{cn}
+            , #{exCnt}
+            , #{scale}
+            , #{ordr}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 설문지 문항 보기 등록 -->
+    <insert id="insertQitemEx" parameterType="QitemExVo" useGeneratedKeys="true" keyProperty="exid">
+        /* QestnrDao.insertQitemEx */
+        INSERT INTO TB_CMM_QESTNR_QITEM_EX (
+            EXID
+            , QITEMID
+            , EX_NO
+            , CN
+            , SCR
+            , ETC_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{exid}
+            , #{qitemid}
+            , #{exNo}
+            , #{cn}
+            , #{scr}
+            , #{etcYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 설문지 문항 정보 조회 -->
+    <select id="selectQitemInfo" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectQitemInfo */
+        SELECT
+            A.QITEMID
+            , A.QESTNRID
+            , A.QITEM_TYPE_CD
+            , A.CN
+            , A.EX_CNT
+            , A.ORDR
+            , A.USE_YN
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE 
+            QITEMID = #{qitemid}
+    </select>
+    
+    <!-- 설문지 문항 보기 목록 조회 -->
+    <select id="selectQitemExList" parameterType="QitemVo" resultType="QitemExVo">
+        /* QestnrDao.selectQitemExList */
+        SELECT
+            A.EXID
+            , A.QITEMID
+            , A.EX_NO
+            , A.CN
+            , A.SCR
+            , A.ETC_YN
+        FROM
+            TB_CMM_QESTNR_QITEM_EX A
+        WHERE 
+            A.QITEMID = #{qitemid}
+        ORDER BY 
+            A.EX_NO
+    </select>
+    
+    <!-- 설문지 문항 정보 업데이트 -->
+    <update id="updateQitem" parameterType="QitemVo">
+        /* QestnrDao.updateQitem */
+        UPDATE TB_CMM_QESTNR_QITEM SET
+            QITEM_TYPE_CD = #{qitemTypeCd}
+            , CN = #{cn}
+            , EX_CNT = #{exCnt}
+            , ORDR = #{ordr}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            QITEMID = #{qitemid}
+    </update>
+    
+    <!-- 설문지 다음 문항 정보 조회 -->
+    <select id="selectNextQitemInfo" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectNextQitemInfo */
+        SELECT
+            A.QITEMID
+            , A.ORDR
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE 
+            A.QESTNRID = #{qestnrid}
+            AND A.ORDR = #{ordr} + 1
+    </select>
+    
+    <!-- 설문지 이전 문항 정보 조회 -->
+    <select id="selectPrevQitemInfo" parameterType="QitemVo" resultType="QitemVo">
+        /* QestnrDao.selectNextQitemInfo */
+        SELECT
+            A.QITEMID
+            , A.ORDR
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE 
+            A.QESTNRID = #{qestnrid}
+            AND A.ORDR = #{ordr} - 1
+    </select>    
+    
+    <!-- 설문지 문항 순서 업데이트 -->
+    <update id="updateQitemOrdr" parameterType="QitemVo">
+        /* QestnrDao.updateQitemOrdr */
+        UPDATE TB_CMM_QESTNR_QITEM SET
+            ORDR = #{ordr}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            QITEMID = #{qitemid}
+    </update>
+    
+    <!-- 설문지 문항 삭제 -->
+    <delete id="deleteQitem" parameterType="QitemVo">
+        /* QestnrDao.deleteQitemOrdr */
+        DELETE 
+            FROM TB_CMM_QESTNR_QITEM
+        WHERE 
+            QITEMID IN
+        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
+    <!-- 설문지 문항 보기 삭제 -->
+    <delete id="deleteQitemEx" parameterType="QitemVo">
+        /* QestnrDao.deleteQitemEx */
+        DELETE 
+            FROM TB_CMM_QESTNR_QITEM_EX
+        WHERE 
+            QITEMID IN
+        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    
+</mapper>

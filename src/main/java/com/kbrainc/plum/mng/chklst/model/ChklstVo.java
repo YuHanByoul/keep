@@ -40,7 +40,7 @@ public class ChklstVo extends ParentRequestVo {
     
     /** 체크리스트 명 */
     @NotEmpty(message = "체크리스트 명을 입력해주세요.")
-    @Size(max = 200, message = "체크리스트 명은 40자 이하여야 합니다.")
+    @Size(max = 40, message = "체크리스트 명은 40자 이하여야 합니다.")
     private String chklstNm;
     
     /** 체크리스트 설명 */
