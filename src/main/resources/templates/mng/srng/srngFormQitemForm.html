@@ -1,11 +1,11 @@
-<form id="srngFormQitemMapgForm" xmlns:th="http://www.w3.org/1999/html">
+<form id="srngFormQitemMapgForm">
     <div class="card-block-small p-t-0">
         <div class="mb-2 row">
             <div class="col-12 btn-group-sm">
                 <button id="expendAllBtn" type="button" class="col-auto btn btn-inverse m-r-5">모두 펼치기</button>
                 <button id="collapseAllBtn" type="button" class="col-auto btn btn-disabled m-r-5">모두 접기</button>
                 <th:block sec:authorize-url="/mng/srng/srngQitemSearchPopup.html">
-                <button id="refreshBtn" type="button" class="col-auto btn btn-primary" data-bs-toggle="modal" data-bs-target="#examinationFormExplanationPopup" onclick="fn_openSearchModal();">문항 불러오기</button>
+                <button id="refreshBtn" type="button" class="col-auto btn btn-primary" onclick="fn_openSearchModal();">문항 불러오기</button>
                 </th:block>
             </div>
         </div>
@@ -19,6 +19,8 @@
         <button type="button" class="btn btn-disabled m-r-5" onclick="srngFormQitem.offForm();">취소</button>
         <th:block sec:authorize-url="/mng/srng/insertSrngFormQitem.do"><button type="button" class="btn btn-primary" onclick="srngFormQitem.onInsertForm();">저장</button></th:block>
     </div>
+
+    <input type="hidden" id="formid" name="formid" th:value="${formid}" />
 </form>
 
 <ol id="cloneTemp" style="display: none;">
@@ -57,10 +59,6 @@
 <div class="modal fade" id="srngQitemSearchPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
-
-    var popupUrl = "/mng/srng/srngQitemSearchPopup.html?";
-    var userAddModal;
-    var instManagerSearchModal;
     var srngFormQitemList = /*[[${srngFormQitemList}]]*/null;
     var dsgncrtrCdMap = /*[[${dsgncrtrCdMap}]]*/null;
     var $listBody = $("#expendable > ol");
@@ -76,7 +74,7 @@
             this.setSortAble();
             expendable.refresh();
         },
-        // => this 값이 달라진다 일반적으로는 이벤트의 this를 가져온다 => 의 경우 상위 이벤트의 this를 가져온다
+
         setQitemList : function (list){
             const parentMap = {}
             for(const item of list) {
@@ -99,8 +97,49 @@
         },
 
         onInsertForm : function (){
-    ``      //select 값 체크
-            //insert 등록
+            let vaild = true;
+            $('#expendable select[name=chklstSeCd]').each(function (){
+                let _this = $(this).val() !== '' ? true : false;
+                if(!_this) vaild = false;
+            });
+            if(!vaild){
+                alert("체크리스트 구분을 선택해주세요.");
+                return;
+            }
+
+            let params = [
+                {name:'formid', value:$('#srngFormQitemMapgForm #formid').val()},
+            ];
+            $("#srngFormQitemMapgForm input[name=dsgncrtrCds]").each(function (){
+                params.push(
+                    {name:'dsgncrtrCds', value:$(this).val()}
+                )
+            });
+            $("#srngFormQitemMapgForm select[name=chklstSeCd]").each(function (item){
+                params.push(
+                    {name:'srngFormQitemMapngVOList['+item+'].chklstSeCd', value:$(this).val()},
+                    {name:'srngFormQitemMapngVOList['+item+'].qitemid', value:$(this).parent().siblings().children().data('qitem-id')}
+                )
+            });
+
+            if(displayWorkProgress()) {
+                $.ajax({
+                    url : "/mng/srng/insertSrngFormQitem.do",
+                    type: "POST",
+                    cache: false,
+                    dataType: "json",
+                    data: params,
+                    success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            srngFormJsGrid.resetListContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
         },
 
         offForm : function() {
@@ -109,14 +148,14 @@
 
         setSortAble : function (){
             $('#expendable ol').sortable({
-                revert: true,
+                axis: 'y',
                 placeholder: "ui-state-highlight"
             });
         },
 
         addQitem : function (){
             const $modalBody = $("#qitemListBody");
-            const $checked = $modalBody.find("input[type=checkBox]:checked");
+            const $checked = $modalBody.find(".singleCheckbox:checked");
 
             if ($checked.length === 0) {
                 alert("문항을 선택해주세요.");
@@ -125,7 +164,7 @@
 
             const parentMap = {};
             $('#expendable > ol > li').each(function () {
-                const dsgncrtrCd = $(this).find("input[name=dsgncrtrCds]");
+                const dsgncrtrCd = $(this).find("input[name=dsgncrtrCds]").val();
                 parentMap[dsgncrtrCd] = $(this);
             });
 
@@ -148,8 +187,13 @@
             });
             instManagerSearchModal.hide();
             expendable.refresh();
+            srngFormQitem.setSortAble();
         }
     }
+
+    var popupUrl = "/mng/srng/srngQitemSearchPopup.html?";
+    var userAddModal;
+    var instManagerSearchModal;
 
     var fn_openSearchModal =()=> {
         var url = popupUrl + qitemParam;

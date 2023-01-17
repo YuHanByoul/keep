@@ -8,8 +8,6 @@ import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -37,19 +35,15 @@ public class SrngQitemVO extends ParentRequestVo {
     private int qitemid;
 
     /** 지정기준_코드 */
-    @NotEmpty(message = "지정기준을 선택해주세요.")
     private String dsgncrtrCd;
 
     /** 지정기준_코드명 */
     private String dsgncrtrCdNm;
 
     /** 확인_사항 */
-    @NotEmpty(message = "확인사항을 입력해주세요.")
-    @Size(max = 200, message = "확인사항은 200자를 넘을 수 없습니다.")
     private String idntyMttr;
 
     /** 배점 */
-    @NotEmpty(message = "배점을 입력해주세요.")
     private int altm;
 
     /** 수정_일시 */
@@ -69,6 +63,7 @@ public class SrngQitemVO extends ParentRequestVo {
     /** 지정기준검색 */
     private String searchDsgncrtrCd;
 
+    /** 이미 선택된 문항아이디 배열 */
     private String[] qitemArr;
 
     public void setDsgncrtrCd(String dsgncrtrCd) throws Exception{

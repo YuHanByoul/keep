@@ -7,7 +7,7 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.srng.model.SrngDao">
 
-    <!-- 심사 문항 조회 -->
+    <!-- 심사 문항 (팝업) 조회 -->
     <select id="selectSrngList" parameterType="SrngQitemVO" resultType="SrngQitemVO">
         /* SrngDao.selectSrngList */
         <include refid="PaginationMapper.header"/>
@@ -266,7 +266,7 @@
             TB_ASS_SRNG_FORM
         WHERE
             OPER_FRM_CD = #{operFrmCd}
-            AND USE_YN = 'Y';
+            AND USE_YN = 'Y'
     </select>
 
     <!-- 심사양식 수정 -->
@@ -285,8 +285,19 @@
             FORMID = #{formid}
     </update>
 
+    <!-- 심사양식 문항 목록 지정기준 순서 삭제 전 목록 존재하는지 체크  -->
+    <select id="selectSrngFormQitemOrdr" resultType="int" parameterType="srngFormQitemMapngVO">
+        /* SrngDao.selectSrngFormQitemOrdr */
+        SELECT
+            COUNT(0)
+        FROM
+            TB_ASS_SRNG_FORM_DSGNCRTR_ORDR
+        WHERE
+            FORMID = #{formid}
+    </select>
+
     <!-- 심사양식 문항 목록 지정기준 삭제  -->
-    <delete id="deleteSrngFormDsgncrtrCdOrdr" parameterType="int">
+    <delete id="deleteSrngFormDsgncrtrCdOrdr" parameterType="srngFormQitemMapngVO">
         /* SrngDao.deleteSrngFormDsgncrtrCdOrdr */
         DELETE FROM TB_ASS_SRNG_FORM_DSGNCRTR_ORDR
         WHERE
@@ -305,7 +316,8 @@
             , REG_DT
             , RGTRID
         ) VALUES
-        <foreach item="item" collection="dsgncrtrCds" open="(" close=")" separator="," index="index">
+        <foreach item="item" collection="dsgncrtrCds" separator="," index="index">
+        (
             #{formid}
             , #{item}
             , #{index}
@@ -313,11 +325,23 @@
             , #{user.userid}
             , NOW()
             , #{user.userid}
+        )
         </foreach>
     </insert>
 
+    <!-- 심사양식 문항 목록 삭제 전 목록 존재하는지 체크 -->
+    <select id="selectSrngFormQitemMang" resultType="int" parameterType="srngFormQitemMapngVO">
+        /* SrngDao.selectSrngFormQitemMang */
+        SELECT
+            COUNT(0)
+        FROM
+            TB_ASS_SRNG_FORM_QITEM_MAPNG
+        WHERE
+            FORMID = #{formid}
+    </select>
+
     <!-- 심사양식 문항 목록 삭제  -->
-    <delete id="deleteSrngFormQitem" parameterType="int">
+    <delete id="deleteSrngFormQitem" parameterType="srngFormQitemMapngVO">
         /* SrngDao.deleteSrngFormQitem */
         DELETE FROM TB_ASS_SRNG_FORM_QITEM_MAPNG
         WHERE
@@ -337,8 +361,9 @@
             , REG_DT
             , RGTRID
         ) VALUES
-        <foreach item="item" collection="srngFormQitemMapngVOs" open="(" close=")" separator="," index="index">
-            #{item.formid}
+        <foreach item="item" collection="srngFormQitemMapngVOList" separator="," index="index">
+        (
+            #{formid}
             , #{item.qitemid}
             , #{index}
             , #{item.chklstSeCd}
@@ -346,6 +371,7 @@
             , #{user.userid}
             , NOW()
             , #{user.userid}
+        )
         </foreach>
     </insert>
 </mapper>

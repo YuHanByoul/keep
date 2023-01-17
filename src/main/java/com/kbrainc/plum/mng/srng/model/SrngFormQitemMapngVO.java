@@ -7,8 +7,8 @@ import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 심사 양식 문항 매핑 VO클래스
@@ -47,7 +47,6 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
     private String idntyMttr;
 
     /** 지정기준_코드 */
-    @NotEmpty(message = "지정기준을 선택해주세요.")
     private String dsgncrtrCd;
 
     /** 지정기준_코드명 */
@@ -65,11 +64,17 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
     /** 등록자아이디 */
     private String rgtrid;
 
-    /** 문항배열 */
+    /** 문항아이디 배열 */
     private String[] qitemArr;
 
     /** 트리 뎁스 */
     private int treeOrd;
+
+    /** 지정기준_코드 배열 */
+    private String[] dsgncrtrCds;
+
+    /** VO 리스트 */
+    private List<SrngFormQitemMapngVO> srngFormQitemMapngVOList;
 
     public void setDsgncrtrCd(String dsgncrtrCd) throws Exception{
         this.dsgncrtrCd = dsgncrtrCd;

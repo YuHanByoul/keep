@@ -8,8 +8,6 @@ import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -37,17 +35,12 @@ public class SrngFormVO extends ParentRequestVo {
     private int formid;
 
     /** 양식_이름 */
-    @NotEmpty(message = "양식이름을 입력해주세요.")
-    @Size(max = 60, message = "양식이름은 60자를 넘을 수 없습니다.")
     private String formNm;
 
     /** 양식_설명 */
-    @NotEmpty(message = "양식설명을 입력해주세요.")
-    @Size(max = 100, message = "양식설명은 100자를 넘을 수 없습니다.")
     private String formExpln;
 
     /** 운영_형태_코드 */
-    @NotEmpty(message = "운영형태코드를 선택해주세요.")
     private String operFrmCd;
 
     /** 운영_형태_코드명 */

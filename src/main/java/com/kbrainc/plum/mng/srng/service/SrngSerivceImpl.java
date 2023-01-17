@@ -5,7 +5,6 @@ import com.kbrainc.plum.mng.srng.model.SrngDao;
 import com.kbrainc.plum.mng.srng.model.SrngFormQitemMapngVO;
 import com.kbrainc.plum.mng.srng.model.SrngFormVO;
 import com.kbrainc.plum.mng.srng.model.SrngQitemVO;
-import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -176,23 +175,19 @@ public class SrngSerivceImpl extends PlumAbstractServiceImpl implements SrngSeri
      * Title : insertSrngFormQitem
      * Description : 심사양식 문항 목록 등록
      *
-     * @param dsgncrtrCds
-     * @param srngFormQitemMapngVOs
-     * @param user
+     * @param srngFormQitemMapngVO
      * @return boolean
      */
     @Override
     @Transactional
-    public boolean insertSrngFormQitem(String[] dsgncrtrCds, SrngFormQitemMapngVO[] srngFormQitemMapngVOs, UserVo user) {
+    public boolean insertSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO) {
         boolean result = false;
 
-        if(srngDao.deleteSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVOs[0].getFormid())
-                && srngDao.insertSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVOs[0].getFormid(), dsgncrtrCds, user)
-                && srngDao.deleteSrngFormQitem(srngFormQitemMapngVOs[0].getFormid())
-                && srngDao.insertSrngFormQitem(srngFormQitemMapngVOs, user)){
-            result = true;
-        }else{
-            result = false;
+        if(srngDao.selectSrngFormQitemOrdr(srngFormQitemMapngVO) > 0) result = srngDao.deleteSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVO);
+        if(srngDao.selectSrngFormQitemMang(srngFormQitemMapngVO) > 0) result = srngDao.deleteSrngFormQitem(srngFormQitemMapngVO);
+        if(!"null".equals(srngFormQitemMapngVO.getSrngFormQitemMapngVOList())){
+            if(srngDao.insertSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVO) && srngDao.insertSrngFormQitem(srngFormQitemMapngVO)) result = true;
+            else result = false;
         }
 
         return result;

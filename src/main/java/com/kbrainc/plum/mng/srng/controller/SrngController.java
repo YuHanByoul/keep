@@ -266,6 +266,7 @@ public class SrngController {
     @RequestMapping(value = "/mng/srng/srngFormQitemForm.html")
     public String srngFormQitemForm(CodeVo codeVo, SrngFormQitemMapngVO srngFormQitemMapngVO, Model model) throws Exception {
         model.addAttribute("srngFormQitemList",  srngSerivce.selectSrngFormQitemList(srngFormQitemMapngVO));
+        model.addAttribute("formid",srngFormQitemMapngVO.getFormid());
         model.addAttribute("codeList", srngSerivce.selectChklstSeCdList(codeVo));
         model.addAttribute("dsgncrtrCdMap", resCodeService.getCodeMap("149"));
         return "mng/srng/srngFormQitemForm";
@@ -408,11 +409,10 @@ public class SrngController {
      */
     @RequestMapping(value = "/mng/srng/selectSrngQitemList.do")
     @ResponseBody
-    public Map<String, Object> selectSrngQitemList(String[] qitemArr, SrngQitemVO srngQitemVO, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectSrngQitemList(SrngQitemVO srngQitemVO, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         List<SrngQitemVO> result = null;
         srngQitemVO.setUser(user);
-        srngQitemVO.setQitemArr(qitemArr);
         result = srngSerivce.selectSrngList(srngQitemVO);
 
         if (result.size() > 0) {
@@ -430,19 +430,18 @@ public class SrngController {
      * Title : insertSrngFormQitem
      * Description : 심사양식 문항 목록 등록
      *
-     * @param dsgncrtrCds
-     * @param srngFormQitemMapngVOs
+     * @param srngFormQitemMapngVO
      * @param user
      * @return map
      * @throws Exception
      */
     @RequestMapping(value = "/mng/srng/insertSrngFormQitem.do")
     @ResponseBody
-    public Map<String, Object> insertSrngFormQitem(String[] dsgncrtrCds, SrngFormQitemMapngVO[] srngFormQitemMapngVOs, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         boolean result = false;
-
-        result = srngSerivce.insertSrngFormQitem(dsgncrtrCds, srngFormQitemMapngVOs, user);
+        srngFormQitemMapngVO.setUser(user);
+        result = srngSerivce.insertSrngFormQitem(srngFormQitemMapngVO);
 
         if(result){
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
