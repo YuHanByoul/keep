@@ -6,7 +6,7 @@ $(function (){
 	formStyle.init();
 	dropDown.init();
 	toggleActiveClass.init();
-	layerPopup();
+	layerPopup.init();
 	tabContent.init();
 	accordionContent.init();
 	uploadFile();
@@ -117,6 +117,7 @@ const gnb = {
 
 		
 		if ($header.length) {
+			$headerHeight = $header.outerHeight()
 			$headerOffsetTop = $header.offset().top;
 			gnb.resize();
 			gnb.onScroll();
@@ -128,7 +129,7 @@ const gnb = {
 	},
 	open : function () {
 		if ($WINDOW_MODE === 'pc') {
-			$Dep01.find('>.active').find($Dep02).stop().fadeIn(ANIMATION_TIME);
+			$Dep01.find('>.active').find($Dep02).stop().fadeIn(0);
 		}
 		if ($WINDOW_MODE === 'mobile') {
 			$elGnb.stop().show(0, function () {
@@ -141,7 +142,7 @@ const gnb = {
 	close : function (){
 		// $header.removeClass(DESKTOP_GNB_ACTIVECLASS);
 		if ($WINDOW_MODE === 'pc') {
-			$Dep01List.find($Dep02).stop().fadeOut(ANIMATION_TIME, function () {
+			$Dep01List.find($Dep02).stop().fadeOut(150, function () {
 				$(this).attr('style','display:none')
 			});
 		}
@@ -256,17 +257,19 @@ const gnb = {
 		// })
 	},
 	resize : function () {
-		if ($headerOffsetTop > 0) {
+		if ($headerOffsetTop > $headerHeight) {
 			$HTML.addClass('header-medium');
 		} else {
 			$HTML.removeClass('header-medium');
 		}
 	},
 	onScroll : function () {
-		$(window).on('scroll', function () {
-			$headerOffsetTop = $header.offset().top;
-			gnb.resize();
-		})
+		if ($WINDOW_MODE === 'pc') {
+			$(window).on('scroll', function () {
+				$headerOffsetTop = $header.offset().top;
+				gnb.resize();
+			})
+		}
 
 	}
 }
@@ -512,53 +515,64 @@ const toggleActiveClass = {
 	
 }
 
+const layerPopup = {
+	init : function () {
+		ZINDEX = 2000;
+		ACTIVECLASS = 'active';
+		ANIMATION_TIME = 300;
+		layerPopup.onClickTrigger();
+		layerPopup.onClickClose();
+		layerPopup.onClickDimmed();
+		
+	},
+	open : function (target) {
+		ZINDEX++;
+		$('[data-layer-id="' + target + '"]').addClass(ACTIVECLASS);
+		
+		$('[data-layer-id="' + target + '"]').attr('tabindex',0);
+		setTimeout(function () {
+			$('[data-layer-id="' + target + '"]').focus();
+		},ANIMATION_TIME)
 
-const popupOpenFunc = function (target){
-	$('[data-layer-id="' + target + '"]').addClass('active');
-	$('[data-layer-id="' + target + '"]').attr('tabindex',0).focus();
-}
-const popupCloseFunc = function (target){
-	var $layerPopup = $('[data-layer-id="' + target + '"]');
-	$layerPopup.removeClass('active');
-	$layerPopup.removeAttr('tabindex');
-	$('[data-layer-href="' + target + '"]').focus();
-}
-const layerPopup = function (){
-	const openTrigger = '[data-layer-href]';
-    let zIndexCount = 2000;
-	$(document).on('click', openTrigger , function (e){
-		if ($(this).is('a')){
-			e.preventDefault();
-		}
-		const layerHref = $(this).attr('data-layer-href');
-        if ($('[data-layer-id="' + layerHref + '"]').hasClass('active')) {
-            popupCloseFunc(layerHref);
-        } else {
-            popupOpenFunc(layerHref);
-        }
-        zIndexCount++;
-        $('body .layer-popup').each(function (){
-            $('[' + layerHref + ']').css('z-index',zIndexCount);
-        });
-	})
-	// close
-	const closeTrigger = '[data-layer-close]';
-	$(document).on('click', closeTrigger , function (){
-		var $layerPopup = $(this).closest('.layer-popup');
-		const layerHref = $layerPopup.attr('data-layer-id');
-		$layerPopup.removeClass('active');
-		$layerPopup.removeAttr('tabindex');
-		$('[data-layer-href="' + layerHref + '"]').focus();
-
-	})
-	const layerDimmed = '.layer-dimmed';
-	$(document).on('click', layerDimmed, function (){
-		var $layerPopup = $(this).closest('.layer-popup');
-		const layerHref = $layerPopup.attr('data-layer-id');
-		$layerPopup.removeClass('active');
-		$layerPopup.removeAttr('tabindex');
-		$('[data-layer-href="' + layerHref + '"]').focus();
-	})
+		$('body .layer-popup').each(function (){
+			$('[data-layer-id="' + target + '"]').css('z-index',ZINDEX);
+		});
+	},
+	close : function (target) {
+		$('[data-layer-id="' + target + '"]').removeClass(ACTIVECLASS);
+		$('[data-layer-id="' + target + '"]').removeAttr('tabindex');
+		$('[data-layer-id="' + target + '"]').css('z-index','');
+		$('[data-layer-href="' + target + '"]').focus();
+	},
+	onClickTrigger : function () {
+		$(document).on('click', '[data-layer-href]' , function (e){
+			if ($(this).is('a')){
+				e.preventDefault();
+			}
+			const target = $(this).attr('data-layer-href');
+			if ($('[data-layer-id="' + target + '"]').hasClass('active')) {
+				layerPopup.close(target);
+			} else {
+				layerPopup.open(target);
+			}
+			
+			
+		})
+	},
+	onClickClose : function () {
+		$(document).on('click', '[data-layer-close]' , function (){
+			const target = $(this).closest('.layer-popup').attr('data-layer-id');
+			layerPopup.close(target);
+	
+		})
+	},
+	onClickDimmed : function () {
+		$(document).on('click', '.layer-dimmed' , function (){
+			const target = $(this).closest('.layer-popup').attr('data-layer-id');
+			layerPopup.close(target);
+	
+		})
+	}
 }
 
 const tabContent = {
@@ -791,7 +805,7 @@ const headerSearch = {
 		});
 		$(document).on('keydown', '.search-suggest-list .list .keyword', function (e) {
 			if (e.which == 13) {
-				searchInput.val(e.target.innerText	).focus();
+				searchInput.val(e.target.innerText).focus();
 			}
 		})
 	}
@@ -809,7 +823,7 @@ $(document).ready(function() {
 	const focusableElementsString = "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable], video";
 
 	// dropdown open key event
-	$(document).on('keydown', '.header-search.active .suggest-wrap, .trapTab.active, .toggle-layer-inner', function (event, target) {
+	$(document).on('keydown', '.header-search.active .suggest-wrap, .trapTab.active, .toggle-layer-inner, .layer-popup', function (event, target) {
 		trapTabKey($(this), event);
 	})
 
@@ -852,7 +866,7 @@ $(document).ready(function() {
 			//layer-popup
 			if (obj.hasClass('layer-popup')) {
 				const layerName = obj.attr('data-layer-id');
-				popupCloseFunc(layerName);
+				layerPopup.close(layerName);
 			}
 			//toggle layer
 			if (obj.hasClass('toggle-layer-inner')) {
