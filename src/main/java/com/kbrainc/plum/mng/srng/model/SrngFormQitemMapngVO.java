@@ -43,6 +43,9 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
     /** 체크리스트_구분_코드 */
     private String chklstSeCd;
 
+    /** 확인_사항 */
+    private String idntyMttr;
+
     /** 지정기준_코드 */
     @NotEmpty(message = "지정기준을 선택해주세요.")
     private String dsgncrtrCd;
@@ -64,6 +67,9 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
 
     /** 문항배열 */
     private String[] qitemArr;
+
+    /** 트리 뎁스 */
+    private int treeOrd;
 
     public void setDsgncrtrCd(String dsgncrtrCd) throws Exception{
         this.dsgncrtrCd = dsgncrtrCd;

@@ -35,7 +35,7 @@ import com.kbrainc.plum.rte.util.ExcelUtil;
  * 설문관리 Controller
  *
  * <pre>
- * com.kbrainc.plum.mng.cmnty.controller
+ * com.kbrainc.plum.mng.srvy.controller
  * - SrvyController.java
  * </pre>
  *
@@ -63,7 +63,8 @@ public class SrvyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/srvy/srvyMngForm.html")
+    //@RequestMapping(value = "/mng/srvyInvstg/srvyMngForm.html")
+    @RequestMapping(value = {"/mng/srvy/srvyMngForm.html", "/mng/srvyInvstg/srvyMngForm.html"})
     public String srvyMngForm() throws Exception {
         return "mng/srvy/srvyMng";
     }
@@ -260,7 +261,7 @@ public class SrvyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/srvy/srvyRsltMngForm.html")
+    @RequestMapping(value = {"/mng/srvy/srvyRsltMngForm.html", "/mng/srvyInvstg/srvyRsltMngForm.html"})
     public String srvyRsltMngForm() throws Exception {
         return "mng/srvy/srvyRsltMng";
     }
