@@ -1,5 +1,6 @@
 package com.kbrainc.plum.rte.service;
 
+import com.kbrainc.plum.rte.menu.MenuItem;
 import com.kbrainc.plum.rte.menu.MenuTree;
 
 /**
@@ -58,4 +59,16 @@ public interface ResMenuService {
     * @throws Exception 예외
     */
     public void putCacheForSiteid(String siteid) throws Exception;
+    
+    /**
+    * 특정 사이트의 menuID에 해당하는 MenuItem을 반환한다.
+    *
+    * @Title : getMenuItemByMenuID
+    * @Description : 특정 사이트의 menuID에 해당하는 MenuItem을 반환한다.
+    * @param siteid 사이트아이디
+    * @param menuID 메뉴아이디
+    * @return MenuItem 메뉴아이템 정보
+    * @throws Exception 예외
+    */
+    public MenuItem getMenuItemByMenuID(String siteid, String menuID) throws Exception;
 }

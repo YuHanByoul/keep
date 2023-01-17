@@ -39,7 +39,7 @@ public class MenuTree extends TreeRoot<MenuItem> {
     }
 
     /**
-     * enuID로 메뉴노드를 찾아 옮.
+     * menuID로 메뉴노드를 찾아 옮.
      * 
      * @Title : getMenuNodeByMenuID
      * @Description : enuID로 메뉴노드를 찾아 옮

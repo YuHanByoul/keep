@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" 
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title th:text="${session.site.siteNm}">페이지 타이틀</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>    
+<link rel="stylesheet" href="/css/front/default.css">
+<link rel="stylesheet" href="/css/front/font.css">
+<link rel="stylesheet" href="/css/front/swiper-bundle.min.css">
+<link rel="stylesheet" href="/css/front/aos.css">
+<link rel="stylesheet" href="/css/front/autoComplete.min.css">
+<link rel="stylesheet" href="/css/front/ui-layout.css">
+<link rel="stylesheet" href="/css/front/ui-style.css">
+<link rel="stylesheet" href="/css/front/ui-content.css">
+<link rel="stylesheet" href="/css/front/ui-plugins.css">
+<span th:replace="layout/front/jsCommon"></span>
+<script src="/js/front/jquery-ui.js"></script>
+<script src="/js/front/swiper-bundle.min.js"></script>
+<script src="/js/front/aos.js"></script>
+<script src="/js/front/autoComplete.min.js"></script>
+<script src="/js/front/ui-script.js"></script>
+</head>
+<body>
+    <!-- skipnav -->
+    <div id="skip">
+        <a href="#gnb">주메뉴 바로가기</a>
+        <a href="#content">본문 바로가기</a>
+        <a href="#asdie">챗봇 &amp; SNS에 공유하기 바로가기</a>
+    </div>
+
+
+
+    <!-- wrap -->
+    <div id="wrap">
+
+        <!-- header -->
+        <header id="header" class="header">
+            <th:block th:replace="layout/front/header"></th:block>
+
+        </header>
+        <!-- //header -->
+
+        
+        <!-- container -->
+        <main class="sub-content" aria-label="Main">
+            <div class="visual">
+                <div class="visual-inner">
+                    <h2 th:text="${#request.getAttribute('MENU_NAME')}">Menu Name</h2>
+                </div>
+            </div>
+            
+            <div id="container" class="container">
+            
+                <nav id="navigation" class="navigation" role="navigation">
+                    <th:block th:utext="${@lnbMenuPrintImpl.menuPrint()}" />
+                </nav>
+                
+                <!-- content -->
+                <div id="content" class="content">
+                    <section>
+                        <div aria-label="Breadcrumb" class="breadcrumb">
+                            <div class="breadcrumb-inner">
+                                <div class="left">
+                                    <ol th:with="menuItem=${#request.getAttribute('MENU_ITEM')}">
+                                        <li class="breadcrumb-home"><a href="/" class="btn-inner-icon" th:title="|${session.site.siteNm} 홈|"></a></li>
+                                        <th:block th:each="menuid : ${menuItem.splitTreeMenuid()}">                                            
+                                            <li th:if="${menuidStat.last}" area-current="page"><a th:href="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).url}"><th:block th:text="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).nm}"></th:block></a></li>
+                                            <li th:unless="${menuidStat.last}"><a th:href="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).url}"><th:block th:text="${@'cmm.resMenuService'.getMenuItemByMenuID(menuItem.siteid, menuid).nm}"></th:block></a></li>
+                                        </th:block>
+                                    </ol>
+                                </div>
+                                <div class="right">
+                                    <ul>
+                                        <li class="breadcrumb-share"><button type="button" title="SNS 공유하기" ></button></li>
+                                        <li class="breadcrumb-linkcopy"><button type="button" title="링크 복사하기" onclick="copyUrl(event)"></button></li>
+                                    </ul>
+                                    <input type="text" id="currentPageUrl" style="position: absolute;width: 30px;height: 0px;bottom: 0;left: 0;opacity: 0;" th:value="|${#request.getRequestURL()}${#request.getQueryString() != null ? '?'+#request.getQueryString() : ''}|">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div layout:fragment="content"></div>
+                        
+                    </section>
+                </div>
+                <!-- //content -->
+            </div>
+        </main>
+        <!-- //container -->
+
+
+        <!-- aside -->
+        <aside>
+            <th:block th:replace="layout/front/aside"></th:block>
+        </aside>
+        <!-- //aside -->
+
+        <!-- footer -->
+        <footer id="footer" class="footer">
+            <th:block th:replace="layout/front/footer"></th:block>
+        </footer>
+        <!-- //footer -->
+
+
+    </div>
+    <!-- //wrap -->
+
+
+    
+</body>
+</html>

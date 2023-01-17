@@ -250,18 +250,5 @@ public class CommonController {
     public List<SiteVo> getSiteList(SiteVo site) throws Exception {
         return commonService.selectSiteList(site);
     }
-    
-    /**
-    * 서브 화면으로 이동한다(테스트용).
-    *
-    * @Title       : sub
-    * @Description : 서브 화면으로 이동한다(테스트용).
-    * @return String 이동화면경로
-    */
-    @GetMapping("/sub.html")
-    public String sub() {
-        return "front/sub";
-    }
 
-    
 }

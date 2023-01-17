@@ -15,6 +15,7 @@ import com.kbrainc.plum.rte.menu.MenuItem;
 import com.kbrainc.plum.rte.menu.MenuNode;
 import com.kbrainc.plum.rte.menu.MenuTree;
 import com.kbrainc.plum.rte.model.ResMenuDao;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Ehcache;
@@ -243,5 +244,24 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
                 menuMap.put(new Element(siteid, true));
             }
         }
+    }
+    
+    /**
+    * 특정 사이트의 menuID에 해당하는 MenuItem을 반환한다.
+    *
+    * @Title : getMenuItemByMenuID
+    * @Description : 특정 사이트의 menuID에 해당하는 MenuItem을 반환한다.
+    * @param siteid 사이트아이디
+    * @param menuID 메뉴아이디
+    * @return MenuItem 메뉴아이템 정보
+    * @throws Exception 예외
+    */
+    public MenuItem getMenuItemByMenuID(String siteid, String menuID) throws Exception {
+        MenuTree menuTree = getMenuTree(siteid);
+        MenuItem menuItem =  menuTree.getMenuItemByMenuID(menuID);
+        if (StringUtil.isNumber(menuItem.getUrl()) || "".equals(StringUtil.nvl(menuItem.getUrl()))) {
+            menuItem.setUrl("#");
+        }
+        return menuItem;
     }
 }
