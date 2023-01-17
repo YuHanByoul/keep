@@ -732,73 +732,10 @@ function fnAppendHidden(p_form, p_obj){
 }
 
 
-/*
-* 트리구조 확장 / 접기 기능
-* */
-function fnExpendable($wrapper, option) {
-    var opt = jQuery.extend({
-
-        /* 확장 / 접기 대상 선택자 */
-        expendableTargetSelector: 'li'
-
-        /*
-            확장 / 접기 시 숨겨지거나 보여질 대상 선택자
-            반드시 확장/접기 대상의 자식이여야함
-        */
-        , expendableTargetChildSelector: 'ol'
-
-        /* 확장 / 접기 시 고정으로 표시될 대상 선택자
-            - 반드시 확장/접기 대상의 자식이여야함
-            - 해당 대상 맨 앞에 확정 접기 버튼 생성
-        */
-        , expendableFixedTargetChildSelector: 'div'
-    }, option);
-
-    var $targets = null;
-
-    $wrapper.on('click', '.expendable-toggle-btn', function () {
-        $(this).parent().parent().toggleClass('expendable-collapse')
-    });
-
-    var refresh = function(){
-        $wrapper.addClass('expendable-wrapper');
-        $wrapper.find(".expendable-item").addClass('expendable-item-old')
-        $targets = $wrapper.find(opt.expendableTargetSelector);
-        $targets.each(function(){
-            var $item = $(this);
-            var $fixed = $item.children(opt.expendableFixedTargetChildSelector);
-            var $child = $item.children(opt.expendableTargetChildSelector);
-            var childContent = $child.html()
-            if (childContent && childContent.trim()) {
-                $item.removeClass('expendable-item-old').addClass('expendable-item')
-                $fixed.addClass("expendable-item-fixed")
-                $child.addClass("expendable-item-child")
-                if ($fixed && $fixed.children('.expendable-toggle-btn').length === 0) {
-                    $fixed.prepend($("<button/>").addClass("expendable-toggle-btn"))
-                }
-            }
-        });
-
-        console.log($wrapper.find('.expendable-item-old'));
-        $wrapper
-            .find('.expendable-item-old').removeClass('expendable-item expendable-item-old')
-                .children('.expendable-item-child').removeClass('expendable-item-child').end()
-                .children('.expendable-item-fixed').removeClass('expendable-item-fixed')
-                    .children('.expendable-toggle-btn').remove()
-    }
-
-    var expendAll = function(){
-        $targets.removeClass('expendable-collapse')
-    }
-    var collapseAll = function(){
-        $targets.addClass('expendable-collapse')
-    }
-
-    refresh();
-
-    return {
-        refresh: refresh,
-        expendAll: expendAll,
-        collapseAll: collapseAll,
-    }
+function fileSizePretty(number) {
+    if (number === 0) return "0 B";
+    var UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    var exponent = Math.min(Math.floor(Math.log(number) * Math.LOG10E / 3), UNITS.length - 1);
+    var unit = UNITS[exponent];
+    return Number((number / Math.pow(1024, exponent)).toPrecision(3)).toLocaleString() + ' ' + unit;
 }
