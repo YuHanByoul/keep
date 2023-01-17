@@ -32,9 +32,12 @@ public class ExpertCrtfctVo {
     private String acqsDe;
     /** 자격증 파일아이디 */
     private Integer crtfctFileid;
+
     /** 순서 */
     private Integer ordr;
 
     private FileVo crtfctFile;
+
+    private Boolean isDiffFile;
 
 }

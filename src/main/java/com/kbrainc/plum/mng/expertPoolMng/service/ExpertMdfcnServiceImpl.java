@@ -6,6 +6,7 @@ import com.kbrainc.plum.mng.expertPoolMng.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,9 +31,6 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
     private ExpertMdfcnDao expertMdfcnDao;
 
     @Autowired
-    private ExpertPoolMngDao expertPoolMngDao;
-
-    @Autowired
     private FileDao fileDao;
 
     @Override
@@ -44,6 +42,7 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
     public ExpertVo selectExpertMdfcnInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception {
         ExpertVo expertVo = expertMdfcnDao.selectExpertMdfcnInfo(expertMdfcnVo);
         List<ExpertHdofVo> expertHdofList = expertMdfcnDao.selectExpertHdofList(expertMdfcnVo);
+
         for (ExpertHdofVo item : expertHdofList) {
             if (item.getHdofcrtfFileid() != null && !item.getHdofcrtfFileid().equals(0)) {
                 FileVo fileVo = new FileVo();
@@ -92,8 +91,24 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
     }
 
     @Override
-    public boolean updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+    @Transactional
+    public int updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+        int retVal = 0;
         /*변경 승인시 기존의 전문가 정보를 모두 제거후 새로운 정보로 교체*/
-        return expertMdfcnDao.updateSttsCd(expertMdfcnVo);
+        if (expertMdfcnVo.getSttsCd().equals("137105")) {
+            retVal += expertMdfcnDao.deleteExpertCareer(expertMdfcnVo);
+            retVal += expertMdfcnDao.deleteExpertCrtfct(expertMdfcnVo);
+            retVal += expertMdfcnDao.deleteExpertActvtRgn(expertMdfcnVo);
+            retVal += expertMdfcnDao.deleteExpertActvtScope(expertMdfcnVo);
+            retVal += expertMdfcnDao.deleteExpertHdof(expertMdfcnVo);
+            retVal += expertMdfcnDao.deleteExpertSbjct(expertMdfcnVo);
+            retVal += expertMdfcnDao.deleteExpertTrgt(expertMdfcnVo);
+            ExpertVo expertVo = selectExpertMdfcnInfo(expertMdfcnVo);
+//            retVal += expertMdfcnDao.insertExpertCareer(expertVo.getExpertCareerList());
+
+        }
+
+        retVal += expertMdfcnDao.updateSttsCd(expertMdfcnVo);
+        return retVal;
     }
 }

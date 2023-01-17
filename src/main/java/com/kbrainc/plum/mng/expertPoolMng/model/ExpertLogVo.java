@@ -72,6 +72,12 @@ public class ExpertLogVo extends ParentRequestVo {
      */
     private String prcsSeCdNm;
 
+
+    /**
+     * 수정 요청 아이디
+     */
+    private Integer mdfcnDmndId;
+
     public void setPrcsSeCd(String prcsSeCd) {
         this.prcsSeCd = prcsSeCd;
 
