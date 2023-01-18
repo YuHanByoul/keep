@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
-import org.apache.ibatis.type.Alias;
 
 import java.util.Date;
 
@@ -43,17 +42,17 @@ public class CntstVO extends ParentRequestVo {
 
     /** 신청_시작_일자*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date aplyBgngDt;
+    private String aplyBgngDt;
 
 
     /** 신청_종료_일자*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date aplyEndDt;
+    private String aplyEndDt;
 
 
     /** 발표_일자*/
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date prsntnDt;
+    private String prsntnDt;
 
     /** 중복_가능_여부*/
     private String dpcnPsbltyYn;

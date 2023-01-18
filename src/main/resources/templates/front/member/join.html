@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/front/join/detailLayout" 
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/join/detailLayout"
 >
     <body>
         <div layout:fragment="content">
@@ -80,7 +79,7 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                        
+
                                         <tr>
                                             <th scope="row">
                                                 <label for=""><em class="ico-required">*</em> 담임 여부</label>
@@ -91,7 +90,7 @@
                                                         <input type="radio" id="id-checkbox01" name="cls_tchr_yn" class="form-checkbox-input" value="Y" checked>
                                                         <label for="id-checkbox01" class="form-checkbox-label">담임</label>
                                                     </span>
-    
+
                                                     <span class="form-checkbox">
                                                         <input type="radio" id="id-checkbox02" name="cls_tchr_yn" class="form-checkbox-input" value="N" >
                                                         <label for="id-checkbox02" class="form-checkbox-label">비담임</label>
@@ -181,7 +180,7 @@
                             </fieldset>
                     </div>
                 </div>
-                
+
              <!--**********HIDDEN PARAMETER**********************  -->
                 <input type="hidden" id="schl_cd" name="schl_cd">
                 <input type="hidden" id="checked_acnt" name="checked_acnt">
@@ -191,15 +190,15 @@
                 <input type="hidden" id="tos_agre_yn" name="tos_agre_yn" >
              <!--***********************************************  -->
       </form>
-         
+
     <script th:inline="javascript">
-      
+
       var member_register_url      = "/front/member/insertMember.do";
       var id_duplication_chekc_url = "/front/member/chekcDuplicationUser.do";
       var search_school_popup        = "/front/member/searchSchoolPop.html";
-      
+
         $(document).ready(function(){
-            var prev_agre_yn = /*[[${agreYn}]]*/null;
+            var prev_agre_yn =
             if(prev_agre_yn != "Y"){
             	alert("약관동의 후 회원가입 진행이 가능합니다.");
             	location.href="/front/member/provision.html";
@@ -207,39 +206,39 @@
             	$("#tos_agre_yn").val("Y");
             }
         })
-        
+
         function fn_chooseSchool(){
         	var chrg_crs_cd = $("#chrg_crs_cd").val();
         	var chrg_crs_nm = $("#chrg_crs_cd option:checked").text();
-        	
+
         	if( chrg_crs_cd == null || chrg_crs_cd =="" ){
         		$("#chrg_crs_nm").val(null);
         	}else{
         	    $("#chrg_crs_nm").val(chrg_crs_nm)
         	}
         }
-        
+
         function fn_changeEmailDomain(){
         	var domain_val = $("#email_domain").val();
         	var domain_text = $("#email_domain option:checked").text();
-        	
+
         	if( domain_val == null || domain_val =="" ){
         		$("#email2").val(null);
         	}else{
         	    $("#email2").val(domain_text)
         	}
         }
-        
+
         function fn_checkDupleID(){
-        	
+
             var acnt = $("#acnt").val();
-            
+
             if(acnt == null || acnt == ""){
             	$(".acnt_err").text("아이디를 입력해주십시오")
             	return;
             }
-        	
-        	if(displayWorkProgress()){	
+
+        	if(displayWorkProgress()){
 	        	$.ajax({
 					url : id_duplication_chekc_url,
 		            cache : false,
@@ -259,14 +258,14 @@
 			   });
 		   }
         }
-        
+
         function fn_searchSchool(){
         	var pop_option ="left=800,top=500,width=500,height=670,toolbar=no,location=no"
         	window.open(search_school_popup,"school_pop",pop_option);
         }
-        
+
         function fn_joinMemeber(){
-        	
+
         	var cmntValidator= $("#joinForm").validate({
         		   rules   : {
         			   acnt        : { required: true, minlength:5,maxlength:20},
@@ -301,29 +300,29 @@
         			   mob_no3     : { required: "휴대전화번호를 입력해주십시오"}
         	       }
         		 })
-        		 
-        		 
+
+
         	if($("#joinForm").valid() == false) return;
-        	
+
         	if($("#checked_acnt").val() != $("#acnt").val()){
         		$(".acnt_err").text("아이디 중복확인을 해주십시오");
         		return;
-        	}	 
-        		 
+        	}
+
             if($("#pswd").val() != $("#pswd_chk").val()){
             	$(".pswd_chk").text("비밀번호와 일치 하지 않습니다. 다시한번 확해주십시오")
             	return;
             }
-        	
+
         	var email1 = $("#email1").val();
         	var email2 = $("#email2").val();
         	$("#email").val(email1+"@"+email2);
-        	
+
         	var mob_no1 = $("#mob_no1").val();
         	var mob_no2 = $("#mob_no2").val();
         	var mob_no3 = $("#mob_no3").val();
         	$("#mob_no").val(mob_no1+"-"+mob_no2+"-"+mob_no3);
-        	
+
         	var param_data = $("#joinForm").serialize();
         	if(displayWorkProgress()){
 		 		$.ajax({
@@ -344,7 +343,7 @@
 			   });
 			}
         }
-        
+
       </script>
       </div>
     </body>

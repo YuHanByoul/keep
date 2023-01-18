@@ -1,10 +1,12 @@
 package com.kbrainc.plum.mng.prtpn.cntst.controller;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.prtpn.cntst.model.CntstVO;
 import com.kbrainc.plum.mng.prtpn.cntst.service.CntstService;
-import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.service.ResCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,16 +42,27 @@ public class CntstController {
 
     @Autowired
     CntstService cntstService;
+    @Autowired
+    ResCodeService resCodeService;
+
+    @Autowired
+    private FileService fileService;
 
     /**
      * 공모전 등록
      * Title : cntstListForm
      * Description : 공모전 등록
      *
+     * @param model
      * @return string
+     * @throws Exception
      */
     @RequestMapping(value = "/mng/prtpn/cntst/cntstListForm.html")
-    public String cntstListForm() {
+    public String cntstListForm(Model model) throws Exception {
+        Map<String, String> cntstSttsCdMap = resCodeService.getCodeMap("159");
+        Map<String, String> cntstClsfCdMap = resCodeService.getCodeMap("165");
+        model.addAttribute("cntstSttsCdMap", cntstSttsCdMap);
+        model.addAttribute("cntstClsfCdMap", cntstClsfCdMap);
         return "mng/prtpn/cntst/cntstList";
     }
 
@@ -82,10 +95,12 @@ public class CntstController {
      * Title : cntstInsertForm
      * Description : 공모전 등록 화면
      *
+     * @param model
      * @return string
      */
     @RequestMapping(value = "/mng/prtpn/cntst/cntstInsertForm.html")
-    public String cntstInsertForm() {
+    public String cntstInsertForm(Model model) {
+        model.addAttribute("cntstInfo", new CntstVO());
         return "mng/prtpn/cntst/cntstForm";
     }
 
@@ -95,14 +110,27 @@ public class CntstController {
      * Title : cntstUpdateForm
      * Description : 공모전 수정 화면
      *
-     * @param cntstId
+     * @param cntstid
      * @param model
      * @return string
      */
     @RequestMapping(value = "/mng/prtpn/cntst/cntstUpdateForm.html")
-    public String cntstUpdateForm(Integer cntstId, Model model) {
-        CntstVO cntstInfo = cntstService.selectCntstInfo(cntstId);
-        List<String> cntstFldCdList = cntstService.selectCntstFldCdList(cntstId);
+    public String cntstUpdateForm(Integer cntstid, Model model) throws Exception {
+        CntstVO cntstInfo = cntstService.selectCntstInfo(cntstid);
+        List<String> cntstFldCdList = cntstService.selectCntstFldCdList(cntstid);
+
+        FileVo fileVo = new FileVo();
+        if (cntstInfo.getThmbnFileid() != null && !cntstInfo.getThmbnFileid().equals(0)) {
+            fileVo.setFileid(cntstInfo.getThmbnFileid());
+            FileVo thmbnFile = fileService.getFileInfo(fileVo);
+            model.addAttribute("thmbnFile", thmbnFile);
+        }
+
+        if (cntstInfo.getAtchFilegrpid() != null && !cntstInfo.getAtchFilegrpid().equals(0)) {
+            fileVo.setFilegrpid(cntstInfo.getAtchFilegrpid());
+            ArrayList<FileVo> atchFileList= fileService.getFileList(fileVo);
+            model.addAttribute("atchFileList", atchFileList);
+        }
         model.addAttribute("cntstInfo", cntstInfo);
         model.addAttribute("cntstFldCdList", cntstFldCdList);
         return "mng/prtpn/cntst/cntstForm";
