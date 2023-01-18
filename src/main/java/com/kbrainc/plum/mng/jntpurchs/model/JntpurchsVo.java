@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.tchaidJntpurchs.model;
+package com.kbrainc.plum.mng.jntpurchs.model;
 
 import java.util.Date;
 
@@ -15,22 +15,22 @@ import lombok.Data;
 
 /**
  * 
- * 체크리스트Vo 클래스
+ * 공동구매모집Vo 클래스
  *
  * <pre>
  * com.kbrainc.plum.mng.tchaidJntpurchs.model
  * - ChklstVo.java
  * </pre> 
  *
- * @ClassName : TchaidJntpurchsVo
- * @Description : 체크리스트Vo 클래스 
+ * @ClassName : JntpurchsVo
+ * @Description : 공동구매모집Vo 클래스 
  * @author : KBRAINC
  * @date : 2023. 01. 09.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class TchaidJntpurchsVo extends ParentRequestVo {
+public class JntpurchsVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;

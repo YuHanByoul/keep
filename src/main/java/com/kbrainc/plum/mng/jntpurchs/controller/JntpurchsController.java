@@ -1,27 +1,7 @@
-package com.kbrainc.plum.mng.tchaidJntpurchs.controller;
+package com.kbrainc.plum.mng.jntpurchs.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.kbrainc.plum.mng.chklst.model.ChklstQitemMapngVo;
-import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
-import com.kbrainc.plum.mng.chklst.model.ChklstVo;
-import com.kbrainc.plum.mng.chklst.service.ChklstServiceImpl;
-import com.kbrainc.plum.mng.code.model.CodeVo;
-import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.UserVo;
-import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
@@ -29,10 +9,10 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
  *
  * <pre>
  * com.kbrainc.plum.mng.tchaidJntpurchs.controller
- * - ChklstController.java
+ * - JntpurchsController.java
  * </pre>
  *
- * @ClassName : TchaidJntpurchsController
+ * @ClassName : JntpurchsController
  * @Description : 공동구매관리 Controller
  * @author : KBRAINC
  * @date : 2023. 01. 04.
@@ -40,7 +20,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Controller
-public class TchaidJntpurchsController {
+public class JntpurchsController {
 
     //@Autowired
     //private ChklstServiceImpl chklstService;
@@ -48,27 +28,27 @@ public class TchaidJntpurchsController {
     /**
      * 공동구매모집 목록 화면
      *
-     * @Title : chklstQitemListForm
-     * @Description : 체크리스트 문항 관리 목록 화면
+     * @Title : jntpurchsListForm
+     * @Description : 공동구매모집 목록 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaidJntpurchs/tchaidJntpurchsListForm.html")
-    public String tchaidJntpurchsListForm() throws Exception {
-        return "mng/tchaidJntpurchs/tchaidJntpurchsList";
+    @RequestMapping(value = "/mng/jntpurchs/jntpurchsListForm.html")
+    public String jntpurchsListForm() throws Exception {
+        return "mng/jntpurchs/jntpurchsList";
     }
     
     /**
      * 공동구매신청 목록 화면
      *
-     * @Title : chklstQitemListForm
-     * @Description : 체크리스트 문항 관리 목록 화면
+     * @Title : jntpurchsOrderListForm
+     * @Description : 공동구매신청 목록 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaidJntpurchs/tchaidJntpurchsOrderListForm.html")
-    public String tchaidJntpurchsOrderListForm() throws Exception {
-        return "mng/tchaidJntpurchs/tchaidJntpurchsOrderList";
+    @RequestMapping(value = "/mng/jntpurchs/jntpurchsOrderListForm.html")
+    public String jntpurchsOrderListForm() throws Exception {
+        return "mng/jntpurchs/jntpurchsOrderList";
     }
     
 //     /**
