@@ -1,6 +1,8 @@
 package com.kbrainc.plum.mng.spce.model;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -12,6 +14,7 @@ import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
 * [클래스 요약].
@@ -28,6 +31,7 @@ import lombok.Data;
 * @Version     : 
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
+@NoArgsConstructor 
 @Data
 public class SpceRsvtdeVo extends ParentRequestVo {
     
@@ -94,6 +98,9 @@ public class SpceRsvtdeVo extends ParentRequestVo {
     
     /** 체크 아웃 시간 */
     private String chcktHr;
+    
+    /** 일괄등록용 list */
+    private List<SpceRsvtdeVo> rsvtdeList;
     
     public void setUtztnSeCd(String utztnSeCd) throws Exception{
         this.utztnSeCd = utztnSeCd;
