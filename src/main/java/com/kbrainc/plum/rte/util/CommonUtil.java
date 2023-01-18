@@ -63,6 +63,8 @@ public class CommonUtil {
     
     public static String portalUrl = applicationConfig.getString("system.portal.url");
     
+    public static String kakaoJavascriptKey = applicationConfig.getString("kakao.javascript.key"); 
+    
     /**
      * @Title : getBean
      * @Description : 특정 bean을 가져오는 함수
