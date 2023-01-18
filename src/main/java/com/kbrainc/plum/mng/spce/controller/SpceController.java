@@ -1,9 +1,11 @@
 package com.kbrainc.plum.mng.spce.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -447,6 +450,53 @@ public class SpceController {
             target = "mng/spce/spceRentRsvtPopup";
         } 
         return target;
+    }
+    
+    /**
+     * 예약일자 일괄 등록
+     *
+     * @Title : insertSpce
+     * @Description : 공간 등록
+     * @param SpceVo         SpceVo객체
+     * @param bindingResult1 SpceVo 유효성검증결과
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/InsertSpceTotalStayInfo.do")
+    @ResponseBody
+   
+    public Map<String, Object> InsertSpceTotalStayInfo( @RequestBody SpceRsvtdeVo spceRsvtdeVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+
+        List< SpceRsvtdeVo> result = null;
+        spceRsvtdeVo.setUser(user);
+        result = spceService.selectSpceRsvtdeList(spceRsvtdeVo);
+        
+        //기존 예약일자 여부 확인  
+        if(result.size() > 0) {
+            String deStr= "";
+            List<String> deStrList= new ArrayList();;
+            for(SpceRsvtdeVo vo :result) {
+                deStrList.add(vo.getDe());
+            }
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg",String.join(", ",deStrList.stream().distinct().collect(Collectors.toList()))+ "일 이미 예약 운영일자가 존재합니다.");
+            return resultMap; 
+        }
+        
+        retVal = spceService.insertSpceRsvtde(spceRsvtdeVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
     }
     
     
