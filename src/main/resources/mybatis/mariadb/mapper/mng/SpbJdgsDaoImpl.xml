@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SpbJdgsDaoImpl.xml
+	Description : 체험환경교육 지원사업 > 심사위원 그룹 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.spbJdgs.model.SpbJdgsDao">
+    <insert id="insertSpbJdgs">
+        INSERT INTO TB_SPB_JDGS_GRP(
+                GRP_NM
+                /*사용여부 추가*/
+                , MDFCN_DT
+                , MDFRID
+                , REG_DT
+
+                , RGTRID
+            ) VALUES (
+                #{grpNm}
+                , NOW()
+                , #{user.userid}
+                , NOW()
+                , #{user.userid}
+               )
+    </insert>
+
+    <update id="updateSpbJdgs">
+        UPDATE
+            TB_SPB_JDGS_GRP
+        SET
+            /*사용여부 추가 */
+            GRP_NM = #{grpNm}
+          , MDFCN_DT = NOW()
+          , MDFRID = #{user.userid}
+        WHERE
+            GRPID = #{grpId}
+    </update>
+
+    <insert id="insertExprt">
+        INSERT INTO TB_SPB_JDGS_GRP_MAPNG(
+        GRPID
+        ,USERID
+        ,MDFCN_DT
+        ,MDFRID
+        ,REG_DT
+        ,RGTRID
+        ) VALUES
+        <foreach item="insertId" collection="insertIds" separator=",">
+            (
+            #{grpId}
+            ,#{insertId}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteExprt">
+        DELETE
+        FROM TB_SPB_JDGS_GRP_MAPNG
+        WHERE GRPID = #{grpId}
+          AND USERID = #{userid}
+    </delete>
+
+    <select id="selectSpbJdgsList" resultType="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT A.GRPID, A.GRP_NM, A.REG_DT, COUNT(B.USERID) AS EXPRT_CNT
+            FROM TB_SPB_JDGS_GRP A
+        LEFT OUTER JOIN TB_SPB_JDGS_GRP_MAPNG B ON A.GRPID = B.GRPID
+        WHERE 1=1
+            <if test="searchKeyword != '' and searchKeyword != null">
+                AND A.GRP_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+         <!--   <if test="searchUseYn != '' and searchUseYn != null">
+                AND A.USE_YN = #{searchUseYn}
+            </if>-->
+            GROUP BY A.GRPID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectSpbJdgsInfo" resultType="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpVo">
+        SELECT GRPID, GRP_NM, REG_DT
+        FROM TB_SPB_JDGS_GRP
+        WHERE GRPID = #{grpId}
+    </select>
+
+    <select id="selectExprtList" resultType="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpExpertVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+            C.USERID
+            ,C.ACNT
+            ,C.NM
+            ,C.EML
+            ,C.MOBLPHON
+            ,C.REG_DT
+            ,C.MDFCN_DT
+            FROM TB_SPB_JDGS_GRP A
+            INNER JOIN TB_SPB_JDGS_GRP_MAPNG B ON A.GRPID = B.GRPID
+            INNER JOIN TB_CMM_USER C ON C.USERID = B.USERID
+            WHERE A.GRPID = #{grpId}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectExistingExprtList" resultType="JdgGrpExpertVo">
+        SELECT USERID
+        FROM TB_SPB_JDGS_GRP_MAPNG
+        WHERE GRPID = #{grpId}
+    </select>
+</mapper>
