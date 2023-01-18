@@ -144,7 +144,7 @@ public class CheckCodeAttr extends AbstractAttributeTagProcessor {
                         result.append("<div class=\"border-checkbox-group border-checkbox-group-inverse\">");
                         result.append("<input type='checkbox' class='border-checkbox ").append(addClass)
                         .append("'  id='").append(attributeValue).append(cnt)
-                        .append("' name ='").append(attributeValue).append(cnt)
+                        .append("' name ='").append(attributeValue)
                         .append("' value='").append(codeInfoVo.getCd())
                         .append("' data-cd-name='").append(codeInfoVo.getCdNm())
                         .append("'");
