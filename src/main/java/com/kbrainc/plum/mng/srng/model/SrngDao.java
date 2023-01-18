@@ -1,8 +1,6 @@
 package com.kbrainc.plum.mng.srng.model;
 
 import com.kbrainc.plum.mng.code.model.CodeVo;
-import com.kbrainc.plum.rte.model.UserVo;
-import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
@@ -37,12 +35,12 @@ public interface SrngDao {
     SrngQitemVO selectSrng(SrngQitemVO srngQitemVO) throws Exception;
 
     /**
-     * 심사 문항 목록 조회
+     * 심사 문항 목록 (팝업) 조회
      * Title : selectSrngList
-     * Description : 심사 문항 목록 조회
+     * Description : 심사 문항 목록 (팝업) 조회
      *
      * @param srngQitemVO SrngQitemVO
-     * @return List<SrngQitemVO>  심사 문항 목록
+     * @return List<SrngQitemVO> 심사 문항 목록
      * @throws Exception
      */
     List<SrngQitemVO> selectSrngList(SrngQitemVO srngQitemVO) throws Exception;
@@ -141,46 +139,63 @@ public interface SrngDao {
     int updateSrngForm(SrngFormVO srngFormVO);
 
     /**
+     * 심사양식 문항 목록 지정기준 순서 삭제 전 목록 존재하는지 체크
+     * Title : selectSrngFormQitemOrdr
+     * Description : 심사양식 문항 목록 지정기준 순서 삭제 전 목록 존재하는지 체크
+     *
+     * @param srngFormQitemMapngVO
+     * @return int
+     */
+    int selectSrngFormQitemOrdr(SrngFormQitemMapngVO srngFormQitemMapngVO);
+
+    /**
      * 심사양식 문항 목록 지정기준 삭제
      * Title : deleteSrngFormDsgncrtrCdOrdr
      * Description : 심사양식 문항 목록 지정기준 삭제
      *
-     * @param formid
+     * @param srngFormQitemMapngVO
      * @return boolean
      */
-    boolean deleteSrngFormDsgncrtrCdOrdr(int formid);
+    boolean deleteSrngFormDsgncrtrCdOrdr(SrngFormQitemMapngVO srngFormQitemMapngVO);
 
     /**
      * 심사양식 문항 목록 지정기준 등록
-     * Title : 심사양식 문항 목록 지정기준 등록
-     * Description : TODO [메소드 설명]
+     * Title : insertSrngFormDsgncrtrCdOrdr
+     * Description : 심사양식 문항 목록 지정기준 등록
      *
-     * @param formid
-     * @param dsgncrtrCds
-     * @param user
+     * @param srngFormQitemMapngVO
      * @return boolean
      */
-    boolean insertSrngFormDsgncrtrCdOrdr(@Param("formid") int formid, @Param("dsgncrtrCds") String[] dsgncrtrCds, @Param("user") UserVo user);
+    boolean insertSrngFormDsgncrtrCdOrdr(SrngFormQitemMapngVO srngFormQitemMapngVO);
+
+    /**
+     * 심사양식 문항 목록 삭제 전 목록 존재하는지 체크
+     * Title : selectSrngFormQitemMang
+     * Description : 심사양식 문항 목록 삭제 전 목록 존재하는지 체크
+     *
+     * @param srngFormQitemMapngVO
+     * @return int
+     */
+    int selectSrngFormQitemMang(SrngFormQitemMapngVO srngFormQitemMapngVO);
 
     /**
      * 심사양식 문항 목록 삭제
      * Title : deleteSrngFormQitem
      * Description : 심사양식 문항 목록 삭제
      *
-     * @param formid
+     * @param srngFormQitemMapngVO
      * @return boolean
      */
-    boolean deleteSrngFormQitem(int formid);
+    boolean deleteSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO);
 
     /**
      * 심사양식 문항 목록 등록
      * Title : insertSrngFormQitem
      * Description : 심사양식 문항 목록 등록
      *
-     * @param srngFormQitemMapngVOs
+     * @param srngFormQitemMapngVO
      * @return boolean
      */
-    boolean insertSrngFormQitem(@Param("srngFormQitemMapngVOs") SrngFormQitemMapngVO[] srngFormQitemMapngVOs);
-
+    boolean insertSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO);
 
 }

@@ -6,11 +6,230 @@
 	Description : 전문가 정보변경 관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.expertPoolMng.model.ExpertMdfcnDao">
+    <insert id="insertExpertTrgt">
+        INSERT INTO TB_ASS_EXPRT_TRGT(
+          USERID
+          , TRGT_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+          ) VALUES(
+            #{userid}
+            ,#{trgtCd}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+          )
+    </insert>
+
+    <insert id="insertExpertSbjct">
+        INSERT INTO TB_ASS_EXPRT_SBJCT(
+            USERID
+            , SBJCT_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES(
+            #{userid}
+            ,#{sbjctCd}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+    <insert id="insertExpertHdof">
+        INSERT INTO TB_ASS_EXPRT_HDOF(
+            USERID
+            , HDOF_SE_CD
+            , INST_NM
+            , DEPT_NM
+            , JBGD_NM
+            , HDOF_BGNG_DE
+            , HDOF_END_DE
+            , HDOF_YN
+            , HDOFCRTF_FILEID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES(
+            #{userid}
+            , #{hdofSeCd}
+            , #{instNm}
+            , #{deptNm}
+            , #{jbgdNm}
+            , #{hdofBgngDe}
+            , #{hdofEndDe}
+            , #{hdofYn}
+            , #{hdofCrtfFileid}
+            , #{ordr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <insert id="insertExpertActvtScope">
+        INSERT INTO TB_ASS_EXPRT_ACTVT_SCOPE (
+            USERID
+            , RGN_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{userid}
+            , #{rgnCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <insert id="insertExpertActvtRgn">
+        INSERT INTO TB_ASS_EXPRT_ACTVT_RGN(
+            USERID
+            , RGN_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{userid}
+            ,#{rgnCd}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+
+    <insert id="insertExpertCrtfct">
+        INSERT INTO TB_ASS_EXPRT_CRTFCT(
+            USERID
+            , CRTFCT_NM
+            , ACQS_INST
+            , ACQS_NO
+            , ACQS_GRD
+            , ACQS_DE
+            , CRTFCT_FILEID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{userid}
+            , #{crtfctNm}
+            , #{acqsInst}
+            , #{acqsNo}
+            , #{acqsGrd}
+            , #{acqsDe}
+            , #{crtfctFileid}
+            , #{ordr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <insert id="insertExpertCareer">
+        INSERT INTO TB_ASS_EXPRT_CAREER(
+            USERID
+            , FLD_NM
+            , ACTVT_BGNG_DE
+            , ACTVT_END_DE
+            , ACTVT_YN
+            , ACTVT_HR
+            , IDNTY_INST_NM
+            , ACTVT_CN
+            , IDNTY_DE
+            , CRTF_FILEID
+            , ARTCLASS_FILEID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{userid}
+            , #{fldNm}
+            , #{actvtBgngDe}
+            , #{actvtEndDe}
+            , #{actvtYn}
+            , #{actvtHr}
+            , #{idntyInstNm}
+            , #{actvtCn}
+            , #{idntyDe}
+            , #{crtfFileid}
+            , #{artclassFileid}
+            , #{ordr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
     <update id="updateSttsCd">
         UPDATE TB_ASS_EXPRT_MDFCN_DMND
         SET STTS_CD = #{sttsCd}
         WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
     </update>
+
+    <update id="updateExpertInfo">
+        UPDATE TB_ASS_EXPRT
+        SET EXPRT_TYPE_CD = #{exprtTypeCd}
+            , FLD_LCTR_YN = #{fldLctrYn}
+            , FLD_PLANNG_YN = #{fldPlanngYn}
+            , FLD_CNSLTNG_YN = #{fldCnslTngYn}
+            , FLD_ETC_YN = #{fldEtcYn}
+            /* 기타인 경우 기타내용 생성 */
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+    </update>
+
+    <delete id="deleteExpertCareer">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
+
+    <delete id="deleteExpertCrtfct">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
+
+    <delete id="deleteExpertActvtRgn">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
+
+    <delete id="deleteExpertActvtScope">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
+
+    <delete id="deleteExpertHdof">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
+
+    <delete id="deleteExpertSbjct">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
+
+    <delete id="deleteExpertTrgt">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+    </delete>
 
     <select id="selectExpertMdfcnList" resultType="ExpertMdfcnVo">
         <include refid="PaginationMapper.header"/>
@@ -24,10 +243,21 @@
             , A.REG_DT
             , A.MDFCN_DT
             , A.MDFRID
-            , C.NM AS MDFR_NM
+            , C.RGTRID AS PROCID
+            , C.REG_DT AS PROC_DT
+            , C.ACNT AS PROC_ACNT
         FROM TB_ASS_EXPRT_MDFCN_DMND A
             INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
-            INNER JOIN TB_CMM_USER C ON A.MDFRID = C.USERID
+            LEFT OUTER JOIN (
+            SELECT
+            TAEL.RGTRID
+            , TAEL.REG_DT
+            , TCU.ACNT
+            , TAEL.MDFCN_DMND_ID
+            FROM TB_ASS_EXPRT_LOG TAEL
+            INNER JOIN TB_CMM_USER TCU ON TAEL.RGTRID = TCU.USERID
+            ) C
+            ON C.MDFCN_DMND_ID = A.MDFCN_DMND_ID
         WHERE 1=1
         <if test="searchKeyword != null and searchKeyword != ''">
             <if test="searchType == 'nm' ">
@@ -46,6 +276,7 @@
     <select id="selectExpertMdfcnInfo" resultType="ExpertVo">
         SELECT
             A.USERID
+             , A.MDFCN_DMND_ID
              , A.STTS_CD
              , A.ENV_EDU_CAREER_MM
              , A.ENV_EDU_CAREER_YY
@@ -73,7 +304,7 @@
              , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_ACTVT_RGN  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_RGN /* 주요활동지역 */
              , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_ACTVT_SCOPE  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_SCOPE /* 가능 활동범위 */
         FROM TB_ASS_EXPRT_MDFCN_DMND A
-                 INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+            INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
         WHERE A.USERID = #{userid}
             AND A.MDFCN_DMND_ID = #{mdfcnDmndId}
     </select>
@@ -108,7 +339,7 @@
              , ACQS_NO
              , ACQS_GRD
              , ACQS_DE
-             , CRTFCT_FILEGRPID
+             , CRTFCT_FILEGRPID AS CRTFCT_FILEID
              , ORDR
         FROM TB_ASS_EXPRT_MDFCN_CRTFCT
         WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
@@ -133,23 +364,30 @@
         WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
         ORDER BY ORDR
     </select>
-    <select id="selectExpertMdfcn" resultType="ExpertMdfcnVo">
-        SELECT
-        A.MDFCN_DMND_ID
-        , A.USERID
-        , B.NM
-        , B.ACNT
-        , A.EXPRT_TYPE_CD
-        , A.STTS_CD
-        , A.REG_DT
-        , A.MDFCN_DT
-        , A.MDFRID
-        , A.INFO_MDFCN_RSN
-        , C.NM AS MDFR_NM
-        FROM TB_ASS_EXPRT_MDFCN_DMND A
-        INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
-        INNER JOIN TB_CMM_USER C ON A.MDFRID = C.USERID
-        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
 
+    <select id="selectExpertMdfcn" resultType="ExpertMdfcnVo">
+        SELECT A.MDFCN_DMND_ID
+             , A.USERID
+             , B.NM
+             , B.ACNT
+             , A.EXPRT_TYPE_CD
+             , A.STTS_CD
+             , A.REG_DT
+             , A.INFO_MDFCN_RSN
+             , C.RGTRID AS PROCID
+             , C.REG_DT AS PROC_DT
+             , C.ACNT   AS PROC_ACNT
+        FROM TB_ASS_EXPRT_MDFCN_DMND A
+                 INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+                 LEFT OUTER JOIN (
+                    SELECT
+                        TAEL.RGTRID
+                       , TAEL.REG_DT
+                       , TCU.ACNT
+                       , TAEL.MDFCN_DMND_ID
+                    FROM TB_ASS_EXPRT_LOG TAEL
+                       INNER JOIN TB_CMM_USER TCU ON TAEL.RGTRID = TCU.USERID) C
+                 ON C.MDFCN_DMND_ID = A.MDFCN_DMND_ID
+        WHERE A.MDFCN_DMND_ID = #{mdfcnDmndId}
     </select>
 </mapper>

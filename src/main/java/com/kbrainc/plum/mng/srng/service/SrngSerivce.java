@@ -4,7 +4,6 @@ import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.srng.model.SrngFormQitemMapngVO;
 import com.kbrainc.plum.mng.srng.model.SrngFormVO;
 import com.kbrainc.plum.mng.srng.model.SrngQitemVO;
-import com.kbrainc.plum.rte.model.UserVo;
 
 import java.util.List;
 
@@ -26,12 +25,12 @@ import java.util.List;
 public interface SrngSerivce {
 
     /**
-     * 심사 문항 목록 조회
+     * 심사 문항 목록 (팝업) 조회
      * Title : selectSrngList
-     * Description : 심사 문항 목록 조회
+     * Description : 심사 문항 목록 (팝업) 조회
      *
      * @param srngQitemVO SrngQitemVO
-     * @return List<SrngQitemVO>  심사 문항 목록
+     * @return List<SrngQitemVO>   심사 문항 목록
      * @throws Exception
      */
     List<SrngQitemVO> selectSrngList(SrngQitemVO srngQitemVO) throws Exception;
@@ -139,16 +138,13 @@ public interface SrngSerivce {
      */
     int updateSrngForm(SrngFormVO srngFormVO);
 
-
     /**
      * 심사양식 문항 목록 등록
      * Title : insertSrngFormQitem
      * Description : 심사양식 문항 목록 등록
      *
-     * @param dsgncrtrCds
-     * @param srngFormQitemMapngVOs
-     * @param user
+     * @param srngFormQitemMapngVO
      * @return boolean
      */
-    boolean insertSrngFormQitem(String[] dsgncrtrCds, SrngFormQitemMapngVO[] srngFormQitemMapngVOs, UserVo user);
+    boolean insertSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO);
 }

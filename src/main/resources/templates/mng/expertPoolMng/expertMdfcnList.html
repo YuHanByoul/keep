@@ -70,7 +70,7 @@
     <script th:inline="javascript">
         var expertMdfcn = {
             listUrl: '/mng/expertPoolMng/selectExpertMdfcnList.do',
-            detailUrl : '/mng/expertPoolMng/expertMdfcnDetail.html',
+            detailUrl: '/mng/expertPoolMng/expertMdfcnDetail.html',
             gridHelper: null,
 
             init() {
@@ -136,14 +136,26 @@
                         {title: "변경요청일시", name: "regDt", type: "text", width: "120", align: "center"},
                         {title: "전문가 아이디", name: "acnt", type: "text", width: "100", align: "center"},
                         {title: "전문가 이름", name: "nm", type: "text", width: "80", align: "center"},
-                        /*{title: "처리자 ID", name: "mdfcnNm", type: "text", width: "100", align: "center"},*/
-                        {title: "처리상태", name: "sttsCdNm", type:"text", width: "125", align: "center"},
-                        {title: "처리일시", name: "mdfcnDt", type: "text", width: "120", align: "center"},
+                        {title: "처리자 ID", name: "procAcnt", type: "text", width: "100", align: "center"
+                            , itemTemplate(value) {
+                                if (value == null) {
+                                    return "-";
+                                } else return value;
+                            }
+                        },
+                        {title: "처리상태", name: "sttsCdNm", type: "text", width: "125", align: "center", sorting:false},
+                        {title: "처리일시", name: "procDt", type: "text", width: "120", align: "center"
+                            , itemTemplate(value, item) {
+                                if (value == null) {
+                                    return "-";
+                                } else return value;
+                            }
+                        },
                     ],
                     /* [# sec:authorize-url="/mng/expertPoolMng/expertMdfcnDetail.html"] */
                     rowClick: function (args) {
                         if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                        var url = expertMdfcn.detailUrl + "?mdfcnDmndId=" + args.item.mdfcnDmndId + "&userid="+ args.item.userid;
+                        var url = expertMdfcn.detailUrl + "?mdfcnDmndId=" + args.item.mdfcnDmndId + "&userid=" + args.item.userid;
                         expertMdfcn.gridHelper.loadContent(url);
                         expertMdfcn.gridHelper.rowClick(args);
                     }

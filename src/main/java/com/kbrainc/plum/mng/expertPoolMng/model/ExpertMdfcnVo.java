@@ -35,10 +35,11 @@ public class ExpertMdfcnVo extends ParentRequestVo {
     private String sttsCdNm;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private Date regDt;
-    private Date mdfcnDt;
-    private Integer mdfrid;
-    private String mdfrNm;
     private String infoMdfcnRsn;
+    private String procid;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date procDt;
+    private String procAcnt;
 
     public void setSttsCd(String sttsCd) {
         this.sttsCd = sttsCd;

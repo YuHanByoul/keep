@@ -113,5 +113,14 @@ public interface SpceDao {
      * @throws Exception 예외
      */
     public String isThereSpceRsvt(SpceVo spceVo) throws Exception;
-    
+    /**
+     * 예약일자 리스트 호출  
+     *
+     * @Title       : selectSpceRsvtList 
+     * @Description : 예약일자 리스트 호출  
+     * @param param SpceVo SpceVo 객체
+     * @return List<SpceRsvtdeVo> 기관정보 목록
+     * @throws Exception 예외
+     */
+    public List<SpceRsvtdeVo> selectSpceRsvtdeList(SpceRsvtdeVo spceRsvtdeVo) throws Exception;
 }

@@ -1,8 +1,9 @@
 package com.kbrainc.plum.rte.service;
 
-import java.util.List;
-
 import com.kbrainc.plum.rte.model.CodeInfoVo;
+
+import java.util.List;
+import java.util.Map;
 
 /**
 * 
@@ -100,4 +101,27 @@ public interface ResCodeService {
     * @throws Exception 예외
     */
     public void removeCacheForCdgrp(String cdgrpid, String upprCd) throws Exception;
+
+    /**
+     * 그룹코드아이디에 해당하는 1depth 코드 Map을 반환한다.
+     * Title : getCodeMap
+     * Description : 그룹코드아이디에 해당하는 1depth 코드 Map을 반환한다.
+     *
+     * @param cdgrpid
+     * @return map
+     * @throws Exception
+     */
+    public Map<String,String> getCodeMap(String cdgrpid) throws Exception;
+
+    /**
+     * 그룹코드아이디에 해당하는 코드 목록을 반환한다.
+     * Title : getCodeMap
+     * Description : 그룹코드아이디에 해당하는 코드 목록을 반환한다.
+     *
+     * @param cdgrpid
+     * @param upprCd
+     * @return map
+     * @throws Exception
+     */
+    public Map<String,String> getCodeMap(String cdgrpid, String upprCd) throws Exception;
 }

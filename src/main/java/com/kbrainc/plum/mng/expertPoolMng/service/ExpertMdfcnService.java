@@ -28,5 +28,5 @@ public interface ExpertMdfcnService {
 
     public ExpertMdfcnVo selectExpertMdfcn(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
-    public boolean updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 }

@@ -225,7 +225,6 @@
                WHERE 1=1 
                  AND A.SPCEID = #{spceid}
     </select>
-    
     <!-- 공간 예약 내역 여부 확인 -->
     <select id="isThereSpceRsvt" parameterType="SpceVo" resultType="String">
           /* SpceDao.deleteSpce */
@@ -261,6 +260,7 @@
              </foreach>
             )
     </update>
+    
     <!-- 공간삭제 --> 
     <update id="deleteSpce" parameterType="SpceVo" >
           /* SpceDao.deleteSpce */
@@ -273,6 +273,24 @@
             )
     </update>
     
-    
-    
+    <!-- 공간 예약 일자 목록 -->
+    <select id="selectSpceRsvtdeList" parameterType="SpceRsvtdeVo" resultType="SpceRsvtdeVo">
+          SELECT 
+             DE 
+             ,date_format(A.BGNG_DT, '%H:%i' )   AS STRT_TM
+             ,date_format(A.END_DT, '%H:%i' )    AS END_TM
+             ,A.UTZTN_SE_CD 
+             ,A.ALLDAY_YN 
+             ,A.AMT 
+             ,A.RSVT_PSBLTY_YN 
+             ,A.BGNG_DT 
+             ,A.END_DT
+            FROM 
+              TB_FCL_SPCE_RSVTDE A
+           WHERE 1=1
+             AND A.SPCEID = #{spceid}
+             AND A.DE <![CDATA[>=]]> #{bgngDt}
+             AND A.DE <![CDATA[<=]]> #{endDt}
+     </select>
+     
 </mapper>

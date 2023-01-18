@@ -100,4 +100,8 @@ public class MenuItem {
         }
         return nm;
     }
+    
+    public String[] splitTreeMenuid() {
+        return this.treeMenuid.split("_");
+    }
 }

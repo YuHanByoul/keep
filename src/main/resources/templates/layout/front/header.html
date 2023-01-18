@@ -1,11 +1,11 @@
 <script th:inline="javascript">
 
-	function logout(){
-		var f = document.logout_form;
-		f.submit();
-	}
-	
-	function moveLoginPage() {
+    function logout(){
+        var f = document.logout_form;
+        f.submit();
+    }
+    
+    function moveLoginPage() {
         var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
         location.href = portalUrl + "login.html?redirectUrl=" + location.origin;
     }
@@ -13,219 +13,347 @@
     function changeLocale(lang) {
         location.href='/?lang=' + lang;
     }
-	
+    
 </script>
-        <div class="header-wrap">
-    <h1 class="ci"><a href="/"><img th:src="'/downloadLogo.do?fileid='+${session.site.logoFileid}+'&file_idntfc_key='+${session.site.logoFileIdntfcKey}"></a></h1>
-    <div class="header-menu">
-        <ul class="header-menu-list">
-            <li>
-                <th:block th:text="#{hello}"></th:block>   
-            </li>
-            <li>
-                <select name="lang" onchange="changeLocale(this.value)">
-                    <option value="">Language</option>
-                    <option value="ko">Korean</option>
-                    <option value="en">English</option>
-                </select>
-            </li>
-            <li>
-                <th:block th:if="${session.user}"> 
-	            <a href="javascript:logout()" class="btn-menu">로그아웃</a>
-	            </th:block>
-                <th:block th:unless="${session.user}">
-                <a href="javascript:moveLoginPage()" class="btn-menu">로그인</a>
-                </th:block>
-            </li>
-            <th:block th:if="${session.user == null}">
-            <li>
-                <a href="/front/member/provision.html" class="btn-menu">회원가입</a>
-            </li>
-            </th:block>
-            <th:block th:unless="${session.user == null}">
-            <li>
-                <a href="/front/member/myPage.html" class="btn-menu">마이페이지</a>
-            </li>
-            </th:block>
-        </ul>
+<script type="text/javascript">
 
-        <div class="header-menu-font">
-            <em>글자크기</em>
-            <button type="button" class="btn-font btn-up"><span class="ir">키우기</span></button>
-            <button type="button" class="btn-font btn-down"><span class="ir">줄이기</span></button>
+    function goMenu(url, cmkey, loginYn, userYn){
+        if(loginYn == 'Y' && userYn == 'N'){
+           alert('로그인이 필요한 서비스입니다.');
+        }
+        //jQuery("#form_menu").attr("action",url);
+        //jQuery("#form_menu input[id=cmkey]").val(cmkey);
+        //jQuery("#form_menu")[0].submit();
+        location.href = url;
+    }
+    
+    function goMenuNewWin(url, cmkey){
+        jQuery("#form_menu").attr("action",url);
+        jQuery("#form_menu").attr("target","_blank");
+        jQuery("#form_menu input[id=cmkey]").val(cmkey);
+        jQuery("#form_menu")[0].submit();
+        jQuery("#form_menu").attr("target","");
+    }
+    
+    function goMenuPop(url, cmkey, width, height, loginYn, userYn){
+        if(loginYn == 'Y' && userYn == 'N'){
+           alert('로그인이 필요한 서비스입니다.');
+           return false;
+        }
+        Center_Fixed_Popup2("", cmkey, width, height, "no");
+        jQuery("#form_menu").attr("action",url);
+        jQuery("#form_menu").attr("target",cmkey);
+        jQuery("#form_menu input[id=cmkey]").val(cmkey);
+        jQuery("#form_menu")[0].submit();
+        jQuery("#form_menu").attr("target","");
+    }
+
+</script>
+
+<form name="form_menu" id="form_menu" th:action="@{/}" method="get" onsubmit="return false;">
+    <input type="hidden" name="cmkey" id="cmkey" value="" />
+</form>
+<div class="header-inner">
+    <div class="header-top">
+        <div class="left">
+            <h1 class="logo"><a href="/"><img th:src="'/downloadLogo.do?fileid='+${session.site.logoFileid}+'&file_idntfc_key='+${session.site.logoFileIdntfcKey}" th:alt="${session.site.siteNm}"></a></h1>
+        </div>
+        <div class="right">
+            <div class="header-search toggleParent">
+                <div class="header-search-innner">
+                    <input type="search" title="키워드 입력" class="search-input" id="search-input" placeholder="찾고 싶은 키워드를 입력해 주세요.">
+                </div>
+                <div class="header-search-btn">
+                    <div class="suggest-wrap">
+                        <button type="button" class="btn-suggest toggleTrigger" title="추천 검색어">
+                            <span class="blind">
+                                <span class="on" aria-hidden="false">추천 검색어 열기</span>
+                                <span class="off" aria-hidden="true">추천 검색어 닫기</span>
+                            </span>
+                        </button>
+                        <div class="search-suggest">
+                            <div class="search-suggest-list">
+                                <div class="recent-keyword">
+                                    <strong class="suggest-title">최근 검색어</strong>
+                                    <ul class="list">
+                                        <li>
+                                            <button type="button" class="keyword"><span>환경보전</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>환경교육</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>미세먼지미세먼지미세먼지미세먼지미세먼지미세먼지미세먼지미세먼지미세먼지미세먼지</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>분리수거</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>체험학습</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>지침</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>법령</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>국가환경교육</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>지정제</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>교육 프로그램</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="keyword"><span>우수환경</span></button>
+                                            <button type="button" class="recent-keyword-remove" title="최근 검색어 삭제"></button>
+                                        </li>
+                                    </ul>
+                                    <!-- <p>최근 검색한 키워드가 없습니다.</p> -->
+                                </div>
+                                <div class="popular-keyword">
+                                    <strong class="suggest-title">인기 검색어</strong>
+                                    <div class="tab-content">
+                                        <ul class="tab-list" role="tablist">
+                                            <li class="tab active"><button type="button" id="search-tab1" role="tab" aria-controls="search-tab-panel1">일간</button></li>
+                                            <li class="tab"><button type="button" id="search-tab2" role="tab" aria-controls="search-tab-panel2">주간</button></li>
+                                            <li class="tab"><button type="button" id="search-tab3" role="tab" aria-controls="search-tab-panel3">월간</button></li>
+                                        </ul>
+                                        <div id="search-tab-panel1" class="tabpanel" role="tabpanel" aria-labelledby="search-tab1">
+                                            <ul class="list">
+                                                <li><button type="button" class="keyword"><span>1환경보전</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1환경교육</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1미세먼지</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1분리수거</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1체험학습</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1지침</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1법령</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1국가환경교육</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1지정제</span></button></li>
+                                                <li><button type="button" class="keyword"><span>1교육 프로그램</span></button></li>
+                                            </ul>
+                                        </div>
+                                        <div id="search-tab-panel2" class="tabpanel" role="tabpanel" aria-labelledby="search-tab2">
+                                            <ul class="list">
+                                                <li><button type="button" class="keyword"><span>2환경보전2환경보전2환경보전2환경보전</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2환경교육</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2미세먼지</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2분리수거</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2체험학습</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2지침</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2법령</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2국가환경교육</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2지정제</span></button></li>
+                                                <li><button type="button" class="keyword"><span>2교육 프로그램</span></button></li>
+                                            </ul>
+                                        </div>
+                                        <div id="search-tab-panel3" class="tabpanel" role="tabpanel" aria-labelledby="search-tab3">
+                                            <ul class="list">
+                                                <li><button type="button" class="keyword"><span>3환경보전</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3환경교육</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3미세먼지</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3분리수거</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3체험학습</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3지침</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3법령</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3국가환경교육</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3지정제</span></button></li>
+                                                <li><button type="button" class="keyword"><span>3교육 프로그램</span></button></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="search-suggest-control">
+                                <div class="left"><button type="button" class="recent-list-remove">최근 검색어 모두 삭제</button></div>
+                                <div class="right"><button type="button" class="auto-save-remove">자동저장 끄기</button></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-search" title="검색"></button>
+                </div>
+            </div>
+            <div class="shortcut-menu">
+                <ul>
+                    <th:block th:if="${session.user}"> 
+                    <li class="ico-member"><a href="#">마이페이지</a></li>
+                    <li class="ico-login">
+                        <a href="javascript:logout()">로그아웃</a>
+                    </li>
+                    </th:block>
+                    <th:block th:unless="${session.user}">
+                    <li class="ico-login">
+                        <a href="javascript:moveLoginPage()">로그인</a>
+                    </li>
+                    <li class="ico-member"><a href="#">회원가입</a></li>
+                    </th:block>
+                    <li class="ico-language toggleParent trapTab">
+                        <button class="toggleTrigger" th:text="${T(org.springframework.context.i18n.LocaleContextHolder).getLocale().toLanguageTag() != 'en' ? '한국어':'ENG'}">
+                            <span class="blind">
+                                <span class="on" aria-hidden="false">언어 변환 열기</span>
+                                <span class="off" aria-hidden="true">언어 변환 닫기</span>
+                            </span>
+                        </button>
+                        <ul class="language-list toggleTarget">
+                            <li th:class="${T(org.springframework.context.i18n.LocaleContextHolder).getLocale().toLanguageTag() != 'en' ? 'active':''}"><a href="javascript:changeLocale('ko')" title="현재 언어">한국어</a></li>
+                            <li th:class="${T(org.springframework.context.i18n.LocaleContextHolder).getLocale().toLanguageTag() == 'en' ? 'active':''}"><a href="javascript:changeLocale('en')" title="현재 언어">ENGLISH</a></li>
+                        </ul>
+                    </li>
+                    <th:block th:if="${session.user}"> 
+                    <li class="ico-alarm toggleParent toggle-layer">
+                        <button class="toggleTrigger">알림 <strong>20</strong>
+                            <span class="blind">
+                                <span class="on" aria-hidden="false">알림 열기</span>
+                                <span class="off" aria-hidden="true">알림 닫기</span>
+                            </span>
+                        </button>
+                        <div class="alarm-layer toggle-layer-inner">
+                            <button class="toggleTrigger toggle-layer-close" title="레이어팝업 닫기"></button>
+                            <div class="toggle-layer-title">
+                                <strong>내 알림</strong>
+                                <button type="button" class="btn-xsmall btn-outline-black">알림 모두 삭제</button> <!-- 알림 없을 경우 삭제-->
+                            </div>
+                            <ul>
+                                <li>
+                                    <a href="#">
+                                        <strong>전문가 회원가입 승인 완료</strong>
+                                        <span>2022-10-11  10:27:23</span>
+                                    </a>
+                                    <button type="button" title="알림 삭제"></button>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <strong>전문가 회원가입 승인 완료</strong>
+                                        <span>2022-10-11  10:27:23</span>
+                                    </a>
+                                    <button type="button" title="알림 삭제"></button>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <strong>전문가 회원가입 승인 완료</strong>
+                                        <span>2022-10-11  10:27:23</span>
+                                    </a>
+                                    <button type="button" title="알림 삭제"></button>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <strong>전문가 회원가입 승인 완료</strong>
+                                        <span>2022-10-11  10:27:23</span>
+                                    </a>
+                                    <button type="button" title="알림 삭제"></button>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <strong>전문가 회원가입 승인 완료</strong>
+                                        <span>2022-10-11  10:27:23</span>
+                                    </a>
+                                    <button type="button" title="알림 삭제"></button>
+                                </li>
+                                <li class="view-all">
+                                    <a href="#">
+                                        <span>알림 전체 보기</span>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- <div class="alarm-nodata">
+                                <div class="thumb">
+                                    <img src="/images/front/ico/ico-alarm-large.png" alt="">
+                                    <p>내가 받은 알림이 <br> 여기에 표시됩니다.</p>
+                                </div>
+                            </div> -->
+                        </div>
+                    </li>
+                    </th:block>
+                </ul>
+            </div>
         </div>
     </div>
-
-    <!-- mobile -->
-    <div class="header-menu-mobile">
-        <th:block th:if="${session.user}"> 
-        <a href="javascript:logout()" class="btn-menu-login">로그아웃</a>
-        </th:block>
-        <th:block th:unless="${session.user}">
-        <a href="/login.html" class="btn-menu-login">로그인</a>
-        </th:block>
-
-        <button type="button" class="btn-menu-mobile"><span class="메뉴보기"></span></button>
+    <div class="header-bottom">
+        <div class="header-bottom-inner">
+            <div id="gnb" class="gnb">
+                <button type="button" class="btn-gnb-start blind" title="GNB 시작"></button>
+                <ul class="dep01">
+                    <th:block th:utext="${@gnbMenuPrintImpl.menuPrint()}" />
+                </ul>
+                <button type="button" class="btn-gnb-end blind" title="GNB 종료"></button>
+            </div>
+            <div class="sitemap"><a href="#" title="전체메뉴"></a></div>
+        </div>
     </div>
-    <!-- // mobile -->
 </div>
-
-<!-- gnb -->
-<nav class="gnb">
-    <div class="gnb-wrap">
-        <!-- 활성화시 is-active -->
-        <div class="gnb-box">
-            <button type="button" class="btn-gnb">교수학습자료</button>
-
-            <ul class="gnb-sub">
-                <li>
-                    <!-- 활성화시  is-active 클래스 추가 -->
-                    <a href="/front/profData/korean/1.html" class="btn-gnb-sub">국어</a>
-                </li>
-                <li><a href="/front/profData/elngish/1.html" class="btn-gnb-sub">영어</a></li>
-                <li><a href="/front/profData/math/1.html" class="btn-gnb-sub">수학</a></li>
-                <li><a href="/front/beforeData/korean/paperData.html" class="btn-gnb-sub">이전 자료</a></li>
-            </ul>
-        </div>
-
-        <div class="gnb-box">
-            <button type="button" class="btn-gnb">커뮤니티</button>
-
-            <ul class="gnb-sub">
-                <li><a href="/front/community/studyDataShare.html" class="btn-gnb-sub">교수학습자료 공유</a></li>
-                <li><a href="/front/community/infoShare.html" class="btn-gnb-sub">정보 나눔</a></li>
-            </ul>
-        </div>
-
-        <div class="gnb-box">
-            <button type="button" class="btn-gnb">학생정보관리</button>
-
-            <ul class="gnb-sub">
-                <li><a href="/front/student/classManage.html" class="btn-gnb-sub">학급 관리</a></li>
-                <li><a href="/front/student/classStatistic.html" class="btn-gnb-sub">학습 현황 (통계)</a></li>
-            </ul>
-        </div>
-        
-        <div class="gnb-box">
-            <button type="button" class="btn-gnb">HiJump 소개</button>
-
-            <ul class="gnb-sub">
-                <li><a href="/front/intro/introduceHJ.html" class="btn-gnb-sub">HiJump 소개</a></li>
-                <li><a href="/front/bbs/10/main.html" class="btn-gnb-sub">예제게시판</a></li>
-                <li><a href="/front/inqry/InquryForm.html" class="btn-gnb-sub">문의하기</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<!-- // gnb -->
-
-<!-- gnb mobile -->
-<nav class="gnb-mobile">
-    <div class="gnb-box">
-        <button type="button" class="btn-gnb">교수학습자료</button>
-
-        <ul class="gnb-sub">
-            <li>
-                <button type="button" class="btn-gnb-sub">국어</button>
-
-                <ul class="gnb-sub-sub">
-                    <li><a href="/front/profData/korean/1.html" class="tit">국어 1차</a></li>
-                    <li><a href="/front/profData/korean/2.html" class="tit">국어 2차</a></li>
-                </ul>
-            </li>
-            <li>
-                <button type="button" class="btn-gnb-sub">영어</button>
-
-                <ul class="gnb-sub-sub">
-                    <li><a href="/front/profData/elngish/1.html" class="tit">영어 1차</a></li>
-                    <li><a href="/front/profData/elngish/2.html" class="tit">영어 2차</a></li>
-                </ul>
-            </li>
-            <li>
-                <button type="button" class="btn-gnb-sub">수학</button>
-    
-                <ul class="gnb-sub-sub">
-                    <li><a href="/front/profData/math/1.html" class="tit">수학 1차</a></li>
-                    <li><a href="/front/profData/math/2.html" class="tit">수학 2차</a></li>
-                </ul>
-            </li>
-            <li>
-                <button type="button" class="btn-gnb-sub">이전자료</button>
-    
-                <ul class="gnb-sub-sub">
-                    <li>
-                        <strong class="tit">국어</strong>
-
-                        <ul>
-                            <li><a href="/front/beforeData/korean/paperData.html">- 시험지 자료</a></li>
-                            <li><a href="/front/beforeData/korean/data.html">- 학습 자료</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <strong class="tit">영어</strong>
-
-                        <ul>
-                            <li><a href="/front/beforeData/english/paperData.html">- 시험지 자료</a></li>
-                            <li><a href="/front/beforeData/english/data.html">- 학습 자료</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <strong class="tit">수학</strong>
-
-                        <ul>
-                            <li><a href="/front/beforeData/math/paperData.html">- 시험지 자료</a></li>
-                            <li><a href="/front/beforeData/math/data.html">- 학습 자료</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div class="gnb-box">
-        <button type="button" class="btn-gnb">커뮤니티</button>
-
-        <ul class="gnb-sub">
-            <li><a href="/front/community/studyDataShare.html" class="btn-gnb-sub">교수학습자료 공유</a></li>
-            <li><a href="/front/community/infoShare.html" class="btn-gnb-sub">정보 나눔</a></li>
-        </ul>
-    </div>
-
-    <div class="gnb-box">
-        <button type="button" class="btn-gnb">학생정보관리</button>
-
-        <ul class="gnb-sub">
-            <li>
-                <button type="button" class="btn-gnb-sub">학급관리</button>
-
-                <ul class="gnb-sub-sub">
-                    <li><a href="/front/student/classManage.html" class="tit">학급 생성</a></li>
-                    <li><a href="/front/student/classManage.html" class="tit">학생 등록</a></li>
-                </ul>
-            </li>
-            <li>
-                <button type="button" class="btn-gnb-sub">학습 현황 (통계)</button>
-
-                <ul class="gnb-sub-sub">
-                    <li><a href="/front/student/classStatistic.html" class="tit">평가 현황</a></li>
-                    <li><a href="/front/student/classStatistic.html" class="tit">접속 현황</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="gnb-box">
-        <button type="button" class="btn-gnb">HiJump 소개</button>
-
-        <ul class="gnb-sub">
-            <li><a href="/front/intro/introduceHJ.html" class="btn-gnb-sub">HiJump 소개</a></li>
-            <li><a href="/front/bbs/10/main.html" class="btn-gnb-sub">예제 게시판</a></li>
-            <li><a href="/front/inqry/InquryForm.html" class="btn-gnb-sub">문의하기</a></li>
-        </ul>
-    </div>
-</nav>
-<!-- // gnb mobile -->
-
-<button type="button" class="btn-gnb-clse"><span class="ir">gnb 닫기</span></button>
 <form name="logout_form" th:action="@{/logout}" method="post" onsubmit="return false">
 </form>
+<script>
+    // header search autocomplete
+    const autoCompleteJS = new autoComplete({
+        selector: "#search-input",
+        data: {
+            src:  [
+                {"keyword": "환경보전1환경보전1환경보전1환경보전1", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전2", "link": "http://www.naver.com"},
+                {"keyword": "환경보전3", "link": "http://www.naver.com"}
+            ],
+            keys: ["keyword"],
+            cache: false,
+        },
+        resultsList: {
+            maxResults: 10,
+        },
+        resultItem: {
+            tag: "li",
+            element: (item, data) => {
+                item.innerHTML = `<span style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${data.match}</span>`;
+                const link = document.createElement('a')
+                item.appendChild(link);
+                link.target = "_blank"
+                link.href = data.value.link;
+                link.textContent  = data.value.link;
+            },
+            highlight: true
+        },
+
+        events: {
+            input: {
+                selection: (event) => {
+                    const selection = event.detail.selection.value.keyword;
+                    autoCompleteJS.input.value = selection;
+                }
+            }
+        }
+    });
+    document.querySelector("#search-input").addEventListener("open", function (event) {
+        this.closest('.header-search').classList.add('autocomplete-open');
+        this.closest('.header-search').classList.remove('active');
+    });
+    document.querySelector("#search-input").addEventListener("close", function (event) {
+        this.closest('.header-search').classList.remove('autocomplete-open');
+    });
+
+</script>

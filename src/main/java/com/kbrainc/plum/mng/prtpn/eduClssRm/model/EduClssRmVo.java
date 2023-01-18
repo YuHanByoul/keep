@@ -50,9 +50,11 @@ public class EduClssRmVo extends ParentRequestVo {
     private String cnsgnInstId;
     /** 위탁_기관명 */
     private String cnsgnInstNm;    
-    /** 접수_시작_일시 */
+    /** 접수_시작_일자 */
+    @NotEmpty(message = "접수 시작 일시를 선택해주십시오.")
     private String rcptBgngDt;
-    /** 접수_종료_일시 */
+    /** 접수_종료_일자 */
+    @NotEmpty(message = "접수 종료 일시를 선택해주십시오.")
     private String rcptEndDt;
     /** 교육관_연간_신청_제한_개수 */
     private String clssrmFyerAplyLmtCnt;

@@ -45,6 +45,7 @@ public class ExpertMdfcnController {
         return "mng/expertPoolMng/expertMdfcnList.html";
     }
 
+
     @RequestMapping("/selectExpertMdfcnList.do")
     @ResponseBody
     public Map<String, Object> selectExpertMdfcnList(ExpertMdfcnVo expertMdfcnVo) throws Exception {
@@ -66,6 +67,7 @@ public class ExpertMdfcnController {
     @RequestMapping("/expertMdfcnDetail.html")
     public String expertMdfcnDetail(ExpertMdfcnVo expertMdfcnVo, Model model) throws Exception {
         model.addAttribute("expertMdfcnInfo", expertMdfcnService.selectExpertMdfcn(expertMdfcnVo));
+
         ExpertVo expertVo = new ExpertVo();
         expertVo.setUserid(expertMdfcnVo.getUserid());
 
@@ -78,23 +80,23 @@ public class ExpertMdfcnController {
             }
         }
         for (ExpertCrtfctVo expertCrtfctVo : expertVo1.getExpertCrtfctList()) {
-
+            for (ExpertCrtfctVo item : existingExpertInfo.getExpertCrtfctList()) {
+            }
         }
         for (ExpertHdofVo expertHdofVo : expertVo1.getExpertHdofList()) {
+            for (ExpertHdofVo item : existingExpertInfo.getExpertHdofList()) {
+
+            }
         }
-        model.addAttribute("newExpertInfo",expertVo1);
+        model.addAttribute("newExpertInfo", expertVo1);
         return "mng/expertPoolMng/expertMdfcnDetail.html";
     }
 
-    @RequestMapping("/updateSttsCd.do")
+    @RequestMapping("/updateMdfcnStts.do")
     @ResponseBody
-    public boolean updateSttsCd(ExpertMdfcnVo expertMdfcnVo, ExpertLogVo expertLogVo, @UserInfo UserVo user) throws Exception {
+    public int updateMdfcnStts(ExpertMdfcnVo expertMdfcnVo, ExpertLogVo expertLogVo, @UserInfo UserVo user) throws Exception {
         expertLogVo.setUser(user);
-        /*#{userid}
-             , #{prcsSeCd}
-             , #{rsnCn}
-             , NOW()
-             , #{user.userid}*/
+        expertPoolMngService.insertExpertLog(expertLogVo);
         return expertMdfcnService.updateSttsCd(expertMdfcnVo);
     }
 }

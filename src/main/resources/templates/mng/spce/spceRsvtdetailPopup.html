@@ -1,0 +1,116 @@
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content type_2">
+        
+            <div class="modal-header">
+                <h4 class="modal-title">예약일 일괄 등록</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                    
+                        <div class="card-header p-b-0 mx-3 row bg-light rounded-3 justify-content-between">
+                            <div class="col-12 col-lg-auto form-group row align-items-center">
+                            
+                                <div class="col-auto p-l-0 p-r-0">
+                                    <strong>이용 구분</strong>
+                                </div>
+                                
+                                <div class="col-auto form-radio">
+                                    <div class="radio d-inline-block">
+                                        <label class="mb-0 form-label">
+                                            <input type="radio" name="utztnSeCd" class="radio-toggle" data-value="useStatusSelectAll1" value="169101"  
+                                                th:checked ="${mode eq 'PS' or mode eq 'S'}" >
+                                            <i class="helper"></i>숙박
+                                        </label>
+                                    </div>
+                                    <div class="radio d-inline-block m-l-10">
+                                        <label class="mb-0 form-label">
+                                            <input type="radio" name="utztnSeCd" class="radio-toggle" data-value="useStatusSelectAll2" value="169102"  
+                                            th:checked ="${mode eq 'PR' or  mode eq 'R' }" >
+                                            <i class="helper"></i>대여
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                         
+                        <!--contnetns_area  start-->
+                        <span id="pop_contents_area"></span>
+                        <!--contnetns_area  end-->
+                        
+                     <!--html load area end  -->
+                    </div>
+                </div>
+            </div>
+            <!--ㅡmodal body end  -->
+            
+        </div>
+        
+   </div>
+  
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+    var mode1 = /*[[${param.mode}]]*/null;
+    var mode = /*[[${mode}]]*/null;
+    var param = /*[[${param}]]*/null;
+    /*]]>*/
+    
+    var contnetnsUrl ="/mng/spce/packageStayRsvtPopup.html?mode=";
+
+    var currentUtztnSeCd = "169101";
+    
+    $(function(){
+        
+        console.log(mode1[0]);
+        console.log(mode);
+        console.log(param);
+        
+    	$("input[name=utztnSeCd]").bind("click",function(){
+    		let cd = $("input[name=utztnSeCd]:checked").val();
+    		console.log(cd);
+    		if(currentUtztnSeCd != cd){
+                loadContent((cd=='169101')?'PS':'PR');
+                currentUtztnSeCd = cd;
+        	}
+        })
+        
+        loadContent(mode);
+        
+    });
+
+
+   loadContent=(pageMode)=>{
+    	$("#pop_contents_area").load(contnetnsUrl+pageMode);
+   }
+   var moveTab =(target)=>{
+        
+        $(".nav-link").removeClass("active");
+        
+        currentTab = target;
+        
+        if(target=="spce"){
+            
+            if(mode == "I"){
+               $("#rsvt_tab").remove();
+               $("#tab_content_area").load(insertUrl);
+            }else{
+               $("#tab_content_area").load(updateUrl);
+            }
+        }else{
+            $("#tab_content_area").load(rsvtUrl);
+        }
+        $("."+currentTab).addClass("active");
+       setTimeout(function(){scrollIntoView('contentPanel');},200 )  
+
+    }
+        
+</script>
+
+</body>
+</html>
