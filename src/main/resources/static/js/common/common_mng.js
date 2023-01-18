@@ -355,3 +355,17 @@ function fileUploader($wrapper, filegrpNm, name, fileData, options) {
         $idInp
     ]);
 }
+
+
+/*
+* 엑셀 다운로드 유틸
+* $searchForm: 검색폼 jquery 객체
+* url: 엑셀 다운로드 주소
+* */
+function excelDownload($searchForm, url) {
+    const inpArr = $searchForm.serializeArray();
+    $("<form/>").css({display: 'none'}).attr({"action": url, 'method': 'post'})
+        .append(
+            inpArr.map(item => $("<input/>").attr({type: 'hidden', name: item.name}).val(item.value))
+        ).appendTo('body').submit().remove();
+}

@@ -87,12 +87,17 @@ public class CntstAplyVO extends ParentRequestVo {
     /** 기관명*/
     private String instNm;
 
+    /** 작성일 YMD */
+    private String regDtYmd;
+
     /** 공모전 제목 */
     private String cntstTtl;
+
+    /** 공모전 분류 */
     private String cntstClsfCd;
 
     /** 검색 영역 */
-    private String searchClsfCd;
+    private String searchCntstClsfCd;
 
     private String searchCntstSttsCd;
 }

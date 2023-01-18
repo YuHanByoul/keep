@@ -3,8 +3,10 @@ package com.kbrainc.plum.mng.prtpn.cntstRcptHist.controller;
 import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplySchlVO;
 import com.kbrainc.plum.mng.prtpn.cntstRcptHist.model.CntstAplyVO;
 import com.kbrainc.plum.mng.prtpn.cntstRcptHist.service.CntstRcptHistService;
+import com.kbrainc.plum.rte.service.ResCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,15 +39,21 @@ public class CntstRcptHistController {
     @Autowired
     CntstRcptHistService cntstRcptHistService;
 
+    @Autowired
+    ResCodeService resCodeService;
+
 
     /**
      * 공모전 접수내역
      * Description : 공모전 접수내역
      *
+     * @param model
      * @return string
      */
     @RequestMapping(value = "/mng/prtpn/cntstRcptHist/cntstRcptHistListForm.html")
-    public String cntstRcptHistListForm() {
+    public String cntstRcptHistListForm(Model model) throws Exception {
+        Map<String, String> cntstClsfCdMap = resCodeService.getCodeMap("165");
+        model.addAttribute("cntstClsfCdMap", cntstClsfCdMap);
         return "mng/prtpn/cntstRcptHist/cntstRcptHistList";
     }
 
