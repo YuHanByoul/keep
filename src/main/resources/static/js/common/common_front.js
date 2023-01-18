@@ -47,3 +47,71 @@ jQuery(function(){
  });
 });
 
+
+jQuery(function(){
+    $("#this_href_naver_share_process").click(function(e) {
+        e.preventDefault();
+        var t = $("#currentPageUrl").val()
+          , a = document.title
+          , n = "http://share.naver.com/web/shareView.nhn?url=" + o(t) + "&title=" + o(a);
+        if (!confirm("현재 페이지를 네이버에 공유하시겠습니까?"))
+            return !1;
+        window.open(n)
+    });
+    
+    $("#this_href_kakaostory_share_process").click(function(e) {
+        e.preventDefault();
+        var t = $("#currentPageUrl").val()
+          , a = document.title
+          , n = "https://story.kakao.com/s/share?url=" + o(t) + "&text=" + o(a);
+        if (!confirm("현재 페이지를 카카오스토리에 공유하시겠습니까?"))
+            return !1;
+        window.open(n)
+    });
+    
+    $("#this_href_twitter_share_process").click(function(e) {
+        e.preventDefault();
+        var t = $("#currentPageUrl").val()
+          , a = document.title
+          , n = "https://twitter.com/intent/tweet?url=" + o(t) + "&text=" + o(a);
+        if (!confirm("현재 페이지를 트위터에 공유하시겠습니까?"))
+            return !1;
+        window.open(n)
+    });
+    
+    $("#this_href_facebook_share_process").click(function(e) {
+        e.preventDefault();
+        var t = $("#currentPageUrl").val()
+          , a = document.title
+          , n = "https://www.facebook.com/sharer/sharer.php?u=" + o(t) + "&t=" + o(a);
+        if (!confirm("현재 페이지를 페이스북에 공유하시겠습니까?"))
+            return !1;
+        window.open(n)
+    });
+});
+
+// url 복사하는 함수
+function copyUrl(e) {
+  if (!document.queryCommandSupported("copy")) {
+    return alert("복사 기능이 지원되지 않는 브라우저입니다.");
+  }
+
+  jQuery("#currentPageUrl").select();
+  document.execCommand('copy');
+  e.target.focus();
+
+  alert("주소가 복사되었습니다.\n원하는 곳에 붙여넣기 해주세요.");
+}
+
+function o(e) {
+    if (null == e || "" == e)
+        return "";
+    if (e instanceof Array) {
+        for (var t = ""; 0 < e.length; ++s)
+            "" != t && (t += "&"),
+            t += o(e[0]);
+        return t
+    }
+    return e = (e = (e = (e = (e = (e = encodeURIComponent(e)).replace(/\!/g, "%21")).replace(/\*/g, "%2A")).replace(/\'/g, "%27")).replace(/\(/g, "%28")).replace(/\)/g, "%29")
+}
+
