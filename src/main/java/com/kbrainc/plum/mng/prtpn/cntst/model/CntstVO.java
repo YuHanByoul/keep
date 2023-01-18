@@ -5,6 +5,8 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**
@@ -31,6 +33,8 @@ public class CntstVO extends ParentRequestVo {
     private Integer cntstid;
 
     /** 제목*/
+    @NotEmpty
+    @Size(max = 200, message = "제목은 200자를 넘을 수 없습니다.")
     private String ttl;
 
     /** 썸네일_파일아이디*/
@@ -41,17 +45,14 @@ public class CntstVO extends ParentRequestVo {
 
 
     /** 신청_시작_일자*/
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private String aplyBgngDt;
 
 
     /** 신청_종료_일자*/
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private String aplyEndDt;
 
 
     /** 발표_일자*/
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private String prsntnDt;
 
     /** 중복_가능_여부*/

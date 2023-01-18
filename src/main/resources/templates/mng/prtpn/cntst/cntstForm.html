@@ -4,7 +4,6 @@
 
 <form id="cntstForm">
     <input type="hidden" name="cntstid" th:value="${cntstInfo.cntstid}"/>
-
     <div class="card">
         <!-- 기본정보 -->
         <div class="card-header p-b-0">
@@ -14,33 +13,41 @@
             <div class="row">
                 <div class="col-lg-6 mb-3">
                     <div class="mb-0 form-group required">
-                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clsfCd"><strong>분류</strong></label>
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clsfCd">분류</label>
                         <div class="col-sm-12">
-                        <span
-                                kattr:select_code="clsfCd"
-                                th:attr="selectedCd=${cntstInfo.clsfCd}"
-                                grpCd="165"
-                                firstOptTxt="- 선택 -"
-                                addClass="form-select form-select-sm form-control-sm"
-                                isAdmin="true"
-                        ></span>
+
+                        <th:block th:if="${cntstInfo.cntstid==null}">
+                             <span
+                                     kattr:select_code="clsfCd"
+                                     th:attr="selectedCd=${cntstInfo.clsfCd}"
+                                     grpCd="165"
+                                     firstOptTxt="- 선택 -"
+                                     addClass="form-select form-select-sm form-control-sm"
+                                     isAdmin="true"
+                             ></span>
+                        </th:block>
+                        <th:block th:if="${cntstInfo.cntstid!=null}">
+                            <input type="text" class="form-control form-control-sm" readonly th:value="${cntstClsfCdMap[cntstInfo.clsfCd]}">
+                            <input type="hidden" id="clsfCd" th:value="${cntstInfo.clsfCd}">
+                        </th:block>
+
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-6 mb-3">
-                    <div class="mb-0 form-group">
+                    <div class="mb-0 form-group required">
                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>중복참여</strong></div>
                         <div class="mt-1">
                             <div class="form-radio">
                                 <div class="radio radio-inline">
                                     <label class="mb-0 form-label">
-                                        <input type="radio" name="noticeTarget"  th:checked="${cntstInfo.dpcnPsbltyYn}=='Y'">
+                                        <input type="radio" name="dpcnPsbltyYn" value="Y" th:checked="${cntstInfo.dpcnPsbltyYn == 'Y'}">
                                         <i class="helper"></i>가능
                                     </label>
                                 </div>
                                 <div class="radio radio-inline">
                                     <label class="mb-0 form-label">
-                                        <input type="radio" name="noticeTarget"  th:checked="${cntstInfo.dpcnPsbltyYn}=='N'">
+                                        <input type="radio" name="dpcnPsbltyYn" value="N" th:checked="${cntstInfo.dpcnPsbltyYn == 'N'}">
                                         <i class="helper"></i>불가능
                                     </label>
                                 </div>
@@ -51,28 +58,28 @@
             </div>
             <div class="row">
                 <div class="col-lg-4 mb-3">
-                    <div class="mb-0 form-group">
+                    <div class="mb-0 form-group required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="date_01"><strong>접수시작일시 설정</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" id="date_01" name="aplyBgngDt"  th:value="${cntstInfo.aplyBgngDt}"/>
+                            <input type="datetime-local" class="form-control form-control-sm" id="date_01" name="aplyBgngDt" th:value="${cntstInfo.aplyBgngDt}"/>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-4 mb-3">
-                    <div class="mb-0 form-group">
+                    <div class="mb-0 form-group required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="date_02"><strong>접수종료일시 설정</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" id="date_02" name="aplyEndDt" value="2023-01-20 11:11:11" th:value="${cntstInfo.aplyEndDt}"/>
+                            <input type="datetime-local" class="form-control form-control-sm" id="date_02" name="aplyEndDt" th:value="${cntstInfo.aplyEndDt}"/>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-lg-4 mb-3">
-                    <div class="mb-0 form-group">
+                    <div class="mb-0 form-group required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="date_03"><strong>당첨자발표일시 설정</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" id="date_03"  name="prsntnDt" value="2023-01-20 11:11:11" th:value="${cntstInfo.prsntnDt}"/>
+                            <input type="datetime-local" class="form-control form-control-sm" id="date_03"  name="prsntnDt" th:value="${cntstInfo.prsntnDt}"/>
                         </div>
                     </div>
                 </div>
@@ -83,10 +90,10 @@
                     <input type="text" class="form-control form-control-sm" name="ttl"  th:value="${cntstInfo.ttl}" id="ttl" placeholder="제목을 입력해 주세요."/>
                 </div>
             </div>
-            <div class="row form-group required mb-3">
+            <div class="row form-group mb-3">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
                 <div class="col-sm-12">
-                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용을 입력해 주세요." id="cn" name="cn" th:value="${cntstInfo.cn}"></textarea>
+                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용을 입력해 주세요." id="cn" name="cn" th:text="${cntstInfo.cn}"></textarea>
                 </div>
             </div>
             <div class="row form-group mb-3 required">
@@ -106,29 +113,32 @@
         <div class="card-header p-b-0">
             <h3 class="sub-title"><strong>접수 정보</strong></h3>
         </div>
-        <div class="card-block-small p-t-0">
+        <div class="card-block-small p-t-0" id="cntstRcptInfoArea">
             <div class="row form-group required mb-3">
-                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>공모분야</strong></div>
+                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                    <strong class="not-diary-cntst">공모분야</strong>
+                    <strong class="is-diary-cntst">신청대상</strong>
+                </div>
                 <div class="col-12">
                     <div class="border-checkbox-section bg-form">
-                    <span kattr:check_code="cntstFldCdArr"
-                          grpCd="166"
-                          th:attr="selectedCd=${#strings.listJoin(cntstFldCdList,',')}"
-                          isAdmin="true">
-                    </span>
+                        <span kattr:check_code="cntstFldCdArr"
+                              grpCd="166"
+                              th:attr="selectedCd=${#strings.listJoin(cntstFldCdList,',')}"
+                              isAdmin="true">
+                        </span>
                     </div>
                 </div>
             </div>
-            <div class="row form-group mb-3">
+            <div class="row form-group mb-3 not-diary-cntst">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="gdnc"><strong>작품 업로드 안내</strong></label>
                 <div class="col-sm-12">
-                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용을 입력해 주세요." id="gdnc" name="gdnc" th:value="${cntstInfo.gdnc}"></textarea>
+                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용을 입력해 주세요." id="gdnc" name="gdnc" th:text="${cntstInfo.gdnc}"></textarea>
                 </div>
             </div>
-            <div class="row form-group mb-3">
+            <div class="row form-group mb-3 not-diary-cntst">
                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="trms"><strong>참가서약 약관</strong></label>
                 <div class="col-sm-12">
-                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용을 입력해 주세요." id="trms" name="trms" th:value="${cntstInfo.trms}"></textarea>
+                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용을 입력해 주세요." id="trms" name="trms" th:text="${cntstInfo.trms}"></textarea>
                 </div>
             </div>
         </div>
@@ -147,37 +157,82 @@
     $(function () {
         const thmbnFile = /*[[${thmbnFile}]]*/null;
         const atchFileList = /*[[${atchFileList}]]*/null;
-        fileUploader($("#thumbnailFileUploader"), 'biz_file', 'thmbnFileid', thmbnFile)
-        fileUploader($("#atchFileUploader"), 'biz_file', 'atchFilegrpid', atchFileList, {multiple: true})
-
-
+        fileUploader($("#thumbnailFileUploader"), 'biz_file', 'thmbnFileid', thmbnFile, {accept: '.jpeg,.jpg,image/png,image/gif'});
+        fileUploader($("#atchFileUploader"), 'biz_file', 'atchFilegrpid', atchFileList, {multiple: true});
 
         const $form = $("#cntstForm");
-        $form.on('submit', function (e) {
-            e.preventDefault();
-            const actionUrl = $form.find("[name=constid]").val() ? "/mng/prtpn/cntst/updateCntst.do" : "/mng/prtpn/cntst/insertCntst.do";
-            if (displayWorkProgress()) {
-                $.ajax({
-                    url: actionUrl,
-                    type: 'POST',
-                    cache: false,
-                    dataType: 'json',
-                    data: $form.serialize(),
-                    success: function (data) {
-                        if (data.result === "success") {
-                            alert("저장이 완료 되었습니다.");
-                            gridHelper1.resetListContent();
-                        } else {
-                            alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
-                        }
-                        closeWorkProgress();
-                    }
-                });
+        const $cn = $form.find('[name=cn]');
+        const $cntstRcptInfoArea = $("#cntstRcptInfoArea");
+        const $cntstRcptInfoAreaIsDiary = $cntstRcptInfoArea.find(".is-diary-cntst");
+        const $cntstRcptInfoAreaNotDiary = $cntstRcptInfoArea.find(".not-diary-cntst");
+        const $clsfCd = $("#clsfCd");
+        const isUpdate = !!$form.find("[name=cntstid]").val();
+        const editor = CKEDITOR.replace($cn[0] );
+
+        $clsfCd.on('change', function () {
+            if ($clsfCd.val() === '165105') { /* 환경방학 일기장 프로젝트  */
+                $cntstRcptInfoAreaIsDiary.show()
+                $cntstRcptInfoAreaNotDiary.hide().find('textarea').prop({disabled: true})
+            } else {
+                $cntstRcptInfoAreaIsDiary.hide()
+                $cntstRcptInfoAreaNotDiary.show().find('textarea').prop({disabled: false})
             }
+        }).change();
 
+        $form.validate({
+            ignore: '',
+            rules: {
+                ...(!isUpdate ? {clsfCd: 'required'}: {} ),
+                dpcnPsbltyYn: 'required',
+                aplyBgngDt: 'required',
+                aplyEndDt: 'required',
+                prsntnDt: 'required',
+                ttl: {required: true, maxlength: 200},
+                thmbnFileid: 'required',
+                cntstFldCdArr: {
+                    required: {depends: () =>{console.log( $clsfCd.val() === '165105'); return  $clsfCd.val() === '165105'}},
+                    required2: {depends: () => {console.log($clsfCd.val() !== '165105'); return $clsfCd.val() !== '165105'}},
+                },
+            },
+            messages: {
+                clsfCd: '분류를 선택해 주십시오.',
+                dpcnPsbltyYn: '중복참여여부를 선택해 주십시오.',
+                aplyBgngDt: '접수시작일시를 설정해 주십시오.',
+                aplyEndDt: '접수종료일시를 설정해 주십시오.',
+                prsntnDt: '당첨자발표일시를 설정해 주십시오.',
+                ttl: {required: "제목을 입력해 주십시오.", maxlength: "게시판 제목은 200자를 넘을 수 없습니다."},
+                thmbnFileid: '썸네일 파일을 첨부해 주십시오.',
+                cntstFldCdArr: {
+                    required: '신청대상을 선택해 주십시오.',
+                    required2: '공모분야를 선택해 주십시오.',
+                },
+            },
+            submitHandler: function(){
+                $cn.val(editor.getData())
+                const actionUrl = isUpdate ? "/mng/prtpn/cntst/updateCntst.do" : "/mng/prtpn/cntst/insertCntst.do";
+                if (displayWorkProgress()) {
+                    $.ajax({
+                        url: actionUrl,
+                        type: 'POST',
+                        cache: false,
+                        dataType: 'json',
+                        data: $form.serialize(),
+                        success: function (data) {
+                            if (data.success) {
+                                alert("저장이 완료 되었습니다.");
+                                if (isUpdate) {
+                                    gridHelper1.resetPageContent();
+                                } else {
+                                    gridHelper1.resetListContent();
+                                }
+                            } else {
+                                alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
         })
-
-
-
     })
 </script>

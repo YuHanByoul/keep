@@ -99,8 +99,10 @@ public class CntstController {
      * @return string
      */
     @RequestMapping(value = "/mng/prtpn/cntst/cntstInsertForm.html")
-    public String cntstInsertForm(Model model) {
+    public String cntstInsertForm(Model model) throws Exception {
+        Map<String, String> cntstClsfCdMap = resCodeService.getCodeMap("165");
         model.addAttribute("cntstInfo", new CntstVO());
+        model.addAttribute("cntstClsfCdMap", cntstClsfCdMap);
         return "mng/prtpn/cntst/cntstForm";
     }
 
@@ -131,7 +133,9 @@ public class CntstController {
             ArrayList<FileVo> atchFileList= fileService.getFileList(fileVo);
             model.addAttribute("atchFileList", atchFileList);
         }
+        Map<String, String> cntstClsfCdMap = resCodeService.getCodeMap("165");
         model.addAttribute("cntstInfo", cntstInfo);
+        model.addAttribute("cntstClsfCdMap", cntstClsfCdMap);
         model.addAttribute("cntstFldCdList", cntstFldCdList);
         return "mng/prtpn/cntst/cntstForm";
     }

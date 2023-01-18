@@ -8,7 +8,7 @@
 <mapper namespace="com.kbrainc.plum.mng.prtpn.cntst.model.CntstDao">
     <!-- 공모전 분야 매핑 등록 -->
     <insert id="insertCntstFldMapng">
-        INSERT INTO TB_CMM_CNTST_FLD_MAPNG (CNTSTID, FLD_CD, REG_DT, RGTRID) VALUES (
+        INSERT INTO TB_CMM_CNTST_FLD_MAPNG (CNTSTID, FLD_CD, REG_DT, RGTRID) VALUES
         <foreach item="item" collection="cntstfldCdArr"  separator=",">
             (
             #{cntstid}
@@ -17,13 +17,14 @@
             , #{user.userid}
             )
         </foreach>
-        )
     </insert>
     <!-- 공모전 등록 -->
-    <insert id="insertCntst" useGeneratedKeys="true" keyColumn="CNTSTID">
+    <insert id="insertCntst" useGeneratedKeys="true">
+        <selectKey resultType="int" keyProperty="cntstid" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         INSERT INTO TB_CMM_CNTST (
-            CNTSTID
-            , TTL
+            TTL
             , THMBN_FILEID
             , ATCH_FILEGRPID
             , APLY_BGNG_DT
@@ -39,8 +40,7 @@
             , REG_DT
             , RGTRID
         ) VALUES (
-            #{cntstid}
-            , #{ttl}
+            #{ttl}
             , #{thmbnFileid}
             , #{atchFilegrpid}
             , #{aplyBgngDt}
@@ -67,7 +67,6 @@
             , APLY_END_DT = #{aplyEndDt}
             , PRSNTN_DT = #{prsntnDt}
             , DPCN_PSBLTY_YN = #{dpcnPsbltyYn}
-            , CLSF_CD = #{clsfCd}
             , GDNC = #{gdnc}
             , TRMS = #{trms}
             , CN = #{cn}
@@ -90,9 +89,9 @@
             , CC.TTL
             , CC.THMBN_FILEID
             , CC.ATCH_FILEGRPID
-            , CC.APLY_BGNG_DT
-            , CC.APLY_END_DT
-            , CC.PRSNTN_DT
+            , DATE_FORMAT(CC.APLY_BGNG_DT, '%Y-%m-%d %H:%i') APLY_BGNG_DT
+            , DATE_FORMAT(CC.APLY_END_DT, '%Y-%m-%d %H:%i') APLY_END_DT
+            , DATE_FORMAT(CC.PRSNTN_DT, '%Y-%m-%d %H:%i') PRSNTN_DT
             , CC.DPCN_PSBLTY_YN
             , CC.CLSF_CD
             , CC.GDNC
@@ -153,9 +152,9 @@
              , CC.TTL
              , CC.THMBN_FILEID
              , CC.ATCH_FILEGRPID
-             , CC.APLY_BGNG_DT
-             , CC.APLY_END_DT
-             , CC.PRSNTN_DT
+             , DATE_FORMAT(CC.APLY_BGNG_DT, '%Y-%m-%d %H:%i') APLY_BGNG_DT
+             , DATE_FORMAT(CC.APLY_END_DT, '%Y-%m-%d %H:%i') APLY_END_DT
+             , DATE_FORMAT(CC.PRSNTN_DT, '%Y-%m-%d %H:%i') PRSNTN_DT
              , CC.DPCN_PSBLTY_YN
              , CC.CLSF_CD
              , CC.GDNC

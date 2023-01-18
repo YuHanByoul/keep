@@ -287,6 +287,7 @@ function fileUploader($wrapper, filegrpNm, name, fileData, options) {
                             type : 'POST',
                             success : function(response) {
                                 closeWorkProgress();
+                                isNew = true;
                                 if (response.result === 'fail') {
                                     alert(response.msg);
                                 } else {
@@ -313,7 +314,7 @@ function fileUploader($wrapper, filegrpNm, name, fileData, options) {
         const $parent = $(this).closest('.file-uploader-list-item');
         const data = $parent.data();
 
-        if(!isNew && opt.multiple && !chkConfirm()) {
+        if(!isNew && !chkConfirm()) {
             $fileInp.val("");
             return;
         }
@@ -330,6 +331,11 @@ function fileUploader($wrapper, filegrpNm, name, fileData, options) {
                 success : function (data){
                     closeWorkProgress();
                     if(data.result==='success'){
+
+                        if (!opt.multiple) {
+                            $idInp.val("");
+                        }
+
                         $parent.remove()
                         fileDataArr.splice(fileDataArr.indexOf(item => item.fileid === data.fileid), 1)
                         refresh();

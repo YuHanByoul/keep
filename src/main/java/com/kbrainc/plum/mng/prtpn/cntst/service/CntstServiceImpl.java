@@ -54,8 +54,8 @@ public class CntstServiceImpl extends PlumAbstractServiceImpl implements CntstSe
     @Override
     @Transactional
     public void insertCntst(CntstVO cntstVO, String[] cntstFldCdArr) {
-        int cntstid = cntstDao.insertCntst(cntstVO);
-        cntstDao.insertCntstFldMapng(cntstid, cntstFldCdArr, cntstVO.getUser());
+        cntstDao.insertCntst(cntstVO);
+        cntstDao.insertCntstFldMapng(cntstVO.getCntstid(), cntstFldCdArr, cntstVO.getUser());
     }
 
     /**

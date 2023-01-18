@@ -79,7 +79,7 @@ public interface CntstDao {
      * @param usercntstfldCdArr
      * @param user
      */
-    void insertCntstFldMapng(@Param("cntstId") Integer cntstId, @Param("cntstfldCdArr") String[] usercntstfldCdArr, @Param("user") UserVo user);
+    void insertCntstFldMapng(@Param("cntstid") Integer cntstid, @Param("cntstfldCdArr") String[] usercntstfldCdArr, @Param("user") UserVo user);
 
     /**
      * 공모전 분야 조회
