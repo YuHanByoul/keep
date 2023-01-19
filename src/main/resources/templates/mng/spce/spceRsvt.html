@@ -109,13 +109,14 @@
     var checkDays =[];
     
     $(function(){
+        
         console.log(spceVo);
+        
     	initFullCalendar();
     	makeCalendarEvent();
     });
 
     changeAllCheckDay=()=>{
-        
         let checked = $("#checkAllDay").is(":checked");
         if(checked){
             $(".checkDay").prop("checked",true);    
@@ -132,9 +133,7 @@
         		checkDays.push($(this).val());
         	}
         })
-		console.log(checkDays);
     }
-    
     
     function initFullCalendar(){
         
@@ -289,17 +288,27 @@
     }
 
 
-    function makeCalendarEvent(gotoMonth){
+    function makeCalendarEvent(gotoYYYYMM){
+
+
+       console.log(gotoYYYYMM);
         
        $("#calendar").fullCalendar('removeEvents');
        
-       var yymm_string = moment($("#calendar").fullCalendar("getDate")).format("YYYY-MM")
-       var lastDayOfMonth = moment(yymm_string, "YYYY-MM").daysInMonth(); 
-
+       var yyyymm_string = moment($("#calendar").fullCalendar("getDate")).format("YYYY-MM")
+       
+       var lastDayOfMonth = "";
+           
+       if(gotoYYYYMM != null && gotoYYYYMM != '' && gotoYYYYMM == 'undefined'){
+	       lastDayOfMonth = moment(gotoYYYYMM, "YYYYMM").daysInMonth();
+       }else{
+	       lastDayOfMonth = moment(yyyymm_string, "YYYY-MM").daysInMonth();
+       }
+       
        var params = {
     	   spceid  : spceVo.spceid
-           ,bgngDt : yymm_string+"-01"
-           ,endDt  : yymm_string+"-"+lastDayOfMonth
+           ,bgngDt : yyyymm_string+"-01"
+           ,endDt  : yyyymm_string+"-"+lastDayOfMonth
        }
 
        if(displayWorkProgress()){
@@ -323,9 +332,9 @@
                            var background_color  = "";
                            
                            if(item.utztnSeCd == '169102'){//대여 
-                        	   title  +=  item.strtTm +' ~ '+ item.strtTm+' | '+item.amt+'원' 
+                        	   title  +=  item.strtTm +' ~ '+ item.strtTm+' | '+addComma3(item.amt)+'원' 
                            }else{//숙박
-                        	   title  +=  '숙박 | '+item.amt+'원' 
+                        	   title  +=  '숙박 | '+addComma3(item.amt)+'원' 
                            }
                            
                            let elementColor = '#0ac282';

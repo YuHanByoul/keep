@@ -248,17 +248,66 @@
         <div class="left">
             <div class="address" style="" th:text="${#strings.replace(session.site.cpyrht, T(org.apache.commons.lang3.StringUtils).LF, '&lt;br /&gt;')}"></div>
             <script>
-                $(".address").html($(".address").text().replace("약도보기","<a href='https://www.naver.com' target='_blank' style='color:black'>약도보기</a>"));
+                $(".address").html($(".address").text().replace("약도보기","<a href='javascript:mapView()'>약도보기</a>"));
             </script>
         </div>
         <div class="right">
             <ul class="logo-list">
-                <li class="logo-wa"><a href="#"><img src="/images/front/footer/logo-wa.jpg" alt="과학기술정보 통신부 웹접근성인증마크"></a></li>
-                <li class="logo-kogl"><a href="javascript:void(0)" style="cursor:default"><img src="/images/front/footer/logo-kogl.png" alt="공공누리 공공저작물 자용이용허락"></a></li>
+                <li class="logo-wa"><a href="#" data-layer-href="layer-logo-wa"><img src="/images/front/footer/logo-wa.jpg" alt="과학기술정보 통신부 웹접근성인증마크"></a></li>
+                <li class="logo-kogl"><img src="/images/front/footer/logo-kogl.png" alt="공공누리 공공저작물 자용이용허락"></li>
             </ul>
         </div>
     </div>
 </div>
+
+<!-- layerpopup -->
+<div class="layer-popup" data-layer-id="layer-location">
+    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+    <div class="layer-wrap">
+        <div class="layer-header">
+            <strong class="tit">국가환경교육센터 약도</strong>
+            <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+        </div>
+        <div class="layer-content">
+            <div class="maps" id="map_portal" style="width:900px;height:470px;"></div>
+        </div>
+    </div>
+</div>
+<!-- //layerpopup -->
+
+
+<!-- layerpopup -->
+<div class="layer-popup" data-layer-id="layer-logo-wa">
+    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+    <div class="layer-wrap">
+        <div class="layer-header">
+            <strong class="tit">웹접근성 품질인증서</strong>
+            <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+        </div>
+        <div class="layer-content  pt0">
+            <div class="thumb-wa">
+                <a href="images/front/footer/wamark.jpg" target="_blank">
+                    <img src="images/front/footer/wamark.jpg" alt="지능정보화 기본법 시행규칙 [별지 제4호서식]
+                        제 2021-1288 호
+                        -
+                        정보통 신접근성 품질인증서
+                        | 1. 업 체 명: 환경보전협회 2. 주 소: 서울특별시 성동구 광나루로 320-2 3. 웹사이트: https://www.keep.go.kr 4. 유효기간: 2021. 12. 02 ~ 2022. 12. 01 5. 인증범위: 환경교육포털 홈페이지
+                        「지능정보화 기본법」 제47조제1항 및 같은 법 시행규칙 제9조제5항에 따라 위와 같이 정보통신접근성 품질인증서를 발급합니다.
+                        | 2021 년
+                        12 월
+                        28 일
+                        KOREA FEDERATION OF ORGANIZATIONS OF THE DISABLED
+                        한국장애인단체총연합회 한국웹접근성인증평가원 하의
+                        Since 1996 한국장에인단제
+                        KOREA INSTITUTE OF WEB ACCESSIBILITY CERTIFICATION AND
+                        ">
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //layerpopup -->
+<script type="text/javascript" th:src="@{//dapi.kakao.com/v2/maps/sdk.js(appkey=${T(com.kbrainc.plum.rte.util.CommonUtil).kakaoJavascriptKey})}"></script>
 <script>
         
     //footer banner
@@ -274,4 +323,29 @@
             nextSlideMessage: '다음 슬라이드',
         },
     });
+    
+    // 지도보기(국가환경교육센터)
+    function mapView(){
+        layerPopup.open('layer-location');
+        var container = document.getElementById('map_portal');
+        var options = {
+            center: new kakao.maps.LatLng(37.54800188675469, 127.06491614029608),
+            level: 3
+        };
+
+        var map = new kakao.maps.Map(container, options);
+        
+        
+        // 마커가 표시될 위치입니다 
+        var markerPosition  = new kakao.maps.LatLng(37.54800188675469, 127.06491614029608); 
+
+        // 마커를 생성합니다
+        var marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
+        
+    }
 </script>

@@ -71,6 +71,7 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
         String addStyle = "";
         String isAdmin = "";
         String applyClass = "";
+        boolean disabled = tag.hasAttribute("disabled");
 
         List<CodeInfoVo> codeList = new ArrayList<CodeInfoVo>();
         StringBuffer result = new StringBuffer(); // html 코드 작성용
@@ -123,7 +124,10 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
                     String changeFunction = tag.getAttribute("onchange").getValue();
                     result.append("    onchange ='").append(changeFunction).append("()' ");
                 }
-                result.append(" >").append("\n");
+                if (disabled) {
+                    result.append(" disabled");
+                }
+                result.append(">").append("\n");
 
                 if (!firstOptTxt.equals("")) {
                     result.append("<option value='' >").append(firstOptTxt).append("</option>").append("\n");

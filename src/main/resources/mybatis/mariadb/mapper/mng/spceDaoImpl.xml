@@ -50,41 +50,9 @@
               ,#{user.userid      }
           )
   </insert>
-    
-  <!-- 공간 예약일자 저장 --> 
-  <insert id="insertSpceRsvtde" parameterType="SpceRsvtdeVo" useGeneratedKeys="true" keyProperty="rsvtdeid">
-        /* SpceDao.insertSpceRsvtde */
-        INSERT INTO TB_FCL_SPCE_RSVTDE (
-               SPCEID
-              ,UTZTN_SE_CD
-              ,DE
-              ,BGNG_DT
-              ,END_DT
-              ,ALLDAY_YN
-              ,AMT
-              ,RSVT_PSBLTY_YN
-              ,MDFCN_DT
-              ,MDFRID
-              ,REG_DT
-              ,RGTRID
-        )VALUES(
-               #{spceid      }
-              ,#{utztnSeCd   }
-              ,#{de          }
-              ,#{bgngDt      }
-              ,#{endDt       }
-              ,#{alldayYn    }
-              ,#{amt         }
-              ,#{rsvtPsbltyYn}
-              ,NOW()
-              ,#{user.userid  }
-              ,NOW()
-              ,#{user.userid  }
-          )
-    </insert>
-    
-    <!-- 공간 정보 목록 조회 -->
-    <select id="selectSpceList" parameterType="SpceVo" resultType="SpceVo">
+  
+  <!-- 공간 정보 목록 조회 -->
+  <select id="selectSpceList" parameterType="SpceVo" resultType="SpceVo">
         /* SpceDao.selectSpceList */
         <include refid="PaginationMapper.header"/>
                SELECT
@@ -139,6 +107,9 @@
                 </if>
                 <if test='user.roleInfo.trgtInstCd == "S"'>
                    AND C.INST_ID = #{user.instid}
+                </if>
+                <if test="fcltid != null and fcltid != '' ">
+                   AND A.FCLTID = #{fcltid}
                 </if>
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -273,10 +244,12 @@
             )
     </update>
     
+    <!--************* 공간 예약 일자 *************** -->
     <!-- 공간 예약 일자 목록 -->
     <select id="selectSpceRsvtdeList" parameterType="SpceRsvtdeVo" resultType="SpceRsvtdeVo">
           SELECT 
-             DE 
+             RSVTDEID
+             ,DE 
              ,date_format(A.BGNG_DT, '%H:%i' )   AS STRT_TM
              ,date_format(A.END_DT, '%H:%i' )    AS END_TM
              ,A.UTZTN_SE_CD 
@@ -289,8 +262,57 @@
               TB_FCL_SPCE_RSVTDE A
            WHERE 1=1
              AND A.SPCEID = #{spceid}
-             AND A.DE <![CDATA[>=]]> #{bgngDt}
-             AND A.DE <![CDATA[<=]]> #{endDt}
+             <if test="bgngDt != null and bgngDt != '' ">
+              AND A.DE <![CDATA[>=]]> #{bgngDt}
+             </if>
+             <if test="endDt != null and endDt != '' ">
+              AND A.DE <![CDATA[<=]]> #{endDt}
+             </if>
+             <if test="rsvtdeList != null and rsvtdeList.size!=0 ">
+              AND A.DE IN
+               (
+                <foreach item="item" collection="rsvtdeList"  separator=",">
+                    #{item.de}
+                 </foreach>
+                )
+             </if>
      </select>
+     
+     
+    <!-- 공간 예약일자 저장 --> 
+    <insert id="insertSpceRsvtde" parameterType="SpceRsvtdeVo">
+        /* SpceDao.insertSpceRsvtde */
+        INSERT INTO TB_FCL_SPCE_RSVTDE (
+               SPCEID
+              ,UTZTN_SE_CD
+              ,DE
+              ,BGNG_DT
+              ,END_DT
+              ,ALLDAY_YN
+              ,AMT
+              ,RSVT_PSBLTY_YN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+        )VALUES
+        <foreach item="item" collection="rsvtdeList"  separator=",">
+         (
+               #{item.spceid      }
+              ,#{item.utztnSeCd   }
+              ,#{item.de          }
+              ,#{item.bgngDt      }
+              ,#{item.endDt       }
+              ,#{item.alldayYn    }
+              ,#{item.amt         }
+              ,#{item.rsvtPsbltyYn}
+              ,NOW()
+              ,#{user.userid  }
+              ,NOW()
+              ,#{user.userid  }
+          )
+        </foreach>
+    </insert>
+     
      
 </mapper>
