@@ -364,8 +364,5 @@ function fileUploader($wrapper, filegrpNm, name, fileData, options) {
 * */
 function excelDownload($searchForm, url) {
     const inpArr = $searchForm.serializeArray();
-    $("<form/>").css({display: 'none'}).attr({"action": url, 'method': 'post'})
-        .append(
-            inpArr.map(item => $("<input/>").attr({type: 'hidden', name: item.name}).val(item.value))
-        ).appendTo('body').submit().remove();
+    $.fileDownload(url + "?" + $.param(inpArr));
 }
