@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : PublicContestDaoImpl.xml
+	Description : 체험환경교육 지원사업 > 사업신청 관리 > 공모관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestDao">
+    
+    <!-- 공모관리 목록 조회 -->
+    <select id="selectContestList" parameterType="PublicContestVo" resultType="PublicContestVo">
+        /* PublicContestDao.selectContestList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            PCNTSTID
+            , FLD_CD
+            , B.CD_NM AS FLD_NM
+            , PCNTST_NM
+            , APLY_BGNG_DT
+            , APLY_END_DT
+            , CONCAT(APLY_BGNG_DT, ' - ', APLY_END_DT) AS APLY_DT
+            <![CDATA[
+            , CASE WHEN NOW() < APLY_BGNG_DT THEN '진행전' 
+                WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '진행중'
+                WHEN NOW() > APLY_END_DT THEN '마감'
+                ELSE ''
+                END AS STATUS
+            ]]>
+            , TRGT_CD
+            , C.CD_NM AS TRGT_NM
+            , BSNS_BGNG_DE
+            , BSNS_END_DE
+            , CONCAT(BSNS_BGNG_DE, ' - ', BSNS_END_DE) AS BSNS_DE
+            , MDL_REPORT_YN
+            , CNSLTNG_USE_CD
+            , D.CD_NM AS CNSLTNG_USE_NM
+            , WCT_DELVRY_CNT
+            , CASE WHEN WCT_DELVRY_CNT = 1 THEN 'N' ELSE 'Y' END AS WCT_DELVRY_CNT_YN  
+            , ONLN_SRNG_TYPE_CD
+            , E.CD_NM AS ONLN_SRNG_TYPE_NM 
+            , BSNS_CN
+            , SRNG_FORMID_FIRST
+            , SRNG_FORMID_SCND
+            , SRNG_BGNG_DT
+            , SRNG_END_DT
+            , DELVRY_APLY_PRSNTN_BGNG_DT
+            , DELVRY_APLY_PRSNTN_END_DT
+            , DELVRY_APLY_BGNG_DT_FIRST
+            , DELVRY_APLY_END_DT_FIRST
+            , DELVRY_APLY_BGNG_DT_SCND
+            , DELVRY_APLY_END_DT_SCND
+            , DELVRY_CFMTN_PRSNTN_BGNG_DT
+            , DELVRY_CFMTN_PRSNTN_END_DT
+            , CPTAL_EXCUT_BGNG_DT_FIRST
+            , CPTAL_EXCUT_END_DT_FIRST
+            , CPTAL_EXCUT_BGNG_DT_SCND
+            , CPTAL_EXCUT_END_DT_SCND
+            , MDL_REPORT_BGNG_DT
+            , MDL_REPORT_END_DT
+            , RSLT_REPORT_BGNG_DT
+            , RSLT_REPORT_END_DT
+            , EXCCLC_REPORT_BGNG_DT
+            , EXCCLC_REPORT_END_DT
+            , FILEGRPID
+            , A.USE_YN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM    
+            TB_SPB_PCNTST A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.FLD_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON A.TRGT_CD = C.CD
+            LEFT OUTER JOIN TB_CMM_CD D ON A.CNSLTNG_USE_CD = D.CD
+            LEFT OUTER JOIN TB_CMM_CD E ON A.ONLN_SRNG_TYPE_CD = E.CD
+        WHERE 
+            1 = 1
+            <if test="searchFldCd != null and searchFldCd != ''">
+            AND A.FLD_CD = #{searchFldCd}
+            </if>
+            <if test="searchPcntstNm != null and searchPcntstNm != ''">
+            AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+            </if>
+            <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
+            <![CDATA[
+            AND A.APLY_BGNG_DT >= #{searchAplyBgngDe} 
+            AND A.APLY_END_DT <= #{searchAplyEndDe}
+            ]]>
+            </if>
+            <if test="searchBsnsBgngDe != null and searchBsnsBgngDe != ''">
+            <![CDATA[
+            AND A.BSNS_BGNG_DE >= #{searchBsnsBgngDe} 
+            AND A.BSNS_END_DE <= #{searchBsnsEndDe}
+            ]]>
+            </if>
+            <if test="status != null and status != ''">
+                <choose>
+                    <when test="status == 'before'">
+                    <![CDATA[
+                    AND NOW() < APLY_BGNG_DT
+                    ]]>
+                    </when>
+                    <when test="status == 'ing'">
+                    <![CDATA[
+                    AND NOW() >= APLY_BGNG_DT AND NOW() <= APLY_END_DT
+                    ]]>
+                    </when>
+                    <when test="status == 'end'">
+                    <![CDATA[
+                    AND NOW() > APLY_END_DT
+                    ]]>
+                    </when>
+                </choose>            
+            </if>
+            <if test="pcntstid != null and pcntstid != ''">
+            AND A.PCNTSTID = #{pcntstid}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공모관리 상세 조회 -->
+    <select id="detailContest" parameterType="PublicContestVo" resultType="PublicContestVo">
+        /* PublicContestDao.detailContest */
+        SELECT 1, NOW() AS REG_DT
+    </select>
+    
+    <!-- 공모관리 등록 -->
+    <insert id="insertContest" parameterType="PublicContestVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* PublicContestDao.insertContest */
+        INSERT INTO 
+            TB_SPB_PCNTST (
+                PCNTSTID
+                , FLD_CD
+                , PCNTST_NM
+                , APLY_BGNG_DT
+                , APLY_END_DT
+                , TRGT_CD
+                , BSNS_BGNG_DE
+                , BSNS_END_DE
+                , MDL_REPORT_YN
+                , CNSLTNG_USE_CD
+                , WCT_DELVRY_CNT
+                , ONLN_SRNG_TYPE_CD
+                , BSNS_CN
+                , SRNG_FORMID_FIRST
+                , SRNG_FORMID_SCND
+                , SRNG_BGNG_DT
+                , SRNG_END_DT
+                , DELVRY_APLY_PRSNTN_BGNG_DT
+                , DELVRY_APLY_PRSNTN_END_DT
+                , DELVRY_APLY_BGNG_DT_FIRST
+                , DELVRY_APLY_END_DT_FIRST
+                , DELVRY_APLY_BGNG_DT_SCND
+                , DELVRY_APLY_END_DT_SCND
+                , DELVRY_CFMTN_PRSNTN_BGNG_DT
+                , DELVRY_CFMTN_PRSNTN_END_DT
+                , CPTAL_EXCUT_BGNG_DT_FIRST
+                , CPTAL_EXCUT_END_DT_FIRST
+                , CPTAL_EXCUT_BGNG_DT_SCND
+                , CPTAL_EXCUT_END_DT_SCND
+                , MDL_REPORT_BGNG_DT
+                , MDL_REPORT_END_DT
+                , RSLT_REPORT_BGNG_DT
+                , RSLT_REPORT_END_DT
+                , EXCCLC_REPORT_BGNG_DT
+                , EXCCLC_REPORT_END_DT
+                , FILEGRPID
+                , USE_YN
+                , MDFCN_DT
+                , MDFRID
+                , REG_DT
+                , RGTRID
+            ) VALUES ( 
+                #{pcntstid}
+                , #{fldCd}
+                , #{pcntstNm}
+                , NULLIF(#{aplyBgngDt}, '')
+                , NULLIF(#{aplyEndDt}, '')
+                , #{trgtCd}
+                , #{bsnsBgngDe}
+                , #{bsnsEndDe}
+                , #{mdlReportYn}
+                , #{cnsltngUseCd}
+                , #{wctDelvryCnt}
+                , #{onlnSrngTypeCd}
+                , #{bsnsCn}
+                , #{srngFormidFirst}
+                , #{srngFormidScnd}
+                , NULLIF(#{srngBgngDt}, '')
+                , NULLIF(#{srngEndDt}, '')
+                , NULLIF(#{delvryAplyPrsntnBgngDt}, '')
+                , NULLIF(#{delvryAplyPrsntnEndDt}, '')
+                , NULLIF(#{delvryAplyBgngDtFirst}, '')
+                , NULLIF(#{delvryAplyEndDtFirst}, '')
+                , NULLIF(#{delvryAplyBgngDtScnd}, '')
+                , NULLIF(#{delvryAplyEndDtScnd}, '')
+                , NULLIF(#{delvryCfmtnPrsntnBgngDt}, '')
+                , NULLIF(#{delvryCfmtnPrsntnEndDt}, '')
+                , NULLIF(#{cptalExcutBgngDtFirst}, '')
+                , NULLIF(#{cptalExcutEndDtFirst}, '')
+                , NULLIF(#{cptalExcutBgngDtScnd}, '')
+                , NULLIF(#{cptalExcutEndDtScnd}, '')
+                , NULLIF(#{mdlReportBgngDt}, '')
+                , NULLIF(#{mdlReportEndDt}, '')
+                , NULLIF(#{rsltReportBgngDt}, '')
+                , NULLIF(#{rsltReportEndDt}, '')
+                , NULLIF(#{excclcReportBgngDt}, '')
+                , NULLIF(#{excclcReportEndDt}, '')
+                , #{filegrpid}
+                , #{useYn}
+                , NOW()
+                , #{user.userid}
+                , NOW()
+                , #{user.userid}
+            )
+    </insert>
+    
+    <!-- 공모관리 수정 -->
+    <update id="updateContest" parameterType="PublicContestVo">
+        /* PublicContestDao.updateContest */
+        UPDATE TB_SPB_PCNTST SET 
+            FLD_CD = #{fldCd}
+            , PCNTST_NM = #{pcntstNm}
+            , APLY_BGNG_DT = NULLIF(#{aplyBgngDt}, '')
+            , APLY_END_DT = NULLIF(#{aplyEndDt}, '')
+            , TRGT_CD = #{trgtCd}
+            , BSNS_BGNG_DE = #{bsnsBgngDe}
+            , BSNS_END_DE = #{bsnsEndDe}
+            , MDL_REPORT_YN = #{mdlReportYn}
+            , CNSLTNG_USE_CD = #{cnsltngUseCd}
+            , WCT_DELVRY_CNT = #{wctDelvryCnt}
+            , ONLN_SRNG_TYPE_CD = #{onlnSrngTypeCd}
+            , BSNS_CN = #{bsnsCn}
+            , SRNG_FORMID_FIRST = #{srngFormidFirst}
+            , SRNG_FORMID_SCND = #{srngFormidScnd}
+            , SRNG_BGNG_DT = NULLIF(#{srngBgngDt}, '')
+            , SRNG_END_DT = NULLIF(#{srngEndDt}, '')
+            , DELVRY_APLY_PRSNTN_BGNG_DT = NULLIF(#{delvryAplyPrsntnBgngDt}, '')
+            , DELVRY_APLY_PRSNTN_END_DT = NULLIF(#{delvryAplyPrsntnEndDt}, '')
+            , DELVRY_APLY_BGNG_DT_FIRST = NULLIF(#{delvryAplyBgngDtFirst}, '')
+            , DELVRY_APLY_END_DT_FIRST = NULLIF(#{delvryAplyEndDtFirst}, '')
+            , DELVRY_APLY_BGNG_DT_SCND = NULLIF(#{delvryAplyBgngDtScnd}, '')
+            , DELVRY_APLY_END_DT_SCND = NULLIF(#{delvryAplyEndDtScnd}, '')
+            , DELVRY_CFMTN_PRSNTN_BGNG_DT = NULLIF(#{delvryCfmtnPrsntnBgngDt}, '')
+            , DELVRY_CFMTN_PRSNTN_END_DT = NULLIF(#{delvryCfmtnPrsntnEndDt}, '')
+            , CPTAL_EXCUT_BGNG_DT_FIRST = NULLIF(#{cptalExcutBgngDtFirst}, '')
+            , CPTAL_EXCUT_END_DT_FIRST = NULLIF(#{cptalExcutEndDtFirst}, '')
+            , CPTAL_EXCUT_BGNG_DT_SCND = NULLIF(#{cptalExcutBgngDtScnd}, '')
+            , CPTAL_EXCUT_END_DT_SCND = NULLIF(#{cptalExcutEndDtScnd}, '')
+            , MDL_REPORT_BGNG_DT = NULLIF(#{mdlReportBgngDt}, '')
+            , MDL_REPORT_END_DT = NULLIF(#{mdlReportEndDt}, '')
+            , RSLT_REPORT_BGNG_DT = NULLIF(#{rsltReportBgngDt}, '')
+            , RSLT_REPORT_END_DT = NULLIF(#{rsltReportEndDt}, '')
+            , EXCCLC_REPORT_BGNG_DT = NULLIF(#{excclcReportBgngDt}, '')
+            , EXCCLC_REPORT_END_DT = NULLIF(#{excclcReportEndDt}, '')
+            , FILEGRPID = #{filegrpid}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE PCNTSTID = #{pcntstid}
+    </update>
+    
+    <!-- 공모관리 삭제 -->
+    <delete id="deleteContest" parameterType="PublicContestVo">
+        /* PublicContestDao.deleteContest */
+        <foreach item="contestId" collection="deleteContestIds" separator=",">
+            #{contestId}
+        </foreach>
+    </delete>
+    
+</mapper>
