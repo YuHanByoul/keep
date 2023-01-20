@@ -1,12 +1,13 @@
 <form id="sprtgrpSrngFrm">
-<input type="hidden" id="prgrmid" name="prgrmid" th:value="${sprtgrpSrngInfo.prgrmid}"><!-- 프로그램id -->
-<input type="hidden" id="splmntDmndid" name="splmntDmndid" th:value="${sprtgrpSrngInfo.splmntDmndid}"><!-- 보완요청id -->
-<input type="hidden" id="sbmsnid" name="sbmsnid" th:value="${sprtgrpSrngInfo.sbmsnid}"><!-- 체크리스트 제출 id -->
-<input type="hidden" id="sbmsnSttsCd" name="sbmsnSttsCd" th:value="${sprtgrpSrngInfo.sbmsnSttsCd}"><!-- 제출상태코드 -->
-<input type="hidden" id="scr" name="scr" th:value="${sprtgrpSrngInfo.scr}"><!-- 점수 -->
-<input type="hidden" id="sprtgrpid" name="sprtgrpid" th:value="${sprtgrpSrngInfo.sprtgrpid}"><!-- 지원단id -->
-<input type="hidden" id="rsltid" name="rsltid" th:value="${sprtgrpSrngInfo.rsltid}"><!-- 결과id -->
-<input type="hidden" id="formid" name="formid" th:value="${sprtgrpSrngInfo.formid}"><!-- 심사양식id -->
+<input type="hidden" id="prgrmid"      name="prgrmid"       th:value="${sprtgrpSrngInfo.prgrmid}"><!-- 프로그램id -->
+<input type="hidden" id="splmntDmndid" name="splmntDmndid"  th:value="${sprtgrpSrngInfo.splmntDmndid}"><!-- 보완요청id -->
+<input type="hidden" id="sbmsnid"      name="sbmsnid"       th:value="${sprtgrpSrngInfo.sbmsnid}"><!-- 체크리스트 제출 id -->
+<input type="hidden" id="sbmsnSttsCd"  name="sbmsnSttsCd"   th:value="${sprtgrpSrngInfo.sbmsnSttsCd}"><!-- 제출상태코드 -->
+<input type="hidden" id="scr"          name="scr"           th:value="${sprtgrpSrngInfo.scr}"><!-- 점수 -->
+<input type="hidden" id="sprtgrpid"    name="sprtgrpid"     th:value="${sprtgrpSrngInfo.sprtgrpid}"><!-- 지원단id -->
+<input type="hidden" id="rsltid"       name="rsltid"        th:value="${sprtgrpSrngInfo.rsltid}"><!-- 결과id -->
+<input type="hidden" id="formid"       name="formid"        th:value="${sprtgrpSrngInfo.formid}"><!-- 심사양식id -->
+
 	<div class="col-12">
 	    <div class="card">
 	        <div class="card-header p-b-0">
@@ -201,7 +202,7 @@
                                         <td class="text-center v-middle" style="width: 60px;" >
                                             <th:block th:text="${item2.ordr}"</th:block>
                                         </td>
-                                        <td>
+                                        <td th:id="${'cnY' + item2.lv1key}">
                                             <th:block th:text="${item2.cn}"</th:block>
                                         </td>
                                         <td class="text-center v-middle"><th:block th:text="${item2.altm}"</th:block></td>
@@ -209,13 +210,13 @@
                                         <td class="text-center v-middle">
 
                                             <label class="mb-0 form-label'" >
-                                                <input class="form-check-input" type="radio" th:checked="${item2.scr > 0 ? true:false}"
+                                                <input class="form-check-input" type="radio" th:checked="${item2.scr > 0 ? true:false}" th:data-ordr="${item2.ordr}"
                                                     th:name="${'cRdoY' + item2.lv2key + '_'+ item2.qitemid}" th:id="${'cRdoY' + item2.lv2key + '_'+  item2.qitemid}" th:attr="altm=${item2.altm}" value="Y" >
                                             </label>
                                         </td>
                                         <td class="text-center v-middle">
                                             <label class="mb-0 form-label'" >
-                                                <input class="form-check-input" type="radio" th:checked="${item2.scr < 0 ? true:false}"
+                                                <input class="form-check-input" type="radio" th:checked="${item2.scr <= 0 ? true:false}"
                                                     th:name="${'cRdoN' + item2.lv2key + '_'+  item2.qitemid}" th:id="${'cRdoN' + item2.lv2key + '_'+  item2.qitemid}" th:attr="altm=${item2.altm}" value="N" >
                                             </label>
                                         </td>
@@ -468,45 +469,47 @@
 
     function fn_insertSprtgrpSrng(){
 
+    	var param = {};
 
+        if(!($("#sprtgrpSrngFrm").valid())) return;
 
-        var chkLst = new Array();
-        for(var i = 1; i <= chkLst.length; i++){
-            var data = new Object();
-            data["scr"] = bannerid[i-1];
-            data["key"]
-            data["ordr"] = i;
-            dataList.push(data);
-        }
-        var params = new Object();
-        params["chkLstVoList"] = dataList;
+    	$("[id^=cRdoY]").each(function(index, item) {
 
-        //if(!($("#sprtgrpSrngFrm").valid())) return;
+    		param["ansLst[" + index + "].sbmsnid"] = $("#sbmsnid").val();
 
+    		param["ansLst[" + index + "].seCd"] = $(item).attr("id").split("_")[0].replace("cRdoY","");
+    		param["ansLst[" + index + "].qitemid"] = $(item).attr("id").split("_")[1];
+    		//param["ansLst[" + index + "].cn"] = $(item).attr("id").split("_")[0].replace("cRdoY","");
+    		//param["ansLst[" + index + "].idntyMttr"] = $(item).attr("id").split("_")[1].replace("cRdoY","");
 
-        $("#sbmsnSttsCd").val("128102")    //제출
+    		param["ansLst[" + index + "].scr"] = $(item).prop("checked") ? $(item).attr("altm"): 0
+    		param["ansLst[" + index + "].ordr"] = $(item).attr("data-ordr");
 
-        var data = {
-        	  asgsysSrngVoList: sprtgrpCheckList
-        	, asgsysSrngVo : $("#sprtgrpSrngFrm").serialize()
-        }
-debugger;
+    	});
 
+    	$("[id^=cnY]").each(function(index, item) {
+    		param["ansLst[" + index + "].cn"] = item.innerText;
+    	});
 
-
-//         var data = $("#sprtgrpSrngFrm").serialize();
+        param["prgrmid"     ]= prgrmid;
+        param["sbmsnid"     ]= $("#sbmsnid").val();
+        param["rsltid"      ]= $("#rsltid").val();
+        param["sbmsnSttsCd" ]= "128102";    //제출
+        param["sprtgrpid"   ]= $("#sprtgrpid").val();
+        param["srngOpnn"    ]= $("#srngOpnn").val();
+        param["chklstRsltCn"]= $("#chklstRsltCn").val();
+        param["scr"         ]= $("#scr").val();
 
         if(!confirm("저장하시겠습니까?")) return;
 
-
         if(displayWorkProgress()){
             $.ajax({
-                url : "/mng/asgsysSrng/insertSprtgrpSrng.do",
-                type: 'POST',
-                cache : false,
-                dataType: 'json',
-                data : data,
-                success : function (data){
+                url      : "/mng/asgsysSrng/insertSprtgrpSrng.do",
+                type     : 'POST',
+                cache    : false,
+                dataType : 'json',
+                data     : param,
+                success  : function (data){
                     if(data.result=="success"){
 
                         alert(data.msg);

@@ -1,22 +1,23 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.service;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import javax.validation.Valid;
 
 /**
  *
- * 코드 관리 서비스 구현 클래스
+ * 지정프로그램 서비스 구현 클래스
  *
  * <pre>
  * com.kbrainc.plum.mng.dsgnPrgrm.service
@@ -24,7 +25,7 @@ import javax.validation.Valid;
  * </pre>
  *
  * @ClassName : DsgnPrgrmServiceImpl
- * @Description : 코드 관리 서비스 구현 클래스
+ * @Description : 지정프로그램 서비스 구현 클래스
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version :
@@ -426,6 +427,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
+	* 보완계획서 수정
+	*
+	* @Title : updateScrtyImprvPlanln
+	* @Description : 보완계획서 수정
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	@Transactional
+	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.updateScrtyImprvPlanln(dsgnPrgrmVo);
+	}
+
+	/**
 	 * 결과보고서 조회
 	 *
 	 * @Title : selectRsltRptln
@@ -453,5 +469,23 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	public int updateSplmntImprv(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.updateSplmntImprv (dsgnPrgrmVo);
 	}
+
+	/**
+	* 결과보고서 수정
+	*
+	* @Title : updateRsltRptln
+	* @Description : 결과보고서 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int updateRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.updateRsltRptln (dsgnPrgrmVo);
+	}
+
+
 
 }

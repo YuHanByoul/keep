@@ -791,6 +791,7 @@ public class DsgnPrgrmController {
     		dtlInfo = dsgnPrgrmVo;
     	}
 
+    	model.addAttribute("cidx", dsgnPrgrmVo.getCidx());
     	model.addAttribute("dtlInfo", dtlInfo);
 
     	return "mng/dsgnPrgrm/implmntIdntySrngDetail";
@@ -810,7 +811,7 @@ public class DsgnPrgrmController {
     }
 
     /**
-     * 변경신청상태 수정
+     * 보완요청 수정
      *
      * @Title : updateSplmntImprv
      * @Description : 보완요청 수정
@@ -860,9 +861,62 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html")
     public String scrtyImprvPlanlnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-    	model.addAttribute("splmntPlanInfo", dsgnPrgrmServiceImpl.selectSplmntPlan(dsgnPrgrmVo));
+    	DsgnPrgrmVo scrtyImprvPlanln = new DsgnPrgrmVo();
+
+    	if(null != dsgnPrgrmVo.getDmndid()) {
+    		scrtyImprvPlanln = dsgnPrgrmServiceImpl.selectSplmntPlan(dsgnPrgrmVo);
+
+    	}else {
+    		scrtyImprvPlanln = dsgnPrgrmVo;
+    	}
+    	model.addAttribute("scrtyImprvPlanln", scrtyImprvPlanln);
+
     	return "mng/dsgnPrgrm/scrtyImprvPlanlnForm";
     }
+
+
+    /**
+	 * 보완계획서 수정
+	 *
+	 * @Title : updateScrtyImprvPlanln
+	 * @Description : 보완계획서 수정
+	 * @param DsgnPrgrmVo 객체
+	 * @param bindingResult 유효성검증결과
+	 * @param user 사용자세션정보
+	 * @return Map<String,Object> 응답결과객체
+	 * @throws Exception 예외
+	 */
+	@RequestMapping(value = "/mng/dsgnPrgrm/updateScrtyImprvPlanln.do")
+	@ResponseBody
+	public Map<String, Object> updateScrtyImprvPlanln(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		if (bindingResult1.hasErrors()) {
+	        FieldError fieldError = bindingResult1.getFieldError();
+	        if (fieldError != null) {
+	            resultMap.put("msg", fieldError.getDefaultMessage());
+	        }
+	        return resultMap;
+	    }
+
+		int retVal = 0;
+
+		dsgnPrgrmVo.setUser(user);
+
+		retVal = dsgnPrgrmServiceImpl.updateScrtyImprvPlanln(dsgnPrgrmVo);
+
+		if (retVal > 0) {
+	        resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+	        resultMap.put("msg", "수정에 성공하였습니다.");
+	    } else {
+	        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+	        resultMap.put("msg", "수정에 실패했습니다.");
+	    }
+
+		return resultMap;
+	}
+
 
     /**
      * @Title : rsltRptlnForm
@@ -873,10 +927,60 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/rsltRptlnForm.html")
     public String rsltRptlnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-    	model.addAttribute("rsltRptlnInfo",dsgnPrgrmServiceImpl.selectImplmntIdntySrngDtl(dsgnPrgrmVo));
+    	DsgnPrgrmVo rsltRptln = new DsgnPrgrmVo();
+
+    	if(null != dsgnPrgrmVo.getDmndid()) {
+    		rsltRptln = dsgnPrgrmServiceImpl.selectImplmntIdntySrngDtl(dsgnPrgrmVo);
+
+    	}else {
+    		rsltRptln = dsgnPrgrmVo;
+    	}
+    	model.addAttribute("rsltRptln", rsltRptln);
+
     	return "mng/dsgnPrgrm/rsltRptlnForm";
     }
 
+	/**
+	 * 결과보고서 수정
+	 *
+	 * @Title : updateRsltRptln
+	 * @Description : 결과보고서 수정
+	 * @param DsgnPrgrmVo 객체
+	 * @param bindingResult 유효성검증결과
+	 * @param user 사용자세션정보
+	 * @return Map<String,Object> 응답결과객체
+	 * @throws Exception 예외
+	 */
+	@RequestMapping(value = "/mng/dsgnPrgrm/updateRsltRptln.do")
+	@ResponseBody
+	public Map<String, Object> updateRsltRptln(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		if (bindingResult1.hasErrors()) {
+	        FieldError fieldError = bindingResult1.getFieldError();
+	        if (fieldError != null) {
+	            resultMap.put("msg", fieldError.getDefaultMessage());
+	        }
+	        return resultMap;
+	    }
+
+		int retVal = 0;
+
+		dsgnPrgrmVo.setUser(user);
+
+		retVal = dsgnPrgrmServiceImpl.updateRsltRptln(dsgnPrgrmVo);
+
+		if (retVal > 0) {
+	        resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+	        resultMap.put("msg", "수정에 성공하였습니다.");
+	    } else {
+	        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+	        resultMap.put("msg", "수정에 실패했습니다.");
+	    }
+
+		return resultMap;
+	}
+
+
 }
-
-

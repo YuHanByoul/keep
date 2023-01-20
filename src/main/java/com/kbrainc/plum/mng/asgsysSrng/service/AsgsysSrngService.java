@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVO;
+import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 
 /**
@@ -141,6 +143,61 @@ public interface AsgsysSrngService {
 	public AsgsysSrngVo selectPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 프로그램 운영일정 목록조회
+	*
+	* @Title : selectPrgrmDstnctn
+	* @Description : 프로그램 운영일정 목록조회
+	* @param prgrmSchdlVo
+	* @return PrgrmSchdlVo
+	* @throws Exception
+	*/
+	public List<PrgrmSchdlVo> selectPrgrmSchdlList(PrgrmSchdlVo prgrmSchdlVo) throws Exception;
+
+	/**
+	* 비상조치계획 목록조회
+	*
+	* @Title : selectEmrgcyActnPlanList
+	* @Description : 비상조치계획 삭제
+	* @param emrgcyActnPlanVo
+	* @return int
+	* @throws Exception
+	*/
+	public List<EmrgcyActnPlanVo> selectEmrgcyActnPlanList(EmrgcyActnPlanVo emrgcyActnPlanVo) throws Exception;
+
+	/**
+	* 프로그램 운영일정 수정
+	*
+	* @Title : updatePrgrmSchdl
+	* @Description : 프로그램 운영일정 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	public int updatePrgrmSchdl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	 */
+
+	/**
+	* 프로그램 운영일정 등록
+	*
+	* @Title : insertPrgrmSchdl
+	* @Description : 프로그램 운영일정 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	public int insertPrgrmSchdl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	 */
+
+	/**
+	* 프로그램 운영일정 삭제
+	*
+	* @Title : deletePrgrmSchdl
+	* @Description : 프로그램 운영일정 삭제
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	public int deletePrgrmSchdl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	 */
+
+	/**
 	* 프로그램 평가 조회
 	*
 	* @Title : selectPrgrmEduSbjct
@@ -194,6 +251,18 @@ public interface AsgsysSrngService {
 	* @throws Exception 예외
 	*/
 	public AsgsysSrngVo selectJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사양식 목록 조회
+	*
+	* @Title : selectDsgnSrgnFormList
+	* @Description : 심사양식 목록 조회
+	* @param DsgnSrngFormVO
+	* @return
+	* @throws Exception
+	* @return List<DsgnSrngFormVO>
+	*/
+	public List<DsgnSrngFormVO> selectDsgnSrgnFormList(DsgnSrngFormVO dsgnSrngFormVO) throws Exception;
 
 	/**
 	 * 심사위원심사 등록

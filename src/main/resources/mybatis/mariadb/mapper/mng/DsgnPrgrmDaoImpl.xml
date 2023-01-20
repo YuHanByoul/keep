@@ -39,7 +39,7 @@
             WHERE 1=1
             GROUP BY ZZ.PRGRMID
         ) Z ON A.PRGRMID = Z.PRGRMID
-        LEFT OUTER JOIN
+        LEFT OUTER JOIN    /*운영결과차수*/
             (
                 SELECT
                     BB.PRGRMID
@@ -50,16 +50,16 @@
                 GROUP BY
                     BB.PRGRMID
             ) B ON A.PRGRMID = B.PRGRMID
-        LEFT OUTER JOIN
+        LEFT OUTER JOIN    /*운영결과차수*/
             (
                 SELECT
                     CC.PRGRMID
                   , CC.STTS_CD
-                  , CONCAT(COUNT(CASE WHEN CC.STTS_CD = '126103' THEN 1 END), "/", COUNT(CC.CYCLID ))    AS OPER_RSLT_CNT
+                  , CONCAT(COUNT(CASE WHEN CC.STTS_CD = '128103' THEN 1 END), "/", COUNT(CC.CYCLID ))    AS OPER_RSLT_CNT
                 FROM
                     TB_ASS_OPER_RSLT_CYCL CC
                 GROUP BY
-                    CC.CYCLID
+                    CC.PRGRMID
             ) C ON A.PRGRMID =C.PRGRMID
         LEFT OUTER JOIN
             (
@@ -545,16 +545,15 @@
                 A.SRNGID       /* 심사아이디 */
               , A.CYCLID       /* 차수아이디 */
               , A.PICID        /* 담당자아이디 */
-              , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.PICID) AS ACNT
-              , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.PICID) AS PIC_NM
-              , C.CYCL         /* 차수 */
+              , (SELECT CONCAT(NM,"(",ACNT,")") FROM TB_CMM_USER WHERE USERID = A.PICID) AS PIC_NM
+              , D.CYCL         /* 차수 */
               , A.VST_DE       /* 방문_일자 */
               , A.VST_HR       /* 방문_시간 */
               , A.VST_MNT      /* 방문_분 */
-              , '보완개선 요청서'        AS SPLMNT_IMPRV_DMNDLN
+              , IFNULL(DATE_FORMAT(B.REG_DT, '%Y-%m-%d'),'-') AS SPLMNT_IMPRV_DMNDLN
               , B.DMND_CMPTN_DE /*보완요청 완료일 */
-              , '보완요청 계획서'        AS SPLMNT_IMPRV_WRTPLN
-              , '보완요청 결과보고서'    AS RSLT_RPTP
+              , IFNULL(DATE_FORMAT(C.REG_DT, '%Y-%m-%d'),'-') AS SPLMNT_IMPRV_WRTPLN
+              , IFNULL(DATE_FORMAT(D.REG_DT, '%Y-%m-%d'),'-') AS RSLTLN
               , A.REG_DT       /* 등록_일시 */
               , A.RGTRID       /* 등록자아이디 */
               , B.DMNDID
@@ -563,7 +562,9 @@
             LEFT OUTER JOIN    /* 보완 요청 */
                 TB_ASS_SPLMNT_DMND B ON A.SRNGID = B.SRNGID
             LEFT OUTER JOIN
-                TB_ASS_OPER_RSLT_CYCL C ON A.CYCLID = C.CYCLID
+                TB_ASS_SPLMNT_PLAN C ON B.DMNDID = C.DMNDID
+            LEFT OUTER JOIN
+                TB_ASS_OPER_RSLT_CYCL D ON A.CYCLID = D.CYCLID
             WHERE A.CYCLID = #{cyclid}
         <include refid="PaginationMapper.footer"/>
     </select>
@@ -586,12 +587,17 @@
           , A.MDFRID
           , A.REG_DT
           , A.RGTRID
+          , B.DMND_CN
+          , C.CN
         FROM
             TB_ASS_IMPLMNT_IDNTY_SRNG A
         LEFT OUTER JOIN
             TB_ASS_SPLMNT_DMND B ON A.SRNGID = B.SRNGID
-        WHERE
-            A.SRNGID = #{srngid}
+        LEFT OUTER JOIN
+            TB_ASS_SPLMNT_PLAN C ON B.DMNDID =C.DMNDID
+        WHERE 1=1
+        AND A.SRNGID = #{srngid}
+        AND B.DMNDID = #{dmndid}
     </select>
 
     <!-- 보완 요청 조회 -->
@@ -629,20 +635,37 @@
     <!-- 보완 계획 조회 -->
     <select id="selectSplmntPlan" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
         SELECT
-            PLANID
-          , DMNDID
-          , SMRIZE_OPNN
-          , CN
-          , FILEGRPID
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PLANID
+          , A.DMNDID
+          , A.SMRIZE_OPNN
+          , A.CN
+          , A.FILEGRPID
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
+          , B.DMND_CN
         FROM
-            TB_ASS_SPLMNT_PLAN
-        WHERE
-            DMNDID = #{dmndid}
+            TB_ASS_SPLMNT_PLAN A
+        INNER JOIN
+            TB_ASS_SPLMNT_DMND B ON A.DMNDID =B.DMNDID
+        WHERE 1=1
+        AND A.DMNDID = #{dmndid}
     </select>
+
+
+    <!-- 보완계획서 (이행확인심사) 수정 -->
+    <update id="updateScrtyImprvPlanln" parameterType="DsgnPrgrmVo" >
+        UPDATE
+            TB_ASS_SPLMNT_PLAN
+        SET
+            SMRIZE_OPNN = #{smrizeOpnn}
+          , CN          = #{cn}
+          , FILEGRPID   = #{filegrpid}
+          , MDFRID      = #{user.userid}
+          , MDFCN_DT    = NOW()
+        WHERE PLANID    = #{planid}
+    </update>
 
     <!-- 결과보고서 조회 -->
     <select id="selectRsltRptlnForm" parameterType="DsgnPrgrmVo" resultType="DsgnPrgrmVo">
@@ -653,6 +676,18 @@
         WHERE
             A.CYCLID = #{cyclid}
     </select>
+
+    <!-- 결과보고서(이행확인심사) 수정 -->
+    <update id="updateRsltRptln" parameterType="DsgnPrgrmVo" >
+        UPDATE
+            TB_ASS_IMPLMNT_IDNTY_SRNG
+        SET GNRLZ_OPNN = #{gnrlzOpnn}
+          , GRD_CD     = #{grdCd}
+          , FILEGRPID  = #{filegrpid}
+          , MDFRID     = #{user.userid}
+          , MDFCN_DT   = NOW()
+        WHERE SRNGID   = #{srngid}
+    </update>
 
     <update id="updateSbmsnPrd" parameterType="DsgnPrgrmVo" >
         UPDATE

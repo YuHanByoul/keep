@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="card-block-small">
-        <button class="btn btn-inverse m-r-5">목록</button>
+        <button type="button" class="btn btn-inverse m-r-5" onclick="implmntSrngGridHelper.resetListContent()">목록</button>
         <button type="button" class="btn btn-primary" id="saveSplmntDmndBtn" onclick="splmntDmndFrm.saveBtn()">저장</button>
     </div>
     </div>
@@ -34,22 +34,26 @@
 
 <script th:inline="javascript">
 
-
+debugger;
     var splmntDmndFrm = {
 
         init : function() {
 
-        	this.setValid();
+            this.setValid();
 
         },
         saveBtn: function() {
 
-        	debugger;
-
-
             if(!($("#splmntDmndFrm").valid())) return;
 
-            var url ="/mng/dsgnPrgrm/updateSplmntImprv.do";
+            var url ="/mng/dsgnPrgrm/";
+            var keyid = $("#dmndid").val();
+
+            if("" == keyid || null == keyid) {
+                url +="insertSplmntImprv.do";
+            }else{
+                url +="updateSplmntImprv.do";
+            }
 
             var param = $("#splmntDmndFrm").serialize();
 
@@ -78,14 +82,14 @@
 
             var validator = $('#splmntDmndFrm').validate({
                 rules: {
-                	dmndCn      : {required: true, maxlength: 1000},
-                	dmndDcmnt   : {required: true, maxlength: 1000},
-                	dmndCmptnDe : {required: true}
+                    dmndCn      : {required: true, maxlength: 1000},
+                    dmndDcmnt   : {required: true, maxlength: 1000},
+                    dmndCmptnDe : {required: true}
                 },
                 messages: {
-                	dmndCn      : {required: "보완개선요청을 입력해주세요.", maxlength: "보완개선요청은 1000자 이하여야 합니다."},
-                	dmndDcmnt   : {required: "요청서류를 입력해주세요."    , maxlength: "요청서류는 1000자 이하여야 합니다."},
-                	dmndCmptnDe : {required: "보완요청 완료일을입력해주세요."}
+                    dmndCn      : {required: "보완개선요청을 입력해주세요.", maxlength: "보완개선요청은 1000자 이하여야 합니다."},
+                    dmndDcmnt   : {required: "요청서류를 입력해주세요."    , maxlength: "요청서류는 1000자 이하여야 합니다."},
+                    dmndCmptnDe : {required: "보완요청 완료일을입력해주세요."}
                 }
             });
         }

@@ -1,6 +1,5 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +11,7 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +24,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVO;
+import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
@@ -31,6 +34,7 @@ import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -391,13 +395,32 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctn.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	PrgrmSchdlVo prgrmSchdlVo = new PrgrmSchdlVo();
+    	EmrgcyActnPlanVo emrgcyActnPlanVo = new EmrgcyActnPlanVo();
+
     	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
     	model.addAttribute("prgrmDstnctnInfo", asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo));
 
-    	//프로그램 운영일정 목록 조회 tb_ass_prgrm_schdl
-    	//대처계획 목록 조회    ASS_비상_조치_계획	TB_ASS_EMRGCY_ACTN_PLAN
 
-    	//관련 교육과정 목록 조회 ASS_프로그램_교육_주제	tb_ass_prgrm_edu_sbjct	TB_ASS_PRGRM_EDU_SBJCT
+    	BeanUtils.copyProperties(asgsysSrngVo, prgrmSchdlVo);
+    	BeanUtils.copyProperties(asgsysSrngVo, emrgcyActnPlanVo);
+
+
+    	List<PrgrmSchdlVo>     prgrmSchdlList    = asgsysSrngService.selectPrgrmSchdlList(prgrmSchdlVo);
+    	List<EmrgcyActnPlanVo> emrgcyActnPlanLst = asgsysSrngService.selectEmrgcyActnPlanList(emrgcyActnPlanVo);
+
+    	//프로그램 운영일정 목록 조회 tb_ass_prgrm_schdl
+    	if(0 == prgrmSchdlList.size()) {
+    		prgrmSchdlVo.setRnd("1차시");
+    		prgrmSchdlList.add(0, prgrmSchdlVo);
+    	}
+    	model.addAttribute("prgrmSchdlList", prgrmSchdlList);
+
+    	//대처계획 목록 조회    ASS_비상_조치_계획	TB_ASS_EMRGCY_ACTN_PLAN
+    	if(0 == emrgcyActnPlanLst.size()) {
+    		emrgcyActnPlanLst.add(0, emrgcyActnPlanVo);
+    	}
+    	model.addAttribute("emrgcyActnPlanLst", emrgcyActnPlanLst);
 
     	return "mng/asgsysSrng/prgrmDstnctn";
     }
@@ -434,6 +457,8 @@ public class AsgsysSrngController {
 
         retVal = asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
 
+        logger.info("@@@@@@@@@@@@@@@ retVal : " +(retVal));
+
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "등록에 성공하였습니다.");
@@ -463,6 +488,7 @@ public class AsgsysSrngController {
     public Map<String, Object> updatePrgrmDstnctn(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<String, Object>();
 
+
     	if (bindingResult1.hasErrors()) {
     		FieldError fieldError = bindingResult1.getFieldError();
     		if (fieldError != null) {
@@ -470,12 +496,13 @@ public class AsgsysSrngController {
     		}
     		return resultMap;
     	}
-
     	asgsysSrngVo.setUser(user);
 
     	int retVal = 0;
 
     	retVal = asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
+
+    	logger.info("@@@@@@@@@@@@@@@ retVal : " +(retVal));
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -633,16 +660,16 @@ public class AsgsysSrngController {
     /**
     * 지원단 캘린더 팝업 오픈
     *
-    * @Title : aplyExcelDownList
+    * @Title : sprtgrpCalenderPopup
     * @Description : 지원단 캘린더 팝업 오픈
     * @param request
     * @param response
     * @param asgsysSrngVo
+    * @return String
     * @throws Exception
-    * @return void
     */
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpCalenderPopup.html")
-    public String sprtgrpCalenderPopup(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    public String sprtgrpCalenderPopup(AsgsysSrngVo asgsysSrngVo) throws Exception {
 
     	//todo 캘린더 조회
     	return "mng/asgsysSrng/sprtgrpCalenderPopup";
@@ -886,12 +913,41 @@ public class AsgsysSrngController {
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-	//심사신청의 심사위언심사 탭과 name이 중복되어 Detail추가
+	//심사신청의 심사위원심사 탭과 name이 중복되어 Detail추가
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngDetailForm.html")
     public String jdgsSrngDetailForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	model.addAttribute("jdgsSrngInfo", asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo));
+    	DsgnSrngFormVO dsgnSrngFormVO = new DsgnSrngFormVO();
+    	AsgsysSrngVo jdgsSrngInfo = asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo);
+
+    	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
+
+    	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVO);
+    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVO));
+
     	return "mng/asgsysSrng/jdgsSrngForm";
+    }
+
+    /**
+     * @Title : dsgnSrngForm
+     * @Description : 보완요청 목록조회
+     * @param AsgsysSrngVo객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/selectDsgnSrgnFormList.do")
+    @ResponseBody
+    public Map<String, Object> selectDsgnSrgnFormList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        DsgnSrngFormVO dsgnSrngFormVO = new DsgnSrngFormVO();
+
+        BeanUtils.copyProperties(asgsysSrngVo, dsgnSrngFormVO);
+
+        resultMap.put("srngFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVO));
+
+
+        return resultMap;
     }
 
     /**
@@ -903,10 +959,9 @@ public class AsgsysSrngController {
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
-    //심사신청의 심사위언심사 탭과 name이 중복되어 Detail추가
     @RequestMapping(value = "/mng/asgsysSrng/updateJdgsSrngDetail.do")
     @ResponseBody
-    public Map<String, Object> updateJdgsSrngDetail(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateJdgsSrngDetail(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<>();
     	List<AsgsysSrngVo> result = null;
@@ -914,13 +969,12 @@ public class AsgsysSrngController {
     	int retVal = 0 ;
 
     	asgsysSrngVo.setUser(user);
+    	asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
 
 
-    	if(null == asgsysSrngVo.getRsltid()) {
+    	if(CommonUtil.isEmpty(asgsysSrngVo.getSbmsnid())) {
     		retVal = asgsysSrngService.insertJdgsSrngDetail(asgsysSrngVo);
-    		logger.info("insert 심사 #####################"  );
     	}else {
-    		logger.info("asgsysSrngVo.getRgtrid : " + asgsysSrngVo.getRgtrid() );
     		retVal = asgsysSrngService.updateJdgsSrngDetail(asgsysSrngVo);
     	}
 
@@ -1013,23 +1067,13 @@ public class AsgsysSrngController {
     */
     @RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
     @ResponseBody
-    public Map<String, Object> insertSprtgrpSrng(@RequestParam Map<String, Object> saveData, @Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
-
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    	logger.info("asgsysSrngVo : " + saveData.toString());
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-
 
     	asgsysSrngVo.setUser(user);
 
     	int retVal = 0;
-
 
     	if(null == asgsysSrngVo.getRsltid()) {
     		retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);

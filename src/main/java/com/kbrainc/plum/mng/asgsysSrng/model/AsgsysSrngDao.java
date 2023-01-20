@@ -2,12 +2,9 @@ package com.kbrainc.plum.mng.asgsysSrng.model;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 
 /**
@@ -165,6 +162,84 @@ public interface AsgsysSrngDao {
 	*/
 	public AsgsysSrngVo selectPrgrmDstnctn(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+
+	/**
+	* 프로그램 운영일정 목록조회
+	*
+	* @Title : selectPrgrmDstnctn
+	* @Description : 프로그램 운영일정 목록조회
+	* @param prgrmSchdlVo
+	* @return List<PrgrmSchdlVo>
+	* @throws Exception
+	*/
+	public List<PrgrmSchdlVo> selectPrgrmSchdlList(PrgrmSchdlVo prgrmSchdlVo) throws Exception;
+
+	/**
+	* 프로그램 운영일정 수정
+	*
+	* @Title : updatePrgrmSchdl
+	* @Description : 프로그램 운영일정 수정
+	* @param prgrmSchdlVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updatePrgrmSchdl(PrgrmSchdlVo prgrmSchdlVo) throws Exception;
+
+	/**
+	* 프로그램 운영일정 등록
+	*
+	* @Title : insertPrgrmSchdl
+	* @Description : 프로그램 운영일정 등록
+	* @param prgrmSchdlVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPrgrmSchdl(PrgrmSchdlVo prgrmSchdlVo) throws Exception;
+
+	/**
+	* 프로그램 운영일정 삭제
+	*
+	* @Title : deletePrgrmSchdl
+	* @Description : 프로그램 운영일정 삭제
+	* @param prgrmSchdlVo
+	* @return int
+	* @throws Exception
+	*/
+	public int deletePrgrmSchdl(PrgrmSchdlVo prgrmSchdlVo) throws Exception;
+
+	/**
+	* 비상조치계획 목록조회
+	*
+	* @Title : selectEmrgcyActnPlanList
+	* @Description : 비상조치계획 삭제
+	* @param emrgcyActnPlanVo
+	* @return int
+	* @throws Exception
+	*/
+	public List<EmrgcyActnPlanVo> selectEmrgcyActnPlanList(EmrgcyActnPlanVo emrgcyActnPlanVo) throws Exception;
+
+	/**
+	 * 비상조치계획 등록
+	 *
+	 * @Title : insertEmrgcyActnPlan
+	 * @Description : 비상조치계획 삭제
+	 * @param emrgcyActnPlanVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertEmrgcyActnPlan(EmrgcyActnPlanVo emrgcyActnPlanVo) throws Exception;
+
+	/**
+	 * 비상조치계획 삭제
+	 *
+	 * @Title : deleteEmrgcyActnPlan
+	 * @Description : 비상조치계획 삭제
+	 * @param emrgcyActnPlanVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteEmrgcyActnPlan(EmrgcyActnPlanVo emrgcyActnPlanVo) throws Exception;
+
     /**
 	* 프로그램 평가 조회
 	*
@@ -250,6 +325,18 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public List<AsgsysSrngVo> jdgsSrngListExcelDown(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사양식 목록 조회
+	*
+	* @Title : selectDsgnSrgnFormList
+	* @Description : 심사양식 목록 조회
+	* @param DsgnSrngFormVO
+	* @return
+	* @throws Exception
+	* @return List<DsgnSrngFormVO>
+	*/
+	public List<DsgnSrngFormVO> selectDsgnSrgnFormList(DsgnSrngFormVO dsgnSrngFormVO) throws Exception;
 
 	/**
 	* 프로그램 운영관리 조회
@@ -341,6 +428,17 @@ public interface AsgsysSrngDao {
 	public int updateSprtgrpOpnn(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 체크리스트 key count 조회
+	*
+	* @Title : selectKeyCntChklstAns
+	* @Description : 체크리스트 key count 조회
+	* @param vo
+	* @return int
+	* @throws Exception
+	*/
+	public int selectKeyCntChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
+
+	/**
 	 * 체크리스트 제출 수정
 	 *
 	 * @Title : updateChklstSbmsn
@@ -361,6 +459,28 @@ public interface AsgsysSrngDao {
 	 * @throws Exception
 	 */
 	public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 체크리스트 답변 수정
+	*
+	* @Title : updateChklstAns
+	* @Description : 체크리스트 답변 수정
+	* @param chklstAnsVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
+
+	/**
+	* 체크리스트 답변 등록
+	*
+	* @Title : insertChklstAns
+	* @Description : 체크리스트 답변 등록
+	* @param chklstAnsVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
 
 	/**
 	* 증빙서류 파일목록 조회
@@ -438,14 +558,5 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
-
-
-
-
-
-
-
-
-
 
 }
