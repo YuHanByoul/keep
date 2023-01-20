@@ -16,24 +16,43 @@
                         <!-- 키워드 filter -->
                         <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
                             <div class="row">
-                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
                                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                         <div class="input-group input-group-sm input-group-dropdown mb-0">
                                             <select name="searchType" id="searchType" class="form-select form-control">
                                                 <option value="">- 선택 -</option>
-                                                <option value="chklstNm">체크리스트명</option>
-                                                <option value="chklstExpln">체크리스트 설명</option>
+                                                <option value="jntpurchsNm">공동구매모집명</option>
+                                                <option value="jntpurchsNo">공동구매모집번호</option>
                                             </select>
                                             <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3 mb-2 mb-lg-0">
+                                <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
-                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영형태</strong></div>
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>모집상태</strong></div>
                                         <div class="col-sm-12">
-                                            <th:block kattr:select_code="searchOperFrmCd" grpCd="145" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                            <th:block kattr:select_code="searchSttusCd" grpCd="172" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>등록처</strong></div>
+                                        <div class="col-sm-12">
+                                            <th:block kattr:select_code="searchInst" grpCd="172" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+                                <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+                                <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>공동구매 접수기간</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
                                         </div>
                                     </div>
                                 </div>
@@ -42,8 +61,8 @@
                         <!-- //키워드 filter -->
                         <!-- 키워드 filter-btn -->
                         <div class="m-t-20 text-center">
-                            <button type="submit" class="btn btn-disabled m-r-5" onclick="chklst.initSearch();">초기화</button>
-                            <button type="submit" class="btn btn-primary" onclick="chklst.onSearch();">검색</button>
+                            <button type="submit" class="btn btn-disabled m-r-5" onclick="jntpurchs.initSearch();">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="jntpurchs.onSearch();">검색</button>
                         </div>
                     </div>
                 </div>
@@ -57,17 +76,17 @@
                             <h5><strong>공동구매모집 검색 결과</strong></h5>
                         </div>
                         <div class="col-12 col-md-6 text-right">
-                            <th:block sec:authorize-url="/mng/chklst/chklstInsertForm.html">
-                                <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="cmntyPst.onDelete();">삭제</button>
+                            <th:block sec:authorize-url="/mng/jntpurchs/jntpurchsInsertForm.html">
+                                <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="jntpurchs.onDelete();">삭제</button>
                             </th:block>
-                            <th:block sec:authorize-url="/mng/chklst/chklstInsertForm.html">
-                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="chklst.onInsertForm();">등록</button>
+                            <th:block sec:authorize-url="/mng/jntpurchs/jntpurchsInsertForm.html">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="jntpurchs.onInsertForm();">등록</button>
                             </th:block>
                         </div>
                     </div>
                     <div class="card-block-small">
-                        <table id="chklstGrid" class="table-responsive"></table>
-                        <div id="chklstPager" class="text-center"></div>
+                        <table id="jntpurchsGrid" class="table-responsive"></table>
+                        <div id="jntpurchsPager" class="text-center"></div>
                     </div>
                 </div>
                 <!-- //그리드 부분 -->
@@ -82,34 +101,43 @@
     </div>
     <script th:inline="javascript">
         var jntpurchs = {
-            listUrl: "/mng/chklst/selectChklstList.do",
+            listUrl: "/mng/jntpurchs/selectJntpurchsList.do",
             
             init: function() {
-                chklstGrid = new GridHelper("chklstGrid", "contentPanel");
+                jntpurchsGrid = new GridHelper("jntpurchsGrid", "contentPanel");
+                $("#searchPeriod").daterangepicker({
+                    autoUpdateInput: false
+                    , locale: {
+                        format: "YYYY-MM-DD"
+                    }
+                });
                 this.setGrid();
                 this.registEvent();                
-            },
+            }
             
-            registEvent: function() {
+            , registEvent: function() {
                 // TODO
-            },
+                $("#searchPeriod").on("apply.daterangepicker", function(e, picker) {
+                    $(this).val(picker.startDate.format("YYYY-MM-DD") + " ~ " + picker.endDate.format("YYYY-MM-DD")); 
+                });
+            }
             
-            initSearch: function() {
-                 $("#searchType, #searchKeyword, #searchOperFrmCd").val('');
-            },
+            , initSearch: function() {
+                 $("#searchType, #searchKeyword, #searchSttudCd, #searchInst, #searchPeriod").val('');
+            }
             
-            onSearch: function() {
-                chklstGrid.resetListContent();
-            },
+            , onSearch: function() {
+                jntpurchsGrid.resetListContent();
+            }
             
-            setGrid: function() {
-                $("#chklstGrid").jsGrid({
+            , setGrid: function() {
+                $("#jntpurchsGrid").jsGrid({
                     height: "auto",
                     width: "100%",
                     autoload: true,
                     sorting: false,
                     paging: true,
-                    pagerContainer: "#chklstPager",
+                    pagerContainer: "#jntpurchsPager",
                     pagerFormat: "{first} {prev} {pages} {next} {last}",
                     pagePrevText: "이전",
                     pageNextText: "다음",
@@ -126,7 +154,7 @@
                             var params = {
                                 "searchType": $('#searchType').val(),
                                 "searchKeyword": $('#searchKeyword').val(),
-                                "searchOperFrmCd": $('#searchOperFrmCd').val(),
+                                //"searchOperFrmCd": $('#searchOperFrmCd').val(),
                                 "pageNumber": filter.pageIndex,
                                 "rowPerPage": filter.pageSize,
                                 "orderField": "REG_DT",
@@ -135,7 +163,7 @@
                             $.ajax({
                               type: "GET",
                               contentType: "application/json; charset=utf-8",
-                              url: chklst.listUrl,
+                              url: jntpurchs.listUrl,
                               data: params,
                               dataType: "json"
                             }).done(function(response) {
@@ -153,44 +181,46 @@
                         {
                             headerTemplate: function() {
                                 return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
-                                   //cmntyPst.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                                   jntpurchs.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
                                 });
                             },
                             itemTemplate: function(value, item) {
                                 return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("pstid", item.pstid).prop("checked", $.inArray(item, cmntyPst.selectedItems) > -1).on("change", function() {
-                                    //$(this).is(":checked") ? cmntyPst.selectItem($(this).attr("pstid")) : cmntyPst.unselectItem($(this).attr("pstid"));
+                                    $(this).is(":checked") ? jntpurchs.selectItem($(this).attr("jntpurchsid")) : jntpurchs.unselectItem($(this).attr("jntpurchsid"));
                                 });
                             },
                             align: "center", width: "30", sorting: false
                         },
                         {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                        {title: "공동구매모집번호", name: "operFrmCdNm", type: "text", width: "100", align: "center"},
-                        {title: "공동구매모집명", name: "chklstNm", type: "text" , width: "200", align: "left"},
-                        {title: "교구명", name: "qitemCnt", type: "number", align: "center", width: "80"},
-                        {title: "등록처", name: "useYn", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
-                            return value == "Y" ? "사용" : "미사용";
+                        {title: "공동구매모집번호", name: "jntpurchsno", type: "text", width: "100", align: "center"},
+                        {title: "공동구매모집명", name: "jntpurchsNm", type: "text" , width: "200", align: "left"},
+                        {title: "교구명", name: "tchidNm", type: "number", align: "center", width: "80"},
+                        {title: "등록처", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
+                            return "등록처 확인";
                         }},
-                        {title: "공동구매 접수기간", name: "mdfcnDt", type: "number", align: "center", width: "80"},
-                        {title: "모집상태", name: "regDt", type: "number", align: "center", width: "80"},
-                        {title: "작성자ID", name: "regDt", type: "number", align: "center", width: "80"},
+                        {title: "공동구매 접수기간", name: "bgngDt", type: "number", align: "center", width: "80", itemTemplate: function(value, item) {
+                            return value + " ~ " + item.endDt;
+                        }},
+                        {title: "모집상태", name: "sttusCdNm", type: "number", align: "center", width: "80"},
+                        {title: "작성자ID", name: "rgtrid", type: "number", align: "center", width: "80"},
                         {title: "등록일", name: "regDt", type: "number", align: "center", width: "80"}
                     ],
                     rowClick: function(args) { 
                         if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                        var detailUrl = "/mng/chklst/chklstDetailForm.html?chklstid=" + args.item.chklstid;
-                        chklstGrid.loadContent(detailUrl);
-                        chklstGrid.rowClick(args);
+                        var detailUrl = "/mng/jntpurchs/jntpurchsUpdateForm.html?jntpurchsid=" + args.item.jntpurchsid;
+                        jntpurchsGrid.loadContent(detailUrl);
+                        jntpurchsGrid.rowClick(args);
                     }
                 });
-            },
+            }
             
-            resetGrid: function() {
-                chklstGrid.resetListContent();
-            },
+            , resetGrid: function() {
+                jntpurchsGrid.resetListContent();
+            }
             
-            onInsertForm() {
-                var insertUrl = "/mng/chklst/chklstRegistForm.html";
-                chklstGrid.loadContent(insertUrl);
+            , onInsertForm() {
+                var insertUrl = "/mng/jntpurchs/jntpurchsInsertForm.html";
+                jntpurchsGrid.loadContent(insertUrl);
             }
         };
         
