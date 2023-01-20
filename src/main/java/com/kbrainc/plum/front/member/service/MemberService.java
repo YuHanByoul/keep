@@ -1,9 +1,6 @@
 package com.kbrainc.plum.front.member.service;
 
-import java.util.Map;
-
 import com.kbrainc.plum.front.member.model.MemberVo;
-import com.kbrainc.plum.front.member.model.TeacherVo;
 
 /**
 * 회원정보 서비스 인터페이스.
@@ -24,42 +21,6 @@ public interface MemberService {
 	
     /**
     *
-    * 회원 정보 등록
-    *
-    * @Title : insertMember
-    * @Description : 
-    * @param memberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
-   public int insertMember(MemberVo memberVo, TeacherVo teacherVo) throws Exception;
-   
-   /**
-    *
-    * 회원 정보 수정
-    *
-    * @Title : updateMember
-    * @Description : 회원 정보 수정 
-    * @param memberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
-   public int updateMember(MemberVo memberVo, TeacherVo teacherVo) throws Exception;
-   
-   /**
-   *
-   * 회원정보 호출
-   *
-   * @Title : selectTeacherMemberInfo
-   * @Description : 회원정보 호출
-   * @param memberVo MemberVo객체
-   * @return MemberVo 
-   * @throws Exception 예외
-   */
-  public Map<String,Object> selectTeacherMemberInfo(MemberVo memberVo) throws Exception;
-   
-   /**
-    *
     * ID 중복 체크
     *
     * @Title : chekcDuplicationUser
@@ -68,7 +29,32 @@ public interface MemberService {
     * @return int 
     * @throws Exception 예외
     */
-   public int chekcDuplicationUser(MemberVo memberVo) throws Exception;
+    public int chekcDuplicationUser(MemberVo memberVo) throws Exception;
+
+    /**
+    *
+    * 회원 정보 등록
+    *
+    * @Title : insertMember
+    * @Description : 
+    * @param memberVo MemberVo객체
+    * @return int 
+    * @throws Exception 예외
+    */
+   public int insertMember(MemberVo memberVo) throws Exception;
+   
+   /**
+   *
+   * 회원 정보 수정
+   *
+   * @Title : updateMember
+   * @Description : 회원 정보 수정 
+   * @param memberVo MemberVo객체
+   * @return int 
+   * @throws Exception 예외
+   */
+   public int updateMember(MemberVo memberVo) throws Exception;
+   
 	
 	
 }

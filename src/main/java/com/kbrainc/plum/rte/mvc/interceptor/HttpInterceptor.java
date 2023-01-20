@@ -43,8 +43,8 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
     @Autowired
     LocaleResolver localeResolver;
     
-    /** 다국어를 적요할 포털의 URL */
-    String[] localeAllowedPageUrls = {"/main.html", "/front/intro/introduceHJ.html"};
+    /** 다국어를 적용할 포털의 URL */
+    String[] localeAllowedPageUrls = {"/main.html"};
     Set<String> localeAllowedPageUrlSet = new HashSet<String>(Arrays.asList(localeAllowedPageUrls));
 
 
