@@ -3,13 +3,54 @@
 
 <!--
 	SQL File Name : JntpurchsDaoImpl.xml
-	Description : 설문지관리
+	Description : 공동구매관리
 -->
-<mapper namespace="com.kbrainc.plum.mng.tchaidJntpurchs.model.JntpurchsDao">
+<mapper namespace="com.kbrainc.plum.mng.jntpurchs.model.JntpurchsDao">
     
-    <!-- 설문지 정보 등록 -->
+    <!-- 공동구매모집 목록 조회 -->
+    <select id="selectJntpurchsList" parameterType="JntpurchsVo" resultType="JntpurchsVo">
+        /* JntpurchsDao.selectJntpurchsList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.JNTPURCHSID
+            , A.JNTPURCHSNO
+            , A.JNTPURCHS_NM
+            , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHID_NM
+            , A.BGNG_DT
+            , A.END_DT
+            , D.CD_NM AS STTUS_CD_NM
+            , A.RGTRID
+            , A.REG_DT
+        FROM
+            TB_THA_TCHAID_JNTPURCHS A
+        LEFT JOIN
+            TB_THA_TCHAID_JNTPURCHS_GOODS B ON (B.JNTPURCHSID = A.JNTPURCHSID)
+        LEFT JOIN
+            TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = 172
+        ) D ON (D.CD = A.STTS_CD)
+        INNER JOIN (
+            SELECT
+                USERID
+                , ACNT
+            FROM
+                TB_CMM_USER
+        ) E ON (E.USERID = A.RGTRID)
+        GROUP BY
+            B.JNTPURCHSID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공동구매모집 등록 -->
     <insert id="insertJntpurchs" parameterType="JntpurchsVo" useGeneratedKeys="true" keyProperty="jntpurchsid">
-        /* TchaidJntpurchsDao.insertTchaidJntpurchs */
+        /* JntpurchsDao.insertJntpurchs */
         INSERT INTO TB_THA_TCHAID_INTPURCHS (
             JNTPURCHSNO
             , JNTPURCHS_NM
@@ -32,7 +73,12 @@
             , REG_DT
             , RGTRID
         ) VALUES (
-            #{jntpurchsno}
+            (
+                SELECT 
+                    CONCAT('GP-', IFNULL(MAX(JNTPURCHSNO), LPAD('1', 3, '0'))) 
+                FROM 
+                    TB_THA_TCHAID_JNTPURCHS)
+            )
             , #{jntpurchsNm}
             , #{sttscd}
             , #{qnlyWhol}
@@ -55,20 +101,11 @@
         )
     </insert>
     
-    <!-- 사이트 목록 조회 -->
-    <select id="selectSiteList" parameterType="QestnrVo" resultType="QestnrVo">
-        /* QestnrDao.selectSiteList */
-        SELECT
-            A.SITEID
-            , A.SITE_NM
-            , B.INST_NM
-        FROM
-            TB_CMM_SITE A
-        INNER JOIN
-            TB_CMM_INST B ON (B.INSTID = A.INSTID)
-        WHERE
-            A.USE_YN = 'Y'
-    </select>
+    
+    
+    
+    
+    
     
     <!-- 설문지 목록 조회 -->
     <select id="selectQestnrList" parameterType="QestnrVo" resultType="QestnrVo">
