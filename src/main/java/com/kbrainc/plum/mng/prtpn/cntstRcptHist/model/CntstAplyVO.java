@@ -64,7 +64,7 @@ public class CntstAplyVO extends ParentRequestVo {
     /** 작품_설명 */
     private String prdctExpln;
     /** 작품_파일그룹아이디 */
-    private String prdctFilegrpid;
+    private Integer prdctFilegrpid;
     /** 약관_동의_여부 */
     private String trmsAgreYn;
     /** 수정_일시 */
