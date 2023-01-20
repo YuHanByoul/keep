@@ -74,8 +74,7 @@ public class PublicContestVo extends ParentRequestVo {
     /** 신청_종료_일시 */
     private String aplyEndDt;
     
-    /** 신청_기간 */
-    private String aplyDt;
+    
     
     
     /** 대상_코드 */
@@ -90,8 +89,7 @@ public class PublicContestVo extends ParentRequestVo {
     /** 사업_종료_일자 */
     private String bsnsEndDe;
 
-    /** 사업_기간 */
-    private String bsnsDe;
+    
     
     /** 중간_보고_여부 */
     private String mdlReportYn;
@@ -202,4 +200,28 @@ public class PublicContestVo extends ParentRequestVo {
     
     /** 등록자아이디 */
     private String rgtrid;
+    
+    
+    /** 신청_기간 */
+    private String aplyDt;
+    /** 사업_기간 */
+    private String bsnsDe;
+    /** 심사_기간 */
+    private String srngDt;
+    /** 교부신청기간 */
+    private String delvryAplyDtFirst;
+    /** 교부신청기간(2차) */
+    private String delvryAplyDtScnd;
+    /** 교부확정발표기간 */
+    private String delvryCfmtnPrsntnDt;
+    /** 자금집행기간 */
+    private String cptalExcutDtFirst;
+    /** 자금집행기간(2차) */
+    private String cptalExcutDtScnd;
+    /** 중간보고기간 */
+    private String mdlReportDt;
+    /** 결과보고기간 */
+    private String rsltReportDt;
+    /** 정산보고기간 */
+    private String excclcReportDt;
 }

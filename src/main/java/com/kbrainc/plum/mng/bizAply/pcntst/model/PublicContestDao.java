@@ -75,6 +75,18 @@ public interface PublicContestDao {
     int updateContest(PublicContestVo publicContestVo) throws Exception;
     
     /**
+    * 공모관리 목록 엑셀 다운로드. 
+    *
+    * @Title : publicContestListExcelDownload
+    * @Description : TODO
+    * @param publicContestVo
+    * @return
+    * @throws Exception
+    * @return void
+     */
+    List<PublicContestVo> publicContestListExcelDownload(PublicContestVo publicContestVo) throws Exception;
+    
+    /**
     * 공모관리 삭제. 
     *
     * @Title : deleteContest

@@ -5,6 +5,9 @@ package com.kbrainc.plum.mng.bizAply.pcntst.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 
 /**
@@ -71,6 +74,19 @@ public interface PublicContestService {
     * @return int
      */
     int updateContest(PublicContestVo publicContestVo) throws Exception;
+    
+    /**
+    * 공모관리 목록 엑셀 다운로드. 
+    *
+    * @Title : publicContestListExcelDownload
+    * @Description : TODO
+    * @param publicContestVo
+    * @param response
+    * @param request
+    * @throws Exception
+    * @return void
+     */
+    void publicContestListExcelDownload(PublicContestVo publicContestVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
     
     /**
     * 공모관리 삭제. 

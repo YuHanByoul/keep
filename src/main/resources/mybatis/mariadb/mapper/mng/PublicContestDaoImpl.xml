@@ -260,6 +260,79 @@
         WHERE PCNTSTID = #{pcntstid}
     </update>
     
+    <!-- 엑셀다운로드 -->
+    <select id="publicContestListExcelDownload" parameterType="PublicContestVo" resultType="PublicContestVo">
+        /* PublicContestDao.publicContestListExcelDownload */
+        SELECT
+            B.CD_NM AS FLD_NM
+            , PCNTST_NM
+            , CONCAT(APLY_BGNG_DT, ' - ', APLY_END_DT) AS APLY_DT
+            <![CDATA[
+            , CASE WHEN NOW() < APLY_BGNG_DT THEN '진행전' 
+                WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '진행중'
+                WHEN NOW() > APLY_END_DT THEN '마감'
+                ELSE ''
+                END AS STATUS
+            ]]>
+            , C.CD_NM AS TRGT_NM
+            , CONCAT(BSNS_BGNG_DE, ' - ', BSNS_END_DE) AS BSNS_DE
+            , CONCAT(SRNG_BGNG_DT, ' - ', SRNG_END_DT) AS SRNG_DT   
+            , CONCAT(DELVRY_APLY_BGNG_DT_FIRST, ' - ', DELVRY_APLY_END_DT_FIRST) AS DELVRY_APLY_DT_FIRST   
+            , CONCAT(DELVRY_APLY_BGNG_DT_SCND, ' - ', DELVRY_APLY_END_DT_SCND) AS DELVRY_APLY_DT_SCND   
+            , CONCAT(DELVRY_CFMTN_PRSNTN_BGNG_DT, ' - ', DELVRY_CFMTN_PRSNTN_END_DT) AS DELVRY_CFMTN_PRSNTN_DT
+            , CONCAT(CPTAL_EXCUT_BGNG_DT_FIRST, ' - ', CPTAL_EXCUT_END_DT_FIRST) AS CPTAL_EXCUT_DT_FIRST
+            , CONCAT(CPTAL_EXCUT_BGNG_DT_SCND, ' - ', CPTAL_EXCUT_END_DT_SCND) AS CPTAL_EXCUT_DT_SCND
+            , CONCAT(MDL_REPORT_BGNG_DT, ' - ', MDL_REPORT_END_DT) AS MDL_REPORT_DT
+            , CONCAT(RSLT_REPORT_BGNG_DT, ' - ', RSLT_REPORT_END_DT) AS RSLT_REPORT_DT
+            , CONCAT(EXCCLC_REPORT_BGNG_DT, ' - ', EXCCLC_REPORT_END_DT) AS EXCCLC_REPORT_DT
+            , A.REG_DT
+        FROM    
+            TB_SPB_PCNTST A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.FLD_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON A.TRGT_CD = C.CD
+            LEFT OUTER JOIN TB_CMM_CD D ON A.CNSLTNG_USE_CD = D.CD
+            LEFT OUTER JOIN TB_CMM_CD E ON A.ONLN_SRNG_TYPE_CD = E.CD
+        WHERE 
+            1 = 1
+            <if test="searchFldCd != null and searchFldCd != ''">
+            AND A.FLD_CD = #{searchFldCd}
+            </if>
+            <if test="searchPcntstNm != null and searchPcntstNm != ''">
+            AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+            </if>
+            <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
+            <![CDATA[
+            AND A.APLY_BGNG_DT >= #{searchAplyBgngDe} 
+            AND A.APLY_END_DT <= #{searchAplyEndDe}
+            ]]>
+            </if>
+            <if test="searchBsnsBgngDe != null and searchBsnsBgngDe != ''">
+            <![CDATA[
+            AND A.BSNS_BGNG_DE >= #{searchBsnsBgngDe} 
+            AND A.BSNS_END_DE <= #{searchBsnsEndDe}
+            ]]>
+            </if>
+            <if test="status != null and status != ''">
+                <choose>
+                    <when test="status == 'before'">
+                    <![CDATA[
+                    AND NOW() < APLY_BGNG_DT
+                    ]]>
+                    </when>
+                    <when test="status == 'ing'">
+                    <![CDATA[
+                    AND NOW() >= APLY_BGNG_DT AND NOW() <= APLY_END_DT
+                    ]]>
+                    </when>
+                    <when test="status == 'end'">
+                    <![CDATA[
+                    AND NOW() > APLY_END_DT
+                    ]]>
+                    </when>
+                </choose>            
+            </if>
+    </select>
+    
     <!-- 공모관리 삭제 -->
     <delete id="deleteContest" parameterType="PublicContestVo">
         /* PublicContestDao.deleteContest */
