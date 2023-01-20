@@ -27,7 +27,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class DsgnSrngFormVO {
+public class DsgnSrngFormVo {
 
 	/** 로그인 사용자 정보 */
     private UserVo user;

@@ -607,7 +607,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private List<ChklstAnsVo> ansLst;
 
     /** 심사양식 목록*/
-    private List<DsgnSrngFormVO> dsgnSrngFormLst;
+    private List<DsgnSrngFormVo> dsgnSrngFormLst;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

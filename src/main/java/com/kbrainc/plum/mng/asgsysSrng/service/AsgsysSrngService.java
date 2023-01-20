@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVO;
+import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -257,12 +257,12 @@ public interface AsgsysSrngService {
 	*
 	* @Title : selectDsgnSrgnFormList
 	* @Description : 심사양식 목록 조회
-	* @param DsgnSrngFormVO
+	* @param DsgnSrngFormVo
 	* @return
 	* @throws Exception
 	* @return List<DsgnSrngFormVO>
 	*/
-	public List<DsgnSrngFormVO> selectDsgnSrgnFormList(DsgnSrngFormVO dsgnSrngFormVO) throws Exception;
+	public List<DsgnSrngFormVo> selectDsgnSrgnFormList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	/**
 	 * 심사위원심사 등록

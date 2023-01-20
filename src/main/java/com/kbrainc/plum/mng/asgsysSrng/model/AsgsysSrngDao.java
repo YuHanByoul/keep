@@ -331,12 +331,12 @@ public interface AsgsysSrngDao {
 	*
 	* @Title : selectDsgnSrgnFormList
 	* @Description : 심사양식 목록 조회
-	* @param DsgnSrngFormVO
+	* @param DsgnSrngFormVo
 	* @return
 	* @throws Exception
 	* @return List<DsgnSrngFormVO>
 	*/
-	public List<DsgnSrngFormVO> selectDsgnSrgnFormList(DsgnSrngFormVO dsgnSrngFormVO) throws Exception;
+	public List<DsgnSrngFormVo> selectDsgnSrgnFormList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	/**
 	* 프로그램 운영관리 조회

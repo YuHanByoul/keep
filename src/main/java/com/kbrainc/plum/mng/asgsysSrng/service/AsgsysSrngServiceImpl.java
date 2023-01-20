@@ -29,7 +29,7 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.ChklstAnsVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVO;
+import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -620,8 +620,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	* @throws Exception
 	* @return List<DsgnSrngFormVO>
 	*/
-	public List<DsgnSrngFormVO> selectDsgnSrgnFormList(DsgnSrngFormVO dsgnSrngFormVO) throws Exception{
-		return asgsysSrngDao.selectDsgnSrgnFormList(dsgnSrngFormVO);
+	public List<DsgnSrngFormVo> selectDsgnSrgnFormList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception{
+		return asgsysSrngDao.selectDsgnSrgnFormList(dsgnSrngFormVo);
 	}
 
     /**
@@ -639,6 +639,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
         int retVal = 0;
         retVal += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
+
+
 
         return retVal;
 	}

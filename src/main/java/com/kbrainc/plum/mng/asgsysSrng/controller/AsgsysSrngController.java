@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVO;
+import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
@@ -917,13 +917,13 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngDetailForm.html")
     public String jdgsSrngDetailForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	DsgnSrngFormVO dsgnSrngFormVO = new DsgnSrngFormVO();
+    	DsgnSrngFormVo dsgnSrngFormVo = new DsgnSrngFormVo();
     	AsgsysSrngVo jdgsSrngInfo = asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo);
 
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
-    	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVO);
-    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVO));
+    	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
+    	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
 
     	return "mng/asgsysSrng/jdgsSrngForm";
     }
@@ -940,11 +940,11 @@ public class AsgsysSrngController {
     public Map<String, Object> selectDsgnSrgnFormList(AsgsysSrngVo asgsysSrngVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
 
-        DsgnSrngFormVO dsgnSrngFormVO = new DsgnSrngFormVO();
+        DsgnSrngFormVo dsgnSrngFormVo = new DsgnSrngFormVo();
 
-        BeanUtils.copyProperties(asgsysSrngVo, dsgnSrngFormVO);
+        BeanUtils.copyProperties(asgsysSrngVo, dsgnSrngFormVo);
 
-        resultMap.put("srngFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVO));
+        resultMap.put("srngFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
 
 
         return resultMap;
