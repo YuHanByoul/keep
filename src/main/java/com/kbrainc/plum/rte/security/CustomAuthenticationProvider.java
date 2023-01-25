@@ -183,7 +183,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     }
                 } else if ("I".equals(loginUserType) && instid == null) {
                     // 회원은 맞으나 기관회원이 아님
-                    request.setAttribute("message", "기관회원이 아닙니다. 개인회원으로 다시 로그인 해주십시오.");
+                    request.setAttribute("message", "기관회원이 아닙니다. 개인회원으로 로그인 해주십시오.");
                     throw new InternalAuthenticationServiceException("Login Error !!");
                 }
                 
