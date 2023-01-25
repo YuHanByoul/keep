@@ -111,7 +111,7 @@ public class SpbJdgsController {
     /**
      * 그룹에 매핑된 전문가 목록 조회
      *
-     * @param grpId
+     * @param jdgGrpVo
      * @return map
      * @throws Exception
      * @Title : selectExprtList
