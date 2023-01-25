@@ -2,8 +2,11 @@ package com.kbrainc.plum.rte.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  * 
@@ -146,6 +150,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         } else { // 사용자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                
                 if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
@@ -195,6 +200,20 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 roleMap.put("SE_CD", "U");
                 resultList.add(roleMap);
                 
+                if (CommonUtil.isEmpty(resultMap.get("PSWD_MDFCN_DT"))) {
+                    request.setAttribute("pswdChangeLayer", true);
+                } else {
+                    Timestamp pswdMdfcnTimestamp = (Timestamp) resultMap.get("PSWD_MDFCN_DT");
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.setTime(pswdMdfcnTimestamp);
+                    cal1.add(Calendar.DATE, 90);
+                    
+                    if (cal1.compareTo(cal2) <= 0) {
+                        request.setAttribute("pswdChangeLayer", true);
+                    }
+                }
+
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
                 Integer loginFailCnt = usernameNotFoundMap.get(loginid);
                 if (loginFailCnt != null && loginFailCnt >= 5) {

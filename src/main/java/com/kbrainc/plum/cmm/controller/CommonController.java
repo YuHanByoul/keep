@@ -76,7 +76,7 @@ public class CommonController {
     * @return ModelAndView 모델뷰객체
     */
     @GetMapping("/")
-    public ModelAndView login(HttpServletRequest request, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout) {
+    public ModelAndView login(HttpServletRequest request, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd) {
         ModelAndView mav = new ModelAndView();
 
         if (user != null) {
@@ -85,7 +85,7 @@ public class CommonController {
                 serverHttpPortStr = ":" + serverHttpsPort;
             }
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL());
+            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL() + (pwd != null ? "?pwd" : ""));
             redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
             mav.setView(redirectView);
             return mav;
@@ -110,7 +110,7 @@ public class CommonController {
             } else if (error) {
                 mav.addObject("error", "true");
                 mav.setViewName("front/login");
-            } else {      
+            } else {
                 PstVo pstVo =new PstVo();
                 
                 pstVo.setUser(user);
