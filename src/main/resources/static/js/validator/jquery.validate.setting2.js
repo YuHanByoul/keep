@@ -31,6 +31,11 @@ $.validator.setDefaults({
                             if($(this.element).siblings(".form-msg")){
                                $(this.element).siblings(".form-msg").text(this.message);
                             }
+                            
+                            if($(this.element).siblings(".invalid-feedback")){ // 로그인 전용
+                               $(this.element).siblings(".invalid-feedback").text(this.message);
+                               return false;
+                            }
 
 /*                            nextSibling = this.element.nextElementSibling;
                             if($(nextSibling).is(".form-msg")){
