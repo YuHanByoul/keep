@@ -95,8 +95,8 @@
                 <td class="text-center v-middle">
                     <div class="align-items-center col-12 justify-content-center m-0 row">
                         <div class="col-auto p-l-0">
-                        <input type="text" class="col-lg-auto form-control form-control-sm text-right" name="payment{{frmNum}}" id="payment{{frmNum}}" style="width:88px;" 
-                          value={{amount}}  {{#if rsvtdeid}} disabled {{/if}} >
+                        <input type="number" class="col-lg-auto form-control form-control-sm text-right" name="payment{{frmNum}}" id="payment{{frmNum}}" style="width:88px;" value="{{amt}}"
+                           {{#if rsvtdeid}} disabled {{/if}} >
                         </div>
                          <div class="col-auto p-l-0 p-r-0">
                              원
@@ -105,7 +105,7 @@
                              <div class="border-checkbox-section">
                                  <div class="border-checkbox-group border-checkbox-group-inverse">
                                      <input class="border-checkbox payment-free-check " type="checkbox" name="paymentFreeCheck{{frmNum}}" id="paymentFreeCheck{{frmNum}}"  value="{{frmNum}}" 
-                                       {{#if amount}} checked{{/if}}    
+                                       {{#if amt}} checked{{/if}}    
                                      > 
                                      <label class="form-label form-label-sm border-checkbox-label m-0" for="paymentFreeCheck{{frmNum}}" >
                                          무료
@@ -132,9 +132,8 @@
     /*]]>*/
 
     $(document).ready(function () {
-        
+
         if(mode=='MR'){
-            console.log(resList);
             $("#inserFrmListArea").html("");
             addModifyForm();
         }else{ 
@@ -175,6 +174,7 @@
                     $("#payment"+frmNum     ).val(inputValue).attr("readonly",true)
                     $("#paymentFreeCheck"+frmNum).prop("checked",false).attr("onclick",'return false;')
                 })
+                
             }else{
             	chkFrms.forEach(function(frmNum){
                     $("#payment"+frmNum     ).val("").attr("readonly",false)
@@ -222,6 +222,7 @@
         }
         
        checkStts();
+       
        $(".payment-checkbox").bind("change",function(){
     	   checkStts()
        })
@@ -240,7 +241,6 @@
            }
        })
     })
-    
     
     function checkStts(){
 
@@ -263,7 +263,11 @@
 	            $("#endTm"+frmNum       ).attr("disabled",false);
 	            $("#paymentFreeCheck"+frmNum).attr("disabled",false);
 	            $("#paymentFreeCheck"+frmNum).prop("checked",false);
-	            $("#payment"+frmNum     ).val("");
+	            
+                if(mode != 'MR'){
+		            $("#payment"+frmNum     ).val("");
+                }
+                
 	            $("#payment"+frmNum     ).attr("disabled",false);
 	            $("#payment"+frmNum     ).attr("readonly",false);
 	
@@ -327,18 +331,12 @@
 	                     ,'rsvtdeid' : resList[i].rsvtdeid
 	                     ,'strtTm'   : resList[i].strtTm
 	                     ,'endTm'    : resList[i].endTm
-	                     ,'amount'   : Number(resList[i].amt)
+	                     ,'amt'   : Number(resList[i].amt)
 	             }
              }
-             
-             console.log(data);
              var html = template(data);
              $("#inserFrmListArea").append(html);
          }
-
-
-
-         
     }
 
     save=()=>{
@@ -466,7 +464,7 @@
             ,'spceid' : spceVo.spceid   
         }
         
-        let reqUrl = (mode=='R')?"/mng/spce/InsertSpceTotalStayInfo.do":"/mng/spce/InsertSpceTotalStayInfo.do";
+        let reqUrl = (mode=='R')?"/mng/spce/InsertSpceTotalStayInfo.do":"/mng/spce/modifyRentRsvt.do";
         
         if(displayWorkProgress()){
             $.ajax({

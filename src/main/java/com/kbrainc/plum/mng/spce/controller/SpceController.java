@@ -615,18 +615,20 @@ public class SpceController {
                 deStrList.add(vo.get("DE").toString());
             }
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg",String.join(", ",deStrList.stream().distinct().collect(Collectors.toList()))+ "일 이미 예약 운영일자가 존재합니다.");
+            resultMap.put("msg",String.join(", ",deStrList.stream().distinct().collect(Collectors.toList()))+"일 이미 예약 신청이 존재하여 수정 할 수 없습니다.");
             return resultMap; 
         }
         
         retVal = spceService.deleteSpceRsvtdeByDate(spceRsvtdeVo);
         
+        retVal = spceService.insertSpceRsvtde(spceRsvtdeVo);
+        
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "삭제 성공하였습니다.");
+            resultMap.put("msg", "저장 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "삭제 실패했습니다.");
+            resultMap.put("msg", "저장 실패했습니다.");
         }
         
         return resultMap;
