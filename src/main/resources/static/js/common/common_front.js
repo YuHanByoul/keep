@@ -52,7 +52,7 @@ jQuery(function(){
     $("#this_href_naver_share_process").click(function(e) {
         e.preventDefault();
         var t = $("#currentPageUrl").val()
-          , a = document.title
+          , a = $("#currentPageNavi").val()
           , n = "http://share.naver.com/web/shareView.nhn?url=" + o(t) + "&title=" + o(a);
         if (!confirm("현재 페이지를 네이버에 공유하시겠습니까?"))
             return !1;
@@ -62,7 +62,7 @@ jQuery(function(){
     $("#this_href_kakaostory_share_process").click(function(e) {
         e.preventDefault();
         var t = $("#currentPageUrl").val()
-          , a = document.title
+          , a = $("#currentPageNavi").val()
           , n = "https://story.kakao.com/s/share?url=" + o(t) + "&text=" + o(a);
         if (!confirm("현재 페이지를 카카오스토리에 공유하시겠습니까?"))
             return !1;
@@ -72,7 +72,7 @@ jQuery(function(){
     $("#this_href_twitter_share_process").click(function(e) {
         e.preventDefault();
         var t = $("#currentPageUrl").val()
-          , a = document.title
+          , a = $("#currentPageNavi").val()
           , n = "https://twitter.com/intent/tweet?url=" + o(t) + "&text=" + o(a);
         if (!confirm("현재 페이지를 트위터에 공유하시겠습니까?"))
             return !1;
@@ -82,7 +82,7 @@ jQuery(function(){
     $("#this_href_facebook_share_process").click(function(e) {
         e.preventDefault();
         var t = $("#currentPageUrl").val()
-          , a = document.title
+          , a = $("#currentPageNavi").val()
           , n = "https://www.facebook.com/sharer/sharer.php?u=" + o(t) + "&t=" + o(a);
         if (!confirm("현재 페이지를 페이스북에 공유하시겠습니까?"))
             return !1;

@@ -1,7 +1,7 @@
 <form id="aplyFrm">
-<input type="hidden" id="prgrmid" name="prgrmid" th:value="${dsgnAplyInfo.prgrmid}">
-<input type="hidden" id="instid" name="instid" th:value="${dsgnAplyInfo.instid}">
-<input type="hidden" id="acnt" name="acnt" th:value="${dsgnAplyInfo.acnt}">
+<input type="hidden" id="prgrmid"      name="prgrmid"      th:value="${dsgnAplyInfo.prgrmid}">
+<input type="hidden" id="instid"       name="instid"       th:value="${dsgnAplyInfo.instid}">
+<input type="hidden" id="acnt"         name="acnt"         th:value="${dsgnAplyInfo.acnt}">
 <input type="hidden" id="splmntDmndid" name="splmntDmndid" th:value="${dsgnAplyInfo.splmntDmndid}">
 
     <div class="tab-pane active" id="applyInfo" role="tabpanel">
@@ -148,23 +148,23 @@
 
                             <input type="file" id="evdncDcmntFile" name="evdncDcmntFile" class="form-control form-control-sm"/>
 
-		                    <div class="row">
+                            <div class="row">
                                 <th:block th:if="${fileList != null}">
-	                                <div class="row">
-		                                <th:block th:if="${fileList != null}">
-		                                    <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
-		                                        <th:block th:if="${item.orginlFileNm != null}">
-		                                            <span th:fileid='${item.fileid}' th:fileIdntfcKey="${item.fileIdntfcKey}" th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))" href="javascript:void(0)" class='label label-inverse'>
-		                                                <th:block th:text="${item.orginlFileNm}" /> <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'><th:block th:text="X"</th:block></a>
-		                                            </span>
-		                                        </th:block>
-		                                    </div>
-		                                 </th:block>
-	                                 </div>
+                                    <div class="row">
+                                        <th:block th:if="${fileList != null}">
+                                            <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                <th:block th:if="${item.orginlFileNm != null}">
+                                                    <span th:fileid='${item.fileid}' th:fileIdntfcKey="${item.fileIdntfcKey}" th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))" href="javascript:void(0)" class='label label-inverse'>
+                                                        <th:block th:text="${item.orginlFileNm}" /> <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'><th:block th:text="X"</th:block></a>
+                                                    </span>
+                                                </th:block>
+                                            </div>
+                                         </th:block>
+                                     </div>
                                 </th:block>
                            </div>
 
-						</div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-12 col-lg-6">
@@ -284,9 +284,8 @@ $('.nav-pills a').on('show.bs.tab', function(event) {
 
 });
 
+//init
 function initAplyInfoForm(){
-
-    //writeSplmntDmndGridData();
 
     prgrmid = $("#prgrmid").val();
 
@@ -297,12 +296,14 @@ function initAplyInfoForm(){
 
     $("#aplcntNm").val($("#aplcntNm").val()+"("+$("#acnt").val()+ ")");
 
+    initJdsgTab();
+
 }
 
 function selectJdsgTab(tabId) {
 
     if(tabId == "jdsgTab1Link") {
-    	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);
+        loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);
     } else if(tabId == "jdsgTab2Link") {
         loadJdsgTabContent("/mng/asgsysSrng/prgrmOperMngForm.html?prgrmid=" + prgrmid);
     } else if(tabId == "jdsgTab3Link") {
@@ -314,11 +315,12 @@ function selectJdsgTab(tabId) {
     } else if(tabId == "jdsgTab6Link") {
         loadJdsgTabContent("/mng/asgsysSrng/assChklst.html?prgrmid=" + prgrmid);
     }
+
     $("#" + tabId).parent().addClass("active");
 }
 
-function loadJdsgTabContent(uri){
-    //$('#myTabContent').load(uri);
+function loadJdsgTabContent(uri) {
+
     $.ajax({
         cache   : false
       , url     : uri
@@ -328,7 +330,7 @@ function loadJdsgTabContent(uri){
       , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
                       $('#jdgsSprtgrpAltmntTabContent').html(result);
 
-                      scrollIntoView('jdgsSprtgrpAltmntTabContent');
+                      //scrollIntoView('jdgsSprtgrpAltmntTabContent');
                   }
     });
     ;
@@ -336,12 +338,12 @@ function loadJdsgTabContent(uri){
 }
 
 function initJdsgTab() {
-	;
+    ;
 
     console.log("dsgnAplyDetailForm start");
 
     var tabFlag = false;
-;
+
     if(tabFlag == false) {
         selectJdsgTab("jdsgTab1Link");
         tabFlag = true;
@@ -447,7 +449,7 @@ function writeSplmntDmndGridData(){
 //“요건검토중 상태변경”으로 변경되며, 사용자 페이지에서 신청자가 신청정보를 수정 불가하다.(제출취소 및 신청정보 수정 불가)
 function fn_updateSttsReqsRvw(){
 
-	if(!confirm("진행상태가 요건검토중로 변경됩니다. 변경 하시겠습니까?")){return;}
+    if(!confirm("진행상태가 요건검토중로 변경됩니다. 변경 하시겠습니까?")){return;}
 
     var data = {
             "sttsCd"  : '111103'    // 요건검토중
@@ -482,14 +484,14 @@ function fn_updateSttsReqsRvw(){
 var chgAltmntModal;
 var openChgAltmntModal = () => {
 
-	var vInstid = $("#instid").val();
+    var vInstid = $("#instid").val();
 
-	var url = "/mng/asgsysSrng/mbrSrchPopup.html?prgrmid="+prgrmid+"&instid="+vInstid;    //회원검색
+    var url = "/mng/asgsysSrng/mbrSrchPopup.html?prgrmid="+prgrmid+"&instid="+vInstid;    //회원검색
 
     $("#chgAltmntPopup").load(url, function(response, status, xhr) {
         if (status == "success") {
-        	chgAltmntModal = new bootstrap.Modal($('#chgAltmntPopup'));
-        	chgAltmntModal.show();
+            chgAltmntModal = new bootstrap.Modal($('#chgAltmntPopup'));
+            chgAltmntModal.show();
         }
     });
 
@@ -497,7 +499,7 @@ var openChgAltmntModal = () => {
 //담당자배정
 var picAltmntModal;
 var openPicChgModal = (modeYn) => {
-	var mode = modeYn
+    var mode = modeYn
     var url = "/mng/asgsysSrng/picAltmntPopup.html?mode="+mode;
 
     $("#picAltmntPopup").load(url, function(response, status, xhr) {
@@ -511,17 +513,17 @@ var openPicChgModal = (modeYn) => {
 
 function fn_reqSplmntDmndBtn(id){
 
-	var key = $("#splmntDmndid").val();
-	var cd;
-	var mode;
+    var key = $("#splmntDmndid").val();
+    var cd;
+    var mode;
 
-	//서류요청
-	if("dcmntDmnd"==id){
-		cd = "111104"
-		mode = "splmntDmnd"
-	}
+    //서류요청
+    if("dcmntDmnd"==id){
+        cd = "111104"
+        mode = "splmntDmnd"
+    }
 
-	openSplmntDmndModal(key, cd, mode)
+    openSplmntDmndModal(key, cd, mode)
 
 };
 
@@ -534,7 +536,7 @@ var openSplmntDmndModal = ( key, cd, mode) => {
 
     var vKey1 = prgrmid;
     var vKey2 = key;
-    debugger;
+
     if(vSttsCd == null || vSttsCd == "undefined" || vSttsCd == "") vSttsCd = '';
 
     var url = "/mng/asgsysSrng/splmntDmndPopup.html?prgrmid="+ vKey1+"&splmntDmndid=" + vKey2+ "&sttsCd="+vSttsCd+"&mode="+vMode;
@@ -554,11 +556,11 @@ var openSplmntDmndModal = ( key, cd, mode) => {
 //“심사위원심사”로 변경되며, 심사위원 심사를 진행할 수 있다.
 function fn_jdgsSrngDmnd(){
 
-	//- 심사위원 배정이 안 되어 있을 경우
-	if(1==2){
-		alert("심사위원 배정이 되어 있지 않습니다. 심사위원 배정 후 심사위원심사 요청이 가능합니다.");
-		return;
-	}
+    //- 심사위원 배정이 안 되어 있을 경우
+    if(1==2){
+        alert("심사위원 배정이 되어 있지 않습니다. 심사위원 배정 후 심사위원심사 요청이 가능합니다.");
+        return;
+    }
 
     if(!confirm("진행상태가 심사위원심사로 변경됩니다. 변경 하시겠습니까?")){return;}
 
@@ -661,7 +663,7 @@ function fn_deleteFile(fileid, fileIdntfcKey){
 
 function removePicInfo(userid){
 
-	$("#picId-"+userid).remove();
+    $("#picId-"+userid).remove();
 }
 
 initAplyInfoForm();

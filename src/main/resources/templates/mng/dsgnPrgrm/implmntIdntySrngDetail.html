@@ -1,6 +1,8 @@
 <form id="dtlTabFrm">
     <input type="hidden" id="cyclid" name="cyclid" th:value="${dtlInfo.cyclid}">
+    <input type="hidden" id="srngid" name="srngid" th:value="${dtlInfo.srngid}">
     <input type="hidden" id="dmndid" name="dmndid" th:value="${dtlInfo.dmndid}">
+    <input type="hidden" id="cidx" name="cidx" th:value="${cidx}">
 <div class="card-header p-t-0 p-b-0">
     <h3 class="sub-title"><strong>지원단 정보</strong></h3>
 </div>
@@ -29,17 +31,17 @@
     <ul class="nav nav-tabs tabs" role="tablist">
         <th:block sec:authorize-url="/mng/dsgnPrgrm/splmntImprvForm.html">
             <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#tab2Con1" role="tab" id="tab2Con1Link" ><strong>보완개선 요청서</strong></a>
+                <a class="nav-link" data-bs-toggle="tab" href="#tab2Con1" role="tab" id="tab2Con1Link"><strong>보완개선 요청서</strong></a>
             </li>
         </th:block>
         <th:block sec:authorize-url="/mng/dsgnPrgrm/scrtyImprvPlanlnForm.html">
             <li class="nav-item">
-                <a class="nav-link " data-bs-toggle="tab" href="#tab2Con2" role="tab" id="tab2Con2Link" ><strong>보완개선 계획서</strong></a>
+                <a class="nav-link" data-bs-toggle="tab" href="#tab2Con2" role="tab" id="tab2Con2Link" ><strong>보완개선 계획서</strong></a>
             </li>
         </th:block>
         <th:block sec:authorize-url="/mng/dsgnPrgrm/rsltRptlnForm.html">
             <li class="nav-item">
-                <a class="nav-link " data-bs-toggle="tab" href="#tab2Con3" role="tab" id="tab2Con3Link" ><strong>결과보고서</strong></a>
+                <a class="nav-link" data-bs-toggle="tab" href="#tab2Con3" role="tab" id="tab2Con3Link" ><strong>결과보고서</strong></a>
             </li>
         </th:block>
     </ul>
@@ -52,19 +54,25 @@
 
 <script th:inline="javascript">
 
-    debugger;
 
     var implmntIdntySrngDtl = {
         init: function() {
+
             this.setTab();
             this.registEvent();
+
+
         },
 
         registEvent: function() {
             var _this = this;
             $(".nav-tabs a").on("show.bs.tab", function(event) {
+
+                //$(".nav-tabs a").removeClass("active");
                 var tabId = event.currentTarget.attributes.id.value;
+
                 _this.selectTab(tabId);
+
             });
         },
 
@@ -84,7 +92,17 @@
             }
         },
 
-        selectTab: function(tabId) {
+        selectTab: function(tidx) {
+            var tabId = tidx;
+
+            if("7" == $("#cidx").val()){
+                tabId = "tab2Con2Link"
+            }
+            if("8" == $("#cidx").val()){
+                tabId="tab2Con3Link";
+            }
+            $("#cidx").val("");
+
             if(tabId == "tab2Con1Link") {
                 this.loadTabContent("/mng/dsgnPrgrm/splmntImprvForm.html");
             } else if(tabId == "tab2Con2Link") {
@@ -92,14 +110,19 @@
             }  else if(tabId == "tab2Con3Link") {
                 this.loadTabContent("/mng/dsgnPrgrm/rsltRptlnForm.html");
             }
-            $("#" + tabId).parent().addClass("active");
+
+            $("#"+tabId).parent().addClass("active");
+
         },
 
+
         loadTabContent: function(uri) {
-        	var dmndid =$("#dmndid").val();
+            debugger;
+            var vSrngid = $("#srngid").val();
+            var vDmndid =$("#dmndid").val();
             $.ajax({
                 cache: false,
-                url: uri + "?dmndid="+dmndid,
+                url: uri + "?dmndid="+vDmndid+"&srngid="+vSrngid,
                 type: "GET",
                 async: "false",
                 dataType: "html",
@@ -111,6 +134,6 @@
     };
 
     $(function() {
-    	implmntIdntySrngDtl.init();
+        implmntIdntySrngDtl.init();
     });
 </script>

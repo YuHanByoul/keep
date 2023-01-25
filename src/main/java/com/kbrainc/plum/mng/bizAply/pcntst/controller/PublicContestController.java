@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -24,6 +26,7 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.service.PublicContestService;
+import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -217,10 +220,35 @@ public class PublicContestController {
         return resultMap;
     }
     
+    /**
+    * 담당자 배정 팝업. 
+    *
+    * @Title : managerSearchPopup
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return String
+     */
     @RequestMapping(value="/mng/bizAply/pcntst/managerSearchPopup.html")
     public String managerSearchPopup() throws Exception {
         return "mng/bizAply/pcntst/managerSearchPopup";
     }
+    
+    /**
+    * 공모관리 목록 엑셀 다운로드. 
+    *
+    * @Title : publicContestListExcelDownload
+    * @Description : TODO
+    * @param request
+    * @param response
+    * @param publicContestVo
+    * @throws Exception
+    * @return void
+     */
+    @RequestMapping(value = "/mng/bizAply/pcntst/publicContestListExcelDownload.do")
+    public void publicContestListExcelDownload(HttpServletRequest request, HttpServletResponse response, PublicContestVo publicContestVo) throws Exception {
+        publicContestService.publicContestListExcelDownload(publicContestVo, response, request);
+    } 
     
     /**
     * 공모관리 삭제. 

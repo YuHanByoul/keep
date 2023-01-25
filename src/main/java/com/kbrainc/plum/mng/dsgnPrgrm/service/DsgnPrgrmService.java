@@ -313,4 +313,27 @@ public interface DsgnPrgrmService {
 	*/
 	public int updateSplmntImprv(@Valid DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 결과보고서 수정
+	*
+	* @Title : updateRsltRptln
+	* @Description : 결과보고서 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateRsltRptln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 보완계획서 수정
+	*
+	* @Title : updateScrtyImprvPlanln
+	* @Description : 보완계획서 수정
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 }

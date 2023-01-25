@@ -1,7 +1,6 @@
 package com.kbrainc.plum.front.member.service;
 
 import java.security.MessageDigest;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberVo;
-import com.kbrainc.plum.front.member.model.TeacherVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -37,6 +35,19 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Resource(name = "front.memberDao")
     private MemberDao memberDao;
     
+    /**
+    *
+    * ID 중복 체크
+    *
+    * @Title : chekcDuplicationUser
+    * @Description : ID 중복 체크
+    * @param memberVo MemberVo객체
+    * @return int 
+    * @throws Exception 예외
+    */
+    public int chekcDuplicationUser(MemberVo memberVo) throws Exception{
+        return memberDao.chekcDuplicationUser(memberVo);
+    };
     
     /**
     *
@@ -49,7 +60,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     * @throws Exception 예외
     */
    @Transactional
-   public int insertMember(MemberVo memberVo,TeacherVo teacherVo) throws Exception{
+   public int insertMember(MemberVo memberVo) throws Exception{
 	   
        String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
        
@@ -79,17 +90,17 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
    };
    
    /**
-    *
-    * 회원 정보 수정
-    *
-    * @Title : updateMember
-    * @Description : 회원 정보 수정 
-    * @param MemberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
+   *
+   * 회원 정보 수정
+   *
+   * @Title : updateMember
+   * @Description : 회원 정보 수정 
+   * @param MemberVo MemberVo객체
+   * @return int 
+   * @throws Exception 예외
+   */
    @Transactional
-   public int updateMember(MemberVo memberVo,TeacherVo teacherVo) throws Exception{
+   public int updateMember(MemberVo memberVo) throws Exception{
 	   
 	   String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
 	   
@@ -115,33 +126,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 	   
 	   return resInt;
    };
-   
-   /**
-   *
-   * 회원정보 호출
-   *
-   * @Title : selectTeacherMemberInfo
-   * @Description : 회원정보 호출
-   * @param memberVo MemberVo객체
-   * @return MemberVo 
-   * @throws Exception 예외
-   */
-  public Map<String,Object> selectTeacherMemberInfo(MemberVo memberVo) throws Exception{
-	  return memberDao.selectTeacherMemberInfo(memberVo);
-  };
-   
-   /**
-    *
-    * ID 중복 체크
-    *
-    * @Title : chekcDuplicationUser
-    * @Description : ID 중복 체크
-    * @param memberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
-   public int chekcDuplicationUser(MemberVo memberVo) throws Exception{
-	   return memberDao.chekcDuplicationUser(memberVo);
-   };
+      
    
 }

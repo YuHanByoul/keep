@@ -18,7 +18,7 @@ import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
 /*****
-* 지정제심사VO 클래스
+* 지정프로그램VO 클래스
 *
 * <pre>
 * com.kbrainc.plum.mng.dsgnPrgrm.model
@@ -115,6 +115,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 지정 번호 차수 */
     private String cyclNo;
+
+    /** cell idx */
+    private String cidx;
 
     /** 신청 ID*/
     private String aplyid;
@@ -617,7 +620,11 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String vstMnt;
 
     /** 종합_의견 */
+    @Size(max = 2000, message = "종합의견은 2000자를 넘을 수 없습니다.")
     private String gnrlzOpnn;
+
+    /** 계획 ID */
+    private String planid;
 
     /** 등급_코드 */
     private String grdCd;
@@ -626,17 +633,25 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String wrtrid;
 
     /** 보완개선 요청서 */
-    private  String splmntImprvDmndln;
+    private String splmntImprvDmndln;
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     /** 보완요청 완료일자 */
-    private  String dmndCmptnDe;
+    private String dmndCmptnDe;
 
     /** 보완요청 계획서 */
-    private  String splmntImprvWrtpln;
+    private String splmntImprvWrtpln;
 
     /** 보완요청 결과보고서 */
-    private  String splmntImprvltRptp;
+    private String splmntImprvltRptp;
+
+    /** 보안개선계획 */
+    @Size(max = 2000, message = "내용은 2000자를 넘을 수 없습니다.")
+    private String cn;
+
+    /** 총괄의견 */
+    @Size(max = 2000, message = "총괄의견은 2000자를 넘을 수 없습니다.")
+    private String smrizeOpnn;
 
     /** 최종_제출_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
