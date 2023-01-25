@@ -162,11 +162,9 @@
            </div>
        </div>
 
-   <div class="modal-footer">
-   
+<!--    <div class="modal-footer">
        <button type="button" class="btn btn-primary waves-effect waves-light" onclick="save()">저장</button>
-       
-   </div>
+   </div> -->
    
   <script  id="insertForm" type="text/x-handlebars-template">
          <tr>
@@ -213,7 +211,7 @@
   <script th:inline="javascript">
 
     var switchCherryArr1=[] ;
-    var limitDayArr = [] ;
+    var possibleDayArr = [] ;
     
     $(document).ready(function () {
         
@@ -319,20 +317,18 @@
         }
 
         //요일  validation check
-        limitDayArr=[];
+        possibleDayArr=[];
         $(".limit-day").each(function(){
-            if($(this).is(":checked")){
-                limitDayArr.push($(this).val())
+            if(!$(this).is(":checked")){
+                possibleDayArr.push($(this).val())
             }
         })
         
-        console.log(limitDayArr)
-        
-        if(limitDayArr.length == 7){
+        if(possibleDayArr.length == 0){
             alert("모든 요일을 제외 할 수 없습니다.")
             return;
         }
-
+        
         //체크된 폼 확인 
         let checkedFrms = [];
         $(".payment-checkbox").each(function(){
@@ -346,13 +342,7 @@
             return;
         }
         
-        
-        
-        console.log(checkedFrms);
-        
-        checkedFrms.every(function(frmNum){
-        })
-        
+        //예약시간 및 금액 설정 사용여부 validation 
         var isValid = true;
         for(let y =0; y < checkedFrms.length;y++){
 
@@ -361,6 +351,7 @@
             var strtTm  = $("#strtTm"+frmNum ).val();
             var endTm   = $("#endTm"+frmNum  ).val();
             var payment = $("#payment"+frmNum).val();
+            var paymentFreeCheck = $("#paymentFreeCheck"+frmNum).is(":checked");
             
             if(strtTm==null || strtTm==''){
                 alert("예약시간 시작일시를 입력 하세요");
@@ -381,7 +372,13 @@
                 break;
             } 
             if(payment==null || payment==''){
-                alert("금액을 입력해주십시오.");
+                alert("입력되지 않은 금액정보가 있습니다");
+                showErrorMark("#payment"+frmNum);
+                isValid = false;
+                break;
+            }
+            if( !paymentFreeCheck && payment <=0 ){
+                alert("금액은 0 이상이어야 합니다.");
                 showErrorMark("#payment"+frmNum);
                 isValid = false;
                 break;
@@ -389,18 +386,111 @@
         }
         if(!isValid)return;
 
+        //하루중 시간 중복 여부 확인
+        var frmArr = []
+        checkedFrms.forEach(function(frmNumber){
+        	frmArr.push(
+                	{ 
+                       'strtTm' :$("#strtTm"+frmNumber ).val()
+                       ,'endTm' :$("#endTm"+frmNumber ).val()
+                       ,'amt'   :$("#payment"+frmNumber ).val()
+                    }
+             );
+        })
         
+        let isThereDuplTime = false;
+        
+        frmArr.forEach(function(map){
+            
+        	frmArr.forEach(function(item){
+		        
+	        	let  strtTm = (map.strtTm).replaceAll(":","") 
+	        	let  endTm  = (map.endTm).replaceAll(":","")
+	        	let  compareStrtTm= (item.strtTm).replaceAll(":","") 
+	        	let  compareEndTm= (item.endTm).replaceAll(":","")
+	        	
+	        	if( strtTm > compareStrtTm && strtTm < compareEndTm ){
+	        		isThereDuplTime = true;
+		        } 
+	        	if( endTm > compareStrtTm && endTm < compareEndTm ){
+	        		isThereDuplTime = true;
+		        } 
+	        })
+        })
+        
+        if(isThereDuplTime){
+            alert("중복되는 시간이 있습니다. 다시 설정해주십시오.")
+            return;
+        }
+
+        if(!confirm("일괄등록 하시겠습니까?"))return;
+
+        //Parameter 생성
+        var start = moment(rsvtStrtDt).format('YYYY-MM-DD');
+        var end = moment(rsvtEndtDt).format('YYYY-MM-DD');
+        var days = moment(rsvtEndtDt).diff(moment(rsvtStrtDt), "days") //moment.duration(end.diff(start)).asDays();
+        var daysArr =[];
+        var paramDays = [];
+        var pushDt = null;
+        for(var x=0; x <= days ; x++){
+            pushDt = (moment(start).add(x,'d')).format('YYYY-MM-DD');
+            daysArr.push(pushDt);
+        }
+
+        var rsvtdeList=[];
+
+        possibleDayArr.forEach(function(day_num){
+            var dateArr = daysArr.filter(function(index){
+                if(moment(index).day() == day_num) {return moment(index).format('YYYY-MM-DD')}
+            })
+            dateArr.forEach(function(d){paramDays.push(d)})
+        });
+
+        paramDays.forEach(function(de){
+            
+        	frmArr.forEach(function(item){
+            	
+                rsvtdeList.push(
+                        { 'amt': item.amt
+                          ,'de' : de
+                          ,'alldayYn' :'N'
+                          ,'spceid' : spceVo.spceid
+                          ,'utztnSeCd' : '169102'
+                          ,'bgngDt'   :de +" "+item.strtTm 
+                          ,'endDt'    :de +" "+item.endTm
+                          ,'rsvtPsbltyYn' :'Y'  
+                        }
+                )
+            })
+        })
+        
+        var params={
+            'rsvtdeList' : rsvtdeList
+            ,'spceid' : spceVo.spceid   
+        }
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/spce/InsertSpceTotalStayInfo.do",
+                type: 'POST',
+                cache : false,
+                traditional : true, //필수
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data :JSON.stringify(params),
+                success : function (data){
+                    if(data.result=='success'){
+                        alert(data.msg);
+		                $('#calendar').fullCalendar('gotoDate', moment(rsvtStrtDt).format('YYYY-MM-DD'));
+                        setTimeout(function(){makeCalendarEvent();},1000)
+                        spceModal.hide();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
         
     }
-
-
-
-
-
-
-
-
-    
-
-  
 </script>
