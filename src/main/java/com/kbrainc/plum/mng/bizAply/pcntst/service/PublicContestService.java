@@ -8,6 +8,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.egovframe.rte.psl.dataaccess.util.EgovMap;
+
+import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 
 /**
@@ -40,16 +43,28 @@ public interface PublicContestService {
     List<PublicContestVo> selectContestList(PublicContestVo publicContestVo) throws Exception;
     
     /**
-    * 공모관리 상세조회. 
+    * 담당자 목록 조회. 
     *
-    * @Title : detailContest
+    * @Title : selectMngList
     * @Description : TODO
-    * @param publicContestVo
+    * @param publicContestMngGrpVo
     * @return
     * @throws Exception
-    * @return PublicContestVo
+    * @return List<PublicContestMngGrpVo>
      */
-    PublicContestVo detailContest(PublicContestVo publicContestVo) throws Exception;
+    List<PublicContestMngGrpVo> selectMngList(PublicContestMngGrpVo publicContestMngGrpVo) throws Exception;
+    
+    /**
+    * 심사표 목록 조회. 
+    *
+    * @Title : selectEvalSheetList
+    * @Description : TODO
+    * @param PublicContestVo
+    * @return
+    * @throws Exception
+    * @return List<EgovMap>
+     */
+    List<EgovMap> selectEvalSheetList(PublicContestVo publicContestVo) throws Exception;
     
     /**
     * 공모관리 등록. 
@@ -89,15 +104,14 @@ public interface PublicContestService {
     void publicContestListExcelDownload(PublicContestVo publicContestVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
     
     /**
-    * 공모관리 삭제. 
-    *
-    * @Title : deleteContest
-    * @Description : TODO
-    * @param deleteContestIds
-    * @return
-    * @throws Exception
-    * @return int
-     */
-    int deleteContest(Integer[] deleteContestIds) throws Exception;
-    
+     * 공모관리 전문가 그룹 리스트 조회. 
+     *
+     * @Title : selectMngGrpList
+     * @Description : TODO
+     * @param publicContestVo
+     * @return
+     * @throws Exception
+     * @return List<PublicContestMngGrpVo>
+      */
+    List<PublicContestMngGrpVo> selectMngGrpList(PublicContestMngGrpVo publicContestVo) throws Exception;
 }
