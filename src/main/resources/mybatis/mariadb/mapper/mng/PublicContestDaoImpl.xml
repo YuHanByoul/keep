@@ -18,7 +18,7 @@
             , PCNTST_NM
             , APLY_BGNG_DT
             , APLY_END_DT
-            , CONCAT(APLY_BGNG_DT, ' - ', APLY_END_DT) AS APLY_DT
+            , CONCAT(DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(APLY_END_DT, '%Y-%m-%d %H:%i')) AS APLY_DT
             <![CDATA[
             , CASE WHEN NOW() < APLY_BGNG_DT THEN '진행전' 
                 WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '진행중'
@@ -118,10 +118,36 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 공모관리 상세 조회 -->
-    <select id="detailContest" parameterType="PublicContestVo" resultType="PublicContestVo">
-        /* PublicContestDao.detailContest */
-        SELECT 1, NOW() AS REG_DT
+    <!-- 담당자 배정 조회 -->
+    <select id="selectMngList" parameterType="PublicContestMngGrpVo" resultType="PublicContestMngGrpVo">
+        /* PublicContestDao.selectMngList */
+        SELECT 
+            PCNTSTID
+            , JDGSID
+            , CYCL
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , B.USERID 
+            , B.NM
+            , B.MOBLPHON
+            , B.EML
+            , B.ACNT
+        FROM TB_SPB_JDGS A
+        INNER JOIN TB_CMM_USER B ON A.JDGSID = B.USERID
+        WHERE PCNTSTID = #{pcntstid}
+        AND CYCL = #{cycl}
+    </select>
+    
+    <!-- 심사표 조회 -->
+    <select id="selectEvalSheetList" parameterType="PublicContestVo" resultType="org.egovframe.rte.psl.dataaccess.util.EgovMap">
+        /* PublicContestDao.selectEvalSheetList */
+        SELECT 1 AS srng_form_id, '심사표1' AS srng_form_nm
+        UNION ALL
+        SELECT 2 AS srng_form_id, '심사표2' AS srng_form_nm
+        UNION ALL
+        SELECT 3 AS srng_form_id, '심사표3' AS srng_form_nm
     </select>
     
     <!-- 공모관리 등록 -->
@@ -215,6 +241,39 @@
             )
     </insert>
     
+    <!-- 담당자 등록 -->
+    <insert id="insertMng" parameterType="PublicContestMngGrpVo">
+        /* PublicContestDao.insertMng */
+        INSERT INTO TB_SPB_JDGS (
+            PCNTSTID
+            , JDGSID
+            , CYCL
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES 
+        <foreach item="item" collection="pcntstids" separator=",">
+        ( 
+            #{pcntstid}
+            , #{item}
+            , #{cycl}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+        </foreach>
+    </insert>
+    
+    <!-- 담당자 삭제 -->
+    <delete id="deleteMng" parameterType="PublicContestMngGrpVo">
+        /* PublicContestDao.deleteMng */
+        DELETE FROM TB_SPB_JDGS
+        WHERE PCNTSTID = #{pcntstid}
+        AND CYCL = #{cycl}
+    </delete>
+    
     <!-- 공모관리 수정 -->
     <update id="updateContest" parameterType="PublicContestVo">
         /* PublicContestDao.updateContest */
@@ -266,7 +325,7 @@
         SELECT
             B.CD_NM AS FLD_NM
             , PCNTST_NM
-            , CONCAT(APLY_BGNG_DT, ' - ', APLY_END_DT) AS APLY_DT
+            , CONCAT(DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(APLY_END_DT, '%Y-%m-%d %H:%i')) AS APLY_DT
             <![CDATA[
             , CASE WHEN NOW() < APLY_BGNG_DT THEN '진행전' 
                 WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '진행중'
@@ -275,17 +334,17 @@
                 END AS STATUS
             ]]>
             , C.CD_NM AS TRGT_NM
-            , CONCAT(BSNS_BGNG_DE, ' - ', BSNS_END_DE) AS BSNS_DE
-            , CONCAT(SRNG_BGNG_DT, ' - ', SRNG_END_DT) AS SRNG_DT   
-            , CONCAT(DELVRY_APLY_BGNG_DT_FIRST, ' - ', DELVRY_APLY_END_DT_FIRST) AS DELVRY_APLY_DT_FIRST   
-            , CONCAT(DELVRY_APLY_BGNG_DT_SCND, ' - ', DELVRY_APLY_END_DT_SCND) AS DELVRY_APLY_DT_SCND   
-            , CONCAT(DELVRY_CFMTN_PRSNTN_BGNG_DT, ' - ', DELVRY_CFMTN_PRSNTN_END_DT) AS DELVRY_CFMTN_PRSNTN_DT
-            , CONCAT(CPTAL_EXCUT_BGNG_DT_FIRST, ' - ', CPTAL_EXCUT_END_DT_FIRST) AS CPTAL_EXCUT_DT_FIRST
-            , CONCAT(CPTAL_EXCUT_BGNG_DT_SCND, ' - ', CPTAL_EXCUT_END_DT_SCND) AS CPTAL_EXCUT_DT_SCND
-            , CONCAT(MDL_REPORT_BGNG_DT, ' - ', MDL_REPORT_END_DT) AS MDL_REPORT_DT
-            , CONCAT(RSLT_REPORT_BGNG_DT, ' - ', RSLT_REPORT_END_DT) AS RSLT_REPORT_DT
-            , CONCAT(EXCCLC_REPORT_BGNG_DT, ' - ', EXCCLC_REPORT_END_DT) AS EXCCLC_REPORT_DT
-            , A.REG_DT
+            , CONCAT(DATE_FORMAT(BSNS_BGNG_DE, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(BSNS_END_DE, '%Y-%m-%d %H:%i')) AS BSNS_DE
+            , CONCAT(DATE_FORMAT(SRNG_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(SRNG_END_DT, '%Y-%m-%d %H:%i')) AS SRNG_DT   
+            , CONCAT(DATE_FORMAT(DELVRY_APLY_BGNG_DT_FIRST, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(DELVRY_APLY_END_DT_FIRST, '%Y-%m-%d %H:%i')) AS DELVRY_APLY_DT_FIRST   
+            , CONCAT(DATE_FORMAT(DELVRY_APLY_BGNG_DT_SCND, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(DELVRY_APLY_END_DT_SCND, '%Y-%m-%d %H:%i')) AS DELVRY_APLY_DT_SCND   
+            , CONCAT(DATE_FORMAT(DELVRY_CFMTN_PRSNTN_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(DELVRY_CFMTN_PRSNTN_END_DT, '%Y-%m-%d %H:%i')) AS DELVRY_CFMTN_PRSNTN_DT
+            , CONCAT(DATE_FORMAT(CPTAL_EXCUT_BGNG_DT_FIRST, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(CPTAL_EXCUT_END_DT_FIRST, '%Y-%m-%d %H:%i')) AS CPTAL_EXCUT_DT_FIRST
+            , CONCAT(DATE_FORMAT(CPTAL_EXCUT_BGNG_DT_SCND, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(CPTAL_EXCUT_END_DT_SCND, '%Y-%m-%d %H:%i')) AS CPTAL_EXCUT_DT_SCND
+            , CONCAT(DATE_FORMAT(MDL_REPORT_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(MDL_REPORT_END_DT, '%Y-%m-%d %H:%i')) AS MDL_REPORT_DT
+            , CONCAT(DATE_FORMAT(RSLT_REPORT_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(RSLT_REPORT_END_DT, '%Y-%m-%d %H:%i')) AS RSLT_REPORT_DT
+            , CONCAT(DATE_FORMAT(EXCCLC_REPORT_BGNG_DT, '%Y-%m-%d %H:%i'), ' - ', DATE_FORMAT(EXCCLC_REPORT_END_DT, '%Y-%m-%d %H:%i')) AS EXCCLC_REPORT_DT
+            , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i') AS REG_DT
         FROM    
             TB_SPB_PCNTST A
             LEFT OUTER JOIN TB_CMM_CD B ON A.FLD_CD = B.CD
@@ -333,12 +392,27 @@
             </if>
     </select>
     
-    <!-- 공모관리 삭제 -->
-    <delete id="deleteContest" parameterType="PublicContestVo">
-        /* PublicContestDao.deleteContest */
-        <foreach item="contestId" collection="deleteContestIds" separator=",">
-            #{contestId}
-        </foreach>
-    </delete>
-    
+    <!-- 심사위원 그룹 조회 -->
+    <select id="selectMngGrpList" parameterType="PublicContestMngGrpVo" resultType="PublicContestMngGrpVo">
+        /* PublicContestDao.selectMngGrpList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            A.GRPID
+            , A.GRP_NM
+            , A.REG_DT
+            , COUNT(B.USERID) AS EXPRT_CNT
+            , group_concat(C.NM) AS GRP_EXPRT_NM
+            , group_concat(C.USERID) AS GRP_EXPRT_IDS
+            , group_concat(concat(C.USERID,',',C.NM,'(',C.ACNT,') | ',C.EML,' | ',C.MOBLPHON) SEPARATOR ':' ) AS GRP_EXPRT_STR
+        FROM TB_SPB_JDGS_GRP A
+        LEFT OUTER JOIN TB_SPB_JDGS_GRP_MAPNG B ON A.GRPID = B.GRPID
+        LEFT OUTER JOIN TB_CMM_USER C ON B.USERID = C.USERID
+        WHERE 1 = 1
+        <if test="searchGrpNm != null and searchGrpNm != '' ">
+        AND A.GRP_NM LIKE CONCAT('%',#{searchGrpNm},'%')
+        </if>
+        GROUP BY A.GRPID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
 </mapper>

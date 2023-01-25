@@ -195,7 +195,7 @@ public class CnsltngController {
     /**
      * @Title : selectJudgeList
      * @Description : 컨설팅 전문가 그룹 리스트 가져오기
-     * @param CnsltngExprtGrpVo
+     * @param PublicContestMngGrpVo
      * @throws Exception
      * @return
      */

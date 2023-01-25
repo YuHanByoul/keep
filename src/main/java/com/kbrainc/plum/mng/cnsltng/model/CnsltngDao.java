@@ -65,7 +65,7 @@ public interface CnsltngDao {
      *
      * @Title       : selectCnsltngExprtGrpList 
      * @Description : 전문가 리스트 호출 
-     * @param CnsltngExprtGrpVo CnsltngExprtGrpVo 객체
+     * @param PublicContestMngGrpVo CnsltngExprtGrpVo 객체
      * @return List<CnsltngExprtGrpVo>
      * @throws Exception 예외
      */

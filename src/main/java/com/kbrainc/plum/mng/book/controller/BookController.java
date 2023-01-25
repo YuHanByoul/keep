@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.cntnts.controller;
+package com.kbrainc.plum.mng.book.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,64 +20,62 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
-import com.kbrainc.plum.mng.cntnts.model.CntntsVo;
-import com.kbrainc.plum.mng.cntnts.service.CntntsService;
-import com.kbrainc.plum.mng.envtcherTrnngInst.model.EnvtcherTrnngInstVo;
-import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
+import com.kbrainc.plum.mng.book.model.BookVo;
+import com.kbrainc.plum.mng.book.service.BookService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
-* 컨텐츠 관리 컨트롤러 클래스
+* 우수환경도서 관리 컨트롤러 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.cntnts.controller
-* - CntntsController.java
+* com.kbrainc.plum.mng.book.controller
+* - BookController.java
 * </pre>
 *
-* @ClassName : CntntsController
+* @ClassName : BookController
 * @Description : 컨텐츠 관리 컨트롤러 클래스
 * @author : JD
-* @date : 2023. 1. 12.
+* @date : 2023. 1. 20.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Controller
-public class CntntsController {
+public class BookController {
 
     @Autowired
-    private CntntsService cntntsService;
+    private BookService bookService;
     
     @Autowired
     private FileService fileService;
     
     /**
-    * 컨텐츠관리 목록화면 이동
+    * 우수환경도서 관리 목록화면 이동
     *
-    * @Title : cntntsListForm
-    * @Description : 컨텐츠관리 목록화면 이동
+    * @Title : bookListForm
+    * @Description : 우수환경도서 관리 목록화면 이동
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/cntnts/cntntsListForm.html")
-    public String cntntsListForm() throws Exception {
+    @RequestMapping(value = "/mng/book/bookListForm.html")
+    public String bookListForm() throws Exception {
 
-        return "/mng/cntnts/cntntsList";
+        return "/mng/book/bookList";
     }
     
     /**
-    * 컨텐츠 관리 게시글 등록화면 이동
+    * 우수환경도서 관리 등록화면 이동
     *
-    * @Title : cntntsInsertForm
-    * @Description : 컨텐츠 관리 게시글 등록화면 이동
+    * @Title : bookInsertForm
+    * @Description : 우수환경도서 관리 등록화면 이동
     * @param model 객체
-    * @param user 사용자세션 정보
+    * @param user 사용자세션정보
     * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/cntnts/cntntsInsertForm.html")
-    public String cntntsInsertForm(Model model, @UserInfo UserVo user) throws Exception {
+    @RequestMapping(value = "/mng/book/bookInsertForm.html")
+    public String bookInsertForm(Model model, @UserInfo UserVo user) throws Exception {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
         model.addAttribute("regDate", formatter.format(date));
@@ -85,29 +83,24 @@ public class CntntsController {
         model.addAttribute("userid", user.getUserid());
         model.addAttribute("useridNm", user.getAcnt()+"("+user.getNm()+")");
         
-        return "/mng/cntnts/cntntsInsertForm";
+        return "/mng/book/bookInsertForm";
     }
     
     /**
-    * 컨텐츠 관리 게시글 수정화면 이동
+    * 우수환경도서 관리 수정화면 이동
     *
-    * @Title : cntntsUpdateForm
-    * @Description : 컨텐츠 관리 게시글 수정화면 이동
+    * @Title : bookUpdateForm
+    * @Description : 우수환경도서 관리 수정화면 이동
     * @param model 객체
-    * @param cntntsVo 객체
-    * @param user 사용자세션 정보
-    * @throws Exception 에외
+    * @param bookVo 객체
+    * @param user 사용자세션정보
+    * @throws Exception 예외
     * @return String
     */
-    @RequestMapping(value = "/mng/cntnts/cntntsUpdateForm.html")
-    public String cntntsUpdateForm(Model model, CntntsVo cntntsVo, @UserInfo UserVo user) throws Exception {
-        CntntsVo result = null;
-        result =  cntntsService.selectCntntsInfo(cntntsVo);
-        
-        if(result.getPlySecnd() != null) {
-            result.setPlyMinute( (result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 );
-            result.setPlySecnd( result.getPlySecnd() - (result.getPlyMinute() * 60) );
-        }
+    @RequestMapping(value = "/mng/book/bookUpdateForm.html")
+    public String bookUpdateForm(Model model, BookVo bookVo, @UserInfo UserVo user) throws Exception {
+        BookVo result = null;
+        result =  bookService.selectBookInfo(bookVo);
         
         FileVo fileVo = new FileVo();
         fileVo.setUser(user);
@@ -122,36 +115,36 @@ public class CntntsController {
             model.addAttribute("currentFileCnt", 0);
         }
         
-        model.addAttribute("cntnts", result);
+        model.addAttribute("book", result);
         
-        if(cntntsVo.getRprsImgFileid() != 0 && result.getFileIdntfcKey() != null) {
+        if(bookVo.getRprsImgFileid() != 0 && result.getFileIdntfcKey() != null) {
             StringBuffer fileBtn = new StringBuffer();
-            fileBtn.append("<div class ='label label-inverse text-white' id='" + cntntsVo.getRprsImgFileid() + "'>");
-            fileBtn.append("<a href=javascript:downloadFileByFileid('" + cntntsVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            fileBtn.append("<a href=javascript:fn_deleteFileList('" + cntntsVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            fileBtn.append("<div class ='label label-inverse text-white' id='" + bookVo.getRprsImgFileid() + "'>");
+            fileBtn.append("<a href=javascript:downloadFileByFileid('" + bookVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>" + result.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            fileBtn.append("<a href=javascript:fn_deleteFileList('" + bookVo.getRprsImgFileid() + "','" + result.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
             model.addAttribute("fileBtn", fileBtn);
         }
         
         
-        return "/mng/cntnts/cntntsUpdate";
+        return "/mng/book/bookUpdate";
     }
     
     /**
-    * 컨텐츠 관리 게시글 목록 조회
+    * 우수환경도서 관리 목록 조회
     *
-    * @Title : selectCntntsList
-    * @Description : 컨텐츠 관리 게시글 목록 조회
-    * @param cntntsVo 객체
+    * @Title : selectBookList
+    * @Description : 우수환경도서 관리 목록 조회
+    * @param bookVo 객체
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/cntnts/selectCntntsList.do")
+    @RequestMapping(value = "/mng/book/selectBookList.do")
     @ResponseBody
-    public Map<String, Object> selectCntntsList(CntntsVo cntntsVo) throws Exception {
+    public Map<String, Object> selectBookList(BookVo bookVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        List<CntntsVo> result = null;
+        List<BookVo> result = null;
         
-        result =  cntntsService.selectCntntsList(cntntsVo);
+        result =  bookService.selectBookList(bookVo);
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -164,19 +157,19 @@ public class CntntsController {
     }
     
     /**
-    * 컨텐츠 관리 게시글 등록
+    * 우수환경도서 관리 등록
     *
-    * @Title : insertCntnts
-    * @Description : 컨텐츠 관리 게시글 등록
-    * @param cntntsVo 객체
+    * @Title : insertBook
+    * @Description : 우수환경도서 관리 등록
+    * @param bookVo 객체
     * @param bindingResult 유효성검증 결과
     * @param user 사용자세션 정보
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/cntnts/insertCntnts.do")
+    @RequestMapping(value = "/mng/book/insertBook.do")
     @ResponseBody
-    public Map<String, Object> insertCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertBook(@Valid BookVo bookVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -187,19 +180,11 @@ public class CntntsController {
             return resultMap;
         }
         
-        cntntsVo.setUser(user);
-        
-        if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
-            int playTime = cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);    
-        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
-            int playTime = cntntsVo.getPlyMinute() * 60;
-            cntntsVo.setPlySecnd(playTime);
-        }
+        bookVo.setUser(user);
         
         int retVal = 0;
                 
-        retVal = cntntsService.insertCntnts(cntntsVo);
+        retVal = bookService.insertBook(bookVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -212,19 +197,19 @@ public class CntntsController {
     }
     
     /**
-    * 컨텐츠 관리 게시글 수정
+    * 우수환경도서 관리 수정
     *
-    * @Title : updateCntnts
-    * @Description : 컨텐츠 관리 게시글 수정
-    * @param cntntsVo 객체
+    * @Title : updateBook
+    * @Description : 우수환경도서 관리 수정
+    * @param bookVo 객체
     * @param bindingResult 유효성검증 결과
     * @param user 사용자세션 정보
-    * @throws Exception 예외
+    * @throws Exception
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/cntnts/updateCntnts.do")
+    @RequestMapping(value = "/mng/book/updateBook.do")
     @ResponseBody
-    public Map<String, Object> updateCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateBook(@Valid BookVo bookVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         if (bindingResult.hasErrors()) {
@@ -235,19 +220,11 @@ public class CntntsController {
             return resultMap;
         }
         
-        cntntsVo.setUser(user);
-        
-        if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
-            int playTime = cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);    
-        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
-            int playTime = cntntsVo.getPlyMinute() * 60;
-            cntntsVo.setPlySecnd(playTime);
-        }
+        bookVo.setUser(user);
 
         int retVal = 0;
                 
-        retVal = cntntsService.updateCntnts(cntntsVo);
+        retVal = bookService.updateBook(bookVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -261,23 +238,23 @@ public class CntntsController {
     }
     
     /**
-    * 컨텐츠 관리 게시글 삭제
+    * 우수환경도서 게시글 삭제
     *
-    * @Title : deleteCntnts
-    * @Description : 컨텐츠 관리 게시글 삭제
+    * @Title : deleteBook
+    * @Description : 우수환경도서 게시글 삭제
     * @param request 객체
     * @throws Exception 예외
     * @return Map<String,Object>
     */
-    @RequestMapping(value = "/mng/cntnts/deleteCntnts.do")
+    @RequestMapping(value = "/mng/book/deleteBook.do")
     @ResponseBody
-    public Map<String, Object> deleteCntnts(HttpServletRequest request) throws Exception {
+    public Map<String, Object> deleteBook(HttpServletRequest request) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
-        String[] cntntsids = request.getParameterValues("cntntsids");
+        String[] bookids = request.getParameterValues("bookids");
         
-        retVal = cntntsService.deleteCntnts(cntntsids);
+        retVal = bookService.deleteBook(bookids);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
