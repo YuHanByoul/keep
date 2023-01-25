@@ -251,7 +251,7 @@ const gnb = {
 	},
 	onResize : function () {
 		if ($WINDOW_MODE === DESKTOP) {
-			if ($headerOffsetTop > $headerHeight) {
+			if ($headerOffsetTop > 0) {
 				$html.addClass('header-medium');
 			} else {
 				$html.removeClass('header-medium');
@@ -437,54 +437,45 @@ const formStyle = {
 
 const dropDown = {
 	init : function (){
-		$elDropdown = $('.dropDown');
-		$elTrigger = $elDropdown.find('.trigger');
-		$elTarget = $elDropdown.find('.target');
-		dropDown.open();
-		dropDown.close();
+		CLASS_ACTIVE = 'active';
+		let par = '';
+		dropDown.onClick();
 		dropDown.select();
-		dropDown.onKeybind();
+		// dropDown.onKeybind();
 	},
 	open : function () {
-		$(document).on('click', '.dropDown >.trigger', function (e){
-			const par = $(this).closest($elDropdown);
-			if (par.find('>.target').length){
-				// e.stopPropagation();
+		par.addClass(CLASS_ACTIVE);
+		par.find('>.target').slideDown(0);
+		$(this).attr('aria-hidden','false');
+	},
+	close : function (){
+		par.removeClass(CLASS_ACTIVE);
+		par.find('>.target').slideUp(0);
+		$(this).attr('aria-hidden','true');
+	},
+	select :function () {
+		$(document).on('click','.dropDown .target button', function (){
+			const value = $(this).html();
+			par.find('.trigger').text(value);
+			dropDown.close();
+		});
+	},
+	onClick : function () {
+		$(document).on('click', '.dropDown .trigger', function (e){
+			par = $(this).closest('.dropDown');
+			if (par.find('.target').length){
 				if (!par.hasClass('active')){
 					$('.dropDown.active').each(function () {
 						$(this).removeClass('active');
 						$(this).find('>.target').slideUp(0);
+						$(this).find('.trigger').attr('aria-hidden','true');
 					})
-					par.addClass('active');
-					par.find('>.target').slideDown(0);
+					dropDown.open();
 				} else {
-					par.removeClass('active')
-					par.find('>.target').slideUp(0);
+					dropDown.close();
 				}
 			}
 		});
-	},
-	close : function (){
-		$('.dropDown.active').each(function () {
-			$(this).removeClass('active');
-			$(this).find('>.target').slideUp(0);
-		})
-	},
-	select :function () {
-		$elTarget.find('a').on('click', function (){
-			const par = $(this).closest($elDropdown);
-			const value = $(this).html();
-			par.find($elTrigger).html(value);
-			par.removeClass('active')
-			par.find('>.target').slideUp(0);
-		});
-	},
-	onKeybind : function () {
-		$(document).on('keydown', '.dropDown.active', function (event) {
-			if (event.keyCode === 27) {
-				dropDown.close();
-			}
-		})
 	}
 }
 
@@ -640,6 +631,7 @@ const tabContent = {
 		$trigger = $tabList.find('button, a')
 		$trigger.each(function (){
 			const $parent = $(this).closest('li');
+			const $dropDown = $(this).closest('.dropDown');
 			if ($parent.hasClass('active')) {
 				$(this).attr({
 					// 'tabindex': '0',
@@ -647,6 +639,11 @@ const tabContent = {
 				})
 				// $('#' + $(this).attr('aria-controls')).attr('tabindex', '0').addClass('active');
 				$('#' + $(this).attr('aria-controls')).addClass('active');
+
+				if ($dropDown.length) {
+					// const activeText = $(this).text();
+					// $dropDown.find('.trigger').text(activeText);
+				}
 			} else {
 				$(this).attr({
 					// 'tabindex': '-1',
@@ -865,7 +862,7 @@ $(document).ready(function() {
 	const focusableElementsString = "a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable], video";
 
 	// dropdown open key event
-	$(document).on('keydown', '.header-search.active .suggest-wrap, .trapTab.active, .toggle-layer-inner, .layer-popup', function (event, target) {
+	$(document).on('keydown', '.header-search.active .suggest-wrap, .trapTab.active, .toggle-layer-inner, .layer-popup, .dropDown.active', function (event, target) {
 		trapTabKey($(this), event);
 	})
 
@@ -888,6 +885,7 @@ $(document).ready(function() {
 			// get the index of the currently focused item
 			var focusedItemIndex;
 			focusedItemIndex = focusableItems.index(focusedItem);
+
 			if (evt.shiftKey) {
 				//back tab
 				// if focused on first item and user preses back-tab, go to the last focusable item
@@ -921,6 +919,10 @@ $(document).ready(function() {
 			//search suggest
 			if (obj.hasClass('suggest-wrap')) {
 				obj.find('.toggleTrigger').trigger('click').focus();
+			}
+			//dropDown
+			if (obj.hasClass('dropDown')) {
+				obj.find('.trigger').trigger('click').focus();
 			}
 		}
 	}
