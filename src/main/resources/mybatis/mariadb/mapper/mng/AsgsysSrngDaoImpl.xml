@@ -199,6 +199,16 @@
           , CONCAT(A.DSGN_BGNG_DE, " ~ ", A.DSGN_END_DE )   AS DSGN_PRD
           , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.APLCNTID) AS ACNT
           , B.SPLMNT_DMNDID
+          , C.USERID_GRP
+          , C.USER_ACNT_GRP
+          , C.USER_NM_GRP
+          , C.USER_EML_GRP
+          , C.USER_MOBLPHON_GRP
+          , D.SPRTGRPID
+          , D.SPRTGRP_ACNT
+          , D.SPRTGRP_NM
+          , D.SPRTGRP_EML
+          , D.SPRTGRP_MOBLPHON
         FROM
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
@@ -209,6 +219,37 @@
             FROM TB_ASS_PRGRM_SPLMNT_DMND
             WHERE PRGRMID = #{prgrmid}
         ) B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+            SELECT
+                AA.PRGRMID
+              , GROUP_CONCAT(AA.JDGSID)   AS USERID_GRP
+              , GROUP_CONCAT(BB.ACNT)     AS USER_ACNT_GRP
+              , GROUP_CONCAT(BB.NM)       AS USER_NM_GRP
+              , GROUP_CONCAT(BB.EML)      AS USER_EML_GRP
+              , GROUP_CONCAT(BB.MOBLPHON) AS USER_MOBLPHON_GRP
+            FROM
+                TB_ASS_PRGRM_JDGS AA
+            INNER JOIN
+                TB_CMM_USER BB ON AA.JDGSID = BB.USERID
+            WHERE AA.PRGRMID = #{prgrmid}
+            GROUP BY
+                AA.PRGRMID
+        ) C ON A.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+        (
+            SELECT
+                AA.PRGRMID
+              , AA.SPRTGRPID
+              , BB.ACNT     AS SPRTGRP_ACNT
+              , BB.NM       AS SPRTGRP_NM
+              , BB.EML      AS SPRTGRP_EML
+              , BB.MOBLPHON AS SPRTGRP_MOBLPHON
+            FROM
+                TB_ASS_SPRTGRP_SRNG AA
+            INNER JOIN
+                TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
+        ) D ON A.PRGRMID = D.PRGRMID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
@@ -555,9 +596,11 @@
         /* AsgsysSrngDao.selectPrgrmOperMng */
         SELECT
             A.PRGRMID
+          , B.PRGRMID   AS OPER_MNG_PRGRMID
           , B.ETRFEE_INCM
           , B.ETC_INCM
           , B.SLFPY
+          , IFNULL(B.ETRFEE_INCM,0) + IFNULL(B.ETC_INCM,0) + IFNULL(B.SLFPY,0) AS BTG_SUM
           , B.OPER_BFR_PRMTN_SESS
           , B.OPER_BFR_PRMTN_MTHD
           , B.OPER_MDL_PRMTN_SESS
@@ -604,6 +647,52 @@
           , MDFRID                 = #{user.userid}
         WHERE PRGRMID = #{prgrmid}
     </update>
+
+
+    <insert id="insertPrgrmOperMng" parameterType="AsgsysSrngVo" >
+        INSERT INTO
+            TB_ASS_PRGRM_OPER_MNG(
+                PRGRMID
+              , ETRFEE_INCM
+              , ETC_INCM
+              , SLFPY
+              , OPER_BFR_PRMTN_SESS
+              , OPER_BFR_PRMTN_MTHD
+              , OPER_MDL_PRMTN_SESS
+              , OPER_MDL_PRMTN_MTHD
+              , OPER_AFTR_PRMTN_SESS
+              , OPER_AFTR_PRMTN_MTHD
+              , TEL_RCPT_YN
+              , APLFRM_RCPT_YN
+              , ONLN_APLY_YN
+              , ETC_YN
+              , ETC_CN
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES (
+                #{prgrmid}
+              , #{etrfeeIncm}
+              , #{etcIncm}
+              , #{slfpy}
+              , #{operBfrPrmtnSess}
+              , #{operBfrPrmtnMthd}
+              , #{operMdlPrmtnSess}
+              , #{operMdlPrmtnMthd}
+              , #{operAftrPrmtnSess}
+              , #{operAftrPrmtnMthd}
+              , #{telRcptYn}
+              , #{aplfrmRcptYn}
+              , #{onlnAplyYn}
+              , #{etcYn}
+              , #{etcCn}
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+    </insert>
 
     <!-- 교구 및 시설목록조회 -->
     <select id="selectTchaidFcltList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
@@ -1535,6 +1624,78 @@
         WHERE
             PRGRMID   = #{prgrmid}
     </update>
+
+
+    <!-- 담당자 심사위원 등록 -->
+    <insert id="insertPicJdgs" parameterType="AsgsysSrngVo" >
+        INSERT INTO
+            TB_ASS_PRGRM_JDGS(
+                PRGRMID
+              , JDGSID
+              , SRNG_STTS_CD
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES (
+                #{prgrmid}
+              , #{jdgsid}
+              , #{srngSttsCd}
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+    </insert>
+
+    <!-- 담당자 지원단 등록 -->
+    <insert id="insertPicSprtgrp" parameterType="AsgsysSrngVo" >
+        INSERT INTO
+            TB_ASS_SPRTGRP_SRNG(
+                PRGRMID
+              , SPRTGRPID
+              , VST_DE
+              , VST_HR
+              , VST_MNT
+              , SPLMNT_DMND_OPNN
+              , SRNG_OPNN
+              , SRGN_STTS_CD
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES (
+                #{prgrmid}
+              , #{sprtgrpid}
+              , #{vstDe}
+              , #{vstHr}
+              , #{vstMnt}
+              , #{splmntDmndOpnn}
+              , #{srngOpnn}
+              , #{srgnSttsCd}
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+    </insert>
+
+    <!-- 담당자 심사위원 삭제 -->
+    <delete id="deletePicJdgs" parameterType="AsgsysSrngVo" >
+        DELETE FROM
+            TB_ASS_PRGRM_JDGS
+        WHERE PRGRMID = #{prgrmid}
+        AND   JDGSID = #{jdgsid}
+    </delete>
+
+    <!-- 담당자 지원단 삭제 -->
+    <delete id="deletePicSprtgrp" parameterType="AsgsysSrngVo" >
+        DELETE FROM
+            TB_ASS_SPRTGRP_SRNG
+        WHERE PRGRMID = #{prgrmid}
+        AND   SPRTGRPID = #{sprtgrpid}
+    </delete>
+
 
     <!-- 담당자(지원단)배정 목록 조회-->
     <select id="selectSprtgrpPicList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">

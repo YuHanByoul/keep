@@ -350,6 +350,17 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 프로그램 운영관리 등록
+	*
+	* @Title : insertPrgrmOperMng
+	* @Description : 프로그램 운영관리 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 교구 및 시설목록 조회
 	*
 	* @Title : selecttchaidFcltList
@@ -558,5 +569,51 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 심사위원 삭제
+	 *
+	 * @Title : deletePicJdgs
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicJdgs(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 지원단 삭제
+	 *
+	 * @Title : deletePicSprtgrp
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 배정 등록 심사위원
+	*
+	* @Title : insertPicJdgs
+	* @Description : 담당자 배정 등록 심사위원
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicJdgs(AsgsysSrngVo asgsysSrngVo)  throws Exception;
+
+	/**
+	* 담당자 배정 등록 지원단
+	*
+	* @Title : insertPicSprtgrp
+	* @Description : 담당자 배정 등록 지원단
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 }

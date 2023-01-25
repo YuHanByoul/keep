@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -295,7 +296,11 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	@Override
 	@Transactional
 	public int insertSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		return asgsysSrngDao.insertSplmntDmnd(asgsysSrngVo);
+		int ret=0;
+		ret = asgsysSrngDao.insertSplmntDmnd(asgsysSrngVo);
+		ret = 0;
+		ret = asgsysSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+		return ret;
 	}
 
 	/**
@@ -310,7 +315,12 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	@Override
 	@Transactional
 	public int updateSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		return asgsysSrngDao.updateSplmntDmnd(asgsysSrngVo);
+		int ret=0;
+		ret = asgsysSrngDao.updateSplmntDmnd(asgsysSrngVo);
+		ret = 0;
+		ret = asgsysSrngDao.updatePrgrSttsCd(asgsysSrngVo);
+
+		return ret;
 	}
 
 	/**
@@ -725,6 +735,23 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	}
 
     /**
+    * 프로그램운영관리 등록
+    *
+    * @Title : insertPrgrmOperMng
+    * @Description : 프로그램운영관리 등록
+    * @param asgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    @Override
+    @Transactional
+	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.insertPrgrmOperMng(asgsysSrngVo);
+	}
+
+
+    /**
     * 지원단심사 목록 조회
     *
     * @Title : selectSprtgrpSrngList
@@ -978,5 +1005,63 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.updateMbr(asgsysSrngVo);
 	}
 
+    /**
+     * 담당자 배정 삭제
+     *
+     * @Title : deletePicInfo
+     * @Description : 담당자 삭제
+     * @param asgsysSrngVo
+     * @return int
+     * @throws Exception
+     */
+     @Override
+     @Transactional
+	public int deletePicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception{
+    	 int ret=0;
+
+    	 if("jdgs".equals(asgsysSrngVo.getMode())) ret = asgsysSrngDao.deletePicJdgs(asgsysSrngVo);
+    	 if("sprtgrp".equals( asgsysSrngVo.getMode())) ret = asgsysSrngDao.deletePicSprtgrp(asgsysSrngVo);
+
+    	 return ret;
+	}
+
+    /**
+    * 담당자 배정 등록
+    *
+    * @Title : insertPicInfo
+    * @Description : 담당자 배정 등록
+    * @param asgsysSrngVo
+    * @return int
+    * @throws Exception
+    */
+    @Override
+    @Transactional
+	public int insertPicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	int ret=0;
+
+    	if("jdgs".equals(asgsysSrngVo.getMode())) {
+    		List<String> tokens = Arrays.asList(asgsysSrngVo.getJdgsid().split("\\s*,\\s*"));
+
+    		for(int i=0; i < tokens.size(); i++) {
+    			asgsysSrngVo.setJdgsid(tokens.get(i));
+    			ret = asgsysSrngDao.insertPicJdgs(asgsysSrngVo);
+    		}
+    	}
+
+    	if("sprtgrp".equals( asgsysSrngVo.getMode())) {
+
+    		ret = asgsysSrngDao.insertPicSprtgrp(asgsysSrngVo);
+
+
+    		//이전 지원단id삭제
+    		if(com.kbrainc.plum.rte.util.CommonUtil.isNotEmpty(asgsysSrngVo.getBfrSprtgrpid())) {
+    			ret=0;
+    			asgsysSrngVo.setSprtgrpid(asgsysSrngVo.getBfrSprtgrpid());
+    			ret = asgsysSrngDao.deletePicSprtgrp(asgsysSrngVo);
+    		}
+    	}
+
+    	return ret;
+	}
 
 }

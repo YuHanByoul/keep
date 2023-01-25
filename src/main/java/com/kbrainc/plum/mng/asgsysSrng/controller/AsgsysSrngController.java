@@ -175,7 +175,10 @@ public class AsgsysSrngController {
 
         if (dsgnAplyInfo == null) {
             dsgnAplyInfo = new AsgsysSrngVo();
+        }else {
+
         }
+
         model.addAttribute("dsgnAplyInfo", dsgnAplyInfo);
 
         if (!StringUtil.nvl(dsgnAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(dsgnAplyInfo.getFilegrpid()).equals(0)) {
@@ -325,6 +328,66 @@ public class AsgsysSrngController {
 
         return resultMap;
     }
+
+    /**
+     * 담당자 배정 등록
+     *
+     * @Title : insertPicInfo
+     * @Description : 담당자 배정 등록
+     * @param asgsysSrngVo
+     * @param user
+     * @return Map<String,Object>
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/insertPicInfo.do")
+    @ResponseBody
+    public Map<String, Object> insertPicInfo(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<>();
+
+    	int retVal = 0 ;
+
+    	asgsysSrngVo.setUser(user);
+    	retVal = asgsysSrngService.insertPicInfo(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "등록 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "등록 실패했습니다.");
+    	}
+    	return resultMap;
+    }
+
+    /**
+	 * 담당자 배정 삭제
+	 *
+	 * @Title : deletePicInfo
+	 * @Description : 담당자 배정 삭제
+	 * @param asgsysSrngVo
+	 * @param user
+	 * @return Map<String,Object>
+	 * @throws Exception
+	 */
+    @RequestMapping(value = "/mng/asgsysSrng/deletePicInfo.do")
+    @ResponseBody
+    public Map<String, Object> deletePicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<>();
+
+		int retVal = 0 ;
+
+		retVal = asgsysSrngService.deletePicInfo(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "삭제 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "삭제 실패했습니다.");
+		}
+		return resultMap;
+    }
+
 
     /**
     * @Title : jdgsSprtgrpAltmntForm
@@ -567,6 +630,39 @@ public class AsgsysSrngController {
         }
 
         return resultMap;
+    }
+
+    /**
+     * 프로그램운영관리 등록
+     *
+     * @Title : insertPrgrmOperMng
+     * @Description : 프로그램운영관리 등록
+     * @param asgsysSrngVo
+     * @param user
+     * @return Map<String,Object>
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/insertPrgrmOperMng.do")
+    @ResponseBody
+    public Map<String, Object> insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.insertPrgrmOperMng(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "저장에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "저장에 실패했습니다.");
+    	}
+
+    	return resultMap;
     }
 
     /**

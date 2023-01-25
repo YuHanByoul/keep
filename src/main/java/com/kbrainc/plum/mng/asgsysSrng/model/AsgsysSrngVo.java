@@ -68,20 +68,32 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 검색 등록전문가 수 */
     private String regExprtCnt;
 
-    /** 검색 사용자ID(계정명) 그룹*/
+    /** 사용자ID(계정명) 그룹*/
     private String userAcntGrp;
 
-    /** 검색 사용자ID(userid) 그룹*/
+    /** 사용자ID(userid) 그룹*/
     private String useridGrp;
 
-    /** 검색 사용자 명 그룹*/
+    /** 사용자 명 그룹*/
     private String userNmGrp;
 
-    /** 검색 사용자 이메일 그룹 */
+    /** 사용자 이메일 그룹 */
     private String userEmlGrp;
 
-    /** 검색 사용자 모바일 그룹 */
+    /** 사용자 모바일 그룹 */
     private String userMoblphonGrp;
+
+    /** 지원단 계정 */
+    private String sprtgrpAcnt;
+
+    /** 지원단 이름 */
+    private String sprtgrpNm;
+
+    /** 지원단 이메일 */
+    private String sprtgrpEml;
+
+    /** 지원단 모바일번호 */
+    private String sprtgrpMoblphon;
 
     /** 검색 숙박여부 */
     private String searchStyYn;
@@ -143,6 +155,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 프로그램아이디 */
 	private Integer prgrmid;
+
+	/** 운영관리 프로그램아이디 */
+	private Integer operMngPrgrmid;
 
 	/** 트리순서 */
 	private Integer treeOrd;
@@ -513,7 +528,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private BigDecimal etcIncm;
 
 	/** 자부담 */
-	private String slfpy;
+	private BigDecimal slfpy;
+
+	/** 예산 구성 총계 */
+	private BigDecimal btgSum;
 
 	/** 운영_이전_홍보_시기 */
 	private String operBfrPrmtnSess;
@@ -556,6 +574,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 지원단 ID */
     private String sprtgrpid;
+
+    /** 지원단 ID (이전)*/
+    private String bfrSprtgrpid;
 
     /** 보완요청 ID */
     private String splmntDmndOpnn;

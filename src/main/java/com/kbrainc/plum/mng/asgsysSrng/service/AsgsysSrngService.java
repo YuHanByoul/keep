@@ -331,6 +331,18 @@ public interface AsgsysSrngService {
 	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 프로그램운영관리 등록
+	*
+	* @Title : insertPrgrmOperMng
+	* @Description : 프로그램운영관리 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 지원단심사 목록 조회
 	*
 	* @Title : selectSprtgrpSrngList
@@ -472,6 +484,30 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	*/
 	public int deleteSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 삭제
+	 *
+	 * @Title : deletePicInfo
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 배정 등록
+	*
+	* @Title : insertPicInfo
+	* @Description : 담당자 배정 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 }

@@ -1,5 +1,6 @@
 <form id="prgrmOperMngFrm">
 <input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmOperMngInfo.prgrmid}">
+<input type="hidden" id="operMngPrgrmid" name="operMngPrgrmid" th:value="${prgrmOperMngInfo.operMngPrgrmid}">
 
 	<div class="card-header p-t-0 p-b-0">
 	    <h3 class="sub-title"><strong>예산구성</strong></h3>
@@ -44,7 +45,7 @@
 	                    </tr>
 	                    <tr>
 	                        <th class="table-active text-center">총계</th>
-	                        <th colspan="2" class="table-active text-center">100%</th>
+	                        <th colspan="2" class="table-active text-center"><th:block th:text="${prgrmOperMngInfo.btgSum} + '%'"></th:block></th>
 	                    </tr>
 	                </tbody>
 	            </table>
@@ -251,7 +252,7 @@
 
 <script th:inline="javascript">
 
-    var vTchaidFcltList = [[${tchaidFcltList}]];
+    var vTchaidFcltList = /*[[${tchaidFcltList}]]*/null;
     var vIdx = vTchaidFcltList.length;
 
     function fn_addBtn(btnId){
@@ -289,20 +290,29 @@
 
     function fn_savePrgrmOperBtn(){
 
+
+        var operMngKey = $("#operMngPrgrmid").val();
+        var vUrl = "/mng/asgsysSrng/";
+
+        debugger;
         if(!confirm("저장 하시겠습니까?")){return;}
 
-        var prgrmOperMngInfo = [[${prgrmOperMngInfo}]];
+        if(operMngKey != null && operMngKey != 0 && operMngKey != ""){
+        	vUrl  += "updatePrgrmOperMng.do"
+        }else{
+        	vUrl  += "insertPrgrmOperMng.do"
+        }
 
 
-        if($("#telRcptYn").is(":checked"))    prgrmOperMngInfo.telRcptYn ="Y"; else    prgrmOperMngInfo.telRcptYn ="N";
-        if($("#aplfrmRcptYn").is(":checked")) prgrmOperMngInfo.telRcptYn ="Y"; else    prgrmOperMngInfo.aplfrmRcptYn ="N";
-        if($("#onlnAplyYn").is(":checked"))   prgrmOperMngInfo.telRcptYn ="Y"; else    prgrmOperMngInfo.onlnAplyYn ="N";
-        if($("#etcYn").is(":checked"))        prgrmOperMngInfo.telRcptYn ="Y"; else    prgrmOperMngInfo.etcYn ="N";
+        $("#telRcptYn"   ).val( $("#telRcptYn"   ).val() =="on" ? "Y":"N" );
+        $("#aplfrmRcptYn").val( $("#aplfrmRcptYn").val() =="on" ? "Y":"N" );
+        $("#onlnAplyYn"  ).val( $("#onlnAplyYn"  ).val() =="on" ? "Y":"N" );
+        $("#etcYn"       ).val( $("#etcYn"       ).val() =="on" ? "Y":"N" );
 
         var data =  $("#prgrmOperMngFrm").serialize() ;
-        debugger;
+
         $.ajax({
-            url : "/mng/asgsysSrng/updatePrgrmOperMng.do",
+            url : vUrl ,
             type: 'POST',
             cache : false,
             dataType: 'json',
@@ -310,7 +320,7 @@
             success : function (data){
                 if(data.result=="success"){
                     alert("수정이 완료 되었습니다.");
-                    loadJdsgTabContent("/mng/asgsysSrng/prgrmOperMngForm.html?prgrmid=" + prgrmid);
+                    gridHelper1.resetPageContent();
                 }else{
                     alert("수정중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
                 }
@@ -327,7 +337,7 @@
     }
 
     $("input:checkbox").on('click', function() {
-debugger;
+
         if ( $(this).prop('checked') ) {
           $(this).parent().addClass("selected");
         } else {
@@ -338,7 +348,7 @@ debugger;
 
 
     function initPrgrmOperMng(){
-    	debugger;
+
     }
     initPrgrmOperMng();
 
