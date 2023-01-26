@@ -45,10 +45,11 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
         if (redirectUrl != null) {
             defaultFailureUrl.append("&redirectUrl=").append(redirectUrl);
         }
-        
+                
         if (!"".equals(StringUtil.nvl(message))) {
             defaultFailureUrl.append("&msg=").append(Base64Utils.encodeToUrlSafeString(message.getBytes()));
         }
+
         setDefaultFailureUrl(defaultFailureUrl.toString());
  
         super.onAuthenticationFailure(request, response, exception);

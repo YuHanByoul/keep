@@ -35,6 +35,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -113,7 +114,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
                 }
-                if (!password.equals((String) resultMap.get("PSWD"))) {
+                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && !password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");                    
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
@@ -151,11 +152,23 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
                 
-                if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
+                if ("101105".equals((String) resultMap.get("ACNT_LOCK_CD"))) { // 휴면계정 회원
+                    if (!password.equals((String) resultMap.get("PSWD"))) {
+                        throw new BadCredentialsException("Login Error !!");
+                    } else {
+                        DrmncyInfoVo drmncyInfo = new DrmncyInfoVo();
+                        drmncyInfo.setUserid(String.valueOf(resultMap.get("USERID")));
+                        drmncyInfo.setPrvcVldty((Integer) resultMap.get("PRVC_VLDTY"));
+                        drmncyInfo.setRegDt((String) resultMap.get("DRMNCY_REG_DT"));
+                        drmncyInfo.setUsed(false);
+                        session.setAttribute("drmncy", drmncyInfo);
+                        throw new LockedException("Login Error !!");
+                    }
+                } else if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
                 }
-                if (!password.equals((String) resultMap.get("PSWD"))) {
+                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && !password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);

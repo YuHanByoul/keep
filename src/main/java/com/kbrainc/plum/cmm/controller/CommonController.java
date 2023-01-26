@@ -29,6 +29,7 @@ import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -67,18 +68,31 @@ public class CommonController {
     private BbsServiceImpl bbsService;
     
     /**
-    * 인덱스 경로 처리.
+    * 인덱스.
     *
-    * @Title : login
-    * @Description : 인덱스 경로 접근시 로그인여부에 따라 화면을 분기처리한다.
+    * @Title : index
+    * @Description : 인덱스
     * @param request 요청객체
     * @param session 세션객체
+    * @param user 사용자세션정보
+    * @param site 사이트세션정보
+    * @param error error요청파라미터 존재여부
+    * @param timeout timeout요청파라미터 존재여부
+    * @param pwd pwd요청파라미터 존재여부
     * @return ModelAndView 모델뷰객체
     */
     @GetMapping("/")
-    public ModelAndView login(HttpServletRequest request, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd) {
+    public ModelAndView index(HttpServletRequest request, HttpSession session, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd) {
         ModelAndView mav = new ModelAndView();
 
+        DrmncyInfoVo drmncyInfo = (DrmncyInfoVo) session.getAttribute("drmncy");
+        if (drmncyInfo != null) {
+            if(drmncyInfo.isUsed()) {
+                session.removeAttribute("drmncy"); // 휴면회원전환 레이어를 한번만 띄우기 위해서
+            }
+            drmncyInfo.setUsed(true);
+        }
+        
         if (user != null) {
             String serverHttpPortStr = "";
             if (!"443".equals(serverHttpsPort)) {

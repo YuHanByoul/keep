@@ -30,6 +30,7 @@
                         <label class="inp"><input type="checkbox" name="idSave" id="idSave" value="Y"><b>아이디 저장</b></label>
                         <th:block th:switch="true">
                         <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
+                        <p class="invalid-feedback" th:case="${session.drmncy != null}"></p>
                         <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.error)}">아이디 또는 비밀번호를 다시 확인해 주십시오.</p>
                         <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.timeout)}">세션이 유효하지 않습니다.<br>로그인 해주십시오.</p>
                         <p class="invalid-feedback" th:case="*"></p>
@@ -80,9 +81,9 @@
                 <span class="icon icon-info-password" title=""></span>
                 <dl>
                     <dt>회원님의 ID는 현재 휴면 상태입니다.</dt>
-                    <dd>1년 이상 국가환경교육 통합플랫폼 서비스 미사용 회원님으로 휴면 전환 처리 되었습니다.</dd>
+                    <dd><th:block th:if="${session.drmncy}" th:text="${session.drmncy.prvcVldty}"></th:block>년 이상 국가환경교육 통합플랫폼 서비스 미사용 회원님으로 휴면 전환 처리 되었습니다.</dd>
                     <dd class="mt15 mb15">
-                        <div class="box-inactive">휴면전환일자 :  2020-10-30</div>
+                        <div class="box-inactive">휴면전환일자 :  <th:block th:if="${session.drmncy}" th:text="${session.drmncy.regDt}"></th:block></div>
                     </dd>
                     <dd><b class="fc-green">휴면 해제 버튼</b>을 눌러 분리 보관된 개인정보에 대한 복원이 진행됩니다. <br> 개인정보 복원 후에는 정상적인 서비스 이용을 위하여 다시 로그인을 해주셔야 합니다.</dd>
                 </dl>
@@ -93,24 +94,24 @@
                     <dd>선택된 유효기간 동안 국가환경교육 통합플랫폼 이용 내역이 없어도 개인정보 분리보관 및 휴면회원으로 전환되지 않습니다.</dd>
                 </dl>
                 <div class="form-check-list mt10">
-                    <label class="inp"><input type="radio"><b>1년</b></label>
-                    <label class="inp"><input type="radio"><b>2년</b></label>
-                    <label class="inp"><input type="radio"><b>5년</b></label>
-                    <label class="inp"><input type="radio"><b>회원탈퇴 시</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="1" checked><b>1년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="2"><b>2년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="5"><b>5년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="0"><b>회원탈퇴 시</b></label>
                 </div>
             </div>
         </div>
         <div class="layer-footer">
             <div class="btn-wrap">
                 <div class="center">
-                    <button type="button" class="btn-medium btn-green">휴면 해제</button>
+                    <button type="button" class="btn-medium btn-green" onclick="drmncyClear()">휴면 해제</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <!-- //layerpopup -->
-<script type="text/javascript">
+<script th:inline="javascript">
 
     jQuery(document).ready(function(){      
         var f = document.login_form;
@@ -120,7 +121,11 @@
                 f.p_userid.value =jQuery.cookie('luserid');
                 f.idSave.checked = true;
             }
+            /*[# th:if="${session.drmncy}"]*/
+            layerPopup.open('layer-popup02');
+            /*[/]*/
         }
+        
         if(f.p_userid.value == ""){
             jQuery("#p_userid").focus();
         }else if(f.p_pswd.value == ""){
@@ -129,6 +134,9 @@
         
         validateLogin();
     });
+
+</script>
+<script type="text/javascript">
     
     // 유효성검증기(로그인)
     var validator;
@@ -175,6 +183,11 @@
         }
     }
     
+    function drmncyClear() {
+        //alert("휴면해제");
+        // ajax 휴면해제/개인정보 유효기간 update, 세션에 휴면회원 상태 정보 삭제 처리 필요
+        layerPopup.close('layer-popup02');
+    }
 </script>
 </th:block>
 </html>
