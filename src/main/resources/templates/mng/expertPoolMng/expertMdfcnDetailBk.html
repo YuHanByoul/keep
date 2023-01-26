@@ -1,0 +1,665 @@
+<div class="card-header p-t-0 p-b-0">
+  <div class="sub-title row m-l-0 m-r-0 align-items-center">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+      <strong>전문가 상태</strong>
+    </div>
+
+    <div class="col-12 col-lg-6 text-right p-r-0 btn-group-sm stts-btn">
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134102')}">
+        <button type="button" class="btn btn-primary m-r-5" onclick="updateExpertStts('aprv')">승인</button>
+        <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#updateRecordExpertCompanionReasonPopup">반려</button>
+      </th:block>
+
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134103')}">
+        <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#updateRecordExpertTerminationReasonPopup">해지</button>
+      </th:block>
+
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134104')}">
+        <button type="button" class="btn btn-inverse" onclick="updateExpertStts('rjctCancel')">반려취소</button>
+      </th:block>
+
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134105')}">
+        <button type="button" class="btn btn-inverse" onclick="updateExpertStts('cnclCancel')">해지취소</button>
+      </th:block>
+    </div>
+  </div>
+</div>
+<div class="card-block-small p-t-0">
+  <div class="mb-0 form-group row">
+    <div class="col-12 p-t-5 p-b-5 stts-div">
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134102')}">
+        신청 ([[${#dates.format(expertApplyInfo.aplyDt,'yyyy-MM-dd')}]])
+      </th:block>
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134103')}">
+        승인 ([[${#dates.format(expertApplyInfo.aprvDt,'yyyy-MM-dd')}]])
+      </th:block>
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134104')}">
+        반려 ([[${#dates.format(expertApplyInfo.rjctDt,'yyyy-MM-dd')}]])
+      </th:block>
+      <th:block th:if="${expertApplyInfo.sttsCd.equals('134105')}">
+        해지 ([[${#dates.format(expertApplyInfo.cnclDt,'yyyy-MM-dd')}]])
+      </th:block>
+    </div>
+  </div>
+</div>
+<div class="card-header p-t-0 p-b-0">
+  <h3 class="sub-title"><strong>재직사항</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+  <div class="col-12 table-border-style">
+    <div class="col-12 table-responsive">
+      <table class="table table-framed table-bordered">
+        <thead>
+        <tr class="border-bottom-inverse">
+          <th class="text-center v-middle">재직구분</th>
+          <th class="text-center v-middle">재직기관명</th>
+          <th class="text-center v-middle">부서(소속)</th>
+          <th class="text-center v-middle">지위(직급)</th>
+          <th class="text-center v-middle">재직기간</th>
+          <th class="text-center" style="width: 100px;">재직증명서</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="expertHdofInfo : ${expertApplyInfo.expertHdofList}">
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1Category"
+                   th:value="${expertHdofInfo.hdofSeCdNm}" readonly/>
+          </td>
+
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                   th:value="${expertHdofInfo.instNm}" readonly/>
+          </td>
+
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                   th:value="${expertHdofInfo.deptNm}" readonly/>
+          </td>
+
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                   th:value="${expertHdofInfo.jbgdNm}" readonly/>
+          </td>
+
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoOfficeRecord1AgencyName"
+                   th:value="${expertHdofInfo.hdofDe}" readonly/>
+          </td>
+          <td>
+            <th:block th:if="${expertHdofInfo.hdofCrtfFile != null}">
+              <div class="btn-group-sm text-center">
+                <button type="button" class="btn btn-primary" th:fileid='${expertHdofInfo.hdofCrtfFile.fileid}' th:fileIdntfcKey="${expertHdofInfo.hdofCrtfFile.fileIdntfcKey}"
+                        th:onclick="openFileDownModal('137107', this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))">
+                  다운로드
+                </button>
+              </div>
+            </th:block>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="card-header p-t-0 p-b-0">
+  <h3 class="sub-title"><strong>자격취득사항</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+  <div class="col-12 table-border-style">
+    <div class="col-12 table-responsive">
+      <table class="table table-framed table-bordered">
+        <thead>
+        <tr class="border-bottom-inverse">
+          <th class="text-center v-middle">자격증명</th>
+          <th class="text-center v-middle">취득기관</th>
+          <th class="text-center v-middle">취득번호</th>
+          <th class="text-center v-middle">취득등급</th>
+          <th class="text-center v-middle">취득일</th>
+          <th class="text-center" style="width: 100px;">자격증명서</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="expertCrtfctInfo : ${expertApplyInfo.expertCrtfctList}">
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                   th:value="${expertCrtfctInfo.crtfctNm}" readonly/>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                   th:value="${expertCrtfctInfo.acqsInst}" readonly/>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                   th:value="${expertCrtfctInfo.acqsNo}" readonly/>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                   th:value="${expertCrtfctInfo.acqsGrd}" readonly/>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoCertificateRecord1Name"
+                   th:value="${expertCrtfctInfo.getAcqsDe()}" readonly/>
+          </td>
+          <td>
+            <th:block th:if="${expertCrtfctInfo.crtfctFile != null}">
+              <div class="btn-group-sm text-center">
+                <button type="button" class="btn btn-primary" th:fileid='${expertCrtfctInfo.crtfctFile.fileid}' th:fileIdntfcKey="${expertCrtfctInfo.crtfctFile.fileIdntfcKey}"
+                        th:onclick="openFileDownModal('137106', this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))">
+                  다운로드
+                </button>
+              </div>
+            </th:block>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="card-header p-t-0 p-b-0">
+  <div class="sub-title row m-l-0 m-r-0 align-items-center">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0">
+      <strong>환경교육 경력(실적)사항</strong>
+    </div>
+    <div class="col-12 col-lg-6 text-right p-r-0">
+      <strong>
+        총 환경교육 경력 <span class="text-danger d-inline fs-6">[[${expertApplyInfo.envEduCareerYy}]]년 [[${expertApplyInfo.envEduCareerMm}]]개월</span>
+      </strong>
+    </div>
+  </div>
+</div>
+<div class="card-block-small p-t-0">
+  <div class="col-12 table-border-style">
+    <div class="col-12 table-responsive">
+      <table class="table table-framed table-bordered">
+        <thead>
+        <tr class="border-bottom-inverse">
+          <th class="text-center v-middle">활동분야</th>
+          <th class="text-center v-middle">활동기간</th>
+          <th class="text-center v-middle" style="width:120px;">활동시간</th>
+          <th class="text-center v-middle">확인기관</th>
+          <th class="text-center" style="width: 80px;">활동내용</th>
+          <th class="text-center v-middle">확인일</th>
+          <th class="text-center" style="width: 100px;">확인서</th>
+          <th class="text-center" style="width: 100px;">정관</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="expertCareerInfo : ${expertApplyInfo.expertCareerList}">
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1Category"
+                   id="expertRequestInfoEnvironmentEduRecord1Category" th:value="${expertCareerInfo.fldNm}" readonly/>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1ActivityDate"
+                   id="expertRequestInfoEnvironmentEduRecord1ActivityDate" th:value="${expertCareerInfo.actvtDe}" readonly/>
+          </td>
+          <td>
+            <div class="col-12 row m-0 align-items-center">
+              <div class="col-8 p-l-0">
+                <input type="text" class="form-control form-control-sm" name="expertRequestInfoEnvironmentEduRecord1ActivityTime"
+                       id="expertRequestInfoEnvironmentEduRecord1ActivityTime"
+                       th:value="${expertCareerInfo.actvtHr}" readonly/>
+              </div>
+              <div class="col-4 p-0">
+                시간
+              </div>
+            </div>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1CertificateAgency"
+                   id="expertRequestInfoEnvironmentEduRecord1CertificateAgency" th:value="${expertCareerInfo.idntyInstNm}" readonly/>
+          </td>
+          <td>
+            <th:block th:if="${expertCareerInfo.actvtCn != null}">
+              <div class="btn-group-sm text-center">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" th:actvtCn="${expertCareerInfo.actvtCn}"
+                        data-bs-target="#commonModal" th:onclick="openModal(this.getAttribute('actvtCn'))">
+                  확인
+                </button>
+              </div>
+            </th:block>
+          </td>
+          <td>
+            <input type="text" class="form-control form-control-sm text-center" name="expertRequestInfoEnvironmentEduRecord1CertificateDate"
+                   id="expertRequestInfoEnvironmentEduRecord1CertificateDate" th:value="${expertCareerInfo.idntyDe}" readonly/>
+          </td>
+          <td>
+            <th:block th:if="${expertCareerInfo.crtfFile != null}">
+              <div class="btn-group-sm text-center">
+                <button type="button" class="btn btn-primary" th:fileid='${expertCareerInfo.crtfFile.fileid}' th:fileIdntfcKey="${expertCareerInfo.crtfFile.fileIdntfcKey}"
+                        th:onclick="openFileDownModal('137108', this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))">
+                  다운로드
+                </button>
+              </div>
+            </th:block>
+          </td>
+          <td>
+            <th:block th:if="${expertCareerInfo.artClassFile != null}">
+              <div class="btn-group-sm text-center">
+                <button type="button" class="btn btn-primary" th:fileid='${expertCareerInfo.artClassFile.fileid}' th:fileIdntfcKey="${expertCareerInfo.artClassFile.fileIdntfcKey}"
+                        th:onclick="openFileDownModal('137109', this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))">
+                  다운로드
+                </button>
+              </div>
+            </th:block>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="card-header p-t-0 p-b-0">
+  <h3 class="sub-title"><strong>전문분야정보</strong></h3>
+</div>
+<div class="card-block-small p-t-0 exprtField">
+  <div class="mb-2 row">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>전문가 유형</strong></div>
+        <div class="col-12">
+          <span kattr:radio_code="exprtTypeCd" th:attr="grpCd=133 ,selectedCd=${expertApplyInfo.exprtTypeCd}" isAdmin="true"/>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>전문분야</strong></div>
+        <div class="border-checkbox-section">
+          <div class="border-checkbox-group border-checkbox-group-inverse">
+            <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField1"
+                   th:checked="${expertApplyInfo.fldLctrYn.equals('Y')}">
+            <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField1">
+              강의
+            </label>
+          </div>
+          <div class="border-checkbox-group border-checkbox-group-inverse">
+            <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField2"
+                   th:checked="${expertApplyInfo.fldPlanngYn.equals('Y')}">
+            <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField2">
+              기획
+            </label>
+          </div>
+          <div class="border-checkbox-group border-checkbox-group-inverse">
+            <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField3"
+                   th:checked="${expertApplyInfo.fldCnsltngYn.equals('Y')}">
+            <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField3">
+              사업자문 및 컨설팅
+            </label>
+          </div>
+          <div class="border-checkbox-group border-checkbox-group-inverse">
+            <input class="border-checkbox" type="checkbox" name="expertRequestInfoExpertFieldInfoExpertField" id="expertRequestInfoExpertFieldInfoExpertField4"
+                   th:checked="${expertApplyInfo.fldEtcYn.equals('Y')}">
+            <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoExpertFieldInfoExpertField4">
+              기타
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-2 row">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>전문분야(대상)</strong></div>
+        <span kattr:check_code="exprtTrgtCd" grpCd="135" th:attr="selectedCd=${expertApplyInfo.exprtTrgtCd}" isAdmin="true"/>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>전문분야(환경주제)</strong></div>
+        <span kattr:check_code="exprtSbjctCd" grpCd="126" th:attr="selectedCd=${expertApplyInfo.exprtSbjctCd}" isAdmin="true"/>
+      </div>
+    </div>
+  </div>
+  <div class="mb-0 row">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>주요활동지역</strong></div>
+        <span kattr:check_code="exprtActvtRgnCd" grpCd="125" th:attr="selectedCd=${expertApplyInfo.exprtActvtRgnCd}" isAdmin="true"/>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>가능 활동범위</strong></div>
+        <span kattr:check_code="exprtActvtScopeCd" grpCd="125" th:attr="selectedCd=${expertApplyInfo.exprtActvtScopeCd}" isAdmin="true"/>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card-header p-t-0 p-b-0">
+  <h3 class="sub-title"><strong>정보공개 범위</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+  <div class="mb-2 row">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>연락처 공개범위</strong>
+        </div>
+        <div class="border-checkbox-section">
+          <div class="border-checkbox-group border-checkbox-group-inverse">
+            <input class="border-checkbox" type="checkbox" name="expertRequestInfoInfoOpenRegionContactOpenRegion1"
+                   id="expertRequestInfoInfoOpenRegionContactOpenRegion1" th:checked="${expertApplyInfo.moblphonRlsYn.equals('Y')}">
+            <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoInfoOpenRegionContactOpenRegion1">
+              휴대전화
+            </label>
+          </div>
+          <div class="border-checkbox-group border-checkbox-group-inverse">
+            <input class="border-checkbox" type="checkbox" name="expertRequestInfoInfoOpenRegionContactOpenRegion2"
+                   id="expertRequestInfoInfoOpenRegionContactOpenRegion2" th:checked="${expertApplyInfo.emlRlsYn.equals('Y')}">
+            <label class="form-label form-label-sm border-checkbox-label" for="expertRequestInfoInfoOpenRegionContactOpenRegion2">
+              이메일
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>자격취득사항 공개</strong></div>
+        <div class="col-12">
+          <span kattr:radio_yn="qlfcRlsYn" label1="공개" label2="비공개" th:attr="defaultVal=${expertApplyInfo.qlfcRlsYn}" isAdmin="true"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-0 row">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>재직사항 공개</strong></div>
+        <div class="col-12">
+          <span kattr:radio_yn="hdofRlsYn" label1="공개" label2="비공개" th:attr="defaultVal=${expertApplyInfo.hdofRlsYn}" isAdmin="true"/>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>환경교육 경력(실적)사항 공개</strong></div>
+        <div class="col-12">
+          <span kattr:radio_yn="careerRlsYn" label1="공개" label2="비공개" th:attr="defaultVal=${expertApplyInfo.careerRlsYn}" isAdmin="true"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card-header p-t-0 p-b-0">
+  <h3 class="sub-title"><strong>강의요청 및 홍보 메세지 수신 여부</strong></h3>
+</div>
+<div class="card-block-small p-t-0">
+  <div class="mb-0 row">
+    <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>기업/단체 강의요청 메시지 수신여부</strong></div>
+        <div class="col-12">
+          <span kattr:radio_yn="entLctrDmndRcptnYn" label1="공개" label2="비공개" th:attr="defaultVal=${expertApplyInfo.entLctrDmndRcptnYn}" isAdmin="true"/>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="mb-0 form-group">
+        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+          <strong>환경보전협회 강의요청 안내 및 홍보 메시지 수신여부</strong></div>
+        <div class="col-12">
+          <span kattr:radio_yn="lctrGdncRcptnYn" label1="공개" label2="비공개" th:attr="defaultVal=${expertApplyInfo.lctrGdncRcptnYn}" isAdmin="true"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 전문가 해지 사유 모달 -->
+<div class="modal fade" id="updateRecordExpertTerminationReasonPopup" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+      <div class="modal-header">
+        <h4 class="modal-title">전문가 해지 사유</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card m-b-10">
+          <div class="card-block-small">
+            <div class="mb-0 form-group row">
+              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRecordExpertTerminationReasonPopupReason"><strong>사유</strong></label>
+              <div class="col-12">
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="사유 입력" id="updateRecordExpertTerminationReasonPopupReason"
+                                          name="updateRecordExpertTerminationReasonPopupReason"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary waves-effect waves-light " onclick="updateExpertStts('cncl')">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 전문가 반려 사유 모달 -->
+<div class="modal fade" id="updateRecordExpertCompanionReasonPopup" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+      <div class="modal-header">
+        <h4 class="modal-title">전문가 반려 사유</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card m-b-10">
+          <div class="card-block-small">
+            <div class="mb-0 form-group row">
+              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRecordExpertCompanionReasonPopupReason"><strong>사유</strong></label>
+              <div class="col-12">
+                                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="updateRecordExpertCompanionReasonPopupReason"
+                                              name="updateRecordExpertCompanionReasonPopupReason"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary waves-effect waves-light " onclick="updateExpertStts('rjct')">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 개인정보 파일 다운로드 사유 모달 -->
+<div class="modal fade" id="fileDownPopup" data-bs-backdrop="static">
+  <input type="hidden" name="fileid" id="fileid"/>
+  <input type="hidden" name="fileIdntfcKey" id="fileIdntfcKey"/>
+  <input type="hidden" name="prcsSeCd" id="prcsSeCd"/>
+
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content type_2">
+      <div class="modal-header">
+        <h4 class="modal-title">개인정보 파일 다운로드 사유</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card m-b-10">
+          <div class="card-block-small">
+            <div class="mb-0 form-group row">
+              <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateRecordExpertFileDownloadReasonPopupReason"><strong>사유</strong></label>
+              <div class="col-12">
+                                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="사유 입력" id="updateRecordExpertFileDownloadReasonPopupReason"
+                                              name="updateRecordExpertFileDownloadReasonPopupReason"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary waves-effect waves-light " onclick="fileDownRsnIns()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  var updateExpertStatusUrl = '/mng/expertPoolMng/updateExpertStatus.do';
+
+  $(function () {
+
+    $('.exprtField .border-checkbox-section, .exprtField .form-radio').each(function() {
+      $(this).addClass('bg-form')
+      $(this).html($(this).html().replace(/&nbsp;/gi, ''))
+    });
+
+    $('input:checkbox, input:radio').on('click', function () {
+      return false;
+    });
+  });
+
+  function openModal(actvtCn) {
+    $('#commonModal .modal-title').text('활동내용');
+    $('#commonModal .modal-body').find('label').html('<strong> 내용 </strong>');
+    $('#commonModal #cn').val(actvtCn);
+  }
+
+  function updateExpertStts(mode) {
+    var sttsCd = null;
+    var rsnCn = null;
+    var prcsSeCd = null;
+
+    if (mode == 'aprv') {
+      if (!confirm('전문가로 등록 하시겠습니까?')) {
+        return;
+      }
+      sttsCd = '134103';
+      prcsSeCd = '137101'
+    } else if (mode == 'rjctCancel') {
+      if (!confirm('반려상태를 취소하면 신청 상태로 돌아갑니다. 계속 하시겠습니까?')) {
+        return;
+      }
+      sttsCd = '134102';
+    } else if (mode == 'cnclCancel') {
+      if (!confirm('해지상태를 취소하면 승인 상태로 돌아갑니다. 계속 하시겠습니까?')) {
+        return;
+      }
+      sttsCd = '134103';
+      prcsSeCd = '137101';
+
+    } else if (mode == 'rjct') {
+      if (!confirm('전문가 반려를 진행 하시겠습니까?')) return;
+      var $rjctRsn = $('#updateRecordExpertCompanionReasonPopupReason');
+      rsnCn = $rjctRsn.val();
+
+      if (rsnCn == null || rsnCn == "") {
+        alert('사유를 입력해주세요');
+        showErrorMark('#updateRecordExpertCompanionReasonPopupReason');
+        return;
+      }
+      prcsSeCd = '137102';
+      sttsCd = '134104';
+
+    } else if (mode == 'cncl') {
+      if (!confirm('전문가 해지를 진행 하시겠습니까?')) return;
+      var $cnclRsn = $('#updateRecordExpertTerminationReasonPopupReason');
+      rsnCn = $cnclRsn.val();
+
+      if (rsnCn == null || rsnCn == "") {
+        alert('사유를 입력해주세요');
+        $cnclRsn.css("border", "2px solid #ff0000");
+        setTimeout(function () {
+          $cnclRsn.css("border", "")
+        }, 1000);
+        return;
+      }
+      prcsSeCd = '137103';
+      sttsCd = '134105';
+    }
+
+    if (displayWorkProgress()) {
+      $.ajax({
+        type: 'post',
+        url: updateExpertStatusUrl,
+        data: {
+          "userid": userid,
+          "sttsCd": sttsCd,
+          "rsnCn": rsnCn,
+          "prcsSeCd": prcsSeCd
+        },
+        success: function (result) {
+          if (result) {
+            if (mode == 'aprv') {
+              alert('등록이 완료되었습니다.');
+            } else if (mode == 'rjctCancel') {
+              alert('처리가 완료되었습니다.');
+            } else if (mode == 'cnclCancel') {
+              alert('처리가 완료되었습니다.');
+            } else if (mode == 'rjct') {
+              alert('반려 처리되었습니다.');
+              $('#updateRecordExpertCompanionReasonPopup').modal('hide');
+            } else if (mode == 'cncl') {
+              alert('해지가 완료되었습니다.');
+              $('#updateRecordExpertTerminationReasonPopup').modal('hide');
+            }
+
+            var curPage = $("#expertJsGrid").jsGrid("option", "pageIndex");
+            $("#expertJsGrid").jsGrid("openPage", curPage);
+            expertDetail.moveTab('expertApplyInfoForm');
+
+          } else {
+            alert('전문가의 상태를 변경하는데 실패하였습니다.');
+          }
+          closeWorkProgress();
+        }
+      })
+    }
+  }
+
+  function openFileDownModal(prcsSeCd, fileid, fileIdntfcKey) {
+    $('#fileDownPopup').modal('show');
+    $('#fileid').val(fileid);
+    $('#fileIdntfcKey').val(fileIdntfcKey);
+    $('#prcsSeCd').val(prcsSeCd);
+  }
+
+  function fileDownRsnIns(fileid, fileIdntfcKey) {
+    var param = {
+      fileid: $('#fileid').val(),
+      file_idntfc_key: $('#fileIdntfcKey').val(),
+      userid: userid,
+      rsnCn: $('#updateRecordExpertFileDownloadReasonPopupReason').val(),
+      prcsSeCd: $('#prcsSeCd').val(),
+      _csrf: $("meta[name='_csrf']").attr("content"),
+      _csrf_header: $("meta[name='_csrf_header']").attr("content")
+    };
+
+    $.fileDownload('/mng/expertPoolMng/downloadFileByFileid.do', {
+      data: param,
+      httpMethod: 'post',
+      successCallback: function () {
+        $('#fileDownPopup').modal('hide');
+        $('#updateRecordExpertFileDownloadReasonPopupReason').val('');
+      },
+      failCallback: function (html, url) {
+        if (html == '404') {
+          alert("파일이 없습니다. 관리자에게 문의하세요.");
+        } else if (html == '403') {
+          alert("권한이 없습니다. 관리자에게 문의하세요.");
+        }
+      }
+    });
+  }
+</script>

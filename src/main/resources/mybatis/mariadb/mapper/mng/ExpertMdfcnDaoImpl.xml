@@ -57,22 +57,25 @@
             , MDFRID
             , REG_DT
             , RGTRID
-        ) VALUES(
+        ) VALUES
+        <foreach item="item" collection="expertHdofList" open="(" close=")" separator=",">
+            (
             #{userid}
-            , #{hdofSeCd}
-            , #{instNm}
-            , #{deptNm}
-            , #{jbgdNm}
-            , #{hdofBgngDe}
-            , #{hdofEndDe}
-            , #{hdofYn}
-            , #{hdofCrtfFileid}
-            , #{ordr}
+            , #{item.hdofSeCd}
+            , #{item.instNm}
+            , #{item.deptNm}
+            , #{item.jbgdNm}
+            , #{item.hdofBgngDe}
+            , #{item.hdofEndDe}
+            , #{item.hdofYn}
+            , #{item.hdofcrtfFileid}
+            , #{item.ordr}
             , NOW()
             , #{user.userid}
             , NOW()
             , #{user.userid}
-        )
+            )
+        </foreach>
     </insert>
 
     <insert id="insertExpertActvtScope">
@@ -125,20 +128,23 @@
             , MDFRID
             , REG_DT
             , RGTRID
-        ) VALUES (
+        ) VALUES
+        <foreach item="item" collection="expertCrtfctList" open="(" close=")" separator=",">
+            (
             #{userid}
-            , #{crtfctNm}
-            , #{acqsInst}
-            , #{acqsNo}
-            , #{acqsGrd}
-            , #{acqsDe}
-            , #{crtfctFileid}
-            , #{ordr}
+            , #{item.crtfctNm}
+            , #{item.acqsInst}
+            , #{item.acqsNo}
+            , #{item.acqsGrd}
+            , #{item.acqsDe}
+            , #{item.crtfctFileid}
+            , #{item.ordr}
             , NOW()
             , #{user.userid}
             , NOW()
             , #{user.userid}
-        )
+            )
+        </foreach>
     </insert>
 
     <insert id="insertExpertCareer">
@@ -159,26 +165,30 @@
             , MDFRID
             , REG_DT
             , RGTRID
-        ) VALUES (
-            #{userid}
-            , #{fldNm}
-            , #{actvtBgngDe}
-            , #{actvtEndDe}
-            , #{actvtYn}
-            , #{actvtHr}
-            , #{idntyInstNm}
-            , #{actvtCn}
-            , #{idntyDe}
-            , #{crtfFileid}
-            , #{artclassFileid}
-            , #{ordr}
-            , NOW()
-            , #{user.userid}
-            , NOW()
-            , #{user.userid}
         )
+        VALUES
+        <foreach item="item" collection="expertCareerList" open="(" close=")" separator=",">
+            (
+            #{userid}
+            , #{item.fldNm}
+            , #{item.actvtBgngDe}
+            , #{item.actvtEndDe}
+            , #{item.actvtYn}
+            , #{item.actvtHr}
+            , #{item.idntyInstNm}
+            , #{item.actvtCn}
+            , #{item.idntyDe}
+            , #{item.crtfFileid}
+            , #{item.artclassFileid}
+            , #{item.ordr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
     </insert>
-    <update id="updateSttsCd">
+    <update id="updateStts">
         UPDATE TB_ASS_EXPRT_MDFCN_DMND
         SET STTS_CD = #{sttsCd}
         WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
@@ -191,9 +201,12 @@
             , FLD_PLANNG_YN = #{fldPlanngYn}
             , FLD_CNSLTNG_YN = #{fldCnslTngYn}
             , FLD_ETC_YN = #{fldEtcYn}
-            /* 기타인 경우 기타내용 생성 */
+            , FLD_ETC_CN = #{fldEtcCn}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
+            , ENV_EDU_CAREER_MM = #{envEduCareerMm}
+            , ENV_EDU_CAREER_YY = #{envEduCareerYy}
+        WHERE USERID = #{userid}
     </update>
 
     <delete id="deleteExpertCareer">
@@ -202,32 +215,32 @@
     </delete>
 
     <delete id="deleteExpertCrtfct">
-        DELETE FROM TB_ASS_EXPRT_CAREER
+        DELETE FROM TB_ASS_EXPRT_CRTFCT
         WHERE USERID= #{userid}
     </delete>
 
     <delete id="deleteExpertActvtRgn">
-        DELETE FROM TB_ASS_EXPRT_CAREER
+        DELETE FROM TB_ASS_EXPRT_ACTVT_RGN
         WHERE USERID= #{userid}
     </delete>
 
     <delete id="deleteExpertActvtScope">
-        DELETE FROM TB_ASS_EXPRT_CAREER
+        DELETE FROM TB_ASS_EXPRT_ACTVT_SCOPE
         WHERE USERID= #{userid}
     </delete>
 
     <delete id="deleteExpertHdof">
-        DELETE FROM TB_ASS_EXPRT_CAREER
+        DELETE FROM TB_ASS_EXPRT_HDOF
         WHERE USERID= #{userid}
     </delete>
 
     <delete id="deleteExpertSbjct">
-        DELETE FROM TB_ASS_EXPRT_CAREER
+        DELETE FROM TB_ASS_EXPRT_SBJCT
         WHERE USERID= #{userid}
     </delete>
 
     <delete id="deleteExpertTrgt">
-        DELETE FROM TB_ASS_EXPRT_CAREER
+        DELETE FROM TB_ASS_EXPRT_TRGT
         WHERE USERID= #{userid}
     </delete>
 
@@ -299,10 +312,10 @@
              , B.TELNO
              , B.MOBLPHON
              , B.EML
-             , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_TRGT  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_TRGT /* 전문분야 대상 */
-             , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_SBJCT  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_SBJCT /* 전문분야 주제 */
-             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_ACTVT_RGN  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_RGN /* 주요활동지역 */
-             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_MDFCN_ACTVT_SCOPE  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_SCOPE /* 가능 활동범위 */
+             , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR',') FROM TB_ASS_EXPRT_MDFCN_TRGT  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_TRGT /* 전문분야 대상 */
+             , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_MDFCN_SBJCT  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_SBJCT /* 전문분야 주제 */
+             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_MDFCN_ACTVT_RGN  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_RGN /* 주요활동지역 */
+             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_MDFCN_ACTVT_SCOPE  WHERE MDFCN_DMND_ID = #{mdfcnDmndId} ) AS EXPRT_ACTVT_SCOPE /* 가능 활동범위 */
         FROM TB_ASS_EXPRT_MDFCN_DMND A
             INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
         WHERE A.USERID = #{userid}
@@ -322,8 +335,8 @@
              , IDNTY_INST_NM
              , ACTVT_CN
              , IDNTY_DE
-             , CRTF_FILEGRPID
-             , ARTCLASS_FILEGRPID
+             , CRTF_FILEGRPID as CRTF_FILEID
+             , ARTCLASS_FILEGRPID as ARTCLASS_FILEID
              , ORDR
         FROM TB_ASS_EXPRT_MDFCN_CAREER
         WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
@@ -358,7 +371,7 @@
              , HDOF_END_DE
              , HDOF_YN
              , IF(HDOF_YN= 'Y', CONCAT(HDOF_BGNG_DE, ' ~ 활동중' ), CONCAT(HDOF_BGNG_DE, ' ~ ' , HDOF_END_DE )) AS HDOF_DE
-             , HDOFCRTF_FILEGRPID
+             , HDOFCRTF_FILEGRPID as HDOFCRTF_FILEID
              , ORDR
         FROM TB_ASS_EXPRT_MDFCN_HDOF
         WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
