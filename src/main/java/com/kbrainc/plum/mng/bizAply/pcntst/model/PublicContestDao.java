@@ -5,8 +5,8 @@ package com.kbrainc.plum.mng.bizAply.pcntst.model;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 
 /**
 * 체험환경교육 지원사업 > 사업신청 관리 > 공모관리 DAO 인터페이스. 
@@ -39,16 +39,28 @@ public interface PublicContestDao {
     List<PublicContestVo> selectContestList(PublicContestVo publicContestVo) throws Exception;
     
     /**
-    * 공모관리 상세조회. 
+    * 담당자 목록 조회. 
     *
-    * @Title : detailContest
+    * @Title : selectMngList
     * @Description : TODO
-    * @param publicContestVo
+    * @param publicContestMngGrpVo
     * @return
     * @throws Exception
-    * @return PublicContestVo
+    * @return List<PublicContestMngGrpVo>
      */
-    PublicContestVo detailContest(PublicContestVo publicContestVo) throws Exception;
+    List<PublicContestMngGrpVo> selectMngList(PublicContestMngGrpVo publicContestMngGrpVo) throws Exception;
+    
+    /**
+    * 심사표 목록 조회. 
+    *
+    * @Title : selectEvalSheetList
+    * @Description : TODO
+    * @param PublicContestVo
+    * @return
+    * @throws Exception
+    * @return List<EgovMap>
+     */
+    List<EgovMap> selectEvalSheetList(PublicContestVo publicContestVo) throws Exception;
     
     /**
     * 공모관리 등록. 
@@ -75,6 +87,30 @@ public interface PublicContestDao {
     int updateContest(PublicContestVo publicContestVo) throws Exception;
     
     /**
+    * 공모관리 담당자 등록. 
+    *
+    * @Title : insertMng
+    * @Description : TODO
+    * @param publicContestMngGrpVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertMng(PublicContestMngGrpVo publicContestMngGrpVo) throws Exception;
+    
+    /**
+    * 공모관리 담당자 삭제. 
+    *
+    * @Title : deleteMng
+    * @Description : TODO
+    * @param publicContestMngGrpVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteMng(PublicContestMngGrpVo publicContestMngGrpVo) throws Exception;
+    
+    /**
     * 공모관리 목록 엑셀 다운로드. 
     *
     * @Title : publicContestListExcelDownload
@@ -87,14 +123,14 @@ public interface PublicContestDao {
     List<PublicContestVo> publicContestListExcelDownload(PublicContestVo publicContestVo) throws Exception;
     
     /**
-    * 공모관리 삭제. 
+    * 공모관리 전문가 그룹 리스트 조회. 
     *
-    * @Title : deleteContest
+    * @Title : selectMngGrpList
     * @Description : TODO
-    * @param deleteContestIds
+    * @param publicContestVo
     * @return
     * @throws Exception
-    * @return int
+    * @return List<PublicContestMngGrpVo>
      */
-    int deleteContest(@Param("deleteContestIds") Integer[] deleteContestIds) throws Exception;
+    List<PublicContestMngGrpVo> selectMngGrpList(PublicContestMngGrpVo publicContestVo) throws Exception;
 }

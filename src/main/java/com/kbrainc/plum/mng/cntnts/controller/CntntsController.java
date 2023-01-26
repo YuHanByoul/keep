@@ -52,24 +52,53 @@ public class CntntsController {
     @Autowired
     private FileService fileService;
     
+    /**
+    * 컨텐츠관리 목록화면 이동
+    *
+    * @Title : cntntsListForm
+    * @Description : 컨텐츠관리 목록화면 이동
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/cntnts/cntntsListForm.html")
     public String cntntsListForm() throws Exception {
 
         return "/mng/cntnts/cntntsList";
     }
     
+    /**
+    * 컨텐츠 관리 게시글 등록화면 이동
+    *
+    * @Title : cntntsInsertForm
+    * @Description : 컨텐츠 관리 게시글 등록화면 이동
+    * @param model 객체
+    * @param user 사용자세션 정보
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/mng/cntnts/cntntsInsertForm.html")
-    public String cntntsInsertForm(Model model, @UserInfo UserVo userVo) throws Exception {
+    public String cntntsInsertForm(Model model, @UserInfo UserVo user) throws Exception {
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
         model.addAttribute("regDate", formatter.format(date));
         
-        model.addAttribute("userid", userVo.getUserid());
-        model.addAttribute("useridNm", userVo.getAcnt()+"("+userVo.getNm()+")");
+        model.addAttribute("userid", user.getUserid());
+        model.addAttribute("useridNm", user.getAcnt()+"("+user.getNm()+")");
         
         return "/mng/cntnts/cntntsInsertForm";
     }
     
+    /**
+    * 컨텐츠 관리 게시글 수정화면 이동
+    *
+    * @Title : cntntsUpdateForm
+    * @Description : 컨텐츠 관리 게시글 수정화면 이동
+    * @param model 객체
+    * @param cntntsVo 객체
+    * @param user 사용자세션 정보
+    * @throws Exception 에외
+    * @return String
+    */
     @RequestMapping(value = "/mng/cntnts/cntntsUpdateForm.html")
     public String cntntsUpdateForm(Model model, CntntsVo cntntsVo, @UserInfo UserVo user) throws Exception {
         CntntsVo result = null;
@@ -107,6 +136,15 @@ public class CntntsController {
         return "/mng/cntnts/cntntsUpdate";
     }
     
+    /**
+    * 컨텐츠 관리 게시글 목록 조회
+    *
+    * @Title : selectCntntsList
+    * @Description : 컨텐츠 관리 게시글 목록 조회
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/cntnts/selectCntntsList.do")
     @ResponseBody
     public Map<String, Object> selectCntntsList(CntntsVo cntntsVo) throws Exception {
@@ -125,6 +163,17 @@ public class CntntsController {
         return resultMap;
     }
     
+    /**
+    * 컨텐츠 관리 게시글 등록
+    *
+    * @Title : insertCntnts
+    * @Description : 컨텐츠 관리 게시글 등록
+    * @param cntntsVo 객체
+    * @param bindingResult 유효성검증 결과
+    * @param user 사용자세션 정보
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/cntnts/insertCntnts.do")
     @ResponseBody
     public Map<String, Object> insertCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -162,6 +211,17 @@ public class CntntsController {
          return resultMap;
     }
     
+    /**
+    * 컨텐츠 관리 게시글 수정
+    *
+    * @Title : updateCntnts
+    * @Description : 컨텐츠 관리 게시글 수정
+    * @param cntntsVo 객체
+    * @param bindingResult 유효성검증 결과
+    * @param user 사용자세션 정보
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/cntnts/updateCntnts.do")
     @ResponseBody
     public Map<String, Object> updateCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -200,6 +260,15 @@ public class CntntsController {
         return resultMap;
     }
     
+    /**
+    * 컨텐츠 관리 게시글 삭제
+    *
+    * @Title : deleteCntnts
+    * @Description : 컨텐츠 관리 게시글 삭제
+    * @param request 객체
+    * @throws Exception 예외
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/mng/cntnts/deleteCntnts.do")
     @ResponseBody
     public Map<String, Object> deleteCntnts(HttpServletRequest request) throws Exception {

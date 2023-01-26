@@ -123,4 +123,34 @@ public interface SpceDao {
      * @throws Exception 예외
      */
     public List<SpceRsvtdeVo> selectSpceRsvtdeList(SpceRsvtdeVo spceRsvtdeVo) throws Exception;
+    /**
+     * 공간 예약일자 상태 변경 
+     *
+     * @Title       : updateSpceRsvtde 
+     * @Description : 공간 예약일자 상태 변경  
+     * @param spceRsvtdeVo spceRsvtdeVo 객체
+     * @return int insert로우수
+     * @throws Exception 예외
+     */
+    public int updateSpceRsvtde(SpceRsvtdeVo spceRsvtdeVo) throws Exception;
+    /**
+     * 공간 예약일자 날자별 삭제  
+     *
+     * @Title       : deleteSpceRsvtdeByDate 
+     * @Description : 공간 예약일자 날자별 삭제   
+     * @param spceRsvtdeVo spceRsvtdeVo 객체
+     * @return int insert로우수
+     * @throws Exception 예외
+     */
+    public int deleteSpceRsvtdeByDate(SpceRsvtdeVo spceRsvtdeVo) throws Exception;
+    /**
+     * 공간 예약 신청 리스트 호출
+     *
+     * @Title       : selectFclRsvtdeList 
+     * @Description : 공간 예약 신청 리스트 호출
+     * @param param SpceVo SpceVo 객체
+     * @return List<Map<String,Object>> 기관정보 목록
+     * @throws Exception 예외
+     */
+    public List<Map<String,Object>> selectFclRsvtdeList(SpceRsvtdeVo spceRsvtdeVo) throws Exception;
 }

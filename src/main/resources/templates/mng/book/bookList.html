@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+		<style>
+		.hide
+		{
+		   display:none;
+		}
+		</style>
+		
+		<div class="page-body">
+			<div class="row">
+				<div class="col-12">
+					<form name="searchFrm" id="searchFrm" th:action="@{/}" onsubmit="return false;" class="card">
+						<!-- 필터 부분 -->
+						<div class="card-block-small">
+	                        <div class="row">
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+	                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+	                                        <select name="searchType" id="searchType" class="form-select form-control">
+	                                        	<option value="">- 전체 -</option>
+	                                            <option value="searchTtl">도서명</option>
+	                                            <option value="searchCn">내용</option>
+	                                            <option value="searchTtlCn">도서명+내용</option>
+	                                        </select>
+	                                        <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
+	                                    <div class="col-6">
+											<select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" class="form-select form-select-sm" onchange="setSearchSelectBox.setNextDepth(163,this.value,'searchEduSbjctCd_2')">
+												<option value="" selected>- 전체 -</option>
+											</select>
+	                                    </div>
+	                                    <div class="col-6">
+					                        <select name="searchMdleEduSbjctCd" id="searchEduSbjctCd_2" class="form-select form-select-sm">
+					                            <option value="" selected>- 전체 -</option>
+					                        </select>
+	                                    </div>                                  
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대상</strong></div>
+	                                    <div class="col-sm-12">
+	                                        <span kattr:select_code="searchEduTrgtCd" th:attr="grpCd=178" firstOptTxt="- 전체 -" isAdmin="true" ></span>
+	                                    </div>
+	                                </div>
+	                            </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>출판사</strong></div>
+                                        <div class="col-12">
+                                            <input class="form-control form-control-sm" type="text" name="searchPlscmpn" id="searchPlscmpn">
+                                        </div>
+                                    </div>
+                                </div>
+	                        </div>
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchStartSelectDate"><strong>등록일-검색시작일</strong></label>
+                                        <div class="col-sm-12">
+                                            <input class="form-control form-control-sm" type="date" name="startDt" id="startDt">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchEndSelectDate"><strong>등록일 -검색종료일</strong></label>
+                                        <div class="col-sm-12">
+                                            <input class="form-control form-control-sm" type="date" name="endDt" id="endDt">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>	                        
+		                    <div class="mt-1 p-t-20 text-center border-top">
+		                        <button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+								<button type="submit" class="btn btn-primary" onclick="fn_searchForm()">검색</button>
+		                    </div>
+		                </div>
+					</form>
+				</div>
+				
+				<div class="col-12">
+					<div class="card">
+	                    <div class="row p-20 p-b-0">
+	                        <div class="col-12 col-md-6">
+	                            <h5><strong>우수환경도서 검색결과</strong></h5>
+	                        </div>
+	                        <div class="col-12 col-md-6 text-right">
+	                            <button type="button" class="btn btn-disabled m-r-5" onclick="deleteItem();">삭제</button>
+	                            <button type="button" class="btn btn-primary" onclick="fn_goInsertForm();">등록</button>
+	                        </div>
+	                    </div>
+						<div class="card-block-small">
+							<div class="dt-responsive table-responsive">
+								<div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+									<table id="jsGrid" class="table-responsive"></table>
+									<div id="listPager" class="text-center"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Content Area -->
+				<div class="col-12">
+				<div id="contentPanel" style="display: none" class="card"></div>
+				</div>
+			</div>
+		</div>
+
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script th:inline="javascript">
+			/* 커스텀태그(공통코드) : 교육주제 */
+			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+			
+			/* searchForm */
+			var setSearchSelectBox = {
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
+					$.ajax({
+						url : getCodeListUrl,
+						type: 'GET',
+						cache : false,
+						dataType: 'json',
+						data: {
+							  grpcd  : grpcd
+							, upprcd : upprcd
+						}, 
+						success : function (data){
+							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+						},
+					 	error : function (error){
+						} 
+						
+					});
+				},
+			 	
+			 	writeHtml : function(grpcd,targetId,list,selected){
+				 	var cntArr = targetId.split("_");
+				   	var nextCnt = Number(cntArr[1])+1;
+				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+				   	   
+				    var html ="<select id='"+targetId+"' class ='form-control' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+				        html +="    <option value='' selected>- 전체 -</option>";
+			    	   
+			  		  for(var i=0 ; i < list.length;i++){
+			  			if(list[i].cdid==selected){
+			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+			  			}else{
+			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+			  			}
+			  		  }
+			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+			  		  }
+				   	  html +="    </select>";
+				   	  $("#"+targetId).html(html);
+			 	},
+			 	
+			    setNextDepth : function(grpcd , upprcd , targetId){
+					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+				}
+			}
+			
+			/* insertForm */
+			var setInsertFormSelectBox = {
+				 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected){
+					 	
+						$.ajax({
+							url : getCodeListUrl,
+							type: 'GET',
+							cache : false,
+							dataType: 'json',
+							data: {
+								  grpcd  : grpcd
+								, upprcd : upprcd
+							}, 
+							success : function (data){
+								setInsertFormSelectBox.writeHtml(grpcd,targetId,data,"");
+							},
+						 	error : function (error){
+							} 
+							
+						});
+					},
+				 	
+				 	writeHtml : function(grpcd,targetId,list,selected){
+					 	var cntArr = targetId.split("_");
+					   	var nextCnt = Number(cntArr[1])+1;
+					   	var nextTarget = cntArr[0]+"_"+nextCnt;
+					   	   
+					    var html ="<select id='"+targetId+"' class ='form-control' onchange=setInsertFormSelectBox,setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+					        html +="    <option value='' selected>- 선택 -</option>";
+				    	   
+				  		  for(var i=0 ; i < list.length;i++){
+				  			if(list[i].cdid==selected){
+				   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+				  			}else{
+				  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+				  			}
+				  		  }
+				  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+				  			setInsertFormSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+				  		  }
+					   	  html +="    </select>";
+					   	  $("#"+targetId).html(html);
+				 	},
+					
+				    setNextDepth : function(grpcd , upprcd , targetId, selected){
+				    	setInsertFormSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+					}
+				}
+			
+			/* updateForm */	
+			var setUpdateSelectBox = {
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected){
+					$.ajax({
+						url : getCodeListUrl,
+						type: 'GET',
+						cache : false,
+						dataType: 'json',
+						data: {
+							  grpcd  : grpcd
+							, upprcd : upprcd
+						}, 
+						success : function (data){
+							setUpdateSelectBox.writeHtml(grpcd,targetId,data,selected);
+							
+						 	if($("#typeCd_1 option:checked").text() == '영상자료' || $("#typeCd_1 option:checked").val() == '164102') {
+								$("#palyTime").show();
+							}else {
+								$("#palyTime").hide();
+							}
+						},
+					 	error : function (error){
+						} 
+						
+					});
+				},
+			 	
+			 	writeHtml : function(grpcd,targetId,list,selected){
+				 	var cntArr = targetId.split("_");
+				   	var nextCnt = Number(cntArr[1])+1;
+				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+				   	   
+				    var html ="<select id='"+targetId+"' class ='form-control' onchange=setUpdateSelectBox,setNextDepth('"+grpcd+"',this.value,'"+nextTarget+","+selected+"')>";
+				        html +="    <option value='' selected>- 선택 -</option>";
+			    	   
+			  		for(var i=0 ; i < list.length;i++){
+			  			if(list[i].cd==selected){
+			   				html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+			  			}else{
+			  				html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+			  			}
+			  		}
+			  		
+			  		if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){z
+			  			setUpdateSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+			  		}
+				   	html +="    </select>";
+					$("#"+targetId).html(html);
+			 	},
+				
+			    setNextDepth : function(grpcd , upprcd , targetId, selected){
+			    	setUpdateSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId, selected);
+				}
+			}
+			
+			/* searchForm setting */
+			setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1');
+			
+			/* 검색 */
+			function fn_searchForm() {
+				if($('#endDt').val() != '' && $('#startDt').val() > $('#endDt').val()) {
+					alert('종료일을 시작일 이후로 선택해 주십시오.');
+				}
+				
+				if($('#searchType').val() != '' && $('#searchKeyword').val() == '' || $('#searchKeyword').val() == null) {					
+					alert('키워드를 입력해주십시오.');
+				}
+					
+				gridHelper1.resetListContent();
+			}
+			
+			/* 초기화 */
+			function fn_init() {
+				$("#searchType").val('');
+				$("#searchKeyword").val('');
+				$("#searchEduSbjctCd_1").val('');
+				$("#searchEduSbjctCd_2").val('');
+				$("#searchEduTrgtCd").val('');
+				$("#startDt").val('');
+				$("#endDt").val('');
+				gridHelper1.resetListContent();
+			}
+			
+			function fn_goInsertForm() {
+				var insertUrl = "/mng/book/bookInsertForm.html";
+				gridHelper1.loadContent(insertUrl);
+			}
+			
+			/* 우수환경도서 관리 게시글 목록 */
+			var selectedItems = [];
+			var gridHelper1;
+			
+			$(function() {
+				gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+				writeJsGridData();
+			});
+			
+			function writeJsGridData() {
+		        $("#jsGrid").jsGrid({
+		            height: "auto",
+		            width: "100%",
+		            autoload: true,
+		            sorting: true,
+		            paging: true,
+		            pagerContainer: "#listPager",
+		            pagerFormat: "{first} {prev} {pages} {next} {last}",
+		            pagePrevText: "이전",
+		            pageNextText: "다음",
+		            pageFirstText: " < 처음 ㅣ",
+		            pageLastText: " | 마지막 >",
+		            pageSize: 10,
+		            pageButtonCount: 10,
+		            pageLoading: true,
+		            pageIndex: 1,
+		            noDataContent: "데이터가 없습니다.",
+
+		            controller: {
+		                loadData: function (filter) {
+		                    var data = $.Deferred();
+		                                            
+		                    var formData = $('#searchFrm').serializeArray();
+		                    var params = [
+		                            {name: "pageNumber", value: filter.pageIndex},
+		                            {name: "rowPerPage", value: filter.pageSize},
+		                    ]
+		                    
+		                    if(filter.sortField != undefined){
+		                        params.push({name: "orderField", value: filter.sortField});
+		                        params.push({name: "orderDirection", value: filter.sortOrder});
+		                    }else{
+		                        params.push({name: "orderField", value: 'reg_dt'});
+		                    }
+		                    formData = formData.concat(params);
+		                    
+		                    $.ajax({
+		                        type: "GET",
+		                        contentType: "application/json; charset=utf-8",
+		                        url: "/mng/book/selectBookList.do",
+		                        dataType: "json",
+		                        data: formData,
+		                      }).done(function(response){
+		                          var da = {
+		                                  data : escapeGridData(response.list)
+		                                  ,itemsCount : response.totalCount
+		                              };
+		                        data.resolve(da);
+		                      });
+		                      return data.promise();
+		                  },				
+					},
+					
+					fields : [
+			        	{
+						 	 headerTemplate: function() {
+							  	 return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+						 	 },
+						 	 itemTemplate: function(_, item) {
+							  	 return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+							  	 .prop("checked", $.inArray(String(item.bookid), selectedItems) > -1)
+							  	 .on("change", function () {
+							  	 $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+							  	 });
+						 	 },
+						 	 align: "center",
+						 	 width: "50",
+						 	 sorting: false
+						}
+					  , { name : 'bookid', css : 'hide' }
+					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
+					  , { title : '도서명', name : 'ttl', type : "text", width : "300" }
+					  , { title : '교육주제', name : 'eduSbjctCd', type : "text", width : "150", align : "center" }
+					  , { title : '대상', name : 'eduTrgtCd', type : "text", width : "150", align : "center" }
+					  , { title : '출판사', name : 'plscmpn', type : "text", width : "150", align : "center" }
+					  , { title : '등록일', name : 'regDt', type : "text", width : "150", align : "center" }
+					  , { title : '조회수', name : 'regDt', type : "text", width : "100", align : "center" }
+					],
+					rowClick : function(args) {
+						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+						var detailUrl = "";
+						if (args.item.rprsImgFileid != null && args.item.rprsImgFileid != null) {
+							detailUrl = "/mng/book/bookUpdateForm.html?bookid=" + args.item.bookid + "&rprsImgFileid=" + args.item.rprsImgFileid + "&filegrpid=" + args.item.filegrpid;
+						} else {
+							detailUrl = "/mng/book/bookUpdateForm.html?bookid=" + args.item.bookid;
+						}
+						gridHelper1.loadContent(detailUrl);
+						gridHelper1.rowClick(args);
+					},
+					onPageChanged : function(args) {
+						selectedItems = [];
+					}
+				});
+		        
+			    var selectItem = function(item) {
+				    selectedItems.push(item);
+				    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+		                $("#selectAllCheckbox").prop("checked", true);
+		            } else {
+		                $("#selectAllCheckbox").prop("checked", false);
+		            }
+				};
+			     
+			    var unselectItem = function(item) {
+				    selectedItems = $.grep(selectedItems, function(i) {
+				    return i !== item;
+				    });
+				    if(selectedItems.length == 0) {
+				    	$('#selectAllCheckbox').attr('checked', false);
+				    }
+				    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+		                $("#selectAllCheckbox").prop("checked", true);
+		            } else {
+		                $("#selectAllCheckbox").prop("checked", false);
+		            }
+			    };
+				
+			    $("#selectAllCheckbox").click(function(item) {
+			    	selectedItems = [];
+			    	if(this.checked) { // check select status
+			            $('.singleCheckbox').each(function() { 
+			                this.checked = true;   
+			                selectItem($(this).parent().next().text());           
+			            });	
+			        }else {
+			            $('.singleCheckbox').each(function() { 
+			                this.checked = false;      
+			                unselectItem(item);
+			            });  
+			            selectedItems = [];
+			        }
+			   	});
+			}
+			
+			/* 게시글 삭제 */
+		    function deleteItem(){
+				if(selectedItems.length == 0) {
+					alert("대상을 선택해주세요.");
+					return false;
+				}
+				if(!confirm("삭제하시겠습니까?")) return;
+				var msg;
+		    		if(displayWorkProgress()){
+		    			$.ajax({
+		    				url: "/mng/book/deleteBook.do",
+		    				type: 'POST',
+		    				cache : false,
+		    				traditional : true,
+		    				dataType: 'json',
+		    				data: {bookids:selectedItems},
+		    				success: function(data){
+		    					if(data.result=="success"){
+		    						alert(data.msg);
+		    					}else{
+		    						alert(data.msg);
+		    					}
+		    					closeWorkProgress();
+		    					gridHelper1.resetListContent();
+		    				}
+		    			});
+			    	}
+			    	
+				
+		    }
+		</script>
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>

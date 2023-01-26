@@ -96,7 +96,6 @@ function fnExpendable($wrapper, option) {
             }
         });
 
-        console.log($wrapper.find('.expendable-item-old'));
         $wrapper
             .find('.expendable-item-old').removeClass('expendable-item expendable-item-old')
             .children('.expendable-item-child').removeClass('expendable-item-child').end()

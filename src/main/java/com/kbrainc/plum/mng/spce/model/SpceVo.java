@@ -152,6 +152,9 @@ public class SpceVo extends ParentRequestVo {
     /** 삭제용 파라메터*/
     private String[] spceids;
     
+    /** 캘린더 전용 파라메터 (한 날자만 선택시)*/
+    private String singleChoiceDt;
+    
     /***********검색용 추가***********/
     /** 지역 코드*/
     private String searchSiGunGuCd;
