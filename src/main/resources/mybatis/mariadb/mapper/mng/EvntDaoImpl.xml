@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EvntDaoImpl.xml
+	Description : 참여신청 관리 > 이벤트 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.evnt.model.EvntDao">
+    <insert id="insertEvnt">
+
+    </insert>
+
+    <update id="updateEvnt">
+
+    </update>
+
+    <select id="selectEvntList" resultType="EvntVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.EVNTID
+            , A.TTL
+            , A.BGNG_DE
+            , A.END_DE
+            , A.PRSNTN_DE
+            , B.NM
+            , <!-- CASE WHEN TIMESTAMPDIFF(MINUTE, NOW(), A.BGNG_DE) > 0 THEN 'BEFORE'
+                WHEN TIMESTAMPDIFF(MINUTE, NOW(), A.BGNG_DE) < 0 THEN 'ING' -->
+            /* 접수전 / 접수중 / 마감 */
+        FROM TB_CMM_EVNT A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        WHERE 1=1
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectEvntInfo" resultType="EvntVo">
+        SELECT
+            EVNTID
+            , TTL
+            , CN
+            , APLY_URL
+            , FILEGRPID
+            , BGNG_DE
+            , END_DE
+            , PRSNTN_DE
+        FROM TB_CMM_EVNT
+        WHERE EVNTID = #{evntid}
+    </select>
+</mapper>
