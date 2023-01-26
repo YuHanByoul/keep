@@ -423,6 +423,7 @@ public class SpceController {
     public String detailPopup(SpceVo spceVo,Model model,@UserInfo UserVo user) throws Exception {
         model.addAttribute("user", user);
         model.addAttribute("mode", spceVo.getMode());
+        model.addAttribute("singleChoiceDt", spceVo.getSingleChoiceDt());
         
         return "mng/spce/spceRsvtdetailPopup";
     }
@@ -436,7 +437,7 @@ public class SpceController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/spce/packageStayRsvtPopup.html")
-    public String packageStayInfoPopup(SpceVo spceVo,Model model,@UserInfo UserVo user) throws Exception {
+    public String packageStayInfoPopup(SpceVo spceVo,SpceRsvtdeVo spceRsvtdeVo,Model model,@UserInfo UserVo user) throws Exception {
         
         String target = "";
         
@@ -448,7 +449,16 @@ public class SpceController {
             target = "mng/spce/spceStayRsvtPopup";
         }else if (spceVo.getMode().equals("R")){ //대여 
             target = "mng/spce/spceRentRsvtPopup";
-        } 
+            
+        }else if (spceVo.getMode().equals("MS")){ //숙박수정
+            model.addAttribute("rsvtList",spceService.selectSpceRsvtdeList(spceRsvtdeVo));
+            target = "mng/spce/spceStayRsvtPopup";
+            
+        }else if (spceVo.getMode().equals("MR")){ //대여수정
+            model.addAttribute("rsvtList",spceService.selectSpceRsvtdeList(spceRsvtdeVo));
+            target = "mng/spce/spceRentRsvtPopup";
+        }
+        
         return target;
     }
     
@@ -497,6 +507,167 @@ public class SpceController {
         }
 
         return resultMap;
+    }
+    
+    /**
+     * 공간관리 예약상태 변경
+     *
+     * @Title : changeRsvtPsblty
+     * @Description : 공간관리 예약상태 변경
+     * @param SpceVo         SpceVo객체
+     * @param bindingResult1 SpceVo 유효성검증결과
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/changeRsvtPsblty.do")
+    @ResponseBody
+    public Map<String, Object> changeRsvtPsblty( @RequestBody SpceRsvtdeVo spceRsvtdeVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        
+        List< SpceRsvtdeVo> result = null;
+        spceRsvtdeVo.setUser(user);
+        
+        retVal = spceService.updateSpceRsvtde(spceRsvtdeVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "변경 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "변경에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    /**
+     * 공간관리 예약 운영일자 삭제 
+     *
+     * @Title : changeRsvtPsblty
+     * @Description : 공간관리 예약상태 변경
+     * @param SpceVo         SpceVo객체
+     * @param bindingResult1 SpceVo 유효성검증결과
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/deleteRsvt.do")
+    @ResponseBody
+    public Map<String, Object> deleteRsvt( @RequestBody SpceRsvtdeVo spceRsvtdeVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        
+        List<Map<String, Object>> result = null;
+        spceRsvtdeVo.setUser(user);
+        result = spceService.selectFclRsvtdeList(spceRsvtdeVo);
+        
+        //예약 신청 여부 확인  
+        if(result.size() > 0) {
+            String deStr= "";
+            List<String> deStrList= new ArrayList();;
+            for(Map<String, Object> vo :result) {
+                deStrList.add(vo.get("DE").toString());
+            }
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg",String.join(", ",deStrList.stream().distinct().collect(Collectors.toList()))+ "일 이미 예약 운영일자가 존재합니다.");
+            return resultMap; 
+        }
+        
+        retVal = spceService.deleteSpceRsvtdeByDate(spceRsvtdeVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+     * 공간관리 예약 일자 수정  
+     *
+     * @Title : modifyRentRsvt
+     * @Description : 공간관리 예약 일자 수정
+     * @param SpceRsvtdeVo         spceRsvtdeVo객체
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/modifyRentRsvt.do")
+    @ResponseBody
+    public Map<String, Object> modifyRentRsvt( @RequestBody SpceRsvtdeVo spceRsvtdeVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        
+        List<Map<String, Object>> result = null;
+        spceRsvtdeVo.setUser(user);
+        result = spceService.selectFclRsvtdeList(spceRsvtdeVo);
+        
+        //예약 신청 여부 확인  
+        if(result.size() > 0) {
+            String deStr= "";
+            List<String> deStrList= new ArrayList();;
+            for(Map<String, Object> vo :result) {
+                deStrList.add(vo.get("DE").toString());
+            }
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg",String.join(", ",deStrList.stream().distinct().collect(Collectors.toList()))+"일 이미 예약 신청이 존재하여 수정 할 수 없습니다.");
+            return resultMap; 
+        }
+        
+        retVal = spceService.deleteSpceRsvtdeByDate(spceRsvtdeVo);
+        
+        retVal = spceService.insertSpceRsvtde(spceRsvtdeVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "저장 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "저장 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+     * 공간관리 예약 숙박 수정 팝업  
+     *
+     * @Title       : modifyStayRsvtPopup 
+     * @Description : 예약일자 리스트 호출  
+     * @param param SpceVo SpceVo 객체
+     * @return String 화면
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/modifyStayRsvtPopup.html")
+    public String modifyStayRsvtPopup(SpceVo spceVo,Model model,@UserInfo UserVo user) throws Exception {
+        model.addAttribute("user", user);
+        model.addAttribute("mode", spceVo.getMode());
+        model.addAttribute("singleChoiceDt", spceVo.getSingleChoiceDt());
+        
+        return "mng/spce/spceRsvtdetailPopup";
+    }
+    
+    /**
+     * 공간관리 예약 대여 수정 팝업  
+     *
+     * @Title       : modifyRentRsvtPopup 
+     * @Description : 예약일자 리스트 호출  
+     * @param param SpceVo SpceVo 객체
+     * @return String 화면
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/spce/modifyRentRsvtPopup.html")
+    public String modifyRentRsvtPopup(SpceVo spceVo,Model model,@UserInfo UserVo user) throws Exception {
+        model.addAttribute("user", user);
+        model.addAttribute("mode", spceVo.getMode());
+        model.addAttribute("singleChoiceDt", spceVo.getSingleChoiceDt());
+        
+        return "mng/spce/spceRsvtdetailPopup";
     }
     
     

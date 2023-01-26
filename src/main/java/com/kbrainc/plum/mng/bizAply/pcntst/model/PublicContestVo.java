@@ -4,6 +4,11 @@
 package com.kbrainc.plum.mng.bizAply.pcntst.model;
 
 import java.util.Date;
+import java.util.List;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -54,44 +59,52 @@ public class PublicContestVo extends ParentRequestVo {
     /** 로그인사용자 정보 */
     private UserVo user;
     
-    private Integer[] deletePublicContestIds;
-    
     /**  공모아이디 */
     private Integer pcntstid;
     
     /** 분야_코드 */
+    @NotEmpty(message = "사업분야를 선택해주십시오.")
     private String fldCd;
 
     /** 분야_코드명 */
     private String fldNm;
     
     /** 공모_이름 */
+    @Size(max = 100, message = "공모명은 100자를 넘을 수 없습니다.")
     private String pcntstNm;
     
     /** 신청_시작_일시 */
+    @NotEmpty(message = "신청기간 시작일시를 선택해주십시오.")
     private String aplyBgngDt;
     
     /** 신청_종료_일시 */
+    @NotEmpty(message = "신청기간 종료일시를 선택해주십시오.")
     private String aplyEndDt;
     
+    /** 담당자 ids */
+    private List<String> pcntstids1;
     
+    /** 담당자 ids */
+    private List<String> pcntstids2;
     
     
     /** 대상_코드 */
+    @NotEmpty(message = "신청대상을 선택해주십시오.")
     private String trgtCd;
     
     /** 대상_코드명 */
     private String trgtNm;
     
     /** 사업_시작_일자 */
+    @NotEmpty(message = "사업기간을 선택해주십시오.")
     private String bsnsBgngDe;
     
     /** 사업_종료_일자 */
+    @NotEmpty(message = "사업기간을 선택해주십시오.")
     private String bsnsEndDe;
 
-    
-    
     /** 중간_보고_여부 */
+    @Pattern(regexp="[YN]")
     private String mdlReportYn;
     
     /** 컨설팅_사용_코드 */
@@ -107,6 +120,7 @@ public class PublicContestVo extends ParentRequestVo {
     private String wctDelvryCntYn;
     
     /** 온라인_심사_유형_코드 */
+    @NotEmpty(message = "온라인 심사유형을 선택해주십시오.")
     private String onlnSrngTypeCd;
     
     /** 온라인_심사_유형_코드명 */
@@ -116,10 +130,11 @@ public class PublicContestVo extends ParentRequestVo {
     private String bsnsCn;
     
     /** 심사_양식아이디_1차 */
-    private String srngFormidFirst;
+//    @NotEmpty(message = "1차 심사표를 선택해주십시오.")
+    private Integer srngFormidFirst;
     
     /** 심사_양식아이디_2차 */
-    private String srngFormidScnd;
+    private Integer srngFormidScnd;
     
     /** 심사_시작_일시 */
     private String srngBgngDt;
@@ -134,9 +149,11 @@ public class PublicContestVo extends ParentRequestVo {
     private String delvryAplyPrsntnEndDt;
     
     /** 교부_신청_시작_일시_1차 */
+    @NotEmpty(message = "교부신청기간 시작일시를 선택해주십시오.")
     private String delvryAplyBgngDtFirst;
     
     /** 교부_신청_종료_일시_1차 */
+    @NotEmpty(message = "교부신청기간 종료일시를 선택해주십시오.")
     private String delvryAplyEndDtFirst;
     
     /** 교부_신청_시작_일시_2차 */
@@ -146,15 +163,19 @@ public class PublicContestVo extends ParentRequestVo {
     private String delvryAplyEndDtScnd;
     
     /** 교부_확정_발표_시작_일시 */    
+    @NotEmpty(message = "교부확정발표기간 시작일시를 선택해주십시오.")
     private String delvryCfmtnPrsntnBgngDt;
     
     /** 교부_확정_발표_종료_일시 */
+    @NotEmpty(message = "교부확정발표기간 종료일시를 선택해주십시오.")
     private String delvryCfmtnPrsntnEndDt;
     
     /** 자금_집행_시작_일시_1차 */
+    @NotEmpty(message = "자금집행기간 시작일시를 선택해주십시오.")
     private String cptalExcutBgngDtFirst;
     
     /** 자금_집행_종료_일시_1차 */
+    @NotEmpty(message = "자금집행기간 종료일시를 선택해주십시오.")
     private String cptalExcutEndDtFirst;
 
     /** 자금_집행_시작_일시_2차 */
@@ -170,9 +191,11 @@ public class PublicContestVo extends ParentRequestVo {
     private String mdlReportEndDt;
     
     /** 결과_보고_시작_일시 */
+    @NotEmpty(message = "결과보고기간 시작일시를 선택해주십시오.")
     private String rsltReportBgngDt;
     
     /** 결과_보고_종료_일시 */
+    @NotEmpty(message = "결과보고기간 종료일시를 선택해주십시오.")
     private String rsltReportEndDt;
     
     /** 정산_보고_시작_일시 */
@@ -185,23 +208,28 @@ public class PublicContestVo extends ParentRequestVo {
     private int filegrpid;
     
     /** 사용_여부 */
+    @Pattern(regexp="[YN]")
     private String useYn;
     
+    /** 차수 */
+    private int cycl;
+    
     /**  수정_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date mdfcnDt;
     
     /** 수정자아이디 */
     private String mdfrid;
     
     /** 등록_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
     
     /** 등록자아이디 */
     private String rgtrid;
     
-    
+
+    /*********** 엑셀 출력용 ***********/
     /** 신청_기간 */
     private String aplyDt;
     /** 사업_기간 */

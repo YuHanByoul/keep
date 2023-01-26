@@ -19,14 +19,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.service.PublicContestService;
-import com.kbrainc.plum.mng.rgnEnveduCntr.model.RgnEnveduCntrVo;
+import com.kbrainc.plum.mng.cnsltng.service.CnsltngService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -57,6 +57,8 @@ public class PublicContestController {
     @Autowired
     private FileService fileService;
     
+    @Autowired
+    private CnsltngService cnsltngService;
     
     /**
     * 공모관리 화면으로 이동. 
@@ -123,6 +125,15 @@ public class PublicContestController {
                 }
             }
             
+            PublicContestMngGrpVo publicContestMngGrpVo = new PublicContestMngGrpVo();
+            // 1차심사 담당자 조회
+            publicContestMngGrpVo.setPcntstid(publicContestVo.getPcntstid());
+            publicContestMngGrpVo.setCycl(1);
+            model.addAttribute("mngList_1", this.publicContestService.selectMngList(publicContestMngGrpVo));
+            // 2차심사 담당자 조회
+            publicContestMngGrpVo.setCycl(2);
+            model.addAttribute("mngList_2", this.publicContestService.selectMngList(publicContestMngGrpVo));
+            
             if (!StringUtil.nvl(publicContestVo.getFilegrpid()).equals("") && !StringUtil.nvl(publicContestVo.getFilegrpid()).equals(0)) {
                 FileVo fileVo = new FileVo();
                 fileVo.setFilegrpid(publicContestVo.getFilegrpid());
@@ -134,7 +145,8 @@ public class PublicContestController {
             }
         }
         
-//        PublicContestVo detailPublicContestVo = this.publicContestService.detailContest(publicContestVo);
+        // 심사표 조회
+        model.addAttribute("srngFormList", this.publicContestService.selectEvalSheetList(detailPublicContestVo));
         model.addAttribute("publicContestVo", detailPublicContestVo);
         
         return "mng/bizAply/pcntst/detailPublicContestForm";
@@ -230,7 +242,11 @@ public class PublicContestController {
     * @return String
      */
     @RequestMapping(value="/mng/bizAply/pcntst/managerSearchPopup.html")
-    public String managerSearchPopup() throws Exception {
+    public String managerSearchPopup(PublicContestVo publicContestVo, Model model) throws Exception {
+        Map<String,Object> paramMap = new HashMap<String,Object>();
+        model.addAttribute("pcntstid", publicContestVo.getPcntstid());
+        model.addAttribute("cycl", publicContestVo.getCycl());
+        model.addAttribute("sidoList", cnsltngService.selectAddrCtprvnList(paramMap));
         return "mng/bizAply/pcntst/managerSearchPopup";
     }
     
@@ -248,34 +264,32 @@ public class PublicContestController {
     @RequestMapping(value = "/mng/bizAply/pcntst/publicContestListExcelDownload.do")
     public void publicContestListExcelDownload(HttpServletRequest request, HttpServletResponse response, PublicContestVo publicContestVo) throws Exception {
         publicContestService.publicContestListExcelDownload(publicContestVo, response, request);
-    } 
+    }
     
     /**
-    * 공모관리 삭제. 
+    * 공모관리 담장자 배정(심사위원 그룹 리스트 조회). 
     *
-    * @Title : deletePublicContest
+    * @Title : selectMngGrpList
     * @Description : TODO
-    * @param deleteContestIds
-    * @param user
+    * @param publicContestVo
     * @return
     * @throws Exception
     * @return Map<String,Object>
      */
-    @RequestMapping(value="/mng/bizAply/pcntst/deletePublicContest.do")
+    @RequestMapping(value="/mng/bizAply/pcntst/selectMngGrpList.do")
     @ResponseBody
-    public Map<String, Object> deletePublicContest(@RequestParam("deleteContestIds") Integer[] deleteContestIds, @UserInfo UserVo user) throws Exception {
-       Map<String, Object> resultMap = new HashMap<String, Object>();
-       
-       int retVal = this.publicContestService.deleteContest(deleteContestIds);
-       
-       if (retVal > 0) {
-           resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-           resultMap.put("msg", "삭제에 성공하였습니다.");
-       } else {
-           resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-           resultMap.put("msg", "삭제에 실패했습니다.");
-       }
-       
-       return resultMap;
+    public Map<String, Object> selectMngGrpList(PublicContestMngGrpVo publicContestVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        List<PublicContestMngGrpVo> result = this.publicContestService.selectMngGrpList(publicContestVo);
+        
+        if (result.size() > 0) {
+            resultMap.put("totalCount", result.get(0).getTotalCount());
+            resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+        
+        return resultMap;
     }
 }

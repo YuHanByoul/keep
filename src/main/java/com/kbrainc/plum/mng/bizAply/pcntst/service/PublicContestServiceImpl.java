@@ -20,10 +20,12 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestDao;
+import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -57,21 +59,81 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
     }
 
     @Override
-    public PublicContestVo detailContest(PublicContestVo publicContestVo) throws Exception {
+    public List<PublicContestMngGrpVo> selectMngList(PublicContestMngGrpVo publicContestMngGrpVo) throws Exception {
         // TODO Auto-generated method stub
-        return publicContestDao.detailContest(publicContestVo);
+        return publicContestDao.selectMngList(publicContestMngGrpVo);
     }
-
+    
+    @Override
+    public List<EgovMap> selectEvalSheetList(PublicContestVo publicContestVo) throws Exception {
+        // TODO Auto-generated method stub
+        return publicContestDao.selectEvalSheetList(publicContestVo);
+    }
+    
     @Override
     public int insertContest(PublicContestVo publicContestVo) throws Exception {
         // TODO Auto-generated method stub
-        return publicContestDao.insertContest(publicContestVo);
+        int returnVal = publicContestDao.insertContest(publicContestVo);
+        
+        if (publicContestVo.getPcntstids1() != null) {
+            if (publicContestVo.getPcntstids1().size() > 0) {
+                PublicContestMngGrpVo publicContestMngGrpVo = new PublicContestMngGrpVo();
+                publicContestMngGrpVo.setUser(publicContestVo.getUser());
+                publicContestMngGrpVo.setPcntstid(publicContestVo.getPcntstid());
+                publicContestMngGrpVo.setCycl(1);
+                publicContestMngGrpVo.setPcntstids(publicContestVo.getPcntstids1());
+                
+                publicContestDao.insertMng(publicContestMngGrpVo);                            
+            }
+        }
+        
+        if (publicContestVo.getPcntstids2() != null) {
+            if (publicContestVo.getPcntstids2().size() > 0) {
+                PublicContestMngGrpVo publicContestMngGrpVo = new PublicContestMngGrpVo();
+                publicContestMngGrpVo.setUser(publicContestVo.getUser());
+                publicContestMngGrpVo.setPcntstid(publicContestVo.getPcntstid());
+                publicContestMngGrpVo.setCycl(2);
+                publicContestMngGrpVo.setPcntstids(publicContestVo.getPcntstids2());
+                
+                publicContestDao.insertMng(publicContestMngGrpVo);                            
+            }
+        }
+        
+        return returnVal;
     }
 
     @Override
     public int updateContest(PublicContestVo publicContestVo) throws Exception {
         // TODO Auto-generated method stub
-        return publicContestDao.updateContest(publicContestVo);
+        int returnVal = publicContestDao.updateContest(publicContestVo);
+        
+        if (publicContestVo.getPcntstids1() != null) {
+            if (publicContestVo.getPcntstids1().size() > 0) {
+                PublicContestMngGrpVo publicContestMngGrpVo = new PublicContestMngGrpVo();
+                publicContestMngGrpVo.setUser(publicContestVo.getUser());
+                publicContestMngGrpVo.setPcntstid(publicContestVo.getPcntstid());
+                publicContestMngGrpVo.setCycl(1);
+                publicContestMngGrpVo.setPcntstids(publicContestVo.getPcntstids1());
+                
+                publicContestDao.deleteMng(publicContestMngGrpVo);
+                publicContestDao.insertMng(publicContestMngGrpVo);                            
+            }
+        }
+        
+        if (publicContestVo.getPcntstids2() != null) {
+            if (publicContestVo.getPcntstids2().size() > 0) {
+                PublicContestMngGrpVo publicContestMngGrpVo = new PublicContestMngGrpVo();
+                publicContestMngGrpVo.setUser(publicContestVo.getUser());
+                publicContestMngGrpVo.setPcntstid(publicContestVo.getPcntstid());
+                publicContestMngGrpVo.setCycl(2);
+                publicContestMngGrpVo.setPcntstids(publicContestVo.getPcntstids2());
+                
+                publicContestDao.deleteMng(publicContestMngGrpVo);
+                publicContestDao.insertMng(publicContestMngGrpVo);                            
+            }
+        }
+        
+        return returnVal;
     }
 
     @Override
@@ -245,8 +307,8 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
     }
 
     @Override
-    public int deleteContest(Integer[] deleteContestIds) throws Exception {
+    public List<PublicContestMngGrpVo> selectMngGrpList(PublicContestMngGrpVo publicContestVo) throws Exception {
         // TODO Auto-generated method stub
-        return publicContestDao.deleteContest(deleteContestIds);
+        return publicContestDao.selectMngGrpList(publicContestVo);
     }
 }

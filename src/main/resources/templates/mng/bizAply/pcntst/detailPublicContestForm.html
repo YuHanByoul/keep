@@ -4,6 +4,7 @@
     <input type="hidden" name="pcntstid" id="pcntstid" th:value="${publicContestVo.pcntstid}" />
     <input type="hidden" name="bsnsBgngDe" id="bsnsBgngDe" th:value="${publicContestVo.bsnsBgngDe}" />
     <input type="hidden" name="bsnsEndDe" id="bsnsEndDe" th:value="${publicContestVo.bsnsEndDe}" />
+    <input type="hidden" name="wctDelvryCnt" id="wctDelvryCnt" th:value="${publicContestVo.wctDelvryCnt}" />
 	<!-- insert 부분 -->
 	<div class="col-12">
 	    <div class="card">
@@ -84,7 +85,7 @@
 	                    <div class="mb-0 form-group">
 	                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업비 교부 횟수</strong></div>
 	                        <div class="form-radio">
-	                            <span kattr:radio_yn="wctDelvryCnt" label1="2회" label2="1회" th:attr="defaultVal=${publicContestVo.wctDelvryCntYn == null ? 'Y' : publicContestVo.wctDelvryCntYn}" isAdmin="true"></span>
+	                            <span kattr:radio_yn="wctDelvryCntYn" label1="2회" label2="1회" th:attr="defaultVal=${publicContestVo.wctDelvryCntYn == null ? 'Y' : publicContestVo.wctDelvryCntYn}" isAdmin="true"></span>
 	                        </div>
 	                    </div>
 	                </div>
@@ -158,20 +159,23 @@
 	            <div class="mb-3 form-group row">
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 배정</strong></div>
 	                <div class="col-sm-12 btn-group-sm">
-	                    <button type="button" class="btn btn-inverse" onclick="openSearchModal()">담당자 검색</button>
+	                    <button type="button" class="btn btn-inverse" onclick="openSearchModal('1')">담당자 검색</button>
 	                </div>
 	                <div class="m-0 row">
 	                    <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
 	                        <div class="col-auto">
-	                            <span class="label label-inverse">
-	                                홍길동(cunsulting001) | ab****@naver.com | 010-0000-0000 <a href="javascript:void(0)" class="text-white">X</a>
-	                            </span>
-	                            <span class="label label-inverse">
-	                                홍길동(cunsulting001) | ab****@naver.com | 010-0000-0000 <a href="javascript:void(0)" class="text-white">X</a>
-	                            </span>
-	                            <span class="label label-inverse">
-	                                홍길동(cunsulting001) | ab****@naver.com | 010-0000-0000 <a href="javascript:void(0)" class="text-white">X</a>
-	                            </span>
+	                            <div class="col-auto"  id="mng_list_area_1">
+		                            <th:block th:each="item : ${mngList_1}" > 
+		                               <span class="label label-inverse mb-2" th:id="'mng_list_'+${item.userid}" >
+		                                   <th:block th:text="${item.nm}+' '"></th:block>
+		                                   (<th:block th:text="${item.acnt}"></th:block>) |
+		                                   <th:block th:text="${item.eml}"></th:block> |
+		                                   <th:block th:text="${item.moblphon}+' '"></th:block>
+		                                   &nbsp;&nbsp;&nbsp;<a th:href="'javascript:deleteMng(1,'+${item.userid}+')'" class="text-white delete-manager">X</a>
+		                                   <input type="hidden" th:id="'pcntst'+${item.userid}" name="pcntstids1" th:value="${item.userid}">
+		                               </span>
+		                            </th:block>	                           
+	                            </div>
 	                        </div>
 	                    </div>
 	                </div>
@@ -183,14 +187,9 @@
 	                        <div class="col-12">
 	                            <select name="srngFormidFirst" id="srngFormidFirst" class="form-select form-select-sm">
 	                                <option value="" disabled="" selected="">-선택-</option>
-	                                <option value="opt1">Type 1</option>
-	                                <option value="opt2">Type 2</option>
-	                                <option value="opt3">Type 3</option>
-	                                <option value="opt4">Type 4</option>
-	                                <option value="opt5">Type 5</option>
-	                                <option value="opt6">Type 6</option>
-	                                <option value="opt7">Type 7</option>
-	                                <option value="opt8">Type 8</option>
+	                                <th:block th:each="item : ${srngFormList}" > 
+		                                <option th:value="${item.srngFormId}" th:selected="${publicContestVo.srngFormidFirst == item.srngFormId}"><th:block th:text="${item.srngFormNm}"/></option>
+	                                </th:block>
 	                            </select>
 	                        </div>
 	                    </div>
@@ -205,20 +204,23 @@
 	            <div class="mb-3 form-group row">
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 배정</strong></div>
 	                <div class="col-sm-12 btn-group-sm">
-	                    <button type="button" class="btn btn-inverse" data-bs-toggle="modal" data-bs-target="#managerSearchPopup">담당자 검색</button>
+	                    <button type="button" class="btn btn-inverse" onclick="openSearchModal('2')">담당자 검색</button>
 	                </div>
-	                <div class="m-0 row" style="display:none;">
+	                <div class="m-0 row">
 	                    <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
 	                        <div class="col-auto">
-	                            <span class="label label-inverse">
-	                                홍길동(cunsulting001) | ab****@naver.com | 010-0000-0000 <a href="javascript:void(0)" class="text-white">X</a>
-	                            </span>
-	                            <span class="label label-inverse">
-	                                홍길동(cunsulting001) | ab****@naver.com | 010-0000-0000 <a href="javascript:void(0)" class="text-white">X</a>
-	                            </span>
-	                            <span class="label label-inverse">
-	                                홍길동(cunsulting001) | ab****@naver.com | 010-0000-0000 <a href="javascript:void(0)" class="text-white">X</a>
-	                            </span>
+	                            <div class="col-auto"  id="mng_list_area_2">
+                                    <th:block th:each="item : ${mngList_2}" > 
+                                       <span class="label label-inverse mb-2" th:id="'mng_list_'+${item.userid}" >
+                                           <th:block th:text="${item.nm}+' '"></th:block>
+                                           (<th:block th:text="${item.acnt}"></th:block>) |
+                                           <th:block th:text="${item.eml}"></th:block> |
+                                           <th:block th:text="${item.moblphon}+' '"></th:block>
+                                           &nbsp;&nbsp;&nbsp;<a th:href="'javascript:deleteMng(2,'+${item.userid}+')'" class="text-white delete-manager">X</a>
+                                           <input type="hidden" th:id="'pcntst'+${item.userid}" name="pcntstids2" th:value="${item.userid}">
+                                       </span>
+                                    </th:block>                            
+                                </div>
 	                        </div>
 	                    </div>
 	                </div>
@@ -230,14 +232,9 @@
 	                        <div class="col-12">
 	                            <select name="srngFormidScnd" id="srngFormidScnd" class="form-select form-select-sm">
 	                                <option value="" disabled="" selected="">-선택-</option>
-	                                <option value="opt1">Type 1</option>
-	                                <option value="opt2">Type 2</option>
-	                                <option value="opt3">Type 3</option>
-	                                <option value="opt4">Type 4</option>
-	                                <option value="opt5">Type 5</option>
-	                                <option value="opt6">Type 6</option>
-	                                <option value="opt7">Type 7</option>
-	                                <option value="opt8">Type 8</option>
+	                                <th:block th:each="item : ${srngFormList}" > 
+                                        <option th:value="${item.srngFormId}" th:selected="${publicContestVo.srngFormidScnd == item.srngFormId}"><th:block th:text="${item.srngFormNm}"/></option>
+                                    </th:block>
 	                            </select>
 	                        </div>
 	                    </div>
@@ -402,7 +399,7 @@
 	        <!-- 하단버튼 -->
 	        <div class="card-block-small">
 	            <button type="button" class="btn btn-disabled m-r-5" id="cancelInsertEnvedu" onclick="gridHelper1.toggleContent()">취소</button>
-                <th:block sec:authorize-url="/mng/bizAply/pcntst/insertPublicContest.do"><button type="button" class="btn btn-primary" id="insertEnvedu" onclick="fn_insert()">저장</button></th:block>
+                <th:block sec:authorize-url="/mng/bizAply/pcntst/insertPublicContest.do"><button type="button" class="btn btn-primary" id="insertEnvedu" onclick="fn_save()">저장</button></th:block>
 	        </div>
 	        <!-- // -->
 	    </div>
@@ -422,8 +419,8 @@
     var uploadFileCnt = 0;
     var managerSearchModal;
     
-    var openSearchModal =()=> {
-        var url = "/mng/bizAply/pcntst/managerSearchPopup.html";
+    var openSearchModal =(cycl)=> {
+        var url = "/mng/bizAply/pcntst/managerSearchPopup.html?pcntstid="+pcntstid+"&cycl="+cycl;
         $("#searchModal").load(url, function(response, status, xhr) {
             if (status == "success") {
                 managerSearchModal = new bootstrap.Modal($('#searchModal'));
@@ -432,7 +429,7 @@
         });
     }
     
-    $(function(){
+    $(document).ready(function() {
 		//editor = CKEDITOR.replace('bsnsCn');
         //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
         editor = CKEDITOR.replace('bsnsCn', {enterMode: CKEDITOR.ENTER_BR});
@@ -454,6 +451,45 @@
             $(this).val('');
         });
         
+        var validator = $("#insertForm").validate({
+            rules: {
+                fldCd    : { required: true }
+                , trgtCd : { required: true } 
+                , aplyBgngDt : { required: true } 
+                , aplyEndDt : { required: true } 
+                , bsnsBgng : { required: true } 
+                , onlnSrngTypeCd : { required: true } 
+                , srngFormidFirst : { required: true } 
+                , delvryAplyBgngDtFirst : { required: true } 
+                , delvryAplyEndDtFirst : { required: true } 
+                , delvryCfmtnPrsntnBgngDt : { required: true } 
+                , delvryCfmtnPrsntnEndDt : { required: true } 
+                , cptalExcutBgngDtFirst : { required: true } 
+                , cptalExcutEndDtFirst : { required: true } 
+                , rsltReportBgngDt : { required: true } 
+                , rsltReportEndDt : { required: true } 
+            },
+            messages: {
+                fldCd    :   { required: "사업분야를 선택해주십시오." }  
+                , trgtCd    :   { required: "신청대상을 선택해주십시오." }  
+                , aplyBgngDt    :   { required: "신청기간 시작일시를 선택해주십시오." }  
+                , aplyEndDt    :   { required: "신청기간 종료일시를 선택해주십시오." }  
+                , bsnsBgng    :   { required: "사업기간을 선택해주십시오." }  
+                , onlnSrngTypeCd    :   { required: "온라인 심사유형을 선택해주십시오." }  
+                , srngFormidFirst    :   { required: "1차 심사표를 선택해주십시오." }  
+                , delvryAplyBgngDtFirst    :   { required: "교부신청기간 시작일시를 선택해주십시오." }  
+                , delvryAplyEndDtFirst    :   { required: "교부신청기간 종료일시를 선택해주십시오." }  
+                , delvryCfmtnPrsntnBgngDt    :   { required: "교부확정발표기간 시작일시를 선택해주십시오." }
+                , delvryCfmtnPrsntnEndDt    :   { required: "교부확정발표기간 종료일시를 선택해주십시오." }
+                , cptalExcutBgngDtFirst    :   { required: "자금집행기간 시작일시를 선택해주십시오." }
+                , cptalExcutEndDtFirst    :   { required: "자금집행기간 종료일시를 선택해주십시오." }
+                , rsltReportBgngDt    :   { required: "결과보고기간 시작일시를 선택해주십시오." }
+                , rsltReportEndDt    :   { required: "결과보고기간 종료일시를 선택해주십시오." }
+            }
+        });
+        
+        $("#srngFormidScnd").attr("disabled", true);
+        
         if ($("#atchfileCnt").val() != null && $("#atchfileCnt").val() != 0) {
             atchfileCnt = $("#atchfileCnt").val()
         }
@@ -461,44 +497,55 @@
             atchfileSize = $("#atchfileSize").val()
         }
         
-	    var validator= $("#insertForm").validate({
-	        rules: {
-	        	fldCd    : { required: true }
-	            , trgtCd : { required: true } 
-	            , aplyBgngDt : { required: true } 
-	            , aplyEndDt : { required: true } 
-	            , bsnsBgng : { required: true } 
-	            , onlnSrngTypeCd : { required: true } 
-// 	            , srngFormidFirst : { required: true } 
-// 	            , srngFormidScnd : { required: true } 
-	            , delvryAplyBgngDtFirst : { required: true } 
-	            , delvryAplyEndDtFirst : { required: true } 
-	            , delvryCfmtnPrsntnBgngDt : { required: true } 
-	            , delvryCfmtnPrsntnEndDt : { required: true } 
-	            , cptalExcutBgngDtFirst : { required: true } 
-	            , cptalExcutEndDtFirst : { required: true } 
-	            , rsltReportBgngDt : { required: true } 
-	            , rsltReportEndDt : { required: true } 
-	        },
-	        messages: {
-	        	fldCd    :   { required: "사업분야를 선택해주십시오." }  
-	            , trgtCd    :   { required: "신청대상을 선택해주십시오." }  
-	            , aplyBgngDt    :   { required: "신청기간 시작일시를 선택해주십시오." }  
-	            , aplyEndDt    :   { required: "신청기간 종료일시를 선택해주십시오." }  
-	            , bsnsBgng    :   { required: "사업기간을 선택해주십시오." }  
-	            , onlnSrngTypeCd    :   { required: "온라인 심사유형을 선택해주십시오." }  
-// 	            , srngFormidFirst    :   { required: "1차 심사표를 선택해주십시오." }  
-// 	            , srngFormidScnd    :   { required: "2차 심사표를 선택해주십시오." }  
-	            , delvryAplyBgngDtFirst    :   { required: "교부신청기간 시작일시를 선택해주십시오." }  
-	            , delvryAplyEndDtFirst    :   { required: "교부신청기간 종료일시를 선택해주십시오." }  
-	            , delvryCfmtnPrsntnBgngDt    :   { required: "교부확정발표기간 시작일시를 선택해주십시오." }
-	            , delvryCfmtnPrsntnEndDt    :   { required: "교부확정발표기간 종료일시를 선택해주십시오." }
-	            , cptalExcutBgngDtFirst    :   { required: "자금집행기간 시작일시를 선택해주십시오." }
-	            , cptalExcutEndDtFirst    :   { required: "자금집행기간 종료일시를 선택해주십시오." }
-	            , rsltReportBgngDt    :   { required: "결과보고기간 시작일시를 선택해주십시오." }
-	            , rsltReportEndDt    :   { required: "결과보고기간 종료일시를 선택해주십시오." }
-	        }
-	    });
+        $("input[name='wctDelvryCntYn']").change(function() {
+        	if ($(this).val() == "Y") {
+        		$("input[name='delvryAplyBgngDtScnd']").attr("disabled", false);
+        		$("input[name='delvryAplyEndDtScnd']").attr("disabled", false);
+        		$("input[name='cptalExcutBgngDtScnd']").attr("disabled", false);
+        		$("input[name='cptalExcutEndDtScnd']").attr("disabled", false);
+        	} else {
+        		$("input[name='delvryAplyBgngDtScnd']").attr("disabled", true);
+        		$("input[name='delvryAplyEndDtScnd']").attr("disabled", true);
+        		$("input[name='cptalExcutBgngDtScnd']").attr("disabled", true);
+        		$("input[name='cptalExcutEndDtScnd']").attr("disabled", true);
+        	}
+        });
+        
+        $("input[name='mdlReportYn']").change(function() {
+        	if ($(this).val() == "Y") {
+        		$("input[name='mdlReportBgngDt']").attr("disabled", false);
+        		$("input[name='mdlReportEndDt']").attr("disabled", false);
+        	} else {
+        		$("input[name='mdlReportBgngDt']").attr("disabled", true);
+        		$("input[name='mdlReportEndDt']").attr("disabled", true);
+        	}
+        });
+        
+        $("#onlnSrngTypeCd").change(function() {
+            if ($(this).val() == "177103" || $(this).val() == "177104") {
+                $("#srngFormidScnd").attr("disabled", false);
+            } else {
+                $("#srngFormidScnd").attr("disabled", true);
+            }
+        });
+        
+        if ($("#onlnSrngTypeCd").val() == "177103" || $("#onlnSrngTypeCd").val() == "177104") {
+        	$("#srngFormidScnd").attr("disabled", false);
+        }
+        
+        if ($("input[name='wctDelvryCntYn']:checked").val() == "N") {
+        	$("input[name='delvryAplyBgngDtScnd']").attr("disabled", true);
+            $("input[name='delvryAplyEndDtScnd']").attr("disabled", true);
+            $("input[name='cptalExcutBgngDtScnd']").attr("disabled", true);
+            $("input[name='cptalExcutEndDtScnd']").attr("disabled", true);
+        }
+        
+        if ($("input[name='mdlReportYn']:checked").val() == "N") {
+        	$("input[name='mdlReportBgngDt']").attr("disabled", true);
+            $("input[name='mdlReportEndDt']").attr("disabled", true);
+        }
+        
+        
 	});
 	
     $('#multiFileInput').on("change", function(event) {
@@ -578,21 +625,92 @@
          })
     };
     
-    function fn_insert(){
+    function fn_save(){
+    	var idArr1 = [];
+    	var idArr2 = [];
         if(!($("#insertForm").valid())) return;
+        
+        if ($("#onlnSrngTypeCd").val() == "177103" || $("#onlnSrngTypeCd").val() == "177104") {
+            if ($("#srngFormidScnd").val() == "" || $("#srngFormidScnd").val() == null) {
+            	alert("2차 심사표를 선택해주십시오");
+            	showErrorMark("#srngFormidScnd");
+                return;
+            }
+        }
+        
+        if ($("input[name='wctDelvryCntYn']:checked").val() == "Y") {
+        	if ($("input[name='delvryAplyBgngDtScnd']").val() == "" || $("input[name='delvryAplyBgngDtScnd']").val() == null) {
+        		alert("교부신청기간(2차) 설정은 필수입니다.");
+        		showErrorMark("#delvryAplyBgngDtScnd");
+                return;
+        	}
+            if ($("input[name='delvryAplyEndDtScnd']").val() == "" || $("input[name='delvryAplyEndDtScnd']").val() == null) {
+        		alert("교부신청기간(2차) 설정은 필수입니다.");
+        		showErrorMark("#delvryAplyEndDtScnd");
+        		return;
+        	}
+        	if ($("input[name='cptalExcutBgngDtScnd']").val() == "" || $("input[name='cptalExcutBgngDtScnd']").val() == null) {
+        		alert("자금집행기간(2차) 설정은 필수입니다.");
+        		showErrorMark("#cptalExcutBgngDtScnd");
+                return;
+        	} 
+        	if ($("input[name='cptalExcutEndDtScnd']").val() == "" || $("input[name='cptalExcutEndDtScnd']").val() == null) {
+        		alert("자금집행기간(2차) 설정은 필수입니다.");
+        		showErrorMark("#cptalExcutEndDtScnd");
+        		return;
+        	}
+        }
+        
+        if ($("input[name='mdlReportYn']:checked").val() == "Y") {
+        	if ($("input[name='mdlReportBgngDt']").val() == "" || $("input[name='mdlReportBgngDt']").val() == null) {
+        		alert("중간보고기간 설정은 필수입니다.");
+        		showErrorMark("#mdlReportBgngDt");
+                return;
+        	} 
+        	if ($("input[name='mdlReportEndDt']").val() == "" || $("input[name='mdlReportEndDt']").val() == null) {
+        		alert("중간보고기간 설정은 필수입니다.");
+        		showErrorMark("#mdlReportEndDt");
+        		return;
+        	}
+        }
+        
+        // 기간체크
+        if($("#aplyBgngDt").val() > $("#aplyEndDt").val() ) { alert("신청기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#aplyEndDt"); return; }
+        if($("#srngBgngDt").val() > $("#srngEndDt").val() ) { alert("심사기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#srngEndDt"); return; }
+        if($("#delvryAplyPrsntnBgngDt").val() > $("#delvryAplyPrsntnEndDt").val() ) { alert("교부신청발표기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#delvryAplyPrsntnEndDt"); return; }
+        if($("#delvryAplyBgngDtFirst").val() > $("#delvryAplyEndDtFirst").val() ) { alert("교부신청기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#delvryAplyEndDtFirst"); return; }
+        if($("#delvryAplyBgngDtScnd").val() > $("#delvryAplyEndDtScnd").val() ) { alert("교부신청기간(2차) 종료일은 시작일 이후여야 합니다."); showErrorMark("#delvryAplyEndDtScnd"); return; }
+        if($("#delvryCfmtnPrsntnBgngDt").val() > $("#delvryCfmtnPrsntnEndDt").val() ) { alert("교부확정발표기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#delvryCfmtnPrsntnEndDt"); return; }
+        if($("#cptalExcutBgngDtFirst").val() > $("#cptalExcutEndDtFirst").val() ) { alert("자금집행기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#cptalExcutEndDtFirst"); return; }
+        if($("#cptalExcutBgngDtScnd").val() > $("#cptalExcutEndDtScnd").val() ) { alert("자금집행기간(2차) 종료일은 시작일 이후여야 합니다."); showErrorMark("#cptalExcutEndDtScnd"); return; }
+        if($("#mdlReportBgngDt").val() > $("#mdlReportEndDt").val() ) { alert("중간보고기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#mdlReportEndDt"); return; }
+        if($("#rsltReportBgngDt").val() > $("#rsltReportEndDt").val() ) { alert("결과보고기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#rsltReportEndDt"); return; }
+        if($("#excclcReportBgngDt").val() > $("#excclcReportEndDt").val() ) { alert("정산보고기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#excclcReportEndDt"); return; }
         
         var editorData = editor.getData();
         $("#bsnsCn").val(editorData);
         
-        if ($("input[name='wctDelvryCnt']:checked").val() == "Y") {
-        	$("input[name='wctDelvryCnt']").val(2);
+        if ($("input[name='wctDelvryCntYn']:checked").val() == "Y") {
+        	$("#wctDelvryCnt").val("2");
         } else {
-        	$("input[name='wctDelvryCnt']").val(1);
+        	$("#wctDelvryCnt").val("1");
+        }
+        
+        if ($("[name=pcntstids1]").length > 0) {
+	        $("[name=pcntstids1]").each(function(){
+	            idArr1.push(this.value);
+	        });        	
+        }
+        if ($("[name=pcntstids2]").length > 0) {
+	        $("[name=pcntstids1]").each(function(){
+	            idArr2.push(this.value);
+	        });        	
         }
         
         if(!confirm("저장하시겠습니까?")) return;
         
         var data =  $("#insertForm").serialize();
+        
         if(displayWorkProgress()){
             $.ajax({
                 url : (pcntstid == "" || pcntstid == null) ? insertUrl : updateUrl,
@@ -611,5 +729,10 @@
                 }
             });
         }
+    }
+    
+  //담당자 삭제 
+    var deleteMng = (num, id) =>{
+        $("#mng_list_area_"+num).find("#mng_list_"+id).remove();
     }
 </script>
