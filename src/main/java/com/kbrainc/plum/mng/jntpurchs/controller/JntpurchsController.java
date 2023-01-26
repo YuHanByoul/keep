@@ -1,7 +1,23 @@
 package com.kbrainc.plum.mng.jntpurchs.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsVo;
+import com.kbrainc.plum.mng.jntpurchs.service.JntpurchsServiceImpl;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
@@ -15,15 +31,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @ClassName : JntpurchsController
  * @Description : 공동구매관리 Controller
  * @author : KBRAINC
- * @date : 2023. 01. 04.
+ * @date : 2023. 01. 18.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Controller
 public class JntpurchsController {
 
-    //@Autowired
-    //private ChklstServiceImpl chklstService;
+    @Autowired
+    private JntpurchsServiceImpl jntpurchsService;
     
     /**
      * 공동구매모집 목록 화면
@@ -39,6 +55,19 @@ public class JntpurchsController {
     }
     
     /**
+     * 공동구매모집 등록 화면
+     *
+     * @Title : jntpurchsInsertForm
+     * @Description : 공동구매모집 목록 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/jntpurchsInsertForm.html")
+    public String jntpurchsInsertForm() throws Exception {
+        return "mng/jntpurchs/jntpurchsInsert";
+    }
+    
+    /**
      * 공동구매신청 목록 화면
      *
      * @Title : jntpurchsOrderListForm
@@ -50,6 +79,9 @@ public class JntpurchsController {
     public String jntpurchsOrderListForm() throws Exception {
         return "mng/jntpurchs/jntpurchsOrderList";
     }
+    
+    
+    
     
 //     /**
 //      * 체크리스트 문항 등록 화면
@@ -184,69 +216,69 @@ public class JntpurchsController {
 //        return "mng/chklst/chklstQitemListPopup";
 //    }
 //    
-//    /**
-//     * 체크리스트 문항 등록
-//     *
-//     * @Title : insertChklstQitem
-//     * @Description : 체크리스트 문항 등록
-//     * @param chklstQitemVo ChklstQitemVo 객체
-//     * @param bindingResult qitemVo 유효성 검증결과
-//     * @param user 사용자 세션 정보
-//     * @return Map<String, Object> 응답결과객체
-//     * @throws Exception 예외
-//     */
-//    @RequestMapping(value = "/mng/chklst/insertChklstQitem.do")
-//    @ResponseBody
-//    public Map<String, Object> insertChklstQitem(@Valid ChklstQitemVo chklstQitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<String, Object>();
-//          
-//        if(bindingResult.hasErrors()) {
-//            FieldError fieldError = bindingResult.getFieldError();
-//            if(fieldError != null) {
-//                resultMap.put("msg", fieldError.getDefaultMessage());
-//            }
-//            return resultMap;
-//        }
-//          
-//        int retVal = 0;
-//        chklstQitemVo.setUser(user);
-//        retVal = chklstService.insertChklstQitem(chklstQitemVo);
-//          
-//        if(retVal > 0) {
-//            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-//            resultMap.put("msg", "등록에 성공하였습니다");
-//        } else {
-//            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-//            resultMap.put("msg", "등록에 실패하였습니다");
-//        }
-//              
-//        return resultMap;
-//    }
-//    
-//    /**
-//     * 체크리스트 문항 목록 조회
-//     *
-//     * @Title : selectChklstQitemList
-//     * @Description : 체크리스트 문항 목록 조회
-//     * @param qitemVo QitemVo 객체
-//     * @return Map<String, Object> 응답결과객체
-//     * @throws Exception 예외
-//     */
-//    @RequestMapping(value = "/mng/chklst/selectChklstQitemList.do")
-//    @ResponseBody
-//    public Map<String, Object> selectChklstQitemList(ChklstQitemVo chklstQitemVo) throws Exception {
-//        Map<String, Object> resultMap = new HashMap<>();
-//        List<ChklstQitemVo> result = chklstService.selectChklstQitemList(chklstQitemVo);
-//             
-//        if(result.size() > 0) {
-//            resultMap.put("totalCount", (result.get(0).getTotalCount()));
-//         } else {
-//             resultMap.put("totalCount", 0);
-//         }
-//        resultMap.put("list", result);
-//        
-//        return resultMap;
-//    }
+    /**
+     * 공동구매모집 등록
+     *
+     * @Title : insertJntpurchs
+     * @Description : 공동구매모집 등록
+     * @param jntpurchsVo JntpurchsVo 객체
+     * @param bindingResult jntpurchsVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/insertJntpurchs.do")
+    @ResponseBody
+    public Map<String, Object> insertJntpurchs(@Valid JntpurchsVo jntpurchsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsVo.setUser(user);
+        retVal = jntpurchsService.insertJntpurchs(jntpurchsVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    /**
+     * 공동구매모집 목록 조회
+     *
+     * @Title : selectJntpurchsList
+     * @Description : 공동구매모집 목록 조회
+     * @param jntpurchsVo JntpurchsVo 객체
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/selectJntpurchsList.do")
+    @ResponseBody
+    public Map<String, Object> selectJntpurchsList(JntpurchsVo jntpurchsVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<JntpurchsVo> result = jntpurchsService.selectJntpurchsList(jntpurchsVo);
+             
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+         } else {
+             resultMap.put("totalCount", 0);
+         }
+        resultMap.put("list", result);
+        
+        return resultMap;
+    }
 //    
 //    /**
 //     * 체크리스트 문항 정보 업데이트

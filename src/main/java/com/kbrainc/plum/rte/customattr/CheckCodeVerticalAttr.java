@@ -169,36 +169,27 @@ public class CheckCodeVerticalAttr extends AbstractAttributeTagProcessor {
                 
             }else{//사용자 
                 
-                if("ul".equals(listStyle)) {
-                    result.append("<ul id='" + attributeValue + "' class='" + addUlClass + "'>");
-                }
+                result.append("<div class=\"form-input\">\n");
+                
                 if (codeList.size() <= 0) {
-                    if("ul".equals(listStyle)) {
-                        result.append("<li><p> 조회 된 코드 목록이 없습니다.</p></li>");   
-                    } else {
-                        result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
-                    }
+                    result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
                 } else {
                     int cnt = 1;
                     for (CodeInfoVo codeInfoVo : codeList) {
-                        if("ul".equals(listStyle)) {
-                            result.append("<li><label>");
+                        if (cnt > 1) {
+                            result.append("<br>\n");
                         }
-                        result.append("<input type='checkbox' class='").append(addClass).append("'  id='").append(attributeValue).append(cnt).append("' name ='").append(attributeValue).append(cnt).append("' value='").append(codeInfoVo.getCd()).append("' data-cd-name='").append(codeInfoVo.getCdNm()).append("'");
+                        result.append("<label class=\"inp\">");
+                        result.append("<input type='checkbox' class='").append(addClass).append("'  id='").append(attributeValue).append(cnt).append("' name ='").append(attributeValue).append("' value='").append(codeInfoVo.getCd()).append("'");
                         if (selectedCd != null && !(selectedCd.trim()).equals("")
                                 && inArray(selectedCds, codeInfoVo.getCd())) {
                             result.append(" checked ");
                         }
-                        result.append(" >").append(codeInfoVo.getCdNm()).append("\n");
-                        if("ul".equals(listStyle)) {
-                            result.append("</label></li>");
-                        }
+                        result.append(" ><b>").append(codeInfoVo.getCdNm()).append("</b>").append("</label>\n");
                         cnt++;
                     }
                 }
-                if("ul".equals(listStyle)) {
-                    result.append("</ul>");
-                }
+                result.append("</div>\n");
             }
             
 

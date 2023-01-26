@@ -4,66 +4,144 @@
 	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
 	layout:decorator="layout/front/loginLayout" 
 >
-<div layout:fragment="content">
-<form name="login_form" id="login_form" th:action="@{/login}" method="post" onsubmit="return login();">
+<th:block layout:fragment="content">
+<form name="login_form" id="login_form" th:action="@{/login}" method="post">
     <input type="hidden" name="redirectUrl" th:value="${param.redirectUrl}">
-    <fieldset>
-        <legend><span>로그인 정보 입력</span></legend>
-        <h3 class="title">로그인</h3>
+    
+    <div class="section-title">
+        <h3>환경교육포털에 오신 것을 환영합니다.</h3>
+        <p>로그인을 하시면 보다 다양한 서비스를 이용하실 수 있습니다.</p>
+    </div>
 
-        <div class="login-box">
-            <div class="login-input">
-            <span class="login-input-box">
-        <input type="radio" name="loginUserType" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == 'P'}"><label for="loginUserTypeP">개인회원</label> <input type="radio" name="loginUserType" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI">기관회원</label>
-            </span>
-                <span class="login-input-box">
-                    <label for="id-id" class="ir">아이디</label>
-                    <input type="text" name="p_userid" id="p_userid" th:value="${param.id}" placeholder="아이디" class="input-text">
-                    <span class="form-msg" style="margin-left:0px;"></span>
-                </span>
-
-                <span class="login-input-box">
-                    <label for="id-pw" class="ir">비밀번호</label>
-                    <input type="password" name="p_pswd" id="p_pswd" placeholder="비밀번호" class="input-text" autocomplete="off">
-                    <span class="form-msg" style="margin-left:0px;"></span>
-                </span>
-            </div>
-
-            <button type="submit" class="btn-large btn-color1 btn-login" style="margin-bottom:24px;">로그인</button>
-            <div style="margin-bottom:10px;"><input type="checkbox" name="idSave" id="idSave" value="Y"> <label for="idSave">아이디 저장</label></div>
-            <th:block th:if="${param.msg}"><span class="form-msg" style="margin-left:0px;"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></span></th:block>
-            <th:block th:unless="${param.msg}">
-                <th:block th:if="${param.error}"><span class="form-msg" style="margin-left:0px;">아이디 또는 비밀번호를 다시 확인해 주십시오.</span></th:block>
-            </th:block>
-            <th:block th:if="${param.timeout}"><span class="form-msg" style="margin-left:0px;">세션이 유효하지 않습니다.<br>로그인 해주십시오.</span></th:block>
+    <div class="member-login">
+        <div class="member-login-type">
+            <ul>
+                <li><label class="inp"><input type="radio" name="loginUserType" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == 'P'}"><b>개인회원</b></label></li>
+                <li><label class="inp"><input type="radio" name="loginUserType" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI"><b>기관회원</b></label></li>
+            </ul>
         </div>
-    </fieldset>
+        <ul>
+            <li>
+                <dl>
+                    <dt>회원 로그인</dt>
+                    <dd>
+                        <input type="text" name="p_userid" id="p_userid" th:value="${param.id}" title="아이디" placeholder="아이디" onkeyup="enterkey()">
+                        <input type="password" name="p_pswd" id="p_pswd" title="비밀번호" placeholder="비밀번호" onkeyup="enterkey()">
+                        <label class="inp"><input type="checkbox" name="idSave" id="idSave" value="Y"><b>아이디 저장</b></label>
+                        <th:block th:switch="true">
+                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
+                        <p class="invalid-feedback" th:case="${session.drmncy != null}"></p>
+                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.error)}">아이디 또는 비밀번호를 다시 확인해 주십시오.</p>
+                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.timeout)}">세션이 유효하지 않습니다.<br>로그인 해주십시오.</p>
+                        <p class="invalid-feedback" th:case="*"></p>
+                        </th:block>
+                    </dd>
+                </dl>
+                <div class="btn-inner">
+                    <a href="javascript:login();" class="btn-large btn-green">로그인</a>
+                    <ul class="link-list">
+                        <li><a href="#">아이디 찾기</a></li>
+                        <li><a href="#">비밀번호 찾기</a></li>
+                        <li><a href="#">회원가입</a></li>
+                    </ul>
+                </div>
+            </li>
+            <li>
+                <dl>
+                    <dt>디지털 원패스</dt>
+                    <dd>
+                        <strong>디지털원패스 아이디를 입력해 주십시오.</strong>
+                        <input type="text" title="디지털원패스 아이디" placeholder="디지털원패스 아이디">
+                        <label class="inp"><input type="checkbox"><b>아이디 저장</b></label>
+                        <p class="invalid-feedback"></p>
+                    </dd>
+                </dl>
+                <div class="btn-inner">
+                    <a href="#" class="btn-large btn-dblue btn-fingerprint">디지털원패스로 로그인</a>
+                    <ul class="link-list">
+                        <li><a href="#">아이디 찾기</a></li>
+                        <li><a href="#">디지털원패스 회원가입</a></li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
 </form>
-<script type="text/javascript">
 
-	jQuery(document).ready(function(){		
-		var f = document.login_form;
-		if(jQuery.cookie != null)
-		{			
-			if(jQuery.cookie('luserid') && jQuery.cookie('luserid') != 'undefined' && jQuery.cookie('luserid') != 'null'){
-				f.p_userid.value =jQuery.cookie('luserid');
-				f.idSave.checked = true;
-			}
-		}
-		if(f.p_userid.value == ""){
-			jQuery("#p_userid").focus();
-		}else if(f.p_pswd.value == ""){
-			jQuery("#p_pswd").focus();
-		}
-		
-		validateLogin();
-	});
-	
-	// 유효성검증기(로그인)
-	var validator;
+<!-- layerpopup -->
+<div class="layer-popup layer-large" data-layer-id="layer-popup02">
+    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+    <div class="layer-wrap">
+        <div class="layer-header">
+            <strong class="tit">휴면 전환 안내</strong>
+            <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+        </div>
+        <div class="layer-content">
+            <div class="thumb-info">
+                <span class="icon icon-info-password" title=""></span>
+                <dl>
+                    <dt>회원님의 ID는 현재 휴면 상태입니다.</dt>
+                    <dd><th:block th:if="${session.drmncy}" th:text="${session.drmncy.prvcVldty}"></th:block>년 이상 국가환경교육 통합플랫폼 서비스 미사용 회원님으로 휴면 전환 처리 되었습니다.</dd>
+                    <dd class="mt15 mb15">
+                        <div class="box-inactive">휴면전환일자 :  <th:block th:if="${session.drmncy}" th:text="${session.drmncy.regDt}"></th:block></div>
+                    </dd>
+                    <dd><b class="fc-green">휴면 해제 버튼</b>을 눌러 분리 보관된 개인정보에 대한 복원이 진행됩니다. <br> 개인정보 복원 후에는 정상적인 서비스 이용을 위하여 다시 로그인을 해주셔야 합니다.</dd>
+                </dl>
+            </div>
+            <div class="box-df-list mt15">
+                <dl>
+                    <dt>개인정보 유효기간</dt>
+                    <dd>선택된 유효기간 동안 국가환경교육 통합플랫폼 이용 내역이 없어도 개인정보 분리보관 및 휴면회원으로 전환되지 않습니다.</dd>
+                </dl>
+                <div class="form-check-list mt10">
+                    <label class="inp"><input type="radio" name="prvcVldty" value="1" checked><b>1년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="2"><b>2년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="5"><b>5년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="0"><b>회원탈퇴 시</b></label>
+                </div>
+            </div>
+        </div>
+        <div class="layer-footer">
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-green" onclick="drmncyClear()">휴면 해제</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- //layerpopup -->
+<script th:inline="javascript">
+
+    jQuery(document).ready(function(){      
+        var f = document.login_form;
+        if(jQuery.cookie != null)
+        {           
+            if(jQuery.cookie('luserid') && jQuery.cookie('luserid') != 'undefined' && jQuery.cookie('luserid') != 'null'){
+                f.p_userid.value =jQuery.cookie('luserid');
+                f.idSave.checked = true;
+            }
+            /*[# th:if="${session.drmncy}"]*/
+            layerPopup.open('layer-popup02');
+            /*[/]*/
+        }
+        
+        if(f.p_userid.value == ""){
+            jQuery("#p_userid").focus();
+        }else if(f.p_pswd.value == ""){
+            jQuery("#p_pswd").focus();
+        }
+        
+        validateLogin();
+    });
+
+</script>
+<script type="text/javascript">
+    
+    // 유효성검증기(로그인)
+    var validator;
     function validateLogin(){
         validator = $("#login_form").validate({
-            onsubmit: false,
             rules: {
                 p_userid: {
                              required: true
@@ -87,18 +165,29 @@
         });
     }
 
-	function login(){
-		var f = document.login_form;
+    function login(){
+        var f = document.login_form;
         
-		if(!$('#login_form').valid()) return false;
-		if(f.idSave.checked){
-			jQuery.cookie('luserid', f.p_userid.value, {expires:30});
-		}else{
+        if(!$('#login_form').valid()) return false;
+        if(f.idSave.checked){
+            jQuery.cookie('luserid', f.p_userid.value, {expires:30});
+        }else{
             jQuery.removeCookie('luserid');
         }
-		return true;
-	}
-	
+        f.submit();
+    }
+    
+    function enterkey() {
+        if (window.event.keyCode == 13) {
+            login();
+        }
+    }
+    
+    function drmncyClear() {
+        //alert("휴면해제");
+        // ajax 휴면해제/개인정보 유효기간 update, 세션에 휴면회원 상태 정보 삭제 처리 필요
+        layerPopup.close('layer-popup02');
+    }
 </script>
-</div>
+</th:block>
 </html>

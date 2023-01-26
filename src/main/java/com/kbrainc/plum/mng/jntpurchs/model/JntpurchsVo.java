@@ -25,7 +25,7 @@ import lombok.Data;
  * @ClassName : JntpurchsVo
  * @Description : 공동구매모집Vo 클래스 
  * @author : KBRAINC
- * @date : 2023. 01. 09.
+ * @date : 2023. 01. 18.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
@@ -81,6 +81,18 @@ public class JntpurchsVo extends ParentRequestVo {
     
     /** 유의사항 */
     private String atentMttr;
+    
+    /** 교구명 */
+    private String tchidNm;
+    
+    /** 등록처 */
+    private String instNm;
+    
+    /** 모집상태 */
+    private String sttusNm;
+    
+    /** 모집상태 */
+    private String sttusCdNm;
     
     
     /** 시작일시 */

@@ -7,6 +7,7 @@ import org.thymeleaf.processor.element.AbstractAttributeTagProcessor;
 import org.thymeleaf.processor.element.IElementTagStructureHandler;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
 
@@ -61,6 +62,7 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
             String label2 = "N";
             String defaultVal = "Y";
             String addStyle = ""; 
+            String isAdmin = "false";
 
             // prameter 유효성 체크
             if (attributeValue == null || attributeValue.equals("")) {
@@ -78,48 +80,81 @@ public class RadioYnAttr extends AbstractAttributeTagProcessor {
             if (tag.hasAttribute("addStyle") && !tag.getAttribute("addStyle").getValue().equals("")) {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
-
-            //Radio area start
-            result.append("<div class=\"form-radio\">");
-            
-            //first Radio
-            result.append("<div class=\"radio radio-inline\">");
-            result.append("<label class=\"mb-0 form-label'\" style=\"").append(addStyle).append("\">").append("\n");
-            result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("1").append("'value='Y'");
-            if (defaultVal.equals("Y")) {
-                result.append("checked");
-            }
-            if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
-                String changeFunction = tag.getAttribute("onchange").getValue();
-                result.append("    onchange ='").append(changeFunction).append("()' ");
+            if (tag.hasAttribute("isAdmin")) {
+                isAdmin = tag.getAttribute("isAdmin").getValue();
             }
             
-            result.append(">");
-            result.append("<i class='helper'></i>")
-            .append(label1).append("\n");
-            result.append("</label>");
-            result.append("</div> ");
-            
-            //second Radio
-            result.append("<div class=\"radio radio-inline\">");
-            result.append("<label class=\"mb-0 form-label\" style=\"").append(addStyle).append("\">").append("\n");
-            result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("2").append("'value='N'");
-            if (defaultVal.equals("N")) {
-                result.append("checked");
+            //관리자 적용시 
+            if(isAdmin.equals("true")) {
+                //Radio area start
+                result.append("<div class=\"form-radio\">");
+                
+                //first Radio
+                result.append("<div class=\"radio radio-inline\">");
+                result.append("<label class=\"mb-0 form-label'\" style=\"").append(addStyle).append("\">").append("\n");
+                result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("1").append("'value='Y'");
+                if (defaultVal.equals("Y")) {
+                    result.append("checked");
+                }
+                if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
+                    String changeFunction = tag.getAttribute("onchange").getValue();
+                    result.append("    onchange ='").append(changeFunction).append("()' ");
+                }
+                
+                result.append(">");
+                result.append("<i class='helper'></i>")
+                .append(label1).append("\n");
+                result.append("</label>");
+                result.append("</div> ");
+                
+                //second Radio
+                result.append("<div class=\"radio radio-inline\">");
+                result.append("<label class=\"mb-0 form-label\" style=\"").append(addStyle).append("\">").append("\n");
+                result.append("<input type='radio' name = '").append(attributeValue).append("' id='").append(attributeValue).append("2").append("'value='N'");
+                if (defaultVal.equals("N")) {
+                    result.append("checked");
+                }
+                if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
+                    String changeFunction = tag.getAttribute("onchange").getValue();
+                    result.append("    onchange ='").append(changeFunction).append("()' ");
+                }
+                result.append(">");
+                result.append("<i class='helper'></i>")
+                .append(label2).append("\n");
+                result.append("</label>");
+                result.append("</div> ");
+                
+                result.append("</div> ");
+                //Radio area end
+            } else {//사용자 적용시 
+                
+                result.append("<div class=\"form-check-list\">\n");
+                
+                result.append("<label class=\"inp\">");
+                result.append("<input type='radio' class='").append("'  id='").append(attributeValue).append("1").append("' name ='").append(attributeValue).append("' value='").append("Y").append("'");
+                if (defaultVal.equals("Y")) {
+                    result.append(" checked ");
+                }
+                if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
+                    String changeFunction = tag.getAttribute("onchange").getValue();
+                    result.append("    onchange ='").append(changeFunction).append("()' ");
+                }
+                result.append(" ><b>").append(label1).append("</b>").append("</label>\n");
+                
+                result.append("<label class=\"inp\">");
+                result.append("<input type='radio' class='").append("'  id='").append(attributeValue).append("2").append("' name ='").append(attributeValue).append("' value='").append("N").append("'");
+                if (defaultVal.equals("N")) {
+                    result.append(" checked ");
+                }
+                if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
+                    String changeFunction = tag.getAttribute("onchange").getValue();
+                    result.append("    onchange ='").append(changeFunction).append("()' ");
+                }
+                result.append(" ><b>").append(label2).append("</b>").append("</label>\n");
+                
+                result.append("</div>\n");
+                
             }
-            if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
-                String changeFunction = tag.getAttribute("onchange").getValue();
-                result.append("    onchange ='").append(changeFunction).append("()' ");
-            }
-            result.append(">");
-            result.append("<i class='helper'></i>")
-            .append(label2).append("\n");
-            result.append("</label>");
-            result.append("</div> ");
-            
-            result.append("</div> ");
-            //Radio area end
-
         } catch (NullPointerException e) {
             result.append("<p>NullPointerException 발생 </p>");
         } catch (Exception e) {

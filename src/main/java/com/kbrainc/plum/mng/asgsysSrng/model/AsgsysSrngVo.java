@@ -9,7 +9,6 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kbrainc.plum.mng.banner.model.BannerVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -38,6 +37,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 로그인사용자정보 */
 	private UserVo user;
+
+	/** 사용자 ip */
+	private String userIp;
 
     /** 검색 진행상태 */
     private String searchSttsCd;
@@ -591,6 +593,21 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 제출 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
     private Date sbmsnDt;
+
+    /** KEY COUNT */
+    private Integer keyCnt;
+
+    /** 프로그램 운영일정 목록*/
+    private List<PrgrmSchdlVo> prgrmSchdlLst;
+
+    /** 프로그램 비상조치계획 목록*/
+    private List<EmrgcyActnPlanVo> emrgcyActnPlanLst;
+
+    /** 체크리스트 답변 목록 List*/
+    private List<ChklstAnsVo> ansLst;
+
+    /** 심사양식 목록*/
+    private List<DsgnSrngFormVo> dsgnSrngFormLst;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

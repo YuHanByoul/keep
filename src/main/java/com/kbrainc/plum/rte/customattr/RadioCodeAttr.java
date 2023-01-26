@@ -143,10 +143,34 @@ public class RadioCodeAttr extends AbstractAttributeTagProcessor {
                     result.append("</div> ");
                 }
                 
-            }else {//사용자 적용시 
+            } else {//사용자 적용시 
                 
+                result.append("<div class=\"form-check-list\">\n");
                 
-                
+                if (codeList.size() <= 0) {
+                    result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
+                } else {
+                    int cnt = 1;
+                    for (CodeInfoVo codeInfoVo : codeList) {
+                        result.append("<label class=\"inp\">");
+                        result.append("<input type='radio' class='").append("'  id='").append(attributeValue).append(cnt).append("' name ='").append(attributeValue).append("' value='").append(codeInfoVo.getCd()).append("'");
+                        if (selectedCd != null && !(selectedCd.trim()).equals("")
+                                && codeInfoVo.getCd().equals(selectedCd)) {
+                            result.append(" checked ");
+                        }
+                        if (disabled != null && !(disabled.trim()).equals("")) {
+                            checkDis = disabled.split("\\|");
+                            for (int i = 0; i < checkDis.length; i++) {
+                                if (codeInfoVo.getCd().equals(checkDis[i])) {
+                                    result.append(" disabled  ");
+                                }
+                            }
+                        }
+                        result.append(" ><b>").append(codeInfoVo.getCdNm()).append("</b>").append("</label>\n");
+                        cnt++;
+                    }
+                }
+                result.append("</div>\n");
                 
             }
             

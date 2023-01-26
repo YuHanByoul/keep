@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html
+        xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        layout:decorator="layout/mng/mainLayout">
+<div layout:fragment="content">
+    <div class="page-body">
+        <div class="row">
+            <!-- 필터 부분 -->
+            <div class="col-12">
+                <form id="searchFrm">
+                    <input type="hidden" name="pageNumber">
+                    <input type="hidden" name="rowPerPage">
+                    <input type="hidden" name="orderField">
+                    <input type="hidden" name="orderDirection">
+                    <div class="card">
+                        <div class="card-block-small">
+                            <!-- 키워드 filter -->
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" class="form-select form-control">
+                                                <option value="">- 선택 -</option>
+                                                <option value="ttl">공모전제목</option>
+                                                <option value="aplyno">접수번호</option>
+                                            </select>
+                                            <input type="text" class="form-control" name="searchKeyword"
+                                                   aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+                                        <div class="col-sm-12">
+                                            <span kattr:select_code="searchCntstClsfCd" th:attr="grpCd=165" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                                        <div class="col-sm-12">
+                                            <span kattr:select_code="searchCntstSttsCd" th:attr="grpCd=159" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- //키워드 filter -->
+                            <!-- 키워드 filter-btn -->
+                            <div class="mt-1 p-t-20 text-center border-top">
+                                <button type="reset" class="btn btn-disabled m-r-5">초기화</button>
+                                <button class="btn btn-primary">검색</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <!-- //필터 부분 -->
+
+            <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>공모전 접수내역 검색결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/prtpn/cntstRcptHist/cntstRcptHistListExcelDown.do">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" id="excelDownloadBtn">엑셀다운로드</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <div class="dt-responsive table-responsive">
+                            <div id="order-table_wrapper"
+                                 class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+
+            <div class="col-12">
+                <div id="contentPanel"></div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        let gridHelper1;
+
+        $(function () {
+            const $form = $("#searchFrm");
+            const $jsGrid = $("#jsGrid");
+            const cntstClsfCdMap = /*[[ ${cntstClsfCdMap} ]]*/{};
+            gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+            $jsGrid.jsGrid({
+                height: "auto",
+                width: "100%",
+                autoload: true,
+                sorting: false,
+                paging: true,
+                pagerContainer: "#listPager",
+                pagerFormat: "{first} {prev} {pages} {next} {last}",
+                pagePrevText: "이전",
+                pageNextText: "다음",
+                pageFirstText: " < 처음 ㅣ",
+                pageLastText: " | 마지막 >",
+                pageSize: 10,
+                pageButtonCount: 10,
+                pageLoading: true,
+                pageIndex: 1,
+                noDataContent: "데이터가 없습니다.",
+                controller: {
+                    loadData: function (filter) {
+                        const data = $.Deferred()
+                        let {orderField, orderDirection} = filter;
+                        if(!filter.sortField){
+                            orderField = 'reg_dt';
+                            orderDirection = 'desc';
+                        }
+                        $form
+                            .find('[name=pageNumber]').val(filter.pageIndex).end()
+                            .find('[name=rowPerPage]').val(filter.pageSize).end()
+                            .find('[name=orderField]').val(orderField).end()
+                            .find('[name=orderDirection]').val(orderDirection).end();
+
+                        $.ajax({
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            url: "/mng/prtpn/cntstRcptHist/selectCntstRcptHistList.do",
+                            dataType: "json",
+                            data: $form.serialize(),
+                        }).done(function(response){
+                            data.resolve({
+                                data : escapeGridData(response.list)
+                                , itemsCount : response.totalCount
+                            });
+                        });
+                        return data.promise();
+                    },
+                },
+                fields: [
+                    {title:'No.', name:'rowNumber', align:"center", width:80}
+                    , {title:'분류', name:'cntstClsfCd', align:"center", width:220, itemTemplate: (value) => cntstClsfCdMap[value]}
+                    , {title:'공모전제목', name:'cntstTtl', width:400, align: "left"}
+                    , {title:'접수번호', name:'aplyno', width:200, align: "center"}
+                    , {title:'접수자명', width: 250, align:"center", itemTemplate: (value, item) => `${item.userNm}${!!item.instNm ? `(${item.instNm})` : ''}`}
+                    , {title:'접수일자', name:'regDtYmd', width: 130, align: "center"}
+                ]
+
+                /*[# sec:authorize-url="/mng/prtpn/cntstRcptHist/cntstRcptHistView.html"]*/
+                , rowClick: function(args) {
+                    if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                    var detailUrl = "/mng/prtpn/cntstRcptHist/cntstRcptHistView.html?aplyid=" + args.item.aplyid;
+                    gridHelper1.loadContent(detailUrl);
+                    gridHelper1.rowClick(args);
+                }
+                /*[/]*/
+            });
+
+            $form.on('submit', function(e){
+                e.preventDefault();
+                gridHelper1.resetListContent();
+            });
+
+            $("#excelDownloadBtn").click(function() {
+                excelDownload($form, '/mng/prtpn/cntstRcptHist/cntstRcptHistListExcelDown.do')
+            })
+        });
+    </script>
+
+</div>
+
+
