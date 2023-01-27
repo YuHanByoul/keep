@@ -3,6 +3,7 @@ package com.kbrainc.plum.mng.prtpn.infntPrgrm.service;
 import java.util.List;
 
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 
 
@@ -44,6 +45,19 @@ public interface InfntPrgrmService {
     * @return int
     */
     public int insertInfntPrgrm(InfntPrgrmVo infntPrgrm) throws Exception;
+
+    /**
+    * 교육프로그램관리 게시글 프로그램 복사 등록
+    **
+    @Title : insertInfntPrgrmCopy
+    * @Description : 교육프로그램관리 게시글 프로그램 복사 등록
+    * @param copyPrgrmIds
+    * @param userVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertInfntPrgrmCopy(String[] copyPrgrmIds, UserVo userVo) throws Exception;
     
     /**
     * 교육프로그램관리 게시글 상세조회
@@ -99,4 +113,16 @@ public interface InfntPrgrmService {
     * @return List<InfntPrgrmVo>
     */
     public List<InfntPrgrmVo> selectInfntPrgrmTmeList(InfntPrgrmVo infntPrgrm) throws Exception;    
+    
+    /**
+    * 교육프로그램관리 프로그램 설정 리스트 조회
+    **
+    @Title : selectPrgrmSettingList
+    * @Description : 교육프로그램관리 프로그램 설정 리스트 조회
+    * @param infntPrgrm
+    * @return
+    * @throws Exception
+    * @return List<InfntPrgrmVo>
+    */
+    public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception;
 }

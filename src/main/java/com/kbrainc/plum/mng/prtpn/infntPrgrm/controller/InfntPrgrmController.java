@@ -1,6 +1,5 @@
 package com.kbrainc.plum.mng.prtpn.infntPrgrm.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,13 +14,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.banner.model.BannerVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
-import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVoList;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.service.InfntPrgrmService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -90,7 +88,7 @@ public class InfntPrgrmController {
 
         EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
-
+        
         int curYear = 2022;
         Integer[] years = new Integer[4];
         
@@ -127,6 +125,25 @@ public class InfntPrgrmController {
         
         InfntPrgrmVo result = null;
         result = infntPrgrmService.selectInfntPrgrmInfo(infntPrgrmVo);
+        
+        //교육소개 첨부파일
+        //if(infntPrgrmVo.getEduIntrcnFileid() != 0 && result.getEduIntrcnFileIdntfcKey() != null) {
+        if(result.getEduIntrcnFileIdntfcKey() != null) {
+            StringBuffer eduIntrcnFileBtn = new StringBuffer();
+            eduIntrcnFileBtn.append("<div class ='label label-inverse text-white' id='" + infntPrgrmVo.getEduIntrcnFileid() + "'>");
+            eduIntrcnFileBtn.append("<a href=javascript:downloadFileByFileid('" + infntPrgrmVo.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>" + result.getEduIntrcnOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            eduIntrcnFileBtn.append("<a href=javascript:fn_deleteFileList('" + infntPrgrmVo.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            model.addAttribute("eduIntrcnFileBtn", eduIntrcnFileBtn);
+        }
+        //교육사진 첨부파일
+        //if(infntPrgrmVo.getEduPhotoFileid() != 0 && result.getEduPhotoFileIdntfcKey() != null) {
+        if(result.getEduPhotoFileIdntfcKey() != null) {
+            StringBuffer eduPhotoFileBtn = new StringBuffer();
+            eduPhotoFileBtn.append("<div class ='label label-inverse text-white' id='" + infntPrgrmVo.getEduPhotoFileid() + "'>");
+            eduPhotoFileBtn.append("<a href=javascript:downloadFileByFileid('" + infntPrgrmVo.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>" + result.getEduPhotoOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            eduPhotoFileBtn.append("<a href=javascript:fn_deleteFileList('" + infntPrgrmVo.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            model.addAttribute("eduPhotoFileBtn", eduPhotoFileBtn);
+        }
         model.addAttribute("infntPrgrm", result);
         return "mng/prtpn/infntPrgrm/infntPrgrmUpdate";
     }
@@ -196,6 +213,37 @@ public class InfntPrgrmController {
         }
         return resultMap;
     }
+    
+    /**
+    * 교육프로그램관리 게시글 복사 기능
+    **
+    @Title : insertInfntPrgrmCopy
+    * @Description : 교육프로그램관리 게시글 복사 기능
+    * @param copyPrgrmIds
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/prtpn/infntPrgrm/insertInfntPrgrmCopy.do")
+    @ResponseBody
+    public Map<String, Object> insertInfntPrgrmCopy(@RequestParam("copyPrgrmIds") String[] copyPrgrmIds, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> reseultMap = new HashMap<>();
+        int retVal = 0;
+
+        retVal = infntPrgrmService.insertInfntPrgrmCopy(copyPrgrmIds, user);
+
+        if (retVal > 0) {
+            reseultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            reseultMap.put("msg", "복사에 성공하였습니다.");
+        } else {
+            reseultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            reseultMap.put("msg", "복사에 실패했습니다.");
+        }
+
+        return reseultMap;
+    }
+
     
     /**
     * 교육프로그램관리 게시글 수정 기능
@@ -304,60 +352,6 @@ public class InfntPrgrmController {
     }
 
     /**
-     * 교육프로그램 회차 리스트 수정 기능
-     **
-    @Title : updateInfntPrgrmTmeList
-     * @Description : 교육프로그램 회차 리스트 수정 기능
-     * @param infntPrgrmVoList
-     * @param bindingResult
-     * @param user
-     * @return
-     * @throws Exception
-     * @return List<Object>
-     */
-    @RequestMapping(value = "/mng/prtpn/infntPrgrm/updateInfntPrgrmTmeList.do")
-    @ResponseBody
-    public List<Object> updateInfntPrgrmTmeList(@RequestBody @Valid InfntPrgrmVoList infntPrgrmVoList, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-        
-        List<Object> response = new ArrayList<Object>();
-        response.add(Constant.REST_API_RESULT_SUCCESS);
-        if (bindingResult.hasErrors()) {
-            return response;
-        }
-        for (InfntPrgrmVo infntPrgrmVo : infntPrgrmVoList.getInfntPrgrmVoList()) {
-            response.add(updateInfntPrgrmTme(user, infntPrgrmVo));
-        }
-        return response;
-    }
-    
-    /**
-     * 교육프로그램 회차 리스트 수정 기능
-     **
-    @Title : updateInfntPrgrmTme
-     * @Description : 교육프로그램 회차 리스트 수정 기능
-     * @param user
-     * @param infntPrgrmVoParam
-     * @return
-     * @throws Exception
-     * @return Map<String,String>
-     */
-    @RequestMapping(value = "/mng/prtpn/infntPrgrm/updateInfntPrgrmTme.do")
-    @ResponseBody
-    public Map<String, String> updateInfntPrgrmTme(@UserInfo UserVo user, @RequestBody InfntPrgrmVo infntPrgrmVoParam) throws Exception {
-        
-        Map<String, String> response = new HashMap<String, String>();
-        infntPrgrmVoParam.setUser(user);
-        int retVal = 0;
-        retVal = infntPrgrmService.updateInfntPrgrmTme(infntPrgrmVoParam);
-        if (retVal > 0) {
-            response.put("result", Constant.REST_API_RESULT_SUCCESS);
-        } else {
-            response.put("result", Constant.REST_API_RESULT_FAIL);
-        }
-        return response;
-    }
-
-    /**
     * 교육프로그램관리 회차 목록 조회
     *
     * @Title : selectInfntPrgrmList
@@ -380,4 +374,24 @@ public class InfntPrgrmController {
         resultMap.put("infntPrgrmTmeList", result);
         return resultMap;
     }
+    
+    /**
+    * 교육프로그램관리 프로그램 설정 리스트 조회
+    *
+    * @Title : selectInfntPrgrmList
+    * @Description : 교육프로그램관리 프로그램 설정 리스트 조회
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/prtpn/infntPrgrm/selectPrgrmSettingList.do")
+    @ResponseBody
+    public Map<String, Object> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
+        List<InfntPrgrmVo> result = null;
+        result =  infntPrgrmService.selectPrgrmSettingList(rcptMthdCd);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("prgrmSttList", result);
+        return resultMap;
+            
+    }            
 }

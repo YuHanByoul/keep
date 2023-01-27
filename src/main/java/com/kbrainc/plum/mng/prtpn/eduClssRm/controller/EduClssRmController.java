@@ -20,7 +20,6 @@ import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
 * 유아환경교육 -> 교육관관리 컨트롤러 클래스
@@ -200,4 +199,28 @@ public class EduClssRmController {
 
         return resultMap;
     }
+    
+    /**
+    * 교육관관리 교육관 교육유형 코드 조회
+    *
+    * @Title : selectInfntPrgrmList
+    * @Description : 교육관관리 교육관 교육유형 코드 조회
+    * @param clssrmId
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do")
+    @ResponseBody
+    public Map<String, Object> selectClssrmEduTypeCd(String clssrmId) throws Exception {
+        EduClssRmVo resultVo = new EduClssRmVo();
+        resultVo =  eduClssRmService.selectClssrmEduTypeCd(clssrmId);
+        
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        resultMap.put("eduTypeCd", resultVo.getEduTypeCd());
+        resultMap.put("clssrmViewngMaxAplyNope", resultVo.getClssrmViewngMaxAplyNope());
+
+        return resultMap;
+            
+    }        
 }

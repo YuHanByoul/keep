@@ -66,4 +66,16 @@ public interface EduClssRmService {
     * @return int
     */
     public int updateEduClssRm(EduClssRmVo eduClssRm) throws Exception;
+    
+    /**
+    * 교육관_교육유형 조회.
+    **
+    @Title : selectClssrmEduTypeCd
+    * @Description : 교육관_교육유형 조회.
+    * @param clssrmId
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    public EduClssRmVo selectClssrmEduTypeCd(String clssrmId) throws Exception;
 }

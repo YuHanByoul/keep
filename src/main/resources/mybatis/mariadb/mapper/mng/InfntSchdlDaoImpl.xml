@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : InfntSchdlDaoImpl.xml
+	Description : 참여신청관리 -> 교육일정관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlDao">
+    
+    <!-- 교육일정 관리 게시글 목록 조회 -->
+    <select id="selectInfntSchdlList" parameterType="InfntSchdlVo" resultType="InfntSchdlVo">
+        /* InfntSchdlDao.selectInfntSchdlList */
+        SELECT 
+          A.PRGRM_SCHDLID
+        , A.SCHDL_NM
+        , DATE_FORMAT(STR_TO_DATE(B.DE, '%Y.%m.%d'),'%Y-%m-%d') AS DE
+        , IF(B.RCPT_MTHD_CD = '156101','#93BE52','#FC6180')  AS BORDER_COLOR
+        , IF(B.RCPT_MTHD_CD = '156101','#93BE52','#FC6180') AS BACKGROUND_COLOR
+        , IF(B.RCPT_MTHD_CD = '156101','#FFF','#FFF') AS TEXT_COLOR     
+        , B.RCPT_MTHD_CD
+        , D.CD_NM AS RCPT_MTHD_NM   
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.REG_DT
+        , A.RGTRID
+        FROM TB_EDU_INFNT_PRGRM_SCHDL A 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_SCHDL_PRGRM C ON A.PRGRM_SCHDLID = C.PRGRM_SCHDLID
+        LEFT OUTER JOIN (
+            SELECT TB.PRGRM_SCHDLID
+                  ,TA.DE
+                  ,TC.RCPT_MTHD_CD
+              FROM TB_EDU_INFNT_PRGRM_SCHDL_DE TA
+                 , TB_EDU_INFNT_PRGRM_SCHDL_PRGRM TB
+                 , (SELECT PRGRMID, RCPT_MTHD_CD, MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE MON_YN = 'Y'
+                    UNION ALL 
+                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE TUES_YN = 'Y'
+                    UNION ALL 
+                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE WED_YN = 'Y'
+                    UNION ALL 
+                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE THUR_YN = 'Y'
+                    UNION ALL 
+                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE FRI_YN = 'Y'
+                    UNION ALL 
+                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE SAT_YN = 'Y'
+                    UNION ALL 
+                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, SUN_YN FROM TB_EDU_INFNT_PRGRM WHERE SUN_YN = 'Y'
+                 ) TC 
+             WHERE TA.PRGRM_SCHDLID = TB.PRGRM_SCHDLID
+               AND TB.PRGRMID = TC.PRGRMID
+               AND DAYOFWEEK(TA.DE) = CASE WHEN TC.MON_YN = 'Y' THEN 2 
+                                           WHEN TC.TUES_YN = 'Y' THEN 3    
+                                           WHEN TC.WED_YN = 'Y' THEN 4    
+                                           WHEN TC.THUR_YN = 'Y' THEN 5    
+                                           WHEN TC.FRI_YN = 'Y' THEN 6    
+                                           WHEN TC.SAT_YN = 'Y' THEN 7    
+                                           WHEN TC.SUN_YN = 'Y' THEN 1
+                                           ELSE NULL 
+                                      END    
+        ) B ON A.PRGRM_SCHDLID = B.PRGRM_SCHDLID     
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = B.RCPT_MTHD_CD    
+        WHERE
+        1=1
+            <if test="searchClssrmId != null and searchClssrmId != ''">
+            AND A.CLSSRMID = #{searchClssrmId}
+            </if>
+            <if test="searchPrgrmId != null and searchPrgrmId != ''">
+            AND C.PRGRMID = #{searchPrgrmId}
+            </if>
+        GROUP BY A.PRGRM_SCHDLID, B.DE            
+    </select>
+    
+    <!-- 교육일정 관리 게시글 등록 --> 
+    <insert id="insertInfntSchdl" parameterType="InfntSchdlVo" useGeneratedKeys="true" keyProperty="prgrmSchdlid">
+        /* InfntSchdlDao.insertInfntSchdl */
+        INSERT INTO TB_EDU_INFNT_PRGRM_SCHDL (
+            YM
+            , SCHDL_NM
+            , CLSSRMID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )VALUES(
+            #{ym}
+            ,#{schdlNm}
+            ,#{clssrmId}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+    </insert>
+
+    <!-- 교육일정 관리 상세조회 -->
+    <select id="selectInfntSchdlInfo" parameterType="InfntSchdlVo" resultType="InfntSchdlVo"> 
+        /* InfntSchdlDao.selectInfntSchdlInfo */
+        SELECT 
+            A.PRGRM_SCHDLID
+            , A.YM
+            , A.SCHDL_NM
+            , A.CLSSRMID
+            , B.CLSSRM_NM
+            ,(SELECT GROUP_CONCAT(DE SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_SCHDL_DE WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS DE
+            ,(SELECT GROUP_CONCAT(PRGRMID SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_SCHDL_PRGRM WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS PRGRMIDS
+            FROM TB_EDU_INFNT_PRGRM_SCHDL A
+            LEFT OUTER JOIN TB_EDU_CLSSRM B ON A.CLSSRMID = B.CLSSRMID
+       WHERE A.PRGRM_SCHDLID = #{prgrmSchdlid}
+    </select>
+    
+    <!-- 교육일정관리 게시글 수정 -->
+    <update id="updateInfntSchdl" parameterType="InfntSchdlVo">
+        /* InfntSchdlDao.updateInfntSchdl */
+        UPDATE TB_EDU_INFNT_PRGRM_SCHDL SET
+                  MDFCN_DT                      = NOW()
+                , MDFRID                        = #{user.userid}
+         WHERE PRGRM_SCHDLID                    = #{prgrmSchdlid}
+    </update>    
+    
+    <!-- 교육일정관리 게시글 삭제 -->
+    <delete id="deleteInfntSchdl" parameterType="InfntSchdlVo">
+        /* InfntSchdlDao.deleteInfntSchdl */
+        DELETE FROM TB_EDU_INFNT_PRGRM_SCHDL
+        WHERE PRGRM_SCHDLID = #{prgrmSchdlid}
+    </delete>      
+    
+    <!-- EDU_유아_프로그램_일정_일자 저장 -->
+    <insert id="insertDeSttId" parameterType="InfntSchdlVo" >
+         /* InfntSchdlDao.insertDeSttId */
+         INSERT INTO TB_EDU_INFNT_PRGRM_SCHDL_DE(
+              DE
+              , PRGRM_SCHDLID
+              , REG_DT
+              , RGTRID
+         )VALUES
+          <foreach item="item" collection="deSttIds"  separator=",">
+           (
+             #{item}
+             ,#{prgrmSchdlid}
+             ,NOW()
+             ,#{user.userid}
+            )
+          </foreach>
+    </insert>
+    
+    <!-- EDU_유아_프로그램_일정_프로그램 저장 -->
+    <insert id="insertPrgrmSttId" parameterType="InfntSchdlVo" >
+         /* InfntSchdlDao.insertPrgrmSttId */
+         INSERT INTO TB_EDU_INFNT_PRGRM_SCHDL_PRGRM(
+              PRGRMID
+              ,PRGRM_SCHDLID
+              ,REG_DT
+              ,RGTRID
+         )VALUES
+          <foreach item="item" collection="prgrmSttIds"  separator=",">
+           (
+             #{item}
+             ,#{prgrmSchdlid}
+             ,NOW()
+             ,#{user.userid}
+            )
+          </foreach>
+    </insert>     
+    
+    <!-- EDU_유아_프로그램_일정_일자 삭제 -->
+    <insert id="deleteDeSttId" parameterType="InfntSchdlVo" >
+         /* InfntSchdlDao.deleteDeSttId */
+         DELETE FROM TB_EDU_INFNT_PRGRM_SCHDL_DE
+         WHERE 1=1
+           AND PRGRM_SCHDLID = #{prgrmSchdlid}
+    </insert>     
+    
+    <!-- 교육주제 삭제 -->
+    <insert id="deletePrgrmSttId" parameterType="InfntSchdlVo" >
+         /* InfntSchdlDao.deletePrgrmSttId */
+         DELETE FROM TB_EDU_INFNT_PRGRM_SCHDL_PRGRM
+         WHERE 1=1
+           AND PRGRM_SCHDLID = #{prgrmSchdlid}
+    </insert>     
+</mapper>
