@@ -63,6 +63,17 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectDsgnAplyDtlInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+    * 신청정보 조회
+    *
+    * @Title : selectAplyInfo
+    * @Description : 신청정보 조회
+    * @param asgsysSrngVo
+    * @return AsgsysSrngVo
+    * @throws Exception 예외
+    */
+	public AsgsysSrngVo selectAplyInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램상태코드 조회
 	*
 	* @Title : selectPrgrmSttsCd
@@ -361,15 +372,71 @@ public interface AsgsysSrngDao {
 	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 지출항목 목록 조회
+	*
+	* @Title : selectExpndArtclList
+	* @Description : 지출항목 목록 조회
+	* @param ExpndArtclVo
+	* @return
+	* @throws Exception
+	* @return List<ExpndArtclVo>
+	*/
+	public List<ExpndArtclVo> selectExpndArtclList(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
+	* 지출항목 등록
+	*
+	* @Title : insertExpndArtcl
+	* @Description : 지출항목 등록
+	* @param expndArtclVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
+	 * 지출항목 목록 삭제
+	 *
+	 * @Title : deleteExpndArtcl
+	 * @Description : 지출항목 목록 삭제
+	 * @param expndArtclVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
 	* 교구 및 시설목록 조회
 	*
 	* @Title : selecttchaidFcltList
 	* @Description : 교구 및 시설목록 조회
 	* @param asgsysSrngVo
-	* @return List<AsgsysSrngVo>
+	* @return List<TchaidFcltVo>
 	* @throws Exception
 	*/
-	public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<TchaidFcltVo> selectTchaidFcltList(TchaidFcltVo tchaidFcltVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 등록
+	*
+	* @Title : insertTchaidFclt
+	* @Description : 교구 및 시설목록 등록
+	* @param tchaidFcltVo
+	* @throws Exception
+	* @return void
+	*/
+	public int insertTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 삭제
+	*
+	* @Title : deleteTchaidFclt
+	* @Description : 교구 및 시설목록 삭제
+	* @param TchaidFcltVo
+	* @return int
+	* @throws Exception
+	*/
+	public void deleteTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정

@@ -216,6 +216,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 파일그룹아이디 */
 	private Integer filegrpid;
 
+	/** 신청 첨부파일 아이디 */
+	private Integer aplyFilegrpid;
+
     /** 상태_코드 */
 	private String sttsCd;
 
@@ -629,6 +632,12 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 심사양식 목록*/
     private List<DsgnSrngFormVo> dsgnSrngFormLst;
+
+    /** 지출항목 목록*/
+    private List<ExpndArtclVo> expndArtclLst;
+
+    /** 교구 및 시설 목록*/
+    private List<TchaidFcltVo> tchaidFcltLst;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

@@ -21,7 +21,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" name="etrfeeIncm" id="etrfeeIncm" placeholder="Text Input Validation" th:value="${prgrmOperMngInfo.etrfeeIncm}">
+	                                    <input type="text" class="form-control form-control-sm" name="etrfeeIncm" id="etrfeeIncm" placeholder="Text Input Validation" th:value="${prgrmOperMngInfo.etrfeeIncm}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -29,7 +29,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" name="etcIncm" id="etcIncm" placeholder="Text Input Validation" th:value="${prgrmOperMngInfo.etcIncm}">
+	                                    <input type="text" class="form-control form-control-sm" name="etcIncm" id="etcIncm" placeholder="Text Input Validation" th:value="${prgrmOperMngInfo.etcIncm}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -37,7 +37,7 @@
 	                        <td>
 	                            <div class="col-12 row m-0 align-items-center justify-content-center">
 	                                <div class="col-11 p-l-0 p-r-0">
-	                                    <input type="text" class="form-control form-control-sm" name="slfpy" id="slfpy" placeholder="Text Input Validation" th:value="${prgrmOperMngInfo.slfpy}">
+	                                    <input type="text" class="form-control form-control-sm" name="slfpy" id="slfpy" placeholder="Text Input Validation" th:value="${prgrmOperMngInfo.slfpy}" onchange="btgSum()">
 	                                </div>
 									<div class="col-auto p-l-5 p-r-0">%</div>
 								</div>
@@ -45,13 +45,14 @@
 	                    </tr>
 	                    <tr>
 	                        <th class="table-active text-center">총계</th>
-	                        <th colspan="2" class="table-active text-center"><th:block th:text="${prgrmOperMngInfo.btgSum} + '%'"></th:block></th>
+	                        <th colspan="2" class="table-active text-center" id="btgSum"><th:block th:text="${prgrmOperMngInfo.btgSum} + '%'"></th:block></th>
 	                    </tr>
 	                </tbody>
 	            </table>
 	        </div>
 	    </div>
 	</div>
+
 
 	<div class="card-block-small p-t-0">
 	    <div class="col-12 table-border-style">
@@ -65,51 +66,38 @@
 	                </tr>
 	                </thead>
 	                <tbody>
-	                <tr>
-	                    <td>
-                            <input type="text" class="form-control form-control-sm" name="prgrmOperMngBudgetExpendCost1" id="prgrmOperMngBudgetExpendCost1" placeholder="Text Input Validation" value="keepgo"/>
-	                    </td>
-	                    <td>
-	                        <div class="col-12 row m-0 align-items-center justify-content-center">
-	                            <div class="col-11 p-l-0 p-r-0">
-	                                <input type="text" class="form-control form-control-sm" name="prgrmOperMngBudgetExpendCost1" id="prgrmOperMngBudgetExpendCost1" placeholder="Text Input Validation" value="keepgo"/>
-	                            </div>
-	                            <div class="col-auto p-l-5 p-r-0">
-	                                원
-	                            </div>
-	                        </div>
-	                    </td>
-	                    <td>
-	                        <div class="btn-group-sm">
-	                            <button type="button" class="btn btn-primary m-r-5">추가</button>
-	                        </div>
-	                    </td>
-	                </tr>
-	                <tr>
-	                    <td>
-	                        <input type="text" class="form-control form-control-sm" name="prgrmOperMngBudgetExpendItem2" id="prgrmOperMngBudgetExpendItem2" placeholder="Text Input Validation" value="keepgo"/>
-	                    </td>
-	                    <td>
-	                        <div class="col-12 row m-0 align-items-center justify-content-center">
-	                            <div class="col-11 p-l-0 p-r-0">
-	                                <input type="text" class="form-control form-control-sm" name="prgrmOperMngBudgetExpendCost2" id="prgrmOperMngBudgetExpendCost2" placeholder="Text Input Validation" value="keepgo"/>
-	                            </div>
-	                            <div class="col-auto p-l-5 p-r-0">
-	                                원
-	                            </div>
-	                        </div>
-	                    </td>
-	                    <td>
-	                        <div class="btn-group-sm">
-	                            <button type="button" class="btn btn-primary m-r-5">추가</button>
-	                            <button type="button" class="btn btn-inverse">삭제</button>
-	                        </div>
-	                    </td>
-	                </tr>
-	                <tr>
-	                    <th class="table-active text-center">총 예산액</th>
-	                    <th colspan="2" class="table-active text-center">300원</th>
-	                </tr>
+
+    	                <tr th:unless="${#lists.isEmpty(expndArtclList)}" th:each="item ,i: ${expndArtclList}" th:id="${'expndTr' + i.count}">
+    	                    <td>
+                                <input type="text" class="form-control form-control-sm" name="expndArtcl" th:id="${ 'expndArtcl' + i.count }" placeholder="지출 항목" th:value="${item.expndArtcl}"/>
+    	                    </td>
+    	                    <td>
+    	                        <div class="col-12 row m-0 align-items-center justify-content-center">
+    	                            <div class="col-11 p-l-0 p-r-0">
+                                        <input type="text" class="form-control form-control-sm" name="amt" th:id="${ 'amt' + i.count }" placeholder="금액"
+                                            th:value="${#numbers.formatInteger(item.amt, 0,'COMMA')}"/>
+
+    	                            </div>
+                                        <div class="col-auto p-l-5 p-r-0">원</div>
+                                </div>
+    	                    </td>
+    	                    <td>
+    	                        <div class="btn-group-sm">
+                                    <button type="button" class="btn btn-primary m-r-5" th:id="${ 'addBtnExpnd' + i.count }" th:idx="${i.count}"
+                                        th:onclick="addExpnd( this.getAttribute('idx') )" >추가</button>
+                                    <button type="button" class="btn btn-inverse"       th:id="${ 'delBtnExpnd' + i.count }" th:idx="${i.count}"
+                                        th:onclick="deleteExpnd( this.getAttribute('idx') )" th:if="${i.index > 0}" >삭제</button>
+    	                        </div>
+    	                    </td>
+    	                </tr>
+
+    	                <tr id="expndSumAmtTr">
+    	                    <th class="table-active text-center">총 예산액</th>
+    	                    <th colspan="2" class="table-active text-center">
+                                <th:bolck th:unless="${#lists.isEmpty(expndArtclList[0].sumAmt)}" th:text="|${#numbers.formatInteger(expndArtclList[0].sumAmt, 0,'COMMA')}원|"></th:bolck>
+                            </th>
+    	                </tr>
+
 	                </tbody>
 	            </table>
 	        </div>
@@ -121,7 +109,7 @@
 	<div class="card-block-small p-t-0">
 	    <div class="col-12 table-border-style">
 	        <div class="col-12 table-responsive">
-	            <table class="table table-framed" id="tchaidFcltTb">
+	            <table class="table table-framed" id="fcltTb">
 	                <thead>
 	                <tr>
 	                    <th class="text-center">세부 프로그램명</th>
@@ -133,20 +121,20 @@
 	                </thead>
 	                <tbody>
 
-	                <tr th:each="tchaidFcltList ,i: ${tchaidFcltList}">
+	                <tr th:each="tchaidFcltList ,i: ${tchaidFcltList}" th:id ="${'fcltTr' + i.count}">
 	                    <td>
-	                        <input type="text" class="form-control form-control-sm" th:name="${'dtlPrgrmNm'+i.count}" th:id="${'dtlPrgrmNm'+i.count}" placeholder="Text Input Validation" th:value="${tchaidFcltList.dtlPrgrmNm}">
+	                        <input type="text" class="form-control form-control-sm" th:name="${'dtlPrgrmNm'+i.count}" th:id="${'dtlPrgrmNm'+i.count}" placeholder="세부 프로그램명" th:value="${tchaidFcltList.dtlPrgrmNm}">
 	                    </td>
 	                    <td>
-	                        <input type="text" class="form-control form-control-sm" th:name="${'eduPlc'+i.count}" th:id="${'eduPlc'+i.count}" placeholder="Text Input Validation" th:value="${tchaidFcltList.eduPlc}">
+	                        <input type="text" class="form-control form-control-sm" th:name="${'eduPlc'+i.count}" th:id="${'eduPlc'+i.count}" placeholder="교육장소" th:value="${tchaidFcltList.eduPlc}">
 	                    </td>
 	                    <td>
-	                        <input type="text" class="form-control form-control-sm" th:name="${'tchaid'+i.count}" th:id="${'tchaid'+i.count}" placeholder="Text Input Validation" th:value="${tchaidFcltList.tchaid}">
+	                        <input type="text" class="form-control form-control-sm" th:name="${'tchaid'+i.count}" th:id="${'tchaid'+i.count}" placeholder="교구 및 매체 등" th:value="${tchaidFcltList.tchaid}">
 	                    </td>
 	                    <td>
 	                        <div class="col-12 row m-0 align-items-center justify-content-center">
 	                            <div class="col-11 p-l-0 p-r-0">
-	                                <input type="text" class="form-control form-control-sm" th:name="${'qnty'+i.count}" th:id="${'qnty'+i.count}" placeholder="Text Input Validation" th:value="${tchaidFcltList.qnty}">
+	                                <input type="text" class="form-control form-control-sm" th:name="${'qnty'+i.count}" th:id="${'qnty'+i.count}" placeholder="수량 (개) 또는 분량 (장)" th:value="${tchaidFcltList.qnty}">
 	                            </div>
 	                            <div class="col-auto p-l-5 p-r-0">
 	                                개/장
@@ -155,8 +143,8 @@
 	                    </td>
 	                    <td>
 	                        <div class="btn-group-sm">
-	                            <button th:id="${'addBtnTchaidFclt'+i.count}" type="button" class="btn btn-primary m-r-5" onclick="fn_addBtn(this.id)">추가</button>
-	                            <button th:id="${'rmbBtnTchaidFclt'+i.count}" type="button" class="btn btn-inverse" onclick="fn_rmvBtn(this.id)">삭제</button>
+                                <button type="button" class="btn btn-primary m-r-5" th:id="${ 'addBtnFclt' + i.count }" th:idx="${i.count}" th:onclick="addFclt(this.getAttribute('idx'))" >추가</button>
+                                <button type="button" class="btn btn-inverse"       th:id="${ 'delBtnFclt' + i.count }" th:idx="${i.count}" th:onclick="deleteFclt( this.getAttribute('idx'))" th:if="${i.index > 0}" >삭제</button>
 	                        </div>
 	                    </td>
 	                </tr>
@@ -244,7 +232,7 @@
 	<div class="card-block-small">
 	    <button type="button" class="btn btn-inverse m-r-5" onclick="gridHelper1.toggleList();">목록</button>
         <button type="button" class="btn btn-primary m-r-5" onclick="fn_savePrgrmOperBtn()">저장</button>
-        <button type="button" class="btn btn-primary" onclick="fn_prgrmOperNextbtn()">다음</button>
+        <button type="button" class="btn btn-primary"       onclick="fn_prgrmOperNextbtn()">다음</button>
 	</div>
 
 	</div>
@@ -255,46 +243,103 @@
     var vTchaidFcltList = /*[[${tchaidFcltList}]]*/null;
     var vIdx = vTchaidFcltList.length;
 
-    function fn_addBtn(btnId){
-    	debugger;
 
-    	var vHtml = "<tr><td><input type='text' class='form-control form-control-sm' placeholder='Text Input Validation'></td>";
-    	 vHtml +="<td>"
-    	 vHtml +="<input type='text' class='form-control form-control-sm' placeholder='Text Input Validation' >"
-    	 vHtml +="</td>"
-    	 vHtml +="<td>"
-    	 vHtml +="<input type='text' class='form-control form-control-sm' placeholder='Text Input Validation'>"
-    	 vHtml +="</td>"
-    	 vHtml +="<td>"
-    	 vHtml +="<div class='col-12 row m-0 align-items-center justify-content-center'>"
-    	 vHtml +="<div class='col-11 p-l-0 p-r-0'>"
-    	 vHtml +="<input type='text' class='form-control form-control-sm' placeholder='Text Input Validation' >"
-    	 vHtml +="</div>"
-    	 vHtml +="<div class='col-auto p-l-5 p-r-0'>"
-    	 vHtml +="개/장"
-    	 vHtml +="</div>"
-    	 vHtml +="</div>"
-    	 vHtml +="</td>"
-    	 vHtml +="<td>"
-    	 vHtml +="<div class='btn-group-sm'>"
-    	 vHtml +="<button type='button' class='btn btn-primary m-r-5' onclick='fn_addBtn(this.id)'>추가</button>"
-    	 vHtml +="<button type='button' class='btn btn-inverse'>삭제</button>"
-    	 vHtml +="</div>"
-    	 vHtml +="</td></tr>"
-    	$("#tchaidFcltTb").append(vHtml);
+    function btgSum(){
+
+    	var  vEtrfeeIncm = 0;
+    	var  vEtcIncm    = 0;
+    	var  vSlfpy      = 0;
+    	var  vBtgSum     = 0;
+    	vEtrfeeIncm = isNaN($("#etrfeeIncm").val()) ? 0 : $("#etrfeeIncm").val();
+    	vEtcIncm    = isNaN($("#etcIncm").val()   ) ? 0 : $("#etcIncm").val()   ;
+    	vSlfpy      = isNaN($("#slfpy").val()     ) ? 0 : $("#slfpy").val()     ;
+
+
+    	vBtgSum = Number(vEtrfeeIncm) + Number(vEtcIncm) + Number(vSlfpy);
+
+    	$("#btgSum")[0].textContent = vBtgSum +"%"
     }
 
-    function fn_rmvBtn(btnId){
-    	alert("삭제");
+
+    function addExpnd(btnId){
+
+    	var trIdx = $("[id^=expndTr]").length + 1;
+
+    	var vHtml = "";
+        vHtml += "<tr id='expndTr"+trIdx+"'>";
+        vHtml += "    <td>"
+        vHtml += "        <input type='text' class='form-control form-control-sm' name='expndArtcl' id='expndArtcl"+trIdx+"' placeholder='지출 항목' value=''/>";
+        vHtml += "    </td>";
+        vHtml += "    <td>";
+        vHtml += "        <div class='col-12 row m-0 align-items-center justify-content-center'>";
+        vHtml += "            <div class='col-11 p-l-0 p-r-0'>";
+        vHtml += "                <input type='text' class='form-control form-control-sm' name='amt' id='amt"+trIdx+"' placeholder='금액' value=''/>";
+        vHtml += "            </div>";
+        vHtml += "                <div class='col-auto p-l-5 p-r-0'>원</div>";
+        vHtml += "        </div>";
+        vHtml += "    </td>";
+        vHtml += "    <td>";
+        vHtml += "        <div class='btn-group-sm'>";
+        vHtml += "            <button type='button' class='btn btn-primary m-r-5' id='addBtnExpnd"+trIdx+"' idx='"+trIdx+"' onclick = 'addExpnd("+trIdx+")'    >추가</button>";
+        vHtml += "            <button type='button' class='btn btn-inverse'       id='delBtnExpnd"+trIdx+"' idx='"+trIdx+"' onclick = 'deleteExpnd("+trIdx+")' >삭제</button>";
+        vHtml += "        </div>";
+        vHtml += "    </td>";
+        vHtml += "</tr>";
+
+    	$("#expndSumAmtTr").before(vHtml);
+    }
+
+    //교구및 시설 추가
+    function addFclt(btnId){
+    	var trIdx = $("[id^=fcltTr]").length + 1;
+    	var vHtml ="";
+    	vHtml += "<tr id ='fcltTr"+trIdx+"'>                                                                                                                                           ";
+    	vHtml += "    <td>                                                                                                                                                             ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' name='${'dtlPrgrmNm"+trIdx+"' id='${'dtlPrgrmNm"+trIdx+"' placeholder='세부 프로그램명' value=''>    ";
+    	vHtml += "    </td>                                                                                                                                                            ";
+    	vHtml += "    <td>                                                                                                                                                             ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' name='${'eduPlc"+trIdx+"' id='${'eduPlc"+trIdx+"' placeholder='교육 장소' value=''>                  ";
+    	vHtml += "    </td>                                                                                                                                                            ";
+    	vHtml += "    <td>                                                                                                                                                             ";
+    	vHtml += "        <input type='text' class='form-control form-control-sm' name='${'tchaid"+trIdx+"' id='${'tchaid"+trIdx+"' placeholder='교구 및 매체 등' value=''>            ";
+    	vHtml += "    </td>                                                                                                                                                            ";
+    	vHtml += "    <td>                                                                                                                                                             ";
+    	vHtml += "        <div class='col-12 row m-0 align-items-center justify-content-center'>                                                                                       ";
+    	vHtml += "            <div class='col-11 p-l-0 p-r-0'>                                                                                                                         ";
+    	vHtml += "                <input type='text' class='form-control form-control-sm' name='${'qnty"+trIdx+"' id='${'qnty"+trIdx+"' placeholder='수량(개) 또는 분량 (장)' value=''>";
+    	vHtml += "            </div>                                                                                                                                                   ";
+    	vHtml += "            <div class='col-auto p-l-5 p-r-0'>                                                                                                                       ";
+    	vHtml += "                개/장                                                                                                                                                ";
+    	vHtml += "            </div>                                                                                                                                                   ";
+    	vHtml += "        </div>                                                                                                                                                       ";
+    	vHtml += "    </td>                                                                                                                                                            ";
+    	vHtml += "    <td>                                                                                                                                                             ";
+    	vHtml += "        <div class='btn-group-sm'>                                                                                                                                   ";
+    	vHtml += "             <button type='button' class='btn btn-primary m-r-5' id='${ 'addBtnFclt"+trIdx+"' idx="+trIdx+"' onclick='addFclt("+trIdx+")' >추가</button>             ";
+    	vHtml += "             <button type='button' class='btn btn-inverse'       id='${ 'delBtnFclt"+trIdx+"' idx="+trIdx+"' onclick='deleteFclt("+trIdx+")' >삭제</button>          ";
+    	vHtml += "        </div>                                                                                                                                                       ";
+    	vHtml += "    </td>                                                                                                                                                            ";
+    	vHtml += "</tr>                                                                                                                                                                ";
+    	$("#fcltTb").append(vHtml);
+    }
+
+    //지출항목 삭제
+    function deleteExpnd(btnIdx){
+        $("#expndTr" + btnIdx).remove();
+    }
+
+    //교구 및 시설 삭제
+    function deleteFclt(btnIdx){
+        $("#fcltTr" + btnIdx).remove();
     }
 
     function fn_savePrgrmOperBtn(){
 
+    	var param = {};
 
         var operMngKey = $("#operMngPrgrmid").val();
         var vUrl = "/mng/asgsysSrng/";
 
-        debugger;
         if(!confirm("저장 하시겠습니까?")){return;}
 
         if(operMngKey != null && operMngKey != 0 && operMngKey != ""){
@@ -303,20 +348,35 @@
         	vUrl  += "insertPrgrmOperMng.do"
         }
 
+        $("#prgrmOperMngFrm input").each(function(index, item) {
 
-        $("#telRcptYn"   ).val( $("#telRcptYn"   ).val() =="on" ? "Y":"N" );
-        $("#aplfrmRcptYn").val( $("#aplfrmRcptYn").val() =="on" ? "Y":"N" );
-        $("#onlnAplyYn"  ).val( $("#onlnAplyYn"  ).val() =="on" ? "Y":"N" );
-        $("#etcYn"       ).val( $("#etcYn"       ).val() =="on" ? "Y":"N" );
+            if("checkbox" == item.type && "on" == item.value) {
+                param[item.id] = "Y";
+            }
+            else{
+                param[item.id] = item.value;
+            }
+        });
 
-        var data =  $("#prgrmOperMngFrm").serialize() ;
+        //지출항목 목록
+        $("[id^=fcltTr]"    ).each(function(index, item) { param["expndArtclLst[" + index + "].prgrmid"]    = prgrmid; });      //프로그램 id (key)
+        $("[id^=expndArtcl]").each(function(index, item) { param["expndArtclLst[" + index + "].expndArtcl"] = item.value; });   //지출 항목
+        $("[id^=amt]"       ).each(function(index, item) { param["expndArtclLst[" + index + "].amt"]        = item.value.replaceAll(",",""); });   //지출 항목
 
+        //교구 및 시설
+        $("[id^=expndTr]"   ).each(function(index, item) { param["tchaidFcltLst[" + index + "].prgrmid"]    = prgrmid;    });   //프로그램 id (key)
+        $("[id^=dtlPrgrmNm]").each(function(index, item) { param["tchaidFcltLst[" + index + "].dtlPrgrmNm"] = item.value; });   //세부 프로그램 이름
+        $("[id^=eduPlc]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].eduPlc"]     = item.value; });   //교육 장소
+        $("[id^=tchaid]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].tchaid"]     = item.value; });   //교구
+        $("[id^=qnty]"      ).each(function(index, item) { param["tchaidFcltLst[" + index + "].qnty"]       = item.value; });   //수량
+// debugger;
+// return;
         $.ajax({
             url : vUrl ,
             type: 'POST',
             cache : false,
             dataType: 'json',
-            data : data,
+            data : param,
             success : function (data){
                 if(data.result=="success"){
                     alert("수정이 완료 되었습니다.");

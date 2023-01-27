@@ -26,7 +26,9 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
@@ -414,7 +416,47 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngForm.html")
     public String jdgsSrngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	//model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo));
+    	//신청정보조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
+
+    	//운영형태코드 목록 조회
+    	CodeVo codeVo = new CodeVo();
+    	codeVo.setCdgrpid("120");    //신청진행상태코드
+
+    	model.addAttribute("operFrmCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
+
+    	//심사점수 목록 조회
+//    	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
+
+
+
+
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+
+    	model.addAttribute("aplyInfo", aplyInfo);
 
     	return "mng/asgsysSrng/jdgsSrng";
     }
@@ -428,7 +470,41 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngForm.html")
     public String sprtgrpSrngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	//신청정보조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
 
+    	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(aplyInfo));
+
+    	//운영형태코드 목록 조회
+    	CodeVo codeVo = new CodeVo();
+    	codeVo.setCdgrpid("120");    //신청진행상태코드
+
+    	model.addAttribute("operFrmCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+    	model.addAttribute("aplyInfo", aplyInfo);
     	return "mng/asgsysSrng/sprtgrpSrng";
     }
 
@@ -589,15 +665,33 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmOperMngForm.html")
     public String prgrmOperMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	ExpndArtclVo expndArtclVo = new ExpndArtclVo();
+    	TchaidFcltVo tchaidFcltVo = new TchaidFcltVo();
+
+    	BeanUtils.copyProperties(asgsysSrngVo, expndArtclVo);
+    	BeanUtils.copyProperties(asgsysSrngVo, tchaidFcltVo);
+
     	//프로그램 운영관리 조회
     	model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo));
-    	//교구 및 시설 조회
-    	model.addAttribute("tchaidFcltList", asgsysSrngService.selectTchaidFcltList(asgsysSrngVo));
 
+    	//지출항목 목록 조회
+    	List<ExpndArtclVo> expndArtclList = asgsysSrngService.selectExpndArtclList(expndArtclVo);
+    	if(0 == expndArtclList.size()) {
+
+    		expndArtclList.add(0, expndArtclVo);
+    	}
+    	model.addAttribute("expndArtclList", expndArtclList);
+
+    	//교구 및 시설 목록 조회
+    	List<TchaidFcltVo> tchaidFcltList = asgsysSrngService.selectTchaidFcltList(tchaidFcltVo);
+
+    	if(0 == tchaidFcltList.size()) {
+    		tchaidFcltList.add(0, tchaidFcltVo);
+    	}
+    	model.addAttribute("tchaidFcltList", tchaidFcltList);
 
     	return "mng/asgsysSrng/prgrmOperMngForm";
     }
-
 
     /**
     * 프로그램운영관리 수정

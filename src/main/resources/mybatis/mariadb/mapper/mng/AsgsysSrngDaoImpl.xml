@@ -160,7 +160,7 @@
         </if>
     </select>
 
-    <!-- 지정프로그램상세 조회. -->
+    <!-- 지정신청프로그램상세 조회. -->
     <select id="selectDsgnAplyDtlInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
             A.PRGRMID
@@ -648,7 +648,6 @@
         WHERE PRGRMID = #{prgrmid}
     </update>
 
-
     <insert id="insertPrgrmOperMng" parameterType="AsgsysSrngVo" >
         INSERT INTO
             TB_ASS_PRGRM_OPER_MNG(
@@ -694,8 +693,60 @@
         )
     </insert>
 
+    <!-- 지출항목 목록 조회 -->
+    <select id="selectExpndArtclList" parameterType="ExpndArtclVo" resultType="ExpndArtclVo">
+        /* AsgsysSrngDao.selectExpndArtclList*/
+        SELECT
+            ARTCLID
+          , PRGRMID
+          , EXPND_ARTCL
+          , AMT
+          , SUM(AMT) OVER() AS SUM_AMT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        FROM
+            TB_ASS_EXPND_ARTCL
+        WHERE
+            PRGRMID = #{prgrmid}
+        ORDER BY
+            ARTCLID
+    </select>
+
+    <!-- 지출항목 등록 -->
+     <insert id="insertExpndArtcl" parameterType="ExpndArtclVo" >
+        /* AsgsysSrngDao.insertExpndArtclt */
+        INSERT INTO
+            TB_ASS_EXPND_ARTCL(
+                PRGRMID
+              , EXPND_ARTCL
+              , AMT
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES (
+                #{prgrmid}
+              , #{expndArtcl}
+              , #{amt}
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+     </insert>
+
+    <!-- 지출항목 목록 삭제 -->
+    <delete id="deleteExpndArtcl" parameterType="ExpndArtclVo">
+        /* AsgsysSrngDao.insertExpndArtclt */
+        DELETE FROM
+            TB_ASS_EXPND_ARTCL
+        WHERE PRGRMID = #{prgrmid}
+    </delete>
+
     <!-- 교구 및 시설목록조회 -->
-    <select id="selectTchaidFcltList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+    <select id="selectTchaidFcltList" parameterType="TchaidFcltVo" resultType="TchaidFcltVo">
         /* AsgsysSrngDao.selecttchaidFcltList */
         SELECT
             TCHAIDFCLTID
@@ -712,6 +763,39 @@
             TB_ASS_TCHAID_FCLT
         WHERE PRGRMID = #{prgrmid}
     </select>
+
+    <!-- 교구 및 시설 등록 -->
+    <insert id="insertTchaidFclt" parameterType="TchaidFcltVo">
+        INSERT INTO
+            TB_ASS_TCHAID_FCLT(
+                PRGRMID
+              , DTL_PRGRM_NM
+              , EDU_PLC
+              , TCHAID
+              , QNTY
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES (
+                #{prgrmid}
+              , #{dtlPrgrmNm}
+              , #{eduPlc}
+              , #{tchaid}
+              , #{qnty}
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+    </insert>
+
+    <!-- 교구 및 시설 삭제 -->
+    <delete id="deleteTchaidFclt" parameterType="TchaidFcltVo">
+        DELETE FROM
+            TB_ASS_TCHAID_FCLT
+        WHERE PRGRMID = #{prgrmid}
+    </delete>
 
     <!-- 프로그램 평가 조회 -->
     <select id="selectPrgrmEvl" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
@@ -880,7 +964,7 @@
         SELECT
             SPLMNT_DMNDID    /* 보완_요청아이디 */
           , PRGRMID          /* 프로그램아이디 */
-          , STTS_CD          /* 상태_코드 */
+          , STTS_CD
           , OPNN_CN          /* 의견_내용 */
           , CMPTN_PRCS_DE    /* 완료_처리_일자 */
           , MDFCN_DT         /* 수정_일시 */
@@ -891,6 +975,9 @@
             TB_ASS_PRGRM_SPLMNT_DMND
         WHERE 1=1
         AND PRGRMID = #{prgrmid}
+        <if test="sttsCd != null and sttsCd != '' and sttsCd == ''">
+            AND STTS_CD = #{sttsCd}
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -1133,6 +1220,47 @@
         </if>
     </select>
 
+    <!-- 신청정보 조회 -->
+    <select id="selectAplyInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            A.PRGRMID
+          , A.PRGRM_NM
+          , A.INSTID
+          , A.INST_NM
+          , A.CHKLSTID
+          , B.STY_YN
+          , B.STY_NIGHT
+          , B.STY_DAYTM
+          , B.OPER_FRM_CD
+          , C.BFR_CERT_YN
+          , C.BFR_CERT_FILEGRPID
+          , A.FILEGRPID  AS APLY_FILEGRPID
+          , A.STTS_CD
+          , D.SPRTGRPID
+          , D.VST_DT
+          , D.NM
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG C ON A.PRGRMID = C.PRGRMID
+        LEFT OUTER JOIN
+        (
+            SELECT
+                AA.PRGRMID
+              , AA.SPRTGRPID
+              , CONCAT(BB.NM,"( ",BB.ACNT," )") AS NM
+              , CONCAT(AA.VST_DE , " " , AA.VST_HR , ":" , AA.VST_MNT) AS VST_DT
+            FROM
+                TB_ASS_SPRTGRP_SRNG AA
+            INNER JOIN
+                TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
+        ) D ON A.PRGRMID = D.PRGRMID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 심사위원 심사 상세 조회 -->
     <select id="selectJdgsSrngDetail" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectJdgsSrngDetail */
@@ -1168,6 +1296,7 @@
                 TB_ASS_SRNG_FORM G ON G.FORMID = F.FORMID
             WHERE 1=1
             AND A.JDGSID = #{jdgsid}
+            AND B.PRGRMID =  #{prgrmid}
     </select>
 
     <!-- 심사양식목록 조회 -->
@@ -1357,6 +1486,7 @@
         LEFT OUTER JOIN
             TB_ASS_CHKLST_SBMSN F ON A.PRGRMID = F.PRGRMID
         WHERE 1=1
+        AND  A.PRGRMID = #{prgrmid}
         AND  A.SPRTGRPID= #{sprtgrpid}
     </select>
 
