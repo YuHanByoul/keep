@@ -182,10 +182,9 @@ public class SrngSerivceImpl extends PlumAbstractServiceImpl implements SrngSeri
     @Transactional
     public boolean insertSrngFormQitem(SrngFormQitemMapngVO srngFormQitemMapngVO) {
         boolean result = false;
-
         if(srngDao.selectSrngFormQitemOrdr(srngFormQitemMapngVO) > 0) result = srngDao.deleteSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVO);
         if(srngDao.selectSrngFormQitemMang(srngFormQitemMapngVO) > 0) result = srngDao.deleteSrngFormQitem(srngFormQitemMapngVO);
-        if(!"null".equals(srngFormQitemMapngVO.getSrngFormQitemMapngVOList())){
+        if(srngFormQitemMapngVO.getSrngFormQitemMapngVOList() != null){
             if(srngDao.insertSrngFormDsgncrtrCdOrdr(srngFormQitemMapngVO) && srngDao.insertSrngFormQitem(srngFormQitemMapngVO)) result = true;
             else result = false;
         }
