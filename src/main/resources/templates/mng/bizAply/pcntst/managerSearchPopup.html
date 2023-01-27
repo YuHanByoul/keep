@@ -224,13 +224,13 @@
            }
     ]
 
-    var expUrl = "/mng/spbJdgs/selectExprtList.do";
+    var expUrl = "/mng/cnsltng/selectExpertList.do";
     var expGrpUrl = "/mng/bizAply/pcntst/selectMngGrpList.do";
 
     
     function writeModalGridData(){
 
-        var url = "/mng/spbJdgs/selectExprtList.do"; 
+        var url = "/mng/cnsltng/selectExpertList.do"; 
         
         if(checkedMode=='P'){
             filter = expFilter;
@@ -310,8 +310,7 @@
         });
     }
 
-    makeCnstntHtml= (userid,introduceStr)=> {
-        
+    makeCnstntHtml = (userid,introduceStr)=> {        
         let html  = '<span class="label label-inverse mb-2" id="mng_list_'+userid+'" >';
         html += introduceStr
         html += '&nbsp;&nbsp;&nbsp;<a href="javascript:deleteMng('+cycl+','+userid+')" class="text-white delete-manager">X</a>';
@@ -331,37 +330,51 @@
            return;
        }
        
-       let compareId = $('input[name=memchk]:checked').val();
+       var compareId = $('input[name=memchk]:checked').val();
+       
        $("#searchGrid").jsGrid("search", {}).done(function(data) {
-
-            
            data.data.forEach(function(item){
-               
-                if(checkedMode=='P' ){
-                    if(compareId == item.userid){selectedItem = item;}
-                }else {
-                    if(compareId == item.grpId){selectedItem = item;}
-                }
+               if (checkedMode=='P' ) {
+                   if(compareId == item.userid){selectedItem = item;}
+               } else {
+                   if(compareId == item.grpId){selectedItem = item;}
+               }
            })
            
            if(checkedMode=='P'){
-               
-               let introStr= selectedItem.nm+' ( '+selectedItem.acnt+' ) |'+selectedItem.eml+' | '+selectedItem.moblphon;
-               $("#mng_list_area_"+cycl).append(makeCnstntHtml(selectedItem.userid,introStr))
-               
-           }else{
-               
+               let introStr = selectedItem.nm+' ( '+selectedItem.acnt+' ) |'+selectedItem.eml+' | '+selectedItem.moblphon;
+               var objArr = $("input[name='pcntstids"+cycl+"']");
+               for (var i = 0; i < objArr.length; i++) {
+            	   if (selectedItem.userid == objArr[i].value) {
+                	   alert("선택하신 전문가는 이미 담당자로 배정되어 있습니다.");
+                	   return;
+            	   }
+               }
+		       $("#mng_list_area_"+cycl).append(makeCnstntHtml(selectedItem.userid,introStr));
+           } else {
                let strArr = selectedItem.grpExprtStr.split(":");
                
                if(strArr.length > 0){
+                   var dupCnt = 0;
+                   var hiddenValArr = [];
+                   $("input[name='pcntstids"+cycl+"']").each(function(){
+                	   hiddenValArr.push($(this).val());
+                   });
                    strArr.forEach(function(item){
                        let idArr = item.split(",");
-                       $("#mng_list_area_"+cycl).append(makeCnstntHtml(idArr[0],idArr[1]))
-                   })
+                       if (hiddenValArr.indexOf(idArr[0]) > -1) {
+                    	   dupCnt = 1;
+                    	   return true;
+                       }
+                       $("#mng_list_area_"+cycl).append(makeCnstntHtml(idArr[0],idArr[1]));
+                   });
+                   if (dupCnt > 0) {
+                	   alert("이미 담당자로 배정되어있는 전문가는 등록되지 않습니다.");
+                   }
                }
            }
-           
        });
+       
        managerSearchModal.hide();
   }
 </script>
