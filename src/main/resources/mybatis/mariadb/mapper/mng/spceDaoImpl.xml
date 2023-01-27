@@ -276,9 +276,10 @@
                  </foreach>
                 )
              </if>
+             <if test='de != null and de !=""'>
+              AND A.DE = #{de}
+             </if>
      </select>
-     
-     
     <!-- 공간 예약일자 저장 --> 
     <insert id="insertSpceRsvtde" parameterType="SpceRsvtdeVo">
         /* SpceDao.insertSpceRsvtde */
@@ -313,6 +314,61 @@
           )
         </foreach>
     </insert>
-     
-     
+    <!-- 공간 예약일자 수정--> 
+    <update id="updateSpceRsvtde" parameterType="SpceRsvtdeVo">
+        /* SpceDao.updateSpceRsvtde */
+        UPDATE TB_FCL_SPCE_RSVTDE
+           SET 
+               RSVT_PSBLTY_YN  = #{rsvtPsbltyYn}       
+              , MDFCN_DT        = NOW()                     
+              , MDFRID          = #{user.userid  }
+        WHERE 1=1
+          AND SPCEID = #{spceid}
+          <if test="rsvtdeList != null and rsvtdeList.size!=0 ">
+          AND DE IN(
+                <foreach item="item" collection="rsvtdeList"  separator=",">
+                    #{item.de}
+                 </foreach>
+          )
+          </if>
+          <if test="rsvtdeid != null and rsvtdeid != 0 ">
+          AND RSVTDEID = #{rsvtdeid}     
+          </if>           
+    </update>
+    <!-- 공간 예약일자 날자별 삭제 --> 
+    <delete id="deleteSpceRsvtdeByDate" parameterType="SpceRsvtdeVo">
+        /* SpceDao.updateSpceRsvtde */
+        DELETE FROM TB_FCL_SPCE_RSVTDE
+        WHERE 1=1 
+          AND SPCEID = #{spceid}
+          <if test="rsvtdeList != null and rsvtdeList.size!=0 ">
+          AND DE IN(
+             <foreach item="item" collection="rsvtdeList"  separator=",">
+                 #{item.de}
+              </foreach>
+          )
+          </if>
+          <if test="rsvtdeid != null and rsvtdeid != 0 ">
+          AND RSVTDEID = #{rsvtdeid}     
+          </if>
+    </delete>
+    
+    <!-- 공간 예약 여부 확인 목록 -->
+    <select id="selectFclRsvtdeList" parameterType="SpceRsvtdeVo" resultType="map">
+         /* SpceDao.selectFclRsvtdeList */
+            SELECT
+                 A.APLYID
+                ,B.DE
+              FROM 
+                TB_FCL_APLY_RSVTDE A
+                INNER JOIN TB_FCL_SPCE_RSVTDE B
+                ON A.RSVTDEID  = B.RSVTDEID 
+             WHERE 1=1
+               AND B.DE IN (
+                <foreach item="item" collection="rsvtdeList"  separator=",">
+                   #{item.de}
+                </foreach>
+               )                 
+    </select>
+    
 </mapper>

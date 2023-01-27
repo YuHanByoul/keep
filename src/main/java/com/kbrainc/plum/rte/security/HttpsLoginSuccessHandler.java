@@ -52,11 +52,12 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         /*StringBuffer defaultTargetUrl = new StringBuffer();
         defaultTargetUrl.append("https://").append(request.getServerName()).append(serverHttpPortStr).append(securityProperties.getDEFAULT_TARGET_URL());
         super.setDefaultTargetUrl(defaultTargetUrl.toString());*/
+        boolean isPswdChangeLayer = request.getAttribute("pswdChangeLayer") == null ? false : true;
         String redirectUrl = (String) request.getParameter("redirectUrl");
         if (redirectUrl == null || "".equals(redirectUrl)) { 
-            super.setDefaultTargetUrl(securityProperties.getDEFAULT_TARGET_URL());
+            super.setDefaultTargetUrl(securityProperties.getDEFAULT_TARGET_URL() + (isPswdChangeLayer ? "?pwd" : ""));
         } else {
-            super.setDefaultTargetUrl(redirectUrl);
+            super.setDefaultTargetUrl(redirectUrl + (isPswdChangeLayer ? "?pwd" : ""));
         }
 
         // 인증 세션을 가져와 새로운 쿠키 생성

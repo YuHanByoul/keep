@@ -2,8 +2,11 @@ package com.kbrainc.plum.rte.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +35,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  * 
@@ -109,7 +114,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
                 }
-                if (!password.equals((String) resultMap.get("PSWD"))) {
+                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && !password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");                    
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
@@ -146,11 +151,24 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         } else { // 사용자 사이트
             try {
                 resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
-                if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
+                
+                if ("101105".equals((String) resultMap.get("ACNT_LOCK_CD"))) { // 휴면계정 회원
+                    if (!password.equals((String) resultMap.get("PSWD"))) {
+                        throw new BadCredentialsException("Login Error !!");
+                    } else {
+                        DrmncyInfoVo drmncyInfo = new DrmncyInfoVo();
+                        drmncyInfo.setUserid(String.valueOf(resultMap.get("USERID")));
+                        drmncyInfo.setPrvcVldty((Integer) resultMap.get("PRVC_VLDTY"));
+                        drmncyInfo.setRegDt((String) resultMap.get("DRMNCY_REG_DT"));
+                        drmncyInfo.setUsed(false);
+                        session.setAttribute("drmncy", drmncyInfo);
+                        throw new LockedException("Login Error !!");
+                    }
+                } else if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
                 }
-                if (!password.equals((String) resultMap.get("PSWD"))) {
+                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && !password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
@@ -183,7 +201,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     }
                 } else if ("I".equals(loginUserType) && instid == null) {
                     // 회원은 맞으나 기관회원이 아님
-                    request.setAttribute("message", "기관회원이 아닙니다. 개인회원으로 다시 로그인 해주십시오.");
+                    request.setAttribute("message", "기관회원이 아닙니다. 개인회원으로 로그인 해주십시오.");
                     throw new InternalAuthenticationServiceException("Login Error !!");
                 }
                 
@@ -195,6 +213,20 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 roleMap.put("SE_CD", "U");
                 resultList.add(roleMap);
                 
+                if (CommonUtil.isEmpty(resultMap.get("PSWD_MDFCN_DT"))) {
+                    request.setAttribute("pswdChangeLayer", true);
+                } else {
+                    Timestamp pswdMdfcnTimestamp = (Timestamp) resultMap.get("PSWD_MDFCN_DT");
+                    Calendar cal1 = Calendar.getInstance();
+                    Calendar cal2 = Calendar.getInstance();
+                    cal1.setTime(pswdMdfcnTimestamp);
+                    cal1.add(Calendar.DATE, 90);
+                    
+                    if (cal1.compareTo(cal2) <= 0) {
+                        request.setAttribute("pswdChangeLayer", true);
+                    }
+                }
+
             } catch (EmptyResultDataAccessException e) { // 존재하지않는 사용자일때
                 Integer loginFailCnt = usernameNotFoundMap.get(loginid);
                 if (loginFailCnt != null && loginFailCnt >= 5) {
