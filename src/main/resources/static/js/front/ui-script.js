@@ -25,6 +25,7 @@ var resizeWindow = {
 		
 		resizeWindow.onResize();
 		resizeWindow.sizeCheck();
+
 		resizeWindow.toggleLayerResize();
 		
 	},
@@ -35,9 +36,10 @@ var resizeWindow = {
 	},
 	sizeCheck : function () {
 		$windowWidth = $(window).outerWidth();
-		var DESKTOP_SIZE = $windowWidth > 1280;
+		var DESKTOP_SIZE = $windowWidth >= 1280;
 		var TABLET_SIZE = $windowWidth < 1280 && $windowWidth >= 1024;
 		var MOBILE_SIZE = $windowWidth < 1024;
+		
 		if (DESKTOP_SIZE) {
 			$html.addClass(DESKTOP);
 			$html.removeClass(TABLET);
@@ -54,6 +56,10 @@ var resizeWindow = {
 			$html.removeClass(TABLET);
 			$WINDOW_MODE = MOBILE;
 		}
+		console.log("🚀$WINDOW_MODE", $WINDOW_MODE)
+		
+		
+
 	},
 	onResize : function () {
 		$(window).on('resize', function () {
@@ -121,7 +127,7 @@ const gnb = {
 		};
 	},
 	open : function () {
-		if ($WINDOW_MODE === DESKTOP || TABLET) {
+		if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 			$Dep01.find('>.active').find($Dep02).stop().fadeIn(0);
 		}
 		if ($WINDOW_MODE === MOBILE) {
@@ -134,7 +140,7 @@ const gnb = {
 	},
 	close : function (){
 		// $header.removeClass(DESKTOP_GNB_ACTIVECLASS);
-		if ($WINDOW_MODE === DESKTOP || TABLET) {
+		if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 			$Dep01List.find($Dep02).stop().fadeOut(150, function () {
 				$(this).attr('style','display:none')
 			});
@@ -149,14 +155,14 @@ const gnb = {
 	},
 	onHover : function (){
 		$Dep01List.on('mouseenter', function (){
-			if ($WINDOW_MODE === DESKTOP || TABLET) {
+			if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 				$(this).siblings('li').removeClass('active');
 				$(this).addClass('active');
 				gnb.open();
 			}
 		})
 		$Dep01List.on('mouseleave', function (){
-			if ($WINDOW_MODE === DESKTOP || TABLET) {
+			if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 				$(this).removeClass('active');
 				gnb.close();
 			}
@@ -164,7 +170,7 @@ const gnb = {
 	},
 	onFocus : function (){
 		$Dep01List.on('focusin', function (){
-			if ($WINDOW_MODE === DESKTOP || TABLET) {
+			if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 				$(this).siblings('li').removeClass('active');
 				$(this).addClass('active');
 				$(this).siblings('li').find($Dep02).stop().fadeOut(ANIMATION_TIME, function () {
@@ -174,7 +180,7 @@ const gnb = {
 			}
 		})
 		$Dep01List.on('focusout', function (){
-			if ($WINDOW_MODE === DESKTOP || TABLET) {
+			if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 				$(this).removeClass('active');
 			}
 		})
@@ -259,7 +265,7 @@ const gnb = {
 		}
 	},
 	onScroll : function () {
-		if ($WINDOW_MODE === DESKTOP || TABLET) {
+		if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 			$(window).on('scroll', function () {
 				$headerOffsetTop = $header.offset().top;
 				gnb.onResize();
@@ -327,6 +333,8 @@ const formStyle = {
 			formStyle.widthDisabled();
 		}
 		formStyle.onResize();
+		formStyle.onNumberClick();
+		formStyle.onNumberKeydown();
 	},
 	// typing : function (){
 	// 	$(document).on('focusin keypress keydown','.form-input input:not([type="checkbox"]), .form-input input:not([type="radio"]), .form-input textarea', function () {
@@ -409,14 +417,14 @@ const formStyle = {
 		})
 	},
 	widthEnabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea').each(function () {
+		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
 			if ($(this).data('width')) {
 				$(this).css('width',$(this).data('width'));
 			}
 		})
 	},
 	widthDisabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea').each(function () {
+		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
 			if ($(this).data('width')) {
 				$(this).removeAttr('style');
 			}
@@ -431,8 +439,48 @@ const formStyle = {
 			}
 		});
 
-	}
+	},
+	onNumberClick :function () {
+		$(document).on('click', '.form-input-number button' , function () {
+			const par = $(this).closest('.form-input-number');
+			const numInput = par.find('input[type="number"]');
+			const valueMin = parseInt(numInput[0].min);
+			const valueMax = parseInt(numInput[0].max);
+			//value up
+			if ($(this).hasClass('num-up')) {
+				if (numInput.val() === '') {
+					numInput.val(0)
+				}
+				if (valueMax > numInput.val() || valueMax.length === undefined) {
+					numInput[0].value++;
+				}
+			}
 
+			//value down
+			if ($(this).hasClass('num-down')) {
+				if (numInput.val() === '') {
+					numInput.val(0)
+				}
+				if (numInput.val() > valueMin || valueMin.length === undefined) {
+					numInput[0].value--;
+				}
+			}
+			
+		});
+	},
+	onNumberKeydown : function () {
+		$(document).on('keyup', '.form-input-number input[type="number"]' , function () {
+			const numInput = $(this);
+			const valueMin = parseInt(numInput[0].min);
+			const valueMax = parseInt(numInput[0].max);
+			if (numInput.val() > valueMax) {
+				numInput.val(valueMax)
+			}
+			if (numInput.val() < valueMin) {
+				numInput.val(valueMin)
+			}
+		});
+	}
 } 
 
 const dropDown = {
@@ -455,9 +503,12 @@ const dropDown = {
 	},
 	select :function () {
 		$(document).on('click','.dropDown .target button', function (){
-			const value = $(this).html();
-			par.find('.trigger').text(value);
-			dropDown.close();
+			par = $(this).closest('.dropDown');
+			if (par.hasClass('active')) {
+				const value = $(this).html();
+				par.find('.trigger').text(value);
+				dropDown.close();
+			}
 		});
 	},
 	onClick : function () {
@@ -707,9 +758,6 @@ const uploadFile = function (){
 				break;
 			}
 			
-			// 2022.12.07 정동헌 : 동일한 기준으로 for문 2번 돌던거 하나로 병합
-
-			
 			if (fileWrap.hasClass('form-input-thumb')) { // thumbnail
 				const file = e.target.files[0];
 				const url = URL.createObjectURL(file);
@@ -718,14 +766,18 @@ const uploadFile = function (){
 				
 			} else { //기본
 				//확장자 체크
-				var ext =  this.files[i].name.split('.').pop().toLowerCase();
-				// console.log(ext);
+				const accept = this.accept;
+				let ext =  this.files[i].name.split('.').pop().toLowerCase();
+				if (accept.includes(ext) === true) {
+					let fileBloc = $('<li/>', {class: 'file-block', data_Ext: ext}),
+						fileName = $('<span/>', {class: 'name', text: this.files.item(i).name});
+					fileBloc.append(fileName).append('<button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button>');
+	
+					fileWrap.find('ul').append(fileBloc);
+				} else {
+					alert('첨부 가능한 파일이 아닙니다.')
+				}
 
-				let fileBloc = $('<li/>', {class: 'file-block', data_Ext: ext}),
-					fileName = $('<span/>', {class: 'name', text: this.files.item(i).name});
-				fileBloc.append(fileName).append('<button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button>');
-
-				fileWrap.find('ul').append(fileBloc);
 
 			}
 
@@ -737,40 +789,41 @@ const uploadFile = function (){
 		// 	dt.items.add(file);
 		// }
 		this.files = dt.files;
+	});
 
-		fileWrap.find('button.file-delete').on('click', function(e){
-			let name = $(this).siblings('.name').text();
+	$(document).on('click', 'button.file-delete', function (e) {
+		var fileWrap = $(this).closest('.form-input-file');
+		let name = $(this).siblings('.name').text();
 
-			/**
-			 * 2022.12.26 정동헌
-			 * DataTransfer(dt) 를 유지시키는 것이 아닌 필요할때마다 초기화 후 input.files 로 재생성하게끔 수정
-			 * why : 화면 내 file input 이 여러개 존재하는 경우 DataTransfer(dt) 가 중복으로 사용되어, 파일 중복 현상 발생
-			 */
-			let fileInput = $(this).closest('.form-input-file').find('input');
-			dt = new DataTransfer();
-			for(let i = 0; i < fileInput[0].files.length; i++){
-				dt.items.add(fileInput[0].files[i]);
+		/**
+		 * 2022.12.26 정동헌
+		 * DataTransfer(dt) 를 유지시키는 것이 아닌 필요할때마다 초기화 후 input.files 로 재생성하게끔 수정
+		 * why : 화면 내 file input 이 여러개 존재하는 경우 DataTransfer(dt) 가 중복으로 사용되어, 파일 중복 현상 발생
+		 */
+		let fileInput = $(this).closest('.form-input-file').find('input');
+		dt = new DataTransfer();
+		for(let i = 0; i < fileInput[0].files.length; i++){
+			dt.items.add(fileInput[0].files[i]);
+		}
+
+		for(let i = 0; i < dt.items.length; i++){
+			if(name === dt.items[i].getAsFile().name){
+				dt.items.remove(i);
+				continue;
 			}
+		}
+		fileWrap.find('input')[0].files = dt.files;
 
-			for(let i = 0; i < dt.items.length; i++){
-				if(name === dt.items[i].getAsFile().name){
-					dt.items.remove(i);
-					continue;
-				}
-			}
-			fileWrap.find('input')[0].files = dt.files;
-
-			/**
-			 * 2022.12.08 정동헌
-			 * 각 화면별로 파일 삭제 로직이 다르므로,
-			 * 기 업로드된 파일(삭제 버튼 태그 내 data-id="~~~" 속성으로 판단)은 element.remove() 호출 X
-			 * why : element 날리면 각 화면에서 구현한 이벤트 호출되지 않음
-			 */
-			let fileId = $(this).data('id');
-			if (fileId == undefined || fileId == null) {
-				$(this).parent().remove();
-			}
-		});
+		/**
+		 * 2022.12.08 정동헌
+		 * 각 화면별로 파일 삭제 로직이 다르므로,
+		 * 기 업로드된 파일(삭제 버튼 태그 내 data-id="~~~" 속성으로 판단)은 element.remove() 호출 X
+		 * why : element 날리면 각 화면에서 구현한 이벤트 호출되지 않음
+		 */
+		let fileId = $(this).data('id');
+		if (fileId == undefined || fileId == null) {
+			$(this).parent().remove();
+		}
 	});
 }
 
@@ -829,7 +882,7 @@ const headerSearch = {
 		});
 	},
 	onMouseleave : function () {
-		$(document).on('mouseleave', '.header-search:not(.typing) input[type=search], .header-search:not(.typing) .search-suggest', function () {
+		$(document).on('mouseleave', '.header-search', function () {
 			SUGGEST = false;
 			headerSearch.Suggest();
 			$el.removeClass(CLASS_FOCUSING)
@@ -926,4 +979,59 @@ $(document).ready(function() {
 			}
 		}
 	}
+	
 });
+
+//URL hash tag layerpopup open 추후 삭제 예정
+$(document).ready(function() {
+	let thisURL = window.location;
+	let thisPath = thisURL.pathname;
+	let thisHash = thisURL.hash;
+	if (thisHash.indexOf('layer') === 1)  {
+		thisHash = thisHash.slice(1);
+		layerPopup.open(thisHash);
+	}
+	if (thisPath.indexOf('component') === 1)  {
+		thisPath = thisPath.replace('/component_', '');
+		thisPath = thisPath.replace('.html', '');
+		document.title = thisPath;
+	}
+	if (thisPath.indexOf('UI-C') === 1)  {
+		const pageTitle = document.querySelector('.visual-inner h2');
+		if (pageTitle !== null) {
+			const pageTitleText = pageTitle.innerText;
+			document.title = pageTitleText;
+		}
+	}
+	$('body').each(function () {
+		var current_path = window.location.pathname;
+		var vsCode = "vscode://file///C:/KEEP_PORTAL_HTML"; //source file 경로
+		var vsCodeHref = '<a class="vscodepath" href=' + '"' + vsCode + current_path + '"></a>';
+		$('body').after(vsCodeHref);
+
+	})
+});
+
+const popupCenter = ({url, title, w, h}) => {
+	// Fixes dual-screen position                             Most browsers      Firefox
+	const dualScreenLeft = window.screenLeft !==  undefined ? window.screenLeft : window.screenX;
+	const dualScreenTop = window.screenTop !==  undefined   ? window.screenTop  : window.screenY;
+
+	const width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+	const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+	const systemZoom = width / window.screen.availWidth;
+	const left = (width - w) / 2 / systemZoom + dualScreenLeft;
+	const top = (height - h) / 2 / systemZoom + dualScreenTop;
+	const newWindow = window.open(url, title, 
+		`
+		scrollbars=yes,
+		width=${w}, 
+		height=${h}, 
+		top=${top}, 
+		left=${left}
+		`
+	);
+	console.log(systemZoom)
+	if (window.focus) newWindow.focus();
+}
