@@ -34,7 +34,8 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
         StringBuffer defaultFailureUrl = new StringBuffer("/?error=true&id=");
         String message = (String)request.getAttribute("message");
         String loginUserType = (String)request.getAttribute("loginUserType");
-        String redirectUrl = (String)request.getAttribute("redirectUrl");
+        String loginType = (String)request.getAttribute("loginType");
+        String returnUrl = (String)request.getAttribute("returnUrl");
         
         defaultFailureUrl.append(request.getAttribute("loginid"));
         
@@ -42,8 +43,12 @@ public class CustomAuthFailureHandler extends SimpleUrlAuthenticationFailureHand
             defaultFailureUrl.append("&userType=").append(loginUserType);
         }
         
-        if (redirectUrl != null) {
-            defaultFailureUrl.append("&redirectUrl=").append(redirectUrl);
+        if (loginType != null) {
+            defaultFailureUrl.append("&loginType=").append(loginType);
+        }
+        
+        if (returnUrl != null) {
+            defaultFailureUrl.append("&returnUrl=").append(returnUrl);
         }
                 
         if (!"".equals(StringUtil.nvl(message))) {

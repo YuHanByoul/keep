@@ -77,35 +77,51 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String loginid = authentication.getName();
+        String loginType= "G"; // 일반(G), 디지털원패스(D)
+        String password = "";
+        String userKey = "";
+        String returnUrl = null;
+        String loginUserType = null; // 개인회원(P), 기관회원(I)
         
-        String password = (String) authentication.getCredentials();
-
-        // 비밀번호 암호화
-        try {
-             password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
-             // sha3-512 비밀번호 암호화
-        } catch (NoSuchAlgorithmException e) {
-            throw new InternalAuthenticationServiceException("Login Error !!");
-        } catch (Exception e) {
-            throw new InternalAuthenticationServiceException("Login Error !!");
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpServletRequest request = attr.getRequest();
+        
+        if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            password = (String) authentication.getCredentials();
+            returnUrl = request.getParameter("returnUrl");
+            loginUserType = request.getParameter("loginUserType");
+        } else if (authentication instanceof OnepassUsernameUserkeyAuthenticationToken) {
+            loginType = "D";
+            userKey = (String) authentication.getCredentials();
+            returnUrl = request.getParameter("returnUrl").split("::")[0];
+            loginUserType = request.getParameter("returnUrl").split("::")[1];
+        }
+        
+        if ("G".equals(loginType)) {
+            // 비밀번호 암호화
+            try {
+                 password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
+                 // sha3-512 비밀번호 암호화
+            } catch (NoSuchAlgorithmException e) {
+                throw new InternalAuthenticationServiceException("Login Error !!");
+            } catch (Exception e) {
+                throw new InternalAuthenticationServiceException("Login Error !!");
+            }
         }
 
         Map resultMap = null;
         List<Map<String, Object>> resultList = null;
         
-        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = attr.getRequest();
         HttpSession session = request.getSession();
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
-        String siteid = siteInfo.getSiteid();
-        String loginUserType = request.getParameter("loginUserType"); // 개인회원(P), 기관회원(I)
-        String redirectUrl = request.getParameter("redirectUrl");
+        String siteid = siteInfo.getSiteid();        
         Integer instid = null;
         String siteaplyUseYn = null;
         request.setAttribute("loginid", loginid);
+        request.setAttribute("returnUrl", returnUrl);
         request.setAttribute("loginUserType", loginUserType);
-        request.setAttribute("redirectUrl", redirectUrl);
+        request.setAttribute("loginType", loginType);
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
@@ -150,10 +166,15 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             }
         } else { // 사용자 사이트
             try {
-                resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                
+                if ("G".equals(loginType)) { // 아이디 비밀번호 방식
+                    resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                } else if ("D".equals(loginType)) { // 디지털 원패스
+                    resultMap = securedObjectService.selectUserLoginInfoForOnepass(userKey); // 디지털원패스 사용자 로그인 정보 조회
+                }
                 
                 if ("101105".equals((String) resultMap.get("ACNT_LOCK_CD"))) { // 휴면계정 회원
-                    if (!password.equals((String) resultMap.get("PSWD"))) {
+                    if ("G".equals(loginType) && !password.equals((String) resultMap.get("PSWD"))) {
                         throw new BadCredentialsException("Login Error !!");
                     } else {
                         DrmncyInfoVo drmncyInfo = new DrmncyInfoVo();
@@ -168,7 +189,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
                 }
-                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && !password.equals((String) resultMap.get("PSWD"))) {
+                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && "G".equals(loginType) && !password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
@@ -213,17 +234,19 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 roleMap.put("SE_CD", "U");
                 resultList.add(roleMap);
                 
-                if (CommonUtil.isEmpty(resultMap.get("PSWD_MDFCN_DT"))) {
-                    request.setAttribute("pswdChangeLayer", true);
-                } else {
-                    Timestamp pswdMdfcnTimestamp = (Timestamp) resultMap.get("PSWD_MDFCN_DT");
-                    Calendar cal1 = Calendar.getInstance();
-                    Calendar cal2 = Calendar.getInstance();
-                    cal1.setTime(pswdMdfcnTimestamp);
-                    cal1.add(Calendar.DATE, 90);
-                    
-                    if (cal1.compareTo(cal2) <= 0) {
+                if (resultMap.get("ACNT") != null) {
+                    if (CommonUtil.isEmpty(resultMap.get("PSWD_MDFCN_DT"))) {
                         request.setAttribute("pswdChangeLayer", true);
+                    } else {
+                        Timestamp pswdMdfcnTimestamp = (Timestamp) resultMap.get("PSWD_MDFCN_DT");
+                        Calendar cal1 = Calendar.getInstance();
+                        Calendar cal2 = Calendar.getInstance();
+                        cal1.setTime(pswdMdfcnTimestamp);
+                        cal1.add(Calendar.DATE, 90);
+                        
+                        if (cal1.compareTo(cal2) <= 0) {
+                            request.setAttribute("pswdChangeLayer", true);
+                        }
                     }
                 }
 
@@ -255,6 +278,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         user.setInstpicRoleCd((String)resultMap.get("INSTPIC_ROLE_CD"));
         user.setLoginUserType(loginUserType);
         user.setData(resultMap);
+        
+        if ("D".equals(loginType)) {
+            user.setEsylgnCd("106101"); // 디지털원패스
+        }
 
         ArrayList<Map<String, String>> sessionAuthorities = new ArrayList<>();
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
@@ -347,7 +374,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class);
+        return authentication.equals(UsernamePasswordAuthenticationToken.class) || authentication.equals(OnepassUsernameUserkeyAuthenticationToken.class);
     }
     
     private Map<String, Object> getLoginFailMessage(Integer loginFailCnt) {
