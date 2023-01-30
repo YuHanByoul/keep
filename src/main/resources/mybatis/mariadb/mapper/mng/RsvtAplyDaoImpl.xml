@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : RsvtAplyDaoImpl.xml
+	Description : 예약 신청 관리(캘린더)
+-->
+<mapper namespace="com.kbrainc.plum.mng.rsvtAply.model.RsvtAplyDao">
+              
+  <select id="selectRsvtAplyList" parameterType="FclAplyRsvtdeVo" resultType="FclAplyRsvtdeVo">
+              /* SpceDao.selectRsvtAplyList */
+              SELECT  
+                  A.APLYID
+                  ,A.STLM_STTS_CD
+                  ,A.APLY_STTS_CD
+                  ,B.RSVTDEID
+                  ,C.INSTID 
+                  ,B.DE 
+                  ,B.BGNG_DT 
+                  ,B.END_DT 
+                  ,E.SPCE_NM 
+                FROM 
+                  TB_FCL_SPCE_APLY A
+                  INNER JOIN TB_FCL_APLY_RSVTDE B
+                  ON A.APLYID = B.APLYID 
+                  INNER JOIN TB_CMM_INST C 
+                  ON A.INSTID = C.INSTID 
+                  INNER JOIN TB_FCL_SPCE_RSVTDE D
+                  ON B.RSVTDEID = D.RSVTDEID 
+                  INNER JOIN TB_FCL_SPCE E
+                  ON D.SPCEID = E.SPCEID 
+               WHERE 1=1 
+                 AND B.DE <![CDATA[>=]]> #{strtDe}
+                 AND B.DE <![CDATA[<=]]> #{endDe}
+                <if test="instid != null and instid != '' ">
+                   AND C.INSTID = #{instid}
+                </if>
+                <if test="fcltid != null and fcltid != '' ">
+                   AND E.FCLTID = #{fcltid}
+                </if>
+                <if test="spceid != null and spceid != '' ">
+                   AND E.SPCEID = #{spceid}
+                </if>
+                <choose>
+                    <when test='aplySttsCds != null and aplySttsCds !=""  and stlmSttsCd != null and stlmSttsCd != "" '>
+                        AND ( 
+                           APLY_STTS_CD IN (
+                           <foreach item="item" collection="aplySttsCds"  separator=",">
+                                #{item}
+                             </foreach>
+                           )
+                          OR A.STLM_STTS_CD = #{stlmSttsCd} )
+                    </when>
+                    <when test='aplySttsCds != null and aplySttsCds!=""  and (stlmSttsCd == null or stlmSttsCd == "" )'>
+                        AND APLY_STTS_CD IN (
+                           <foreach item="item" collection="aplySttsCds"  separator=",">
+                                #{item}
+                             </foreach>
+                           )
+                    </when>
+                    <when test='(aplySttsCds == null or aplySttsCds == "") and stlmSttsCd != null and stlmSttsCd != "" '>
+                        AND A.STLM_STTS_CD = #{stlmSttsCd} 
+                    </when>
+                    <otherwise>
+                        AND 1=2
+                    </otherwise>
+                </choose>
+    </select>
+    
+    <select id="selectSpcetList" parameterType="SpceVo" resultType="map">
+            /* SpceDao.selectSpcetList */
+            SELECT 
+                A.SPCEID 
+                ,A.SPCE_NM 
+                ,A.SPCE_NO
+              FROM 
+                TB_FCL_SPCE A
+             WHERE 1=1
+               AND A.FCLTID  = #{fcltid}
+    </select>
+</mapper>
