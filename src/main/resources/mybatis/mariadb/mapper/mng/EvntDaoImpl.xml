@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EvntDaoImpl.xml
+	Description : 참여신청 관리 > 이벤트 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.evnt.model.EvntDao">
+    <insert id="insertEvnt" useGeneratedKeys="true" keyProperty="evntid">
+        INSERT INTO TB_CMM_EVNT(
+            TTL
+            , CN
+            , BGNG_DE
+            , END_DE
+            , PRSNTN_DE
+            , APLY_URL
+            , HITS
+            , FILEGRPID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{ttl}
+            , #{cn}
+            , #{bgngDe}
+            , #{endDe}
+            , #{prsntnDe}
+            , #{aplyUrl}
+            , 0
+            , #{filegrpid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <update id="updateEvnt">
+        UPDATE TB_CMM_EVNT
+        SET
+             TTL = #{ttl}
+           , CN = #{cn}
+           , BGNG_DE = #{bgngDe}
+           , END_DE = #{endDe}
+           , PRSNTN_DE = #{prsntnDe}
+           , APLY_URL = #{aplyUrl}
+           , FILEGRPID = #{filegrpid}
+           , MDFCN_DT = NOW()
+           , MDFRID = #{user.userid}
+        WHERE
+            EVNTID = #{evntid}
+    </update>
+
+    <select id="selectEvntList" resultType="EvntVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.EVNTID
+            , A.TTL
+            , A.BGNG_DE
+            , A.END_DE
+            , A.PRSNTN_DE
+            , A.REG_DT
+            , CASE WHEN A.END_DE <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y-%m-%d') THEN 'CLOSED'
+              WHEN A.BGNG_DE <![CDATA[>]]> DATE_FORMAT(NOW(),'%Y-%m-%d') THEN 'BEFORE'
+              ELSE 'ONGOING' END AS STTS
+            , B.NM
+            , B.ACNT
+            , C.INST_NM
+        FROM TB_CMM_EVNT A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C
+                ON B.INSTID = C.INSTID
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword !=''">
+            <if test="searchType != null and searchType == 'TTL'">
+                AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType != null and searchType == 'CN'">
+                AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+        </if>
+        <if test="stts != null and stts != ''">
+            <if test="stts == 'BEFORE'">
+                AND A.BGNG_DE <![CDATA[>]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+            </if>
+            <if test="stts == 'ONGOING'">
+                AND (A.BGNG_DE <![CDATA[<=]]> DATE_FORMAT(NOW(),'%Y-%m-%d') AND A.END_DE <![CDATA[>=]]> DATE_FORMAT(NOW(),'%Y-%m-%d'))
+            </if>
+            <if test="stts == 'CLOSED'">
+                AND A.END_DE <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+        </if>
+        <if test="instNm != null and instNm != ''">
+            AND C.INST_NM LIKE CONCAT('%', #{instNm}, '%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectEvntInfo" resultType="EvntVo">
+        SELECT
+            A.EVNTID
+            , A.TTL
+            , A.CN
+            , A.APLY_URL
+            , A.FILEGRPID
+            , A.BGNG_DE
+            , A.END_DE
+            , A.PRSNTN_DE
+            , A.REG_DT
+            , C.INST_NM
+        FROM TB_CMM_EVNT A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C
+            ON B.INSTID = C.INSTID
+        WHERE EVNTID = #{evntid}
+    </select>
+</mapper>

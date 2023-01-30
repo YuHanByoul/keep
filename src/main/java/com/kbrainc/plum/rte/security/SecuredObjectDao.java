@@ -43,6 +43,8 @@ import com.kbrainc.plum.rte.util.StringUtil;
 public class SecuredObjectDao {
 
     private final String sqlUserLoginInfo;
+    
+    private final String sqlUserLoginInfoForOnepass;
 
     private final String sqlGrantedAuthority;
 
@@ -53,6 +55,7 @@ public class SecuredObjectDao {
     @Autowired
     public SecuredObjectDao(SecurityProperties securityProperties) {
         this.sqlUserLoginInfo = securityProperties.getDEF_USER_LOGIN_INFO_QUERY();
+        this.sqlUserLoginInfoForOnepass = securityProperties.getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY();
         this.sqlGrantedAuthority = securityProperties.getDEF_GRANTED_AUTHORITY_QUERY();
         this.sqlRolesAndUrl = securityProperties.getDEF_ROLES_AND_URL_QUERY();
         this.sqlHttpsAndUrl = securityProperties.getDEF_HTTPS_AND_URL_QUERY();
@@ -105,6 +108,12 @@ public class SecuredObjectDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("loginid", loginid);
         return this.namedParameterJdbcTemplate.queryForMap(sqlUserLoginInfo, paramSource);
+    }
+    
+    public Map selectUserLoginInfoForOnepass(String userKey) throws Exception {
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("userKey", userKey);
+        return this.namedParameterJdbcTemplate.queryForMap(sqlUserLoginInfoForOnepass, paramSource);
     }
 
     public List<Map<String, Object>> selectGrantedAuthority(String loginid) throws Exception {

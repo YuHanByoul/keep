@@ -9,7 +9,9 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 
 /**
@@ -50,6 +52,17 @@ public interface AsgsysSrngService {
 	 * @return AsgsysSrngVo
 	 */
 	public AsgsysSrngVo selectDsgnAplyDtlInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+    * 신청정보 조회
+    *
+    * @Title : selectAplyInfo
+    * @Description : 신청정보 조회
+    * @param asgsysSrngVo
+    * @return AsgsysSrngVo
+    * @throws Exception 예외
+    */
+	public AsgsysSrngVo selectAplyInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 프로그램상태코드 조회
@@ -314,10 +327,10 @@ public interface AsgsysSrngService {
 	* @Title       : selectDsgnAplyList
 	* @Description : 교구 및 시설목록 조회
 	* @param memberVo AsgsysAplyVo객체
-	* @return List<AsgsysSrngVo>
+	* @return List<TchaidFcltVo>
 	* @throws Exception 예외
 	*/
-	 public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	 public List<TchaidFcltVo> selectTchaidFcltList(TchaidFcltVo tchaidFcltVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정
@@ -329,6 +342,30 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	*/
 	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램운영관리 등록
+	*
+	* @Title : insertPrgrmOperMng
+	* @Description : 프로그램운영관리 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지출항목 목록 조회
+	*
+	* @Title : selectExpndArtclList
+	* @Description : 지출항목 목록 조회
+	* @param ExpndArtclVo
+	* @return
+	* @throws Exception
+	* @return List<ExpndArtclVo>
+	*/
+	public List<ExpndArtclVo> selectExpndArtclList(ExpndArtclVo expndArtclVo) throws Exception;
 
 	/**
 	* 지원단심사 목록 조회
@@ -472,6 +509,52 @@ public interface AsgsysSrngService {
 	* @throws Exception
 	*/
 	public int deleteSplmntDmnd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 삭제
+	 *
+	 * @Title : deletePicInfo
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 배정 등록
+	*
+	* @Title : insertPicInfo
+	* @Description : 담당자 배정 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사점수 목록 조회
+	*
+	* @Title : selectSrngScrList
+	* @Description : 심사점수 목록조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 심사점수 목록 헤더 조회
+	 *
+	 * @Title : selectSrngScrHeader
+	 * @Description : 심사점수 목록조회
+	 * @param asgsysSrngVo
+	 * @return List<AsgsysSrngVo>
+	 * @throws Exception
+	 */
+	 public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 }

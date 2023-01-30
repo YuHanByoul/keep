@@ -53,11 +53,11 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
         defaultTargetUrl.append("https://").append(request.getServerName()).append(serverHttpPortStr).append(securityProperties.getDEFAULT_TARGET_URL());
         super.setDefaultTargetUrl(defaultTargetUrl.toString());*/
         boolean isPswdChangeLayer = request.getAttribute("pswdChangeLayer") == null ? false : true;
-        String redirectUrl = (String) request.getParameter("redirectUrl");
-        if (redirectUrl == null || "".equals(redirectUrl)) { 
+        String returnUrl = request.getParameter("returnUrl") != null ? (String) request.getParameter("returnUrl").split("::")[0] : ""; // 관리자에서는 사용하지않으며, 디지털원패스때문에 split하여 사용
+        if (returnUrl == null || "".equals(returnUrl)) { 
             super.setDefaultTargetUrl(securityProperties.getDEFAULT_TARGET_URL() + (isPswdChangeLayer ? "?pwd" : ""));
         } else {
-            super.setDefaultTargetUrl(redirectUrl + (isPswdChangeLayer ? "?pwd" : ""));
+            super.setDefaultTargetUrl(returnUrl + (isPswdChangeLayer ? "?pwd" : ""));
         }
 
         // 인증 세션을 가져와 새로운 쿠키 생성

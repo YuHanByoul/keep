@@ -1,0 +1,265 @@
+<form id="evntForm" name="evntForm">
+    <div class="card-header p-b-0">
+        <h3 class="sub-title"><strong>기본정보</strong></h3>
+    </div>
+    <div class="card-block-small p-t-0">
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="bgngDe"><strong>접수시작일 설정</strong></label>
+                    <div class="col-6">
+                        <input type="date" id="bgngDe" name="bgngDe" class="form-control form-control-sm" th:value="${evntInfo.bgngDe}">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="endDe"><strong>접수종료일 설정</strong></label>
+                    <div class="col-6">
+                        <input type="date" id="endDe" name="endDe" class="form-control form-control-sm" th:value="${evntInfo.endDe}">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 mb-3">
+                <div class="mb-0 form-group required">
+                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prsntnDe"><strong>당첨자발표일</strong></label>
+                    <div class="col-6">
+                        <input type="date" class="form-control form-control-sm" id="prsntnDe" name="prsntnDe" th:value="${evntInfo.prsntnDe}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row form-group mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="aplyUrl"><strong>신청버튼 링크</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="aplyUrl" id="aplyUrl" placeholder="신청페이지 URL을 입력해 주세요." th:value="${evntInfo.aplyUrl}"/>
+            </div>
+        </div>
+
+        <div class="row form-group required mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ttl"><strong>제목</strong></label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control form-control-sm" name="ttl" id="ttl" placeholder="제목" th:value="${evntInfo.ttl}"/>
+            </div>
+        </div>
+
+        <div class="row form-group required mb-3">
+            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="cn"><strong>내용</strong></label>
+            <div class="col-sm-12">
+                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="내용" id="cn" name="cn"><th:block th:text="${evntInfo.cn}"></th:block></textarea>
+            </div>
+        </div>
+
+        <div class="row col-lg-6 mb-3">
+            <div class="mb-0 form-group">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="multiFileInput"><strong>첨부파일</strong></label>
+                <div class="col-sm-12">
+                    <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm"/>
+                </div>
+                <div class="mt-2 row">
+                    <div class="col-auto">
+                        <div id="multipleFileUploadError"></div>
+                        <div id="multipleFileUploadSuccess">
+                            <th:block th:if="${evntInfo.fileVoList}">
+                                <th:block th:each="fileInfo : ${evntInfo.fileVoList}" th:id="${fileInfo.fileid}">
+                                    <span class='label label-inverse mb-2 mr-0' th:id="${fileInfo.fileid}"><th:block th:text="${fileInfo.orginlFileNm}"/>
+                                    <a class='text-white' href="javascript:void(0)"
+                                       th:name="${fileInfo.fileid}" th:attr="data-idntfc-key=${fileInfo.fileIdntfcKey}"
+                                       th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a></span>
+                                </th:block>
+                            </th:block>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(evntInfo.filegrpid == '' or evntInfo.filegrpid == null) ? 0 : evntInfo.filegrpid}"/>
+            </div>
+        </div>
+
+        <th:block th:if="evntInfo.evntid != null">
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>등록기관</strong></label>
+                        <div class="col-6">
+                            <input type="text" id="instNm" name="instNm" class="form-control form-control-sm" th:value="${evntInfo.instNm}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="endDe"><strong>등록일</strong></label>
+                        <div class="col-6">
+                            <input type="date" id="regDtString" name="regDtString" class="form-control form-control-sm" th:value="${#dates.format(evntInfo.regDt, 'yyyy-MM-dd')}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+    </div>
+    <!-- 버튼영역 -->
+    <div class="card-block-small">
+        <button type="button" class="btn btn-disabled m-r-5" onclick="evntList.gridHelper.toggleContent()">취소</button>
+        <th:block sec:authorize-url="/mng/evnt/insertEvnt.do">
+            <button type="button" class="btn btn-primary" onclick="evntDetail.save()">저장</button>
+        </th:block>
+    </div>
+</form>
+
+<script th:inline="javascript">
+    var evntDetail = {
+        editor: null,
+        insertUrl: '/mng/evnt/insertEvnt.do',
+        updateUrl: '/mng/evnt/updateEvnt.do',
+        /*<![CDATA[*/
+        evntid: /*[[${evntInfo.evntid}]]*/null,
+        /*]]>*/
+
+        init() {
+            this.validateForm();
+            this.editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
+        },
+
+        validateForm() {
+            $('#evntForm').validate({
+                ignore: [],
+                rules: {
+                    bgngDe: {required: true},
+                    endDe: {required: true},
+                    prsntnDe: {required: true},
+                    ttl: {required: true},
+                    cn: {required: true}
+                },
+                messages: {
+                    bgngDe: {required: "접수기간 시작 일자를 입력해 주십시오."},
+                    endDe: {required: "접수기간 종료 일자를 입력해 주십시오."},
+                    prsntnDe: {required: "당첨자 발표일을 입력해 주십시오."},
+                    ttl: {required: "제목을 입력해 주십시오."},
+                    cn: {required: "내용을 입력해 주십시오."}
+                }
+            });
+        },
+
+        save() {
+            var url = evntDetail.insertUrl;
+            if (this.evntid != null) {
+                url = evntDetail.updateUrl;
+            }
+
+            var editorData = this.editor.getData();
+            $("#cn").val(editorData);
+
+            if (!$('#evntForm').valid()) return;
+
+            var $bgngDe = $("#bgngDe").val();
+            var $endDe = $("#endDe").val();
+            var $prsntnDe = $('#prsntnDe').val();
+            if (Date.parse($bgngDe) > Date.parse($endDe)) {
+                alert('시작 일자는 종료 일자보다 클 수 없습니다.');
+                return;
+            }
+
+            if (Date.parse($endDe) > Date.parse($prsntnDe)) {
+                alert('종료 일자는 발표 일자보다 클 수 없습니다.');
+                return;
+            }
+
+            if (!confirm(url == evntDetail.updateUrl ? '이벤트를 수정하시겠습니까?' : '이벤트를 등록하시겠습니까?')) return;
+
+            var formData = $('#evntForm').serializeArray();
+            formData = formData.concat({"name": "evntid", "value": this.evntid});
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    type: 'post',
+                    data: formData,
+                    url: url,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.result == "success") {
+                            alert(response.msg);
+                            url == evntDetail.insertUrl ? evntList.gridHelper.resetListContent() : evntList.gridHelper.resetPageContent();
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+    };
+
+    $(function () {
+        evntDetail.init();
+
+        $('#multiFileInput').on("change", function (event) {
+
+            var objFile = document.querySelector('#multiFileInput');
+            var formData = new FormData();
+            var content = "";
+
+            for (i = 0; i < objFile.files.length; i++) {
+                formData.append("files", objFile.files[i]);
+            }
+
+            formData.append("filegrpid", $("#filegrpid").val());
+            formData.append("filegrpNm", "evnt_file");
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: '/uploadMultipleFiles.do',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.result == 'fail') {
+                            alert(response.msg);
+                        } else {
+                            if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                                $("#filegrpid").val(response[0].filegrpid);
+                            }
+
+                            for (i = 0; i < response.length; i++) {
+                                content = "<span class ='label label-inverse' id='" + response[i].fileid + "'>" + response[i].orginlFileNm;
+                                content += "<a class='text-white' href=javascript:fn_deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>";
+                                $('#multipleFileUploadSuccess').append(content);
+                            }
+                        }
+                        closeWorkProgress();
+                    }
+                });
+                $("#multiFileInput").val("");
+            }
+        });
+    });
+
+    function fn_deleteFileList(fileid, fileIdntfcKey) {
+        if (!confirm("파일을 삭제하시겠습니까?")) {
+            return;
+        }
+        fn_deleteFile(fileid, fileIdntfcKey);
+    }
+
+    function fn_deleteFile(fileid, fileIdntfcKey) {
+        var deleteFileUrl = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
+        $.ajax({
+            url: deleteFileUrl,
+            type: 'GET',
+            cache: false,
+            dataType: 'json',
+            success: function (data) {
+                if (data.result == "success") {
+                    $("#" + fileid).remove();
+                    alert("파일삭제가 완료 되었습니다.");
+                } else {
+                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                }
+            },
+            error: function (error) {
+            }
+        })
+    };
+</script>
+

@@ -20,6 +20,15 @@ public interface SecurityProperties {
 	*/
 	public String getDEF_USER_LOGIN_INFO_QUERY();
 	
+	/**
+    * 디지털원패스 사용자 로그인 정보를 확인하기 위한 SQL 반환.
+    *
+    * @Title       : getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY 
+    * @Description : 디지털원패스 사용자 로그인 정보를 확인하기 위한 SQL 반환.
+    * @return String 디지털원패스 사용자 로그인 정보를 확인하기 위한 SQL 문자열 
+    */
+    public String getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY();
+	
     /**
     * 사용자에게 부여된 역할을 확인하기 위한 SQL 반환.
     *

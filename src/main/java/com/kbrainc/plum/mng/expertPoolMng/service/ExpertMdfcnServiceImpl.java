@@ -33,6 +33,9 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
     @Autowired
     private FileDao fileDao;
 
+    @Autowired
+    private ExpertPoolMngDao expertPoolMngDao;
+
     @Override
     public List<ExpertMdfcnVo> selectExpertMdfcnList(ExpertMdfcnVo expertMdfcnVo) throws Exception {
         return expertMdfcnDao.selectExpertMdfcnList(expertMdfcnVo);
@@ -92,23 +95,36 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
 
     @Override
     @Transactional
-    public int updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+    public int updateStts(ExpertMdfcnVo expertMdfcnVo, ExpertLogVo expertLogVo) throws Exception {
         int retVal = 0;
         /*변경 승인시 기존의 전문가 정보를 모두 제거후 새로운 정보로 교체*/
-        if (expertMdfcnVo.getSttsCd().equals("137105")) {
-            retVal += expertMdfcnDao.deleteExpertCareer(expertMdfcnVo);
+        if (expertMdfcnVo.getSttsCd().equals("152102")) {
+        /*    retVal += expertMdfcnDao.deleteExpertCareer(expertMdfcnVo);
             retVal += expertMdfcnDao.deleteExpertCrtfct(expertMdfcnVo);
             retVal += expertMdfcnDao.deleteExpertActvtRgn(expertMdfcnVo);
             retVal += expertMdfcnDao.deleteExpertActvtScope(expertMdfcnVo);
             retVal += expertMdfcnDao.deleteExpertHdof(expertMdfcnVo);
             retVal += expertMdfcnDao.deleteExpertSbjct(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertTrgt(expertMdfcnVo);
-            ExpertVo expertVo = selectExpertMdfcnInfo(expertMdfcnVo);
-//            retVal += expertMdfcnDao.insertExpertCareer(expertVo.getExpertCareerList());
+            retVal += expertMdfcnDao.deleteExpertTrgt(expertMdfcnVo);*/
 
+            ExpertVo expertVo = selectExpertMdfcnInfo(expertMdfcnVo);
+            expertVo.setUser(expertLogVo.getUser());
+
+            /*
+                1. 재직사항 / 경력사항 / 자격증 수정
+                2. 기본정보 수정
+                3. 활동분야 / 전문분야 수정
+            */
+
+            /*retVal += expertMdfcnDao.insertExpertHdof(expertVo); //재직사항
+            retVal += expertMdfcnDao.insertExpertCrtfct(expertVo); //자격취득사항
+            retVal += expertMdfcnDao.insertExpertCareer(expertVo); //경력사항
+            retVal += expertMdfcnDao.updateExpertInfo(expertVo); //기본정보 수정*/
         }
 
-        retVal += expertMdfcnDao.updateSttsCd(expertMdfcnVo);
+        /*retVal += expertMdfcnDao.updateStts(expertMdfcnVo);
+        expertPoolMngDao.insertExpertLog(expertLogVo);
+*/
         return retVal;
     }
 }

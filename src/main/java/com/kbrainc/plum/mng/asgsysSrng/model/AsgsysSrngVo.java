@@ -68,20 +68,32 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 검색 등록전문가 수 */
     private String regExprtCnt;
 
-    /** 검색 사용자ID(계정명) 그룹*/
+    /** 사용자ID(계정명) 그룹*/
     private String userAcntGrp;
 
-    /** 검색 사용자ID(userid) 그룹*/
+    /** 사용자ID(userid) 그룹*/
     private String useridGrp;
 
-    /** 검색 사용자 명 그룹*/
+    /** 사용자 명 그룹*/
     private String userNmGrp;
 
-    /** 검색 사용자 이메일 그룹 */
+    /** 사용자 이메일 그룹 */
     private String userEmlGrp;
 
-    /** 검색 사용자 모바일 그룹 */
+    /** 사용자 모바일 그룹 */
     private String userMoblphonGrp;
+
+    /** 지원단 계정 */
+    private String sprtgrpAcnt;
+
+    /** 지원단 이름 */
+    private String sprtgrpNm;
+
+    /** 지원단 이메일 */
+    private String sprtgrpEml;
+
+    /** 지원단 모바일번호 */
+    private String sprtgrpMoblphon;
 
     /** 검색 숙박여부 */
     private String searchStyYn;
@@ -94,6 +106,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 심사위원 심사상태 */
     private String searchSrngSttsCd;
+
+    /** 심사위원 심사 총점평균 */
+    private Integer sumAvg;
 
     /** 지원단 심사상태 */
     private String searchSrgnSttsCd;
@@ -143,6 +158,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 프로그램아이디 */
 	private Integer prgrmid;
+
+	/** 운영관리 프로그램아이디 */
+	private Integer operMngPrgrmid;
 
 	/** 트리순서 */
 	private Integer treeOrd;
@@ -200,6 +218,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 파일그룹아이디 */
 	private Integer filegrpid;
+
+	/** 신청 첨부파일 아이디 */
+	private Integer aplyFilegrpid;
 
     /** 상태_코드 */
 	private String sttsCd;
@@ -513,7 +534,10 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private BigDecimal etcIncm;
 
 	/** 자부담 */
-	private String slfpy;
+	private BigDecimal slfpy;
+
+	/** 예산 구성 총계 */
+	private BigDecimal btgSum;
 
 	/** 운영_이전_홍보_시기 */
 	private String operBfrPrmtnSess;
@@ -557,6 +581,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 지원단 ID */
     private String sprtgrpid;
 
+    /** 지원단 ID (이전)*/
+    private String bfrSprtgrpid;
+
     /** 보완요청 ID */
     private String splmntDmndOpnn;
 
@@ -588,11 +615,39 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String rgnCdNm;
 
     /** 제출ID */
-    private String sbmsnid;
+    private Integer sbmsnid;
 
     /** 제출 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
     private Date sbmsnDt;
+
+    private Integer colCnt;
+
+    /** 동적 항목을 위한 변수 */
+    /** id */
+    private Integer colId1;
+    private Integer colId2;
+    private Integer colId3;
+    private Integer colId4;
+    private Integer colId5;
+    private Integer colId6;
+    private Integer colId7;
+    private Integer colId8;
+    private Integer colId9;
+    private Integer colId10;
+
+    private String colVal1;
+    private String colVal2;
+    private String colVal3;
+    private String colVal4;
+    private String colVal5;
+    private String colVal6;
+    private String colVal7;
+    private String colVal8;
+    private String colVal9;
+    private String colVal10;
+
+    /** 동적 항목을 위한 변수 */
 
     /** KEY COUNT */
     private Integer keyCnt;
@@ -608,6 +663,12 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 심사양식 목록*/
     private List<DsgnSrngFormVo> dsgnSrngFormLst;
+
+    /** 지출항목 목록*/
+    private List<ExpndArtclVo> expndArtclLst;
+
+    /** 교구 및 시설 목록*/
+    private List<TchaidFcltVo> tchaidFcltLst;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

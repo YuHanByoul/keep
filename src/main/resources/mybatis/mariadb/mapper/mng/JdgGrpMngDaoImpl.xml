@@ -43,7 +43,7 @@
         <include refid="PaginationMapper.header"></include>
             SELECT A.GRP_ID, A.GRP_NM, A.USE_YN, A.REG_DT, COUNT(B.USERID) AS EXPRT_CNT
             FROM TB_ASS_EXPRT_GRP A
-            LEFT OUTER JOIN TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
+                LEFT OUTER JOIN TB_ASS_EXPRT_GRP_MAPNG B ON A.GRP_ID = B.GRP_ID
             WHERE 1=1
             <if test="searchKeyword != '' and searchKeyword != null">
                 AND A.GRP_NM LIKE CONCAT('%',#{searchKeyword},'%')
@@ -52,7 +52,6 @@
                 AND A.USE_YN = #{searchUseYn}
             </if>
             GROUP BY A.GRP_ID
-
         <include refid="PaginationMapper.footer"></include>
     </select>
 
@@ -89,46 +88,36 @@
     <select id="selectJdgGrpMngExpertSearchList"
             resultType="com.kbrainc.plum.mng.ass.jdgGrpMng.model.JdgGrpExpertVo">
         <include refid="PaginationMapper.header"/>
-        SELECT A.USERID,
-        A.ACNT,
-        A.NM,
-        A.EML,
-        A.MOBLPHON,
-        GROUP_CONCAT(B.CD_NM SEPARATOR', ') RGN_CD_NM,
-        GROUP_CONCAT(C.CD_NM SEPARATOR', ') SBJCT_CD_NM,
-        GROUP_CONCAT(D.CRTFCT_NM SEPARATOR', ') CRTFCT_NM,
-        A.REG_DT,
-        A.MDFCN_DT
-        FROM TB_CMM_USER A
-        INNER JOIN TB_ASS_EXPRT E ON A.USERID = E.USERID
-        LEFT OUTER JOIN (
-        SELECT A.USERID, B.CD_NM, B.CD
-        FROM TB_ASS_EXPRT_ACTVT_RGN A
-        INNER JOIN TB_CMM_CD B ON A.RGN_CD = B.CD
-        ) B
-        ON A.USERID = B.USERID
-        LEFT OUTER JOIN (
-        SELECT A.USERID, B.CD_NM, B.CD
-        FROM TB_ASS_EXPRT_SBJCT A
-        INNER JOIN TB_CMM_CD B ON A.SBJCT_CD = B.CD
-        ) C
-        ON A.USERID = C.USERID
-        LEFT OUTER JOIN TB_ASS_EXPRT_CRTFCT D ON A.USERID = D.USERID
-        WHERE 1=1
-        <if test="acntOrNm !=null and acntOrNm != '' ">
-            AND A.ACNT LIKE CONCAT('%',#{acntOrNm},'%') OR A.NM LIKE
-            CONCAT('%',#{acntOrNm}, '%')
-        </if>
-        <if test="crtfctNm != null and crtfctNm != '' ">
-            AND D.CRTFCT_NM LIKE CONCAT('%', #{crtfctNm}, '%')
-        </if>
-        <if test="sbjctCd != null and sbjctCd != '' ">
-            AND C.CD = #{sbjctCd}
-        </if>
-        <if test="rgnCd != null and rgnCd != '' ">
-            AND B.CD = #{rgnCd}
-        </if>
-        GROUP BY A.USERID
+            SELECT A.*
+            FROM
+                (
+                SELECT
+                    B.USERID,
+                    B.ACNT,
+                    B.NM,
+                    B.EML,
+                    B.MOBLPHON,
+                    B.REG_DT,
+                    B.MDFCN_DT,
+                    (SELECT GROUP_CONCAT(D.CD_NM SEPARATOR ', ') FROM TB_ASS_EXPRT_ACTVT_RGN C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID = A.USERID) AS RGN_CD_NM,
+                    (SELECT GROUP_CONCAT(D.CD_NM SEPARATOR ', ') FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID= A.USERID) AS SBJCT_CD_NM,
+                    (SELECT GROUP_CONCAT(C.CRTFCT_NM SEPARATOR ', ') FROM TB_ASS_EXPRT_CRTFCT C WHERE C.USERID = A.USERID) AS CRTFCT_NM
+                FROM TB_ASS_EXPRT A
+                INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
+            ) A
+            WHERE 1=1
+            <if test="acntOrNm !=null and acntOrNm != '' ">
+                AND (A.ACNT LIKE CONCAT('%',#{acntOrNm},'%') OR A.NM LIKE CONCAT('%',#{acntOrNm}, '%'))
+            </if>
+            <if test="crtfctNm != null and crtfctNm != '' ">
+                AND A.CRTFCT_NM LIKE CONCAT('%', #{crtfctNm}, '%')
+            </if>
+            <if test="sbjctCdNm != null and sbjctCdNm != '' ">
+                AND A.SBJCT_CD_NM LIKE CONCAT('%', #{sbjctCdNm}, '%')
+            </if>
+            <if test="rgnCdNm != null and rgnCdNm != '' ">
+                AND A.RGN_CD_NM LIKE CONCAT('%', #{rgnCdNm}, '%')
+            </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 

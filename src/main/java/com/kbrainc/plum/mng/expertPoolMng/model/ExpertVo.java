@@ -140,17 +140,29 @@ public class ExpertVo extends ParentRequestVo {
     /** 이메일 */
     private String eml;
 
-    /** 전문분야(대상) */
-    private String exprtTrgt;
+    /** 전문분야(대상) 코드 */
+    private String exprtTrgtCd;
 
-    /** 전문분야(환경주제) */
-    private String exprtSbjct;
+    /** 전문분야(환경주제) 코드 */
+    private String exprtSbjctCd;
 
-    /** 가능 활동범위 */
-    private String exprtActvtScope;
+    /** 가능 활동범위 코드 */
+    private String exprtActvtScopeCd;
 
-    /** 주요활동지역 */
-    private String exprtActvtRgn;
+    /** 주요활동지역 코드 */
+    private String exprtActvtRgnCd;
+
+    /** 전문분야(대상) 코드 이름 */
+    private String exprtTrgtCdNm;
+
+    /** 전문분야(환경주제) 코드 이름 */
+    private String exprtSbjctCdNm;
+
+    /** 가능 활동범위 코드 이름 */
+    private String exprtActvtScopeCdNm;
+
+    /** 주요활동지역 코드 이름 */
+    private String exprtActvtRgnCdNm;
 
     /** 경력사항 리스트 */
     List<ExpertCareerVo> expertCareerList;
@@ -200,5 +212,71 @@ public class ExpertVo extends ParentRequestVo {
         }
     }
 
+    public void setExprtTrgtCd(String exprtTrgtCd) {
+        this.exprtTrgtCd = exprtTrgtCd;
+        if (CommonUtil.isEmpty(this.exprtTrgtCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtTrgtCd);
+                this.exprtTrgtCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
 
+    public void setExprtSbjctCd(String exprtSbjctCd) {
+        this.exprtSbjctCd = exprtSbjctCd;
+        if (CommonUtil.isEmpty(this.exprtSbjctCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtSbjctCd);
+                this.exprtSbjctCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
+
+    public void setExprtActvtScopeCd(String exprtActvtScopeCd) {
+        this.exprtActvtScopeCd = exprtActvtScopeCd;
+        if (CommonUtil.isEmpty(this.exprtActvtScopeCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtActvtScopeCd);
+                this.exprtActvtScopeCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
+
+    public void setExprtActvtRgnCd(String exprtActvtRgnCd) {
+        this.exprtActvtRgnCd = exprtActvtRgnCd;
+        if (CommonUtil.isEmpty(this.exprtActvtRgnCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.exprtActvtRgnCd);
+                this.exprtActvtRgnCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.expertPoolMng.service;
 
+import com.kbrainc.plum.mng.expertPoolMng.model.ExpertLogVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertMdfcnVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertVo;
 
@@ -28,5 +29,5 @@ public interface ExpertMdfcnService {
 
     public ExpertMdfcnVo selectExpertMdfcn(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
-    public int updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int updateStts(ExpertMdfcnVo expertMdfcnVo, ExpertLogVo expertLogVo) throws Exception;
 }
