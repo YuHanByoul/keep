@@ -1,11 +1,14 @@
 package com.kbrainc.plum.mng.evnt.service;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.evnt.model.EvntDao;
 import com.kbrainc.plum.mng.evnt.model.EvntVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +31,7 @@ import java.util.List;
 public class EvntServiceImpl extends PlumAbstractServiceImpl implements EvntService {
 
     private final EvntDao evntDao;
+    private final FileDao fileDao;
 
     /**
      * 이벤트 목록 조회
@@ -54,7 +58,15 @@ public class EvntServiceImpl extends PlumAbstractServiceImpl implements EvntServ
      */
     @Override
     public EvntVo selectEvntInfo(EvntVo evntVo) throws Exception {
-        return evntDao.selectEvntInfo(evntVo);
+        EvntVo evntInfo = evntDao.selectEvntInfo(evntVo);
+        if (evntInfo.getFilegrpid() != null && !evntInfo.getFilegrpid().equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(evntInfo.getFilegrpid().toString()));
+            ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
+            evntInfo.setFileVoList(fileList);
+        }
+
+        return evntInfo;
     }
 
     /**

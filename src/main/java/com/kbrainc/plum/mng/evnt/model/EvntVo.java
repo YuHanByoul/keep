@@ -1,5 +1,7 @@
 package com.kbrainc.plum.mng.evnt.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
@@ -7,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 참여신청관리 > 이벤트Vo 클래스
@@ -26,42 +29,110 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class EvntVo extends ParentRequestVo {
+    /**
+     * 로그인 사용자 정보
+     */
     private UserVo user;
 
+    /**
+     * 이벤트 아이디 
+     */
     private Integer evntid;
 
+    /**
+     * 제목
+     */
     @NotEmpty
     private String ttl;
 
+    /**
+     * 내용
+     */
     @NotEmpty
     private String cn;
 
+    /**
+     * 접수시작일
+     */
     @NotEmpty
-    private Date bgngDe;
+    private String bgngDe;
 
+    /**
+     * 접수종료일
+     */
     @NotEmpty
-    private Date endDe;
+    private String endDe;
 
+    /**
+     * 당첨자발표일
+     */
     @NotEmpty
-    private Date prsntnDe;
+    private String prsntnDe;
 
-    @NotEmpty
+    /**
+     * 신청링크
+     */
     private String aplyUrl;
 
+    /**
+     * 조회수
+     */
     private Integer hits;
 
+    /**
+     * 파일그룹아이디
+     */
     private Integer filegrpid;
 
+    /**
+     * 상태
+     */
+    private String stts;
+
+    /**
+     * 삭제여부
+     */
     private String delYn;
 
+    /**
+     * 수정일
+     */
     private Date mdfcnDt;
 
+    /**
+     * 등록일
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
 
+    /**
+     * 수정자 아이디
+     */
     private Integer mdfrid;
 
+    /**
+     * 등록자 아이디
+     */
     private Integer rgtrid;
 
+    /**
+     * 등록자 이름
+     */
     private String nm;
+
+    /**
+     * 등록자 아이디
+     */
+    private String acnt;
+
+    /**
+     * 등록기관 이름
+     */
+    private String instNm;
+
+    /**
+     * 파일VO 리스트
+     */
+    private List<FileVo> fileVoList;
 
 }

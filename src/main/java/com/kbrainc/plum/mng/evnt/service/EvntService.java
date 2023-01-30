@@ -1,6 +1,5 @@
 package com.kbrainc.plum.mng.evnt.service;
 
-import com.kbrainc.plum.mng.evnt.model.EvntDao;
 import com.kbrainc.plum.mng.evnt.model.EvntVo;
 
 import java.util.List;

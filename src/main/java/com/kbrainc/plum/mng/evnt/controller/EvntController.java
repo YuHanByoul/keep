@@ -2,12 +2,14 @@ package com.kbrainc.plum.mng.evnt.controller;
 
 import com.kbrainc.plum.mng.evnt.model.EvntVo;
 import com.kbrainc.plum.mng.evnt.service.EvntService;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -94,7 +96,7 @@ public class EvntController {
     public String evtForm(EvntVo evntVo, Model model) throws Exception {
         EvntVo evntInfo = evntService.selectEvntInfo(evntVo);
         if (evntInfo == null) evntInfo = new EvntVo();
-        model.addAttribute("evntInfo", new EvntVo());
+        model.addAttribute("evntInfo", evntInfo);
         return "mng/evnt/evntForm";
     }
 
@@ -114,28 +116,27 @@ public class EvntController {
     public Map<String, Object> insertEvnt(@Valid EvntVo evntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<String, Object>();
 
-         /*   if (bindingResult.hasErrors()) {
-                FieldError fieldError = bindingResult.getFieldError();
-                if (fieldError != null) {
-                    map.put("msg", fieldError.getDefaultMessage());
-                }
-                return map;
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                result.put("msg", fieldError.getDefaultMessage());
             }
+            return result;
+        }
 
-            jdgGrpVo.setUser(user);
+        evntVo.setUser(user);
 
-            int retVal = 0;
+        int retVal = 0;
 
-            retVal = jdgGrpMngService.insertJdgGrpInfo(jdgGrpVo);
+        retVal = evntService.insertEvnt(evntVo);
 
-            if (retVal > 0) {
-                map.put("result", Constant.REST_API_RESULT_SUCCESS);
-                map.put("msg", "등록에 성공하였습니다.");
-            } else {
-                map.put("result", Constant.REST_API_RESULT_FAIL);
-                map.put("msg", "등록에 실패했습니다.");
-            }
-        */
+        if (retVal > 0) {
+            result.put("result", Constant.REST_API_RESULT_SUCCESS);
+            result.put("msg", "등록에 성공하였습니다.");
+        } else {
+            result.put("result", Constant.REST_API_RESULT_FAIL);
+            result.put("msg", "등록에 실패했습니다.");
+        }
 
         return result;
     }
@@ -156,27 +157,27 @@ public class EvntController {
     public Map<String, Object> updateEvnt(@Valid EvntVo evntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<String, Object>();
 
-         /*   if (bindingResult.hasErrors()) {
-                FieldError fieldError = bindingResult.getFieldError();
-                if (fieldError != null) {
-                    map.put("msg", fieldError.getDefaultMessage());
-                }
-                return map;
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                result.put("msg", fieldError.getDefaultMessage());
             }
+            return result;
+        }
 
-            jdgGrpVo.setUser(user);
+        evntVo.setUser(user);
 
-            int retVal = 0;
+        int retVal = 0;
 
-            retVal = jdgGrpMngService.insertJdgGrpInfo(jdgGrpVo);
+        retVal = evntService.updateEvnt(evntVo);
 
-            if (retVal > 0) {
-                map.put("result", Constant.REST_API_RESULT_SUCCESS);
-                map.put("msg", "등록에 성공하였습니다.");
-            } else {
-                map.put("result", Constant.REST_API_RESULT_FAIL);
-                map.put("msg", "등록에 실패했습니다.");
-            }*/
+        if (retVal > 0) {
+            result.put("result", Constant.REST_API_RESULT_SUCCESS);
+            result.put("msg", "수정에 성공하였습니다.");
+        } else {
+            result.put("result", Constant.REST_API_RESULT_FAIL);
+            result.put("msg", "수정에 실패했습니다.");
+        }
 
         return result;
     }
