@@ -23,6 +23,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestDao;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
@@ -71,6 +72,7 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
     }
     
     @Override
+    @Transactional
     public int insertContest(PublicContestVo publicContestVo) throws Exception {
         // TODO Auto-generated method stub
         int returnVal = publicContestDao.insertContest(publicContestVo);
@@ -103,6 +105,7 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
     }
 
     @Override
+    @Transactional
     public int updateContest(PublicContestVo publicContestVo) throws Exception {
         // TODO Auto-generated method stub
         int returnVal = publicContestDao.updateContest(publicContestVo);

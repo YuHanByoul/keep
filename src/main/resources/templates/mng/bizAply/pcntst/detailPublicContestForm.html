@@ -197,10 +197,10 @@
 	            </div>
 	        </div>
 	        <!-- 2차 심사 설정 -->
-	        <div class="card-header p-t-0 p-b-0">
+	        <div class="card-header p-t-0 p-b-0 secondForm" style="display:none;">
 	            <h3 class="sub-title"><strong>2차 심사 설정</strong></h3>
 	        </div>
-	        <div class="card-block-small p-t-0">
+	        <div class="card-block-small p-t-0 secondForm" style="display:none;">
 	            <div class="mb-3 form-group row">
 	                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>담당자 배정</strong></div>
 	                <div class="col-sm-12 btn-group-sm">
@@ -419,6 +419,7 @@
     var uploadFileCnt = 0;
     var managerSearchModal;
     
+    // 담당자 배정 팝업 호출
     var openSearchModal =(cycl)=> {
         var url = "/mng/bizAply/pcntst/managerSearchPopup.html?pcntstid="+pcntstid+"&cycl="+cycl;
         $("#searchModal").load(url, function(response, status, xhr) {
@@ -434,6 +435,7 @@
         //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
         editor = CKEDITOR.replace('bsnsCn', {enterMode: CKEDITOR.ENTER_BR});
         
+        // 사업기간 설정 daterangepicker
 		$("#bsnsBgng").daterangepicker({
 		    autoUpdateInput: false,
 		    locale: {
@@ -441,12 +443,14 @@
 		    },
 		});
 		
+        // 사업기간 설정시 사업 시작일과 종료일을 각각 저장해준다.
 		$("#bsnsBgng").on('apply.daterangepicker', function(ev, picker) {
 			$("#bsnsBgngDe").val(picker.startDate.format('YYYY-MM-DD'));
             $("#bsnsEndDe").val(picker.endDate.format('YYYY-MM-DD'));
             $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
         });
 
+        // 사업기간 설정 daterangepicker에서 cancel 버튼 클릭 시 선택한 기간을 취소한다.
         $("bsnsBgng").on('cancel.daterangepicker', function(ev, picker) {
             $(this).val('');
         });
@@ -488,8 +492,6 @@
             }
         });
         
-        $("#srngFormidScnd").attr("disabled", true);
-        
         if ($("#atchfileCnt").val() != null && $("#atchfileCnt").val() != 0) {
             atchfileCnt = $("#atchfileCnt").val()
         }
@@ -497,6 +499,7 @@
             atchfileSize = $("#atchfileSize").val()
         }
         
+        // 사업비 교부횟수가 2회일 경우 교부신청기간(2차), 자금집행기간(2차) 설정을 활성화 한다.
         $("input[name='wctDelvryCntYn']").change(function() {
         	if ($(this).val() == "Y") {
         		$("input[name='delvryAplyBgngDtScnd']").attr("disabled", false);
@@ -511,6 +514,7 @@
         	}
         });
         
+        // 중간보고 사용여부가 'Y'일 경우 중간보고기간 설정을 활성화 한다.
         $("input[name='mdlReportYn']").change(function() {
         	if ($(this).val() == "Y") {
         		$("input[name='mdlReportBgngDt']").attr("disabled", false);
@@ -521,18 +525,21 @@
         	}
         });
         
+        // 온라인 심사유형이 2차(1차+2차 합산), 2차(1차+2차 평균) 일 경우 2차심사 설정영역을 노출한다.
         $("#onlnSrngTypeCd").change(function() {
             if ($(this).val() == "177103" || $(this).val() == "177104") {
-                $("#srngFormidScnd").attr("disabled", false);
+                $(".secondForm").show();
             } else {
-                $("#srngFormidScnd").attr("disabled", true);
+            	$(".secondForm").hide();
             }
         });
         
+        // 수정화면에서 온라인 심사유형이 2차(1차+2차 합산), 2차(1차+2차 평균) 일 경우 2차심사 설정영역을 노출한다.
         if ($("#onlnSrngTypeCd").val() == "177103" || $("#onlnSrngTypeCd").val() == "177104") {
-        	$("#srngFormidScnd").attr("disabled", false);
+        	$(".secondForm").show();
         }
         
+        // 수정화면에서 사업비 교부횟수가 1회일 경우 교부신청기간(2차), 자금집행기간(2차) 설정을 비활성화 한다.
         if ($("input[name='wctDelvryCntYn']:checked").val() == "N") {
         	$("input[name='delvryAplyBgngDtScnd']").attr("disabled", true);
             $("input[name='delvryAplyEndDtScnd']").attr("disabled", true);
@@ -540,27 +547,26 @@
             $("input[name='cptalExcutEndDtScnd']").attr("disabled", true);
         }
         
+        // 수정화면에서 중간보고 사용여부가 'N'일 경우 중간보고기간 설정을 비활성화 한다.
         if ($("input[name='mdlReportYn']:checked").val() == "N") {
         	$("input[name='mdlReportBgngDt']").attr("disabled", true);
             $("input[name='mdlReportEndDt']").attr("disabled", true);
         }
-        
-        
 	});
 	
+    // 파일업로드
     $('#multiFileInput').on("change", function(event) {
         var objFile = document.querySelector('#multiFileInput');
         var formData = new FormData();
         var content = "";
 
         for( i = 0 ; i < objFile.files.length ; i++) {
-
-               if(uploadFileCnt >= atchfileCnt){
-                   alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
-               }else{
-                   formData.append("files", objFile.files[i]);
-                   uploadFileCnt++;
-               }
+	        if(uploadFileCnt >= atchfileCnt){
+	            alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+	        } else {
+	            formData.append("files", objFile.files[i]);
+	            uploadFileCnt++;
+	        }
         }
 
         formData.append("filegrpid", $("#filegrpid").val());
@@ -587,8 +593,6 @@
                             content =  "<span id='"+response[i].fileid+"' class='label label-inverse' href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm
                             content += "&nbsp;&nbsp;<a href='javascript:void(0)' onclick =uploadFileCnt--;fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') class='text-white'>X</a></span>"
     //                         content += "<a type='button'  class = 'text-white' onclick =uploadFileCnt--;fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></a></span>"
-
-
                             $('#multipleFileUploadSuccess').append(content);
                         }
                     }
@@ -598,12 +602,14 @@
         }
     });
 
+    // 파일삭제
     function fn_deleteFileList(fileid, fileIdntfcKey){
         if(!confirm("파일을 삭제하시겠습니까?")){return;}
         fn_deleteFile(fileid, fileIdntfcKey);
         $("#"+fileid).remove();
     }
 
+    // 파일삭제
     function fn_deleteFile(fileid, fileIdntfcKey){
         var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
           $.ajax({
@@ -625,11 +631,11 @@
          })
     };
     
+    // 저장
     function fn_save(){
-    	var idArr1 = [];
-    	var idArr2 = [];
         if(!($("#insertForm").valid())) return;
         
+        // 온라인 심사유형이 2차(1차+2차 합산), 2차(1차+2차 평균) 일 경우 2차 심사표를 필수 항목으로 설정한다.
         if ($("#onlnSrngTypeCd").val() == "177103" || $("#onlnSrngTypeCd").val() == "177104") {
             if ($("#srngFormidScnd").val() == "" || $("#srngFormidScnd").val() == null) {
             	alert("2차 심사표를 선택해주십시오");
@@ -638,6 +644,7 @@
             }
         }
         
+        // 사업비 교부횟수가 2회일 경우 교부신청기간(2차), 자금집행기간(2차) 입력을 필수로 한다.
         if ($("input[name='wctDelvryCntYn']:checked").val() == "Y") {
         	if ($("input[name='delvryAplyBgngDtScnd']").val() == "" || $("input[name='delvryAplyBgngDtScnd']").val() == null) {
         		alert("교부신청기간(2차) 설정은 필수입니다.");
@@ -661,6 +668,7 @@
         	}
         }
         
+        // 중간보고 사용여부가 'Y'일 경우 중간보고기간 입력을 필수로 한다.
         if ($("input[name='mdlReportYn']:checked").val() == "Y") {
         	if ($("input[name='mdlReportBgngDt']").val() == "" || $("input[name='mdlReportBgngDt']").val() == null) {
         		alert("중간보고기간 설정은 필수입니다.");
@@ -674,7 +682,7 @@
         	}
         }
         
-        // 기간체크
+        // 설정기간체크
         if($("#aplyBgngDt").val() > $("#aplyEndDt").val() ) { alert("신청기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#aplyEndDt"); return; }
         if($("#srngBgngDt").val() > $("#srngEndDt").val() ) { alert("심사기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#srngEndDt"); return; }
         if($("#delvryAplyPrsntnBgngDt").val() > $("#delvryAplyPrsntnEndDt").val() ) { alert("교부신청발표기간 종료일은 시작일 이후여야 합니다."); showErrorMark("#delvryAplyPrsntnEndDt"); return; }
@@ -694,17 +702,6 @@
         	$("#wctDelvryCnt").val("2");
         } else {
         	$("#wctDelvryCnt").val("1");
-        }
-        
-        if ($("[name=pcntstids1]").length > 0) {
-	        $("[name=pcntstids1]").each(function(){
-	            idArr1.push(this.value);
-	        });        	
-        }
-        if ($("[name=pcntstids2]").length > 0) {
-	        $("[name=pcntstids1]").each(function(){
-	            idArr2.push(this.value);
-	        });        	
         }
         
         if(!confirm("저장하시겠습니까?")) return;
@@ -731,7 +728,7 @@
         }
     }
     
-  //담당자 삭제 
+    //담당자 삭제 
     var deleteMng = (num, id) =>{
         $("#mng_list_area_"+num).find("#mng_list_"+id).remove();
     }

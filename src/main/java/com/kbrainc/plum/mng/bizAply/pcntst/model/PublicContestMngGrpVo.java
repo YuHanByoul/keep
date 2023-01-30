@@ -3,7 +3,6 @@ package com.kbrainc.plum.mng.bizAply.pcntst.model;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
