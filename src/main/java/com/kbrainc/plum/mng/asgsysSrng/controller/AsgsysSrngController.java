@@ -427,11 +427,18 @@ public class AsgsysSrngController {
     	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
 
     	//심사점수 목록 조회
-//    	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
+    	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
 
 
 
+    	if(srngScrList.size() > 0) {
+    		model.addAttribute("srngScrList", srngScrList);
 
+    		asgsysSrngVo.setFormid(srngScrList.get(0).getFormid());
+
+    		//심사점수 목록 헤더 조회
+    		model.addAttribute("scrHeader", asgsysSrngService.selectSrngScrHeader(asgsysSrngVo));
+    	}
 
     	//신청 첨부파일
     	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
@@ -1113,6 +1120,7 @@ public class AsgsysSrngController {
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
+    	logger.info(dsgnSrngFormVo.toString())                    ;
     	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
 
     	return "mng/asgsysSrng/jdgsSrngForm";
@@ -1143,7 +1151,7 @@ public class AsgsysSrngController {
     /**
      *
      * @Title       : updateJdgsSrngDetail
-     * @Description : asgsysSrng
+     * @Description : 심사위원심사 수정
      * @param asgsysSrngVo AsgsysSrngVo , TeacherVo TeacherVo객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체

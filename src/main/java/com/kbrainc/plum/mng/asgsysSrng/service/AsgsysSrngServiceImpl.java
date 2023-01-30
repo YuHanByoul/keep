@@ -1140,9 +1140,25 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     * @return List<AsgsysSrngVo>
     * @throws Exception
     */
-//    @Override
-//	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		//return asgsysSrngDao.selectSrngScrList(asgsysSrngVo);
-//	}
+    @Override
+	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+
+		return asgsysSrngDao.selectSrngScrList(asgsysSrngVo);
+	}
+
+    /**
+     * 심사점수 목록 헤더 조회
+     *
+     * @Title : selectSrngScrList
+     * @Description : 심사점수 목록조회
+     * @param asgsysSrngVo
+     * @return List<AsgsysSrngVo>
+     * @throws Exception
+     */
+    @Override
+    public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception{
+
+    	return asgsysSrngDao.selectSrngScrHeader(asgsysSrngVo);
+    }
 
 }

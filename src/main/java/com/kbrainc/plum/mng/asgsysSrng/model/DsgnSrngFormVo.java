@@ -77,6 +77,9 @@ public class DsgnSrngFormVo {
     /** 프로그램아이디*/;
 	private Integer prgrmid;
 
+	/** 심사위원 id*/;
+	private String jdgsid;
+
     /** 등록_일시*/
 	private Date regDt;
 

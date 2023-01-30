@@ -107,6 +107,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 심사위원 심사상태 */
     private String searchSrngSttsCd;
 
+    /** 심사위원 심사 총점평균 */
+    private Integer sumAvg;
+
     /** 지원단 심사상태 */
     private String searchSrgnSttsCd;
 
@@ -612,11 +615,39 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String rgnCdNm;
 
     /** 제출ID */
-    private String sbmsnid;
+    private Integer sbmsnid;
 
     /** 제출 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
     private Date sbmsnDt;
+
+    private Integer colCnt;
+
+    /** 동적 항목을 위한 변수 */
+    /** id */
+    private Integer colId1;
+    private Integer colId2;
+    private Integer colId3;
+    private Integer colId4;
+    private Integer colId5;
+    private Integer colId6;
+    private Integer colId7;
+    private Integer colId8;
+    private Integer colId9;
+    private Integer colId10;
+
+    private String colVal1;
+    private String colVal2;
+    private String colVal3;
+    private String colVal4;
+    private String colVal5;
+    private String colVal6;
+    private String colVal7;
+    private String colVal8;
+    private String colVal9;
+    private String colVal10;
+
+    /** 동적 항목을 위한 변수 */
 
     /** KEY COUNT */
     private Integer keyCnt;
