@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsAmtVo;
 import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsDao;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsOrderVo;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsTchaidVo;
 import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsVo;
-import com.kbrainc.plum.mng.qestnr.model.QestnrVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -41,270 +44,200 @@ public class JntpurchsServiceImpl extends PlumAbstractServiceImpl implements Jnt
      * @return int insert 로우수
      * @throws Exception 예외
      */
-     @Override
-     public int insertJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
-         int retVal = 0;
-         retVal += jntpurchsDao.insertJntpurchs(jntpurchsVo);
-         
-         return retVal;
-     }
+    @Override
+    @Transactional
+    public int insertJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
+        int retVal = 0;
+        // 상품 등록 목록
+        List<JntpurchsTchaidVo> goodsList = jntpurchsVo.getGoodsList();
+        // 금액설정 등록 목록
+        List<JntpurchsAmtVo> amtList = jntpurchsVo.getAmtList();
+        // 1. 공동구매모집 등록
+        retVal += jntpurchsDao.insertJntpurchs(jntpurchsVo);
+        int jntpurchsid = jntpurchsVo.getJntpurchsid();
+        // 2. 상품 등록
+        if(goodsList != null && goodsList.size() > 0) {
+            JntpurchsTchaidVo goods = null;
+            for(int i = 0 ; i < goodsList.size() ; i++) {
+                goods = goodsList.get(i);
+                goods.setUser(jntpurchsVo.getUser());
+                goods.setJntpurchsid(jntpurchsid);
+                retVal += jntpurchsDao.insertJntpurchsGoods(goods);
+            }
+        }
+        // 3. 금액 등록
+        if(amtList != null && amtList.size() > 0) {
+            JntpurchsAmtVo amt = null;
+            for(int i = 0 ; i < amtList.size() ; i++) {
+                amt = amtList.get(i);
+                amt.setUser(jntpurchsVo.getUser());
+                amt.setJntpurchsid(jntpurchsid);
+                retVal += jntpurchsDao.insertJntpurchsAmt(amt);
+            }
+        }
+        
+        return retVal;
+    }
      
-     /**
-      * 공동구매모집 목록 조회
-      *
-      * @Title : selectJntpurchsList
-      * @Description : 공동구매모집 목록 조회
-      * @param jntpurchsVo JntpurchsVo 객체
-      * @return List<JntpurchsVo> 공동구매모집 목록
-      * @throws Exception 예외
-      */
-     @Override
-     public List<JntpurchsVo> selectJntpurchsList(JntpurchsVo jntpurchsVo) throws Exception {
-         List<JntpurchsVo> jntpurchs =  jntpurchsDao.selectJntpurchsList(jntpurchsVo);
-         return jntpurchsDao.selectJntpurchsList(jntpurchsVo);
-     }
+    /**
+     * 공동구매모집 목록 조회
+     *
+     * @Title : selectJntpurchsList
+     * @Description : 공동구매모집 목록 조회
+     * @param jntpurchsVo JntpurchsVo 객체
+     * @return List<JntpurchsVo> 공동구매모집 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<JntpurchsVo> selectJntpurchsList(JntpurchsVo jntpurchsVo) throws Exception {
+        return jntpurchsDao.selectJntpurchsList(jntpurchsVo);
+    }
      
-//    /**
-//     * 설문지 목록 조회
-//     *
-//     * @Title : selectQestnrList
-//     * @Description : 설문지 목록 조회
-//     * @param qestnrVo QestnrVo 객체
-//     * @return List<QestnrVo> 설문지 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<QestnrVo> selectQestnrList(QestnrVo qestnrVo) throws Exception {
-//        return qestnrDao.selectQestnrList(qestnrVo);
-//    }
-//    
-//    /**
-//     * 설문지 정보 조회
-//     *
-//     * @Title : selectQestnrInfo
-//     * @Description : 설문지 정보 조회
-//     * @param qestnrVo QestnrVo 객체
-//     * @return QestnrVo QestnrVo 객체
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public QestnrVo selectQestnrInfo(QestnrVo qestnrVo) throws Exception {
-//        return qestnrDao.selectQestnrInfo(qestnrVo);
-//    }
-//      
-//    /**
-//     * 설문지 정보 업데이트
-//     *
-//     * @Title : updateQestnr
-//     * @Description : 설문지 정보 업데이트
-//     * @param qestnrVo QestnrVo 객체
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public int updateQestnr(QestnrVo qestnrVo) throws Exception {
-//        int retVal = 0;
-//        retVal = qestnrDao.updateQestnr(qestnrVo);        
-//             
-//        return retVal;
-//    }
-//     
-//     /**
-//      * 설문지 문항 목록 조회
-//      *
-//      * @Title : selectQitemList
-//      * @Description : 설문지 목록 조회
-//      * @param QitemVo qitemVo 객체
-//      * @return List<QitemVo> 설문지 문항 목록
-//      * @throws Exception 예외
-//      */
-//     @Override
-//     public List<QitemVo> selectQitemList(QitemVo qitemVo) throws Exception {
-//         return qestnrDao.selectQitemList(qitemVo);
-//     }
-//    
-//    /**
-//    * 설문지 문항 정보 등록
-//     *
-//     * @Title : insertQitem 
-//     * @Description : 설문지 문항 정보 등록
-//     * @param qitemVo QitemVo
-//     * @return int insert 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    @Transactional
-//    public int insertQitem(QitemVo qitemVo) throws Exception {
-//        int retVal = 0;
-//        retVal = qestnrDao.insertQitem(qitemVo);
-//        List<QitemExVo> exampleList = qitemVo.getExampleList();
-//        if(exampleList != null && exampleList.size() > 0) {
-//            QitemExVo qitemExVo = null;
-//            for(int i = 0 ; i < exampleList.size() ; i++) {
-//                qitemExVo = exampleList.get(i);
-//                qitemExVo.setUser(qitemVo.getUser());
-//                qitemExVo.setQitemid(qitemVo.getQitemid());
-//                retVal = qestnrDao.insertQitemEx(qitemExVo);
-//            }
-//        }
-//        
-//        return retVal;
-//    }
-//    
-//    /**
-//     * 설문지 문항 정보 조회
-//     *
-//     * @Title : selectQitemInfo
-//     * @Description : 설문지 문항 정보 조회
-//     * @param qitemVo QitemVo 객체
-//     * @return QitemVo QitemVo 객체
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public QitemVo selectQitemInfo(QitemVo qitemVo) throws Exception {
-//        return qestnrDao.selectQitemInfo(qitemVo);
-//    }
-//    
-//    /**
-//     * 설문지 문항 보기 목록 조회
-//     *
-//     * @Title : selectQitemExList
-//     * @Description : 설문지 문항 보기 목록 조회
-//     * @param QitemVo qitemVo 객체
-//     * @return List<QitemVo> 설문지 문항 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<QitemExVo> selectQitemExList(QitemVo qitemVo) throws Exception {
-//        return qestnrDao.selectQitemExList(qitemVo);
-//    }
-//    
-//    /**
-//     * 설문지 문항 정보 업데이트
-//     *
-//     * @Title : updateQitem
-//     * @Description : 설문지 정보 업데이트
-//     * @param qitemVo QitemVo 객체
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    @Transactional
-//    public int updateQitem(QitemVo qitemVo) throws Exception {
-//        int retVal = 0;
-//        // 1. 이전 등록된 보기 삭제
-//        String[] deleteIds = new String[1];
-//        deleteIds[0] = String.valueOf(qitemVo.getQitemid());
-//        qitemVo.setDeleteQitemids(deleteIds);
-//        retVal = qestnrDao.deleteQitemEx(qitemVo);
-//        // 2. 문항 정보 업데이트
-//        retVal = qestnrDao.updateQitem(qitemVo);
-//        // 3. 보기 등록
-//        List<QitemExVo> exampleList = qitemVo.getExampleList();
-//        if(exampleList != null && exampleList.size() > 0) {
-//            QitemExVo qitemExVo = null;
-//            for(int i = 0 ; i < exampleList.size() ; i++) {
-//                qitemExVo = exampleList.get(i);
-//                qitemExVo.setUser(qitemVo.getUser());
-//                qitemExVo.setQitemid(qitemVo.getQitemid());
-//                retVal = qestnrDao.insertQitemEx(qitemExVo);
-//            }
-//        }
-//             
-//        return retVal;
-//    }
-//    
-//    /**
-//     * 설문지 문항 순서 업데이트
-//     *
-//     * @Title : updateQestnr
-//     * @Description : 설문지 정보 업데이트
-//     * @param qitemVo QitemVo 객체
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    @Transactional
-//    public int updateQitemOrdr(QitemVo qitemVo) throws Exception {
-//        int retVal = 0;
-//        int ordr = qitemVo.getOrdr();
-//        String dir = qitemVo.getChangeDir();
-//        // 1. 다음(이전) 문항 조회
-//        QitemVo changeQitemVo = null;
-//        if(dir.equals("next")) { // 다음 문항
-//            changeQitemVo = qestnrDao.selectNextQitemInfo(qitemVo);
-//            qitemVo.setOrdr(ordr + 1);
-//            changeQitemVo.setOrdr(changeQitemVo.getOrdr() - 1);
-//        } else { // 이전 문항
-//            changeQitemVo = qestnrDao.selectPrevQitemInfo(qitemVo);
-//            qitemVo.setOrdr(ordr - 1);
-//            changeQitemVo.setOrdr(changeQitemVo.getOrdr() + 1);
-//        }
-//        // 2. 선택 문항 업데이트
-//        retVal = qestnrDao.updateQitemOrdr(qitemVo);
-//        // 3. 다음(이전) 문항 업데이트
-//        retVal = qestnrDao.updateQitemOrdr(changeQitemVo);
-//             
-//        return retVal;
-//    }
-//    
-//    /**
-//     * 설문지 문항 삭제
-//     *
-//     * @Title : updateQestnr
-//     * @Description : 설문지 정보 업데이트
-//     * @param qitemVo QitemVo 객체
-//     * @return int delete 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    @Transactional
-//    public int deleteQitem(QitemVo qitemVo) throws Exception {
-//        int retVal = 0;
-//        
-//        // 1. 문항에 걸려있는 보기 삭제
-//        retVal = qestnrDao.deleteQitemEx(qitemVo);
-//        // 2. 문항 삭제
-//        retVal = qestnrDao.deleteQitem(qitemVo);
-//        // 3. 문항 조회 후 순서 업데이트
-//        qitemVo.setOrderField("ORDR");
-//        qitemVo.setOrderDirection(ORDER_DIRECTION.asc);
-//        List<QitemVo> qitemList = qestnrDao.selectQitemList(qitemVo);
-//        if(qitemList != null && qitemList.size() > 0) {
-//            for(int i = 0; i < qitemList.size(); i++) {
-//                QitemVo qitem = qitemList.get(i);
-//                qitem.setOrdr(i + 1);
-//                retVal = qestnrDao.updateQitemOrdr(qitem);
-//            }
-//        }
-//        
-//        return retVal;
-//    }
-//    
-//    /**
-//     * 설문지 문항, 보기 목록 조회
-//     *
-//     * @Title : selectQitemWithExList
-//     * @Description : 설문지 문항, 보기 목록 조회
-//     * @param QitemVo qitemVo 객체
-//     * @return List<QitemVo> 설문지 문항, 보기 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<QitemVo> selectQitemWithExList(QitemVo qitemVo) throws Exception {
-//        List<QitemVo> qitemList = qestnrDao.selectQitemList(qitemVo);
-//        if(qitemList != null && qitemList.size() > 0) {
-//            for(int i = 0; i < qitemList.size(); i++) {
-//                QitemVo qitem = qitemList.get(i);
-//                int exCnt = qitem.getExCnt();
-//                if(exCnt > 0) {
-//                    List<QitemExVo> qitemExList = qestnrDao.selectQitemExList(qitem);
-//                    qitem.setExampleList(qitemExList);
-//                }
-//            }
-//        }
-//        
-//        return qitemList;
-//    }
+    /**
+     * 교구 목록 조회
+     *
+     * @Title : selectTchaidList
+     * @Description : 교구 목록 조회
+     * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
+     * @return List<JntpurchsTchaidVo> 교구 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<JntpurchsTchaidVo> selectTchaidList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception {
+        return jntpurchsDao.selectTchaidList(jntpurchsTchaidVo);
+    }
      
+    /**
+     * 공동구매모집 상세 정보 조회
+     *
+     * @Title : selectJntpurchsList
+     * @Description : 공동구매모집 상세 정보 조회
+     * @param jntpurchsVo JntpurchsVo 객체
+     * @return JntpurchsVo 공동구매모집 상세 정보
+     * @throws Exception 예외
+     */
+    @Override
+    public JntpurchsVo selectJntpurchsInfo(JntpurchsVo jntpurchsVo) throws Exception {
+        return jntpurchsDao.selectJntpurchsInfo(jntpurchsVo);
+    }
+     
+    /**
+     * 공동구매모집 상품 목록 조회
+     *
+     * @Title : selectGoodsList
+     * @Description : 공동구매모집 상품 목록 조회
+     * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
+     * @return List<JntpurchsTchaidVo> 공동구매모집 상품 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<JntpurchsTchaidVo> selectGoodsList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception {
+        return jntpurchsDao.selectGoodsList(jntpurchsTchaidVo);
+    }
+     
+    /**
+     * 공동구매모집 수량별 가격 목록 조회
+     *
+     * @Title : selectGoodsList
+     * @Description : 공동구매모집 수량별 가격 목록 조회
+     * @param jntpurchsAmtVo JntpurchsAmtVo 객체
+     * @return List<JntpurchsAmtVo> 공동구매모집 수량별 가격 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<JntpurchsAmtVo> selectAmtList(JntpurchsAmtVo jntpurchsAmtVo) throws Exception {
+        return jntpurchsDao.selectAmtList(jntpurchsAmtVo);
+    }
+    
+    /**
+     * 공동구매모집 정보 업데이트
+     *
+     * @Title : updateJntpurchs 
+     * @Description : 공동구매모집 정보 업데이트
+     * @param jntpurchsVo JntpurchsVo
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int updateJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
+        int retVal = 0;
+        
+        // 모집에 해당하는 신청건이 있는지 확인
+        JntpurchsVo orderInfo = jntpurchsDao.isExistOrder(jntpurchsVo);
+        if("Y".equals(orderInfo.getIsExistOrder())) {
+            return -1;
+        }
+        // 상품 등록 목록
+        List<JntpurchsTchaidVo> goodsList = jntpurchsVo.getGoodsList();
+        // 금액설정 등록 목록
+        List<JntpurchsAmtVo> amtList = jntpurchsVo.getAmtList();
+        // 1. 공동구매모집 업데이트
+        retVal += jntpurchsDao.updateJntpurchs(jntpurchsVo);
+        int jntpurchsid = jntpurchsVo.getJntpurchsid();
+        // 2-1. 상품 삭제
+        retVal += jntpurchsDao.deleteGoods(jntpurchsVo);
+        // 2-2. 상품 등록
+        if(goodsList != null && goodsList.size() > 0) {
+            JntpurchsTchaidVo goods = null;
+            for(int i = 0 ; i < goodsList.size() ; i++) {
+                goods = goodsList.get(i);
+                goods.setUser(jntpurchsVo.getUser());
+                goods.setJntpurchsid(jntpurchsid);
+                retVal += jntpurchsDao.insertJntpurchsGoods(goods);
+            }
+        }
+        // 3-1. 금액 삭제
+        retVal += jntpurchsDao.deleteAmt(jntpurchsVo);
+        // 3-2. 금액 등록
+        if(amtList != null && amtList.size() > 0) {
+            JntpurchsAmtVo amt = null;
+            for(int i = 0 ; i < amtList.size() ; i++) {
+                amt = amtList.get(i);
+                amt.setUser(jntpurchsVo.getUser());
+                amt.setJntpurchsid(jntpurchsid);
+                retVal += jntpurchsDao.insertJntpurchsAmt(amt);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * 공동구매모집 정보 삭제
+     *
+     * @Title : deleteJntpurchs 
+     * @Description : 공동구매모집 정보 삭제
+     * @param jntpurchsVo JntpurchsVo
+     * @return int delete 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int deleteJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
+        int retVal = 0;
+        
+        // 모집에 해당하는 신청건이 있는지 확인
+        JntpurchsVo orderInfo = jntpurchsDao.isExistOrder(jntpurchsVo);
+        if("Y".equals(orderInfo.getIsExistOrder())) {
+            return -1;
+        }
+        retVal += jntpurchsDao.deleteJntpurchs(jntpurchsVo);        
+        return retVal;
+    }
+    
+    /**
+     * 공동구매신청 목록 조회
+     *
+     * @Title : selectJntpurchsOrderList
+     * @Description : 공동구매신청 목록 조회
+     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+     * @return List<JntpurchsOrderVo> 공동구매신청 목록
+     * @throws Exception 예외
+     */
+    @Override
+    public List<JntpurchsOrderVo> selectJntpurchsOrderList(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
+        return jntpurchsDao.selectJntpurchsOrderList(jntpurchsOrderVo);
+    }
+    
 }

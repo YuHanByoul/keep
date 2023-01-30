@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+    <script src="/js/ckeditor/ckeditor.js"></script>
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <!-- 필터 부분 -->
+                <div class="card">
+                    <div class="card-block-small">
+                        <!-- 키워드 filter -->
+                        <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchType" id="searchType" class="form-select form-control">
+                                                <option value="">- 선택 -</option>
+                                                <option value="jntpurchsNm">공동구매모집명</option>
+                                                <option value="jntpurchsNo">공동구매모집번호</option>
+                                            </select>
+                                            <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청정보</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select name="searchOrderType" id="searchOrderType" class="form-select form-control">
+                                                <option value="">- 선택 -</option>
+                                                <option value="acnt">신청자ID</option>
+                                                <option value="nm">신청자</option>
+                                                <option value="instNm">기관명</option>
+                                            </select>
+                                            <input type="text" name="searchOrderKeyword" id="searchOrderKeyword" class="form-control" aria-label="Text input with dropdown button">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청상태</strong></div>
+                                        <div class="col-sm-12">
+                                            <th:block kattr:select_code="searchSttsCd" grpCd="181" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRegDt"><strong>신청일</strong></label>
+                                        <div class="col-12">
+                                            <input type="date" class="form-control form-control-sm" name="searchRegDt" id="searchRegDt" value="" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 키워드 filter-btn -->
+                            <div class="m-t-20 text-center">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="jntpurchsOrder.initSearch();">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="jntpurchsOrder.onSearch();">검색</button>
+                            </div>
+                        </form>
+                        <!-- //키워드 filter -->
+                    </div>
+                </div>
+                <!-- //필터 부분 -->
+            </div>
+            <div class="col-12">
+                <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>공동구매신청 검색 결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/jntpurchs/downloadJntpurchsOrderListExcel.do">
+                                <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="jntpurchsOrder.onExcelDownload();">엑셀다운로드</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="jntpurchsOrderGrid" class="table-responsive"></table>
+                        <div id="jntpurchsOrderPager" class="text-center"></div>
+                    </div>
+                </div>
+                <!-- //그리드 부분 -->
+            </div>
+            <div class="col-12">
+                <!-- insert 부분 -->
+                <div id="contentPanel" class="card" style="display: none;">
+                </div>
+                <!-- //insert 부분 -->
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var jntpurchsOrder = {
+            listUrl: "/mng/jntpurchs/selectJntpurchsOrderList.do",
+            
+            init: function() {
+                jntpurchsOrderGrid = new GridHelper("jntpurchsOrderGrid", "contentPanel");
+                this.setGrid();
+                this.registEvent();                
+            }
+            
+            , registEvent: function() {
+                // TODO
+            }
+            
+            , initSearch: function() {
+                 $("#searchType, #searchKeyword, #searchSttudCd, #searchInst, #searchPeriod").val('');
+            }
+            
+            , onSearch: function() {
+                jntpurchsOrderGrid.resetListContent();
+            }
+            
+            , setGrid: function() {
+                $("#jntpurchsOrderGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#jntpurchsOrderPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchType": $('#searchType').val(),
+                                "searchKeyword": $('#searchKeyword').val(),
+                                "searchOrderType": $('#searchOrderType').val(),
+                                "searchOrderKeyword": $('#searchOrderKeyword').val(),
+                                "searchSttsCd": $('#searchSttsCd').val(),
+                                "searchRegDt": $('#searchRegDt').val(),
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize,
+                                "orderField": "REG_DT",
+                                "orderDirection": "desc"
+                            };
+                            $.ajax({
+                              type: "GET",
+                              contentType: "application/json; charset=utf-8",
+                              url: jntpurchsOrder.listUrl,
+                              data: params,
+                              dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false}
+                        , {title: "공동구매모집명", name: "jntpurchsNm", type: "text" , width: "200", align: "left"}
+                        , {title: "신청자ID", name: "acnt", type: "text", width: "100", align: "center"}
+                        , {title: "신청자(기관명)", name: "nm", type: "text", align: "center", width: "150", itemTemplate: function(value, item) {
+                            return value + "(" + item.instNm + ")";
+                        }}
+                        , {title: "접수번호", name: "orderno", type: "text", align: "center" , width: "100", itemTemplate: function(value, item) {
+                            return !value ? "-" : value;
+                        }}
+                        , {title: "교구명", name: "tchaidNm", type: "text", align: "center", width: "150"}
+                        , {title: "신청수량", name: "qnty", type: "text", align: "center", width: "80"}
+                        , {title: "신청상태", name: "sttsCdNm", type: "text", align: "center", width: "80"}
+                        , {title: "신청일시", name: "regDt", type: "text", align: "center", width: "100"}
+                    ]
+                    , rowClick: function(args) {
+                        alert("준비중-교구정리후 적용");
+                        return false; 
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var detailUrl = "/mng/jntpurchs/jntpurchsOrderUpdateForm.html?jntpurchsid=" + args.item.jntpurchsid;
+                        jntpurchsGrid.loadContent(detailUrl);
+                        jntpurchsGrid.rowClick(args);
+                    }
+                });
+            }
+            
+            , onExcelDownload: function() {
+                excelDownload($("#searchFrm"), "/mng/jntpurchs/downloadJntpurchsOrderListExcel.do");
+            }
+            
+            , resetGrid: function() {
+                jntpurchsGrid.resetListContent();
+            }
+        };
+        
+        $(function() {
+            jntpurchsOrder.init();
+            //downloadJntpurchsOrderListExcel
+        });
+    </script>
+</div>
+</body>
+</html>

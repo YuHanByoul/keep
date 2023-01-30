@@ -16,22 +16,22 @@ import lombok.Data;
 
 /**
  * 
- * 공동구매모집Vo 클래스
+ * 공동구매신청Vo 클래스
  *
  * <pre>
  * com.kbrainc.plum.mng.tchaidJntpurchs.model
- * - JntpurchsVo.java
+ * - JntpurchsOrderVo.java
  * </pre> 
  *
- * @ClassName : JntpurchsVo
- * @Description : 공동구매모집Vo 클래스 
+ * @ClassName : JntpurchsOrderVo
+ * @Description : 공동구매신청Vo 클래스 
  * @author : KBRAINC
- * @date : 2023. 01. 18.
+ * @date : 2023. 01. 30.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class JntpurchsVo extends ParentRequestVo {
+public class JntpurchsOrderVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
     private UserVo user;
@@ -43,84 +43,52 @@ public class JntpurchsVo extends ParentRequestVo {
     private String jntpurchsno;
     
     /** 공동구매 모집명 */
-    @NotEmpty(message = "공동구매 모집명을 입력해주세요.")
-    @Size(max = 40, message = "공동구매 모집명은 40자 이하여야 합니다.")
     private String jntpurchsNm;
     
-    /** 모집상태 코드 */
-    private String sttsCd;
+    /** 신청자 계정 */
+    private String acnt;
     
-    /** 총 판매 수량 */
-    private Integer qntyWhol;
+    /** 신청자 계정 */
+    private String nm;
     
-    /** 1인당 신청 가능 수량 */
-    private Integer qntyLmt;
+    /** 신청자 기관명 */
+    private String instNm;
     
-    /** 1인당 신청 가능 제한여부 */
-    private String qntyLmtYn;
-    
-    /** 상세내용 */
-    private String dtlCn;
-    
-    /** 동영상 URL */
-    private String mvpUrl;
-    
-    /** 동영상 위치 코드 */
-    private String mvpPstnCd;
-    
-    /** 대표이미지 파일 아이디 */
-    private Integer rprsImgFileid;
-    
-    /** 상세이미지 파일 그룹 아이디 */
-    private Integer dtlImgFilegrpid;
-    
-    /** 지도 파일 그룹 아이디 */
-    private Integer mapFilegrpid;
-    
-    /** 교육사진 파일 그룹 아이디 */
-    private Integer eduPhotoFilegrpid;
-    
-    /** 유의사항 */
-    private String atentMttr;
+    /** 접수번호 */
+    private String orderno;
     
     /** 교구명 */
     private String tchaidNm;
     
-    /** 등록처 */
-    private String instNm;
+    /** 신청수량 */
+    private int qnty;
     
-    /** 모집상태 코드명 */
+    /** 신청상태 코드 */
+    private String sttsCd;
+    
+    /** 신청상태 코드명 */
     private String sttsCdNm;
     
-    /** 등록자 계정 */
-    private String acnt;
+    /** 모집상태 코드 */
+    private String JntpurchsSttsCd;
     
-    /** 시작일시  */
-    private String bgngDtStr;
+    /** 모집상태 코드명 */
+    private String JntpurchsSttsCdNm;
     
-    /** 종료일시  */
-    private String endDtStr;
+    /** 신청일시 */
+    private String regDtStr;
     
-    /** 검색 모집상태 */
+    /** 검색 신청정보 유형 */
+    private String searchOrderType;
+    
+    /** 검색 신청정보 키워드 */
+    private String searchOrderKeyword;
+    
+    /** 검색 신청상태 */
     private String searchSttsCd;
     
-    /** 검색 등록처 */
-    private String searchInstType;
-    
-    /** 검색 모집 시작일 */
-    private String searchBgngDt;
-    
-    /** 검색 모집 종료일 */
-    private String searchEndDt;
-    
-    private String isExistOrder;
-    
-    
-    /** 교구목록 */
-    private List<JntpurchsTchaidVo> goodsList;
-    
-    /** 수량별 가격설정 목록 */
-    private List<JntpurchsAmtVo> amtList;
+    /** 검색 신청일 */
+    private String searchRegDt;
     
     
     /** 시작일시 */
