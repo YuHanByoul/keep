@@ -663,12 +663,27 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
     @Transactional
     public int updateJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception {
-        int retVal = 0;
-        retVal += asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
+    	int ret = 0;
+
+		//심사 답변 저장
+    	List<DsgnSrngFormVo> dsgnSrngFormLst = asgsysSrngVo.getDsgnSrngFormLst();
 
 
+    	//심사 답변 저장
+    	asgsysSrngDao.deleteJdgsSrngAns(dsgnSrngFormLst.get(0));
 
-        return retVal;
+    	if( 0 < dsgnSrngFormLst.size()) {
+
+    		for(DsgnSrngFormVo dsgnSrngFormVo : dsgnSrngFormLst) {
+
+    			dsgnSrngFormVo.setUser(asgsysSrngVo.getUser());
+				ret = asgsysSrngDao.insertJdgsSrngAns(dsgnSrngFormVo);
+    		}
+
+    	}
+    	ret = asgsysSrngDao.updateJdgsSrngDetail(asgsysSrngVo);
+
+        return ret;
 	}
 
     /**

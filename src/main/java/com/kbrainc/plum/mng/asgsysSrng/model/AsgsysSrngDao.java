@@ -313,7 +313,40 @@ public interface AsgsysSrngDao {
 	 * @return int
      * @throws Exception 예외
 	 */
-	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo);
+	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사위원 심사 답변 등록
+	*
+	* @Title : insertJdgsSrngAns
+	* @Description : 심사위원 심사 답변 등록
+	* @param dsgnSrngFormVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+	/**
+	* 심사위원 심사 답변 수정
+	*
+	* @Title : updateJdgsSrngAns
+	* @Description : 심사위원 심사 답변 수정
+	* @param dsgnSrngFormVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+	/**
+	 * 심사위원 심사 답변 삭제
+	 *
+	 * @Title : deleteJdgsSrngAns
+	 * @Description : 심사위원 심사 답변 삭제
+	 * @param dsgnSrngFormVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	/**
 	* 안전관리 수정
@@ -680,6 +713,10 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public int insertPicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
 
 
 
