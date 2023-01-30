@@ -63,6 +63,17 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectDsgnAplyDtlInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+    * 신청정보 조회
+    *
+    * @Title : selectAplyInfo
+    * @Description : 신청정보 조회
+    * @param asgsysSrngVo
+    * @return AsgsysSrngVo
+    * @throws Exception 예외
+    */
+	public AsgsysSrngVo selectAplyInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램상태코드 조회
 	*
 	* @Title : selectPrgrmSttsCd
@@ -302,7 +313,40 @@ public interface AsgsysSrngDao {
 	 * @return int
      * @throws Exception 예외
 	 */
-	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo);
+	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사위원 심사 답변 등록
+	*
+	* @Title : insertJdgsSrngAns
+	* @Description : 심사위원 심사 답변 등록
+	* @param dsgnSrngFormVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+	/**
+	* 심사위원 심사 답변 수정
+	*
+	* @Title : updateJdgsSrngAns
+	* @Description : 심사위원 심사 답변 수정
+	* @param dsgnSrngFormVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+	/**
+	 * 심사위원 심사 답변 삭제
+	 *
+	 * @Title : deleteJdgsSrngAns
+	 * @Description : 심사위원 심사 답변 삭제
+	 * @param dsgnSrngFormVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	/**
 	* 안전관리 수정
@@ -350,15 +394,82 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 프로그램 운영관리 등록
+	*
+	* @Title : insertPrgrmOperMng
+	* @Description : 프로그램 운영관리 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지출항목 목록 조회
+	*
+	* @Title : selectExpndArtclList
+	* @Description : 지출항목 목록 조회
+	* @param ExpndArtclVo
+	* @return
+	* @throws Exception
+	* @return List<ExpndArtclVo>
+	*/
+	public List<ExpndArtclVo> selectExpndArtclList(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
+	* 지출항목 등록
+	*
+	* @Title : insertExpndArtcl
+	* @Description : 지출항목 등록
+	* @param expndArtclVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
+	 * 지출항목 목록 삭제
+	 *
+	 * @Title : deleteExpndArtcl
+	 * @Description : 지출항목 목록 삭제
+	 * @param expndArtclVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
 	* 교구 및 시설목록 조회
 	*
 	* @Title : selecttchaidFcltList
 	* @Description : 교구 및 시설목록 조회
 	* @param asgsysSrngVo
-	* @return List<AsgsysSrngVo>
+	* @return List<TchaidFcltVo>
 	* @throws Exception
 	*/
-	public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<TchaidFcltVo> selectTchaidFcltList(TchaidFcltVo tchaidFcltVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 등록
+	*
+	* @Title : insertTchaidFclt
+	* @Description : 교구 및 시설목록 등록
+	* @param tchaidFcltVo
+	* @throws Exception
+	* @return void
+	*/
+	public int insertTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 삭제
+	*
+	* @Title : deleteTchaidFclt
+	* @Description : 교구 및 시설목록 삭제
+	* @param TchaidFcltVo
+	* @return int
+	* @throws Exception
+	*/
+	public void deleteTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정
@@ -558,5 +669,55 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 심사위원 삭제
+	 *
+	 * @Title : deletePicJdgs
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicJdgs(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 지원단 삭제
+	 *
+	 * @Title : deletePicSprtgrp
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 배정 등록 심사위원
+	*
+	* @Title : insertPicJdgs
+	* @Description : 담당자 배정 등록 심사위원
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicJdgs(AsgsysSrngVo asgsysSrngVo)  throws Exception;
+
+	/**
+	* 담당자 배정 등록 지원단
+	*
+	* @Title : insertPicSprtgrp
+	* @Description : 담당자 배정 등록 지원단
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
+
+
 
 }
