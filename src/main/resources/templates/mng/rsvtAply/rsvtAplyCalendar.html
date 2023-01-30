@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.css" />
+<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.min.css" media="print"/>
+
+<script type="text/javascript" src="/files/bower_components/moment/moment.js" charset="utf-8"></script>
+<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/locale-all.js" charset="utf-8" ></script>
+<script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
+
+<style>
+
+	.fc-unthemed td .fc-day-top.fc-mon .fc-day-number, 
+	.fc-unthemed td .fc-day-top.fc-tue .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-wed .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-thu .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-fri .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-sat .fc-day-number,
+	.fc-unthemed td .fc-day-top.fc-sun .fc-day-number
+	{
+	    width: calc(100% - 12px);
+	    font-size: 1.1em;
+	    margin: none; 
+	    padding:none;
+	} 
+	.fc-unthemed td .fc-day-top.fc-sat .fc-day-number{ 
+	    color:blue; 
+	}
+	.fc-unthemed td .fc-day-top.fc-sun .fc-day-number{ 
+	    color:red; 
+	}
+	.border-checkbox-section{
+	    padding-right:10px;
+	}
+	.fc-CustomNextButton-button.fc-state-default.fc-corner-left,
+	.fc-CustomPrevButton-button.fc-state-default.fc-corner-left,
+	.fc-CustomNextButton-button.fc-state-default.fc-corner-left,
+	.fc-CustomPrevButton-button.fc-state-default.fc-corner-right{
+		     content: "";
+		     height: 35px;
+		     color: black;
+		     font-size:1.5em;
+		     background:white;
+		     border: none;
+	}
+	/* 이벤트  텍스트 중앙정렬*/
+	.fc-event-container{
+	    padding-left :5px;
+	    float:center;
+	    text-align :center; 
+	}
+	tr:first-child>td>.fc-day-grid-event {
+       color: white; 
+       padding-left: 3px;
+       background:  #3a87ad;
+       margin-left: 2px; 
+    }
+    .fc-event-container a {
+         padding:1px;
+         font-size:0.75em;
+    }
+    .fc-event{
+         font-size:0.75em;
+    }
+    
+  </style>
+
+           <!-- Page-body start -->
+           <div class="page-body">
+               <div class="row">
+                   <div class="col-12">
+                       <div class="card">
+                       
+                       <form id="rsvtAplyCalFrm">
+                           <div class="card-header">
+                               <div class="row align-items-center justify-content-between">
+                                   <div class="col-12 col-lg-auto">
+                                       <div class="row align-items-center">
+                                       
+                                           <label class="col-auto"><strong>환경교육적 적절성</strong></label>
+                                           
+                                           <div class="col-auto p-l-0">
+                                               <select id="instid" name="instid" class="form-select form-select-sm form-control-sm col-auto" onchange="changeInst()">
+                                                   <option value="0">선택 </option>
+                                                   <option th:each="item:${instList}" th:value="${item.INSTID}"><th:block th:text="${item.INST_NM}"/></option>
+                                               </select>
+                                           </div>
+                                           
+                                           <div class="col-auto p-l-0">
+                                               <select id="fcltid" name="fcltid" class="form-select form-select-sm form-control-sm col-auto" onchange="changeFclt()" >
+                                                  <option value="0">선택 </option>
+                                               </select>
+                                           </div>
+                                           
+                                           <div class="col-auto p-l-0">
+                                               <select id="spceid" name="spceid" class="form-select form-select-sm form-control-sm col-auto" onchange="changeSpce()">
+                                                   <option value="0">선택 </option>
+                                               </select>
+                                           </div>
+                                           
+                                       </div>
+                                   </div>
+                                   
+                                   <div class="col-12 col-lg-auto">
+                                       <div class="border-checkbox-section">
+                                           <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
+                                               <input class="border-checkbox stts-cd" type="checkbox" name="aplySttsCds" id="aplySttsCd1" value="160101"  checked>
+                                               <label class="form-label form-label-sm border-checkbox-label bg-warning pe-3 rounded" for="aplySttsCd1">
+                                                   예약신청
+                                               </label>
+                                           </div>
+                                           <div class="border-checkbox-group d-inline-block">
+                                               <input class="border-checkbox stts-cd" type="checkbox" name="aplySttsCds" id="aplySttsCd2" value="160102" checked>
+                                               <label class="form-label form-label-sm border-checkbox-label pe-3 rounded" style="background-color:#415dfe;color:#fff" for="aplySttsCd2">
+                                                   예약승인
+                                               </label>
+                                           </div>
+                                           <div class="border-checkbox-group d-inline-block">
+                                               <input class="border-checkbox stts-cd" type="checkbox" name="stlmSttsCd" id="stlmSttsCd" value="161103" checked>
+                                               <label class="form-label form-label-sm border-checkbox-label bg-danger pe-3 rounded me-0" for="stlmSttsCd">
+                                                   환불요청
+                                               </label>
+                                           </div>
+                                       </div>
+                                   </div>
+                                   
+                               </div>
+                           </div>
+                           </form>
+                           <div class="card-block-small p-t-0">
+                               <div id="calendar"></div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <!-- Page-body end -->
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+    var instList = /*[[${instList}]]*/null;
+    /*]]>*/
+    var today = moment();
+    var today = today.format('YYYYMMDD');
+    
+    $(function(){
+        
+    	initFullCalendar();
+    	
+    	$(".stts-cd").bind("change",function(){
+    		makeCalendarEvent();
+        })
+    });
+
+    changeInst = () =>{
+        
+    	var instid = $("#instid").val();
+        if(displayWorkProgress()){
+            
+            $.ajax({
+                url: "/mng/spce/selectFcltList.do",
+                cache: false,
+                dataType: 'json',
+                data: {instid  : instid},
+                success: function(data){
+
+                    $("#fcltid").html("<option value='0'>선택</option>")
+                    
+                     if(data.fcltlist.length > 0){
+                         data.fcltlist.forEach(function(item){
+                        	 $("#fcltid").append("<option value='"+item.FCLTID+"'>"+item.FCLT_NM+"</option>");
+                         })
+                     }
+                     closeWorkProgress();
+                }
+            });
+        }
+    }
+    
+    changeFclt = () =>{
+        
+    	var fcltid = $("#fcltid").val();
+
+        if(displayWorkProgress()){
+            
+            $.ajax({
+                url: "/mng/rsvtApply/selectSpceList.do",
+                cache: false,
+                dataType: 'json',
+                data: {fcltid  : fcltid},
+                success: function(data){
+                    
+                    $("#spceid").html("<option value='0'>선택</option>");
+                    
+                    if(data.spceList.length > 0){
+                         data.spceList.forEach(function(item){
+                        	 $("#spceid").append("<option value='"+item.SPCEID+"'>"+item.SPCE_NM+"</option>");
+                         })
+                     }
+                     closeWorkProgress();
+                }
+            });
+        }
+
+        if(fcltid=='0' || fcltid== null){
+            $("#calendar").fullCalendar('removeEvents');
+            $("#calendar").fullCalendar('removeEventSources');
+        }else{
+            makeCalendarEvent();
+        }
+        
+    }
+    
+    changeSpce = () =>{
+    	makeCalendarEvent();
+    }
+
+    function initFullCalendar(){
+        
+        $('#calendar').fullCalendar({
+            
+            plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
+            locale : 'ko',
+            defaultView : 'month',
+            defaultDate : moment(new Date()),
+            editable : false,
+            disable : false,
+            droppable: false,
+            eventLimit: 5,
+            displayEventTime: true,
+            firstDay: 0, 
+            fixedWeekCount :false ,
+            height: "auto",
+            //contentHeight    : "1500px", 
+            monthNames      : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+            monthNamesShort : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+            dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+            dayNamesShort   : ["일","월","화","수","목","금","토"],
+            header : {
+                left   : '',
+                center : 'CustomPrevButton title CustomNextButton ',
+                right  : ''
+            },
+            views: {month: {titleFormat: 'YYYY년 M월'}},
+            customButtons: {
+                CustomPrevButton: {
+                  click: function() {
+                        $('#calendar').fullCalendar("prev");
+                        makeCalendarEvent();
+                        
+                  },
+                  icon:"left-single-arrow",
+                },
+                CustomNextButton: {
+                  click: function() {
+                        $('#calendar').fullCalendar("next");
+                        makeCalendarEvent();
+                  },
+                  icon:"right-single-arrow",
+                }
+            },
+            dayClick: function(date, jsEvent, view) {
+            },
+            eventRender:function (event,element){
+                //console.log(event);
+            },
+            eventClick: function(calEvent, jsEvent, view) {
+                
+                if(calEvent.stlmSttsCd=='161103'){
+                    //환불요청건 메뉴 링크
+                }else if(calEvent.aplySttsCd=='160102'){
+                    //예약승인건 메뉴 링크
+                    
+                }else{
+                    //예약신청건건 메뉴 링크
+                }
+            },
+            dayRender: function(date, cell) {
+            },
+            //캘린더 렌더링 이후  
+            viewRender: function(view, element){
+                element.find(".fc-day-number").each(function(item){
+                })
+            }
+        });
+    }
+
+
+    function makeCalendarEvent(gotoYYYYMM){
+        
+       $("#calendar").fullCalendar('removeEvents');
+       
+       var yyyymm_string = moment($("#calendar").fullCalendar("getDate")).format("YYYY-MM")
+       
+       var lastDayOfMonth = "";
+       
+       if(gotoYYYYMM != null && gotoYYYYMM != '' && gotoYYYYMM != 'undefined'){
+	       lastDayOfMonth = moment(gotoYYYYMM, "YYYYMM").daysInMonth();
+	       yyyymm_string  = moment(gotoYYYYMM, "YYYY-MM")
+       }else{
+	       lastDayOfMonth = moment(yyyymm_string, "YYYY-MM").daysInMonth();
+       }
+       
+       var serialData = $("#rsvtAplyCalFrm").serialize()+"&strtDe="+yyyymm_string+"-01&endDe="+yyyymm_string+"-"+lastDayOfMonth;
+       
+       //if(displayWorkProgress()){
+           $.ajax({
+               url : "/mng/rsvtApply/selectRsvtApplyList.do",
+               type: 'POST',
+               cache : false,
+               dataType: 'json',
+               data : serialData,
+               success : function (data){
+                   
+            	   let list = data.list;
+            	   
+                   if(list.length > 0){
+                       
+                       var schdul_events = {events:[]};
+                       
+                       list.forEach(function(item){
+                           
+                           let elementColor; //예약신청
+                           
+                           if(item.stlmSttsCd == '161103'){ 
+                               elementColor = '#fe5d70 !important';//환불요청
+                           }else if(item.aplySttsCd == '160102'){
+                               elementColor = '#415dfe !important';//예약승인
+                           }else{
+                               elementColor = '#fe9365 !important';//예약신청
+                           }
+                           
+                           var title = item.spceNm +"\n"
+                           
+                           var diffDay = moment(item.endDt,'YYYY-MM-DD').diff(item.de,"days");
+
+                           if(diffDay > 0){
+	                           title +=  diffDay +"박"+ (diffDay+1)+"일"
+                           }else{
+	                           title +=  moment(item.bgngDt).format("HH:mm")+" ~ "+moment(item.endDt).format("HH:mm") 
+                           }
+                           
+                           schdul_events.events.push({
+                               title:title ,
+                               start:moment(item.bgngDt,'YYYY-MM-DD')
+                               ,end : moment(item.endDt,'YYYY-MM-DD')
+                               ,borderColor:elementColor
+                               ,backgroundColor:elementColor
+                               ,textColor:'#fff'
+                               ,rsvtdeid:item.rsvtdeid
+                               ,aplyid :item.aplyid
+                               ,stlmSttsCd :item.stlmSttsCd
+                               ,aplySttsCd :item.aplySttsCd
+                               ,displayEventTime:false
+                           })
+                           
+                       })
+                       
+                       $("#calendar").fullCalendar('removeEventSources');
+                       $("#calendar").fullCalendar('addEventSource', schdul_events);
+                       $(".fc-time").remove();
+                       
+                   }
+
+                   closeWorkProgress();
+               }
+           });
+       //}
+    }
+    
+</script>
+
+</div> 
+</body>
+</html>

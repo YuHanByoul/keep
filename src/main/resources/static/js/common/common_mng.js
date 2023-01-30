@@ -91,12 +91,11 @@ function fnExpendable($wrapper, option) {
                 $fixed.addClass("expendable-item-fixed")
                 $child.addClass("expendable-item-child")
                 if ($fixed && $fixed.children('.expendable-toggle-btn').length === 0) {
-                    $fixed.prepend($("<button/>").addClass("expendable-toggle-btn"))
+                    $fixed.prepend($("<button/>").attr({type : 'button'}).addClass("expendable-toggle-btn"))
                 }
             }
         });
 
-        console.log($wrapper.find('.expendable-item-old'));
         $wrapper
             .find('.expendable-item-old').removeClass('expendable-item expendable-item-old')
             .children('.expendable-item-child').removeClass('expendable-item-child').end()

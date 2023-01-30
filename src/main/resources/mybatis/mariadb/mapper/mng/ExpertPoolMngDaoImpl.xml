@@ -9,107 +9,89 @@
       <!--전문가 목록 조회-->
     <select id="selectExpertList" resultType="ExpertVo">
         <include refid="PaginationMapper.header"/>
-        SELECT
-            A.USERID
-            , A.EXPRT_TYPE_CD
-            , A.FLD_LCTR_YN
-            , A.FLD_PLANNG_YN
-            , A.FLD_CNSLTNG_YN
-            , A.FLD_ETC_YN
-            , A.FLD_ETC_CN
-            , A.MOBLPHON_RLS_YN
-            , A.EML_RLS_YN
-            , A.QLFC_RLS_YN
-            , A.HDOF_RLS_YN
-            , A.CAREER_RLS_YN
-            , A.ENT_LCTR_DMND_RCPTN_YN
-            , A.LCTR_GDNC_RCPTN_YN
-            , A.ENV_EDU_CAREER_YY
-            , A.ENV_EDU_CAREER_MM
-            , A.STTS_CD
-            , A.APLY_DT
-            , A.MDFCN_DT
-            , A.MDFRID
-            , A.REG_DT
-            , A.RGTRID
-            , A.APRV_DT
-            , A.RJCT_DT
-            , A.CNCL_DT
-            , B.STTS_CD AS USER_STTS_CD
-            , B.ACNT
-            , B.NM
-            , GROUP_CONCAT(D.CD_NM) AS EXPRT_SBJCT
-            , GROUP_CONCAT(C.CD_NM) AS EXPRT_ACTVT_SCOPE
-            , GROUP_CONCAT(E.CD_NM) AS EXPRT_TRGT
-        FROM TB_ASS_EXPRT A
-        INNER JOIN TB_CMM_USER B
-        ON A.USERID = B.USERID
 
-        LEFT OUTER JOIN (
-            SELECT A.USERID, B.CD_NM, B.CD
-            FROM TB_ASS_EXPRT_ACTVT_SCOPE A
-            INNER JOIN TB_CMM_CD B ON A.RGN_CD = B.CD
-        ) C
-        ON A.USERID = C.USERID
-
-        LEFT OUTER JOIN (
-            SELECT A.USERID, B.CD_NM, B.CD
-            FROM TB_ASS_EXPRT_SBJCT A
-            INNER JOIN TB_CMM_CD B ON A.SBJCT_CD = B.CD
-        ) D
-        ON A.USERID= D.USERID
-
-        LEFT OUTER JOIN (
-            SELECT A.USERID, B.CD_NM, B.CD
-            FROM TB_ASS_EXPRT_TRGT A
-            INNER JOIN TB_CMM_CD B ON A.TRGT_CD = B.CD
-        ) E
-        ON A.USERID= E.USERID
-
+        SELECT AA.*
+        FROM (
+            SELECT
+                A.USERID
+                , A.EXPRT_TYPE_CD
+                , A.FLD_LCTR_YN
+                , A.FLD_PLANNG_YN
+                , A.FLD_CNSLTNG_YN
+                , A.FLD_ETC_YN
+                , A.FLD_ETC_CN
+                , A.MOBLPHON_RLS_YN
+                , A.EML_RLS_YN
+                , A.QLFC_RLS_YN
+                , A.HDOF_RLS_YN
+                , A.CAREER_RLS_YN
+                , A.ENT_LCTR_DMND_RCPTN_YN
+                , A.LCTR_GDNC_RCPTN_YN
+                , A.ENV_EDU_CAREER_YY
+                , A.ENV_EDU_CAREER_MM
+                , A.STTS_CD
+                , A.APLY_DT
+                , A.MDFCN_DT
+                , A.MDFRID
+                , A.REG_DT
+                , A.RGTRID
+                , A.APRV_DT
+                , A.RJCT_DT
+                , A.CNCL_DT
+                , B.STTS_CD AS USER_STTS_CD
+                , B.ACNT
+                , B.NM
+                ,(SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
+                ,(SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID) AS EXPRT_ACTVT_SCOPE_CD_NM
+                ,(SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
+            FROM TB_ASS_EXPRT A
+            INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        ) AA
         WHERE 1=1
         <if test="searchKeyword != null and searchKeyword != ''">
             <if test="searchType == 'nm' ">
-            AND B.NM LIKE CONCAT('%',#{searchKeyword},'%')
+                AND AA.NM LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
             <if test="searchType == 'acnt' ">
-            AND B.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+                AND AA.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
         </if>
         <if test="exprtTypeCd != null and exprtTypeCd != ''">
-            AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
+            AND AA.EXPRT_TYPE_CD = #{exprtTypeCd}
         </if>
         <if test="exprtField != null and exprtField != ''">
             <choose>
                 <when test='exprtField == "1"'>
-                    AND A.FLD_LCTR_YN = 'Y'
+                    AND AA.FLD_LCTR_YN = 'Y'
                 </when>
                 <when test='exprtField == "2"'>
-                    AND A.FLD_PLANNG_YN = 'Y'
+                    AND AA.FLD_PLANNG_YN = 'Y'
                 </when>
                 <when test='exprtField == "3"'>
-                    AND A.FLD_CNSLTNG_YN = 'Y'
+                    AND AA.FLD_CNSLTNG_YN = 'Y'
                 </when>
                 <when test='exprtField == "4"'>
-                    AND A.FLD_ETC_YN = 'Y'
+                    AND AA.FLD_ETC_YN = 'Y'
                 </when>
             </choose>
         </if>
-        <if test="exprtTrgt != null and exprtTrgt != ''">
-            AND E.CD = #{exprtTrgt}
+        <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
+            AND AA.EXPRT_TRGT_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm} , '%')
         </if>
-        <if test="exprtSbjct != null and exprtSbjct != ''">
-            AND D.CD = #{exprtSbjct}
+        <if test="exprtSbjctCdNm != null and exprtSbjctCdNm != ''">
+            AND AA.EXPRT_SBJCT_CD_NM LIKE CONCAT('%', #{exprtSbjctCdNm} , '%')
         </if>
-        <if test="exprtActvtScope != null and exprtActvtScope != ''">
-            AND C.CD = #{exprtActvtScope}
+        <if test="exprtActvtScopeCdNm != null and exprtActvtScopeCdNm != ''">
+            AND AA.EXPRT_ACTVT_SCOPE_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm} , '%')
         </if>
         <if test="userSttsCd != null and userSttsCd != ''">
-            AND B.STTS_CD = #{userSttsCd}
+            AND AA.STTS_CD = #{userSttsCd}
         </if>
         <if test="sttsCd != null and sttsCd != ''">
-            AND A.STTS_CD = #{sttsCd}
+            AND AA.STTS_CD = #{sttsCd}
         </if>
-        GROUP BY A.USERID
+
         <include refid="PaginationMapper.footer"/>
     </select>
     <select id="selectExpertInfo" resultType="ExpertVo">
@@ -157,10 +139,10 @@
             , B.TELNO
             , B.MOBLPHON
             , B.EML
-            , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{userid} ) AS EXPRT_TRGT /* 전문분야 대상 */
-            , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR', ') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{userid} ) AS EXPRT_SBJCT /* 전문분야 주제 */
-            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_RGN /* 주요활동지역 */
-            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR', ') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_SCOPE /* 가능 활동범위 */
+            , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR',') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{userid} ) AS EXPRT_TRGT_CD/* 전문분야 대상 */
+            , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{userid} ) AS EXPRT_SBJCT_CD /* 전문분야 주제 */
+            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_RGN_CD /* 주요활동지역 */
+            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_SCOPE_CD /* 가능 활동범위 */
         FROM TB_ASS_EXPRT A
         INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
         WHERE A.USERID = #{userid}

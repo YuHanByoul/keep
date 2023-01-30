@@ -1,7 +1,10 @@
 package com.kbrainc.plum.mng.ass.jdgGrpMng.model;
 
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import lombok.Data;
 
 import java.util.Date;
@@ -102,4 +105,40 @@ public class JdgGrpExpertVo extends ParentRequestVo {
      * 심사위원 그룹에 추가되는 전문가 일련번호
      */
     private Integer[] insertIds;
+
+    public void setSbjctCd(String sbjctCd) {
+        this.sbjctCd = sbjctCd;
+
+        if(CommonUtil.isEmpty(this.sbjctCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.sbjctCd);
+                this.sbjctCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+
+    public void setRgnCd(String rgnCd) {
+        this.rgnCd = rgnCd;
+
+        if(CommonUtil.isEmpty(this.rgnCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.rgnCd);
+                this.rgnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
 }
