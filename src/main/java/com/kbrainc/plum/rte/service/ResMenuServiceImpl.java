@@ -259,9 +259,10 @@ public class ResMenuServiceImpl extends PlumAbstractServiceImpl implements ResMe
     public MenuItem getMenuItemByMenuID(String siteid, String menuID) throws Exception {
         MenuTree menuTree = getMenuTree(siteid);
         MenuItem menuItem =  menuTree.getMenuItemByMenuID(menuID);
+        MenuItem copyMenuItem = (MenuItem) menuItem.clone();
         if (StringUtil.isNumber(menuItem.getUrl()) || "".equals(StringUtil.nvl(menuItem.getUrl()))) {
-            menuItem.setUrl("#");
+            copyMenuItem.setUrl("#");
         }
-        return menuItem;
+        return copyMenuItem;
     }
 }
