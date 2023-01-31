@@ -541,7 +541,18 @@ public interface AsgsysSrngService {
 	* @return List<AsgsysSrngVo>
 	* @throws Exception
 	*/
-//	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 심사점수 목록 헤더 조회
+	 *
+	 * @Title : selectSrngScrHeader
+	 * @Description : 심사점수 목록조회
+	 * @param asgsysSrngVo
+	 * @return List<AsgsysSrngVo>
+	 * @throws Exception
+	 */
+	 public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 
 

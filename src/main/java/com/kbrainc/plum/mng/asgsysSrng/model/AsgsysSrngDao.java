@@ -714,10 +714,26 @@ public interface AsgsysSrngDao {
 	*/
 	public int insertPicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 심사위원심사 점수 목록조회
+	*
+	* @Title : selectSrngScrList
+	* @Description : 심사위원심사 점수 목록조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
-
-
-
-
+	/**
+	 * 심사위원심사 점수 헤더 조회
+	 *
+	 * @Title : selectSrngScrList
+	 * @Description : 심사위원심사 점수 헤더 조회
+	 * @param asgsysSrngVo
+	 * @return List<AsgsysSrngVo>
+	 * @throws Exception
+	 */
+	public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 }

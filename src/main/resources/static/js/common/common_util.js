@@ -734,7 +734,7 @@ function fnAppendHidden(p_form, p_obj){
 
 function fileSizePretty(number) {
     if (number === 0) return "0 B";
-    var UNITS = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    var UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     var exponent = Math.min(Math.floor(Math.log(number) * Math.LOG10E / 3), UNITS.length - 1);
     var unit = UNITS[exponent];
     return Number((number / Math.pow(1024, exponent)).toPrecision(3)).toLocaleString() + ' ' + unit;

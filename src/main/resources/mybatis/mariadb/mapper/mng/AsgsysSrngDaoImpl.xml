@@ -1104,7 +1104,7 @@
             SELECT
                  A.PRGRMID
                , A.JDGSID
-               , '' AS JDGS_NM
+               , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID) AS JDGS_NM
                , B.PRGRM_NM
                , B.INST_NM
                , A.SRNG_STTS_CD
@@ -1121,8 +1121,7 @@
             LEFT OUTER JOIN
                 TB_ASS_PRGRM_DSTNCTN C ON A.PRGRMID = C.PRGRMID
             LEFT OUTER JOIN
-                /*TB_ASS_SRNG_RSLT D ON A.PRGRMID = D.PRGRMID */
-                TB_ASS_SRNG_SBMSN D ON A.PRGRMID = D.PRGRMID
+                TB_ASS_SRNG_SBMSN D ON A.PRGRMID = D.PRGRMID AND A.JDGSID = D.USERID
             WHERE 1=1
         <!-- 키워드.전체 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
@@ -1267,11 +1266,11 @@
             SELECT
                  A.PRGRMID
                , A.JDGSID
-               , G.FORMID       /*양식ID*/
+               , F.FORMID       /*양식ID*/
                , F.SBMSNID
                , B.PRGRM_NM
                , B.INST_NM
-               , C.STY_YN    /*숙박여부*/
+               , C.STY_YN       /*숙박여부*/
                , C.STY_NIGHT
                , C.STY_DAYTM
                , C.OPER_FRM_CD
@@ -1279,9 +1278,8 @@
     --         , '첨부파일'
     --         , '증빙서류'
                , A.SRNG_STTS_CD
-               , A.REG_DT    /*배정일*/
+               , A.REG_DT       /*배정일*/
                , F.SRNG_OPNN    /*심사의견*/
-               , G.FORMID       /*양식ID*/
             FROM
                 TB_ASS_PRGRM_JDGS A
             INNER JOIN
@@ -1291,9 +1289,7 @@
             LEFT OUTER JOIN
                 TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
             LEFT OUTER JOIN
-                TB_ASS_SRNG_SBMSN F ON A.PRGRMID = F.PRGRMID
-            LEFT OUTER JOIN
-                TB_ASS_SRNG_FORM G ON G.FORMID = F.FORMID
+                TB_ASS_SRNG_SBMSN F ON A.PRGRMID = F.PRGRMID AND A.JDGSID =F.USERID
             WHERE 1=1
             AND A.JDGSID = #{jdgsid}
             AND B.PRGRMID =  #{prgrmid}
@@ -1308,28 +1304,31 @@
                 , A.QITEMID          AS QITEMID
                 , A.CHKLST_SE_CD     AS CHKLST_SE_CD
                 , B.ALTM
-                , D.SCR
+                , E.SCR
                 , SUM(B.ALTM) OVER() AS ALLALTM
-                , SUM(D.SCR) OVER()  AS ALLSCR
-                , TASS.PRGRMID
-                , TASS.FORMID
-                , TASS.SBMSNID
+                , SUM(E.SCR) OVER()  AS ALLSCR
+                , SBMSN.PRGRMID
+                , SBMSN.FORMID
+                , SBMSN.SBMSNID
                 , A.ORDR
                 , ROW_NUMBER() OVER(PARTITION BY C.DSGNCRTR_CD ORDER BY A.ORDR ASC) AS RNK
                 , COUNT(1) OVER (PARTITION  BY C.DSGNCRTR_CD ASC) AS ROWSPAN
-            FROM TB_ASS_SRNG_SBMSN TASS
-            LEFT OUTER JOIN  TB_ASS_SRNG_FORM_QITEM_MAPNG A
-                ON TASS.FORMID = A.FORMID
-            LEFT OUTER JOIN TB_ASS_SRNG_QITEM B
-                ON B.QITEMID = A.QITEMID
-            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C
-                ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
-            LEFT OUTER JOIN TB_ASS_SRNG_ANS D ON A.QITEMID = D.QITEMID
-            WHERE
-                TASS.PRGRMID = #{prgrmid}
+            FROM TB_ASS_SRNG_SBMSN SBMSN
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_FORM_QITEM_MAPNG A    ON SBMSN.FORMID = A.FORMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_QITEM B    ON B.QITEMID = A.QITEMID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C    ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+            LEFT OUTER JOIN
+                TB_ASS_PRGRM_JDGS D    ON SBMSN.PRGRMID = D.PRGRMID  AND SBMSN.USERID =D.JDGSID
+            LEFT OUTER JOIN
+                TB_ASS_SRNG_ANS   E    ON SBMSN.SBMSNID = E.SBMSNID  AND A.QITEMID = E.QITEMID
+            WHERE SBMSN.PRGRMID = #{prgrmid}
+            AND   D.JDGSID = #{jdgsid}
+            AND   SBMSN.SBMSNID = #{sbmsnid}
             ORDER BY
                 A.ORDR ,C.DSGNCRTR_CD , C.ORDR
-
     </select>
 
     <!-- 심사위원심사 등록 -->
@@ -1384,6 +1383,102 @@
         WHERE
             SBMSNID       = #{sbmsnid    }
     </update>
+
+    <!-- 심사위원심사 점수 헤더 조회 -->
+    <select id="selectSrngScrHeader" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+             MAX(CASE WHEN BB.DSGNCRTR_CD = '149101' THEN BB.DSGNCRTR_NM END) AS COL_VAL1
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149102' THEN BB.DSGNCRTR_NM END) AS COL_VAL2
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149103' THEN BB.DSGNCRTR_NM END) AS COL_VAL3
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149104' THEN BB.DSGNCRTR_NM END) AS COL_VAL4
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149105' THEN BB.DSGNCRTR_NM END) AS COL_VAL5
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149106' THEN BB.DSGNCRTR_NM END) AS COL_VAL6
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149107' THEN BB.DSGNCRTR_NM END) AS COL_VAL7
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149108' THEN BB.DSGNCRTR_NM END) AS COL_VAL8
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149109' THEN BB.DSGNCRTR_NM END) AS COL_VAL9
+           , MAX(CASE WHEN BB.DSGNCRTR_CD = '149110' THEN BB.DSGNCRTR_NM END) AS COL_VAL10
+        FROM
+        (
+            SELECT
+                  A.FORMID
+                , B.DSGNCRTR_CD
+                , (select CD_NM  from TB_CMM_CD where CD = B.DSGNCRTR_CD) as DSGNCRTR_NM
+                , A.QITEMID
+                , B.IDNTY_MTTR
+                , A.ORDR QITEM_ORDR
+                , C.ORDR DSGNCRTR_ORDR
+                , A.CHKLST_SE_CD
+            FROM
+                TB_ASS_SRNG_FORM_QITEM_MAPNG A
+            LEFT OUTER JOIN TB_ASS_SRNG_QITEM B
+                ON B.QITEMID = A.QITEMID
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C
+                ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+            WHERE
+                A.FORMID = #{formid}
+        ) BB
+
+    </select>
+
+
+    <select id="selectSrngScrList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            A.PRGRMID
+          , A.JDGSID
+          , B.SBMSNID
+          , B.FORMID
+          , B.USERID
+          , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID ) AS JDGS_NM
+          , B.SBMSN_DT
+          , COL_VAL1
+          , COL_VAL2
+          , COL_VAL3
+          , COL_VAL4
+          , COL_VAL5
+          , COL_VAL6
+          , COL_VAL7
+          , COL_VAL8
+          , COL_VAL9
+          , COL_VAL10
+          , B.SCR    AS SUM_SCR
+          , ROUND( SUM(SCR) OVER()/COUNT(A.JDGSID) OVER(),2) AS SUM_AVG
+          , B.SRNG_OPNN
+        FROM
+            TB_ASS_PRGRM_JDGS A
+        LEFT OUTER JOIN
+            TB_ASS_SRNG_SBMSN B ON A.PRGRMID =B.PRGRMID AND A.JDGSID = B.USERID
+        LEFT OUTER JOIN
+        (
+            SELECT
+                 AA.SBMSNID
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149101' THEN AA.SCR END) AS COL_VAL1
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149102' THEN AA.SCR END) AS COL_VAL2
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149103' THEN AA.SCR END) AS COL_VAL3
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149104' THEN AA.SCR END) AS COL_VAL4
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149105' THEN AA.SCR END) AS COL_VAL5
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149106' THEN AA.SCR END) AS COL_VAL6
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149107' THEN AA.SCR END) AS COL_VAL7
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149108' THEN AA.SCR END) AS COL_VAL8
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149109' THEN AA.SCR END) AS COL_VAL9
+               , SUM(CASE WHEN AA.DSGNCRTR_CD = '149110' THEN AA.SCR END) AS COL_VAL10
+            FROM
+            (
+                SELECT
+                     SBMSNID
+                   , DSGNCRTR_CD
+                   , SUM(SCR) SCR
+                FROM
+                TB_ASS_SRNG_ANS
+                GROUP BY SBMSNID, DSGNCRTR_CD
+            ) AA
+            GROUP BY SBMSNID
+        ) C ON B.SBMSNID = C.SBMSNID
+        WHERE
+            A.PRGRMID = #{prgrmid}
+        GROUP BY
+            A.JDGSID
+    </select>
+
 
     <!-- 심사위원심사 답변 등록 -->
     <insert id="insertJdgsSrngAns" parameterType="DsgnSrngFormVo" >
@@ -1539,6 +1634,8 @@
         AND  A.PRGRMID = #{prgrmid}
         AND  A.SPRTGRPID= #{sprtgrpid}
     </select>
+
+
 
     <!-- 지원단심사 체크리스트 조회
     <select id="selectCheckList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
@@ -1982,6 +2079,5 @@
         <include refid="PaginationMapper.footer"/>
 
     </select>
-
 
 </mapper>
