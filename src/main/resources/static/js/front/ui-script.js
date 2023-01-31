@@ -446,13 +446,15 @@ const formStyle = {
 			const numInput = par.find('input[type="number"]');
 			const valueMin = parseInt(numInput[0].min);
 			const valueMax = parseInt(numInput[0].max);
+
+			console.log(numInput[0].min)
 			//value up
 			if ($(this).hasClass('num-up')) {
 				if (numInput.val() === '') {
 					numInput.val(0)
 				}
-				if (valueMax > numInput.val() || valueMax.length === undefined) {
-					numInput[0].value++;
+				if (valueMax > numInput.val() || numInput[0].max === '') {
+				numInput[0].value++;
 				}
 			}
 
@@ -461,7 +463,7 @@ const formStyle = {
 				if (numInput.val() === '') {
 					numInput.val(0)
 				}
-				if (numInput.val() > valueMin || valueMin.length === undefined) {
+				if (numInput.val() > valueMin || numInput[0].min === '') {
 					numInput[0].value--;
 				}
 			}
@@ -640,7 +642,7 @@ const layerPopup = {
 		})
 	},
 	onClickDimmed : function () {
-		$(document).on('click', '.layer-dimmed' , function (){
+		$(document).on('click', '.layer-dimmed:not(.prevent-close)' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
 			layerPopup.close(target);
 	
@@ -1005,10 +1007,12 @@ $(document).ready(function() {
 	}
 	$('body').each(function () {
 		var current_path = window.location.pathname;
-		var vsCode = "vscode://file///C:/KEEP_PORTAL_HTML"; //source file 경로
-		var vsCodeHref = '<a class="vscodepath" href=' + '"' + vsCode + current_path + '"></a>';
-		$('body').after(vsCodeHref);
-
+		var localhost = window.location.href;
+		if (localhost.indexOf('http://127.0.0.1:5500') === 0) { //vscode liveServer port
+			var vsCode = "vscode://file///C:/KEEP_PORTAL_HTML"; //source file 경로
+			var vsCodeHref = '<a class="vscodepath" href=' + '"' + vsCode + current_path + '"></a>';
+			$('body').after(vsCodeHref);
+		}
 	})
 });
 
@@ -1032,6 +1036,5 @@ const popupCenter = ({url, title, w, h}) => {
 		left=${left}
 		`
 	);
-	console.log(systemZoom)
 	if (window.focus) newWindow.focus();
 }
