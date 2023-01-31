@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.controller;
 
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,7 +42,6 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
-import com.kbrainc.plum.front.member.model.EsylgnVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
@@ -302,129 +302,5 @@ public class CommonController {
         return commonService.selectSiteList(site);
     }
 
-    /**
-    * 디지털원패스 로그인후 응답URL 후처리.
-    *
-    * @Title : onepassAcs
-    * @Description : 디지털원패스 로그인후 응답URL 후처리.
-    * @param request 요청객체
-    * @param response 응답객체
-    * @return ModelAndView 모델뷰객체
-    * @throws Exception 예외
-    */
-    @RequestMapping("/onepass/acs.html")
-    public ModelAndView onepassAcs(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView();
-        
-        OnepassResponse onepassResponse = OnepassResponseHandler.check(request);
-        
-        if (onepassResponse.getStatus() == STATUS.SUCCESS  && onepassResponse.getResultCode() == RESULT_CODE.SUCCESS) {
-            if (onepassResponse.getType() == TYPE.LOGIN) {
-                String userKey = onepassResponse.getUserKey();
-                String intfToken = onepassResponse.getIntfToken();
-
-                OnepassResponseHandler.onepassLogin(response, userKey, intfToken);
-                ApiSendHandler apiSendHandler = new ApiSendHandler();
-                
-                OnepassUserResponse onepassUser = apiSendHandler.findUser(userKey, intfToken);
-                if (onepassUser == null) {
-                  onepassUser = new OnepassUserResponse();
-                }
-                
-                String ci = onepassUser.getCi();
-                String email = onepassUser.getEmail();
-                String name = onepassUser.getName();
-                String birth = onepassUser.getBirth();
-                
-                EsylgnVo esylgnVo = new EsylgnVo();
-                esylgnVo.setEsylgnCd("106101");
-                esylgnVo.setUserkey(userKey);
-                esylgnVo.setCi(ci);
-                
-                String userid = null;
-                // 1. userKey일치하면 로그인 처리
-                userid = commonService.selectUseridByEsylgnUserkey(esylgnVo);
-                if (userid != null) {
-                    onepassLogin(request, response, onepassUser.getId(), userKey);
-                    return null;
-                }
-                
-                // 2. ci만 일치하면 userKey연결후 로그인 처리
-                userid = commonService.selectUseridByCi(esylgnVo);
-                if (userid != null) {
-                    esylgnVo.setUserid(userid);
-                    commonService.updateEsylgnUserkey(esylgnVo);
-                    onepassLogin(request, response, onepassUser.getId(), userKey);
-                    return null;
-                }
-
-                // 3. 모두 일치하지 않을때 onepassUser(ci, email, name, userKey, 어린이회원여부)정보를 세션에 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행), 회원정보저장시 세션에 정보없으면 진행불가)
-                // 만나이 계산
-                /*SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-                Date birthDate = formatter.parse(birth);
-                Calendar currentCal = Calendar.getInstance();
-                Calendar brithCal = Calendar.getInstance();
-                
-                brithCal.setTime(birthDate);
-                int currentYear = currentCal.get(Calendar.YEAR);
-                int currentMonth = currentCal.get(Calendar.MONTH);
-                int currentDay = currentCal.get(Calendar.DATE);
-                int birthYear = brithCal.get(Calendar.YEAR);
-                int birthMonth = brithCal.get(Calendar.MONTH);
-                int birthDay = brithCal.get(Calendar.DATE);
-
-                int manAge = currentYear - birthYear;
-                
-                if (currentMonth < birthMonth) {
-                    manAge--;
-                } else if (currentMonth == birthMonth && currentDay < birthDay) {
-                    manAge--;
-                }
-                
-                if (manAge < 14) {
-                    System.out.println("어린이 회원");
-                }*/
-                
-                // 리다이렉션
-                
-            } else if(onepassResponse.getType() == TYPE.LOGOUT) {
-                OnepassResponseHandler.onepassLogout(request, response);
-            }
-        }
-        
-        // returnUrl과 시큐리티세션에 저장된 url, defaultUrl 따져보아 리다이렉션 진행
-        /*RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(request.getContextPath() + "/login.html");
-        redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
-        mav.setView(redirectView);
-        return mav;*/
-        return null;
-    }
     
-    /**
-    * 디지털원패스 로그인으로 들어왔을때 로그인 처리.
-    *
-    * @Title : onepassLogin
-    * @Description : 디지털원패스 로그인으로 들어왔을때 로그인 처리.
-    * @param request 요청객체
-    * @param response 응답객체
-    * @param loginid 디지털원패스 로그인계정
-    * @param userKey 디지털원패스 사용자키
-    * @return void 리턴값 없음
-    * @throws Exception 예외
-    */
-    public void onepassLogin(HttpServletRequest request, HttpServletResponse response, String loginid, String userKey) throws Exception {
-        OnepassUsernameUserkeyAuthenticationToken authReq = new OnepassUsernameUserkeyAuthenticationToken(loginid, userKey);
-        try {
-            AuthenticationManager authenticaltionManager = ((AuthenticationManager)CommonUtil.getBean("authenticationManagerBean"));
-            Authentication auth = authenticaltionManager.authenticate(authReq);
-            SecurityContext sc = SecurityContextHolder.getContext();
-            sc.setAuthentication(auth);
-            SavedRequestAwareAuthenticationSuccessHandler successHandler = ((SavedRequestAwareAuthenticationSuccessHandler)CommonUtil.getBean("httpsLoginSuccessHandler"));
-            successHandler.onAuthenticationSuccess(request, response, auth);
-        } catch(AuthenticationException e) {
-            SimpleUrlAuthenticationFailureHandler failureHandler = ((SimpleUrlAuthenticationFailureHandler)CommonUtil.getBean("customAuthFailureHandler"));
-            failureHandler.onAuthenticationFailure(request, response, e);
-        }
-    }
 }

@@ -27,7 +27,7 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 * @ClassName : MemberController
 * @Description : 회원정보 컨트롤러 클래스
 * @author : KBRAINC
-* @date : 2021. 11. 22.
+* @date : 2023. 1. 31.
 * @Version : 
 * @Company : Copyright KBRAIN Company. All Rights Reserved 
 */
@@ -37,6 +37,8 @@ public class MemberController {
 
     @Resource(name = "front.memberServiceImpl")
     private MemberService memberService;
+    
+    
     
     /**
     * ID 중복 체크

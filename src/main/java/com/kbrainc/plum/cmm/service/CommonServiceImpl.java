@@ -17,9 +17,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.kbrainc.plum.cmm.model.CommonDao;
-import com.kbrainc.plum.front.member.model.EsylgnVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
-import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -186,42 +184,5 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         return commonDao.selectCtprvnList();
     }
     
-    /**
-    * 간편로그인 userkey로 조회하여 userid를 가져온다.
-    *
-    * @Title : selectUseridByEsylgnUserkey
-    * @Description : 간편로그인 userkey로 조회하여 userid를 가져온다.
-    * @param esylgnVo EsylgnVo객체
-    * @return String userid값
-    * @throws Exception 예외
-    */
-    public String selectUseridByEsylgnUserkey(EsylgnVo esylgnVo) throws Exception {
-        return commonDao.selectUseridByEsylgnUserkey(esylgnVo);
-    }
     
-    /**
-    * ci로 조회하여 userid를 가져온다.
-    *
-    * @Title : selectUseridByCi
-    * @Description : ci로 조회하여 userid를 가져온다.
-    * @param esylgnVo EsylgnVo객체
-    * @return String userid값
-    * @throws Exception 예외
-    */
-    public String selectUseridByCi(EsylgnVo esylgnVo) throws Exception {
-        return commonDao.selectUseridByCi(esylgnVo);
-    }
-    
-    /**
-    * ci에 해당하는 사용자의 userkey를 업데이트한다.
-    *
-    * @Title : updateEsylgnUserkey
-    * @Description : ci에 해당하는 사용자의 userkey를 업데이트한다.
-    * @param esylgnVo EsylgnVo객체
-    * @return int update로우수
-    * @throws Exception 예외
-    */
-    public int updateEsylgnUserkey(EsylgnVo esylgnVo) throws Exception {
-        return commonDao.updateEsylgnUserkey(esylgnVo);
-    }
 }
