@@ -83,11 +83,15 @@
                         },
                         itemTemplate: function (value, item) {
                             if (item.rsnCn == null || item.rsnCn == '') return '-';
-
                             var result = $('<div>').addClass('btn-group-sm text-center').append(
-                                $('<button>').attr('type', 'button').addClass('btn btn-primary btn-modal').attr('data-bs-toggle', 'modal')
+                                    $('<button>').attr('type', 'button')
+                                    .addClass('btn btn-primary btn-modal')
+                                    .attr('data-bs-toggle', 'modal')
                                     .attr('data-bs-target', '#commonModal')
-                                    .attr('onclick', 'sttsChgHis.openModal("' + item.rsnCn + '", "' + item.prcsSeCdNm + '")').text('확인')
+                                    .attr('data-rsn-cn', item.rsnCn)
+                                    .attr('data-prcs-se-cd-nm', item.prcsSeCdNm)
+                                    .attr('onclick', 'sttsChgHis.openModal(this)')
+                                    .text('확인')
                             );
                             return result;
                         },
@@ -97,10 +101,10 @@
             });
         },
 
-        openModal: function (rsnCn, prcsSeCdNm) {
-            $('#commonModal .modal-title').text(prcsSeCdNm + " 사유");
+        openModal: function (data) {
+            $('#commonModal .modal-title').text($(data).data('prcsSeCdNm') + " 사유");
             $('#commonModal .modal-body').find('label').html('<strong> 사유 </strong>');
-            $('#commonModal #cn').val(rsnCn);
+            $('#commonModal #cn').val($(data).data('rsnCn'));
         }
     };
     $(function () {
