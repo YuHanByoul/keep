@@ -1,33 +1,19 @@
 package com.kbrainc.plum.cmm.controller;
 
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,16 +35,7 @@ import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.security.OnepassUsernameUserkeyAuthenticationToken;
 import com.kbrainc.plum.rte.util.CommonUtil;
-
-import kr.go.onepass.client.dto.api.send.OnepassUserResponse;
-import kr.go.onepass.client.dto.saml.OnepassResponse;
-import kr.go.onepass.client.handler.api.ApiSendHandler;
-import kr.go.onepass.client.handler.saml.OnepassResponseHandler;
-import kr.go.onepass.client.handler.saml.OnepassResponseHandler.RESULT_CODE;
-import kr.go.onepass.client.handler.saml.OnepassResponseHandler.STATUS;
-import kr.go.onepass.client.handler.saml.OnepassResponseHandler.TYPE;
 
 /**
  * 
