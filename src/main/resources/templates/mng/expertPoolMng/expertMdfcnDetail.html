@@ -401,16 +401,10 @@
             this.writeHdofJsGrid("newHdofJsGrid", "newHdofListPager", this.newHdofData);
         },
 
-        openModal(actvtCn) {
-            console.log('?');
+        openModal(data) {
             $('#commonModal .modal-title').text('활동내용');
-            console.log('1');
             $('#commonModal .modal-body').find('label').html('<strong> 내용 </strong>');
-            console.log('2');
-
-            $('#commonModal #cn').val(actvtCn);
-            console.log('3');
-
+            $('#commonModal #cn').val($(data).data('actvtCn'));
         },
 
         updateStts(sttsCd) {
@@ -445,6 +439,7 @@
                         if (result > 0) {
                             alert('상태 변경에 성공하였습니다.');
                             $('#updateCompanionReasonPopup').modal('hide');
+                            expertMdfcn.gridHelper.resetPageContent();
                         } else {
                             alert('상태 변경에 실패하였습니다.');
                         }
@@ -521,7 +516,7 @@
                     {title: "활동내용", name: "actvtCn", type: "text", width: 100, sorting: false, align: 'center',
                         itemTemplate(_,item) {
                             if(isNull(item.actvtCn)) return '<td></td>';
-                            result = "<button type='button' class='btn btn-sm btn-primary' data-bs-target='#commonModal' data-bs-toggle='modal' onclick=expertMdfcnDetail.openModal('" + item.actvtCn + "')>" + "확인 </button>";
+                            let result = "<button type='button' class='btn btn-sm btn-primary' data-actvt-cn='" + item.actvtCn + "' data-bs-target='#commonModal' data-bs-toggle='modal' onclick=expertMdfcnDetail.openModal(this)>" + "확인 </button>";
                             return result;
                         }
                     },

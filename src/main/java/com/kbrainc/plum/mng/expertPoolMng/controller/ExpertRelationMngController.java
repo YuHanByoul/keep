@@ -49,11 +49,28 @@ public class ExpertRelationMngController {
     @Value("${crypto.key}")
     private String encryptKey;
 
+    /**
+     * 전문가 섭외 목록 화면
+     *
+     * @return string
+     * @throws Exception
+     * @Title : expertRelationList
+     * @Description : 전문가 섭외 목록 화면
+     */
     @RequestMapping("/mng/expertPoolMng/expertRelationList.html")
     public String expertRelationList() throws Exception {
         return "mng/expertPoolMng/expertRelationList.html";
     }
 
+    /**
+     * 전문가 섭외 목록 조회
+     *
+     * @param expertRelationVo
+     * @return map
+     * @throws Exception
+     * @Title : selectExpertRelationList
+     * @Description : 전문가 섭외 목록 조회
+     */
     @RequestMapping("/mng/expertPoolMng/selectExpertRelationList.do")
     @ResponseBody
     public Map<String, Object> selectExpertRelationList(ExpertRelationVo expertRelationVo) throws Exception {
@@ -72,12 +89,32 @@ public class ExpertRelationMngController {
         return result;
     }
 
+    /**
+     * 섭외 정보 상세 탭 이동
+     *
+     * @param expertRelationVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertRelationDetail
+     * @Description : 섭외 정보 상세 탭 이동
+     */
     @RequestMapping("/mng/expertPoolMng/expertRelationDetail.html")
     public String expertRelationDetail(ExpertRelationVo expertRelationVo, Model model) throws Exception {
         model.addAttribute("expertRelationInfo", expertRelationVo);
         return "mng/expertPoolMng/expertRelationDetail.html";
     }
 
+    /**
+     * 매칭정보 화면 이동
+     *
+     * @param expertRelationVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertMatchForm
+     * @Description : 매칭정보 화면 이동
+     */
     @RequestMapping("/mng/expertPoolMng/expertMatchForm.html")
     public String expertMatchForm(ExpertRelationVo expertRelationVo, Model model) throws Exception {
         ExpertRelationVo expertRelationInfo = expertRelationMngService.selectExpertRelationInfo(expertRelationVo);
@@ -103,6 +140,16 @@ public class ExpertRelationMngController {
         return "mng/expertPoolMng/expertMatchForm.html";
     }
 
+    /**
+     * 강의요청서 화면 이동
+     *
+     * @param expertRelationVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertLctrDmndForm
+     * @Description : 강의요청서 화면 이동
+     */
     @RequestMapping("/mng/expertPoolMng/expertLctrDmndForm.html")
     public String expertLctrDmndForm(ExpertRelationVo expertRelationVo, Model model) throws Exception {
         ExpertRelationVo expertRelationInfo = expertRelationMngService.selectExpertRelationInfo(expertRelationVo);

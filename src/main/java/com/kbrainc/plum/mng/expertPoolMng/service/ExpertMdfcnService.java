@@ -25,7 +25,9 @@ import java.util.List;
 public interface ExpertMdfcnService {
     public List<ExpertMdfcnVo> selectExpertMdfcnList(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
-    public ExpertVo selectExpertMdfcnInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public ExpertVo selectExistingExpertInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+
+    public ExpertVo selectNewExpertInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
     public ExpertMdfcnVo selectExpertMdfcn(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
