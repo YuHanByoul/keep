@@ -124,4 +124,26 @@ public interface JntpurchsService {
      */
     public List<JntpurchsOrderVo> selectJntpurchsOrderList(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
     
+    /**
+     * 공동구매신청 상세 정보 조회
+     *
+     * @Title : selectJntpurchsOrderInfo 
+     * @Description : 공동구매신청 상세 정보 조회
+     * @param jntpurchsOrderVo JntpurchsOrderVo객체
+     * @return JntpurchsOrderVo 공동구매신청 상세 정보
+     * @throws Exception 예외
+     */
+    public JntpurchsOrderVo selectJntpurchsOrderInfo(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+     * 공동구매신청 정보 업데이트
+     *
+     * @Title : updateJntpurchsOrder
+     * @Description : 공동구매모집 정보 업데이트
+     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
 }

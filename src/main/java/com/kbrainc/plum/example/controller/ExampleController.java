@@ -139,6 +139,14 @@ public class ExampleController {
         return "example/sendMail";
     }
     
+    @RequestMapping(value = "/example/sendSms.html")
+    public String sendSms(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "SMS발송");
+        request.setAttribute("MENU_NAVI", "예제 / SMS발송");
+        
+        return "example/sendSms";
+    }
+    
     @RequestMapping(value = "/example/compress.html")
     public String compress(HttpServletRequest request) throws Exception {
         request.setAttribute("MENU_NAME", "압축/압축해제");
