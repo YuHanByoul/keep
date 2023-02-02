@@ -344,7 +344,8 @@
         /* JntpurchsDao.selectJntpurchsOrderList */
         <include refid="PaginationMapper.header"/>
         SELECT
-            D.JNTPURCHS_NM
+            B.JNTPURCHSID
+            , D.JNTPURCHS_NM
             , E.ACNT
             , E.NM
             , IFNULL(F.INST_NM, "-") AS INST_NM
@@ -408,34 +409,69 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 공동구매모집 상세 정보 조회 -->
-    <!--  
-    <select id="selectJntpurchsInfo" parameterType="JntpurchsVo" resultType="JntpurchsVo">
-        /* JntpurchsDao.selectJntpurchsInfo */
+    <!-- 공동구매신청 상세 정보 조회 -->
+    <select id="selectJntpurchsOrderInfo" parameterType="JntpurchsOrderVo" resultType="JntpurchsOrderVo">
+        /* JntpurchsDao.selectJntpurchsOrderInfo */
         SELECT
-            JNTPURCHSID
-            , JNTPURCHSNO
-            , JNTPURCHS_NM
-            , STTS_CD
-            , QNTY_WHOL
-            , QNTY_LMT
-            , QNTY_LMT_YN
-            , DATE_FORMAT(BGNG_DT, '%Y-%m-%d %H:%i:%s') AS BGNG_DT_STR
-            , DATE_FORMAT(END_DT, '%Y-%m-%d %H:%i:%s') AS END_DT_STR
-            , BGNG_DT
-            , END_DT
-            , DTL_CN
-            , MVP_URL
-            , MVP_PSTN_CD
-            , RPRS_IMG_FILEID
-            , DTL_IMG_FILEGRPID
-            , MAP_FILEGRPID
-            , EDU_PHOTO_FILEGRPID
-            , ATENT_MTTR
+            A.ORDERID
+            , D.JNTPURCHS_NM
+            , D.JNTPURCHSNO
+            , D.BGNG_DT
+            , D.END_DT
+            , (SELECT CD_NM FROM TB_CMM_CD WHERE CD = D.STTS_CD) AS JNTPURCHS_STTS_CD_NM
+            , A.ORDERNO
+            , A.STTS_CD
+            , GROUP_CONCAT(CONCAT(C.TCHAID_NM, CONCAT('(TA-', LPAD(B.TCHAIDID, 3, '0'), ')')) SEPARATOR ', ') AS TCHAID_NM
+            , B.QNTY
+            , B.AMT
+            , E.ACNT
+            , CASE WHEN E.INSTID IS NOT NULL THEN 'C' ELSE 'U' END USER_TYPE
+            , A.INST_NM
+            , (SELECT CD_NM FROM TB_CMM_CD WHERE CD = F.INST_TYPE_CD) AS INST_TYPE_CD_NM
+            , A.TELNO
+            , A.EML
+            , A.RECPTR
+            , A.RECPTR_TELNO
+            , A.RECPTR_EML
+            , A.DLVY_ADDR
+            , A.DLVY_ADDR_DTL
         FROM
-            TB_THA_TCHAID_JNTPURCHS
+            TB_THA_TCHAID_JNTPURCHS_ORDER A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS D ON (D.JNTPURCHSID = B.JNTPURCHSID)
+        INNER JOIN (
+            SELECT
+                USERID
+                , NM
+                , ACNT
+                , INSTID
+            FROM
+                TB_CMM_USER
+        ) E ON (E.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_CMM_INST F ON (F.INSTID = A.INSTID)
         WHERE
-            JNTPURCHSID = #{jntpurchsid}
+            B.JNTPURCHSID = #{jntpurchsid}
+        GROUP BY
+            B.JNTPURCHSID
     </select>
-    -->
+    
+    <!-- 공동구매신청 정보 업데이트 -->
+    <update id="updateJntpurchsOrder" parameterType="JntpurchsOrderVo">
+        /* JntpurchsDao.updateJntpurchsOrder */
+        UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+            STTS_CD = #{sttsCd}
+            , RECPTR = #{recptr}
+            , RECPTR_TELNO = #{recptrTelno}
+            , RECPTR_EML = #{recptrEml}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            ORDERID = #{orderid}
+    </update>
+    
 </mapper>

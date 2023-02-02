@@ -24,8 +24,8 @@ import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsTchaidVo;
 import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsVo;
 import com.kbrainc.plum.mng.jntpurchs.service.JntpurchsServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
-import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo.ORDER_DIRECTION;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.excel.ExcelDownloadUtil;
 
@@ -84,7 +84,7 @@ public class JntpurchsController {
      * 교구 목록 팝업
      *
      * @Title : tchaidListPopup
-     * @Description : 공동구매모집 목록 화면
+     * @Description : 교구 목록 팝업
      * @return String 화면경로
      * @throws Exception 예외
      */
@@ -97,7 +97,7 @@ public class JntpurchsController {
      * 공동구매모집 수정 화면
      *
      * @Title : jntpurchsUpdateForm
-     * @Description : 공동구매신청 목록 화면
+     * @Description : 공동구매모집 수정 화면
      * @return String 화면경로
      * @throws Exception 예외
      */
@@ -151,6 +151,20 @@ public class JntpurchsController {
     @RequestMapping(value = "/mng/jntpurchs/jntpurchsOrderListForm.html")
     public String jntpurchsOrderListForm() throws Exception {
         return "mng/jntpurchs/jntpurchsOrderList";
+    }
+    
+    /**
+     * 공동구매신청 수정 화면
+     *
+     * @Title : jntpurchsOrderUpdateForm
+     * @Description : 공동구매신청 수정 화면
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/jntpurchsOrderUpdateForm.html")
+    public String jntpurchsOrderUpdateForm(JntpurchsOrderVo jntpurchsOrderVo, Model model) throws Exception {
+        model.addAttribute("orderInfo", jntpurchsService.selectJntpurchsOrderInfo(jntpurchsOrderVo));
+        return "mng/jntpurchs/jntpurchsOrderUpdate";
     }
     
     
@@ -381,6 +395,45 @@ public class JntpurchsController {
             }
         );
         excelDownloadUtil.excelDownload(response, "공동구매신청 검색결과");
+    }
+    
+    /**
+     * 공동구매신청 정보 업데이트
+     *
+     * @Title : updateJntpurchsOrder
+     * @Description : 공동구매신청 정보 업데이트
+     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+     * @param bindingResult jntpurchsVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/updateJntpurchsOrder.do")
+    @ResponseBody
+    public Map<String, Object> updateJntpurchsOrder(@Valid JntpurchsOrderVo jntpurchsOrderVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsOrderVo.setUser(user);
+        retVal = jntpurchsService.updateJntpurchsOrder(jntpurchsOrderVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
+              
+        return resultMap;
     }
     
 }

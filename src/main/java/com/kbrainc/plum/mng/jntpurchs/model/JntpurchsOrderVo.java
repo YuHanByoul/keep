@@ -36,23 +36,59 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     /** 로그인 사용자 정보 */
     private UserVo user;
     
-    /** 공동구매 아이디 */
+    /** 공동구매신청 아이디 */
+    private int orderid;
+    
+    /** 공동구매모집 아이디 */
     private int jntpurchsid;
     
-    /** 공동구매 번호 */
+    /** 공동구매모집 번호 */
     private String jntpurchsno;
     
-    /** 공동구매 모집명 */
+    /** 공동구매모집 이름 */
     private String jntpurchsNm;
+    
+    /** 공동구매모집 상태 코드 */
+    private String JntpurchsSttsCd;
+    
+    /** 공동구매모집 상태 코드명 */
+    private String JntpurchsSttsCdNm;
     
     /** 신청자 계정 */
     private String acnt;
+    
+    /** 신청자 회원유형 */
+    private String userType;
     
     /** 신청자 계정 */
     private String nm;
     
     /** 신청자 기관명 */
     private String instNm;
+    
+    /** 신청자 기관 유형 코드명 */
+    private String instTypeCdNm;
+    
+    /** 신청자 연락처 */
+    private String telno;
+    
+    /** 신청자 이메일 */
+    private String eml;
+    
+    /** 수령인 */
+    private String recptr;
+    
+    /** 수령인 연락처 */
+    private String recptrTelno;
+    
+    /** 수령인 이메일 */
+    private String recptrEml;
+    
+    /** 배송지 주소 */
+    private String dlvyAddr;
+    
+    /** 배송지 상세주소 */
+    private String dlvyAddrDtl;
     
     /** 접수번호 */
     private String orderno;
@@ -63,17 +99,14 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     /** 신청수량 */
     private int qnty;
     
+    /** 구매가격 */
+    private int amt;
+    
     /** 신청상태 코드 */
     private String sttsCd;
     
     /** 신청상태 코드명 */
     private String sttsCdNm;
-    
-    /** 모집상태 코드 */
-    private String JntpurchsSttsCd;
-    
-    /** 모집상태 코드명 */
-    private String JntpurchsSttsCdNm;
     
     /** 신청일시 */
     private String regDtStr;
