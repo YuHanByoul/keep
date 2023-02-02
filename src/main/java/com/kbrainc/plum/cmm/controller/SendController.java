@@ -54,44 +54,5 @@ public class SendController {
         
         return result;
     }
-    /*
-    @RequestMapping(value = "/mng/helpDesk/deleteHelpDesk.do")
-    @ResponseBody
-    public Map<String, Object> deleteHelpDesk(@RequestParam("deleteHelpDeskIds") Integer[] deleteHelpDeskIds, @UserInfo UserVo user) throws Exception {
-        Map<String, Object> reseultMap = new HashMap<>();
-        int retVal = 0;
-
-        retVal = helpDeskService.deleteHelpDesk(deleteHelpDeskIds, user);
-
-        if (retVal > 0) {
-            reseultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            reseultMap.put("msg", "삭제에 성공하였습니다.");
-        } else {
-            reseultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            reseultMap.put("msg", "삭제에 실패했습니다.");
-        }
-
-        return reseultMap;
-    }
-    */
-    
-    /**
-     * MMS 발송
-     *
-     * @Title : sendMms
-     * @Description : MMS 발송
-     * @return Map<String, Object> 발송결과
-     * @throws Exception 예외
-     */
-//     @RequestMapping(value = "/mng/mms/sendSms.do")
-//     @ResponseBody
-//     public Map<String, Object> sendMms() throws Exception {
-//         String[] phoneList = new String[] {"01066278970"};
-//         String msg = "안녕하세요, 환경보전협회입니다.\n홈페이지가 새롭게 오픈되었습니다.";
-//         
-//         Map<String, Object> result = smsService.sendSms(msg, phoneList);
-//         
-//         return result;
-//     }
     
 }
