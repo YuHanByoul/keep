@@ -277,7 +277,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         user.setInstid((Integer) resultMap.get("INSTID"));
         user.setInstpicRoleCd((String) resultMap.get("INSTPIC_ROLE_CD"));
         user.setLoginUserType(loginUserType);
-        user.setOnepass_link_yn((String) resultMap.get("ONEPASS_LINK_YN"));
+        user.setOnepassLinkYn((String) resultMap.get("ONEPASS_LINK_YN"));
+        user.setEsylgnLinkCnt(Integer.parseInt(String.valueOf(resultMap.get("ESYLGN_LINK_CNT"))));
         user.setData(resultMap);
         
         if ("D".equals(loginType)) {

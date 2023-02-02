@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : EsylgnDaoImpl.xml
+    Description : 간편로그인 관련 쿼리
+-->
+<mapper namespace="com.kbrainc.plum.cmm.esylgn.model.EsylgnDao">
+    
+    <!-- 간편로그인 userkey로 조회하여 userid를 가져온다. -->
+    <select id="selectUseridByEsylgnUserkey" parameterType="cmm.EsylgnVo" resultType="String">
+        /* EsylgnDao.selectUseridByEsylgnUserkey */
+        SELECT 
+            USERID 
+        FROM 
+            TB_CMM_USER_ESYLGN 
+        WHERE 
+            USERKEY = #{userkey} 
+        AND ESYLGN_CD = #{esylgnCd}
+    </select>
+    
+    <!-- ci로 조회하여 userid와 acnt를 가져온다. -->
+    <select id="selectUserInfoByCi" parameterType="cmm.EsylgnVo" resultType="cmm.EsylgnVo">
+        /* EsylgnDao.selectUserInfoByCi */
+        SELECT 
+            USERID,
+            ACNT
+        FROM 
+            TB_CMM_USER 
+        WHERE 
+            CI = #{ci}
+        AND DEL_YN = 'N'
+    </select>
+    
+    <!-- ci에 해당하는 사용자의 userkey를 merge한다. -->
+    <insert id="mergeEsylgnUserkey" parameterType="cmm.EsylgnVo">
+        /* EsylgnDao.mergeEsylgnUserkey */
+        INSERT INTO  TB_CMM_USER_ESYLGN
+            (
+                USERID,
+                ESYLGN_CD,
+                USERKEY
+            ) 
+            VALUES
+            (
+                #{userid},
+                #{esylgnCd},
+                #{userkey}
+            )
+        ON DUPLICATE KEY UPDATE
+            USERKEY = #{userkey}
+    </insert>
+    
+    <!-- userid에 해당하는 사용자의 userkey를 저장한다. -->
+    <update id="insertEsylgnUserkey" parameterType="cmm.EsylgnVo">
+        /* EsylgnDao.insertEsylgnUserkey */
+        INSERT INTO TB_CMM_USER_ESYLGN 
+            (
+                USERID,
+                ESYLGN_CD,
+                USERKEY
+            ) 
+            VALUES
+            (
+                #{userid},
+                #{esylgnCd},
+                #{userkey}
+            )
+    </update>
+    
+    <!-- 내 userid에서 사용하는 특정 간편로그인 userkey 조회 -->
+    <select id="selectEsylgnUserkeyByUserid" parameterType="cmm.EsylgnVo" resultType="String">
+        /* EsylgnDao.selectEsylgnUserkeyByUserid */
+        SELECT 
+            USERKEY 
+        FROM 
+            TB_CMM_USER_ESYLGN 
+        WHERE 
+            USERID = #{userid} 
+        AND ESYLGN_CD = #{esylgnCd}
+    </select>
+    
+    <!-- 간편로그인 추가 정보 조회 -->
+    <select id="selectEsylgnAdditionalUserInfo" parameterType="cmm.EsylgnVo" resultType="cmm.EsylgnVo">
+        /* EsylgnDao.selectEsylgnUserkeyByUserid */
+        SELECT 
+            A.ACNT,
+            IF(B.USERID IS NOT NULL, 'Y', 'N') AS ONEPASS_LINK_YN,
+            (SELECT COUNT(USERID) FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID) AS ESYLGN_LINK_CNT
+        FROM 
+            TB_CMM_USER A LEFT OUTER JOIN TB_CMM_USER_ESYLGN B ON A.USERID = B.USERID AND B.ESYLGN_CD = #{esylgnCd}
+        WHERE 
+            A.USERID = #{userid}
+        AND A.DEL_YN = 'N'
+    </select>
+    
+    <!-- 간편로그인 추가 정보 조회(by userkey) -->
+    <select id="selectEsylgnAdditionalUserInfoByUserkey" parameterType="cmm.EsylgnVo" resultType="cmm.EsylgnVo">
+        /* EsylgnDao.selectEsylgnAdditionalUserInfoByUserkey */
+        SELECT 
+            B.ACNT,
+            A.USERID,
+            (SELECT COUNT(USERID) FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID) AS ESYLGN_LINK_CNT
+        FROM 
+            TB_CMM_USER_ESYLGN A INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID AND B.DEL_YN = 'N'
+        WHERE 
+            A.USERKEY = #{userkey}
+        AND A.ESYLGN_CD = #{esylgnCd}
+    </select>
+    
+    <!-- 특정 userid의 간편로그인코드에 해당하는 정보 삭제 -->
+    <delete id="deleteEsylgnByUseridAndEsylgnCd" parameterType="cmm.EsylgnVo">
+        /* EsylgnDao.deleteEsylgnByUseridAndEsylgnCd */
+        DELETE FROM TB_CMM_USER_ESYLGN WHERE USERID = #{userid} AND ESYLGN_CD = #{esylgnCd}
+    </delete>
+    
+    <!-- 특정 userkey의 간편로그인코드에 해당하는 정보 삭제 -->
+    <delete id="deleteEsylgnByUserkeyAndEsylgnCd" parameterType="cmm.EsylgnVo">
+        /* EsylgnDao.deleteEsylgnByUserkeyAndEsylgnCd */
+        DELETE FROM TB_CMM_USER_ESYLGN WHERE USERKEY = #{userkey} AND ESYLGN_CD = #{esylgnCd}
+    </delete>
+</mapper>

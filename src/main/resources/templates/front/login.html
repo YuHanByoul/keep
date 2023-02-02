@@ -48,6 +48,10 @@
         </form>
         </li>
         <li>
+        <form id="logOutRequest">
+            <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGOUT_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logout(#request)}" />
+            <input type="hidden" name="pageType" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).pageType(#request)}" />
+        </form>
         <form name="request" id="request" th:action="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_DEST}" method="post">
             <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
             <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).login()}" />
@@ -149,6 +153,19 @@
         }
         
         validateLogin();
+        
+        jQuery.ajax({
+            url : /*[[${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logoutDest(#request)}]]*/"",
+            type : "POST",
+            data: $('#logOutRequest').serialize(),
+            withCredentials: true,
+            success : function(res) {
+                console.log(res + " 로그아웃 성공");
+            },
+            error : function() {
+                console.log("로그아웃 실패");
+            }
+        });
     });
 
 </script>

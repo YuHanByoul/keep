@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -82,7 +83,7 @@ public class CommonController {
     * @return ModelAndView 모델뷰객체
     */
     @GetMapping("/")
-    public ModelAndView index(HttpServletRequest request, HttpSession session, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd) {
+    public ModelAndView index(HttpServletRequest request, HttpSession session, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd, @RequestParam(required=false) String alertMsg) {
         ModelAndView mav = new ModelAndView();
 
         DrmncyInfoVo drmncyInfo = (DrmncyInfoVo) session.getAttribute("drmncy");
@@ -98,8 +99,20 @@ public class CommonController {
             if (!"443".equals(serverHttpsPort)) {
                 serverHttpPortStr = ":" + serverHttpsPort;
             }*/
+            
+            StringBuffer alertMessageBuffer = new StringBuffer("");
+            
+            if (alertMsg != null) {
+                if (pwd != null) {
+                    alertMessageBuffer.append("&");
+                } else {
+                    alertMessageBuffer.append("?");
+                }
+                alertMessageBuffer.append("alertMsg=").append(alertMsg);
+            }
+            
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL() + (pwd != null ? "?pwd" : ""));
+            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL() + (pwd != null ? "?pwd" : "") + alertMessageBuffer.toString());
             redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
             mav.setView(redirectView);
             return mav;

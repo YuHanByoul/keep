@@ -1,6 +1,9 @@
 package com.kbrainc.plum.front.member.service;
 
+import javax.servlet.http.HttpSession;
+
 import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
 * 회원정보 서비스 인터페이스.
@@ -19,6 +22,18 @@ import com.kbrainc.plum.front.member.model.MemberVo;
 */
 public interface MemberService {
 	
+    /**
+    * 회원 탈퇴 처리.
+    *
+    * @Title : withdrawalMember 
+    * @Description : 회원 탈퇴 처리
+    * @param user 사용자세션정보
+    * @param session 세션객체
+    * @return int DB변경로우수
+    * @throws Exception 예외
+    */
+    public int withdrawalMember(UserVo user, HttpSession session) throws Exception;
+    
     /**
     *
     * ID 중복 체크

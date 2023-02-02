@@ -42,7 +42,10 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     private String esylgnCd;
     
     /** 디지털원패스 연동여부 */
-    private String onepass_link_yn;
+    private String onepassLinkYn;
+    
+    /** 간편로그인 연결갯수 */
+    private int esylgnLinkCnt;
     
     /** 사용자정보조회시 조회된 데이터 ROW Map */
     private Map data = new HashMap();
