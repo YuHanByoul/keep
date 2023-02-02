@@ -37,26 +37,33 @@ public class EnvWordVo extends ParentRequestVo {
     /** 용어아이디 */
     private int wordid;
     /** 용어 */
+    @NotEmpty(message = "용어를 입력해주십시오.")
     private String word;
     /** 용어_영어 */
+    @NotEmpty(message = "영문을 입력해주십시오.")
     private String wordEngl;
     /** 내용_요약 */
+    @NotEmpty(message = "요약정보를 입력해주십시오.")
     private String cnSumry;
     /** 내용 */
+    @NotEmpty(message = "내용을 입력해주십시오.")
     private String cn;
     /** 작성 일자 */
     private String wrtDe;
     /** 수정 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
     /** 수정자 아이디 */
     private int mdfrid;
     /** 등록 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
     
     private String rgtridNm;
     
-    private String nm;
-    private String searchCd;
+    private String searchEngl;
+    private String startDt;
+    private String endDt;
 }

@@ -18,7 +18,53 @@ import java.text.MessageFormat;
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 public class PaginationUtil {
-	
+
+
+	public static String getFrontPaginationHtml(int totalPage, int pageNumber, int pageCount) throws Exception {
+		StringBuffer paginationHtml = new StringBuffer();
+		int cntPageNumber = pageNumber;
+
+		if (totalPage <= cntPageNumber) {
+			cntPageNumber = totalPage;
+		}
+
+		int firstPageNum = ((cntPageNumber - 1) / cntPageNumber) * pageCount + 1;
+		int lastPageNum = firstPageNum + pageCount - 1;
+
+		if(Math.floorMod(cntPageNumber,pageCount) > 0) {
+			lastPageNum = (Math.floorDiv(cntPageNumber,pageCount)+1)*pageCount;
+			firstPageNum = (Math.floorDiv(cntPageNumber,pageCount)+1)*pageCount -(pageCount-1);
+		}
+
+		if (lastPageNum > totalPage) {
+			lastPageNum = totalPage;
+		}
+
+		if (cntPageNumber <= 1) {
+			paginationHtml.append("<div class=\"pagination\" aria-label=\"pagination\">");
+		}
+
+		if (cntPageNumber > 1) {
+			paginationHtml.append("<div class=\"pagination\" aria-label=\"pagination\">");
+			paginationHtml.append("<button type=\"button\" class=\"first\" title=\"처음\" onclick='goPage(1)'></button>");
+			paginationHtml.append("<button type=\"button\" class=\"prev\" title=\"이전\" onclick='goPage(").append(cntPageNumber - 1).append(")'></button>");
+		}
+
+		for (int i = firstPageNum; i <= lastPageNum; i++) {
+
+			if (i == cntPageNumber) {
+				paginationHtml.append("<button type=\"button\" class=\"active\">").append(i).append("</button>");
+			} else {
+				paginationHtml.append("<button type=\"button\" onclick='goPage(").append(i).append(")'>").append(i).append("</button>");
+			}
+		}
+		if (cntPageNumber < totalPage) {
+			paginationHtml.append("<button type=\"button\" class=\"next\" title=\"다음\" onclick='goPage(").append(cntPageNumber + 1).append(")'></button>");
+			paginationHtml.append("<button type=\"button\" class=\"last\" title=\"마지막\" onclick='goPage(").append(totalPage).append(")'></button>");
+			paginationHtml.append("</div>");
+		}
+		return paginationHtml.toString();
+	}
 	/**
 	 * 페이징 처리 html 생성
 	 *

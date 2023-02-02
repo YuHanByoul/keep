@@ -119,7 +119,7 @@
                             </div>
                             <div class="mt-1 p-t-20 text-center border-top">
                                 <button type="button" class="btn btn-disabled m-r-5" onclick="expertList.searchInit()">초기화</button>
-                                <button type="button" class="btn btn-primary" onclick="expertList.search()">검색</button>
+                                <button type="submit" class="btn btn-primary" onclick="expertList.search()">검색</button>
                             </div>
                         </form>
                     </div>
@@ -261,23 +261,23 @@
                     },
                     fields: [
                         {name: 'userid', css: 'hide'},
-                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting:false},
-                        {title: "전문가 유형", name: "expertTypeCdNm", type: "text", width: "120", align: "center", sorting:false},
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                        {title: "전문가 유형", name: "expertTypeCdNm", type: "text", width: "120", align: "center", sorting: false},
                         {title: "아이디", name: "acnt", type: "text", width: "100", align: "center"},
                         {title: "이름", name: "nm", type: "text", width: "80", align: "center"},
-                        {title: "전문분야", type: "text", width: "100", align: "center", cellRenderer: expertList.cellRendererExprtField , sorting:false},
-                        {title: "전문분야(대상)", name: "exprtTrgtCdNm", width: "125", align: "center", cellRenderer: expertList.cellRendererExprtTrgt , sorting:false},
-                        {title: "전문분야(환경주제)", name: "exprtSbjctCdNm", type: "text", width: "120", align: "center", cellRenderer: expertList.cellRendererExprtSbjct, sorting:false},
-                        {title: "가능 활동범위", name: "exprtActvtScopeCdNm", type: "text", width: "100", align: 'center', cellRenderer: expertList.cellRendererExprtActvtScope, sorting:false},
+                        {title: "전문분야", type: "text", width: "100", align: "center", cellRenderer: expertList.exprtFieldCellRenderer, sorting: false},
+                        {title: "전문분야(대상)", name: "exprtTrgtCdNm", width: "125", align: "center", cellRenderer: expertList.commonCellRenderer, sorting: false},
+                        {title: "전문분야(환경주제)", name: "exprtSbjctCdNm", type: "text", width: "120", align: "center", cellRenderer: expertList.commonCellRenderer, sorting: false},
+                        {title: "가능 활동범위", name: "exprtActvtScopeCdNm", type: "text", width: "100", align: 'center', cellRenderer: expertList.commonCellRenderer, sorting: false},
                         {
-                            title: "회원상태", name: "userSttsCd", type: "text", width: "100", align: 'center', sorting:false
+                            title: "회원상태", name: "userSttsCd", type: "text", width: "100", align: 'center', sorting: false
                             , itemTemplate: function (value) {
                                 if (value == "1") return "가입";
                                 else if (value == "2") return "대기";
                                 else if (value == "9") return "탈퇴";
                             }
                         },
-                        {title: "전문가 상태", name: "expertSttsCdNm", type: "text", width: "100", align: 'center', sorting:false},
+                        {title: "전문가 상태", name: "expertSttsCdNm", type: "text", width: "100", align: 'center', sorting: false},
                         {title: "전문가 신청일", name: "aplyDt", type: "text", width: "120", align: "center"},
                     ],
                     /* [# sec:authorize-url="/mng/expertPoolMng/expertDetail.html"] */
@@ -297,44 +297,31 @@
 
             search() {
 
-                if($('#searchType').val() != '' && $('#searchKeyword') == '') {
+                if ($('#searchType').val() != '' && $('#searchKeyword') == '') {
                     alert('검색어를 입력해 주십시오.');
-                    return ;
+                    return;
                 }
 
                 this.gridHelper.resetListContent();
             },
 
             /* 전문분야 */
-            cellRendererExprtField: function (value, item) {
+            exprtFieldCellRenderer: function (value, item) {
 
-                var result =[];
-                if(item.fldLctrYn == 'Y') result.push('강의');
-                if(item.fldPlanngYn == 'Y') result.push('기획');
-                if(item.fldCnsltngYn == 'Y') result.push('컨설팅');
-                if(item.fldEtcYn == 'Y') result.push('기타');
+                var result = [];
+                if (item.fldLctrYn == 'Y') result.push('강의');
+                if (item.fldPlanngYn == 'Y') result.push('기획');
+                if (item.fldCnsltngYn == 'Y') result.push('컨설팅');
+                if (item.fldEtcYn == 'Y') result.push('기타');
 
                 return "<td style='word-wrap: break-word;white-space: normal;'>" + result.join(', ') + '</td>';
             },
 
-            /* 전문분야(대상) */
-            cellRendererExprtTrgt: function (value, item) {
-                if (isNull(item.exprtTrgtCdNm)) return '<td></td>';
-                return "<td style='word-wrap: break-word;white-space: normal;'>" + item.exprtTrgtCdNm + '</td>';
+            commonCellRenderer: function (value, item) {
+                if (isNull(value)) return '<td></td>';
+                return "<td style='word-wrap: break-word;white-space: normal;'>" + value + '</td>';
             },
-
-            /* 전문분야(환경주제) */
-            cellRendererExprtSbjct: function (value, item) {
-                if (isNull(item.exprtSbjctCdNm)) return '<td></td>';
-                return "<td style='word-wrap: break-word;white-space: normal;'>" + item.exprtSbjctCdNm + '</td>';
-            },
-
-            /* 가능 활동범위 */
-            cellRendererExprtActvtScope: function (value, item) {
-                if (isNull(item.exprtActvtScopeCdNm)) return '<td></td>';
-                return "<td style='word-wrap: break-word;white-space: normal;'>" + item.exprtActvtScopeCdNm + '</td>';
-            }
-        }
+        };
 
         $(function () {
             expertList.init();

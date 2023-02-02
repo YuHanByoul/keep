@@ -3,154 +3,139 @@
 
 <!--
 	SQL File Name : TchaidRvwDaoImpl.xml
-	Description : 언론보도관리
+	Description : 교구후기관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.tchaidRvw.model.TchaidRvwDao">
     
-    <!-- 언론보도관리 게시글 목록 조회 -->
+    <!-- 교구후기관리 게시글 목록 조회 -->
     <select id="selectTchaidRvwList" parameterType="TchaidRvwVo" resultType="TchaidRvwVo">
         /* TchaidRvwDao.selectTchaidRvwList */
         <include refid="PaginationMapper.header"/>
-        SELECT
-        	<!-- 후기아이디 -->
-        	A.RVWID
-        
-        	<!-- 구분 -->
-          , D.TCHAID_TYPE_CD
-        
-        	<!-- 작성자 ID -->
-          , B.ACNT
-        
-        	<!-- 작성자/기관명 -->
-          , B.NM            <!-- 작성자 -->
-          , C.INST_NM       <!-- 기관명 -->
-        
-        	<!-- 모집번호 -->
-          , D.JNTPURCHSNO   <!-- 공동구매 번호 -->
-          , E.RCRIT_NO      <!-- 꾸러미 모집번호 -->
-        
-        	<!-- 모집명 -->
-          , D.JNTPURCHS_NM  <!-- 공동구매 이름 -->
-          , E.RCRIT_NM      <!-- 모집 이름 -->
-        
-        	<!-- 만족도 -->
-          , A.SCR
-        
-        	<!-- 등록일 -->
-          , A.REG_DT
-        FROM
-        	TB_THA_TCHAID_JNTPURCHS_RVW A
-            
-    		<!-- 사용자정보 -->
-        	LEFT OUTER JOIN TB_CMM_USER B ON A.USERID = B.USERID
-        	LEFT OUTER JOIN TB_CMM_INST C ON B.INSTID = C.INSTID
-        
-        
-        	<!-- 공동구매 -->
-        	LEFT OUTER JOIN (SELECT
-				                 TB1.JNTPURCHSID
-			                   , TB2.JNTPURCHSNO
-			                   , TB2.JNTPURCHS_NM
-			                   , TB4.TCHAIDID
-			                   , TB4.TCHAID_TYPE_CD
-			                 FROM
-				                 TB_THA_TCHAID_JNTPURCHS_RVW TB1
-				                 LEFT OUTER JOIN TB_THA_TCHAID_JNTPURCHS TB2 ON TB1.JNTPURCHSID = TB2.JNTPURCHSID                       <!-- THA_교구_공동구매 -->
-				                 LEFT OUTER JOIN TB_THA_TCHAID_JNTPURCHS_GOODS TB3 ON TB2.JNTPURCHSID = TB3.JNTPURCHSID                 <!-- THA_교구_공동구매_상품 -->
-				                 LEFT OUTER JOIN TB_THA_TCHAID TB4 ON TB3.TCHAIDID = TB4.TCHAIDID                                       <!-- THA_교구 -->
-							) D ON A.JNTPURCHSID = D.JNTPURCHSID
-        
-        	<!-- 꾸러미대여 -->
-        	LEFT OUTER JOIN (SELECT
-				                 TB1.TCHAIDID
-			                   , TB6.RCRIT_NO
-			                   , TB6.RCRIT_NM
-			                 FROM
-				                 TB_THA_PACKAGE_TCHAID_CMPSTN TB1
-				                 LEFT OUTER JOIN TB_THA_PACKAGE TB2 ON TB1.PACKAGEID = TB2.PACKAGEID                                    <!-- THA_꾸러미 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGEINDVD TB3 ON TB2.PACKAGEID = TB3.PACKAGEID                               <!-- THA_꾸러미개체 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD TB4 ON TB3.PACKAGEINDVDID = TB4.PACKAGEINDVDID    <!-- THA_꾸러미_대여_차시_꾸러미개체 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RND TB5 ON TB4.RNDID = TB5.RNDID                                   <!-- THA_꾸러미_대여_차시 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RCRIT TB6 ON TB5.RCRITID = TB6.RCRITID                             <!-- THA_꾸러미_대여_모집 -->
-							) E ON D.TCHAIDID = E.TCHAIDID
-        WHERE 
-            1=1
-            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'oxprNm'">
-            AND OXPR_NM LIKE CONCAT('%',#{searchKeyword},'%')
-            </if>
-            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
-            AND TTL LIKE CONCAT('%',#{searchKeyword},'%')
-            </if>
-            <if test="searchCd != null and searchCd != ''">
-            AND CLSF_CD = #{searchCd}
-            </if>
+            SELECT
+            	*
+            FROM
+            	(SELECT
+            		 '대여' AS TYPE
+            	   , A.APLYID
+            	   , H.TCHAIDID
+            	   , B.ACNT AS APLCNTID
+            	   , A.APLCNT_NM
+            	   , INST_NM
+            	   , E.RCRIT_NM
+            	   , A.RVW_SCR
+            	   , A.RVW_CN
+            	   , A.RVW_FILEGRPID
+            	   , DATE(A.RVW_REG_DT) AS RVW_REG_DT
+            	 FROM
+            		 TB_THA_PACKAGE_LEND_APLY A
+            		 LEFT OUTER JOIN (SELECT USERID, ACNT, NM FROM TB_CMM_USER) B ON A.APLCNTID = B.USERID
+            		 LEFT OUTER JOIN (SELECT APLYID, RNDID, PACKAGEINDVDID FROM TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD) C ON A.APLYID = C.APLYID
+            		 LEFT OUTER JOIN (SELECT RNDID, RCRITID FROM TB_THA_PACKAGE_LEND_RND) D ON C.RNDID = D.RNDID
+            		 LEFT OUTER JOIN (SELECT RCRITID, RCRIT_NM FROM TB_THA_PACKAGE_LEND_RCRIT) E ON D.RCRITID = E.RCRITID
+            		 LEFT OUTER JOIN (SELECT PACKAGEINDVDID, PACKAGEID FROM TB_THA_PACKAGEINDVD) F ON C.PACKAGEINDVDID = F.PACKAGEINDVDID
+            		 LEFT OUTER JOIN (SELECT PACKAGEID, PACKAGE_NM FROM TB_THA_PACKAGE) G ON F.PACKAGEID = G.PACKAGEID
+                     LEFT OUTER JOIN (SELECT PACKAGEID, TCHAIDID FROM TB_THA_PACKAGE_TCHAID_CMPSTN) H ON G.PACKAGEID = H.PACKAGEID
+            	 WHERE
+            		 STTS_CD = 1
+
+            	 UNION ALL
+
+            	 SELECT
+            		 '공동구매'
+            	   , A.ORDERID AS APLYID
+            	   , E.TCHAIDID
+            	   , B.ACNT AS APLCNTID
+            	   , B.NM AS APLCNT_NM
+            	   , INST_NM
+            	   , D.JNTPURCHS_NM AS RCRIT_NM
+            	   , A.RVW_SCR
+            	   , A.RVW_CN
+            	   , A.RVW_FILEGRPID
+            	   , DATE(A.RVW_REG_DT)
+            	 FROM
+            		 TB_THA_TCHAID_JNTPURCHS_ORDER A
+            		 LEFT OUTER JOIN (SELECT USERID, ACNT, NM FROM TB_CMM_USER) B ON A.USERID = B.USERID
+            		 LEFT OUTER JOIN (SELECT ORDERID, JNTPURCHSID, TCHAIDID FROM TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS) C ON A.ORDERID = C.ORDERID
+            		 LEFT OUTER JOIN (SELECT JNTPURCHSID, JNTPURCHSNO, JNTPURCHS_NM FROM TB_THA_TCHAID_JNTPURCHS) D ON C.JNTPURCHSID = D.JNTPURCHSID
+            		 LEFT OUTER JOIN (SELECT TCHAIDID, TCHAID_NM FROM TB_THA_TCHAID) E ON C.TCHAIDID = E.TCHAIDID
+            	 WHERE
+            		 STTS_CD = 181100
+                ) TB1
+            WHERE
+                1=1
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'oxprNm'">
+                AND OXPR_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
+                AND TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchCd != null and searchCd != ''">
+                AND CLSF_CD = #{searchCd}
+                </if>
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 언론보도관리 게시글 상세조회 -->
+    <!-- 교구후기관리 게시글 상세조회 -->
     <select id="selectTchaidRvwInfo" parameterType="TchaidRvwVo" resultType="TchaidRvwVo"> 
         /* TchaidRvwDao.selectTchaidRvwInfo */
-        SELECT
-        	<!-- 후기아이디 -->
-        	A.RVWID
-        
-        	<!-- 작성자 ID -->
-          , B.ACNT
-        
-        	<!-- 작성자/기관명 -->
-          , B.NM            <!-- 작성자 -->
-          , C.INST_NM       <!-- 기관명 -->
-        
-        	<!-- 모집번호 -->
-          , D.JNTPURCHSNO   <!-- 공동구매 번호 -->
-          , E.RCRIT_NO      <!-- 꾸러미 모집번호 -->
-        
-        	<!-- 모집명 -->
-          , D.JNTPURCHS_NM  <!-- 공동구매 이름 -->
-          , E.RCRIT_NM      <!-- 모집 이름 -->
-        
-        	<!-- 만족도 -->
-          , A.SCR
-        
-        	<!-- 등록일 -->
-          , A.REG_DT
-        FROM
-        	TB_THA_TCHAID_JNTPURCHS_RVW A
-        	<!-- 사용자정보 -->
-        	LEFT OUTER JOIN TB_CMM_USER B ON A.USERID = B.USERID
-        	LEFT OUTER JOIN TB_CMM_INST C ON B.INSTID = C.INSTID
-        
-        	<!-- 공동구매 -->
-        	LEFT OUTER JOIN (SELECT
-				                 TB1.JNTPURCHSID
-			                   , TB2.JNTPURCHSNO
-			                   , TB2.JNTPURCHS_NM
-			                   , TB4.TCHAIDID
-			                   , TB4.TCHAID_TYPE_CD
-			                 FROM
-				                 TB_THA_TCHAID_JNTPURCHS_RVW TB1
-				                 LEFT OUTER JOIN TB_THA_TCHAID_JNTPURCHS TB2 ON TB1.JNTPURCHSID = TB2.JNTPURCHSID                       <!-- THA_교구_공동구매 -->
-				                 LEFT OUTER JOIN TB_THA_TCHAID_JNTPURCHS_GOODS TB3 ON TB2.JNTPURCHSID = TB3.JNTPURCHSID                 <!-- THA_교구_공동구매_상품 -->
-				                 LEFT OUTER JOIN TB_THA_TCHAID TB4 ON TB3.TCHAIDID = TB4.TCHAIDID                                       <!-- THA_교구 -->
-							) D ON A.JNTPURCHSID = D.JNTPURCHSID
-        
-        	<!-- 꾸러미대여 -->
-        	LEFT OUTER JOIN (SELECT
-				                 TB1.TCHAIDID
-			                   , TB6.RCRIT_NO
-			                   , TB6.RCRIT_NM
-			                 FROM
-				                 TB_THA_PACKAGE_TCHAID_CMPSTN TB1
-				                 LEFT OUTER JOIN TB_THA_PACKAGE TB2 ON TB1.PACKAGEID = TB2.PACKAGEID                                    <!-- THA_꾸러미 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGEINDVD TB3 ON TB2.PACKAGEID = TB3.PACKAGEID                               <!-- THA_꾸러미개체 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD TB4 ON TB3.PACKAGEINDVDID = TB4.PACKAGEINDVDID    <!-- THA_꾸러미_대여_차시_꾸러미개체 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RND TB5 ON TB4.RNDID = TB5.RNDID                                   <!-- THA_꾸러미_대여_차시 -->
-				                 LEFT OUTER JOIN TB_THA_PACKAGE_LEND_RCRIT TB6 ON TB5.RCRITID = TB6.RCRITID                             <!-- THA_꾸러미_대여_모집 -->
-							) E ON D.TCHAIDID = E.TCHAIDID
-        WHERE RVWID = #{rvwid}
+            SELECT
+                *
+            FROM
+                (SELECT
+                     '대여' AS TYPE
+                   , A.APLYID
+                   , H.TCHAIDID
+                   , B.ACNT AS APLCNTID
+                   , A.APLCNT_NM
+                   , INST_NM
+                   , E.RCRIT_NM
+                   , G.PACKAGE_NM AS PRODUCT_NM
+                   , A.RVW_SCR
+                   , A.RVW_CN
+                   , A.RVW_FILEGRPID
+                   , DATE(A.RVW_REG_DT) AS RVW_REG_DT
+                 FROM
+            		 TB_THA_PACKAGE_LEND_APLY A
+            		 LEFT OUTER JOIN (SELECT USERID, ACNT, NM FROM TB_CMM_USER) B ON A.APLCNTID = B.USERID
+            		 LEFT OUTER JOIN (SELECT APLYID, RNDID, PACKAGEINDVDID FROM TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD) C ON A.APLYID = C.APLYID
+            		 LEFT OUTER JOIN (SELECT RNDID, RCRITID FROM TB_THA_PACKAGE_LEND_RND) D ON C.RNDID = D.RNDID
+            		 LEFT OUTER JOIN (SELECT RCRITID, RCRIT_NM FROM TB_THA_PACKAGE_LEND_RCRIT) E ON D.RCRITID = E.RCRITID
+            		 LEFT OUTER JOIN (SELECT PACKAGEINDVDID, PACKAGEID FROM TB_THA_PACKAGEINDVD) F ON C.PACKAGEINDVDID = F.PACKAGEINDVDID
+            		 LEFT OUTER JOIN (SELECT PACKAGEID, PACKAGE_NM FROM TB_THA_PACKAGE) G ON F.PACKAGEID = G.PACKAGEID
+                     LEFT OUTER JOIN (SELECT PACKAGEID, TCHAIDID FROM TB_THA_PACKAGE_TCHAID_CMPSTN) H ON G.PACKAGEID = H.PACKAGEID
+                 WHERE
+                     STTS_CD = 1
+
+                 UNION ALL
+
+                 SELECT
+                     '공동구매'
+                   , A.ORDERID AS APLYID
+                   , C.TCHAIDID
+                   , B.ACNT AS APLCNTID
+                   , B.NM AS APLCNT_NM
+                   , INST_NM
+                   , D.JNTPURCHS_NM AS RCRIT_NM
+                   , E.TCHAID_NM AS PRODUCT_NM
+                   , A.RVW_SCR
+                   , A.RVW_CN
+                   , A.RVW_FILEGRPID
+                   , DATE(A.RVW_REG_DT)
+                 FROM
+            		 TB_THA_TCHAID_JNTPURCHS_ORDER A
+            		 LEFT OUTER JOIN (SELECT USERID, ACNT, NM FROM TB_CMM_USER) B ON A.USERID = B.USERID
+            		 LEFT OUTER JOIN (SELECT ORDERID, JNTPURCHSID, TCHAIDID FROM TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS) C ON A.ORDERID = C.ORDERID
+            		 LEFT OUTER JOIN (SELECT JNTPURCHSID, JNTPURCHSNO, JNTPURCHS_NM FROM TB_THA_TCHAID_JNTPURCHS) D ON C.JNTPURCHSID = D.JNTPURCHSID
+            		 LEFT OUTER JOIN (SELECT TCHAIDID, TCHAID_NM FROM TB_THA_TCHAID) E ON C.TCHAIDID = E.TCHAIDID
+                 WHERE
+                     STTS_CD = 181100
+            WHERE
+                TB1.APLYID = #{aplyid}
+                AND TB1.TCHAIDID = #{tchaidid}
+                AND TB1.TYPE = #{type}
     </select>
     
-    <!-- 언론보도관리 게시글 수정 -->
+    <!-- 교구후기관리 게시글 수정 -->
     <update id="updateTchaidRvw" parameterType="TchaidRvwVo" keyProperty="userid">
         /* TchaidRvwDao.updateTchaidRvw */
         UPDATE TB_THA_TCHAID_JNTPURCHS_RVW SET
@@ -161,7 +146,7 @@
          WHERE RVWID = #{rvwid}
     </update>
     
-    <!-- 언론보도관리 게시글 삭제 -->
+    <!-- 교구후기관리 게시글 삭제 -->
     <delete id="deleteTchaidRvw" parameterType="java.util.ArrayList">
         /* TchaidRvwDao.deleteTchaidRvw */
 		DELETE FROM TB_THA_TCHAID_JNTPURCHS_RVW 

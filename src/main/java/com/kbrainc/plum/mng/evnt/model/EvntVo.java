@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class EvntVo extends ParentRequestVo {
      * 제목
      */
     @NotEmpty
+    @Size(max = 200, message = "제목은 200자를 넘을 수 없습니다.")
     private String ttl;
 
     /**

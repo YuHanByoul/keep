@@ -365,3 +365,27 @@ function excelDownload($searchForm, url) {
     const inpArr = $searchForm.serializeArray();
     $.fileDownload(url + "?" + $.param(inpArr));
 }
+
+function deleteFile(fileid, fileIdntfcKey) {
+    if (!confirm("파일을 삭제하시겠습니까?")) {
+        return;
+    }
+
+    let deleteFileUrl = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
+    $.ajax({
+        url: deleteFileUrl,
+        type: 'GET',
+        cache: false,
+        dataType: 'json',
+        success: function (data) {
+            if (data.result == "success") {
+                $("#" + fileid).remove();
+                alert("파일삭제가 완료 되었습니다.");
+            } else {
+                alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+            }
+        },
+        error: function (error) {
+        }
+    })
+}

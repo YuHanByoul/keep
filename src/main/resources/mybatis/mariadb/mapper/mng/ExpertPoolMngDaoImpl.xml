@@ -86,7 +86,7 @@
             AND AA.EXPRT_ACTVT_SCOPE_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm} , '%')
         </if>
         <if test="userSttsCd != null and userSttsCd != ''">
-            AND AA.STTS_CD = #{userSttsCd}
+            AND AA.USER_STTS_CD = #{userSttsCd}
         </if>
         <if test="sttsCd != null and sttsCd != ''">
             AND AA.STTS_CD = #{sttsCd}
@@ -125,6 +125,7 @@
             , A.FLD_PLANNG_YN
             , A.FLD_CNSLTNG_YN
             , A.FLD_ETC_YN
+            , A.FLD_ETC_CN
             , A.MOBLPHON_RLS_YN
             , A.EML_RLS_YN
             , A.QLFC_RLS_YN
@@ -143,6 +144,9 @@
             , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{userid} ) AS EXPRT_SBJCT_CD /* 전문분야 주제 */
             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_RGN_CD /* 주요활동지역 */
             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_SCOPE_CD /* 가능 활동범위 */
+            , A.TOS_AGRE_YN
+            , A.PRVC_CLCT_AGRE_YN
+            , A.PRVC_THPTY_PVSN_AGRE_YN
         FROM TB_ASS_EXPRT A
         INNER JOIN TB_CMM_USER B ON A.USERID = B.USERID
         WHERE A.USERID = #{userid}

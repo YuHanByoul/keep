@@ -119,9 +119,6 @@ public class ExpertVo extends ParentRequestVo {
     /** 회원 상태 코드*/
     private String userSttsCd;
 
-    /** 회원 상태 코드 이름*/
-    private String userSttsCdNm;
-
     /** 전문가 상태 코드 이름*/
     private String expertSttsCdNm;
 
@@ -175,6 +172,30 @@ public class ExpertVo extends ParentRequestVo {
 
     /** 검색용 필드 (전문분야) */
     private String exprtField;
+
+    /**
+     * 이용약관 동의 여부
+     */
+    private String tosAgreYn;
+
+    /**
+     * 개인정보 수집 동의 여부
+     */
+    private String prvcClctAgreYn;
+
+    /**
+     * 개인정보 제3자 제공 동의 여부
+     */
+    private String prvcThptyPvsnAgreYn;
+
+    /* 저장용 */
+    private String[] exprtTrgtArr;
+    /* 저장용 */
+    private String[] exprtActvtRgnArr;
+    /* 저장용 */
+    private String[] exprtActvtScopeArr;
+    /* 저장용 */
+    private String[] exprtSbjctArr;
 
     public void setSttsCd(String sttsCd) {
         this.sttsCd = sttsCd;
