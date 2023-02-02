@@ -2,6 +2,9 @@ package com.kbrainc.plum.mng.cntnts.model;
 
 import java.sql.Date;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -32,36 +35,48 @@ public class CntntsVo  extends ParentRequestVo{
     /** 콘텐츠아이디 */
     private int cntntsid;
     /** 교육_주제_코드(중분류) */
+    @NotEmpty(message = "교육주제(중분류)를 선택해주십시오.")
     private String eduSbjctCd;
     /** 교육_주제_코드(대분류) */
+    @NotEmpty(message = "교육주제(대분류) 선택해주십시오.")
     private String mainEduSbjctCd;
     /** 유형_코드(중분류) */
+    @NotEmpty(message = "콘텐츠 유형(중분류) 선택해주십시오.")
     private String typeCd;
     /** 유형_코드(대분류) */
+    @NotEmpty(message = "콘텐츠 유형(대분류) 선택해주십시오.")
     private String mainTypeCd;
     /** 교육_대상_코드 */
+    @NotEmpty(message = "교육대상 선택해주십시오.")
     private String eduTrgtCd;
     /** 출처 */
     private String origin;
     /** 제작_년 */
     private Integer mnfctYy;
-    /** 재생_초 */
+    /** 재생_분 */
     private Integer plyMinute;
     /** 재생_초 */
+    @Size(max = 2, message = "재생시간(초)는 2자리까지 입력가능합니다.")
     private Integer plySecnd;
     /** 제목 */
+    @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
     /** 내용 */
+    @NotEmpty(message = "내용을 입력해주십시오.")
     private String cn;
+    /** 조회수 */
+    private Integer hits;
     /** 대표_이미지_파일아이디 */
     private Integer rprsImgFileid;
     /** 첨부_파일그룹아이디 */
     private Integer atchFilegrpid;
     /** 수정_일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
     /** 수정자아이디 */
     private int mdfrid;
     /** 등록_일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
