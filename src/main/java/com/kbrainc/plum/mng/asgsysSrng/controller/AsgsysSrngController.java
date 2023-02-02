@@ -32,6 +32,9 @@ import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -73,6 +76,7 @@ public class AsgsysSrngController {
 	/**********************************************************************************
      * 지정신청
      **********************************************************************************/
+
 	/**
      * @Title : dsgnSrngMainForm
      * @Description : 지정신청메인 화면이동
@@ -123,6 +127,8 @@ public class AsgsysSrngController {
     	CodeVo codeVo = new CodeVo();
 
     	codeVo.setCdgrpid("111");    //신청진행상태코드
+    	codeVo.setRowPerPage(30);
+
 
     	model.addAttribute("sttsCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
     	model.addAttribute("sttsCdList", codeServiceImpl.selectCodeList(codeVo));
@@ -210,13 +216,6 @@ public class AsgsysSrngController {
     	model.addAttribute("instid", asgsysSrngVo.getInstid());
     	model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
 
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
     	return "mng/asgsysSrng/mbrSrchPopup";
     }
 
@@ -429,8 +428,6 @@ public class AsgsysSrngController {
     	//심사점수 목록 조회
     	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
 
-
-
     	if(srngScrList.size() > 0) {
     		model.addAttribute("srngScrList", srngScrList);
 
@@ -525,10 +522,56 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/rsltRptForm.html")
     public String rsltRptForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	//신청정보조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
+
+
+    	//운영형태코드 목록 조회
+    	CodeVo codeVo = new CodeVo();
+    	codeVo.setCdgrpid("120");    //신청진행상태코드
+
+    	model.addAttribute("operFrmCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
+    	model.addAttribute("aplyInfo", aplyInfo);
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+    	//심사점수 목록 조회
+    	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
+
+    	if(srngScrList.size() > 0) {
+    		model.addAttribute("srngScrList", srngScrList);
+
+    		asgsysSrngVo.setFormid(srngScrList.get(0).getFormid());
+
+    		//심사점수 목록 헤더 조회
+    		model.addAttribute("scrHeader", asgsysSrngService.selectSrngScrHeader(asgsysSrngVo));
+    	}
 
     	return "mng/asgsysSrng/rsltRpt";
     }
 
+    //지정탈락
 
     /**
     * @Title : prgrmDstnctn
@@ -866,18 +909,65 @@ public class AsgsysSrngController {
     * @throws Exception
     */
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpCalenderPopup.html")
-    public String sprtgrpCalenderPopup(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    public String sprtgrpCalenderPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	//todo 캘린더 조회
+    	//캘린더 조회
+    	model.addAttribute("clndrList", asgsysSrngService.selectSprtgrpClndrList(asgsysSrngVo));
+
     	return "mng/asgsysSrng/sprtgrpCalenderPopup";
     }
 
     /**
-     * @Title : prgrmDstnctn
-     * @Description : 지정신청목록 엑셀 다운로드
-     * @param AsgsysSrngVo객체
-     * @throws Exception 예외
-     */
+    * 지원단 캘린더 목록 조회
+    *
+    * @Title : selectSprtgrpClndrList
+    * @Description : 지원단 캘린더 목록 조회
+    * @param asgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/asgsSrng/selectSprtgrpClndrList.do")
+    @ResponseBody
+    public Map<String, Object> selectSprtgrpClndrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+    	List<AsgsysSrngVo> result = null;
+
+    	result = asgsysSrngService.selectSprtgrpClndrList(asgsysSrngVo);
+    	//todo 캘린더 조회
+        resultMap.put("list", result);
+        return resultMap;
+    }
+
+
+    /**
+    * 총평 엑셀 다운로드
+    *
+    * @Title : gnrlrvwExcelDownList
+    * @Description : 총평 엑셀 다운로드
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @return void
+    * @throws Exception
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/gnrlrvwExcelDownList.do")
+    public void gnrlrvwExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	asgsysSrngService.gnrlrvwExcelDownList(asgsysSrngVo, response, request);
+    }
+
+    /**
+    * 신청목록 엑셀 다운로드
+    *
+    * @Title : aplyExcelDownList
+    * @Description : 신청목록 엑셀 다운로드
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @return void
+    * @throws Exception
+    */
     @RequestMapping(value = "/mng/asgsysSrng/aplyExcelDownList.do")
     public void aplyExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
     	asgsysSrngService.aplyExcelDownList(asgsysSrngVo, response, request);
@@ -1291,6 +1381,9 @@ public class AsgsysSrngController {
 
         return resultMap;
     }
+
+
+
 
 }
 

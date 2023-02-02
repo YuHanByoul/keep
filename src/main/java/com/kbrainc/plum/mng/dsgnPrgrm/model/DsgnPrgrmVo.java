@@ -53,7 +53,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 검색.차수*/
     private String searchDsgnCycl;
 
-    /** 호출구분(팝업용)*/
+    /** 호출구분*/
     private String callSe;
 
     /** 이력 ID*/
@@ -95,6 +95,8 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 등록자 이름*/
     private String rgtrNm;
 
+
+    @Size(max = 10, message = "지정시작일은 10자를 넘을 수 없습니다.")
     /** 지정획득일자*/
     private String dsgnObtainDe;
 
@@ -132,8 +134,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String aplySttsCdNm;
 
     /** 상태수정 일시 */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date sttsMdfcnDt;
 
     /** 동일내용 여부 */
@@ -656,6 +657,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 최종_제출_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date lastSbmsnDt;
+
+
+    /** 체크 값 */
+    private String chkVal;
 
     /*------------------------------------------------------------------------------------------*/
 

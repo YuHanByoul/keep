@@ -87,6 +87,17 @@ public interface AsgsysSrngService {
 	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	 * 지원단 캘린더 목록 조회
+	 *
+	 * @Title : selectSprtgrpClndrList
+	 * @Description : 지원단 캘린더 목록 조회
+	 * @param asgsysSrngVo
+	 * @return List<AsgsysSrngVo>
+	 * @throws Exception
+	 */
+	public List<AsgsysSrngVo> selectSprtgrpClndrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 지정신청목록 엑셀다운로드
 	*
 	* @Title : aplyExcelDownList
@@ -98,6 +109,19 @@ public interface AsgsysSrngService {
 	* @return void
 	*/
 	public void aplyExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
+
+	/**
+	 * 총평 엑셀다운로드
+	 *
+	 * @Title : gnrlrvwExcelDownList
+	 * @Description : 총평 엑셀다운로드
+	 * @param memberVo
+	 * @param response
+	 * @param request
+	 * @throws Exception
+	 * @return void
+	 */
+	void gnrlrvwExcelDownList(AsgsysSrngVo asgsysSrngVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
 
 	/**
 	* 보완요청 목록조회
@@ -553,6 +577,8 @@ public interface AsgsysSrngService {
 	 * @throws Exception
 	 */
 	 public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 
