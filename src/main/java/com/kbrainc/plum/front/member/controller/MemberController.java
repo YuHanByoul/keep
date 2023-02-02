@@ -38,7 +38,18 @@ public class MemberController {
     @Resource(name = "front.memberServiceImpl")
     private MemberService memberService;
     
-    
+    /**
+    * 회원가입 0단계 : 회원가입 유형 선택 화면.
+    *
+    * @Title       : membershipStep0 
+    * @Description : 회원가입 0단계 : 회원가입 유형 선택 화면
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/step0.html")
+    public String membershipStep0() throws Exception {
+        return "front/member/step0.html";
+    }
     
     /**
     * ID 중복 체크
