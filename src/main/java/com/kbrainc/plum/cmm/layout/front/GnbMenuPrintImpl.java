@@ -265,7 +265,7 @@ public class GnbMenuPrintImpl {
                         switch (i) {
                             case 2: menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb01.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb01.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>우수환경교육 프로그램</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -274,7 +274,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb02.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb02.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>푸름이 이동환경교실</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -283,7 +283,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb03.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb03.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>유아환경교육관</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -292,7 +292,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb04.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb04.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육 교구 공동구매</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -302,7 +302,7 @@ public class GnbMenuPrintImpl {
                                     break;
                             case 4: menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb05.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb05.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>초록작당소 안내ㆍ대관</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -311,7 +311,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb06.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb06.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>자연환경연수원 안내</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -321,7 +321,7 @@ public class GnbMenuPrintImpl {
                                     break;
                             case 5: menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb07.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb07.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육주간</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -330,7 +330,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb08.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb08.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육도시</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -339,7 +339,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb09.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb09.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>꿈꾸는 환경학교</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -348,7 +348,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb10.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb10.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육 우수학교</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -358,7 +358,7 @@ public class GnbMenuPrintImpl {
                                     break;
                             case 6: menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb11.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb11.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육 제안</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");
@@ -368,7 +368,7 @@ public class GnbMenuPrintImpl {
                                     break;
                             case 7: menuTag.append("                        <li>\n");
                                     menuTag.append("                            <a href=\"#\">\n");
-                                    menuTag.append("                                <div class=\"thumb\"><img src=\"images/front/banner/banner-gnb12.png\" alt=\"\"></div>\n");
+                                    menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb12.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육 실태조사</strong>\n");
                                     menuTag.append("                                    <span class=\"btn-small btn-blue btn-after-link-arrow\">바로가기</span>\n");

@@ -1,6 +1,6 @@
 package com.kbrainc.plum.mng.tchaidRvw.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -32,34 +32,23 @@ public class TchaidRvwVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 보도아이디 */
-    private int nscvrgid;
-    /** 분류 코드 */
-    /** C : 센터소식, E : 환경교육소식*/
-    @NotEmpty(message = "분류코드를 입력해주십시오.")
-    private String clsfCd;
-    /** 언론사 이름 */
-    @NotEmpty(message = "언론사를 입력해주십시오.")
-    private String oxprNm;
-    /** 제목 */
-    @NotEmpty(message = "제목을 입력해주십시오.")
-    private String ttl;
-    /** url */
-    @NotEmpty(message = "링크주소를 입력해주십시오.")
-    private String url;
-    /** 작성 일자 */
-    private String wrtDe;
-    /** 수정 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date mdfcnDt;
-    /** 수정자 아이디 */
-    private int mdfrid;
-    /** 등록 일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
-    private Date regDt;
+    private String type;
+    private Integer aplyid;
+    private String aplcntid;
+    private String aplcntNm;
+    private String instNm;
+    private String rcritNo;
+    private String rcritNm;
+    private String productNm;
+    private Integer rvwScr;
+    private String rvwCn;
+    private String rvwFilegrpid;
+    private Date rvwRegDt;
+    
     /** 등록자아이디 */
     private int rgtrid;
     
-    private String nm;
+    private String searchRcritNm;
     private String searchCd;
+    
 }

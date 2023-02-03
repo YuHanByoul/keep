@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.rte.model.UserVo;
+
 /**
 * 회원정보 DAO 클래스.
 *
@@ -22,6 +24,28 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 @Mapper("front.memberDao")
 public interface MemberDao {
 
+    /**
+    * 회원 탈퇴.
+    *
+    * @Title : updateMemberDel
+    * @Description : 회원 탈퇴
+    * @param user 사용자세션정보
+    * @return int udpate로우수
+    * @throws Exception 예외
+    */
+    public int updateMemberDel(UserVo user) throws Exception;
+    
+    /**
+    * 특정 userid의 간편로그인 정보 전체 삭제.
+    *
+    * @Title : deleteEsylgnByUserid
+    * @Description : 특정 userid의 간편로그인 정보 전체 삭제
+    * @param user 사용자세션정보
+    * @return int delete로우수
+    * @throws Exception 예외
+    */
+    public int deleteEsylgnByUserid(UserVo user) throws Exception;
+    
     /**
     *
     * ID 중복 체크
