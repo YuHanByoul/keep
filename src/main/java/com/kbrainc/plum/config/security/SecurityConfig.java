@@ -114,6 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/mng/monitor/reloadSecurityMetadataSource.do",
                 "/mng/monitor/reloadCodeInfo.do",
                 "/downloadLogo.do",
+                "/onepass/rcv.do",
         		"/**/*.js", 
         		"/**/*.css", 
         		"/css/**/*", 

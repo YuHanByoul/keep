@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.book.model;
 
 import java.sql.Date;
 
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -32,10 +34,13 @@ public class BookVo  extends ParentRequestVo{
     /** 도서아이디 */
     private int bookid;
     /** 교육_주제_코드(중분류) */
+    @NotEmpty(message = "교육주제(중분류)를 선택해주십시오.")
     private String eduSbjctCd;
     /** 교육_주제_코드(대분류) */
+    @NotEmpty(message = "교육주제(대분류) 선택해주십시오.")
     private String mainEduSbjctCd;
     /** 교육_대상_코드 */
+    @NotEmpty(message = "교육대상 선택해주십시오.")
     private String eduTrgtCd;
     /** 작가 */
     private String writr;
@@ -46,9 +51,13 @@ public class BookVo  extends ParentRequestVo{
     /** 금액 */
     private Integer amt;
     /** 도서명(제목) */
+    @NotEmpty(message = "도서명을 입력해주십시오.")
     private String ttl;
     /** 내용 */
+    @NotEmpty(message = "내용을 입력해주십시오.")
     private String cn;
+    /** 내용 */
+    private Integer hits;
     /** 대표_이미지_파일아이디 */
     private Integer rprsImgFileid;
     /** 첨부_파일그룹아이디 */

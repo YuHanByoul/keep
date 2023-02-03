@@ -20,7 +20,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
  * 
- * NHN SMS 발송 서비스 구현 클래스.
+ * NHN 문자 발송 서비스 구현 클래스.
  *
  * <pre>
  * com.kbrainc.plum.cmm.service
@@ -28,9 +28,9 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
  * </pre> 
  *
  * @ClassName : SmsNhnServiceImpl
- * @Description : 문자발송 서비스 구현 클래스.
+ * @Description : 문자 발송 서비스 구현 클래스.
  * @author : KBRAINC
- * @date : 2021. 2. 26.
+ * @date : 2023. 2. 1.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */

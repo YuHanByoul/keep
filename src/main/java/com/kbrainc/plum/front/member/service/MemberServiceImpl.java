@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.member.service;
 import java.security.MessageDigest;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.ibatis.type.Alias;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -34,6 +36,28 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 
     @Resource(name = "front.memberDao")
     private MemberDao memberDao;
+    
+    /**
+    * 회원 탈퇴 처리.
+    *
+    * @Title : withdrawalMember 
+    * @Description : 회원 탈퇴 처리
+    * @param user 사용자세션정보
+    * @param session 세션객체
+    * @return int DB변경로우수
+    * @throws Exception 예외
+    */
+    @Transactional
+    public int withdrawalMember(UserVo user, HttpSession session) throws Exception {
+        int retVal = 0;
+        retVal += memberDao.updateMemberDel(user);
+        retVal += memberDao.deleteEsylgnByUserid(user);
+        
+        if (session != null) {
+            session.invalidate();
+        }
+        return retVal;
+    }
     
     /**
     *

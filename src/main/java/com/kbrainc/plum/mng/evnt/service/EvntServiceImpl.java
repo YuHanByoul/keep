@@ -59,7 +59,7 @@ public class EvntServiceImpl extends PlumAbstractServiceImpl implements EvntServ
     @Override
     public EvntVo selectEvntInfo(EvntVo evntVo) throws Exception {
         EvntVo evntInfo = evntDao.selectEvntInfo(evntVo);
-        if (evntInfo.getFilegrpid() != null && !evntInfo.getFilegrpid().equals(0)) {
+        if (evntInfo != null && evntInfo.getFilegrpid() != null && !evntInfo.getFilegrpid().equals(0)) {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(Integer.parseInt(evntInfo.getFilegrpid().toString()));
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);

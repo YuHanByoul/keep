@@ -141,10 +141,18 @@ public class ExampleController {
     
     @RequestMapping(value = "/example/sendSms.html")
     public String sendSms(HttpServletRequest request) throws Exception {
-        request.setAttribute("MENU_NAME", "SMS발송");
-        request.setAttribute("MENU_NAVI", "예제 / SMS발송");
+        request.setAttribute("MENU_NAME", "문자발송");
+        request.setAttribute("MENU_NAVI", "예제 / 문자발송");
         
         return "example/sendSms";
+    }
+    
+    @RequestMapping(value = "/example/sendAlimtalk.html")
+    public String sendAlimtalk(HttpServletRequest request) throws Exception {
+        request.setAttribute("MENU_NAME", "알림톡발송");
+        request.setAttribute("MENU_NAVI", "예제 / 알림톡발송");
+        
+        return "example/sendAlimtalk";
     }
     
     @RequestMapping(value = "/example/compress.html")

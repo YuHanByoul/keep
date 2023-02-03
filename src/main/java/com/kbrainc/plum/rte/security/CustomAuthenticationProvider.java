@@ -271,12 +271,14 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         UserVo user = new UserVo();
         user.setUserid(String.valueOf(resultMap.get("USERID")));
-        user.setAcnt(loginid);
-        user.setName(loginid);
+        user.setAcnt((String) resultMap.get("ACNT"));
+        user.setName((String) resultMap.get("ACNT"));
         user.setNm((String) resultMap.get("NM"));
-        user.setInstid((Integer)resultMap.get("INSTID"));
-        user.setInstpicRoleCd((String)resultMap.get("INSTPIC_ROLE_CD"));
+        user.setInstid((Integer) resultMap.get("INSTID"));
+        user.setInstpicRoleCd((String) resultMap.get("INSTPIC_ROLE_CD"));
         user.setLoginUserType(loginUserType);
+        user.setOnepassLinkYn((String) resultMap.get("ONEPASS_LINK_YN"));
+        user.setEsylgnLinkCnt(Integer.parseInt(String.valueOf(resultMap.get("ESYLGN_LINK_CNT"))));
         user.setData(resultMap);
         
         if ("D".equals(loginType)) {

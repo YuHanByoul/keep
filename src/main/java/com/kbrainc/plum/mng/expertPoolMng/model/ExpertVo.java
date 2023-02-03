@@ -119,9 +119,6 @@ public class ExpertVo extends ParentRequestVo {
     /** 회원 상태 코드*/
     private String userSttsCd;
 
-    /** 회원 상태 코드 이름*/
-    private String userSttsCdNm;
-
     /** 전문가 상태 코드 이름*/
     private String expertSttsCdNm;
 

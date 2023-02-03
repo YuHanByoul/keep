@@ -1,4 +1,4 @@
-package com.kbrainc.plum.front.member.model;
+package com.kbrainc.plum.cmm.esylgn.model;
 
 import org.apache.ibatis.type.Alias;
 
@@ -10,7 +10,7 @@ import lombok.Data;
 * 간편로그인 Vo클래스
 *
 * <pre>
-* com.kbrainc.plum.front.member.model
+* com.kbrainc.plum.cmm.esylgn.model
 * - EsylgnVo.java
 * </pre>
 *
@@ -22,7 +22,7 @@ import lombok.Data;
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Data
-@Alias("front.EsylgnVo")
+@Alias("cmm.EsylgnVo")
 public class EsylgnVo extends ParentRequestVo {
     
     /** 사용자 아이디 */
@@ -36,4 +36,13 @@ public class EsylgnVo extends ParentRequestVo {
     
     /** 간편로그인 코드 */
     private String esylgnCd;
+    
+    /** 사용자계정(간편로그인계정아님) */
+    private String acnt;
+    
+    /** 디지털원패스 연동여부 */
+    private String onepassLinkYn;
+    
+    /** 간편로그인 연결갯수 */
+    private int esylgnLinkCnt;
 }

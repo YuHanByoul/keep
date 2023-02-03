@@ -5,9 +5,7 @@ import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.front.member.model.EsylgnVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
-import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -136,36 +134,5 @@ public interface CommonDao {
     */
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
     
-    /**
-    * 간편로그인 userkey로 조회하여 userid를 가져온다.
-    *
-    * @Title : selectUseridByEsylgnUserkey
-    * @Description : 간편로그인 userkey로 조회하여 userid를 가져온다.
-    * @param esylgnVo EsylgnVo객체
-    * @return String userid값
-    * @throws Exception 예외
-    */
-    public String selectUseridByEsylgnUserkey(EsylgnVo esylgnVo) throws Exception;
     
-    /**
-    * ci로 조회하여 userid를 가져온다.
-    *
-    * @Title : selectUseridByCi
-    * @Description : ci로 조회하여 userid를 가져온다.
-    * @param esylgnVo EsylgnVo객체
-    * @return String userid값
-    * @throws Exception 예외
-    */
-    public String selectUseridByCi(EsylgnVo esylgnVo) throws Exception;
-    
-    /**
-    * ci에 해당하는 사용자의 userkey를 업데이트한다.
-    *
-    * @Title : updateEsylgnUserkey
-    * @Description : ci에 해당하는 사용자의 userkey를 업데이트한다.
-    * @param esylgnVo EsylgnVo객체
-    * @return int update로우수
-    * @throws Exception 예외
-    */
-    public int updateEsylgnUserkey(EsylgnVo esylgnVo) throws Exception;
 }
