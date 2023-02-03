@@ -19,7 +19,8 @@
                 , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
                 , NVL(A.HITS,0) AS HITS
                 , A.RPRS_IMG_FILEID
-                , E.FILEGRPID
+                , E.FILE_IDNTFC_KEY
+                , A.MDFCN_DT
                 , A.REG_DT
             FROM
                 TB_CMM_CNTNTS A
@@ -89,6 +90,7 @@
             , D1.CD_NM AS TYPE_CD
             , D2.CD_NM AS MAIN_TYPE_CD
             , A.ORIGIN
+            , NVL(A.HITS,0) AS HITS
             , A.MNFCT_YY
             , A.PLY_SECND
             , A.TTL
@@ -115,4 +117,9 @@
             LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
         WHERE CNTNTSID = 12
     </select>
+    
+    <update id="updateCntntsHits" parameterType="front.CntntsVo">
+        UPDATE TB_CMM_CNTNTS SET HITS = IFNULL(HITS,0) + 1 
+        WHERE CNTNTSID = 12
+    </update>
 </mapper>

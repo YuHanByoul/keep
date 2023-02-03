@@ -46,24 +46,31 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/front/cntnts/cntntsListForm.html")
-    public String cntntsListForm() throws Exception {
+    public String cntntsListForm(Model model, CntntsVo cntntsVo) throws Exception {
+        List<CntntsVo> result = null;
+        
+        result =  cntntsService.selectCntntsList(cntntsVo);
+        
+        if (result.size() > 0) {
+            model.addAttribute("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            model.addAttribute("totalCount", 0);
+        }
+        model.addAttribute("list", result);
+        
         return "front/cntnts/cntntsList";
     }
     
-    /**
-    * 컨텐츠관리 목록화면 이동
-    *
-    * @Title : cntntsListForm
-    * @Description : 컨텐츠관리 목록화면 이동
-    * @throws Exception 예외
-    * @return String
-    */
+    
     @RequestMapping(value = "/front/cntnts/cntntsDetailForm.html")
     public String cntntsDetailForm(Model model, CntntsVo cntntsVo) throws Exception {
+        int hits = cntntsService.updateCntntsHits(cntntsVo); 
+        
         CntntsVo result = null;
         result =  cntntsService.selectCntntsInfo(cntntsVo);
         
         model.addAttribute("cntnts", result);
+        
         
         return "front/cntnts/cntntsDetail";
     }

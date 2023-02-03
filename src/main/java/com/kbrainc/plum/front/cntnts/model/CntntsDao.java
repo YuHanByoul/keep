@@ -45,4 +45,6 @@ public interface CntntsDao {
     * @return CntntsVo
     */
     public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception;
+
+    public int updateCntntsHits(CntntsVo cntntsVo) throws Exception;
 }
