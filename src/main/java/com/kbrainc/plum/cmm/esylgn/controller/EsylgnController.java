@@ -1,6 +1,9 @@
 package com.kbrainc.plum.cmm.esylgn.controller;
 
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -290,9 +293,9 @@ public class EsylgnController {
                             return null;
                         }
             
-                        // 3. 모두 일치하지 않을때 onepassUser(ci, email, name, userKey, 어린이회원여부)정보를 세션에 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행), 회원정보저장시 세션에 정보없으면 진행불가)
-                        // 만나이 계산
-                        /*SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+                        // 3. 모두 일치하지 않을때(신규회원연동)
+                        // 만나이 계산(어린이회원인지 확인하기위해)
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
                         Date birthDate = formatter.parse(birth);
                         Calendar currentCal = Calendar.getInstance();
                         Calendar brithCal = Calendar.getInstance();
@@ -315,9 +318,12 @@ public class EsylgnController {
                         
                         if (manAge < 14) {
                             System.out.println("어린이 회원");
-                        }*/
+                        }
                         
-                        // 리다이렉션
+                        // onepassUser(ci, email, name, userKey, 어린이회원여부)정보를 세션에 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행), 회원정보저장시 세션에 정보없으면 진행불가)
+                        // 회원가입 리다이렉션
+                        
+                        
                     } else { // 정보조회 오류, 로그인 불가
                         response.setContentType("text/html;charset=UTF-8");
                         writer = response.getWriter();
