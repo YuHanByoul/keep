@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -48,6 +49,25 @@ public class CntntsController {
     public String cntntsListForm() throws Exception {
         return "front/cntnts/cntntsList";
     }
+    
+    /**
+    * 컨텐츠관리 목록화면 이동
+    *
+    * @Title : cntntsListForm
+    * @Description : 컨텐츠관리 목록화면 이동
+    * @throws Exception 예외
+    * @return String
+    */
+    @RequestMapping(value = "/front/cntnts/cntntsDetailForm.html")
+    public String cntntsDetailForm(Model model, CntntsVo cntntsVo) throws Exception {
+        CntntsVo result = null;
+        result =  cntntsService.selectCntntsInfo(cntntsVo);
+        
+        model.addAttribute("cntnts", result);
+        
+        return "front/cntnts/cntntsDetail";
+    }
+    
     
     /**
     * 컨텐츠 관리 게시글 목록 조회

@@ -33,4 +33,15 @@ public interface CntntsService {
     * @return List<CntntsVo>
     */
     public List<CntntsVo> selectCntntsList(CntntsVo cntntsVo) throws Exception;
+    
+    /**
+    * 컨텐츠 관리 게시글 상세조회
+    *
+    * @Title : selectCntntsInfo
+    * @Description : 컨텐츠 관리 게시글 상세조회
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return CntntsVo
+    */
+    public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception;
 }

@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.front.cntnts.model.CntntsVo;
+
 /**
 * 컨텐츠 관리 Dao 클래스
 *
@@ -32,4 +34,15 @@ public interface CntntsDao {
     * @return List<CntntsVo>
     */
     public List<CntntsVo> selectCntntsList(CntntsVo cntntsVo) throws Exception;
+    
+    /**
+    * 컨텐츠 관리 게시글 상세조회
+    *
+    * @Title : selectCntntsInfo
+    * @Description : 컨텐츠 관리 게시글 상세조회
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return CntntsVo
+    */
+    public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception;
 }
