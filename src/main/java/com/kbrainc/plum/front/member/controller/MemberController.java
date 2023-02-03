@@ -52,6 +52,58 @@ public class MemberController {
     }
     
     /**
+    * 회원가입 1단계 : 약관동의 화면.
+    *
+    * @Title       : membershipStep1 
+    * @Description : 회원가입 1단계 : 약관동의 화면.
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/step1.html")
+    public String membershipStep1() throws Exception {
+        return "front/member/step1.html";
+    }
+    
+    /**
+    * 회원가입 2단계 : 본인인증 화면.
+    *
+    * @Title       : membershipStep2 
+    * @Description : 회원가입 2단계 : 본인인증 화면.
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/step2.html")
+    public String membershipStep2() throws Exception {
+        return "front/member/step2.html";
+    }
+    
+    /**
+    * 회원가입 3단계 : 회원정보입력 화면.
+    *
+    * @Title       : membershipStep3 
+    * @Description : 회원가입 1단계 : 회원정보입력 화면.
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/step3.html")
+    public String membershipStep3() throws Exception {
+        return "front/member/step3.html";
+    }
+    
+    /**
+    * 회원가입 4단계 : 가입완료 화면.
+    *
+    * @Title       : membershipStep4 
+    * @Description : 회원가입 4단계 : 가입완료 화면.
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/step4.html")
+    public String membershipStep4() throws Exception {
+        return "front/member/step4.html";
+    }
+    
+    /**
     * ID 중복 체크
     *
     * @Title       : chekcDuplicationUser 
