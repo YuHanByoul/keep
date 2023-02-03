@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : PrgrmMngDaoImpl.xml
+	Description : 콘텐츠·교구 관리 > 우수환경교육 프로그램 관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.envEdu.model.PrgrmMngDao">
+    
+    <!-- 우수환경교육 프로그램 관리 목록 조회 -->
+    <select id="selectPrgrmMngList" parameterType="PrgrmMngVo" resultType="PrgrmMngVo">
+        /* PrgrmMngDao.selectPrgrmMngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            A.PRGRMID
+            , A.PRGRM_NM
+            , A.INST_NM
+            , SUBSTRING(A.SBJCT_CD, 1, 6) AS SBJCT_CD1
+            , A.SBJCT_CD
+            , <![CDATA[ CONCAT(B1.CD_NM, ' < ', B.CD_NM) AS SBJCT_CD_NM ]]>
+            , A.TRGT_CD
+            , C.CD_NM AS TRGT_CD_NM
+            , A.CN
+            , A.RPRS_IMG_FILEID
+            , E.FILEGRPID
+            , E.FILE_IDNTFC_KEY      
+            , E.ORGINL_FILE_NM
+            , A.ATCH_FILEGRPID
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID 
+            , CONCAT(D.ACNT,'(',D.NM,')') AS RGTR_NM
+        FROM 
+            TB_CMM_EXCLNC_EDU_PRGRM A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.SBJCT_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD B1 ON SUBSTRING(A.SBJCT_CD, 1, 6) = B1.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON A.TRGT_CD = C.CD
+            LEFT OUTER JOIN TB_CMM_USER D ON A.RGTRID = D.USERID
+            LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+        WHERE 
+            1 = 1
+            <if test="searchKeywordType != null and searchKeywordType != ''">
+                <choose>
+                    <when test="searchKeywordType == 'P'.toString()">
+                    AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                    </when>
+                    <otherwise>
+                    AND A.SBJCT_CD LIKE CONCAT('%',#{searchKeyword},'%')
+                    </otherwise>
+                </choose>            
+            </if>
+            <if test="searchSbjctCd_1 != null and searchSbjctCd_1 != ''">
+            AND A.SBJCT_CD LIKE CONCAT(#{searchSbjctCd_1},'%')
+            </if>
+            <if test="searchSbjctCd_2 != null and searchSbjctCd_2 != ''">
+            AND A.SBJCT_CD = #{searchSbjctCd_2}
+            </if>
+            <if test="searchTrgtCd != null and searchTrgtCd != ''">
+            AND A.TRGT_CD = #{searchTrgtCd}
+            </if>
+            <if test="searchStartRegDt != null and searchStartRegDt != ''">
+            <![CDATA[
+            AND A.RGTRID >= #{searchStartRegDt} 
+            AND A.RGTRID <= #{searchEndRegDt}
+            ]]>
+            </if>
+            <if test="prgrmid != null and prgrmid != ''">
+            AND A.PRGRMID = #{prgrmid}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 우수환경교육 프로그램 관리 등록 -->
+    <insert id="insertPrgrmMng" parameterType="PrgrmMngVo" useGeneratedKeys="true" keyProperty="prgrmid">
+        /* PrgrmMngDao.insertPrgrmMng */
+        INSERT INTO tb_cmm_exclnc_edu_prgrm (
+            PRGRMID
+            , PRGRM_NM
+            , INST_NM
+            , SBJCT_CD
+            , TRGT_CD
+            , CN
+            , RPRS_IMG_FILEID
+            , ATCH_FILEGRPID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{prgrmid}
+            , #{prgrmNm}
+            , #{instNm}
+            , #{sbjctCd}
+            , #{trgtCd}
+            , #{cn}
+            , #{rprsImgFileid}
+            , #{atchFilegrpid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 우수환경교육 프로그램 관리 수정 -->
+    <update id="updatePrgrmMng" parameterType="PrgrmMngVo">
+        /* PrgrmMngDao.updatePrgrmMng */
+        UPDATE tb_cmm_exclnc_edu_prgrm SET 
+            PRGRM_NM = #{prgrmNm}
+            , INST_NM = #{prgrmNm}
+            , SBJCT_CD = #{sbjctCd}
+            , TRGT_CD = #{trgtCd}
+            , CN = #{cn}
+            , RPRS_IMG_FILEID = #{rprsImgFileid}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+</mapper>

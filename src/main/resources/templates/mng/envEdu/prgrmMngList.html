@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+	<style>
+        .hide
+        {
+           display:none;
+        }
+        </style>
+	<!-- Date-range picker css  -->
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+		<div class="page-body">
+	        <div class="row">
+                <div class="col-12">
+		            <div class="card">
+		              <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+                            <input type="hidden" id="searchStartRegDt" name="searchStartRegDt" value="" />
+                            <input type="hidden" id="searchEndRegDt" name="searchEndRegDt" value="" />
+			                <div class="card-block-small">
+			                    <div class="row">
+			                        <div class="col-lg-3 col-md-6 mb-3">
+			                            <div class="mb-0 form-group row">
+			                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+			                                <div class="input-group input-group-sm input-group-dropdown mb-0">
+			                                    <select name="searchKeywordType" id="searchKeywordType" class="form-select form-control">
+	                                                <option value="">- 선택 -</option>
+	                                                <option value="P">프로그램명</option>
+	                                                <option value="T">운영기관명</option>
+	                                            </select>
+			                                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+			                                </div>
+			                            </div>
+			                        </div>
+			                        <div class="col-lg-3 col-md-6 mb-3">
+			                            <div class="mb-0 form-group row">
+			                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
+			                                <div class="col-6">
+			                                    <span kattr:select_code="searchSbjctCd_1" grpCd="163" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true">     
+	                                        </div>
+	                                        <div class="col-6">
+	                                            <select name="searchSbjctCd_2" id="searchSbjctCd_2" class="form-select form-select-sm">
+	                                                <option value="" selected>- 전체 -</option>
+	                                            </select>
+	                                        </div>
+			                            </div>
+			                        </div>
+			                        <div class="col-lg-3 col-md-6 mb-3">
+			                            <div class="mb-0 form-group row">
+			                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>대상</strong></div>
+			                                <div class="col-sm-12">
+			                                    <span kattr:select_code="searchTrgtCd" grpCd="178" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
+			                                </div>
+			                            </div>
+			                        </div>
+			                        <div class="col-lg-3 col-md-6 mb-3">
+			                            <div class="mb-0 form-group row">
+			                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>검색기간</strong></label>
+			                                <div class="col-sm-12">
+			                                    <input class="form-control form-control-sm" type="text" name="filterSearchSelectDate" id="filterSearchSelectDate">
+			                                </div>
+			                            </div>
+			                        </div>
+			                    </div>
+			                    <div class="mt-1 p-t-20 text-center border-top">
+			                        <button class="btn btn-disabled m-r-5" onclick="searchInit()">초기화</button>
+			                        <button class="btn btn-primary" onclick="searchData()">검색</button>
+			                    </div>
+			                </div>
+			             </form>
+		            </div>
+		        </div>
+	
+	            <div class="col-12">
+	                <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+	                <div class="card">
+	                    <div class="row p-20 p-b-0">
+	                        <div class="col-12 col-md-6 mb-2 mb-md-0">
+	                            <h5><strong>우수환경교육 프로그램 검색결과</strong></h5>
+	                        </div>
+	                        <div class="col-12 col-md-6 text-right">
+	                            <th:block sec:authorize-url="/mng/envEdu/deletePrgrmMng.do">
+	                                <button type="button" class="btn btn-inverse m-r-5">삭제</button>
+	                            </th:block>
+	
+	                            <th:block sec:authorize-url="/mng/envEdu/insertPrgrmMng.do">
+	                                <button type="button" class="btn btn-primary" onclick="insertRow()">등록</button>
+	                            </th:block>
+	                        </div>
+	                    </div>
+	                    <div class="card-block-small">
+	                        <div class="dt-responsive table-responsive">
+	                            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+	                                <table id="jsGrid" class="table-responsive"></table>
+	                                <div id="listPager" class="text-center"></div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+	            </div>
+	
+	            <div class="col-12">
+	                <div id="contentPanel" class="card"></div>
+	            </div>
+	        </div>
+	    </div>
+
+	    <!-- 담당자 검색 팝업 Start -->
+	    <div class="modal fade" id="searchModal" aria-hidden="true" data-bs-backdrop="static"></div>
+	    <!-- 담당자 검색 팝업 end  -->
+    
+        <!-- Date-range picker js -->
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+		<script th:inline="javascript">
+		    var gridHelper1;
+		    var listUrl = "/mng/envEdu/selectPrgrmMngList.do";
+		    var detailUrl = "/mng/envEdu/detailPrgrmMngForm.html";
+		    
+		    /* 커스텀태그(공통코드) : 교육주제 */
+            var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+            
+            /* searchForm */
+            var setSearchSelectBox = {
+                fn_getNextDepthList : function(grpcd , upprcd, targetId){
+                    $.ajax({
+                        url : getCodeListUrl,
+                        type: 'GET',
+                        cache : false,
+                        dataType: 'json',
+                        data: {
+                              grpcd  : grpcd
+                            , upprcd : upprcd
+                        }, 
+                        success : function (data){
+                            setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+                        },
+                        error : function (error){
+                        } 
+                        
+                    });
+                },
+                
+                writeHtml : function(grpcd,targetId,list,selected){
+                    var cntArr = targetId.split("_");
+                    var nextCnt = Number(cntArr[1])+1;
+                    var nextTarget = cntArr[0]+"_"+nextCnt;
+                       
+                    var html ="<select id='"+targetId+"' class ='form-control' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+                        html +="    <option value='' selected>- 전체 -</option>";
+                       
+                      for(var i=0 ; i < list.length;i++){
+                        if(list[i].cdid==selected){
+                        html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+                        }else{
+                        html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+                        }
+                      }
+                      if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+                        setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+                      }
+                      html +="    </select>";
+                      $("#"+targetId).html(html);
+                },
+                
+                setNextDepth : function(grpcd , upprcd , targetId){
+                    setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+                }
+            }
+            
+		    $(function(){
+		    	gridHelper1 = new GridHelper('jsGrid','contentPanel');
+		    	
+		    	$("#searchSbjctCd_1").change(function(){
+		            setSearchSelectBox.setNextDepth(163, $(this).val(),'searchSbjctCd_2');          
+		        });
+		    	
+		    	$("#filterSearchSelectDate").daterangepicker({
+		    		autoUpdateInput: false,
+		    		locale: {
+		    	        format: "YYYY-MM-DD",
+		    	    },
+		    	});
+		    	
+		    	$("#filterSearchSelectDate").on('apply.daterangepicker', function(ev, picker) {
+		    		$("#searchStartRegDt").val(picker.startDate.format('YYYY-MM-DD'));
+		    		$("#searchEndRegDt").val(picker.endDate.format('YYYY-MM-DD'));
+		    	    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+		    	});
+
+		    	$("#filterSearchSelectDate").on('cancel.daterangepicker', function(ev, picker) {
+		    	    $(this).val('');
+		    	});
+		    	
+				$("#jsGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#listPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    noDataContent: "데이터가 없습니다.",
+                    
+                    controller: {
+                        loadData: function (filter) {
+                            var data = $.Deferred();
+                            var formData = $('#searchFrm').serializeArray();
+                            var params = [
+                                {name: "pageNumber", value: filter.pageIndex},
+                                {name: "rowPerPage", value: filter.pageSize},
+                            ]
+
+                            if(filter.sortField != undefined) {
+                                params.push({name: "orderField", value: filter.sortField});
+                                params.push({name: "orderDirection", value: filter.sortOrder});
+                            } else {
+                                params.push({name: "orderField", value: 'reg_dt'});
+
+                            }
+                            formData = formData.concat(params);
+                            
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: listUrl,
+                                dataType: "json",
+                                data: formData
+                            }).done(function(response){
+                                var da = {
+                                    data : escapeGridData(response.list)
+                                    , itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [ 
+                    	{ name : 'prgrmid', css : 'hide' }
+                    	, { name : 'atchFilegrpid', css : 'hide' }
+                        , { title: 'No.'      ,name: 'rowNumber' ,type: "number", width: "80" , align:"center", sorting :false }
+                        , { title: '우수환경교육 프로그램명' ,name: 'prgrmNm'     ,type: "text"  , width: "200" , align:"left"}
+                        , { title: '운영기관명' ,name: 'instNm'     ,type: "text"  , width: "350" , align:"left"}
+                        , { title: '교육주제'   ,name: 'sbjctCdNm'        ,type: "text"  , width: "100", align:"center"}
+                        , { title: '대상'   ,name: 'trgtCdNm'   ,type: "text"  , width: "200" , align:"center"}
+                        , { title: '등록일'   ,name: 'regDt'   ,type: "text"  , width: "200" , align:"center"}
+                        , { title: '조회수'   ,name: ''    ,type: "text"  , width: "100" , align:"center"}
+                    ],
+                    /*[# sec:authorize-url="/mng/envEdu/detailPrgrmMngForm.html"]*/
+                    rowClick: function (args) {
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        gridHelper1.loadContent(detailUrl + '?prgrmid=' + args.item.prgrmid + '&atchFilegrpid=' + args.item.atchFilegrpid);
+                    },
+                    /*[/]*/
+                });
+			});
+
+		    /**
+		    * 검색조건 초기화.
+		    */
+	        function searchInit() {
+	            $("#searchKeywordType").val('');
+	            $("#searchKeyword").val('');
+	            $("#searchSbjctCd_1").val('');
+	            $("#searchSbjctCd_2").val('');
+	            $("#searchTrgtCd").val('');
+	            $('#filterSearchSelectDate').val('');
+	            setSearchSelectBox.setNextDepth(163 , '', 'searchSbjctCd_2');
+	            gridHelper1.resetListContent();
+	        }
+	        
+            /**
+            * 검색.
+            */		    
+	        function searchData() {
+	        	if($('#searchKeywordType').val() == '' && ($('#searchKeyword').val() != '' && $('#searchKeyword').val() != null)) {                 
+                    alert('키워드를 선택해주십시오.');
+                    return;
+                }
+	        	if($('#searchKeywordType').val() != '' && ($('#searchKeyword').val() == '' || $('#searchKeyword').val() == null)) {                 
+                    alert('키워드를 입력해주십시오.');
+                    return;
+                }
+	            gridHelper1.resetListContent();
+	        }
+
+            /**
+            * 등록 화면 호출
+            */
+	        function insertRow() {
+	            gridHelper1.loadContent(detailUrl + '?prgrmid=0');
+	        }
+
+		</script>
+		
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>
