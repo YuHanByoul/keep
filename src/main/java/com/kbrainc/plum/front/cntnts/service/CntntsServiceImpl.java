@@ -3,7 +3,6 @@ package com.kbrainc.plum.front.cntnts.service;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
@@ -46,4 +45,17 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     public List<CntntsVo> selectCntntsList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsList(cntntsVo);
     };
+    
+    /**
+    * 컨텐츠 관리 게시글 상세조회
+    *
+    * @Title : selectCntntsInfo
+    * @Description : 컨텐츠 관리 게시글 상세조회
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return CntntsVo
+    */
+    public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception {
+        return cntntsDao.selectCntntsInfo(cntntsVo);
+    }
 }

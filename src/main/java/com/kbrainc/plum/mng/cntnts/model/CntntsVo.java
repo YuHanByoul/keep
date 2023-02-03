@@ -56,7 +56,6 @@ public class CntntsVo  extends ParentRequestVo{
     /** 재생_분 */
     private Integer plyMinute;
     /** 재생_초 */
-    @Size(max = 2, message = "재생시간(초)는 2자리까지 입력가능합니다.")
     private Integer plySecnd;
     /** 제목 */
     @NotEmpty(message = "제목을 입력해주십시오.")
