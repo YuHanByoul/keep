@@ -1,16 +1,24 @@
 package com.kbrainc.plum.front.member.controller;
 
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.front.member.model.MemberTypeVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.member.service.MemberService;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -60,7 +68,15 @@ public class MemberController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/membership/step1.html")
-    public String membershipStep1() throws Exception {
+    public String membershipStep1(HttpServletResponse response, @Valid MemberTypeVo memberTypeVo, BindingResult bindingResult) throws Exception {
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            fieldError.getDefaultMessage();
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter writer = response.getWriter();
+            writer.print("<script>alert('" + fieldError.getDefaultMessage() + "');location.href='/front/membership/step0.html';</script>");
+            return null;
+        }
         return "front/member/step1.html";
     }
     
