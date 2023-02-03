@@ -1,5 +1,7 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,9 +34,6 @@ import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmDao;
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
-import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -584,19 +583,20 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctn.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+
     	PrgrmSchdlVo prgrmSchdlVo = new PrgrmSchdlVo();
     	EmrgcyActnPlanVo emrgcyActnPlanVo = new EmrgcyActnPlanVo();
 
     	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
-    	model.addAttribute("prgrmDstnctnInfo", asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo));
-
+    	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
+    	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
 
     	BeanUtils.copyProperties(asgsysSrngVo, prgrmSchdlVo);
     	BeanUtils.copyProperties(asgsysSrngVo, emrgcyActnPlanVo);
 
+    	List<PrgrmSchdlVo>     prgrmSchdlList    = asgsysSrngService.selectPrgrmSchdlList(prgrmSchdlVo);    //프로그램 운영일정
+    	List<EmrgcyActnPlanVo> emrgcyActnPlanLst = asgsysSrngService.selectEmrgcyActnPlanList(emrgcyActnPlanVo);    //대처계획
 
-    	List<PrgrmSchdlVo>     prgrmSchdlList    = asgsysSrngService.selectPrgrmSchdlList(prgrmSchdlVo);
-    	List<EmrgcyActnPlanVo> emrgcyActnPlanLst = asgsysSrngService.selectEmrgcyActnPlanList(emrgcyActnPlanVo);
 
     	//프로그램 운영일정 목록 조회 tb_ass_prgrm_schdl
     	if(0 == prgrmSchdlList.size()) {
@@ -609,7 +609,30 @@ public class AsgsysSrngController {
     	if(0 == emrgcyActnPlanLst.size()) {
     		emrgcyActnPlanLst.add(0, emrgcyActnPlanVo);
     	}
+
     	model.addAttribute("emrgcyActnPlanLst", emrgcyActnPlanLst);
+
+
+    	//교육사진 그룹 조회
+    	if (prgrmDstnctnInfo.getEduPhotoFilegrpid() != null && !prgrmDstnctnInfo.getEduPhotoFilegrpid().equals(0)) {
+
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(prgrmDstnctnInfo.getEduPhotoFilegrpid());
+
+    		List<FileVo> eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);    //증빙서류파일목록
+
+    		for(int i=1; i < 4; i++) {    //교육사진 3개 고정
+
+    			if(eduPhotoFileList.size() == (i-1)) {
+
+    				logger.info("@@ size : " + eduPhotoFileList.size() + "  @@ idx : " + i);
+    				FileVo rowVo = new FileVo();
+    				rowVo.setFileIdntfcKey("");
+    				eduPhotoFileList.add((i-1), rowVo);
+    			}
+    		}
+    		model.addAttribute("eduPhotoFileList", eduPhotoFileList);
+    	}
 
     	return "mng/asgsysSrng/prgrmDstnctn";
     }

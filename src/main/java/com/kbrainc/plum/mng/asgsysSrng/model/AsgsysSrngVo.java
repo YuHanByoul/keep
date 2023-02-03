@@ -433,6 +433,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/**교육 주제 코드 */
 	private String eduSbjctCd;
 
+	/**교육 주제 코드 목록*/
+	private String eduSbjctCdLst;
+
     /**교육_사진_파일그룹아이디 */
 	private Integer  eduPhotoFilegrpid;
 

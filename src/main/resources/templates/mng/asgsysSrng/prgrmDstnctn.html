@@ -1,6 +1,8 @@
 <form id="prgrmDstnctnFrm">
 <input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmDstnctnInfo.prgrmid}"><!-- 프로그램id -->
 <input type="hidden" id="dstnctnKey" name="dstnctnKey" th:value="${prgrmDstnctnInfo.dstnctnKey}"><!-- 우수성key -->
+<input type="hidden" id="eduSbjctCdLst" name="eduSbjctCdLst" th:value="${prgrmDstnctnInfo.eduSbjctCdLst}"><!-- 교육주제코드 -->
+
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title"><strong>프로그램 개요</strong></h3>
     </div>
@@ -146,58 +148,13 @@
                 </div>
             </div>
         </div>
-        <div class="mb-2 form-group row">
-            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
-            <div class="border-checkbox-section">
 
-                <div class="border-checkbox-group border-checkbox-group-inverse">
-                    <span kattr:check_code="eduSbjctCd" grpCd="116" isAdmin="true" addClass=" form-control-static " th:attr="selectedCd=${prgrmDstnctnInfo.eduSbjctCd}" />
-                </div>
-            </div>
-        </div>
 
          <div class="row">
             <div class="col-lg-6 mb-3">
-                <div class="mb-0 form-group required">
+                <div id="eduSbjctDiv" class="mb-0 form-group required">
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
                     <!-- [230125] 교육주제 항목 내용 변경 -->
-                    <div class="row">
-                        <div class="col-sm">
-                            <select name="select04" class="form-select form-select-sm form-control-sm">
-                                <option value="" disabled selected>-선택-</option>
-                                <option value="0">선택1</option>
-                                <option value="1">선택2</option>
-                            </select>
-                        </div>
-                        <div class="col-sm mt-1 mt-sm-0">
-                            <select name="select05" class="form-select form-select-sm form-control-sm">
-                                <option value="0">폐기물 및 자원순환</option>
-                                <option value="1">선택2</option>
-                            </select>
-                        </div>
-                        <div class="mt-1 mt-sm-0" style="width:100px;">
-                            <button class="input-group-text btn btn-primary btn-sm">-</button>
-                        </div>
-                    </div>
-                    <div class="row mt-1">
-                        <div class="col-sm">
-                            <select name="select04" class="form-select form-select-sm form-control-sm">
-                                <option value="" disabled selected>-선택-</option>
-                                <option value="0">선택1</option>
-                                <option value="1">선택2</option>
-                            </select>
-                        </div>
-                        <div class="col-sm mt-1 mt-sm-0">
-                            <select name="select05" class="form-select form-select-sm form-control-sm">
-                                <option value="0">폐기물 및 자원순환</option>
-                                <option value="1">선택2</option>
-                            </select>
-                        </div>
-                        <div class="mt-1 mt-sm-0" style="width:100px;">
-                            <button class="input-group-text btn btn-primary btn-sm">-</button>
-                            <button class="input-group-text btn btn-primary btn-sm">+</button>
-                        </div>
-                    </div>
                     <!-- //[230125] 교육주제 항목 내용 변경 -->
                 </div>
             </div>
@@ -306,32 +263,71 @@
         <h3 class="sub-title"><strong>교육사진</strong></h3>
     </div>
     <div class="card-block-small p-t-0">
+
         <!-- [230125] 교육사진 항목에 수정 시 - 이미지 등록, 삭제 버튼 추가 -->
-        <div class="col-12 row mb-3">
-            <div class="col-12 col-lg-4 mb-3 mb-lg-0">
+        <div class="col-12 row mb-3" >
+
+
+            <div id="delFileDiv1" class="col-12 col-lg-4 mb-3 mb-lg-0" >
                 <div class="ratio ratio-4x3">
-                    <img class="img-fluid col-12" src="../../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
+                    <img id="eduPhotoFile1" class="img-fluid col-12" th:if="${eduPhotoFileList[0].fileid==0}" src="../../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
+                    <img id="eduPhotoFile1" class="img-fluid col-12" th:if="${eduPhotoFileList[0].fileid!=0}" th:src="${ '/downloadFileByFileid.do?fileid=' + eduPhotoFileList[0].fileid + '&file_idntfc_key=' + eduPhotoFileList[0].fileIdntfcKey }" alt="Generic placeholder image">
                 </div>
                 <div class="mt-2 text-center">
-                    <button class="btn btn-inverse btn-sm">이미지 삭제</button>
+                    <button id="eduPhotoFileDelBtn1" type="button" class="btn btn-inverse btn-sm" th:fileid="${eduPhotoFileList[0].fileid}" th:fileIdntfcKey="${eduPhotoFileList[0].fileIdntfcKey}" onclick="fn_deleteEduPhotoFile(this.id)">이미지 삭제</button>
                 </div>
             </div>
-            <div class="col-12 col-lg-4">
-                <div class="ratio ratio-4x3">
-                    <img class="img-fluid col-12" src="../../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
-                </div>
-                <div class="mt-2 text-center">
-                    <button class="btn btn-inverse btn-sm">이미지 삭제</button>
-                </div>
-            </div>
-            <div class="col-12 col-lg-4 mb-3 mb-lg-0">
+            <div id="regFileDiv1" class="col-12 col-lg-4 mb-3 mb-lg-0" >
                 <div class="ratio ratio-4x3 text">
                     <i class="align-items-center d-flex f-48 fa fa-file-image-o justify-content-center"></i>
                 </div>
                 <div class="mt-2 text-center">
-                    <button class="btn btn-primary btn-sm">이미지 등록</button>
+                    <label class="btn btn-primary btn-sm">
+                        이미지 등록 <input id="eduPhotoFile1" type="file" name="eduPhotoFile" style="display: none;">
+                    </label>
                 </div>
             </div>
+
+            <div id="delFileDiv2" class="col-12 col-lg-4 mb-3 mb-lg-0" >
+                <div class="ratio ratio-4x3">
+                    <img id="eduPhotoFile1" class="img-fluid col-12" th:if="${eduPhotoFileList[1].fileid==0}" src="../../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
+                    <img id="eduPhotoFile1" class="img-fluid col-12" th:if="${eduPhotoFileList[1].fileid!=0}" th:src="${ '/downloadFileByFileid.do?fileid=' + eduPhotoFileList[1].fileid + '&file_idntfc_key=' + eduPhotoFileList[1].fileIdntfcKey }" alt="Generic placeholder image">
+                </div>
+                <div class="mt-2 text-center">
+                    <button id="eduPhotoFileDelBtn2" type="button" class="btn btn-inverse btn-sm" th:fileid="${eduPhotoFileList[1].fileid}" th:fileIdntfcKey="${eduPhotoFileList[1].fileIdntfcKey}" onclick="fn_deleteEduPhotoFile(this.id)">이미지 삭제</button>
+                </div>
+            </div>
+            <div id="regFileDiv2" class="col-12 col-lg-4 mb-3 mb-lg-0" >
+                <div class="ratio ratio-4x3 text">
+                    <i class="align-items-center d-flex f-48 fa fa-file-image-o justify-content-center"></i>
+                </div>
+                <div class="mt-2 text-center">
+                    <label class="btn btn-primary btn-sm">
+                        이미지 등록 <input id="eduPhotoFile2" type="file" name="eduPhotoFile" style="display: none;">
+                    </label>
+                </div>
+            </div>
+            <div id="delFileDiv3" class="col-12 col-lg-4 mb-3 mb-lg-0" >
+                <div class="ratio ratio-4x3">
+
+                    <img id="eduPhotoFile1" class="img-fluid col-12" th:if="${eduPhotoFileList[2].fileid==0}" src="../../files/assets/images/avatar-2.jpg" alt="Generic placeholder image">
+                    <img id="eduPhotoFile1" class="img-fluid col-12" th:if="${eduPhotoFileList[2].fileid!=0}" th:src="${ '/downloadFileByFileid.do?fileid=' + eduPhotoFileList[2].fileid + '&file_idntfc_key=' + eduPhotoFileList[2].fileIdntfcKey }" alt="Generic placeholder image">
+                </div>
+                <div class="mt-2 text-center">
+                    <button id="eduPhotoFileDelBtn3" type="button" class="btn btn-inverse btn-sm" th:fileid="${eduPhotoFileList[2].fileid}" th:fileIdntfcKey="${eduPhotoFileList[2].fileIdntfcKey}" onclick="fn_deleteEduPhotoFile(this.id)">이미지 삭제</button>
+                </div>
+            </div>
+            <div id="regFileDiv3" class="col-12 col-lg-4 mb-3 mb-lg-0" >
+                <div class="ratio ratio-4x3 text">
+                    <i class="align-items-center d-flex f-48 fa fa-file-image-o justify-content-center"></i>
+                </div>
+                <div class="mt-2 text-center">
+                    <label class="btn btn-primary btn-sm">
+                        이미지 등록 <input id="eduPhotoFile3" type="file" name="eduPhotoFile" style="display: none;">
+                    </label>
+                </div>
+            </div>
+
         </div>
         <!-- //[230125] 교육사진 항목에 수정 시 - 이미지 등록, 삭제 버튼 추가 -->
     </div>
@@ -499,6 +495,249 @@
 
 <script th:inline="javascript">
 
+var veduPhotoFileList = /*[[${eduPhotoFileList}]]*/null;
+
+//커스텀 테그 라이브러리 임시 설정
+var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
+
+function fn_getNextDepthList(grpcd , upprcd, selId, cd){
+
+
+	$.ajax({
+        url : getCodeListUrl,
+        type: 'GET',
+        cache : false,
+        dataType: 'json',
+        async: false,
+        data: {
+              grpcd  : grpcd
+            , upprcd : upprcd
+        },
+        success : function (data){
+
+        	writeHtml(grpcd, selId, data, cd);
+
+        },
+        error : function (error){
+        }
+    });
+}
+
+
+//교육주제 코드 목록
+function setEduJbjct(){
+    var cdLst = $("#eduSbjctCdLst").val().split(",");
+    var cd      ="";
+    var grpcd   ="";
+    var upprcd  =0;
+
+    var vHtml ="";
+    var selId = "";
+    var selSubId = "";
+    var idx = 0;
+
+
+    for( idx=0; idx < cdLst.length; idx++) {
+    	subcd    = cdLst[idx];
+    	cd       = cdLst[idx].substring(0,6);
+    	grpcd    = cdLst[idx].substring(0,3);
+
+    	selId    = "eduSbjctSel"+(idx+1);
+    	selSubId = "sub_"+selId;
+    	fn_getNextDepthList(grpcd , upprcd, selId, cd);
+
+    	debugger;
+        setNextDepth(grpcd,cd,selSubId,subcd);
+
+    }
+}
+
+function writeHtml(grpcd,selId,list,cd){
+
+    var vHtml ="";
+    var selSubId ="";
+
+    var idx = selId.substring(selId.length-1, selId.length);
+
+    if(selId.startsWith("sub")) {
+    	vHtml += "        <select id='"+selId+"' name='sub_eduSbjctSel' class='form-select form-select-sm form-control-sm'>";
+    	vHtml +="           <option  >전체</option>";
+	if(list.length > 0){
+    	for(var i=0 ; i < list.length;i++) {
+            if(list[i].cd==cd){
+                vHtml +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+            }else{
+                vHtml +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+            }
+        }
+    }
+    	vHtml += "      </select>";
+
+    	$("#"+selId).html(vHtml);
+
+    }else{
+        selSubId = "sub_"+selId;
+
+
+        if(idx == "1"){
+            vHtml += "<div class='row'>";
+        }else{
+            vHtml += "<div class='row mt-1'>";
+        }
+
+            vHtml += "    <div class='col-sm'>                                                                                                                                                            ";
+            vHtml += "      <select id='"+selId+"' name='eduSbjctSel' class='form-select form-select-sm form-control-sm' value='"+cd+"' onchange=setNextDepth("+grpcd+",this.value,'"+selSubId+"') >";
+            vHtml +="           <option  >전체</option>";
+
+            if(list.length > 0){
+                for(var i=0 ; i < list.length;i++) {
+                    if(list[i].cd==cd){
+                        vHtml +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+                    }else{
+                        vHtml +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+                    }
+                }
+                    vHtml += "      </select>";
+                    vHtml += "    </div>                                                                                                                                                                          ";
+                    vHtml += "    <div class='col-sm mt-1 mt-sm-0'>                                                                                                                                               ";
+                    vHtml += "        <select id='"+selSubId+"' name='sub_eduSbjctSel' class='form-select form-select-sm form-control-sm'></select>                                          ";
+                    vHtml += "    </div>                                                                                                                                                                          ";
+                    vHtml += "    <div class='mt-1 mt-sm-0' style='width:100px;'>                                                                                                                                 ";
+                    vHtml += "        <button type='button' class='input-group-text btn btn-primary btn-sm' onclick='eduSbjctBtn()'>+</button>                                                                    ";
+                if(idx != "1"){
+                    vHtml += "        <button type='button' class='input-group-text btn btn-primary btn-sm' onclick='eduSbjctBtn()'>-</button>";
+                }
+                    vHtml += '        </div>';
+                    vHtml += '    </div>';
+
+            }
+
+        $("#eduSbjctDiv").append(vHtml);
+    }
+}
+
+
+function setNextDepth(grpcd , upprcd , targetId, cd){
+    fn_getNextDepthList(grpcd , upprcd , targetId, cd);
+}
+
+function setSubSel(){
+	return;
+	var cdLst = $("#eduSbjctCdLst").val().split(",");
+    var cd="";
+
+    for(var i=0; i < cdLst.length; i++) {
+        var selSubId = "sub_eduSbjctSel"+(i+1);
+        cd = cdLst[i];
+
+        $("#"+selSubId)
+    }
+}
+
+function eduSbjctBtn(){
+	alert();
+};
+
+function readImage() {
+
+
+	for(var i=0; i < veduPhotoFileList.length; i++){
+		if(veduPhotoFileList[i].fileid==0){
+			$("#delFileDiv"+(i+1)).hide();
+            $("#regFileDiv"+(i+1)).show();
+		}else{
+			$("#delFileDiv"+(i+1)).show();
+            $("#regFileDiv"+(i+1)).hide();
+
+		}
+	}
+
+
+}
+
+
+$('[id^=eduPhotoFile]').on('change', function(event) {
+
+	var trgtId = event.currentTarget.id;
+	var trgtIdx = trgtId.substr(trgtId.length-1,1);
+
+	var objFile = document.querySelector('#'+trgtId);
+
+    var formData = new FormData();
+    var content = "";
+
+
+
+
+
+    for( i = 0 ; i < objFile.files.length ; i++) {
+        formData.append("files", objFile.files[i]);
+    }
+
+    formData.append("filegrpid", 642);
+    formData.append("filegrpNm", "dstnctnEduPhoto_file");
+
+    //if(uploadFileCnt >0 ){
+    if(displayWorkProgress()){
+        $.ajax({
+            url : '/uploadMultipleFiles.do',
+            processData : false,
+            contentType : false,
+            data : formData,
+            type : 'POST',
+            success : function(response) {
+                if(response.result == 'fail'){
+                    alert(response.msg);
+                }else{
+                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                        $("#filegrpid").val( response[0].filegrpid );
+                    }
+
+                    $("#regFileDiv" + trgtIdx).show();
+                    $("#delFileDiv" + trgtIdx).hide();
+
+                }
+                closeWorkProgress();
+            }
+        });
+       //$("#multiFileInput").val("");
+    }
+
+});
+
+
+function fn_deleteEduPhotoFile(btnid){
+
+
+	var vFileid        = $("#"+btnid).attr("fileid");
+	var vFileIdntfcKey = $("#"+btnid).attr("fileIdntfcKey");
+	var trgtIdx = btnid.substr(btnid.length-1,1);
+;
+
+    if(!confirm("파일을 삭제하시겠습니까?")){return;}
+
+    var deleteFileUrl="/deleteFile.do?fileid="+vFileid+"&file_idntfc_key=" + vFileIdntfcKey;
+
+    $.ajax({
+      url : deleteFileUrl,
+      type: 'GET',
+      cache : false,
+      dataType: 'json',
+      success : function (data){
+
+    	  $("#regFileDiv" + trgtIdx).show();
+          $("#delFileDiv" + trgtIdx).hide();
+
+      },
+      error : function (error){
+
+      }
+   })
+}
+
+
+
+
 //일정 추가 버튼
 function addSchdl(btnid){
     var html;
@@ -627,6 +866,7 @@ function prgrmDstnctnSaveBtn() {
     $("[id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
     $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
 
+
     $.ajax({
         url : vUrl,
         type: 'POST',
@@ -660,7 +900,15 @@ function fn_dstnctnNextbtn(){
 
 function initPrgrmDstnctn(){
 
-debugger;
+	//교육사진 set
+	readImage();
+
+	//교육주제 set
+	setEduJbjct();
+
+
+
+
     $('#jdsgTab1Link').addClass("active");
 
     $("[id^=cnsltngPrgrsYn]").attr("disabled", true);
@@ -683,3 +931,5 @@ debugger;
 initPrgrmDstnctn();
 
 </script>
+
+
