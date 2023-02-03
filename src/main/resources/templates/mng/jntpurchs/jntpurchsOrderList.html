@@ -80,6 +80,9 @@
                             <h5><strong>공동구매신청 검색 결과</strong></h5>
                         </div>
                         <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/alimtalk/sendAlimtalk.do">
+                                <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="jntpurchsOrder.onSendAlimtalk();">알림톡발송</button>
+                            </th:block>
                             <th:block sec:authorize-url="/mng/sms/sendSms.do">
                                 <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="jntpurchsOrder.onSendSms();">SMS발송</button>
                             </th:block>
@@ -223,6 +226,7 @@
             , onExcelDownload: function() {
                 excelDownload($("#searchFrm"), "/mng/jntpurchs/downloadJntpurchsOrderListExcel.do");
             }
+            
             , onSendSms: function() {
                 /*[# sec:authorize-url="/mng/sms/sendSms.do"]*/
                 var phoneList = ["01066278970"];
@@ -273,6 +277,30 @@
                                 alert("문자 발송이 완료되었습니다.");                                
                             } else {
                                 alert("문자 발송이 실패 하였습니다.\n잠시 후 다시 시도해주세요.");
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+                /*[/]*/
+            }
+            
+            , onSendAlimtalk: function() {
+                /*[# sec:authorize-url="/mng/alimtalk/sendAlimtalk.do"]*/
+                var recipientList = [
+                    {recipientNo: "01066278970", templateParameter: {nm: "박희열"}}
+                ]; 
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url: "/mng/alimtalk/sendAlimtalk.do"
+                        , type: 'POST'
+                        , data: {templateCode: "TEST002", recipientList: JSON.stringify(recipientList)} 
+                        , cache: false
+                        , success: function(response) {
+                            if(response.header.resultCode == 0) {
+                                alert("알림톡 발송이 완료되었습니다.");                                
+                            } else {
+                                alert("알림톡 발송이 실패 하였습니다.\n잠시 후 다시 시도해주세요.");
                             }
                             closeWorkProgress();
                         }

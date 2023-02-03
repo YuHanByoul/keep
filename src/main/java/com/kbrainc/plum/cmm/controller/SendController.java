@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
 import com.kbrainc.plum.cmm.service.SmsNhnService;
 
 /**
@@ -32,11 +33,14 @@ public class SendController {
     @Autowired
     private SmsNhnService smsService;
     
+    @Autowired
+    private AlimtalkNhnService alimtalkService;
+    
     /**
-    * SMS 발송
+    * 문자 발송
     *
     * @Title : sendSms
-    * @Description : SMS 발송
+    * @Description : 문자 발송
     * @return Map<String, Object> 발송결과
     * @throws Exception 예외
     */
@@ -54,5 +58,19 @@ public class SendController {
         
         return result;
     }
+    
+    /**
+     * 알림톡 발송
+     *
+     * @Title : sendAlimtalk
+     * @Description : 알림톡 발송
+     * @return Map<String, Object> 발송결과
+     * @throws Exception 예외
+     */
+     @RequestMapping(value = "/mng/alimtalk/sendAlimtalk.do")
+     @ResponseBody
+     public Map<String, Object> sendAlimtalk(@RequestParam(value="templateCode") String templateCode, @RequestParam("recipientList") String recipientList) throws Exception {
+         return alimtalkService.sendAlimtalk(templateCode, recipientList);
+     }
     
 }

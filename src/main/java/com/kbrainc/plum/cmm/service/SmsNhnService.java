@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * 
- * NHN SMS 발송 서비스 인터페이스.
+ * NHN 문자 발송 서비스 인터페이스.
  *
  * <pre>
  * com.kbrainc.plum.cmm.service
@@ -12,9 +12,9 @@ import java.util.Map;
  * </pre> 
  *
  * @ClassName : SmsNhnService
- * @Description : SMS 발송 서비스 인터페이스.
+ * @Description : 문자 발송 서비스 인터페이스.
  * @author : KBRAINC
- * @date : 2023. 1. 31.
+ * @date : 2023. 2. 1.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
