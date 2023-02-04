@@ -1,0 +1,165 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">제목 검색</strong></div>
+                <div class="form-body">
+                    <input type="search" id="searchKeyword" name="searchKeyword" title="제목 검색" placeholder="검색어를 입력해 주세요.">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">분류</strong></div>
+                <div class="form-body">
+                    <span kattr:select_code="inqryClCd" grpCd="102" firstOptTxt="- 전체 -"></span>
+                </div>
+            </div>
+        </div>
+        <div class="search-filter-submit">
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="inqryMain.searchInit()">초기화</button>
+            <button type="button" class="btn-medium btn-green btn-before-search" onclick="inqryMain.search()">검색</button>
+        </div>
+
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="DESC">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+        <input type="hidden" id="inqryid" name="inqryid" >
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="totalCount">0</b> 건</p>
+        </div>
+        <div class="right d-flex">
+            <select title="글 보기 개수" id="rowPerPage" name="rowPerPage">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+            <div class="ml10">
+                <button type="button" class="btn-medium btn-blue" onclick="inqryMain.moveToInsertForm()">문의하기</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>1:1문의 목록 - 번호, 분류, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <colgroup>
+                <col>
+                <col>
+                <col style="width:30%;">
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">분류</th>
+                <th scope="col">제목</th>
+                <th scope="col">상태</th>
+                <th scope="col">작성자</th>
+                <th scope="col">공개여부</th>
+                <th scope="col">등록일</th>
+            </tr>
+            </thead>
+            <tbody id="list-area">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" id="pagination"/>
+
+    <script th:inline="javascript">
+        var inqryMain = {
+            userid: /*[[${userInfo.userid}]]*/ null,
+            listUrl: '/front/inqry/selectInqryList.do',
+            detailUrl : '/front/inqry/inqryDetail.html',
+
+            init() {
+                this.writeList();
+            },
+
+            moveToInsertForm() {
+                if (this.userid == null) {
+                    alert('로그인 후 이용하실 수 있습니다.');
+                    return;
+                }
+                location.href = '/front/inqry/inqryForm.html';
+            },
+
+            search() {
+                $('#pageNumber').val('1');
+                this.writeList();
+            },
+
+            searchInit() {
+                $('#searchKeyword, #inqryClCd').val('');
+            },
+
+            writeList() {
+                if (displayWorkProgress()) {
+                    let formData = $('#searchForm').serializeArray();
+                    formData.push('rowPerPage', $('#rowPerPage').val());
+
+                    $.ajax({
+                        url: inqryMain.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData,
+                        type: 'GET',
+                        success: function (data) {
+                            inqryMain.makeListHtml(data);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            moveToDetail(inqryid) {
+                var f = document.forms.searchForm ;
+                f.inqryid.value=inqryid;
+                f.action = this.detailUrl;
+                f.submit();
+            },
+
+            makeListHtml(data) {
+                var html = "";
+                if (data.list == null || data.list.length <= 0) {
+                    html += `
+                    <tr>
+                        <td className="nodata" colSpan="7">
+                            <p><span className="icon icon-notice bg-black9"></span>등록된 1:1문의가 없습니다</p>
+                        </td>
+                    </tr>`;
+                } else {
+                    data.list.forEach(function(item) {
+                        html += `
+                        <td>${item.rowNumber}</td>
+                        <td>${item.inqryClCdNm}</td>
+                        <td className="al article"><a href="javascript:void(0)" className="link ellipsis" onclick="inqryMain.moveToDetail(${item.inqryid})">${item.cntnts}</a></td>
+                        <td>${item.sttsCdNm}</td>
+                        <td>${item.acnt}</td>
+                        <td>${item.rlsYn =='Y' ? '공개' : '비공개'}</td>
+                        <td>${item.regDt}</td>`;
+                    });
+                }
+
+                $('#list-area').html(html);
+                $("#pagination").html(data.pagination);
+                $("#totalCount").html(data.totalCount);
+            }
+        };
+
+        $(function () {
+            inqryMain.init();
+        })
+    </script>
+</div>
+<body>

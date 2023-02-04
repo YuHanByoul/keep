@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : InqryDaoImpl.xml
+    Description : 1:1문의 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.inqry.model.InqryDao">
+    <insert id="insertInqry">
+
+    </insert>
+
+    <update id="updateInqry">
+
+    </update>
+
+    <delete id="deleteInqry">
+
+    </delete>
+
+    <select id="selectInqryList" resultType="com.kbrainc.plum.front.inqry.model.InqryVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.INQRYID
+            , A.SITEID
+            , A.TITLE
+            , A.CNTNTS
+            , B.ACNT
+            , A.FILEGRPID
+            , A.INQRY_CL_CD
+            , A.STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+        FROM TB_CMM_INQRY A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE
+            A.DEL_YN = 'N'
+            <if test="searchKeyword != null and searchKeyword!= ''">
+                AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="inqryClCd != null and inqryClCd != ''">
+                AND A.INQRY_CL_CD = #{inqryClCd}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectInqryDetail" resultType="com.kbrainc.plum.front.inqry.model.InqryVo">
+        SELECT
+            A.INQRYID
+             , A.SITEID
+             , A.TITLE
+             , A.CNTNTS
+             , B.ACNT
+             , A.FILEGRPID
+             , A.INQRY_CL_CD
+             , A.STTS_CD
+             , A.RLS_YN
+             , A.REG_DT
+        FROM TB_CMM_INQRY A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE INQRYID = #{inqryid}
+    </select>
+</mapper>
