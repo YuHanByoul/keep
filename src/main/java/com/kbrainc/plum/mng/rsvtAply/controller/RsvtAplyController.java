@@ -22,14 +22,14 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * 공간 관리 컨트롤러 클래스.
+ * 예약 신청 캘린더 컨트롤러 클래스.
  *
  * <pre>
- * com.kbrainc.plum.mng.spce.controller - SpceController.java
+ * com.kbrainc.plum.mng.spce.controller - RsvtAplyController.java
  * </pre>
  *
- * @ClassName : SpceController
- * @Description : 기관 관리 컨트롤러 클래스.
+ * @ClassName : RsvtAplyController
+ * @Description : 예약 신청 캘린더 컨트롤러 클래스.
  * @author : KBRAINC
  * @date : 2023. 01. 10.
  * @Version :
@@ -43,22 +43,18 @@ public class RsvtAplyController {
     private RsvtAplyService rsvtAplyService;
     
     @Autowired
-    private InstService instService;
-    
-    @Autowired
     private CommonService commonService;
 
     /**
-     * 공간관리 화면 이동.
+     * 예약 신청 캘린더
      *
-     * @Title : spceList
-     * @Description : 개인회원관리 리스트화면 이동.
+     * @Title : rsvtApplyCalendarForm
+     * @Description : 예약 신청 캘린더
      * @return String 이동화면경로
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/rsvtApply/rsvtApplyCalendarForm.html")
-    public String spceLists(Model model) throws Exception {
-        //model.addAttribute("sidoList", commonService.selectCtprvnList());      
+    public String rsvtApplyCalendarForm(Model model) throws Exception {
         model.addAttribute("instList", commonService.selectAlowedInstList());      
         return "mng/rsvtAply/rsvtAplyCalendar";
     }
@@ -83,17 +79,17 @@ public class RsvtAplyController {
     }
     
     /**
-     * 공간 목록 조회.
+     * 예약신청 목록 조회.
      *
-     * @Title : selectSpceList
-     * @Description : 기관 목록 조회.
+     * @Title : selectRsvtApplyList
+     * @Description : 예약신청 목록 조회.
      * @param InstVo instVo 객체
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/rsvtApply/selectRsvtApplyList.do")
     @ResponseBody
-    public Map<String, Object> selectSpceLista(FclAplyRsvtdeVo fclAplyRsvtdeVo,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectRsvtApplyList(FclAplyRsvtdeVo fclAplyRsvtdeVo,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         
         List<FclAplyRsvtdeVo> result = null;
