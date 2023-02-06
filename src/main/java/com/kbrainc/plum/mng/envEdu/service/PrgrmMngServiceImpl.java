@@ -51,4 +51,16 @@ public class PrgrmMngServiceImpl extends PlumAbstractServiceImpl implements Prgr
         return prgrmMngDao.updatePrgrmMng(prgrmMngVo);
     }
     
+    @Override
+    public int updateHits(PrgrmMngVo prgrmMngVo) throws Exception {
+        // TODO Auto-generated method stub
+        return prgrmMngDao.updateHits(prgrmMngVo);
+    }
+
+    @Override
+    public int deletePrgrmMng(String[] prgrmids) throws Exception {
+        // TODO Auto-generated method stub
+        return prgrmMngDao.deletePrgrmMng(prgrmids);
+    }
+    
 }

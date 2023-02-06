@@ -24,9 +24,63 @@ import com.kbrainc.plum.mng.envEdu.model.PrgrmMngVo;
 */
 public interface PrgrmMngService {
 
+    /**
+    * 우수환경교육 프로그램 관리 목록 조회. 
+    *
+    * @Title : selectPrgrmMngList
+    * @Description : TODO
+    * @param prgrmMngVo
+    * @return
+    * @throws Exception
+    * @return List<PrgrmMngVo>
+     */
     List<PrgrmMngVo> selectPrgrmMngList(PrgrmMngVo prgrmMngVo) throws Exception;
     
+    /**
+    * 우수환경교육 프로그램 관리 등록. 
+    *
+    * @Title : insertPrgrmMng
+    * @Description : TODO
+    * @param prgrmMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
     int insertPrgrmMng(PrgrmMngVo prgrmMngVo) throws Exception;
     
+    /**
+    * 우수환경교육 프로그램 관리 수정. 
+    *
+    * @Title : updatePrgrmMng
+    * @Description : TODO
+    * @param prgrmMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
     int updatePrgrmMng(PrgrmMngVo prgrmMngVo) throws Exception;
+    
+    /**
+    * 우수환경교육 프로그램 관리 조회수 증가. 
+    *
+    * @Title : updateHits
+    * @Description : TODO
+    * @param prgrmMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateHits(PrgrmMngVo prgrmMngVo) throws Exception;
+    
+    /**
+    * 우수환경교육 프로그램 관리 삭제. 
+    *
+    * @Title : deletePrgrmMng
+    * @Description : TODO
+    * @param prgrmids
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deletePrgrmMng(String[] prgrmids) throws Exception;
 }

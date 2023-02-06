@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -115,6 +116,8 @@ public class PrgrmMngController {
                   List<PrgrmMngVo> result = this.prgrmMngService.selectPrgrmMngList(prgrmMngVo);                         
                   if (CollectionUtils.isNotEmpty(result)) {
                       detailPrgrmMngVo = result.get(0);
+                      // 조회수 증가
+                      this.prgrmMngService.updateHits(detailPrgrmMngVo);
                   }
               }
               
@@ -132,7 +135,7 @@ public class PrgrmMngController {
                   StringBuffer fileBtn = new StringBuffer();
                   fileBtn.append("<div class ='label label-inverse text-white' id='" +detailPrgrmMngVo.getRprsImgFileid() + "'>");
                   fileBtn.append("<a href=javascript:downloadFileByFileid('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>" + detailPrgrmMngVo.getOrginlFileNm() + "&nbsp;&nbsp;</a>");
-                  fileBtn.append("<a href=javascript:fn_deleteFileList('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
+                  fileBtn.append("<a href=javascript:fn_deleteMainFile('" + detailPrgrmMngVo.getRprsImgFileid() + "','" + detailPrgrmMngVo.getFileIdntfcKey() + "') class='text-white'>X</a></div>");
                   model.addAttribute("fileBtn", fileBtn.toString());
               }
           }
@@ -219,6 +222,37 @@ public class PrgrmMngController {
               resultMap.put("msg", "수정에 실패했습니다.");
           }
           
+          return resultMap;
+      }
+      
+      /**
+      * 우수환경교육 프로그램 관리 삭제. 
+      *
+      * @Title : deletePrgrmMng
+      * @Description : TODO
+      * @param request
+      * @return
+      * @throws Exception
+      * @return Map<String,Object>
+       */
+      @RequestMapping(value = "/mng/envEdu/deletePrgrmMng.do")
+      @ResponseBody
+      public Map<String, Object> deletePrgrmMng(HttpServletRequest request) throws Exception {
+          Map<String, Object> resultMap = new HashMap<String, Object>();
+          int retVal = 0;
+           
+          String[] prgrmids = request.getParameterValues("prgrmids");
+           
+          retVal = this.prgrmMngService.deletePrgrmMng(prgrmids);
+           
+          if (retVal > 0) {
+              resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+              resultMap.put("msg", "삭제에 성공하였습니다.");
+          } else {
+              resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+              resultMap.put("msg", "삭제에 실패했습니다.");
+          }
+
           return resultMap;
       }
 }

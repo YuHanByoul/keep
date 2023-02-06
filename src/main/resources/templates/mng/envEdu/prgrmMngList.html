@@ -18,7 +18,7 @@
 	        <div class="row">
                 <div class="col-12">
 		            <div class="card">
-		              <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+		                <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
                             <input type="hidden" id="searchStartRegDt" name="searchStartRegDt" value="" />
                             <input type="hidden" id="searchEndRegDt" name="searchEndRegDt" value="" />
 			                <div class="card-block-small">
@@ -71,7 +71,7 @@
 			                        <button class="btn btn-primary" onclick="searchData()">검색</button>
 			                    </div>
 			                </div>
-			             </form>
+			            </form>
 		            </div>
 		        </div>
 	
@@ -84,7 +84,7 @@
 	                        </div>
 	                        <div class="col-12 col-md-6 text-right">
 	                            <th:block sec:authorize-url="/mng/envEdu/deletePrgrmMng.do">
-	                                <button type="button" class="btn btn-inverse m-r-5">삭제</button>
+	                                <button type="button" class="btn btn-inverse m-r-5" onclick="deleteItem()">삭제</button>
 	                            </th:block>
 	
 	                            <th:block sec:authorize-url="/mng/envEdu/insertPrgrmMng.do">
@@ -109,18 +109,16 @@
 	            </div>
 	        </div>
 	    </div>
-
-	    <!-- 담당자 검색 팝업 Start -->
-	    <div class="modal fade" id="searchModal" aria-hidden="true" data-bs-backdrop="static"></div>
-	    <!-- 담당자 검색 팝업 end  -->
     
         <!-- Date-range picker js -->
         <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 		<script th:inline="javascript">
 		    var gridHelper1;
+		    var selectedItems = [];
 		    var listUrl = "/mng/envEdu/selectPrgrmMngList.do";
 		    var detailUrl = "/mng/envEdu/detailPrgrmMngForm.html";
+		    var deletelUrl = "/mng/envEdu/deletePrgrmMng.do";
 		    
 		    /* 커스텀태그(공통코드) : 교육주제 */
             var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
@@ -250,16 +248,31 @@
                             return data.promise();
                         }
                     },
-                    fields: [ 
-                    	{ name : 'prgrmid', css : 'hide' }
-                    	, { name : 'atchFilegrpid', css : 'hide' }
-                        , { title: 'No.'      ,name: 'rowNumber' ,type: "number", width: "80" , align:"center", sorting :false }
-                        , { title: '우수환경교육 프로그램명' ,name: 'prgrmNm'     ,type: "text"  , width: "200" , align:"left"}
-                        , { title: '운영기관명' ,name: 'instNm'     ,type: "text"  , width: "350" , align:"left"}
-                        , { title: '교육주제'   ,name: 'sbjctCdNm'        ,type: "text"  , width: "100", align:"center"}
-                        , { title: '대상'   ,name: 'trgtCdNm'   ,type: "text"  , width: "200" , align:"center"}
-                        , { title: '등록일'   ,name: 'regDt'   ,type: "text"  , width: "200" , align:"center"}
-                        , { title: '조회수'   ,name: ''    ,type: "text"  , width: "100" , align:"center"}
+                    fields: [
+                       {
+                            headerTemplate: function() {
+                                return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                            },
+                            itemTemplate: function(_, item) {
+                                return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                                .prop("checked", $.inArray(String(item.prgrmid), selectedItems) > -1)
+                                .on("change", function () {
+                                    $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                                });
+                            },
+                            align: "center",
+                            width: "50",
+                            sorting: false
+                       }
+                       , { name : 'prgrmid', css : 'hide' }
+                       , { name : 'atchFilegrpid', css : 'hide' }
+                       , { title: 'No.'      ,name: 'rowNumber' ,type: "number", width: "80" , align:"center", sorting :false }
+                       , { title: '우수환경교육 프로그램명' ,name: 'prgrmNm'     ,type: "text"  , width: "200" , align:"left"}
+                       , { title: '운영기관명' ,name: 'instNm'     ,type: "text"  , width: "200" , align:"left"}
+                       , { title: '교육주제'   ,name: 'sbjctCdNm'        ,type: "text"  , width: "300", align:"center"}
+                       , { title: '대상'   ,name: 'trgtCdNm'   ,type: "text"  , width: "150" , align:"center"}
+                       , { title: '등록일'   ,name: 'regDt'   ,type: "text"  , width: "200" , align:"center"}
+                       , { title: '조회수'   ,name: 'hits'    ,type: "text"  , width: "100" , align:"center"}
                     ],
                     /*[# sec:authorize-url="/mng/envEdu/detailPrgrmMngForm.html"]*/
                     rowClick: function (args) {
@@ -267,8 +280,81 @@
                         gridHelper1.loadContent(detailUrl + '?prgrmid=' + args.item.prgrmid + '&atchFilegrpid=' + args.item.atchFilegrpid);
                     },
                     /*[/]*/
+                    onPageChanged : function(args) {
+                        selectedItems = [];
+                    }
+                });
+				
+                var selectItem = function(item) {
+                    selectedItems.push(item);
+                    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                        $("#selectAllCheckbox").prop("checked", true);
+                    } else {
+                        $("#selectAllCheckbox").prop("checked", false);
+                    }
+                };
+                 
+                var unselectItem = function(item) {
+                    selectedItems = $.grep(selectedItems, function(i) {
+                    return i !== item;
+                    });
+                    if(selectedItems.length == 0) {
+                        $('#selectAllCheckbox').attr('checked', false);
+                    }
+                    if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                        $("#selectAllCheckbox").prop("checked", true);
+                    } else {
+                        $("#selectAllCheckbox").prop("checked", false);
+                    }
+                };
+                
+                $("#selectAllCheckbox").click(function(item) {
+                    selectedItems = [];
+                    if(this.checked) { // check select status
+                        $('.singleCheckbox').each(function() { 
+                            this.checked = true;   
+                            selectItem($(this).parent().next().text());           
+                        }); 
+                    }else {
+                        $('.singleCheckbox').each(function() { 
+                            this.checked = false;      
+                            unselectItem(item);
+                        });  
+                        selectedItems = [];
+                    }
                 });
 			});
+            
+            /**
+            * 삭제
+            */
+            function deleteItem(){
+                if(selectedItems.length == 0) {
+                    alert("대상을 선택해주세요.");
+                    return false;
+                }
+                if(!confirm("삭제하시겠습니까?")) return;
+                var msg;
+                    if(displayWorkProgress()){
+                        $.ajax({
+                            url: deletelUrl,
+                            type: 'POST',
+                            cache : false,
+                            traditional : true,
+                            dataType: 'json',
+                            data: {prgrmids:selectedItems},
+                            success: function(data){
+                                if(data.result=="success"){
+                                    alert(data.msg);
+                                }else{
+                                    alert(data.msg);
+                                }
+                                closeWorkProgress();
+                                gridHelper1.resetListContent();
+                            }
+                        });
+                    }
+            }
 
 		    /**
 		    * 검색조건 초기화.

@@ -67,7 +67,7 @@
 	                <div class="col-12 col-lg-6 mb-3">
 	                    <div class="mb-0 form-group required">
 	                        <div class="col-12 form-label m-b-0 pb-1">
-	                            <label class="col-form-label pb-0" for="rentalRecruitmentMainImage"><strong>대표 이미지</strong></label>
+	                            <label class="col-form-label pb-0" for="mainImage"><strong>대표 이미지</strong></label>
 	                            <span>(권장 사이즈 : 000x000)</span>
 	                        </div>
 	                        <div class="col-12">
@@ -76,7 +76,7 @@
                                 <input type="hidden" name="rprsImgFileid" id="rprsImgFileid" th:value="${prgrmMngVo.rprsImgFileid}">
 	                        </div>
 	                        <div class="mt-2 row">
-	                            <div class="col-auto">
+	                            <div class="col-auto" id="mainImg">
 	                                <th:block th:if="${fileBtn}">
 	                                   <div th:utext="${fileBtn}"/>
 	                                </th:block>
@@ -122,7 +122,7 @@
 	                    <div class="mb-0 form-group">
 	                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="registDate"><strong>등록일</strong></label>
 	                        <div class="col-12">
-	                            <input type="text" class="form-control form-control-sm" name="inputRegDt" id="inputRegDt" th:value="${prgrmMngVo.regDt}" readonly/>
+	                            <input type="text" class="form-control form-control-sm" name="inputRegDt" id="inputRegDt" th:value="${#dates.format(prgrmMngVo.regDt, 'yyyy-MM-dd')}" readonly/>
 	                        </div>
 	                    </div>
 	                </div>
@@ -138,10 +138,8 @@
 	        </div>
 	        
 	        <div class="card-block-small">
-	            <button class="btn btn-disabled m-r-5" id="cancelInsertEnvedu" onclick="gridHelper1.toggleContent()">취소</button>
-	            <th:block sec:authorize-url="/mng/envEdu/insertPrgrmMng.do">
-	               <button class="btn btn-primary" onclick="fn_save()">저장</button>
-	            </th:block>
+	            <button class="btn btn-disabled m-r-5" id="cancelSave" onclick="gridHelper1.toggleContent(); return false;">취소</button>
+	            <th:block sec:authorize-url="/mng/envEdu/insertPrgrmMng.do"><button class="btn btn-primary" onclick="fn_save(); return false;">저장</button></th:block>
 	        </div>
 	        <!-- // -->
 	    </div>
@@ -162,13 +160,22 @@
     /*<![CDATA[*/
     var sbjctCd1 = /*[[${prgrmMngVo.sbjctCd1}]]*/null;
     var sbjctCd = /*[[${prgrmMngVo.sbjctCd}]]*/null;
+    var fileBtn = /*[[${fileBtn}]]*/null;
     /*]]>*/
 
     $(document).ready(function() {
 		//editor = CKEDITOR.replace('bsnsCn');
         //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
         editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
-        
+        var text = "";
+        text += "<p>&nbsp;</p>";
+        text += "<p>&nbsp;</p>";            
+        text += "<p>&nbsp;</p>";
+        text += "<p style='text-align: center;'><a href='https://www.kogl.or.kr/info/licenseType4.do' target='_blank' title='새 창'><img alt='img' src='https://www.kogl.or.kr/static/kogl/img/sub/number3.jpg' style='width: 120px; height: 30px;'/></a> &nbsp;본 저작물은 “공공누리” 제4유형 : 출처표시 + 상업적 이용금지 + 변경금지 조건에 따라 이용할 수 있습니다.</p>";
+        if (Number(prgrmid) == 0) {
+	        editor.setData(text);        	
+        }
+    
         // 교육주제 대분류 change 이벤트 
         $("#sbjctCd1").change(function(){
         	setSearchSelectBox.setNextDepth(163, $(this).val(),'sbjctCd');        	
@@ -232,8 +239,9 @@
                     }else if(response.filegrpid != undefined && response.filegrpid != ''){
                         $("#rprsImgFilegrpid").val(response.filegrpid);
                         $("#rprsImgFileid").val(response.fileid);
+                        $('#mainImg').html("");
                         content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
-                        content +="<a href=javascript:fn_deleteFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+                        content +="<a href=javascript:fn_deleteMainFile('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
                         $('#fileUploadSuccess').html(content);
                     }
                     closeWorkProgress();
@@ -288,13 +296,20 @@
         }
     });
 
+    // 대표이미지 파일삭제
+    function fn_deleteMainFile(fileid, fileIdntfcKey){
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        fn_deleteFile(fileid, fileIdntfcKey);
+        $("#"+fileid).remove();
+        $('#rprsImgFile').val('');
+        fileBtn = "";
+    }
+
     // 파일삭제
     function fn_deleteFileList(fileid, fileIdntfcKey){
         if(!confirm("파일을 삭제하시겠습니까?")){return;}
         fn_deleteFile(fileid, fileIdntfcKey);
         $("#"+fileid).remove();
-        // 확인 필요....
-        $('#rprsImgFile').val('');
     }
 
     // 파일삭제
@@ -326,7 +341,7 @@
         var editorData = editor.getData();
         $("#cn").val(editorData);
         
-        if (($("#rprsImgFileid") == "" && $("#rprsImgFileid") == null) || ($("#rprsImgFile") == "" && $("#rprsImgFile") == null)) {
+        if ($("#fileUploadSuccess").html() == "" && (fileBtn == null || fileBtn == "")) {
         	alert("대표이미지를 선택해주십시오.");
         	showErrorMark("#rprsImgFile");
             return;
@@ -335,7 +350,7 @@
         if(!confirm("저장하시겠습니까?")) return;
         
         var data =  $("#insertForm").serialize();
-        var url = (prgrmid == "" || prgrmid == null || prgrmid == 0) ? insertUrl : updateUrl;
+        var url = (prgrmid == "" || prgrmid == null || Number(prgrmid) == 0) ? insertUrl : updateUrl;
         
         if(displayWorkProgress()){
             $.ajax({
@@ -347,7 +362,11 @@
                 success : function (data){
                     if(data.result=="success"){
                         alert(data.msg);
-                        gridHelper1.resetListContent();
+                        if (Number(prgrmid) == 0) {
+                            gridHelper1.resetListContent();                        	
+                        } else {
+	                        gridHelper1.resetPageContent();                        	
+                        }
                     }else{
                         alert(data.msg);
                     }

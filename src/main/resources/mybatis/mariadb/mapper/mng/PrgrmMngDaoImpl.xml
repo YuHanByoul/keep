@@ -21,6 +21,7 @@
             , A.TRGT_CD
             , C.CD_NM AS TRGT_CD_NM
             , A.CN
+            , IFNULL(A.HITS, 0) AS HITS
             , A.RPRS_IMG_FILEID
             , E.FILEGRPID
             , E.FILE_IDNTFC_KEY      
@@ -74,13 +75,14 @@
     <!-- 우수환경교육 프로그램 관리 등록 -->
     <insert id="insertPrgrmMng" parameterType="PrgrmMngVo" useGeneratedKeys="true" keyProperty="prgrmid">
         /* PrgrmMngDao.insertPrgrmMng */
-        INSERT INTO tb_cmm_exclnc_edu_prgrm (
+        INSERT INTO TB_CMM_EXCLNC_EDU_PRGRM (
             PRGRMID
             , PRGRM_NM
             , INST_NM
             , SBJCT_CD
             , TRGT_CD
             , CN
+            , HITS
             , RPRS_IMG_FILEID
             , ATCH_FILEGRPID
             , MDFCN_DT
@@ -94,6 +96,7 @@
             , #{sbjctCd}
             , #{trgtCd}
             , #{cn}
+            , 0
             , #{rprsImgFileid}
             , #{atchFilegrpid}
             , NOW()
@@ -106,7 +109,7 @@
     <!-- 우수환경교육 프로그램 관리 수정 -->
     <update id="updatePrgrmMng" parameterType="PrgrmMngVo">
         /* PrgrmMngDao.updatePrgrmMng */
-        UPDATE tb_cmm_exclnc_edu_prgrm SET 
+        UPDATE TB_CMM_EXCLNC_EDU_PRGRM SET 
             PRGRM_NM = #{prgrmNm}
             , INST_NM = #{prgrmNm}
             , SBJCT_CD = #{sbjctCd}
@@ -119,4 +122,21 @@
         WHERE PRGRMID = #{prgrmid}
     </update>
 
+    <!-- 조회수 증가 -->
+    <update id="updateHits" parameterType="PrgrmMngVo">
+        /* PrgrmMngDao.updateHits */
+        UPDATE TB_CMM_EXCLNC_EDU_PRGRM SET 
+            HITS = IFNULL(HITS, 0)+1
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 우수환경교육 프로그램 관리 삭제 -->
+    <delete id="deletePrgrmMng" parameterType="java.util.ArrayList">
+        /* PrgrmMngDao.deletePrgrmMng */
+        DELETE FROM TB_CMM_EXCLNC_EDU_PRGRM
+        WHERE PRGRMID IN 
+        <foreach item="item" collection="array" index="prgrmids" open="(" close=")" separator=",">
+        #{item}
+        </foreach>
+    </delete>
 </mapper>

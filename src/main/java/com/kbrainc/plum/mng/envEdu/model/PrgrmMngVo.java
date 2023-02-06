@@ -5,6 +5,9 @@ package com.kbrainc.plum.mng.envEdu.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -52,21 +55,29 @@ public class PrgrmMngVo extends ParentRequestVo {
     /** 프로그램아이디 */
     private int prgrmid;
     /** 프로그램_이름 */
+    @NotEmpty(message = "우수환경교육 프로그램명을 입력해주십시오.")
+    @Size(max = 200, message = "프로그램명은 200자를 넘을 수 없습니다.")
     private String prgrmNm;
     /** 기관_이름 */
+    @Size(max = 100, message = "기관명은 100자를 넘을 수 없습니다.")
     private String instNm;
     /** 주제_코드(대분류) */
+    @NotEmpty(message = "교육주제(대분류)를 선택해주십시오.")
     private String sbjctCd1;
     /** 주제_코드 */
+    @NotEmpty(message = "교육주제(중분류)를 선택해주십시오.")
     private String sbjctCd;
     /** 주제_코드명 */
     private String sbjctCdNm;
     /** 대상_코드 */
+    @NotEmpty(message = "교육대상을 선택해주십시오.")
     private String trgtCd;
     /** 대상_코드명 */
     private String trgtCdNm;
     /** 내용 */
     private String cn;
+    /** 조회수 */
+    private int hits;
     /** 대표_이미지_파일아아디 */
     private int rprsImgFileid;
     /** 첨부_파일그룹아이디 */
