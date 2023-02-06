@@ -40,6 +40,35 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
     @Autowired
     private AsgsysSrngDao asgSrngDao;
 
+    /**
+    * 지정번호 조회
+    *
+    * @Title : selectDsgnNo
+    * @Description : 지정번호 조회
+    * @param dsgnPrgrmVo
+    * @return dsgnPrgrmVo
+    * @throws Exception
+    */
+    @Override
+    public DsgnPrgrmVo selectDsgnNo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectDsgnNo(dsgnPrgrmVo);
+	}
+
+    /**
+    * 지정내역조회
+    *
+    * @Title : selectDsgnHstry
+    * @Description : 지정내역조회
+    * @param dsgnPrgrmVo
+    * @return List<DsgnPrgrmVo>
+    * @throws Exception
+    */
+    @Override
+    public List<DsgnPrgrmVo> selectDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+    	return dsgnPrgrmDao.selectDsgnHstry(dsgnPrgrmVo);
+
+	}
+
 	/**
 	* 지정프로그램 목록 조회
 	*
@@ -486,6 +515,19 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		return dsgnPrgrmDao.updateRsltRptln (dsgnPrgrmVo);
 	}
 
+	/**
+	* 지정번호 중복 조회
+	*
+	* @Title : selectDsgnNoDupChk
+	* @Description : 지정번호 중복 조회
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	public int selectDsgnNoDupChk(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectDsgnNoDupChk (dsgnPrgrmVo);
 
+	}
 
 }

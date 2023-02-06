@@ -24,25 +24,23 @@
           , C.VST_HR
           , C.VST_MNT
           , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
+          , C.SPLMNT_DMND_OPNN
+          , C.SRNG_OPNN
         FROM
             TB_ASS_PRGRM A
-        LEFT OUTER JOIN
-        (   SELECT
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+            SELECT
                 PRGRMID
               , SRNG_STTS_CD
-            FROM
-                TB_ASS_PRGRM_JDGS LIMIT 0,1 ) B ON A.PRGRMID  = B.PRGRMID
+              , JDGSID
+              , COUNT(1) AS CNT
+            FROM TB_ASS_PRGRM_JDGS
+        ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
         LEFT OUTER JOIN
-        (   SELECT
-                PRGRMID
-              , SRGN_STTS_CD
-              , VST_DE
-              , VST_HR
-              , VST_MNT
-            FROM
-                TB_ASS_SPRTGRP_SRNG LIMIT 0,1 ) C ON A.PRGRMID  = C.PRGRMID
-        LEFT OUTER JOIN
-        TB_CMM_INST D ON A.INSTID  = D.INSTID
+            TB_CMM_INST D ON A.INSTID  = D.INSTID
         WHERE 1=1
         <!-- 키워드.프로그램명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
@@ -303,7 +301,7 @@
           , B.MDFRID                 /* 수정자아이디             */
           , B.REG_DT                 /* 등록_일시                */
           , B.RGTRID                 /* 등록자아이디             */
-          , (SELECT GROUP_CONCAT(EDU_SBJCT_CD SEPARATOR',') FROM TB_ASS_PRGRM_EDU_SBJCT WHERE PRGRMID = #{prgrmid}) AS EDU_SBJCT_CD
+          , (SELECT GROUP_CONCAT(EDU_SBJCT_CD SEPARATOR',') FROM TB_ASS_PRGRM_EDU_SBJCT WHERE PRGRMID = #{prgrmid}) AS EDU_SBJCT_CD_LST
         FROM
             TB_ASS_PRGRM A
         /*프로그램 우수성*/
@@ -1169,25 +1167,23 @@
           , C.VST_HR
           , C.VST_MNT
           , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
+          , C.SPLMNT_DMND_OPNN
+          , C.SRNG_OPNN
         FROM
             TB_ASS_PRGRM A
-        LEFT OUTER JOIN
-        (   SELECT
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+            SELECT
                 PRGRMID
               , SRNG_STTS_CD
-            FROM
-                TB_ASS_PRGRM_JDGS LIMIT 0,1 ) B ON A.PRGRMID  = B.PRGRMID
+              , JDGSID
+              , COUNT(1) AS CNT
+            FROM TB_ASS_PRGRM_JDGS
+        ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
         LEFT OUTER JOIN
-        (   SELECT
-                PRGRMID
-              , SRGN_STTS_CD
-              , VST_DE
-              , VST_HR
-              , VST_MNT
-            FROM
-                TB_ASS_SPRTGRP_SRNG LIMIT 0,1 ) C ON A.PRGRMID  = C.PRGRMID
-        LEFT OUTER JOIN
-        TB_CMM_INST D ON A.INSTID  = D.INSTID
+            TB_CMM_INST D ON A.INSTID  = D.INSTID
         WHERE 1=1
         <!-- 키워드.전체 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
@@ -1219,6 +1215,35 @@
         </if>
     </select>
 
+    <!-- 지원단 캘린더 목록 조회 -->
+    <select id="selectSprtgrpClndrList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            A.PRGRMID
+          , A.PRGRM_NM
+          , A.INST_NM
+          , B.VST_DE
+          , B.VST_HR
+          , B.VST_MNT
+          , B.SPRTGRPID
+          , CONCAT(C.NM, '(', C.ACNT, ')')    AS SPRTGRP_NM_ACNT
+          , C.NM
+          , CONCAT(B.VST_DE , ' ', B.VST_HR  ,' : ',  B.VST_MNT)    AS VST_DE
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID = B.PRGRMID
+        LEFT OUTER JOIN
+            TB_CMM_USER C ON B.SPRTGRPID = C.USERID
+        WHERE 1=1
+        <if test="searchAplyStartDt != null and searchAplyStartDt != '' ">
+            AND B.VST_DE <![CDATA[>=]]> #{searchAplyStartDt}
+        </if>
+        <if test="searchAplyEndDt != null and searchAplyEndDt != '' ">
+            AND   B.VST_DE <![CDATA[<=]]> #{searchAplyEndDt}
+        </if>
+        ORDER BY VST_DE, VST_HR, VST_MNT
+    </select>
+
     <!-- 신청정보 조회 -->
     <select id="selectAplyInfo" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
@@ -1238,6 +1263,8 @@
           , D.SPRTGRPID
           , D.VST_DT
           , D.NM
+          , D.SPLMNT_DMND_OPNN
+          , D.SRNG_OPNN
         FROM
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
@@ -1251,6 +1278,8 @@
               , AA.SPRTGRPID
               , CONCAT(BB.NM,"( ",BB.ACNT," )") AS NM
               , CONCAT(AA.VST_DE , " " , AA.VST_HR , ":" , AA.VST_MNT) AS VST_DT
+              , AA.SPLMNT_DMND_OPNN
+              , AA.SRNG_OPNN
             FROM
                 TB_ASS_SPRTGRP_SRNG AA
             INNER JOIN
@@ -1430,16 +1459,12 @@
           , B.USERID
           , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.JDGSID ) AS JDGS_NM
           , B.SBMSN_DT
-          , COL_VAL1
-          , COL_VAL2
-          , COL_VAL3
-          , COL_VAL4
-          , COL_VAL5
-          , COL_VAL6
-          , COL_VAL7
-          , COL_VAL8
-          , COL_VAL9
-          , COL_VAL10
+          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL1) OVER() THEN IFNULL(COL_VAL1,0) END AS COL_VAL1
+          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL2) OVER() THEN IFNULL(COL_VAL2,0) END AS COL_VAL2
+          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL3) OVER() THEN IFNULL(COL_VAL3,0) END AS COL_VAL3
+          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL4) OVER() THEN IFNULL(COL_VAL4,0) END AS COL_VAL4
+          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL5) OVER() THEN IFNULL(COL_VAL5,0) END AS COL_VAL5
+          , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL6) OVER() THEN IFNULL(COL_VAL6,0) END AS COL_VAL6
           , B.SCR    AS SUM_SCR
           , ROUND( SUM(SCR) OVER()/COUNT(A.JDGSID) OVER(),2) AS SUM_AVG
           , B.SRNG_OPNN

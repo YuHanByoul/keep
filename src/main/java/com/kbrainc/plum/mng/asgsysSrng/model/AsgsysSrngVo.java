@@ -89,6 +89,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 지원단 이름 */
     private String sprtgrpNm;
 
+    /** 지원단 이름(계정) */
+    private String sprtgrpNmAcnt;
+
     /** 지원단 이메일 */
     private String sprtgrpEml;
 
@@ -108,7 +111,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String searchSrngSttsCd;
 
     /** 심사위원 심사 총점평균 */
-    private Integer sumAvg;
+    private BigDecimal sumAvg;
 
     /** 지원단 심사상태 */
     private String searchSrgnSttsCd;
@@ -430,6 +433,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/**교육 주제 코드 */
 	private String eduSbjctCd;
 
+	/**교육 주제 코드 목록*/
+	private String eduSbjctCdLst;
+
     /**교육_사진_파일그룹아이디 */
 	private Integer  eduPhotoFilegrpid;
 
@@ -679,6 +685,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
         UserVo clone = (UserVo) SerializationUtils.clone(this.user);
         return  clone;
     }
+
+    /** 호출구분*/
+    private String callSe;
 
     /** 상태코드 */
 	public void setSttsCd(String sttsCd) throws Exception{

@@ -1,48 +1,253 @@
-<div class="modal fade show" id="supportGroupCalendarPopup" aria-modal="true" role="dialog" style="display: block;">
-<!-- 	<form id="blcklstFrm"> -->
-	   <div class="modal-dialog modal-lg" role="document">
-	       <div class="modal-content type_2">
-	           <div class="modal-header">
-	               <h4 class="modal-title">지원단 캘린더</h4>
-	               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-	                   <span aria-hidden="true"></span>
-	               </button>
-	           </div>
-	           <div class="modal-body">
-	               <div class="card m-b-10">
-	                   <div class="card-block-small">
-	                       <div class="col-12">
-	                           <div id="calendar"></div>
-	                       </div>
-	                   </div>
-	               </div>
-	           </div>
-	           <div class="modal-footer">
-	               <button type="button" class="btn btn-primary waves-effect waves-light ">저장</button>
-	           </div>
-	       </div>
-	   </div>
-<!-- 	</form> -->
-</div>
+<form id="sprtgrpCalenderFrm">
+   <div class="modal-dialog modal-lg" role="document">
+       <div class="modal-content type_2">
+           <div class="modal-header">
+               <h4 class="modal-title">지원단 캘린더</h4>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                   <span aria-hidden="true"></span>
+               </button>
+           </div>
+           <div class="modal-body">
+               <div class="card m-b-10">
+                   <div class="card-block-small">
+                       <div class="col-12">
+<!--                            <div id="calendar"></div> -->
+                           <div class="calendar-body" id="calendar">
 
-<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
-<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
-<!-- Custom js -->
-<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
-<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
-<script src="/files/assets/js/pcoded.min.js"></script>
-<script src="/files/assets/js/vartical-layout.min.js"></script>
-<script src="/files/assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
-<script type="text/javascript" src="/files/assets/js/script.js"></script>
-<script type="text/javascript" src="/files/assets/pages/full-calender/calendar.js"></script>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div class="modal-footer">
+               <button type="button" class="btn btn-primary waves-effect waves-light ">저장</button>
+           </div>
+       </div>
+   </div>
+</form>
 
-<!-- Calender css -->
-<link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.css">
-<link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.css" media='print'>
-<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
-<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.css" />
+<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.min.css" media="print"/>
+
 <script th:inline="javascript">
 
+var limitDt ;
+var today = moment();
+var today = today.format('YYYYMMDD')
+var checkDays =[];
+var sttsArr=[];
+
+$(function(){
+
+	$("#calendar") .on("mouseover","[name=vstSchdl]",function(e) {
+
+		var trgtId = e.currentTarget.id;
+
+		$("#"+trgtId).children().last().attr("style","display:show")
+
+    });
+
+	$("#calendar") .on("mouseout","[name=vstSchdl]",function(e) {
+
+        var trgtId = e.currentTarget.id;
+
+        $("#"+trgtId).children().last().attr("style","display:none");
+
+    });
 
 
+    initFullCalendar();
+    makeCalendarEvent();
+
+
+
+});
+
+$(".checkDay").bind("change",function(){
+    checkDaysStts();
+})
+
+function initFullCalendar(){
+
+    $('#calendar').fullCalendar({
+
+        plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
+        locale : 'ko',
+        defaultView : 'month',
+        defaultDate : moment(new Date()),
+        editable : false,
+        disable : false,
+        droppable: false,
+        eventLimit: 5,
+        displayEventTime: true,
+        firstDay: 0,
+        fixedWeekCount :false ,
+        height: "auto",
+        //contentHeight    : "1500px",
+        monthNames      : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+        monthNamesShort : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+        dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+        dayNamesShort   : ["일","월","화","수","목","금","토"],
+        header : {
+
+            left   : '',
+            center : 'CustomPrevButton title CustomNextButton ',
+            right  : ''
+
+        },
+        views: {month: {titleFormat: 'YYYY년 M월'}},
+
+        customButtons: {
+            CustomPrevButton: {
+              click: function() {
+                    $('#calendar').fullCalendar("prev");
+                    makeCalendarEvent();
+
+              },
+              icon:"left-single-arrow",
+            },
+            CustomNextButton: {
+              click: function() {
+                    $('#calendar').fullCalendar("next");
+                    makeCalendarEvent();
+              },
+              icon:"right-single-arrow",
+            }
+        },
+
+        dayClick: function(date, jsEvent, view) {
+
+            if($(jsEvent.target).attr("for")){
+                //체크 박스 이벤트 중복 방지
+                return false;
+            }else{
+                var chkDay = moment(date).format("YYYY-MM-DD")
+                if($("#rsvt_stts"+chkDay).val()=='N'){
+                    singleChoiceModal(chkDay);
+                }
+            }
+        },
+
+        eventRender:function (event,element){
+            //console.log(event);
+        },
+
+        eventClick: function(calEvent, jsEvent, view) {
+            console.log(calEvent);
+            var cellStts = $("#rsvt_stts"+calEvent.de).val();
+            if(cellStts=='R'){
+                var modifyKind = (calEvent.utztnSeCd =='169101')? 'MS':'MR';
+                openRsvtModifyModal(modifyKind,calEvent.de);
+            }
+        },
+
+        dayRender: function(date, cell) {
+        },
+        //캘린더 렌더링 이후
+        viewRender: function(view, element){
+
+            var redirect_dt = "";
+
+            element.find(".fc-day-number").each(function(item){
+
+                var year_month_str = moment($("#calendar").fullCalendar("getDate")).format("YYYYMM")
+
+                let cell_dt      = $(this).parent().attr("data-date");
+                let thisMonthDay =  moment(cell_dt).format("YYYYMM")
+                let cellDay      =  moment(cell_dt).format("YYYYMMDD")
+                let day          =  moment(cell_dt).format("D")
+
+                let rsvtHtml ='   <div id="calendarDay'+cellDay+'">'
+                    rsvtHtml +=       day
+                    rsvtHtml +='  </div>'
+//                     rsvtHtml +='     <div class="border-checkbox-section">'
+//                     rsvtHtml +='         <div class="border-checkbox-group">'
+//                     rsvtHtml +='             <input class="border-checkbox checkDay" type="checkbox" name="calendarDay'+cell_dt+'" id="calendarDay'+cell_dt+'"  value="'+cell_dt+'">'
+//                     rsvtHtml +='             <label class="form-label border-checkbox-label" data-value="label"  for="calendarDay'+cell_dt+'"><span class="d-none">'+day+'</span></label>'
+//                     rsvtHtml +='         </div>'
+//                     rsvtHtml +='     </div>'
+
+//                     rsvtHtml +='    <a class="fc-day-grid-event fc-h-event fc-event fc-start fc-end fc-draggable" style="background-color: #FC6180; border-color: #FC6180; color: #fff">'
+//                     rsvtHtml +='        <div class="fc-content">                                                                                                                        '
+//                     rsvtHtml +='            <span class="fc-title">Business Lunch</span>                                                                                                '
+//                     rsvtHtml +='        </div>                                                                                                                                          '
+//                     rsvtHtml +='    </a>                                                                                                                                                '
+
+                $(this).html("<span>"+rsvtHtml+"</span>");
+
+            })
+
+        }
+    });
+}
+
+function makeCalendarEvent(gotoYYYYMM){
+
+    $("#calendar").fullCalendar('removeEvents');
+
+    var yyyymm_string = moment($("#calendar").fullCalendar("getDate")).format("YYYY-MM")
+
+    var lastDayOfMonth = "";
+
+    if(gotoYYYYMM != null && gotoYYYYMM != '' && gotoYYYYMM != 'undefined'){
+        lastDayOfMonth = moment(gotoYYYYMM, "YYYYMM").daysInMonth();
+        yyyymm_string  = moment(gotoYYYYMM, "YYYY-MM")
+    }else{
+        lastDayOfMonth = moment(yyyymm_string, "YYYY-MM").daysInMonth();
+    }
+
+    var params = {
+    	 searchAplyStartDt : yyyymm_string+"-01"
+        ,searchAplyEndDt   : yyyymm_string+"-"+lastDayOfMonth
+    }
+
+    if(displayWorkProgress()){
+        $.ajax({
+            url : "/mng/asgsSrng/selectSprtgrpClndrList.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : params,
+            success : function (data){
+
+
+                let list = data.list;
+
+                if(list.length > 0){
+
+                    var schdul_events = { events: []};
+                    var idx=1;
+
+                    list.forEach(function(item){
+
+                    	var de = item.vstDe.replaceAll("-","");
+                        var vHtml ="";
+
+                        vHtml +='<a href="javascript:void(0);" id="vstSchdl'+item.vstDe+idx+'" name="vstSchdl" class="fc-day-grid-event fc-h-event fc-event fc-start fc-end fc-draggable" style="background-color: #FC6180; border-color: #FC6180; color: #fff">'
+                        vHtml +='    <div class="fc-content">                                                                                                                        '
+                        vHtml +='        <span class="fc-title">'+item.vstHr+':'+item.vstMnt+' '+item.nm+'</span>                                                                    '
+                        vHtml +='    </div>                                                                                                                                          '
+                        vHtml +='<div class="col-auto border p-2 bg-white pos-absolute rounded" style="display: none;">'
+                        vHtml +='    <span>*'+item.prgrmNm      +' </span>'
+                        vHtml +='    <span>*'+item.instNm       +' </span>'
+                        vHtml +='    <span>*'+item.vstDe        +' </span>'
+                        vHtml +='    <span>*'+item.sprtgrpNmAcnt+' </span>'
+                        vHtml +='</div>'
+                        vHtml +='</a>                                                                                                                                                '
+
+                        $("#calendarDay"+de).append(vHtml);
+                        idx++;
+
+                    })
+
+
+                    $("#calendar").fullCalendar('removeEventSources');
+                    $("#calendar").fullCalendar('addEventSource', schdul_events);
+                }
+
+                closeWorkProgress();
+            }
+        });
+    }
+
+}
 </script>

@@ -96,6 +96,17 @@ public interface AsgsysSrngDao {
 	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 지원단 캘린더 목록 조회
+	*
+	* @Title : selectSprtgrpClndrList
+	* @Description : 지원단 캘린더 목록 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSprtgrpClndrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	 * 지정신청목록 엑셀다운로드
 	 *
 	 * @Title : selectMemberExcelList

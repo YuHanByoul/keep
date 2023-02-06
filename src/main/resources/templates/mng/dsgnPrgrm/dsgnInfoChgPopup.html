@@ -25,7 +25,7 @@
 	                        <div class="mb-2 form-group row required">
 	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignUpdatePopupDegree"><strong>차수</strong></label>
 	                            <div class="col-12">
-	                                <input type="text" class="form-control form-control-sm" name="pDsgnCycl" id="pDsgnCycl" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnCycl}" readonly="">
+	                                <input type="text" class="form-control form-control-sm" name="pDsgnCycl" id="pDsgnCycl" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnCycl}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-2 form-group row required">
@@ -35,19 +35,19 @@
 	                            </div>
 	                        </div>
 	                        <div class="mb-2 form-group row required">
-	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignUpdatePopupAppointedDate"><strong>지정 획득일</strong></label>
+	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pDsgnObtainDe"><strong>지정 획득일</strong></label>
 	                            <div class="col-12">
 	                                <input type="date" class="form-control form-control-sm" name="pDsgnObtainDe" id="pDsgnObtainDe" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnObtainDe}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-2 form-group row required">
-	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignUpdatePopupAppointedStartDate"><strong>유효지정 시작일</strong></label>
+	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pDsgnBgngDe"><strong>유효지정 시작일</strong></label>
 	                            <div class="col-12">
 	                                <input type="date" class="form-control form-control-sm" name="pDsgnBgngDe" id="pDsgnBgngDe" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnBgngDe}">
 	                            </div>
 	                        </div>
 	                        <div class="mb-0 form-group row required">
-	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="assignUpdatePopupAppointedEndDate"><strong>유효지정 만료일</strong></label>
+	                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="pDsgnEndDe"><strong>유효지정 만료일</strong></label>
 	                            <div class="col-12">
 	                                <input type="date" class="form-control form-control-sm" name="pDsgnEndDe" id="pDsgnEndDe" placeholder="Text Input Validation" th:value="${dsgnPrgrmInfo.dsgnEndDe}">
 	                            </div>
@@ -62,9 +62,11 @@
 	    </div>
 </form>
 <script th:inline="javascript">
-var popupSe;
 
-var validator= $("#dsgnRtrcnPopupFrm").validate({
+var popupSe;
+var orgDsgnNo;
+
+var validator= $("#dsgnInfoChgPopupFrm").validate({
 
     rules: {
         pDsgnCycl     : { required: true }
@@ -81,13 +83,43 @@ var validator= $("#dsgnRtrcnPopupFrm").validate({
       , pDsgnEndDe    : { required: "유효지정 만료일을 입력하세요"}
     }
 })
+/*
+function chkDsgnNo(){
+//dsgnNo 중복 체크
+	var params={};
+	params = {
+	    prgrmid : $("#prgrmid").val()
+      , dsgnNo  : $("#pDsgnNo").val()
+      , chkVal  : $("#pDsgnNo").val() == orgDsgnNo ? "" : orgDsgnNo
+	}
 
+	if(displayWorkProgress()){
+        $.ajax({
+            url : "/mng/dsgmPrgrm/selectDsgnNoDupChk.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : params,
+            success : function (data){
+
+                if(data.msg != "") {
+                	alert(data.msg);
+                	$("#pDsgnNo"      ).focus();
+                	return false;
+                }else{
+                	return true;
+                }
+               closeWorkProgress();
+            }
+        });
+    }
+};
+*/
 function dsgnInfoChgSaveBtn(){
 
 	var vUrl;
 
-	if(popupSe){
-		//재지정
+	if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" && $("#hstryid").val() == 0)){
         if(!($("#dsgnInfoChgPopupFrm").valid())) return;
 
         var params ={
@@ -100,12 +132,14 @@ function dsgnInfoChgSaveBtn(){
             , dsgnBgngDe   : $("#pDsgnBgngDe"  ).val()
             , dsgnEndDe    : $("#pDsgnEndDe"   ).val()
             , dttsCd       : $("#pDttsCd"      ).val()
+            , chkVal  : $("#pDsgnNo").val() == orgDsgnNo ? "" : orgDsgnNo
         }
 
         vUrl="/mng/dsgnPrgrm/insertDsgnHstry.do"
-	}else{
-		//지정정보 변경
+
+	} else{    //지정정보 변경
 	    if(!($("#dsgnInfoChgPopupFrm").valid())) return;
+
 
 	    var params ={
 	          prgrmid      : $("#prgrmid"      ).val()
@@ -117,10 +151,13 @@ function dsgnInfoChgSaveBtn(){
 	        , dsgnEndDe    : $("#pDsgnEndDe"   ).val()
 	        , dttsCd       : $("#pDttsCd"      ).val()
 	        , sttsCd       : $("#pSttsCd"      ).val()
+	        , chkVal  : $("#pDsgnNo").val() == orgDsgnNo ? "" : orgDsgnNo
 
 	    }
 	    vUrl="/mng/dsgnPrgrm/updateDsgnHstry.do";
 	}
+
+	if(!confirm("저장하시겠습니까?")) return;
 
     if(displayWorkProgress()){
         $.ajax({
@@ -132,15 +169,22 @@ function dsgnInfoChgSaveBtn(){
             success : function (data){
                alert(data.msg);
 
-               if("dsgnInfoChgA"== $("#callSe").val()){
-
-            	   dsgnInfoChgListModal.hide();
+               if(result=="fail"){
+            	   $("#pDsgnNo").focus();
                }else{
-            	    dsgnInfoChgModal.hide();
+                   if(popupSe == "dsgnInfoChgA"){
+                	   dsgnInfoChgListModal.hide();
+                   }else if(popupSe == "dsgnAprv"){
+                	   dsgnAprvModal.hide();
+                   }else{
+                	    dsgnInfoChgModal.hide();
+                	    gridHelper1.resetListContent();
+                   }
+                   gridHelper1.resetListContent();
+
                }
-               gridHelper1.resetListContent();
-               //dsgnDsctnGridHelper.resetListContent();
                closeWorkProgress();
+
             }
         });
     }
@@ -149,22 +193,14 @@ function dsgnInfoChgSaveBtn(){
 
 function initDsgnInfoChg(){
 
-debugger;
-	// 재지정 true ,지정정보변경 false
-    popupSe = $("#callSe").val() =="reDsgn";
+    popupSe = $("#callSe").val();
+
+    orgDsgnNo = $("#pDsgnNo").val();
 
     $("#pSttsCd").attr("disabled",true);
 
-    if(popupSe) {
-		//재지정
-		debugger;
+    if(popupSe=="reDsgn" || (popupSe == "dsgnAprv" && $("#hstryid").val() != 0)) {    //재지정
 		$("#pSttsCd").val( "132101");        //지정상태-지정승인
-		//차수 증가
-		var nClcy = Number($("#pDsgnCycl").val());
-		nClcy = nClcy+1
-
-		$("#pDsgnCycl").val( nClcy );
-
 	}
 
 }

@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +29,7 @@ import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +69,32 @@ public class DsgnPrgrmController {
     /**********************************************************************************
      * 지정프로그램
      **********************************************************************************/
+
+
+	/**
+	* 지정번호 중복 조회
+	*
+	* @Title : selectDsgnNo
+	* @Description : 지정번호 중복 조회
+	* @param dsgnPrgrmVo
+	* @return Map<String,Object>
+	* @throws Exception
+	*/
+	@RequestMapping(value = "/mng/dsgmPrgrm/selectDsgnNoDupChk.do")
+	@ResponseBody
+    public Map<String, Object> selectDsgnNo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+		int retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
+
+		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+		if (retVal > 0) {
+            resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
+        }else {
+        	resultMap.put("msg", "");
+        }
+        return resultMap;
+    }
+
 	/**
      * @Title : dsgnPrgrmListForm
      * @Description : 지정프로그램목록 화면이동
@@ -657,8 +685,33 @@ public class DsgnPrgrmController {
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/dsgnInfoChgPopup.html")
     public String dsgnInfoChgPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
-    	model.addAttribute("callSe", dsgnPrgrmVo.getCallSe());
-    	model.addAttribute("dsgnPrgrmInfo", dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo));
+    	DsgnPrgrmVo dsgnPrgrmInfo = new DsgnPrgrmVo();
+
+
+        model.addAttribute("callSe", dsgnPrgrmVo.getCallSe());
+
+        //지정내역 조회
+    	List<DsgnPrgrmVo> dsgnHstryList =  dsgnPrgrmServiceImpl.selectDsgnHstry(dsgnPrgrmVo);
+
+
+    	//최초 지정승인
+    	if(dsgnHstryList.size() == 0) {
+    		//지정번호 조회
+
+    		dsgnPrgrmVo = dsgnPrgrmServiceImpl.selectDsgnNo(dsgnPrgrmVo);
+    		BeanUtils.copyProperties(dsgnPrgrmVo, dsgnPrgrmInfo);
+
+    	}else {
+    		//결과보고 지정승인 클릭시 Hstryid 세팅
+    		if(dsgnPrgrmVo.getHstryid() ==0) {
+    			dsgnPrgrmVo.setHstryid(dsgnHstryList.get(dsgnHstryList.size() -1).getHstryid());
+    		}
+
+    		dsgnPrgrmInfo = dsgnPrgrmServiceImpl.selectDsgnPrgrm(dsgnPrgrmVo);
+
+    	}
+
+    	model.addAttribute("dsgnPrgrmInfo", dsgnPrgrmInfo);
     	return "mng/dsgnPrgrm/dsgnInfoChgPopup";
     }
 
@@ -678,6 +731,9 @@ public class DsgnPrgrmController {
     public Map<String, Object> insertDsgnHstry(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
+    	int retVal = 0;
+
+    	dsgnPrgrmVo.setUser(user);
 
     	if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
@@ -687,19 +743,25 @@ public class DsgnPrgrmController {
             return resultMap;
         }
 
-    	int retVal = 0;
+    	if("".equalsIgnoreCase(dsgnPrgrmVo.getChkVal()) ){
 
-    	dsgnPrgrmVo.setUser(user);
+    		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
+    		if(retVal > 0) {
+    			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
+    		}
+    		return resultMap;
+    	}
 
-    	retVal = dsgnPrgrmServiceImpl.insertDsgnHstry(dsgnPrgrmVo);
+		retVal = dsgnPrgrmServiceImpl.insertDsgnHstry(dsgnPrgrmVo);
 
-    	if (retVal > 0) {
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "저장에 성공하였습니다.");
-        } else {
-            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "저장에 실패했습니다.");
-        }
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
 
     	return resultMap;
     }
@@ -720,6 +782,7 @@ public class DsgnPrgrmController {
     public Map<String, Object> updateDsgnHstry(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
+    	int retVal = 0;
 
     	if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
@@ -729,7 +792,20 @@ public class DsgnPrgrmController {
             return resultMap;
         }
 
-    	int retVal = 0;
+        retVal = 0;
+
+    	if(!"".equals(dsgnPrgrmVo.getChkVal()) ){
+
+    		retVal = dsgnPrgrmServiceImpl.selectDsgnNoDupChk(dsgnPrgrmVo);
+
+    		if(retVal > 0) {
+
+    			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    			resultMap.put("msg", "중복되는 지정번호가 존재합니다. 지정번호를 변경 후 다시 시도(저장)하시기 바랍니다.");
+    		}
+
+    		return resultMap;
+    	}
 
     	dsgnPrgrmVo.setUser(user);
 
@@ -742,6 +818,7 @@ public class DsgnPrgrmController {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "수정에 실패했습니다.");
         }
+
 
     	return resultMap;
     }
