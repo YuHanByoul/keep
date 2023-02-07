@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.inqry.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 1:1문의 요청Vo
@@ -39,6 +41,7 @@ public class InqryVo extends ParentRequestVo {
     private String cntnts;
     private String acnt;
     private Integer filegrpid;
+    private Integer userid;
     private String inqryClCd;
     private String inqryClCdNm;
     private String sttsCd;
@@ -46,6 +49,7 @@ public class InqryVo extends ParentRequestVo {
     private String rlsYn;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+    private List<FileVo> fileList;
 
     public void setInqryClCd(String inqryClCd) {
         this.inqryClCd = inqryClCd;

@@ -23,11 +23,15 @@ import java.util.List;
 public interface InqryDao {
     public List<InqryVo> selectInqryList(InqryVo inqryVo) throws Exception;
 
-    public InqryVo selectInqryDetail(InqryVo inqryVo) throws Exception;
+    public InqryVo selectInqry(InqryVo inqryVo) throws Exception;
+
+    public InqryAnsVo selectInqryAns(InqryVo inqryVo) throws Exception;
 
     public int insertInqry(InqryVo inqryVo) throws Exception;
 
     public int updateInqry(InqryVo inqryVo) throws Exception;
 
     public int deleteInqry(InqryVo inqryVo) throws Exception;
+
+    public int cancelInqry(InqryVo inqryVo) throws Exception;
 }
