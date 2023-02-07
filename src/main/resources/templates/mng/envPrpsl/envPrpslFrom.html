@@ -1,0 +1,143 @@
+<div class="col-12 col-lg-6">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h4 class="sub-title"><strong>문의</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p>
+                <strong th:text="|[${envPrpsInfo.clsfCdNm}] ${envPrpsInfo.ttl}|"></strong>
+            </p>
+            <p>
+                <div th:text="${envPrpsInfo.instNm != '' ? envPrpsInfo.instNm+' '+envPrpsInfo.userNm+'('+envPrpsInfo.acnt+')' : envPrpsInfo.userNm+'('+envPrpsInfo.acnt+')'}"></div>
+                <div th:text="${#dates.format(envPrpsInfo.regDt,'yyyy-MM-dd')}"></div>
+            </p>
+        </div>
+        <div class="card-header p-t-0 p-b-0">
+            <h4 class="sub-title"><strong>환경교육제안 내용</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <p th:utext="${#strings.replace(#strings.escapeXml(envPrpsInfo.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></p>
+            <div class="mt-2 row">
+                <div id="atchFileList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="envPrpsAnsForm" class="col-12 col-lg-6">
+    <input type="hidden" name="prpslid" th:value="${envPrpsInfo.prpslid}">
+    <input type="hidden" name="ansid" th:value="${envPrpslAnsInfo.ansid}">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <h4 class="sub-title"><strong>답변</strong></h4>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="mb-3 form-group row required">
+                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                <div class="col-sm-12">
+                    <span kattr:select_code="prcsSttsCd" grpCd="113" th:attr="selectedCd=${envPrpsInfo.prcsSttsCd}" addClass="form-select form-select-sm form-control-sm" ></span>
+                </div>
+            </div>
+            <div class="mb-3 form-group row">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                       for="ttl"><strong>답변 제목</strong></label>
+                <div class="col-sm-12">
+                    <input type="text" class="form-control form-control-sm"
+                           name="ttl" id="ttl" placeholder="답변 제목을 입력해주세요."
+                           th:value="${envPrpslAnsInfo.ttl}" />
+                </div>
+            </div>
+            <div class="mb-3 form-group row">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                       for="cn"><strong>답변 내용</strong></label>
+                <div class="col-sm-12">
+                    <textarea rows="5" cols="5" class="form-control form-control-sm"
+                              placeholder="답변 내용을 입력해주세요."
+                              id="cn"
+                              name="cn" th:text="${envPrpslAnsInfo.cn}"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                               for="answerManager"><strong>답변자</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm"
+                                   name="answerManager" id="answerManager"
+                                   th:value="${envPrpslAnsInfo.usernm != null ? envPrpslAnsInfo.usernm : envPrpsInfo.user.nm}"
+                                   disabled/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
+                               for="answerDate"><strong>답변일자</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm"
+                                   name="answerDate" id="answerDate"
+                                   th:value="${envPrpslAnsInfo.ansDt != null ? #dates.format(envPrpslAnsInfo.ansDt,'yyyy-MM-dd') : #dates.format(#dates.createToday(),'yyyy-MM-dd')}"
+                                   disabled/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-t-0 card-block-small">
+            <button type="button" class="btn btn-disabled m-r-5" onclick="envPrpslJsGrid.toggleContent();">취소</button>
+            <button type="button" class="btn btn-primary" onclick="saveProc();">저장</button>
+        </div>
+    </div>
+</form>
+
+<script th:inline="javascript">
+    var $envPrpsAnsForm = $("#envPrpsAnsForm");
+
+    $(function () {
+        const atchFileList = /*[[${atchFileList}]]*/null;
+        fileUploader($("#atchFileList"), '', '', atchFileList, {multiple: true, readonly: true});
+
+        $envPrpsAnsForm.validate({
+            rules: {
+                ttl: {required: true, maxlength: 100},
+                cn: 'required',
+            },
+            messages: {
+                ttl: {required : '답변 제목을 입력해주세요.', maxlength : '답변 제목은 100자를 넘을 수 없습니다.'},
+                cn: '답변 내용을 입력해주세요.',
+            }
+        });
+    });
+
+    function saveProc(){
+        let prcsSttsCd = $('#prcsSttsCd').val();
+        let isUpdate = !!$envPrpsAnsForm.find("[name=ansid]").val();
+        let actionUrl = isUpdate ? "/mng/envPrpsl/updateEnvPrpslAnswer.do" : "/mng/envPrpsl/insertEnvPrpslAnswer.do";
+        if(prcsSttsCd === '113104'){
+            if(!$envPrpsAnsForm.valid()) return;
+        }
+
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: actionUrl,
+                type: 'POST',
+                cache: false,
+                dataType: 'json',
+                data: $envPrpsAnsForm.serialize(),
+                success: function (data) {
+                    if (data.result) {
+                        alert(data.msg);
+                        if (isUpdate) {
+                            envPrpslJsGrid.resetPageContent();
+                        } else {
+                            envPrpslJsGrid.resetListContent();
+                        }
+                    } else {
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+</script>

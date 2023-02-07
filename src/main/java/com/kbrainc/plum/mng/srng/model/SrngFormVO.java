@@ -32,7 +32,7 @@ public class SrngFormVO extends ParentRequestVo {
     private UserVo user;
 
     /** 양식아이디 */
-    private int formid;
+    private Integer formid;
 
     /** 양식_이름 */
     private String formNm;
@@ -54,20 +54,20 @@ public class SrngFormVO extends ParentRequestVo {
     private Date mdfcnDt;
 
     /** 수정자아이디 */
-    private int mdfrid;
+    private Integer mdfrid;
 
     /** 등록_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
 
     /** 등록자아이디 */
-    private int rgtrid;
+    private Integer rgtrid;
 
     /** 등록/수정 구분코드 */
     private String mode;
 
     /** 심사양식 문항 수 */
-    private int srngFormQitemCnt;
+    private Integer srngFormQitemCnt;
 
     /** 운영형태검색 */
     private String searchOperFrmCd;
