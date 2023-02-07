@@ -65,6 +65,16 @@ public class ExpertPoolMngController {
     @Value("${crypto.key}")
     private String encryptKey;
 
+    /**
+     * 전문가 목록 화면
+     *
+     * @param exprtTypeCd
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertList
+     * @Description : 전문가 목록 화면
+     */
     @RequestMapping("/mng/expertPoolMng/{exprtTypeCd}/expertList.html")
     public String expertList(@PathVariable String exprtTypeCd,Model model) throws Exception {
         model.addAttribute("exprtTypeCd", exprtTypeCd);
@@ -99,7 +109,7 @@ public class ExpertPoolMngController {
     }
 
     /**
-     * 전문가 상세 탭 화면 이동
+     * 전문가 상세 탭 이동
      *
      * @param expertVo
      * @param model
@@ -114,6 +124,16 @@ public class ExpertPoolMngController {
         return "mng/expertPoolMng/expertDetail";
     }
 
+    /**
+     * 전문가 신청정보 탭 상세 화면
+     *
+     * @param expertVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertApplyInfoForm
+     * @Description : 전문가 신청정보 상세 화면
+     */
     @RequestMapping("/mng/expertPoolMng/expertApplyInfoForm.html")
     public String expertApplyInfoForm(ExpertVo expertVo, Model model) throws Exception {
         ExpertVo expertApplyInfo = expertPoolMngService.selectExpertApplyInfo(expertVo);
@@ -122,6 +142,16 @@ public class ExpertPoolMngController {
     }
 
 
+    /**
+     * 회원정보 탭 상세화면
+     *
+     * @param expertVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertInfoForm
+     * @Description : 회원정보 탭 상세화면
+     */
     @RequestMapping("/mng/expertPoolMng/expertInfoForm.html")
     public String expertInfoForm(ExpertVo expertVo, Model model) throws Exception {
 
@@ -138,12 +168,30 @@ public class ExpertPoolMngController {
         return "mng/expertPoolMng/expertInfoForm";
     }
 
+    /**
+     * 후기이력 탭 상세화면
+     *
+     * @param expertReviewHistoryVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertReviewHistoryForm
+     * @Description : 후기이력 탭 상세화면
+     */
     @RequestMapping("/mng/expertPoolMng/expertReviewHistoryForm.html")
     public String expertReviewHistoryForm(ExpertReviewHistoryVo expertReviewHistoryVo, Model model) throws Exception {
         model.addAttribute("scrAvg", expertPoolMngService.getExpertReviewScrAvg(expertReviewHistoryVo));
         return "mng/expertPoolMng/expertReviewHistoryForm";
     }
 
+    /**
+     * 상태변경이력 탭 상세화면
+     *
+     * @return string
+     * @throws Exception
+     * @Title : expertStatusChangeHistoryForm
+     * @Description : 상태변경이력 탭 상세화면
+     */
     @RequestMapping("/mng/expertPoolMng/expertStatusChangeHistoryForm.html")
     public String expertStatusChangeHistoryForm() throws Exception {
         return "mng/expertPoolMng/expertStatusChangeHistoryForm";
@@ -220,6 +268,19 @@ public class ExpertPoolMngController {
         return result;
     }
 
+    /**
+     * 전문가 파일 다운로드 및 로그 생성
+     *
+     * @param fileid
+     * @param fileIdntfcKey
+     * @param expertLogVo
+     * @param request
+     * @param user
+     * @return response entity
+     * @throws Exception
+     * @Title : downloadFile
+     * @Description : 전문가 파일 다운로드 및 로그 생성
+     */
     @RequestMapping("/mng/expertPoolMng/downloadFileByFileid.do")
     @ResponseBody
     public ResponseEntity<Resource> downloadFile(@RequestParam(name="fileid",required=true) int fileid, @RequestParam(name="file_idntfc_key",required=true) String fileIdntfcKey

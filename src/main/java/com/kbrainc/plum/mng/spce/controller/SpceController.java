@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.inst.model.InstVo;
@@ -668,6 +671,30 @@ public class SpceController {
         model.addAttribute("singleChoiceDt", spceVo.getSingleChoiceDt());
         
         return "mng/spce/spceRsvtdetailPopup";
+    }
+    
+    /**
+     * QR 코드 생성
+     * @param commandMap
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/makeQRCode.do")
+    public ModelAndView makeAtndncQRCode(Map<String, Object> commandMap, HttpServletRequest request, HttpServletResponse response) throws Exception{
+
+        ModelAndView modelandview = new ModelAndView();
+
+        String tmtbl_prd_atndnc_id = StringUtil.nvl(commandMap.get("p_tmtbl_prd_atndnc_id"));
+        if(StringUtil.isNotNull(tmtbl_prd_atndnc_id)){
+            // modelandview.setViewName("qrcodeview");
+        }
+        
+        modelandview.setViewName("QRCodeView");
+        modelandview.addObject("qrText","aadadf-123");
+        
+        return modelandview;
     }
     
     

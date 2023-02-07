@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : TchaidDaoImpl.xml
+	Description : 교구관리 
+-->
+<mapper namespace="com.kbrainc.plum.mng.tchaid.model.TchaidDao">
+
+   <!-- 구성품 목록 호출 --> 
+   <select id="selectCmpntList" parameterType="CmpntVo" resultType="CmpntVo">
+          /* TchaidDao.selectCmpntList */
+          <include refid="PaginationMapper.header"/>
+          SELECT 
+            CMPNTID
+            ,CMPNT_NM
+            ,QNTY_INVNTRY
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+          FROM 
+            TB_THA_TCHAID_CMPNT
+         WHERE 1=1
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+              AND CMPNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+         <include refid="PaginationMapper.footer"/>
+   </select>
+   <!-- 구성품 입고 내역 호출 --> 
+   <select id="selectCmpntWrhousngList" parameterType="CmpntWrhousngVo" resultType="CmpntWrhousngVo">
+          /* TchaidDao.selectCmpntWrhousngList */
+          <include refid="PaginationMapper.header"/>
+          SELECT 
+              WRHOUSNGID
+              ,CMPNTID
+              ,WRHOUSNGDE
+              ,QNTY
+              ,RMRK
+              ,REG_DT
+              ,RGTRID
+            FROM    
+               TB_THA_CMPNT_WRHOUSNG
+           WHERE 1=1 
+             AND CMPNTID = #{cmpntid}
+        <include refid="PaginationMapper.footer"/>
+   </select>
+   <!-- 구성품 등록 --> 
+   <insert id="insertCmpnt" parameterType="CmpntVo" >
+        /* TchaidDao.insertCmpnt */
+        INSERT INTO TB_THA_TCHAID_CMPNT (
+            CMPNT_NM
+            ,QNTY_INVNTRY
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+        )VALUES(
+             #{cmpntNm     }
+            ,#{qntyInvntry }
+            ,NOW()
+            ,#{user.userid  }
+            ,NOW()
+            ,#{user.userid  }
+        )
+   </insert>
+   <!-- 구성품 입고 등록 --> 
+   <insert id="insertCmpntWrhousng" parameterType="CmpntWrhousngVo" >
+        /* TchaidDao.insertCmpntWrhousng */
+        INSERT INTO TB_THA_CMPNT_WRHOUSNG (
+              CMPNTID
+              ,WRHOUSNGDE
+              ,QNTY
+              ,RMRK
+              ,REG_DT
+              ,RGTRID
+        )VALUES(
+               #{cmpntid    }
+              ,#{wrhousngde }
+              ,#{qnty       }
+              ,NOW()
+              ,#{user.userid  }
+        )
+   </insert>
+   <!-- 구성품 수정 --> 
+   <update id="updateCmpnt" parameterType="CmpntVo" >
+        /* TchaidDao.insertCmpnt */
+        UPDATE TB_THA_TCHAID_CMPNT
+           SET 
+             CMPNT_NM     = #{cmpntNm     }   
+            ,QNTY_INVNTRY = #{qntyInvntry }   
+            ,MDFCN_DT     = NOW()             
+            ,MDFRID       = #{user.userid  }  
+         WHERE 1=1 
+           AND CMPNTID = #{cmpntid}
+  </update>
+  
+</mapper>

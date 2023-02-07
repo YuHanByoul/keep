@@ -110,7 +110,7 @@ public class JntpurchsServiceImpl extends PlumAbstractServiceImpl implements Jnt
     /**
      * 공동구매모집 상세 정보 조회
      *
-     * @Title : selectJntpurchsList
+     * @Title : selectJntpurchsInfo
      * @Description : 공동구매모집 상세 정보 조회
      * @param jntpurchsVo JntpurchsVo 객체
      * @return JntpurchsVo 공동구매모집 상세 정보
@@ -238,6 +238,36 @@ public class JntpurchsServiceImpl extends PlumAbstractServiceImpl implements Jnt
     @Override
     public List<JntpurchsOrderVo> selectJntpurchsOrderList(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
         return jntpurchsDao.selectJntpurchsOrderList(jntpurchsOrderVo);
+    }
+    
+    /**
+     * 공동구매신청 상세 정보 조회
+     *
+     * @Title : selectJntpurchsOrderInfo
+     * @Description : 공동구매신청 상세 정보 조회
+     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+     * @return JntpurchsOrderVo 공동구매신청 상세 정보
+     * @throws Exception 예외
+     */
+    @Override
+    public JntpurchsOrderVo selectJntpurchsOrderInfo(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
+        return jntpurchsDao.selectJntpurchsOrderInfo(jntpurchsOrderVo);
+    }
+    
+    /**
+     * 공동구매신청 정보 업데이트
+     *
+     * @Title : updateJntpurchsOrder 
+     * @Description : 공동구매신청 정보 업데이트
+     * @param jntpurchsOrderVo JntpurchsOrderVo
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    public int updateJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
+        int retVal = 0;
+        
+        return retVal += jntpurchsDao.updateJntpurchsOrder(jntpurchsOrderVo);
     }
     
 }

@@ -1,0 +1,181 @@
+<form id="searchInstModalFrm" >
+ <style>
+.hide{display:none;}
+</style>
+<!-- 담당자정보 회원검색 팝업 -->
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">기관검색</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12 col-lg-6 mb-3">
+                                <div class="mb-0 form-group">
+                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관유형</strong></span>
+                                    <div class="col-12">
+                                       <span kattr:select_code="searchInstCd" grpCd="108" firstOptTxt="-선택 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                           <div class="col-12 col-lg-6 mb-3">
+                                <div class="mb-0 form-group">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업자등록번호</strong></div>
+                                 <div class="col-12">
+                                     <input type="text" class="form-control form-control-sm" name="brno" id="brno" />
+                                 </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                         
+                        <div class="mt-1 p-t-20 text-center border-top">
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="initSearchInst()">초기화</button>
+                            <button type="button" class="btn btn-primary" onclick="searchInstList()">검색</button>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!--임시 그리드-->
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="dt-responsive table-responsive">
+                        
+                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="instManagerModalGrid" class="table-responsive"></table>
+                                <div id="listPager3" class="text-center"></div>
+                       </div>
+                        </div>
+                    </div>
+                </div>
+                <!--//임시 그리드-->
+            </div>
+             
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="chooseInst()">선택</button>
+            </div>
+        </div>
+  </div>
+</form>
+
+<script th:inline="javascript">
+
+    $(function(){
+        writeManagerModalGridData();
+    });
+
+    searchInstList = () =>{
+        $("#instManagerModalGrid").jsGrid("reset");
+    }
+    
+    initSearchInst = () =>{
+    	$("#searchInstCd").val("");
+    	$("#brno").val("");
+    }
+    
+    function writeManagerModalGridData(){
+        
+        $("#instManagerModalGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager3",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchInstModalFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/spce/selectInstList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "radio").attr("class", "singleCheckbox3").attr("name","memchk")
+                                .attr("value",item.instid).attr("id","chk_"+item.instid)
+                     },
+                     align: "center",
+                     width: "30",
+                     sorting: false
+                 }   
+                ,{ name: 'instid', css: 'hide' }
+                ,{ title: '기관명'   ,name: 'instNm'    ,type: "text" , width: "200",align:"center"}
+                ,{ title: '사업자등록번호'  ,name: 'brno',type: "text" , width: "150" ,align:"center"}
+                ,{ title: '대표자명'   ,name: 'rprsvNm'     ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '지역'   ,name: 'sidoNm'     ,type: "text" , width: "150" ,align:"center"}
+            ],
+            rowClick: function(args) {
+            	selectedInstItem = args.item;
+                $("#chk_"+args.item.instid).prop("checked",true);
+                
+            },
+            onPageChanged: function(args) {
+            	selectedInstItem = null;
+            }
+        });
+  }
+    
+  var chooseInst = () =>{
+	  
+      if(selectedInstItem == null){
+          alert("기관을 선택해주세요");
+          return;
+      }
+      
+      $("#instid").val(selectedInstItem.instid);
+      $("#instNm").val(selectedInstItem.instNm);
+      getFcltListData();
+      spceModal.hide();
+      selectedInstItem=null;
+      
+  }
+  
+</script>

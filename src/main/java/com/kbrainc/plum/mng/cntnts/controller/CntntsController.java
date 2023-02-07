@@ -226,7 +226,7 @@ public class CntntsController {
     @ResponseBody
     public Map<String, Object> updateCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        
+
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {

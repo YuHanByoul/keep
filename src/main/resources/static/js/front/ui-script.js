@@ -419,7 +419,10 @@ const formStyle = {
 	widthEnabled : function () {
 		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
 			if ($(this).data('width')) {
-				$(this).css('width',$(this).data('width'));
+				$(this).css({
+					'width': $(this).data('width'),
+					'flex': '0 0' + $(this).data('width') + 'px'
+				});
 			}
 		})
 	},
@@ -447,7 +450,6 @@ const formStyle = {
 			const valueMin = parseInt(numInput[0].min);
 			const valueMax = parseInt(numInput[0].max);
 
-			console.log(numInput[0].min)
 			//value up
 			if ($(this).hasClass('num-up')) {
 				if (numInput.val() === '') {
@@ -595,41 +597,100 @@ const layerPopup = {
 		ZINDEX = 2000;
 		ACTIVECLASS = 'active';
 		ANIMATION_TIME = 300;
+		layerPosition = '';
+		
 		layerPopup.onClickTrigger();
 		layerPopup.onClickClose();
 		layerPopup.onClickDimmed();
+		layerPopup.resize();
 		
 	},
-	open : function (target) {
+	open : function ({target, w, h, l, t}) {
+		const targetWrap = $('[data-layer-id="' + target + '"]');
 		ZINDEX++;
-		$('[data-layer-id="' + target + '"]').addClass(ACTIVECLASS);
 		
-		$('[data-layer-id="' + target + '"]').attr('tabindex',0);
+		
+		//layer
+		if (targetWrap.hasClass('layer-alert')) {
+			targetWrap.css({
+				width: w,
+				height : h,
+				left : l,
+				top : t,
+				display : 'block',
+				padding: 0
+			})
+
+			if (l === undefined) {
+				const targetWidth = targetWrap.outerWidth();
+				const targetHeight = targetWrap.outerHeight();
+				const targetLeft = (targetWidth / 2) * -1;
+				const targetTop = (targetHeight / 2) * -1;
+				targetWrap.css({
+					marginLeft : targetLeft,
+					marginTop : targetTop,
+					left : '50%',
+					top : '50%'
+				})
+			}
+			if (w === undefined) {
+				targetWrap.css({
+					width:'auto'
+				})
+			}
+			if (h === undefined) {
+				targetWrap.css({
+					height:'auto'
+				})
+			}
+			layerPosition = targetWrap[0].getAttribute('style');
+			targetWrap.attr('data-style',layerPosition);
+			if ($WINDOW_MODE === TABLET || $WINDOW_MODE === MOBILE) {
+				targetWrap.removeAttr('style');
+			}
+		}
+		targetWrap.addClass(ACTIVECLASS);
+		
+		targetWrap.attr('tabindex',0);
 		setTimeout(function () {
-			$('[data-layer-id="' + target + '"]').focus();
+			targetWrap.focus();
 		},ANIMATION_TIME)
 
 		$('body .layer-popup').each(function (){
-			$('[data-layer-id="' + target + '"]').css('z-index',ZINDEX);
+			targetWrap.css('z-index',ZINDEX);
 		});
 	},
 	close : function (target) {
-		$('[data-layer-id="' + target + '"]').removeClass(ACTIVECLASS);
-		$('[data-layer-id="' + target + '"]').removeAttr('tabindex');
-		$('[data-layer-id="' + target + '"]').css('z-index','');
-		$('[data-layer-href="' + target + '"]').focus();
+		const targetWrap = $('[data-layer-id="' + target + '"]');
+		const trigger = $('[data-layer-href="' + target + '"]');
+		
+		targetWrap.removeClass(ACTIVECLASS);
+		targetWrap.removeAttr('tabindex style');
+		targetWrap.css('z-index','');
+		trigger.focus();
 	},
 	onClickTrigger : function () {
 		$(document).on('click', '[data-layer-href]' , function (e){
+
+			// a link
 			if ($(this).is('a')){
 				e.preventDefault();
 			}
+
 			const target = $(this).attr('data-layer-href');
 			if ($('[data-layer-id="' + target + '"]').hasClass('active')) {
-				layerPopup.close(target);
-			} else {
-				layerPopup.open(target);
-			}
+					layerPopup.close({target});
+				} else {
+					//checkbox flag
+					if ($(this).is('.inp')) {
+						if ($(this).find('input').is(':checked')){
+							layerPopup.open({target});
+						}
+					} else {
+						layerPopup.open({target});
+					}
+				}
+
 			
 			
 		})
@@ -647,6 +708,21 @@ const layerPopup = {
 			layerPopup.close(target);
 	
 		})
+	},
+	resize : function () {
+		$(window).on('resize', function () {
+			$('body .layer-popup').each(function (){
+				if ($(this).hasClass('active')) {
+					const layerStyle = $(this).attr('data-style');
+					if ($WINDOW_MODE === TABLET || $WINDOW_MODE === MOBILE) {
+						$(this).removeAttr('style');
+					} else {
+						$(this).attr('style',layerStyle);
+					}
+				}
+			});
+		})
+		
 	}
 }
 
@@ -1016,7 +1092,9 @@ $(document).ready(function() {
 	})
 });
 
-const popupCenter = ({url, title, w, h}) => {
+const popupCenter = ({url, title, w, h, l, t}) => {
+
+	//open
 	// Fixes dual-screen position                             Most browsers      Firefox
 	const dualScreenLeft = window.screenLeft !==  undefined ? window.screenLeft : window.screenX;
 	const dualScreenTop = window.screenTop !==  undefined   ? window.screenTop  : window.screenY;
@@ -1025,16 +1103,17 @@ const popupCenter = ({url, title, w, h}) => {
 	const height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
 
 	const systemZoom = width / window.screen.availWidth;
-	const left = (width - w) / 2 / systemZoom + dualScreenLeft;
-	const top = (height - h) / 2 / systemZoom + dualScreenTop;
+	let top = '';
+	let left = '';
+	if (l === undefined) {
+		top = (height - h) / 2 / systemZoom + dualScreenTop;
+		left = (width - w) / 2 / systemZoom + dualScreenLeft;
+	} else {
+		top = t + dualScreenTop;
+		left = l + dualScreenLeft;
+	};
 	const newWindow = window.open(url, title, 
-		`
-		scrollbars=yes,
-		width=${w}, 
-		height=${h}, 
-		top=${top}, 
-		left=${left}
-		`
+		`scrollbars=yes, width=${w}, height=${h}, left=${left}, top=${top}`
 	);
 	if (window.focus) newWindow.focus();
 }

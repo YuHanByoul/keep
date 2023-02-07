@@ -1,0 +1,101 @@
+
+<!-- [팝업] 구성품 -->
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">구성품</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <form id="insertCmpntFrm" action="" onsubmit="return false;">
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-3 form-group row required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="compositionName"><strong>구성품명</strong></label>
+                            <div class="col-12">
+                            
+                                <th:block th:if = "${cmpntVo} ne null and ${cmpntVo.cmpntid} != null">
+                                <input type="text" class="form-control form-control-sm" name="cmpntNm" id="cmpntNm" th:value="${cmpntVo.cmpntNm}">
+                                </th:block>
+                                
+                                <th:block th:unless = "${cmpntVo} ne null and ${cmpntVo.cmpntid} != null">
+                                <input type="text" class="form-control form-control-sm" name="cmpntNm" id="cmpntNm">
+                                </th:block>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			</form>
+            <div class="modal-footer">
+                <th:block sec:authorize-url="/mng/cmpnt/insertCmpnt.do">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_insertCmpnt()" >저장</button>
+                </th:block>
+            </div>
+        </div>
+    </div>
+<!-- //[팝업] 구성품 -->
+      <input type="hidden" id="mode" name="mode" th:value="${param.mode}">
+
+      <th:block th:if = "${cmpntVo} ne null and ${cmpntVo.cmpntid} != null">  
+      <input type="hidden" id="modifyCmpntid" name="modifyCmpntid" th:value="${cmpntVo.cmpntid}">
+      </th:block>
+
+<script th:inline="javascript">
+
+    var validator= $("#insertCmpntFrm").validate({
+        onsubmit: false,
+          rules: {
+        	  cmpntNm      :   { required: true , maxlength: 100 }
+            },
+            messages: {
+            	cmpntNm      :   { required: "구성품명을 입력해주십시오." , maxlength: "구성품aud은 100자 이하여야 합니다." }  
+            }
+    })
+    
+    function fn_insertCmpnt(){
+        
+        if(!($("#insertCmpntFrm").valid())) return;
+        
+        let data = {};
+
+        var mode = $("#mode").val();
+
+        if( mode =='I'){
+	        data =  {
+	        		cmpntNm : $("#cmpntNm").val() 
+	        		,qntyInvntry : 0
+	        		,mode :"I" 
+	        }
+        }else{
+	        data =  {
+	        		cmpntNm : $("#cmpntNm").val()
+	        		,cmpntid : $("#modifyCmpntid").val()
+	        		,mode :"U" 
+	        }
+        }
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/cmpnt/insertCmpnt.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        (mode=='I')?gridHelper1.resetListContent():gridHelper1.resetPageContent();
+                        cmpntModal.hide();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }  
+</script>

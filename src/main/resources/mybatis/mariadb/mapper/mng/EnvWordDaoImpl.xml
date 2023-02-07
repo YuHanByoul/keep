@@ -20,15 +20,34 @@
             TB_CMM_ENV_WORD A
         WHERE 
             1=1
-            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'oxprNm'">
-            AND OXPR_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            <!-- 키워드 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'word'">
+            AND A.WORD LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
-            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl'">
-            AND TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cn'">
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
-            <if test="searchCd != null and searchCd != ''">
-            AND CLSF_CD = #{searchCd}
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'wordCn'">
+            AND A.WORD LIKE CONCAT('%',#{searchKeyword},'%')
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
+            
+            <!-- 영문 -->
+            <if test="searchEngl != null and searchEngl != ''">
+            AND A.WORD_ENGL LIKE CONCAT('%',#{searchEngl},'%')
+            </if>
+            
+            <!-- 등록일(시작일, 종료일) -->
+            <if test="startDt != null and startDt != ''">
+            <![CDATA[
+                AND DATE(A.REG_DT) >= #{startDt}
+            ]]>
+            </if>
+            <if test="endDt != null and endDt != ''">
+            <![CDATA[
+                AND DATE(A.REG_DT) <= #{endDt}
+            ]]>
+            </if> 
         <include refid="PaginationMapper.footer"/>
     </select>
     

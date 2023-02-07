@@ -64,4 +64,7 @@ public interface ExpertMdfcnDao {
     public int insertExpertTrgt(ExpertVo expertMdfcnVo) throws Exception;
 
     public int updateExpertInfo(ExpertVo expertMdfcnVo) throws Exception;
+
+    public int getPrevDmndId(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+
 }
