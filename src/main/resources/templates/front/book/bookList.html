@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<form class="search-filter" id="searchForm" name="searchForm">
+			<div class="form-input-wrap">
+				<div class="form-row">
+					<div class="form-header"><strong class="label">검색어</strong></div>
+					<div class="form-body">
+						<div class="form-input">
+							<select title="검색어">
+								<option value="제목">제목</option>
+								<option value="제목">제목</option>
+								<option value="제목">제목</option>
+							</select>
+							<input type="search" title="검색어" placeholder="검색어를 입력해 주세요.">
+						</div>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">작가/출판사</strong></div>
+					<div class="form-body">
+						<div class="form-input">
+							<select title="작가/출판사">
+								<option value="작가(글)">작가(글)</option>
+								<option value="제목">제목</option>
+								<option value="제목">제목</option>
+							</select>
+							<input type="search" title="작가/출판사" placeholder="작가/출판사를 입력해 주세요.">
+						</div>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">대상</strong></div>
+					<div class="form-body">
+						<select title="대상">
+							<option value="전체">전체</option>
+							<option value="제목">제목</option>
+							<option value="제목">제목</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">주제</strong></div>
+					<div class="form-body">
+						<div class="form-input">
+							<select title="주제">
+								<option value="제목">제목</option>
+								<option value="제목">제목</option>
+								<option value="제목">제목</option>
+							</select>
+							<select title="주제 상세" style="flex:auto">
+								<option value="전체">전체</option>
+								<option value="제목">제목</option>
+								<option value="제목">제목</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="search-filter-submit">
+				<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="book.searchInit()">초기화</button>
+				<button type="button" class="btn-medium btn-green btn-before-search" onclick="book.search()">검색</button>
+			</div>
+			
+	        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="16">
+	        <input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="DESC">
+	        <input type="hidden" id="orderField" name="orderField" value="BOOKID DESC, REG_DT">
+	        <input type="hidden" id="bookid" name="bookid" >
+		</form>
+
+		<div class="tab-content">
+			<div class="table-caption flex-nowrap">
+				<div class="left">
+					<p>총 <b>0</b> 건</p>
+				</div>
+				<div class="right">
+					<div class="sort-tab">
+						<ul class="tab-list" role="tablist">
+							<li class="active"><button role="tab" aria-controls="tab-album1" id="album-tab1"><span class="icon icon-sort-album"></span>앨범형</button></li>
+							<li><button role="tab" aria-controls="tab-list1" id="list-tab1"><span class="icon icon-sort-list"></span>목록형</button></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div id="tab-album1" class="tabpanel" role="tabpanel" aria-labelledby="album-tab1">
+				<div class="card-list card-list-n4 card-list-mo-n2">
+					<ul id="cardList-area">
+					</ul>
+				</div>
+				<div id="pagination1" aria-label="pagination">
+				</div>
+			</div>
+
+			<div id="tab-list1" class="tabpanel" role="tabpanel" aria-labelledby="list-tab1">
+				<div class="table-col table-layout-auto table-col-mo">
+					<table>
+						<caption>우수환경도서 - 번호, 주제, 제목, 작가(글), 작가(그림), 출판사, 대상, 등록일, 조회수</caption>
+						<colgroup>
+							<col style="width:6%;">
+							<col style="width:11%;">
+							<col>
+							<col style="width:16%;">
+							<col style="width:10%;">
+							<col style="width:10%;">
+							<col style="width:10%;">
+							<col style="width:10%;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">번호</th>
+								<th scope="col">주제</th>
+								<th scope="col">제목</th>
+								<th scope="col">작가(글)</th>
+								<th scope="col">작가(그림)</th>
+								<th scope="col">출판사</th>
+								<th scope="col">대상</th>
+								<th scope="col">등록일</th>
+								<th scope="col">조회수</th>
+							</tr>
+						</thead>
+						<tbody id="list-area">
+						</tbody>
+					</table>
+				</div>
+
+				<div id="pagination2" aria-label="pagination">
+				</div>
+			</div>
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">		
+        var book = {
+                listUrl: '/front/book/selectBookList.do',
+                detailUrl : '/front/book/bookDetailForm.html',
+
+                init(rowPerPage) {
+                	if(rowPerPage != null) {
+	                    $("#rowPerPage").val(parseInt(rowPerPage));
+	                    $('#pageNumber').val('1');
+                	}
+                    this.selectBookList();
+                },
+
+                moveToDetail() {
+                    if (this.userid == null) {
+                        alert('로그인 후 이용하실 수 있습니다.');
+                        return;
+                    }
+                    location.href = '/front/book/bookDetailForm.html';
+                },
+
+                search() {
+                    $('#pageNumber').val('1');
+                    this.selectBookList();
+                },
+
+                searchInit() {
+    				$("#searchType").val('');
+    				$("#searchKeyword").val('');
+    				$("#searchEduSbjctCd_1").val('');
+    				$("#searchEduSbjctCd_2").val('');
+    				$("#searchEduTrgtCd").val('');
+    				$("#searchTypeCd_1").val('');
+    				$("#searchTypeCd_2").val('');
+    				$("#startDt").val('');
+    				$("#endDt").val('');
+    				this.selectBookList();
+                },
+
+                selectBookList() {
+                    if (displayWorkProgress()) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: book.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	book.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                moveToDetail(bookid) {
+                    var f = document.forms.searchForm ;
+                    f.bookid.value=bookid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                },
+
+                makeListHtml(data) {
+                    var cardListHtml = "";
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `
+                        <tr>
+                            <td className="nodata" colSpan="7">
+                                <p><span className="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
+                            </td>
+                        </tr>`;
+                    } else {
+                        data.list.forEach(function(item) {
+                        	listHtml += `
+                            <tr>
+                            <td>${item.rowNumber}</td>
+                            <td>${item.eduSbjctCd}</td>
+                            <td className="al article"><a href="javascript:void(0)" onclick="book.moveToDetail(${item.bookid})">${item.ttl}</a></td>
+   							<td>${item.typeCd}</td>
+   							<td>${item.eduTrgtCd}</td>
+   							<td>${item.regDt}</td>
+   							<td>${item.hits}</td>
+   							<tr>
+   							`;
+   							
+                            cardListHtml += `
+                             <li>
+ 	                            <a href="/front/book/bookDetailForm.html?bookid=${item.bookid}">
+ 		                            <div class="thumb contain" style="height:160px;">
+ 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+ 		                            </div>
+ 		                            <dl class="card-cate-list">
+ 										<dt class="mo-ellipsis" data-ellipsis="2">${item.ttl}</dt>
+ 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 ${item.hits}회</dd>
+ 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">${item.regDt}</dd>
+ 									</dl>
+ 								</a>
+ 							</li>
+    						`;
+                        });
+                    }
+                    $('#cardList-area').html(cardListHtml);	
+                    $('#list-area').html(listHtml);
+                    $("#pagination1").html(data.pagination);
+                    $("#pagination2").html(data.pagination);
+                    $("#totalCount").html(data.totalCount);
+                }
+            };
+
+            $(function () {
+            	book.init();
+            })
+            
+			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+			
+			var setSearchSelectBox = {
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
+					$.ajax({
+						url : getCodeListUrl,
+						type: 'GET',
+						cache : false,
+						dataType: 'json',
+						data: {
+							  grpcd  : grpcd
+							, upprcd : upprcd
+						}, 
+						success : function (data){
+							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+						},
+					 	error : function (error){
+						} 
+						
+					});
+				},
+			 	
+			 	writeHtml : function(grpcd,targetId,list,selected){
+				 	var cntArr = targetId.split("_");
+				   	var nextCnt = Number(cntArr[1])+1;
+				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+				   	   
+				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+				        html +="    <option value='' selected>- 전체 -</option>";
+			    	   
+			  		  for(var i=0 ; i < list.length;i++){
+			  			if(list[i].cdid==selected){
+			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+			  			}else{
+			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+			  			}
+			  		  }
+			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+			  		  }
+				   	  html +="    </select>";
+				   	  $("#"+targetId).html(html);
+			 	},
+			 	
+			    setNextDepth : function(grpcd , upprcd , targetId){
+					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+				}
+			}
+			
+			setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1');
+			setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1');
+			
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				
+				book.selectBookList();
+			}            
+		</script>
+	</div>
+
+</body>
+</html>

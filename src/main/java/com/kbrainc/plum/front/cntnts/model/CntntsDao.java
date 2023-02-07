@@ -47,4 +47,6 @@ public interface CntntsDao {
     public CntntsVo selectCntntsInfo(CntntsVo cntntsVo) throws Exception;
 
     public int updateCntntsHits(CntntsVo cntntsVo) throws Exception;
+    
+    public List<CntntsVo> selectCntntsFileList(CntntsVo cntntsVo) throws Exception;
 }

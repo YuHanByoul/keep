@@ -6,20 +6,19 @@
 <body>
 	<div layout:fragment="content">
 		<!-- content -->
-		<div id="content" class="content">
-				<form class="search-filter">
+				<form class="search-filter" id="searchForm" name="searchForm">
 					<div class="form-input-wrap">
 						<div class="form-row">
 							<div class="form-header"><strong class="label">검색어</strong></div>
 							<div class="form-body">
 								<div class="form-input">
-									<select title="검색어">
-										<option value="제목">- 전체 - </option>	
-										<option value="제목">제목</option>
-										<option value="제목+내용">내용</option>
-										<option value="제목+내용">제목+내용</option>
+									<select title="검색어" name="searchType" id="searchType">
+										<option value="" selected>- 전체 - </option>	
+										<option value="searchTtl">제목</option>
+										<option value="searchCn">내용</option>
+										<option value="searchTtlCn">제목+내용</option>
 									</select>
-									<input type="search" title="검색어" placeholder="제목을 입력해 주세요.">
+									<input type="search" title="검색어" name="searchKeyword" id="searchKeyword" placeholder="검색어를 입력해 주세요.">
 								</div>
 							</div>
 						</div>
@@ -27,33 +26,31 @@
 							<div class="form-header"><strong class="label">교육주제</strong></div>
 							<div class="form-body">
 								<div class="form-input">
-									<select title="교육주제">
-										<option value="전체">- 전체 -</option>
-									</select>
-									<select title="교육주제 상세" style="flex:auto">
-										<option value="전체">- 전체 -</option>
-									</select>
+			                        <select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" title="교육주제" onchange="setSearchSelectBox.setNextDepth(163,this.value,'searchEduSbjctCd_2')">
+			                            <option value="" selected>- 전체 -</option>
+			                        </select>
+									<select name="searchMdleEduSbjctCd" id="searchEduSbjctCd_2" title="교육주제 상세" style="flex:auto">
+					                	<option value="" selected>- 전체 -</option>
+					                </select>
 								</div>
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-header"><strong class="label">교육대상</strong></div>
 							<div class="form-body">
-								<select title="교육대상">
-									<option value="전체">- 전체 -</option>
-								</select>
+								<span kattr:select_code="searchEduTrgtCd" th:attr="grpCd=171" firstOptTxt="- 전체 -"></span>
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-header"><strong class="label">콘텐츠 유형</strong></div>
 							<div class="form-body">
 								<div class="form-input">
-									<select title="콘텐츠 유형">
-										<option value="전체">- 전체 -</option>
-									</select>
-									<select title="콘텐츠 유형 상세" style="flex:auto">
-										<option value="전체">- 전체 -</option>
-									</select>
+			                        <select name="searchMainTypeCd" id="searchTypeCd_1" title="콘텐츠 유형" onchange="setSearchSelectBox.setNextDepth(164,this.value,'searchTypeCd_2')">
+			                            <option value="" selected>- 전체 -</option>
+			                        </select>
+			                        <select name="searchMdleTypeCd" id="searchTypeCd_2" title="콘텐츠 유형 상세" style="flex:auto">
+			                            <option value="" selected>- 전체 -</option>
+			                        </select>									
 								</div>
 							</div>
 						</div>
@@ -61,97 +58,45 @@
 							<div class="form-header"><strong class="label">등록일</strong></div>
 							<div class="form-body">
 								<div class="form-input">
-									<input type="date" title="시작일">
+									<input type="date" title="시작일" name="startDt" id="startDt">
 									<div class="bul">~</div>
-									<input type="date" title="종료일">
+									<input type="date" title="종료일" name="endDt" id="endDt">
 								</div>
 							</div>
 						</div>
 					</div>
 					<div class="search-filter-submit">
-						<button type="button" class="btn-medium btn-gray btn-before-refresh">초기화</button>
-						<button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+						<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="cntnts.searchInit()">초기화</button>
+						<button type="button" class="btn-medium btn-green btn-before-search" onclick="cntnts.search()">검색</button>
 					</div>
+					
+			        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+			        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+			        <input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="DESC">
+			        <input type="hidden" id="orderField" name="orderField" value="CNTNTSID DESC, REG_DT">
+			        <input type="hidden" id="cntntsid" name="cntntsid" >
 				</form>
 
 				<div class="tab-content">
 					<div class="table-caption flex-nowrap">
 						<div class="left">
-							<p>총 <b><th:block th:text="${totalCount}"/></b> 건</p>
+							<p>총 <b id="totalCount">0</b> 건</p>
 						</div>
 						<div class="right">
 							<div class="sort-tab">
 								<ul class="tab-list" role="tablist">
-									<li class="active"><button role="tab" aria-controls="tab-album1" id="album-tab1"><span class="icon icon-sort-album"></span>앨범형</button></li>
-									<li><button role="tab" aria-controls="tab-list1" id="list-tab1"><span class="icon icon-sort-list"></span>목록형</button></li>
+									<li class="active"><button role="tab" aria-controls="tab-album1" id="album-tab1" onclick="cntnts.init(12);"><span class="icon icon-sort-album"></span>앨범형</button></li>
+									<li><button role="tab" aria-controls="tab-list1" id="list-tab1" onclick="cntnts.init(10);"><span class="icon icon-sort-list"></span>목록형</button></li>
 								</ul>
 							</div>
 						</div>
 					</div>
 					<div id="tab-album1" class="tabpanel" role="tabpanel" aria-labelledby="album-tab1">
 						<div class="card-list card-list-n4"> 
-							<ul>
-								<th:block th:each="item : ${list}">
-									<li>
-										<a href="/front/cntnts/cntntsDetailForm.html">
-											<div class="video" title="동영상 콘텐츠"></div>
-											<div class="thumb" style="height:127px;"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.rprsImgFileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}" alt=""></div>
-											<dl class="card-cate-list">
-												<dt class="mo-ellipsis" data-ellipsis="2"><th:block th:text="${item.ttl}"/></dt>
-												<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 <th:block th:text="${item.hits}"/>회</dd>
-												<dd class="mo-ellipsis fc-black6" data-ellipsis="1"><th:block th:text="${item.regDt}"/></dd>
-											</dl>
-										</a>
-									</li>
-								</th:block>
-<!-- 								<li>
-									<a href="#">
-										<div class="thumb" style="height:127px;"><img src="https://picsum.photos/230/127" alt=""></div>
-										<dl class="card-cate-list">
-											<dt class="mo-ellipsis" data-ellipsis="2">지구 오염의 역사 지구 오염의 역사 지구 오오염의 역사 지구 오오염의 역사 지구 오</dt>
-											<dd class="mo-ellipsis fc-black6" data-ellipsis="1">일반인용 일반인용 일반인용 일반인용 일반인용 일반인용 </dd>
-											<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 323회</dd>
-										</dl>
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<div class="thumb" style="height:127px;"><img src="https://picsum.photos/230/127" alt=""></div>
-										<dl class="card-cate-list">
-											<dt class="mo-ellipsis" data-ellipsis="2">지구 오염의 역사 지구 오염의 역사 지구 오오염의 역사 지구 오오염의 역사 지구 오</dt>
-											<dd class="mo-ellipsis fc-black6" data-ellipsis="1">일반인용 일반인용 일반인용 일반인용 일반인용 일반인용 </dd>
-											<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 323회</dd>
-										</dl>
-									</a>
-								</li>
-								<li>
-									<a href="#">
-										<div class="video" title="동영상 콘텐츠"></div>
-										<div class="thumb" style="height:127px;"><img src="https://picsum.photos/230/127" alt=""></div>
-										<dl class="card-cate-list">
-											<dt class="mo-ellipsis" data-ellipsis="2">지구 오염의 역사 지구 오염의 역사 지구 오오염의 역사 지구 오오염의 역사 지구 오</dt>
-											<dd class="mo-ellipsis fc-black6" data-ellipsis="1">일반인용 일반인용 일반인용 일반인용 일반인용 일반인용 </dd>
-											<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 323회</dd>
-										</dl>
-									</a>
-								</li> -->
+							<ul id="cardList-area">
 							</ul>
 						</div>
-						<div class="pagination" aria-label="pagination">
-							<button type="button" class="first" title="처음"></button>
-							<button type="button" class="prev" title="이전"></button>
-							<button type="button" class="active" title="현재 페이지">1</button>
-							<button type="button">2</button>
-							<button type="button">3</button>
-							<button type="button">4</button>
-							<button type="button">5</button>
-							<button type="button">6</button>
-							<button type="button">7</button>
-							<button type="button">8</button>
-							<button type="button">9</button>
-							<button type="button">10</button>
-							<button type="button" class="next" title="다음"></button>
-							<button type="button" class="last" title="마지막"></button>
+						<div id="pagination1" aria-label="pagination">
 						</div>
 					</div>
 					<div id="tab-list1" class="tabpanel" role="tabpanel" aria-labelledby="list-tab1">
@@ -179,66 +124,209 @@
 										<th scope="col">조회수</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr>
-										<td>10</td>
-										<td>환경문화 &gt; 생명윤리</td>
-										<td class="al article"><a href="#" class="link ellipsis">환경교육 프로그램 05</a></td>
-										<td>교육자료 &gt; 교육지도안</td>
-										<td>유아기(7세 이하)</td>
-										<td>2022-10-04</td>
-										<td>123</td>
-									</tr>
-									<tr>
-										<td>9</td>
-										<td>환경문화 &gt; 생명윤리</td>
-										<td class="al article"><a href="#" class="link ellipsis">환경교육 프로그램 05</a></td>
-										<td>교육자료 &gt; 교육지도안</td>
-										<td>유아기(7세 이하)</td>
-										<td>2022-10-04</td>
-										<td>123</td>
-									</tr>
-									<tr>
-										<td>8</td>
-										<td>환경문화 &gt; 생명윤리</td>
-										<td class="al article"><a href="#" class="link ellipsis">환경교육 프로그램 05</a></td>
-										<td>교육자료 &gt; 교육지도안</td>
-										<td>유아기(7세 이하)</td>
-										<td>2022-10-04</td>
-										<td>123</td>
-									</tr>
-									<tr>
-										<td class="nodata" colspan="7">
-											<p><span class="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
-										</td>
-									</tr>
+								<tbody id="list-area">
 								</tbody>
 							</table>
 						</div>
 
-						<div class="pagination" aria-label="pagination">
-							<button type="button" class="first" title="처음"></button>
-							<button type="button" class="prev" title="이전"></button>
-							<button type="button" class="active" title="현재 페이지">1</button>
-							<button type="button">2</button>
-							<button type="button">3</button>
-							<button type="button">4</button>
-							<button type="button">5</button>
-							<button type="button">6</button>
-							<button type="button">7</button>
-							<button type="button">8</button>
-							<button type="button">9</button>
-							<button type="button">10</button>
-							<button type="button" class="next" title="다음"></button>
-							<button type="button" class="last" title="마지막"></button>
+						<div id="pagination2" aria-label="pagination">
 						</div>
 					</div>
 				</div>
-		</div>
 		<!-- //content -->
 	
-		<script th:inline="javascript">
+		<script th:inline="javascript">		
+        var cntnts = {
+                listUrl: '/front/cntnts/selectCntntsList.do',
+                detailUrl : '/front/cntnts/cntntsDetailForm.html',
 
+                init(rowPerPage) {
+                	if(rowPerPage != null) {
+	                    $("#rowPerPage").val(parseInt(rowPerPage));
+	                    $('#pageNumber').val('1');
+                	}
+                    this.selectCntntsList();
+                },
+
+                moveToDetail() {
+                    if (this.userid == null) {
+                        alert('로그인 후 이용하실 수 있습니다.');
+                        return;
+                    }
+                    location.href = '/front/cntnts/cntntsDetailForm.html';
+                },
+
+                search() {
+                    $('#pageNumber').val('1');
+                    this.selectCntntsList();
+                },
+
+                searchInit() {
+    				$("#searchType").val('');
+    				$("#searchKeyword").val('');
+    				$("#searchEduSbjctCd_1").val('');
+    				$("#searchEduSbjctCd_2").val('');
+    				$("#searchEduTrgtCd").val('');
+    				$("#searchTypeCd_1").val('');
+    				$("#searchTypeCd_2").val('');
+    				$("#startDt").val('');
+    				$("#endDt").val('');
+    				this.selectCntntsList();
+                },
+
+                selectCntntsList() {
+                    if (displayWorkProgress()) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: cntnts.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	cntnts.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                moveToDetail(cntntsid) {
+                    var f = document.forms.searchForm ;
+                    f.cntntsid.value=cntntsid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                },
+
+                makeListHtml(data) {
+                    var cardListHtml = "";
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `
+                        <tr>
+                            <td className="nodata" colSpan="7">
+                                <p><span className="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
+                            </td>
+                        </tr>`;
+                    } else {
+                        data.list.forEach(function(item) {
+                        	listHtml += `
+                            <tr>
+                            <td>${item.rowNumber}</td>
+                            <td>${item.eduSbjctCd}</td>
+                            <td className="al article"><a href="javascript:void(0)" onclick="cntnts.moveToDetail(${item.cntntsid})">${item.ttl}</a></td>
+   							<td>${item.typeCd}</td>
+   							<td>${item.eduTrgtCd}</td>
+   							<td>${item.regDt}</td>
+   							<td>${item.hits}</td>
+   							<tr>
+   							`;
+   							
+   							if(`${item.mainTypeCd}` == '교육영상'){
+   	                            cardListHtml += `
+   	                             <li>
+   	 	                            <a href="/front/cntnts/cntntsDetailForm.html?cntntsid=${item.cntntsid}">
+   	 		                            <div class="thumb" style="height:127px;">
+   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+   	 		                            	<div class="video" title="동영상 콘텐츠"><span class="icon icon-video-play"></span></div>
+   	 		                            </div>
+   	 		                            <dl class="card-cate-list">
+   	 										<dt class="mo-ellipsis" data-ellipsis="2">${item.ttl}</dt>
+   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 ${item.hits}회</dd>
+   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">${item.regDt}</dd>
+   	 									</dl>
+   	 								</a>
+   	 							</li>
+   	    						`;
+   							}else {
+   	                            cardListHtml += `
+   	                             <li>
+   	 	                            <a href="/front/cntnts/cntntsDetailForm.html?cntntsid=${item.cntntsid}">
+   	 		                            <div class="thumb" style="height:127px;">
+   	 		                            	<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+   	 		                            </div>
+   	 		                            <dl class="card-cate-list">
+   	 										<dt class="mo-ellipsis" data-ellipsis="2">${item.ttl}</dt>
+   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">조회수 ${item.hits}회</dd>
+   	 										<dd class="mo-ellipsis fc-black6" data-ellipsis="1">${item.regDt}</dd>
+   	 									</dl>
+   	 								</a>
+   	 							</li>
+   	    						`;
+   							}
+
+                        });
+                    }
+                    $('#cardList-area').html(cardListHtml);	
+                    $('#list-area').html(listHtml);
+                    $("#pagination1").html(data.pagination);
+                    $("#pagination2").html(data.pagination);
+                    $("#totalCount").html(data.totalCount);
+                }
+            };
+
+            $(function () {
+            	cntnts.init();
+            })
+            
+			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+			
+			var setSearchSelectBox = {
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
+					$.ajax({
+						url : getCodeListUrl,
+						type: 'GET',
+						cache : false,
+						dataType: 'json',
+						data: {
+							  grpcd  : grpcd
+							, upprcd : upprcd
+						}, 
+						success : function (data){
+							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+						},
+					 	error : function (error){
+						} 
+						
+					});
+				},
+			 	
+			 	writeHtml : function(grpcd,targetId,list,selected){
+				 	var cntArr = targetId.split("_");
+				   	var nextCnt = Number(cntArr[1])+1;
+				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+				   	   
+				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+				        html +="    <option value='' selected>- 전체 -</option>";
+			    	   
+			  		  for(var i=0 ; i < list.length;i++){
+			  			if(list[i].cdid==selected){
+			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+			  			}else{
+			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+			  			}
+			  		  }
+			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+			  		  }
+				   	  html +="    </select>";
+				   	  $("#"+targetId).html(html);
+			 	},
+			 	
+			    setNextDepth : function(grpcd , upprcd , targetId){
+					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+				}
+			}
+			
+			setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1');
+			setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1');
+			
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				
+				cntnts.selectCntntsList();
+			}            
 		</script>
 	</div>
 
