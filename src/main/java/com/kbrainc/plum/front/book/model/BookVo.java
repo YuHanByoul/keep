@@ -52,7 +52,7 @@ public class BookVo  extends ParentRequestVo{
     /** 출판사 */
     private String plscmpn;
     /** 금액 */
-    private Integer amt;
+    private String amt;
     /** 도서명(제목) */
     @NotEmpty(message = "도서명을 입력해주십시오.")
     private String ttl;
