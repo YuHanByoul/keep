@@ -74,15 +74,43 @@
 	  WHERE  USERID = #{userid  }
     </update>
     
-    <select id="chekcDuplicationUser" parameterType="front.MemberVo" resultType="int">
-    /* MemberDao.chekcDuplicationUser */
-     SELECT 
-	   COUNT(*)
-	 FROM 
-	   TB_CMM_USER
-	 WHERE 1=1
-	   AND ACNT = #{acnt}
+    <!-- acnt에 해당하는 사용자 카운트 조회  -->
+    <select id="checkDuplicationUser" parameterType="front.MemberVo" resultType="int">
+        /* MemberDao.checkDuplicationUser */
+        SELECT 
+            1
+	    FROM 
+            TB_CMM_USER
+	    WHERE
+	        ACNT = #{acnt}
+        LIMIT 1
     </select>
     
+    <!-- ci에 해당하는 userid 조회  -->
+    <select id="selectUseridByCI" parameterType="front.MemberVo" resultType="String">
+        /* MemberDao.selectUseridByCI */
+        SELECT 
+            USERID
+        FROM
+            TB_CMM_USER
+        WHERE
+            CI = #{ci}
+        AND DEL_YN = 'N' 
+        LIMIT 1
+    </select>
+    
+    <!-- 부모ci와 이름에 해당하는 userid 조회  -->
+    <select id="selectUseridByParntsCIandName" parameterType="front.MemberVo" resultType="String">
+        /* MemberDao.selectUseridByParntsCIandName */
+        SELECT 
+            USERID
+        FROM
+            TB_CMM_USER
+        WHERE
+            CI_PARNTS = #{ciParnts}
+        AND NM = #{nm}
+        AND DEL_YN = 'N' 
+        LIMIT 1
+    </select>
     
 </mapper>

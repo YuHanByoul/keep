@@ -6,6 +6,9 @@
 >
     <body>
         <th:block layout:fragment="content">
+            <form id="agreeForm" th:action="@{/front/membership/step2.html}" method="post">
+            <input type="hidden" name="type" id="type" th:value="${data.type}" />
+            <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
             <div class="steps">
                 <ol>
                     <li class="active" title="현재 단계">
@@ -177,7 +180,7 @@
                     </div>
                 </div>
                 <div class="form-check-list">
-                    <label class="inp"><input type="checkbox"><b>서비스 이용약관에 동의합니다.</b></label>
+                    <label class="inp"><input type="checkbox" name="tosAgreYn" id="tosAgreYn" value="Y" th:checked="${data.tosAgreYn == 'Y'}"><b>서비스 이용약관에 동의합니다.</b></label>
                 </div>
             </div>
 
@@ -292,7 +295,7 @@
                     </div>
                 </div>
                 <div class="form-check-list">
-                    <label class="inp"><input type="checkbox"><b>개인정보 수집 이용안내에 동의합니다.</b></label>
+                    <label class="inp"><input type="checkbox" name="privcyAgreYn" id="privcyAgreYn" value="Y" th:checked="${data.privcyAgreYn == 'Y'}"><b>개인정보 수집 이용안내에 동의합니다.</b></label>
                 </div>
             </div>
 
@@ -347,11 +350,11 @@
                     </div>
                 </div>
                 <div class="form-check-list">
-                    <label class="inp"><input type="checkbox"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
+                    <label class="inp"><input type="checkbox" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" value="Y" th:checked="${data.prvcThptyPvsnAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
                 </div>
             </div>
 
-            <div class="terms-content">
+            <div class="terms-content" th:if="${data.type == 'C'}">
                 <div class="terms-title">14세 미만 회원가입 동의 <strong class="fc-sred">(필수)</strong></div>
                 <div class="terms-inner" tabindex="0">
                     <div class="agree-txt">
@@ -359,7 +362,7 @@
                     </div>
                 </div>
                 <div class="form-check-list">
-                    <label class="inp"><input type="checkbox"><b>14세 미만 어린이 회원가입은 보호자 본인인증이 필요하며 이에 동의합니다.</b></label>
+                    <label class="inp"><input type="checkbox" name="childJoinAgreYn" id="childJoinAgreYn" value="Y" th:checked="${data.childJoinAgreYn == 'Y'}"><b>14세 미만 어린이 회원가입은 보호자 본인인증이 필요하며 이에 동의합니다.</b></label>
                 </div>
             </div>
 
@@ -371,20 +374,71 @@
                     </div>
                 </div>
                 <div class="form-check-list">
-                    <label class="inp"><input type="checkbox"><b>뉴스레터 수신에 동의합니다.</b></label>
+                    <label class="inp"><input type="checkbox" name="wbznAplyAgreYn" id="wbznAplyAgreYn" value="Y" th:checked="${data.wbznAplyAgreYn == 'Y'}"><b>뉴스레터 수신에 동의합니다.</b></label>
                 </div>
             </div>
 
             <div class="form-check-all">
-                <label class="inp"><input type="checkbox"><b>전체 약관 동의</b></label>
+                <label class="inp"><input type="checkbox" name="agreAll" id="agreAll"><b>전체 약관 동의</b></label>
             </div>
 
             <div class="btn-wrap">
                 <div class="center">
                     <button type="button" class="btn-medium btn-gray" onclick="location.href='/front/membership/step0.html'">이전</button>
-                    <button type="button" class="btn-medium btn-green" onclick="location.href='/front/membership/step2.html'">확인</button>
+                    <button type="button" class="btn-medium btn-green" onclick="next()">확인</button>
                 </div>
             </div>
+            </form>
+            <script th:inline="javascript">
+                $(function(){
+                   $("#agreAll").on("click", function(e) {
+                       if (e.target.checked) {
+                           $("#tosAgreYn").prop('checked', true);
+                           $("#privcyAgreYn").prop('checked', true);
+                           $("#prvcThptyPvsnAgreYn").prop('checked', true);
+                           $("#childJoinAgreYn").prop('checked', true);
+                           $("#wbznAplyAgreYn").prop('checked', true);
+                       }else{
+                           $("#tosAgreYn").prop('checked', false);
+                           $("#privcyAgreYn").prop('checked', false);
+                           $("#prvcThptyPvsnAgreYn").prop('checked', false);
+                           $("#childJoinAgreYn").prop('checked', false);
+                           $("#wbznAplyAgreYn").prop('checked', false);
+                       }
+                   });
+                   
+                   /*[# th:if="${data.alertMsg}"]*/
+                       alert([[${data.alertMsg}]]);
+                   /*[/]*/
+                });
+                
+                function next() {
+                    if(!valid()) return false;
+                    $("#agreeForm").submit();
+                    
+                }
+                
+                function valid() {
+                    if(!$('#tosAgreYn').is(':checked')) {
+                        alert("필수항목을 동의해야 회원가입이 가능합니다.");
+                        return false;
+                    } else if(!$('#privcyAgreYn').is(':checked')) {
+                        alert("필수항목을 동의해야 회원가입이 가능합니다.");
+                        return false;
+                    } else if(!$('#prvcThptyPvsnAgreYn').is(':checked')) {
+                        alert("필수항목을 동의해야 회원가입이 가능합니다.");
+                        return false;
+                    /*[# th:if="${data.type == 'C'}"]*/
+                    } else if(!$('#childJoinAgreYn').is(':checked')) {
+                        alert("필수항목을 동의해야 회원가입이 가능합니다.");
+                        return false;
+                    /*[/]*/
+                    }
+                    
+                    return true;
+                }
+                
+            </script>
         </th:block>
     </body>
 </html>
