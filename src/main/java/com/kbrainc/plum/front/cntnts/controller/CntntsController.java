@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.cntnts.model.CntntsVo;
 import com.kbrainc.plum.front.cntnts.service.CntntsService;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
 * 컨텐츠 관리 컨트롤러 클래스
@@ -47,16 +48,6 @@ public class CntntsController {
     */
     @RequestMapping(value = "/front/cntnts/cntntsListForm.html")
     public String cntntsListForm(Model model, CntntsVo cntntsVo) throws Exception {
-        List<CntntsVo> result = null;
-        
-        result =  cntntsService.selectCntntsList(cntntsVo);
-        
-        if (result.size() > 0) {
-            model.addAttribute("totalCount", (result.get(0).getTotalCount()));
-        } else {
-            model.addAttribute("totalCount", 0);
-        }
-        model.addAttribute("list", result);
         
         return "front/cntnts/cntntsList";
     }
@@ -64,13 +55,27 @@ public class CntntsController {
     
     @RequestMapping(value = "/front/cntnts/cntntsDetailForm.html")
     public String cntntsDetailForm(Model model, CntntsVo cntntsVo) throws Exception {
-        int hits = cntntsService.updateCntntsHits(cntntsVo); 
+        cntntsService.updateCntntsHits(cntntsVo); 
         
         CntntsVo result = null;
         result =  cntntsService.selectCntntsInfo(cntntsVo);
         
+        if(result.getPlySecnd() != null) {
+            if(result.getPlySecnd() >= 3600) {
+                result.setPlyHour((result.getPlySecnd() - (result.getPlySecnd() % 3600)) / 3600);
+                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 - (result.getPlyHour() * 60));
+                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600));
+            }else {
+                result.setPlyHour(0);
+                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60);
+                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60));
+            }
+        }
+        
         model.addAttribute("cntnts", result);
         
+        List<CntntsVo> file = cntntsService.selectCntntsFileList(cntntsVo);
+        model.addAttribute("file", file);
         
         return "front/cntnts/cntntsDetail";
     }
@@ -95,6 +100,7 @@ public class CntntsController {
         
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
+            resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 12));
         } else {
             resultMap.put("totalCount", 0);
         }
