@@ -1,6 +1,5 @@
-package com.kbrainc.plum.front.inqry.model;
+package com.kbrainc.plum.front.pltfomImprvmPropsl.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -11,74 +10,70 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
 /**
- * 1:1문의 요청Vo
+ * 플랫폼 개선 제안 Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.front.inqry.model
- * - InqryVo.java
+ * com.kbrainc.plum.front.pltfomImprvmPropsl.model
+ * - PltfomImprvmPropslVo.java
  * </pre>
  *
  * @author : KBRAINC_DEV
- * @ClassName : InqryReqVo
- * @Description : 1:1문의 요청Vo
- * @date : 2023. 02. 03.
+ * @ClassName : PltfomImprvmPropslVo
+ * @Description : 플랫폼 개선 제안 Vo 클래스
+ * @date : 2023. 02. 07.
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
-
+@Alias("front.PltfomImprvmPropslVo")
 @Data
-@Alias("front.InqryVo")
 @NoArgsConstructor
-public class InqryVo extends ParentRequestVo {
+public class PltfomImprvmPropslVo extends ParentRequestVo {
     private UserVo user;
 
-    private Integer inqryid;
+    private Integer prpslid;
 
-    private int siteid;
+    private Integer userid;
 
-    @NotEmpty(message = "제목을 입력해 주십시오.")
-    @Size(max = 500, message = "제목은 500자를 넘을 수 없습니다.")
-    private String title;
+    @NotEmpty(message="제목을 입력해주십시오.")
+    @Size(max = 100 , message = "제목은 100자를 넘을 수 없습니다.")
+    private String ttl;
 
-    @NotEmpty(message="내용을 입력해 주십시오.")
-    private String cntnts;
+    @NotEmpty(message="내용을 입력해주십시오.")
+    @Size(max = 4000 , message = "내용은 4000자를 넘을 수 없습니다.")
+    private String cn;
 
     private String acnt;
 
     private Integer filegrpid;
 
-    private Integer userid;
+    private String clsfCd;
 
-    private String inqryClCd;
+    private String clsfCdNm;
 
-    private String inqryClCdNm;
+    private String prcsSttsCd;
 
-    private String sttsCd;
-
-    private String sttsCdNm;
+    private String prcsSttsCdNm;
 
     private String rlsYn;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
 
     private List<FileVo> fileList;
 
-    public void setInqryClCd(String inqryClCd) {
-        this.inqryClCd = inqryClCd;
+    public void setClsfCd(String clsfCd) {
+        this.clsfCd = clsfCd;
 
-        if (CommonUtil.isEmpty(this.inqryClCdNm)) {
+        if (CommonUtil.isEmpty(this.clsfCdNm)) {
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.inqryClCd);
-                this.inqryClCdNm = code.getCdNm();
+                CodeInfoVo code = resCodeService.getCodeInfo(this.clsfCd);
+                this.clsfCdNm = code.getCdNm();
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;
@@ -89,14 +84,14 @@ public class InqryVo extends ParentRequestVo {
         }
     }
 
-    public void setSttsCd(String sttsCd) {
-        this.sttsCd = sttsCd;
+    public void setPrcsSttsCd(String prcsSttsCd) {
+        this.prcsSttsCd = prcsSttsCd;
 
-        if (CommonUtil.isEmpty(this.sttsCdNm)) {
+        if (CommonUtil.isEmpty(this.prcsSttsCdNm)) {
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.sttsCd);
-                this.sttsCdNm = code.getCdNm();
+                CodeInfoVo code = resCodeService.getCodeInfo(this.prcsSttsCd);
+                this.prcsSttsCdNm = code.getCdNm();
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;

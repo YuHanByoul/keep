@@ -6,8 +6,8 @@
 <div layout:fragment="content">
     <div class="table-caption">
         <div class="left">
-            <h3 class="sub-title">1:1문의
-                <th:block th:text="${inqry.inqryid == null? '등록' : '수정'}"/>
+            <h3 class="sub-title">플랫폼 개선 제안
+                <th:block th:text="${propsl.prpslid == null? '등록' : '수정'}"/>
             </h3>
         </div>
         <div class="right">
@@ -15,10 +15,10 @@
         </div>
     </div>
 
-    <form id="inqryForm" name="inqryForm" action="post">
+    <form id="propslForm" name="propslForm">
         <div class="table-row table-row-mo">
             <table>
-                <caption>1:1문의_정보입력 - 공개여부, 분류, 분류, 내용, 첨부파일</caption>
+                <caption>플랫폼 개선 제안_정보입력 - 공개여부, 제목, 내용, 첨부파일</caption>
                 <colgroup>
                     <col style="width:140px;">
                     <col>
@@ -27,14 +27,14 @@
                 <tr>
                     <th scope="row">공개여부</th>
                     <td>
-                        <span kattr:radio_yn="rlsYn" label1="예" label2="아니요" addClass=" inp" th:attr="defaultVal=${inqry.rlsYn == 'Y' ? 'Y':'N'}"></span>
+                        <span kattr:radio_yn="rlsYn" label1="예" label2="아니요" addClass=" inp" th:attr="defaultVal=${propsl.rlsYn == 'Y' ? 'Y':'N'}"></span>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">분류<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-input">
-                            <span kattr:select_code="inqryClCd" grpCd="102" th:attr="selectedCd=${inqry.inqryClCd}" firstOptTxt="- 선택 -"></span>
+                            <span kattr:select_code="clsfCd" grpCd="189" th:attr="selectedCd=${propsl.clsfCd}" firstOptTxt="- 선택 -"></span>
                         </div>
                     </td>
                 </tr>
@@ -42,7 +42,7 @@
                     <th scope="row">제목<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-input">
-                            <input type="text" id="title" name="title" title="제목" placeholder="제목을 입력해주세요." th:value="${inqry.title}">
+                            <input type="text" title="제목" id="ttl" name="ttl" placeholder="제목을 입력해주세요." th:value="${propsl.ttl}">
                         </div>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
                     <th scope="row">내용<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-input">
-                            <textarea title="내용" id="cntnts" name="cntnts" placeholder="내용을 입력해주세요." th:text="${inqry.cntnts}"></textarea>
+                            <textarea title="내용" name="cn" id="cn" placeholder="내용을 입력해주세요." th:text="${propsl.cn}"></textarea>
                         </div>
                     </td>
                 </tr>
@@ -65,8 +65,8 @@
                                 <span class="btn-medium btn-gray">파일선택</span>
                             </label>
                             <ul id="multipleFileUploadSuccess">
-                                <th:block th:if="${inqry.fileList != null}">
-                                    <th:block th:each="file : ${inqry.fileList}">
+                                <th:block th:if="${propsl.fileList != null}">
+                                    <th:block th:each="file : ${propsl.fileList}">
                                         <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                             <span class="name">
                                                 <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
@@ -83,13 +83,14 @@
                                     </th:block>
                                 </th:block>
                             </ul>
-                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(inqry.filegrpid == '' or inqry.filegrpid == null) ? 0 : inqry.filegrpid}"/>
+                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(propsl.filegrpid == '' or propsl.filegrpid == null) ? 0 : propsl.filegrpid}"/>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
         <div class="box-desc-list bg7 mt10">
             <ul>
                 <li>첨부 가능 확장자 :
@@ -107,48 +108,47 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <button type="button" class="btn-medium btn-gray" onclick="frontInqryForm.cancel()">취소</button>
-                <button type="button" class="btn-medium btn-blue" onclick="frontInqryForm.save()">
-                    <th:block th:text="${inqry.inqryid == null? '등록' : '저장'}"/>
+                <button type="button" class="btn-medium btn-gray" onclick="pltfomPropsl.cancel()">취소</button>
+                <button type="button" class="btn-medium btn-blue" onclick="pltfomPropsl.save()">
+                    <th:block th:text="${propsl.prpslid == null? '등록' : '저장'}"/>
                 </button>
             </div>
         </div>
     </form>
 
-    <form id="listForm" th:action="@{/}" method="get" onsubmit="return false;">
+    <form id="listForm" th:action="@{/}" onsubmit="return false;">
         <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
         <input type="hidden" id="searchType" name="searchType" th:value="${searchVo.searchType}">
         <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
-        <input type="hidden" id="inqryClCd" name="inqryClCd" th:value="${searchVo.inqryClCd}">
+        <input type="hidden" id="clsfCd" name="clsfCd" th:value="${searchVo.clsfCd}">
         <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
         <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
-        <input type="hidden" id="inqryid" name="inqryid" th:value="${searchVo.inqryid}">
+        <input type="hidden" id="prpslid" name="prpslid" th:value="${searchVo.prpslid}">
     </form>
 
-
     <script th:inline="javascript">
-        let frontInqryForm = {
-            insertUrl: '/front/inqry/insertInqry.do',
-            updateUrl: '/front/inqry/updateInqry.do',
-            listUrl: '/front/inqry/inqryList.html',
-            detailUrl: '/front/inqry/inqryDetail.html',
-            inqryid: /*[[${inqry.inqryid}]]*/null,
+        let pltfomPropsl = {
+            insertUrl: '/front/pltfomImprvmPropsl/insertPltfomImprvmPropsl.do',
+            updateUrl: '/front/pltfomImprvmPropsl/updatePltfomImprvmPropsl.do',
+            listUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslList.html',
+            detailUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslDetail.html',
+            prpslid: /*[[${propsl.prpslid}]]*/null,
 
             init() {
                 this.validateForm();
             },
 
             save() {
-                if (!$('#inqryForm').valid()) return;
+                if (!$('#propslForm').valid()) return;
 
                 let url = this.insertUrl;
-                if (this.inqryid != null) url = this.updateUrl;
+                if (this.prpslid != null) url = this.updateUrl;
 
                 if (displayWorkProgress(true)) {
-                    let formData = $('#inqryForm').serializeArray();
+                    let formData = $('#propslForm').serializeArray();
                     var params = [];
 
-                    params.push({name: 'inqryid', value: frontInqryForm.inqryid});
+                    params.push({name: 'prpslid', value: pltfomPropsl.prpslid});
                     formData = formData.concat(params);
 
                     $.ajax({
@@ -158,10 +158,11 @@
                         dataType: 'json',
                         success: function (response) {
                             closeWorkProgress();
+                            console.log(response);
                             alert(response.msg);
                             if (response.success) {
                                 let f = document.forms.listForm;
-                                f.action = frontInqryForm.listUrl;
+                                f.action = pltfomPropsl.listUrl;
                                 f.submit();
                             }
                         }
@@ -169,17 +170,25 @@
                 }
             },
 
+            cancel() {
+                if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
+
+                let f = document.forms.listForm;
+                f.action = (this.prpslid == null ? this.listUrl : this.detailUrl);
+                f.submit();
+            },
+
             validateForm() {
-                $('#inqryForm').validate({
+                $('#propslForm').validate({
                     rules: {
-                        inqryClCd: {required: true},
-                        title: {required: true},
-                        cntnts: {required: true},
+                        clsfCd: {required: true},
+                        ttl: {required: true, maxlength:100},
+                        cn: {required: true, maxlength:4000},
                     },
                     messages: {
-                        inqryClCd: {required: "분류를 선택해 주십시오."},
-                        title: {required: "제목을 입력해 주십시오."},
-                        cntnts: {required: "내용을 입력해 주십시오."},
+                        clsfCd: {required: "분류를 선택해 주십시오."},
+                        ttl: {required: "제목을 입력해 주십시오.", maxlength: "제목은 100자를 넘을 수 없습니다."},
+                        cn: {required: "내용을 입력해 주십시오.", maxlength: "내용은 4000자를 넘을 수 없습니다."},
                     }
                 })
             },
@@ -188,10 +197,9 @@
                 if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
 
                 let f = document.forms.listForm;
-                f.action = (this.inqryid == null ? this.listUrl : this.detailUrl);
+                f.action = (this.prpslid == null ? this.listUrl : this.detailUrl);
                 f.submit();
-            },
-
+            }
         };
         $('#multiFileInput').on("change", function (event) {
             var objFile = document.querySelector('#multiFileInput');
@@ -202,7 +210,7 @@
             }
 
             formData.append("filegrpid", $("#filegrpid").val());
-            formData.append("filegrpNm", "inqry_file");
+            formData.append("filegrpNm", "pltfom_imprvm_propsl_file");
 
             if (displayWorkProgress()) {
                 $.ajax({
@@ -244,11 +252,8 @@
         });
 
         $(function () {
-            frontInqryForm.init();
+            pltfomPropsl.init();
         })
     </script>
 </div>
-
-
-
-
+</html>

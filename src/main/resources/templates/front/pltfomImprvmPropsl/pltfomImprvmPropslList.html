@@ -15,17 +15,17 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">분류</strong></div>
                 <div class="form-body">
-                    <span kattr:select_code="inqryClCd" grpCd="102" th:attr="selectedCd=${searchVo.inqryClCd}" firstOptTxt="- 전체 -"></span>
+                    <span kattr:select_code="clsfCd" grpCd="189" th:attr="selectedCd=${searchVo.clsfCd}" firstOptTxt="- 전체 -"></span>
                 </div>
             </div>
         </div>
         <div class="search-filter-submit">
-            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="inqryMain.searchInit()">초기화</button>
-            <button type="submit" class="btn-medium btn-green btn-before-search" onclick="inqryMain.search()">검색</button>
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="pltfomImprvmPropslList.searchInit()">초기화</button>
+            <button type="submit" class="btn-medium btn-green btn-before-search" onclick="pltfomImprvmPropslList.search()">검색</button>
         </div>
 
         <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
-        <input type="hidden" id="inqryid" name="inqryid">
+        <input type="hidden" id="prpslid" name="prpslid">
         <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
         <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
     </form>
@@ -41,18 +41,18 @@
                 <option value="100" th:selected="${searchVo.rowPerPage == 100}">100개씩 보기</option>
             </select>
             <div class="ml10">
-                <button type="button" class="btn-medium btn-blue" onclick="inqryMain.moveToInsertForm()">문의하기</button>
+                <button type="button" class="btn-medium btn-blue" onclick="pltfomImprvmPropslList.moveToInsertForm()">제안하기</button>
             </div>
         </div>
     </div>
 
     <div class="table-col table-layout-auto table-col-mo">
         <table>
-            <caption>1:1문의 목록 - 번호, 분류, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <caption>플랫폼 개선 제안 - 번호, 제목, 상태, 작성자, 공개여부, 등록일</caption>
             <colgroup>
                 <col>
                 <col>
-                <col style="width:30%;">
+                <col style="width:40%;">
                 <col>
                 <col>
                 <col>
@@ -70,16 +70,22 @@
             </tr>
             </thead>
             <tbody>
+            <th:block th:if="${list.size() == 0}">
+                <tr>
+                    <td class="nodata" colspan="6">
+                        <p><span class="icon icon-notice bg-black9"></span>등록된 플랫폼 개선 제안이 없습니다</p>
+                    </td>
+                </tr>
+            </th:block>
             <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'N' || (item.rlsYn == 'Y' && (item.userid == loginUserid)) ? true : false}">
                 <td>[[${item.rowNumber}]]</td>
-                <td>[[${item.inqryClCdNm}]]</td>
-                <td className="al article">
-                    <a href="javascript:void(0)" className="link ellipsis" th:onclick="|inqryMain.moveToDetail(${item.inqryid}, ${canGoToDetail})|">[[${item.title}]]</a>
+                <td>[[${item.clsfCdNm}]]</td>
+                <td class="al article"><a href="javascript:void(0)" class="link ellipsis" th:onclick="|pltfomImprvmPropslList.moveToDetail(${item.prpslid}, ${canGoToDetail})|">[[${item.ttl}]]</a>
                 </td>
-                <td>[[${item.sttsCdNm}]]</td>
+                <td>[[${item.prcsSttsCdNm}]]</td>
                 <td>[[${item.acnt}]]</td>
-                <td>[[${item.rlsYn =='Y' ? '공개' : '비공개'}]]</td>
-                <td>[[${#dates.format(item.regDt, 'yyyy-MM-dd')}]]</td>
+                <td>[[${item.rlsYn == 'Y'? '공개' : '비공개'}]]</td>
+                <td>[[${#dates.format(item.regDt,'yyyy-MM-dd')}]]</td>
             </tr>
             </tbody>
         </table>
@@ -88,17 +94,29 @@
     <th:block kattr:pagination="pagination" onclick="moveToPage"/>
 
     <script th:inline="javascript">
-        var inqryMain = {
+        let pltfomImprvmPropslList = {
             userid: /*[[${loginUserid}]]*/ null,
-            listUrl: '/front/inqry/selectInqryList.do',
-            detailUrl: '/front/inqry/inqryDetail.html',
+            listUrl: '/front/pltfomImprvmPropsl/selectPltfomImprvmPropslList.do',
+            detailUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslDetail.html',
 
             moveToInsertForm() {
                 if (this.userid == null) {
                     alert('로그인 후 이용하실 수 있습니다.');
                     return;
                 }
-                location.href = '/front/inqry/inqryForm.html';
+                location.href = '/front/pltfomImprvmPropsl/pltfomImprvmPropslForm.html';
+            },
+
+            moveToDetail(prpslid, canGoToDetail) {
+                if (canGoToDetail) {
+                    var f = document.forms.searchForm;
+                    f.prpslid.value = prpslid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                } else {
+                    alert('비공개 글의 경우 작성자만 볼 수 있습니다.');
+                    return;
+                }
             },
 
             search() {
@@ -109,21 +127,9 @@
             },
 
             searchInit() {
-                $('#searchKeyword, #inqryClCd').val('');
+                $('#searchKeyword, #clsfCd').val('');
             },
-
-            moveToDetail(inqryid, canGoToDetail) {
-                if (canGoToDetail) {
-                    var f = document.forms.searchForm;
-                    f.inqryid.value = inqryid;
-                    f.action = this.detailUrl;
-                    f.submit();
-                } else {
-                    alert('비공개 글의 경우 작성자만 볼 수 있습니다.');
-                    return;
-                }
-            },
-        };
+        }
 
         function moveToPage(num) {
             $("#pageNumber").val(num);
@@ -132,7 +138,8 @@
             f.submit();
         }
 
-
     </script>
 </div>
-<body>
+
+
+</html>
