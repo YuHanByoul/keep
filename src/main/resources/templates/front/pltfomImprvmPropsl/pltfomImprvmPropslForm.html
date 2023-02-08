@@ -1,0 +1,259 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title">플랫폼 개선 제안
+                <th:block th:text="${propsl.prpslid == null? '등록' : '수정'}"/>
+            </h3>
+        </div>
+        <div class="right">
+            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+        </div>
+    </div>
+
+    <form id="propslForm" name="propslForm">
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>플랫폼 개선 제안_정보입력 - 공개여부, 제목, 내용, 첨부파일</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">공개여부</th>
+                    <td>
+                        <span kattr:radio_yn="rlsYn" label1="예" label2="아니요" addClass=" inp" th:attr="defaultVal=${propsl.rlsYn == 'Y' ? 'Y':'N'}"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">분류<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <span kattr:select_code="clsfCd" grpCd="189" th:attr="selectedCd=${propsl.clsfCd}" firstOptTxt="- 선택 -"></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">제목<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <input type="text" title="제목" id="ttl" name="ttl" placeholder="제목을 입력해주세요." th:value="${propsl.ttl}">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">내용<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <textarea title="내용" name="cn" id="cn" placeholder="내용을 입력해주세요." th:text="${propsl.cn}"></textarea>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">첨부파일</th>
+                    <td>
+                        <div class="form-input-file">
+                            <label class="form-input">
+                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
+                                       th:attr="accept=${acceptUploadFileExt}">
+                                <span class="inp-file-text placeholder" data-width="400">파일첨부</span>
+                                <span class="btn-medium btn-gray">파일선택</span>
+                            </label>
+                            <ul id="multipleFileUploadSuccess">
+                                <th:block th:if="${propsl.fileList != null}">
+                                    <th:block th:each="file : ${propsl.fileList}">
+                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                            <span class="name">
+                                                <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                   th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                    [[${file.orginlFileNm}]]
+                                                </a>
+                                            </span>
+                                            <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                    th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                    th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                <span class="icon icon-circle-close"></span>
+                                            </button>
+                                        </li>
+                                    </th:block>
+                                </th:block>
+                            </ul>
+                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(propsl.filegrpid == '' or propsl.filegrpid == null) ? 0 : propsl.filegrpid}"/>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="box-desc-list bg7 mt10">
+            <ul>
+                <li>첨부 가능 확장자 :
+                    <th:block>
+                        <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtSn}">
+                            [[${item.value}]]
+                            <th:block th:if="${!itemStat.last}">,&nbsp;</th:block>
+                        </th:block>
+                    </th:block>
+                </li>
+                <li>첨부 가능 총 용량 : [[${fileConfiguration.uploadFileTotalSize}]]Mbyte</li>
+                <li>첨부 가능 개별 용량 : [[${fileConfiguration.uploadFileSize}]]Mbyte</li>
+            </ul>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="pltfomPropsl.cancel()">취소</button>
+                <button type="button" class="btn-medium btn-blue" onclick="pltfomPropsl.save()">
+                    <th:block th:text="${propsl.prpslid == null? '등록' : '저장'}"/>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <form id="listForm" th:action="@{/}" onsubmit="return false;">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="searchType" name="searchType" th:value="${searchVo.searchType}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" id="clsfCd" name="clsfCd" th:value="${searchVo.clsfCd}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="prpslid" name="prpslid" th:value="${searchVo.prpslid}">
+    </form>
+
+    <script th:inline="javascript">
+        let pltfomPropsl = {
+            insertUrl: '/front/pltfomImprvmPropsl/insertPltfomImprvmPropsl.do',
+            updateUrl: '/front/pltfomImprvmPropsl/updatePltfomImprvmPropsl.do',
+            listUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslList.html',
+            detailUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslDetail.html',
+            prpslid: /*[[${propsl.prpslid}]]*/null,
+
+            init() {
+                this.validateForm();
+            },
+
+            save() {
+                if (!$('#propslForm').valid()) return;
+
+                let url = this.insertUrl;
+                if (this.prpslid != null) url = this.updateUrl;
+
+                if (displayWorkProgress(true)) {
+                    let formData = $('#propslForm').serializeArray();
+                    var params = [];
+
+                    params.push({name: 'prpslid', value: pltfomPropsl.prpslid});
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                        method: 'POST',
+                        url: url,
+                        data: formData,
+                        dataType: 'json',
+                        success: function (response) {
+                            closeWorkProgress();
+                            console.log(response);
+                            alert(response.msg);
+                            if (response.success) {
+                                let f = document.forms.listForm;
+                                f.action = pltfomPropsl.listUrl;
+                                f.submit();
+                            }
+                        }
+                    });
+                }
+            },
+
+            cancel() {
+                if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
+
+                let f = document.forms.listForm;
+                f.action = (this.prpslid == null ? this.listUrl : this.detailUrl);
+                f.submit();
+            },
+
+            validateForm() {
+                $('#propslForm').validate({
+                    rules: {
+                        clsfCd: {required: true},
+                        ttl: {required: true, maxlength:100},
+                        cn: {required: true, maxlength:4000},
+                    },
+                    messages: {
+                        clsfCd: {required: "분류를 선택해 주십시오."},
+                        ttl: {required: "제목을 입력해 주십시오.", maxlength: "제목은 100자를 넘을 수 없습니다."},
+                        cn: {required: "내용을 입력해 주십시오.", maxlength: "내용은 4000자를 넘을 수 없습니다."},
+                    }
+                })
+            },
+
+            cancel() {
+                if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
+
+                let f = document.forms.listForm;
+                f.action = (this.prpslid == null ? this.listUrl : this.detailUrl);
+                f.submit();
+            }
+        };
+        $('#multiFileInput').on("change", function (event) {
+            var objFile = document.querySelector('#multiFileInput');
+            var formData = new FormData();
+
+            for (i = 0; i < objFile.files.length; i++) {
+                formData.append("files", objFile.files[i]);
+            }
+
+            formData.append("filegrpid", $("#filegrpid").val());
+            formData.append("filegrpNm", "pltfom_imprvm_propsl_file");
+
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: '/uploadMultipleFiles.do',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.result == 'fail') {
+                            alert(response.msg);
+                        } else {
+                            if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                                $("#filegrpid").val(response[0].filegrpid);
+                            }
+
+                            for (i = 0; i < response.length; i++) {
+                                var result = `
+                                    <li class='file-block' data_ext='${response[i].fileExtsn.substr(1)}'>
+                                        <span class="name">
+                                            <a href="javascript:void(0)" data-fileid="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
+                                             onclick="javascript:downloadFileByFileid(this.dataset.fileid, this.dataset.fileIdntfcKey)"> ${response[i].orginlFileNm}
+                                            </a>
+                                        </span>
+                                        <button type="button" class="file-delete" title="삭제" name="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
+                                             data-id=${response[i].fileid} onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                            <span class="icon icon-circle-close"></span>
+                                        </button>
+                                    </li>
+                                `;
+                                $('#multipleFileUploadSuccess').append(result);
+                            }
+                        }
+                        closeWorkProgress();
+                    }
+                });
+                $("#multiFileInput").val("");
+            }
+        });
+
+        $(function () {
+            pltfomPropsl.init();
+        })
+    </script>
+</div>
+</html>

@@ -36,7 +36,7 @@ public class CntntsVo  extends ParentRequestVo{
     
     
     /** 콘텐츠아이디 */
-    private int cntntsid;
+    private Integer cntntsid;
     /** 교육_주제_코드(중분류) */
     @NotEmpty(message = "교육주제(중분류)를 선택해주십시오.")
     private String eduSbjctCd;
@@ -56,6 +56,8 @@ public class CntntsVo  extends ParentRequestVo{
     private String origin;
     /** 제작_년 */
     private Integer mnfctYy;
+    /** 재생_시간 */
+    private Integer plyHour;
     /** 재생_분 */
     private Integer plyMinute;
     /** 재생_초 */
@@ -74,22 +76,25 @@ public class CntntsVo  extends ParentRequestVo{
     /** 첨부_파일그룹아이디 */
     private Integer atchFilegrpid;
     /** 수정_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
     /** 수정자아이디 */
     private int mdfrid;
     /** 등록_일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
     private int rgtrid;
     
-    private String rgtridNm;
+    private String nextCntntsid;
+    private String nextCntntsTtl;
+    private String beforeCntntsid;
+    private String beforeCntntsTtl;
     
     /** 첨부파일 관련 */
     private String filegrpid;
+    private String fileid;
     private String fileIdntfcKey;
     private String orginlFileNm;
+    private String ext;
     
     /** 필터 */
     /** 교육주제 */

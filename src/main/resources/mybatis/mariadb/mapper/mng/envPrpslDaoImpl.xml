@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : envPrpslDaoImpl.xml
+	Description : 환경교육제안관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.envPrpsl.model.EnvPrpslDao">
+
+    <!-- 환경교육제안관리 목록 조회 -->
+    <select id="selectEnvPrpslList" parameterType="EnvPrpslVO" resultType="EnvPrpslVO">
+        /* EnvPrpslDao.selectEnvPrpslList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRPSLID
+            , A.TTL
+            , A.CLSF_CD
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.USERID) USER_NM
+            , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.USERID) ACNT
+            , B.USERNM ANS_NM
+            , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = B.USERID) ANS_ACNT
+            , A.PRCS_STTS_CD
+            , A.REG_DT
+        FROM TB_CMM_ENV_EDU_PRPSL A
+        LEFT JOIN TB_CMM_ENV_EDU_PRPSL_ANS B
+            ON B.PRPSLID = A.PRPSLID
+        WHERE
+            1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttlStr'">
+            AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cnSttr'">
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+            AND (
+                A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+                OR A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            )
+        </if>
+        <if test="searchClsfCd != null and searchClsfCd != '' ">
+            AND A.CLSF_CD = #{searchClsfCd}
+        </if>
+        <if test="searchPrcsSttsCd != null and searchPrcsSttsCd != '' ">
+            AND A.PRCS_STTS_CD = #{searchPrcsSttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 환경교육제안 정보 조회 -->
+    <select id="selectEnvPrpsInfo" parameterType="EnvPrpslVO" resultType="EnvPrpslVO">
+        /* EnvPrpslDao.selectEnvPrpsInfo */
+        SELECT
+            PRPSLID
+             , CLSF_CD
+             , TTL
+             , CN
+             , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.USERID) USER_NM
+             , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.USERID) ACNT
+             , USERID
+             , (SELECT INST_NM FROM TB_CMM_INST WHERE INSTID = A.INSTID) INST_NM
+             , INSTID
+             , PRCS_STTS_CD
+             , FILEGRPID
+             , MDFCN_DT
+             , REG_DT
+        FROM
+            TB_CMM_ENV_EDU_PRPSL A
+        WHERE
+            PRPSLID = #{prpslid}
+            AND DEL_YN = 'N'
+    </select>
+
+    <!-- 환경교육제안 답변 정보 조회 -->
+    <select id="selectEnvPrpslAnsInfo" parameterType="EnvPrpslAnsVO" resultType="EnvPrpslAnsVO">
+        /* EnvPrpslDao.selectEnvPrpslAnsInfo */
+        SELECT
+            ANSID
+            , PRPSLID
+            , TTL
+            , CN
+            , USERNM
+            , ANS_DT
+        FROM
+            TB_CMM_ENV_EDU_PRPSL_ANS
+        WHERE
+            PRPSLID = #{prpslid}
+    </select>
+
+    <!-- 환경교육제안 정보 처리 상태 수정 -->
+    <update id="updatePrcsSttsCd" parameterType="EnvPrpslAnsVO">
+        /* EnvPrpslDao.updatePrcsSttsCd */
+        UPDATE TB_CMM_ENV_EDU_PRPSL SET
+            PRCS_STTS_CD = #{prcsSttsCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            PRPSLID = #{prpslid}
+    </update>
+
+    <!-- 환경교육제안 답변 등록 -->
+    <insert id="insertEnvPrpslAnswer" parameterType="EnvPrpslAnsVO">
+        /* EnvPrpslDao.insertEnvPrpslAnswer */
+        INSERT INTO TB_CMM_ENV_EDU_PRPSL_ANS (
+            ANSID
+            , PRPSLID
+            , TTL
+            , CN
+            , USERID
+            , USERNM
+            , RLS_YN
+            , ANS_DT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{ansid}
+            , #{prpslid}
+            , #{ttl}
+            , #{cn}
+            , #{user.userid}
+            , #{user.nm}
+            , #{rlsYn}
+            , NOW()
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <!-- 환경교육제안 답변 수정 -->
+    <update id="updateEnvPrpslAnswer" parameterType="EnvPrpslAnsVO">
+        /* EnvPrpslDao.updateEnvPrpslAnswer */
+        UPDATE TB_CMM_ENV_EDU_PRPSL_ANS SET
+            TTL = #{ttl}
+            , CN = #{cn}
+            , RLS_YN = #{rlsYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            ANSID = #{ansid}
+    </update>
+</mapper>

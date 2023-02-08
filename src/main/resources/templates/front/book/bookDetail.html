@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<div class="table-view">
+			<div class="table-view-header">
+				<h3><span><th:block th:text="${book.ttl}"></th:block></span> </h3>
+				<dl>
+					<div class="list">
+						<dt class="large">주제</dt>
+						<dd><th:block th:text="${book.eduSbjctCd}"></th:block></dd>
+					</div>
+					<div class="list">
+						<dt class="large">대상</dt>
+						<dd><th:block th:text="${book.eduTrgtCd}"></th:block></dd>
+					</div>
+				</dl>
+				<dl>
+					<div class="list">
+						<dt class="large">작가(글)</dt>
+						<dd><th:block th:text="${book.writr}"></th:block></dd>
+					</div>
+					<div class="list">
+						<dt class="large">작가(그림)</dt>
+						<dd><th:block th:text="${book.writrPictr}"></th:block></dd>
+					</div>
+				</dl>
+				<dl>
+					<div class="list">
+						<dt class="large">출판사</dt>
+						<dd><th:block th:text="${book.plscmpn}"></th:block></dd>
+					</div>
+					<div class="list">
+						<dt class="large">정가</dt>
+						<dd><th:block th:text="${book.amt}"></th:block>원</dd>
+					</div>
+				</dl>
+				<dl>
+					<div class="list">
+						<dt class="large">조회수</dt>
+						<dd><th:block th:text="${book.hits}"></th:block></dd>
+					</div>
+				</dl>					
+				<dl class="table-view-file">
+					<div class="list">
+						<dt class="large">첨부파일</dt>
+						<dd>
+							<div class="form-input-file">
+								<ul>
+								<th:block th:each="item : ${file}">
+									<li class="file-block" th:data_ext="${item.ext}"><span class="name"><a href="javascript:void(0)" th:onclick="javascript:downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block></a></span></li>
+								</th:block>										
+								</ul>
+							</div>
+						</dd>
+					</div>
+				</dl>
+			</div>
+			<div class="table-view-body">
+				<div class="table-view-content">
+					<div class="book-wrap">
+						<div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${book.rprsImgFileid}+@{&file_idntfc_key=}+${book.fileIdntfcKey}" alt=""></div>
+						<div class="book-section">
+							<dl>
+								<div class="list">
+									<dt>주제</dt>
+									<dd><th:block th:text="${book.eduSbjctCd}"></th:block></dd>
+								</div>
+								<div class="list">
+									<dt>대상</dt>
+									<dd><th:block th:text="${book.eduTrgtCd}"></dd>
+								</div>
+								<div class="list">
+									<dt>작가(글)</dt>
+									<dd><th:block th:text="${book.writr}"></th:block></dd>
+								</div>
+								<div class="list">
+									<dt>작가(그림)</dt>
+									<dd><th:block th:text="${book.writrPictr}"></th:block></dd>
+								</div>
+								<div class="list">
+									<dt>출판사</dt>
+									<dd><th:block th:text="${book.plscmpn}"></th:block></dd>
+								</div>
+								<div class="list">
+									<dt>정가</dt>
+									<dd><th:block th:text="${book.amt}"></th:block>원</dd>
+								</div>
+							</dl>
+							<p><th:block th:utext="${book.cn}"></th:block></p>
+						</div>
+					</div>
+				</div>
+				<div class="opentype">
+					<a href="https://www.kogl.or.kr/info/licenseType4.do" target="_blank" title="새 창">
+						<div class="thumb"><img src="/images/front/opentype/opentype04.png" alt=""></div>
+						<p>본 저작물은 “공공누리” 제4유형 : 출처표시 + 상업적 이용금지 + 변경금지 조건에 따라 이용할 수 있습니다.</p>
+					</a>
+				</div>				
+			</div>
+
+			<div class="btn-wrap">
+				<div class="center">
+					<!-- <button type="button" class="btn-medium btn-gray">삭제</button>
+					<button type="button" class="btn-medium btn-gray">수정</button> -->
+					<button type="button" class="btn-medium btn-gray" onclick="moveToDetail();">목록</button>
+				</div>
+			</div>
+
+			<div class="page-navigation">
+				<th:block th:if="${book.beforeBookid} != null">
+				<a th:href="@{/front/book/bookDetailForm.html?bookid=}+${book.beforeBookid}">
+					<dl>
+						<dt>이전글</dt>
+						<dd><span class="ellipsis"><th:block th:text="${book.beforeBookTtl}"></th:block></span></dd>
+					</dl>
+				</a>
+				</th:block>
+				<th:block th:unless="${book.beforeBookid} != null">
+					<a style="cursor:auto">
+						<dl>
+							<dt>이전글</dt>
+							<dd><span class="ellipsis">이전글이 없습니다.</th:block></span></dd>
+						</dl>
+					</a>
+				</th:block>						
+				
+				<th:block th:if="${book.nextBookid} != null">
+					<a th:href="@{/front/book/bookDetailForm.html?bookid=}+${book.nextBookid}">
+						<dl>
+							<dt>다음글</dt>
+							<dd><span class="ellipsis"><th:block th:text="${book.nextBookTtl}"></th:block></span></dd>
+						</dl>
+					</a>
+				</th:block>
+				<th:block th:unless="${book.nextBookid} != null">
+					<a style="cursor:auto">
+						<dl>
+							<dt>다음글</dt>
+							<dd><span class="ellipsis">다음글이 없습니다.</th:block></span></dd>
+						</dl>
+					</a>
+				</th:block>					
+			</div>
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">
+			var hh = /*[[${book.plyHour}]]*/ null
+			var mm = /*[[${book.plyMinute}]]*/ null
+			var ss = /*[[${book.plySecnd}]]*/ null
+			
+			var strHh = String(hh);
+			var strMm = String(mm);
+			var strSs = String(ss);
+			
+			console.log(strMm, strSs)
+			
+			$("#playTime").text(strHh.padStart(2,'0')+":"+strMm.padStart(2,'0')+":"+strSs.padStart(2,'0'));
+			
+	        function moveToDetail() {
+	            location.href = '/front/book/bookListForm.html';
+	        }
+		</script>
+	</div>
+
+</body>
+</html>

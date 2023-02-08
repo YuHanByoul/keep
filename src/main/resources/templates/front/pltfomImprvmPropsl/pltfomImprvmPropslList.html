@@ -1,0 +1,145 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">제목 검색</strong></div>
+                <div class="form-body">
+                    <input type="search" id="searchKeyword" name="searchKeyword" title="제목 검색" placeholder="검색어를 입력해 주세요." th:value="${searchVo.searchKeyword}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">분류</strong></div>
+                <div class="form-body">
+                    <span kattr:select_code="clsfCd" grpCd="189" th:attr="selectedCd=${searchVo.clsfCd}" firstOptTxt="- 전체 -"></span>
+                </div>
+            </div>
+        </div>
+        <div class="search-filter-submit">
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="pltfomImprvmPropslList.searchInit()">초기화</button>
+            <button type="submit" class="btn-medium btn-green btn-before-search" onclick="pltfomImprvmPropslList.search()">검색</button>
+        </div>
+
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="prpslid" name="prpslid">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="totalCount" th:text="${totalCount}">0</b> 건</p>
+        </div>
+        <div class="right d-flex">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                <option value="10" th:selected="${searchVo.rowPerPage == 10}">10개씩 보기</option>
+                <option value="50" th:selected="${searchVo.rowPerPage == 50}">50개씩 보기</option>
+                <option value="100" th:selected="${searchVo.rowPerPage == 100}">100개씩 보기</option>
+            </select>
+            <div class="ml10">
+                <button type="button" class="btn-medium btn-blue" onclick="pltfomImprvmPropslList.moveToInsertForm()">제안하기</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>플랫폼 개선 제안 - 번호, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <colgroup>
+                <col>
+                <col>
+                <col style="width:40%;">
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">분류</th>
+                <th scope="col">제목</th>
+                <th scope="col">상태</th>
+                <th scope="col">작성자</th>
+                <th scope="col">공개여부</th>
+                <th scope="col">등록일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:if="${list.size() == 0}">
+                <tr>
+                    <td class="nodata" colspan="6">
+                        <p><span class="icon icon-notice bg-black9"></span>등록된 플랫폼 개선 제안이 없습니다</p>
+                    </td>
+                </tr>
+            </th:block>
+            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'N' || (item.rlsYn == 'Y' && (item.userid == loginUserid)) ? true : false}">
+                <td>[[${item.rowNumber}]]</td>
+                <td>[[${item.clsfCdNm}]]</td>
+                <td class="al article"><a href="javascript:void(0)" class="link ellipsis" th:onclick="|pltfomImprvmPropslList.moveToDetail(${item.prpslid}, ${canGoToDetail})|">[[${item.ttl}]]</a>
+                </td>
+                <td>[[${item.prcsSttsCdNm}]]</td>
+                <td>[[${item.acnt}]]</td>
+                <td>[[${item.rlsYn == 'Y'? '공개' : '비공개'}]]</td>
+                <td>[[${#dates.format(item.regDt,'yyyy-MM-dd')}]]</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <th:block kattr:pagination="pagination" onclick="moveToPage"/>
+
+    <script th:inline="javascript">
+        let pltfomImprvmPropslList = {
+            userid: /*[[${loginUserid}]]*/ null,
+            listUrl: '/front/pltfomImprvmPropsl/selectPltfomImprvmPropslList.do',
+            detailUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslDetail.html',
+
+            moveToInsertForm() {
+                if (this.userid == null) {
+                    alert('로그인 후 이용하실 수 있습니다.');
+                    return;
+                }
+                location.href = '/front/pltfomImprvmPropsl/pltfomImprvmPropslForm.html';
+            },
+
+            moveToDetail(prpslid, canGoToDetail) {
+                if (canGoToDetail) {
+                    var f = document.forms.searchForm;
+                    f.prpslid.value = prpslid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                } else {
+                    alert('비공개 글의 경우 작성자만 볼 수 있습니다.');
+                    return;
+                }
+            },
+
+            search() {
+                $('#pageNumber').val(1);
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+                var f = document.forms.searchForm;
+                f.submit();
+            },
+
+            searchInit() {
+                $('#searchKeyword, #clsfCd').val('');
+            },
+        }
+
+        function moveToPage(num) {
+            $("#pageNumber").val(num);
+            $('#rowPerPage').val($('#selectRowPerPage').val());
+            var f = document.forms.searchForm;
+            f.submit();
+        }
+
+    </script>
+</div>
+
+
+</html>

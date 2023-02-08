@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.inqry.service;
 
+import com.kbrainc.plum.front.inqry.model.InqryAnsVo;
 import com.kbrainc.plum.front.inqry.model.InqryVo;
 
 import java.util.List;
@@ -23,12 +24,16 @@ import java.util.List;
 public interface InqryService {
     public List<InqryVo> selectInqryList(InqryVo inqryVo) throws Exception;
 
-    public InqryVo selectInqryDetail(InqryVo inqryVo) throws Exception;
+    public InqryVo selectInqry(InqryVo inqryVo) throws Exception;
+
+    public InqryAnsVo selectInqryAns(InqryVo inqryVo) throws Exception;
 
     public int insertInqry(InqryVo inqryVo) throws Exception;
 
     public int updateInqry(InqryVo inqryVo) throws Exception;
 
     public int deleteInqry(InqryVo inqryVo) throws Exception;
+
+    public int cancelInqry(InqryVo inqryVo) throws Exception;
 
 }

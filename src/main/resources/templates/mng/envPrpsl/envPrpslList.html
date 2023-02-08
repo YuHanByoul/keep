@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns:kattr="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout/mng/mainLayout">
+<body>
+<div layout:fragment="content">
+    <div class="page-body">
+        <div class="row">
+            <!-- 필터 부분 -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-block-small">
+                        <!-- 키워드 filter -->
+                        <div class="row">
+                            <div class="col-lg-3 mb-2 mb-lg-0">
+                                <div class="mb-0 form-group row">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                        <select name="searchType" id="searchType" class="form-select form-control">
+                                            <option value="">전체</option>
+                                            <option value="ttlStr">제목</option>
+                                            <option value="cnSttr">내용</option>
+                                        </select>
+                                        <input type="text" name="searchKeyword" id="searchKeyword" class="form-control form-control-sm" aria-label="Text input with dropdown button">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="mb-0 form-group row">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>분류</strong></div>
+                                    <div class="col-12">
+                                        <span kattr:select_code="searchClsfCd" grpCd="182" firstOptTxt="- 전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="mb-0 form-group row">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                                    <div class="col-12">
+                                        <span kattr:select_code="searchPrcsSttsCd" grpCd="113" firstOptTxt="- 전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- //키워드 filter -->
+                        <!-- 키워드 filter-btn -->
+                        <div class="mt-1 p-t-20 text-center border-top">
+                            <button type="button" class="btn btn-disabled m-r-5" onclick="envPrpsl.initSearch();">초기화</button>
+                            <button type="submit" class="btn btn-primary" onclick="envPrpsl.onSearch();">검색</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- //필터 부분 -->
+
+            <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>환경교육제안 검색결과</strong></h5>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <div class="dt-responsive table-responsive">
+                            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <table id="jsGrid" class="table-responsive"></table>
+                                <div id="listPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+            <div class="col-12">
+                <div id="contentPanel" class="row"></div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var envPrpsl = {
+            listUrl : "/mng/envPrpsl/selectEnvPrpslList.do",
+
+            init: function() {
+                envPrpslJsGrid = new GridHelper("jsGrid", "contentPanel");
+                this.setGrid();
+                this.registEvent();
+            },
+
+            registEvent: function() {
+                // TODO
+            },
+
+            initSearch: function(){
+                $('#searchType, #searchKeyword, #searchClsfCd, #searchPrcsSttsCd').val('');
+            },
+
+            onSearch: function() {
+                envPrpslJsGrid.resetListContent();
+            },
+
+            setGrid: function() {
+                $("#jsGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#listPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchType": $('#searchType').val(),
+                                "searchKeyword": $('#searchKeyword').val(),
+                                "searchClsfCd": $('#searchClsfCd').val(),
+                                "searchPrcsSttsCd": $('#searchPrcsSttsCd').val(),
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize,
+                                "orderField": "REG_DT",
+                                "orderDirection": "desc"
+                            };
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: envPrpsl.listUrl,
+                                data: params,
+                                dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
+                        {title: "제목", name: "ttl", type: "text", width: "200", align: "left"},
+                        {title: "분류", name: "clsfCdNm", type: "text", width: "100", align: "center"},
+                        {title: "작성자", name: "userNm", type: "text" , width: "100", align: "center",
+                            itemTemplate: function(_, item) {
+                                return item.userNm + '(' + item.acnt + ')'
+                            }},
+                        {title: "작성일", name: "regDt", type: "text", align: "center", width: "100"},
+                        {title: "상태", name: "prcsSttsCdNm", type: "text", align: "center", width: "100"},
+                        {title: "답변자", name: "ansNm", type: "text", align: "center", width: "100",
+                            itemTemplate: function(_, item) {
+                                let el = '-';
+                                if(item.ansNm != null) el = item.ansNm + '(' + item.ansAcnt + ')';
+                                return el
+                            }},
+                    ],
+                    rowClick: function(args) {
+                        /* [# sec:authorize-url="/mng/envPrpsl/envPrpslFrom.html"] */
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var detailUrl = "/mng/envPrpsl/envPrpslFrom.html?prpslid=" + args.item.prpslid;
+                        envPrpslJsGrid.loadContent(detailUrl);
+                        envPrpslJsGrid.rowClick(args);
+                        /* [/] */
+                    }
+                });
+            },
+
+            resetGrid: function() {
+                envPrpslJsGrid.resetListContent();
+            }
+        };
+
+        $(function() {
+            envPrpsl.init();
+        });
+    </script>
+</div>
+</body>

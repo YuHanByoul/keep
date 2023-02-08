@@ -54,6 +54,8 @@ public class CntntsVo  extends ParentRequestVo{
     /** 제작_년 */
     private Integer mnfctYy;
     /** 재생_분 */
+    private Integer plyHour;
+    /** 재생_분 */
     private Integer plyMinute;
     /** 재생_초 */
     private Integer plySecnd;

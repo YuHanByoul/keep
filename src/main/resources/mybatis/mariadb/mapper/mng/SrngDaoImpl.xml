@@ -24,7 +24,7 @@
             TB_ASS_SRNG_QITEM A
         WHERE
         1 = 1
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'idntyMttrStr'">
+        <if test="searchKeyword != null and searchKeyword != '' and (searchType == 'idntyMttrStr' or searchType == '') ">
             AND A.IDNTY_MTTR LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <if test="searchDsgncrtrCd != null and searchDsgncrtrCd != '' ">
@@ -224,6 +224,12 @@
         </if>
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'formExplnStr'">
             AND A.FORM_EXPLN LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+            AND (
+                A.FORM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                OR A.FORM_EXPLN LIKE CONCAT('%',#{searchKeyword},'%')
+            )
         </if>
         <if test="searchOperFrmCd != null and searchOperFrmCd != '' ">
             AND A.OPER_FRM_CD = #{searchOperFrmCd}

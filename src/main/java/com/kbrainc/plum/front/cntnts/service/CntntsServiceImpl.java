@@ -62,4 +62,8 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     public int updateCntntsHits(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.updateCntntsHits(cntntsVo);
     };
+    
+    public List<CntntsVo> selectCntntsFileList(CntntsVo cntntsVo) throws Exception {
+        return cntntsDao.selectCntntsFileList(cntntsVo);
+    };
 }

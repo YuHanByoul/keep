@@ -17,11 +17,11 @@
                 , CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDUSBJCTCD
                 , C1.CD_NM AS EDUTRGTCD
                 , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
+                , D1.CD_NM AS MAINTYPECD
                 , NVL(A.HITS,0) AS HITS
                 , A.RPRS_IMG_FILEID
                 , E.FILE_IDNTFC_KEY
-                , A.MDFCN_DT
-                , A.REG_DT
+                , DATE(A.REG_DT) AS REG_DT
             FROM
                 TB_CMM_CNTNTS A
                 LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
@@ -98,12 +98,14 @@
             , DATE(A.REG_DT) AS REG_DT
             , A.RGTRID
             , CONCAT(F.ACNT,'(',F.NM,')') AS rgtridNm
-            , A.RPRS_IMG_FILEID
-            , E.FILEGRPID
-            , E.FILE_IDNTFC_KEY
-            , E.ORGINL_FILE_NM
-            , A.ATCH_FILEGRPID
             , A.REG_DT
+            
+            <![CDATA[
+            , (SELECT CNTNTSID FROM tb_cmm_cntnts WHERE CNTNTSID > #{cntntsid} LIMIT 1) AS NEXT_CNTNTSID
+            , (SELECT TTL FROM tb_cmm_cntnts WHERE CNTNTSID > #{cntntsid} LIMIT 1) AS NEXT_CNTNTS_TTL
+            , (SELECT CNTNTSID FROM tb_cmm_cntnts WHERE CNTNTSID < #{cntntsid} ORDER BY CNTNTSID DESC LIMIT 1) AS BEFORE_CNTNTSID
+            , (SELECT TTL FROM tb_cmm_cntnts WHERE CNTNTSID < #{cntntsid} ORDER BY CNTNTSID DESC LIMIT 1) AS BEFORE_CNTNTS_TTL
+            ]]>
         FROM
             TB_CMM_CNTNTS A
             LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
@@ -112,14 +114,27 @@
             LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
             LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
             
-            LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
-            
             LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
-        WHERE CNTNTSID = 12
+        WHERE CNTNTSID = #{cntntsid}
+    </select>
+    
+        <!-- 컨텐츠 관리 게시글 상세조회 -->
+    <select id="selectCntntsFileList" parameterType="front.CntntsVo" resultType="front.CntntsVo"> 
+        /* CntntsDao.selectCntntsFileList */
+        SELECT
+            A.ATCH_FILEGRPID
+            , B.FILEID
+            , B.FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM
+            , TRIM(LEADING '.' FROM B.FILE_EXTSN) AS EXT
+        FROM
+            TB_CMM_CNTNTS A
+            LEFT OUTER JOIN TB_CMM_FILE B ON A.ATCH_FILEGRPID = B.FILEGRPID
+        WHERE CNTNTSID = #{cntntsid}
     </select>
     
     <update id="updateCntntsHits" parameterType="front.CntntsVo">
         UPDATE TB_CMM_CNTNTS SET HITS = IFNULL(HITS,0) + 1 
-        WHERE CNTNTSID = 12
+        WHERE CNTNTSID = #{cntntsid}
     </update>
 </mapper>
