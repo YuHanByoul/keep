@@ -4,7 +4,6 @@ import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.inqry.model.InqryAnsVo;
 import com.kbrainc.plum.front.inqry.model.InqryVo;
 import com.kbrainc.plum.front.inqry.service.InqryService;
-import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
