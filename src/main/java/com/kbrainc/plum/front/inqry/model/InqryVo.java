@@ -11,6 +11,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
@@ -35,20 +38,37 @@ import java.util.List;
 @NoArgsConstructor
 public class InqryVo extends ParentRequestVo {
     private UserVo user;
+
     private Integer inqryid;
+
     private int siteid;
+
+    @NotEmpty(message = "제목을 입력해 주십시오.")
+    @Size(max = 5, message = "제목은 500자를 넘을 수 없습니다.")
     private String title;
+
+    @NotEmpty(message="내용을 입력해 주십시오.")
     private String cntnts;
+
     private String acnt;
+
     private Integer filegrpid;
+
     private Integer userid;
+
     private String inqryClCd;
+
     private String inqryClCdNm;
+
     private String sttsCd;
+
     private String sttsCdNm;
+
     private String rlsYn;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+
     private List<FileVo> fileList;
 
     public void setInqryClCd(String inqryClCd) {

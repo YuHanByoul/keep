@@ -12,12 +12,15 @@ import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,8 +123,17 @@ public class InqryController {
 
     @PostMapping("/insertInqry.do")
     @ResponseBody
-    public Map<String, Object> insertInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> insertInqry(@Valid InqryVo inqryVo, BindingResult bindingResult, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> response = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                response.put("msg", fieldError.getDefaultMessage());
+            }
+            return response;
+        }
+
         boolean success = false;
         inqryVo.setUser(userVo);
 
@@ -138,8 +150,17 @@ public class InqryController {
 
     @PostMapping("/updateInqry.do")
     @ResponseBody
-    public Map<String, Object> updateInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> updateInqry(@Valid InqryVo inqryVo, BindingResult bindingResult, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> response = new HashMap<>();
+
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                response.put("msg", fieldError.getDefaultMessage());
+            }
+            return response;
+        }
+
         boolean success = false;
         inqryVo.setUser(userVo);
 

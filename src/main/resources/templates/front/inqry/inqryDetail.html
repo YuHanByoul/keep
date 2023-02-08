@@ -116,7 +116,6 @@
                 </th:block>
 
 
-
                 <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToList()">목록</button>
             </div>
         </div>
@@ -139,47 +138,32 @@
             updateFormUrl: '/front/inqry/inqryForm.html',
             listUrl: '/front/inqry/inqryList.html',
             deleteUrl: '/front/inqry/deleteInqry.do',
-            cancelUrl : '/front/inqry/cancelInqry.do',
+            cancelUrl: '/front/inqry/cancelInqry.do',
 
             update(status) {
-                if(status == '103102') {
-                    if(!confirm('접수를 취소 하시겠습니까?')) return;
-                    if (displayWorkProgress(true)) {
-                        $.ajax({
-                            method: 'post',
-                            url: inqryDetail.cancelUrl,
-                            dataType: 'json',
-                            data: {inqryid : inqryDetail.inqryid},
-                            success: function (response) {
-                                closeWorkProgress();
-                                if(response.result == 'success') {
-                                    alert('접수 취소가 완료 되었습니다.');
-                                    inqryDetail.submit(inqryDetail.listUrl);
-                                } else {
-                                    alert('접수 취소중 에러가 발생하였습니다. 다시 시도해 주십시오.');
-                                }
-                            }
-                        })
-                    }
-                } else if( status == '103104') {
-                    if(!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
-                    if (displayWorkProgress(true)) {
-                        $.ajax({
-                            method: 'post',
-                            url: inqryDetail.deleteUrl,
-                            dataType: 'json',
-                            data: {inqryid : inqryDetail.inqryid},
-                            success: function (response) {
-                                closeWorkProgress();
-                                if(response.result == 'success') {
-                                    alert('삭제가 완료 되었습니다.');
-                                    inqryDetail.submit(inqryDetail.listUrl);
-                                } else {
-                                    alert('삭제중 에러가 발생하였습니다. 다시 시도해 주십시오.');
-                                }
-                            }
-                        })
-                    }
+                if (status == '103102') {
+                    if (!confirm('접수를 취소 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(inqryDetail.cancelUrl);
+                } else if (status == '103104') {
+                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(inqryDetail.deleteUrl);
+                }
+            },
+
+            ajaxForSttsUpdate(url) {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'post',
+                        url: url,
+                        dataType: 'json',
+                        data: {inqryid: inqryDetail.inqryid},
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success)
+                                inqryDetail.submit(inqryDetail.listUrl);
+                        }
+                    })
                 }
             },
 
