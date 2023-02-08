@@ -56,7 +56,7 @@ var resizeWindow = {
 			$html.removeClass(TABLET);
 			$WINDOW_MODE = MOBILE;
 		}
-		console.log("🚀$WINDOW_MODE", $WINDOW_MODE)
+		console.log("🚀", $WINDOW_MODE)
 		
 		
 
@@ -65,7 +65,6 @@ var resizeWindow = {
 		$(window).on('resize', function () {
 			$windowWidth = $(window).outerWidth();
 			resizeWindow.sizeCheck();
-			console.log($WINDOW_MODE)
 		})
 
 	},
