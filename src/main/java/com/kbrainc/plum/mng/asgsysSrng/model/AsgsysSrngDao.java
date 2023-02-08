@@ -2,10 +2,12 @@ package com.kbrainc.plum.mng.asgsysSrng.model;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
 * 지정제심사관리 DAO클래스.
@@ -262,6 +264,31 @@ public interface AsgsysSrngDao {
 	 */
 	public int deleteEmrgcyActnPlan(EmrgcyActnPlanVo emrgcyActnPlanVo) throws Exception;
 
+	/**
+	 * 교육주제 등록
+	 *
+	 * @Title : insertEduSbjct
+	 * @Description : 비상조치계획 삭제
+	 * @param asgsysSrngVo
+	 * @param eduSbjctCdLst
+	 * @param userVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertEduSbjct(@Param("asgsysSrngVo") AsgsysSrngVo asgsysSrngVo, @Param("eduSbjctCdArr") String[] eduSbjctCdArr, @Param("user")UserVo userVo) throws Exception;
+
+
+	/**
+	 * 교육주제 삭제
+	 *
+	 * @Title : deleteEduSbjct
+	 * @Description : 교육주제 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteEduSbjct(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
     /**
 	* 프로그램 평가 조회
 	*
@@ -272,6 +299,28 @@ public interface AsgsysSrngDao {
 	* @return AsgsysSrngVo
 	*/
 	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 프로그램평가 등록
+	 *
+	 * @Title : insertPrgrmEvl
+	 * @Description : 프로그램평가 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램평가 수정
+	*
+	* @Title : updatePrgrmEvl
+	* @Description : 프로그램평가 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updatePrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 프로그램 안전관리 조회
@@ -369,6 +418,17 @@ public interface AsgsysSrngDao {
     * @throws Exception 예외
 	*/
 	public int updateSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 안전관리 등록
+	 *
+	 * @Title : insertSftyMng
+	 * @Description : 안전관리 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception 예외
+	 */
+	public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 심사위원심사 목록 엑셀 다운
@@ -526,6 +586,18 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 체크리스트제출 등록
+	*
+	* @Title : insertChklstSbmsn
+	* @Description : 체크리스트제출 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertChklstSbmsn(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 지원단심사 등록
@@ -746,5 +818,10 @@ public interface AsgsysSrngDao {
 	 * @throws Exception
 	 */
 	public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
+
 
 }

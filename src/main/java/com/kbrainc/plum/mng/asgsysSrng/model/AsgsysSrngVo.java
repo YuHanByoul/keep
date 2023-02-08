@@ -175,7 +175,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private String cnsltngKndCd;
 
 	/** 우수성KEY */
-	private Integer dstnctnKey;
+	private Integer prgrmKey;
 
     /** 기관아이디 */
 	private Integer instid;
@@ -468,6 +468,12 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /**사전_인솔자_평가_항목 */
     private String bfrGdrEvlArtcl;
+
+    /**사전_인솔자_평가_도구 */
+    private String bfrGdrEvlTl;
+
+    /**사후_인솔자_평가_항목 */
+    private String aftrGdrEvlArtcl;
 
     /**사후_인솔자_평가_도구 */
     private String aftrGdrEvlTl;

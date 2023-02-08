@@ -246,6 +246,17 @@ public interface AsgsysSrngService {
 	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 프로그램 평가 수정
+	*
+	* @Title : updatePrgrmEvl
+	* @Description : 프로그램 평가 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updatePrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램 안전관리 조회
 	*
 	* @Title : selectSftyMng
@@ -425,6 +436,17 @@ public interface AsgsysSrngService {
 	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 체크치스트 수정
+	*
+	* @Title : updateAssChklst
+	* @Description : 체크치스트 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateAssChklst(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 지원단심사 등록
 	*
 	* @Title : insertSprtgrpSrng
@@ -577,6 +599,9 @@ public interface AsgsysSrngService {
 	 * @throws Exception
 	 */
 	 public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
 
 
 

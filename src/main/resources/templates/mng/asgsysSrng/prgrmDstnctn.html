@@ -1,7 +1,10 @@
 <form id="prgrmDstnctnFrm">
-<input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmDstnctnInfo.prgrmid}"><!-- 프로그램id -->
-<input type="hidden" id="dstnctnKey" name="dstnctnKey" th:value="${prgrmDstnctnInfo.dstnctnKey}"><!-- 우수성key -->
+<input type="hidden" id="prgrmKey" name="prgrmKey" th:value="${prgrmDstnctnInfo.prgrmKey}"><!-- 프로그램id -->
+<input type="hidden" id="prgrmid" name="prgrmid" th:value="${prgrmDstnctnInfo.prgrmid}"><!-- 우수성key -->
 <input type="hidden" id="eduSbjctCdLst" name="eduSbjctCdLst" th:value="${prgrmDstnctnInfo.eduSbjctCdLst}"><!-- 교육주제코드 -->
+<input type="hidden" id="eduPhotoFilegrpid" name="eduPhotoFilegrpid" th:value="${prgrmDstnctnInfo.eduPhotoFilegrpid}"> <!-- 교육사진파일그룹코드 -->
+
+
 
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title"><strong>프로그램 개요</strong></h3>
@@ -392,20 +395,20 @@
                                 <td>
                                     <div class="col-12 row m-0">
                                         <div class="col-6 p-l-0 p-r-5">
-                                            <input type="text" class="form-control form-control-sm" name="bgngHr" th:id="${ 'bgngHr' + i.count }" placeholder="00" th:value="${schdl.bgngHr}"/>
+                                            <input type="number" class="form-control form-control-sm" pattern="[0-9]" min="0" max="23" name="bgngHr" th:id="${ 'bgngHr' + i.count }" placeholder="00" th:value="${schdl.bgngHr}"/>
                                         </div>
                                         <div class="col-6 p-r-0 p-l-5">
-                                            <input type="text" class="form-control form-control-sm" name="bgngMnt" th:id="${ 'bgngMnt' + i.count }" placeholder="00" th:value="${schdl.bgngMnt}"/>
+                                            <input type="number" class="form-control form-control-sm" pattern="[0-9]" min="0" max="59" name="bgngMnt" th:id="${ 'bgngMnt' + i.count }" placeholder="00" th:value="${schdl.bgngMnt}"/>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="col-12 row m-0">
                                         <div class="col-6 p-l-0 p-r-5">
-                                            <input type="text" class="form-control form-control-sm" name="endHr" th:id="${ 'endHr' + i.count }" placeholder="00" th:value="${schdl.endHr}"/>
+                                            <input type="number" class="form-control form-control-sm" maxlength="2" min="0" max="23" name="endHr" th:id="${ 'endHr' + i.count }" placeholder="00" th:value="${schdl.endHr}"/>
                                         </div>
                                         <div class="col-6 p-r-0 p-l-5">
-                                            <input type="text" class="form-control form-control-sm" name="endMnt" th:id="${ 'endMnt' + i.count }" placeholder="00" th:value="${schdl.endMnt}"/>
+                                            <input type="number" class="form-control form-control-sm" maxlength="2" min="0" max="59" name="endMnt" th:id="${ 'endMnt' + i.count }" placeholder="00" th:value="${schdl.endMnt}"/>
                                         </div>
                                     </div>
                                 </td>
@@ -546,7 +549,6 @@ function setEduJbjct(){
     	selSubId = "sub_"+selId;
     	fn_getNextDepthList(grpcd , upprcd, selId, cd);
 
-    	debugger;
         setNextDepth(grpcd,cd,selSubId,subcd);
 
     }
@@ -666,18 +668,14 @@ $('[id^=eduPhotoFile]').on('change', function(event) {
     var formData = new FormData();
     var content = "";
 
-
-
-
-
     for( i = 0 ; i < objFile.files.length ; i++) {
         formData.append("files", objFile.files[i]);
     }
 
-    formData.append("filegrpid", 642);
+    formData.append("filegrpid", $("#eduPhotoFilegrpid").val());
     formData.append("filegrpNm", "dstnctnEduPhoto_file");
 
-    //if(uploadFileCnt >0 ){
+
     if(displayWorkProgress()){
         $.ajax({
             url : '/uploadMultipleFiles.do',
@@ -689,8 +687,8 @@ $('[id^=eduPhotoFile]').on('change', function(event) {
                 if(response.result == 'fail'){
                     alert(response.msg);
                 }else{
-                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
-                        $("#filegrpid").val( response[0].filegrpid );
+                    if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
+                    	$("#eduPhotoFilegrpid").val(response[0].filegrpid );
                     }
 
                     $("#regFileDiv" + trgtIdx).show();
@@ -700,7 +698,7 @@ $('[id^=eduPhotoFile]').on('change', function(event) {
                 closeWorkProgress();
             }
         });
-       //$("#multiFileInput").val("");
+
     }
 
 });
@@ -827,8 +825,43 @@ function deletePlan(btnid){
 function prgrmDstnctnSaveBtn() {
 
     var vUrl = "";
+    var param = {};
 
-    if( $("#dstnctnKey").val() == null || $("#dstnctnKey").val() == "" ) {
+    //필수체크
+    if(0== $("[id^=sub_eduSbjctSel]").length){
+    	alert("교육주제는 필수 입력입니다.");
+    	return;
+    }
+
+    //교육주제
+    $("[id^=sub_eduSbjctSel]").each(function(index, item) {
+
+        if(item.value=="전체"){
+            alert("선택하지 않은 교육주제항목이 있습니다.");
+            $("#"+item.id).focus();
+            return;
+        }
+        if(index==0) param["eduSbjctCdLst"] = ""+item.value;
+        if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
+    });
+
+    //프로그램 일정
+    $("[id^=schdlTr]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].prgrmid"] = $("#prgrmKey").val()});    //프로그램 id (key)
+    $("[id^=rnd]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].rnd"    ] = item.textContent; });    //차수
+    $("[id^=bgngHr]").each(function(index, item)       {
+
+    	param["prgrmSchdlLst[" + index + "].bgngHr" ] = item.value;
+    });    //시작 시간
+
+    $("[id^=bgngMnt]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].bgngMnt"] = item.value; });    //시작 분
+    $("[id^=endHr]").each(function(index, item)        { param["prgrmSchdlLst[" + index + "].endHr"  ] = item.value; });    //종료 시간
+    $("[id^=endMnt]").each(function(index, item)       { param["prgrmSchdlLst[" + index + "].endMnt" ] = item.value; });    //종료 분
+    $("[id^=schdlPrgrmNm]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].prgrmNm"] = item.value; });    //프로그램명
+    $("[id^=crs]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].crs"    ] = item.value; });    //과정
+
+    if(!confirm("저장 하시겠습니까?")){return;}
+
+    if( $("#prgrmid").val() == null || $("#prgrmid").val() == "" ) {
         //insert
         vUrl = "/mng/asgsysSrng/insertPrgrmDstnctn.do";
     } else {
@@ -836,11 +869,7 @@ function prgrmDstnctnSaveBtn() {
         vUrl = "/mng/asgsysSrng/updatePrgrmDstnctn.do";
     }
 
-    if(!confirm("저장 하시겠습니까?")){return;}
 
-    var param = {};
-
-    //프로그램 일정
     $("#prgrmDstnctnFrm input").each(function(index, item) {
 
         if("checkbox" == item.type && "on" == item.value) {
@@ -851,21 +880,12 @@ function prgrmDstnctnSaveBtn() {
         }
     });
 
-    $("[id^=schdlTr]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].prgrmid"] = prgrmid; });    //프로그램 id (key)
-    $("[id^=rnd]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].rnd"    ] = item.textContent; });    //차수
-    $("[id^=bgngHr]").each(function(index, item)       { param["prgrmSchdlLst[" + index + "].bgngHr" ] = item.value; });    //시작 시간
-    $("[id^=bgngMnt]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].bgngMnt"] = item.value; });    //시작 분
-    $("[id^=endHr]").each(function(index, item)        { param["prgrmSchdlLst[" + index + "].endHr"  ] = item.value; });    //종료 시간
-    $("[id^=endMnt]").each(function(index, item)       { param["prgrmSchdlLst[" + index + "].endMnt" ] = item.value; });    //종료 분
-    $("[id^=schdlPrgrmNm]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].prgrmNm"] = item.value; });    //프로그램명
-    $("[id^=crs]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].crs"    ] = item.value; });    //과정
-
+    param["eduCn"] = $("#eduCn").val();    //교육 내용
 
     //프로그램 대처계획
-    $("[id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = prgrmid; });       //프로그램 id (key)
+    $("[id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmKey").val()});       //프로그램 id (key)
     $("[id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
     $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
-
 
     $.ajax({
         url : vUrl,
@@ -878,7 +898,8 @@ function prgrmDstnctnSaveBtn() {
 
                 alert("저장이 완료 되었습니다.");
 
-                var url="/mng/asgsysSrng/dsgnAplyDetailForm.html?prgrmid=" + prgrmid;
+                gridHelper1.resetPageContent();
+
 
             }else{
 
@@ -905,9 +926,6 @@ function initPrgrmDstnctn(){
 
 	//교육주제 set
 	setEduJbjct();
-
-
-
 
     $('#jdsgTab1Link').addClass("active");
 
