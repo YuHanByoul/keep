@@ -60,7 +60,7 @@
                         <div class="form-input-file">
                             <label class="form-input">
                                 <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
-                                    th:attr="accept=${acceptUploadFileExt}">
+                                       th:attr="accept=${acceptUploadFileExt}">
                                 <span class="inp-file-text placeholder" data-width="400">파일첨부</span>
                                 <span class="btn-medium btn-gray">파일선택</span>
                             </label>
@@ -75,7 +75,7 @@
                                                 </a>
                                             </span>
                                             <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
-                                                    th:attr="data-file-idntfc-key=${file.fileIdntfcKey}"
+                                                    th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
                                                     th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
                                                 <span class="icon icon-circle-close"></span>
                                             </button>
@@ -88,7 +88,7 @@
                     </td>
                 </tr>
                 </tbody>
-            </table>xhfdv
+            </table>
         </div>
         <div class="box-desc-list bg7 mt10">
             <ul>
@@ -142,14 +142,13 @@
                 if (!$('#inqryForm').valid()) return;
 
                 let url = this.insertUrl;
-
                 if (this.inqryid != null) url = this.updateUrl;
 
                 if (displayWorkProgress(true)) {
                     let formData = $('#inqryForm').serializeArray();
                     var params = [];
-                    params.push({name: 'inqryid', value: frontInqryForm.inqryid});
 
+                    params.push({name: 'inqryid', value: frontInqryForm.inqryid});
                     formData = formData.concat(params);
 
                     $.ajax({
@@ -158,18 +157,12 @@
                         data: formData,
                         dataType: 'json',
                         success: function (response) {
-                            console.log(response.result);
-                            if (response.result == 'success') {
-                                alert(response.);
-                                alert('문의글이 성공적으로 등록 되었습니다.');
-                                closeWorkProgress();
-
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success) {
                                 let f = document.forms.listForm;
                                 f.action = frontInqryForm.listUrl;
                                 f.submit();
-                            } else {
-                                alert('1:1 문의글 등록 중 에러가 발생했습니다. 다시 등록해 주십시오.');
-                                closeWorkProgress();
                             }
                         }
                     });
@@ -235,7 +228,7 @@
                                             </a>
                                         </span>
                                         <button type="button" class="file-delete" title="삭제" name="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
-                                             onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                             data-id=${response[i].fileid} onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
                                             <span class="icon icon-circle-close"></span>
                                         </button>
                                     </li>

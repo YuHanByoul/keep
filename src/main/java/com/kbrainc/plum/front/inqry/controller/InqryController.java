@@ -54,11 +54,10 @@ public class InqryController {
     @GetMapping("/inqryList.html")
     public String inqryList(InqryVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
         searchVo.setOrderField("REG_DT");
+        List<InqryVo> list = inqryService.selectInqryList(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
         model.addAttribute("searchVo", searchVo);
-
-        List<InqryVo> list = inqryService.selectInqryList(searchVo);
         model.addAttribute("list", list);
         model.addAttribute("totalCount", list.size() > 0 ? list.get(0).getTotalCount() : 0);
 
@@ -90,8 +89,8 @@ public class InqryController {
     public String inqryDetail(InqryVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
         InqryVo inqry = inqryService.selectInqry(searchVo);
         InqryAnsVo inqryAns = inqryService.selectInqryAns(searchVo);
-        model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
 
+        model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("inqry", inqry);
         model.addAttribute("inqryAns", inqryAns);
@@ -104,6 +103,7 @@ public class InqryController {
     public Map<String, Object> selectInqryList(InqryVo inqryVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
         inqryVo.setUser(user);
+
         List<InqryVo> list = inqryService.selectInqryList(inqryVo);
         if (list.size() > 0) {
             result.put("totalCount", list.get(0).getTotalCount());
@@ -121,55 +121,70 @@ public class InqryController {
     @PostMapping("/insertInqry.do")
     @ResponseBody
     public Map<String, Object> insertInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
-        Map<String, Object> result = new HashMap<>();
-        String resultMsg = Constant.REST_API_RESULT_FAIL;
+        Map<String, Object> response = new HashMap<>();
+        boolean success = false;
+        inqryVo.setUser(userVo);
 
-        if (userVo.getUserid() == null) {
-            // throws new Exception('not login');
-        } else {
-            inqryVo.setUser(userVo);
-            if (inqryService.insertInqry(inqryVo) > 0)
-                resultMsg = Constant.REST_API_RESULT_SUCCESS;
-        }
-        result.put("result", resultMsg);
+        if (inqryService.insertInqry(inqryVo) > 0) {
+            success = true;
+            response.put("msg", "등록이 완료되었습니다.");
+        } else
+            response.put("msg", "등록이 실패하였습니다.");
 
-        return result;
+        response.put("success", success);
+
+        return response;
     }
 
     @PostMapping("/updateInqry.do")
     @ResponseBody
     public Map<String, Object> updateInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
-        Map<String, Object> result = new HashMap<>();
-        String resultMsg = Constant.REST_API_RESULT_FAIL;
+        Map<String, Object> response = new HashMap<>();
+        boolean success = false;
         inqryVo.setUser(userVo);
-        if (inqryService.updateInqry(inqryVo) > 0)
-            resultMsg = Constant.REST_API_RESULT_SUCCESS;
-        result.put("result", resultMsg);
 
-        return result;
+        if (inqryService.updateInqry(inqryVo) > 0) {
+            success = true;
+            response.put("msg", "수정이 완료되었습니다.");
+        } else
+            response.put("msg", "수정이 실패하였습니다.");
+
+        response.put("result", success);
+
+        return response;
     }
 
     @PostMapping("/deleteInqry.do")
     @ResponseBody
     public Map<String, Object> deleteInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
-        Map<String, Object> result = new HashMap<>();
-        String resultMsg = Constant.REST_API_RESULT_FAIL;
+        Map<String, Object> response = new HashMap<>();
+        boolean success = false;
         inqryVo.setUser(userVo);
-        if (inqryService.deleteInqry(inqryVo) > 0)
-            resultMsg = Constant.REST_API_RESULT_SUCCESS;
-        result.put("result", resultMsg);
-        return result;
+
+        if (inqryService.deleteInqry(inqryVo) > 0) {
+            success = true;
+            response.put("msg", "삭제가 완료되었습니다.");
+        } else
+            response.put("msg", "삭제가 실패하였습니다.");
+
+        response.put("success", success);
+        return response;
     }
 
     @PostMapping("/cancelInqry.do")
     @ResponseBody
     public Map<String, Object> cancelInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
-        Map<String, Object> result = new HashMap<>();
-        String resultMsg = Constant.REST_API_RESULT_FAIL;
+        Map<String, Object> response = new HashMap<>();
+        boolean success = false;
         inqryVo.setUser(userVo);
-        if (inqryService.cancelInqry(inqryVo) > 0)
-            resultMsg = Constant.REST_API_RESULT_SUCCESS;
-        result.put("result", resultMsg);
-        return result;
+
+        if (inqryService.cancelInqry(inqryVo) > 0) {
+            success = true;
+            response.put("msg", "취소가 완료되었습니다.");
+        } else
+            response.put("msg", "취소가 실패하였습니다.");
+
+        response.put("success", success);
+        return response;
     }
 }
