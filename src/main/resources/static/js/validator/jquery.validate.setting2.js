@@ -12,6 +12,7 @@ $.validator.setDefaults({
                 highlight :true,
                 showErrors:function(errorMap, errorList){ //alert
                     $('.form-msg').text('');
+                    $('.feedback.invalid', this.currentForm).text('').removeClass("invalid");
                     if(this.numberOfInvalids() && errorList.length != 0) {
                         //option1 : alert 표시
                         //alert(errorList[0].message);
@@ -28,13 +29,17 @@ $.validator.setDefaults({
                         //$(errorList[0].element.nextElementSibling).text('123')
                         var nextSibling = null;
                         $(errorList).each(function(){
-                            if($(this.element).siblings(".form-msg")){
+                            if($(this.element).siblings(".form-msg")){ // 예제용
                                $(this.element).siblings(".form-msg").text(this.message);
                             }
                             
-                            if($(this.element).siblings(".invalid-feedback")){ // 로그인 전용
+                            if($(this.element).siblings(".invalid-feedback").length == 1){ // 로그인 전용
                                $(this.element).siblings(".invalid-feedback").text(this.message);
                                return false;
+                            }
+                            
+                            if($(this.element).closest("td").find(".feedback").length == 1) { // 포털용
+                                $(this.element).closest("td").find(".feedback").text(this.message).removeClass("valid").addClass("invalid");
                             }
 
 /*                            nextSibling = this.element.nextElementSibling;
