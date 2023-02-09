@@ -94,6 +94,6 @@ public class InfntSchdlVo extends ParentRequestVo {
     
     /** 검색 관련 */
     private String searchClssrmId;
-    private String searchPrgrmId;
+    private String searchSchdlId;
     
 }

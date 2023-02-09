@@ -79,6 +79,9 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String sunYn;
     /** 사용_여부 */
     private String useYn;
+    
+    /** 분류_상위 코드 */
+    private String upprClsfCd;
     /** 분류_코드 */
     private String clsfCd;
     /** 분류_코드명 */
@@ -111,6 +114,8 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String tmeSatYn;
     /** 회차별 일요일_여부 */
     private String tmeSunYn;
+    /** 회차별 삭제_여부 */
+    private String delFlag;
     
     /** 프로그램복사 ID */
     private String copyPrgrmId;

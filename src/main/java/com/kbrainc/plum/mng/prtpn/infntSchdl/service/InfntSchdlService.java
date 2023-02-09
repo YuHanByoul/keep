@@ -2,6 +2,11 @@ package com.kbrainc.plum.mng.prtpn.infntSchdl.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
 import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlVo;
 
 
@@ -78,4 +83,16 @@ public interface InfntSchdlService {
      * @return int
      */
     public int deleteInfntSchdl(InfntSchdlVo infntSchdl) throws Exception;
+    
+    /**
+    * 교육일정관리 교육일정 리스트 조회
+    **
+    @Title : selectInfntSchdlIdList
+    * @Description : 교육일정관리 교육일정 리스트 조회
+    * @param clssrmId
+    * @return
+    * @throws Exception
+    * @return List<InfntSchdlVo>
+    */
+    public List<InfntSchdlVo> selectInfntSchdlIdList(String clssrmId) throws Exception;
 }

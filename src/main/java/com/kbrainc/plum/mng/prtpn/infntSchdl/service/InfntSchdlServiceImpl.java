@@ -65,6 +65,8 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
         if(infntSchdlVo.getPrgrmSttIds()!=null & infntSchdlVo.getPrgrmSttIds().length > 0) {
             retVal += infntSchdlDao.insertPrgrmSttId(infntSchdlVo);
         }
+       //유아_프로그램_일정_프로그램_회차 저장 
+       retVal += infntSchdlDao.insertPrgrmTmeSchdl(infntSchdlVo);
         
         return retVal;
     }
@@ -127,5 +129,17 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
         
         return retVal;        
     }
-    
+ 
+    /**
+     * 교육일정관리 교육일정 리스트 조회
+     *
+     * @Title : updateInfntSchdl
+     * @Description : 교육일정관리 교육일정 리스트 조회
+     * @param clssrmId
+     * @throws Exception 예외
+     * @return int
+     */
+    public List<InfntSchdlVo> selectInfntSchdlIdList(String clssrmId) throws Exception{
+        return infntSchdlDao.selectInfntSchdlIdList(clssrmId);   
+    }
 }

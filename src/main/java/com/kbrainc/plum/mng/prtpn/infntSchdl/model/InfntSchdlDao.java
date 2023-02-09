@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.prtpn.infntSchdl.model;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
@@ -126,5 +127,26 @@ public interface InfntSchdlDao {
     * @return int
     */
     public int insertPrgrmSttId(InfntSchdlVo infntSchdlVo) throws Exception;
-    
+    /**
+    * EDU_유아_프로그램_회차_일정 등록
+    **
+    @Title : insertPrgrmTmeSchdl
+    * @Description : EDU_유아_프로그램_회차_일정 등록
+    * @param infntSchdlVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertPrgrmTmeSchdl(InfntSchdlVo infntSchdlVo) throws Exception;    
+
+    /**
+     * 교육일정관리 교육일정 리스트 조회
+     *
+     * @Title : selectInfntSchdlIdList
+     * @Description : 교육일정관리 교육일정 리스트 조회
+     * @param clssrmId
+     * @throws Exception 예외
+     * @return int
+     */
+    public List<InfntSchdlVo> selectInfntSchdlIdList(@Param("clssrmId") String clssrmId) throws Exception;   
 }

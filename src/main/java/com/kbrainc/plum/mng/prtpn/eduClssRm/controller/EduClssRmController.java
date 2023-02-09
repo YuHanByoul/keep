@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -42,6 +43,9 @@ public class EduClssRmController {
     @Autowired
     private EduClssRmService eduClssRmService;
     
+    @Autowired
+    private CommonService commonService;
+    
     /**
     * 교육관관리 리스트화면으로 이동
     *
@@ -53,7 +57,8 @@ public class EduClssRmController {
     */
     @RequestMapping(value = "/mng/prtpn/eduClssRm/eduClssRmListForm.html")
     public String eduClssRmListForm(Model model, HttpServletRequest request) throws Exception {
-        
+        List<Map<String, Object>> instList = commonService.selectAlowedInstList();
+        model.addAttribute("instList", instList);
         return "mng/prtpn/eduClssRm/eduClssRmList";
     }
     

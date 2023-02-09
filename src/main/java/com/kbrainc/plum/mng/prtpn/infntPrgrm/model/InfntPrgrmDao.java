@@ -125,6 +125,50 @@ public interface InfntPrgrmDao {
     public int updateInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception;
  
     /**
+     * 교육프로그램관리 회차 삭제
+     *
+     * @Title : deleteInfntPrgrmTme
+     * @Description : 교육프로그램관리 회차 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * EDU_유아_프로그램_신청_교육_대상 삭제
+     *
+     * @Title : deleteInfntPrgrmAplyEduTrgt
+     * @Description : EDU_유아_프로그램_신청_교육_대상 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmAplyEduTrgt(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * EDU_유아_프로그램_신청 삭제
+     *
+     * @Title : deleteInfntPrgrmAply
+     * @Description : EDU_유아_프로그램_신청 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmAply(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * EDU_유아_프로그램_회차_일정 삭제
+     *
+     * @Title : deleteInfntPrgrmTmeSchdl
+     * @Description : EDU_유아_프로그램_회차_일정 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmTmeSchdl(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
     * 교육대상 삭제
     **
     @Title : deleteTrgtCd

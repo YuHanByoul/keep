@@ -38,7 +38,6 @@ public class InfntAplyVo extends ParentRequestVo {
     
     /** 프로그램_일정아이디 */
     private String prgrmSchdlid;
-    
     /** 신청아이디 */
     private int aplyId;
     /** 교육관아이디 */
@@ -51,8 +50,6 @@ public class InfntAplyVo extends ParentRequestVo {
     private int prgrmId;
     /** 프로그램_이름 */
     private String prgrmNm;
-    /** 교육_인원수 */
-    private String eduNope;
     /** 교육관_이름 */
     private String clssrmNm;
     /** 신청상태_신청완료_수 */
@@ -65,43 +62,61 @@ public class InfntAplyVo extends ParentRequestVo {
     private String cnclAplyCnt;
     /** 신청상태_승인거부_수 */
     private String dnlApprvCnt;
-
     
-    
-    
-    
-    /** 신청_이름 */
-    private String aplyNm;
-    /** 교육_시간_분 */
-    private String eduHrMnt;
     /** 접수_방법_코드 */
     private String rcptMthdCd;
     /** 접수_방법_코드명 */
     private String rcptMthdNm;
     
-    /** 교육_설명 */
-    private String eduExpln;
-    /** 유의사항 */
-    private String mttrat;
-    /** 교육_소개_파일아이디 */
-    private int eduIntrcnFileid;
-    /** 교육_사진_파일아이디 */
-    private int eduPhotoFileid;
-    /** 신청복사 ID */
-    private String copyAplyId;
-    
+    /** 교육일자 */
+    private String de;
+    /** 회차ID */
+    private String tmeId;
+    /** 회차명 */
+    private String tmeNm;
+    /** 신청일자 */
+    private String rcptDt;
+    /** 기관아이디 */
+    private int instid;
+    /** 기관명 */
+    private String instNm;
+    /** 신청인아이디 */
+    private int aplyUserid;
+    /** 신청인명 */
+    private String aplyUserNm;
+    /** 회차_일정아이디 */
+    private int tmeSchdlid;
+    /** 우편번호 */
+    private String zip;
+    /** 주소 */
+    private String addr;
+    /** 주소_상세 */
+    private String addrDtl;
+    /** 시도_코드 */
+    private String ctprvnCd;
+    /** 전화번호 */
+    private String telno;
+    /** 휴대폰번호 */
+    private String moblphon;
+    /** 이메일 */
+    private String eml;
+    /** 교육_인원수 */
+    private String eduNope;
+    /** 교사_인원수 */
+    private String tcherNope;
+    /** 기타 */
+    private String etc;
+    /** 쌍방향_온라인_교육_동의_여부 */
+    private String towwayOnlnEduAgreYn;
+    /** 상태_코드 */
+    private String sttsCd;
+    /** 상태_이름 */
+    private String sttsNm;
     /** 교육대상 코드 저장용 */
     private String [] trgtCds;
-    /** 교육주제 코드 저장용 */
-    private String [] clsfCds;
-    /** 신청복사 저장용 */
-    private String [] copyAplyIds;
+    /** 대상_코드 */
+    private String trgtCd;
 
-    
-    /** 교육_유형_코드 */
-    @NotEmpty(message = "교육유형을 선택해주십시오.")
-    private String eduTypeCd;
-    
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
@@ -123,4 +138,9 @@ public class InfntAplyVo extends ParentRequestVo {
     private String searchClssrmMm;
     private String searchRcptMthdCd;
     private String searchSttsCd;
+    private String searchType;
+    private String searchDeStartDt;
+    private String searchDeEndDt;
+    private String searchRcptStartDt;
+    private String searchRcptEndDt;    
 }

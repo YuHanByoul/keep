@@ -63,8 +63,8 @@
             <if test="searchClssrmId != null and searchClssrmId != ''">
             AND A.CLSSRMID = #{searchClssrmId}
             </if>
-            <if test="searchPrgrmId != null and searchPrgrmId != ''">
-            AND C.PRGRMID = #{searchPrgrmId}
+            <if test="searchSchdlId != null and searchSchdlId != ''">
+            AND A.PRGRM_SCHDLID = #{searchSchdlId}
             </if>
         GROUP BY A.PRGRM_SCHDLID, B.DE            
     </select>
@@ -160,6 +160,55 @@
             )
           </foreach>
     </insert>     
+
+    <!-- EDU_유아_프로그램_일정_프로그램_회차 저장 -->
+    <insert id="insertPrgrmTmeSchdl" parameterType="InfntSchdlVo" >
+         /* InfntSchdlDao.insertPrgrmTmeSchdl */
+         INSERT INTO TB_EDU_INFNT_PRGRM_TME_SCHDL(
+              TMEID
+              , DE
+              , PRGRM_SCHDLID
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+         )
+         SELECT TC.TMEID
+              ,TA.DE            
+              ,TB.PRGRM_SCHDLID
+              ,NOW()
+              ,#{user.userid}
+              ,NOW()
+              ,#{user.userid}
+           FROM TB_EDU_INFNT_PRGRM_SCHDL_DE TA
+              , TB_EDU_INFNT_PRGRM_SCHDL_PRGRM TB         
+              , (SELECT TMEID, PRGRMID, MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE MON_YN = 'Y'
+                UNION ALL 
+                SELECT TMEID, PRGRMID, NULL MON_YN, TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE TUES_YN = 'Y'
+                UNION ALL 
+                SELECT TMEID, PRGRMID, NULL MON_YN, NULL TUES_YN, WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE WED_YN = 'Y'
+                UNION ALL 
+                SELECT TMEID, PRGRMID, NULL MON_YN, NULL TUES_YN, NULL WED_YN, THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE THUR_YN = 'Y'
+                UNION ALL 
+                SELECT TMEID, PRGRMID, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE FRI_YN = 'Y'
+                UNION ALL 
+                SELECT TMEID, PRGRMID, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, SAT_YN, NULL SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE SAT_YN = 'Y'
+                UNION ALL 
+                SELECT TMEID, PRGRMID, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, SUN_YN FROM TB_EDU_INFNT_PRGRM_TME WHERE SUN_YN = 'Y'
+               ) TC 
+        WHERE TA.PRGRM_SCHDLID = TB.PRGRM_SCHDLID
+          AND TB.PRGRMID = TC.PRGRMID
+          AND DAYOFWEEK(TA.DE) = CASE WHEN TC.MON_YN = 'Y' THEN 2 
+                                       WHEN TC.TUES_YN = 'Y' THEN 3    
+                                       WHEN TC.WED_YN = 'Y' THEN 4    
+                                       WHEN TC.THUR_YN = 'Y' THEN 5    
+                                       WHEN TC.FRI_YN = 'Y' THEN 6    
+                                       WHEN TC.SAT_YN = 'Y' THEN 7    
+                                       WHEN TC.SUN_YN = 'Y' THEN 1
+                                       ELSE NULL 
+                                  END    
+          AND TA.PRGRM_SCHDLID = #{prgrmSchdlid}                                                       
+    </insert>     
     
     <!-- EDU_유아_프로그램_일정_일자 삭제 -->
     <insert id="deleteDeSttId" parameterType="InfntSchdlVo" >
@@ -176,4 +225,15 @@
          WHERE 1=1
            AND PRGRM_SCHDLID = #{prgrmSchdlid}
     </insert>     
+    
+    <!-- 교육일정관리 교육일정 리스트 조회 -->   
+    <select id="selectInfntSchdlIdList" resultType="InfntSchdlVo">
+        /* InfntSchdlDao.selectInfntSchdlIdList */
+        SELECT
+          PRGRM_SCHDLID
+        , YM
+        , SCHDL_NM
+        FROM TB_EDU_INFNT_PRGRM_SCHDL
+       WHERE CLSSRMID = #{clssrmId}
+    </select>     
 </mapper>

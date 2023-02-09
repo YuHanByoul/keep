@@ -120,10 +120,10 @@
 									<strong>교육신청 검색결과</strong>
 								</h5>
 							</div>
-							<div class="col-12 col-md-6 text-right">
+<!-- 							<div class="col-12 col-md-6 text-right">
 								<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">등록</button>
 							</div>
-						</div>
+ -->						</div>
 						<div class="card-block-small">
 							<div class="dt-responsive table-responsive">
 								<div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -133,19 +133,18 @@
 							</div>
 						</div>
 					</div>
-					<!-- Content Area -->
-					<div class="col-12">
-					   <div id="contentPanel" style="display: none" class="card"></div>
-					</div>   
 				</div>
+				<!-- Content Area -->
+				<div class="col-12">
+				   <div id="contentPanel" style="display: none" class="card"></div>
+				</div>   
 			</div>
 		</div>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
 <script th:inline="javascript">
-    var selectedItems;
-    var aplyCopyUrl = "/mng/prtpn/infntAply/insertInfntAplyCopy.do";
+    var selectedItems = [];
     //커스텀 테그 라이브러리 임시 설정
        var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
        function fn_getNextDepthList(grpcd , upprcd, targetId){
@@ -271,29 +270,30 @@
                       return data.promise();
                   },				
 			},
-			
 			fields : [
-			   { name : 'aplyId', css : 'hide' }
+			    { name : 'prgrmId', css : 'hide' }
+			  , { name : 'clssrmId', css : 'hide' } 
+			  , { name : 'prgrmSchdlid', css : 'hide' } 
 			  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
 			  , { title : '교육년도', name : 'eduYr', type : "text", width : "120", align : "center" }
 			  , { title : '교육관', name : 'clssrmNm', type : "text", width : "263", align : "center" }
 			  , { title : '프로그램명', name : 'prgrmNm', type : "text", width : "223", align : "center" }
 			  , { title : '교육월', name : 'eduMm', type : "text", width : "96", align : "center" }
 			  , { title : '접수방법', name : 'rcptMthdNm', type : "text", width : "120", align : "center" }
-			  , { title : '교육정원', name : 'eduNope', type : "text", width : "120", align : "center" }
-			  , { title : '신청완료', name : 'aplyCmpltCnt', type : "text", width : "120", align : "center" }
-			  , { title : '대기신청', name : 'wtngAplyCnt', type : "text", width : "120", align : "center" }
-			  , { title : '승인대기', name : 'wtngApprvCnt', type : "text", width : "120", align : "center" }
-			  , { title : '신청취소', name : 'cnclAplyCnt', type : "text", width : "120", align : "center" }
-			  , { title : '승인거부', name : 'dnlApprvCnt', type : "text", width : "120", align : "center" }
+			  , { title : '교육정원', name : 'eduNope', type : "text", width : "80", align : "center" }
+			  , { title : '신청완료', name : 'aplyCmpltCnt', type : "text", width : "80", align : "center" }
+			  , { title : '대기신청', name : 'wtngAplyCnt', type : "text", width : "80", align : "center" }
+			  , { title : '승인대기', name : 'wtngApprvCnt', type : "text", width : "80", align : "center" }
+			  , { title : '신청취소', name : 'cnclAplyCnt', type : "text", width : "80", align : "center" }
+			  , { title : '승인거부', name : 'dnlApprvCnt', type : "text", width : "80", align : "center" }
 			],
 			
 			rowClick : function(args) {
 				if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-				var detailUrl = detailUrl = "/mng/prtpn/infntAply/infntAplyUpdateForm.html?aplyId=" + args.item.aplyId;
-					
+				var detailUrl = detailUrl = "/mng/prtpn/infntAply/infntAplyDetailForm.html?prgrmSchdlid=" + args.item.prgrmSchdlid;
 				gridHelper1.loadContent(detailUrl);
 				gridHelper1.rowClick(args);
+                selectedItems.push({"prgrmSchdlid": args.item.prgrmSchdlid, "eduYr": args.item.eduYr, "clssrmId":args.item.clssrmId, "clssrmNm" : args.item.clssrmNm, "prgrmId":args.item.prgrmId, "prgrmNm":args.item.prgrmNm});
 			},
 			onPageChanged : function(args) {
 				selectedItems = [];

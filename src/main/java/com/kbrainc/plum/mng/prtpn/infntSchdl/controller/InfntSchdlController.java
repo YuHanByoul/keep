@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
@@ -295,5 +297,25 @@ public class InfntSchdlController {
             resultMap.put("msg", "삭제에 실패했습니다.");
         }
         return resultMap;
+    }    
+    
+    /**
+    * 교육일정관리 교육일정 리스트 조회
+    *
+    * @Title : selectInfntPrgrmList
+    * @Description : 교육일정관리 교육일정 리스트 조회
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/prtpn/infntSchdl/selectInfntSchdlIdList.do")
+    @ResponseBody
+    public Map<String, Object> selectInfntSchdlIdList(String clssrmId) throws Exception {
+        List<InfntSchdlVo> result = null;
+        result =  infntSchdlService.selectInfntSchdlIdList(clssrmId);
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("schdlIdList", result);
+        return resultMap;
+            
     }    
 }

@@ -140,7 +140,25 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @return int
     */
     public int insertInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception{
-        return infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
+        int retVal = 0;
+        InfntPrgrmVo delInfntPrgrmVo =  new InfntPrgrmVo();
+        
+        if(infntPrgrmVo.getInfntPrgrmVoList() != null) {
+            retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);            
+            retVal += infntPrgrmDao.updateInfntPrgrmTme(infntPrgrmVo);
+            for (int i=0; i<infntPrgrmVo.getInfntPrgrmVoList().size();i++){
+                if("Y".equals(infntPrgrmVo.getInfntPrgrmVoList().get(i).getDelFlag())) {
+                    delInfntPrgrmVo.setTmeId(infntPrgrmVo.getInfntPrgrmVoList().get(i).getTmeId());
+                    retVal += infntPrgrmDao.deleteInfntPrgrmAplyEduTrgt(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmAply(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmTmeSchdl(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmTme(delInfntPrgrmVo);
+                }
+            }
+            
+            //retVal += infntPrgrmDao.deleteInfntPrgrmTme(infntPrgrmVo);
+        }
+        return retVal;
     }
     
     /**

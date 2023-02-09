@@ -248,6 +248,7 @@
     <insert id="insertInfntPrgrmTme" parameterType="InfntPrgrmVo" keyProperty="InfntPrgrmVo">
         /* InfntPrgrmDao.insertInfntPrgrmTme */
         <foreach collection="infntPrgrmVoList" item="item" index="index" separator=";">
+        <if test="item.tmeId == null or item.tmeId == ''">
         INSERT INTO TB_EDU_INFNT_PRGRM_TME (
             PRGRMID
             , TME_NM
@@ -284,7 +285,8 @@
             ,#{user.userid}
             ,NOW()
             ,#{user.userid}
-        )            
+        )
+        </if>    
         </foreach>            
     </insert>    
         
@@ -298,7 +300,8 @@
             , B.EDU_TYPE_CD
             , A.EDU_YR
             , A.PRGRM_NM
-            ,(SELECT GROUP_CONCAT(CLSF_CD SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_CLSF_MAPNG  WHERE PRGRMID = #{prgrmId} ) AS CLSF_CD
+            ,(SELECT GROUP_CONCAT(T1.CLSF_CD SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_CLSF_MAPNG T1 WHERE T1.PRGRMID = #{prgrmId} ) AS CLSF_CD
+            ,(SELECT GROUP_CONCAT(T2.UPPR_CD SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_CLSF_MAPNG T1 LEFT OUTER JOIN TB_CMM_CD T2 ON T2.CD = T1.CLSF_CD WHERE T1.PRGRMID = #{prgrmId} ) AS UPPR_CLSF_CD
             , A.EDU_NOPE
             , A.EDU_HR_MNT
             , A.RCPT_MTHD_CD
@@ -362,24 +365,66 @@
     <!-- 교육프로그램 회차 수정 -->
     <update id="updateInfntPrgrmTme" parameterType="InfntPrgrmVo" keyProperty="InfntPrgrmVo">
         /* InfntPrgrmDao.updateInfntPrgrmTme */
-        UPDATE TB_EDU_INFNT_PRGRM_TME SET
-                PRGRMID                         = #{prgrmId}        
-                , TME_NM                        = #{tmeNm}         
-                , MON_YN                        = #{monYn}         
-                , TUES_YN                       = #{tuesYn}        
-                , WED_YN                        = #{wedYn}         
-                , THUR_YN                       = #{thurYn}        
-                , FRI_YN                        = #{friYn}         
-                , SAT_YN                        = #{satYn}         
-                , SUN_YN                        = #{sunYn}         
-                , BGNG_TM                       = #{bgngTm}        
-                , END_TM                        = #{endTm}         
-                , ORDR                          = #{ordr}          
-                , USE_YN                        = #{useYn}         
-                , MDFCN_DT                      = NOW()            
-                , MDFRID                        = #{user.userid}   
-         WHERE TMEID                            = #{tmeId}
+        <foreach collection="infntPrgrmVoList" item="item" index="index" separator=";">
+            <if test="item.tmeId != null and item.tmeId != ''">
+            UPDATE TB_EDU_INFNT_PRGRM_TME SET
+                    PRGRMID                         = #{item.prgrmId}
+                    , TME_NM                        = #{item.tmeNm}         
+                    , MON_YN                        = #{item.tmeMonYn}         
+                    , TUES_YN                       = #{item.tmeTuesYn}        
+                    , WED_YN                        = #{item.tmeWedYn}         
+                    , THUR_YN                       = #{item.tmeThurYn}        
+                    , FRI_YN                        = #{item.tmeFriYn}         
+                    , SAT_YN                        = #{item.tmeSatYn}         
+                    , SUN_YN                        = #{item.tmeSunYn}         
+                    , BGNG_TM                       = #{item.bgngTm}        
+                    , END_TM                        = #{item.endTm}         
+                    , ORDR                          = #{item.ordr}          
+                    , USE_YN                        = #{item.useYn}         
+                    , MDFCN_DT                      = NOW()            
+                    , MDFRID                        = #{user.userid}   
+             WHERE TMEID                            = #{item.tmeId}
+             </if>
+         </foreach>
     </update>  
+
+    <!-- EDU_유아_프로그램_신청_교육_대상 삭제 -->
+    <insert id="deleteInfntPrgrmAplyEduTrgt" parameterType="InfntPrgrmVo" >
+         /* InfntPrgrmDao.deleteInfntPrgrmAplyEduTrgt */
+         DELETE FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
+         WHERE 1=1
+           AND APLYID IN (
+                SELECT A.APLYID
+                  FROM TB_EDU_INFNT_PRGRM_APLY A
+                     , TB_EDU_INFNT_PRGRM_TME_SCHDL B
+                 WHERE A.TME_SCHDLID = B.TME_SCHDLID 
+                   AND B.TMEID = #{tmeId}
+                 )
+    </insert>
+         
+    <!-- EDU_유아_프로그램_신청 삭제 -->
+    <insert id="deleteInfntPrgrmAply" parameterType="InfntPrgrmVo" >
+         /* InfntPrgrmDao.deleteInfntPrgrmAply */
+         DELETE FROM TB_EDU_INFNT_PRGRM_APLY
+         WHERE 1=1
+           AND TME_SCHDLID IN (SELECT TME_SCHDLID FROM TB_EDU_INFNT_PRGRM_TME_SCHDL WHERE TMEID = #{tmeId})
+    </insert>
+         
+    <!-- EDU_유아_프로그램_회차_일정 삭제 -->
+    <insert id="deleteInfntPrgrmTmeSchdl" parameterType="InfntPrgrmVo" >
+         /* InfntPrgrmDao.deleteInfntPrgrmTme */
+         DELETE FROM TB_EDU_INFNT_PRGRM_TME_SCHDL
+         WHERE 1=1
+           AND TMEID = #{tmeId}
+    </insert>
+         
+    <!-- 교육대상 삭제 -->
+    <insert id="deleteInfntPrgrmTme" parameterType="InfntPrgrmVo" >
+         /* InfntPrgrmDao.deleteInfntPrgrmTme */
+         DELETE FROM TB_EDU_INFNT_PRGRM_TME
+         WHERE 1=1
+           AND TMEID = #{tmeId}
+    </insert>     
     
     <!-- 교육대상 저장 -->
     <insert id="insertTrgtCd" parameterType="InfntPrgrmVo" >
@@ -438,9 +483,9 @@
     <!-- 교육프로그램 관리 회차 목록 조회 -->
     <select id="selectInfntPrgrmTmeList" parameterType="InfntPrgrmVo" resultType="InfntPrgrmVo">
         /* InfntPrgrmDao.selectInfntPrgrmTmeList */
-        <include refid="PaginationMapper.header"/>
         SELECT 
-        A.PRGRMID
+        A.TMEID
+        , A.PRGRMID
         , A.TME_NM        
         , A.MON_YN
         , A.TUES_YN
@@ -466,8 +511,8 @@
             </when>
             <otherwise>            
             </otherwise>
-        </choose>        
-        <include refid="PaginationMapper.footer"/>
+        </choose>
+        ORDER BY A.ORDR        
     </select>    
     
     <!-- 교육프로그램 교육프로그램 설정 목록 조회 -->   

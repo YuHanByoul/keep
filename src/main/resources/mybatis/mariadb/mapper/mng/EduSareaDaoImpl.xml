@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EduSareaDaoImpl.xml
+	Description : 환경교육 NOW -> 운영권역관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaDao">
+    
+    <!-- 운영권역관리 게시글 목록 조회 -->
+    <select id="selectEduSareaList" parameterType="EduSareaVo" resultType="EduSareaVo">
+        /* EduSareaDao.selectEnveduList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        	  A.SAREAID
+            , A.SAREA_NM
+            , A.INSTID AS CNSGN_INSTID
+            , B.INST_NM AS CNSGN_INST_NM
+            , A.EXPLN
+            , A.APLY_LMT_CNT
+            , A.USE_YN
+            ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR',') FROM TB_EDU_SAREA_CTPRVN_MAPNG TA, TB_CMM_CD TB WHERE TA.SAREAID = A.SAREAID and TA.CTPRVN_CD = TB.CD) AS CTPRVN_NM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM 
+            TB_EDU_SAREA A
+            LEFT OUTER JOIN TB_CMM_INST B ON B.INSTID = A.INSTID
+        WHERE 
+            1=1
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 운영권역관리 게시글 등록 --> 
+    <insert id="insertEduSarea" parameterType="EduSareaVo" useGeneratedKeys="true" keyProperty="sareaId">
+        /* EduSareaDao.insertEduSarea */
+        INSERT INTO TB_EDU_SAREA (
+            SAREA_NM
+          , INSTID
+          , APLY_LMT_CNT
+          , EXPLN
+          , USE_YN
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        )VALUES(
+            #{sareaNm}
+          , #{cnsgnInstId}
+          , #{aplyLmtCnt}
+          , #{expln}
+          , #{useYn}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+    <!-- 지역코드 저장 -->
+    <insert id="insertCtprvnCd" parameterType="EduSareaVo" >
+         /* EduSareaDao.insertCtprvnCd */
+         INSERT INTO TB_EDU_SAREA_CTPRVN_MAPNG(
+              SAREAID
+              ,CTPRVN_CD
+              ,MDFCN_DT
+              ,MDFRID              
+              ,REG_DT
+              ,RGTRID
+         )VALUES
+          <foreach item="item" collection="ctprvnCds"  separator=",">
+           (
+             #{sareaId}
+             ,#{item}
+             ,NOW()
+             ,#{user.userid}
+             ,NOW()
+             ,#{user.userid}
+            )
+          </foreach>
+    </insert>         
+    <!-- 운영권역관리 상세조회 -->
+    <select id="selectEduSareaInfo" parameterType="EduSareaVo" resultType="EduSareaVo"> 
+        /* EduSareaDao.selectEnveduInfo */
+        SELECT 
+              A.SAREAID
+            , A.SAREA_NM
+            , A.INSTID AS CNSGN_INSTID
+            , B.INST_NM AS CNSGN_INST_NM
+            , A.EXPLN
+            , A.APLY_LMT_CNT
+            , A.USE_YN
+            ,(SELECT GROUP_CONCAT(T1.CTPRVN_CD SEPARATOR',') FROM TB_EDU_SAREA_CTPRVN_MAPNG T1 WHERE T1.SAREAID = #{sareaId} ) AS CTPRVN_CD            
+        FROM TB_EDU_SAREA A
+        LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+       WHERE SAREAID = #{sareaId}
+    </select>
+    
+    <!-- 운영권역관리 게시글 수정 -->
+    <update id="updateEduSarea" parameterType="EduSareaVo" keyProperty="EduSareaVo">
+        /* EduSareaDao.updateEduSarea */
+        UPDATE TB_EDU_SAREA SET
+                SAREA_NM                 = #{sareaNm}
+                ,INSTID                  = #{cnsgnInstId}
+                ,APLY_LMT_CNT            = #{aplyLmtCnt}
+                ,EXPLN                   = #{expln}
+                ,USE_YN                  = #{useYn} 
+                ,MDFCN_DT                = NOW() 
+                ,MDFRID                  = #{user.userid}
+         WHERE SAREAID                  = #{sareaId}
+    </update>
+    
+    <!-- 지역코드 삭제 -->
+    <insert id="deleteCtprvnCd" parameterType="EduSareaVo" >
+         /* EduSareaDao.deleteCtprvnCd */
+         DELETE FROM TB_EDU_SAREA_CTPRVN_MAPNG
+         WHERE 1=1
+           AND SAREAID = #{sareaId}
+    </insert>
+
+    <!-- 시군구코드 목록 조회 -->
+    <select id="selectSignguCodeList" parameterType="EduSareaVo" resultType="EduSareaVo">
+        /* EduSareaDao.selectSignguCodeList */
+        SELECT A.UPPR_CD AS CTPRVN_CD
+             , A.CD_NM AS SIGNGU_NM
+             , A.CD AS SIGNGU_CD 
+             , CASE WHEN B.SIGNGU_CD IS NULL THEN 'N' ELSE 'Y' END USE_YN
+             , B.HR_SE_CD
+        FROM TB_CMM_CD A
+        LEFT OUTER JOIN TB_EDU_SAREA_SIGNGU B ON B.SIGNGU_CD = A.CD AND B.CTPRVN_CD = A.UPPR_CD
+        WHERE A.USE_YN = 'Y' 
+          AND A.UPPR_CD = #{ctprvnCd}
+        ORDER BY A.CDGRPID, A.UPPR_CD, A.ORD
+    </select>
+    
+    <!-- 운영권역관리 세부지역설정 수정 -->
+    <insert id="updateEduSareaSignguSetting" parameterType="EduSareaVo">
+        /* EduSareaDao.updateEduSareaSignguSetting */
+        <foreach collection="signguList" item="item" index="index" separator=";">
+            INSERT INTO TB_EDU_SAREA_SIGNGU (  
+                SAREAID
+                , CTPRVN_CD      
+                , SIGNGU_CD      
+                , HR_SE_CD       
+                , MDFCN_DT       
+                , MDFRID         
+                , REG_DT         
+                , RGTRID                         
+            ) VALUES (
+                  1                 
+                , #{item.ctprvnCd}    
+                , #{item.signguCd}    
+                , #{item.hrSeCd}      
+                , NOW()               
+                , #{user.userid}      
+                , NOW()               
+                , #{user.userid}      
+             )
+         </foreach>
+    </insert>  
+    
+    <!-- 운영권역관리 세부지역설정 삭제 -->
+    <insert id="deleteEduSareaSignguSetting" parameterType="EduSareaVo" >
+         /* EduSareaDao.deleteEduSareaSignguSetting */
+         DELETE FROM TB_EDU_SAREA_SIGNGU
+         WHERE 1=1
+           AND SAREAID = 1
+    </insert>    
+    
+</mapper>

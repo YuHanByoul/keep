@@ -21,6 +21,19 @@
 		{
 		  background-color: #0ac282 !important;
 		}
+		/* 일요일_빨간색 */
+		.fc-sun .fc-day-number {
+		  color: red;
+		  text-decoration: none;
+		}
+		/* 토요일_파란색 */
+		.fc-sat .fc-day-number {
+		  color: blue;
+		  text-decoration: none;
+		}
+		.fc-unthemed td.fc-today {
+		  background-color : #fcf8e3 !important;
+		}		
 		</style>
 		<form id ="infntSchdlForm">
 	        <!-- Page-body start -->
@@ -34,7 +47,7 @@
 	                                    <div class="row align-items-center">
 	                                        <label class="col-auto"><strong>교육관</strong></label>
 	                                        <div class="col-auto p-l-0">
-	                                            <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm col-auto";>
+	                                            <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeClssrmId(this)">
 	                                                <option value="">- 선택 -</option>
 	                                                <th:block th:each="item : ${clssList}">
 	                                                    <option th:value="${item.clssrmId}"><th:block th:text="${item.clssrmNm}" /></option>
@@ -42,7 +55,7 @@
 	                                            </select>
 	                                        </div>
 	                                        <div class="col-auto p-l-0">
-	                                            <select name="searchPrgrmId" class="form-select form-select-sm form-control-sm col-auto">
+	                                            <select id="searchSchdlId" name="searchSchdlId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeSchdlId(this)">
 	                                                <option value="" disabled selected>교육관을 선택해 주세요.</option>
 	                                            </select>
 	                                        </div>
@@ -119,6 +132,7 @@
             defaultView : 'month',
             //defaultDate : moment(new Date()),
             defaultDate: moment().format("YYYY-MM-DD"),
+            initialDate : '2023-02-16',
             editable : false,
             disable : false,
             droppable: false,
@@ -133,7 +147,7 @@
             dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
             dayNamesShort   : ["일","월","화","수","목","금","토"],
             header : {
-            	left: 'prev,next today',
+            	left: 'prev,next,today',
             	center: 'title',
                 right  : ''
             }, 
@@ -162,24 +176,12 @@
                 //fn_makeCalendarEvent();            	
             },
             eventPositioned: function(info){
-                debugger; 
                   $(".fc-event-container").on('click', 'div', function (e) { 
                       $('.area').css("background-color", '#FFFFFF'); //기존 이벤트제목 배경색 투명처리.
                       $(this).addClass('area');//배경색을 입힐 타겟 지정용 클래스명 삽입.
                       $(this).css("background-color", '#F3F781'); //현재 클릭된 요소의 배경색 변경처리.
                     }); 
              },            
-            /*eventColor: '#378006',
-            eventDidMount: function(info) {
-                debugger;            	
-            	var gColor = 'lightGreen';
-            	var bColor = 'lightBlue';
-            	if(info.event.extendedProps.status == 'done'){
-            		info.el.style.backgroundColor = gColor;
-            	}else{
-                    info.el.style.backgroundColor = bColor;            		
-            	}
-            },*/
             eventClick: function(calEvent, jsEvent, view) {
                 //eventBackgroundColor = jsEvent.currentTarget.style.backgroundColor;
                 $('.select-calendar-color').each(function() {
@@ -192,35 +194,6 @@
             },            
             //캘린더 렌더링 이후  
             viewRender: function(view, element){
-            	
-/*                 var redirect_dt = "";
-                
-                element.find(".fc-day-number").each(function(item){
-                    var year_month_str = moment($("#calendar").fullCalendar("getDate")).format("YYYYMM")
-                    var cell_dt = $(this).parent().attr("data-date");
-                    var thisMonthDay =  moment(cell_dt).format("YYYYMM");
-                    var cellDay =  moment(cell_dt).format("YYYYMMDD");
-                    var day =  moment(cell_dt).format("D");
-                    
-                    var rsvtHtml ='   <div class="day-chk">';
-                        rsvtHtml +=    day;
-                        rsvtHtml +='     <div class="border-checkbox-section">';
-                        rsvtHtml +='         <div class="border-checkbox-group">';
-                        rsvtHtml +='             <input class="border-checkbox checkDay" type="checkbox" name="calendarDay'+cell_dt+'" id="calendarDay'+cell_dt+'"  value="'+cell_dt+'">';
-                        rsvtHtml +='             <label class="form-label border-checkbox-label" data-value="label"  for="calendarDay'+cell_dt+'"><span class="d-none">'+day+'</span></label>';
-                        rsvtHtml +='         </div>';
-                        rsvtHtml +='     </div>';
-                        rsvtHtml +='  </div>';
-                        rsvtHtml +='  <input type="hidden" id="rsvt_stts'+cell_dt+'" value="N" />';
-
-                    var endHtml ='    <div class="day-chk">';
-                        endHtml +=    day    ;
-                        endHtml +='   </div>';
-                        endHtml +='   <input type="hidden" id="rsvt_stts'+cell_dt+'" value="E" />';
-
-                        $(this).html("<span>"+rsvtHtml+"</span>");
-                })                
- */                //fn_makeListHtml();
             }
         });		
         // 이전 날짜 클릭
@@ -245,13 +218,15 @@
             if(displayWorkProgress()){          
                 // ajax 처리로 데이터를 로딩 시킨다..
                 var ym = $("#ym").val();
+                var searchSchdlId = $("#searchSchdlId").val();
                 var p_events = { events: [] };
                  $.ajax({
                     url : "/mng/prtpn/infntSchdl/selectInfntSchdlList.do",
                     type: "GET",
                     dataType: 'json',
                     data : {
-                        "ym" : ym
+                        "ym" : ym,
+                        "searchSchdlId" : searchSchdlId
                     },
                     success : function (data){
                         //JSON.stringify(data);
@@ -305,6 +280,35 @@
             return yyyy + "년 " + (mm[1] ? mm : "0" + mm[0]) + "월";
         }        
 
+        function fn_changeClssrmId(item){
+            var getCodeUrl = "/mng/prtpn/infntSchdl/selectInfntSchdlIdList.do";
+            var url = getCodeUrl + "?clssrmId=" + $(item).val();
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    cache: false,
+                    success: function (data) {
+                        //$("#eduTypeCd").val(data.eduTypeCd);
+                        $("#searchSchdlId").html(fn_makeSearchSchdlIdHtml(data.schdlIdList));
+                        closeWorkProgress();                    
+                    }
+                });
+            }
+        }
+        
+        function fn_changeSchdlId(item){
+        	fn_makeCalendarEvent();        
+        }
+        
+        function fn_makeSearchSchdlIdHtml(dataList) {
+            var schdlIdHtml = "";
+            schdlIdHtml += '           <option value="">- 선택 -</option>   ';  
+            for(var i=0; i<dataList.length; i++){  
+            	schdlIdHtml += '<option value="'+dataList[i].prgrmSchdlid+'">'+dataList[i].schdlNm+'</option>';
+            }
+            return schdlIdHtml;
+        }
 		</script>
 		<script src="/js/ckeditor/ckeditor.js"></script>
 	</div>

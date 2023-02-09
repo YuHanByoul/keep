@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.prtpn.infntPrgrm.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +125,10 @@ public class InfntPrgrmController {
         model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
         
         InfntPrgrmVo result = null;
+        List<InfntPrgrmVo> resultTmeList = null;
+        
         result = infntPrgrmService.selectInfntPrgrmInfo(infntPrgrmVo);
+        resultTmeList =  infntPrgrmService.selectInfntPrgrmTmeList(infntPrgrmVo);
         
         //교육소개 첨부파일
         //if(infntPrgrmVo.getEduIntrcnFileid() != 0 && result.getEduIntrcnFileIdntfcKey() != null) {
@@ -145,6 +149,8 @@ public class InfntPrgrmController {
             model.addAttribute("eduPhotoFileBtn", eduPhotoFileBtn);
         }
         model.addAttribute("infntPrgrm", result);
+        model.addAttribute("resultTmeList", resultTmeList);
+        
         return "mng/prtpn/infntPrgrm/infntPrgrmUpdate";
     }
    
@@ -301,24 +307,14 @@ public class InfntPrgrmController {
         infntPrgrmVo.setUser(user);
 
         int retVal = 0;
-/*        List<Object> response = new ArrayList<Object>();
-        response.add(Constant.REST_API_RESULT_SUCCESS);
-        if (bindingResult.hasErrors()) {
-            return response;
-        }
-        for (InfntPrgrmVo infntPrgrmVo : infntPrgrmVoList.getInfntPrgrmVoList()) {
-            response.add(insertInfntPrgrmTme(user, infntPrgrmVo));
-        }
-        return response; */
-
         retVal = infntPrgrmService.insertInfntPrgrmTme(infntPrgrmVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록에 성공하였습니다.");
+            resultMap.put("msg", "저장에 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "등록에 실패했습니다.");
+            resultMap.put("msg", "저장에 실패했습니다.");
         }
 
         return resultMap;        
