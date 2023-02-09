@@ -7,6 +7,47 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestDao">
     
+    <!-- 신청관리 목록 검색 조건 -->
+    <sql id="searchCondition">
+        <if test="searchFldCd != null and searchFldCd != ''">
+        AND A.FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+        AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
+        <![CDATA[
+        AND (DATE_FORMAT(A.APLY_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchAplyBgngDe} AND #{searchAplyEndDe}
+        OR DATE_FORMAT(A.APLY_END_DT, '%Y-%m-%d') BETWEEN #{searchAplyBgngDe} AND #{searchAplyEndDe})
+        ]]>
+        </if>
+        <if test="searchBsnsBgngDe != null and searchBsnsBgngDe != ''">
+        <![CDATA[
+        AND (DATE_FORMAT(A.BSNS_BGNG_DE, '%Y-%m-%d') BETWEEN #{searchBsnsBgngDe} AND #{searchBsnsEndDe}
+        OR DATE_FORMAT(A.BSNS_END_DE, '%Y-%m-%d') BETWEEN #{searchBsnsBgngDe} AND #{searchBsnsEndDe})
+        ]]>
+        </if>
+        <if test="status != null and status != ''">
+            <choose>
+                <when test="status == 'before'">
+                <![CDATA[
+                AND NOW() < APLY_BGNG_DT
+                ]]>
+                </when>
+                <when test="status == 'ing'">
+                <![CDATA[
+                AND NOW() >= APLY_BGNG_DT AND NOW() <= APLY_END_DT
+                ]]>
+                </when>
+                <when test="status == 'end'">
+                <![CDATA[
+                AND NOW() > APLY_END_DT
+                ]]>
+                </when>
+            </choose>            
+        </if>
+    </sql>
+    
     <!-- 공모관리 목록 조회 -->
     <select id="selectContestList" parameterType="PublicContestVo" resultType="PublicContestVo">
         /* PublicContestDao.selectContestList */
@@ -75,43 +116,7 @@
             LEFT OUTER JOIN TB_CMM_CD E ON A.ONLN_SRNG_TYPE_CD = E.CD
         WHERE 
             1 = 1
-            <if test="searchFldCd != null and searchFldCd != ''">
-            AND A.FLD_CD = #{searchFldCd}
-            </if>
-            <if test="searchPcntstNm != null and searchPcntstNm != ''">
-            AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
-            </if>
-            <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
-            <![CDATA[
-            AND A.APLY_BGNG_DT >= #{searchAplyBgngDe} 
-            AND A.APLY_END_DT <= #{searchAplyEndDe}
-            ]]>
-            </if>
-            <if test="searchBsnsBgngDe != null and searchBsnsBgngDe != ''">
-            <![CDATA[
-            AND A.BSNS_BGNG_DE >= #{searchBsnsBgngDe} 
-            AND A.BSNS_END_DE <= #{searchBsnsEndDe}
-            ]]>
-            </if>
-            <if test="status != null and status != ''">
-                <choose>
-                    <when test="status == 'before'">
-                    <![CDATA[
-                    AND NOW() < APLY_BGNG_DT
-                    ]]>
-                    </when>
-                    <when test="status == 'ing'">
-                    <![CDATA[
-                    AND NOW() >= APLY_BGNG_DT AND NOW() <= APLY_END_DT
-                    ]]>
-                    </when>
-                    <when test="status == 'end'">
-                    <![CDATA[
-                    AND NOW() > APLY_END_DT
-                    ]]>
-                    </when>
-                </choose>            
-            </if>
+            <include refid="searchCondition"/>
             <if test="pcntstid != null and pcntstid != ''">
             AND A.PCNTSTID = #{pcntstid}
             </if>
@@ -352,43 +357,7 @@
             LEFT OUTER JOIN TB_CMM_CD E ON A.ONLN_SRNG_TYPE_CD = E.CD
         WHERE 
             1 = 1
-            <if test="searchFldCd != null and searchFldCd != ''">
-            AND A.FLD_CD = #{searchFldCd}
-            </if>
-            <if test="searchPcntstNm != null and searchPcntstNm != ''">
-            AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
-            </if>
-            <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
-            <![CDATA[
-            AND A.APLY_BGNG_DT >= #{searchAplyBgngDe} 
-            AND A.APLY_END_DT <= #{searchAplyEndDe}
-            ]]>
-            </if>
-            <if test="searchBsnsBgngDe != null and searchBsnsBgngDe != ''">
-            <![CDATA[
-            AND A.BSNS_BGNG_DE >= #{searchBsnsBgngDe} 
-            AND A.BSNS_END_DE <= #{searchBsnsEndDe}
-            ]]>
-            </if>
-            <if test="status != null and status != ''">
-                <choose>
-                    <when test="status == 'before'">
-                    <![CDATA[
-                    AND NOW() < APLY_BGNG_DT
-                    ]]>
-                    </when>
-                    <when test="status == 'ing'">
-                    <![CDATA[
-                    AND NOW() >= APLY_BGNG_DT AND NOW() <= APLY_END_DT
-                    ]]>
-                    </when>
-                    <when test="status == 'end'">
-                    <![CDATA[
-                    AND NOW() > APLY_END_DT
-                    ]]>
-                    </when>
-                </choose>            
-            </if>
+            <include refid="searchCondition"/>
     </select>
     
     <!-- 심사위원 그룹 조회 -->
