@@ -131,8 +131,6 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "UNION ALL "
             + "SELECT '/login' AS URL "
             + "UNION ALL "
-            + "SELECT '/onepass/acs.html' AS URL "
-            + "UNION ALL "
             + "SELECT '/logout' AS URL "
             + "UNION ALL "
             + "SELECT '/error' AS URL "

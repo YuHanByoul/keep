@@ -37,6 +37,7 @@ import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
 
@@ -537,54 +538,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	}
 
 	/**
-	* 프로그램 운영일정 수정
-	*
-	* @Title : updatePrgrmSchdl
-	* @Description : 프로그램 운영일정 수정
-	* @param asgsysSrngVo
-	* @return int
-	* @throws Exception
-
-	@Override
-	@Transactional
-	public int updatePrgrmSchdl(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		return asgsysSrngDao.updatePrgrmSchdl(asgsysSrngVo);
-	}
-		*/
-
-	/**
-	* 프로그램 운영일정 등록
-	*
-	* @Title : insertPrgrmSchdl
-	* @Description : 프로그램 운영일정 등록
-	* @param asgsysSrngVo
-	* @return int
-	* @throws Exception
-
-	@Override
-	@Transactional
-	public int insertPrgrmSchdl(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		return asgsysSrngDao.insertPrgrmSchdl(asgsysSrngVo);
-	}
-	*/
-
-	/**
-	* 프로그램 운영일정 삭제
-	*
-	* @Title : deletePrgrmSchdl
-	* @Description : 프로그램 운영일정 삭제
-	* @param asgsysSrngVo
-	* @return int
-	* @throws Exception
-
-	@Override
-	@Transactional
-	public int deletePrgrmSchdl(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		return asgsysSrngDao.deletePrgrmSchdl(asgsysSrngVo);
-	}
-	*/
-
-	/**
 	* 프로그램 평가 조회
 	*
 	* @Title : selectPrgrmEduSbjct
@@ -596,6 +549,27 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	@Override
 	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectPrgrmEvl(asgsysSrngVo);
+	}
+
+	/**
+	* 프로그램 평가 수정
+	*
+	* @Title : updatePrgrmEvl
+	* @Description : 프로그램 평가 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	@Override
+	public int updatePrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		AsgsysSrngVo dtlVo = asgsysSrngDao.selectPrgrmEvl(asgsysSrngVo);
+		int ret=0;
+		if(CommonUtil.isEmpty(dtlVo.getPrgrmid())){
+			ret = asgsysSrngDao.insertPrgrmEvl(asgsysSrngVo);
+		}else {
+			ret = asgsysSrngDao.updatePrgrmEvl(asgsysSrngVo);
+		}
+		return ret;
 	}
 
 	/**
@@ -852,10 +826,16 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     */
     @Override
     @Transactional
-	public int updateSftyMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception{
-    	int retVal = 0;
-    	retVal += asgsysSrngDao.updateSftyMng(asgsysSrngVo);
-		return retVal;
+	public int updateSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception{
+    	int ret = 0;
+    	AsgsysSrngVo dtlVo = asgsysSrngDao.selectSftyMng(asgsysSrngVo);
+
+    	if(null == dtlVo){
+    		ret = asgsysSrngDao.insertSftyMng(asgsysSrngVo);
+    	}else {
+    		ret = asgsysSrngDao.updateSftyMng(asgsysSrngVo);
+    	}
+		return ret;
 	}
 
     /**
@@ -998,6 +978,43 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 		return asgsysSrngDao.selectCheckList(asgsysSrngVo);
 	}
 
+    @Override
+    @Transactional
+    public int updateAssChklst(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	int ret=0;
+
+
+
+    	if (asgsysSrngVo.getSbmsnid() != null && !asgsysSrngVo.getSbmsnid().equals(0)) {
+
+    		//체크리스트 제출 수정
+    		ret = asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
+
+    	}else {
+    		//체크리스트 제출 등록
+    		ret = asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
+    	}
+
+
+    	AsgsysSrngVo SbmsnInfo = asgsysSrngDao.selectDsgnAplyDtlInfo(asgsysSrngVo);
+
+    	//체크리스트 답변 수정
+    	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
+    	for(ChklstAnsVo vo : lst) {
+
+    		vo.setUser(asgsysSrngVo.getUser());
+    		vo.setSbmsnid(SbmsnInfo.getSbmsnid());
+
+    		if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+    			ret += asgsysSrngDao.updateChklstAns(vo);
+    		}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+    			ret += asgsysSrngDao.insertChklstAns(vo);
+    		}
+    	}
+
+		return ret;
+	}
+
     /**
     * 지원단심사 등록
     *
@@ -1012,9 +1029,34 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	public int insertSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
 
     	int ret=0;
-    	//심사결과insert asgsysSrngDao.insertSprtgrpSrng(asgsysSrngVo)
-    	//심사의견 update
-    	ret = asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
+
+
+    	//지원단심사 수정
+    	ret += asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
+
+    	if (asgsysSrngVo.getSbmsnid() != null && !asgsysSrngVo.getSbmsnid().equals(0)) {
+    		//체크리스트 제출 수정
+    		ret = asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
+    	}else {
+    		//체크리스트 제출 등록
+    		ret = asgsysSrngDao.insertChklstSbmsn(asgsysSrngVo);
+    	}
+
+    	AsgsysSrngVo SbmsnInfo = asgsysSrngDao.selectDsgnAplyDtlInfo(asgsysSrngVo);
+
+    	//체크리스트 답변 수정
+    	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
+    	for(ChklstAnsVo vo : lst) {
+
+    		vo.setUser(asgsysSrngVo.getUser());
+    		vo.setSbmsnid(SbmsnInfo.getSbmsnid());
+
+    		if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+    			ret += asgsysSrngDao.updateChklstAns(vo);
+    		}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+    			ret += asgsysSrngDao.insertChklstAns(vo);
+    		}
+    	}
 
 		return ret;
 	}
@@ -1032,17 +1074,16 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Transactional
     public int updateSprtgrpSrng(AsgsysSrngVo asgsysSrngVo) throws Exception {
 
-
     	int ret=0;
 
+    	//지원단심사 수정
+    	ret += asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
+
+    	//체크리스트 제출 저장
+    	ret += asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
+    	//체크리스트 답변 수정
     	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
 
-    	logger.info("###############################################");
-    	logger.info("size : " + lst.size());
-    	logger.info("###############################################");
-    	logger.info("size : " + lst.get(0).getSeCd());
-    	logger.info("###############################################");
-    	//체크리스트 답변 수정
     	for(ChklstAnsVo vo : lst) {
 
     		vo.setUser(asgsysSrngVo.getUser());
@@ -1053,20 +1094,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     			ret += asgsysSrngDao.insertChklstAns(vo);
     		}
     	}
-
-    	//지원단심사 저장 심사의견 수정
-    	ret = asgsysSrngDao.updateSprtgrpOpnn(asgsysSrngVo);
-
-    	//체크리스트 제출 저장
-    	ret += asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
-
-
-    	//updateSprtgrpSrng
-    	//sprtgrpSrng
-
-
-    	//체크리스트 답변목록 저장
-
 
     	return ret;
     }
@@ -1155,9 +1182,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     			prgrmSchdlVo.setUser(asgsysSrngVo.getUser());
     			ret += asgsysSrngDao.insertPrgrmSchdl(prgrmSchdlVo);
     		}
-
     	}
-    	ret = 0;
 
     	//비상조치계획 저장*/
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
@@ -1172,10 +1197,19 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     			ret += asgsysSrngDao.insertEmrgcyActnPlan(emrgcyActnPlanVo);
     		}
     	}
-    	ret = 0;
+
+    	//교육주제 저장
+    	if(CommonUtil.isNotEmpty(asgsysSrngVo.getEduSbjctCdLst())){
+
+    		String [] eduSbjctCdArr = asgsysSrngVo.getEduSbjctCdLst().split(",");
+
+    		asgsysSrngDao.deleteEduSbjct(asgsysSrngVo);
+
+    		ret += asgsysSrngDao.insertEduSbjct(asgsysSrngVo, eduSbjctCdArr, asgsysSrngVo.getUser());
+    	}
 
     	// 프로그램 우수성 수정
-    	ret = asgsysSrngDao.updatePrgrmDstnctn(asgsysSrngVo);
+    	ret += asgsysSrngDao.updatePrgrmDstnctn(asgsysSrngVo);
 
     	return ret;
     }
@@ -1259,7 +1293,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
 
     		//이전 지원단id삭제
-    		if(com.kbrainc.plum.rte.util.CommonUtil.isNotEmpty(asgsysSrngVo.getBfrSprtgrpid())) {
+    		if(CommonUtil.isNotEmpty(asgsysSrngVo.getBfrSprtgrpid())) {
     			ret=0;
     			asgsysSrngVo.setSprtgrpid(asgsysSrngVo.getBfrSprtgrpid());
     			ret = asgsysSrngDao.deletePicSprtgrp(asgsysSrngVo);
@@ -1298,5 +1332,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	return asgsysSrngDao.selectSrngScrHeader(asgsysSrngVo);
     }
+
+
+
 
 }

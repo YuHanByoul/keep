@@ -1,36 +1,40 @@
 <form id="sftyMngFrm">
 <input type="hidden" id="prgrmid" name="prgrmid" th:value="${sftyMngInfo.prgrmid}">
-
+<input type="hidden" id="filegrpid" name="filegrpid" th:value="${sftyMngInfo.filegrpid == null or sftyMngInfo.filegrpid == ''}? 0: ${sftyMngInfo.filegrpid}"/>
+<input type="hidden" id="bfrCertFilegrpid" name="bfrCertFilegrpid" th:value="${sftyMngInfo.bfrCertFilegrpid == null or sftyMngInfo.bfrCertFilegrpid == ''}? 0: ${sftyMngInfo.bfrCertFilegrpid}"/>
 
 	<div class="card-header p-t-0 p-b-0">
 	    <h3 class="sub-title"><strong>안전관리 메뉴얼</strong></h3>
 	</div>
-	<div class="card-block-small p-t-0">
-	    <div class="mb-0 form-group row">
-	        <div class="mb-0 form-group">
-	            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
-				<div class="col-sm-12">
-<!-- 					<input id="sftyMngMnlFile" type="file" class="form-control form-control-sm"/> -->
-					<input id="sftyMngMnlFile" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" class="form-control form-control-sm" style="display:none"/>
-				</div>
+    <div class="card-block-small p-t-0">
+        <div class="mb-3 form-group row">
+            <div class="mb-0 form-group">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
+                <div class="col-sm-12">
+                    <input type="file" multiple id="sftyMngMnlFile" name="sftyMngMnlFile" class="form-control form-control-sm" />
+                </div>
+                <div class="mt-2 row">
+                    <div class="col-auto">
+                        <th:block th:if="${mnlFileList} != null">
+                            <th:block th:each="item:${mnlFileList}" th:if="${item.fileid} > 0">
+                                <span class='label label-inverse ' th:id="'file_'+${item.fileid}">
+                                    <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
+                                    <a class='text-white' href="javascript:void(0)"
+                                    th:name="${item.fileid}"
+                                    th:attr="data-idntfc-key=${item.fileIdntfcKey}"
+                                    th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a>
+                                </span>
+                            </th:block>
+                        </th:block>
+                        <div id="mnlFileUploadError"></div>
+                        <div id="mnlFileUploadSuccess"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-				<div class="mt-2 row">
-	                <div class="col-auto">
-						<div class="upload-response" >
-	                        <div>
-                                <span class="label label-inverse"> sampleFile.pptx <a href="javascript:void(0)" class="text-white">X</a></span>
-	                        </div>
-	                        <div id="multipleFileUploadError"></div>
-	                        <div id="multipleFileUploadSuccess"></div>
-	                    </div>
-<!-- 	                    <input type="hidden"  id = "filegrpid" name = "filegrpid" value='0'/> -->
-
-					</div>
-	            </div>
-	        </div>
-	    </div>
-	</div>
-	<div class="card-header p-t-0 p-b-0">
+    <div class="card-header p-t-0 p-b-0">
 	    <h3 class="sub-title"><strong>프로그램 지도자 대상 교육</strong>
 	    </h3>
 	</div>
@@ -41,7 +45,7 @@
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
 	                       for="sftyMngProgramLeaderEduDate"><strong>교육시기</strong></label>
 					<div class="col-12">
-						<input type="text" class="form-control form-control-sm" name="ldrEduSess" id="ldrEduSess" placeholder="Text Input Validation"  th:value="${sftyMngInfo.ldrEduSess}" emode="mod" readonly/>
+						<input type="text" class="form-control form-control-sm" name="ldrEduSess" id="ldrEduSess" placeholder="Text Input Validation"  th:value="${sftyMngInfo.ldrEduSess}" emode="mod" />
 					</div>
 				</div>
 	        </div>
@@ -50,7 +54,7 @@
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
 	                       for="sftyMngProgramLeaderEduManager"><strong>담당자</strong></label>
 					<div class="col-12">
-						<input type="text" class="form-control form-control-sm" name="ldrEduPic" id="ldrEduPic" placeholder="Text Input Validation" th:value="${sftyMngInfo.ldrEduPic}" emode="mod" readonly/>
+						<input type="text" class="form-control form-control-sm" name="ldrEduPic" id="ldrEduPic" placeholder="Text Input Validation" th:value="${sftyMngInfo.ldrEduPic}" emode="mod" />
 					</div>
 				</div>
 	        </div>
@@ -58,7 +62,7 @@
 	    <div class="mb-0 form-group row">
 			<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="sftyMngProgramLeaderEduContents"><strong>교육내용 개요</strong></label>
 			<div class="col-12">
-				<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="prtcpntEduCn" name="prtcpntEduCn" emode="mod" readonly><th:block th:text="${sftyMngInfo.prtcpntEduCn}"></th:block></textarea>
+				<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="prtcpntEduCn" name="prtcpntEduCn" emode="mod" ><th:block th:text="${sftyMngInfo.prtcpntEduCn}"></th:block></textarea>
 			</div>
 	    </div>
 	</div>
@@ -72,7 +76,7 @@
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
 	                       for="sftyMngProgramApplicantEduDate"><strong>교육시기</strong></label>
 	                <div class="col-12">
-						<input type="text" class="form-control form-control-sm" name="prtcpntEduSess" id="prtcpntEduSess" placeholder="Text Input Validation" th:value="${sftyMngInfo.prtcpntEduSess}" emode="mod" readonly/>
+						<input type="text" class="form-control form-control-sm" name="prtcpntEduSess" id="prtcpntEduSess" placeholder="Text Input Validation" th:value="${sftyMngInfo.prtcpntEduSess}" emode="mod" />
 					</div>
 	            </div>
 	        </div>
@@ -81,7 +85,7 @@
 	                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"
 	                       for="sftyMngProgramApplicantEduManager"><strong>담당자</strong></label>
 					<div class="col-12">
-						<input type="text" class="form-control form-control-sm" name="prtcpntEduPic" id="prtcpntEduPic" placeholder="Text Input Validation" th:value="${sftyMngInfo.prtcpntEduPic}" emode="mod" readonly/>
+						<input type="text" class="form-control form-control-sm" name="prtcpntEduPic" id="prtcpntEduPic" placeholder="Text Input Validation" th:value="${sftyMngInfo.prtcpntEduPic}" emode="mod" />
 					</div>
 				</div>
 	        </div>
@@ -89,7 +93,7 @@
 	    <div class="mb-0 form-group row">
 			<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="sftyMngProgramApplicantEduContents"><strong>교육내용 개요</strong></label>
 			<div class="col-12">
-				<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="ldrEduCn" name="ldrEduCn" emode="mod" readonly><th:block th:text="${sftyMngInfo.ldrEduCn}"></th:block></textarea>
+				<textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="ldrEduCn" name="ldrEduCn" emode="mod" ><th:block th:text="${sftyMngInfo.ldrEduCn}"></th:block></textarea>
 			</div>
 	    </div>
 	</div>
@@ -103,7 +107,7 @@
 	        <div class="col-12">
             <div class="form-radio">
 	           <div class="radio radio-inline" >
-	               <span kattr:radio_yn="bfrCertYn" label1="예" label2="아니오" th:attr="defaultVal=${sftyMngInfo.bfrCertYn == null ? 'N':sftyMngInfo.bfrCertYn}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" readonly/>
+	               <span kattr:radio_yn="bfrCertYn" label1="예" label2="아니오" th:attr="defaultVal=${sftyMngInfo.bfrCertYn == null ? 'N':sftyMngInfo.bfrCertYn}" addStyle="margin-top:4px" addClass="col-sm-3" isAdmin="true" />
 	           </div>
 	       </div>
 	    </div>
@@ -111,43 +115,43 @@
 	        <div class="mb-0 form-group">
 	            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>첨부파일</strong></label>
 	            <div class="col-sm-12">
-					<input type="file" class="form-control form-control-sm" style="display:none"/>
+                    <input type="file" multiple id="bfrCertFile" name="bfrCertFile" class="form-control form-control-sm" />
 				</div>
+                <!-- 안전관리 첨부파일 -->
 	            <div class="mt-2 row">
-	                <div class="col-auto">
-						<span class="label label-inverse"> sampleFile.pptx <a href="javascript:void(0)" class="text-white">X</a></span>
-					</div>
+                    <div class="col-auto" id="sftyFileListDiv">
+                        <th:block th:unless="${#lists.isEmpty(bfrCertFileList)}" th:each="item, i : ${bfrCertFileList}" th:if = "${item.fileid} > 0">
+                        <span class ='label label-inverse ' th:id="'bfrCertFile_'+${item.fileid}">
+                            <th:block th:text="${item.orginlFileNm}"></th:block>&nbsp;&nbsp;
+                            <a  class = 'text-white' href = "javascript:void(0)" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFile(this.name, this.dataset.idntfcKey)">X</a>
+                        </span>
+                    </div>
 	            </div>
+                <div id="sftyFileUploadError"></div>
+                <div id="sftyFileUploadSuccess"></div>
+                <!-- 안전관리 첨부파일 -->
 	        </div>
 	    </div>
 	</div>
 	<div class="card-block-small">
-	    <button class="btn btn-inverse m-r-5">목록</button>
-	    <button type="button" id="sftyMngModBtn" class="btn btn-primary m-r-5" onclick="fn_modSftyMngFrm()">수정</button>
+
+        <button type="button" id="sftyMngLstBtn"  class="btn btn-inverse m-r-5" onclick="gridHelper1.resetListContent()">목록</button>
 	    <button type="button" id="sftyMngSaveBtn" class="btn btn-primary m-r-5" onclick="fn_saveSftyMngFrm()">저장</button>
-	    <button class="btn btn-primary">다음</button>
+        <button type="button" id="sftyMngNextBtn" class="btn btn-primary" onclick="fn_sftyMngNextbtn()">다음</button>
 	</div>
 
-	<input type="hidden" id="filegrpid" name="filegrpid" value="0"/>
 </form>
 <script th:inline="javascript">
 
 function fn_sftyMngFrmInit(){
 
-	$("#sftyMngSaveBtn").hide();
-
 }
 
-function fn_modSftyMngFrm(){
+function fn_sftyMngNextbtn(){
 
-	$("#ldrEduSess").focus();
-	$("#sftyMngModBtn").hide();
-debugger;
-    $("textarea[emode='mod'], input[emode='mod']").removeAttr("readonly");
-
-	$("#sftyMngSaveBtn").show();
-	$("#sftyMngMnlFile").show();
-
+    $("#jdsgTab5Link").removeClass("active");
+    $("#jdsgTab6Link").addClass("active");
+    selectJdsgTab("jdsgTab6Link");
 }
 
 function fn_saveSftyMngFrm(){
@@ -176,61 +180,54 @@ function fn_saveSftyMngFrm(){
 }
 
 //안전관리 메뉴얼 첨부파일
-var atchfileCnt = 2 ;
-var uploadFileCnt = 0 ;
 
-$('#sftyMngMnlFile').on("change", function(event) {
+$('#sftyMngMnlFile, #bfrCertFile').on("change", function(event) {
+    var trgtGrpid = (this.id == "sftyMngMnlFile") ? "filegrpid" : "bfrCertFilegrpid";
+
+    var formData = new FormData();
+    var objFile = event.target;
+    var content = "";
+
+    for( i = 0 ; i < objFile.files.length ; i++) {
+        formData.append("files", objFile.files[i]);
+    }
+
+    if($("#"+trgtGrpid).val() != '0' && $("#"+trgtGrpid).val()!='' && $("#"+trgtGrpid).val()!=null){
+        formData.append("filegrpid", $('#'+trgtGrpid).val());
+    }
+    formData.append("filegrpNm", "asgsysSrng_file");
+
+    $.ajax({
+    	url : '/uploadMultipleFiles.do',
+        processData : false,
+        contentType : false,
+        data : formData,
+        type : 'POST',
+        success : function(response) {
+            if(response.result == 'fail'){
+                alert(response.msg);
+            }else{
 debugger;
-        var objFile = document.querySelector('#sftyMngMnlFile');
-        var formData = new FormData();
-        var content = "";
-
-        for( i = 0 ; i < objFile.files.length ; i++) {
-
-               if(uploadFileCnt >= atchfileCnt){
-                   alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
-               }else{
-                   formData.append("files", objFile.files[i]);
-                   uploadFileCnt++;
-               }
-        }
-
-        formData.append("filegrpid", $("#filegrpid").val());
-        formData.append("filegrpNm", "asgsysSrng_file");
-
-        if(uploadFileCnt >0 ){
-            $.ajax({
-            	url : '/uploadMultipleFiles.do',
-                processData : false,
-                contentType : false,
-                data : formData,
-                type : 'POST',
-                success : function(response) {
-                    if(response.result == 'fail'){
-                        alert(response.msg);
-                    }else{
-                    	debugger;
-
-                        if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
-                            $("#filegrpid").val( response[0].filegrpid );
-                        }
-
-                        for(i = 0 ;i < response.length; i++ ){
-                        	debugger;
-    //                         content = "<div class ='' id='"+response[i].fileid+"'><a href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm +"</a>";
-    //                         content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick =uploadFileCnt--;fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>";
-                            content =  "<span id='"+response[i].fileid+"' class='label label-inverse' href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm
-                            content += "&nbsp;&nbsp;<a href='javascript:void(0)' onclick =uploadFileCnt--;fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') class='text-white'>X</a></span>"
-    //                         content += "<a type='button'  class = 'text-white' onclick =uploadFileCnt--;fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></a></span>"
-
-
-                            $('#multipleFileUploadSuccess').append(content);
-                        }
-                    }
+                if($("#"+trgtGrpid).val()=='0' || $("#"+trgtGrpid).val()==''  || $("#"+trgtGrpid).val()==null){
+                    $("#"+trgtGrpid).val( response[0].filegrpid );
                 }
-            });
-           $("#sftyMngMnlFile").val("");
+
+                for(i = 0 ;i < response.length; i++ ){
+                    content =  "<span id='"+response[i].fileid+"' class='label label-inverse' href=javascript:downloadFileByFileid('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"')>"+response[i].orginlFileNm
+                    content += "&nbsp;&nbsp;<a href='javascript:void(0)' onclick =fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') class='text-white'>X</a></span>"
+                }
+
+                if(trgtGrpid == "filegrpid") {
+                    $('#mnlFileUploadSuccess').append(content);
+                    $("#sftyMngMnlFile").val("");
+                }else{
+                    $('#sftyFileUploadSuccess').append(content);
+                    $("#bfrCertFile").val("");
+                }
+            }
         }
+    });
+
 });
 
 function fn_deleteFileList(fileid, fileIdntfcKey){
@@ -240,7 +237,7 @@ function fn_deleteFileList(fileid, fileIdntfcKey){
 }
 
 function fn_deleteFile(fileid, fileIdntfcKey){
-debugger;
+
     var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
       $.ajax({
         url : deleteFileUrl,

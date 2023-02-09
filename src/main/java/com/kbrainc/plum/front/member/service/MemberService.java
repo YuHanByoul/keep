@@ -38,14 +38,14 @@ public interface MemberService {
     *
     * ID 중복 체크
     *
-    * @Title : chekcDuplicationUser
+    * @Title : checkDuplicationUser
     * @Description : ID 중복 체크
     * @param memberVo MemberVo객체
     * @return int 
     * @throws Exception 예외
     */
-    public int chekcDuplicationUser(MemberVo memberVo) throws Exception;
-
+    public int checkDuplicationUser(MemberVo memberVo) throws Exception;
+    
     /**
     *
     * 회원 정보 등록
@@ -56,20 +56,41 @@ public interface MemberService {
     * @return int 
     * @throws Exception 예외
     */
-   public int insertMember(MemberVo memberVo) throws Exception;
-   
-   /**
-   *
-   * 회원 정보 수정
-   *
-   * @Title : updateMember
-   * @Description : 회원 정보 수정 
-   * @param memberVo MemberVo객체
-   * @return int 
-   * @throws Exception 예외
-   */
-   public int updateMember(MemberVo memberVo) throws Exception;
-   
-	
-	
+    public int insertMember(MemberVo memberVo) throws Exception;
+    
+    /**
+    *
+    * 회원 정보 수정
+    *
+    * @Title : updateMember
+    * @Description : 회원 정보 수정 
+    * @param memberVo MemberVo객체
+    * @return int 
+    * @throws Exception 예외
+    */
+    public int updateMember(MemberVo memberVo) throws Exception;
+    
+    /**
+    * ci에 해당하는 userid 조회.
+    *
+    * @Title : selectUseridByCI
+    * @Description : ci에 해당하는 userid 조회
+    * @param memberVo MemberVo객체
+    * @return String userid
+    * @throws Exception 예외
+    */
+    public String selectUseridByCI(MemberVo memberVo) throws Exception;
+    
+    /**
+    * 부모ci와 이름에 해당하는 userid 조회.
+    *
+    * @Title : selectUseridByParntsCIandName
+    * @Description : 부모ci와 이름에 해당하는 userid 조회
+    * @param memberVo MemberVo객체
+    * @return String userid
+    * @throws Exception 예외
+    */
+    public String selectUseridByParntsCIandName(MemberVo memberVo) throws Exception;
+    
+    
 }

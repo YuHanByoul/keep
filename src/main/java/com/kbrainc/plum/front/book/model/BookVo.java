@@ -74,8 +74,6 @@ public class BookVo  extends ParentRequestVo{
     /** 등록자아이디 */
     private int rgtrid;
     
-    private String rgtridNm;
-    
     private String nextBookid;
     private String nextBookTtl;
     private String beforeBookid;
@@ -93,8 +91,8 @@ public class BookVo  extends ParentRequestVo{
     private String searchMdleEduSbjctCd;
     private String searchEduTrgtCd;
     private String searchPlscmpn;
-    private String startDt;
-    private String endDt;
+    protected String searchType2;
+    protected String searchKeyword2;
     
     
 }

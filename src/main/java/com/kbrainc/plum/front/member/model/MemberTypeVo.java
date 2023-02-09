@@ -33,4 +33,31 @@ public class MemberTypeVo {
     @NotEmpty(message = "회원가입 유형을 선택해주세요.")
     @Pattern(regexp="[PCI]", message = "회원가입 유형을 선택해주세요.")
     private String type;
+    
+    /** 회원가입완료호면에서 로그인 버튼 클릭후 로그인 성공시 되돌아갈 URL */
+    private String returnUrl;
+
+    public String getTosAgreYn() {
+        return null;
+    }
+
+    public String getPrivcyAgreYn() {
+        return null;
+    }
+
+    public String getPrvcThptyPvsnAgreYn() {
+        return null;
+    }
+
+    public String getChildJoinAgreYn() {
+        return null;
+    }
+
+    public String getWbznAplyAgreYn() {
+        return null;
+    }
+    
+    public String getAlertMsg() {
+        return null;
+    }
 }

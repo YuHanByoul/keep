@@ -1,0 +1,215 @@
+<form id="assChklstFrm">
+    <input type="hidden" id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}">
+    <input type="hidden" id="sbmsnid" name="sbmsnid" th:value="${aplyInfo.sbmsnid}">
+    <input type="hidden" id="sprtgrpid" name="sprtgrpid" th:value="${aplyInfo.sprtgrpid}">
+    <input type="hidden" id="chklstid" name="chklstid" th:value="${aplyInfo.chklstid}">
+    <div th:each="title , a : ${sprtgrpCheckList}">
+
+        <div th:if="${title.treeOrd==1}" >
+
+            <div class="card-header p-t-0" >
+                <div class="sub-title row m-l-0 m-r-0 align-items-center">
+                    <div class="col-12 col-lg-6 mb-2 mb-lg-0 p-l-0"><strong><th:block th:text="${title.cn}"</th:block></strong></div>
+                    <div class="col-12 col-lg-6 text-right p-r-0" th:id="chkTitle+${title.lv2key}" th:attr="lv2key=${title.lv2key}" >
+                        <strong><span class="text-danger d-inline fs-6">15</span> /15점</strong>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div th:if="${title.treeOrd==2}" class="card-block-small p-t-0">
+            <div name="chkLv2block" class="col-12 table-border-style mb-3">
+                <div class="col-12 table-responsive">
+                    <table class="table table-border-style table-columned">
+                        <thead>
+                            <tr class="border-bottom-inverse border-top" style="border-top-color: #404E67 !important;">
+                                <th colspan="2" class="text-center v-middle"><th:block th:text="${title.cn}"</th:block></th>
+                                <th class="text-center v-middle" style="width: 60px;">배점</th>
+                                <th class="text-center v-middle" style="width: 60px;">예</th>
+                                <th class="text-center v-middle" style="width: 60px;">아니오</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-bottom" th:each="row, b : ${sprtgrpCheckList}" th:if="${row.treeOrd==3 and title.lv2key==row.lv2key}">
+                                <td class="text-center v-middle" style="width: 60px;"><th:block th:text="${row.ordr}"</th:block></td>
+                                <td th:id="${'cnY' + row.lv1key}">
+                                    <th:block th:text="${row.cn}"</th:block>
+                                </td>
+                                <td class="text-center v-middle"><th:block th:text="${row.altm}"</th:block></td>
+                                <td class="text-center v-middle">
+                                    <label class="mb-0 form-label'" >
+                                        <input class="form-check-input" type="radio" th:checked="${row.scr > 0 ? true:false}" th:data-ordr="${row.ordr}"
+                                            th:name="${'cRdoY' + row.lv2key + '_'+ row.qitemid}" th:id="${'cRdoY' + row.lv2key + '_'+  row.qitemid}"
+                                            th:attr="altm=${row.altm}, lv1key=${row.lv1key} " value="Y" >
+                                    </label>
+                                </td>
+                                <td class="text-center v-middle">
+                                    <label class="mb-0 form-label'" >
+                                        <input class="form-check-input" type="radio" th:checked="${row.scr <= 0 ? true:false}"
+                                            th:name="${'cRdoN' + row.lv2key + '_'+  row.qitemid}" th:id="${'cRdoN' + row.lv2key + '_'+  row.qitemid}" th:attr="altm=${row.altm}" value="N" >
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" class="table-active text-center">총점</th>
+                                <th colspan="3" class="table-active text-center">
+                                    <span class="text-danger" th:id="${'scrSum'+title.lv2key}" th:attr="lv1key=${title.lv1key}">0점</span>
+                           </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card-block-small">
+        <button type="button" id="assChklstLstBtn"  class="btn btn-inverse m-r-5" onclick="gridHelper1.resetListContent()">목록</button>
+        <button type="button" id="assChklstSaveBtn" class="btn btn-primary m-r-5" onclick="fn_assChklstFrm()">저장</button>
+    </div>
+</form>
+<script th:inline="javascript">
+	var sprtgrpCheckList = /*[[${sprtgrpCheckList}]]*/null;
+
+	$(function() {
+// 	   $("div[name='chkLv2block'").wrapAll("<div class='card-block-small p-t-0'></div>");
+		initScrSum();
+	});
+
+	function initScrSum() {
+
+		var allScr = $("[id^='scrSum']");
+		var totalscore = 0;
+
+		//scr
+		for (var i = 0; i < allScr.length; i++) {
+
+			var scrId = allScr[i].id;
+			var lvCd = scrId.substr(6, 6);
+
+			var rdoGrp = $("[name^='cRdoY" + lvCd + "']");
+			var sumScr = 0;
+
+			for (var k = 0; k < rdoGrp.length; k++) {
+				var rdoId = rdoGrp[k].id
+
+				if ($("#" + rdoId).prop("checked")
+						&& false == isNaN($("#" + rdoId).attr("altm"))) {
+
+					sumScr = Number(sumScr)
+							+ Number($("#" + rdoId).attr("altm"));
+				}
+
+			}
+			$("#scrSum" + lvCd).text(sumScr + "점");
+
+			totalscore = Number(totalscore) + Number(sumScr);
+		}
+
+		//$("#scr").val(totalscore);
+
+
+		//title sum
+        $("[id^=chkTitle]").each(
+        function(index1, item1){
+
+            var lvkey = item1.getAttribute("lv2key");
+            var vAltm = 0;
+            var vScr = 0;
+            var vHtml = "";
+
+            $("[id^='cRdoY'][lv1key="+lvkey+"]").each(
+            function(index2, item2){
+
+                vAltm = vAltm + Number(item2.getAttribute("altm"));
+            });
+            $("[id^='scrSum'][lv1key="+lvkey+"]").each(
+            function(index3, item3){
+
+            	vScr = vScr + Number(item3.innerText.replace("점",""));
+            });
+
+
+            vHtml = '<strong><span class="text-danger d-inline fs-6">'+vScr+'</span> /'+vAltm+'점</strong>';
+            $("#"+item1.id).html(vHtml)
+
+        });
+	}
+
+	//체크리스트 라디오 클릭
+    $("[name^='cRdo']").on('click', function() {
+
+        //라디오 id,name = cRdo+ lv2Cd + qitemid
+
+        var rdoId = this.id;
+        var lvCd = rdoId.substr(5,6)
+        var tail = rdoId.split("_")[1];
+
+        var opponentRdoId = rdoId.substr(4, 1) == "N" ? "cRdoY"+lvCd+"_"+tail: "cRdoN"+lvCd+"_"+tail;
+        $("#"+rdoId).prop("checked",true);
+        $("#"+opponentRdoId).prop("checked",false);
+
+        //$("[id^='scrSum']")
+
+        initScrSum();
+
+    });
+
+	function fn_assChklstFrm() {
+		var param = {};
+
+		$("[id^=cRdoY]").each(
+		function(index, item) {
+
+			param["ansLst[" + index + "].sbmsnid"] = $("#sbmsnid").val();
+
+			param["ansLst[" + index + "].seCd"] = $(item).attr("id").split("_")[0].replace("cRdoY", "");
+			param["ansLst[" + index + "].qitemid"] = $(item).attr("id").split("_")[1];
+			param["ansLst[" + index + "].scr"] = $(item).prop("checked") ? $(item).attr("altm") : 0
+			param["ansLst[" + index + "].ordr"] = $(item).attr("data-ordr");
+
+		});
+
+		$("[id^=cnY]").each(function(index, item) {
+			param["ansLst[" + index + "].cn"] = item.innerText;
+		});
+
+		param["prgrmid"] = prgrmid;
+		param["sbmsnid"] = $("#sbmsnid").val();
+		param["sprtgrpid"] = $("#sprtgrpid").val();
+		param["chklstid"] = $("#chklstid").val();
+
+		var vScr = 0;
+		$("[id^=scrSum]").each(
+	        function(index1, item1){
+	            vScr = vScr + Number(item1.innerText.replace("점",""));
+	        });
+		param["scr"] = vScr;
+
+		if (!confirm("저장하시겠습니까?")) return;
+
+		if (displayWorkProgress()) {
+			$.ajax({
+				url : "/mng/asgsysSrng/updateAssChklst.do",
+				type : 'POST',
+				cache : false,
+				dataType : 'json',
+				data : param,
+				success : function(data) {
+					if (data.result == "success") {
+
+						alert(data.msg);
+						closeWorkProgress();
+						loadJdsgTabContent("/mng/asgsysSrng/assChklstForm.html?prgrmid=" + prgrmid);
+
+					} else {
+						alert(data.msg);
+					}
+
+				}
+			});
+		}
+	}
+</script>
