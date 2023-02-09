@@ -195,12 +195,14 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
             result.setSMobileNo((String)mapresult.get("MOBILE_NO"));
             result.setSMobileCo((String)mapresult.get("MOBILE_CO"));
             
-            String session_sRequestNumber = (String)session.getAttribute("REQ_SEQ");
-            if(!sRequestNumber.equals(session_sRequestNumber))
-            {
-                sMessage = "세션값 불일치 오류입니다.";
-                result.setSResponseNumber("");
-                result.setSAuthType("");
+            if (session != null) {
+                String session_sRequestNumber = (String)session.getAttribute("REQ_SEQ");
+                if(!sRequestNumber.equals(session_sRequestNumber))
+                {
+                    sMessage = "세션값 불일치 오류입니다.";
+                    result.setSResponseNumber("");
+                    result.setSAuthType("");
+                }
             }
         }
         else if( iReturn == -1)
