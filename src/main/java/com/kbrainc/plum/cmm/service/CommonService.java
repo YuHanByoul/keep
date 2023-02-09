@@ -99,4 +99,6 @@ public interface CommonService {
      * @throws Exception 예외
      */
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
+    
+    
 }

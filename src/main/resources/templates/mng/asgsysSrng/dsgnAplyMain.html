@@ -107,10 +107,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="row p-20 p-b-0">
-                        <div class="col-12 col-md-6">
+                            <div class="col-12 col-md">
                             <h5><strong>지정신청 검색결과</strong></h5>
                         </div>
-                        <div class="col-12 col-md-6 text-right">
+                        <div class="col-12 col-md-auto text-right">
                             <button type="button" class="btn btn-primary m-r-5" onclick="fn_openSprtgrpCalModal()">지원단 캘린더</button>
                             <button type="button" class="btn btn-primary m-r-5" onclick="fn_gnrlrvwExcelDownload()">지원단총평 엑셀다운로드</button>
                             <button type="button" class="btn btn-primary" onclick="fn_aplyExcelDownload()">엑셀다운로드</button>
@@ -141,24 +141,23 @@
     <div class="modal fade" id="sprtgrpCalenderPopup" aria-hidden="true" data-bs-backdrop="static"></div>
     <!--팝업-->
 
+    <link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.css" />
+    <link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.min.css" media="print"/>
+
+    <script type="text/javascript" src="/files/bower_components/moment/moment.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/files/bower_components/fullcalendar/dist/locale-all.js" charset="utf-8" ></script>
+    <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
+
+
     <script th:inline="javascript">
 
-    /*<![CDATA[*/
-    var userid = /*[[${param.userid}]]*/null;
-    /*]]>*/
-
     var gridHelper1;
-
     var gridArgs;
 
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
         writeJsGridData();
-
-        if(userid != null){
-            //
-        }
-
     });
 
     //초기화 버튼
@@ -196,7 +195,10 @@
 
     /* 지원단 총평 엑셀 다운로드 */
     function fn_gnrlrvwExcelDownload(){
+    	var f = document.searchFrm;
 
+        f.action ="/mng/asgsysSrng/gnrlrvwExcelDownList.do";
+        f.submit();
     }
 
     /* 엑셀 다운로드 */
@@ -231,7 +233,6 @@
                 loadData: function (filter) {
                     var data = $.Deferred();
                     var formData = $('#searchFrm').serializeArray();
-debugger;
                     var params = [
                             {name: "pageNumber", value: filter.pageIndex},
                             {name: "rowPerPage", value: filter.pageSize},
@@ -241,7 +242,7 @@ debugger;
                         params.push({name: "orderField", value: filter.sortField});
                         params.push({name: "orderDirection", value: filter.sortOrder});
                     }else{
-                        params.push({name: "orderField", value: 'aply_dt ,vst_de'});
+                        params.push({name: "orderField", value: 'aply_dt ,vst_de, prgrmid'});
                     }
 
                     formData = formData.concat(params);
@@ -253,9 +254,7 @@ debugger;
                       dataType: "json",
                       data: formData
                     }).done(function(response){
-console.log("@@@@@1");
 
-console.log("@@@@@2");
                         var da = {
                                 data : escapeGridData(response.list)
                                 ,itemsCount : response.totalCount

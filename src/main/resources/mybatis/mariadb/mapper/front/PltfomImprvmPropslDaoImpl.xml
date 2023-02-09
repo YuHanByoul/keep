@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslDao">
+
+    <insert id="insertPltfomImprvmPropsl">
+        INSERT INTO TB_CMM_PLTFOM_IMPRVM_PRPSL(
+               USERID
+               , TTL
+               , CN
+               , CLSF_CD
+               , PRCS_STTS_CD
+               , FILEGRPID
+               , RLS_YN
+               , DEL_YN
+               , MDFCN_DT
+               , MDFRID
+               , REG_DT
+               , RGTRID
+        ) VALUES(
+                #{user.userid}
+                , #{ttl}
+                , #{cn}
+                , #{clsfCd}
+                , '188101'
+                , #{filegrpid}
+                , #{rlsYn}
+                , 'N'
+                , NOW()
+                , #{user.userid}
+                , NOW()
+                , #{user.userid}
+        )
+    </insert>
+
+    <update id="updatePltfomImprvmPropsl">
+        UPDATE TB_CMM_PLTFOM_IMPRVM_PRPSL SET
+              TTL = #{ttl}
+            , CN = #{cn}
+            , CLSF_CD =#{clsfCd}
+            , FILEGRPID = #{filegrpid}
+            , RLS_YN = #{rlsYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE PRPSLID =  #{prpslid}
+    </update>
+
+    <update id="deletePltfomImprvmPropsl">
+        UPDATE TB_CMM_PLTFOM_IMPRVM_PRPSL SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            WHERE PRPSLID = #{prpslid}
+    </update>
+
+    <update id="cancelPltfomImprvmPropsl">
+        UPDATE TB_CMM_PLTFOM_IMPRVM_PRPSL SET
+            PRCS_STTS_CD = '188102'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE PRPSLID = #{prpslid}
+    </update>
+
+    <select id="selectPltfomImprvmPropslList" resultType="com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRPSLID
+            , A.USERID
+            , A.TTL
+            , A.CN
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+            CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+            ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+            )
+            ELSE CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+            )
+            END AS ACNT
+            , A.FILEGRPID
+            , A.CLSF_CD
+            , A.PRCS_STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL A
+        INNER JOIN TB_CMM_USER B
+        ON A.USERID = B.USERID
+        WHERE
+        A.DEL_YN = 'N' AND A.PRCS_STTS_CD != '188102'
+        <if test="searchKeyword != null and searchKeyword!= ''">
+            AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <if test="clsfCd != null and clsfCd !=''">
+            AND A.CLSF_CD = #{clsfCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectPropsl" resultType="com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslVo">
+        SELECT
+            A.PRPSLID
+            , A.USERID
+            , A.TTL
+            , A.CN
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+                CONCAT(
+                SUBSTRING(B.ACNT, 1, 1)
+                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                )
+                ELSE CONCAT(
+                SUBSTRING(B.ACNT, 1, 1)
+                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                )
+                END AS ACNT
+            , A.FILEGRPID
+            , A.CLSF_CD
+            , A.PRCS_STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL A
+        INNER JOIN TB_CMM_USER B
+        ON A.USERID = B.USERID
+        WHERE PRPSLID = #{prpslid}
+    </select>
+
+    <select id="selectPropslAns" resultType="com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslAnsVo">
+        SELECT
+            A.ANSID
+             , A.PRPSLID
+             , A.TTL
+             , A.CN
+             , A.ANS_DT
+             , A.FILEGRPID
+             , C.ACNT AS OPETR_ACNT
+        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL_ANS A
+        INNER JOIN TB_CMM_PLTFOM_IMPRVM_PRPSL B
+            ON A.PRPSLID = B.PRPSLID
+        INNER JOIN TB_CMM_USER C
+            ON A.USERID = C.USERID
+        WHERE A.PRPSLID = #{prpslid}
+    </select>
+</mapper>

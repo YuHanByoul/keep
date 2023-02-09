@@ -2,10 +2,12 @@ package com.kbrainc.plum.mng.asgsysSrng.model;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 /**
 * 지정제심사관리 DAO클래스.
@@ -63,6 +65,17 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectDsgnAplyDtlInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+    * 신청정보 조회
+    *
+    * @Title : selectAplyInfo
+    * @Description : 신청정보 조회
+    * @param asgsysSrngVo
+    * @return AsgsysSrngVo
+    * @throws Exception 예외
+    */
+	public AsgsysSrngVo selectAplyInfo(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램상태코드 조회
 	*
 	* @Title : selectPrgrmSttsCd
@@ -83,6 +96,17 @@ public interface AsgsysSrngDao {
 	* @return Map<String,Object>
 	*/
 	public int updatePrgrSttsCd(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지원단 캘린더 목록 조회
+	*
+	* @Title : selectSprtgrpClndrList
+	* @Description : 지원단 캘린더 목록 조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSprtgrpClndrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	 * 지정신청목록 엑셀다운로드
@@ -240,6 +264,31 @@ public interface AsgsysSrngDao {
 	 */
 	public int deleteEmrgcyActnPlan(EmrgcyActnPlanVo emrgcyActnPlanVo) throws Exception;
 
+	/**
+	 * 교육주제 등록
+	 *
+	 * @Title : insertEduSbjct
+	 * @Description : 비상조치계획 삭제
+	 * @param asgsysSrngVo
+	 * @param eduSbjctCdLst
+	 * @param userVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertEduSbjct(@Param("asgsysSrngVo") AsgsysSrngVo asgsysSrngVo, @Param("eduSbjctCdArr") String[] eduSbjctCdArr, @Param("user")UserVo userVo) throws Exception;
+
+
+	/**
+	 * 교육주제 삭제
+	 *
+	 * @Title : deleteEduSbjct
+	 * @Description : 교육주제 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteEduSbjct(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
     /**
 	* 프로그램 평가 조회
 	*
@@ -250,6 +299,28 @@ public interface AsgsysSrngDao {
 	* @return AsgsysSrngVo
 	*/
 	public AsgsysSrngVo selectPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 프로그램평가 등록
+	 *
+	 * @Title : insertPrgrmEvl
+	 * @Description : 프로그램평가 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int insertPrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 프로그램평가 수정
+	*
+	* @Title : updatePrgrmEvl
+	* @Description : 프로그램평가 수정
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updatePrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 프로그램 안전관리 조회
@@ -302,7 +373,40 @@ public interface AsgsysSrngDao {
 	 * @return int
      * @throws Exception 예외
 	 */
-	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo);
+	public int insertJdgsSrngDetail(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사위원 심사 답변 등록
+	*
+	* @Title : insertJdgsSrngAns
+	* @Description : 심사위원 심사 답변 등록
+	* @param dsgnSrngFormVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+	/**
+	* 심사위원 심사 답변 수정
+	*
+	* @Title : updateJdgsSrngAns
+	* @Description : 심사위원 심사 답변 수정
+	* @param dsgnSrngFormVo
+	* @return int
+	* @throws Exception
+	*/
+	public int updateJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+	/**
+	 * 심사위원 심사 답변 삭제
+	 *
+	 * @Title : deleteJdgsSrngAns
+	 * @Description : 심사위원 심사 답변 삭제
+	 * @param dsgnSrngFormVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteJdgsSrngAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	/**
 	* 안전관리 수정
@@ -314,6 +418,17 @@ public interface AsgsysSrngDao {
     * @throws Exception 예외
 	*/
 	public int updateSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 안전관리 등록
+	 *
+	 * @Title : insertSftyMng
+	 * @Description : 안전관리 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception 예외
+	 */
+	public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 심사위원심사 목록 엑셀 다운
@@ -350,15 +465,82 @@ public interface AsgsysSrngDao {
 	public AsgsysSrngVo selectPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 프로그램 운영관리 등록
+	*
+	* @Title : insertPrgrmOperMng
+	* @Description : 프로그램 운영관리 등록
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지출항목 목록 조회
+	*
+	* @Title : selectExpndArtclList
+	* @Description : 지출항목 목록 조회
+	* @param ExpndArtclVo
+	* @return
+	* @throws Exception
+	* @return List<ExpndArtclVo>
+	*/
+	public List<ExpndArtclVo> selectExpndArtclList(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
+	* 지출항목 등록
+	*
+	* @Title : insertExpndArtcl
+	* @Description : 지출항목 등록
+	* @param expndArtclVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
+	 * 지출항목 목록 삭제
+	 *
+	 * @Title : deleteExpndArtcl
+	 * @Description : 지출항목 목록 삭제
+	 * @param expndArtclVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deleteExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+
+	/**
 	* 교구 및 시설목록 조회
 	*
 	* @Title : selecttchaidFcltList
 	* @Description : 교구 및 시설목록 조회
 	* @param asgsysSrngVo
-	* @return List<AsgsysSrngVo>
+	* @return List<TchaidFcltVo>
 	* @throws Exception
 	*/
-	public List<AsgsysSrngVo> selectTchaidFcltList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	public List<TchaidFcltVo> selectTchaidFcltList(TchaidFcltVo tchaidFcltVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 등록
+	*
+	* @Title : insertTchaidFclt
+	* @Description : 교구 및 시설목록 등록
+	* @param tchaidFcltVo
+	* @throws Exception
+	* @return void
+	*/
+	public int insertTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
+
+	/**
+	* 교구 및 시설목록 삭제
+	*
+	* @Title : deleteTchaidFclt
+	* @Description : 교구 및 시설목록 삭제
+	* @param TchaidFcltVo
+	* @return int
+	* @throws Exception
+	*/
+	public void deleteTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정
@@ -404,6 +586,18 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public List<AsgsysSrngVo> selectCheckList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 체크리스트제출 등록
+	*
+	* @Title : insertChklstSbmsn
+	* @Description : 체크리스트제출 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertChklstSbmsn(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 지원단심사 등록
@@ -558,5 +752,76 @@ public interface AsgsysSrngDao {
 	* @throws Exception
 	*/
 	public int updateMbr(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 심사위원 삭제
+	 *
+	 * @Title : deletePicJdgs
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicJdgs(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 담당자 지원단 삭제
+	 *
+	 * @Title : deletePicSprtgrp
+	 * @Description : 담당자 삭제
+	 * @param asgsysSrngVo
+	 * @return int
+	 * @throws Exception
+	 */
+	public int deletePicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 담당자 배정 등록 심사위원
+	*
+	* @Title : insertPicJdgs
+	* @Description : 담당자 배정 등록 심사위원
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicJdgs(AsgsysSrngVo asgsysSrngVo)  throws Exception;
+
+	/**
+	* 담당자 배정 등록 지원단
+	*
+	* @Title : insertPicSprtgrp
+	* @Description : 담당자 배정 등록 지원단
+	* @param asgsysSrngVo
+	* @return int
+	* @throws Exception
+	*/
+	public int insertPicSprtgrp(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 심사위원심사 점수 목록조회
+	*
+	* @Title : selectSrngScrList
+	* @Description : 심사위원심사 점수 목록조회
+	* @param asgsysSrngVo
+	* @return List<AsgsysSrngVo>
+	* @throws Exception
+	*/
+	public List<AsgsysSrngVo> selectSrngScrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 심사위원심사 점수 헤더 조회
+	 *
+	 * @Title : selectSrngScrList
+	 * @Description : 심사위원심사 점수 헤더 조회
+	 * @param asgsysSrngVo
+	 * @return List<AsgsysSrngVo>
+	 * @throws Exception
+	 */
+	public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
+
+
+
 
 }

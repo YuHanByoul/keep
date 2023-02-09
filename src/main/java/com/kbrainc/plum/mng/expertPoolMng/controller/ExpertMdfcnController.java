@@ -37,15 +37,28 @@ public class ExpertMdfcnController {
     @Autowired
     private ExpertMdfcnService expertMdfcnService;
 
-    @Autowired
-    private ExpertPoolMngService expertPoolMngService;
-
+    /**
+     * 전문가 정보변경 목록 화면
+     *
+     * @return string
+     * @throws Exception
+     * @Title : expertMdfcnList
+     * @Description : 전문가 정보변경 목록 화면
+     */
     @RequestMapping("/expertMdfcnList.html")
     public String expertMdfcnList() throws Exception {
         return "mng/expertPoolMng/expertMdfcnList.html";
     }
 
-
+    /**
+     * 전문가 정보변경 목록 조회
+     *
+     * @param expertMdfcnVo
+     * @return map
+     * @throws Exception
+     * @Title : selectExpertMdfcnList
+     * @Description : 전문가 정보변경 목록 조회
+     */
     @RequestMapping("/selectExpertMdfcnList.do")
     @ResponseBody
     public Map<String, Object> selectExpertMdfcnList(ExpertMdfcnVo expertMdfcnVo) throws Exception {
@@ -64,39 +77,39 @@ public class ExpertMdfcnController {
         return result;
     }
 
+    /**
+     * 전문가 정보변경 상세화면
+     *
+     * @param expertMdfcnVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : expertMdfcnDetail
+     * @Description : 전문가 정보변경 상세화면
+     */
     @RequestMapping("/expertMdfcnDetail.html")
     public String expertMdfcnDetail(ExpertMdfcnVo expertMdfcnVo, Model model) throws Exception {
         model.addAttribute("expertMdfcnInfo", expertMdfcnService.selectExpertMdfcn(expertMdfcnVo));
-
-        ExpertVo expertVo = new ExpertVo();
-        expertVo.setUserid(expertMdfcnVo.getUserid());
-
-        ExpertVo existingExpertInfo = expertPoolMngService.selectExpertApplyInfo(expertVo);
-        model.addAttribute("existingExpertInfo", existingExpertInfo);
-        ExpertVo expertVo1 = expertMdfcnService.selectExpertMdfcnInfo(expertMdfcnVo);
-
-        for (ExpertCareerVo expertCareerVo : expertVo1.getExpertCareerList()) {
-            for (ExpertCareerVo item : existingExpertInfo.getExpertCareerList()) {
-            }
-        }
-        for (ExpertCrtfctVo expertCrtfctVo : expertVo1.getExpertCrtfctList()) {
-            for (ExpertCrtfctVo item : existingExpertInfo.getExpertCrtfctList()) {
-            }
-        }
-        for (ExpertHdofVo expertHdofVo : expertVo1.getExpertHdofList()) {
-            for (ExpertHdofVo item : existingExpertInfo.getExpertHdofList()) {
-
-            }
-        }
-        model.addAttribute("newExpertInfo", expertVo1);
+        model.addAttribute("existingExpertInfo", expertMdfcnService.selectExistingExpertInfo(expertMdfcnVo));
+        model.addAttribute("newExpertInfo", expertMdfcnService.selectNewExpertInfo(expertMdfcnVo));
         return "mng/expertPoolMng/expertMdfcnDetail.html";
     }
 
+    /**
+     * 전문가 정보변경 상태변경
+     *
+     * @param expertMdfcnVo
+     * @param expertLogVo
+     * @param user
+     * @return int
+     * @throws Exception
+     * @Title : updateMdfcnStts
+     * @Description : 전문가 정보변경 상태변경
+     */
     @RequestMapping("/updateMdfcnStts.do")
     @ResponseBody
     public int updateMdfcnStts(ExpertMdfcnVo expertMdfcnVo, ExpertLogVo expertLogVo, @UserInfo UserVo user) throws Exception {
         expertLogVo.setUser(user);
-        expertPoolMngService.insertExpertLog(expertLogVo);
-        return expertMdfcnService.updateSttsCd(expertMdfcnVo);
+        return expertMdfcnService.updateStts(expertMdfcnVo, expertLogVo);
     }
 }

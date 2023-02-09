@@ -15,19 +15,34 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 	private static final String DEFAULT_TARGET_URL = "/main.html";
 	
 	/**
-     * 사용자 로그인 정보를 확인하기 위한 쿼리
-     */
+    * 사용자 로그인 정보를 확인하기 위한 쿼리
+    */
 	private final String DEF_USER_LOGIN_INFO_QUERY = 
-			"  SELECT  A.USERID, A.NM, NVL(A.PSWD, D.PSWD) AS PSWD, A.INSTID, A.INSTPIC_ROLE_CD, A.ACNT_LOCK_YN, A.ACNT_LOCK_CD, A.PRVC_VLDTY, DATE_FORMAT(D.REG_DT, '%Y-%m-%d') AS DRMNCY_REG_DT, A.PSWD_MDFCN_DT, A.LGN_FAIL_CNT, B.APRV_STTS_CD AS INST_APRV_STTS_CD, B.USE_YN AS INST_USE_YN, "
-	        + "NVL((SELECT USE_YN AS SITE_USE_YN FROM TB_CMM_SITE WHERE INSTID = A.INSTID AND SYS_KND_CD = 'T' AND USE_YN = 'Y' LIMIT 1), 'N') AS SITEAPLY_USE_YN "
+			"  SELECT  A.USERID, A.ACNT, A.NM, NVL(A.PSWD, D.PSWD) AS PSWD, A.INSTID, A.INSTPIC_ROLE_CD, A.ACNT_LOCK_YN, A.ACNT_LOCK_CD, A.PRVC_VLDTY, DATE_FORMAT(D.REG_DT, '%Y-%m-%d') AS DRMNCY_REG_DT, A.PSWD_MDFCN_DT, A.LGN_FAIL_CNT, B.APRV_STTS_CD AS INST_APRV_STTS_CD, B.USE_YN AS INST_USE_YN, "
+	        + "NVL((SELECT USE_YN AS SITE_USE_YN FROM TB_CMM_SITE WHERE INSTID = A.INSTID AND SYS_KND_CD = 'T' AND USE_YN = 'Y' LIMIT 1), 'N') AS SITEAPLY_USE_YN, "
+	        + "NVL((SELECT 'Y' FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID AND ESYLGN_CD = '106101' LIMIT 1), 'N') AS ONEPASS_LINK_YN, "
+	        + "(SELECT COUNT(USERID) FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID) AS ESYLGN_LINK_CNT "
 			+ "FROM  TB_CMM_USER A LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID "
 			+ "      LEFT OUTER JOIN TB_CMM_USER_DRMNCY D ON A.USERID = D.USERID "
             + "WHERE A.ACNT = :loginid "
             + "AND A.DEL_YN = 'N' ";
+	
+	/**
+    * 디지털원패스 사용자 로그인 정보를 확인하기 위한 쿼리
+    */
+    private final String DEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY = 
+            "  SELECT  A.USERID, A.ACNT, A.NM, NVL(A.PSWD, D.PSWD) AS PSWD, A.INSTID, A.INSTPIC_ROLE_CD, A.ACNT_LOCK_YN, A.ACNT_LOCK_CD, A.PRVC_VLDTY, DATE_FORMAT(D.REG_DT, '%Y-%m-%d') AS DRMNCY_REG_DT, A.PSWD_MDFCN_DT, A.LGN_FAIL_CNT, B.APRV_STTS_CD AS INST_APRV_STTS_CD, B.USE_YN AS INST_USE_YN, "
+            + "NVL((SELECT USE_YN AS SITE_USE_YN FROM TB_CMM_SITE WHERE INSTID = A.INSTID AND SYS_KND_CD = 'T' AND USE_YN = 'Y' LIMIT 1), 'N') AS SITEAPLY_USE_YN, "
+            + "'Y' AS ONEPASS_LINK_YN, "
+            + "(SELECT COUNT(USERID) FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID) AS ESYLGN_LINK_CNT "
+            + "FROM  TB_CMM_USER A LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID "
+            + "      LEFT OUTER JOIN TB_CMM_USER_DRMNCY D ON A.USERID = D.USERID "
+            + "WHERE A.USERID = (SELECT USERID FROM TB_CMM_USER_ESYLGN WHERE USERKEY = :userKey AND ESYLGN_CD = '106101') "
+            + "AND A.DEL_YN = 'N' ";
 
     /**
-     * 사용자에게 부여된 역할을 확인하기 위한 쿼리
-     */
+    * 사용자에게 부여된 역할을 확인하기 위한 쿼리
+    */
 	private final String DEF_GRANTED_AUTHORITY_QUERY = 
 			"  SELECT B.ROLEID, C.NM, C.SE_CD, C.TRGT_INST_CD, C.TRGT_RGN_CD, D.ALLOWED_SITEIDS, C.KND_CD "
 			+ "FROM TB_CMM_USER A, "
@@ -56,8 +71,8 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 	        + "AND C.ROLEID = D.ROLEID ";
 
     /**
-     * url 형식인 보호자원 - Role 맵핑정보를 조회하는 default 쿼리
-     */
+    * url 형식인 보호자원 - Role 맵핑정보를 조회하는 default 쿼리
+    */
 	private final String DEF_ROLES_AND_URL_QUERY = 
 	        " WITH CTE AS "
 	        + "( "
@@ -130,8 +145,8 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "ORDER BY URL ";
 
     /**
-     * url 형식인 보호자원 - channel 맵핑정보를 조회하는 default 쿼리
-     */
+    * url 형식인 보호자원 - channel 맵핑정보를 조회하는 default 쿼리
+    */
 	private final String DEF_HTTPS_AND_URL_QUERY = 
 	        " WITH CTE AS "
 	        + "( "
@@ -196,6 +211,18 @@ public class SecurityPropertiesImpl implements SecurityProperties {
 	public String getDEF_USER_LOGIN_INFO_QUERY() {
 		return DEF_USER_LOGIN_INFO_QUERY;
 	}
+    
+    /**
+    * 디지털원패스 사용자 로그인 정보를 확인하기 위한 SQL 반환.
+    *
+    * @Title       : getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY 
+    * @Description : 디지털원패스 사용자 로그인 정보를 확인하기 위한 SQL 반환.
+    * @return String 디지털원패스 사용자 로그인 정보를 확인하기 위한 SQL 문자열 
+    */
+    @Override
+    public String getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY() {
+        return DEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY;
+    }
 
     /**
     * 사용자에게 부여된 역할을 확인하기 위한 SQL 반환.

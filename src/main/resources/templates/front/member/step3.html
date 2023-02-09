@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/membershipLayout"
+>
+    <body>
+        <th:block layout:fragment="content">
+            <form id="authForm" name="authForm" th:action="@{/front/membership/step3.html}" method="post">
+            <input type="hidden" name="type" id="type" th:value="${data.type}" />
+            <input type="hidden" name="tosAgreYn" id="tosAgreYn" th:value="${data.tosAgreYn}" />
+            <input type="hidden" name="privcyAgreYn" id="privcyAgreYn" th:value="${data.privcyAgreYn}" />
+            <input type="hidden" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:value="${data.prvcThptyPvsnAgreYn}" />
+            <input type="hidden" name="childJoinAgreYn" th:if="${data.type == 'C'}" id="childJoinAgreYn" th:value="${param.childJoinAgreYn}" />
+            <input type="hidden" name="wbznAplyAgreYn" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
+            <input type="hidden" name="wbznAp" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
+            <input type="hidden" name="encodeData" id="encodeData" th:value="${data.encodeData}" />
+            <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
+            <div class="steps">
+                <ol>
+                    <li>
+                        <div class="steps-inner">
+                            <span>01</span>
+                            <strong>약관동의</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="steps-inner">
+                            <span>02</span>
+                            <strong>본인인증</strong>
+                        </div>
+                    </li>
+                    <li class="active" title="현재 단계">
+                        <div class="steps-inner">
+                            <span>03</span>
+                            <strong>회원정보입력</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="steps-inner">
+                            <span>04</span>
+                            <strong>가입완료</strong>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">회원정보 입력</h3>
+                </div>
+                <div class="right">
+                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                </div>
+            </div>
+
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>회원가입  - 이름, 아이디, 비밀번호, 비밀번호 확인, 휴대전화, 이메일, 주소, 상세주소, 관심분야, 맞춤 환경정보</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">이름<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="form-input">
+                                    <input type="text" title="이름" placeholder="이름 입력" data-width="304" th:value="${authData.sName}" th:readonly="${authData.sName != null}">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">아이디<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="text" title="아이디" placeholder="아이디 입력" data-width="304">
+                                            <button type="button" class="btn-medium btn-gray">중복확인</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback valid">사용가능한 아이디 입니다.</p>
+                                    </div>
+                                </div>
+                                <p class="desc">* 아이디 영문+숫자 6~10자 이내</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">비밀번호<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input"><input type="password" title="비밀번호" placeholder="비밀번호 입력" data-width="414"></div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback invalid">비밀번호 조건이 일치하지 않습니다.</p>
+                                    </div>
+                                </div>
+                                <p class="desc">* 비밀번호 영문+숫자+특수문자(!@#$) 각 1자 이상 포함아여 9~12자 이내</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">비밀번호 확인<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input"><input type="password" title="비밀번호 확인" placeholder="비밀번호 확인 입력" data-width="414"></div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback valid">비밀번호가 일치합니다.</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">휴대전화</th>
+                            <td>
+                                <div class="form-input">
+                                    <input type="number" title="휴대전화" placeholder="숫자만 입력" data-width="304" th:value="${authData.sMobileNo}" th:readonly="${authData.sName != null}">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">이메일<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="email" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160">
+                                            <div class="bul">@</div>
+                                            <input type="email" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
+                                            <select title="이메일 도메인" data-width="120">
+                                                <option value="직접입력">직접입력</option>
+                                                <option value="select">select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback invalid">이메일 형식이 올바르지 않습니다.</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="form-input">
+                                    <div class="bul">지번/도로명</div>
+                                    <input type="text" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly id="reado">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">상세주소</th>
+                            <td>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback invalid">상세주소는 100자를 초과할 수 없습니다.</p>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" rowspan="4">관심분야 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <strong class="label">교육 프로그램</strong>
+                                    <div class="form-check-list">
+                                        <label class="inp"><input type="checkbox"><b>푸름이 이동환경교실 </b></label>
+                                        <label class="inp"><input type="checkbox"><b>유아환경교육관</b></label>
+                                        <label class="inp"><input type="checkbox"><b>전국 환경교육 기관ㆍ단체 프로그램</b></label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <strong class="label">지원사업</strong>
+                                    <div class="form-check-list">
+                                        <label class="inp"><input type="checkbox"><b>사회 환경교육 지원사업</b></label>
+                                        <label class="inp"><input type="checkbox"><b>학교 환경교육 지원사업</b></label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <strong class="label">제도지원</strong>
+                                    <div class="form-check-list">
+                                        <label class="inp"><input type="checkbox"><b>환경교육사</b></label>
+                                        <label class="inp"><input type="checkbox"><b>우수환경교육프로그램 지정제</b></label>
+                                        <label class="inp"><input type="checkbox"><b>환경교육도시 지정</b></label>
+                                        <label class="inp"><input type="checkbox"><b>사회환경교육관 지정</b></label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <strong class="label">기타</strong>
+                                    <div class="form-check-list">
+                                        <label class="inp"><input type="checkbox"><b>정보/소식</b></label>
+                                        <label class="inp"><input type="checkbox"><b>참여/신청</b></label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">맞춤 환경정보 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
+                            <td>
+                                <div class="form-check-list">
+                                    <label class="inp"><input type="checkbox"><b>실시간 대기정보</b></label>
+                                    <label class="inp"><input type="checkbox"><b>내일의 대기정보</b></label>
+                                    <label class="inp"><input type="checkbox"><b>시도별 대기경보정보</b></label>
+                                    <label class="inp"><input type="checkbox"><b>우리동네 대기정보</b></label>
+                                    <label class="inp"><input type="checkbox"><b>우리동네 공기질</b></label>
+                                    <label class="inp"><input type="checkbox"><b>실시간 공간분포</b></label>
+                                    <label class="inp"><input type="checkbox"><b>농업날씨365</b></label>
+                                    <label class="inp"><input type="checkbox"><b>국내외 배출권 거래동향</b></label>
+                                    <label class="inp"><input type="checkbox"><b>빛 공해 조명환경 관리구역 지정현황</b></label>
+                                    <label class="inp"><input type="checkbox"><b>전국 저공해차 충전소 운영현황 인증 신청통계</b></label>
+                                    <label class="inp"><input type="checkbox"><b>분야 별 온실가스 배출량 및 흡수량</b></label>
+                                    <label class="inp"><input type="checkbox"><b>실시간 수질자료</b></label>
+                                    <label class="inp"><input type="checkbox"><b>4대강 홍수 정보</b></label>
+                                    <label class="inp"><input type="checkbox"><b>연도별 환경정보 등록기업 정보현황</b></label>
+                                    <label class="inp"><input type="checkbox"><b>수계열 실시간 수질자료</b></label>
+                                    <label class="inp"><input type="checkbox"><b>기상청 날씨누리</b></label>
+                                    <label class="inp"><input type="checkbox"><b>국가하수도 정보시스템</b></label>
+                                    <label class="inp"><input type="checkbox"><b>전국 실내 라돈 지도</b></label>
+                                    <label class="inp"><input type="checkbox"><b>탄소포인트제 빠른서비스</b></label>
+                                </div>
+                                <p class="desc-info mt15">선택하신 정보는 로그인 시, 메인 화면에서 위젯 형태로 확인할 수 있습니다.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="box-df-list mt10">
+                <dl>
+                    <dt>개인정보 유효기간</dt>
+                    <dd>선택된 유효기간 동안 국가환경교육 통합플랫폼 이용 내역이 없어도 개인정보 분리보관 및 휴면회원으로 전환되지 않습니다.</dd>
+                </dl>
+                <div class="form-check-list mt10">
+                    <label class="inp"><input type="radio"><b>1년</b></label>
+                    <label class="inp"><input type="radio"><b>2년</b></label>
+                    <label class="inp"><input type="radio"><b>5년</b></label>
+                    <label class="inp"><input type="radio"><b>회원탈퇴 시</b></label>
+                </div>
+            </div>
+            
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-green" onclick="location.href='/front/membership/step4.html'">가입하기</button>
+                </div>
+            </div>
+        </th:block>
+    </body>
+</html>

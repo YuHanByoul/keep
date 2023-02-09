@@ -12,84 +12,75 @@
 			display:none;
 		}
 	</style>
-
-	<div class="row">
-		<div class="col-12">
-			<div class="card">
-				<div class="card-block-small">
-					<div class="mb-0 form-group row">
-						<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트</strong></div>
-						<th:block kattr:select_site="searchSite" witdh="100%" firstOptTxt="- 선택 - " firstOptVal="" isAdmin="true"/>
+	<div class="page-body">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-block-small">
+						<div class="mb-0 form-group row">
+							<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사이트선택</strong></div>
+							<th:block kattr:select_site="searchSite" witdh="100%" firstOptTxt="- 선택 - " firstOptVal="" isAdmin="true"/>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-
-		<div class="col-12">
-			<div class="card">
-				<div class="card-block-small">
-					<div class="row">
-						<div class="col-12 col-lg-6 mb-2 mb-lg-0">
-							<h5 class="mb-3 p-b-5">
-								<strong>FAQ 분류 목록</strong>
-							</h5>
-							<div class="card">
-									<div class="card-block-small">
-										<table id="jsGrid" class="table-responsive"></table>
-										<div id="listPager" class="text-center"></div>
+			<div class="col-12 col-lg-6 mb-2 mb-lg-0">
+				<div class="card">
+					<div class="card-block-small">
+						<h3 class="sub-title mt-2 p-b-15"><strong>FAQ 분류 목록</strong></h3><!-- [230126] 타이틀 수정 -->
+						<table id="jsGrid" class="table-responsive"></table>
+						<div id="listPager" class="text-center"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-12 col-lg-6">
+				<div class="card">
+					<form name="faqClForm" id="faqClForm">
+						<input type="hidden" id="useYn" name="useYn" value="Y">
+						<input type="hidden" id="ord" name="id">
+						<div class="card-block-small">
+							<!-- [230126] 타이틀 수정 -->
+							<div class="sub-title">
+								<div class="row align-items-center">
+									<div class="col">
+										<strong>FAQ 분류 정보</strong>
+									</div>
+									<div class="col-auto btn-group-sm">
+										<th:block sec:authorize-url="/mng/faq/insertCl.do">
+											<button type='button' class="btn btn-primary" onclick="addFaqCl()">등록</button>
+										</th:block>
 									</div>
 								</div>
-						</div>
-
-						<div class="col-12 col-lg-6">
-							<div style="display:flex; justify-content: space-between; flex-wrap:wrap;">
-								<h5 class="mb-3 p-b-5">
-									<strong>FAQ 분류 정보</strong>
-								</h5>
-								<div class="text-right">
-									<th:block sec:authorize-url="/mng/faq/insertCl.do">
-										<button class="btn btn-primary" onclick="addFaqCl()">등록</button>
-									</th:block>
+							</div>
+							<div class="mb-3 form-group row required"><!-- [230126] mb-2 -> mb-3으로 변경 -->
+								<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clid"><strong>분류코드</strong></label>
+								<div class="col-sm-12">
+									<input type="text" class="form-control form-control-sm" name="clid" id="clid" placeholder="자동생성" readonly/>
 								</div>
 							</div>
-							<div class="card">
-								<div class="card-block-small">
-									<form name="faqClForm" id="faqClForm" action="" method="post">
-										<input type="hidden" id="useYn" name="useYn" value="Y">
-										<input type="hidden" id="ord" name="id">
-										<div class="mb-2 form-group required row">
-											<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clid"><strong>분류코드</strong></label>
-											<div class="col-sm-12">
-												<input type="text" class="form-control form-control-sm" name="clid" id="clid" placeholder="자동생성" readonly/>
-											</div>
-										</div>
-										<div class="mb-2 form-group required row">
-											<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clNm"><strong>분류명</strong></label>
-											<div class="col-sm-12">
-												<input type="text" class="form-control form-control-sm" name="clNm" id="clNm"/>
-											</div>
-										</div>
-										<div class="mb-2 form-group row">
-											<div class="col-sm-12">
-												<div class="col-sm-12">
-													<span kattr:switch_yn="clUseYn" label="FAQ 분류 사용" defaultVal="Y" onchange="clSwitch" isAdmin="true"></span>
-												</div>
-											</div>
-										</div>
-										<div class="mb-0 mt-4 form-group row">
-											<div class="col-sm-12">
-												<th:block sec:authorize-url="/mng/faq/insertCl.do">
-													<button type="button" class="btn btn-primary" onclick="saveFaqCl()" >저장</button>
-												</th:block>
-											</div>
-										</div>
-									</form>
+							<div class="mb-3 form-group row required"><!-- [230126] mb-2 -> mb-3으로 변경 -->
+								<label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clNm"><strong>분류명</strong></label>
+								<div class="col-sm-12">
+									<input type="text" class="form-control form-control-sm" name="clNm" id="clNm" placeholder="분류명"/>
+								</div>
+							</div>
+							<div class="mb-3 form-group row"><!-- [230126] mb-0 -> mb-3으로 변경 -->
+								<div class="col-sm-12">
+									<span kattr:switch_yn="clUseYn" label="FAQ 분류 사용" defaultVal="Y" onchange="clSwitch" isAdmin="true"></span>
 								</div>
 							</div>
 						</div>
-					</div>
+					<th:block sec:authorize-url="/mng/faq/insertCl.do">
+						<!-- [230126] 버튼위치 변경 -->
+						<div class="card-block-small">
+							<button type="button" class="btn btn-primary" onclick="saveFaqCl()" >저장</button>
+						</div>
+						<!-- //[230126] 버튼위치 변경 -->
+					</th:block>
+					</form>
 				</div>
 			</div>
+
 		</div>
 	</div>
 
@@ -258,15 +249,15 @@
 						name: 'ord',
 						title: "정렬",
 						type: "number",
-						width: "100",
+						width: "120",
 						align: "center"
 						,
 						itemTemplate: function (value, item) {
-							var firstObj = $("<a class='btn btn-xs btn-info' />").text("▲").on("click", function () {
+							var firstObj = $("<a class='btn btn-inverse btn-sm' />").text("▲").on("click", function () {
 								changeOrd("OU", item);
 								return false;
 							}).add("<span>&nbsp;</span>");
-							var lastObj = $("<a class='btn btn-xs btn-info' />").text("▼").on("click", function () {
+							var lastObj = $("<a class='btn btn-inverse btn-sm' />").text("▼").on("click", function () {
 								changeOrd("OD", item);
 								return false;
 							});

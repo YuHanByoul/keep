@@ -1,0 +1,185 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+
+    <!-- 문의 내용 -->
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span> <th:block th:text="|[${inqry.inqryClCdNm}]|"/> [[${inqry.title}]]</span>
+                <th:block th:if="${inqry.rlsYn == 'N'}">
+                    <span class="icon icon-lockon" title="비밀글"></span>
+                </th:block>
+            </h3>
+            <dl>
+                <div class="list">
+                    <dt>상태</dt>
+                    <dd>[[${inqry.sttsCdNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(inqry.regDt, 'yyyy-MM-dd')}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>작성자</dt>
+                    <dd>[[${inqry.acnt}]]</dd>
+                </div>
+            </dl>
+            <dl class="table-view-file">
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:if="${inqry.fileList != null}">
+                                <th:block th:each="file : ${inqry.fileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content" th:text="${inqry.cntnts}">
+            </div>
+        </div>
+
+        <!-- 답변 완료 -->
+        <th:block th:if="${inqry.sttsCd == '103104'}">
+            <div class="table-view">
+                <div class="table-view-header">
+                    <h3>
+                        <span class="box-tag tag-green">답변완료</span>
+                        <span th:text="${inqryAns.cntnts}">답변제목</span>
+                    </h3>
+                    <dl>
+                        <div class="list">
+                            <dt>작성자</dt>
+                            <dd th:text="${inqryAns.opetrAcnt}"/>
+                        </div>
+                        <div class="list">
+                            <dt>답변일</dt>
+                            <dd th:text="${inqryAns.ansDe}"/>
+                        </div>
+                    </dl>
+                    <dl class="table-view-file">
+                        <div class="list">
+                            <dt>첨부파일</dt>
+                            <dd>
+                                <div class="form-input-file">
+                                    <ul th:if="${inqryAns.fileList != null}">
+                                        <th:block th:each="file : ${inqryAns.fileList}">
+                                            <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                                <span class="name">
+                                                    <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                       th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        [[${file.orginlFileNm}]]
+                                                    </a>
+                                                </span>
+                                            </li>
+                                        </th:block>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+                <div class="table-view-body">
+                    <div class="table-view-content" th:text="${inqryAns.cntnts}">
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <th:block th:if="${inqry.userid == loginUserid}">
+                    <th:block th:if="${inqry.sttsCd == '103101'}">
+                        <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.update('cancel')">접수취소</button>
+                    </th:block>
+                    <th:block th:if="${inqry.sttsCd == '103104'}">
+                        <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.update('delete')">삭제</button>
+                    </th:block>
+                    <th:block th:if="${inqry.sttsCd == '103101'}">
+                        <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToUpdateForm()">수정</button>
+                    </th:block>
+                </th:block>
+                <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToList()">목록</button>
+            </div>
+        </div>
+    </div>
+
+    <form id="listForm" th:action="@{/}" method="get" onsubmit="return false;">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="searchType" name="searchType" th:value="${searchVo.searchType}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="inqryClCd" name="inqryClCd" th:value="${searchVo.inqryClCd}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="inqryid" name="inqryid" th:value="${inqry.inqryid}">
+    </form>
+
+    <script th:inline="javascript">
+        let inqryDetail = {
+            inqryid: /*[[${inqry.inqryid}]]*/null,
+            updateFormUrl: '/front/inqry/inqryForm.html',
+            listUrl: '/front/inqry/inqryList.html',
+            deleteUrl: '/front/inqry/deleteInqry.do',
+            cancelUrl: '/front/inqry/cancelInqry.do',
+
+            update(mode) {
+                if (mode == 'cancel') {
+                    if (!confirm('접수를 취소 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(inqryDetail.cancelUrl);
+                } else if (mode == 'delete') {
+                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(inqryDetail.deleteUrl);
+                }
+            },
+
+            ajaxForSttsUpdate(url) {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'post',
+                        url: url,
+                        dataType: 'json',
+                        data: {inqryid: inqryDetail.inqryid},
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success)
+                                inqryDetail.submit(inqryDetail.listUrl);
+                        }
+                    })
+                }
+            },
+
+            moveToList() {
+                this.submit(this.listUrl);
+            },
+
+            moveToUpdateForm(url) {
+                this.submit(this.updateFormUrl);
+            },
+
+            submit(url) {
+                let f = document.forms.listForm;
+                f.action = url;
+                f.submit();
+            }
+        }
+
+
+    </script>
+</div>
+

@@ -6,7 +6,6 @@ import java.util.Map;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.site.model.SiteVo;
-import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -124,13 +123,16 @@ public interface CommonDao {
     * @throws Exception 예외
     */
     public List<Map<String, Object>> selectAllRgnList() throws Exception;
+    
     /**
-     * 시도 지역목록을 반환한다.
-     *
-     * @Title : selectCtprvnList
-     * @Description : 시도 지역목록을 반환한다.
-     * @return List<Map<String,Object>> 지역목록
-     * @throws Exception 예외
-     */
+    * 시도 지역목록을 반환한다.
+    *
+    * @Title : selectCtprvnList
+    * @Description : 시도 지역목록을 반환한다.
+    * @return List<Map<String,Object>> 지역목록
+    * @throws Exception 예외
+    */
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
+    
+    
 }

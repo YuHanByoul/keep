@@ -114,6 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/mng/monitor/reloadSecurityMetadataSource.do",
                 "/mng/monitor/reloadCodeInfo.do",
                 "/downloadLogo.do",
+                "/onepass/rcv.do",
         		"/**/*.js", 
         		"/**/*.css", 
         		"/css/**/*", 
@@ -129,7 +130,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         		"/example/**/*",
         		"/js/ckeditor/**/*",
         		"/old/**/*"
-        ); // 시큐리티를 적용하지 않을 자원들(정적)
+        ); // 시큐리티를 적용하지 않을 자원들
     }
 
     @Override
@@ -171,7 +172,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterAfter(new AjaxSessionTimeoutFilter(), ExceptionTranslationFilter.class); 
 
         // http.csrf().disable(); // 주석풀지마세요!!! csrf공격대응 기능을 기본적으로 사용함(보안강화)
-        http.csrf().csrfTokenRepository(new CookieCsrfTokenRepository());
+        http.csrf().csrfTokenRepository(new CookieCsrfTokenRepository()).ignoringAntMatchers("/onepass/acs.html");
 
         http.headers().frameOptions().disable(); // iframe사용가능
     }

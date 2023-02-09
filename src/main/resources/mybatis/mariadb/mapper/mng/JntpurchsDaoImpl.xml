@@ -15,17 +15,18 @@
             A.JNTPURCHSID
             , A.JNTPURCHSNO
             , A.JNTPURCHS_NM
-            , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHID_NM
+            , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
             , A.BGNG_DT
             , A.END_DT
-            , D.CD_NM AS STTUS_CD_NM
-            , A.RGTRID
+            , D.CD_NM AS STTS_CD_NM
+            , E.ACNT
+            , F.INST_NM
             , A.REG_DT
         FROM
             TB_THA_TCHAID_JNTPURCHS A
-        LEFT JOIN
+        LEFT OUTER JOIN
             TB_THA_TCHAID_JNTPURCHS_GOODS B ON (B.JNTPURCHSID = A.JNTPURCHSID)
-        LEFT JOIN
+        LEFT OUTER JOIN
             TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
         INNER JOIN (
             SELECT
@@ -34,15 +35,40 @@
             FROM
                 TB_CMM_CD
             WHERE
-                CDGRPID = 172
+                CDGRPID = '172'
         ) D ON (D.CD = A.STTS_CD)
         INNER JOIN (
             SELECT
                 USERID
+                , INSTID
                 , ACNT
             FROM
                 TB_CMM_USER
         ) E ON (E.USERID = A.RGTRID)
+        LEFT OUTER JOIN
+          TB_CMM_INST F ON (F.INSTID = E.INSTID)
+        WHERE 1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNm'">
+            AND A.JNTPURCHS_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNo'">
+            AND A.JNTPURCHSNO LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.STTS_CD = #{searchSttsCd}
+        </if>
+        <if test="searchInstType != null and searchInstType != '' and searchInstType == 'epa'">
+            AND F.INST_CD = 'epa'
+        </if>
+        <if test="searchInstType != null and searchInstType != '' and searchInstType == 'other'">
+            AND (F.INST_CD != 'epa' OR F.INST_CD IS NULL)
+        </if>
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND A.BGNG_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt}, ' 00:00:00')
+        </if>
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND A.END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt}, ' 23:59:59')
+        </if>
         GROUP BY
             B.JNTPURCHSID
         <include refid="PaginationMapper.footer"/>
@@ -51,7 +77,7 @@
     <!-- 공동구매모집 등록 -->
     <insert id="insertJntpurchs" parameterType="JntpurchsVo" useGeneratedKeys="true" keyProperty="jntpurchsid">
         /* JntpurchsDao.insertJntpurchs */
-        INSERT INTO TB_THA_TCHAID_INTPURCHS (
+        INSERT INTO TB_THA_TCHAID_JNTPURCHS (
             JNTPURCHSNO
             , JNTPURCHS_NM
             , STTS_CD
@@ -73,19 +99,14 @@
             , REG_DT
             , RGTRID
         ) VALUES (
-            (
-                SELECT 
-                    CONCAT('GP-', IFNULL(MAX(JNTPURCHSNO), LPAD('1', 3, '0'))) 
-                FROM 
-                    TB_THA_TCHAID_JNTPURCHS)
-            )
+            (SELECT CONCAT('GP-', IFNULL(MAX(LPAD(JNTPURCHSID + 1, 3, '0')), LPAD('1', 3, '0'))) FROM TB_THA_TCHAID_JNTPURCHS AS A)
             , #{jntpurchsNm}
-            , #{sttscd}
-            , #{qnlyWhol}
+            , #{sttsCd}
+            , #{qntyWhol}
             , #{qntyLmt}
             , #{qntyLmtYn}
-            , #{bgngDt}
-            , #{endDt}
+            , #{bgngDtStr}
+            , #{endDtStr}
             , #{dtlCn}
             , #{mvpUrl}
             , #{mvpPstnCd}
@@ -101,297 +122,356 @@
         )
     </insert>
     
+    <!-- 공동구매 상품 등록 -->
+    <insert id="insertJntpurchsGoods" parameterType="JntpurchsTchaidVo" >
+        /* JntpurchsDao.insertJntpurchsGoods */
+        INSERT INTO TB_THA_TCHAID_JNTPURCHS_GOODS (
+            JNTPURCHSID
+            , TCHAIDID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{jntpurchsid}
+            , #{tchaidid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
     
+    <!-- 공동구매 금액 등록 -->
+    <insert id="insertJntpurchsAmt" parameterType="JntpurchsAmtVo" >
+        /* JntpurchsDao.insertJntpurchsAmt */
+        INSERT INTO TB_THA_TCHAID_JNTPURCHS_AMT (
+            JNTPURCHSID
+            , QNTY_BGNG
+            , QNTY_END
+            , AMT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{jntpurchsid}
+            , #{qntyBgng}
+            , #{qntyEnd}
+            , #{amt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
     
-    
-    
-    
-    
-    <!-- 설문지 목록 조회 -->
-    <select id="selectQestnrList" parameterType="QestnrVo" resultType="QestnrVo">
-        /* QestnrDao.selectQestnrList */
+    <!-- 교구 목록 조회 -->
+    <select id="selectTchaidList" parameterType="JntpurchsTchaidVo" resultType="JntpurchsTchaidVo">
+        /* JntpurchsDao.selectTchaidList */
         <include refid="PaginationMapper.header"/>
         SELECT
-            A.QESTNRID
-            , A.SITEID
-            , A.QESTNR_KND_CD
-            , C.CD_NM AS QESTNR_KND_CD_NM
-            , A.QESTNR_NM
-            , A.EXPLN
-            , A.USE_YN
+            A.TCHAIDID
+<!--             , A.TCHAID_TYPE_CD -->
+<!--             , B.CD_NM AS TCHAID_TYPE_NM -->
+            , CONCAT('TA-', LPAD(A.TCHAIDID, 3, '0')) AS TCHAID_NO
+            , A.TCHAID_NM
             , A.REG_DT
-            , D.SITE_NM
-            , E.INST_NM
-            , COUNT(B.QESTNRID) AS QITEM_CNT
+<!--             , A.EDU_TYPE_CD -->
+<!--             , C.CD_NM AS EDU_TYPE_NM -->
         FROM
-            TB_CMM_QESTNR A
+            TB_THA_TCHAID A
+<!--         INNER JOIN ( -->
+<!--             SELECT -->
+<!--                 CD -->
+<!--                 , CD_NM -->
+<!--             FROM -->
+<!--                 TB_CMM_CD -->
+<!--             WHERE -->
+<!--                 CDGRPID = 172 -->
+<!--         ) B ON (B.CD = A.TCHAID_TYPE_CD) -->
+<!--         INNER JOIN ( -->
+<!--             SELECT -->
+<!--                 CD -->
+<!--                 , CD_NM -->
+<!--             FROM -->
+<!--                 TB_CMM_CD -->
+<!--             WHERE -->
+<!--                 CDGRPID = 172 -->
+<!--         ) C ON (C.CD = A.EDU_TYPE_CD)     -->
+        WHERE 
+            1 = 1
+        <if test="tchaidSearchKeyword != null and tchaidSearchKeyword != '' and tchaidSearchType == 'tchaidNm'">
+            AND A.TCHAID_NM LIKE CONCAT('%',#{tchaidSearchKeyword},'%')
+        </if>
+        <if test="tchaidSearchKeyword != null and tchaidSearchKeyword != '' and tchaidSearchType == 'tchaidNo'">
+            AND CONCAT('TA-', LPAD(A.TCHAIDID, 3, '0')) LIKE CONCAT('%',#{tchaidSearchKeyword},'%')
+        </if>
+<!--         <if test="searchSeCd != null and searchSeCd != ''"> -->
+<!--             AND A.SE_CD = #{searchSeCd} -->
+<!--         </if> -->
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공동구매모집 상세 정보 조회 -->
+    <select id="selectJntpurchsInfo" parameterType="JntpurchsVo" resultType="JntpurchsVo">
+        /* JntpurchsDao.selectJntpurchsInfo */
+        SELECT
+            JNTPURCHSID
+            , JNTPURCHSNO
+            , JNTPURCHS_NM
+            , STTS_CD
+            , QNTY_WHOL
+            , QNTY_LMT
+            , QNTY_LMT_YN
+            , DATE_FORMAT(BGNG_DT, '%Y-%m-%d %H:%i:%s') AS BGNG_DT_STR
+            , DATE_FORMAT(END_DT, '%Y-%m-%d %H:%i:%s') AS END_DT_STR
+            , BGNG_DT
+            , END_DT
+            , DTL_CN
+            , MVP_URL
+            , MVP_PSTN_CD
+            , RPRS_IMG_FILEID
+            , DTL_IMG_FILEGRPID
+            , MAP_FILEGRPID
+            , EDU_PHOTO_FILEGRPID
+            , ATENT_MTTR
+        FROM
+            TB_THA_TCHAID_JNTPURCHS
+        WHERE
+            JNTPURCHSID = #{jntpurchsid}
+    </select>
+    
+    <!-- 공동구매모집 상품 정보 조회 -->
+    <select id="selectGoodsList" parameterType="JntpurchsTchaidVo" resultType="JntpurchsTchaidVo">
+        /* JntpurchsDao.selectGoodsList */
+        SELECT
+            B.TCHAIDID
+            , CONCAT('TA-', LPAD(B.TCHAIDID, 3, '0')) AS TCHAID_NO
+            , B.TCHAID_NM
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_GOODS A
         LEFT OUTER JOIN
-            TB_CMM_QESTNR_QITEM B ON (B.QESTNRID = A.QESTNRID)
+            TB_THA_TCHAID B ON (B.TCHAIDID = A.TCHAIDID)
+        WHERE
+            JNTPURCHSID = #{jntpurchsid}
+        ORDER BY
+            B.REG_DT DESC
+    </select>
+    
+    <!-- 공동구매모집 수량별 가격 정보 조회 -->
+    <select id="selectAmtList" parameterType="JntpurchsAmtVo" resultType="JntpurchsAmtVo">
+        /* JntpurchsDao.selectAmtList */
+        SELECT
+            AMTID
+            , QNTY_BGNG
+            , QNTY_END
+            , AMT
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_AMT
+        WHERE
+            JNTPURCHSID = #{jntpurchsid}
+        ORDER BY
+            AMTID
+    </select>
+    
+    <!-- 공동구매모집 신청 여부 조회 -->
+    <select id="isExistOrder" parameterType="JntpurchsVo" resultType="JntpurchsVo">
+        /* JntpurchsDao.isExistOrder */
+        SELECT
+          CASE WHEN COUNT(ORDERID) = 0 THEN 'N' ELSE 'Y' END AS IS_EXIST_ORDER
+        FROM
+          TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS
+        WHERE
+          JNTPURCHSID = #{jntpurchsid}
+    </select>
+    
+    <!-- 공동구매모집 정보 업데이트 -->
+    <update id="updateJntpurchs" parameterType="JntpurchsVo">
+        /* JntpurchsDao.updateJntpurchs */
+        UPDATE TB_THA_TCHAID_JNTPURCHS SET
+            JNTPURCHS_NM = #{jntpurchsNm}
+            , STTS_CD = #{sttsCd}
+            , QNTY_WHOL = #{qntyWhol}
+            , QNTY_LMT = #{qntyLmt}
+            , QNTY_LMT_YN = #{qntyLmtYn}
+            , BGNG_DT = #{bgngDtStr}
+            , END_DT = #{endDtStr}
+            , DTL_CN = #{dtlCn}
+            , MVP_URL = #{mvpUrl}
+            , MVP_PSTN_CD = #{mvpPstnCd}
+            , RPRS_IMG_FILEID = #{rprsImgFileid}
+            , DTL_IMG_FILEGRPID = #{dtlImgFilegrpid}
+            , MAP_FILEGRPID = #{mapFilegrpid}
+            , EDU_PHOTO_FILEGRPID = #{eduPhotoFilegrpid}
+            , ATENT_MTTR = #{atentMttr}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            JNTPURCHSID = #{jntpurchsid}
+    </update>
+    
+    <!-- 공동구매모집 정보 업데이트 -->
+    <update id="deleteJntpurchs" parameterType="JntpurchsVo">
+        UPDATE TB_THA_TCHAID_JNTPURCHS SET
+            STTS_CD = '-1'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            JNTPURCHSID = #{jntpurchsid}
+    </update>
+    
+    <!-- 공동구매모집 상품 일괄 삭제 -->
+    <delete id="deleteGoods" parameterType="JntpurchsVo">
+        /* JntpurchsDao.deleteGoods */
+        DELETE 
+            FROM TB_THA_TCHAID_JNTPURCHS_GOODS
+        WHERE 
+            JNTPURCHSID = #{jntpurchsid}
+    </delete>
+    
+    <!-- 공동구매모집 수량별 가격 정보 일괄 삭제 -->
+    <delete id="deleteAmt" parameterType="JntpurchsVo">
+        /* JntpurchsDao.deleteGoods */
+        DELETE 
+            FROM TB_THA_TCHAID_JNTPURCHS_AMT
+        WHERE 
+            JNTPURCHSID = #{jntpurchsid}
+    </delete>
+    
+    <!-- 공동구매신청 목록 조회 -->
+    <select id="selectJntpurchsOrderList" parameterType="JntpurchsOrderVo" resultType="JntpurchsOrderVo">
+        /* JntpurchsDao.selectJntpurchsOrderList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            B.JNTPURCHSID
+            , D.JNTPURCHS_NM
+            , E.ACNT
+            , E.NM
+            , IFNULL(F.INST_NM, "-") AS INST_NM
+            , A.ORDERNO
+            , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
+            , B.QNTY
+            , G.CD_NM AS STTS_CD_NM
+            , A.REG_DT
+            , DATE_FORMAT(A.REG_DT, '%Y-%m-%d %H:%i:%s') AS REG_DT_STR
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_ORDER A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS D ON (D.JNTPURCHSID = B.JNTPURCHSID)
+        INNER JOIN (
+            SELECT
+                USERID
+                , NM
+                , ACNT
+            FROM
+                TB_CMM_USER
+        ) E ON (E.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_CMM_INST F ON (F.INSTID = A.INSTID)
         INNER JOIN (
             SELECT
                 CD
                 , CD_NM
-            FROM 
-                TB_CMM_CD 
-            WHERE 
-                CDGRPID = 110
-        ) C ON (C.CD = A.QESTNR_KND_CD)
-        LEFT OUTER JOIN
-            TB_CMM_SITE D ON (D.SITEID = A.SITEID)
-        LEFT OUTER JOIN
-            TB_CMM_INST E ON (E.INSTID = D.INSTID)             
-        WHERE 
-            1 = 1
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'qestnrNm'">
-            AND A.QESTNR_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '181'
+        ) G ON (G.CD = A.STTS_CD)
+        WHERE 1 = 1
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNm'">
+            AND D.JNTPURCHS_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
-            AND E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNo'">
+            AND D.JNTPURCHSNO LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instCd'">
-            AND E.INST_CD LIKE CONCAT('%',#{searchKeyword},'%')
+        <if test="searchOrderKeyword != null and searchOrderKeyword != '' and searchOrderType == 'acnt'">
+            AND E.ACNT LIKE CONCAT('%',#{searchOrderKeyword},'%')
         </if>
-        <if test="searchSiteid != null and searchSiteid != ''">
-            AND A.SITEID = #{searchSiteid}
+        <if test="searchOrderKeyword != null and searchOrderKeyword != '' and searchOrderType == 'nm'">
+            AND E.NM LIKE CONCAT('%',#{searchOrderKeyword},'%')
         </if>
-        <if test="searchQestnrKndCd != null and searchQestnrKndCd != ''">
-            AND A.QESTNR_KND_CD = #{searchQestnrKndCd}
+        <if test="searchOrderKeyword != null and searchOrderKeyword != '' and searchOrderType == 'instNm'">
+            AND F.INST_NM LIKE CONCAT('%',#{searchOrderKeyword},'%')
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.STTS_CD = #{searchSttsCd}
+        </if>
+        <if test="searchRegDt != null and searchRegDt !=''">
+            AND DATE_FORMAT(A.REG_DT, '%Y-%m-%d') = #{searchRegDt}
         </if>
         GROUP BY
-            A.QESTNRID
+            B.JNTPURCHSID
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 설문지 정보 조회 -->
-    <select id="selectQestnrInfo" parameterType="QestnrVo" resultType="QestnrVo">
-        /* QestnrDao.selectQestnrInfo */
+    <!-- 공동구매신청 상세 정보 조회 -->
+    <select id="selectJntpurchsOrderInfo" parameterType="JntpurchsOrderVo" resultType="JntpurchsOrderVo">
+        /* JntpurchsDao.selectJntpurchsOrderInfo */
         SELECT
-            A.QESTNRID
-            , A.SITEID
-            , A.QESTNR_KND_CD
-            , A.QESTNR_NM
-            , A.EXPLN
-            , A.USE_YN
+            A.ORDERID
+            , D.JNTPURCHS_NM
+            , D.JNTPURCHSNO
+            , D.BGNG_DT
+            , D.END_DT
+            , (SELECT CD_NM FROM TB_CMM_CD WHERE CD = D.STTS_CD) AS JNTPURCHS_STTS_CD_NM
+            , A.ORDERNO
+            , A.STTS_CD
+            , GROUP_CONCAT(CONCAT(C.TCHAID_NM, CONCAT('(TA-', LPAD(B.TCHAIDID, 3, '0'), ')')) SEPARATOR ', ') AS TCHAID_NM
+            , B.QNTY
+            , B.AMT
+            , E.ACNT
+            , CASE WHEN E.INSTID IS NOT NULL THEN 'C' ELSE 'U' END USER_TYPE
+            , A.INST_NM
+            , (SELECT CD_NM FROM TB_CMM_CD WHERE CD = F.INST_TYPE_CD) AS INST_TYPE_CD_NM
+            , A.TELNO
+            , A.EML
+            , A.RECPTR
+            , A.RECPTR_TELNO
+            , A.RECPTR_EML
+            , A.DLVY_ADDR
+            , A.DLVY_ADDR_DTL
         FROM
-            TB_CMM_QESTNR A
-        WHERE 
-            QESTNRID = #{qestnrid}
-    </select>
-    
-    <!-- 설문지 업데이트 -->
-    <update id="updateQestnr" parameterType="QestnrVo">
-        /* QestnrDao.updateQestnr */
-        UPDATE TB_CMM_QESTNR SET
-            SITEID = #{siteid}
-            , QESTNR_KND_CD = #{qestnrKndCd}
-            , QESTNR_NM = #{qestnrNm}
-            , EXPLN = #{expln}
-            , USE_YN = #{useYn}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
-        WHERE 
-            QESTNRID = #{qestnrid}
-    </update>
-    
-    <!-- 설문지 문항 목록 조회 -->
-    <select id="selectQitemList" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectQitemList */
-        <include refid="PaginationMapper.header"/>
-        SELECT
-            A.QITEMID
-            , A.QESTNRID
-            , A.QITEM_TYPE_CD 
-            , B.CD_NM AS QITEM_TYPE_CD_NM 
-            , A.CN
-            , A.ORDR
-            , A.EX_CNT
-            , A.MDFCN_DT
-        FROM
-            TB_CMM_QESTNR_QITEM A
+            TB_THA_TCHAID_JNTPURCHS_ORDER A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS D ON (D.JNTPURCHSID = B.JNTPURCHSID)
         INNER JOIN (
-            SELECT 
-                CD
-                , CD_NM 
-            FROM 
-                TB_CMM_CD 
-            WHERE 
-                CDGRPID = 107
-        ) B ON (B.CD = A.QITEM_TYPE_CD)
-        WHERE 
-            1 = 1
-            AND A.QESTNRID = #{qestnrid}
-        <include refid="PaginationMapper.footer"/>
+            SELECT
+                USERID
+                , NM
+                , ACNT
+                , INSTID
+            FROM
+                TB_CMM_USER
+        ) E ON (E.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_CMM_INST F ON (F.INSTID = A.INSTID)
+        WHERE
+            B.JNTPURCHSID = #{jntpurchsid}
+        GROUP BY
+            B.JNTPURCHSID
     </select>
     
-    <!-- 설문지 문항 정보 등록 -->
-    <insert id="insertQitem" parameterType="QitemVo" useGeneratedKeys="true" keyProperty="qitemid">
-        /* QestnrDao.insertQestnr */
-        INSERT INTO TB_CMM_QESTNR_QITEM (
-            QITEMID
-            , QESTNRID
-            , QITEM_TYPE_CD
-            , CN
-            , EX_CNT
-            , SCALE
-            , ORDR
-            , USE_YN
-            , MDFCN_DT
-            , MDFRID
-            , REG_DT
-            , RGTRID
-        ) VALUES (
-            #{qitemid}
-            , #{qestnrid}
-            , #{qitemTypeCd}
-            , #{cn}
-            , #{exCnt}
-            , #{scale}
-            , #{ordr}
-            , #{useYn}
-            , NOW()
-            , #{user.userid}
-            , NOW()
-            , #{user.userid}
-        )
-    </insert>
-    
-    <!-- 설문지 문항 보기 등록 -->
-    <insert id="insertQitemEx" parameterType="QitemExVo" useGeneratedKeys="true" keyProperty="exid">
-        /* QestnrDao.insertQitemEx */
-        INSERT INTO TB_CMM_QESTNR_QITEM_EX (
-            EXID
-            , QITEMID
-            , EX_NO
-            , CN
-            , SCR
-            , ETC_YN
-            , MDFCN_DT
-            , MDFRID
-            , REG_DT
-            , RGTRID
-        ) VALUES (
-            #{exid}
-            , #{qitemid}
-            , #{exNo}
-            , #{cn}
-            , #{scr}
-            , #{etcYn}
-            , NOW()
-            , #{user.userid}
-            , NOW()
-            , #{user.userid}
-        )
-    </insert>
-    
-    <!-- 설문지 문항 정보 조회 -->
-    <select id="selectQitemInfo" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectQitemInfo */
-        SELECT
-            A.QITEMID
-            , A.QESTNRID
-            , A.QITEM_TYPE_CD
-            , A.CN
-            , A.EX_CNT
-            , A.ORDR
-            , A.USE_YN
-        FROM
-            TB_CMM_QESTNR_QITEM A
-        WHERE 
-            QITEMID = #{qitemid}
-    </select>
-    
-    <!-- 설문지 문항 보기 목록 조회 -->
-    <select id="selectQitemExList" parameterType="QitemVo" resultType="QitemExVo">
-        /* QestnrDao.selectQitemExList */
-        SELECT
-            A.EXID
-            , A.QITEMID
-            , A.EX_NO
-            , A.CN
-            , A.SCR
-            , A.ETC_YN
-        FROM
-            TB_CMM_QESTNR_QITEM_EX A
-        WHERE 
-            A.QITEMID = #{qitemid}
-        ORDER BY 
-            A.EX_NO
-    </select>
-    
-    <!-- 설문지 문항 정보 업데이트 -->
-    <update id="updateQitem" parameterType="QitemVo">
-        /* QestnrDao.updateQitem */
-        UPDATE TB_CMM_QESTNR_QITEM SET
-            QITEM_TYPE_CD = #{qitemTypeCd}
-            , CN = #{cn}
-            , EX_CNT = #{exCnt}
-            , ORDR = #{ordr}
-            , USE_YN = #{useYn}
+    <!-- 공동구매신청 정보 업데이트 -->
+    <update id="updateJntpurchsOrder" parameterType="JntpurchsOrderVo">
+        /* JntpurchsDao.updateJntpurchsOrder */
+        UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+            STTS_CD = #{sttsCd}
+            , RECPTR = #{recptr}
+            , RECPTR_TELNO = #{recptrTelno}
+            , RECPTR_EML = #{recptrEml}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
         WHERE 
-            QITEMID = #{qitemid}
+            ORDERID = #{orderid}
     </update>
-    
-    <!-- 설문지 다음 문항 정보 조회 -->
-    <select id="selectNextQitemInfo" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectNextQitemInfo */
-        SELECT
-            A.QITEMID
-            , A.ORDR
-        FROM
-            TB_CMM_QESTNR_QITEM A
-        WHERE 
-            A.QESTNRID = #{qestnrid}
-            AND A.ORDR = #{ordr} + 1
-    </select>
-    
-    <!-- 설문지 이전 문항 정보 조회 -->
-    <select id="selectPrevQitemInfo" parameterType="QitemVo" resultType="QitemVo">
-        /* QestnrDao.selectNextQitemInfo */
-        SELECT
-            A.QITEMID
-            , A.ORDR
-        FROM
-            TB_CMM_QESTNR_QITEM A
-        WHERE 
-            A.QESTNRID = #{qestnrid}
-            AND A.ORDR = #{ordr} - 1
-    </select>    
-    
-    <!-- 설문지 문항 순서 업데이트 -->
-    <update id="updateQitemOrdr" parameterType="QitemVo">
-        /* QestnrDao.updateQitemOrdr */
-        UPDATE TB_CMM_QESTNR_QITEM SET
-            ORDR = #{ordr}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
-        WHERE 
-            QITEMID = #{qitemid}
-    </update>
-    
-    <!-- 설문지 문항 삭제 -->
-    <delete id="deleteQitem" parameterType="QitemVo">
-        /* QestnrDao.deleteQitemOrdr */
-        DELETE 
-            FROM TB_CMM_QESTNR_QITEM
-        WHERE 
-            QITEMID IN
-        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-    </delete>
-    
-    <!-- 설문지 문항 보기 삭제 -->
-    <delete id="deleteQitemEx" parameterType="QitemVo">
-        /* QestnrDao.deleteQitemEx */
-        DELETE 
-            FROM TB_CMM_QESTNR_QITEM_EX
-        WHERE 
-            QITEMID IN
-        <foreach item="item" collection="deleteQitemids" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-    </delete>
     
 </mapper>

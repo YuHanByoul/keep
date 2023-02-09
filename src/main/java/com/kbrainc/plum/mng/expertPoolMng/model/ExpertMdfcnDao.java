@@ -33,7 +33,7 @@ public interface ExpertMdfcnDao {
 
     public ExpertMdfcnVo selectExpertMdfcn(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
-    public int updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int updateStts(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
     public int deleteExpertCareer(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
@@ -49,19 +49,22 @@ public interface ExpertMdfcnDao {
 
     public int deleteExpertTrgt(ExpertMdfcnVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertCareer(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertCareer(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertCrtfct(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertCrtfct(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertActvtRgn(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertActvtRgn(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertActvtScope(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertActvtScope(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertHdof(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertHdof(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertSbjct(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertSbjct(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int insertExpertTrgt(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int insertExpertTrgt(ExpertVo expertMdfcnVo) throws Exception;
 
-    public int updateExpertInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+    public int updateExpertInfo(ExpertVo expertMdfcnVo) throws Exception;
+
+    public int getPrevDmndId(ExpertMdfcnVo expertMdfcnVo) throws Exception;
+
 }

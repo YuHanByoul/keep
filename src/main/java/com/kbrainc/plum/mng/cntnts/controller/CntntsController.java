@@ -105,8 +105,15 @@ public class CntntsController {
         result =  cntntsService.selectCntntsInfo(cntntsVo);
         
         if(result.getPlySecnd() != null) {
-            result.setPlyMinute( (result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 );
-            result.setPlySecnd( result.getPlySecnd() - (result.getPlyMinute() * 60) );
+            if(result.getPlySecnd() >= 3600) {
+                result.setPlyHour((result.getPlySecnd() - (result.getPlySecnd() % 3600)) / 3600);
+                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60 - (result.getPlyHour() * 60));
+                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60) - (result.getPlyHour() * 3600));
+            }else {
+                result.setPlyHour(0);
+                result.setPlyMinute((result.getPlySecnd() - (result.getPlySecnd() % 60)) / 60);
+                result.setPlySecnd(result.getPlySecnd() - (result.getPlyMinute() * 60));
+            }
         }
         
         FileVo fileVo = new FileVo();
@@ -189,9 +196,12 @@ public class CntntsController {
         
         cntntsVo.setUser(user);
         
-        if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+        if(cntntsVo.getPlyHour() != null && cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+            int playTime = cntntsVo.getPlyHour() * 3600 + cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
+            cntntsVo.setPlySecnd(playTime);
+        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
             int playTime = cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);    
+            cntntsVo.setPlySecnd(playTime);
         }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
             int playTime = cntntsVo.getPlyMinute() * 60;
             cntntsVo.setPlySecnd(playTime);
@@ -226,7 +236,7 @@ public class CntntsController {
     @ResponseBody
     public Map<String, Object> updateCntnts(@Valid CntntsVo cntntsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
-        
+
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if (fieldError != null) {
@@ -237,9 +247,12 @@ public class CntntsController {
         
         cntntsVo.setUser(user);
         
-        if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+        if(cntntsVo.getPlyHour() != null && cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
+            int playTime = cntntsVo.getPlyHour() * 3600 + cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
+            cntntsVo.setPlySecnd(playTime);
+        }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() != null) {
             int playTime = cntntsVo.getPlyMinute() * 60 + cntntsVo.getPlySecnd();
-            cntntsVo.setPlySecnd(playTime);    
+            cntntsVo.setPlySecnd(playTime);
         }else if(cntntsVo.getPlyMinute() != null && cntntsVo.getPlySecnd() == null) {
             int playTime = cntntsVo.getPlyMinute() * 60;
             cntntsVo.setPlySecnd(playTime);

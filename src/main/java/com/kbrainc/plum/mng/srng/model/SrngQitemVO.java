@@ -32,7 +32,7 @@ public class SrngQitemVO extends ParentRequestVo {
     private UserVo user;
 
     /** 문항아이디 */
-    private int qitemid;
+    private Integer qitemid;
 
     /** 지정기준_코드 */
     private String dsgncrtrCd;
@@ -44,21 +44,21 @@ public class SrngQitemVO extends ParentRequestVo {
     private String idntyMttr;
 
     /** 배점 */
-    private int altm;
+    private Integer altm;
 
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date mdfcnDt;
 
     /** 수정자아이디 */
-    private int mdfrid;
+    private Integer mdfrid;
 
     /** 등록_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date regDt;
 
     /** 등록자아이디 */
-    private int rgtrid;
+    private Integer rgtrid;
 
     /** 지정기준검색 */
     private String searchDsgncrtrCd;

@@ -32,10 +32,10 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
     private UserVo user;
 
     /** 양식아이디 */
-    private int formid;
+    private Integer formid;
 
     /** 문항아이디 */
-    private int qitemid;
+    private Integer qitemid;
 
     /** 문항순서 */
     private String qitemOrdr;
@@ -68,7 +68,7 @@ public class SrngFormQitemMapngVO extends ParentRequestVo {
     private String[] qitemArr;
 
     /** 트리 뎁스 */
-    private int treeOrd;
+    private Integer treeOrd;
 
     /** 지정기준_코드 배열 */
     private String[] dsgncrtrCds;

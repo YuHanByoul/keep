@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -82,7 +83,7 @@ public class CommonController {
     * @return ModelAndView 모델뷰객체
     */
     @GetMapping("/")
-    public ModelAndView index(HttpServletRequest request, HttpSession session, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd) {
+    public ModelAndView index(HttpServletRequest request, HttpSession session, @UserInfo UserVo user, @SiteInfo SiteInfoVo site, @RequestParam(required=false) boolean error, @RequestParam(required=false) boolean timeout, @RequestParam(required=false) String pwd, @RequestParam(required=false) String alertMsg) {
         ModelAndView mav = new ModelAndView();
 
         DrmncyInfoVo drmncyInfo = (DrmncyInfoVo) session.getAttribute("drmncy");
@@ -94,12 +95,24 @@ public class CommonController {
         }
         
         if (user != null) {
-            String serverHttpPortStr = "";
+            /*String serverHttpPortStr = "";
             if (!"443".equals(serverHttpsPort)) {
                 serverHttpPortStr = ":" + serverHttpsPort;
+            }*/
+            
+            StringBuffer alertMessageBuffer = new StringBuffer("");
+            
+            if (alertMsg != null) {
+                if (pwd != null) {
+                    alertMessageBuffer.append("&");
+                } else {
+                    alertMessageBuffer.append("?");
+                }
+                alertMessageBuffer.append("alertMsg=").append(alertMsg);
             }
+            
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL() + (pwd != null ? "?pwd" : ""));
+            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL() + (pwd != null ? "?pwd" : "") + alertMessageBuffer.toString());
             redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
             mav.setView(redirectView);
             return mav;
@@ -191,20 +204,34 @@ public class CommonController {
     /**
     * 로그인 화면으로 이동한다.
     *
-    * @Title       : login 
+    * @Title : login
     * @Description : 로그인 화면으로 이동한다.
-    * @return String 이동화면경로
+    * @param request 요청객체
+    * @param session 세션객체
+    * @param user 사용자세션정보
+    * @return ModelAndView 모델객체
     */
     @GetMapping("/login.html")
-    public String login(HttpSession session) {
+    public ModelAndView login(HttpServletRequest request, HttpSession session, @UserInfo UserVo user) {
+        ModelAndView mav = new ModelAndView();
+        
+        if (user != null) {
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(request.getContextPath() + securityProperties.getDEFAULT_TARGET_URL());
+            redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
+            mav.setView(redirectView);
+            return mav;
+        }
+        
         SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
         String sysSeCd = siteInfo.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
-            return "mng/login";
+            mav.setViewName("mng/login");
         } else { // 사용자 사이트
-            return "front/login";
+            mav.setViewName("front/login");
         }
+        return mav;
     }
 
     /**
@@ -265,4 +292,5 @@ public class CommonController {
         return commonService.selectSiteList(site);
     }
 
+    
 }

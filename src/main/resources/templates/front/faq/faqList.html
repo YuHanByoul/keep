@@ -1,0 +1,85 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">검색어</strong></div>
+                <div class="form-body">
+                    <div class="form-input">
+                        <select title="검색어" id="searchType" name="searchType">
+                            <option value="" th:selected="${searchVo.searchType == ''}">- 전체 -</option>
+                            <option value="title" th:selected="${searchVo.searchType == 'title'}">제목</option>
+                            <option value="cntnts" th:selected="${searchVo.searchType == 'cntnts'}">내용</option>
+                        </select>
+                        <input type="search" id="searchKeyword" name="searchKeyword" title="검색어" placeholder="검색어를 입력해 주세요." th:value="${searchVo.searchKeyword}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">유형</strong></div>
+                <div class="form-body">
+                    <select title="유형" id="clid" name="clid">
+                        <option value="">- 전체 -</option>
+                        <th:block th:each="faqCl : ${faqClList}">
+                            <option th:value="${faqCl.clid}" th:selected="${searchVo.clid == faqCl.clid}">[[${faqCl.clNm}]]</option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="search-filter-submit">
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="faqList.searchInit()">초기화</button>
+            <button type="button" class="btn-medium btn-green btn-before-search" onclick="faqList.search()">검색</button>
+        </div>
+        <input type="hidden" id="pageNumber" name="pageNumber">
+    </form>
+
+    <div class="accordion-content acc-list">
+        <th:block th:if="${list.size() == 0}">
+            <div class="nodata">
+                <p><span class="icon icon-notice bg-black9"></span>등록된 자주하는 질문이 없습니다</p>
+            </div>
+        </th:block>
+        <th:block th:each="item, itemStat:${list}">
+            <h3 class="acc-title">
+                <button type="button" class="acc-trigger" th:attr="aria-controls='accordion-panel'+${itemStat.index}" th:id="|accordion-${itemStat.index}|" title="질문">
+                    <span class="tag tag-green">[[${item.clNm}]]</span>
+                    <b>Q</b>
+                    <strong>[[${item.title}]]</strong>
+                </button>
+            </h3>
+            <div th:id="|accordion-panel${itemStat.index}|" role="region" th:attr="aria-labelledby='accordion-'+${itemStat.index}" class="acc-panel" style="overflow:scroll">
+                <span class="blind">답변</span>
+                <div class="acc-content">
+                    <th:block th:utext="${item.cntnts}"></th:block>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <th:block kattr:pagination="pagination" onclick="moveToPage"/>
+
+    <script>
+        var faqList = {
+            search() {
+                $('#pageNumber').val(1);
+                var f = document.forms.searchForm;
+                f.submit();
+            },
+
+            searchInit() {
+                $('#searchType, #searchKeyword, #clid').val('');
+            },
+        };
+
+        function moveToPage(num) {
+            $('#pageNumber').val(num);
+            var f = document.forms.searchForm;
+            f.submit();
+        }
+    </script>
+</div>

@@ -1,72 +1,84 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" 
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-	layout:decorator="layout/front/loginLayout" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/loginLayout" 
 >
 <th:block layout:fragment="content">
-<form name="login_form" id="login_form" th:action="@{/login}" method="post">
-    <input type="hidden" name="redirectUrl" th:value="${param.redirectUrl}">
-    
-    <div class="section-title">
-        <h3>환경교육포털에 오신 것을 환영합니다.</h3>
-        <p>로그인을 하시면 보다 다양한 서비스를 이용하실 수 있습니다.</p>
-    </div>
+<div class="section-title">
+    <h3>환경교육포털에 오신 것을 환영합니다.</h3>
+    <p>로그인을 하시면 보다 다양한 서비스를 이용하실 수 있습니다.</p>
+</div>
 
-    <div class="member-login">
-        <div class="member-login-type">
-            <ul>
-                <li><label class="inp"><input type="radio" name="loginUserType" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == 'P'}"><b>개인회원</b></label></li>
-                <li><label class="inp"><input type="radio" name="loginUserType" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI"><b>기관회원</b></label></li>
-            </ul>
-        </div>
+<div class="member-login">
+    <div class="member-login-type">
         <ul>
-            <li>
-                <dl>
-                    <dt>회원 로그인</dt>
-                    <dd>
-                        <input type="text" name="p_userid" id="p_userid" th:value="${param.id}" title="아이디" placeholder="아이디" onkeyup="enterkey()">
-                        <input type="password" name="p_pswd" id="p_pswd" title="비밀번호" placeholder="비밀번호" onkeyup="enterkey()">
-                        <label class="inp"><input type="checkbox" name="idSave" id="idSave" value="Y"><b>아이디 저장</b></label>
-                        <th:block th:switch="true">
-                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
-                        <p class="invalid-feedback" th:case="${session.drmncy != null}"></p>
-                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.error)}">아이디 또는 비밀번호를 다시 확인해 주십시오.</p>
-                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.timeout)}">세션이 유효하지 않습니다.<br>로그인 해주십시오.</p>
-                        <p class="invalid-feedback" th:case="*"></p>
-                        </th:block>
-                    </dd>
-                </dl>
-                <div class="btn-inner">
-                    <a href="javascript:login();" class="btn-large btn-green">로그인</a>
-                    <ul class="link-list">
-                        <li><a href="#">아이디 찾기</a></li>
-                        <li><a href="#">비밀번호 찾기</a></li>
-                        <li><a href="#">회원가입</a></li>
-                    </ul>
-                </div>
-            </li>
-            <li>
-                <dl>
-                    <dt>디지털 원패스</dt>
-                    <dd>
-                        <strong>디지털원패스 아이디를 입력해 주십시오.</strong>
-                        <input type="text" title="디지털원패스 아이디" placeholder="디지털원패스 아이디">
-                        <label class="inp"><input type="checkbox"><b>아이디 저장</b></label>
-                        <p class="invalid-feedback"></p>
-                    </dd>
-                </dl>
-                <div class="btn-inner">
-                    <a href="#" class="btn-large btn-dblue btn-fingerprint">디지털원패스로 로그인</a>
-                    <ul class="link-list">
-                        <li><a href="#">아이디 찾기</a></li>
-                        <li><a href="#">디지털원패스 회원가입</a></li>
-                    </ul>
-                </div>
-            </li>
+            <li><label class="inp"><input type="radio" name="loginUserTypeRadio" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == '' or #request.getParameter('userType') == 'P'}"><b>개인회원</b></label></li>
+            <li><label class="inp"><input type="radio" name="loginUserTypeRadio" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI"><b>기관회원</b></label></li>
         </ul>
     </div>
-</form>
+    <ul>
+        <li>
+        <form name="login_form" id="login_form" th:action="@{/login}" method="post">
+            <input type="hidden" name="loginUserType">
+            <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
+            <dl>
+                <dt>회원 로그인</dt>
+                <dd>
+                    <input type="text" name="p_userid" id="p_userid" th:value="${#request.getParameter('loginType') == 'G'? param.id : ''}" title="아이디" placeholder="아이디" onkeyup="enterkey()">
+                    <input type="password" name="p_pswd" id="p_pswd" title="비밀번호" placeholder="비밀번호" onkeyup="enterkey()">
+                    <label class="inp"><input type="checkbox" name="lidSave" id="lidSave" value="Y"><b>아이디 저장</b></label>
+                    <th:block th:switch="true">
+                    <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
+                    <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and session.drmncy != null}"></p>
+                    <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and not #strings.isEmpty(param.error)}">아이디 또는 비밀번호를 다시 확인해 주십시오.</p>
+                    <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.timeout)}">세션이 유효하지 않습니다.<br>로그인 해주십시오.</p>
+                    <p class="invalid-feedback" th:case="*"></p>
+                    </th:block>
+                </dd>
+            </dl>
+            <div class="btn-inner">
+                <a href="javascript:login();" class="btn-large btn-green">로그인</a>
+                <ul class="link-list">
+                    <li><a href="#">아이디 찾기</a></li>
+                    <li><a href="#">비밀번호 찾기</a></li>
+                    <li><a href="/front/membership/step0.html">회원가입</a></li>
+                </ul>
+            </div>
+        </form>
+        </li>
+        <li>
+        <form id="logOutRequest">
+            <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGOUT_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logout(#request)}" />
+            <input type="hidden" name="pageType" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).pageType(#request)}" />
+        </form>
+        <form name="request" id="request" th:action="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_DEST}" method="post">
+            <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
+            <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).login()}" />
+            <dl>
+                <dt>디지털 원패스</dt>
+                <dd>
+                    <strong>디지털원패스 아이디를 입력해 주십시오.</strong>
+                    <input type="email" title="디지털원패스 아이디" placeholder="디지털원패스 아이디" id="user_id" name="user_id" th:value="${#request.getParameter('loginType') == 'D'? param.id : ''}" onkeydown="if(event.keyCode == 13){onClickSubmit(); return false;};">
+                    <label class="inp"><input type="checkbox" name="ridSave" id="ridSave" value="Y"><b>아이디 저장</b></label>
+                    <th:block th:switch="true">
+                    <p class="invalid-feedback" id="onepassInvalidFeedback" th:case="${#request.getParameter('loginType') == 'D' and not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
+                    <p class="invalid-feedback" id="onepassInvalidFeedback" th:case="*"></p>
+                    </th:block>
+                </dd>
+            </dl>
+            <div class="btn-inner">
+                <a href="javascript:onClickSubmit();" class="btn-large btn-dblue btn-fingerprint">디지털원패스로 로그인</a>
+                <ul class="link-list">
+                    <li><a href="https://www.onepass.go.kr/membership/find/id" target="_blank">아이디 찾기</a></li>
+                    <li><a href="https://www.onepass.go.kr/regist/agree" target="_blank">디지털원패스 회원가입</a></li>
+                </ul>
+            </div>
+        </form>
+        </li>
+    </ul>
+</div>
+
 
 <!-- layerpopup -->
 <div class="layer-popup layer-large" data-layer-id="layer-popup02">
@@ -115,12 +127,20 @@
 
     jQuery(document).ready(function(){      
         var f = document.login_form;
+        var f2 = document.request;
+        
         if(jQuery.cookie != null)
         {           
             if(jQuery.cookie('luserid') && jQuery.cookie('luserid') != 'undefined' && jQuery.cookie('luserid') != 'null'){
                 f.p_userid.value =jQuery.cookie('luserid');
-                f.idSave.checked = true;
+                f.lidSave.checked = true;
             }
+            
+            if(jQuery.cookie('ruserid') && jQuery.cookie('ruserid') != 'undefined' && jQuery.cookie('ruserid') != 'null'){
+                f2.user_id.value =jQuery.cookie('ruserid');
+                f2.ridSave.checked = true;
+            }
+            
             /*[# th:if="${session.drmncy}"]*/
             layerPopup.open('layer-popup02');
             /*[/]*/
@@ -133,15 +153,27 @@
         }
         
         validateLogin();
+        
+        jQuery.ajax({
+            url : /*[[${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logoutDest(#request)}]]*/"",
+            type : "POST",
+            data: $('#logOutRequest').serialize(),
+            withCredentials: true,
+            success : function(res) {
+                console.log(res + " 로그아웃 성공");
+            },
+            error : function() {
+                console.log("로그아웃 실패");
+            }
+        });
     });
 
 </script>
 <script type="text/javascript">
     
     // 유효성검증기(로그인)
-    var validator;
     function validateLogin(){
-        validator = $("#login_form").validate({
+        $("#login_form").validate({
             rules: {
                 p_userid: {
                              required: true
@@ -169,11 +201,12 @@
         var f = document.login_form;
         
         if(!$('#login_form').valid()) return false;
-        if(f.idSave.checked){
+        if(f.lidSave.checked){
             jQuery.cookie('luserid', f.p_userid.value, {expires:30});
         }else{
             jQuery.removeCookie('luserid');
         }
+        f.loginUserType.value = $("input[name=loginUserTypeRadio]:checked").val();
         f.submit();
     }
     
@@ -187,6 +220,27 @@
         //alert("휴면해제");
         // ajax 휴면해제/개인정보 유효기간 update, 세션에 휴면회원 상태 정보 삭제 처리 필요
         layerPopup.close('layer-popup02');
+        alert("휴면 해제가 완료되었습니다 다시 로그인을 진행해 주세요.");
+
+    }
+    
+    function onClickSubmit() {    
+        var f2 = document.request;
+        
+        var user_id = f2.user_id.value;
+        if ( user_id == null || user_id == "" ) {
+            $("#onepassInvalidFeedback").text("아이디를 입력해주세요.");
+            f2.user_id.focus();
+            return;
+        }
+
+        if(f2.ridSave.checked){
+            jQuery.cookie('ruserid', f2.user_id.value, {expires:30});
+        }else{
+            jQuery.removeCookie('ruserid');
+        }
+        f2.returnUrl.value += "::" + $("input[name=loginUserTypeRadio]:checked").val();
+        f2.submit();
     }
 </script>
 </th:block>

@@ -40,7 +40,7 @@ import lombok.Data;
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
 @Data
-public class MenuItem {
+public class MenuItem implements Cloneable {
 
     /* 메뉴ID */
     private String menuid;
@@ -103,5 +103,9 @@ public class MenuItem {
     
     public String[] splitTreeMenuid() {
         return this.treeMenuid.split("_");
+    }
+    
+    public Object clone()throws CloneNotSupportedException{  
+        return super.clone();  
     }
 }

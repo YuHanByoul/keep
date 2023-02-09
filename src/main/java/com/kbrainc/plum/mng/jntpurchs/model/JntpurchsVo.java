@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.jntpurchs.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -19,7 +20,7 @@ import lombok.Data;
  *
  * <pre>
  * com.kbrainc.plum.mng.tchaidJntpurchs.model
- * - ChklstVo.java
+ * - JntpurchsVo.java
  * </pre> 
  *
  * @ClassName : JntpurchsVo
@@ -46,14 +47,14 @@ public class JntpurchsVo extends ParentRequestVo {
     @Size(max = 40, message = "공동구매 모집명은 40자 이하여야 합니다.")
     private String jntpurchsNm;
     
-    /** 상태코드 */
-    private String sttscd;
+    /** 모집상태 코드 */
+    private String sttsCd;
     
     /** 총 판매 수량 */
-    private int qnlyWhol;
+    private Integer qntyWhol;
     
     /** 1인당 신청 가능 수량 */
-    private int qntyLmt;
+    private Integer qntyLmt;
     
     /** 1인당 신청 가능 제한여부 */
     private String qntyLmtYn;
@@ -68,31 +69,58 @@ public class JntpurchsVo extends ParentRequestVo {
     private String mvpPstnCd;
     
     /** 대표이미지 파일 아이디 */
-    private int rprsImgFileid;
+    private Integer rprsImgFileid;
     
     /** 상세이미지 파일 그룹 아이디 */
-    private int dtlImgFilegrpid;
+    private Integer dtlImgFilegrpid;
     
     /** 지도 파일 그룹 아이디 */
-    private int mapFilegrpid;
+    private Integer mapFilegrpid;
     
     /** 교육사진 파일 그룹 아이디 */
-    private int eduPhotoFilegrpid;
+    private Integer eduPhotoFilegrpid;
     
     /** 유의사항 */
     private String atentMttr;
     
     /** 교구명 */
-    private String tchidNm;
+    private String tchaidNm;
     
     /** 등록처 */
     private String instNm;
     
-    /** 모집상태 */
-    private String sttusNm;
+    /** 모집상태 코드명 */
+    private String sttsCdNm;
     
-    /** 모집상태 */
-    private String sttusCdNm;
+    /** 등록자 계정 */
+    private String acnt;
+    
+    /** 시작일시  */
+    private String bgngDtStr;
+    
+    /** 종료일시  */
+    private String endDtStr;
+    
+    /** 검색 모집상태 */
+    private String searchSttsCd;
+    
+    /** 검색 등록처 */
+    private String searchInstType;
+    
+    /** 검색 모집 시작일 */
+    private String searchBgngDt;
+    
+    /** 검색 모집 종료일 */
+    private String searchEndDt;
+    
+    private String isExistOrder;
+    
+    
+    /** 교구목록 */
+    private List<JntpurchsTchaidVo> goodsList;
+    
+    /** 수량별 가격설정 목록 */
+    private List<JntpurchsAmtVo> amtList;
     
     
     /** 시작일시 */
@@ -117,7 +145,7 @@ public class JntpurchsVo extends ParentRequestVo {
         return endDt != null ? (Date) endDt.clone() : null;
     }
     
-    public void setEndDt(Date bgngDt) {
+    public void setEndDt(Date endDt) {
         this.endDt = endDt != null ? (Date) endDt.clone() : null;
     }
     

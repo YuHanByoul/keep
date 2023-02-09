@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CntntsDaoImpl.xml
+	Description : 콘텐츠 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.cntnts.model.CntntsDao">
+    
+    <!-- 컨텐츠 관리 게시글 목록 조회 -->
+    <select id="selectCntntsList" parameterType="front.CntntsVo" resultType="front.CntntsVo">
+        /* CntntsDao.selectCntntsList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                  A.CNTNTSID
+                , A.TTL
+                , CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDUSBJCTCD
+                , C1.CD_NM AS EDUTRGTCD
+                , CONCAT(D2.CD_NM, ' > ', D1.CD_NM) AS TYPECD
+                , D1.CD_NM AS MAINTYPECD
+                , NVL(A.HITS,0) AS HITS
+                , A.RPRS_IMG_FILEID
+                , E.FILE_IDNTFC_KEY
+                , DATE(A.REG_DT) AS REG_DT
+            FROM
+                TB_CMM_CNTNTS A
+                LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
+                LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
+                LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
+                LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
+                LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
+                
+                LEFT OUTER JOIN TB_CMM_FILE E ON A.RPRS_IMG_FILEID = E.FILEID
+            WHERE 1=1
+            <!-- 키워드 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtl'">
+            AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchCn'">
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtlCn'">
+            AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            
+            <!-- 교육주제 -->
+            <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
+            AND B2.CD = #{searchManinEduSbjctCd}
+            </if>
+            <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
+            AND B1.CD = #{searchMdleEduSbjctCd}
+            </if>
+            
+            <!-- 교육대상 -->
+            <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
+            AND C1.CD = #{searchEduTrgtCd}
+            </if>
+            
+            <!-- 콘텐츠 유형 -->
+            <if test="searchMainTypeCd != null and searchMainTypeCd != ''">
+            AND D2.CD = #{searchMainTypeCd}
+            </if>
+            <if test="searchMdleTypeCd != null and searchMdleTypeCd != ''">
+            AND D1.CD = #{searchMdleTypeCd}
+            </if>
+            
+            <!-- 등록일(시작일, 종료일) -->
+            <if test="startDt != null and startDt != ''">
+            <![CDATA[
+                AND DATE(A.REG_DT) >= #{startDt}
+            ]]>
+            </if>
+            <if test="endDt != null and endDt != ''">
+            <![CDATA[
+                AND DATE(A.REG_DT) <= #{endDt}
+            ]]>
+            </if>            
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 컨텐츠 관리 게시글 상세조회 -->
+    <select id="selectCntntsInfo" parameterType="front.CntntsVo" resultType="front.CntntsVo"> 
+        /* CntntsDao.selectCntntsInfo */
+        SELECT
+              A.CNTNTSID
+            , B1.CD_NM AS EDU_SBJCT_CD
+            , B2.CD_NM AS MAIN_EDU_SBJCT_CD
+            , C1.CD_NM AS EDU_TRGT_CD
+            , D1.CD_NM AS TYPE_CD
+            , D2.CD_NM AS MAIN_TYPE_CD
+            , A.ORIGIN
+            , NVL(A.HITS,0) AS HITS
+            , A.MNFCT_YY
+            , A.PLY_SECND
+            , A.TTL
+            , A.CN
+            , DATE(A.REG_DT) AS REG_DT
+            , A.RGTRID
+            , CONCAT(F.ACNT,'(',F.NM,')') AS rgtridNm
+            , A.REG_DT
+            
+            <![CDATA[
+            , (SELECT CNTNTSID FROM tb_cmm_cntnts WHERE CNTNTSID > #{cntntsid} LIMIT 1) AS NEXT_CNTNTSID
+            , (SELECT TTL FROM tb_cmm_cntnts WHERE CNTNTSID > #{cntntsid} LIMIT 1) AS NEXT_CNTNTS_TTL
+            , (SELECT CNTNTSID FROM tb_cmm_cntnts WHERE CNTNTSID < #{cntntsid} ORDER BY CNTNTSID DESC LIMIT 1) AS BEFORE_CNTNTSID
+            , (SELECT TTL FROM tb_cmm_cntnts WHERE CNTNTSID < #{cntntsid} ORDER BY CNTNTSID DESC LIMIT 1) AS BEFORE_CNTNTS_TTL
+            ]]>
+        FROM
+            TB_CMM_CNTNTS A
+            LEFT OUTER JOIN TB_CMM_CD B1 ON A.EDU_SBJCT_CD = B1.CD
+            LEFT OUTER JOIN TB_CMM_CD B2 ON B1.UPPR_CD = B2.CD
+            LEFT OUTER JOIN TB_CMM_CD C1 ON A.EDU_TRGT_CD = C1.CD
+            LEFT OUTER JOIN TB_CMM_CD D1 ON A.TYPE_CD = D1.CD
+            LEFT OUTER JOIN TB_CMM_CD D2 ON D1.UPPR_CD = D2.CD
+            
+            LEFT OUTER JOIN TB_CMM_USER F ON A.RGTRID = F.USERID
+        WHERE CNTNTSID = #{cntntsid}
+    </select>
+    
+        <!-- 컨텐츠 관리 게시글 상세조회 -->
+    <select id="selectCntntsFileList" parameterType="front.CntntsVo" resultType="front.CntntsVo"> 
+        /* CntntsDao.selectCntntsFileList */
+        SELECT
+            A.ATCH_FILEGRPID
+            , B.FILEID
+            , B.FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM
+            , TRIM(LEADING '.' FROM B.FILE_EXTSN) AS EXT
+        FROM
+            TB_CMM_CNTNTS A
+            LEFT OUTER JOIN TB_CMM_FILE B ON A.ATCH_FILEGRPID = B.FILEGRPID
+        WHERE CNTNTSID = #{cntntsid}
+    </select>
+    
+    <update id="updateCntntsHits" parameterType="front.CntntsVo">
+        UPDATE TB_CMM_CNTNTS SET HITS = IFNULL(HITS,0) + 1 
+        WHERE CNTNTSID = #{cntntsid}
+    </update>
+</mapper>

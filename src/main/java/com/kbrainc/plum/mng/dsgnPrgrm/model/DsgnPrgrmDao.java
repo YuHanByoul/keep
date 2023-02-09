@@ -26,6 +26,39 @@ import javax.validation.Valid;
 public interface DsgnPrgrmDao {
 
 	/**
+	* 지정번호 중복 조회
+	*
+	* @Title : selectDsgnNoDupChk
+	* @Description : 지정번호 중복 조회
+	* @param dsgnPrgrmVo
+	* @return int
+	* @throws Exception
+	*/
+	public int selectDsgnNoDupChk(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정번호 조회
+	*
+	* @Title : selectDsgnNo
+	* @Description : 지정번호 조회
+	* @param dsgnPrgrmVo
+	* @return dsgnPrgrmVo
+	* @throws Exception
+	*/
+	public DsgnPrgrmVo selectDsgnNo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정내역 조회
+	*
+	* @Title : selectDsgnHstry
+	* @Description : 지정내역 조회
+	* @param dsgnPrgrmVo
+	* @return List<DsgnPrgrmVo>
+	* @throws Exception
+	*/
+	public List<DsgnPrgrmVo> selectDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo)throws Exception;
+
+	/**
 	* 지정프로그램 목록 조회
 	 *
 	 * @Title : selectDsgnPrgrmList
@@ -345,6 +378,7 @@ public interface DsgnPrgrmDao {
 	* @throws Exception
 	*/
 	public int updateScrtyImprvPlanln(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 
 }

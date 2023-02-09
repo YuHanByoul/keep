@@ -208,6 +208,7 @@
              , A.ROLEID
              , C.USERID
              , C.NM
+             , C.ACNT
              , C.INSTID
              , D.INST_NM
              , C.REG_DT
@@ -219,6 +220,15 @@
         WHERE 1=1
         AND C.DEL_YN = 'N'
         AND C.STTS_CD <![CDATA[<>]]>  '9'
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchType == 'acnt'">
+                AND C.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType == 'nm'">
+                AND C.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+        </if>
+
         <choose>
             <when test='searchInst == "N"'>
                 AND C.INSTID IS NULL

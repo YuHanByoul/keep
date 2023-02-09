@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+
+<div layout:fragment="content">
+ 
+ <style>
+.hide{display:none;}
+</style>
+
+<!-- Page-body start -->
+  <div class="page-body">
+      <div class="row">
+          <div class="col-12">
+          <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+             <!-- 필터 부분 -->
+                 <div class="card-block-small">
+                     <!-- 키워드 filter -->
+                     <div class="row">
+                         <div class="col-lg-3 mb-3">
+                             <div class="mb-0 form-group row">
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관 키워드</strong></span>
+                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                     <select name="searchType" id="searchType" class="form-select form-control ">
+                                        <option value="">- 전체 -</option>
+                                        <option value="nm">구성품명</option>
+                                     </select>
+                                     <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     
+                     <div class="mt-1 p-t-20 text-center border-top">
+                         <button class="btn btn-disabled m-r-5" onclick="fn_init()" >초기화</button>
+                         <button class="btn btn-primary" onclick="fn_searchForm()" >검색</button>
+                     </div>
+                     
+                 </div>
+           </form>
+          </div>
+           
+          <!-- //필터 부분 -->
+          
+          <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-block-small">
+                    <div class="sub-title">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <strong>구성품 검색 결과</strong>
+                            </div>
+                            <div class="col-auto btn-group-sm">
+                                <button type="button" class="btn btn-primary" onclick="openCmpntModal()" >등록</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-block-small">
+	                    <div class="dt-responsive table-responsive">
+	                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+	                            <table id="jsGrid" class="table-responsive"></table>
+	                            <div id="listPager" class="text-center"></div>
+	                       </div>
+	                    </div>
+                    </div>
+                </div>
+              </div>
+          </div>
+          
+          <div class="col-12 col-lg-6">
+            <div class="card">
+                <div class="card-block-small">
+                    <div class="sub-title">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <strong>입고 내역</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-block-small">
+	                    <div class="dt-responsive table-responsive">
+	                        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+	                                <table id="jsGrid2" class="table-responsive"></table>
+	                                <div id="listPager2" class="text-center"></div>
+	                       </div>
+	                    </div>
+                    </div>
+                </div>
+              </div>
+          </div>
+                    
+      </div>
+  </div>
+  
+  <input type="hidden" id="cmpntid" name="cmpntid" />
+  
+ <!--모달 팝업  -->
+ <div class="modal fade" id="cmpntModal"  data-bs-backdrop="static"></div>
+ 
+<script th:inline="javascript">
+  
+    var gridHelper1;
+    var cmpntModal;
+             
+    $(function(){
+        gridHelper1 = new GridHelper('jsGrid','contentPanel');
+        writeJsGridData();
+    });
+    
+    function fn_searchForm(){
+        gridHelper1.resetListContent();
+    }
+    
+    function fn_init() {
+        $("#searchType").val('');
+        $("#searchKeyword").val('');
+    }
+    
+    function writeJsGridData(){
+        
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 5,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/cmpnt/selectCmpntList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 { title: 'cmpntid'  ,name: 'cmpntid'   ,css:"hide" }
+                ,{ title: 'No.'      ,name: 'rowNumber'   ,type: "number", width : "50", align:"center",  sorting :false }
+                ,{ title: "구성품명"   ,name: 'cmpntNm'     ,type: "text" , width: "120" ,align:"center"}
+                ,{ title: '제고'      ,name: 'qntyInvntry' ,type: "text" , width: "50" ,align:"center"}
+                ,{ title: '비고 ' ,name: 'regDt'       ,type: "text" , width: "120", align:"center" 
+                    ,itemTemplate: function(value, item) {
+                             let html  = "" 
+                            	 html  +="<button class='btn btn-xs btn-info btn-mini' onclick ='fn_openWrhousngModal("+item.cmpntid+");'>입고</button>"
+                            	 html  +="<button class='btn btn-xs btn-info btn-mini' onclick ='modifyCmpntModal("+item.cmpntid+");'>수정</button>"
+                            return html
+                      }
+                 }
+            ],
+            
+            /*[# sec:authorize-url="/mng/cmpnt/selectCmpntWrhousngList.do"]*/
+            rowClick: function(args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                gridHelper1.rowClick(args);
+                $("#cmpntid").val(args.item.cmpntid)
+                writeJsGridData2();
+            }
+            /*[/]*/
+        });
+    }
+
+    
+    function writeJsGridData2(){
+        $("#jsGrid2").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#listPager2",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 5,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    
+                    var data = $.Deferred();
+                    var params = [
+                        
+                            {name: "cmpntid", value: $("#cmpntid").val() },
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'WRHOUSNGDE DESC, reg_dt '});
+                    }
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/cmpnt/selectCmpntWrhousngList.do",
+                      dataType: "json",
+                      data: params,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 { title: 'No.'      ,name: 'rowNumber'  ,type: "number", width : "50", align:"center",  sorting :false }
+                ,{ title: "입고일자"   ,name: 'wrhousngde' ,type: "text" , width: "150" ,align:"center"}
+                ,{ title: '수량'      ,name: 'qnty'       ,type: "text" , width: "50" ,align:"center"}
+                ,{ title: '처리자'     ,name: 'nm'         ,type: "text" , width: "80", align:"center" }
+                ,{ title: '처리일자'   ,name: 'regDt'      ,type: "text" , width: "80", align:"center" 
+                	,itemTemplate: function(value, item){return value.substring(0,10)}
+            	 }
+            ]
+        });
+    }
+  
+    
+    //구성품 입력 모달 오픈   
+    openCmpntModal = () => {
+        var url = "/mng/cmpnt/insertCmpntPopup.html?mode=I";
+        openModal(url);
+    }
+    
+    modifyCmpntModal = (cmpntid) => {
+        var url = "/mng/cmpnt/insertCmpntPopup.html?cmpntid="+cmpntid+"&mode=U";
+        openModal(url);
+    }
+    
+    fn_openWrhousngModal= (cmpntid) => {
+        var url = "/mng/cmpnt/insertCmpntWrhousngPopup.html?cmpntid="+cmpntid ;
+        openModal(url);
+    }
+
+    openModal =(url)=>{
+    	$("#cmpntModal").load(url, function(response, status, xhr) { 
+            if (status == "success") {
+                cmpntModal = new bootstrap.Modal($('#cmpntModal'));
+                cmpntModal.show();
+            }
+        });
+        
+    }
+
+
+
+    
+</script>
+</div> 
+</body>
+</html>

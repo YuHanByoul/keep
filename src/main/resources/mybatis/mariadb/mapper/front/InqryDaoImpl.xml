@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : InqryDaoImpl.xml
+    Description : 1:1문의 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.inqry.model.InqryDao">
+    <insert id="insertInqry">
+        INSERT INTO TB_CMM_INQRY(
+            SITEID
+            , TITLE
+            , CNTNTS
+            , FILEGRPID
+            , INQRY_CL_CD
+            , STTS_CD
+            , RLS_YN
+            , DEL_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+             ) VALUES (
+            #{siteid}
+            , #{title}
+            , #{cntnts}
+            , #{filegrpid}
+            , #{inqryClCd}
+            , '103102'
+            , #{rlsYn}
+            , 'N'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+             )
+    </insert>
+
+    <update id="updateInqry">
+        UPDATE TB_CMM_INQRY SET
+            TITLE = #{title}
+            , CNTNTS = #{cntnts}
+            , FILEGRPID = #{filegrpid}
+            , INQRY_CL_CD = #{inqryClCd}
+            , RLS_YN = #{rlsYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE INQRYID = #{inqryid}
+    </update>
+
+    <update id="deleteInqry">
+        UPDATE TB_CMM_INQRY SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE INQRYID = #{inqryid}
+    </update>
+
+    <update id="cancelInqry">
+        UPDATE TB_CMM_INQRY SET
+            STTS_CD = '103102'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE INQRYID = #{inqryid}
+    </update>
+
+    <select id="selectInqryList" resultType="com.kbrainc.plum.front.inqry.model.InqryVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.INQRYID
+            , A.SITEID
+            , A.RGTRID AS USERID
+            , A.TITLE
+            , A.CNTNTS
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+                CONCAT(
+                SUBSTRING(B.ACNT, 1, 1)
+                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                )
+                ELSE CONCAT(
+                SUBSTRING(B.ACNT, 1, 1)
+                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                )
+                END AS ACNT
+            , A.FILEGRPID
+            , A.INQRY_CL_CD
+            , A.STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+        FROM TB_CMM_INQRY A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        WHERE
+            A.DEL_YN = 'N' AND A.STTS_CD != '103102'
+            <if test="searchKeyword != null and searchKeyword!= ''">
+                AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="inqryClCd != null and inqryClCd != ''">
+                AND A.INQRY_CL_CD = #{inqryClCd}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectInqry" resultType="com.kbrainc.plum.front.inqry.model.InqryVo">
+        SELECT
+            A.INQRYID
+             , A.SITEID
+             , A.RGTRID AS USERID
+             , A.TITLE
+             , A.CNTNTS
+             , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+                         CONCAT(
+                              SUBSTRING(B.ACNT, 1, 1)
+                             ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                             ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                             )
+                     ELSE CONCAT(
+                         SUBSTRING(B.ACNT, 1, 1)
+                         ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                         )
+                END AS ACNT
+             , A.FILEGRPID
+             , A.INQRY_CL_CD
+             , A.STTS_CD
+             , A.RLS_YN
+             , A.REG_DT
+        FROM TB_CMM_INQRY A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        WHERE INQRYID = #{inqryid}
+    </select>
+
+    <select id="selectInqryAns" resultType="com.kbrainc.plum.front.inqry.model.InqryAnsVo">
+        SELECT
+            A.ANSWRID
+            , A.INQRYID
+            , A.TITLE
+            , A.CNTNTS
+            , A.OPETRID
+            , A.FILEGRPID
+            , A.ANS_DE
+            , C.ACNT AS OPETR_ACNT
+            FROM TB_CMM_INQRY_ANSWR A
+            INNER JOIN TB_CMM_INQRY B
+                ON A.INQRYID = B.INQRYID
+            INNER JOIN TB_CMM_USER C
+                ON A.OPETRID = C.USERID
+            WHERE A.INQRYID = #{inqryid}
+    </select>
+</mapper>

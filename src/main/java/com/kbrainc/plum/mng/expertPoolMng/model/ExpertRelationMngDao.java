@@ -21,8 +21,27 @@ import java.util.List;
  */
 @Mapper
 public interface ExpertRelationMngDao {
+
+    /**
+     * 섭외 현황 목록 조회
+     *
+     * @param expertRelationVo
+     * @return list
+     * @throws Exception
+     * @Title : selectExpertRelationList
+     * @Description : 섭외 현황 목록 조회
+     */
     public List<ExpertRelationVo> selectExpertRelationList(ExpertRelationVo expertRelationVo) throws Exception;
 
+    /**
+     * 섭외 상세 정보 조회
+     *
+     * @param expertRelationVo
+     * @return expert relation vo
+     * @throws Exception
+     * @Title : selectExpertRelationInfo
+     * @Description : 섭외 상세 정보 조회
+     */
     public ExpertRelationVo selectExpertRelationInfo(ExpertRelationVo expertRelationVo) throws Exception;
 
 

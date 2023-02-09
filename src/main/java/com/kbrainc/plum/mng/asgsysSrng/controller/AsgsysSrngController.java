@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.asgsysSrng.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +27,9 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
@@ -71,6 +74,7 @@ public class AsgsysSrngController {
 	/**********************************************************************************
      * 지정신청
      **********************************************************************************/
+
 	/**
      * @Title : dsgnSrngMainForm
      * @Description : 지정신청메인 화면이동
@@ -121,6 +125,8 @@ public class AsgsysSrngController {
     	CodeVo codeVo = new CodeVo();
 
     	codeVo.setCdgrpid("111");    //신청진행상태코드
+    	codeVo.setRowPerPage(30);
+
 
     	model.addAttribute("sttsCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
     	model.addAttribute("sttsCdList", codeServiceImpl.selectCodeList(codeVo));
@@ -176,6 +182,7 @@ public class AsgsysSrngController {
         if (dsgnAplyInfo == null) {
             dsgnAplyInfo = new AsgsysSrngVo();
         }
+
         model.addAttribute("dsgnAplyInfo", dsgnAplyInfo);
 
         if (!StringUtil.nvl(dsgnAplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(dsgnAplyInfo.getFilegrpid()).equals(0)) {
@@ -205,13 +212,6 @@ public class AsgsysSrngController {
     	model.addAttribute("instid", asgsysSrngVo.getInstid());
     	model.addAttribute("prgrmid", asgsysSrngVo.getPrgrmid());
 
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
-    	logger.info("@@@@@@@@@@@@ : prgrmid" + asgsysSrngVo.getPrgrmid());
     	return "mng/asgsysSrng/mbrSrchPopup";
     }
 
@@ -327,6 +327,66 @@ public class AsgsysSrngController {
     }
 
     /**
+     * 담당자 배정 등록
+     *
+     * @Title : insertPicInfo
+     * @Description : 담당자 배정 등록
+     * @param asgsysSrngVo
+     * @param user
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/insertPicInfo.do")
+    @ResponseBody
+    public Map<String, Object> insertPicInfo(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<>();
+
+    	int retVal = 0 ;
+
+    	asgsysSrngVo.setUser(user);
+    	retVal = asgsysSrngService.insertPicInfo(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "등록 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "등록 실패했습니다.");
+    	}
+    	return resultMap;
+    }
+
+    /**
+	 * 담당자 배정 삭제
+	 *
+	 * @Title : deletePicInfo
+	 * @Description : 담당자 배정 삭제
+	 * @param asgsysSrngVo
+	 * @param user
+	 * @return Map<String,Object> 응답결과객체
+	 * @throws Exception
+	 */
+    @RequestMapping(value = "/mng/asgsysSrng/deletePicInfo.do")
+    @ResponseBody
+    public Map<String, Object> deletePicInfo(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<>();
+
+		int retVal = 0 ;
+
+		retVal = asgsysSrngService.deletePicInfo(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "삭제 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "삭제 실패했습니다.");
+		}
+		return resultMap;
+    }
+
+
+    /**
     * @Title : jdgsSprtgrpAltmntForm
     * @Description : 심사위원/지원단 배정 화면이동
     * @param AsgsysSrngVo객체
@@ -351,7 +411,52 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/jdgsSrngForm.html")
     public String jdgsSrngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	//model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectJdgsSrngDetail(asgsysSrngVo));
+    	//신청정보조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
+
+    	//운영형태코드 목록 조회
+    	CodeVo codeVo = new CodeVo();
+    	codeVo.setCdgrpid("120");    //신청진행상태코드
+
+    	model.addAttribute("operFrmCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
+
+    	//심사점수 목록 조회
+    	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
+
+    	if(srngScrList.size() > 0) {
+    		model.addAttribute("srngScrList", srngScrList);
+
+    		asgsysSrngVo.setFormid(srngScrList.get(0).getFormid());
+
+    		//심사점수 목록 헤더 조회
+    		model.addAttribute("scrHeader", asgsysSrngService.selectSrngScrHeader(asgsysSrngVo));
+    	}
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+
+    	model.addAttribute("aplyInfo", aplyInfo);
 
     	return "mng/asgsysSrng/jdgsSrng";
     }
@@ -365,7 +470,41 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpSrngForm.html")
     public String sprtgrpSrngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	//신청정보조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
 
+    	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(aplyInfo));
+
+    	//운영형태코드 목록 조회
+    	CodeVo codeVo = new CodeVo();
+    	codeVo.setCdgrpid("120");    //신청진행상태코드
+
+    	model.addAttribute("operFrmCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+    	model.addAttribute("aplyInfo", aplyInfo);
     	return "mng/asgsysSrng/sprtgrpSrng";
     }
 
@@ -379,10 +518,56 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/rsltRptForm.html")
     public String rsltRptForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+    	//신청정보조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectAplyInfo(asgsysSrngVo);
+
+
+    	//운영형태코드 목록 조회
+    	CodeVo codeVo = new CodeVo();
+    	codeVo.setCdgrpid("120");    //신청진행상태코드
+
+    	model.addAttribute("operFrmCd", asgsysSrngService.selectPrgrmSttsCd(asgsysSrngVo));
+    	model.addAttribute("operFrmCdList", codeServiceImpl.selectCodeList(codeVo));
+    	model.addAttribute("aplyInfo", aplyInfo);
+
+    	//신청 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getAplyFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getAplyFilegrpid());
+
+            model.addAttribute("aplyFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("aplyFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
+    	//심사점수 목록 조회
+    	List<AsgsysSrngVo> srngScrList = asgsysSrngService.selectSrngScrList(asgsysSrngVo);
+
+    	if(srngScrList.size() > 0) {
+    		model.addAttribute("srngScrList", srngScrList);
+
+    		asgsysSrngVo.setFormid(srngScrList.get(0).getFormid());
+
+    		//심사점수 목록 헤더 조회
+    		model.addAttribute("scrHeader", asgsysSrngService.selectSrngScrHeader(asgsysSrngVo));
+    	}
 
     	return "mng/asgsysSrng/rsltRpt";
     }
 
+    //지정탈락
 
     /**
     * @Title : prgrmDstnctn
@@ -395,19 +580,20 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmDstnctn.html")
     public String prgrmDstnctnForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+
     	PrgrmSchdlVo prgrmSchdlVo = new PrgrmSchdlVo();
     	EmrgcyActnPlanVo emrgcyActnPlanVo = new EmrgcyActnPlanVo();
 
     	//프로그램 우수성 상세 조회 tb_ass_prgrm_dstnctn
-    	model.addAttribute("prgrmDstnctnInfo", asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo));
-
+    	AsgsysSrngVo prgrmDstnctnInfo = asgsysSrngService.selectPrgrmDstnctn(asgsysSrngVo);
+    	model.addAttribute("prgrmDstnctnInfo", prgrmDstnctnInfo);
 
     	BeanUtils.copyProperties(asgsysSrngVo, prgrmSchdlVo);
     	BeanUtils.copyProperties(asgsysSrngVo, emrgcyActnPlanVo);
 
+    	List<PrgrmSchdlVo>     prgrmSchdlList    = asgsysSrngService.selectPrgrmSchdlList(prgrmSchdlVo);    //프로그램 운영일정
+    	List<EmrgcyActnPlanVo> emrgcyActnPlanLst = asgsysSrngService.selectEmrgcyActnPlanList(emrgcyActnPlanVo);    //대처계획
 
-    	List<PrgrmSchdlVo>     prgrmSchdlList    = asgsysSrngService.selectPrgrmSchdlList(prgrmSchdlVo);
-    	List<EmrgcyActnPlanVo> emrgcyActnPlanLst = asgsysSrngService.selectEmrgcyActnPlanList(emrgcyActnPlanVo);
 
     	//프로그램 운영일정 목록 조회 tb_ass_prgrm_schdl
     	if(0 == prgrmSchdlList.size()) {
@@ -420,7 +606,31 @@ public class AsgsysSrngController {
     	if(0 == emrgcyActnPlanLst.size()) {
     		emrgcyActnPlanLst.add(0, emrgcyActnPlanVo);
     	}
+
     	model.addAttribute("emrgcyActnPlanLst", emrgcyActnPlanLst);
+
+    	FileVo fileVo = new FileVo();
+    	List<FileVo> eduPhotoFileList = new ArrayList<FileVo>();
+
+    	//교육사진 그룹 조회
+    	if (prgrmDstnctnInfo.getEduPhotoFilegrpid() != null && !prgrmDstnctnInfo.getEduPhotoFilegrpid().equals(0)) {
+
+    		fileVo.setFilegrpid(prgrmDstnctnInfo.getEduPhotoFilegrpid());
+
+    		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);    //증빙서류파일목록
+
+    	}
+    	for(int i=1; i < 4; i++) {    //교육사진 3개 고정
+
+    		if(eduPhotoFileList.size() == (i-1)) {
+
+    			logger.info("@@ size : " + eduPhotoFileList.size() + "  @@ idx : " + i);
+    			FileVo rowVo = new FileVo();
+    			rowVo.setFileIdntfcKey("");
+    			eduPhotoFileList.add((i-1), rowVo);
+    		}
+    	}
+    	model.addAttribute("eduPhotoFileList", eduPhotoFileList);
 
     	return "mng/asgsysSrng/prgrmDstnctn";
     }
@@ -443,6 +653,7 @@ public class AsgsysSrngController {
     public Map<String, Object> insertPrgrmDstnctn(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
+logger.info("111111111111111111111111111111111111111111111111111");
         if (bindingResult1.hasErrors()) {
             FieldError fieldError = bindingResult1.getFieldError();
             if (fieldError != null) {
@@ -450,13 +661,13 @@ public class AsgsysSrngController {
             }
             return resultMap;
         }
-
+        logger.info("2222222222222222222222222222222222222222222222222");
         asgsysSrngVo.setUser(user);
 
         int retVal = 0;
 
         retVal = asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
-
+        logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@3");
         logger.info("@@@@@@@@@@@@@@@ retVal : " +(retVal));
 
         if (retVal > 0) {
@@ -488,7 +699,7 @@ public class AsgsysSrngController {
     public Map<String, Object> updatePrgrmDstnctn(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<String, Object>();
 
-
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1");
     	if (bindingResult1.hasErrors()) {
     		FieldError fieldError = bindingResult1.getFieldError();
     		if (fieldError != null) {
@@ -497,11 +708,11 @@ public class AsgsysSrngController {
     		return resultMap;
     	}
     	asgsysSrngVo.setUser(user);
-
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2");
     	int retVal = 0;
-
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3");
     	retVal = asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
-
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 4");
     	logger.info("@@@@@@@@@@@@@@@ retVal : " +(retVal));
 
     	if (retVal > 0) {
@@ -526,15 +737,33 @@ public class AsgsysSrngController {
     @RequestMapping(value = "/mng/asgsysSrng/prgrmOperMngForm.html")
     public String prgrmOperMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
+    	ExpndArtclVo expndArtclVo = new ExpndArtclVo();
+    	TchaidFcltVo tchaidFcltVo = new TchaidFcltVo();
+
+    	BeanUtils.copyProperties(asgsysSrngVo, expndArtclVo);
+    	BeanUtils.copyProperties(asgsysSrngVo, tchaidFcltVo);
+
     	//프로그램 운영관리 조회
     	model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo));
-    	//교구 및 시설 조회
-    	model.addAttribute("tchaidFcltList", asgsysSrngService.selectTchaidFcltList(asgsysSrngVo));
 
+    	//지출항목 목록 조회
+    	List<ExpndArtclVo> expndArtclList = asgsysSrngService.selectExpndArtclList(expndArtclVo);
+    	if(0 == expndArtclList.size()) {
+
+    		expndArtclList.add(0, expndArtclVo);
+    	}
+    	model.addAttribute("expndArtclList", expndArtclList);
+
+    	//교구 및 시설 목록 조회
+    	List<TchaidFcltVo> tchaidFcltList = asgsysSrngService.selectTchaidFcltList(tchaidFcltVo);
+
+    	if(0 == tchaidFcltList.size()) {
+    		tchaidFcltList.add(0, tchaidFcltVo);
+    	}
+    	model.addAttribute("tchaidFcltList", tchaidFcltList);
 
     	return "mng/asgsysSrng/prgrmOperMngForm";
     }
-
 
     /**
     * 프로그램운영관리 수정
@@ -544,7 +773,7 @@ public class AsgsysSrngController {
     * @param asgsysSrngVo
     * @param user
     * @throws Exception
-    * @return Map<String,Object>
+    * @return Map<String,Object> 응답결과객체
     */
     @RequestMapping(value = "/mng/asgsysSrng/updatePrgrmOperMng.do")
     @ResponseBody
@@ -570,6 +799,39 @@ public class AsgsysSrngController {
     }
 
     /**
+     * 프로그램운영관리 등록
+     *
+     * @Title : insertPrgrmOperMng
+     * @Description : 프로그램운영관리 등록
+     * @param asgsysSrngVo
+     * @param user
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/insertPrgrmOperMng.do")
+    @ResponseBody
+    public Map<String, Object> insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.insertPrgrmOperMng(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "저장에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "저장에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+    /**
     * @Title : prgrmEvl
     * @Description : 지정신청-프로그램평가 탭
     * @param AsgsysSrngVo객체
@@ -579,9 +841,46 @@ public class AsgsysSrngController {
     */
     @RequestMapping(value = "/mng/asgsysSrng/prgrmEvl.html")
     public String prgrmEvlForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
-    	model.addAttribute("prgrmEvlInfo", asgsysSrngService.selectPrgrmEvl(asgsysSrngVo));
+
+    	AsgsysSrngVo prgrmEvlInfo = asgsysSrngService.selectPrgrmEvl(asgsysSrngVo);
+		if(CommonUtil.isEmpty(prgrmEvlInfo.getPrgrmid())) {
+			prgrmEvlInfo = new AsgsysSrngVo();
+			BeanUtils.copyProperties(asgsysSrngVo, prgrmEvlInfo);
+		}
+
+		model.addAttribute("prgrmEvlInfo", prgrmEvlInfo);
 
     	return "mng/asgsysSrng/prgrmEvl";
+    }
+
+    /**
+     * @Title : updatePrgrmEvl
+     * @Description : 프로그램 평가 수정
+     * @param AsgsysSrngVo객체
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/updatePrgrmEvl.do")
+    @ResponseBody
+    public Map<String, Object> updatePrgrmEvl(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.updatePrgrmEvl(asgsysSrngVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+
+        return resultMap;
     }
 
     /**
@@ -608,7 +907,39 @@ public class AsgsysSrngController {
     */
     @RequestMapping(value = "/mng/asgsysSrng/sftyMngForm.html")
     public String sftyMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
-    	model.addAttribute("sftyMngInfo", asgsysSrngService.selectSftyMng(asgsysSrngVo));
+
+    	//안전관리탭 상세 정보 조회
+    	AsgsysSrngVo sftyMngInfo = asgsysSrngService.selectSftyMng(asgsysSrngVo);
+
+    	if(null == sftyMngInfo) {
+    		sftyMngInfo = new AsgsysSrngVo();
+    		BeanUtils.copyProperties(asgsysSrngVo, sftyMngInfo);
+    	}
+
+    	model.addAttribute("sftyMngInfo", sftyMngInfo);
+
+    	//안전관리 메뉴얼 첨부파일
+    	if (!StringUtil.nvl(sftyMngInfo.getFilegrpid()).equals("") && !StringUtil.nvl(sftyMngInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(sftyMngInfo.getFilegrpid());
+
+            model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("mnlFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(sftyMngInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(sftyMngInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(sftyMngInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
     	return "mng/asgsysSrng/sftyMngForm";
     }
 
@@ -618,7 +949,7 @@ public class AsgsysSrngController {
      * @Description : user insert
      * @param UserTempVo
      * @throws Exception
-     * @return String Y or N
+     * @return Map<String,Object> 응답결과객체
      */
     @RequestMapping(value = "/mng/asgsysSrng/updateSftyMng.do")
     @ResponseBody
@@ -651,11 +982,88 @@ public class AsgsysSrngController {
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/asgsysSrng/assChklst.html")
+    @RequestMapping(value = "/mng/asgsysSrng/assChklstForm.html")
     public String assChklstForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	return "mng/asgsysSrng/assChklst";
+    	//지정신청상세정보 조회
+    	AsgsysSrngVo aplyInfo = asgsysSrngService.selectDsgnAplyDtlInfo(asgsysSrngVo);
+    	model.addAttribute("aplyInfo", aplyInfo);
+
+    	model.addAttribute("sprtgrpCheckList", asgsysSrngService.selectCheckList(aplyInfo));
+
+    	return "mng/asgsysSrng/assChklstForm";
     }
+    //updateAssChklst
+    /**
+     * 지원단심사 수정
+     *
+     * @Title : updateAssChklst
+     * @Description : 지원단심사 수정
+     * @param asgsysSrngVo
+     * @param user
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+     @RequestMapping(value = "/mng/asgsysSrng/updateAssChklst.do")
+     @ResponseBody
+     public Map<String, Object> updateAssChklst(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+
+     	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+     	asgsysSrngVo.setUser(user);
+     	asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
+
+     	int ret = 0;
+     	ret = asgsysSrngService.updateAssChklst(asgsysSrngVo);
+
+         if (ret > 0) {
+             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+             resultMap.put("msg", "저장에 성공하였습니다.");
+         } else {
+             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+             resultMap.put("msg", "저장에 실패했습니다.");
+         }
+
+         return resultMap;
+     }
+
+     /**
+      * 지원단심사 등록
+      *
+      * @Title : insertSprtgrpSrng
+      * @Description : 지원단심사 등록
+      * @param asgsysSrngVo
+      * @param user
+      * @throws Exception
+      * @return Map<String,Object>
+      */
+      @RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
+      @ResponseBody
+      public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
+
+      	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+      	asgsysSrngVo.setUser(user);
+      	asgsysSrngVo.setUserIp(CommonUtil.getClientIp(request));
+
+      	int retVal = 0;
+
+      	if (!StringUtil.nvl(asgsysSrngVo.getSbmsnid()).equals("") && !StringUtil.nvl(asgsysSrngVo.getSbmsnid()).equals(0)) {
+      		retVal = asgsysSrngService.updateSprtgrpSrng(asgsysSrngVo);
+      	}else {
+      		retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);
+      	}
+
+          if (retVal > 0) {
+              resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+              resultMap.put("msg", "저장에 성공하였습니다.");
+          } else {
+              resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+              resultMap.put("msg", "저장에 실패했습니다.");
+          }
+
+          return resultMap;
+      }
 
     /**
     * 지원단 캘린더 팝업 오픈
@@ -669,18 +1077,65 @@ public class AsgsysSrngController {
     * @throws Exception
     */
     @RequestMapping(value = "/mng/asgsysSrng/sprtgrpCalenderPopup.html")
-    public String sprtgrpCalenderPopup(AsgsysSrngVo asgsysSrngVo) throws Exception {
+    public String sprtgrpCalenderPopup(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
 
-    	//todo 캘린더 조회
+    	//캘린더 조회
+    	model.addAttribute("clndrList", asgsysSrngService.selectSprtgrpClndrList(asgsysSrngVo));
+
     	return "mng/asgsysSrng/sprtgrpCalenderPopup";
     }
 
     /**
-     * @Title : prgrmDstnctn
-     * @Description : 지정신청목록 엑셀 다운로드
-     * @param AsgsysSrngVo객체
-     * @throws Exception 예외
-     */
+    * 지원단 캘린더 목록 조회
+    *
+    * @Title : selectSprtgrpClndrList
+    * @Description : 지원단 캘린더 목록 조회
+    * @param asgsysSrngVo
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/asgsSrng/selectSprtgrpClndrList.do")
+    @ResponseBody
+    public Map<String, Object> selectSprtgrpClndrList(AsgsysSrngVo asgsysSrngVo) throws Exception {
+
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+    	List<AsgsysSrngVo> result = null;
+
+    	result = asgsysSrngService.selectSprtgrpClndrList(asgsysSrngVo);
+    	//todo 캘린더 조회
+        resultMap.put("list", result);
+        return resultMap;
+    }
+
+
+    /**
+    * 총평 엑셀 다운로드
+    *
+    * @Title : gnrlrvwExcelDownList
+    * @Description : 총평 엑셀 다운로드
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @return void
+    * @throws Exception
+    */
+    @RequestMapping(value = "/mng/asgsysSrng/gnrlrvwExcelDownList.do")
+    public void gnrlrvwExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
+    	asgsysSrngService.gnrlrvwExcelDownList(asgsysSrngVo, response, request);
+    }
+
+    /**
+    * 신청목록 엑셀 다운로드
+    *
+    * @Title : aplyExcelDownList
+    * @Description : 신청목록 엑셀 다운로드
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @return void
+    * @throws Exception
+    */
     @RequestMapping(value = "/mng/asgsysSrng/aplyExcelDownList.do")
     public void aplyExcelDownList(HttpServletRequest request, HttpServletResponse response, AsgsysSrngVo asgsysSrngVo) throws Exception {
     	asgsysSrngService.aplyExcelDownList(asgsysSrngVo, response, request);
@@ -725,7 +1180,7 @@ public class AsgsysSrngController {
 	* @param asgsysSrngVo
 	* @param bindingResult1
 	* @param user
-	* @return Map<String,Object>
+	* @return Map<String,Object> 응답결과객체
 	* @throws Exception
 	*/
 	@RequestMapping(value = "/mng/asgsysSrng/insertSplmntDmnd.do")
@@ -765,7 +1220,7 @@ public class AsgsysSrngController {
 	 * @param asgsysSrngVo
 	 * @param bindingResult1
 	 * @param user
-	 * @return Map<String,Object>
+	 * @return Map<String,Object> 응답결과객체
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/mng/asgsysSrng/updateSplmntDmnd.do")
@@ -804,7 +1259,7 @@ public class AsgsysSrngController {
 	 * @Description : 보완요청 삭제
 	 * @param asgsysSrngVo
 	 * @param user
-	 * @return Map<String,Object>
+	 * @return Map<String,Object> 응답결과객체
 	 * @throws Exception
 	 */
     @RequestMapping(value = "/mng/asgsysSrng/deleteSplmntDmnd.do")
@@ -923,6 +1378,7 @@ public class AsgsysSrngController {
     	model.addAttribute("jdgsSrngInfo", jdgsSrngInfo);
 
     	BeanUtils.copyProperties(jdgsSrngInfo, dsgnSrngFormVo);
+    	logger.info(dsgnSrngFormVo.toString())                    ;
     	model.addAttribute("dsgnSrgnFormList", asgsysSrngService.selectDsgnSrgnFormList(dsgnSrngFormVo));
 
     	return "mng/asgsysSrng/jdgsSrngForm";
@@ -953,7 +1409,7 @@ public class AsgsysSrngController {
     /**
      *
      * @Title       : updateJdgsSrngDetail
-     * @Description : asgsysSrng
+     * @Description : 심사위원심사 수정
      * @param asgsysSrngVo AsgsysSrngVo , TeacherVo TeacherVo객체
      * @param user 사용자세션정보
      * @return Map<String,Object> 응답결과객체
@@ -1055,44 +1511,10 @@ public class AsgsysSrngController {
         return "mng/asgsysSrng/sprtgrpSrngInsertForm";
     }
 
-    /**
-    * 지원단심사 등록
-    *
-    * @Title : insertSprtgrpSrng
-    * @Description : 지원단심사 등록
-    * @param asgsysSrngVo
-    * @param user
-    * @throws Exception
-    * @return Map<String,Object>
-    */
-    @RequestMapping(value = "/mng/asgsysSrng/insertSprtgrpSrng.do")
-    @ResponseBody
-    public Map<String, Object> insertSprtgrpSrng(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
 
-    	Map<String, Object> resultMap = new HashMap<String, Object>();
 
-    	asgsysSrngVo.setUser(user);
 
-    	int retVal = 0;
 
-    	if(null == asgsysSrngVo.getRsltid()) {
-    		retVal = asgsysSrngService.insertSprtgrpSrng(asgsysSrngVo);
-    		logger.info("insert 심사 #####################"  );
-    	}else {
-    		logger.info("asgsysSrngVo.getRgtrid : " + asgsysSrngVo.getRgtrid() );
-    		retVal = asgsysSrngService.updateSprtgrpSrng(asgsysSrngVo);
-    	}
-
-        if (retVal > 0) {
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "저장에 성공하였습니다.");
-        } else {
-            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "저장에 실패했습니다.");
-        }
-
-        return resultMap;
-    }
 
 }
 

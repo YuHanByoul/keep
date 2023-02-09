@@ -6,7 +6,26 @@
 	Description : 회원정보
 -->
 <mapper namespace="com.kbrainc.plum.front.member.model.MemberDao">
-
+    
+    <!-- 회원 탈퇴 -->
+    <update id="updateMemberDel" parameterType="UserVo">
+        /* MemberDao.updateMemberDel */
+        UPDATE TB_CMM_USER 
+        SET
+            DEL_YN = 'Y',
+            ACNT_LOCK_YN = 'Y',
+            ACNT_LOCK_CD = '101106',
+            STTS_CD = '9'
+        WHERE
+            USERID = #{userid}
+    </update>
+    
+    <!-- 특정 userid의 간편로그인 정보 전체 삭제 -->
+    <delete id="deleteEsylgnByUserid" parameterType="UserVo">
+        /* MemberDao.deleteEsylgnByUserid */
+        DELETE FROM TB_CMM_USER_ESYLGN WHERE USERID = #{userid}
+    </delete>
+    
     <!-- 회원 등록 -->
     <insert id="insertMember" parameterType="front.MemberVo"  useGeneratedKeys="true"  keyProperty ="userid">
         /* MemberDao.insertMember */
@@ -55,15 +74,43 @@
 	  WHERE  USERID = #{userid  }
     </update>
     
-    <select id="chekcDuplicationUser" parameterType="front.MemberVo" resultType="int">
-    /* MemberDao.chekcDuplicationUser */
-     SELECT 
-	   COUNT(*)
-	 FROM 
-	   TB_CMM_USER
-	 WHERE 1=1
-	   AND ACNT = #{acnt}
+    <!-- acnt에 해당하는 사용자 카운트 조회  -->
+    <select id="checkDuplicationUser" parameterType="front.MemberVo" resultType="int">
+        /* MemberDao.checkDuplicationUser */
+        SELECT 
+            1
+	    FROM 
+            TB_CMM_USER
+	    WHERE
+	        ACNT = #{acnt}
+        LIMIT 1
     </select>
     
+    <!-- ci에 해당하는 userid 조회  -->
+    <select id="selectUseridByCI" parameterType="front.MemberVo" resultType="String">
+        /* MemberDao.selectUseridByCI */
+        SELECT 
+            USERID
+        FROM
+            TB_CMM_USER
+        WHERE
+            CI = #{ci}
+        AND DEL_YN = 'N' 
+        LIMIT 1
+    </select>
+    
+    <!-- 부모ci와 이름에 해당하는 userid 조회  -->
+    <select id="selectUseridByParntsCIandName" parameterType="front.MemberVo" resultType="String">
+        /* MemberDao.selectUseridByParntsCIandName */
+        SELECT 
+            USERID
+        FROM
+            TB_CMM_USER
+        WHERE
+            CI_PARNTS = #{ciParnts}
+        AND NM = #{nm}
+        AND DEL_YN = 'N' 
+        LIMIT 1
+    </select>
     
 </mapper>

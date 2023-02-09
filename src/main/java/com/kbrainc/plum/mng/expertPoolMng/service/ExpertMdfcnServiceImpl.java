@@ -33,20 +33,36 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
     @Autowired
     private FileDao fileDao;
 
+    @Autowired
+    private ExpertPoolMngDao expertPoolMngDao;
+
     @Override
     public List<ExpertMdfcnVo> selectExpertMdfcnList(ExpertMdfcnVo expertMdfcnVo) throws Exception {
         return expertMdfcnDao.selectExpertMdfcnList(expertMdfcnVo);
     }
 
     @Override
-    public ExpertVo selectExpertMdfcnInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+    public ExpertVo selectExistingExpertInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+        int prevDmndId = expertMdfcnDao.getPrevDmndId(expertMdfcnVo);
+        ExpertMdfcnVo expertMdfcnVo1 = new ExpertMdfcnVo();
+        expertMdfcnVo1.setMdfcnDmndId(prevDmndId);
+        expertMdfcnVo1.setUserid(expertMdfcnVo.getUserid());
+        return selectExpertMdfcnInfo(expertMdfcnVo1);
+    }
+
+    @Override
+    public ExpertVo selectNewExpertInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+        return selectExpertMdfcnInfo(expertMdfcnVo);
+    }
+
+    private ExpertVo selectExpertMdfcnInfo(ExpertMdfcnVo expertMdfcnVo) throws Exception {
         ExpertVo expertVo = expertMdfcnDao.selectExpertMdfcnInfo(expertMdfcnVo);
         List<ExpertHdofVo> expertHdofList = expertMdfcnDao.selectExpertHdofList(expertMdfcnVo);
 
         for (ExpertHdofVo item : expertHdofList) {
             if (item.getHdofcrtfFileid() != null && !item.getHdofcrtfFileid().equals(0)) {
                 FileVo fileVo = new FileVo();
-                fileVo.setFilegrpid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
+                fileVo.setFileid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
                 FileVo fileInfo = fileDao.getFileInfo(fileVo);
                 item.setHdofCrtfFile(fileInfo);
             }
@@ -92,23 +108,54 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
 
     @Override
     @Transactional
-    public int updateSttsCd(ExpertMdfcnVo expertMdfcnVo) throws Exception {
+    public int updateStts(ExpertMdfcnVo expertMdfcnVo, ExpertLogVo expertLogVo) throws Exception {
         int retVal = 0;
         /*변경 승인시 기존의 전문가 정보를 모두 제거후 새로운 정보로 교체*/
-        if (expertMdfcnVo.getSttsCd().equals("137105")) {
-            retVal += expertMdfcnDao.deleteExpertCareer(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertCrtfct(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertActvtRgn(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertActvtScope(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertHdof(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertSbjct(expertMdfcnVo);
-            retVal += expertMdfcnDao.deleteExpertTrgt(expertMdfcnVo);
-            ExpertVo expertVo = selectExpertMdfcnInfo(expertMdfcnVo);
-//            retVal += expertMdfcnDao.insertExpertCareer(expertVo.getExpertCareerList());
+        if (expertMdfcnVo.getSttsCd().equals("152102")) {
+            retVal += expertMdfcnDao.deleteExpertCareer(expertMdfcnVo); // 경력
+            retVal += expertMdfcnDao.deleteExpertCrtfct(expertMdfcnVo); // 자격
+            retVal += expertMdfcnDao.deleteExpertHdof(expertMdfcnVo); // 재직
+            retVal += expertMdfcnDao.deleteExpertActvtRgn(expertMdfcnVo); // 활동지역
+            retVal += expertMdfcnDao.deleteExpertActvtScope(expertMdfcnVo); // 활동범위
+            retVal += expertMdfcnDao.deleteExpertSbjct(expertMdfcnVo); // 분야 주제
+            retVal += expertMdfcnDao.deleteExpertTrgt(expertMdfcnVo); // 분야 대상
 
+            ExpertVo expertVo = selectExpertMdfcnInfo(expertMdfcnVo);
+            expertVo.setUser(expertLogVo.getUser());
+
+            if (expertVo.getExprtActvtRgnCd() != null) {
+                String[] split = expertVo.getExprtActvtRgnCd().split(",");
+                expertVo.setExprtActvtRgnArr(split);
+                retVal += expertMdfcnDao.insertExpertActvtRgn(expertVo); // 활동 지역
+            }
+
+            if (expertVo.getExprtActvtScopeCd() != null) {
+                String[] split = expertVo.getExprtActvtScopeCd().split(",");
+                expertVo.setExprtActvtScopeArr(split);
+                retVal += expertMdfcnDao.insertExpertActvtScope(expertVo);// 활동 범위
+            }
+
+            if (expertVo.getExprtSbjctCd() != null) {
+                String[] split = expertVo.getExprtSbjctCd().split(",");
+                expertVo.setExprtSbjctArr(split);
+                retVal += expertMdfcnDao.insertExpertSbjct(expertVo);// 분야 주제
+            }
+
+            if (expertVo.getExprtTrgtCd() != null) {
+                String[] split = expertVo.getExprtTrgtCd().split(",");
+                expertVo.setExprtTrgtArr(split);
+                retVal += expertMdfcnDao.insertExpertTrgt(expertVo);// 분야 대상
+            }
+
+            retVal += (expertVo.getExpertCareerList().size() == 0 ? 0 : expertMdfcnDao.insertExpertCareer(expertVo)); // 경력사항
+            retVal += (expertVo.getExpertCrtfctList().size() == 0 ? 0 : expertMdfcnDao.insertExpertCrtfct(expertVo)); // 자격
+            retVal += (expertVo.getExpertHdofList().size() == 0 ? 0 : expertMdfcnDao.insertExpertHdof(expertVo)); // 재직
+            retVal += expertMdfcnDao.updateExpertInfo(expertVo); //기본 정보
         }
 
-        retVal += expertMdfcnDao.updateSttsCd(expertMdfcnVo);
+        retVal += expertMdfcnDao.updateStts(expertMdfcnVo);
+        expertPoolMngDao.insertExpertLog(expertLogVo);
+
         return retVal;
     }
 }

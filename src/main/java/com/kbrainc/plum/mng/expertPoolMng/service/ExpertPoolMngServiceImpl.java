@@ -75,10 +75,11 @@ public class ExpertPoolMngServiceImpl extends PlumAbstractServiceImpl implements
     public ExpertVo selectExpertApplyInfo(ExpertVo expertVo) throws Exception {
         ExpertVo expertApplyInfo = expertPoolMngDao.selectExpertApplyInfo(expertVo);
         List<ExpertHdofVo> expertHdofList = expertPoolMngDao.selectExpertHdofList(expertVo);
+
         for (ExpertHdofVo item : expertHdofList) {
             if (item.getHdofcrtfFileid() != null && !item.getHdofcrtfFileid().equals(0)) {
                 FileVo fileVo = new FileVo();
-                fileVo.setFilegrpid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
+                fileVo.setFileid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
                 FileVo fileInfo = fileDao.getFileInfo(fileVo);
                 item.setHdofCrtfFile(fileInfo);
             }
