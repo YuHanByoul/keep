@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : FaqDaoImpl.xml
+    Description : 자주묻는 질문 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.faq.model.FaqDao">
+
+    <select id="selectFaqList"
+            resultType="com.kbrainc.plum.front.faq.model.FaqVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.FAQID
+            , A.CLID
+            , A.TITLE
+            , A.CNTNTS
+            , A.ORD
+            , B.CL_NM
+        FROM TB_CMM_FAQ A
+        INNER JOIN (
+            SELECT CLID
+                 , CL_NM
+            FROM TB_CMM_FAQ_CL
+            WHERE USE_YN ='Y'
+              AND SITEID=#{site.siteid}
+        ) B
+            ON A.CLID = B.CLID
+        WHERE 1=1
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchType == 'title'">
+                AND A.TITLE LIKE CONCAT('%', #{searchKeyword},'%')
+            </if>
+            <if test="searchType == 'cntnts'">
+                AND A.CNTNTS LIKE CONCAT('%', #{searchKeyword},'%')
+            </if>
+            <if test="searchType == ''">
+                AND (A.TITLE LIKE CONCAT('%', #{searchKeyword},'%') OR A.CNTNTS LIKE CONCAT('%', #{searchKeyword},'%'))
+            </if>
+        </if>
+        <if test="clid != null">
+            AND A.CLID = #{clid}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectFaqClList" resultType="com.kbrainc.plum.front.faq.model.FaqClVo">
+        SELECT CLID
+             , CL_NM
+        FROM TB_CMM_FAQ_CL
+        WHERE USE_YN = 'Y'
+          AND SITEID = #{site.siteid}
+    </select>
+</mapper>
