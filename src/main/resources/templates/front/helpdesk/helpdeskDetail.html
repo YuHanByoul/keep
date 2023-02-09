@@ -4,27 +4,25 @@
       layout:decorator="layout/front/subLayout">
 
 <div layout:fragment="content">
-
-    <!-- 문의 내용 -->
     <div class="table-view">
         <div class="table-view-header">
-            <h3><span> <th:block th:text="|[${inqry.inqryClCdNm}]|"/> [[${inqry.title}]]</span>
-                <th:block th:if="${inqry.rlsYn == 'N'}">
+            <h3><span><th:block th:text="|[${helpdesk.clsfCdNm}]|"/> [[${helpdesk.ttl}]]</span>
+                <th:block th:if="${helpdesk.rlsYn == 'N'}">
                     <span class="icon icon-lockon" title="비밀글"></span>
                 </th:block>
             </h3>
             <dl>
                 <div class="list">
                     <dt>상태</dt>
-                    <dd>[[${inqry.sttsCdNm}]]</dd>
+                    <dd>[[${helpdesk.sttsCdNm}]]</dd>
                 </div>
                 <div class="list">
                     <dt>등록일</dt>
-                    <dd>[[${#dates.format(inqry.regDt, 'yyyy-MM-dd')}]]</dd>
+                    <dd>[[${#dates.format(helpdesk.regDt, 'yyyy-MM-dd')}]]</dd>
                 </div>
                 <div class="list">
                     <dt>작성자</dt>
-                    <dd>[[${inqry.acnt}]]</dd>
+                    <dd>[[${helpdesk.acnt}]]</dd>
                 </div>
             </dl>
             <dl class="table-view-file">
@@ -32,8 +30,8 @@
                     <dt>첨부파일</dt>
                     <dd>
                         <div class="form-input-file">
-                            <ul th:if="${inqry.fileList != null}">
-                                <th:block th:each="file : ${inqry.fileList}">
+                            <ul th:if="${helpdesk.fileList != null}">
+                                <th:block th:each="file : ${helpdesk.fileList}">
                                     <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                         <span class="name">
                                             <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
@@ -50,26 +48,24 @@
             </dl>
         </div>
         <div class="table-view-body">
-            <div class="table-view-content" th:text="${inqry.cntnts}">
+            <div class="table-view-content" th:text="${helpdesk.cn}">
             </div>
         </div>
 
-        <!-- 답변 완료 -->
-        <th:block th:if="${inqry.sttsCd == '103104'}">
+        <th:block th:if="${helpdesk.sttsCd == '113104' && helpdeskAns.rlsYn == 'Y' }">
             <div class="table-view">
                 <div class="table-view-header">
-                    <h3>
-                        <span class="box-tag tag-green">답변완료</span>
-                        <span th:text="${inqryAns.title}">답변제목</span>
+                    <h3><span class="box-tag tag-green">답변완료</span>
+                        <span th:text="${helpdeskAns.ttl}">답변제목</span>
                     </h3>
                     <dl>
                         <div class="list">
                             <dt>작성자</dt>
-                            <dd th:text="${inqryAns.opetrAcnt}"/>
+                            <dd th:text="${helpdeskAns.acnt}">관리자ID</dd>
                         </div>
                         <div class="list">
                             <dt>답변일</dt>
-                            <dd th:text="${inqryAns.ansDe}"/>
+                            <dd th:text="${helpdeskAns.ansDe}">2022-03-08</dd>
                         </div>
                     </dl>
                     <dl class="table-view-file">
@@ -77,8 +73,8 @@
                             <dt>첨부파일</dt>
                             <dd>
                                 <div class="form-input-file">
-                                    <ul th:if="${inqryAns.fileList != null}">
-                                        <th:block th:each="file : ${inqryAns.fileList}">
+                                    <ul th:if="${helpdeskAns.fileList != null}">
+                                        <th:block th:each="file : ${helpdeskAns.fileList}">
                                             <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                                 <span class="name">
                                                     <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
@@ -94,8 +90,9 @@
                         </div>
                     </dl>
                 </div>
+
                 <div class="table-view-body">
-                    <div class="table-view-content" th:text="${inqryAns.cntnts}">
+                    <div class="table-view-content" th:text="${helpdeskAns.cn}">
                     </div>
                 </div>
             </div>
@@ -103,18 +100,18 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <th:block th:if="${inqry.userid == loginUserid}">
-                    <th:block th:if="${inqry.sttsCd == '103101'}">
-                        <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.update('cancel')">접수취소</button>
+                <th:block th:if="${helpdesk.userid == loginUserid}">
+                    <th:block th:if="${helpdesk.sttsCd == '113101'}">
+                        <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.update('cancel')">접수취소</button>
                     </th:block>
-                    <th:block th:if="${inqry.sttsCd == '103104'}">
-                        <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.update('delete')">삭제</button>
+                    <th:block th:if="${helpdesk.sttsCd == '113104'}">
+                        <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.update('delete')">삭제</button>
                     </th:block>
-                    <th:block th:if="${inqry.sttsCd == '103101'}">
-                        <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToUpdateForm()">수정</button>
+                    <th:block th:if="${helpdesk.sttsCd == '113101'}">
+                        <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.moveToUpdateForm()">수정</button>
                     </th:block>
                 </th:block>
-                <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToList()">목록</button>
+                <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.moveToList()">목록</button>
             </div>
         </div>
     </div>
@@ -123,27 +120,27 @@
         <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
         <input type="hidden" id="searchType" name="searchType" th:value="${searchVo.searchType}">
         <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
-        <input type="hidden" id="inqryClCd" name="inqryClCd" th:value="${searchVo.inqryClCd}">
+        <input type="hidden" id="clsfCd" name="inqryClCd" th:value="${searchVo.clsfCd}">
         <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
         <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
-        <input type="hidden" id="inqryid" name="inqryid" th:value="${inqry.inqryid}">
+        <input type="hidden" id="inqryid" name="inqryid" th:value="${helpdesk.inqryid}">
     </form>
 
     <script th:inline="javascript">
-        let inqryDetail = {
-            inqryid: /*[[${inqry.inqryid}]]*/null,
-            updateFormUrl: '/front/inqry/inqryForm.html',
-            listUrl: '/front/inqry/inqryList.html',
-            deleteUrl: '/front/inqry/deleteInqry.do',
-            cancelUrl: '/front/inqry/cancelInqry.do',
+        var helpdeskDetail = {
+            inqryid: /*[[${helpdesk.inqryid}]]*/null,
+            updateFormUrl: '/front/helpdesk/helpdeskForm.html',
+            listUrl: '/front/helpdesk/helpdeskList.html',
+            deleteUrl: '/front/helpdesk/deleteHelpdesk.do',
+            cancelUrl: '/front/helpdesk/cancelHelpdesk.do',
 
             update(mode) {
                 if (mode == 'cancel') {
                     if (!confirm('접수를 취소 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(inqryDetail.cancelUrl);
+                    this.ajaxForSttsUpdate(this.cancelUrl);
                 } else if (mode == 'delete') {
                     if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(inqryDetail.deleteUrl);
+                    this.ajaxForSttsUpdate(this.deleteUrl);
                 }
             },
 
@@ -153,17 +150,16 @@
                         method: 'post',
                         url: url,
                         dataType: 'json',
-                        data: {inqryid: inqryDetail.inqryid},
+                        data: {inqryid: helpdeskDetail.inqryid},
                         success: function (response) {
                             closeWorkProgress();
                             alert(response.msg);
                             if (response.success)
-                                inqryDetail.submit(inqryDetail.listUrl);
+                                helpdeskDetail.submit(helpdeskDetail.listUrl);
                         }
                     })
                 }
             },
-
             moveToList() {
                 this.submit(this.listUrl);
             },
@@ -177,9 +173,6 @@
                 f.action = url;
                 f.submit();
             }
-        }
-
-
+        };
     </script>
 </div>
-

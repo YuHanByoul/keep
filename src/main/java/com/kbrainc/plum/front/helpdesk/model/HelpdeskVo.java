@@ -1,10 +1,8 @@
-package com.kbrainc.plum.front.inqry.model;
+package com.kbrainc.plum.front.helpdesk.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
-import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -12,56 +10,49 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
 /**
- * 1:1문의 요청Vo
+ * 헬프데스크Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.front.inqry.model
- * - InqryVo.java
+ * com.kbrainc.plum.front.helpdesk.model
+ * - HelpdeskVo.java
  * </pre>
  *
  * @author : KBRAINC_DEV
- * @ClassName : InqryReqVo
- * @Description : 1:1문의 요청Vo
- * @date : 2023. 02. 03.
+ * @ClassName : HelpdeskVo
+ * @Description : 헬프데스크Vo 클래스
+ * @date : 2023. 02. 09.
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
-
+@Alias("front.HelpdeskVo")
 @Data
-@Alias("front.InqryVo")
 @NoArgsConstructor
-public class InqryVo extends ParentRequestVo {
-    private SiteInfoVo site;
-
+public class HelpdeskVo extends ParentRequestVo {
     private UserVo user;
 
     private Integer inqryid;
 
-    private int siteid;
-
-    @NotEmpty(message = "제목을 입력해 주십시오.")
-    @Size(max = 500, message = "제목은 500자를 넘을 수 없습니다.")
-    private String title;
-
-    @NotEmpty(message="내용을 입력해 주십시오.")
-    private String cntnts;
-
-    private String acnt;
-
-    private Integer filegrpid;
-
     private Integer userid;
 
-    private String inqryClCd;
+    @NotEmpty(message = "제목을 입력해 주십시오")
+    @Size(max = 100, message = "제목은 100자를 넘을 수 없습니다")
+    private String ttl;
 
-    private String inqryClCdNm;
+    private String clsfCd;
+
+    private String clsfCdNm;
+
+    @NotEmpty(message = "내용을 입력해 주십시오")
+    @Size(max = 4000, message = "내용은 4000자를 넘을 수 없습니다.")
+    private String cn;
+
+    private Integer filegrpid;
 
     private String sttsCd;
 
@@ -69,19 +60,20 @@ public class InqryVo extends ParentRequestVo {
 
     private String rlsYn;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private String acnt;
+
     private Date regDt;
 
     private List<FileVo> fileList;
 
-    public void setInqryClCd(String inqryClCd) {
-        this.inqryClCd = inqryClCd;
+    public void setClsfCd(String clsfCd) {
+        this.clsfCd = clsfCd;
 
-        if (CommonUtil.isEmpty(this.inqryClCdNm)) {
+        if (CommonUtil.isEmpty(this.clsfCdNm)) {
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.inqryClCd);
-                this.inqryClCdNm = code.getCdNm();
+                CodeInfoVo code = resCodeService.getCodeInfo(this.clsfCd);
+                this.clsfCdNm = code.getCdNm();
             } catch (NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return;
