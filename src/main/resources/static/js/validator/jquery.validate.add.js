@@ -24,7 +24,7 @@ jQuery.validator.addMethod("alphanumeric", function(value, element) {
 //기능 : 영문 , '.','-','_' 
 jQuery.validator.addMethod("emailDomain", function(value, element) {
 	 //var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-	 var regExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+	 var regExp = /[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*[.][a-zA-Z]{2,3}$/i;
 	 if( value.match(regExp) != null ){ return true; 
 	 }else{ return false}
 	
@@ -66,13 +66,17 @@ $.validator.addMethod("passwordPolicy2", function(value, element) {
 //영문,숫자 혼용
 $.validator.addMethod("idPolicy1", function(value, element) {
     //아이디 정책 관련 필터  
-    var chk_num = value.search(/[0-9]/g);
-    var chk_eng = value.search(/[a-z]/ig);
-    
-    if(chk_num <0 || chk_eng <0){
-        return false;
+    if(/^[a-z0-9]+$/.test(value)) {
+        var chk_num = value.search(/[0-9]/g);
+        var chk_eng = value.search(/[a-z]/ig);
+        
+        if(chk_num <0 || chk_eng <0){
+            return false;
+        }else{
+            return true;
+        }
     }else{
-        return true;
+        return false;
     }
 });
 
