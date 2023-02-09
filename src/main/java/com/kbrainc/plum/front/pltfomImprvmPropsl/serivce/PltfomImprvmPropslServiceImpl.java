@@ -2,7 +2,6 @@ package com.kbrainc.plum.front.pltfomImprvmPropsl.serivce;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.front.inqry.model.InqryDao;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslAnsVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslDao;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslVo;
@@ -68,6 +67,7 @@ public class PltfomImprvmPropslServiceImpl extends PlumAbstractServiceImpl imple
     @Override
     public PltfomImprvmPropslVo selectPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         PltfomImprvmPropslVo propsl = pltfomImprvmPropslDao.selectPropsl(pltfomImprvmPropslVo);
+
         if (propsl != null && propsl.getFilegrpid() != null && !propsl.getFilegrpid().equals("0")) {
             FileVo fileVo = new FileVo();
             fileVo.setFilegrpid(propsl.getFilegrpid());
@@ -80,6 +80,15 @@ public class PltfomImprvmPropslServiceImpl extends PlumAbstractServiceImpl imple
 
     @Override
     public PltfomImprvmPropslAnsVo selectPropslAns(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
-        return pltfomImprvmPropslDao.selectPropslAns(pltfomImprvmPropslVo);
+        PltfomImprvmPropslAnsVo propslAns = pltfomImprvmPropslDao.selectPropslAns(pltfomImprvmPropslVo);
+
+        if (propslAns != null && propslAns.getFilegrpid() != null && !propslAns.getFilegrpid().equals("0")) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(propslAns.getFilegrpid());
+            ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
+            propslAns.setFileList(fileList);
+        }
+
+        return propslAns;
     }
 }

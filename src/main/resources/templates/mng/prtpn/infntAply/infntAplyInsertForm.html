@@ -1,0 +1,304 @@
+<form id ="infntAplyInsertForm">
+<input type="hidden" id="prgrmid" name="prgrmid" value="" />
+        <!-- INSERT -->
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>교육신청자 정보</strong></h3>
+        </div>
+        <!-- Tab Container Start -->
+         <div class="card-block-small p-t-0">
+             <div class="row">
+                 <div class="col-lg-6 mb-3">                 
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduYr"><strong>교육년도</strong></label>
+                         <div class="col-sm-12">
+	                         <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm" disabled>
+	                             <option value="">- 선택 -</option>
+	                             <th:block th:each="year : ${years}">
+	                                 <option th:value="${year}"><th:block th:text="${year}" /></option>
+	                             </th:block>
+	                         </select>
+                         </div>
+                     </div>
+                 </div>
+             </div>                 
+             <div class="row">
+                 <div class="col-lg-6 mb-3">                 
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육관</strong></label>
+                         <div class="col-sm-12">
+	                         <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm" onchange="fn_changeClssrmId(this)" disabled>
+	                             <option value="">- 선택 -</option>
+	                             <th:block th:each="item : ${clssList}">
+	                                 <option th:value="${item.clssrmId}"><th:block th:text="${item.clssrmNm}" /></option>
+	                             </th:block>
+	                         </select>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 mb-3">                                                                    
+                     <div class="mb-0 form-group required" >
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>프로그램명</strong></label>
+                         <div class="col-12">
+                             <input type="text" class="form-control form-control-sm" name="prgrmNm" id="prgrmNm" placeholder="" disabled>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-lg-6">
+                     <div class="row">
+                         <div class="col-sm-6 mb-3 form-group required">
+                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="de"><strong>교육일자</strong></label>
+                             <select name="tmeSchdlid" class="form-select form-select-sm form-control-sm" id="tmeSchdlid" onchange="fn_changeSelectDe(this);">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${tmeSchdlList}">
+                                     <option th:value="${item.tmeSchdlid}"><th:block th:text="${item.de}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                         <div class="col-sm-6 mb-3 form-group required">
+                             <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tme"><strong>회차</strong></label>
+                             <select name="tme" class="form-select form-select-sm form-control-sm" id="tme" disabled>
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${tmeSchdlList}">
+                                     <option th:value="${item.tmeSchdlid}"><th:block th:text="${item.tmeNm}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="ctprvnCd"><strong>신청인지역</strong></label>
+                         <div class="col-sm-12">
+                             <th:block kattr:select_code="ctprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="instNm"><strong>신청기관</strong></label>
+                         <div class="col-12">
+                             <input type="hidden" name="instid" id="instid"/>
+                             <input type="text" class="form-control form-control-sm" name="instNm" id="instNm" placeholder="" disabled/>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청인</strong></div>
+                         <div class="col-12 row">
+                             <div class="col-8">
+                                 <input type="text" class="form-control form-control-sm" name="userNm" id="userNm" placeholder="신청인" />
+                                 <input type="hidden" name="aplyUserid" id="userid" />
+                             </div>
+                             <div class="col-4 btn-group-sm">
+                                 <button type="button" class="btn btn-inverse btn-sm" onclick="fn_openUserSearchModal();">사용자 검색</button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addr"><strong>기관주소</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="addr" id="addr" disabled/>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="addrDtl"><strong>상세주소</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="addrDtl" id="addrDtl" disabled/>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="telno"><strong>기관 전화번호</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="telno" id="telno" disabled/>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="moblphon"><strong>휴대폰번호</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="moblphon" id="moblphon" placeholder="교육일에 방문하는 교사 휴대폰번호 기입 필수" />
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eml"><strong>신청자 이메일</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="eml" id="eml" disabled/>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="trgtCd"><strong>교육대상</strong></label>
+                         <div class="col-sm-12">
+                             <div class="border-checkbox-section">
+                                 <span kattr:check_code="trgtCd" grpCd="162" isAdmin="true" addClass="trgtCds">
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduNope"><strong>총 교육인원(명)</strong></label>
+                         <div class="col-sm-12">
+                             <input type="number" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="총 교육인원(명)을 숫자로 입력하세요." onchange="">
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="tcherNope"><strong>인솔교사인원(명)</strong></label>
+                         <div class="col-sm-12">
+                             <input type="number" class="form-control form-control-sm" name="tcherNope" id="tcherNope" placeholder="인솔교사인원(명)을 숫자로 입력하세요. 유아 10명당 인솔교사 1명 필수 참석" />
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row form-group mb-3">
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="input10"><strong>기타사항</strong></label>
+                 <div class="col-sm-12">
+                     <input type="text" class="form-control form-control-sm" name="etc" id="etc" />
+                 </div>
+             </div>
+             <div class="row form-group required mb-3">
+                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>쌍방향 온라인 시범교육 신청 동의 (비동의 시 교육 선정 및 진행 불가)</strong></div>
+                 <div class="col-12">
+                     <div class="form-radio">
+                         <div class="radio radio-inline">
+                             <label class="mb-0 form-label">
+                                 <input type="radio" name="towwayOnlnEduAgreYn" value="Y" checked="">
+                                 <i class="helper"></i>동의
+                             </label>
+                         </div>
+                         <div class="radio radio-inline">
+                             <label class="mb-0 form-label">
+                                 <input type="radio" name="towwayOnlnEduAgreYn" value="N">
+                                 <i class="helper"></i>비동의
+                             </label>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+        <div class="card-block-small">
+            <button type="button" class="btn btn-disabled m-r-5" id="canceInfntAply" onclick="gridHelper1.toggleContent()">취소</button>
+            <th:block sec:authorize-url="/mng/prtpn/infntAply/insertInfntAply.do"><button type="button" class="btn btn-primary" id="insertInfntAply" onclick="fn_insertInfntAply()">저장</button></th:block>
+        </div>
+        <!-- Tab Container End -->
+</form>
+<form id="searchManagerFrm" >
+   <input type="hidden" id="instid" name="instid" value="0"/>
+</form>
+<div class="modal fade" id="userSearchPopup" data-bs-backdrop="static"></div>
+<script th:inline="javascript">
+	var prgrmTmeSelectedItems = [];
+	var clssrmViewngMaxAplyNope = 0;
+	var userSearchPopupUrl = "/mng/prtpn/infntAply/infntAplyUserSearchPopup.html";
+	var userSearchAddModal;
+	init();
+	fn_openUserSearchModal = () => {
+	    $("#userSearchPopup").load(userSearchPopupUrl, function(response, status, xhr) {
+	        if (status == "success") {
+	            userSearchAddModal = new bootstrap.Modal($('#userSearchPopup'));
+	            userSearchAddModal.show();
+	        }
+	    });
+	}
+
+	function init() {
+		prgrmTmeSelectedItems = [];
+		clssrmViewngMaxAplyNope = 0;
+
+        var eduYr = selectedItems[0].eduYr;
+        var clssrmId = selectedItems[0].clssrmId;
+        var clssrmNm = selectedItems[0].clssrmNm;
+        var prgrmId = selectedItems[0].prgrmId;
+        var prgrmNm = selectedItems[0].prgrmNm;
+    
+        $('#eduYr').val(eduYr);
+        $('#clssrmId').val(clssrmId).prop("selected", true);
+        $('#prgrmId').val(prgrmId);
+        $('#prgrmNm').val(prgrmNm);
+            
+	}
+	
+    function fn_insertInfntAply(){
+        if(!($("#infntAplyInsertForm").valid())) return;
+        //debugger;
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        var zip = $('#zip').val();
+        var addr = $('#addr').val();
+        var addrDtl = $('#addrDtl').val();
+        var telno = $('#telno').val();
+        var eml = $('#eml').val();
+        
+        var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
+        
+        var data =  $("#infntAplyInsertForm").serialize();
+        data = data+"&zip="+zip+"&addr="+addr+"&addrDtl="+addrDtl+"&telno="+telno+"&eml="+eml+"&trgtCds="+trgtCds;
+        debugger;
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/prtpn/infntAply/insertInfntAply.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                    	alert(data.msg);
+                        gridHelper1.resetListContent();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    function fn_changeClssrmId(item){
+    	var getCodeUrl = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do";
+        var url = getCodeUrl + "?clssrmId=" + $(item).val();
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                	$("#eduTypeCd").val(data.eduTypeCd);
+                	$("#eduNope").val(data.clssrmViewngMaxAplyNope);
+                	//교육관 최대 신청 인원수 세팅.
+                	clssrmViewngMaxAplyNope = data.clssrmViewngMaxAplyNope;
+                }
+            });
+        }
+    }
+    
+    function fn_changeSelectDe(item){
+    	var tmeSchdlid = $(item).val();
+    	$('#tme').val(tmeSchdlid).prop("selected", true);
+    }
+    
+</script>

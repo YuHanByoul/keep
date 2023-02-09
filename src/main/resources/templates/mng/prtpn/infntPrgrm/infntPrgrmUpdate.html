@@ -27,7 +27,7 @@
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육관</strong></label>
                          <div class="col-sm-12">
-                             <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm">
+                             <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm" onchange="fn_changeClssrmId(this)">
                                  <option value="">- 선택 -</option>
                                  <th:block th:each="item : ${clssList}">
                                      <option th:value="${item.clssrmId}" th:selected="${infntPrgrm.clssrmId} == ${item.clssrmId}"><th:block th:text="${item.clssrmNm}" /></option>
@@ -38,7 +38,7 @@
                  </div>                     
                  <div class="col-lg-6 mb-3">    
                      <div class="mb-0 form-group required">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""eduTypeCd""><strong>교육유형</strong></label>
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduTypeCd"><strong>교육유형</strong></label>
                          <div class="col-sm-12">
                              <th:block kattr:select_code="eduTypeCd" th:attr="grpCd=144,selectedCd=${infntPrgrm.eduTypeCd}" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" disabled></th:block>
                          </div>
@@ -56,8 +56,25 @@
                  </div>
              </div>
              <div class="row">
-                 <div class="col-6 mb-3">                                                                    
-                     <div class="mb-0 form-group required">
+                 <div class="col-6 mb-3">                  
+                     <div id="clsfCdDiv" class="mb-0 form-group required">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
+                         <div id="clsfHtmlDiv">
+	                         <div class="row">
+	                             <div class="col-sm">
+	                                 <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange='setNextDepth(155,this.value,"clsfCds_2" )' firstOptTxt="- 선택 -" isAdmin="true"></th:block>                           
+	                             </div>
+	                             <div class="col-sm mt-1 mt-sm-0">
+	                                 <th:block kattr:select_code="clsfCds_2" th:attr="grpCd=155,selectedCd=${infntPrgrm.clsfCd}" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" disabled></th:block>
+	                             </div>
+	                             <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">
+	                                 <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>
+	                                 <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>
+	                             </div>
+	                         </div>                 
+                         </div>                                  
+                     </div>                                                                   
+<!--                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clsfCd"><strong>교육주제</strong></label>
                          <div class="row">
                              <div class="col-sm-4">
@@ -67,7 +84,7 @@
                                  <div class="input-group-text btn btn-primary btn-sm">+</div>
                              </div>
                          </div>                                                   
-                     </div>
+                     </div> -->
                  </div>
                  <div class="col-6 mb-3">                                                                    
                      <div class="mb-0 form-group required">
@@ -75,7 +92,7 @@
                          <div class="row">
                              <div class="col-sm-12">
                                  <div class="border-checkbox-section">
-                                     <span kattr:check_code="trgtCd" th:attr="grpCd=162,selectedCd=${infntPrgrm.clsfCd}" isAdmin="true" addClass="trgtCds">
+                                     <span kattr:check_code="trgtCd" th:attr="grpCd=162,selectedCd=${infntPrgrm.trgtCd}" isAdmin="true" addClass="trgtCds">
                                  </div>
                              </div>
                          </div>                                                   
@@ -87,7 +104,7 @@
                      <div class="col-lg-6 mb-3">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육정원(명)</strong></label>
                          <div class="col-sm-12">
-                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" th:value="${infntPrgrm.eduNope}">
+                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" th:value="${infntPrgrm.eduNope}" onchange="fn_changeEduNope(this);">
                              <span class="messages"></span>
                          </div>
                      </div>
@@ -124,13 +141,19 @@
                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduIntrcnFileid"><strong>교육소개</strong></label>
                  <div class="col-sm-12">
                      <input type="file" class="form-control form-control-sm" id="eduIntrcnFile" name="eduIntrcnFile"/>
-                     <input type="hidden" name="eduIntrcnFilegrpid" id="eduIntrcnFilegrpid" value="${infntPrgrm.eduIntrcnFilegrpid}">
-                     <input type="hidden" name="eduIntrcnFileid" id="eduIntrcnFileid" value="${infntPrgrm.eduIntrcnFileid}">                         
+                     <input type="hidden" name="eduIntrcnFilegrpid" id="eduIntrcnFilegrpid" th:value="${infntPrgrm.eduIntrcnFilegrpid}">
+                     <input type="hidden" name="eduIntrcnFileid" id="eduIntrcnFileid" th:value="${infntPrgrm.eduIntrcnFileid}">                         
                  </div>
                  <div class="mt-2 row">
                      <div class="col-auto">
+                         <th:block th:if="${eduIntrcnFileBtn}">
+                         <div id="eduIntrcnFileUploadSuccess" th:utext="${eduIntrcnFileBtn}">
+                         </div>
+                         </th:block>
+                         <th:block th:unless="${eduIntrcnFileBtn}">
                          <div id="eduIntrcnFileUploadSuccess">
                          </div>
+                         </th:block>
                      </div>
                  </div>
              </div>                                                          
@@ -138,13 +161,20 @@
                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduPhotoFile"><strong>교육사진</strong></label>
                  <div class="col-sm-12">
                      <input type="file" class="form-control form-control-sm" id="eduPhotoFile" name="eduPhotoFile"/>
-                     <input type="hidden" name="eduPhotoFilegrpid" id="eduPhotoFilegrpid" value="${infntPrgrm.eduPhotoFilegrpid}">
-                     <input type="hidden" name="eduPhotoFileid" id="eduPhotoFileid" value="${infntPrgrm.eduPhotoFileid}">                         
+                     <input type="hidden" name="eduPhotoFilegrpid" id="eduPhotoFilegrpid" th:value="${infntPrgrm.eduPhotoFilegrpid}">
+                     <input type="hidden" name="eduPhotoFileid" id="eduPhotoFileid" th:value="${infntPrgrm.eduPhotoFileid}">                         
                  </div>
                  <div class="mt-2 row">
                      <div class="col-auto">
+                     <div class="col-auto">
+                         <th:block th:if="${eduPhotoFileBtn}">
+                         <div id="eduPhotoFileUploadSuccess" th:utext="${eduPhotoFileBtn}">
+                         </div>
+                         </th:block>
+                         <th:block th:unless="${eduPhotoFileBtn}">
                          <div id="eduPhotoFileUploadSuccess">
                          </div>
+                         </th:block>
                      </div>
                  </div>
              </div>                                                          
@@ -155,43 +185,43 @@
                          <div class="col-sm-12">
                              <div class="border-checkbox-section">
                                  <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="sunYn" id="sunYn" th:checked="${infntPrgrm.sunYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="sunYn" id="sunYn" th:checked="${infntPrgrm.sunYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="sunYn">
                                          일요일
                                      </label>
                                  </div>
                                  <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="monYn" id="monYn" th:checked="${infntPrgrm.monYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="monYn" id="monYn" th:checked="${infntPrgrm.monYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label" for="monYn">
                                          월요일
                                      </label>
                                  </div>
                                  <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="tuesYn" id="tuesYn" th:checked="${infntPrgrm.tuesYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="tuesYn" id="tuesYn" th:checked="${infntPrgrm.tuesYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label" for="tuesYn">
                                          화요일
                                      </label>
                                  </div>
                                  <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="wedYn" id="wedYn" th:checked="${infntPrgrm.wedYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="wedYn" id="wedYn" th:checked="${infntPrgrm.wedYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label" for="wedYn">
                                          수요일
                                      </label>
                                  </div>
                                  <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="thurYn" id="thurYn" th:checked="${infntPrgrm.thurYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="thurYn" id="thurYn" th:checked="${infntPrgrm.thurYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label" for="thurYn">
                                          목요일
                                      </label>
                                  </div>
                                  <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="friYn" id="friYn" th:checked="${infntPrgrm.friYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="friYn" id="friYn" th:checked="${infntPrgrm.friYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label" for="friYn">
                                          금요일
                                      </label>
                                  </div>
                                  <div class="border-checkbox-group d-inline-block">
-                                     <input class="border-checkbox" type="checkbox" name="satYn" id="satYn" th:checked="${infntPrgrm.satYn eq 'Y'}">
+                                     <input class="border-checkbox" type="checkbox" name="satYn" id="satYn" th:checked="${infntPrgrm.satYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
                                      <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="satYn">
                                          토요일
                                      </label>
@@ -252,128 +282,69 @@
                              </tr>
                          </thead>
                          <tbody id="infntPrgrmTmBody">
+                             <th:block th:each="item, stat : ${resultTmeList}">
                              <tr>
                                  <td class="text-center v-middle">
-                                     <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">
+                                     <input id="prgrmTmeSingleCheckbox" name="tmeId" class="form-check-input" type="checkbox" th:value="${item.tmeId}" aria-label="선택" onchange="fn_changeSelectItem(this);">
                                  </td>
-                                 <td class="text-center v-middle">1</td>
+                                 <td class="text-center v-middle idx" th:text="${stat.count}"></td>
                                  <td class="text-center v-middle">
-                                     <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">
+                                     <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" th:value="${item.tmeNm}" style="width:88px;">
                                  </td>
                                  <td class="text-center v-middle">
                                      <div class="border-checkbox-section">
                                          <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeSunYn" th:id="|tmeSunYn${stat.count}|" th:checked="${item.sunYn eq 'Y'}" th:disabled="${infntPrgrm.sunYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label text-c-pink" th:for="|tmeSunYn${stat.count}|">
                                                  일
                                              </label>
                                          </div>
                                          <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeMonYn" th:id="|tmeMonYn${stat.count}|" th:checked="${item.monYn eq 'Y'}" th:disabled="${infntPrgrm.monYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeMonYn${stat.count}|">
                                                  월
                                              </label>
                                          </div>
                                          <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeTuesYn" th:id="|tmeTuesYn${stat.count}|" th:checked="${item.tuesYn eq 'Y'}" th:disabled="${infntPrgrm.tuesYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeTuesYn${stat.count}|">
                                                  화
                                              </label>
                                          </div>
                                          <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeWedYn" th:id="|tmeWedYn${stat.count}|" th:checked="${item.wedYn eq 'Y'}" th:disabled="${infntPrgrm.wedYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeWedYn${stat.count}|">
                                                  수
                                              </label>
                                          </div>
                                          <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeThurYn" th:id="|tmeThurYn${stat.count}|" th:checked="${item.thurYn eq 'Y'}" th:disabled="${infntPrgrm.thurYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeThurYn${stat.count}|">
                                                  목
                                              </label>
                                          </div>
                                          <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeFriYn" th:id="|tmeFriYn${stat.count}|" th:checked="${item.friYn eq 'Y'}" th:disabled="${infntPrgrm.friYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeFriYn${stat.count}|">
                                                  금
                                              </label>
                                          </div>
                                          <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn1">
-                                             <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn1">
+                                             <input class="border-checkbox" type="checkbox" name="tmeSatYn" th:id="|tmeSatYn${stat.count}|" th:checked="${item.satYn eq 'Y'}" th:disabled="${infntPrgrm.satYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label text-c-blue" th:for="|tmeSatYn${stat.count}|">
                                                  토
                                              </label>
                                          </div>
                                      </div>
                                  </td>
                                  <td class="text-center v-middle">
-                                     <input type="time" name="bgngTm" class="form-control form-control-sm" />
+                                     <input type="time" name="bgngTm" th:value="${item.bgngTm}" class="form-control form-control-sm" />
                                  </td>
                                  <td class="text-center v-middle">
-                                     <input type="time" name="endTm" class="form-control form-control-sm" />
+                                     <input type="time" name="endTm" th:value="${item.endTm}" class="form-control form-control-sm" />
                                  </td>
                              </tr>
-                             <tr>
-                                 <td class="text-center v-middle">
-                                     <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">
-                                 </td>
-                                 <td class="text-center v-middle">2</td>
-                                 <td class="text-center v-middle">
-                                     <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">
-                                 </td>
-                                 <td class="text-center v-middle">
-                                     <div class="border-checkbox-section">
-                                         <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn2">
-                                                 일
-                                             </label>
-                                         </div>
-                                         <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn2">
-                                                 월
-                                             </label>
-                                         </div>
-                                         <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn2">
-                                                 화
-                                             </label>
-                                         </div>
-                                         <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn2">
-                                                 수
-                                             </label>
-                                         </div>
-                                         <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn2">
-                                                 목
-                                             </label>
-                                         </div>
-                                         <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn2">
-                                                 금
-                                             </label>
-                                         </div>
-                                         <div class="border-checkbox-group d-inline-block">
-                                             <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn2">
-                                             <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn2">
-                                                 토
-                                             </label>
-                                         </div>
-                                     </div>
-                                 </td>
-                                 <td class="text-center v-middle">
-                                     <input type="time" name="bgngTm" class="form-control form-control-sm" />
-                                 </td>
-                                 <td class="text-center v-middle">
-                                     <input type="time" name="endTm" class="form-control form-control-sm" />
-                                 </td>
-                             </tr>
+                             </th:block>
                          </tbody>
                      </table>
                  </div>
@@ -381,23 +352,54 @@
          </div>
         <div class="card-block-small">
             <button type="button" class="btn btn-disabled m-r-5" id="canceInfntPrgrm" onclick="gridHelper1.toggleContent()">취소</button>
-            <th:block sec:authorize-url="/mng/prtpn/infntPrgrm/insertInfntPrgrm.do"><button type="button" class="btn btn-primary" id="insertInfntPrgrm" onclick="fn_insertInfntPrgrm()">저장</button></th:block>
+            <th:block sec:authorize-url="/mng/prtpn/infntPrgrm/updateInfntPrgrm.do"><button type="button" class="btn btn-primary" id="updateInfntPrgrm" onclick="fn_updateInfntPrgrm()">저장</button></th:block>
         </div>
         <!-- Tab Container End -->
 </form>
 
 <script th:inline="javascript">
+var clsfCdSelectedItems = [];
+var upprClsfCdSelectedItems = [];
 var prgrmTmeSelectedItems = [];
+var prgrmTmeSelectedTmeIds = [];
+var prgrmTmeDeleteTgtItems = [];
+var eduPssbDayWeekSelectedItems = [];
 
+var clssrmViewngMaxAplyNope = 0;
     init(); 
+    
     function init() {
         prgrmTmeSelectedItems = [];
-        //setDefaultImage('imgPreview','profile');
+        prgrmTmeDeleteTgtItems = [];
+        clssrmViewngMaxAplyNope = 0;
+        var clsfCds = [[${infntPrgrm.clsfCd}]];
+        var upprClsfCds = [[${infntPrgrm.upprClsfCd}]];
+        
+        //1depth 교육주제 담기        
+        if(upprClsfCds.indexOf(",") >= 0) {            
+            var upprClsfCdsArr = upprClsfCds.split(",");
+            for(var i=0; i<upprClsfCdsArr.length;i++) {
+            	upprClsfCdSelectedItems.push(upprClsfCdsArr[i]);
+            }
+        }else{
+        	upprClsfCdSelectedItems.push(upprClsfCds);
+        }
+        
+        //2depth 교육주제 담기
+        if(clsfCds.indexOf(",") >= 0) {            
+            var clsfCdsArr = clsfCds.split(",");
+            for(var i=0; i<clsfCdsArr.length;i++) {
+                clsfCdSelectedItems.push(clsfCdsArr[i]);
+            }
+        }else{
+            clsfCdSelectedItems.push(clsfCds);
+        }
+
+        $("#clsfHtmlDiv").html( fn_makeClsfCdsDivHtml() );
     }
     
-    function fn_insertInfntPrgrm(){
-        if(!($("#infntPrgrmInsertForm").valid())) return;
-        //debugger;
+    function fn_updateInfntPrgrm(){
+        if(!($("#infntPrgrmUpdateForm").valid())) return;
         if(!confirm("저장하시겠습니까?")) return;
 
         // 교육가능 요일 등록
@@ -416,16 +418,16 @@ var prgrmTmeSelectedItems = [];
         $("#friYn").val(friYn);
         $("#satYn").val(satYn);
         $("#sunYn").val(sunYn);
-
+        
+        var eduTypeCd = $('#eduTypeCd').val();
         var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
         var clsfCds = $('[name=clsfCds_2] option:selected').map(function(){ return $(this).val();}).get().join(",");
 
-        var data =  $("#infntPrgrmInsertForm").serialize();
-        data = data+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
-
+        var data =  $("#infntPrgrmUpdateForm").serialize();
+        data = data+"&eduTypeCd="+eduTypeCd+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
         if(displayWorkProgress()){
             $.ajax({
-                url : "/mng/prtpn/infntPrgrm/insertInfntPrgrm.do",
+                url : "/mng/prtpn/infntPrgrm/updateInfntPrgrm.do",
                 type: 'POST',
                 cache : false,
                 dataType: 'json',
@@ -433,12 +435,12 @@ var prgrmTmeSelectedItems = [];
                 success : function (data){
                     if(data.result=="success"){
                         var dataList = new Array();
-                        var prgrmId  = data.prgrmId;
                         for(var i = 0; i < $("#infntPrgrmTmBody").children().length; i++) {
                             var data = new Object();
-                            data["prgrmId"]     = prgrmId;
+                            data["prgrmId"]     = $("#prgrmId").val();
+                            data["tmeId"]       = $("#infntPrgrmTmBody").find($("input[name=tmeId]")[i]).val();
                             data["tmeNm"]       = $("#infntPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
-                            data["tmeSunYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeSunYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
                             data["tmeMonYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
                             data["tmeTuesYn"]   = $("#infntPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
                             data["tmeWedYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
@@ -447,13 +449,12 @@ var prgrmTmeSelectedItems = [];
                             data["tmeSatYn"]    = $("#infntPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
                             data["bgngTm"]      = $("#infntPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
                             data["endTm"]       = $("#infntPrgrmTmBody").find($("input[name=endTm]")[i]).val();
+                            data["delFlag"]     = prgrmTmeDeleteTgtItems.includes($("#infntPrgrmTmBody").find($("input[name=tmeId]")[i]).val()) ? "Y" : "N";
                             data["ordr"]        = i+1;
                             dataList.push(data);
                         }
                         var params = new Object();
                         params["infntPrgrmVoList"] = dataList;
-                        
-                        // 배너 id, 순서 수정
                         $.ajax({
                             url : "/mng/prtpn/infntPrgrm/insertInfntPrgrmTmeList.do",
                             cache : false,
@@ -474,10 +475,49 @@ var prgrmTmeSelectedItems = [];
             });
         }
     }
+    function fn_changeClssrmId(item){
+        var getCodeUrl = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do";
+        var url = getCodeUrl + "?clssrmId=" + $(item).val();
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    $("#eduTypeCd").val(data.eduTypeCd);
+                    $("#eduNope").val(data.clssrmViewngMaxAplyNope);
+                    //교육관 최대 신청 인원수 세팅.
+                    clssrmViewngMaxAplyNope = data.clssrmViewngMaxAplyNope;
+                    closeWorkProgress();                    
+                }
+            });
+        }
+    }
+    
+    function fn_changeEduNope(item){
+        if(parseInt(clssrmViewngMaxAplyNope) == 0){
+            return;         
+        }
+        if(parseInt($(item).val()) > 0 && parseInt($(item).val()) > parseInt(clssrmViewngMaxAplyNope)){
+            alert("교육관 관람 최대 신청 인원수("+clssrmViewngMaxAplyNope+"명)를 초과할 수 없습니다.");
+            $(item).val(clssrmViewngMaxAplyNope);
+            return;
+        }
+    }
     // 체크박스
     function fn_changeSelectItem(item){
-        debugger;
-        $(item).is(":checked") ? prgrmTmeSelectItem($(item).parent().next().text()) : prgrmTmeUnselectItem($(item).parent().next().text());     
+        if($(item).is(":checked")){
+            prgrmTmeSelectItem($(item).parent().next().text());
+            if($(item).val() != '' && $(item).val() != undefined){
+                prgrmTmeSelectedTmeIds.push($(item).val());
+            }
+        }else{
+        	prgrmTmeUnselectItem($(item));
+/*         	prgrmTmeSelectedTmeIds = $.grep(prgrmTmeSelectedTmeIds, function(i) {
+                return i !== $(item).val();
+            });        	 */
+        }
+        
     }
     
     var prgrmTmeSelectItem = function(item) {
@@ -490,9 +530,14 @@ var prgrmTmeSelectedItems = [];
     }
      
     var prgrmTmeUnselectItem = function(item) {
+    	
         prgrmTmeSelectedItems = $.grep(prgrmTmeSelectedItems, function(i) {
-        return i !== item;
+            return i !== $(item).parent().next().text();
         });
+        prgrmTmeSelectedTmeIds = $.grep(prgrmTmeSelectedTmeIds, function(i) {
+            return i !== $(item).val();
+        });         
+        
         if(prgrmTmeSelectedItems.length == 0) {
             $('#prgrmTmeSelectAllCheckbox').attr('checked', false);
         }
@@ -505,55 +550,81 @@ var prgrmTmeSelectedItems = [];
 
     $("#prgrmTmeSelectAllCheckbox").click(function(item) {
         prgrmTmeSelectedItems = [];
+        prgrmTmeSelectedTmeIds = [];
         if(this.checked) { // check select status
             $('[id=prgrmTmeSingleCheckbox]').each(function() { 
                 this.checked = true;   
-                prgrmTmeSelectItem($(this).parent().next().text());           
+                prgrmTmeSelectItem($(this).parent().next().text());    
+                if($(this).val() != '' && $(this).val() != undefined){
+                    prgrmTmeSelectedTmeIds.push($(this).val());
+                }                
             }); 
         }else {
-            
-            $('[id=prgrmTmeSingleCheckbox]').each(function() { 
+            $('[id=prgrmTmeSingleCheckbox]').each(function() {
                 this.checked = false;      
-                prgrmTmeUnselectItem(item);
-            });  
+                console.log(item);
+                //prgrmTmeUnselectItem($(this).parent().next().text());
+                prgrmTmeUnselectItem($(this));
+            });
+            
             prgrmTmeSelectedItems = [];
         }
     })
-    
-    // 행추가
+    // 교육주제 행추가
+    function fn_addRowClsfCds(item){
+        var rowCnt = $("#clsfCdDiv").find('.row').length;
+        //추가버튼 삭제 -> 마지막 행에만 추가한다..
+        $("#clsfCdDiv").find("#addRowClsfCds").remove();
+        $("#clsfCdDiv").find('.row').last().after( fn_makeClsfCdsListHtml() );
+        
+    }
+    // 교육시간표 행삭제
+    function fn_delRowClsfCds(item) {
+        var rowCnt = $("#clsfCdDiv").find('.row').length;
+        if(rowCnt <= 1){
+            return;
+        }else{
+            $(item).parent().parent().remove();
+            //행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
+            $("#clsfCdDiv").find("#addRowClsfCds").remove();
+            var btnHtml = '<button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>';
+            
+            $("#clsfCdDiv").find('.row :button').last().after( btnHtml );
+        }
+    }
+    // 교육시간표 행추가
     function fn_addRow() {
         var trCnt = $("#infntPrgrmTmBody").children().length;
         
         $("#infntPrgrmTmBody").append( fn_makeListHtml() );
     }
-    // 행삭제
+    // 교육시간표 행삭제
     function fn_delRow() {
         if(!prgrmTmeValidChecked()) return false;
-        
-        var trCnt = $("#infntPrgrmTmBody").children().length;
-        if(trCnt <= 2){
-            alert("더이상 삭제가 불가 합니다.")
-            return;
-        }        
-        
+        var trCnt = 0;
         prgrmTmeSelectedItems.forEach(function (item, index, array) {
-/*            var i = prgrmTmeGridData.findIndex(function(element) {
-                return element.userid == prgrmTmeSelectedItems[index];
+            $('#infntPrgrmTmBody .idx').each(function() {
+                if($(this).text() == item){
+                    trCnt = $('#infntPrgrmTmBody .idx').length;
+                    var tmeId = $(this).parent().find('[name=tmeId]').val();
+                    if(trCnt <= 2){
+                        alert("더이상 삭제가 불가 합니다.")
+                        return;
+                    }
+                    if(tmeId != "" && tmeId != undefined){
+                    	$(this).parent().hide();
+                    }else{
+                        $(this).parent().remove();
+                    }
+                }
             });
-            prgrmTmeGridData.splice(i, 1);*/
         });
-/*        var prgrmTmeGridDataLength = prgrmTmeGridData.length;
-        prgrmTmeGridData.forEach(function (item, index, array) {
-            item.rowNumber = prgrmTmeGridDataLength--;
+        //삭제대상 COPY
+        prgrmTmeDeleteTgtItems = prgrmTmeSelectedTmeIds;
+        //넘버링 초기화
+        $('#infntPrgrmTmBody .idx').each(function(i) {$(this)
+            $(this).text(i+1);
         });
-        prgrmTmeItemsCount = prgrmTmeGridData.length;
-        prgrmTmeSelectedItems = [];
-        $("#prgrmTmeJsGrid").jsGrid("reset");        
-        */
-        for (i=0; i<trCnt; i++){
-            $("#infntPrgrmTmBody tr").remove(); 
-        }
-        //$("#infntPrgrmTmBody").html();
     }
     
     function prgrmTmeValidChecked() {
@@ -564,6 +635,89 @@ var prgrmTmeSelectedItems = [];
         return true;
     }
     
+    function fn_makeClsfCdsDivHtml() {
+        var clsfCdsDivHtml = "";
+        var rowCnt =  $("#clsfCdDiv").find('.row').length;
+        for(var i=0; i<clsfCdSelectedItems.length; i++){
+        	if(i==0){
+        		clsfCdsDivHtml += '<div class="row">   ';
+                clsfCdsDivHtml += '   <div class="col-sm">   ';
+                clsfCdsDivHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\'>    ';
+        	}else{
+        		clsfCdsDivHtml += '<div class="row mt-1">   ';
+                clsfCdsDivHtml += '   <div class="col-sm">   ';
+                clsfCdsDivHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_'+(i+1)+'" )\'>    ';
+        	}
+	        clsfCdsDivHtml += '           <option value="">- 선택 -</option>   ';     
+	        clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155101" ? '<option value="155101" selected>생활환경</option>' : '<option value="155101">생활환경</option>';     
+	        clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155102" ? '<option value="155102" selected>지구환경</option>' : '<option value="155102">지구환경</option>';     
+	        clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155103" ? '<option value="155103" selected>자연환경</option>' : '<option value="155103">자연환경</option>';     
+	        clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155104" ? '<option value="155104" selected>환경문화</option>' : '<option value="155104">환경문화</option>';     
+	        clsfCdsDivHtml += '       </select>    ';       
+	        clsfCdsDivHtml += '   </div>   ';
+	        clsfCdsDivHtml += '   <div class="col-sm mt-1 mt-sm-0">   ';
+	        if(i==0){
+	        	clsfCdsDivHtml += '       <select id="clsfCds_2" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
+	        }else{
+                clsfCdsDivHtml += '       <select id="clsfCds_2_'+(i+1)+'" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '	        	
+	        }
+            clsfCdsDivHtml += '           <option value="">- 선택 -</option>   ';
+            if(upprClsfCdSelectedItems[i] =="155101"){
+           	    clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101101" ? '<option value="155101101" selected>소음</option>' : '<option value="155101101">소음</option>';            	
+           	    clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101102" ? '<option value="155101102" selected>폐기물 및 자원순환</option>' : '<option value="155101102">폐기물 및 자원순환</option>';            	
+           	    clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101103" ? '<option value="155101103" selected>환경보건</option>' : '<option value="155101103">환경보건</option>';            	
+            }else if(upprClsfCdSelectedItems[i] =="155102"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102101" ? '<option value="155102101" selected>물</option>' : '<option value="155102101">물</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102102" ? '<option value="155102102" selected>토양</option>' : '<option value="155102102">토양</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102103" ? '<option value="155102103" selected>생태계</option>' : '<option value="155102103">생태계</option>';               
+	        }else if(upprClsfCdSelectedItems[i] =="155103"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103101" ? '<option value="155103101" selected>기후변화 및 탄소중립</option>' : '<option value="155103101">기후변화 및 탄소중립</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103102" ? '<option value="155103102" selected>대기</option>' : '<option value="155103102">대기</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103103" ? '<option value="155103103" selected>에너지</option>' : '<option value="155103103">에너지</option>';               
+		    }else if(upprClsfCdSelectedItems[i] =="155104"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155104101" ? '<option value="155104101" selected>지속가능발전</option>' : '<option value="155104101">지속가능발전</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155104102" ? '<option value="155104102" selected>생명윤리</option>' : '<option value="155104102">생명윤리</option>';               
+            }
+	        clsfCdsDivHtml += '       </select>    '
+	        clsfCdsDivHtml += '   </div>   '
+	        clsfCdsDivHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   ';
+	        clsfCdsDivHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   ';
+	        clsfCdsDivHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   ';
+	        clsfCdsDivHtml += '   </div>   ';
+	        clsfCdsDivHtml += '</div>    ';
+        }
+        return clsfCdsDivHtml;
+    }
+    
+    function fn_makeClsfCdsListHtml() {
+        var clsfCdsHtml = "";
+        var rowCnt =  $("#clsfCdDiv").find('.row').length;
+        
+        clsfCdsHtml += '<div class="row mt-1">   '
+        clsfCdsHtml += '   <div class="col-sm">   '
+        clsfCdsHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_'+rowCnt+'" )\'>    '
+        clsfCdsHtml += '           <option value="">- 선택 -</option>   '     
+        clsfCdsHtml += '           <option value="155101">생활환경</option>   '     
+        clsfCdsHtml += '           <option value="155103">지구환경</option>   '     
+        clsfCdsHtml += '           <option value="155102">자연환경</option>   '     
+        clsfCdsHtml += '           <option value="155104">환경문화</option>   '
+        clsfCdsHtml += '       </select>    '       
+        //clsfCdsHtml += '       <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\' firstOptTxt="- 선택 -" isAdmin="true"></th:block>    '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '   <div class="col-sm mt-1 mt-sm-0">   '
+        clsfCdsHtml += '       <select id="clsfCds_2_'+rowCnt+'" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
+        clsfCdsHtml += '           <option value="" disabled selected>대분류를 선택하세요</option>   '
+        clsfCdsHtml += '       </select>    '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   '
+        clsfCdsHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   '
+        clsfCdsHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '</div>    ';
+        
+        return clsfCdsHtml;
+    }
+
     function fn_makeListHtml(list) {
         var html = "";
         var trCnt = $("#infntPrgrmTmBody").children().length;
@@ -571,50 +725,78 @@ var prgrmTmeSelectedItems = [];
         html += '    <td class="text-center v-middle">                                                                                                                      '
         html += '        <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">       '
         html += '    </td>                                                                                                                                                  '
-        html += '    <td class="text-center v-middle">' + (trCnt+1) + '</td>                                                                                                '
+        html += '    <td class="text-center v-middle idx">' + (trCnt+1) + '</td>                                                                                                '
         html += '    <td class="text-center v-middle">                                                                                                                      '
         html += '        <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">                   '
         html += '    </td>                                                                                                                                                  '
         html += '    <td class="text-center v-middle">                                                                                                                      '
         html += '        <div class="border-checkbox-section">                                                                                                              '
         html += '            <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">                                                               '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '">                                             '
+        if($("#sunYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '" disabled>                                             '          
+        }      
         html += '                <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn' + (trCnt+1) + '">                                 '
         html += '                    일                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
         html += '            </div>                                                                                                                                         '
         html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '">                                             '
+        if($("#monYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '" disabled>                                             '          
+        }
         html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn' + (trCnt+1) + '">                                             '
         html += '                    월                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
         html += '            </div>                                                                                                                                         '
         html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '">                                           '
+       	if($("#tuesYn").prop("checked")){     
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '">                                           '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '" disabled>                                           '          
+        }
         html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn' + (trCnt+1) + '">                                            '
         html += '                    화                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
         html += '            </div>                                                                                                                                         '
         html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '">                                             '
+       	if($("#wedYn").prop("checked")){
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '" disabled>                                             '          
+        }
         html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn' + (trCnt+1) + '">                                             '
         html += '                    수                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
         html += '            </div>                                                                                                                                         '
         html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '">                                           '
+       	if($("#thurYn").prop("checked")){
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '">                                           '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '" disabled>                                           '          
+        }
         html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn' + (trCnt+1) + '">                                            '
         html += '                    목                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
         html += '            </div>                                                                                                                                         '
         html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '">                                             '
+        if($("#friYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '">                                    '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '" disabled>                                    '
+        }      
         html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn' + (trCnt+1) + '">                                             '
         html += '                    금                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
         html += '            </div>                                                                                                                                         '
         html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
-        html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '">                                             '
+        if($("#satYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '" disabled>                                             '          
+        }
         html += '                <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn' + (trCnt+1) + '">                                 '
         html += '                    토                                                                                                                                      '
         html += '                </label>                                                                                                                                   '
@@ -636,7 +818,6 @@ var prgrmTmeSelectedItems = [];
         var formData = new FormData();
         var objFile = event.target;
         var content = "";
-        debugger;
         formData.append("file", objFile.files[0]);
         formData.append("filegrpNm", "eduIntrcn_file");
         if($('#eduIntrcnFilegrpid').val() != '')
@@ -674,10 +855,6 @@ var prgrmTmeSelectedItems = [];
 
         formData.append("file", objFile.files[0]);
         formData.append("filegrpNm", "eduPhotoFile_file");
-        debugger;
-        console.log("★★★★★★★★★★★★★★★★★★★★");
-        console.log(formData);
-        console.log("★★★★★★★★★★★★★★★★★★★★");
         
         if($('#eduPhotoFilegrpid').val() != '')
             formData.append("filegrpid", $('#eduPhotoFilegrpid').val());
@@ -766,5 +943,85 @@ var prgrmTmeSelectedItems = [];
             error : function (error){
             } 
          })
-    };   
+    }; 
+    
+    // 교육가능요일 체크박스
+    function fn_changeEduPssbDayWeekSelectItem(item){
+        $(item).is(":checked") ? eduPssbDayWeekSelectedItem($(item).attr('id')) : eduPssbDayWeekUnSelectedItem($(item).attr('id'));     
+    }    
+    
+    var eduPssbDayWeekSelectedItem = function(item) {
+        eduPssbDayWeekSelectedItems.push(item);
+        
+        if($("#monYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled",false);
+        }
+        
+        if($("#tuesYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled",false);
+        }
+        
+        if($("#wedYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled",false);
+        }
+        
+        if($("#thurYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled",false);
+        }
+        
+        if($("#friYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled",false);
+        }
+        
+        if($("#satYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled",false);
+        }        
+
+        if($("#sunYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled",false);
+        }        
+    }
+     
+    var eduPssbDayWeekUnSelectedItem = function(item) {
+        eduPssbDayWeekSelectedItems = $.grep(eduPssbDayWeekSelectedItems, function(i) {
+        return i !== item;
+        });
+        if(!$("#monYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeMonYn]').prop("checked", false);
+        }
+        
+        if(!$("#tuesYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeTuesYn]').prop("checked", false);
+        }
+        
+        if(!$("#wedYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeWedYn]').prop("checked", false);
+        }
+        
+        if(!$("#thurYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeThurYn]').prop("checked", false);
+        }
+        
+        if(!$("#friYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeFriYn]').prop("checked", false);
+        }
+        
+        if(!$("#satYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeSatYn]').prop("checked", false);
+        }        
+
+        if(!$("#sunYn").prop("checked")){
+            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled",true);
+            $("#infntPrgrmTmBody").find('[name=tmeSunYn]').prop("checked", false);
+        }        
+    }
+    
+    
+    
 </script>

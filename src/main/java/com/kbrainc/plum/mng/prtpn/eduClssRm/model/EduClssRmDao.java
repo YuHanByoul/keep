@@ -2,9 +2,8 @@ package com.kbrainc.plum.mng.prtpn.eduClssRm.model;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
-import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
 
 /**
 * 유아환경교육 -> 교육관관리 Dao 클래스
@@ -67,4 +66,16 @@ public interface EduClssRmDao {
     * @return int
     */
     public int updateEduClssRm(EduClssRmVo eduClssRmVo) throws Exception;
+
+    /**
+    * 교육관_교육유형 조회
+    **
+    * @Title : selectClssrmEduTypeCd
+    * @Description : 교육관_교육유형 조회
+    * @param clssrmId
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    public EduClssRmVo selectClssrmEduTypeCd(@Param("clssrmId") String clssrmId) throws Exception;
 }

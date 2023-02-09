@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+
+<body>
+	<div layout:fragment="content">
+		<style>
+		.hide
+		{
+		   display:none;
+		}
+		</style>
+		
+		<div class="page-body">
+			<div class="row">
+				<!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+				<div class="col-12">                
+					<div class="card">
+                        <div class="row p-20 p-b-0">
+                            <div class="col-12 col-md-6 mb-2 mb-md-0">
+<!--                                 <h5><strong></strong></h5> -->
+                            </div>
+                            <div class="col-12 col-md-6 text-right">
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_openSignguSettingModal();">세부지역설정</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">등록</button>
+                            </div>
+                        </div>
+                        <div class="card-block-small">
+                            <div class="dt-responsive table-responsive">
+                                <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                    <table id="jsGrid" class="table-responsive"></table>
+                                    <div id="listPager" class="text-center"></div>
+                                </div>
+                            </div>
+                        </div>
+					</div>
+				</div>	
+				<!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+				<!-- Content Area -->
+				<div id="contentPanel" style="display: none" class="card"></div>
+			</div>
+		</div>
+        <div class="modal fade" id="signguSettingPopup" data-bs-backdrop="static"></div>
+        <div class="modal fade" id="eduSareaSettingPopup" data-bs-backdrop="static"></div>
+        
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+		<script th:inline="javascript">
+			var signguSettingPopupUrl = "/mng/prtpn/eduSarea/eudSareaSignguSettingPopup.html";
+			//var eduSareaSettingPopupUrl = "/mng/prtpn/eduSarea/eudSareaSettingPopup.html";
+		    var signguSettingModal;
+			var selectedItems = [];
+			var gridHelper1;
+			
+		    fn_openSignguSettingModal = () => {
+		        $("#signguSettingPopup").load(signguSettingPopupUrl, function(response, status, xhr) {
+		            if (status == "success") {
+		            	signguSettingModal = new bootstrap.Modal($('#signguSettingPopup'));
+		            	signguSettingModal.show();
+		            }
+		        });
+		    }
+			
+			$(function() {
+				gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+				writeJsGridData();
+			});
+
+		    function fn_goInsertForm() {
+		        var insertUrl = "/mng/prtpn/eduSarea/eduSareaInsertForm.html";
+		        gridHelper1.loadContent(insertUrl);
+		    }
+			
+			function writeJsGridData() {
+		        $("#jsGrid").jsGrid({
+		            height: "auto",
+		            width: "100%",
+		            autoload: true,
+		            sorting: true,
+		            paging: true,
+		            pagerContainer: "#listPager",
+		            pagerFormat: "{first} {prev} {pages} {next} {last}",
+		            pagePrevText: "이전",
+		            pageNextText: "다음",
+		            pageFirstText: " < 처음 ㅣ",
+		            pageLastText: " | 마지막 >",
+		            pageSize: 10,
+		            pageButtonCount: 10,
+		            pageLoading: true,
+		            pageIndex: 1,
+		            noDataContent: "데이터가 없습니다.",
+
+		            controller: {
+		                loadData: function (filter) {
+		                    var data = $.Deferred();
+		                    var formData = [];
+		                    var params = [
+		                            {name: "pageNumber", value: filter.pageIndex},
+		                            {name: "rowPerPage", value: filter.pageSize},
+		                    ]
+		                    
+		                    if(filter.sortField != undefined){
+		                        params.push({name: "orderField", value: filter.sortField});
+		                        params.push({name: "orderDirection", value: filter.sortOrder});
+		                    }else{
+		                        params.push({name: "orderField", value: 'reg_dt'});
+		                    }
+		                    formData = formData.concat(params);
+		                    
+		                    $.ajax({
+		                        type: "GET",
+		                        contentType: "application/json; charset=utf-8",
+		                        url: "/mng/prtpn/eduSarea/selectEduSareaList.do",
+		                        dataType: "json",
+		                        data: formData,
+		                      }).done(function(response){
+		                          var da = {
+		                                  data : escapeGridData(response.list)
+		                                  ,itemsCount : response.totalCount
+		                              };
+		                        data.resolve(da);
+		                      });
+		                      return data.promise();
+		                  },				
+					},
+					
+					fields : [
+						{ name : 'sareaId', css : 'hide' }
+					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
+					  , { title : '운영권역', name : 'sareaNm', type : "text", width : "120", align : "center" }
+					  , { title : '운영기관', name : 'cnsgnInstNm', type : "text", width : "120", align : "center" }
+					  , { title : '지역', name : 'ctprvnNm', type : "text", width : "200", align : "center" }
+					  , { title : '기관당신청횟수제한', name : 'aplyLmtCnt', type : "text", width : "120", align : "center"} 
+                      , { title : '사용여부', name : 'useYn', type : "text", width : "120", align : "center"}
+					],
+					
+					rowClick : function(args) {
+						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+						/*
+			            fn_openEduSareaSettingModal = () => {
+			                $("#eduSareaSettingPopup").load(eduSareaSettingPopupUrl, function(response, status, xhr) {
+			                    if (status == "success") {
+			                        eduSareaSettingModal = new bootstrap.Modal($('#eduSareaSettingPopup'));
+			                        eduSareaSettingModal.show();
+			                    }
+			                });
+			            }*/
+						var detailUrl = detailUrl = "/mng/prtpn/eduSarea/eduSareaUpdateForm.html?sareaId=" + args.item.sareaId;
+		                gridHelper1.loadContent(detailUrl);
+		                gridHelper1.rowClick(args);
+			            
+					},
+					onPageChanged : function(args) {
+						selectedItems = [];
+					}
+				});
+			}
+		</script>
+
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>

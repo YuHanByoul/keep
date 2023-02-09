@@ -1,0 +1,160 @@
+<form id ="eduSareaInsertForm">
+<input type="hidden" value="Y" name="useYn" id="useYn">
+        <!-- INSERT -->
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>기본정보</strong></h3>
+        </div>
+
+        <!-- Tab Container Start -->
+         <div class="card-block-small p-t-0">
+             <div class="row">
+                 <div class="col-12 mb-3">                                                                    
+                     <div class="mb-0 form-group required" >
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="sareaNm"><strong>운영권역명</strong></label>
+                         <div class="col-12">
+                             <input type="text" class="form-control form-control-sm" name="sareaNm" id="sareaNm" placeholder="" >
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-12 mb-3">
+                     <div class="mb-0 form-group required">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영기관</strong></div>
+                         <div class="col-12 row">
+                             <div class="col-8">
+                                 <input type="text" class="form-control form-control-sm" name="cnsgnInstNm" id="instNm" placeholder="기관" />
+                                 <input type="hidden" name="cnsgnInstId" id="instid" />
+                             </div>
+                             <div class="col-4 btn-group-sm">
+                                 <button type="button" class="btn btn-inverse" onclick="fn_openInstSearchModal();">
+                                     기관검색
+                                 </button>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 mb-3">
+                     <div id="ctprvnDiv" class="mb-0 form-group required">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역</strong></div>
+                         <div class="row">
+                             <div class="col-sm">
+                                <th:block kattr:select_code="ctprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
+                             </div>
+                             <div class="mt-1 mt-sm-0" style="width:100px;">
+                                 <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowCtprvnCds(this)">+</button>
+                             </div>    
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-12 mb-3">
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="input01"><strong>연도별 기관당 신청 횟수 제한</strong></label>
+                         <input type="text" class="form-control form-control-sm" name="aplyLmtCnt" id="aplyLmtCnt" placeholder="신청 가능 횟수를 입력하세요.">
+                     </div>
+                 </div>
+                 <div class="col-12">
+                     <div class="mb-0 form-group">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="useStatus"><strong>사용여부</strong></label>
+                         <span kattr:switch_yn="sareaUseYn" label="사용여부" defaultVal="Y" onchange="useSwitch" isAdmin="true"></span>
+                     </div>
+                 </div>
+             </div>
+        </div>
+        <div class="card-block-small">
+            <button type="button" class="btn btn-disabled m-r-5" id="canceeduSarea" onclick="gridHelper1.toggleContent()">취소</button>
+            <th:block sec:authorize-url="/mng/prtpn/eduSarea/insertEduSarea.do"><button type="button" class="btn btn-primary" id="inserteduSarea" onclick="fn_insertEduSarea()">저장</button></th:block>
+        </div>
+        <!-- Tab Container End -->
+</form>
+<div class="modal fade" id="instSearchPopup" data-bs-backdrop="static"></div>
+<script th:inline="javascript">
+
+	var instSearchPopupUrl = "/mng/envtcherTrnngInst/instSearchPopup.html";
+	var instSearchAddModal;
+	
+	fn_openInstSearchModal = () => {
+	    $("#instSearchPopup").load(instSearchPopupUrl, function(response, status, xhr) {
+	        if (status == "success") {
+	            instSearchAddModal = new bootstrap.Modal($('#instSearchPopup'));
+	            instSearchAddModal.show();
+	        }
+	    });
+	}
+    init(); 
+	function init() {
+        var elemsingleSmallList = document.querySelectorAll('.js-single-small');
+        for(var i = 0; i < elemsingleSmallList.length; i++) {
+            new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
+       }
+       $(".switchery").css({pointerEvents: "none"});
+		
+	}
+	
+    function useSwitch() {
+        if ($("#useYn").is(":checked")) {
+            $('#eduSareaInsertForm').find('#useYn').val("Y");
+        } else {
+            $('#eduSareaInsertForm').find('#useYn').val("N");
+        }
+    }
+    //지역 행추가
+    function fn_addRowCtprvnCds(item){
+        var rowCnt = $("#ctprvnDiv").find('.row').length;
+        //추가버튼 삭제 -> 마지막 행에만 추가한다..
+        $("#ctprvnDiv").find("#addRowCtprvnCds").hide();
+        $("#ctprvnDiv").find('.row').last().after( fn_makeCtprvnCdsListHtml() );
+    }    
+    
+    function fn_makeCtprvnCdsListHtml() {
+        var ctprvnCdsHtml = "";
+        var rowCnt =  $("#ctprvnDiv").find('.row').length;
+        var ctprvnCdsList = /*[[${ctprvnCdList}]]*/;
+        ctprvnCdsHtml += '<div class="row mt-1">   '
+        ctprvnCdsHtml += '  <div class="col-sm">';                         
+        ctprvnCdsHtml += '      <select class="form-select form-select-sm form-control-sm" style="" id="ctprvnCd" name="ctprvnCd">';
+        ctprvnCdsHtml += '          <option value="">- 선택 -</option>';
+        for(var i=0; i<ctprvnCdsList.length; i++){
+        	ctprvnCdsHtml += '      <option value="'+ctprvnCdsList[i].cd+'">'+ctprvnCdsList[i].cdNm+'</option>';        	
+        }
+        ctprvnCdsHtml += '      </select>';
+        ctprvnCdsHtml += '  </div>';        
+        ctprvnCdsHtml += '  <div class="mt-1 mt-sm-0" style="width:100px;">';
+        ctprvnCdsHtml += '      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowCtprvnCds(this)">+</button>';
+        ctprvnCdsHtml += '  </div>';                             
+        ctprvnCdsHtml += '</div>';                             
+        
+        return ctprvnCdsHtml;
+    }    
+    
+    function fn_insertEduSarea(){
+        if(!($("#eduSareaInsertForm").valid())) return;
+        //debugger;
+        if(!confirm("저장하시겠습니까?")) return;
+
+        var ctprvnCds = $('[name=ctprvnCd] option:selected').map(function(){ return $(this).val();}).get().join(",");
+        
+        var data =  $("#eduSareaInsertForm").serialize();
+        data = data + "&ctprvnCds="+ctprvnCds;
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/prtpn/eduSarea/insertEduSarea.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        gridHelper1.resetListContent();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }    
+	
+</script>

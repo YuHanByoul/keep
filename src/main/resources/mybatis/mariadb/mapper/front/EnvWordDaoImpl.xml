@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EnvWordDaoImpl.xml
+	Description : 환경교육용어사전
+-->
+<mapper namespace="com.kbrainc.plum.front.envWord.model.EnvWordDao">
+    
+    <!-- 환경교육용어사전 게시글 목록 조회 -->
+    <select id="selectEnvWordList" parameterType="front.EnvWordVo" resultType="front.EnvWordVo">
+        /* EnvWordDao.selectEnvWordList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+    	        A.WORDID
+              , A.WORD
+              , A.WORD_ENGL
+              , A.CN_SUMRY
+              , A.REG_DT
+            FROM 
+                TB_CMM_ENV_WORD A
+            WHERE 
+                1=1
+                <!-- 환경용어 검색 -->
+                <if test="searchWord != null and searchWord != ''">
+                AND A.WORD LIKE CONCAT('%',#{searchWord},'%')
+                AND A.WORD_ENGL LIKE CONCAT('%',#{searchWord},'%')
+                </if>
+                
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㄱ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^(ㄱ|ㄲ)' OR ( A.WORD >= '가' AND A.WORD < '나' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㄴ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㄴ' OR ( A.WORD >= '나' AND A.WORD < '다' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㄷ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^(ㄷ|ㄸ)' OR ( A.WORD >= '다' AND A.WORD < '라' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㄹ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㄹ' OR ( A.WORD >= '라' AND A.WORD < '마' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅁ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅁ' OR ( A.WORD >= '마' AND A.WORD < '바' ))
+                ]]>
+                </if>                
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅂ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^(ㅂ|ㅃ)' OR ( A.WORD >= '바' AND A.WORD < '사' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅅ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^(ㅅ|ㅆ)' OR ( A.WORD >= '사' AND A.WORD < '아' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅇ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅇ' OR ( A.WORD >= '아' AND A.WORD < '자' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅈ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^(ㅈ|ㅉ)' OR ( A.WORD >= '자' AND A.WORD < '차' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅊ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅊ' OR ( A.WORD >= '차' AND A.WORD < '카' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅋ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅋ' OR ( A.WORD >= '카' AND A.WORD < '타' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅌ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅌ' OR ( A.WORD >= '타' AND A.WORD < '파' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅍ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅍ' OR ( A.WORD >= '파' AND A.WORD < '하' ))
+                ]]>
+                </if>
+                <if test="searchKR != null and searchKR != '' and searchKR == 'ㅎ'">
+                <![CDATA[
+                AND (A.WORD RLIKE '^ㅎ' OR ( A.WORD >= '하'))
+                ]]>
+                </if>
+                
+                <if test="searchEng != null and searchEng != ''">
+                AND A.WORD_ENGL LIKE CONCAT(#{searchEng},'%')
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 환경교육용어사전 게시글 상세조회 -->
+    <select id="selectEnvWordInfo" parameterType="front.EnvWordVo" resultType="front.EnvWordVo"> 
+        /* EnvWordDao.selectEnvWordInfo */
+        SELECT 
+              WORDID
+            , WORD
+            , WORD_ENGL
+            , CN_SUMRY
+            , CN
+            , DATE(A.REG_DT) AS REG_DT
+            , A.RGTRID
+            , CONCAT(B.ACNT,'(',B.NM,')') AS rgtridNm          
+        FROM 
+            TB_CMM_ENV_WORD A
+            LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID        
+       WHERE WORDID = #{wordid}
+    </select>
+    
+</mapper>

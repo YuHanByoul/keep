@@ -60,9 +60,9 @@ public class InfntPrgrmVo extends ParentRequestVo {
     /** 유의사항 */
     private String mttrat;
     /** 교육_소개_파일아이디 */
-    private String eduIntrcnFileid;
+    private int eduIntrcnFileid;
     /** 교육_사진_파일아이디 */
-    private String eduPhotoFileid;
+    private int eduPhotoFileid;
     /** 월요일_여부 */
     private String monYn;
     /** 화요일_여부 */
@@ -79,6 +79,9 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String sunYn;
     /** 사용_여부 */
     private String useYn;
+    
+    /** 분류_상위 코드 */
+    private String upprClsfCd;
     /** 분류_코드 */
     private String clsfCd;
     /** 분류_코드명 */
@@ -111,11 +114,18 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String tmeSatYn;
     /** 회차별 일요일_여부 */
     private String tmeSunYn;
+    /** 회차별 삭제_여부 */
+    private String delFlag;
+    
+    /** 프로그램복사 ID */
+    private String copyPrgrmId;
     
     /** 교육대상 코드 저장용 */
     private String [] trgtCds;
     /** 교육주제 코드 저장용 */
     private String [] clsfCds;
+    /** 프로그램복사 저장용 */
+    private String [] copyPrgrmIds;
 
     
     /** 교육_유형_코드 */
@@ -141,5 +151,15 @@ public class InfntPrgrmVo extends ParentRequestVo {
     private String searchClssrmId;
     private String searchClsfCd;
     private String searchRcptMthdCd;
+    private String searchClsfCd_1;
+    private String searchClsfCd_2;
     private String searchUseYn;
+    
+    /** 첨부파일 관련*/
+    private String eduIntrcnFilegrpid;
+    private String eduPhotoFilegrpid;
+    private String eduIntrcnFileIdntfcKey;
+    private String eduIntrcnOrginlFileNm;    
+    private String eduPhotoFileIdntfcKey;
+    private String eduPhotoOrginlFileNm;    
 }

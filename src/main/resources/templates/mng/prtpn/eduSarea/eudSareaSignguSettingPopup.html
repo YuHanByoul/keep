@@ -1,0 +1,194 @@
+<div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content type_2">
+        <div class="modal-header">
+            <h4 class="modal-title">세부지역설정</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="card m-b-10">
+                <div class="card-block-small pb-0">
+<!--                     <div class="row">
+                        <div class="col-lg-6">
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label class="form-label col-form-label me-2" for="select01"><strong>접수방법</strong></label>
+                                    <select name="" class="form-select form-select-sm d-inline-block" id="select01" style="width:auto;">
+                                        <option value="" disabled selected>-선택-</option>
+                                        <option value="opt1">승인처리</option>
+                                        <option value="opt2">Type 2</option>
+                                        <option value="opt3">Type 3</option>
+                                        <option value="opt4">Type 4</option>
+                                        <option value="opt5">Type 5</option>
+                                        <option value="opt6">Type 6</option>
+                                        <option value="opt7">Type 7</option>
+                                        <option value="opt8">Type 8</option>
+                                    </select>
+                                </div>
+                                <div class="col-auto mb-3 ps-0">
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup03">이전년도복사</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="row">
+                        <!-- 지역 -->
+                        <div class="col-lg-6">
+                            <h3 class="sub-title"><strong>지역</strong></h3>
+                            <div class="col-12 table-responsive">
+                                <table class="table table-framed table-bordered">
+                                    <thead>
+                                    <tr class="border-bottom-inverse">
+                                        <th class="text-center v-middle">지역(시도)</th>
+                                        <th class="text-center v-middle">세부설정</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <th:block th:each="item : ${ctprvnCdList}" >
+	                                    <tr>
+	                                        <td class="text-center v-middle">
+	                                           <th:block th:text="${item.cdNm}"></th:block>
+	                                        </td>
+	                                        <td class="text-center v-middle">
+	                                            <button type="button" class="btn btn-disabled btn-sm" th:onclick="fn_signguDetail([[${item}]])">세부설정</button>
+	                                        </td>
+	                                    </tr>
+                                    </th:block>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- 세부설정 -->
+                        <div class="col-lg-6">
+                            <div class="col-12 mb-3">
+                                <strong id="areaNmTxt">지역 : 전라북도</strong>
+                            </div>
+                            <h3 class="sub-title"><strong>세부설정</strong></h3>
+                            <div class="col-12 table-responsive">
+                                <input type="hidden" class="js-single"/>
+                                <table class="table table-framed table-bordered">
+                                    <thead>
+                                    <tr class="border-bottom-inverse">
+                                        <th class="text-center v-middle">세부지역(시군구)</th>
+                                        <th class="text-center v-middle">전일/오후 구분</th>
+                                        <th class="text-center v-middle">사용여부</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="signguDetailTbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- // -->
+                    </div>
+                </div>
+                
+                
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_updateEduSareaSignguSetting()">저장</button>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+
+function fn_signguDetail(item){
+    var getCodeUrl = "/mng/prtpn/eduSarea/signguCodeList.do";
+    var ctprvnCd = item.cd;
+    var params = {
+            "ctprvnCd": ctprvnCd
+    }
+    var signguDetailHtml = "";
+    $("#signguDetailTbody tr").remove();
+    $.ajax({
+        url: getCodeUrl,
+        type: 'GET',
+        contentType: "application/json; charset=utf-8",
+        data: params,
+        dataType: "json",
+        success: function (data) {
+            for(var i = 0; i < data.list.length; i++){
+                signguDetailHtml += '<tr>';
+                signguDetailHtml += '   <input type="hidden" name="ctprvnCd" value="'+data.list[i].ctprvnCd+'"/>';                
+                signguDetailHtml += '   <input type="hidden" name="signguCd" value="'+data.list[i].signguCd+'"/>';
+                signguDetailHtml += '   <td class="text-center v-middle">'+data.list[i].signguNm+'</td>';
+                signguDetailHtml += '   <td class="text-center v-middle">';
+                signguDetailHtml += '       <div class="form-radio">';
+                signguDetailHtml += '           <div class="radio radio-inline">';
+            	signguDetailHtml += '              <label class="mb-0 form-label">';
+            	//전일
+            	if(data.list[i].hrSeCd == '191101'){
+            		signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd" checked>';
+            	}else{
+                    signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd">';            		
+            	}
+            	signguDetailHtml += '                  <i class="helper"></i>전일';
+            	signguDetailHtml += '              </label>';
+            	signguDetailHtml += '          </div>';
+            	signguDetailHtml += '          <div class="radio radio-inline">';
+            	signguDetailHtml += '              <label class="mb-0 form-label">';
+            	//오후
+            	if(data.list[i].hrSeCd == '191102'){
+            		signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191102" addClass="hrSeCd" checked>';
+            	}else{
+                    signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191102" addClass="hrSeCd">';            		
+            	}
+            	signguDetailHtml += '                  <i class="helper"></i>오후';
+            	signguDetailHtml += '              </label>';
+            	signguDetailHtml += '          </div>';
+            	signguDetailHtml += '      </div>';
+            	signguDetailHtml += '  </td>';
+            	signguDetailHtml += '  <td class="text-center v-middle">';
+                if(data.list[i].useYn == "Y"){
+                	signguDetailHtml += '      <input type="checkbox" class="js-single-small" name="useYn" checked/>';
+                }else{
+                	signguDetailHtml += '      <input type="checkbox" class="js-single-small" name="useYn"/>';                	
+                }
+            	signguDetailHtml += '  </td>';
+            	signguDetailHtml += '</tr>';
+            }
+            $("#areaNmTxt").text("지역 : " + item.cdNm);
+            $("#signguDetailTbody").append(signguDetailHtml);
+        }
+    });    
+}
+function fn_updateEduSareaSignguSetting(){
+    var rowCnt = $("#signguDetailTbody tr").length;
+    if(rowCnt < 1) {
+        alert("저장할 데이터가 없습니다!");
+        return;
+    }
+    if(!confirm("저장하시겠습니까?")) return;
+    if(displayWorkProgress()){
+    	var param = {};
+    	$("#signguDetailTbody tr").each(function(index, item){
+            debugger;
+    		if($(this).find("[name=useYn]").prop("checked")) {
+	            param["signguList[" + index + "].ctprvnCd"] = $(this).find("[name=ctprvnCd]").val();
+	            param["signguList[" + index + "].signguCd"] = $(this).find("[name=signguCd]").val();
+	            param["signguList[" + index + "].hrSeCd"] = $(this).find("[name=hrSeCd"+index+"]:checked").val();
+    		}
+            //param["signguList[" + index + "].useYn"] = $(this).find("[name=useYn]").prop("checked") ? "Y" : "N";
+            debugger;
+        });
+        $.ajax({
+            url : "/mng/prtpn/eduSarea/updateEduSareaSignguSetting.do",
+            type: "POST",
+            cache: false,
+            dataType: "json",
+            data: param,
+            success : function (data){
+                if(data.result=="success"){
+                    alert(data.msg);
+                    gridHelper1.resetListContent();
+                }else{
+                    alert(data.msg);
+                }
+                closeWorkProgress();
+            }
+        });
+    }
+}
+</script>

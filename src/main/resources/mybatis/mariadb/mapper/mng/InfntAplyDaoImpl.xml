@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : InfntAplyDaoImpl.xml
+	Description : 참여신청관리 -> 교육신청관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.prtpn.infntAply.model.InfntAplyDao">
+    
+    <!-- 교육신청 관리 게시글 목록 조회 -->
+    <select id="selectInfntAplyList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
+        /* InfntAplyDao.selectInfntAplyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+          C.PRGRM_SCHDLID
+        , SUBSTRING_INDEX(C.YM, '-', 1) EDU_YR  
+        , CONCAT(REPLACE(SUBSTRING_INDEX(C.YM, '-', -1), '0', ''), '월') EDU_MM
+        , D.PRGRMID
+        , E.PRGRM_NM
+        , E.EDU_NOPE
+        , C.CLSSRMID
+        , L.CD_NM AS RCPT_MTHD_NM
+        , F.CLSSRM_NM
+        , COUNT(G.STTS_CD) WTNG_APLY_CNT
+        , COUNT(H.STTS_CD) WTNG_APPRV_CNT 
+        , COUNT(I.STTS_CD) APLY_CMPLT_CNT
+        , COUNT(J.STTS_CD) CNCL_APLY_CNT
+        , COUNT(K.STTS_CD) DNL_APPRV_CNT
+        , C.YM REG_DT
+        FROM TB_EDU_INFNT_PRGRM_SCHDL C 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM E ON E.PRGRMID = D.PRGRMID
+        LEFT OUTER JOIN TB_EDU_CLSSRM F ON F.CLSSRMID = C.CLSSRMID        
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_APLY G ON (G.STTS_CD = '180101' AND G.TME_SCHDLID = B.TME_SCHDLID)
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_APLY H ON (H.STTS_CD = '180102' AND H.TME_SCHDLID = B.TME_SCHDLID)
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_APLY I ON (I.STTS_CD = '180103' AND I.TME_SCHDLID = B.TME_SCHDLID)
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_APLY J ON (J.STTS_CD = '180104' AND J.TME_SCHDLID = B.TME_SCHDLID)
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_APLY K ON (K.STTS_CD = '180105' AND K.TME_SCHDLID = B.TME_SCHDLID)
+        LEFT OUTER JOIN TB_CMM_CD L ON L.CD = E.RCPT_MTHD_CD
+        WHERE
+        1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+            AND E.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchEduYr != null and searchEduYr != ''">
+            AND SUBSTRING_INDEX(C.YM, '-', 1) = #{searchEduYr}
+            </if>
+            <if test="searchClssrmId != null and searchClssrmId != ''">
+            AND A.CLSSRMID = #{searchClssrmId}
+            </if>
+            <if test="searchClssrmMm != null and searchClssrmMm != ''">
+            AND SUBSTRING_INDEX(C.YM, '-', 2) = #{searchClssrmMm}
+            </if>
+            <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
+            AND A.RCPT_MTHD_CD = #{searchRcptMthdCd}
+            </if>
+            <if test="searchSttsCd != null and searchSttsCd != ''">
+            AND A.STTS_CD = #{searchSttsCd}
+            </if>
+        GROUP BY C.PRGRM_SCHDLID, C.YM, D.PRGRMID, E.PRGRM_NM, E.EDU_NOPE, C.CLSSRMID, L.CD_NM, F.CLSSRM_NM
+        <include refid="PaginationMapper.footer"/>        
+    </select>
+
+    <!-- 교육신청 관리 게시글 상세목록 조회 -->
+    <select id="selectInfntAplyDetailList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
+        /* InfntAplyDao.selectInfntAplyDetailList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+          A.APLYID
+        , B.PRGRM_SCHDLID  
+        , B.DE
+        , C.TME_NM
+        , A.REG_DT AS RCPT_DT  
+        , A.INSTID
+        , E.INST_NM 
+        , A.USERID APLY_USERID
+        , F.NM APLY_USER_NM
+        , A.TME_SCHDLID
+        , A.ZIP
+        , A.ADDR
+        , A.ADDR_DTL
+        , A.CTPRVN_CD
+        , A.TELNO
+        , A.MOBLPHON
+        , A.EML
+        , A.EDU_NOPE
+        , A.TCHER_NOPE
+        , A.ETC
+        , A.TOWWAY_ONLN_EDU_AGRE_YN
+        , A.STTS_CD
+        , D.CD_NM AS STTS_NM
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.REG_DT
+        , A.RGTRID  
+        FROM TB_EDU_INFNT_PRGRM_APLY A 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
+        LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
+        LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
+        WHERE B.PRGRM_SCHDLID = #{prgrmSchdlid}
+            <!-- 키워드.전체 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+                AND (E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR F.NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%'))
+            </if>
+            <!-- 키워드.기관명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+                AND E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.신청자ID -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
+                AND A.USERID LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.신청자명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
+                AND F.NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.휴대폰번호 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTelNo'">
+                AND A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>     
+            <!-- 교육일 검색시작일  -->
+            <if test="searchDeStartDt != null and searchDeStartDt != ''">
+                AND B.DE >= #{searchDeStartDt}
+            </if>
+            <!-- 교육일 검색종료일  -->
+            <if test="searchDeEndDt  != null and searchDeEndDt != ''">
+                AND B.DE <![CDATA[<]]> CAST(CONCAT(#{searchDeEndDt},' 23:59:59') AS DATETIME)
+            </if>            
+            <!-- 접수일 검색시작일  -->
+            <if test="searchRcptStartDt != null and searchRcptStartDt != ''">
+                AND A.REG_DT >= #{searchRcptStartDt}
+            </if>
+            <!-- 접수일 검색종료일  -->
+            <if test="searchRcptEndDt  != null and searchRcptEndDt != ''">
+                AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchRcptEndDt},' 23:59:59') AS DATETIME)
+            </if>            
+        <include refid="PaginationMapper.footer"/>        
+    </select>
+
+    <!-- 교육신청 관리 게시글 상세목록 엑셀 다운로드 -->
+    <select id="infntAplyExcelDownList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
+        /* InfntAplyDao.infntAplyExcelDownList */
+        SELECT 
+          A.APLYID
+        , B.PRGRM_SCHDLID  
+        , B.DE
+        , C.TME_NM
+        , A.REG_DT AS RCPT_DT  
+        , A.INSTID
+        , E.INST_NM 
+        , A.USERID APLY_USERID
+        , F.NM APLY_USER_NM
+        , A.TME_SCHDLID
+        , A.ZIP
+        , A.ADDR
+        , A.ADDR_DTL
+        , A.CTPRVN_CD
+        , A.TELNO
+        , A.MOBLPHON
+        , A.EML
+        , A.EDU_NOPE
+        , A.TCHER_NOPE
+        , A.ETC
+        , A.TOWWAY_ONLN_EDU_AGRE_YN
+        , A.STTS_CD
+        , D.CD_NM AS STTS_NM
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.REG_DT
+        , A.RGTRID  
+        FROM TB_EDU_INFNT_PRGRM_APLY A 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
+        LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
+        LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
+        WHERE B.PRGRM_SCHDLID = #{prgrmSchdlid}
+            <!-- 키워드.전체 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+                AND (E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR F.NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%'))
+            </if>
+            <!-- 키워드.기관명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+                AND E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.신청자ID -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
+                AND A.USERID LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.신청자명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
+                AND F.NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.휴대폰번호 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTelNo'">
+                AND A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>     
+            <!-- 교육일 검색시작일  -->
+            <if test="searchDeStartDt != null and searchDeStartDt != ''">
+                AND B.DE >= #{searchDeStartDt}
+            </if>
+            <!-- 교육일 검색종료일  -->
+            <if test="searchDeEndDt  != null and searchDeEndDt != ''">
+                AND B.DE <![CDATA[<]]> CAST(CONCAT(#{searchDeEndDt},' 23:59:59') AS DATETIME)
+            </if>            
+            <!-- 접수일 검색시작일  -->
+            <if test="searchRcptStartDt != null and searchRcptStartDt != ''">
+                AND A.REG_DT >= #{searchRcptStartDt}
+            </if>
+            <!-- 접수일 검색종료일  -->
+            <if test="searchRcptEndDt  != null and searchRcptEndDt != ''">
+                AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchRcptEndDt},' 23:59:59') AS DATETIME)
+            </if>            
+    </select>
+    
+    <!-- 교육신청 관리 게시글 등록 --> 
+    <insert id="insertInfntAply" parameterType="InfntAplyVo" useGeneratedKeys="true" keyProperty="aplyId">
+        /* InfntAplyDao.insertInfntAply */
+        INSERT INTO TB_EDU_INFNT_PRGRM_APLY (
+            INSTID
+            , USERID
+            , TME_SCHDLID
+            , ZIP
+            , ADDR
+            , ADDR_DTL
+            , CTPRVN_CD
+            , TELNO
+            , MOBLPHON
+            , EML
+            , EDU_NOPE
+            , TCHER_NOPE
+            , ETC
+            , TOWWAY_ONLN_EDU_AGRE_YN
+            , STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        SELECT 
+            #{instid}
+            ,#{aplyUserid}
+            ,#{tmeSchdlid}
+            ,#{zip}
+            ,#{addr}
+            ,#{addrDtl}
+            ,#{ctprvnCd}
+            ,#{telno}
+            ,#{moblphon}
+            ,#{eml}
+            ,#{eduNope}
+            ,#{tcherNope}
+            ,#{etc}
+            ,#{towwayOnlnEduAgreYn}
+            ,CASE WHEN C.RCPT_MTHD_CD = '156101' THEN '180102' ELSE CASE WHEN COUNT(D.STTS_CD) <![CDATA[<=]]> C.EDU_NOPE THEN '180102' ELSE '180101' END END    
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+          FROM TB_EDU_INFNT_PRGRM_TME_SCHDL A
+          LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME B ON B.TMEID = A.TMEID
+          LEFT OUTER JOIN TB_EDU_INFNT_PRGRM C ON C.PRGRMID = B.PRGRMID                
+          LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_APLY D ON D.TME_SCHDLID = #{tmeSchdlid}                 
+         WHERE A.TME_SCHDLID = #{tmeSchdlid}    
+    </insert>
+        
+    <!-- 교육신청 관리 상세조회 -->
+    <select id="selectInfntAplyInfo" parameterType="InfntAplyVo" resultType="InfntAplyVo"> 
+        /* InfntAplyDao.selectInfntAplyInfo */
+        SELECT 
+          A.APLYID
+        , A.TME_SCHDLID  
+        , B.DE
+        , C.TMEID
+        , C.TME_NM
+        , A.REG_DT AS RCPT_DT  
+        , A.INSTID
+        , E.INST_NM 
+        , A.USERID APLY_USERID
+        , F.NM APLY_USER_NM
+        , A.TME_SCHDLID
+        , A.ZIP
+        , A.ADDR
+        , A.ADDR_DTL
+        , A.CTPRVN_CD
+        , A.TELNO
+        , A.MOBLPHON
+        , A.EML
+        , A.EDU_NOPE
+        , A.TCHER_NOPE
+        , A.ETC
+        , A.TOWWAY_ONLN_EDU_AGRE_YN
+        , A.STTS_CD
+        , D.CD_NM AS STTS_NM
+        ,(SELECT GROUP_CONCAT(EDU_TRGT_CD SEPARATOR',') FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT  WHERE APLYID = #{aplyId} ) AS TRGT_CD
+        , A.MDFCN_DT
+        , A.MDFRID
+        , A.REG_DT
+        , A.RGTRID  
+        FROM TB_EDU_INFNT_PRGRM_APLY A 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
+        LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
+        LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
+        WHERE A.APLYID = #{aplyId}
+    </select>
+    
+    <!-- 교육신청관리 게시글 수정 -->
+    <update id="updateInfntAply" parameterType="InfntAplyVo" keyProperty="InfntAplyVo">
+        /* InfntAplyDao.updateInfntAply */
+        UPDATE TB_EDU_INFNT_PRGRM_APLY SET
+                INSTID                      = #{instid}
+                , USERID                    = #{aplyUserid}
+                , ZIP                       = #{zip}
+                , ADDR                      = #{addr}
+                , ADDR_DTL                  = #{addrDtl}
+                , CTPRVN_CD                 = #{ctprvnCd}
+                , TELNO                     = #{telno}
+                , MOBLPHON                  = #{moblphon}
+                , EML                       = #{eml}
+                , EDU_NOPE                  = #{eduNope}
+                , TCHER_NOPE                = #{tcherNope}
+                , ETC                       = #{etc}
+                , TOWWAY_ONLN_EDU_AGRE_YN   = #{towwayOnlnEduAgreYn}
+                , MDFCN_DT                  = NOW()
+                , MDFRID                    = #{user.userid}
+         WHERE APLYID                      = #{aplyId}
+    </update>    
+    
+    <!-- 교육신청관리 교육신청자 신청상태 수정 기능 -->
+    <update id="updateSttsCdInfntAply" parameterType="InfntAplyVo" keyProperty="InfntAplyVo">
+        /* InfntAplyDao.updateSttsCdInfntAply */
+        UPDATE TB_EDU_INFNT_PRGRM_APLY SET
+                STTS_CD                    = #{sttsCd}
+                , MDFCN_DT                 = NOW()
+                , MDFRID                   = #{user.userid}
+         WHERE APLYID                      = #{aplyId}
+    </update>    
+    
+    <!-- 교육대상 저장 -->
+    <insert id="insertTrgtCd" parameterType="InfntAplyVo" >
+         /* InfntAplyDao.insertTrgtCd */
+         INSERT INTO TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT(
+              APLYID
+              ,EDU_TRGT_CD
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+         )VALUES
+          <foreach item="item" collection="trgtCds"  separator=",">
+           (
+             #{aplyId}
+             ,#{item}
+             ,NOW()
+             ,#{user.userid}
+             ,NOW()
+             ,#{user.userid}             
+            )
+          </foreach>
+    </insert>
+    
+    <!-- 교육대상 삭제 -->
+    <insert id="deleteTrgtCd" parameterType="InfntAplyVo" >
+         /* InfntAplyDao.deleteTrgtCd */
+         DELETE FROM TB_EDU_INFNT_PRGRM_APLY_EDU_TRGT
+         WHERE 1=1
+           AND APLYID = #{aplyId}
+    </insert>   
+        
+    <!-- 교육신청 관리 회차 목록 조회 -->
+    <select id="selectTmeSchdlList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
+        /* InfntAplyDao.selectTmeSchdlList */
+        SELECT 
+        REPLACE(A.DE, '.', '-') DE
+        , A.TMEID
+        , B.TME_NM    
+        , A.TME_SCHDLID    
+        FROM TB_EDU_INFNT_PRGRM_TME_SCHDL A
+        LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME B ON B.TMEID = A.TMEID
+        WHERE
+        1=1
+        AND A.PRGRM_SCHDLID = #{prgrmSchdlid}
+        ORDER BY A.DE 
+    </select>
+               
+    <!-- 회원정보 조회 -->
+    <select id="selectMemberList" parameterType="InfntAplyVo" resultType="InfntAplyVo">
+        /* InfntAplyDao.selectMemberList */
+        <include refid="PaginationMapper.header"/>
+                  SELECT
+                      A.USERID APLY_USER_ID
+                      ,A.NM APLY_USER_NM
+                      ,A.EML
+                      ,A.INSTID
+                      ,B.INST_NM
+                      ,B.ADDR 
+                      ,B.ADDR_DTL 
+                      ,B.TELNO    
+                      ,A.MOBLPHON                
+                      ,A.MDFCN_DT
+                      ,A.REG_DT
+                    FROM TB_CMM_USER A
+                    LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID    
+                   WHERE 1=1
+                     AND A.DEL_YN = 'N'
+                     AND A.STTS_CD <![CDATA[<>]]>  '9' 
+                <if test="instid != null and instid != '' ">                     
+                     AND ( A.INSTID IS NULL OR A.INSTID <![CDATA[<>]]> #{instid} )  
+                </if>
+                
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+                   AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
+                   AND A.ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'moblphon'">
+                   AND A.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'eml'">
+                   AND A.EML LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>    
+</mapper>

@@ -3,18 +3,18 @@
 
 <!--
 	SQL File Name : BookDaoImpl.xml
-	Description : 콘텐츠 관리
+	Description : 우수환경도서 
 -->
 <mapper namespace="com.kbrainc.plum.front.book.model.BookDao">
     
-    <!-- 컨텐츠 관리 게시글 목록 조회 -->
+    <!-- 우수환경도서 게시글 목록 조회 -->
     <select id="selectBookList" parameterType="front.BookVo" resultType="front.BookVo">
         /* BookDao.selectBookList */
         <include refid="PaginationMapper.header"/>
             SELECT
                   A.BOOKID
                 , A.TTL
-                , CONCAT(B2.CD_NM, ' > ', B1.CD_NM) AS EDUSBJCTCD
+                , B1.CD_NM AS EDUSBJCTCD
                 , C1.CD_NM AS EDUTRGTCD
                 , A.WRITR
                 , A.WRITR_PICTR                
@@ -43,6 +43,22 @@
             AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
             </if>
             
+            <!-- 작가/출판사 -->
+            <if test="searchKeyword2 != null and searchKeyword2 != '' and searchType2 == 'searchWritr'">
+            AND A.WRITR LIKE CONCAT('%',#{searchKeyword2},'%')
+            </if>
+            <if test="searchKeyword2 != null and searchKeyword2 != '' and searchType2 == 'searchWritrPictr'">
+            AND A.WRITR_PICTR LIKE CONCAT('%',#{searchKeyword2},'%')
+            </if>
+            <if test="searchKeyword2 != null and searchKeyword2 != '' and searchType2 == 'searchPlscmpn'">
+            AND A.PLSCMPN LIKE CONCAT('%',#{searchKeyword2},'%')
+            </if>            
+            
+            <!-- 교육대상 -->
+            <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
+            AND C1.CD = #{searchEduTrgtCd}
+            </if>
+            
             <!-- 교육주제 -->
             <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
             AND B2.CD = #{searchManinEduSbjctCd}
@@ -50,32 +66,10 @@
             <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
             AND B1.CD = #{searchMdleEduSbjctCd}
             </if>
-            
-            <!-- 교육대상 -->
-            <if test="searchEduTrgtCd != null and searchEduTrgtCd != ''">
-            AND C1.CD = #{searchEduTrgtCd}
-            </if>
-            
-            <!-- 출판사 -->
-            <if test="searchPlscmpn != null and searchPlscmpn != ''">
-            AND A.PLSCMPN LIKE CONCAT('%',#{searchPlscmpn},'%')
-            </if>
-            
-            <!-- 등록일(시작일, 종료일) -->
-            <if test="startDt != null and startDt != ''">
-            <![CDATA[
-                AND DATE(A.REG_DT) >= #{startDt}
-            ]]>
-            </if>
-            <if test="endDt != null and endDt != ''">
-            <![CDATA[
-                AND DATE(A.REG_DT) <= #{endDt}
-            ]]>
-            </if>            
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 컨텐츠 관리 게시글 상세조회 -->
+    <!-- 우수환경도서 게시글 상세조회 -->
     <select id="selectBookInfo" parameterType="front.BookVo" resultType="front.BookVo"> 
         /* BookDao.selectBookInfo */
         SELECT
@@ -110,7 +104,7 @@
         WHERE BOOKID = #{bookid}
     </select>
     
-    <!-- 컨텐츠 관리 게시글 상세조회 -->
+    <!-- 우수환경도서 게시글 상세조회 -->
     <select id="selectBookFileList" parameterType="front.BookVo" resultType="front.BookVo"> 
         /* BookDao.selectBookFileList */
         SELECT

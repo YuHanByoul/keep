@@ -15,12 +15,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
 import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.DateTimeUtil;
 
 /**
 * 유아환경교육 -> 교육관관리 컨트롤러 클래스
@@ -43,6 +43,9 @@ public class EduClssRmController {
     @Autowired
     private EduClssRmService eduClssRmService;
     
+    @Autowired
+    private CommonService commonService;
+    
     /**
     * 교육관관리 리스트화면으로 이동
     *
@@ -54,7 +57,8 @@ public class EduClssRmController {
     */
     @RequestMapping(value = "/mng/prtpn/eduClssRm/eduClssRmListForm.html")
     public String eduClssRmListForm(Model model, HttpServletRequest request) throws Exception {
-        
+        List<Map<String, Object>> instList = commonService.selectAlowedInstList();
+        model.addAttribute("instList", instList);
         return "mng/prtpn/eduClssRm/eduClssRmList";
     }
     
@@ -200,4 +204,28 @@ public class EduClssRmController {
 
         return resultMap;
     }
+    
+    /**
+    * 교육관관리 교육관 교육유형 코드 조회
+    *
+    * @Title : selectInfntPrgrmList
+    * @Description : 교육관관리 교육관 교육유형 코드 조회
+    * @param clssrmId
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/prtpn/eduClssRm/selectClssrmEduTypeCd.do")
+    @ResponseBody
+    public Map<String, Object> selectClssrmEduTypeCd(String clssrmId) throws Exception {
+        EduClssRmVo resultVo = new EduClssRmVo();
+        resultVo =  eduClssRmService.selectClssrmEduTypeCd(clssrmId);
+        
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        resultMap.put("eduTypeCd", resultVo.getEduTypeCd());
+        resultMap.put("clssrmViewngMaxAplyNope", resultVo.getClssrmViewngMaxAplyNope());
+
+        return resultMap;
+            
+    }        
 }
