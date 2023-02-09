@@ -4,9 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
 import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmDao;
+import com.kbrainc.plum.mng.prtpn.infntPrgrm.model.InfntPrgrmVo;
+import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -56,8 +58,8 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
         int retVal = 0;
         retVal += infntPrgrmDao.insertInfntPrgrm(infntPrgrmVo);
         
-        infntPrgrmDao.deleteTrgtCd(infntPrgrmVo);
-        infntPrgrmDao.deleteClsfCd(infntPrgrmVo);
+        //infntPrgrmDao.deleteTrgtCd(infntPrgrmVo);
+        //infntPrgrmDao.deleteClsfCd(infntPrgrmVo);
         
         if(infntPrgrmVo.getTrgtCds()!=null & infntPrgrmVo.getTrgtCds().length > 0) {
             retVal += infntPrgrmDao.insertTrgtCd(infntPrgrmVo);
@@ -69,7 +71,25 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
         
         return retVal;
     }
-    
+
+    @Override
+    @Transactional
+    public int insertInfntPrgrmCopy(String[] copyPrgrmIds, UserVo userVo) throws Exception {
+        int retVal = 0;
+        InfntPrgrmVo infntPrgrmVo = new InfntPrgrmVo();
+//        infntPrgrmVo.setCopyPrgrmIds(copyPrgrmIds);
+        infntPrgrmVo.setUser(userVo);
+        for(String copyPrgrmId : copyPrgrmIds) {
+          infntPrgrmVo.setCopyPrgrmId(copyPrgrmId);
+          retVal += infntPrgrmDao.insertInfntPrgrmCopy(infntPrgrmVo);
+          retVal += infntPrgrmDao.insertInfntPrgrmClsfMapngCopy(infntPrgrmVo);
+          retVal += infntPrgrmDao.insertInfntPrgrmTrgtMapngCopy(infntPrgrmVo);
+        }
+        
+        
+        return retVal;
+    }
+
     /**
     * 교육프로그램관리 게시글 상세조회
     *
@@ -93,7 +113,21 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @return int
     */
     public int updateInfntPrgrm(InfntPrgrmVo infntPrgrmVo) throws Exception{
-        return infntPrgrmDao.updateInfntPrgrm(infntPrgrmVo);
+        int retVal = 0;
+        retVal += infntPrgrmDao.updateInfntPrgrm(infntPrgrmVo);
+        
+        infntPrgrmDao.deleteTrgtCd(infntPrgrmVo);
+        infntPrgrmDao.deleteClsfCd(infntPrgrmVo);
+        
+        if(infntPrgrmVo.getTrgtCds()!=null & infntPrgrmVo.getTrgtCds().length > 0) {
+            retVal += infntPrgrmDao.insertTrgtCd(infntPrgrmVo);
+        }
+        if(infntPrgrmVo.getClsfCds()!=null & infntPrgrmVo.getClsfCds().length > 0) {
+            retVal += infntPrgrmDao.insertClsfCd(infntPrgrmVo);
+        }
+        //retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
+        
+        return retVal;        
     }
     
     /**
@@ -106,7 +140,25 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     * @return int
     */
     public int insertInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception{
-        return infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);
+        int retVal = 0;
+        InfntPrgrmVo delInfntPrgrmVo =  new InfntPrgrmVo();
+        
+        if(infntPrgrmVo.getInfntPrgrmVoList() != null) {
+            retVal += infntPrgrmDao.insertInfntPrgrmTme(infntPrgrmVo);            
+            retVal += infntPrgrmDao.updateInfntPrgrmTme(infntPrgrmVo);
+            for (int i=0; i<infntPrgrmVo.getInfntPrgrmVoList().size();i++){
+                if("Y".equals(infntPrgrmVo.getInfntPrgrmVoList().get(i).getDelFlag())) {
+                    delInfntPrgrmVo.setTmeId(infntPrgrmVo.getInfntPrgrmVoList().get(i).getTmeId());
+                    retVal += infntPrgrmDao.deleteInfntPrgrmAplyEduTrgt(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmAply(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmTmeSchdl(delInfntPrgrmVo);
+                    retVal += infntPrgrmDao.deleteInfntPrgrmTme(delInfntPrgrmVo);
+                }
+            }
+            
+            //retVal += infntPrgrmDao.deleteInfntPrgrmTme(infntPrgrmVo);
+        }
+        return retVal;
     }
     
     /**
@@ -133,5 +185,18 @@ public class InfntPrgrmServiceImpl extends PlumAbstractServiceImpl implements In
     */
     public List<InfntPrgrmVo> selectInfntPrgrmTmeList(InfntPrgrmVo infntPrgrmVo) throws Exception {
         return infntPrgrmDao.selectInfntPrgrmTmeList(infntPrgrmVo);
+    }    
+
+    /**
+    * 교육프로그램관리 프로그램 설정 리스트 조회
+    *
+    * @Title : selectPrgrmSettingList
+    * @Description : 교육프로그램관리 프로그램 설정 리스트 조회
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @throws Exception 예외
+    * @return List<InfntPrgrmVo>
+    */
+    public List<InfntPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
+        return infntPrgrmDao.selectPrgrmSettingList(rcptMthdCd);
     }    
 }

@@ -1,0 +1,410 @@
+<form id ="infntSchdlUpdatePopupForm">
+<input type="hidden" id="prgrmSchdlid" name="prgrmSchdlid" th:value="${infntSchdl.prgrmSchdlid}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">교육일정수정</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 mb-3">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateClssrmNm"><strong>교육관</strong></label>
+                                    <div class="col-12">
+                                        <input type="text" class="form-control form-control-sm" name="updateClssrmNm" id="updateClssrmNm" th:value="${infntSchdl.clssrmNm}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput02"><strong>교육일정 등록 년/월</strong></label>
+                                    <div class="col-12">
+                                        <input type="hidden" name="ym" id="ym01" th:value="${ym}" />
+                                        <input type="text" class="form-control form-control-sm" id="ymDesc" th:value="${ymDesc}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group required mb-3">
+                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput03"><strong>교육일정명</strong></label>
+                                <div class="col-12">
+                                    <input type="text" class="form-control form-control-sm" name="schdlNm" id="schdlNm" th:value="${infntSchdl.schdlNm}" placeholder="교육일정명을 입력해주세요." disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 접수방법 선택 -->
+                        <div class="row justify-content-end my-2">
+                            <div class="col-auto">
+                                <label class="form-label col-form-label me-2"><strong>접수방법</strong></label>
+                                <th:block kattr:select_code="rcptMthdCd" th:attr="grpCd=156" onchange="fn_changeRcptMthdCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
+                            </div>
+                        </div>
+                        <!-- // 접수방법 선택 -->
+                        <div class="row">
+                            <!-- 교육일자 설정 -->
+                            <div class="col-lg-6">
+                                <h3 class="sub-title"><strong>교육일자 설정</strong></h3>
+                                <div class="col-12 table-responsive">
+                                    <table class="table table-framed table-bordered">
+                                        <thead>
+                                        <tr class="border-bottom-inverse">
+                                            <th class="text-center v-middle">
+                                                <input id="deSttSelectAllCheckbox" class="form-check-input" type="checkbox" value="" aria-label="전체 선택" onclick="fn_deSttSelectAllCheckbox()">
+                                            </th>
+                                            <th class="text-center v-middle">요일</th>
+                                            <th class="text-center v-middle">일자</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="updateCheckDayBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- 교육프로그램 설정 -->
+                            <div class="col-lg-6">
+                                <h3 class="sub-title"><strong>교육프로그램 설정</strong></h3>
+                                <div class="col-12 table-responsive">
+                                    <table class="table table-framed table-bordered">
+                                        <thead>
+                                        <tr class="border-bottom-inverse">
+                                            <th class="text-center v-middle">
+                                                <input id="prgrmSttSelectAllCheckbox" class="form-check-input" type="checkbox" value="" aria-label="전체 선택">
+                                            </th>
+                                            <th class="text-center v-middle">교육프로그램명</th>
+                                            <th class="text-center v-middle">교육가능요일</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="updatePrgrmSettingList">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- // -->
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-disabled waves-effect waves-light" id="deleteInfntSchdl" onclick="fn_deleteInfntSchdl()">삭제</button>
+                <button type="button" class="btn btn-primary waves-effect waves-light" id="updateInfntSchdl" onclick="fn_updateInfntSchdl()">저장</button>
+            </div>
+        </div>
+    </div>
+</form>
+    <script th:inline="javascript">
+    var deSttSelectedItems = [];
+    var prgrmSttSelectedItems = [];     
+    
+    $(function() {
+        fn_makeListHtml();
+        
+        //기존 데이터 일정, 프로그램 담기        
+        var des = [[${infntSchdl.de}]];
+        if(des.indexOf(",") >= 0) {            
+            var deArr = des.split(",");
+            for(var i=0; i<deArr.length;i++) {
+                deSttSelectedItems.push(deArr[i]);
+            }
+        }else{
+        	deSttSelectedItems.push(des);
+        }
+        
+        var prgrmIds = [[${infntSchdl.prgrmIds}]];
+        if(prgrmIds.indexOf(",") >= 0) {
+            var prgrmIdArr = prgrmIds.split(",");
+            for(var i=0; i<prgrmIdArr.length;i++) {
+                prgrmSttSelectedItems.push(prgrmIdArr[i]);
+            }
+        }else{
+            prgrmSttSelectedItems.push(prgrmIds)
+        }
+        
+    });        
+    
+    function fn_makeListHtml(){
+        var jsonData = null;
+        var jsonDataCnt = 0;
+        var yyyy = $('#calendar').fullCalendar('getView').intervalStart.format("YYYY");
+        var mm = $('#calendar').fullCalendar('getView').intervalStart.format("MM");
+        var lastDay = new Date(yyyy, mm, 0);
+        var weekDay = ['일', '월', '화', '수', '목', '금', '토'];
+        
+        var xhr = new XMLHttpRequest();
+        var url = 'http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getAnniversaryInfo'; /*URL*/
+        var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'HJwCA6TG5HWdSWlAhHzB190xv4Z%2F2okQ7xj0iITXHGLp6E5iQHdB4ZSS4ehLZiszBeLLcKPP%2F%2FQ6gRrI8k4dDA%3D%3D'; /*Service Key*/
+        queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); /**/
+        queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); /**/
+        queryParams += '&' + encodeURIComponent('solYear') + '=' + encodeURIComponent(yyyy); /**/
+        queryParams += '&' + encodeURIComponent('solMonth') + '=' + encodeURIComponent(mm); /**/
+        queryParams += '&' + encodeURIComponent('_type') + '=' + encodeURIComponent('json'); /**/
+        xhr.open('GET', url + queryParams);
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4) {
+                jsonDataCnt = JSON.parse(this.response).response.body.totalCount;
+                if(jsonDataCnt > 0){
+                       jsonData = JSON.parse(this.response).response.body.items.item;
+                }
+            }
+        };
+        xhr.send('');
+        $("#updateCheckDayBody tr").remove();
+        var schdlHtml = "";
+        for (var i=1; i<=lastDay.getDate(); i++){
+            var day = new Date(yyyy,mm-1,i);
+            var week = weekDay[day.getDay()];
+            var de = yyyy + '.' + mm + '.' + (("00"+i.toString()).slice(-2));
+            var checked = "";
+            
+            if(day.getDay() == 0){
+                schdlHtml += '<tr class="text-c-pink">';
+            }else if(day.getDay() == 6){
+                schdlHtml += '<tr class="text-c-blue">';
+            }else{
+                if(jsonData != null){
+                    for (var j=0; j<jsonData.length; j++){                      
+                        if(jsonData[j].locdate == yyyy + mm + (("00"+i.toString()).slice(-2))){                     
+                            if(jsonData[j].isHoliday == "Y"){
+                                schdlHtml += '<tr class="text-c-pink">';
+                            }else{
+                                schdlHtml += '<tr>';                            
+                            }
+                        }else{
+                            schdlHtml += '<tr>';                            
+                        }
+                    }
+                }else{
+                    schdlHtml += '<tr>';
+                }
+            }
+            schdlHtml += '<td class="text-center v-middle">';   
+            var des = [[${infntSchdl.de}]];
+            if(des.indexOf(",") >= 0) {            
+	            var deArr = des.split(",");
+	            for(var j=0; j<deArr.length;j++) {
+	            	//checked = "";
+	                if(de == deArr[j]) checked = " checked";
+	            }
+            }else{
+            	if(de == des) checked = " checked";
+            }
+            schdlHtml += '<input id="deSttSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeDeSttSelectItem(this);"'+checked+'>';
+            schdlHtml += '</td>';
+            schdlHtml += '<td class="text-center v-middle">' + week + '</td>';                                        
+            schdlHtml += '<td class="text-center v-middle">' + de + '</td>';
+            schdlHtml += '</tr>';  
+       } 
+       $("#updateCheckDayBody").append(schdlHtml);          
+    }    
+    function fn_changeRcptMthdCd(item){
+        var getCodeUrl = "/mng/prtpn/infntPrgrm/selectPrgrmSettingList.do";
+        var url = getCodeUrl + "?rcptMthdCd=" + $(item).val();
+        var prgrmStthtml = "";
+        $("#updatePrgrmSettingList tr").remove();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            cache: false,
+            success: function (data) {
+                for(var i = 0; i < data.prgrmSttList.length; i++){
+                    var weekDesc = "";
+                    var checked = "";
+                    prgrmStthtml += '<tr>';
+                    prgrmStthtml += '<td class="text-center v-middle">';
+                    var prgrmIds = [[${infntSchdl.prgrmIds}]];
+                    if(prgrmIds.indexOf(",") >= 0) {
+	                    var prgrmIdArr = prgrmIds.split(",");
+	                    for(var j=0; j<prgrmIdArr.length;j++) {
+	                        if(data.prgrmSttList[i].prgrmId == prgrmIdArr[j]) checked = " checked";
+	                    }
+                    }else{
+                    	if(data.prgrmSttList[i].prgrmId == prgrmIds)  checked = " checked";
+                    }
+                    prgrmStthtml += '<input id="prgrmSttSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changePrgrmSttSelectItem(this);"'+checked+'>';                    
+                    prgrmStthtml += '</td>';
+                    prgrmStthtml += '<input id="prgrmId" type="hidden" value="' + data.prgrmSttList[i].prgrmId + '" >';                     
+                    prgrmStthtml += '<td class="text-center v-middle">' + data.prgrmSttList[i].prgrmNm + '</td>';
+                    if(data.prgrmSttList[i].monYn == "Y"){
+                        weekDesc += "월";
+                    }
+                    if(data.prgrmSttList[i].tuesYn == "Y"){
+                        if(weekDesc != "") weekDesc += "/";
+                        weekDesc += "화";
+                    }
+                    if(data.prgrmSttList[i].wedYn == "Y"){
+                        if(weekDesc != "") weekDesc += "/";
+                        weekDesc += "수";
+                    }
+                    if(data.prgrmSttList[i].thurYn == "Y"){
+                        if(weekDesc != "") weekDesc += "/";
+                        weekDesc += "목";
+                    }
+                    if(data.prgrmSttList[i].friYn == "Y"){
+                        if(weekDesc != "") weekDesc += "/";
+                        weekDesc += "금";
+                    }
+                    if(data.prgrmSttList[i].satYn == "Y"){
+                        if(weekDesc != "") weekDesc += "/";
+                        weekDesc += "토";
+                    }
+                    if(data.prgrmSttList[i].sunYn == "Y"){
+                        if(weekDesc != "") weekDesc += "/";
+                        weekDesc += "일";
+                    }
+                    
+                    prgrmStthtml += '<td class="text-center v-middle">' + weekDesc + '</td>';
+                    prgrmStthtml += '</tr>';
+                }
+                
+                $("#updatePrgrmSettingList").append(prgrmStthtml);
+            }
+        });                
+    }  
+    // 체크박스
+    function fn_changeDeSttSelectItem(item){
+        $(item).is(":checked") ? deSttSelectItem($(item).parent().next().next().text()) : deSttUnselectItem($(item).parent().next().next().text());     
+    }
+    
+    var deSttSelectItem = function(item) {
+        deSttSelectedItems.push(item);
+        if($("[id=deSttSingleCheckbox]").length == $("[id=deSttSingleCheckbox]:checked").length) {
+            $("#deSttSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#deSttSelectAllCheckbox").prop("checked", false);
+        }
+    }
+     
+    var deSttUnselectItem = function(item) {
+        deSttSelectedItems = $.grep(deSttSelectedItems, function(i) {
+        return i !== item;
+        });
+        if(deSttSelectedItems.length == 0) {
+            $('#deSttSelectAllCheckbox').attr('checked', false);
+        }
+        if($("[id=deSttSingleCheckbox]").length == $("[id=deSttSingleCheckbox]:checked").length) {
+            $("#deSttSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#deSttSelectAllCheckbox").prop("checked", false);
+        }
+    }
+
+    $("[id=deSttSelectAllCheckbox]").click(function(item) {
+        deSttSelectedItems = [];
+        if(this.checked) { // check select status
+            $('[id=deSttSingleCheckbox]').each(function() { 
+                this.checked = true;   
+                deSttSelectItem($(this).parent().next().next().text());           
+            }); 
+        }else {
+            
+            $('[id=deSttSingleCheckbox]').each(function() { 
+                this.checked = false;      
+                deSttUnselectItem(item);
+            });  
+            deSttSelectedItems = [];
+        }
+    })        
+
+    // 체크박스
+    function fn_changePrgrmSttSelectItem(item){
+        $(item).is(":checked") ? prgrmSttSelectItem($(item).parent().next().val()) : prgrmSttUnselectItem($(item).parent().next().val());     
+    }
+    
+    var prgrmSttSelectItem = function(item) {
+        prgrmSttSelectedItems.push(item);
+        if($("[id=prgrmSttSingleCheckbox]").length == $("[id=prgrmSttSingleCheckbox]:checked").length) {
+            $("#prgrmSttSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#prgrmSttSelectAllCheckbox").prop("checked", false);
+        }
+    }
+     
+    var prgrmSttUnselectItem = function(item) {
+        prgrmSttSelectedItems = $.grep(prgrmSttSelectedItems, function(i) {
+        return i !== item;
+        });
+        if(prgrmSttSelectedItems.length == 0) {
+            $('#prgrmSttSelectAllCheckbox').attr('checked', false);
+        }
+        if($("[id=prgrmSttSingleCheckbox]").length == $("[id=prgrmSttSingleCheckbox]:checked").length) {
+            $("#prgrmSttSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#prgrmSttSelectAllCheckbox").prop("checked", false);
+        }
+    }
+
+    $("[id=prgrmSttSelectAllCheckbox]").click(function(item) {
+        prgrmSttSelectedItems = [];
+        if(this.checked) { // check select status
+            $('[id=prgrmSttSingleCheckbox]').each(function() { 
+                this.checked = true;   
+                prgrmSttSelectItem($(this).parent().next().val());           
+            }); 
+        }else {
+            
+            $('[id=prgrmSttSingleCheckbox]').each(function() { 
+                this.checked = false;      
+                prgrmSttUnselectItem(item);
+            });  
+            prgrmSttSelectedItems = [];
+        }
+    })   
+
+    function fn_updateInfntSchdl(){
+        if(!($("#infntSchdlUpdatePopupForm").valid())) return;
+        //debugger;
+        if(!confirm("수정하시겠습니까?")) return;
+
+        var deSttIds = deSttSelectedItems.join(",");
+        var prgrmSttIds = prgrmSttSelectedItems.join(",");
+        var schdlNm = $("#schdlNm").val();
+        var ym = $("#ym01").val();
+        
+        var data =  $("#infntSchdlUpdatePopupForm").serialize();
+        data = data+"&deSttIds="+deSttIds+"&prgrmSttIds="+prgrmSttIds+"&schdlNm="+schdlNm+"&ym="+ym;
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/prtpn/infntSchdl/updateInfntSchdl.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    alert(data.msg);
+                    fn_popUpdForm.hide();
+                    fn_makeCalendarEvent();
+                }
+            });
+        }
+    }
+    
+    function fn_deleteInfntSchdl() {
+        if(!confirm("삭제 하시겠습니까?"))return;
+        var schdlNm = $("#schdlNm").val();
+        
+        var data =  $("#infntSchdlUpdatePopupForm").serialize();
+        data = data+"&schdlNm="+schdlNm;
+
+        debugger;
+        $.ajax({
+            url : "/mng/prtpn/infntSchdl/deleteInfntSchdl.do",
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : data,
+            success : function (data){
+                alert(data.msg);
+                fn_popUpdForm.hide();
+                fn_makeCalendarEvent();
+            }
+        });
+    }    
+    </script>

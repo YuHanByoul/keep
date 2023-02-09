@@ -2,9 +2,8 @@ package com.kbrainc.plum.mng.prtpn.infntPrgrm.model;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
-import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
 
 /**
 * 유아환경교육 -> 교육프로그램관리 Dao 클래스
@@ -45,6 +44,41 @@ public interface InfntPrgrmDao {
     * @return int
     */
     public int insertInfntPrgrm(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+    * 교육프로그램관리 게시글 프로그램 복사 등록
+    **
+    @Title : insertInfntPrgrmCopy
+    * @Description : 교육프로그램관리 게시글 프로그램 복사 등록
+    * @param infntPrgrmVo 교육프로그램관리 객체
+    * @return
+    * @throws Exception
+    * @return int
+    */
+    public int insertInfntPrgrmCopy(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * 교육프로그램관리 게시글 프로그램_교육주제 복사 등록
+     **
+    @Title : insertInfntPrgrmCopy
+     * @Description : 교육프로그램관리 게시글 프로그램 복사 등록
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int insertInfntPrgrmClsfMapngCopy(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    /**
+     * 교육프로그램관리 게시글 프로그램_교육대상 복사 등록
+     **
+    @Title : insertInfntPrgrmCopy
+     * @Description : 교육프로그램관리 게시글 프로그램 복사 등록
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int insertInfntPrgrmTrgtMapngCopy(InfntPrgrmVo infntPrgrmVo) throws Exception;
     
     /**
     * 교육프로그램관리 게시글 상세조회
@@ -90,6 +124,50 @@ public interface InfntPrgrmDao {
     */
     public int updateInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception;
  
+    /**
+     * 교육프로그램관리 회차 삭제
+     *
+     * @Title : deleteInfntPrgrmTme
+     * @Description : 교육프로그램관리 회차 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmTme(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * EDU_유아_프로그램_신청_교육_대상 삭제
+     *
+     * @Title : deleteInfntPrgrmAplyEduTrgt
+     * @Description : EDU_유아_프로그램_신청_교육_대상 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmAplyEduTrgt(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * EDU_유아_프로그램_신청 삭제
+     *
+     * @Title : deleteInfntPrgrmAply
+     * @Description : EDU_유아_프로그램_신청 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmAply(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
+    /**
+     * EDU_유아_프로그램_회차_일정 삭제
+     *
+     * @Title : deleteInfntPrgrmTmeSchdl
+     * @Description : EDU_유아_프로그램_회차_일정 삭제
+     * @param infntPrgrmVo 교육프로그램관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int deleteInfntPrgrmTmeSchdl(InfntPrgrmVo infntPrgrmVo) throws Exception;
+    
     /**
     * 교육대상 삭제
     **
@@ -144,5 +222,17 @@ public interface InfntPrgrmDao {
     * @throws Exception 예외
     * @return List<InfntPrgrmVo>
     */
-    public List<InfntPrgrmVo> selectInfntPrgrmTmeList(InfntPrgrmVo infntPrgrmVo) throws Exception;    
+    public List<InfntPrgrmVo> selectInfntPrgrmTmeList(InfntPrgrmVo infntPrgrmVo) throws Exception;   
+    
+    /**
+    * 교육프로그램관리 프로그램 설정 리스트 조회
+    **
+    @Title : selectPrgrmSettingList
+    * @Description : 교육프로그램관리 프로그램 설정 리스트 조회
+    * @param rcptMthdCd
+    * @return
+    * @throws Exception
+    * @return List<InfntPrgrmVo>
+    */
+    public List<InfntPrgrmVo> selectPrgrmSettingList(@Param("rcptMthdCd") String rcptMthdCd) throws Exception;
 }

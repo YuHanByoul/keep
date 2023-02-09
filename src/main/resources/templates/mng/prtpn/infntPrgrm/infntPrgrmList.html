@@ -65,22 +65,22 @@
 										<div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
 											<strong>교육주제</strong>
 										</div>
-										<div class="col-sm-12">
-										    <span kattr:select_codes="searchClsfCd" th:attr="grpCd=155"  isAdmin="true" selectedCd=""></span>
+										<div class="col-12">
+	                                        <div class="row">
+	                                            <div class="col-6 pe-1">
+	                                                <th:block kattr:select_code="searchClsfCd_1" grpCd="155" upprCd="0" selectedCd="" onchange='setNextDepth(155,this.value,"searchClsfCd_2" )' firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+	                                            </div>
+	                                            <div class="col-6 ps-1">
+	                                                <select id="searchClsfCd_2" name="searchClsfCd_2" class="form-select form-select-sm form-control-sm">
+	                                                     <option value="">- 전체 -</option>
+	                                                </select>
+	                                            </div>
+	                                        </div>										
+<!-- 										    <span kattr:select_codes="searchClsfCd" th:attr="grpCd=155"  isAdmin="true" selectedCd=""></span> -->
 											<!-- <th:block kattr:select_code="searchEduTypeCd" grpCd="155" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" isAdmin="true"></th:block> -->
 										</div>
 									</div>
 								</div>
-	<!-- 							<div class="col-lg-3 col-md-6 mb-3"> -->
-	<!-- 								<div class="mb-0 form-group row"> -->
-	<!-- 									<div class="form-label col-sm-12 col-form-label p-t-0 pb-1"> -->
-	<!-- 										<strong>위탁기관</strong>										 -->
-	<!-- 									</div> -->
-	<!-- 									<div class="col-sm-12"> -->
-	<!--                                         <th:block kattr:select_inst="searchCnsgnInstId" selectedCd="" width="100%" firstOptTxt="- 전체 -" firstOptVal="" isAdmin="true"></th:block>									 -->
-	<!-- 									</div> -->
-	<!-- 								</div> -->
-	<!-- 							</div> -->
 							</div>		
 							<div class="row">		
 	                            <div class="col-lg-3 col-md-6 mb-3">
@@ -95,7 +95,12 @@
 	                                <div class="mb-0 form-group row">
 	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
 	                                    <div class="col-sm-12"> 
-	                                        <th:block kattr:select_code="searchUseYn" grpCd="157" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+				                            <select name="searchUseYn" id="searchUseYn" class="form-select form-select-sm form-control-sm">
+				                                 <option value="">- 전체 -</option>
+				                                 <option value="Y">사용</option>
+				                                 <option value="N">미사용</option>
+				                            </select>
+<!-- 	                                        <th:block kattr:select_code="searchUseYn" grpCd="157" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" isAdmin="true"></th:block> -->
 	                                    </div>
 	                                </div>
 	                            </div>
@@ -118,6 +123,7 @@
 								</h5>
 							</div>
 							<div class="col-12 col-md-6 text-right">
+							    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_copyPrgrmInfo();">프로그램복사</button>
 								<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">등록</button>
 							</div>
 						</div>
@@ -130,170 +136,247 @@
 							</div>
 						</div>
 					</div>
-					<!-- Content Area -->
-					<div class="col-12">
-					   <div id="contentPanel" style="display: none" class="card"></div>
-					</div>   
 				</div>
+				<!-- Content Area -->
+				<div class="col-12">
+				   <div id="contentPanel" style="display: none" class="card"></div>
+				</div>   
 			</div>
 		</div>
 
-		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
-		<script th:inline="javascript">
-		
-		    //커스텀 테그 라이브러리 임시 설정
-	        var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
-	        function fn_getNextDepthList(grpcd , upprcd, targetId){
-	            $.ajax({
-	                url : getCodeListUrl,
-	                type: 'GET',
-	                cache : false,
-	                dataType: 'json',
-	                data: {
-	                      grpcd  : grpcd
-	                    , upprcd : upprcd
-	                }, 
-	                success : function (data){
-	                    writeHtml(grpcd,targetId,data,"");
-	                },
-	                error : function (error){
-	                } 
-	            });
-	        }
-	        
-            function writeHtml(grpcd,targetId,list,selected){
-                var cntArr = targetId.split("_");
-                var nextCnt = Number(cntArr[1])+1;
-                var nextTarget =  cntArr[0]+"_"+nextCnt;
-                var html ="<select id='"+targetId+"' class ='form-control' onchange=setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"') >";
-                    html +="    <option  >전체</option>";
-                    for(var i=0 ; i < list.length;i++){
-                      if(list[i].cdid==selected){
-                          html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
-                      }else{
-                          html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
-                      }
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+<script th:inline="javascript">
+    var selectedItems = [];
+    var prgrmCopyUrl = "/mng/prtpn/infntPrgrm/insertInfntPrgrmCopy.do";
+    //커스텀 테그 라이브러리 임시 설정
+       var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
+       function fn_getNextDepthList(grpcd , upprcd, targetId){
+           $.ajax({
+               url : getCodeListUrl,
+               type: 'GET',
+               cache : false,
+               dataType: 'json',
+               data: {
+                     grpcd  : grpcd
+                   , upprcd : upprcd
+               }, 
+               success : function (data){
+                   writeHtml(grpcd,targetId,data,"");
+               },
+               error : function (error){
+               } 
+           });
+       }
+       
+          function writeHtml(grpcd,targetId,list,selected){
+              var cntArr = targetId.split("_");
+              var nextCnt = Number(cntArr[1])+1;
+              var nextTarget =  cntArr[0]+"_"+nextCnt;
+              var html ="<select id='"+targetId+"' class ='form-control' onchange=setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"') >";
+                  html +="    <option  >전체</option>";
+                  for(var i=0 ; i < list.length;i++){
+                    if(list[i].cdid==selected){
+                        html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+                    }else{
+                        html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
                     }
-                    if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-                       writeHtml(grpcd,nextTarget,list,selected);
+                  }
+                  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+                     writeHtml(grpcd,nextTarget,list,selected);
+                  }
+                  html +="    </select>";
+                  $("#"+targetId).html(html);
+          }
+          
+          function setNextDepth(grpcd , upprcd , targetId){
+              fn_getNextDepthList(grpcd , upprcd , targetId);
+          }
+       
+	var gridHelper1;
+	
+	$(function() {
+		gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
+		writeJsGridData();
+	});
+
+	function fn_goInsertForm() {
+		var insertUrl = "/mng/prtpn/infntPrgrm/infntPrgrmInsertForm.html";
+		gridHelper1.loadContent(insertUrl);
+	}
+
+	function fn_searchForm() {
+		gridHelper1.resetListContent();
+	}
+
+	function fn_init() {
+		$("#searchKeyword").val('');
+		$("#searchCtprvnCd").val('');
+		$("#searchEduTypeCd").val('');
+		$("#searchCnsgnInstId").val('');
+		gridHelper1.resetListContent();
+	}
+
+	function writeJsGridData() {
+        $("#jsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#listPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
                     }
-                    html +="    </select>";
-                    $("#"+targetId).html(html);
-            }
-            
-            function setNextDepth(grpcd , upprcd , targetId){
-                fn_getNextDepthList(grpcd , upprcd , targetId);
-            }
-	        
-			var selectedItems = [];
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        url: "/mng/prtpn/infntPrgrm/selectInfntPrgrmList.do",
+                        dataType: "json",
+                        data: formData,
+                      }).done(function(response){
+                          var da = {
+                                  data : escapeGridData(response.list)
+                                  ,itemsCount : response.totalCount
+                              };
+                        data.resolve(da);
+                      });
+                      return data.promise();
+                  },				
+			},
 			
-			var gridHelper1;
+			fields : [
+			   {
+                    headerTemplate: function() {
+                        return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
+                    },
+                    itemTemplate: function(_, item) {
+                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
+                        .prop("checked", $.inArray(item, selectedItems) > -1)
+                        .on("change", function () {
+                        $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
+                        });
+                    },
+                    align: "center",
+                    width: "30",
+                    sorting: false
+                   }   						
+			  , { name : 'prgrmId', css : 'hide' }
+			  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
+			  , { title : '교육년도', name : 'eduYr', type : "text", width : "90", align : "center" }
+			  , { title : '교육관', name : 'clssrmNm', type : "text", width : "170", align : "center" }
+			  , { title : '프로그램명', name : 'prgrmNm', type : "text", width : "200", align : "center" }
+			  , { title : '교육주제', name : 'clsfNm', type : "text", width : "140", align : "center" }
+			  , { title : '교육대상', name : 'trgtNm', type : "text", width : "130", align : "center" }
+			  , { title : '접수방법', name : 'rcptMthdNm', type : "text", width : "80", align : "center" }
+                    , { title : '사용여부', name : 'useYn', type : "text", width : "70", align : "center"}
+                    
+			],
 			
-			$(function() {
-				gridHelper1 = new GridHelper('jsGrid', 'contentPanel');
-				writeJsGridData();
-			});
-
-			function fn_goInsertForm() {
-				var insertUrl = "/mng/prtpn/infntPrgrm/infntPrgrmInsertForm.html";
-				gridHelper1.loadContent(insertUrl);
-			}
-
-			function fn_searchForm() {
-				gridHelper1.resetListContent();
-			}
-
-			function fn_init() {
-				$("#searchKeyword").val('');
-				$("#searchCtprvnCd").val('');
-				$("#searchEduTypeCd").val('');
-				$("#searchCnsgnInstId").val('');
-				gridHelper1.resetListContent();
-			}
-
-			function writeJsGridData() {
-		        $("#jsGrid").jsGrid({
-		            height: "auto",
-		            width: "100%",
-		            autoload: true,
-		            sorting: true,
-		            paging: true,
-		            pagerContainer: "#listPager",
-		            pagerFormat: "{first} {prev} {pages} {next} {last}",
-		            pagePrevText: "이전",
-		            pageNextText: "다음",
-		            pageFirstText: " < 처음 ㅣ",
-		            pageLastText: " | 마지막 >",
-		            pageSize: 10,
-		            pageButtonCount: 10,
-		            pageLoading: true,
-		            pageIndex: 1,
-		            noDataContent: "데이터가 없습니다.",
-
-		            controller: {
-		                loadData: function (filter) {
-		                    var data = $.Deferred();
-		                                            
-		                    var formData = $('#searchFrm').serializeArray();
-		                    var params = [
-		                            {name: "pageNumber", value: filter.pageIndex},
-		                            {name: "rowPerPage", value: filter.pageSize},
-		                    ]
-		                    
-		                    if(filter.sortField != undefined){
-		                        params.push({name: "orderField", value: filter.sortField});
-		                        params.push({name: "orderDirection", value: filter.sortOrder});
-		                    }else{
-		                        params.push({name: "orderField", value: 'reg_dt'});
-		                    }
-		                    formData = formData.concat(params);
-		                    
-		                    $.ajax({
-		                        type: "GET",
-		                        contentType: "application/json; charset=utf-8",
-		                        url: "/mng/prtpn/infntPrgrm/selectInfntPrgrmList.do",
-		                        dataType: "json",
-		                        data: formData,
-		                      }).done(function(response){
-		                          var da = {
-		                                  data : escapeGridData(response.list)
-		                                  ,itemsCount : response.totalCount
-		                              };
-		                        data.resolve(da);
-		                      });
-		                      return data.promise();
-		                  },				
-					},
+			rowClick : function(args) {
+				if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+				var detailUrl = detailUrl = "/mng/prtpn/infntPrgrm/infntPrgrmUpdateForm.html?prgrmId=" + args.item.prgrmId;
 					
-					fields : [
-						{ name : 'prgrmId', css : 'hide' }
-					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
-					  , { title : '교육년도', name : 'eduYr', type : "text", width : "90", align : "center" }
-					  , { title : '교육관', name : 'clssrmNm', type : "text", width : "170", align : "center" }
-					  , { title : '프로그램명', name : 'prgrmNm', type : "text", width : "200", align : "center" }
-					  , { title : '교육주제', name : 'clsfNm', type : "text", width : "140", align : "center" }
-					  , { title : '교육대상', name : 'trgtNm', type : "text", width : "130", align : "center" }
-					  , { title : '접수방법', name : 'rcptMthdNm', type : "text", width : "80", align : "center" }
-                      , { title : '사용여부', name : 'useYn', type : "text", width : "70", align : "center"}
-                      
-					],
-					
-					rowClick : function(args) {
-						if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-						var detailUrl = detailUrl = "/mng/prtpn/infntPrgrm/infntPrgrmUpdateForm.html?prgrmId=" + args.item.prgrmId;
-							
-						gridHelper1.loadContent(detailUrl);
-						gridHelper1.rowClick(args);
-					},
-					onPageChanged : function(args) {
-						selectedItems = [];
-					}
-				});
+				gridHelper1.loadContent(detailUrl);
+				gridHelper1.rowClick(args);
+			},
+			onPageChanged : function(args) {
+				selectedItems = [];
 			}
-		</script>
+		});
+        
+        var selectItem = function(item) {
+        	selectedItems.push(item);
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+         
+        var unselectItem = function(item) {
+            selectedItems = $.grep(selectedItems, function(i) {
+            return i !== item;
+            });
+            if(selectedItems.length == 0) {
+                $('#selectAllCheckbox').attr('checked', false);
+            }
+            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                $("#selectAllCheckbox").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox").prop("checked", false);
+            }
+        };
+        
+        $("#selectAllCheckbox").click(function(item) {
+            selectedItems = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox').each(function() { 
+                    this.checked = true;   
+                    selectItem($(this).parent().next().text());           
+                }); 
+            }else {
+                $('.singleCheckbox').each(function() { 
+                    this.checked = false;      
+                    unselectItem(item);
+                });  
+                selectedItems = [];
+            }
+        });		    
+	}
+    function fn_copyPrgrmInfo() {
+        if (selectedItems.length <= 0) {
+            alert("복사할 프로그램을 선택해주십시오.");
+            return;
+        }
+        if (!confirm("선택한 프로그램을 복사하시겠습니까?")) return;
 
-		<script src="/js/ckeditor/ckeditor.js"></script>
+        var copyPrgrmIds = selectedItems.join(",")
+        var url = prgrmCopyUrl + "?copyPrgrmIds=" + copyPrgrmIds;
+
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    alert(data.msg);
+                    gridHelper1.resetPageContent();
+                    selectedItems = [];
+                    closeWorkProgress();
+                }
+            });
+        }  
+    }	
+</script>
+<script src="/js/ckeditor/ckeditor.js"></script>
+
 	</div>
 </body>
 </html>

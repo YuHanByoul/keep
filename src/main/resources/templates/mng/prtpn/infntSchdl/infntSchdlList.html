@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+	layout:decorator="layout/mng/mainLayout">
+	<link rel="stylesheet" type="text/css" href="/files/assets/icon/ion-icon/css/ionicons.min.css">
+<body>
+	<div layout:fragment="content">
+		<!-- Calender css -->
+	    <link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.css">
+	    <link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.css" media="print">
+		<!-- calender js -->
+		<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+		<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+		<style>
+		.hide
+		{
+		   display:none;
+		}
+		.select-calendar-color
+		{
+		  background-color: #0ac282 !important;
+		}
+		/* 일요일_빨간색 */
+		.fc-sun .fc-day-number {
+		  color: red;
+		  text-decoration: none;
+		}
+		/* 토요일_파란색 */
+		.fc-sat .fc-day-number {
+		  color: blue;
+		  text-decoration: none;
+		}
+		.fc-unthemed td.fc-today {
+		  background-color : #fcf8e3 !important;
+		}		
+		</style>
+		<form id ="infntSchdlForm">
+	        <!-- Page-body start -->
+	        <div class="page-body">
+	            <div class="row">
+	                <div class="col-12">
+	                    <div class="card">
+	                        <div class="card-header">
+	                            <div class="row align-items-center justify-content-between">
+	                                <div class="col-lg-auto mb-3">
+	                                    <div class="row align-items-center">
+	                                        <label class="col-auto"><strong>교육관</strong></label>
+	                                        <div class="col-auto p-l-0">
+	                                            <select name="clssrmId" id="clssrmId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeClssrmId(this)">
+	                                                <option value="">- 선택 -</option>
+	                                                <th:block th:each="item : ${clssList}">
+	                                                    <option th:value="${item.clssrmId}"><th:block th:text="${item.clssrmNm}" /></option>
+	                                                </th:block>
+	                                            </select>
+	                                        </div>
+	                                        <div class="col-auto p-l-0">
+	                                            <select id="searchSchdlId" name="searchSchdlId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeSchdlId(this)">
+	                                                <option value="" disabled selected>교육관을 선택해 주세요.</option>
+	                                            </select>
+	                                        </div>
+	                                    </div>
+	                                </div>
+	                                <div class="col-lg-auto mb-3 text-right">
+	                                    <button type="button" class="btn btn-primary m-r-5" data-bs-toggle="modal" onclick="fn_popInsForm();">교육일정등록</button>
+	                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#popup02" onclick="fn_popUpdForm();">교육일정수정</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="card-block-small p-t-0">
+	                            <div id="calendar"></div>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+        </form>
+		<!-- Page-body end -->
+		<input type="hidden" id="eduTypeCd" name="eduTypeCd" value="" />        
+		<input type="hidden" id="ym" name="ym" value="" />
+		<input type="hidden" id="ymDesc" name="ymDesc" value="" />
+		<div class="modal fade" id="insertPopupModal" aria-hidden="true" data-bs-backdrop="static"></div>
+		<div class="modal fade" id="updatePopupModal" aria-hidden="true" data-bs-backdrop="static"></div>
+		
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>		
+		<script th:inline="javascript">
+		
+		var popInsFormModal;
+		var popUpdFormModal;
+		var eventClickSelectItem = "";
+		
+		fn_popInsForm = () => {
+            var clssrmId = $("#clssrmId").val();
+            var ym = $("#ym").val();
+            var ymDesc = $("#ymDesc").val();
+            var clssrmNm = $("#clssrmId option:checked").text();
+            if(clssrmId == "" || clssrmId == null){
+                alert("교육관을 선택해 주시기 바랍니다.");
+                return;
+            }
+            var url = "/mng/prtpn/infntSchdl/infntSchdlInsertPopup.html?clssrmId="+clssrmId+"&ym="+ym;
+            
+            $("#insertPopupModal").load(url, function(response, status, xhr) {
+                if (status == "success") {
+                    popInsFormModal = new bootstrap.Modal($('#insertPopupModal'));
+                    popInsFormModal.show();
+                }
+            });
+		},
+
+		fn_popUpdForm = () => {
+            var prgrmSchdlid = eventClickSelectItem;
+            if(prgrmSchdlid == "" || prgrmSchdlid == null){
+                alert("수정할 교육일정을 선택해 주시기 바랍니다.");
+                return;
+            }
+            var url = "/mng/prtpn/infntSchdl/infntSchdlUpdatePopup.html?prgrmSchdlid="+prgrmSchdlid;
+            
+            $("#updatePopupModal").load(url, function(response, status, xhr) {
+                if (status == "success") {
+                    popUpdFormModal = new bootstrap.Modal($('#updatePopupModal'));
+                    popUpdFormModal.show();
+                }
+            });
+		},
+
+        $('#calendar').fullCalendar({
+            plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
+            locale : 'ko',
+            defaultView : 'month',
+            //defaultDate : moment(new Date()),
+            defaultDate: moment().format("YYYY-MM-DD"),
+            initialDate : '2023-02-16',
+            editable : false,
+            disable : false,
+            droppable: false,
+            eventLimit: 5,
+            displayEventTime: true,
+            firstDay: 0, 
+            fixedWeekCount :false ,
+            height: "auto",
+            //contentHeight    : "1500px", 
+            monthNames      : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+            monthNamesShort : ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
+            dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
+            dayNamesShort   : ["일","월","화","수","목","금","토"],
+            header : {
+            	left: 'prev,next,today',
+            	center: 'title',
+                right  : ''
+            }, 
+            views: {month: {titleFormat: 'YYYY년 M월'}},
+        	
+/*            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month'
+            },*/
+/*            defaultDate: moment().format("YYYY-MM-DD"),
+            navLinks: true, // can click day/week names to navigate views
+            businessHours: true, // display business hours
+            editable: true,
+            droppable: true, // this allows things to be dropped onto the calendar
+            drop: function() {
+                // is the "remove after drop" checkbox checked?
+                if ($('#checkbox2').is(':checked')) {
+                    // if so, remove the element from the "Draggable Events" list
+                    $(this).remove();
+                }
+            },*/
+            dayClick: function(date, jsEvent, view) {
+            },
+            eventRender:function (event,element){
+                //fn_makeCalendarEvent();            	
+            },
+            eventPositioned: function(info){
+                  $(".fc-event-container").on('click', 'div', function (e) { 
+                      $('.area').css("background-color", '#FFFFFF'); //기존 이벤트제목 배경색 투명처리.
+                      $(this).addClass('area');//배경색을 입힐 타겟 지정용 클래스명 삽입.
+                      $(this).css("background-color", '#F3F781'); //현재 클릭된 요소의 배경색 변경처리.
+                    }); 
+             },            
+            eventClick: function(calEvent, jsEvent, view) {
+                //eventBackgroundColor = jsEvent.currentTarget.style.backgroundColor;
+                $('.select-calendar-color').each(function() {
+                	$(this).removeClass("select-calendar-color");
+                });
+                $(this).toggleClass('select-calendar-color');
+                eventClickSelectItem = calEvent.id;
+            },
+            dayRender: function(date, cell) {
+            },            
+            //캘린더 렌더링 이후  
+            viewRender: function(view, element){
+            }
+        });		
+        // 이전 날짜 클릭
+        $("button.fc-prev-button").click(function() {
+            var orgDate = $("#calendar").fullCalendar("getDate");
+            fn_cnvtDate(orgDate);
+            //fn_makeListHtml();
+        });
+
+        // 다음 날짜 클릭
+        $("button.fc-next-button").click(function() {
+            var orgDate = $("#calendar").fullCalendar("getDate");
+            fn_cnvtDate(orgDate);
+            //fn_makeListHtml();
+        });
+        
+        $(function() {
+        	fn_makeCalendarEvent();
+        });
+        function fn_makeCalendarEvent(){
+            fn_cnvtDate($("#calendar").fullCalendar("getDate"));
+            if(displayWorkProgress()){          
+                // ajax 처리로 데이터를 로딩 시킨다..
+                var ym = $("#ym").val();
+                var searchSchdlId = $("#searchSchdlId").val();
+                var p_events = { events: [] };
+                 $.ajax({
+                    url : "/mng/prtpn/infntSchdl/selectInfntSchdlList.do",
+                    type: "GET",
+                    dataType: 'json',
+                    data : {
+                        "ym" : ym,
+                        "searchSchdlId" : searchSchdlId
+                    },
+                    success : function (data){
+                        //JSON.stringify(data);
+                        //debugger;
+                        $.each(data,function(i){
+                           var title  = "";
+                               title  +=  data[i].rcptMthdNm +' | ' + data[i].schdlNm 
+                            
+                           // calendar.addEvent({title:data[0].title, start:data[0].start, borderColor:data[0].borderColor, backgroundColor:data[0].backgroundColor, borderColor:data[0].borderColor, textColor:data[0].textColor})
+                            p_events.events.push({
+                                title:title
+                               ,id:data[i].prgrmSchdlid
+                               ,start:data[i].de
+                               ,end:data[i].de
+                               ,borderColor:data[i].borderColor
+                               ,backgroundColor:data[i].backgroundColor
+                               ,textColor:data[i].textColor
+                               ,rcptMthdCd:data[i].rcptMthdCd                               
+                               ,rcptMthdNm:data[i].rcptMthdNm
+                           })                           
+                            //events.push({title:data[0].title, start:data[0].start, borderColor:data[0].borderColor, backgroundColor:data[0].backgroundColor, borderColor:data[0].borderColor, textColor:data[0].textColor});
+                        });
+                       $("#calendar").fullCalendar('removeEventSources');
+                       $("#calendar").fullCalendar('addEventSource', p_events);
+                       
+                       closeWorkProgress();
+                       }
+                });            
+            }
+        	
+        }
+        // 날짜값 컨버팅
+        function fn_cnvtDate(date) {
+            var date = new Date(date);
+            $("#ym").val(date.yyyymmdd());
+            $("#ymDesc").val(date.yyyymmddDesc());
+        }
+
+        // 받은 날짜값 입력을 위한 변환(YYYY-MM)
+        Date.prototype.yyyymmdd = function() {
+            var yyyy = this.getFullYear().toString();
+            var mm = (this.getMonth() + 1).toString();
+            var dd = this.getDate().toString();
+            return yyyy + "-" + (mm[1] ? mm : "0" + mm[0]);
+        }        
+
+        // 받은 날짜값 팝업 표기를 위한 변환(YYYY년 MM월)
+        Date.prototype.yyyymmddDesc = function() {
+            var yyyy = this.getFullYear().toString();
+            var mm = (this.getMonth() + 1).toString();
+            return yyyy + "년 " + (mm[1] ? mm : "0" + mm[0]) + "월";
+        }        
+
+        function fn_changeClssrmId(item){
+            var getCodeUrl = "/mng/prtpn/infntSchdl/selectInfntSchdlIdList.do";
+            var url = getCodeUrl + "?clssrmId=" + $(item).val();
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    cache: false,
+                    success: function (data) {
+                        //$("#eduTypeCd").val(data.eduTypeCd);
+                        $("#searchSchdlId").html(fn_makeSearchSchdlIdHtml(data.schdlIdList));
+                        closeWorkProgress();                    
+                    }
+                });
+            }
+        }
+        
+        function fn_changeSchdlId(item){
+        	fn_makeCalendarEvent();        
+        }
+        
+        function fn_makeSearchSchdlIdHtml(dataList) {
+            var schdlIdHtml = "";
+            schdlIdHtml += '           <option value="">- 선택 -</option>   ';  
+            for(var i=0; i<dataList.length; i++){  
+            	schdlIdHtml += '<option value="'+dataList[i].prgrmSchdlid+'">'+dataList[i].schdlNm+'</option>';
+            }
+            return schdlIdHtml;
+        }
+		</script>
+		<script src="/js/ckeditor/ckeditor.js"></script>
+	</div>
+</body>
+</html>

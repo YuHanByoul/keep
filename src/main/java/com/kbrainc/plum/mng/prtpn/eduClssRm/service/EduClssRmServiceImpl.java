@@ -81,4 +81,17 @@ public class EduClssRmServiceImpl extends PlumAbstractServiceImpl implements Edu
     public int updateEduClssRm(EduClssRmVo eduClssRmVo) throws Exception{
         return eduClssRmDao.updateEduClssRm(eduClssRmVo);
     }
+    
+    /**
+    * 교육관_교육유형 조회.
+    *
+    * @Title : updateEduClssRm
+    * @Description : 교육관_교육유형 조회.
+    * @param eduClssRmVo 환경교육관리 객체
+    * @throws Exception 예외
+    * @return int
+    */
+    public EduClssRmVo selectClssrmEduTypeCd(String clssrmId) throws Exception{
+        return eduClssRmDao.selectClssrmEduTypeCd(clssrmId);        
+    }
 }

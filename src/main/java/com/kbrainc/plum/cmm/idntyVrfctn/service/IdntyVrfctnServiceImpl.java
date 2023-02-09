@@ -82,28 +82,17 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
         String sEncData = "";
 
         int iReturn = niceCheck.fnEncode(sSiteCode, sSitePassword, sPlainData);
-        if( iReturn == 0 )
-        {
+        if (iReturn == 0) {
             sEncData = niceCheck.getCipherData();
-        }
-        else if( iReturn == -1)
-        {
+        } else if (iReturn == -1) {
             sMessage = "암호화 시스템 에러입니다.";
-        }
-        else if( iReturn == -2)
-        {
+        } else if (iReturn == -2) {
             sMessage = "암호화 처리오류입니다.";
-        }
-        else if( iReturn == -3)
-        {
+        } else if (iReturn == -3) {
             sMessage = "암호화 데이터 오류입니다.";
-        }
-        else if( iReturn == -9)
-        {
+        } else if (iReturn == -9) {
             sMessage = "입력 데이터 오류입니다.";
-        }
-        else
-        {
+        } else {
             sMessage = "알수 없는 에러 입니다. iReturn : " + iReturn;
         }
 
@@ -138,7 +127,7 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
             result = result.replaceAll("-", "");
             result = result.replaceAll(",", "");
 
-            if(gubun != "encodeData"){
+            if (gubun != "encodeData") {
                 result = result.replaceAll("\\+", "");
                 result = result.replaceAll("/", "");
                 result = result.replaceAll("=", "");
@@ -173,8 +162,7 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
 
         int iReturn = niceCheck.fnDecode(sSiteCode, sSitePassword, sEncodeData);
 
-        if( iReturn == 0 )
-        {
+        if (iReturn == 0) {
             sPlainData = niceCheck.getPlainData();
             //sCipherTime = niceCheck.getCipherDateTime();
 
@@ -195,40 +183,27 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
             result.setSMobileNo((String)mapresult.get("MOBILE_NO"));
             result.setSMobileCo((String)mapresult.get("MOBILE_CO"));
 
-            String session_sRequestNumber = (String)session.getAttribute("REQ_SEQ");
-            if(!sRequestNumber.equals(session_sRequestNumber))
-            {
-                sMessage = "세션값 불일치 오류입니다.";
-                result.setSResponseNumber("");
-                result.setSAuthType("");
+            if (session != null) {
+                String session_sRequestNumber = (String)session.getAttribute("REQ_SEQ");
+                if (!sRequestNumber.equals(session_sRequestNumber)) {
+                    sMessage = "세션값 불일치 오류입니다.";
+                    result.setSResponseNumber("");
+                    result.setSAuthType("");
+                }
             }
-        }
-        else if( iReturn == -1)
-        {
+        } else if (iReturn == -1) {
             sMessage = "복호화 시스템 오류입니다.";
-        }
-        else if( iReturn == -4)
-        {
+        } else if (iReturn == -4) {
             sMessage = "복호화 처리 오류입니다.";
-        }
-        else if( iReturn == -5)
-        {
+        } else if (iReturn == -5) {
             sMessage = "복호화 해쉬 오류입니다.";
-        }
-        else if( iReturn == -6)
-        {
+        } else if (iReturn == -6) {
             sMessage = "복호화 데이터 오류입니다.";
-        }
-        else if( iReturn == -9)
-        {
+        } else if (iReturn == -9) {
             sMessage = "입력 데이터 오류입니다.";
-        }
-        else if( iReturn == -12)
-        {
+        } else if (iReturn == -12) {
             sMessage = "사이트 패스워드 오류입니다.";
-        }
-        else
-        {
+        } else {
             sMessage = "알수 없는 에러 입니다. iReturn : " + iReturn;
         }
 
@@ -261,8 +236,7 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
 
         int iReturn = niceCheck.fnDecode(sSiteCode, sSitePassword, sEncodeData);
 
-        if( iReturn == 0 )
-        {
+        if (iReturn == 0) {
             sPlainData = niceCheck.getPlainData();
             //sCipherTime = niceCheck.getCipherDateTime();
 
@@ -272,33 +246,19 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
             result.setSRequestNumber((String)mapresult.get("REQ_SEQ"));
             result.setSErrorCode((String)mapresult.get("ERR_CODE"));
             result.setSAuthType((String)mapresult.get("AUTH_TYPE"));
-        }
-        else if( iReturn == -1)
-        {
+        } else if (iReturn == -1) {
             sMessage = "복호화 시스템 에러입니다.";
-        }
-        else if( iReturn == -4)
-        {
+        } else if (iReturn == -4) {
             sMessage = "복호화 처리오류입니다.";
-        }
-        else if( iReturn == -5)
-        {
+        } else if (iReturn == -5) {
             sMessage = "복호화 해쉬 오류입니다.";
-        }
-        else if( iReturn == -6)
-        {
+        } else if (iReturn == -6) {
             sMessage = "복호화 데이터 오류입니다.";
-        }
-        else if( iReturn == -9)
-        {
+        } else if (iReturn == -9) {
             sMessage = "입력 데이터 오류입니다.";
-        }
-        else if( iReturn == -12)
-        {
+        } else if (iReturn == -12) {
             sMessage = "사이트 패스워드 오류입니다.";
-        }
-        else
-        {
+        } else {
             sMessage = "알수 없는 에러 입니다. iReturn : " + iReturn;
         }
 

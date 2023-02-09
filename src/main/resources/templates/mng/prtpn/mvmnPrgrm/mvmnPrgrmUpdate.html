@@ -1,0 +1,1063 @@
+<form id ="mvmnPrgrmUpdateForm">
+<input type="hidden" id="prgrmId" name="prgrmId" th:value="${mvmnPrgrm.prgrmId}">
+        <!-- UPDATE -->
+        <div class="card-header p-b-0">
+            <h3 class="sub-title"><strong>교육프로그램 정보</strong></h3>
+        </div>
+
+        <!-- Tab Container Start -->
+         <div class="card-block-small p-t-0">
+             <div class="row">
+                 <div class="col-lg-6 mb-3">                 
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduYr"><strong>교육년도</strong></label>
+                         <div class="col-sm-12">
+                             <select name="eduYr" id="eduYr" class="form-select form-select-sm form-control-sm">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="year : ${years}">
+                                     <option th:value="${year}"><th:block th:text="${year}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">    
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduTypeCd"><strong>교육구분</strong></label>
+                         <div class="col-sm-12">
+                             <span id="eduSeCd" name="eduSeCd" kattr:radio_code="eduSeCd" th:attr="grpCd=196,selectedCd=${mvmnPrgrm.eduSeCd}" isAdmin="true">
+                         </div>
+                     </div>
+                 </div>
+             </div>                 
+             <div class="row">
+                 <div class="col-lg-6 mb-3">                 
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영권역</strong></label>
+                         <div class="col-sm-12">
+                             <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm" onchange="fn_changeSareaId(this)">
+                                 <option value="">- 선택 -</option>
+                                 <th:block th:each="item : ${sareaList}">
+                                     <option th:value="${item.sareaId}" th:selected="${mvmnPrgrm.sareaId} == ${item.sareaId}"><th:block th:text="${item.sareaNm}" /></option>
+                                 </th:block>
+                             </select>
+                         </div>
+                     </div>
+                 </div>                     
+                 <div class="col-lg-6 mb-3">    
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduTypeCd"><strong>교육유형</strong></label>
+                         <div class="col-sm-12">
+                             <th:block kattr:select_code="eduTypeCd" th:attr="grpCd=198,selectedCd=${mvmnPrgrm.eduTypeCd}" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" disabled></th:block>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-12 mb-3">                                                                    
+                     <div class="mb-0 form-group required" >
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="prgrmNm"><strong>프로그램명</strong></label>
+                         <div class="col-12">
+                             <input type="text" class="form-control form-control-sm" name="prgrmNm" id="prgrmNm" placeholder="" th:value="${mvmnPrgrm.prgrmNm}">
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             <div class="row">
+                 <div class="col-6 mb-3">                  
+                     <div id="clsfCdDiv" class="mb-0 form-group required">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
+                         <div id="clsfHtmlDiv">
+                             <div class="row">
+                                 <div class="col-sm">
+                                     <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange='setNextDepth(155,this.value,"clsfCds_2" )' firstOptTxt="- 선택 -" isAdmin="true"></th:block>                           
+                                 </div>
+                                 <div class="col-sm mt-1 mt-sm-0">
+                                     <th:block kattr:select_code="clsfCds_2" th:attr="grpCd=155,selectedCd=${mvmnPrgrm.clsfCd}" firstOptTxt="- 선택 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" disabled></th:block>
+                                 </div>
+                                 <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">
+                                     <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>
+                                     <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>
+                                 </div>
+                             </div>                 
+                         </div>                                  
+                     </div>                                                                   
+<!--                      <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="clsfCd"><strong>교육주제</strong></label>
+                         <div class="row">
+                             <div class="col-sm-4">
+                                 <span kattr:select_codes="clsfCds" th:attr="grpCd=155,selectedCd=${mvmnPrgrm.clsfCd}" addClass="clsfCds" addStyle="margin-left:5px;width:150px;" isAdmin="true" selectedCd=""></span>
+                             </div>                                 
+                             <div class="col-sm-4 mt-1 mt-sm-0">
+                                 <div class="input-group-text btn btn-primary btn-sm">+</div>
+                             </div>
+                         </div>                                                   
+                     </div> -->
+                 </div>
+                 <div class="col-lg-6 mb-3">    
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="operFomCd"><strong>운영형식</strong></label>
+                         <div class="col-sm-12">
+                             <span id="operFomCd" name="operFomCd" kattr:radio_code="operFomCd" th:attr="grpCd=197,selectedCd=${mvmnPrgrm.operFomCd}" isAdmin="true" onchange="fn_changeOperFomCd(this)">                         
+                         </div>
+                     </div>
+                 </div>  
+             </div>
+             <div class="row">                            
+                 <div class="col-6 mb-3">                                                                    
+                     <div class="mb-0 form-group required">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></label>
+                         <div class="row">
+                             <div class="col-sm-12">
+                                 <div class="border-checkbox-section">
+                                     <span kattr:check_code="trgtCd" th:attr="grpCd=199,selectedCd=${mvmnPrgrm.trgtCd}" isAdmin="true" addClass="trgtCds">
+                                 </div>
+                             </div>
+                         </div>                                                   
+                     </div>
+                 </div>  
+             </div>     
+             <div class="row">                                           
+                 <div class="col-lg-6 mb-3">
+                     <div class="col-lg-6 mb-3">
+                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육정원(명)</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="eduNope" id="eduNope" placeholder="" th:value="${mvmnPrgrm.eduNope}" onchange="fn_changeEduNope(this);">
+                             <span class="messages"></span>
+                         </div>
+                     </div>
+                 </div>                     
+                 <div class="col-lg-6 mb-3">                                  
+                     <div class="mb-0 form-group required">                     
+                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육시간(분)</strong></label>
+                         <div class="col-sm-12">
+                             <input type="text" class="form-control form-control-sm" name="eduHrMnt" id="eduHrMnt" placeholder="" th:value="${mvmnPrgrm.eduHrMnt}">
+                             <span class="messages"></span>
+                         </div>
+                     </div>
+                 </div>
+             </div> 
+             <div class="row form-group mb-3">    
+                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>접수방법</strong></div>     
+                 <div class="col-sm-12">
+                      <span id="rcptMthdCd" name="rcptMthdCd" kattr:radio_code="rcptMthdCd" th:attr="grpCd=156,selectedCd=${mvmnPrgrm.rcptMthdCd}" isAdmin="true">
+                  </div>     
+             </div>  
+             <div class="row form-group mb-3">    
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduExpln"><strong>교육설명</strong></label>
+                 <div class="col-sm-12">
+                     <textarea rows="5" cols="5" name="eduExpln" id="eduExpln" class="form-control form-control-sm" placeholder="내용을 입력해주세요." th:text="${mvmnPrgrm.eduExpln}"></textarea>
+                 </div>
+             </div>                                                          
+             <div class="row form-group mb-3">    
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="mttrat"><strong>유의사항</strong></label>
+                 <div class="col-sm-12">
+                     <textarea rows="5" cols="5" name="mttrat" id="mttrat" class="form-control form-control-sm" placeholder="내용을 입력해주세요." th:text="${mvmnPrgrm.mttrat}"></textarea>
+                 </div>
+             </div>                
+             <div class="row form-group mb-3">    
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduIntrcnFileid"><strong>교육소개</strong></label>
+                 <div class="col-sm-12">
+                     <input type="file" class="form-control form-control-sm" id="eduIntrcnFile" name="eduIntrcnFile"/>
+                     <input type="hidden" name="eduIntrcnFilegrpid" id="eduIntrcnFilegrpid" th:value="${mvmnPrgrm.eduIntrcnFilegrpid}">
+                     <input type="hidden" name="eduIntrcnFileid" id="eduIntrcnFileid" th:value="${mvmnPrgrm.eduIntrcnFileid}">                         
+                 </div>
+                 <div class="mt-2 row">
+                     <div class="col-auto">
+                         <th:block th:if="${eduIntrcnFileBtn}">
+                         <div id="eduIntrcnFileUploadSuccess" th:utext="${eduIntrcnFileBtn}">
+                         </div>
+                         </th:block>
+                         <th:block th:unless="${eduIntrcnFileBtn}">
+                         <div id="eduIntrcnFileUploadSuccess">
+                         </div>
+                         </th:block>
+                     </div>
+                 </div>
+             </div>                                                          
+             <div class="row form-group mb-3">    
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="eduPhotoFile"><strong>교육사진</strong></label>
+                 <div class="col-sm-12">
+                     <input type="file" class="form-control form-control-sm" id="eduPhotoFile" name="eduPhotoFile"/>
+                     <input type="hidden" name="eduPhotoFilegrpid" id="eduPhotoFilegrpid" th:value="${mvmnPrgrm.eduPhotoFilegrpid}">
+                     <input type="hidden" name="eduPhotoFileid" id="eduPhotoFileid" th:value="${mvmnPrgrm.eduPhotoFileid}">                         
+                 </div>
+                 <div class="mt-2 row">
+                     <div class="col-auto">
+                     <div class="col-auto">
+                         <th:block th:if="${eduPhotoFileBtn}">
+                         <div id="eduPhotoFileUploadSuccess" th:utext="${eduPhotoFileBtn}">
+                         </div>
+                         </th:block>
+                         <th:block th:unless="${eduPhotoFileBtn}">
+                         <div id="eduPhotoFileUploadSuccess">
+                         </div>
+                         </th:block>
+                     </div>
+                 </div>
+             </div>                                                          
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group required">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육가능요일</strong></div>
+                         <div class="col-sm-12">
+                             <div class="border-checkbox-section">
+                                 <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="sunYn" id="sunYn" th:checked="${mvmnPrgrm.sunYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="sunYn">
+                                         일요일
+                                     </label>
+                                 </div>
+                                 <div class="border-checkbox-group d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="monYn" id="monYn" th:checked="${mvmnPrgrm.monYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label" for="monYn">
+                                         월요일
+                                     </label>
+                                 </div>
+                                 <div class="border-checkbox-group d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="tuesYn" id="tuesYn" th:checked="${mvmnPrgrm.tuesYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label" for="tuesYn">
+                                         화요일
+                                     </label>
+                                 </div>
+                                 <div class="border-checkbox-group d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="wedYn" id="wedYn" th:checked="${mvmnPrgrm.wedYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label" for="wedYn">
+                                         수요일
+                                     </label>
+                                 </div>
+                                 <div class="border-checkbox-group d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="thurYn" id="thurYn" th:checked="${mvmnPrgrm.thurYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label" for="thurYn">
+                                         목요일
+                                     </label>
+                                 </div>
+                                 <div class="border-checkbox-group d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="friYn" id="friYn" th:checked="${mvmnPrgrm.friYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label" for="friYn">
+                                         금요일
+                                     </label>
+                                 </div>
+                                 <div class="border-checkbox-group d-inline-block">
+                                     <input class="border-checkbox" type="checkbox" name="satYn" id="satYn" th:checked="${mvmnPrgrm.satYn eq 'Y'}" onchange="fn_changeEduPssbDayWeekSelectItem(this);">
+                                     <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="satYn">
+                                         토요일
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="col-lg-6 mb-3">
+                     <div class="mb-0 form-group">
+                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></div>
+                         <div class="col-sm-12">
+                             <div class="form-radio">
+                                 <div class="radio radio-inline">
+                                     <label class="mb-0 form-label">
+                                         <input type="radio" name="useYn" value="Y" th:checked="${mvmnPrgrm.useYn eq 'Y'}">
+                                         <i class="helper"></i>사용
+                                     </label>
+                                 </div>
+                                 <div class="radio radio-inline">
+                                     <label class="mb-0 form-label">
+                                         <input type="radio" name="useYn" value="N" th:checked="${mvmnPrgrm.useYn eq 'N'}">
+                                         <i class="helper"></i>미사용
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+         <!-- 교육 시간표 -->
+         <div class="card-header p-b-0">
+             <h3 class="sub-title">
+                 <div class="row">
+                     <div class="col-lg-6 d-flex align-items-end"><strong>교육 시간표<i class="mark-required">*</i></strong></div>
+                     <div class="col-lg-6 text-right">
+                         <button type="button" id="delRowBtn" class="btn btn-disabled btn-sm" onclick="fn_delRow();">삭제</button>
+                         <button type="button" id="addRowBtn" class="btn btn-primary btn-sm"  onclick="fn_addRow();">추가</button>
+                     </div>
+                 </div>
+             </h3>
+         </div>
+         <div class="card-block-small p-t-0">
+             <div class="col-12 table-border-style">
+                 <div class="table-responsive">
+                     <table class="table">
+                         <thead>
+                             <tr>
+                                 <th class="text-center">
+                                     <input id="prgrmTmeSelectAllCheckbox" class="form-check-input" type="checkbox" value="" aria-label="전체 선택" >
+                                 </th>
+                                 <th class="text-center">No.</th>
+                                 <th class="text-center">회차구분</th>
+                                 <th class="text-center">사용요일</th>
+                                 <th class="text-center">시작시간</th>
+                                 <th class="text-center">종료시간</th>
+                             </tr>
+                         </thead>
+                         <tbody id="mvmnPrgrmTmBody">
+                             <th:block th:each="item, stat : ${resultTmeList}">
+                             <tr>
+                                 <td class="text-center v-middle">
+                                     <input id="prgrmTmeSingleCheckbox" name="tmeId" class="form-check-input" type="checkbox" th:value="${item.tmeId}" aria-label="선택" onchange="fn_changeSelectItem(this);">
+                                 </td>
+                                 <td class="text-center v-middle idx" th:text="${stat.count}"></td>
+                                 <td class="text-center v-middle">
+                                     <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" th:value="${item.tmeNm}" style="width:88px;">
+                                 </td>
+                                 <td class="text-center v-middle">
+                                     <div class="border-checkbox-section">
+                                         <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeSunYn" th:id="|tmeSunYn${stat.count}|" th:checked="${item.sunYn eq 'Y'}" th:disabled="${mvmnPrgrm.sunYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label text-c-pink" th:for="|tmeSunYn${stat.count}|">
+                                                 일
+                                             </label>
+                                         </div>
+                                         <div class="border-checkbox-group d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeMonYn" th:id="|tmeMonYn${stat.count}|" th:checked="${item.monYn eq 'Y'}" th:disabled="${mvmnPrgrm.monYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeMonYn${stat.count}|">
+                                                 월
+                                             </label>
+                                         </div>
+                                         <div class="border-checkbox-group d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeTuesYn" th:id="|tmeTuesYn${stat.count}|" th:checked="${item.tuesYn eq 'Y'}" th:disabled="${mvmnPrgrm.tuesYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeTuesYn${stat.count}|">
+                                                 화
+                                             </label>
+                                         </div>
+                                         <div class="border-checkbox-group d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeWedYn" th:id="|tmeWedYn${stat.count}|" th:checked="${item.wedYn eq 'Y'}" th:disabled="${mvmnPrgrm.wedYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeWedYn${stat.count}|">
+                                                 수
+                                             </label>
+                                         </div>
+                                         <div class="border-checkbox-group d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeThurYn" th:id="|tmeThurYn${stat.count}|" th:checked="${item.thurYn eq 'Y'}" th:disabled="${mvmnPrgrm.thurYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeThurYn${stat.count}|">
+                                                 목
+                                             </label>
+                                         </div>
+                                         <div class="border-checkbox-group d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeFriYn" th:id="|tmeFriYn${stat.count}|" th:checked="${item.friYn eq 'Y'}" th:disabled="${mvmnPrgrm.friYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label" th:for="|tmeFriYn${stat.count}|">
+                                                 금
+                                             </label>
+                                         </div>
+                                         <div class="border-checkbox-group d-inline-block">
+                                             <input class="border-checkbox" type="checkbox" name="tmeSatYn" th:id="|tmeSatYn${stat.count}|" th:checked="${item.satYn eq 'Y'}" th:disabled="${mvmnPrgrm.satYn ne 'Y'}">
+                                             <label class="form-label form-label-sm border-checkbox-label text-c-blue" th:for="|tmeSatYn${stat.count}|">
+                                                 토
+                                             </label>
+                                         </div>
+                                     </div>
+                                 </td>
+                                 <td class="text-center v-middle">
+                                     <input type="time" name="bgngTm" th:value="${item.bgngTm}" class="form-control form-control-sm" />
+                                 </td>
+                                 <td class="text-center v-middle">
+                                     <input type="time" name="endTm" th:value="${item.endTm}" class="form-control form-control-sm" />
+                                 </td>
+                             </tr>
+                             </th:block>
+                         </tbody>
+                     </table>
+                 </div>
+             </div>
+         </div>
+        <div class="card-block-small">
+            <button type="button" class="btn btn-disabled m-r-5" id="canceMvmnPrgrm" onclick="gridHelper1.toggleContent()">취소</button>
+            <th:block sec:authorize-url="/mng/prtpn/mvmnPrgrm/updateMvmnPrgrm.do"><button type="button" class="btn btn-primary" id="updateMvmnPrgrm" onclick="fn_updateMvmnPrgrm()">저장</button></th:block>
+        </div>
+        <!-- Tab Container End -->
+</form>
+
+<script th:inline="javascript">
+var clsfCdSelectedItems = [];
+var upprClsfCdSelectedItems = [];
+var prgrmTmeSelectedItems = [];
+var prgrmTmeSelectedTmeIds = [];
+var prgrmTmeDeleteTgtItems = [];
+var eduPssbDayWeekSelectedItems = [];
+
+var sareaViewngMaxAplyNope = 0;
+    init(); 
+    
+    function init() {
+        prgrmTmeSelectedItems = [];
+        prgrmTmeDeleteTgtItems = [];
+        sareaViewngMaxAplyNope = 0;
+        $("#addRowBtn").show();
+        $("#delRowBtn").show();
+
+        var clsfCds = [[${mvmnPrgrm.clsfCd}]];
+        var upprClsfCds = [[${mvmnPrgrm.upprClsfCd}]];
+        
+        //1depth 교육주제 담기        
+        if(upprClsfCds.indexOf(",") >= 0) {            
+            var upprClsfCdsArr = upprClsfCds.split(",");
+            for(var i=0; i<upprClsfCdsArr.length;i++) {
+                upprClsfCdSelectedItems.push(upprClsfCdsArr[i]);
+            }
+        }else{
+            upprClsfCdSelectedItems.push(upprClsfCds);
+        }
+        
+        //2depth 교육주제 담기
+        if(clsfCds.indexOf(",") >= 0) {            
+            var clsfCdsArr = clsfCds.split(",");
+            for(var i=0; i<clsfCdsArr.length;i++) {
+                clsfCdSelectedItems.push(clsfCdsArr[i]);
+            }
+        }else{
+            clsfCdSelectedItems.push(clsfCds);
+        }
+
+        $("#clsfHtmlDiv").html( fn_makeClsfCdsDivHtml() );
+    }
+    
+    function fn_updateMvmnPrgrm(){
+        if(!($("#mvmnPrgrmUpdateForm").valid())) return;
+        if(!confirm("저장하시겠습니까?")) return;
+
+        // 교육가능 요일 등록
+        var monYn = ($("#monYn").is(":checked") ? "Y" : "N");
+        var tuesYn = ($("#tuesYn").is(":checked") ? "Y" : "N");
+        var wedYn = ($("#wedYn").is(":checked") ? "Y" : "N");
+        var thurYn = ($("#thurYn").is(":checked") ? "Y" : "N");
+        var friYn = ($("#friYn").is(":checked") ? "Y" : "N");
+        var satYn = ($("#satYn").is(":checked") ? "Y" : "N");
+        var sunYn = ($("#sunYn").is(":checked") ? "Y" : "N");
+
+        $("#monYn").val(monYn);
+        $("#tuesYn").val(tuesYn);
+        $("#wedYn").val(wedYn);
+        $("#thurYn").val(thurYn);
+        $("#friYn").val(friYn);
+        $("#satYn").val(satYn);
+        $("#sunYn").val(sunYn);
+        
+        var eduTypeCd = $('#eduTypeCd').val();
+        var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
+        var clsfCds = $('[name=clsfCds_2] option:selected').map(function(){ return $(this).val();}).get().join(",");
+
+        var data =  $("#mvmnPrgrmUpdateForm").serialize();
+        data = data+"&eduTypeCd="+eduTypeCd+"&trgtCds="+trgtCds+"&clsfCds="+clsfCds;
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/prtpn/mvmnPrgrm/updateMvmnPrgrm.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        var dataList = new Array();
+                        for(var i = 0; i < $("#mvmnPrgrmTmBody").children().length; i++) {
+                            var data = new Object();
+                            data["prgrmId"]     = $("#prgrmId").val();
+                            data["tmeId"]       = $("#mvmnPrgrmTmBody").find($("input[name=tmeId]")[i]).val();
+                            data["tmeNm"]       = $("#mvmnPrgrmTmBody").find($("input[name=tmeNm]")[i]).val();
+                            data["tmeSunYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeSunYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeMonYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeMonYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeTuesYn"]   = $("#mvmnPrgrmTmBody").find($("[name=tmeTuesYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeWedYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeWedYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeThurYn"]   = $("#mvmnPrgrmTmBody").find($("[name=tmeThurYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeFriYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeFriYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["tmeSatYn"]    = $("#mvmnPrgrmTmBody").find($("[name=tmeSatYn]")[i]).is(":checked") == true ?  "Y" : "N";
+                            data["bgngTm"]      = $("#mvmnPrgrmTmBody").find($("input[name=bgngTm]")[i]).val();
+                            data["endTm"]       = $("#mvmnPrgrmTmBody").find($("input[name=endTm]")[i]).val();
+                            data["delFlag"]     = prgrmTmeDeleteTgtItems.includes($("#mvmnPrgrmTmBody").find($("input[name=tmeId]")[i]).val()) ? "Y" : "N";
+                            data["ordr"]        = i+1;
+                            dataList.push(data);
+                        }
+                        var params = new Object();
+                        params["mvmnPrgrmVoList"] = dataList;
+                        $.ajax({
+                            url : "/mng/prtpn/mvmnPrgrm/insertMvmnPrgrmTmeList.do",
+                            cache : false,
+                            dataType : 'json',
+                            data : JSON.stringify(params),
+                            type : 'POST',
+                            contentType: "application/json; charset=utf-8",
+                            success : function(data) {
+                                alert(data.msg);
+                            }
+                        });
+                        gridHelper1.resetListContent();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    function fn_changeSareaId(item){
+        var getCodeUrl = "/mng/prtpn/eduClssRm/selectSareaEduTypeCd.do";
+        var url = getCodeUrl + "?sareaId=" + $(item).val();
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: url,
+                type: 'POST',
+                cache: false,
+                success: function (data) {
+                    $("#eduTypeCd").val(data.eduTypeCd);
+                    $("#eduNope").val(data.sareaViewngMaxAplyNope);
+                    //교육관 최대 신청 인원수 세팅.
+                    sareaViewngMaxAplyNope = data.sareaViewngMaxAplyNope;
+                    closeWorkProgress();                    
+                }
+            });
+        }
+    }
+    
+    function fn_changeEduNope(item){
+        if(parseInt(sareaViewngMaxAplyNope) == 0){
+            return;         
+        }
+        if(parseInt($(item).val()) > 0 && parseInt($(item).val()) > parseInt(sareaViewngMaxAplyNope)){
+            alert("교육관 관람 최대 신청 인원수("+sareaViewngMaxAplyNope+"명)를 초과할 수 없습니다.");
+            $(item).val(sareaViewngMaxAplyNope);
+            return;
+        }
+    }
+    
+    function fn_changeOperFomCd(item){
+        if($(item).val() == "197102"){
+            $("#addRowBtn").hide();
+            $("#delRowBtn").hide();
+        }else{
+            $("#addRowBtn").show();
+            $("#delRowBtn").show();
+        }
+    }    
+    // 체크박스
+    function fn_changeSelectItem(item){
+        if($(item).is(":checked")){
+            prgrmTmeSelectItem($(item).parent().next().text());
+            if($(item).val() != '' && $(item).val() != undefined){
+                prgrmTmeSelectedTmeIds.push($(item).val());
+            }
+        }else{
+            prgrmTmeUnselectItem($(item));
+/*          prgrmTmeSelectedTmeIds = $.grep(prgrmTmeSelectedTmeIds, function(i) {
+                return i !== $(item).val();
+            });          */
+        }
+        
+    }
+    
+    var prgrmTmeSelectItem = function(item) {
+        prgrmTmeSelectedItems.push(item);
+        if($("[id=prgrmTmeSingleCheckbox]").length == $("[id=prgrmTmeSingleCheckbox]:checked").length) {
+            $("#prgrmTmeSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#prgrmTmeSelectAllCheckbox").prop("checked", false);
+        }
+    }
+     
+    var prgrmTmeUnselectItem = function(item) {
+        
+        prgrmTmeSelectedItems = $.grep(prgrmTmeSelectedItems, function(i) {
+            return i !== $(item).parent().next().text();
+        });
+        prgrmTmeSelectedTmeIds = $.grep(prgrmTmeSelectedTmeIds, function(i) {
+            return i !== $(item).val();
+        });         
+        
+        if(prgrmTmeSelectedItems.length == 0) {
+            $('#prgrmTmeSelectAllCheckbox').attr('checked', false);
+        }
+        if($("[id=prgrmTmeSingleCheckbox]").length == $("[id=prgrmTmeSingleCheckbox]:checked").length) {
+            $("#prgrmTmeSelectAllCheckbox").prop("checked", true);
+        } else {
+            $("#prgrmTmeSelectAllCheckbox").prop("checked", false);
+        }
+    }
+
+    $("#prgrmTmeSelectAllCheckbox").click(function(item) {
+        prgrmTmeSelectedItems = [];
+        prgrmTmeSelectedTmeIds = [];
+        if(this.checked) { // check select status
+            $('[id=prgrmTmeSingleCheckbox]').each(function() { 
+                this.checked = true;   
+                prgrmTmeSelectItem($(this).parent().next().text());    
+                if($(this).val() != '' && $(this).val() != undefined){
+                    prgrmTmeSelectedTmeIds.push($(this).val());
+                }                
+            }); 
+        }else {
+            $('[id=prgrmTmeSingleCheckbox]').each(function() {
+                this.checked = false;      
+                console.log(item);
+                //prgrmTmeUnselectItem($(this).parent().next().text());
+                prgrmTmeUnselectItem($(this));
+            });
+            
+            prgrmTmeSelectedItems = [];
+        }
+    })
+    // 교육주제 행추가
+    function fn_addRowClsfCds(item){
+        var rowCnt = $("#clsfCdDiv").find('.row').length;
+        //추가버튼 삭제 -> 마지막 행에만 추가한다..
+        $("#clsfCdDiv").find("#addRowClsfCds").remove();
+        $("#clsfCdDiv").find('.row').last().after( fn_makeClsfCdsListHtml() );
+        
+    }
+    // 교육시간표 행삭제
+    function fn_delRowClsfCds(item) {
+        var rowCnt = $("#clsfCdDiv").find('.row').length;
+        if(rowCnt <= 1){
+            return;
+        }else{
+            $(item).parent().parent().remove();
+            //행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
+            $("#clsfCdDiv").find("#addRowClsfCds").remove();
+            var btnHtml = '<button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>';
+            
+            $("#clsfCdDiv").find('.row :button').last().after( btnHtml );
+        }
+    }
+    // 교육시간표 행추가
+    function fn_addRow() {
+        var trCnt = $("#mvmnPrgrmTmBody").children().length;
+        
+        $("#mvmnPrgrmTmBody").append( fn_makeListHtml() );
+    }
+    // 교육시간표 행삭제
+    function fn_delRow() {
+        if(!prgrmTmeValidChecked()) return false;
+        var trCnt = 0;
+        prgrmTmeSelectedItems.forEach(function (item, index, array) {
+            $('#mvmnPrgrmTmBody .idx').each(function() {
+                if($(this).text() == item){
+                    trCnt = $('#mvmnPrgrmTmBody .idx').length;
+                    var tmeId = $(this).parent().find('[name=tmeId]').val();
+                    if(trCnt <= 2){
+                        alert("더이상 삭제가 불가 합니다.")
+                        return;
+                    }
+                    if(tmeId != "" && tmeId != undefined){
+                        $(this).parent().hide();
+                    }else{
+                        $(this).parent().remove();
+                    }
+                }
+            });
+        });
+        //삭제대상 COPY
+        prgrmTmeDeleteTgtItems = prgrmTmeSelectedTmeIds;
+        //넘버링 초기화
+        $('#mvmnPrgrmTmBody .idx').each(function(i) {$(this)
+            $(this).text(i+1);
+        });
+    }
+    
+    function prgrmTmeValidChecked() {
+        if(prgrmTmeSelectedItems.length == 0) {
+            alert("삭제할 대상을 선택해주세요.");
+            return false;
+        }
+        return true;
+    }
+    
+    function fn_makeClsfCdsDivHtml() {
+        var clsfCdsDivHtml = "";
+        var rowCnt =  $("#clsfCdDiv").find('.row').length;
+        for(var i=0; i<clsfCdSelectedItems.length; i++){
+            if(i==0){
+                clsfCdsDivHtml += '<div class="row">   ';
+                clsfCdsDivHtml += '   <div class="col-sm">   ';
+                clsfCdsDivHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\'>    ';
+            }else{
+                clsfCdsDivHtml += '<div class="row mt-1">   ';
+                clsfCdsDivHtml += '   <div class="col-sm">   ';
+                clsfCdsDivHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_'+(i+1)+'" )\'>    ';
+            }
+            clsfCdsDivHtml += '           <option value="">- 선택 -</option>   ';     
+            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155101" ? '<option value="155101" selected>생활환경</option>' : '<option value="155101">생활환경</option>';     
+            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155102" ? '<option value="155102" selected>지구환경</option>' : '<option value="155102">지구환경</option>';     
+            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155103" ? '<option value="155103" selected>자연환경</option>' : '<option value="155103">자연환경</option>';     
+            clsfCdsDivHtml += upprClsfCdSelectedItems[i] == "155104" ? '<option value="155104" selected>환경문화</option>' : '<option value="155104">환경문화</option>';     
+            clsfCdsDivHtml += '       </select>    ';       
+            clsfCdsDivHtml += '   </div>   ';
+            clsfCdsDivHtml += '   <div class="col-sm mt-1 mt-sm-0">   ';
+            if(i==0){
+                clsfCdsDivHtml += '       <select id="clsfCds_2" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
+            }else{
+                clsfCdsDivHtml += '       <select id="clsfCds_2_'+(i+1)+'" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '             
+            }
+            clsfCdsDivHtml += '           <option value="">- 선택 -</option>   ';
+            if(upprClsfCdSelectedItems[i] =="155101"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101101" ? '<option value="155101101" selected>소음</option>' : '<option value="155101101">소음</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101102" ? '<option value="155101102" selected>폐기물 및 자원순환</option>' : '<option value="155101102">폐기물 및 자원순환</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155101103" ? '<option value="155101103" selected>환경보건</option>' : '<option value="155101103">환경보건</option>';               
+            }else if(upprClsfCdSelectedItems[i] =="155102"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102101" ? '<option value="155102101" selected>물</option>' : '<option value="155102101">물</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102102" ? '<option value="155102102" selected>토양</option>' : '<option value="155102102">토양</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155102103" ? '<option value="155102103" selected>생태계</option>' : '<option value="155102103">생태계</option>';               
+            }else if(upprClsfCdSelectedItems[i] =="155103"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103101" ? '<option value="155103101" selected>기후변화 및 탄소중립</option>' : '<option value="155103101">기후변화 및 탄소중립</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103102" ? '<option value="155103102" selected>대기</option>' : '<option value="155103102">대기</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155103103" ? '<option value="155103103" selected>에너지</option>' : '<option value="155103103">에너지</option>';               
+            }else if(upprClsfCdSelectedItems[i] =="155104"){
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155104101" ? '<option value="155104101" selected>지속가능발전</option>' : '<option value="155104101">지속가능발전</option>';               
+                clsfCdsDivHtml += clsfCdSelectedItems[i] == "155104102" ? '<option value="155104102" selected>생명윤리</option>' : '<option value="155104102">생명윤리</option>';               
+            }
+            clsfCdsDivHtml += '       </select>    '
+            clsfCdsDivHtml += '   </div>   '
+            clsfCdsDivHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   ';
+            clsfCdsDivHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   ';
+            clsfCdsDivHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   ';
+            clsfCdsDivHtml += '   </div>   ';
+            clsfCdsDivHtml += '</div>    ';
+        }
+        return clsfCdsDivHtml;
+    }
+    
+    function fn_makeClsfCdsListHtml() {
+        var clsfCdsHtml = "";
+        var rowCnt =  $("#clsfCdDiv").find('.row').length;
+        
+        clsfCdsHtml += '<div class="row mt-1">   '
+        clsfCdsHtml += '   <div class="col-sm">   '
+        clsfCdsHtml += '       <select class="form-select form-select-sm form-control-sm   " style="" id="clsfCds_1" name="clsfCds_1" onchange=\'setNextDepth(155,this.value,"clsfCds_2_'+rowCnt+'" )\'>    '
+        clsfCdsHtml += '           <option value="">- 선택 -</option>   '     
+        clsfCdsHtml += '           <option value="155101">생활환경</option>   '     
+        clsfCdsHtml += '           <option value="155103">지구환경</option>   '     
+        clsfCdsHtml += '           <option value="155102">자연환경</option>   '     
+        clsfCdsHtml += '           <option value="155104">환경문화</option>   '
+        clsfCdsHtml += '       </select>    '       
+        //clsfCdsHtml += '       <th:block kattr:select_code="clsfCds_1" grpCd="155" upprCd="0" selectedCd="" onchange=\'setNextDepth(155,this.value,"clsfCds_2" )\' firstOptTxt="- 선택 -" isAdmin="true"></th:block>    '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '   <div class="col-sm mt-1 mt-sm-0">   '
+        clsfCdsHtml += '       <select id="clsfCds_2_'+rowCnt+'" name="clsfCds_2" class="form-select form-select-sm form-control-sm">   '
+        clsfCdsHtml += '           <option value="" disabled selected>대분류를 선택하세요</option>   '
+        clsfCdsHtml += '       </select>    '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '   <div id="btnDiv" class="mt-1 mt-sm-0" style="width:100px;">   '
+        clsfCdsHtml += '       <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowClsfCds(this)">-</button>   '
+        clsfCdsHtml += '       <button type="button" id="addRowClsfCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowClsfCds(this)">+</button>   '
+        clsfCdsHtml += '   </div>   '
+        clsfCdsHtml += '</div>    ';
+        
+        return clsfCdsHtml;
+    }
+
+    function fn_makeListHtml(list) {
+        var html = "";
+        var trCnt = $("#mvmnPrgrmTmBody").children().length;
+        html += '<tr>                                                                                                                                                       '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input id="prgrmTmeSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeSelectItem(this);">       '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle idx">' + (trCnt+1) + '</td>                                                                                                '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input type="text" class="form-control form-control-sm d-inline-block" name="tmeNm" placeholder="" value="" style="width:88px;">                   '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <div class="border-checkbox-section">                                                                                                              '
+        html += '            <div class="border-checkbox-group border-checkbox-group-inverse d-inline-block">                                                               '
+        if($("#sunYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSunYn" id="tmeSunYn' + (trCnt+1) + '" disabled>                                             '          
+        }      
+        html += '                <label class="form-label form-label-sm border-checkbox-label text-c-pink" for="tmeSunYn' + (trCnt+1) + '">                                 '
+        html += '                    일                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if($("#monYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeMonYn" id="tmeMonYn' + (trCnt+1) + '" disabled>                                             '          
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeMonYn' + (trCnt+1) + '">                                             '
+        html += '                    월                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if($("#tuesYn").prop("checked")){     
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '">                                           '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeTuesYn" id="tmeTuesYn' + (trCnt+1) + '" disabled>                                           '          
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeTuesYn' + (trCnt+1) + '">                                            '
+        html += '                    화                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if($("#wedYn").prop("checked")){
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeWedYn" id="tmeWedYn' + (trCnt+1) + '" disabled>                                             '          
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeWedYn' + (trCnt+1) + '">                                             '
+        html += '                    수                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if($("#thurYn").prop("checked")){
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '">                                           '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeThurYn" id="tmeThurYn' + (trCnt+1) + '" disabled>                                           '          
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeThurYn' + (trCnt+1) + '">                                            '
+        html += '                    목                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if($("#friYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '">                                    '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeFriYn" id="tmeFriYn' + (trCnt+1) + '" disabled>                                    '
+        }      
+        html += '                <label class="form-label form-label-sm border-checkbox-label" for="tmeFriYn' + (trCnt+1) + '">                                             '
+        html += '                    금                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '            <div class="border-checkbox-group d-inline-block">                                                                                             '
+        if($("#satYn").prop("checked")){      
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '">                                             '
+        }else{
+            html += '                <input class="border-checkbox" type="checkbox" name="tmeSatYn" id="tmeSatYn' + (trCnt+1) + '" disabled>                                             '          
+        }
+        html += '                <label class="form-label form-label-sm border-checkbox-label text-c-blue" for="tmeSatYn' + (trCnt+1) + '">                                 '
+        html += '                    토                                                                                                                                      '
+        html += '                </label>                                                                                                                                   '
+        html += '            </div>                                                                                                                                         '
+        html += '        </div>                                                                                                                                             '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input type="time" name="bgngTm" class="form-control form-control-sm" />                                                                           '
+        html += '    </td>                                                                                                                                                  '
+        html += '    <td class="text-center v-middle">                                                                                                                      '
+        html += '        <input type="time" name="endTm" class="form-control form-control-sm" />                                                                            '
+        html += '    </td>                                                                                                                                                  '
+        html += '</tr>                                                                                                                                                      '
+        
+        return html;
+    }
+    //라디오_운영형식 변경시
+    $("input[name=operFomCd]:radio").change(function() {
+        fn_changeOperFomCd(this);
+    });
+    
+    //교육소개
+    $('#eduIntrcnFile').change(function(event) {
+        var formData = new FormData();
+        var objFile = event.target;
+        var content = "";
+        formData.append("file", objFile.files[0]);
+        formData.append("filegrpNm", "eduIntrcn_file");
+        if($('#eduIntrcnFilegrpid').val() != '')
+            formData.append("filegrpid", $('#eduIntrcnFilegrpid').val());
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : '/uploadFile.do',
+                processData : false,
+                contentType : false,
+                data : formData,
+                type : 'POST',
+                success : function(response) {
+                    if(response.result == 'fail'){
+                        alert(response.msg);
+                    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                        $("#eduIntrcnFilegrpid").val(response.filegrpid);
+                        $("#eduIntrcnFileid").val(response.fileid);
+                        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
+                        content +="<a href=javascript:fn_deleteEduIntrcnFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+                        $('#eduIntrcnFileUploadSuccess').html(content);
+                    }
+                    closeWorkProgress();
+                }
+            });
+            $("#eduIntrcnFile").val("");
+        }
+        event.preventDefault();
+    });
+    //교육사진
+    $('#eduPhotoFile').change(function(event) {
+        var formData = new FormData();
+        var objFile = event.target;
+        var content = "";
+
+        formData.append("file", objFile.files[0]);
+        formData.append("filegrpNm", "eduPhotoFile_file");
+        
+        if($('#eduPhotoFilegrpid').val() != '')
+            formData.append("filegrpid", $('#eduPhotoFilegrpid').val());
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : '/uploadFile.do',
+                processData : false,
+                contentType : false,
+                data : formData,
+                type : 'POST',
+                success : function(response) {
+                    if(response.result == 'fail'){
+                        alert(response.msg);
+                    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                        $("#eduPhotoFilegrpid").val(response.filegrpid);
+                        $("#eduPhotoFileid").val(response.fileid);
+                        content = "<div class ='label label-inverse text-white' id='"+response.fileid+"'><a href=javascript:downloadFileByFileid('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>"+response.orginlFileNm+"&nbsp;&nbsp;</a>";
+                        content +="<a href=javascript:fn_deleteEduPhotoFileList('"+response.fileid+"','"+response.fileIdntfcKey+"') class='text-white'>X</a></div>";
+                        $('#eduPhotoFileUploadSuccess').html(content);
+                    }
+                    closeWorkProgress();
+                }
+            });
+            $("#eduPhotoFile").val("");
+        }
+        event.preventDefault();
+    });   
+    
+    function fn_deleteEduIntrcnFileList(fileid, fileIdntfcKey){
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        fn_deleteEduIntrcnFile(fileid, fileIdntfcKey);
+        $("#"+fileid).remove();
+        $('#eduIntrcnFile').val('');
+    } 
+
+    function fn_deleteEduIntrcnFile(fileid, fileIdntfcKey){
+        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+          $.ajax({
+            url : deleteFileUrl,
+            type: 'GET',
+            cache : false,
+            dataType: 'json',
+            success : function (data){
+                if(data.result=="success"){
+                    $("#"+fileid).remove();
+                    $('#eduIntrcnFileid').val(0);
+                    $('#eduIntrcnFilegrpid').val(0);
+                    $('#eduIntrcnFile').val('');
+                    alert("파일삭제가 완료 되었습니다.");
+                }else{
+                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                }
+            },
+            error : function (error){
+            } 
+         })
+    };   
+
+    function fn_deleteEduPhotoFileList(fileid, fileIdntfcKey){
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        fn_deleteEduPhotoFile(fileid, fileIdntfcKey);
+        $("#"+fileid).remove();
+        $('#eduPhotoFile').val('');
+    } 
+
+    function fn_deleteEduPhotoFile(fileid, fileIdntfcKey){
+                   
+        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey; 
+          $.ajax({
+            url : deleteFileUrl,
+            type: 'GET',
+            cache : false,
+            dataType: 'json',
+            success : function (data){
+                if(data.result=="success"){
+                    $("#"+fileid).remove();
+                    $('#eduPhotoFileid').val(0);
+                    $('#eduPhotoFilegrpid').val(0);
+                    $('#eduPhotoFileFile').val('');
+                    alert("파일삭제가 완료 되었습니다.");
+                }else{
+                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                }
+            },
+            error : function (error){
+            } 
+         })
+    }; 
+    
+    // 교육가능요일 체크박스
+    function fn_changeEduPssbDayWeekSelectItem(item){
+        $(item).is(":checked") ? eduPssbDayWeekSelectedItem($(item).attr('id')) : eduPssbDayWeekUnSelectedItem($(item).attr('id'));     
+    }    
+    
+    var eduPssbDayWeekSelectedItem = function(item) {
+        eduPssbDayWeekSelectedItems.push(item);
+        
+        if($("#monYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled",false);
+        }
+        
+        if($("#tuesYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled",false);
+        }
+        
+        if($("#wedYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled",false);
+        }
+        
+        if($("#thurYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled",false);
+        }
+        
+        if($("#friYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled",false);
+        }
+        
+        if($("#satYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled",false);
+        }        
+
+        if($("#sunYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled",false);
+        }        
+    }
+     
+    var eduPssbDayWeekUnSelectedItem = function(item) {
+        eduPssbDayWeekSelectedItems = $.grep(eduPssbDayWeekSelectedItems, function(i) {
+        return i !== item;
+        });
+        if(!$("#monYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeMonYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeMonYn]').prop("checked", false);
+        }
+        
+        if(!$("#tuesYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeTuesYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeTuesYn]').prop("checked", false);
+        }
+        
+        if(!$("#wedYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeWedYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeWedYn]').prop("checked", false);
+        }
+        
+        if(!$("#thurYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeThurYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeThurYn]').prop("checked", false);
+        }
+        
+        if(!$("#friYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeFriYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeFriYn]').prop("checked", false);
+        }
+        
+        if(!$("#satYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeSatYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeSatYn]').prop("checked", false);
+        }        
+
+        if(!$("#sunYn").prop("checked")){
+            $("#mvmnPrgrmTmBody").find('[name=tmeSunYn]').attr("disabled",true);
+            $("#mvmnPrgrmTmBody").find('[name=tmeSunYn]').prop("checked", false);
+        }        
+    }
+    
+    
+    
+</script>
