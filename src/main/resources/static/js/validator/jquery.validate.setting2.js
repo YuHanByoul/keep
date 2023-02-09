@@ -12,7 +12,9 @@ $.validator.setDefaults({
                 highlight :true,
                 showErrors:function(errorMap, errorList){ //alert
                     $('.form-msg').text('');
-                    $('.feedback.invalid', this.currentForm).text('').removeClass("invalid");
+                    if(this.currentElements.length > 1) {
+                        $('.feedback.invalid', this.currentForm).text('').removeClass("invalid");
+                    }
                     if(this.numberOfInvalids() && errorList.length != 0) {
                         //option1 : alert 표시
                         //alert(errorList[0].message);
