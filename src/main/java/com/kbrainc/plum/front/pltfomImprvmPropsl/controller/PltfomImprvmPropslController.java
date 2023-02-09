@@ -1,9 +1,6 @@
 package com.kbrainc.plum.front.pltfomImprvmPropsl.controller;
 
-import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
-import com.kbrainc.plum.front.inqry.model.InqryAnsVo;
-import com.kbrainc.plum.front.inqry.model.InqryVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslAnsVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.serivce.PltfomImprvmPropslService;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,12 +89,12 @@ public class PltfomImprvmPropslController {
     public String pltfomImprvPropslDetail(PltfomImprvmPropslVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
 
         PltfomImprvmPropslVo propsl = pltfomImprvmPropslService.selectPropsl(searchVo);
-//        PltfomImprvmPropslAnsVo propslAns = pltfomImprvmPropslService.selectPropslAns(searchVo);
+        PltfomImprvmPropslAnsVo propslAns = pltfomImprvmPropslService.selectPropslAns(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("propsl", propsl);
-//        model.addAttribute("inqryAns", inqryAns);
+        model.addAttribute("propslAns", propslAns);
         return VIEW_PREFIX + "/pltfomImprvmPropslDetail";
     }
 

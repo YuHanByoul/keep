@@ -40,12 +40,12 @@ public class PltfomImprvmPropslVo extends ParentRequestVo {
 
     private Integer userid;
 
-    @NotEmpty(message="제목을 입력해주십시오.")
-    @Size(max = 100 , message = "제목은 100자를 넘을 수 없습니다.")
+    @NotEmpty(message = "제목을 입력해주십시오.")
+    @Size(max = 100, message = "제목은 100자를 넘을 수 없습니다.")
     private String ttl;
 
-    @NotEmpty(message="내용을 입력해주십시오.")
-    @Size(max = 4000 , message = "내용은 4000자를 넘을 수 없습니다.")
+    @NotEmpty(message = "내용을 입력해주십시오.")
+    @Size(max = 4000, message = "내용은 4000자를 넘을 수 없습니다.")
     private String cn;
 
     private String acnt;
