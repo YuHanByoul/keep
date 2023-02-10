@@ -110,7 +110,7 @@ public class HelpdeskController {
 
         Map<String, Object> fileConfiguration = fileService.getConfigurationByFilegrpName("helpdesk_file");
 
-        String uploadFileExtSn = ((HashMap<String, String>) fileConfiguration.get("uploadFileExtSn"))
+        String uploadFileExtsn = ((HashMap<String, String>) fileConfiguration.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
                 .map(stringStringEntry -> "." + stringStringEntry.getValue())
@@ -118,7 +118,7 @@ public class HelpdeskController {
 
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("fileConfiguration", fileConfiguration);
-        model.addAttribute("acceptUploadFileExt", uploadFileExtSn);
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
         model.addAttribute("helpdesk", helpdesk);
 
         return VIEW_PREFIX + "/helpdeskForm";

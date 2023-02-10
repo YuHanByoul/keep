@@ -6,7 +6,9 @@
 <div layout:fragment="content">
     <div class="table-caption">
         <div class="left">
-            <h3 class="sub-title">탄소중립 헬프데스크 신청 수정</h3>
+            <h3 class="sub-title">탄소중립 헬프데스크 신청
+                <th:block th:text="${helpdesk.inqryid == null? '등록' : '수정'}"/>
+            </h3>
         </div>
         <div class="right">
             <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
@@ -62,7 +64,8 @@
                     <td>
                         <div class="form-input-file">
                             <label class="form-input">
-                                <input type="file" class="blind" th:attr="accept=${acceptUploadFileExt}" title="파일첨부" maxcount="5">
+                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
+                                       th:attr="accept=${acceptUploadFileExt}">
                                 <span class="inp-file-text placeholder" data-width="400">파일첨부</span>
                                 <span class="btn-medium btn-gray">파일선택</span>
                             </label>
@@ -97,7 +100,7 @@
             <ul>
                 <li>첨부 가능 확장자 :
                     <th:block>
-                        <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtSn}">
+                        <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtsn}">
                             [[${item.value}]]
                             <th:block th:if="${!itemStat.last}">,&nbsp;</th:block>
                         </th:block>
@@ -129,6 +132,23 @@
     </form>
 
     <script th:inline="javascript">
+        var cnTemplate =
+            `□ 적용 학교급 *아래의 유형 중 해당 사항 필수 기재
+             - 초등저
+             - 초등고
+             - 중등
+             - 고등
+             - 기타
+
+            □ 문의유형 *아래의 유형 중 해당 사항을 필수 기재
+             - 자료요청(교재, 지도안, 영상, 안내서 등)
+             - 정보제공(사이트, 지원사업 등)
+             - 컨설팅제공
+             - 기타
+
+            ※ 강의(강사)요청은 전문가ㆍ강사 > 환경교육 전문가 풀 > 섭외 요청 게시판에 글을
+            작성해주시기바랍니다.`;
+
         var frontHelpdeskForm = {
             insertUrl: '/front/helpdesk/insertHelpdesk.do',
             updateUrl: '/front/helpdesk/updateHelpdesk.do',
@@ -141,13 +161,13 @@
             },
 
             save() {
-                if (!$('#inqryForm').valid()) return;
+                if (!$('#helpdeskForm').valid()) return;
 
                 let url = this.insertUrl;
                 if (this.inqryid != null) url = this.updateUrl;
 
                 if (displayWorkProgress(true)) {
-                    let formData = $('#inqryForm').serializeArray();
+                    let formData = $('#helpdeskForm').serializeArray();
                     var params = [];
 
                     params.push({name: 'inqryid', value: frontHelpdeskForm.inqryid});
@@ -172,16 +192,16 @@
             },
 
             validateForm() {
-                $('#inqryForm').validate({
+                $('#helpdeskForm').validate({
                     rules: {
                         clsfCd: {required: true},
-                        ttl: {required: true, maxlength : true},
-                        cn: {required: true, maxlength : true},
+                        ttl: {required: true, maxlength : 100},
+                        cn: {required: true, maxlength : 4000},
                     },
                     messages: {
                         clsfCd: {required: "분류를 선택해 주십시오."},
                         ttl: {required: "제목을 입력해 주십시오.", maxlength: "제목은 100자를 넘을 수 없습니다."},
-                        cn: {required: "내용을 입력해 주십시오.", maxlength: "내용은 400자를 넘을 수 없습니다."},
+                        cn: {required: "내용을 입력해 주십시오.", maxlength: "내용은 4000자를 넘을 수 없습니다."},
                     }
                 })
             },
@@ -204,7 +224,7 @@
             }
 
             formData.append("filegrpid", $("#filegrpid").val());
-            formData.append("filegrpNm", "inqry_file");
+            formData.append("filegrpNm", "helpdesk_file");
 
             if (displayWorkProgress()) {
                 $.ajax({
@@ -247,6 +267,10 @@
 
         $(function () {
             frontHelpdeskForm.init();
+
+            if($('#cn').val() == null || $('#cn').val() == '') {
+                $('#cn').val(cnTemplate);
+            }
         })
     </script>
 </div>

@@ -76,7 +76,7 @@ public class InqryController {
         }
 
         Map<String, Object> inqryFile = fileService.getConfigurationByFilegrpName("inqry_file");
-        String uploadFileExtSn = ((HashMap<String, String>) inqryFile.get("uploadFileExtSn"))
+        String uploadFileExtsn = ((HashMap<String, String>) inqryFile.get("uploadFileExtSn"))
                 .entrySet()
                 .stream()
                 .map(stringStringEntry -> "." + stringStringEntry.getValue())
@@ -84,7 +84,7 @@ public class InqryController {
 
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("fileConfiguration", inqryFile);
-        model.addAttribute("acceptUploadFileExt", uploadFileExtSn);
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
         model.addAttribute("inqry", inqry);
         return VIEW_PATH + "/inqryForm";
     }
