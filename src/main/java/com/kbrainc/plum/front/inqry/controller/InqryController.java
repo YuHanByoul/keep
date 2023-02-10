@@ -4,7 +4,9 @@ import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.inqry.model.InqryAnsVo;
 import com.kbrainc.plum.front.inqry.model.InqryVo;
 import com.kbrainc.plum.front.inqry.service.InqryService;
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.apache.ibatis.type.Alias;
@@ -74,7 +76,7 @@ public class InqryController {
         }
 
         Map<String, Object> inqryFile = fileService.getConfigurationByFilegrpName("inqry_file");
-        String uploadFileExtSn = ((HashMap<String, String>) inqryFile.get("uploadFileExtSn"))
+        String uploadFileExtsn = ((HashMap<String, String>) inqryFile.get("uploadFileExtSn"))
                 .entrySet()
                 .stream()
                 .map(stringStringEntry -> "." + stringStringEntry.getValue())
@@ -82,7 +84,7 @@ public class InqryController {
 
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("fileConfiguration", inqryFile);
-        model.addAttribute("acceptUploadFileExt", uploadFileExtSn);
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
         model.addAttribute("inqry", inqry);
         return VIEW_PATH + "/inqryForm";
     }
@@ -122,7 +124,7 @@ public class InqryController {
 
     @PostMapping("/insertInqry.do")
     @ResponseBody
-    public Map<String, Object> insertInqry(@Valid InqryVo inqryVo, BindingResult bindingResult, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> insertInqry(@Valid InqryVo inqryVo, BindingResult bindingResult, @UserInfo UserVo userVo, @SiteInfo SiteInfoVo site) throws Exception {
         Map<String, Object> response = new HashMap<>();
 
         if (bindingResult.hasErrors()) {
@@ -134,6 +136,7 @@ public class InqryController {
         }
 
         boolean success = false;
+        inqryVo.setSite(site);
         inqryVo.setUser(userVo);
 
         if (inqryService.insertInqry(inqryVo) > 0) {

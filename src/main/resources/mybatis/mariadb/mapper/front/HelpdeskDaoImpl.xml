@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : HelpdeskDaoImpl.xml
+    Description : 탄소중립 헬프데스크
+-->
+<mapper namespace="com.kbrainc.plum.front.helpdesk.model.HelpdeskDao">
+    <insert id="insertHelpdesk">
+        INSERT INTO TB_CMM_HELPDESK(
+            TTL
+            , CN
+            , FILEGRPID
+            , CLSF_CD
+            , STTS_CD
+            , USERID
+            , INSTID
+            , RLS_YN
+            , DEL_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+             #{ttl}
+             , #{cn}
+             , #{filegrpid}
+             , #{clsfCd}
+             , '113101'
+             , #{user.userid}
+             , #{user.instid}
+             , #{rlsYn}
+             , 'N'
+             , NOW()
+             , #{user.userid}
+             , NOW()
+             , #{user.userid}
+             )
+    </insert>
+
+    <update id="updateHelpdesk">
+        UPDATE TB_CMM_HELPDESK SET
+            TTL = #{ttl}
+            , CN = #{cn}
+            , FILEGRPID = #{filegrpid}
+            , CLSF_CD = #{clsfCd}
+            , RLS_YN = #{rlsYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE INQRYID = #{inqryid}
+    </update>
+
+    <update id="deleteHelpdesk">
+        UPDATE TB_CMM_HELPDESK SET
+            DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE INQRYID = #{inqryid}
+    </update>
+
+    <update id="cancelHelpdesk">
+        UPDATE TB_CMM_HELPDESK SET
+           STTS_CD = '113102'
+           , MDFCN_DT = NOW()
+           , MDFRID = #{user.userid}
+        WHERE INQRYID = #{inqryid}
+    </update>
+
+    <select id="selectHelpdeskList" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.INQRYID
+            , A.TTL
+            , A.CLSF_CD
+            , A.CN
+            , A.FILEGRPID
+            , A.STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+            , A.USERID
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+               CONCAT(
+                       SUBSTRING(B.ACNT, 1, 1)
+                   ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                   ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                   )
+               ELSE CONCAT(
+                       SUBSTRING(B.ACNT, 1, 1)
+                   ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                   )
+            END AS ACNT
+        FROM TB_CMM_HELPDESK A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE 1 = 1
+            AND A.DEL_YN = 'N' AND A.STTS_CD != '113102'
+        <if test="searchKeyword != null and searchKeyword !=''">
+            <if test="searchType == 'ttl' ">
+                AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType =='cn' ">
+                AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+        </if>
+        <if test="clsfCd != null and clsfCd != ''">
+            AND A.CLSF_CD = #{clsfCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectHelpdesk" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskVo">
+        SELECT
+            A.INQRYID
+             , A.TTL
+             , A.CLSF_CD
+             , A.CN
+             , A.FILEGRPID
+             , A.STTS_CD
+             , A.RLS_YN
+             , A.REG_DT
+             , A.USERID
+             , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+                CONCAT(
+                        SUBSTRING(B.ACNT, 1, 1)
+                    ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                    ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                    )
+                ELSE CONCAT(
+                        SUBSTRING(B.ACNT, 1, 1)
+                    ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                    )
+            END AS ACNT
+        FROM TB_CMM_HELPDESK A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE A.INQRYID = #{inqryid}
+    </select>
+
+    <select id="selectHelpdeskAns" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskAnsVo">
+        SELECT
+            A.ANSID
+            , A.ANS_DE
+            , A.RLS_YN
+            , A.TTL
+            , A.CN
+            , A.FILEGRPID
+            , B.ACNT
+        FROM TB_CMM_HELPDESK_ANS A
+        INNER JOIN TB_CMM_USER B
+            ON A.PRCRID = B.USERID
+        WHERE A.INQRYID = #{inqryid}
+    </select>
+
+</mapper>

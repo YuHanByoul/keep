@@ -34,7 +34,7 @@ import com.kbrainc.plum.rte.util.excel.ExcelDownloadUtil;
  * 공동구매관리 Controller
  *
  * <pre>
- * com.kbrainc.plum.mng.tchaidJntpurchs.controller
+ * com.kbrainc.plum.mng.jntpurchs.controller
  * - JntpurchsController.java
  * </pre>
  *

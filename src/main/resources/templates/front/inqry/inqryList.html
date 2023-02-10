@@ -70,10 +70,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'N' || (item.rlsYn == 'Y' && (item.userid == loginUserid)) ? true : false}">
+            <th:block th:if="${list.size() == 0}">
+                <tr>
+                    <td class="nodata" colspan="7">
+                        <p><span class="icon icon-notice bg-black9"></span>등록된 1:1문의가 없습니다</p>
+                    </td>
+                </tr>
+            </th:block>
+            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == loginUserid)) ? true : false}">
                 <td>[[${item.rowNumber}]]</td>
                 <td>[[${item.inqryClCdNm}]]</td>
-                <td className="al article">
+                <td class="al article">
                     <a href="javascript:void(0)" className="link ellipsis" th:onclick="|inqryMain.moveToDetail(${item.inqryid}, ${canGoToDetail})|">[[${item.title}]]</a>
                 </td>
                 <td>[[${item.sttsCdNm}]]</td>

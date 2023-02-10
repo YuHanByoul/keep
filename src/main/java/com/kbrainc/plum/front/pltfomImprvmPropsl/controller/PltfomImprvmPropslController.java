@@ -72,7 +72,7 @@ public class PltfomImprvmPropslController {
         }
 
         Map<String, Object> propslFileConfiguration = fileService.getConfigurationByFilegrpName("pltfom_imprvm_propsl_file");
-        String uploadFileExtSn = ((HashMap<String, String>) propslFileConfiguration.get("uploadFileExtSn"))
+        String uploadFileExtsn = ((HashMap<String, String>) propslFileConfiguration.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
                 .map(stringStringEntry -> "." + stringStringEntry.getValue())
@@ -80,7 +80,7 @@ public class PltfomImprvmPropslController {
 
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("fileConfiguration", propslFileConfiguration);
-        model.addAttribute("acceptUploadFileExt", uploadFileExtSn);
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
         model.addAttribute("propsl", propslVo);
         return VIEW_PREFIX + "/pltfomImprvmPropslForm";
     }

@@ -19,7 +19,7 @@ import lombok.Data;
  * 공동구매모집Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.tchaidJntpurchs.model
+ * com.kbrainc.plum.mng.jntpurchs.model
  * - JntpurchsVo.java
  * </pre> 
  *

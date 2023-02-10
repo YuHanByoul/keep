@@ -1,0 +1,175 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">검색어</strong></div>
+                <div class="form-body">
+                    <div class="form-input">
+                        <select title="검색어" id="searchType" name="searchType">
+                            <option value="">- 전체 -</option>
+                            <option value="">제목</option>
+                            <option value="">내용</option>
+                        </select>
+                        <input type="search" id="searchKeyword" name="searchKeyword" title="검색어" placeholder="검색어를 입력해 주세요.">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">분야</strong></div>
+                <div class="form-body">
+                    <th:block kattr:select_code="clsfCd" grpCd="112" upprCd="0" firstOptTxt="- 전체 -"></th:block>
+                </div>
+            </div>
+        </div>
+        <div class="search-filter-submit">
+            <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="helpdeskList.searchInit()">초기화</button>
+            <button type="submit" class="btn-medium btn-green btn-before-search" onclick="helpdeskList.search()">검색</button>
+        </div>
+
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="inqryid" name="inqryid">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+    </form>
+
+    <div class="steps-list">
+        <ul>
+            <li>
+                <span class="icon icon-sign-step01"></span>
+                <dl>
+                    <dt><span>Step1.</span> 신청/문의</dt>
+                    <dd>지원받고 싶은 분야 <br class="pc-only"> 선택 후 신청</dd>
+                </dl>
+            </li>
+            <li>
+                <span class="icon icon-sign-step02"></span>
+                <dl>
+                    <dt><span>Step2.</span> 접수/검토</dt>
+                    <dd>분야ㆍ대상ㆍ일정 등 <br class="pc-only"> 헬프데스크 내부 검토</dd>
+                </dl>
+            </li>
+            <li>
+                <span class="icon icon-sign-step03"></span>
+                <dl>
+                    <dt><span>Step3.</span> 답변/지원</dt>
+                    <dd>신청/문의 내용 답변 및 <br class="pc-only"> 지원 안내</dd>
+                </dl>
+            </li>
+        </ul>
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-large btn-green" onclick="helpdeskList.moveToInsertForm()">신청하기</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b th:text="${totalCount}">0</b> 건</p>
+        </div>
+        <div class="right">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                <option value="10" th:selected="${searchVo.rowPerPage == 10}">10개씩 보기</option>
+                <option value="50" th:selected="${searchVo.rowPerPage == 50}">50개씩 보기</option>
+                <option value="100" th:selected="${searchVo.rowPerPage == 100}">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>환경교육 헬프 신청 목록 - 번호, 분야, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <colgroup>
+                <col>
+                <col>
+                <col style="width:30%;">
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">분야</th>
+                <th scope="col">제목</th>
+                <th scope="col">상태</th>
+                <th scope="col">작성자</th>
+                <th scope="col">공개여부</th>
+                <th scope="col">등록일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:if="${list.size() == 0}">
+                <tr>
+                    <td class="nodata" colspan="7">
+                        <p><span class="icon icon-notice bg-black9"></span>등록된 환경교육 헬프 신청 내역이 없습니다</p>
+                    </td>
+                </tr>
+            </th:block>
+
+            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == loginUserid)) ? true : false}">
+                <td>[[${item.rowNumber}]]</td>
+                <td>[[${item.clsfCdNm}]]</td>
+                <td class="al article"><a href="javascript:void(0)" className="link ellipsis" th:onclick="|helpdeskList.moveToDetail(${item.inqryid}, ${canGoToDetail})|">[[${item.ttl}]]</a></td>
+                <td>[[${item.sttsCdNm}]]</td>
+                <td>[[${item.acnt}]]</td>
+                <td>[[${item.rlsYn =='Y' ? '공개' : '비공개'}]]</td>
+                <td>[[${#dates.format(item.regDt, 'yyyy-MM-dd')}]]</td>
+            </tbody>
+        </table>
+    </div>
+
+    <th:block kattr:pagination="pagination" onclick="moveToPage"/>
+
+    <script th:inline="javascript">
+        var helpdeskList = {
+            userid: /*[[${loginUserid}]]*/ null,
+            detailUrl: '/front/helpdesk/helpdeskDetail.html',
+
+            search() {
+                $('#pageNumber').val(1);
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+                var f = document.forms.searchForm;
+                f.submit();
+            },
+
+            searchInit() {
+                $('#searchType, #searchKeyword, #clsfCd').val('');
+            },
+
+            moveToInsertForm() {
+                if (this.userid == null) {
+                    alert('로그인 후 이용하실 수 있습니다.');
+                    return;
+                }
+                location.href = '/front/helpdesk/helpdeskForm.html';
+            },
+
+            moveToDetail(inqryid, canGoToDetail) {
+                if (canGoToDetail) {
+                    var f = document.forms.searchForm;
+                    f.inqryid.value = inqryid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                } else {
+                    alert('비공개 글의 경우 작성자만 볼 수 있습니다.');
+                    return;
+                }
+            },
+        }
+
+        function moveToPage(num) {
+            $("#pageNumber").val(num);
+            $('#rowPerPage').val($('#selectRowPerPage').val());
+            var f = document.forms.searchForm;
+            f.submit();
+        }
+    </script>
+</div>

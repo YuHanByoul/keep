@@ -9,7 +9,7 @@ import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsVo;
 
 /**
  * 
- * 서비스 인터페이스
+ * 공동구매관리 서비스 인터페이스
  *
  * <pre>
  * com.kbrainc.plum.mng.jntpurchs.service

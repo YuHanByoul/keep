@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -37,6 +38,8 @@ import java.util.List;
 @Alias("front.InqryVo")
 @NoArgsConstructor
 public class InqryVo extends ParentRequestVo {
+    private SiteInfoVo site;
+
     private UserVo user;
 
     private Integer inqryid;

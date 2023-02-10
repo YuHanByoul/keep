@@ -1,11 +1,12 @@
 package com.kbrainc.plum.mng.helpDesk.model;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 
 /**
@@ -51,4 +52,6 @@ public class HelpDeskAnswrVo extends ParentRequestVo {
     private String[] helpDeskManager;
     /** 문의 상태코드 */
     private String sttsCd;
+    /** 파일Vo 목록 */
+    private List<FileVo> fileList;
 }
