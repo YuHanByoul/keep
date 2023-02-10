@@ -730,7 +730,8 @@ const tabContent = {
 		$tabList = $('.tab-list li');
 		$trigger = $tabList.find('button') //toggle;
 		tabContent.onClick();
-		tabContent.afterLoad();
+		tabContent.afterLoadHash();
+		tabContent.afterLoadTab();
 	},
 	onClick : function () {
 		$trigger.on('click', function (){
@@ -738,49 +739,58 @@ const tabContent = {
 			// 선택 탭 활성화
 			$parent.addClass('active');
 			$(this).attr({
-				// 'tabindex': '0',
 				'aria-selected': 'true'
-			}).focus();
+			})
 			// 기존 탭 비활성화
 			$parent.siblings().removeClass('active');
 			$parent.siblings().find('button').attr({
-				// 'tabindex': '-1',
 				'aria-selected': 'false'
 			});
 			// 선택된 연관된 탭 패널 활성화
-			// $('#' + $(this).attr('aria-controls')).attr('tabindex', '0').addClass('active')
 			$('#' + $(this).attr('aria-controls')).addClass('active')
 			// 기존 탭 패널 비활성화
-			// $('#' + $(this).attr('aria-controls')).siblings('.tabpanel').attr('tabindex', '-1').removeClass('active');
 			$('#' + $(this).attr('aria-controls')).siblings('.tabpanel').removeClass('active');
+			if ($(this).is('button')) {
+				history.pushState({}, "", "#" + $(this).attr('id'))
+			}
 		})
 	},
-	afterLoad  : function () {
+	afterLoadTab  : function () {
 		$trigger = $tabList.find('button, a')
 		$trigger.each(function (){
 			const $parent = $(this).closest('li');
 			const $dropDown = $(this).closest('.dropDown');
 			if ($parent.hasClass('active')) {
 				$(this).attr({
-					// 'tabindex': '0',
 					'aria-selected': 'true'
 				})
-				// $('#' + $(this).attr('aria-controls')).attr('tabindex', '0').addClass('active');
 				$('#' + $(this).attr('aria-controls')).addClass('active');
 
-				if ($dropDown.length) {
-					// const activeText = $(this).text();
-					// $dropDown.find('.trigger').text(activeText);
-				}
+				//mobile trigger text 
+				const $tabParent = $(this).closest('.tab-content');
+				const $mobileTrigger = $tabParent.find('.tab-mobile-trigger')
+				$mobileTrigger.text($(this).text())
 			} else {
 				$(this).attr({
-					// 'tabindex': '-1',
 					'aria-selected': 'false'
 				});
-				// $('#' + $(this).attr('aria-controls')).attr('tabindex', '-1').removeClass('active');
 				$('#' + $(this).attr('aria-controls')).removeClass('active');
 			}
 		});
+	},
+	afterLoadHash : function () {
+		const hashTag = window.location.hash;
+		if (hashTag.length) {
+			$trigger.each(function () {
+				const $triggerId = `#${$(this).attr('id')}`
+				if ($triggerId === hashTag) {
+					const $parent = $(this).closest('li');
+					// 선택 탭 활성화
+					$parent.addClass('active');
+					$parent.siblings().removeClass('active');
+				}
+			})
+		}
 	}
 }
 
@@ -873,7 +883,6 @@ const uploadFile = function (){
 		let name = $(this).siblings('.name').text();
 
 		/**
-		 * 2022.12.26 정동헌
 		 * DataTransfer(dt) 를 유지시키는 것이 아닌 필요할때마다 초기화 후 input.files 로 재생성하게끔 수정
 		 * why : 화면 내 file input 이 여러개 존재하는 경우 DataTransfer(dt) 가 중복으로 사용되어, 파일 중복 현상 발생
 		 */
@@ -892,7 +901,6 @@ const uploadFile = function (){
 		fileWrap.find('input')[0].files = dt.files;
 
 		/**
-		 * 2022.12.08 정동헌
 		 * 각 화면별로 파일 삭제 로직이 다르므로,
 		 * 기 업로드된 파일(삭제 버튼 태그 내 data-id="~~~" 속성으로 판단)은 element.remove() 호출 X
 		 * why : element 날리면 각 화면에서 구현한 이벤트 호출되지 않음
@@ -1066,7 +1074,7 @@ $(document).ready(function() {
 	let thisHash = thisURL.hash;
 	if (thisHash.indexOf('layer') === 1)  {
 		thisHash = thisHash.slice(1);
-		layerPopup.open(thisHash);
+		layerPopup.open({target:thisHash});
 	}
 	if (thisPath.indexOf('component') === 1)  {
 		thisPath = thisPath.replace('/component_', '');
