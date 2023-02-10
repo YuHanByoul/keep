@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <!-- 필터 부분 -->
+                <div class="card">
+                    <div class="card-block-small">
+                        <!-- 키워드 filter -->
+                        <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업분야</strong></div>
+                                        <div class="col-12">
+                                            <th:block kattr:select_code="searchFldCd" grpCd="173" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPcntstNm"><strong>공모명</strong></label>
+                                        <div class="col-12">
+                                            <input type="text" class="form-control form-control-sm" name="searchPcntstNm" id="searchPcntstNm"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+                                <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+                                <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>교부신청발표기간</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></div>
+                                        <div class="col-sm-12">
+                                            <select class="form-select form-select-sm form-control-sm   form-select form-select-sm form-control-sm" id="searchPrgrsStts" name="searchPrgrsStts">
+                                                <option value="">- 전체 -</option>
+                                                <option value="before">신청전</option>
+                                                <option value="pending">신청중</option>
+                                                <option value="end">마감</option>
+                                            </select> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 키워드 filter-btn -->
+                            <div class="m-t-20 text-center">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="delvry.initSearch();">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="delvry.onSearch();">검색</button>
+                            </div>
+                        </form>
+                        <!-- //키워드 filter -->
+                    </div>
+                </div>
+                <!-- //필터 부분 -->
+            </div>
+            <div class="col-12">
+                <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>공동구매모집 검색 결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/delvry/downloadDelvryListExcel.do">
+                                <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="delvry.onExcelDownload();">엑셀다운로드</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="delvryGrid" class="table-responsive"></table>
+                        <div id="delvryPager" class="text-center"></div>
+                    </div>
+                </div>
+                <!-- //그리드 부분 -->
+            </div>
+            <div class="col-12">
+                <!-- insert 부분 -->
+                <div id="contentPanel" class="card" style="display: none;">
+                </div>
+                <!-- //insert 부분 -->
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var delvry = {
+            listUrl: "/mng/delvry/selectDelvryList.do"
+            , mode: null
+            , selectedItems: []
+            
+            , init: function() {
+                delvryGrid = new GridHelper("delvryGrid", "contentPanel");
+                $("#searchPeriod").daterangepicker({
+                    autoUpdateInput: false
+                    , locale: {
+                        format: "YYYY-MM-DD"
+                    }
+                });
+                this.setGrid();
+                this.registEvent();                
+            }
+            
+            , registEvent: function() {
+                // TODO
+                $("#searchPeriod").on("apply.daterangepicker", function(e, picker) {
+                    $(this).val(picker.startDate.format("YYYY-MM-DD") + " ~ " + picker.endDate.format("YYYY-MM-DD")); 
+                });
+            }
+            
+            , initSearch: function() {
+                 $("#searchFldCd, #searchPcntstNm, #searchPeriod, #searchPrgrsStts").val('');
+            }
+            
+            , onSearch: function() {
+                delvryGrid.resetListContent();
+            }
+            
+            , setGrid: function() {
+                $("#delvryGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#delvryPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchFldCd": $('#searchFldCd').val(),
+                                "searchPcntstNm": $('#searchPcntstNm').val(),
+                                "searchPrgrsStts": $('#searchPrgrsStts').val(),
+                                "searchBgngDt": $.trim($('#searchPeriod').val().split("~")[0]),
+                                "searchEndDt": $.trim($('#searchPeriod').val().split("~")[1]),
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize
+                            };
+                            $.ajax({
+                              type: "GET",
+                              contentType: "application/json; charset=utf-8",
+                              url: delvry.listUrl,
+                              data: params,
+                              dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false}
+                        , {title: "사업분야", name: "fldCdNm", type: "text", width: "150", align: "center"}
+                        , {title: "공모명", name: "pcntstNm", type: "text" , width: "200", align: "left"}
+                        , {title: "진행상태", name: "prgrsStts", type: "text", align: "center", width: "100"}
+                        , {title: "교부신청발표기간", name: "delvryCfmtnPrsntnBgngDt", type: "text", align: "center" , width: "200", itemTemplate: function(value, item) {
+                            return value + " ~ " + item.delvryCfmtnPrsntnEndDt;
+                        }}
+                        , {title: "사업 선정 수", name: "slctnCnt", type: "number", align: "center", width: "80"}
+                        , {title: "사업비 교부 횟수", name: "wctDelvryCnt", type: "text", align: "center", width: "80", itemTemplate: function(value, item) {
+                            return value + "회";
+                        }}
+                    ]
+                    , rowClick: function(args) { 
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var detailUrl = "/mng/delvry/delvryDetailForm.html?delvryid=" + args.item.delvryid;
+                        delvryGrid.loadContent(detailUrl);
+                        delvryGrid.rowClick(args);
+                    }
+                });
+            }
+            
+            , onExcelDownload: function() {
+                excelDownload($("#searchFrm"), "/mng/delvry/downloadDelvryListExcel.do");
+            }
+            
+            , resetGrid: function() {
+                delvryGrid.resetListContent();
+            }
+        };
+        
+        $(function() {
+            delvry.init();
+        });
+    </script>
+</div>
+</body>
+</html>

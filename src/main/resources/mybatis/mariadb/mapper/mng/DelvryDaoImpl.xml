@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : DelvryDaoImpl.xml
+	Description : 교부관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.delvry.model.DelvryDao">
+    
+    <!-- 교부 목록 조회 -->
+    <select id="selectDelvryList" parameterType="DelvryVo" resultType="DelvryVo">
+        /* DelvryDao.selectDelvryList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.DELVRYID
+            , B.PCNTSTID
+            , B.FLD_CD
+            , C.CD_NM AS FLD_CD_NM
+            , B.PCNTST_NM
+            , CASE WHEN NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT THEN '신청전' WHEN NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT THEN '마감' ELSE '신청중' END PRGRS_STTS
+            , CASE WHEN NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT THEN 1 WHEN NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT THEN 3 ELSE 2 END PRGRS_STTS_ORDR
+            , A.DELVRY_CFMTN_PRSNTN_BGNG_DT
+            , A.DELVRY_CFMTN_PRSNTN_END_DT
+            , DATE_FORMAT(A.DELVRY_CFMTN_PRSNTN_BGNG_DT, '%Y-%m-%d %H:%i:%s') AS DELVRY_CFMTN_PRSNTN_BGNG_DT_STR
+            , DATE_FORMAT(A.DELVRY_CFMTN_PRSNTN_END_DT, '%Y-%m-%d %H:%i:%s') AS DELVRY_CFMTN_PRSNTN_END_DT_STR
+            , COUNT(D.PCNTSTID) AS SLCTN_CNT
+            , B.WCT_DELVRY_CNT
+        FROM
+            TB_SPB_DELVRY A
+        LEFT JOIN
+            TB_SPB_PCNTST B ON (B.PCNTSTID = A.PCNTSTID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '173'
+        ) C ON (C.CD = B.FLD_CD)
+        LEFT JOIN
+            TB_SPB_APLY D ON (D.PCNTSTID = B.PCNTSTID AND D.SLCTN_STTS_CD = '193102')
+        WHERE 1 = 1
+        <if test="searchFldCd != null and searchFldCd != ''">
+            AND B.FLD_CD LIKE CONCAT('%',#{searchFldCd},'%')
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+            AND B.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND A.DELVRY_CFMTN_PRSNTN_BGNG_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt}, ' 00:00:00')
+        </if>
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND A.DELVRY_CFMTN_PRSNTN_END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt}, ' 23:59:59')
+        </if>
+        <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'before'">
+            AND NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT 
+        </if>
+        <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'pending'">
+            AND (NOW() <![CDATA[>=]]> A.DELVRY_APLY_BGNG_DT AND NOW() <![CDATA[<=]]> A.DELVRY_APLY_END_DT)
+        </if>
+        <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'end'">
+            AND NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT
+        </if>
+        GROUP BY
+            B.PCNTSTID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+</mapper>

@@ -15,7 +15,7 @@ import lombok.Data;
  * 공동구매교구Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.tchaidJntpurchs.model
+ * com.kbrainc.plum.mng.jntpurchs.model
  * - JntpurchsTchaidVo.java
  * </pre> 
  *

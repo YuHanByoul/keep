@@ -1,0 +1,995 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ReqMngDaoImpl.xml
+	Description : 체험환경교육 지원사업 > 사업신청 관리 > 신청관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.bizAply.req.model.ReqMngDao">
+    
+    <!-- 신청관리 목록 검색 조건 -->
+    <sql id="reqMngSearchCondition">
+        <if test="searchFldCd != null and searchFldCd != ''">
+        AND FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+        AND PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchAplyBgngDe != null and searchAplyBgngDe != ''">
+        <![CDATA[
+        AND (DATE_FORMAT(APLY_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchAplyBgngDe} AND #{searchAplyEndDe}
+        OR DATE_FORMAT(APLY_END_DT, '%Y-%m-%d') BETWEEN #{searchAplyBgngDe} AND #{searchAplyEndDe})
+        ]]>
+        </if>
+        <if test="searchSrngBgngDe != null and searchSrngBgngDe != ''">
+        <![CDATA[
+        AND (DATE_FORMAT(SRNG_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchSrngBgngDe} AND #{searchSrngEndDe}
+        OR DATE_FORMAT(SRNG_END_DT, '%Y-%m-%d') BETWEEN #{searchSrngBgngDe} AND #{searchSrngEndDe})
+        ]]>
+        </if>
+        <if test="searchAplyStts != null and searchAplyStts != ''">
+            <choose>
+                <when test="searchAplyStts == 'before'">
+                <![CDATA[
+                AND NOW() < APLY_BGNG_DT
+                ]]>
+                </when>
+                <when test="searchAplyStts == 'ing'">
+                <![CDATA[
+                AND NOW() >= APLY_BGNG_DT AND NOW() <= APLY_END_DT
+                ]]>
+                </when>
+                <when test="searchAplyStts == 'end'">
+                <![CDATA[
+                AND NOW() > APLY_END_DT
+                ]]>
+                </when>
+            </choose>            
+        </if>
+        <if test="searchSrngStts != null and searchSrngStts != ''">
+            <choose>
+                <when test="searchSrngStts == 'before'">
+                <![CDATA[
+                AND NOW() < SRNG_BGNG_DT
+                ]]>
+                </when>
+                <when test="searchSrngStts == 'ing'">
+                <![CDATA[
+                AND NOW() >= SRNG_BGNG_DT AND NOW() <= SRNG_END_DT
+                ]]>
+                </when>
+                <when test="searchSrngStts == 'end'">
+                <![CDATA[
+                AND NOW() > SRNG_END_DT
+                ]]>
+                </when>
+            </choose>            
+        </if>
+    </sql>
+    
+    <!-- 신청관리 목록 조회 -->
+    <select id="selectReqMngList" parameterType="ReqMngVo" resultType="ReqMngVo">
+        /* ReqMngDao.selectReqMngList */
+        <if test="excelYn != 'Y'.toString()">
+            <include refid="PaginationMapper.header"/>
+        </if>
+        SELECT 
+            A.PCNTSTID
+            , C.CD_NM AS FLD_NM
+            , A.PCNTST_NM
+            <![CDATA[
+            , CASE WHEN NOW() < APLY_BGNG_DT THEN '신청전' 
+                WHEN NOW() >= APLY_BGNG_DT AND  NOW() <= APLY_END_DT THEN '신청중'
+                WHEN NOW() > APLY_END_DT THEN '신청완료'
+                ELSE ''
+                END AS APLY_STTS_NM
+            , CASE WHEN NOW() < SRNG_BGNG_DT THEN '심사전' 
+                WHEN NOW() >= SRNG_BGNG_DT AND  NOW() <= SRNG_END_DT THEN '심사중'
+                WHEN NOW() > SRNG_END_DT THEN '심사완료'
+                ELSE ''
+                END AS SRNG_STTS_NM
+            ]]>
+            , CONCAT(DATE_FORMAT(A.APLY_BGNG_DT, '%Y-%m-%d'), ' - ', DATE_FORMAT(A.APLY_END_DT, '%Y-%m-%d')) AS APLY_DT
+            , CONCAT(DATE_FORMAT(A.SRNG_BGNG_DT, '%Y-%m-%d'), ' - ', DATE_FORMAT(A.SRNG_END_DT, '%Y-%m-%d')) AS SRNG_DT
+            , COUNT(APLYID) AS APLYNO_CNT
+            , CONCAT(' / ', COUNT(APLYID)) AS FRT_SRNG_CNT
+            , CONCAT(' / ', COUNT(APLYID)) AS SCD_SRNG_CNT
+            , SUM(CASE WHEN SLCTN_STTS_CD = '' THEN 1 ELSE 0 END) AS SLCTN_Y_CNT
+            , SUM(CASE WHEN SLCTN_STTS_CD = '' THEN 1 ELSE 0 END) AS SLCTN_N_CNT
+            , A.REG_DT
+            , A.MDFCN_DT
+        FROM
+            TB_SPB_PCNTST A 
+            LEFT OUTER JOIN TB_SPB_APLY B ON A.PCNTSTID = B.PCNTSTID
+            LEFT OUTER JOIN TB_CMM_CD C ON A.FLD_CD = C.CD
+        WHERE 1 = 1
+            <include refid="reqMngSearchCondition"/>
+            <if test="pcntstid != null and pcntstid != ''">
+            AND A.PCNTSTID = #{pcntstid}
+            </if>
+        GROUP BY 
+            A.PCNTSTID
+            , C.CD_NM
+            , A.PCNTST_NM
+            , A.APLY_BGNG_DT
+            , A.APLY_END_DT
+            , A.SRNG_BGNG_DT
+            , A.SRNG_END_DT
+            , A.REG_DT
+        <if test="excelYn != 'Y'.toString()">
+            <include refid="PaginationMapper.footer"/>
+        </if>
+    </select>
+    
+    <!-- 신청자 목록 조회 -->
+    <select id="selectReqUserList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectReqUserList */
+        <if test="excelYn != 'Y'.toString()">
+            <include refid="PaginationMapper.header"/>
+        </if>
+        SELECT
+            APLYID
+            , PCNTSTID
+            , APLYNO
+            , A.INSTID
+            , A.USERID
+            , CONCAT(U.NM, '(', U.ACNT, ')') AS USER_NM 
+            , A.INST_NM
+            , PRGRM_NM
+            , RPRSV_NM
+            , REG_INST_NM
+            , REG_NO
+            , REG_DE
+            , A.INST_TYPE_CD
+            , B.CD_NM AS INST_TYPE_NM
+            , ETC_CN
+            , INST_TYPE_DTL_CD
+            , C.CD_NM AS INST_TYPE_DTL_NM
+            , HMPG
+            , RELGN_CD
+            , D.CD_NM AS RELGN_NM
+            , APLCNT_NM
+            , APLCNT_TELNO
+            , APLCNT_EML
+            , APLY_INST_TELNO
+            , INST_SAREA_CD
+            , E.CD_NM AS INST_SAREA_NM
+            , INST_ZIP
+            , INST_ADDR
+            , CONCAT('우)', INST_ZIP, ' ', INST_ADDR) AS ADDR
+            , INST_ADDR_DTL
+            , RGN_CD
+            , F.CD_NM AS RGN_NM
+            , LDR_MNG_MTHD
+            , FILEGRPID1
+            , FILEGRPID2
+            , FILEGRPID3
+            , APLY_STTS_CD
+            , G.CD_NM AS APLY_STTS_NM
+            , SLCTN_STTS_CD
+            , H.CD_NM AS SLCTN_STTS_NM
+            , BSNS_CNCL_YN
+            , EXCCLC_STTS_CD
+            , I.CD_NM AS EXCCLC_STTS_NM
+            , BNKB_FILEID
+            , EXCCLC_ATCH_FILEGRPID
+            , RTURN_YN
+            , RTURN_AMT
+            , RTURN_DT
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID 
+        FROM
+            TB_SPB_APLY A
+            INNER JOIN TB_CMM_USER U ON A.USERID = U.USERID 
+            LEFT OUTER JOIN TB_CMM_CD B ON A.INST_TYPE_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON A.INST_TYPE_DTL_CD = C.CD
+            LEFT OUTER JOIN TB_CMM_CD D ON A.RELGN_CD = D.CD
+            LEFT OUTER JOIN TB_CMM_CD E ON A.INST_SAREA_CD = E.CD
+            LEFT OUTER JOIN TB_CMM_CD F ON A.RGN_CD = F.CD
+            LEFT OUTER JOIN TB_CMM_CD G ON A.APLY_STTS_CD = G.CD
+            LEFT OUTER JOIN TB_CMM_CD H ON A.SLCTN_STTS_CD = H.CD
+            LEFT OUTER JOIN TB_CMM_CD I ON A.EXCCLC_STTS_CD = I.CD
+        WHERE PCNTSTID = #{pcntstid}
+        <if test="searchAplySttsCd != '' and searchAplySttsCd != null">
+        AND APLY_STTS_CD = #{searchAplySttsCd}
+        </if>
+        <if test="searchKeywordType != null and searchKeywordType != ''">
+            <choose>
+                <when test="searchKeywordType == 'I'.toString()">
+                AND A.INST_NM LIKE CONCAT('%',#{searchCondition},'%')
+                </when>
+                <otherwise>
+<!--                 AND A.SBJCT_CD LIKE CONCAT('%',#{searchKeyword},'%') -->
+                </otherwise>
+            </choose>            
+        </if>
+        <if test="searchSlctnSttsCd != '' and searchSlctnSttsCd != null">
+        AND SLCTN_STTS_CD = #{searchSlctnSttsCd}
+        </if>
+        <if test="searchRegStartDe != '' and searchRegStartDe != null">
+        <![CDATA[
+        AND REG_DE >= #{searchRegStartDe} AND REG_DE <= #{searchRegEndDe}
+        ]]>
+        </if>
+        <if test="aplyid != '' and aplyid != null">
+        AND APLYID = #{aplyid}
+        </if>
+        <if test="excelYn != 'Y'.toString()">
+            <include refid="PaginationMapper.footer"/>
+        </if>
+    </select>
+    
+    <!-- 담당자 목록 조회 -->
+    <select id="selectUserList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectUserList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.USERID
+          , A.INSTID
+          , A.ACNT
+          , A.NM AS USER_NM
+          , A.MOBLPHON AS APLCNT_TELNO
+          , A.EML AS APLCNT_EML
+          , B.INST_NM
+        FROM
+        TB_CMM_USER A
+        LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+        WHERE 1=1
+        AND A.INSTID = #{instid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 선정여부 상태 변경 -->
+    <update id="updateSlctnSttsCd" parameterType="java.util.ArrayList">
+        /* ReqMngDao.updateSlctnSttsCd */
+        UPDATE TB_SPB_APLY SET
+        SLCTN_STTS_CD = #{slctnSttsCd}
+        WHERE APLYID IN
+        <foreach item="item" collection="array" index="aplyids" open="(" close=")" separator=",">
+        #{item}
+        </foreach>
+    </update>
+
+    <!-- 신청정보 탭 저장 -->
+    <update id="updateReqInfo" parameterType="ReqUserVo">
+        /* ReqMngDao.updateReqInfo */
+        UPDATE
+            TB_SPB_APLY
+        SET
+            PRGRM_NM = #{prgrmNm}
+            , REG_DE = #{regDe}
+            , RELGN_CD = #{relgnCd}
+            <if test="userid != null and userid != ''">
+            , USERID = #{userid}
+            </if>
+            <if test="aplcntNm != null and aplcntNm != ''">
+            , APLCNT_NM = #{aplcntNm}
+            </if>
+            <if test="aplcntTelno != null and aplcntTelno != ''">
+            , APLCNT_TELNO = #{aplcntTelno}
+            </if>
+            <if test="aplcntEml != null and aplcntEml != ''">
+            , APLCNT_EML = #{aplcntEml}
+            </if>
+            , INST_SAREA_CD = #{instSareaCd}
+            , RGN_CD = #{rgnCd}
+            , FILEGRPID1 = #{filegrpid1}
+            , FILEGRPID2 = #{filegrpid2}
+            , FILEGRPID3 = #{filegrpid3}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}
+    </update>
+
+    <!-- 신청정보 탭 > 보완요청 목록 조회 -->
+    <select id="selectSplmntList" parameterType="SupplementVo" resultType="SupplementVo">
+        /* ReqMngDao.selectSplmntList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            SPLMNTID
+            , APLYID
+            , DMND_CN
+            , RQSTRID
+            , ANS_CN
+            , ANSWRRID
+            , DMND_DT
+            , ANS_DT
+            , ANS_STTS_CD
+            , B.CD_NM AS ANS_STTS_NM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_SPB_APLY_SPLMNT A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.ANS_STTS_CD = B.CD
+        WHERE APLYID = #{aplyid}
+        <if test="splmntid != null and splmntid != ''">
+        AND SPLMNTID = #{splmntid}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 신청정보 탭 > 보완요청 -->
+    <insert id="insertSplmnt" parameterType="SupplementVo" useGeneratedKeys="true" keyProperty="splmntid">
+        /* ReqMngDao.insertSplmnt */
+        INSERT INTO TB_SPB_APLY_SPLMNT (
+            SPLMNTID
+            , APLYID
+            , DMND_CN
+            , RQSTRID
+            , DMND_DT
+            , ANS_STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{splmntid}
+            , #{aplyid}
+            , #{dmndCn}
+            , #{user.userid}
+            , NOW()
+            , #{ansSttsCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <!-- 신청정보 탭 > 보완요청 수정 -->
+    <update id="updateSplmnt" parameterType="SupplementVo">
+        /* ReqMngDao.updateSplmnt */
+        UPDATE TB_SPB_APLY_SPLMNT SET
+            DMND_CN = #{dmndCn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE SPLMNTID = #{splmntid}
+    </update>
+
+    <!-- 기관역량 탭 조회 -->
+    <select id="detailInst" parameterType="CapabilityVo" resultType="CapabilityVo">
+        /* ReqMngDao.detailInst */
+        SELECT
+            APLYID
+            , BSNS_PRPS
+            , BSNS_SUMRY
+            , FOND_DE
+            , OPER_PRD
+            , INSTRCTR_CAREER
+            , DSGN_YN
+            , INSTRCTR_HOLD_YN
+            , BFRYY_SPORTBSNS_OPER_YN
+            , DSGN_NO
+            , QLFC_NO
+            , OPERBSNS_NM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_INST_ABILITY
+        WHERE APLYID = #{aplyid}
+    </select>
+
+    <!-- 기관역량 탭 저장 -->
+    <insert id="insertInst" parameterType="CapabilityVo">
+        /* ReqMngDao.insertInst */
+        INSERT INTO TB_SPB_INST_ABILITY (
+            APLYID
+            , BSNS_PRPS
+            , BSNS_SUMRY
+            , FOND_DE
+            , OPER_PRD
+            , INSTRCTR_CAREER
+            , DSGN_YN
+            , INSTRCTR_HOLD_YN
+            , BFRYY_SPORTBSNS_OPER_YN
+            , DSGN_NO
+            , QLFC_NO
+            , OPERBSNS_NM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{bsnsPrps}
+            , #{bsnsSumry}
+            , #{fondDe}
+            , #{operPrd}
+            , #{instrctrCareer}
+            , #{dsgnYn}
+            , #{instrctrHoldYn}
+            , #{bfryySportbsnsOperYn}
+            , #{dsgnNo}
+            , #{qlfcNo}
+            , #{operbsnsNm}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 기관역량 탭 수정 -->
+    <update id="updateInst" parameterType="CapabilityVo">
+        /* ReqMngDao.updateInst */
+        UPDATE TB_SPB_INST_ABILITY SET 
+            BSNS_PRPS = #{bsnsPrps}
+            , BSNS_SUMRY = #{bsnsSumry}
+            , FOND_DE = #{fondDe}
+            , OPER_PRD = #{operPrd}
+            , INSTRCTR_CAREER = #{instrctrCareer}
+            , DSGN_YN = #{dsgnYn}
+            , INSTRCTR_HOLD_YN = #{instrctrHoldYn}
+            , BFRYY_SPORTBSNS_OPER_YN = #{bfryySportbsnsOperYn}
+            , DSGN_NO = #{dsgnNo}
+            , QLFC_NO = #{qlfcNo}
+            , OPERBSNS_NM = #{operbsnsNm}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+    
+    <!-- 기관역량 탭 > 전년도 지원사업 프로그램 주제 목록 조회 -->
+    <select id="selectInstPrgrmList" parameterType="CapabilityVo" resultType="CapabilityVo">
+        /* ReqMngDao.selectInstPrgrmList */
+        SELECT 
+            APLYID
+            , PRGRM_SBJCT_CD
+            , B.CD_NM AS PRGRM_SBJCT_NM 
+            , REG_DT
+            , RGTRID 
+        FROM 
+            TB_SPB_BFRYY_PRGRM_SBJCT
+            LEFT OUTER JOIN TB_CMM_CD B ON A.PRGRM_SBJCT_CD = B.CD
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 기관역량 탭 > 전년도 지원사업 프로그램 주제 삭제 -->
+    <delete id="deleteInstPrgrm" parameterType="CapabilityVo">
+        /* ReqMngDao.deleteInstPrgrm */
+        DELETE FROM TB_SPB_BFRYY_PRGRM_SBJCT
+        WHERE APLYID = #{aplyid}
+    </delete>
+    
+    <!-- 기관역량 탭 > 전년도 지원사업 프로그램 주제 등록 -->
+    <insert id="insertInstPrgrm" parameterType="CapabilityVo">
+        /* ReqMngDao.insertInstPrgrm */
+        INSERT INTO TB_SPB_BFRYY_PRGRM_SBJCT (
+            APLYID
+            , PRGRM_SBJCT_CD
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{prgrmSbjctCd}
+            , NOW()
+            , #{user.userid}
+        ) 
+    </insert>
+    
+    <!-- 기관역량 탭 > 환경교육 운영성과 목록 조회 -->
+    <select id="selectInstOperRsltList" parameterType="CapabilityVo" resultType="CapabilityVo">
+        /* ReqMngDao.selectInstOperRsltList */
+        SELECT 
+            SEQ
+            , APLYID
+            , SE_CD
+            , B.CD_NM AS SE_NM
+            , BSNS_NM
+            , BSNS_PRD
+            , EDU_NOPE
+            , BSNS_BGT
+            , OPER_CN
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID 
+        FROM 
+            TB_SPB_ENVEDU_OPER_RSLT A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.SE_CD = B.CD
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 기관역량 탭 > 환경교육 운영성과 삭제 -->
+    <delete id="deleteInstOperRslt" parameterType="CapabilityVo">
+        /* ReqMngDao.deleteInstOperRslt */
+        DELETE FROM TB_SPB_ENVEDU_OPER_RSLT
+        WHERE APLYID = #{aplyid}
+    </delete>
+    
+    <!-- 기관역량 탭 > 환경교육 운영성과 저장 -->
+    <insert id="insertInstOperRslt" parameterType="CapabilityVo">
+        /* ReqMngDao.insertInstOperRslt */
+        INSERT INTO TB_SPB_ENVEDU_OPER_RSLT (
+            SEQ
+            , APLYID
+            , SE_CD
+            , BSNS_NM
+            , BSNS_PRD
+            , EDU_NOPE
+            , BSNS_BGT
+            , OPER_CN
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{seq}
+            , #{aplyid}
+            , #{seCd}
+            , #{bsnsNm}
+            , #{bsnsPrd}
+            , #{eduNope}
+            , #{bsnsBgt}
+            , #{operCn}
+            , #{ordr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 사업수행계획 탭 조회 -->
+    <select id="detailPlan" parameterType="ProcPlanVo" resultType="ProcPlanVo">
+        /* ReqMngDao.detailPlan */
+        SELECT
+            APLYID
+            , LBCST_SUM
+            , ORPNS_SUM
+            , TRVCT_SUM
+            , EXPENS_SUM
+            , REFUND_SUM
+            , OPER_BFR_PRMTN_SE
+            , OPER_BFR_PRMTN_SESS
+            , OPER_BFR_PRMTN_MTHD
+            , OPER_MDL_PRMTN_SE
+            , OPER_MDL_PRMTN_SESS
+            , OPER_MDL_PRMTN_MTHD
+            , OPER_AFTR_PRMTN_SE
+            , OPER_AFTR_PRMTN_SESS
+            , OPER_AFTR_PRMTN_MTHD
+            , TEL_RCPT_YN
+            , APLY_RCPT_YN
+            , ONLN_RCPT_YN
+            , ETC_YN
+            , ETC_CN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_BSNSEXC_PLAN
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 사업수행계획 저장 -->
+    <insert id="insertPlan" parameterType="ProcPlanVo">
+        /* ReqMngDao.insertPlan */
+        INSERT INTO TB_SPB_BSNSEXC_PLAN (
+            APLYID
+            , LBCST_SUM
+            , ORPNS_SUM
+            , TRVCT_SUM
+            , EXPENS_SUM
+            , REFUND_SUM
+            , OPER_BFR_PRMTN_SE
+            , OPER_BFR_PRMTN_SESS
+            , OPER_BFR_PRMTN_MTHD
+            , OPER_MDL_PRMTN_SE
+            , OPER_MDL_PRMTN_SESS
+            , OPER_MDL_PRMTN_MTHD
+            , OPER_AFTR_PRMTN_SE
+            , OPER_AFTR_PRMTN_SESS
+            , OPER_AFTR_PRMTN_MTHD
+            , TEL_RCPT_YN
+            , APLY_RCPT_YN
+            , ONLN_RCPT_YN
+            , ETC_YN
+            , ETC_CN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{lbcstSum}
+            , #{orpnsSum}
+            , #{trvctSum}
+            , #{expensSum}
+            , #{refundSum}
+            , #{operBfrPrmtnSe}
+            , #{operBfrPrmtnSess}
+            , #{operBfrPrmtnMthd}
+            , #{operMdlPrmtnSe}
+            , #{operMdlPrmtnSess}
+            , #{operMdlPrmtnMthd}
+            , #{operAftrPrmtnSe}
+            , #{operAftrPrmtnSess}
+            , #{operAftrPrmtnMthd}
+            , #{telRcptYn}
+            , #{aplyRcptYn}
+            , #{onlnRcptYn}
+            , #{etcYn}
+            , #{etcCn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 사업수행계획 수정 -->
+    <update id="updatePlan" parameterType="ProcPlanVo">
+        /* ReqMngDao.updatePlan */
+        UPDATE
+            TB_SPB_BSNSEXC_PLAN
+        SET
+            LBCST_SUM = #{lbcstSum}
+            , ORPNS_SUM = #{orpnsSum}
+            , TRVCT_SUM = #{trvctSum}
+            , EXPENS_SUM = #{expensSum}
+            , REFUND_SUM = #{refundSum}
+            , OPER_BFR_PRMTN_SE = #{operBfrPrmtnSe}
+            , OPER_BFR_PRMTN_SESS = #{operBfrPrmtnSess}
+            , OPER_BFR_PRMTN_MTHD = #{operBfrPrmtnMthd}
+            , OPER_MDL_PRMTN_SE = #{operMdlPrmtnSe}
+            , OPER_MDL_PRMTN_SESS = #{operMdlPrmtnSess}
+            , OPER_MDL_PRMTN_MTHD = #{operMdlPrmtnMthd}
+            , OPER_AFTR_PRMTN_SE = #{operAftrPrmtnSe}
+            , OPER_AFTR_PRMTN_SESS = #{operAftrPrmtnSess}
+            , OPER_AFTR_PRMTN_MTHD = #{operAftrPrmtnMthd}
+            , TEL_RCPT_YN = #{telRcptYn}
+            , APLY_RCPT_YN = #{aplyRcptYn}
+            , ONLN_RCPT_YN = #{onlnRcptYn}
+            , ETC_YN = #{etcYn}
+            , ETC_CN = #{etcCn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}
+    </update>
+    
+    <!-- 프로그램 정보 탭 조회 -->
+    <select id="detailPrgrmInfo" parameterType="ProgramInfoVo" resultType="ProgramInfoVo">
+        /* ReqMngDao.detailPrgrmInfo */
+        SELECT
+            APLYID
+            , EDU_TRGT
+            , EDU_PLC
+            , EDU_MTHD_CD
+            , B.CD_NM AS EDU_MTHD_NM
+            , LCTR_PLC_SE_CD
+            , C.CD_NM AS LCTR_PLC_SE_NM 
+            , LCTR_FRM_CD
+            , D.CD_NM AS LCTR_FRM_NM 
+            , LCTR_TME_MTHD_CD
+            , E.CD_NM AS LCTR_TME_MTHD_NM
+            , ESSNTL_SBJCT_NM
+            , ESSNTL_SBJCT_RND
+            , CHOISE_SBJCT_NM
+            , CHOISE_SBJCT_RND
+            , OPER_SESN
+            , SESN_EDU_RND
+            , WHOL_OPER_RND
+            , RND_EDU_NOPE
+            , WHOL_EDU_NOPE
+            , PRGRM_BCRN
+            , EDU_APPRO
+            , PRGRM_DSTNCTN
+            , OPER_PLAN
+            , FYER_COMPL_PREARNGE_NOPE
+            , JAN_CNT
+            , FEB_CNT
+            , MAR_CNT
+            , APR_CNT
+            , MAY_CNT
+            , JUNE_CNT
+            , JULY_CNT
+            , AUG_CNT
+            , SEPT_CNT
+            , OCT_CNT
+            , NOV_CNT
+            , DCM_CNT
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_SPB_PRGRM A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.EDU_MTHD_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON A.LCTR_PLC_SE_CD = C.CD
+            LEFT OUTER JOIN TB_CMM_CD D ON A.LCTR_FRM_CD = D.CD
+            LEFT OUTER JOIN TB_CMM_CD E ON A.LCTR_TME_MTHD_CD = E.CD
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 프로그램 정보 탭 저장 -->
+    <insert id="insertPrgrmInfo" parameterType="ProgramInfoVo">
+        /* ReqMngDao.insertPrgrmInfo */
+        INSERT INTO TB_SPB_PRGRM (
+            APLYID
+            , EDU_TRGT
+            , EDU_PLC
+            , EDU_MTHD_CD
+            , LCTR_PLC_SE_CD
+            , LCTR_FRM_CD
+            , LCTR_TME_MTHD_CD
+            , ESSNTL_SBJCT_NM
+            , ESSNTL_SBJCT_RND
+            , CHOISE_SBJCT_NM
+            , CHOISE_SBJCT_RND
+            , OPER_SESN
+            , SESN_EDU_RND
+            , WHOL_OPER_RND
+            , RND_EDU_NOPE
+            , WHOL_EDU_NOPE
+            , PRGRM_BCRN
+            , EDU_APPRO
+            , PRGRM_DSTNCTN
+            , OPER_PLAN
+            , FYER_COMPL_PREARNGE_NOPE
+            , JAN_CNT
+            , FEB_CNT
+            , MAR_CNT
+            , APR_CNT
+            , MAY_CNT
+            , JUNE_CNT
+            , JULY_CNT
+            , AUG_CNT
+            , SEPT_CNT
+            , OCT_CNT
+            , NOV_CNT
+            , DCM_CNT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{eduTrgt}
+            , #{eduPlc}
+            , #{eduMthdCd}
+            , #{lctrPlcSeCd}
+            , #{lctrFrmCd}
+            , #{lctrTmeMthdCd}
+            , #{essntlSbjctNm}
+            , #{essntlSbjctRnd}
+            , #{choiseSbjctNm}
+            , #{choiseSbjctRnd}
+            , #{operSesn}
+            , #{sesnEduRnd}
+            , #{wholOperRnd}
+            , #{rndEduNope}
+            , #{wholEduNope}
+            , #{prgrmBcrn}
+            , #{eduAppro}
+            , #{prgrmDstnctn}
+            , #{operPlan}
+            , #{fyerComplPrearngeNope}
+            , #{janCnt}
+            , #{febCnt}
+            , #{marCnt}
+            , #{aprCnt}
+            , #{mayCnt}
+            , #{juneCnt}
+            , #{julyCnt}
+            , #{augCnt}
+            , #{septCnt}
+            , #{octCnt}
+            , #{novCnt}
+            , #{dcmCnt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        );
+                
+    </insert>
+
+    <!-- 프로그램 정보 탭 수정 -->
+    <update id="updatePrgrmInfo" parameterType="ProgramInfoVo">
+        /* ReqMngDao.updatePrgrmInfo */
+        UPDATE
+            TB_SPB_PRGRM
+        SET
+            EDU_TRGT = #{eduTrgt}
+            , EDU_PLC = #{eduPlc}
+            , EDU_MTHD_CD = #{eduMthdCd}
+            , LCTR_PLC_SE_CD = #{lctrPlcSeCd}
+            , LCTR_FRM_CD = #{lctrFrmCd}
+            , LCTR_TME_MTHD_CD = #{lctrTmeMthdCd}
+            , ESSNTL_SBJCT_NM = #{essntlSbjctNm}
+            , ESSNTL_SBJCT_RND = #{essntlSbjctRnd}
+            , CHOISE_SBJCT_NM = #{choiseSbjctNm}
+            , CHOISE_SBJCT_RND = #{choiseSbjctRnd}
+            , OPER_SESN = #{operSesn}
+            , SESN_EDU_RND = #{sesnEduRnd}
+            , WHOL_OPER_RND = #{wholOperRnd}
+            , RND_EDU_NOPE = #{rndEduNope}
+            , WHOL_EDU_NOPE = #{wholEduNope}
+            , PRGRM_BCRN = #{prgrmBcrn}
+            , EDU_APPRO = #{eduAppro}
+            , PRGRM_DSTNCTN = #{prgrmDstnctn}
+            , OPER_PLAN = #{operPlan}
+            , FYER_COMPL_PREARNGE_NOPE = #{fyerComplPrearngeNope}
+            , JAN_CNT = #{janCnt}
+            , FEB_CNT = #{febCnt}
+            , MAR_CNT = #{marCnt}
+            , APR_CNT = #{aprCnt}
+            , MAY_CNT = #{mayCnt}
+            , JUNE_CNT = #{juneCnt}
+            , JULY_CNT = #{julyCnt}
+            , AUG_CNT = #{augCnt}
+            , SEPT_CNT = #{septCnt}
+            , OCT_CNT = #{octCnt}
+            , NOV_CNT = #{novCnt}
+            , DCM_CNT = #{dcmCnt}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}
+    </update>
+    
+    <!-- 프로그램 정보 탭 > 프로그램 개요 목록 조회 -->
+    <select id="selectPrgrmList" parameterType="ProgramInfoVo" resultType="ProgramInfoVo">
+        /* ReqMngDao.selectPrgrmList */
+        SELECT
+            PRGRMSUMRYID
+            , APLYID
+            , PRGRM_NM
+            , EDU_RND
+            , EDU_NOPE
+            , ORDR
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_PRGRM_SUMRY
+        WHERE
+            APLYID = #{aplyid}
+    </select>
+    
+    <!-- 프로그램 정보 탭 > 프로그램 개요 삭제 -->
+    <delete id="deletePrgrm" parameterType="ProgramInfoVo">
+        /* ReqMngDao.deletePrgrm */
+        DELETE FROM TB_SPB_PRGRM_SUMRY
+        WHERE APLYID = #{aplyid}
+    </delete>
+    
+    <!-- 프로그램 정보 탭 > 프로그램 개요 저장 -->
+    <insert id="insertPrgrm" parameterType="ProgramInfoVo" useGeneratedKeys="true" keyProperty="prgrmsumryid">
+        /* ReqMngDao.insertPrgrm */
+        INSERT INTO TB_SPB_PRGRM_SUMRY (
+            PRGRMSUMRYID
+            , APLYID
+            , PRGRM_NM
+            , EDU_RND
+            , EDU_NOPE
+            , ORDR
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{prgrmsumryid}
+            , #{aplyid}
+            , #{prgrmNm}
+            , #{eduRnd}
+            , #{eduNope}
+            , #{ordr}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <!-- 전문강사 확보 탭 > 전문인력 보유현황 및 운영계획 목록 조회 -->
+    <select id="selectLeaderPlanList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectLeaderPlanList */
+        
+    </select>
+
+    <!-- 전문강사 확보 탭 > 전문인력 보유현황 및 운영계획 삭제 -->
+    <delete id="deleteLeaderPlan" parameterType="ReqUserVo">
+        /* ReqMngDao.deleteLeaderPlan */
+    </delete>
+    
+    <!-- 전문강사 확보 탭 > 전문인력 보유현황 및 운영계획 저장 -->
+    <insert id="insertLeaderPlan" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* ReqMngDao.insertLeaderPlan */
+        
+    </insert>
+
+    <!-- 전문강사 확보 탭 > 지도자 관리방안 / 총괄 운영 담당자 지도자 자격 조회 -->
+    <select id="detailSmrLeader" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.detailSmrLeader */
+        
+    </select>
+
+    <!-- 전문강사 확보 탭 > 지도자 관리방안 저장 -->
+    <update id="updateSmrLeaderMgt" parameterType="ReqUserVo">
+        /* ReqMngDao.updateSmrLeaderMgt */
+        
+    </update>
+    
+    <!-- 전문강사 확보 탭 > 총괄 운영 담당자 지도자 자격 저장 -->
+    <update id="updateSmrLeaderInfo" parameterType="ReqUserVo">
+        /* ReqMngDao.updateSmrLeaderInfo */
+        
+    </update>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 학력사항 목록 조회 -->
+    <select id="selectLeaderAbilList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectLeaderAbilList */
+        
+    </select>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 학력사항 삭제 -->
+    <delete id="deleteLeaderAbil" parameterType="ReqUserVo">
+        /* ReqMngDao.deleteLeaderAbil */
+    </delete>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 학력사항 저장 -->
+    <insert id="insertLeaderAbil" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* ReqMngDao.insertLeaderAbil */
+        
+    </insert>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 자격사항 목록 조회 -->
+    <select id="selectLeaderLicList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectLeaderLicList */
+        
+    </select>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 자격사항 삭제 -->
+    <delete id="deleteLeaderLic" parameterType="ReqUserVo">
+        /* ReqMngDao.deleteLeaderLic */
+    </delete>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 자격사항 저장 -->
+    <insert id="insertLeaderLic" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* ReqMngDao.insertLeaderLic */
+        
+    </insert>
+
+    <!-- 전문강사 확보 탭 > 환경교육관련 경력사항 목록 조회 -->
+    <select id="selectLeaderCarrList" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.selectLeaderCarrList */
+        
+    </select>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 경력사항 삭제 -->
+    <delete id="deleteLeaderCarr" parameterType="ReqUserVo">
+        /* ReqMngDao.deleteLeaderCarr */
+    </delete>
+    
+    <!-- 전문강사 확보 탭 > 환경교육관련 경력사항 저장 -->
+    <insert id="insertLeaderCarr" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* ReqMngDao.insertLeaderCarr */
+        
+    </insert>
+    
+    <!-- 안전관리 적정성 탭 조회 -->
+    <select id="detailSafety" parameterType="ReqUserVo" resultType="ReqUserVo">
+        /* ReqMngDao.detailSafety */
+        
+    </select>
+    
+    <!-- 안전관리 적정성 탭 > 안전관리 저장 -->
+    <insert id="insertEduInfo" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* ReqMngDao.insertEduInfo */
+        
+    </insert>
+    
+    <!-- 안전관리 적정성 탭 > 프로그램 평가 저장 -->
+    <insert id="insertPrgrmTest" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+        /* ReqMngDao.insertPrgrmTest */
+        
+    </insert>
+</mapper>
