@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.helpDesk.service;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.helpDesk.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +32,9 @@ public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements Help
 
     @Autowired
     private HelpDeskDao helpDeskDao;
+
+    @Autowired
+    private FileDao fileDao;
 
     /**
      * 문의 목록 조회
@@ -73,7 +78,16 @@ public class HelpDeskServiceImpl extends PlumAbstractServiceImpl implements Help
      */
     @Override
     public HelpDeskAnswrVo selectHelpDeskAnswrInfo(HelpDeskVo helpDeskVO) throws Exception {
-        return helpDeskDao.selectHelpDeskAnswrInfo(helpDeskVO);
+        HelpDeskAnswrVo helpdeskAnswr = helpDeskDao.selectHelpDeskAnswrInfo(helpDeskVO);
+
+        if (helpdeskAnswr != null && helpdeskAnswr.getFilegrpid() != null && !helpdeskAnswr.getFilegrpid().equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(helpdeskAnswr.getFilegrpid());
+            ArrayList<FileVo> fileList= fileDao.getFileList(fileVo);
+            helpdeskAnswr.setFileList(fileList);
+        }
+
+        return helpdeskAnswr;
     }
 
     /**

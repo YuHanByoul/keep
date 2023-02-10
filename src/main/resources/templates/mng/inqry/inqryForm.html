@@ -122,9 +122,18 @@
                             <div class="col-auto">
                                 <div id="multipleFileUploadError"></div>
                                 <div id="multipleFileUploadSuccess">
+                                    <th:block th:if="${inqryAnswrInfo.fileList}">
+                                        <th:block th:each="fileInfo : ${inqryAnswrInfo.fileList}" th:id="${fileInfo.fileid}">
+                                    <span class='label label-inverse mb-2 mr-0' th:id="${fileInfo.fileid}"><th:block th:text="${fileInfo.orginlFileNm}"/>
+                                    <a class='text-white' href="javascript:void(0)"
+                                       th:name="${fileInfo.fileid}" th:attr="data-idntfc-key=${fileInfo.fileIdntfcKey}"
+                                       th:onclick="deleteFile(this.name, this.dataset.idntfcKey)">X</a></span>
+                                        </th:block>
+                                    </th:block>
                                 </div>
                             </div>
                         </div>
+                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(inqryAnswrInfo.filegrpid=='' or inqryAnswrInfo.filegrpid==null)? 0:inqryAnswrInfo.filegrpid} "/>
                     </div>
                 </div>
 
@@ -266,7 +275,52 @@
                 }
             });
         }
-    }
+    };
+
+    $('#multiFileInput').on("change", function (event) {
+
+        var objFile = document.querySelector('#multiFileInput');
+        var formData = new FormData();
+        var content = "";
+
+        for (i = 0; i < objFile.files.length; i++) {
+            formData.append("files", objFile.files[i]);
+        }
+
+        formData.append("filegrpid", $("#filegrpid").val());
+        formData.append("filegrpNm", "inqry_file");
+
+        if (displayWorkProgress()) {
+            $.ajax({
+                url: '/uploadMultipleFiles.do',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: 'POST',
+                success: function (response) {
+                    if (response.result == 'fail') {
+                        alert(response.msg);
+                    } else {
+                        if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                            $("#filegrpid").val(response[0].filegrpid);
+                        }
+                        for (i = 0; i < response.length; i++) {
+                            content = "<span class ='label label-inverse' id='" + response[i].fileid + "'>" + response[i].orginlFileNm;
+                            content += "<a class='text-white' href=javascript:deleteFile('" + response[i].fileid + "','" + response[i].fileIdntfcKey + "')>X</a></span>";
+                            $('#multipleFileUploadSuccess').append(content);
+                        }
+                    }
+                    closeWorkProgress();
+                }
+            })
+
+            if (detectBrowser() == "other") {
+                $("#multiFileInput").val("");
+            } else {
+                $("#multiFileInput").replaceWith($("#multiFileInput").clone(true))
+            }
+        }
+    });
 
     function removeManagerInfo(userid) {
         $("#managerId-" + userid).remove();

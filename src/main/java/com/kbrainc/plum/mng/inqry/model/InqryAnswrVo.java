@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.inqry.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.SerializationUtils;
 
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
@@ -74,6 +76,10 @@ public class InqryAnswrVo extends ParentRequestVo {
     private Date anscmptnDt;
 
     private Integer[] managerId;
+
+    private Integer filegrpid;
+
+    private List<FileVo> fileList;
 
     public void setRegDt(Date regDt) {
         this.regDt = regDt != null ? (Date) regDt.clone() : null;

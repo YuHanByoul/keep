@@ -1,7 +1,9 @@
 package com.kbrainc.plum.mng.inqry.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.mng.inqry.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -33,6 +35,9 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
 
     @Autowired
     private InqryDao inqryDao;
+
+    @Autowired
+    private FileDao fileDao;
 
     /**
      * @Title : selectInqryList
@@ -67,7 +72,16 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
      */
     @Override
     public InqryAnswrVo selectInqryAnswrInfo(InqryVo inqryVO) throws Exception {
-        return inqryDao.selectInqryAnswrInfo(inqryVO);
+        InqryAnswrVo inqryAnswr = inqryDao.selectInqryAnswrInfo(inqryVO);
+
+        if (inqryAnswr != null && inqryAnswr.getFilegrpid() != null && !inqryAnswr.getFilegrpid().equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(inqryAnswr.getFilegrpid());
+            ArrayList<FileVo> fileList= fileDao.getFileList(fileVo);
+            inqryAnswr.setFileList(fileList);
+        }
+
+        return inqryAnswr;
     }
 
     /**
