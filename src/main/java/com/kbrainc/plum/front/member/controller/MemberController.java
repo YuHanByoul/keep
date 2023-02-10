@@ -71,21 +71,21 @@ public class MemberController {
     /**
     * 회원가입 0단계 : 회원가입 유형 선택 화면.
     *
-    * @Title       : membershipStep0 
-    * @Description : 회원가입 0단계 : 회원가입 유형 선택 화면
+    * @Title       : membershipStep1 
+    * @Description : 회원가입 1단계 : 회원가입 유형 선택 화면
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/membership/step0.html")
-    public String membershipStep0() throws Exception {
-        return "front/member/step0.html";
+    @RequestMapping(value = "/front/membership/step1.html")
+    public String membershipStep1() throws Exception {
+        return "front/member/step1.html";
     }
     
     /**
-    * 회원가입 1단계 : 약관동의 화면.
+    * 회원가입 2단계 : 약관동의 화면.
     *
-    * @Title : membershipStep1
-    * @Description : 회원가입 1단계 : 약관동의 화면
+    * @Title : membershipStep2
+    * @Description : 회원가입 2단계 : 약관동의 화면
     * @param request 요청객체
     * @param response 응답객체
     * @param memberTypeVo MemberTypeVo객체
@@ -94,8 +94,8 @@ public class MemberController {
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/membership/step1.html")
-    public String membershipStep1(HttpServletRequest request, HttpServletResponse response, MemberTypeVo memberTypeVo, Model model, RedirectAttributes redirect) throws Exception {
+    @RequestMapping(value = "/front/membership/step2.html")
+    public String membershipStep2(HttpServletRequest request, HttpServletResponse response, MemberTypeVo memberTypeVo, Model model, RedirectAttributes redirect) throws Exception {
         Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
         if(flashMap != null){
             MemberAgreVo memberAgreVo = (MemberAgreVo) flashMap.get("data");
@@ -112,18 +112,18 @@ public class MemberController {
         for (ConstraintViolation<MemberTypeVo> violation : violations) {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.print("<script>alert('" + violation.getMessage() + "');location.href='/front/membership/step0.html';</script>");
+            writer.print("<script>alert('" + violation.getMessage() + "');location.href='/front/membership/step1.html';</script>");
             return null;
         }
         
-        return "front/member/step1.html";
+        return "front/member/step2.html";
     }
     
     /**
-    * 회원가입 2단계 : 본인인증 화면.
+    * 회원가입 3단계 : 본인인증 화면.
     *
-    * @Title : membershipStep2
-    * @Description : 회원가입 2단계 : 본인인증 화면
+    * @Title : membershipStep3
+    * @Description : 회원가입 3단계 : 본인인증 화면
     * @param request 요청객체
     * @param response 응답객체
     * @param memberAgreVo MemberAgreVo객체
@@ -133,8 +133,8 @@ public class MemberController {
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/membership/step2.html")
-    public String membershipStep2(HttpServletRequest request, HttpServletResponse response, @Valid MemberAgreVo memberAgreVo, BindingResult bindingResult, Model model, RedirectAttributes redirect) throws Exception {
+    @RequestMapping(value = "/front/membership/step3.html")
+    public String membershipStep3(HttpServletRequest request, HttpServletResponse response, @Valid MemberAgreVo memberAgreVo, BindingResult bindingResult, Model model, RedirectAttributes redirect) throws Exception {
         Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
         MemberAuthVo memberAuthVo = null;
         
@@ -157,27 +157,27 @@ public class MemberController {
         for (ConstraintViolation<MemberAgreVo> violation : violations) {
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.print("<script>alert('" + violation.getMessage() + "');location.href='/front/membership/step0.html';</script>");
+            writer.print("<script>alert('" + violation.getMessage() + "');location.href='/front/membership/step1.html';</script>");
             return null;
         }
         
         if ("C".equals(memberAgreVo.getType()) && (memberAgreVo.getChildJoinAgreYn() == null|| !"Y".equals(memberAgreVo.getChildJoinAgreYn()))) { // 어린이 회원 일때
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.print("<script>alert('필수항목을 동의해야 회원가입이 가능합니다.');location.href='/front/membership/step0.html';</script>");
+            writer.print("<script>alert('필수항목을 동의해야 회원가입이 가능합니다.');location.href='/front/membership/step1.html';</script>");
             return null;
         }
 
         model.addAttribute("data", memberAgreVo);
         
-        return "front/member/step2.html";
+        return "front/member/step3.html";
     }
     
     /**
-    * 회원가입 3단계 : 회원정보입력 화면.
+    * 회원가입 4단계 : 회원정보입력 화면.
     *
-    * @Title : membershipStep3
-    * @Description : 회원가입 3단계 : 회원정보입력 화면
+    * @Title : membershipStep4
+    * @Description : 회원가입 4단계 : 회원정보입력 화면
     * @param response 응답객체
     * @param memberAuthVo MemberAuthVo객체
     * @param bindingResult 유효성검증결과
@@ -187,21 +187,21 @@ public class MemberController {
     * @return String 이동화면 경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/membership/step3.html")
-    public String membershipStep3(HttpServletResponse response, @Valid MemberAuthVo memberAuthVo, BindingResult bindingResult, Model model, HttpSession session, RedirectAttributes redirect) throws Exception {
+    @RequestMapping(value = "/front/membership/step4.html")
+    public String membershipStep4(HttpServletResponse response, @Valid MemberAuthVo memberAuthVo, BindingResult bindingResult, Model model, HttpSession session, RedirectAttributes redirect) throws Exception {
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             fieldError.getDefaultMessage();
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.print("<script>alert('" + fieldError.getDefaultMessage() + "');location.href='/front/membership/step0.html';</script>");
+            writer.print("<script>alert('" + fieldError.getDefaultMessage() + "');location.href='/front/membership/step1.html';</script>");
             return null;
         }
         
         if ("C".equals(memberAuthVo.getType()) && (memberAuthVo.getChildJoinAgreYn() == null|| !"Y".equals(memberAuthVo.getChildJoinAgreYn()))) { // 어린이 회원 일때
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
-            writer.print("<script>alert('필수항목을 동의해야 회원가입이 가능합니다.');location.href='/front/membership/step0.html';</script>");
+            writer.print("<script>alert('필수항목을 동의해야 회원가입이 가능합니다.');location.href='/front/membership/step1.html';</script>");
             return null;
         }
         
@@ -213,7 +213,7 @@ public class MemberController {
             if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
                 response.setContentType("text/html;charset=UTF-8");
                 PrintWriter writer = response.getWriter();
-                writer.print("<script>alert('" + result.getSMessage() + "');location.href='/front/membership/step0.html;</script>");
+                writer.print("<script>alert('" + result.getSMessage() + "');location.href='/front/membership/step1.html;</script>");
                 return null;
             }
             
@@ -226,27 +226,27 @@ public class MemberController {
                 if (userid != null) {
                     memberAuthVo.setAlertMsg("회원정보가 존재합니다.\n아이디 찾기로 확인해주시기 바랍니다.");
                     redirect.addFlashAttribute("data", memberAuthVo);
-                    return "redirect:/front/membership/step2.html";
+                    return "redirect:/front/membership/step3.html";
                 }
             }
         }
         
         model.addAttribute("data", memberAuthVo);
         model.addAttribute("authData", result);
-        return "front/member/step3.html";
+        return "front/member/step4.html";
     }
     
     /**
-    * 회원가입 4단계 : 가입완료 화면.
+    * 회원가입 5단계 : 가입완료 화면.
     *
-    * @Title       : membershipStep4 
-    * @Description : 회원가입 4단계 : 가입완료 화면.
+    * @Title       : membershipStep5 
+    * @Description : 회원가입 5단계 : 가입완료 화면.
     * @return String 이동화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/membership/step4.html")
-    public String membershipStep4() throws Exception {
-        return "front/member/step4.html";
+    @RequestMapping(value = "/front/membership/step5.html")
+    public String membershipStep5() throws Exception {
+        return "front/member/step5.html";
     }
     
     /**

@@ -6,19 +6,15 @@
 >
     <body>
         <th:block layout:fragment="content">
-            <form id="memberInfoForm" name="memberInfoForm" th:action="@{/front/membership/step4.html}" method="post">
+            <form id="authForm" name="authForm" th:action="@{/front/membership/step3.html}" method="post">
             <input type="hidden" name="type" id="type" th:value="${data.type}" />
             <input type="hidden" name="tosAgreYn" id="tosAgreYn" th:value="${data.tosAgreYn}" />
             <input type="hidden" name="privcyAgreYn" id="privcyAgreYn" th:value="${data.privcyAgreYn}" />
             <input type="hidden" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:value="${data.prvcThptyPvsnAgreYn}" />
             <input type="hidden" name="childJoinAgreYn" th:if="${data.type == 'C'}" id="childJoinAgreYn" th:value="${param.childJoinAgreYn}" />
             <input type="hidden" name="wbznAplyAgreYn" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
-            <input type="hidden" name="wbznAp" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
-            <input type="hidden" name="encodeData" id="encodeData" th:value="${data.encodeData}" />
+            <input type="hidden" name="encodeData" id="encodeData" value="" />
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
-            <input type="hidden" name="signguCd" id="signguCd" />
-            <input type="hidden" name="zip" id="zip" />
-            
             <div class="steps">
                 <ol>
                     <li>
@@ -27,13 +23,13 @@
                             <strong>약관동의</strong>
                         </div>
                     </li>
-                    <li>
+                    <li class="active" title="현재 단계">
                         <div class="steps-inner">
                             <span>02</span>
                             <strong>본인인증</strong>
                         </div>
                     </li>
-                    <li class="active" title="현재 단계">
+                    <li>
                         <div class="steps-inner">
                             <span>03</span>
                             <strong>회원정보입력</strong>
@@ -48,413 +44,54 @@
                 </ol>
             </div>
 
-            <div class="table-caption">
-                <div class="left">
-                    <h3 class="sub-title">회원정보 입력</h3>
-                </div>
-                <div class="right">
-                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
-                </div>
+            <div class="section-title">
+                <h3>개인회원 본인인증</h3>
             </div>
 
-            <div class="table-row table-row-mo">
-                <table>
-                    <caption>회원가입  - 이름, 아이디, 비밀번호, 비밀번호 확인, 휴대전화, 이메일, 주소, 상세주소, 관심분야, 맞춤 환경정보</caption>
-                    <colgroup>
-                        <col style="width:140px;">
-                        <col>
-                    </colgroup>
-                    <tbody>
-                        <tr>
-                            <th scope="row">이름<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input">
-                                            <input type="text" name="nm" id="nm" maxlength="20" title="이름" placeholder="이름 입력" data-width="304" th:value="${authData.sName}" th:readonly="${authData.sName != null}">
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback"></p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">아이디<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input">
-                                            <input type="text" name="acnt" id="acnt" maxlength="10" title="아이디" placeholder="아이디 입력" data-width="304">
-                                            <button type="button" class="btn-medium btn-gray" onclick="checkIdYn()">중복확인</button>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback" id="checkIdMsg"></p>
-                                    </div>
-                                </div>
-                                <p class="desc">* 아이디 영문소문자+숫자 6~10자 이내</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">비밀번호<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input"><input type="password" name="pswd" id="pswd" maxlength="12" onkeyup="changePswd()" title="비밀번호" placeholder="비밀번호 입력" data-width="414"></div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback" id="checkPswdMsg"></p>
-                                    </div>
-                                </div>
-                                <p class="desc">* 비밀번호 영문+숫자+특수문자(!@#$) 각 1자 이상 포함아여 9~12자 이내</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">비밀번호 확인<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input"><input type="password" name="pswdConfirm" id="pswdConfirm" maxlength="12" onkeyup="changePswdConfirm()" title="비밀번호 확인" placeholder="비밀번호 확인 입력" data-width="414"></div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback" id="checkPswdConfirmMsg"></p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">휴대전화<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="form-input">
-                                    <input type="number" name="moblphon" id="moblphon" maxlength="12" title="휴대전화" placeholder="숫자만 입력" data-width="304" th:value="${authData.sMobileNo}" th:readonly="${authData.sName != null}">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">이메일<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input">
-                                            <input type="text" name="eml1" id="eml1" maxlength="50" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160">
-                                            <div class="bul">@</div>
-                                            <input type="text" name="eml2" id="eml2" maxlength="50" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
-                                            <select id="emailList" title="이메일 도메인" data-width="150">
-                                                <option value="">직접입력</option>
-                                                <option value="chol.com">chol.com</option>
-                                                <option value="dreamwiz.com">dreamwiz.com</option>
-                                                <option value="empal.com">empal.com</option>
-                                                <option value="empas.com">empas.com</option>
-                                                <option value="freechal.com">freechal.com</option>
-                                                <option value="gmail.com">gmail.com</option>
-                                                <option value="hanafos.com">hanafos.com</option>
-                                                <option value="hanmail.net">hanmail.net</option>
-                                                <option value="hanmir.com">hanmir.com</option>
-                                                <option value="hitel.net">hitel.net</option>
-                                                <option value="hotmail.com">hotmail.com</option>
-                                                <option value="korea.com">korea.com</option>
-                                                <option value="lycos.co.kr">lycos.co.kr</option>
-                                                <option value="megapass.net">megapass.net</option>
-                                                <option value="nate.com">nate.com</option>
-                                                <option value="naver.com">naver.com</option>
-                                                <option value="paran.com">paran.com</option>
-                                                <option value="sayclub.net">sayclub.net</option>
-                                                <option value="shinbiro.com">shinbiro.com</option>
-                                                <option value="yahoo.co.kr">yahoo.co.kr</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback"></p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input">
-                                            <div class="bul">지번/도로명</div>
-                                            <input type="text" name="addr" id="addr" onclick="daumPostcode()" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback" id="checkAddrMsg"></p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
-                            <td>
-                                <div class="row row-auto flex-wrap">
-                                    <div class="col">
-                                        <div class="form-input">
-                                            <input type="text" name="addrDtl" id="addrDtl" maxlength="400" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585">
-                                        </div>
-                                    </div>
-                                    <div class="col">
-                                        <p class="feedback"></p>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row" rowspan="4">관심분야 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
-                            <td>
-                                <div class="form-input mo-flex-wrap">
-                                    <strong class="label">교육 프로그램</strong>
-                                    <span kattr:check_code="itrstfldCds1" grpCd="105" upprCd="105101" addClass="itrstfldCds" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="form-input mo-flex-wrap">
-                                    <strong class="label">지원사업</strong>
-                                    <span kattr:check_code="itrstfldCds2" grpCd="105" upprCd="105102" addClass="itrstfldCds" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            
-                            <td>
-                                <div class="form-input mo-flex-wrap">
-                                    <strong class="label">제도지원</strong>
-                                    <span kattr:check_code="itrstfldCds3" grpCd="105" upprCd="105103" addClass="itrstfldCds" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="form-input mo-flex-wrap">
-                                    <strong class="label">기타</strong>
-                                    <span kattr:check_code="itrstfldCds4" grpCd="105" upprCd="105104" addClass="itrstfldCds" />
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th scope="row">맞춤 환경정보 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
-                            <td>
-                                <span kattr:check_code="envfldCds1" grpCd="104" addClass="envfldCds" selectedCd="104101,104105,104106" />
-                                <p class="desc-info mt15">선택하신 정보는 로그인 시, 메인 화면에서 위젯 형태로 확인할 수 있습니다.</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="cert-list">
+                <ul>
+                    <li>
+                        <div class="thumb"><img src="/images/front/member/cert-list01.png" alt=""></div>
+                        <dl>
+                            <dt>휴대폰 인증</dt>
+                            <dd>&lsquo;<b class="fc-green">인증하기</b>&rsquo; 버튼을 클릭하여 실명인증을 진행해주세요.</dd>
+                        </dl>
+                        <div class="btn-inner">
+                            <button type="button" class="btn-medium btn-green" onclick="fnAuthPopup()">인증하기</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
 
-            <div class="box-df-list mt10">
-                <dl>
-                    <dt>개인정보 유효기간</dt>
-                    <dd>선택된 유효기간 동안 국가환경교육 통합플랫폼 이용 내역이 없어도 개인정보 분리보관 및 휴면회원으로 전환되지 않습니다.</dd>
-                </dl>
-                <div class="form-check-list mt10">
-                    <label class="inp"><input type="radio" name="prvcVldty" value="1" checked><b>1년</b></label>
-                    <label class="inp"><input type="radio" name="prvcVldty" value="2"><b>2년</b></label>
-                    <label class="inp"><input type="radio" name="prvcVldty" value="5"><b>5년</b></label>
-                    <label class="inp"><input type="radio" name="prvcVldty" value="0"><b>회원탈퇴 시</b></label>
-                </div>
-            </div>
-            
-            <div class="btn-wrap">
-                <div class="center">
-                    <button type="button" class="btn-medium btn-green" onclick="join()">가입하기</button>
-                </div>
+            <div class="box-desc-list bg7 mt50">
+                <ul>
+                    <li>[정보통신망 이용촉진 및 정보보호 등에 관한 법률시행령에 제 29조 10에 따른 본인확인란, 공인인증기관 그 밖에 본인확인서비스를 제공하는 제3자를 통하여 본인임을 확인하는 것을 의미합니다.</li>
+                    <li>환경교육포털은 개인정보에 대한 유출 및 도용을 방지하기 위해 본인인증을 시행하고 있습니다.</li>
+                    <li>회원님의 개인정보는 항상 암호화되어 처리됩니다.</li>
+                    <li>본인인증 시 제공되는 정보는 해당 인증기관에서 직접 수집하며, 인증 이외 용도로 이용 또는 저장하지 않습니다.</li>
+                </ul>
             </div>
             </form>
-            <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-            <script type="text/javascript">
-                var checkId = "";
-                var isDuplicatedId = false;
-                var validator= $("#memberInfoForm").validate({
-                        onsubmit: false,
-                        rules: {
-                             nm         :   { required: true, isBlank : true, maxlength: 20 }
-                            ,acnt       :   { required: true, isBlank : true, minlength: 6, maxlength: 10, idPolicy1: true }
-                            ,pswd       :   { required: true, isBlank : true, passwordPolicy2: true, minlength: 9, maxlength: 12 ,isHangulOff: true }
-                            ,pswdConfirm:   { required: true, isBlank : true, passwordPolicy2: true, isHangulOff: true }
-                            ,moblphon   :   { required: true, number : true, maxlength: 12}
-                            ,eml1       :   { required: true, isBlank : true, maxlength: 50 }
-                            ,eml2       :   { required: true, isBlank : true, maxlength: 50, emailDomain: true }
-                            ,addr       :   { required: true, maxlength: 200 }
-                            ,addrDtl    :   { required: true, maxlength: 400 }
-                        },
-                        messages: {
-                             nm         :   { required: "이름을 입력 해주십시오.", isBlank : "이름에 공백이 있습니다.", maxlength: "이름은 20자를 초과할 수 없습니다." }
-                            ,acnt       :   { required: "아이디를 입력 해주십시오.", isBlank : "아이디에 공백이 있습니다.", minlength:"아이디 형식이 올바르지 않습니다.", maxlength: "아이디 형식이 올바르지 않습니다.", idPolicy1: "아이디 형식이 올바르지 않습니다." }  
-                            ,pswd       :   { required: "비밀번호를 입력 해주십시오.", isBlank : "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2 : "비밀번호 조건이 일치하지 않습니다.", minlength:"비밀번호 조건이 일치하지 않습니다.", maxlength: "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
-                            ,pswdConfirm:   { required: "비밀번호 확인을 입력 해주십시오.", isBlank : "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2 : "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
-                            ,moblphon   :   { required: "휴대전화를 입력 해주십시오.",number : "숫자만 입력 가능합니다.", maxlength:"휴대전화는 12자를 초과할 수 없습니다." }  
-                            ,eml1       :   { required: "이메일을 입력 해주십시오.", isBlank : "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
-                            ,eml2       :   { required: "이메일을 입력 해주십시오.", isBlank : "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
-                            ,addr       :   { required: "주소를 입력 해주십시오.", maxlength: "주소는 200자를 초과할 수 없습니다." }
-                            ,addrDtl    :   { required: "상세주소를 입력 해주십시오.", maxlength: "상세주소는 400자를 초과할 수 없습니다." }
-                        }
-                    })
+            <script language='javascript'>
+                window.name ="Parent_window";
                 
-                //아이디 중복 체크 
-                function checkIdYn(){
-                    
-                    if(!$('#acnt').valid()) return;
-                    
-                    if(displayWorkProgress(true)){
-                        $.ajax({
-                            url : "/front/member/checkDuplicationUser.do",
-                            type: 'POST',
-                            cache : false,
-                            dataType: 'json',
-                            data : { acnt: $("#acnt").val() },
-                            success : function (data){
-                                if(!data.result){
-                                    $("#checkIdMsg").text("이미 사용중인 아이디입니다.").removeClass("valid").addClass("invalid");
-                                    checkId = "";
-                                    isDuplicatedId = true;
-                                }else{
-                                    $("#checkIdMsg").text("사용가능한 아이디입니다.").removeClass("invalid").addClass("valid");
-                                    checkId = $("#acnt").val();
-                                    isDuplicatedId = false;
-                                }
-                                closeWorkProgress();
-                            }
-                        });
-                    }
+                function fnAuthPopup(){
+                    window.open('/CheckPlusSafeModel/checkplus.html', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
                 }
                 
-                function changePswd(){
-                    if($('#pswd').valid()) {
-                        $("#checkPswdMsg").text("사용 가능한 비밀번호입니다.").removeClass("invalid").addClass("valid");
-                    }
-                    
-                    if($("#pswdConfirm").val().length > 0) {
-                        changePswdConfirm();
-                    }
+                function setEncodeData(encodeData) {
+                    document.authForm.encodeData.value = encodeData;
+                    document.authForm.submit();
                 }
-                
-                function changePswdConfirm() {
-                    if($("#pswd").val()!=$("#pswdConfirm").val()) {
-                        $("#checkPswdConfirmMsg").text("비밀번호가 일치하지 않습니다.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }else{
-                        
-                        $("#checkPswdConfirmMsg").text("비밀번호가 일치합니다.").removeClass("invalid").addClass("valid");
-                        return true;
-                    }
-                }   
-                
-                function checkIdDup() {
-                    if(checkId !=  $("#acnt").val()){
-                        $("#checkIdMsg").text("아이디 중복확인을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }else{
-                        return true;
-                    }   
-                }
-                
-                function checkAddr() {
-                    if($("#addr").val() == "") {
-                        $("#checkAddrMsg").text("주소를 입력 해주십시오.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }else if($("#addr").val().length > 200){
-                        $("#checkAddrMsg").text("주소는 200자를 초과할 수 없습니다.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }
-                    return truel;
-                }
-                
-                function join(){
-                    if(!($("#memberInfoForm").valid())){
-                        if($("#checkIdMsg").text() == "" || checkId !=  $("#acnt").val()) $("#acnt").focus();
-                        if($("#checkPswdMsg").text() == "") changePswd();
-                        if($("#checkPswdConfirmMsg").text() == "") $("#pswdConfirm").focus();   
-                        // readonly라 별도 처리
-                        if(!checkAddr()) {
-                          if($(".feedback.invalid", "#memberInfoForm").length == 1) {
-                              window.scrollTo({top: document.getElementById("addr").getBoundingClientRect().top-128 + window.pageYOffset});
-                          }  
-                        } 
-                        return;
-                    }
+            </script>
+            <script th:inline="javascript">
 
-                    changePswd();
-                    
-                    var checkIdDupResult = checkIdDup();
-                    var checkPswdConfirmResult = changePswdConfirm();
-                    
-                    if(checkIdDupResult && checkPswdConfirmResult){
-                        if($("input[name=envfldCds1]:checked").length > 3) {
-                            alert("맞춤 환경정보는 최대 3개 까지만 선택가능합니다.");
-                            return;
-                        }
-                        
-                        if(($("input[name=itrstfldCds1]:checked").length + $("input[name=itrstfldCds2]:checked").length + $("input[name=itrstfldCds3]:checked").length + $("input[name=itrstfldCds4]:checked").length) > 3) {
-                            alert("관심분야는 최대 3개 까지만 선택가능합니다.");
-                            return;
-                        }
-                        
-                        if(!confirm("회원가입을 완료하시겠습니까?")) return;
-                
-                        var itrstfldCds = $('.itrstfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
-                        var envfldCds   = $('.envfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
-                        
-                        var data =  $("#memberInfoForm").serialize();
-                        data = data+"&itrstfldCds="+itrstfldCds+"&envfldCds="+envfldCds
-
-                        if(displayWorkProgress(true)){
-                            $.ajax({
-                                url : "/front/member/insertMember.do",
-                                type: 'POST',
-                                cache : false,
-                                dataType: 'json',
-                                data : data,
-                                success : function (data){
-                                    if(data.result=="success"){
-                                        if($("#returnUrl").val() != ''){
-                                            location.href="/front/membership/step4.html?returnUrl=" + $("#returnUrl").val();
-                                        }else{
-                                            location.href="/front/membership/step4.html";
-                                        }
-                                    }else{
-                                        alert(data.msg);
-                                    }
-                                    closeWorkProgress();
-                                }
-                            });
-                        }
-                    }else{
-                        if(!checkPswdConfirmResult) $("#pswdConfirm").focus();
-                        if(!checkIdDupResult) $("#acnt").focus();
-                    }
-                }
-                
-                function daumPostcode(){
-                    new daum.Postcode({
-                        oncomplete: function(data) {
-                            let addr = '';
-                            if (data.userSelectedType === 'R') {
-                                addr = data.roadAddress;
-                            } else {
-                                addr = data.jibunAddress;
-                            }
-                            $('#signguCd').val(data.sigunguCode);
-                            $('#zip').val(data.zonecode);
-                            $('#addr').val(addr);
-                            $('#addrDtl').focus();
-                        }
-                    }).open();
-                }
-                
                 $(function(){
-                    $('#emailList').change(function(e){
-                        var self = $(this);
-                        var val = self.val();
-                        $('input#eml2').val(val);
-                    });
+                   /*[# th:if="${data.alertMsg}"]*/
+                       alert([[${data.alertMsg}]]);
+                   /*[/]*/
                 });
+
             </script>
         </th:block>
     </body>
