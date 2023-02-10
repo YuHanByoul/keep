@@ -6,7 +6,7 @@
 >
     <body>
         <th:block layout:fragment="content">
-            <form id="authForm" name="authForm" th:action="@{/front/membership/step3.html}" method="post">
+            <form id="memberInfoForm" name="memberInfoForm" th:action="@{/front/membership/step4.html}" method="post">
             <input type="hidden" name="type" id="type" th:value="${data.type}" />
             <input type="hidden" name="tosAgreYn" id="tosAgreYn" th:value="${data.tosAgreYn}" />
             <input type="hidden" name="privcyAgreYn" id="privcyAgreYn" th:value="${data.privcyAgreYn}" />
@@ -16,6 +16,9 @@
             <input type="hidden" name="wbznAp" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
             <input type="hidden" name="encodeData" id="encodeData" th:value="${data.encodeData}" />
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
+            <input type="hidden" name="signguCd" id="signguCd" />
+            <input type="hidden" name="zip" id="zip" />
+            
             <div class="steps">
                 <ol>
                     <li>
@@ -65,8 +68,15 @@
                         <tr>
                             <th scope="row">이름<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <input type="text" title="이름" placeholder="이름 입력" data-width="304" th:value="${authData.sName}" th:readonly="${authData.sName != null}">
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="text" name="nm" id="nm" maxlength="20" title="이름" placeholder="이름 입력" data-width="304" th:value="${authData.sName}" th:readonly="${authData.sName != null}">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -76,15 +86,15 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" title="아이디" placeholder="아이디 입력" data-width="304">
-                                            <button type="button" class="btn-medium btn-gray">중복확인</button>
+                                            <input type="text" name="acnt" id="acnt" maxlength="10" title="아이디" placeholder="아이디 입력" data-width="304">
+                                            <button type="button" class="btn-medium btn-gray" onclick="checkIdYn()">중복확인</button>
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback valid">사용가능한 아이디 입니다.</p>
+                                        <p class="feedback" id="checkIdMsg"></p>
                                     </div>
                                 </div>
-                                <p class="desc">* 아이디 영문+숫자 6~10자 이내</p>
+                                <p class="desc">* 아이디 영문소문자+숫자 6~10자 이내</p>
                             </td>
                         </tr>
                         <tr>
@@ -92,10 +102,10 @@
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
-                                        <div class="form-input"><input type="password" title="비밀번호" placeholder="비밀번호 입력" data-width="414"></div>
+                                        <div class="form-input"><input type="password" name="pswd" id="pswd" maxlength="12" onkeyup="changePswd()" title="비밀번호" placeholder="비밀번호 입력" data-width="414"></div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback invalid">비밀번호 조건이 일치하지 않습니다.</p>
+                                        <p class="feedback" id="checkPswdMsg"></p>
                                     </div>
                                 </div>
                                 <p class="desc">* 비밀번호 영문+숫자+특수문자(!@#$) 각 1자 이상 포함아여 9~12자 이내</p>
@@ -106,19 +116,19 @@
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
-                                        <div class="form-input"><input type="password" title="비밀번호 확인" placeholder="비밀번호 확인 입력" data-width="414"></div>
+                                        <div class="form-input"><input type="password" name="pswdConfirm" id="pswdConfirm" maxlength="12" onkeyup="changePswdConfirm()" title="비밀번호 확인" placeholder="비밀번호 확인 입력" data-width="414"></div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback valid">비밀번호가 일치합니다.</p>
+                                        <p class="feedback" id="checkPswdConfirmMsg"></p>
                                     </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">휴대전화</th>
+                            <th scope="row">휴대전화<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="form-input">
-                                    <input type="number" title="휴대전화" placeholder="숫자만 입력" data-width="304" th:value="${authData.sMobileNo}" th:readonly="${authData.sName != null}">
+                                    <input type="number" name="moblphon" id="moblphon" maxlength="12" title="휴대전화" placeholder="숫자만 입력" data-width="304" th:value="${authData.sMobileNo}" th:readonly="${authData.sName != null}">
                                 </div>
                             </td>
                         </tr>
@@ -128,17 +138,36 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="email" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160">
+                                            <input type="text" name="eml1" id="eml1" maxlength="50" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160">
                                             <div class="bul">@</div>
-                                            <input type="email" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
-                                            <select title="이메일 도메인" data-width="120">
-                                                <option value="직접입력">직접입력</option>
-                                                <option value="select">select</option>
+                                            <input type="text" name="eml2" id="eml2" maxlength="50" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
+                                            <select id="emailList" title="이메일 도메인" data-width="150">
+                                                <option value="">직접입력</option>
+                                                <option value="chol.com">chol.com</option>
+                                                <option value="dreamwiz.com">dreamwiz.com</option>
+                                                <option value="empal.com">empal.com</option>
+                                                <option value="empas.com">empas.com</option>
+                                                <option value="freechal.com">freechal.com</option>
+                                                <option value="gmail.com">gmail.com</option>
+                                                <option value="hanafos.com">hanafos.com</option>
+                                                <option value="hanmail.net">hanmail.net</option>
+                                                <option value="hanmir.com">hanmir.com</option>
+                                                <option value="hitel.net">hitel.net</option>
+                                                <option value="hotmail.com">hotmail.com</option>
+                                                <option value="korea.com">korea.com</option>
+                                                <option value="lycos.co.kr">lycos.co.kr</option>
+                                                <option value="megapass.net">megapass.net</option>
+                                                <option value="nate.com">nate.com</option>
+                                                <option value="naver.com">naver.com</option>
+                                                <option value="paran.com">paran.com</option>
+                                                <option value="sayclub.net">sayclub.net</option>
+                                                <option value="shinbiro.com">shinbiro.com</option>
+                                                <option value="yahoo.co.kr">yahoo.co.kr</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback invalid">이메일 형식이 올바르지 않습니다.</p>
+                                        <p class="feedback"></p>
                                     </div>
                                 </div>
                             </td>
@@ -146,23 +175,30 @@
                         <tr>
                             <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <div class="bul">지번/도로명</div>
-                                    <input type="text" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly id="reado">
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <div class="bul">지번/도로명</div>
+                                            <input type="text" name="addr" id="addr" onclick="daumPostcode()" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback" id="checkAddrMsg"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">상세주소</th>
+                            <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585">
+                                            <input type="text" name="addrDtl" id="addrDtl" maxlength="400" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585">
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback invalid">상세주소는 100자를 초과할 수 없습니다.</p>
+                                        <p class="feedback"></p>
                                     </div>
                                 </div>
                             </td>
@@ -172,11 +208,7 @@
                             <td>
                                 <div class="form-input mo-flex-wrap">
                                     <strong class="label">교육 프로그램</strong>
-                                    <div class="form-check-list">
-                                        <label class="inp"><input type="checkbox"><b>푸름이 이동환경교실 </b></label>
-                                        <label class="inp"><input type="checkbox"><b>유아환경교육관</b></label>
-                                        <label class="inp"><input type="checkbox"><b>전국 환경교육 기관ㆍ단체 프로그램</b></label>
-                                    </div>
+                                    <span kattr:check_code="itrstfldCds1" grpCd="105" upprCd="105101" addClass="itrstfldCds" />
                                 </div>
                             </td>
                         </tr>
@@ -184,10 +216,7 @@
                             <td>
                                 <div class="form-input mo-flex-wrap">
                                     <strong class="label">지원사업</strong>
-                                    <div class="form-check-list">
-                                        <label class="inp"><input type="checkbox"><b>사회 환경교육 지원사업</b></label>
-                                        <label class="inp"><input type="checkbox"><b>학교 환경교육 지원사업</b></label>
-                                    </div>
+                                    <span kattr:check_code="itrstfldCds2" grpCd="105" upprCd="105102" addClass="itrstfldCds" />
                                 </div>
                             </td>
                         </tr>
@@ -196,12 +225,7 @@
                             <td>
                                 <div class="form-input mo-flex-wrap">
                                     <strong class="label">제도지원</strong>
-                                    <div class="form-check-list">
-                                        <label class="inp"><input type="checkbox"><b>환경교육사</b></label>
-                                        <label class="inp"><input type="checkbox"><b>우수환경교육프로그램 지정제</b></label>
-                                        <label class="inp"><input type="checkbox"><b>환경교육도시 지정</b></label>
-                                        <label class="inp"><input type="checkbox"><b>사회환경교육관 지정</b></label>
-                                    </div>
+                                    <span kattr:check_code="itrstfldCds3" grpCd="105" upprCd="105103" addClass="itrstfldCds" />
                                 </div>
                             </td>
                         </tr>
@@ -209,37 +233,14 @@
                             <td>
                                 <div class="form-input mo-flex-wrap">
                                     <strong class="label">기타</strong>
-                                    <div class="form-check-list">
-                                        <label class="inp"><input type="checkbox"><b>정보/소식</b></label>
-                                        <label class="inp"><input type="checkbox"><b>참여/신청</b></label>
-                                    </div>
+                                    <span kattr:check_code="itrstfldCds4" grpCd="105" upprCd="105104" addClass="itrstfldCds" />
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">맞춤 환경정보 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
                             <td>
-                                <div class="form-check-list">
-                                    <label class="inp"><input type="checkbox"><b>실시간 대기정보</b></label>
-                                    <label class="inp"><input type="checkbox"><b>내일의 대기정보</b></label>
-                                    <label class="inp"><input type="checkbox"><b>시도별 대기경보정보</b></label>
-                                    <label class="inp"><input type="checkbox"><b>우리동네 대기정보</b></label>
-                                    <label class="inp"><input type="checkbox"><b>우리동네 공기질</b></label>
-                                    <label class="inp"><input type="checkbox"><b>실시간 공간분포</b></label>
-                                    <label class="inp"><input type="checkbox"><b>농업날씨365</b></label>
-                                    <label class="inp"><input type="checkbox"><b>국내외 배출권 거래동향</b></label>
-                                    <label class="inp"><input type="checkbox"><b>빛 공해 조명환경 관리구역 지정현황</b></label>
-                                    <label class="inp"><input type="checkbox"><b>전국 저공해차 충전소 운영현황 인증 신청통계</b></label>
-                                    <label class="inp"><input type="checkbox"><b>분야 별 온실가스 배출량 및 흡수량</b></label>
-                                    <label class="inp"><input type="checkbox"><b>실시간 수질자료</b></label>
-                                    <label class="inp"><input type="checkbox"><b>4대강 홍수 정보</b></label>
-                                    <label class="inp"><input type="checkbox"><b>연도별 환경정보 등록기업 정보현황</b></label>
-                                    <label class="inp"><input type="checkbox"><b>수계열 실시간 수질자료</b></label>
-                                    <label class="inp"><input type="checkbox"><b>기상청 날씨누리</b></label>
-                                    <label class="inp"><input type="checkbox"><b>국가하수도 정보시스템</b></label>
-                                    <label class="inp"><input type="checkbox"><b>전국 실내 라돈 지도</b></label>
-                                    <label class="inp"><input type="checkbox"><b>탄소포인트제 빠른서비스</b></label>
-                                </div>
+                                <span kattr:check_code="envfldCds1" grpCd="104" addClass="envfldCds" selectedCd="104101,104105,104106" />
                                 <p class="desc-info mt15">선택하신 정보는 로그인 시, 메인 화면에서 위젯 형태로 확인할 수 있습니다.</p>
                             </td>
                         </tr>
@@ -253,18 +254,208 @@
                     <dd>선택된 유효기간 동안 국가환경교육 통합플랫폼 이용 내역이 없어도 개인정보 분리보관 및 휴면회원으로 전환되지 않습니다.</dd>
                 </dl>
                 <div class="form-check-list mt10">
-                    <label class="inp"><input type="radio"><b>1년</b></label>
-                    <label class="inp"><input type="radio"><b>2년</b></label>
-                    <label class="inp"><input type="radio"><b>5년</b></label>
-                    <label class="inp"><input type="radio"><b>회원탈퇴 시</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="1" checked><b>1년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="2"><b>2년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="5"><b>5년</b></label>
+                    <label class="inp"><input type="radio" name="prvcVldty" value="0"><b>회원탈퇴 시</b></label>
                 </div>
             </div>
             
             <div class="btn-wrap">
                 <div class="center">
-                    <button type="button" class="btn-medium btn-green" onclick="location.href='/front/membership/step4.html'">가입하기</button>
+                    <button type="button" class="btn-medium btn-green" onclick="join()">가입하기</button>
                 </div>
             </div>
+            </form>
+            <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+            <script type="text/javascript">
+                var checkId = "";
+                var isDuplicatedId = false;
+                var validator= $("#memberInfoForm").validate({
+                        onsubmit: false,
+                        rules: {
+                             nm         :   { required: true, isBlank : true, maxlength: 20 }
+                            ,acnt       :   { required: true, isBlank : true, minlength: 6, maxlength: 10, idPolicy1: true }
+                            ,pswd       :   { required: true, isBlank : true, passwordPolicy2: true, minlength: 9, maxlength: 12 ,isHangulOff: true }
+                            ,pswdConfirm:   { required: true, isBlank : true, passwordPolicy2: true, isHangulOff: true }
+                            ,moblphon   :   { required: true, number : true, maxlength: 12}
+                            ,eml1       :   { required: true, isBlank : true, maxlength: 50 }
+                            ,eml2       :   { required: true, isBlank : true, maxlength: 50, emailDomain: true }
+                            ,addr       :   { required: true, maxlength: 200 }
+                            ,addrDtl    :   { required: true, maxlength: 400 }
+                        },
+                        messages: {
+                             nm         :   { required: "이름을 입력 해주십시오.", isBlank : "이름에 공백이 있습니다.", maxlength: "이름은 20자를 초과할 수 없습니다." }
+                            ,acnt       :   { required: "아이디를 입력 해주십시오.", isBlank : "아이디에 공백이 있습니다.", minlength:"아이디 형식이 올바르지 않습니다.", maxlength: "아이디 형식이 올바르지 않습니다.", idPolicy1: "아이디 형식이 올바르지 않습니다." }  
+                            ,pswd       :   { required: "비밀번호를 입력 해주십시오.", isBlank : "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2 : "비밀번호 조건이 일치하지 않습니다.", minlength:"비밀번호 조건이 일치하지 않습니다.", maxlength: "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
+                            ,pswdConfirm:   { required: "비밀번호 확인을 입력 해주십시오.", isBlank : "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2 : "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
+                            ,moblphon   :   { required: "휴대전화를 입력 해주십시오.",number : "숫자만 입력 가능합니다.", maxlength:"휴대전화는 12자를 초과할 수 없습니다." }  
+                            ,eml1       :   { required: "이메일을 입력 해주십시오.", isBlank : "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
+                            ,eml2       :   { required: "이메일을 입력 해주십시오.", isBlank : "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
+                            ,addr       :   { required: "주소를 입력 해주십시오.", maxlength: "주소는 200자를 초과할 수 없습니다." }
+                            ,addrDtl    :   { required: "상세주소를 입력 해주십시오.", maxlength: "상세주소는 400자를 초과할 수 없습니다." }
+                        }
+                    })
+                
+                //아이디 중복 체크 
+                function checkIdYn(){
+                    
+                    if(!$('#acnt').valid()) return;
+                    
+                    if(displayWorkProgress(true)){
+                        $.ajax({
+                            url : "/front/member/checkDuplicationUser.do",
+                            type: 'POST',
+                            cache : false,
+                            dataType: 'json',
+                            data : { acnt: $("#acnt").val() },
+                            success : function (data){
+                                if(!data.result){
+                                    $("#checkIdMsg").text("이미 사용중인 아이디입니다.").removeClass("valid").addClass("invalid");
+                                    checkId = "";
+                                    isDuplicatedId = true;
+                                }else{
+                                    $("#checkIdMsg").text("사용가능한 아이디입니다.").removeClass("invalid").addClass("valid");
+                                    checkId = $("#acnt").val();
+                                    isDuplicatedId = false;
+                                }
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+                
+                function changePswd(){
+                    if($('#pswd').valid()) {
+                        $("#checkPswdMsg").text("사용 가능한 비밀번호입니다.").removeClass("invalid").addClass("valid");
+                    }
+                    
+                    if($("#pswdConfirm").val().length > 0) {
+                        changePswdConfirm();
+                    }
+                }
+                
+                function changePswdConfirm() {
+                    if($("#pswd").val()!=$("#pswdConfirm").val()) {
+                        $("#checkPswdConfirmMsg").text("비밀번호가 일치하지 않습니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        
+                        $("#checkPswdConfirmMsg").text("비밀번호가 일치합니다.").removeClass("invalid").addClass("valid");
+                        return true;
+                    }
+                }   
+                
+                function checkIdDup() {
+                    if(checkId !=  $("#acnt").val()){
+                        $("#checkIdMsg").text("아이디 중복확인을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        return true;
+                    }   
+                }
+                
+                function checkAddr() {
+                    if($("#addr").val() == "") {
+                        $("#checkAddrMsg").text("주소를 입력 해주십시오.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else if($("#addr").val().length > 200){
+                        $("#checkAddrMsg").text("주소는 200자를 초과할 수 없습니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }
+                    return truel;
+                }
+                
+                function join(){
+                    if(!($("#memberInfoForm").valid())){
+                        if($("#checkIdMsg").text() == "" || checkId !=  $("#acnt").val()) $("#acnt").focus();
+                        if($("#checkPswdMsg").text() == "") changePswd();
+                        if($("#checkPswdConfirmMsg").text() == "") $("#pswdConfirm").focus();   
+                        // readonly라 별도 처리
+                        if(!checkAddr()) {
+                          if($(".feedback.invalid", "#memberInfoForm").length == 1) {
+                              window.scrollTo({top: document.getElementById("addr").getBoundingClientRect().top-128 + window.pageYOffset});
+                          }  
+                        } 
+                        return;
+                    }
+
+                    changePswd();
+                    
+                    var checkIdDupResult = checkIdDup();
+                    var checkPswdConfirmResult = changePswdConfirm();
+                    
+                    if(checkIdDupResult && checkPswdConfirmResult){
+                        if($("input[name=envfldCds1]:checked").length > 3) {
+                            alert("맞춤 환경정보는 최대 3개 까지만 선택가능합니다.");
+                            return;
+                        }
+                        
+                        if(($("input[name=itrstfldCds1]:checked").length + $("input[name=itrstfldCds2]:checked").length + $("input[name=itrstfldCds3]:checked").length + $("input[name=itrstfldCds4]:checked").length) > 3) {
+                            alert("관심분야는 최대 3개 까지만 선택가능합니다.");
+                            return;
+                        }
+                        
+                        if(!confirm("회원가입을 완료하시겠습니까?")) return;
+                
+                        var itrstfldCds = $('.itrstfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
+                        var envfldCds   = $('.envfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
+                        
+                        var data =  $("#memberInfoForm").serialize();
+                        data = data+"&itrstfldCds="+itrstfldCds+"&envfldCds="+envfldCds
+
+                        if(displayWorkProgress(true)){
+                            $.ajax({
+                                url : "/front/member/insertMember.do",
+                                type: 'POST',
+                                cache : false,
+                                dataType: 'json',
+                                data : data,
+                                success : function (data){
+                                    if(data.result=="success"){
+                                        if($("#returnUrl").val() != ''){
+                                            location.href="/front/membership/step4.html?returnUrl=" + $("#returnUrl").val();
+                                        }else{
+                                            location.href="/front/membership/step4.html";
+                                        }
+                                    }else{
+                                        alert(data.msg);
+                                    }
+                                    closeWorkProgress();
+                                }
+                            });
+                        }
+                    }else{
+                        if(!checkPswdConfirmResult) $("#pswdConfirm").focus();
+                        if(!checkIdDupResult) $("#acnt").focus();
+                    }
+                }
+                
+                function daumPostcode(){
+                    new daum.Postcode({
+                        oncomplete: function(data) {
+                            let addr = '';
+                            if (data.userSelectedType === 'R') {
+                                addr = data.roadAddress;
+                            } else {
+                                addr = data.jibunAddress;
+                            }
+                            $('#signguCd').val(data.sigunguCode);
+                            $('#zip').val(data.zonecode);
+                            $('#addr').val(addr);
+                            $('#addrDtl').focus();
+                        }
+                    }).open();
+                }
+                
+                $(function(){
+                    $('#emailList').change(function(e){
+                        var self = $(this);
+                        var val = self.val();
+                        $('input#eml2').val(val);
+                    });
+                });
+            </script>
         </th:block>
     </body>
 </html>

@@ -15,7 +15,6 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.constraints.Pattern;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +23,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.kbrainc.plum.cmm.esylgn.service.EsylgnService;
-import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnStartVo;
 import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
 import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
 import com.kbrainc.plum.front.member.model.MemberAgreVo;
@@ -38,6 +35,7 @@ import com.kbrainc.plum.front.member.model.MemberAuthVo;
 import com.kbrainc.plum.front.member.model.MemberTypeVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.member.service.MemberService;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -66,6 +64,9 @@ public class MemberController {
     
     @Autowired
     private IdntyVrfctnService idntyVrfctnService;
+    
+    @Autowired
+    private EsylgnService esylgnService;
     
     /**
     * 회원가입 0단계 : 회원가입 유형 선택 화면.
@@ -245,8 +246,6 @@ public class MemberController {
     */
     @RequestMapping(value = "/front/membership/step4.html")
     public String membershipStep4() throws Exception {
-        // 세션값 불일치 오류시 step0으로 보내되 returnUrl있으면 파라미터 추가
-        
         return "front/member/step4.html";
     }
     
@@ -277,30 +276,100 @@ public class MemberController {
     }
     
     /**
-    * 회원등록
+    * 회원등록.
     *
-    * @Title       : insertMember 
+    * @Title : insertMember
     * @Description : 회원등록
-    * @param memberVo MemberVo
-    * @param user 사용자세션정보
+    * @param memberVo MemberVo객체
+    * @param bindingResult 유효성검증결과
     * @return Map<String,Object> 응답결과객체
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/member/insertMember.do")
     @ResponseBody
-    public Map<String, Object> insertMember(MemberVo memberVo) throws Exception {
+    public Map<String, Object> insertMember(@Valid MemberVo memberVo, BindingResult bindingResult) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        // 아이디 중복 확인
+        int cnt = memberService.checkDuplicationUser(memberVo);
+        if(cnt > 0) {
+            resultMap.put("msg", "이미 사용중인 아이디입니다.");
+            return resultMap;
+        }
+        
+        String ci = null;
+        String nm = null;
+        String moblphon = null;
+        String userKey = null;
+        
+        // 본인인증 암호화 데이터에서 추출
+        if (!"".equals(StringUtil.nvl(memberVo.getEncodeData()))) {
+            IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, memberVo.getEncodeData());
+            
+            if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
+                resultMap.put("msg", result.getSMessage());
+                return resultMap;
+            } else {                
+                ci = result.getSConnInfo();
+                nm = result.getSName();
+                moblphon = result.getSMobileNo();
+                memberVo.setCi(ci);
+
+                // 본인인증 암호화 데이터와 파라미터로 넘어온 이름과 모바일 번호 일치 하는지 확인
+                if ((nm != null && !nm.equals(memberVo.getNm())) || (moblphon != null && !moblphon.equals(memberVo.getMoblphon()))) {
+                    resultMap.put("msg", "입력데이터가 본인인증 정보와 다릅니다.");
+                    return resultMap;
+                }
+            }
+        }
+        
+        // 디지털원패스 회원연동으로 진입시
+        // 디지털원패스 암호화 데이터와 파라미터로 넘어온 이름 일치 하는지 확인
+        //userKey = ;
+        //ci = ;
+        //nm = ;
+        /*if ((nm != null && !nm.equals(memberVo.getNm()))) {
+            resultMap.put("msg", "입력데이터가 본인인증 정보와 다릅니다.");
+            return resultMap;
+        }*/
+        
+
+        // ci중복체크(본인인증은 ci, 디지털원패스 회원연동으로 진입시 디지털원패스 ci값으로 비교)
+        if (ci != null) {
+            // CI값이 동일한 회원이 있는지 확인한다.
+            String userid = memberService.selectUseridByCI(memberVo);
+            if (userid != null) {
+                resultMap.put("msg", "회원정보가 존재합니다.\n아이디 찾기로 확인해주시기 바랍니다.");
+                return resultMap;
+            }
+        }
+                
+        // userKey 사용중인지 확인(디지털원패스 회원연동으로 진입시)
+        /*EsylgnVo esylgnVo = new EsylgnVo();
+        esylgnVo.setEsylgnCd("106101");
+        esylgnVo.setUserkey(userKey);
+        String userid = esylgnService.selectUseridByEsylgnUserkey(esylgnVo);
+        if (userid != null) {
+            resultMap.put("msg", "이미 다른 사용자계정과 연동된 디지털원패스 계정입니다.");
+            return resultMap;
+        }*/
+        
+    	int retVal = memberService.insertMember(memberVo);
     	
-    	Map<String, Object> resultMap = new HashMap<>();
-    	List<MemberVo> result = null;
-    	
-    	memberVo.setTosAgreYn("Y");
-    	memberVo.setSttsCd("2");
-    	
-    	int checkDuplicationID = memberService.insertMember(memberVo);
-    	if(checkDuplicationID > 0) {
-    		resultMap.put("result", true);
+    	if(retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
     	}else {
-    		resultMap.put("result", false);
+    	    resultMap.put("msg", "회원가입에 실패하였습니다.");
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
     	}
     	return resultMap;
     }

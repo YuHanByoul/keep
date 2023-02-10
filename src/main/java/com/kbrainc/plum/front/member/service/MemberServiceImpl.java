@@ -73,26 +73,34 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         return memberDao.checkDuplicationUser(memberVo);
     }
     
-    /**
-    *
-    * 회원 정보 등록
-    *
-    * @Title : insertMember
-    * @Description : 
-    * @param MemberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
+    
     @Transactional
     public int insertMember(MemberVo memberVo) throws Exception{
+        int retVal = 0;
         
         String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
-         
         memberVo.setPswd(password);
        
-	    int resRegisterMember = memberDao.insertMember(memberVo);
+        // 회원정보 입력
+	    retVal += memberDao.insertMember(memberVo);
+	    
+	    // 맞춤환경정보 입력
+	    if (memberVo.getEnvfldCds() != null & memberVo.getEnvfldCds().length > 0) {
+	        retVal += memberDao.insertEnvfld(memberVo);
+        }
+	    
+	    // 관심분야 입력
+        if (memberVo.getItrstfldCds() != null & memberVo.getItrstfldCds().length > 0) {
+            retVal += memberDao.insertItrstfld(memberVo);
+        }
+	    
+	    // 기관정보 입력
+	    
+	    
+	    // 디지털원패스 userKey 입력
+	    	    
 	   
-	    return resRegisterMember;
+	    return retVal;
     }
    
     /**

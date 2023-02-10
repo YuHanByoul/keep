@@ -30,10 +30,10 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 @Service
 public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements IdntyVrfctnService {
 
-    //@Value("${niceid.mobilephone.sitecode}")
+    @Value("${niceid.mobilephone.sitecode}")
     private String niceidMobilephoneSiteCode;
 
-    //@Value("${niceid.mobilephone.sitepassword}")
+    @Value("${niceid.mobilephone.sitepassword}")
     private String niceidMobilephoneSitePassword;
 
     /**
