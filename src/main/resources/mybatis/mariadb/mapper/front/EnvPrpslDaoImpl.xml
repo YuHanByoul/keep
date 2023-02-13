@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : EnvPrpslDaoImpl.xml
+    Description : 환경교육 제안 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.envPrpsl.model.EnvPrpslDao">
+
+    <insert id="insertEnvPrpsl">
+        INSERT INTO TB_CMM_ENV_EDU_PRPSL(
+            CLSF_CD
+            , TTL
+            , CN
+            , USERID
+            , INSTID
+            , RLS_YN
+            , DEL_YN
+            , PRCS_STTS_CD
+            , FILEGRPID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{clsfCd}
+            , #{ttl}
+            , #{cn}
+            , #{user.userid}
+            , #{user.instid}
+            , #{rlsYn}
+            , 'N'
+            , '113101'
+            , #{filegrpid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+
+    <update id="deleteEnvPrpsl">
+        UPDATE TB_CMM_ENV_EDU_PRPSL SET
+            DEL_YN = 'Y'
+            , MDFRID = #{user.userid}
+            , MDFCN_DT = NOW()
+        WHERE PRPSLID = #{prpslid}
+    </update>
+
+    <update id="cancelEnvPrpsl">
+        UPDATE TB_CMM_ENV_EDU_PRPSL SET
+            PRCS_STTS_CD = '113102'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE PRPSLID = #{prpslid}
+    </update>
+
+    <update id="updateEnvPrpsl">
+        UPDATE TB_CMM_ENV_EDU_PRPSL SET
+            CLSF_CD = #{clsfCd}
+            , TTL = #{ttl}
+            , CN = #{cn}
+            , RLS_YN = #{rlsYn}
+            , FILEGRPID = #{filegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE PRPSLID = #{prpslid}
+    </update>
+
+    <select id="selectEnvPrpslList" resultType="com.kbrainc.plum.front.envPrpsl.model.EnvPrpslVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRPSLID
+             , A.CLSF_CD
+             , A.TTL
+             , A.CN
+             , A.RLS_YN
+             , A.PRCS_STTS_CD
+             , A.REG_DT
+             , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+                CONCAT(
+                SUBSTRING(B.ACNT, 1, 1)
+                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                )
+                ELSE CONCAT(
+                SUBSTRING(B.ACNT, 1, 1)
+                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                )
+                END AS ACNT
+        FROM TB_CMM_ENV_EDU_PRPSL A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE
+            A.DEL_YN != 'Y'
+            AND A.PRCS_STTS_CD != '113102'
+            <if test="searchKeyword != null and searchKeyword != ''">
+                AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="clsfCd != null and clsfCd != ''">
+                AND A.CLSF_CD = #{clsfCd}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectEnvPrps" resultType="com.kbrainc.plum.front.envPrpsl.model.EnvPrpslVo">
+        SELECT
+        A.PRPSLID
+        , A.CLSF_CD
+        , A.TTL
+        , A.CN
+        , A.RLS_YN
+        , A.PRCS_STTS_CD
+        , A.FILEGRPID
+        , A.REG_DT
+        , A.USERID
+        , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+           CONCAT(
+                   SUBSTRING(B.ACNT, 1, 1)
+               ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+               ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+               )
+           ELSE CONCAT(
+                   SUBSTRING(B.ACNT, 1, 1)
+               ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+               )
+            END AS ACNT
+    FROM TB_CMM_ENV_EDU_PRPSL A
+    INNER JOIN TB_CMM_USER B
+        ON A.USERID = B.USERID
+    WHERE PRPSLID = #{prpslid}
+    </select>
+
+    <select id="selectEnvPrpslAns" resultType="com.kbrainc.plum.front.envPrpsl.model.EnvPrpslAnsVo">
+        SELECT
+        A.ANSID
+        , A.PRPSLID
+        , A.TTL
+        , A.CN
+        , B.ACNT
+        , A.RLS_YN
+        , A.ANS_DT
+        FROM TB_CMM_ENV_EDU_PRPSL_ANS A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE A.PRPSLID = #{prpslid}
+    </select>
+</mapper>

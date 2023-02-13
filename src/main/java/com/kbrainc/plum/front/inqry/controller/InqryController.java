@@ -76,7 +76,7 @@ public class InqryController {
         }
 
         Map<String, Object> inqryFile = fileService.getConfigurationByFilegrpName("inqry_file");
-        String uploadFileExtsn = ((HashMap<String, String>) inqryFile.get("uploadFileExtSn"))
+        String uploadFileExtsn = ((HashMap<String, String>) inqryFile.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
                 .map(stringStringEntry -> "." + stringStringEntry.getValue())
