@@ -1,5 +1,6 @@
 package com.kbrainc.plum.mng.tchaid.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.cmpnt.model.CmpntVo;
-import com.kbrainc.plum.mng.cmpnt.model.CmpntWrhousngVo;
+import com.kbrainc.plum.mng.tchaid.model.TchaidEduTrgtVo;
+import com.kbrainc.plum.mng.tchaid.model.TchaidVo;
+import com.kbrainc.plum.mng.tchaid.model.TchaidWrhousngVo;
 import com.kbrainc.plum.mng.tchaid.service.TchaidService;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,36 +50,36 @@ public class TchaidController {
     private TchaidService tchaidService;
     
     /**
-     * 구성품 관리
+     * 교구 관리 화면
      *
-     * @Title : tchaidCmpntList
-     * @Description : 구성품 관리
+     * @Title : tchaidList
+     * @Description : 교구 관리 화면
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaid/tchaidCmpntList.hrml")
-    public String tchaidCmpntList(Model model) throws Exception {
-        return "mng/tchaid/cmpnt/cmpntList";
+    @RequestMapping(value = "/mng/tchaid/tchaidList.html")
+    public String tchaidList(Model model) throws Exception {
+        return "mng/tchaid/tchaidList";
     }
     
     /**
-     * 구성품 목록 조회
+     * 교구 목록 조회
      *
      * @Title : selectCmpntList
-     * @Description :구성품 목록 조회
+     * @Description : 교구 목록 조회
      * @param CmpntVo CmpntVo 객체
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaid/selectCmpntList.do")
+    @RequestMapping(value = "/mng/tchaid/selectTchaidList.do")
     @ResponseBody
-    public Map<String, Object> selectCmpntList(CmpntVo cmpntVo,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> selectTchaidList( TchaidVo TchaidVo,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
         
-        List<CmpntVo> result = null;
-        cmpntVo.setUser(user);
+        List<TchaidVo> result = null;
+        TchaidVo.setUser(user);
         
-        //result = tchaidService.selectCmpntList(cmpntVo);
+        result = tchaidService.selectTchaidList(TchaidVo);
 
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -88,74 +92,72 @@ public class TchaidController {
     }
     
     /**
-     * 구성품 입고 내역 조회
+     * 교구 관리 상세 (탭) 화면
      *
-     * @Title : selectCmpntWrhousngList
-     * @Description :구성품 입고 내역 조회
-     * @param CmpntVo CmpntVo 객체
-     * @return Map<String,Object> 응답결과객체
+     * @Title : tchaidDetail
+     * @Description : 교구 관리 화면
+     * @return String 이동화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaid/selectCmpntWrhousngList.do")
-    @ResponseBody
-    public Map<String, Object> selectCmpntWrhousngList(CmpntWrhousngVo cmpntWrhousngVo,@UserInfo UserVo user) throws Exception {
-        Map<String, Object> resultMap = new HashMap<>();
+    @RequestMapping(value = "/mng/tchaid/tchaidDetail.html")
+    public String tchaidDetail(TchaidVo tchaidVo , Model model) throws Exception {
+        model.addAttribute("param", tchaidVo);
+        model.addAttribute("mode", tchaidVo.getMode());
+        return "mng/tchaid/tchaidDetail";
+    }
+    
+    /**
+     * 교구 등록 화면
+     *
+     * @Title : tchaidModifyForm
+     * @Description : 교구 등록 화면
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/tchaidModifyForm.html")
+    public String tchaidModifyForm(TchaidVo tchaidVo , Model model) throws Exception {
         
-        List<CmpntWrhousngVo> result = null;
-        cmpntWrhousngVo.setUser(user);
+        //교육 주제 리스트 호출         
+        Map<String,String> map = new HashMap();
+        map.put("cdgrpid", "155");
+        model.addAttribute("sbjctCdLsit", tchaidService.selectTchaidCdList(map)  );
+        model.addAttribute("cmpntLsit", tchaidService.selectAllCmpntList(map)  );
         
-        //result = tchaidService.selectCmpntWrhousngList(cmpntWrhousngVo);
-        
-        if (result.size() > 0) {
-            resultMap.put("totalCount", (result.get(0).getTotalCount()));
-        } else {
-            resultMap.put("totalCount", 0);
+        if(tchaidVo.getMode().equals("I")){
+            return "mng/tchaid/tchaidInsertForm";
+        }else {
+            model.addAttribute("tchaidVo", tchaidService.selectTchaid(tchaidVo)  );
+            model.addAttribute("mySbjctLsit", tchaidService.selectTchaidEduSbjctList(tchaidVo)  );
+            
+            List<String> trgtCds = new ArrayList();
+            List<TchaidEduTrgtVo> list = tchaidService.selectTchaidEduTrgtList(tchaidVo); 
+            for(TchaidEduTrgtVo vo :list) {
+                trgtCds.add(vo.getEduTrgtCd());
+            }
+            
+            model.addAttribute("mytrgtLsit", list );
+            model.addAttribute("mytrgtCds", String.join(",",trgtCds) );
+            
+            map.put("tchaidid", String.valueOf(tchaidVo.getTchaidid()));
+            model.addAttribute("myCmpntLsit", tchaidService.selectTchaidCmpntList(map)  );
+            return "mng/tchaid/tchaidModifyForm";
         }
-        resultMap.put("list", result);
-        
-        return resultMap;
     }
     
     /**
-     * 구성품 입력 팝업
+     * 교구 등록
      *
-     * @Title : insertCmpntPopup
-     * @Description : 구성품 등록 팝업
-     * @return String 이동화면경로
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/tchaid/insertCmpntPopup.html")
-    public String insertCmpntPopup(Model model) throws Exception {
-        return "mng/tchaid/cmpnt/insertCmpntPopup";
-    }
-    
-    /**
-     * 구성품 입고 팝업
-     *
-     * @Title : insertCmpntWrhousngPopup
-     * @Description : 구성품 입고 팝업
-     * @return String 이동화면경로
-     * @throws Exception 예외
-     */
-    @RequestMapping(value = "/mng/tchaid/insertCmpntWrhousngPopup.html")
-    public String insertCmpntWrhousngPopup(Model model) throws Exception {
-        return "mng/tchaid/cmpnt/insertCmpntWrhousngPopup";
-    }
-    
-    /**
-     * 구성품 등록
-     *
-     * @Title : resultMap
-     * @Description : 구성품 등록
+     * @Title : insertTchaid
+     * @Description : 교구 등록
      * @param CmpntVo         CmpntVo객체
      * @param bindingResult1 SpceVo 유효성검증결과
      * @param user           사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaid/insertCmpnt.do")
+    @RequestMapping(value = "/mng/tchaid/insertTchaid.do")
     @ResponseBody
-    public Map<String, Object> insertCmpnt(@Valid CmpntVo cmpntVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertTchaid(@Valid @RequestBody TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
 
@@ -166,9 +168,9 @@ public class TchaidController {
             }
             return resultMap;
         }
-        cmpntVo.setUser(user);
+        TchaidVo.setUser(user);
         
-        //retVal = tchaidService.insertCmpnt(cmpntVo);
+        retVal = tchaidService.insertTchaid(TchaidVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -182,19 +184,19 @@ public class TchaidController {
     }
     
     /**
-     * 구성품  입고 등록
+     * 교구 수정
      *
-     * @Title : insertCmpntWrhousng
-     * @Description : 구성품  입고 등록
-     * @param CmpntWrhousngVo         CmpntWrhousngVo객체
+     * @Title : updateTchaid
+     * @Description :  교구 수정
+     * @param TchaidVo TchaidVo 객체
      * @param bindingResult1 SpceVo 유효성검증결과
      * @param user           사용자세션정보
      * @return Map<String,Object> 응답결과객체
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/tchaid/insertCmpntWrhousng.do")
+    @RequestMapping(value = "/mng/tchaid/updateTchaid.do")
     @ResponseBody
-    public Map<String, Object> insertCmpntWrhousng(@Valid CmpntWrhousngVo cmpntWrhousngVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateTchaid(@Valid @RequestBody TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         int retVal = 0;
         
@@ -205,16 +207,219 @@ public class TchaidController {
             }
             return resultMap;
         }
-        cmpntWrhousngVo.setUser(user);
+        TchaidVo.setUser(user);
         
-        retVal = tchaidService.insertCmpntWrhousng(cmpntWrhousngVo);
+        if(StringUtil.isNotNull(TchaidVo.getMode()) && TchaidVo.getMode().equals("use")) {
+            //use_yn 정보만 변경
+            retVal = tchaidService.updateTchaidUseYn(TchaidVo);
+        }else {
+            retVal = tchaidService.updateTchaid(TchaidVo);
+        }
+        
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록에 성공하였습니다.");
+            resultMap.put("msg", "저장 성공하였습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "등록에 실패했습니다.");
+            resultMap.put("msg", "저장 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    /**
+     * 교구 삭제
+     *
+     * @Title : deleteTchaid
+     * @Description :  교구 삭제
+     * @param TchaidVo TchaidVo 객체
+     * @param bindingResult1 SpceVo 유효성검증결과
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/deleteTchaid.do")
+    @ResponseBody
+    public Map<String, Object> deleteTchaid(@Valid TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        TchaidVo.setUser(user);
+        
+        int packageCnt = tchaidService.selectTchaidCntForPackage(TchaidVo);
+        
+        if(packageCnt > 0 ) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "이미 꾸러미로 구성되어 삭제 할 수 없습니다.");
+            return resultMap;
+        }
+        
+        retVal = tchaidService.deleteTchaid(TchaidVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "삭제 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "삭제 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    /**
+     * 교구 구성 상세 
+
+     *
+     * @Title : tchaidCmpntCmpstnForm
+     * @Description : 교구 구성 상세
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/tchaidCmpntCmpstnForm.html")
+    public String tchaidCmpntCmpstnForm(TchaidVo tchaidVo,Model model) throws Exception {
+        model.addAttribute("tchaidVo", tchaidVo);
+        model.addAttribute("cmpntLsit", tchaidService.selectTchaidCmpntCmpstnDetailList(tchaidVo)  );
+        return "mng/tchaid/tchaidCmpntCmpstnForm";
+    }
+    /**
+     * 교구 구성 수정 
+     *
+     * @Title : modifyCmpntCmpstn
+     * @Description : 교구 구성 수정
+     * @param TchaidVo TchaidVo 객체
+     * @param bindingResult1 SpceVo 유효성검증결과
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/modifyCmpntCmpstn.do")
+    @ResponseBody
+    public Map<String, Object> modifyCmpntCmpstn(@Valid TchaidVo TchaidVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        TchaidVo.setUser(user);
+        
+        retVal = tchaidService.createTchaidFromCmpnt(TchaidVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "교구생성에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "교구생성에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+     * 교구 입고 상세  
+     *
+     * @Title : tchaidWrhousngDetail
+     * @Description : 교구 입고 상세 
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/tchaidWrhousngDetail.html")
+    public String tchaidWrhousngDetail(TchaidVo tchaidVo,Model model) throws Exception {
+        model.addAttribute("param", tchaidVo);
+        return "mng/tchaid/tchaidWrhousngForm";
+    }
+    
+    
+    /**
+     * 교구 입고 목록 호출
+     *
+     * @Title : selectTchaidWrhousngList
+     * @Description : 교구 입고 목록 호출
+     * @param CmpntVo CmpntVo 객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/selectTchaidWrhousngList.do")
+    @ResponseBody
+    public Map<String, Object> selectTchaidWrhousngList( TchaidVo TchaidVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        List<TchaidWrhousngVo> result = null;
+        TchaidVo.setUser(user);
+        
+        result = tchaidService.selectTchaidWrhousngList(TchaidVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+
+        return resultMap;
+    }
+    
+    /**
+     * 교구 입고 처리 모달  
+     *
+     * @Title : tchaidWrhousngPopup
+     * @Description : 교구 입고 처리 모달 
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/tchaidWrhousngPopup.html")
+    public String tchaidWrhousngPopup(TchaidVo tchaidVo,Model model) throws Exception {
+        model.addAttribute("tchaidVo", tchaidService.selectTchaid(tchaidVo)  );
+        return "mng/tchaid/tchaidWrhousngPopup";
+    }
+    
+    /**
+     * 교구 입고 처리 
+     *
+     * @Title : modifyTchaidWrhousng
+     * @Description : 교구 입고 처리 
+     * @param TchaidVo TchaidVo 객체
+     * @param bindingResult1 SpceVo 유효성검증결과
+     * @param user           사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/tchaid/modifyTchaidWrhousng.do")
+    @ResponseBody
+    public Map<String, Object> modifyTchaidWrhousng(@Valid TchaidVo TchaidVo,TchaidWrhousngVo tchaidWrhousngVo, BindingResult bindingResult1,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        int retVal = 0;
+        
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        TchaidVo.setUser(user);
+        tchaidWrhousngVo.setUser(user);
+        
+        retVal = tchaidService.insertTchaidWrhousng(tchaidWrhousngVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "입고처리 되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "입고처리에 실패했습니다.");
         }
         
         return resultMap;
@@ -222,14 +427,6 @@ public class TchaidController {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+       
     
 }
