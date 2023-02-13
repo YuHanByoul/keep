@@ -13,7 +13,7 @@
                 <div class="card m-b-10">
                     <div class="card-block-small">
                         <div class="mb-3 form-group row required">
-                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="qnty"><strong><th:block th:text="${cmpntVo.cmpntNm}"/> 입고 수량</strong></label>
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="qnty"><strong><th:block th:text="${tchaidVo.tchaidNm}"/> 입고 수량</strong></label>
                             <div class="col-12">
                                 <input type="number" class="form-control form-control-sm" name="qnty" id="qnty">
                             </div>
@@ -30,7 +30,7 @@
             </form>
             
             <div class="modal-footer">
-                <th:block sec:authorize-url="/mng/cmpnt/insertCmpntWrhousng.do">
+                <th:block sec:authorize-url="/mng/tchaid/modifyTchaidWrhousng.do">
                 <button type="button" class="btn btn-primary waves-effect waves-light" onclick ="save()">저장</button>
                 </th:block>
             </div>
@@ -39,9 +39,10 @@
 
 <script th:inline="javascript">
 
-	/*<![CDATA[*/ 
-	var cmpntVo = /*[[${cmpntVo}]]*/
-	/*]]>*/
+    /*<![CDATA[*/ 
+    var cmpntVo = /*[[${cmpntVo}]]*/null;
+    var tchaidVo = /*[[${tchaidVo}]]*/null;
+    /*]]>*/
 
     $(function(){
     });
@@ -49,11 +50,11 @@
     var validator= $("#insertFrm").validate({
         onsubmit: false,
           rules: {
-        	   qnty        :   { required: true , number: true}
-        	   ,wrhousngde :   { required: true  }
+               qnty        :   { required: true , number: true}
+               ,wrhousngde :   { required: true  }
             },
             messages: {
-            	qnty       :   { required: "입고 수량을 입력해주십시오." , number: "숫자만 입력 가능 합니다."  }  
+                qnty       :   { required: "입고 수량을 입력해주십시오." , number: "숫자만 입력 가능 합니다."  }  
                ,wrhousngde :   { required: "입고일자를 입력해주십시오."  }  
             }
     })
@@ -63,26 +64,24 @@
         if(!($("#insertFrm").valid())) return;
         
         let data =  {
-        		qnty : $("#qnty").val() 
-        		,wrhousngde : $("#wrhousngde").val()
-        		,cmpntid : cmpntVo.cmpntid 
+                qnty : $("#qnty").val() 
+                ,wrhousngde : $("#wrhousngde").val()
+                ,tchaidid : tchaidVo.tchaidid 
         }
         
         if(displayWorkProgress()){
             $.ajax({
-                url : "/mng/cmpnt/insertCmpntWrhousng.do",
+                url : "/mng/tchaid/modifyTchaidWrhousng.do",
                 type: 'POST',
                 cache : false,
                 dataType: 'json',
                 data : data,
                 success : function (data){
                     if(data.result=="success"){
-                    	clickedCmpntid = cmpntVo.cmpntid;
                         alert(data.msg);
-                        $("#cmpntid").val(cmpntVo.cmpntid)
+                        clickedTchaidid = null;
                         gridHelper1.resetPageContent();
-                        writeJsGridData2();
-                        cmpntModal.hide();
+                        tchaidModal.hide();
                     }else{
                         alert(data.msg);
                     }

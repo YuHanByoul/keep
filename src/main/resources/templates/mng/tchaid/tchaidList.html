@@ -21,13 +21,11 @@
                      <div class="row">
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관 키워드</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
                                  <div class="input-group input-group-sm input-group-dropdown mb-0">
                                      <select name="searchType" id="searchType" class="form-select form-control ">
                                         <option value="">- 전체 -</option>
-                                        <option value="instNm">기관명</option>
-                                        <option value="fcltNm">시설명 </option>
-                                        <option value="spceNm">공간명 </option>
+                                        <option value="nm">교구명</option>
                                      </select>
                                      <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
                                  </div>
@@ -36,34 +34,27 @@
                          
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>예약신청 방법</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교구 유형</strong></span>
                                  <div class="col-sm-12">
-                                     <span kattr:select_code="searchAplyMthdCd" grpCd="153" firstOptTxt="-선택 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                     <span kattr:select_code="searchTchaidTypeCd" grpCd="184" firstOptTxt="-전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
                                  </div>
                              </div>
                          </div>
                          
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육 유형</strong></span>
                                  <div class="col-sm-12">
-                                     <select id ="searchSiGunGuCd" name="searchSiGunGuCd" class="form-select form-select-sm form-control-sm">
-                                        <option value="">- 전체 -</option>
-                                        <option  th:each ="item:${sidoList}" th:value="${item.CTPRVN_CD}" th:text="${item.CTPRVN_NM}" ></option>
-                                     </select>
+                                     <span kattr:select_code="searchEduTypeCd" grpCd="187" firstOptTxt="-전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
                                  </div>
                              </div>
                          </div>
                          
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사용여부</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>모듬구성</strong></span>
                                  <div class="col-sm-12">
-                                     <select id ="searchUseYn" name="searchUseYn" class="form-select form-select-sm form-control-sm">
-                                        <option value="">- 전체 -</option>
-                                        <option value="Y">사용</option>
-                                        <option value="N">미사용</option>
-                                     </select>
+                                     <span kattr:select_code="searchTeamCmpstnCd" grpCd="186" firstOptTxt="-전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
                                  </div>
                              </div>
                          </div>
@@ -85,19 +76,16 @@
                 <div class="row p-20 p-b-0">
                 
                     <div class="col-12 col-md-6 mb-2 mb-md-0">
-                        <h5><strong>공간 검색 결과</strong></h5>
+                        <h5><strong>교구 검색 결과</strong></h5>
                     </div>
-                    
                     <div class="col-12 col-md-6 text-right">
-	                    <th:block sec:authorize-url="/mng/inst/instDetail.html">
-	                        <button type="button" class="btn btn-disabled m-r-5" onclick="deleteSpce();" >삭제</button>
-	                    </th:block>
-                        <th:block sec:authorize-url="/mng/inst/instDetail.html">
+                        <th:block sec:authorize-url="/mng/tchaid/tchaidDetail.html">
                             <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();" >등록</button>
                         </th:block>
                     </div>
                     
                 </div>
+                
                 <div class="card-block-small">
                     <div class="dt-responsive table-responsive">
                         <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -106,6 +94,7 @@
                        </div>
                     </div>
                 </div>
+                
             </div>
           </div>
 		  <!-- Content Area -->
@@ -116,50 +105,35 @@
   </div>
   
  <!--기업 검색 모달 팝업  -->
- <div class="modal fade" id="instSearchModal"  data-bs-backdrop="static"></div>
- <!--예약일 일괄 등록 모달 팝업  -->
- <div class="modal fade" id="spcePackageRsvtModal" data-bs-backdrop="static"></div>
- <!--예약일등록 모달 팝업  -->
- <div class="modal fade" id="spceRsvtModal" data-bs-backdrop="static"></div>
+ <div class="modal fade" id="tchaidModal"  data-bs-backdrop="static"></div>
 
-<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.css" />
-<link rel="stylesheet" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.min.css" media="print"/>
-
-<script type="text/javascript" src="/files/bower_components/moment/moment.js" charset="utf-8"></script>
-<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js" charset="utf-8"></script>
-<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/locale-all.js" charset="utf-8" ></script>
 <script type="text/javascript" src="/files/bower_components/handlebars/handlebars.min.js" charset="utf-8" ></script>
-
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
 <script th:inline="javascript">
   
   /*<![CDATA[*/ 
      var userid = /*[[${param.userid}]]*/null;
   /*]]>*/
-    var selectedInstItem;
-    var selectedItems;
     var gridHelper1;
-    var spceModal;
+    var tchaidModal;
+    var clickedTchaidid = null;
              
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
         writeJsGridData();
     });
     
-    function fn_goInsertForm(){
-        var insertUrl = "/mng/spce/spceDetail.html?mode=I"
-            gridHelper1.loadContent(insertUrl);
-    }
-     
     function fn_searchForm(){
+    	clickedTchaidid= null;
         gridHelper1.resetListContent();
     }
     
     function fn_init() {
         $("#searchType").val('');
         $("#searchKeyword").val('');
-        $("#searchSiGunGuCd").val('');
-        $("#searchUseYn").val('');
-        $("#searchAplyMthdCd").val('');
+        $("#searchTchaidTypeCd").val('');
+        $("#searchEduTypeCd").val('');
+        $("#searchTeamCmpstnCd").val('');
     }
     
     function writeJsGridData(){
@@ -180,7 +154,6 @@
             pageLoading: true,
             pageIndex: 1,
             noDataContent: "데이터가 없습니다.",
-            
             controller: {
                 loadData: function (filter) {
                     var data = $.Deferred();
@@ -197,12 +170,13 @@
                     }else{
                         params.push({name: "orderField", value: 'reg_dt'});
                     }
+                    
                     formData = formData.concat(params);
                     
                     $.ajax({
                       type: "GET",
                       contentType: "application/json; charset=utf-8",
-                      url: "/mng/spce/selectSpceList.do",
+                      url: "/mng/tchaid/selectTchaidList.do",
                       dataType: "json",
                       data: formData,
                     }).done(function(response){
@@ -215,88 +189,65 @@
                     return data.promise();
                 },
             },
+            
             fields: [
-                 {
-                     headerTemplate: function() {
-                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-                     },
-                     itemTemplate: function(_, item) {
-                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-                         .prop("checked", $.inArray(item, selectedItems) > -1)
-                         .on("change", function () {
-                         $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-                         });
-                     },
-                     align: "center",
-                     width: "30",
-                     sorting: false
-                 }                  
-                ,{ name: 'spceid', css: 'hide' }
-                ,{ title: 'No.'   ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
-                ,{ title: '운영기관'   ,name: 'instNm'    ,type: "text" , width: "200" ,align:"center"}
-                ,{ title: '시설'   ,name: 'fcltNm'    ,type: "text" , width: "200" ,align:"center"}
-                ,{ title: '공간'  ,name: 'spceNm'   ,type: "text" , width: "200" ,align:"center"}
-                ,{ title: '예약신청방법'  ,name: 'aplyMthdCdNm'   ,type: "text" , width: "100" ,align:"center"}
-                ,{ title: '지역'  ,name: 'ctprvnNm'   ,type: "text" , width: "150" ,align:"center"}
+                { name: 'tchaidid', css: 'hide' }
+                ,{ title: 'No.'    ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '교구명'   ,name: 'tchaidNm'    ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '재고'    ,name: 'qntyInvntry'    ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '교구유형' ,name: 'tchaidTypeCdNm'   ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '교육유형'  ,name: 'eduTypeCdNm'   ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '모둠구성'  ,name: 'teamCmpstnCdNm'   ,type: "text" , width: "100" ,align:"center"}
                 ,{ title: '사용여부'  ,name: 'useYn'   ,type: "text" , width: "100" ,align:"center"
-                    ,itemTemplate: function(value, item){ return (value=='Y')?"사용":"미사용";}
+                    ,itemTemplate: returnSelectUseYn
                 }
-                ,{ title: '등록일'  ,name: 'regDt' ,type: "text" , width: "100", align:"center" 
-                    ,itemTemplate: function(value, item){return value.substring(0,10)}
+                ,{ title: '입고처리'  ,name: 'regDt' ,type: "text" , width: "100", align:"center" 
+                    ,itemTemplate: function(value, item){
+                        return $("<button class='btn btn-xs btn-info btn-mini' style='width:80%;'>").text("입고").on("click", function(){openWrhousngModal(item.tchaidid);  return false;});
+                    }
                  }
             ],
             
-            /*[# sec:authorize-url="/mng/spce/spceDetail.html"]*/
+            /*[# sec:authorize-url="/mng/tchaid/tchaidDetail.html"]*/
             rowClick: function(args) {
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                var detailUrl = "/mng/spce/spceDetail.html?mode=U&spceid=" + args.item.spceid; 
+                var detailUrl = "/mng/tchaid/tchaidDetail.html?mode=U&tchaidid=" + args.item.tchaidid; 
                 gridHelper1.loadContent(detailUrl);
                 gridHelper1.rowClick(args);
+                clickedItem = args.item;
             },
             /*[/]*/
-            onPageChanged: function(args) {
-                selectedItems = [];
+            onDataLoaded: function(args) {
+                if(clickedTchaidid== null || args.grid.data == null || args.grid.data.length == 0) return;
+                for(var i = 0; i < args.grid.data.length; i++) {
+                    if(args.grid.data[i].tchaidid == clickedTchaidid){
+                        var items = $("#jsGrid").jsGrid("option", "data");
+                        var $row = $("#"+gridHelper1.jsGridId).jsGrid("rowByItem", items[i]);
+                        $row.toggleClass("highlight");
+                    }    
+                }
             }
         });
+    }
+    
+    var returnSelectUseYn = (_,item) =>{
         
-        var selectItem = function(item) {
-            selectedItems.push(item);
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        };
-         
-        var unselectItem = function(item) {
-            selectedItems = $.grep(selectedItems, function(i) {
-            return i !== item;
-            });
-            if(selectedItems.length == 0) {
-                $('#selectAllCheckbox').attr('checked', false);
-            }
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        };
-        
-        $("#selectAllCheckbox").click(function(item) {
-            selectedItems = [];
-            if(this.checked) { // check select status
-                $('.singleCheckbox').each(function() { 
-                    this.checked = true;   
-                    selectItem($(this).parent().next().text());           
-                }); 
-            }else {
-                $('.singleCheckbox').each(function() { 
-                    this.checked = false;      
-                    unselectItem(item);
-                });  
-                selectedItems = [];
-            }
-        });
+        let selectHtml ="";
+            selectHtml +="<select id='use_"+item.tchaidid+"' name='use_"+item.tchaidid+"' onchange=changeUseYn(this.id)" 
+            selectHtml +=" class='form-select form-control form-bg-info' style='align:center;height:2.4em;width:90%;font-size:12px;'>";
+            selectHtml +="<option value='Y'  "
+            selectHtml +=(item.useYn == 'Y')? "selected":""; 
+            selectHtml +=">사용</option>";
+            selectHtml +="<option value='N'  "
+            selectHtml +=(item.useYn == 'N')? "selected":""; 
+            selectHtml +=">미사용</option>";
+            selectHtml += "</select>";
+            return selectHtml;      
+    }
+    
+    fn_goInsertForm =()=>{
+    	var inserlUrl = "/mng/tchaid/tchaidDetail.html?mode=I"; 
+        gridHelper1.loadContent(inserlUrl);
     }
     
     //공간 삭제 
@@ -338,18 +289,49 @@
             });
         }
     }
-    //기관 검색 모달 오픈   
-    openSearchInstModal = () => {
-    	selectedInstItem = null;
-        var url = "/mng/spce/instSearchPopup.html";
+    
+    changeUseYn=(elid)=>{
 
-        $("#instSearchModal").load(url, function(response, status, xhr) {
+    	var id = elid.replace("use_","");
+    	var yn = $("#use_"+id).val();
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/tchaid/updateTchaid.do",
+                type: 'POST',
+                contentType: "application/json; charset=utf-8",
+                cache : false,
+                traditional : true, //필수
+                dataType: 'json',
+                data :JSON.stringify( {
+                      tchaidid : id
+                      ,useYn   : yn 
+                      ,mode    : 'use'
+                }),
+                success : function (data){
+                    if(data.result!="success"){
+                        alert(data.msg);
+                        var backVal = (yn=='Y')?"N":"Y";
+                        $("#use_"+id).val(backVal);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+
+   openWrhousngModal=(tchaidid) => {
+	   
+        var url = "/mng/tchaid/tchaidWrhousngPopup.html?tchaidid="+tchaidid;
+        
+        $("#tchaidModal").load(url, function(response, status, xhr) {
             if (status == "success") {
-            	spceModal = new bootstrap.Modal($('#instSearchModal'));
-            	spceModal.show();
+            	tchaidModal = new bootstrap.Modal($('#tchaidModal'));
+            	tchaidModal.show();
             }
         });
-    }
+     }
     
 </script>
 </div> 

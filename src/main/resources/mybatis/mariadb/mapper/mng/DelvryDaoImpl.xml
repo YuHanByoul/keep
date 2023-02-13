@@ -8,27 +8,23 @@
 <mapper namespace="com.kbrainc.plum.mng.delvry.model.DelvryDao">
     
     <!-- 교부 목록 조회 -->
-    <select id="selectDelvryList" parameterType="DelvryVo" resultType="DelvryVo">
-        /* DelvryDao.selectDelvryList */
+    <select id="selectPcntstList" parameterType="PcntstVo" resultType="PcntstVo">
+        /* DelvryDao.selectPcntstList */
         <include refid="PaginationMapper.header"/>
         SELECT
-            A.DELVRYID
-            , B.PCNTSTID
-            , B.FLD_CD
-            , C.CD_NM AS FLD_CD_NM
-            , B.PCNTST_NM
-            , CASE WHEN NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT THEN '신청전' WHEN NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT THEN '마감' ELSE '신청중' END PRGRS_STTS
-            , CASE WHEN NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT THEN 1 WHEN NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT THEN 3 ELSE 2 END PRGRS_STTS_ORDR
-            , A.DELVRY_CFMTN_PRSNTN_BGNG_DT
-            , A.DELVRY_CFMTN_PRSNTN_END_DT
-            , DATE_FORMAT(A.DELVRY_CFMTN_PRSNTN_BGNG_DT, '%Y-%m-%d %H:%i:%s') AS DELVRY_CFMTN_PRSNTN_BGNG_DT_STR
-            , DATE_FORMAT(A.DELVRY_CFMTN_PRSNTN_END_DT, '%Y-%m-%d %H:%i:%s') AS DELVRY_CFMTN_PRSNTN_END_DT_STR
-            , COUNT(D.PCNTSTID) AS SLCTN_CNT
-            , B.WCT_DELVRY_CNT
+            A.PCNTSTID
+            , B.CD_NM AS FLD_CD_NM
+            , A.PCNTST_NM
+            , CASE WHEN NOW() <![CDATA[<]]> A.APLY_BGNG_DT THEN '신청전' WHEN NOW() <![CDATA[>]]> A.APLY_END_DT THEN '마감' ELSE '신청중' END PRGRS_STTS
+            , CASE WHEN NOW() <![CDATA[<]]> A.APLY_BGNG_DT THEN 1 WHEN NOW() <![CDATA[>]]> A.APLY_END_DT THEN 3 ELSE 2 END PRGRS_STTS_ORDR
+            , A.DELVRY_APLY_PRSNTN_BGNG_DT
+            , A.DELVRY_APLY_PRSNTN_END_DT
+            , DATE_FORMAT(A.DELVRY_APLY_PRSNTN_BGNG_DT, '%Y-%m-%d %H:%i:%s') AS DELVRY_APLY_PRSNTN_BGNG_DT_STR
+            , DATE_FORMAT(A.DELVRY_APLY_PRSNTN_END_DT, '%Y-%m-%d %H:%i:%s') AS DELVRY_APLY_PRSNTN_END_DT_STR
+            , COUNT(C.PCNTSTID) AS SLCTN_CNT
+            , A.WCT_DELVRY_CNT
         FROM
-            TB_SPB_DELVRY A
-        LEFT JOIN
-            TB_SPB_PCNTST B ON (B.PCNTSTID = A.PCNTSTID)
+            TB_SPB_PCNTST A
         INNER JOIN (
             SELECT
                 CD
@@ -37,34 +33,77 @@
                 TB_CMM_CD
             WHERE
                 CDGRPID = '173'
-        ) C ON (C.CD = B.FLD_CD)
+        ) B ON (B.CD = A.FLD_CD)
         LEFT JOIN
-            TB_SPB_APLY D ON (D.PCNTSTID = B.PCNTSTID AND D.SLCTN_STTS_CD = '193102')
-        WHERE 1 = 1
+            TB_SPB_APLY C ON (C.PCNTSTID = A.PCNTSTID AND C.SLCTN_STTS_CD = '193102')
+        WHERE
+            USE_YN = 'Y'
         <if test="searchFldCd != null and searchFldCd != ''">
-            AND B.FLD_CD LIKE CONCAT('%',#{searchFldCd},'%')
+            AND A.FLD_CD = #{searchFldCd}
         </if>
         <if test="searchPcntstNm != null and searchPcntstNm != ''">
-            AND B.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+            AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
         </if>
         <if test="searchBgngDt != null and searchBgngDt != ''">
-            AND A.DELVRY_CFMTN_PRSNTN_BGNG_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt}, ' 00:00:00')
+            AND A.DELVRY_APLY_PRSNTN_BGNG_DT <![CDATA[>=]]> CONCAT(#{searchBgngDt}, ' 00:00:00')
         </if>
         <if test="searchEndDt != null and searchEndDt != ''">
-            AND A.DELVRY_CFMTN_PRSNTN_END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt}, ' 23:59:59')
+            AND A.DELVRY_APLY_PRSNTN_END_DT <![CDATA[<=]]> CONCAT(#{searchEndDt}, ' 23:59:59')
         </if>
         <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'before'">
-            AND NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT 
+            AND NOW() <![CDATA[<]]> A.APLY_BGNG_DT 
         </if>
         <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'pending'">
-            AND (NOW() <![CDATA[>=]]> A.DELVRY_APLY_BGNG_DT AND NOW() <![CDATA[<=]]> A.DELVRY_APLY_END_DT)
+            AND (NOW() <![CDATA[>=]]> A.APLY_BGNG_DT AND NOW() <![CDATA[<=]]> A.APLY_END_DT)
         </if>
         <if test="searchPrgrsStts != null and searchPrgrsStts != '' and searchPrgrsStts == 'end'">
-            AND NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT
+            AND NOW() <![CDATA[>]]> A.APLY_END_DT
         </if>
         GROUP BY
-            B.PCNTSTID
+            A.PCNTSTID
         <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공모 정보 조회 -->
+    <select id="selectPcntstInfo" parameterType="PcntstVo" resultType="PcntstVo">
+        SELECT
+            A.DELVRYID
+            , E.CD_NM AS FLD_CD_NM
+            , D.PCNTST_NM
+            , CASE WHEN NOW() <![CDATA[<]]> A.DELVRY_APLY_BGNG_DT THEN '신청전' WHEN NOW() <![CDATA[>]]> A.DELVRY_APLY_END_DT THEN '마감' ELSE '신청중' END PRGRS_STTS
+            , COUNT(B.PCNTSTID) AS SLCTN_CNT
+            , A.DELVRY_APLY_BGNG_DT
+            , A.DELVRY_APLY_END_DT
+            , COUNT(C.DELVRY_APLYID) AS APLY_CNT
+            , COUNT(CASE WHEN C.DELVRY_STTS_CD = '202102' THEN 1 END) AS CFMTN_CNT
+            , A.CPTAL_EXCUT_BGNG_DT
+            , A.CPTAL_EXCUT_END_DT
+            , D.WCT_DELVRY_CNT
+        FROM
+            TB_SPB_DELVRY A
+        LEFT JOIN
+            TB_SPB_APLY B ON (B.PCNTSTID = A.PCNTSTID AND B.SLCTN_STTS_CD = '193102')
+        LEFT JOIN
+            TB_SPB_DELVRY_APLY C ON (C.DELVRYID = A.DELVRYID)
+        LEFT JOIN
+            TB_SPB_PCNTST D ON (D.PCNTSTID = A.PCNTSTID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '173'
+        ) E ON (E.CD = D.FLD_CD)    
+        WHERE
+            A.DELVRYID = #{delvryid}
+        GROUP BY
+            A.PCNTSTID
+    </select>
+    
+    <!-- 교부신청 목록 조회 -->
+    <select id="selectDelvryAplyList" parameterType="DelvryVo" resultType="DelvryVo">
     </select>
     
 </mapper>

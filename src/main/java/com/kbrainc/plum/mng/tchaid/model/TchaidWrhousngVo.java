@@ -15,11 +15,11 @@ import lombok.Data;
 *
 * <pre>
 * com.kbrainc.plum.tchaid.CmpntVo.model
-* - CmpntVo.java
+* - TchaidWrhousngVo.java
 * </pre>
 *
-* @ClassName   : CmpntVo 
-* @Description : TODO 
+* @ClassName   : TchaidWrhousngVo 
+* @Description : 교구 입고 
 * @author      : KBRAINC
 * @date        : 2023.02.02
 * @Version     : 
@@ -34,8 +34,8 @@ public class TchaidWrhousngVo extends ParentRequestVo {
     /** 입고 아이이디 */
     private int wrhousngid;
     
-    /** 구성품 아이이디 */
-    private Integer cmpntid;
+    /** 교구 아이이디 */
+    private Integer tchaidid;
     
     /** 입고 일자*/
     @Size(max = 10, message = "입고일자는 10자를 넘을 수 없습니다.")
@@ -49,10 +49,13 @@ public class TchaidWrhousngVo extends ParentRequestVo {
     private String rmrk;
     
     /** 등록일시 */
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private Date regDt;
     
     /** 등록자 아이디 */
     private String rgtrid;
+    
+    /** 등록자 명 */
+    private String nm;
     
 }

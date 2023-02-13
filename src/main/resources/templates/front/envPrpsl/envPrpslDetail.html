@@ -1,0 +1,180 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span>[[${envPrpsl.ttl}]]</span>
+                <th:block th:if="${envPrpsl.rlsYn == 'N'}">
+                    <span class="icon icon-lockon" title="비밀글"></span>
+                </th:block>
+            </h3>
+            <dl>
+                <div class="list">
+                    <dt>분류</dt>
+                    <dd>[[${envPrpsl.clsfCdNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>작성자</dt>
+                    <dd>[[${envPrpsl.acnt}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(envPrpsl.regDt,'yyyy-MM-dd')}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>처리상태</dt>
+                    <dd>[[${envPrpsl.prcsSttsCdNm}]]</dd>
+                </div>
+            </dl>
+            <dl class="table-view-file">
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:if="${envPrpsl.fileList != null}">
+                                <th:block th:each="file : ${envPrpsl.fileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content">
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(envPrpsl.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:if="${envPrpslAns != null and envPrpsl.prcsSttsCd == '113104' }">
+        <div class="table-view">
+            <div class="table-view-header">
+                <h3><span class="box-tag tag-green">답변완료</span> <span>[기타] 환경교육 강사모집 공유할 수 있을까요?</span></h3>
+                <dl>
+                    <div class="list">
+                        <dt>작성자</dt>
+                        <dd>[[${envPrpslAns.acnt}]]</dd>
+                    </div>
+                    <div class="list">
+                        <dt>답변일</dt>
+                        <dd>[[${#dates.format(envPrpslAns.ansDt, 'yyyy-MM-dd')}]]</dd>
+                    </div>
+                </dl>
+                <dl class="table-view-file">
+                    <div class="list">
+                        <dt>첨부파일</dt>
+                        <dd>
+                            <div class="form-input-file">
+                                <ul th:if="${envPrpslAns.fileList != null}">
+                                    <th:block th:each="file : ${envPrpslAns.fileList}">
+                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="table-view-body">
+                <div class="table-view-content">
+                    <th:block th:utext="${#strings.replace(#strings.escapeXml(envPrpslAns.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                </div>
+            </div>
+        </div>
+    </th:block>
+    <div class="btn-wrap">
+        <div class="center">
+            <th:block th:if="${envPrpsl.userid == loginUserid}">
+                <th:block th:if="${envPrpsl.prcsSttsCd == '113101'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="envPrpslDetail.update('cancel')">접수취소</button>
+                </th:block>
+                <th:block th:if="${envPrpsl.prcsSttsCd == '113104'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="envPrpslDetail.update('delete')">삭제</button>
+                </th:block>
+                <th:block th:if="${envPrpsl.prcsSttsCd == '113101'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="envPrpslDetail.moveToUpdateForm()">수정</button>
+                </th:block>
+            </th:block>
+            <button type="button" class="btn-medium btn-gray" onclick="envPrpslDetail.moveToList()">목록</button>
+        </div>
+    </div>
+
+    <form id="listForm" method="get" onsubmit="return false;">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="clsfCd" name="clsfCd" th:value="${searchVo.clsfCd}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="prpslid" name="prpslid" th:value="${searchVo.prpslid}">
+    </form>
+
+    <script th:inline="javascript">
+        var envPrpslDetail = {
+            prpslid: /*[[${envPrpsl.prpslid}]]*/null,
+            updateFormUrl: '/front/envPrpsl/envPrpslForm.html',
+            listUrl: '/front/envPrpsl/envPrpslList.html',
+            deleteUrl: '/front/envPrpsl/deleteEnvPrpsl.do',
+            cancelUrl: '/front/envPrpsl/cancelEnvPrpsl.do',
+
+            update(mode) {
+                if (mode == 'cancel') {
+                    if (!confirm('접수를 취소 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(envPrpslDetail.cancelUrl);
+                } else if (mode == 'delete') {
+                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(envPrpslDetail.deleteUrl);
+                }
+            },
+
+            ajaxForSttsUpdate(url) {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'post',
+                        url: url,
+                        dataType: 'json',
+                        data: {prpslid: envPrpslDetail.prpslid},
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success)
+                                envPrpslDetail.submit(envPrpslDetail.listUrl);
+                        }
+                    })
+                }
+            },
+            moveToList() {
+                this.submit(this.listUrl);
+            },
+
+            moveToUpdateForm() {
+                this.submit(this.updateFormUrl);
+            },
+
+            submit(url) {
+                let f = document.forms.listForm;
+                f.action = url;
+                f.submit();
+            }
+        };
+
+    </script>
+</div>

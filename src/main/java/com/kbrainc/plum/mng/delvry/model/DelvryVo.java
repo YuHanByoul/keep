@@ -62,6 +62,12 @@ public class DelvryVo extends ParentRequestVo {
     /** 사업비 교부 횟수 */
     private int wctDelvryCnt;
     
+    /** 신청 수 */
+    private int aplyCnt;
+    
+    /** 확정 수 */
+    private int cfmtnCnt;
+    
     /** 검색 사업분야 코드 */
     private String searchFldCd;
     

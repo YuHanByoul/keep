@@ -1,0 +1,173 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+
+    <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">제목 검색</strong></div>
+                <div class="form-body">
+                    <input type="search" title="제목 검색" placeholder="검색어를 입력해 주세요." name="searchKeyword" id="searchKeyword">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">분류</strong></div>
+                <div class="form-body">
+                    <span kattr:select_code="clsfCd" grpCd="182" firstOptTxt="- 전체 -"></span>
+                </div>
+            </div>
+        </div>
+        <div class="search-filter-submit">
+            <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="searchInit()">초기화</button>
+            <button type="submit" class="btn-medium btn-green btn-before-search" onclick="search()">검색</button>
+        </div>
+
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+        <input type="hidden" id="prpslid" name="prpslid" value="0">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10"/>
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="total-count">0</b> 건</p>
+        </div>
+        <div class="right d-flex">
+
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="changeRowPerPage()" >
+                <option value="10" selected>10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+            <div class="ml10">
+                <button type="button" class="btn-medium btn-blue" onclick="moveToInsertForm()">문의</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>환경교육 제안 - 번호, 분류, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <colgroup>
+                <col>
+                <col>
+                <col style="width:30%;">
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">분류</th>
+                <th scope="col">제목</th>
+                <th scope="col">상태</th>
+                <th scope="col">작성자</th>
+                <th scope="col">공개여부</th>
+                <th scope="col">등록일</th>
+            </tr>
+            </thead>
+            <tbody id="list-area">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
+
+
+    <script th:inline="javascript">
+        var listUrl = "/front/envPrpsl/selectEnvPrpslList.do";
+        var detailUrl = '/front/envPrpsl/envPrpslDetail.html';
+        var formUrl = '/front/envPrpsl/envPrpslForm.html';
+        var searchVo = /*[[${searchVo}]]*/null;
+
+        function changeRowPerPage() {
+            $('#rowPerPage').val($('#selectRowPerPage').val());
+        };
+
+        $(function () {
+            $("#pageNumber").val(searchVo.pageNumber);
+            $("#searchKeyword").val(searchVo.searchKeyword);
+            $("#clsfCd").val(searchVo.clsfCd);
+            $('#rowPerPage').val(searchVo.rowPerPage);
+            $('#selectRowPerPage').val(searchVo.rowPerPage);
+
+            selectEnvPrpsList();
+        });
+
+        function search() {
+            $('#pageNumber').val(1);
+            selectEnvPrpsList();
+        }
+
+        function searchInit() {
+            $('#searchKeyword, #clsfCd').val('');
+        }
+
+        function selectEnvPrpsList() {
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: formData = $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        $("#list-area").html(makeListHtml(data.list));
+                        $("#pagination").html(data.pagination);
+                        $("#total-count").html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        function makeListHtml(list) {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<tr>
+                            <td class="nodata" colspan="7">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 환경교육 제안이 없습니다</p>
+                            </td>
+                        </tr>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `<tr>
+                                <td>${item.rowNumber}</td>
+                                <td>${item.prcsSttsCdNm}</td>
+                                <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToDetail(${item.prpslid})">${item.ttl}</a></td>
+                                <td>${item.clsfCdNm}</td>
+                                <td>${item.acnt}</td>
+                                <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+                                <td>${item.regDt}</td>
+                            </tr>`;
+                })
+            }
+            return html;
+        }
+
+        function moveToInsertForm() {
+            var f = document.forms.searchForm;
+            f.action = formUrl;
+            f.submit();
+        }
+
+        function moveToDetail(prpslid) {
+            var f = document.forms.searchForm;
+            f.prpslid.value = prpslid;
+            f.action = detailUrl;
+            f.submit();
+        }
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            selectEnvPrpsList();
+        }
+    </script>
+</div>
