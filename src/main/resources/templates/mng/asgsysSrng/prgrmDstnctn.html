@@ -659,8 +659,11 @@ function readImage() {
 
 
 $('[id^=eduPhotoFileInpu]').on('change', function(event) {
+
 	var trgtId = event.currentTarget.id;
 	var trgtIdx = trgtId.substr(trgtId.length-1,1);
+
+	var bEduFilegrpid= false;
 
 	var objFile = document.querySelector('#'+trgtId);
 
@@ -671,7 +674,7 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
         formData.append("files", objFile.files[i]);
     }
 
-    formData.append("filegrpid", $("#eduPhotoFilegrpid").val());
+    formData.append("filegrpid", $("#eduPhotoFilegrpid").val() == "" ? 0 : $("#eduPhotoFilegrpid").val());
     formData.append("filegrpNm", "dstnctnEduPhoto_file");
 
 
@@ -682,18 +685,20 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
             contentType : false,
             data : formData,
             type : 'POST',
+            async : false,
             success : function(response) {
+
                 if(response.result == 'fail'){
                     alert(response.msg);
                 }else{
                     if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
                     	$("#eduPhotoFilegrpid").val(response[0].filegrpid );
+
+debugger;
+                    	bEduFilegrpid= true;
+                    }else{
+                    	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);    //재조회
                     }
-
-                    //$("#regFileDiv" + trgtIdx).show();
-                    //$("#delFileDiv" + trgtIdx).hide();
-                    loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);    //재조회
-
                 }
                 closeWorkProgress();
             }
@@ -701,7 +706,42 @@ $('[id^=eduPhotoFileInpu]').on('change', function(event) {
 
     }
 
+    fn_eduImgFileUpdate();
+
+
+
+
+
 });
+
+function fn_eduImgFileUpdate(){
+	debugger;
+	var formData = new FormData();
+	formData.append("eduPhotoFilegrpid",$("#eduPhotoFilegrpid").val())
+	formData.append("prgrmid", prgrmid);
+
+	if(displayWorkProgress()){
+        $.ajax({
+            url : "/mng/asgsysSrng/updateEduPhotoFilegrpid.do",
+            processData : false,
+            contentType : false,
+            data : formData,
+            async: false,
+            type : 'POST',
+            success : function(response) {
+            	debugger;
+                if(response.result == 'fail'){
+                    alert("교육사진파일그룹id를 저장중에 실패했습니다.");
+                }else{
+                	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);    //재조회
+                }
+                closeWorkProgress();
+            }
+        });
+
+    }
+
+}
 
 
 function fn_deleteEduPhotoFile(btnid){
@@ -710,7 +750,6 @@ function fn_deleteEduPhotoFile(btnid){
 	var vFileid        = $("#"+btnid).attr("fileid");
 	var vFileIdntfcKey = $("#"+btnid).attr("fileIdntfcKey");
 	var trgtIdx = btnid.substr(btnid.length-1,1);
-;
 
     if(!confirm("파일을 삭제하시겠습니까?")){return;}
 

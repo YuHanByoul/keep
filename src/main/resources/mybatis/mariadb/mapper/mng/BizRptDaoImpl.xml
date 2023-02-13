@@ -6,8 +6,307 @@
     Description : 사업보고관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptDao">
+    <!-- 중간보고관리 목록조회 조건-->
+    <sql id="searchCondition1">
+        <!-- 사업분야 -->
+        <if test="searchFldCd != null and searchFldCd != '' ">
+           AND A.FLD_CD = #{searchFldCd}
+        </if>
+            <!-- 공모명 -->
+        <if test="searchPcntstNm != null and searchPcntstNm != '' ">
+           AND A.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+            <!-- 중간보고 제출기간-시작일 -->
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND A.MDL_REPORT_BGNG_DT <![CDATA[>=]]> #{searchBgngDt}
+        </if>
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND A.MDL_REPORT_END_DT <![CDATA[<]]> CAST(CONCAT(#{searchEndDt},' 23:59:59') AS DATETIME)
+        </if>
+            <!-- 진행상태 -->
+        <if test="searchPrgrsSttsCd!= null and searchPrgrsSttsCd != '' ">
+           AND #{searchPrgrsSttsCd} = CASE WHEN A.MDL_REPORT_BGNG_DT <![CDATA[<]]>  NOW()  THEN '200101'
+                                     WHEN A.MDL_REPORT_BGNG_DT <![CDATA[>=]]> NOW()
+                                     THEN CASE WHEN A.MDL_REPORT_END_DT <![CDATA[<]]> NOW() THEN '200103'
+                                               WHEN A.MDL_REPORT_END_DT <![CDATA[>=]]> NOW() THEN '200102'
+                                               ELSE ''
+                                               END
+                                     ELSE ''
+                                END
+        </if>
+    </sql>
+
+    <!-- 중간보고제출 목록조회 조건-->
+    <sql id="searchCondition2">
+            <!-- 제출상태 -->
+        <if test="searchReportSttsCd != null and searchReportSttsCd != '' ">
+            AND C.REPORT_STTS_CD = #{searchReportSttsCd}
+        </if>
+            <!-- 키워드.프로그램명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'prgrmNm'">
+            AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+            <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+            <!-- 키워드.사용자 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'userNm'">
+            AND USR.NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+            <!-- 증빙서류 첨부 -->
+        <if test="evdncDcmntYn != null and evdncDcmntYn != '' ">
+            AND IF(C.ATCH_FILEGRPID IS NOT NULL, 'Y','N') = #{evdncDcmntYn}
+        </if>
+            <!-- 중간보고 제출기간-시작일 -->
+        <if test="searchBgngDt != null and searchBgngDt != ''">
+            AND C.REG_DT <![CDATA[>=]]> #{searchBgngDt}
+        </if>
+            <!-- 중간보고 제출기간-종료일 -->
+        <if test="searchEndDt != null and searchEndDt != ''">
+            AND C.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchEndDt},' 23:59:59') AS DATETIME)
+        </if>
+    </sql>
 
     <!-- 중간보고관리 목록조회 -->
-    <!-- 중간보고관리 목록조회 -->
+    <select id="selectMdlRptMngList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectMdlRptMngList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PCNTSTID
+          , A.FLD_CD    /*분야 코드*/
+          , A.PCNTST_NM    /*공모 이름*/
+          ,''    /*진행 상태*/
+          , A.MDL_REPORT_BGNG_DT    /*중간보고 시작일자*/
+          , A.MDL_REPORT_END_DT    /*중간보고 종료일자*/
+          , CONCAT(A.MDL_REPORT_BGNG_DT, '~', A.MDL_REPORT_END_DT)   AS MDL_REPORT_PRD
+          , CASE WHEN A.MDL_REPORT_BGNG_DT <![CDATA[<]]>  NOW()  THEN '200101'
+                 WHEN A.MDL_REPORT_BGNG_DT <![CDATA[>=]]> NOW()
+                 THEN CASE WHEN A.MDL_REPORT_END_DT <![CDATA[<]]> NOW() THEN '200103'
+                           WHEN A.MDL_REPORT_END_DT <![CDATA[>=]]> NOW() THEN '200102'
+                           ELSE ''
+                      END
+                 ELSE ''
+           END    AS PRGRS_STTS_CD    /*진행상태 코드*/
+          , B.SLCTN_BIZ_CNT    /*선정 사업*/
+          , CONCAT(B.REPORT_CNT, "/", B.SLCTN_BIZ_CNT)    AS SBMSN_CNT /*제출 건수*/
+          , A.CNSLTNG_USE_CD    /*컨설팅 대상*/
+          , A.REG_DT
+        FROM
+            TB_SPB_PCNTST A
+        LEFT OUTER JOIN
+        (
+            SELECT
+                COUNT(A.APLYID)    AS SLCTN_BIZ_CNT
+              , A.PCNTSTID
+              /* 보고구분코드 : 중간보고, 보고상태코드 : 제출완료 */
+              , COUNT(IF(B.REPORT_SE_CD = '204101' AND B.REPORT_STTS_CD <![CDATA[<>]]> '203101' ,1,NULL))    AS REPORT_CNT
+            FROM
+                TB_SPB_APLY A
+            LEFT OUTER JOIN
+                TB_SPB_REPORT B ON A.APLYID =B.APLYID
+            WHERE
+                A.SLCTN_STTS_CD = '193102'    /* 선정 상태 코드 : 선정*/
+            GROUP BY
+                A.PCNTSTID
+        ) B ON A.PCNTSTID = B.PCNTSTID
+        WHERE 1=1
+        <include refid="searchCondition1"/>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 중간보고관리 목록조회 (엑셀)-->
+    <select id="selectMdlRptMngListExcel" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectMdlRptMngListExcel */
+        SELECT
+            A.PCNTSTID
+          , A.FLD_CD    /*분야 코드*/
+          , A.PCNTST_NM    /*공모 이름*/
+          ,''    /*진행 상태*/
+          , A.MDL_REPORT_BGNG_DT    /*중간보고 시작일자*/
+          , A.MDL_REPORT_END_DT    /*중간보고 종료일자*/
+          , CONCAT(A.MDL_REPORT_BGNG_DT, '~', A.MDL_REPORT_END_DT)   AS MDL_REPORT_PRD
+          , CASE WHEN A.MDL_REPORT_BGNG_DT <![CDATA[<]]>  NOW()  THEN '200101'
+                 WHEN A.MDL_REPORT_BGNG_DT <![CDATA[>=]]> NOW()
+                 THEN CASE WHEN A.MDL_REPORT_END_DT <![CDATA[<]]> NOW() THEN '200103'
+                           WHEN A.MDL_REPORT_END_DT <![CDATA[>=]]> NOW() THEN '200102'
+                           ELSE ''
+                      END
+                 ELSE ''
+           END    AS PRGRS_STTS_CD    /*진행상태 코드*/
+          , B.SLCTN_BIZ_CNT    /*선정 사업*/
+          , CONCAT(B.REPORT_CNT, "/", B.SLCTN_BIZ_CNT)    AS SBMSN_CNT /*제출 건수*/
+          , A.CNSLTNG_USE_CD    /*컨설팅 대상*/
+          , A.REG_DT
+        FROM
+            TB_SPB_PCNTST A
+        LEFT OUTER JOIN
+        (
+            SELECT
+                COUNT(A.APLYID)    AS SLCTN_BIZ_CNT
+              , A.PCNTSTID
+              /* 보고구분코드 : 중간보고, 보고상태코드 : 제출완료 */
+              , COUNT(IF(B.REPORT_SE_CD = '204101' AND B.REPORT_STTS_CD <![CDATA[<>]]> '203101' ,1,NULL))    AS REPORT_CNT
+            FROM
+                TB_SPB_APLY A
+            LEFT OUTER JOIN
+                TB_SPB_REPORT B ON A.APLYID =B.APLYID
+            WHERE
+                A.SLCTN_STTS_CD = '193102'    /* 선정 상태 코드 : 선정*/
+            GROUP BY
+                A.PCNTSTID
+        ) B ON A.PCNTSTID = B.PCNTSTID
+        WHERE 1=1
+        <include refid="searchCondition1"/>
+    </select>
+
+    <!-- 중간보고관리 상세조회 -->
+    <select id="selectMdlRptMng" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectMdlRptMng */
+        SELECT
+            A.PCNTSTID
+          , A.FLD_CD    /*분야 코드*/
+          , A.PCNTST_NM    /*공모 이름*/
+          ,''    /*진행 상태*/
+          , A.MDL_REPORT_BGNG_DT    /*중간보고 시작일자*/
+          , A.MDL_REPORT_END_DT    /*중간보고 종료일자*/
+          , CONCAT(A.MDL_REPORT_BGNG_DT, '~', A.MDL_REPORT_END_DT)   AS MDL_REPORT_PRD
+          , CASE WHEN A.MDL_REPORT_BGNG_DT <![CDATA[<]]>  NOW()  THEN '200101'
+                 WHEN A.MDL_REPORT_BGNG_DT <![CDATA[>=]]> NOW()
+                 THEN CASE WHEN A.MDL_REPORT_END_DT <![CDATA[<]]> NOW() THEN '200103'
+                           WHEN A.MDL_REPORT_END_DT <![CDATA[>=]]> NOW() THEN '200102'
+                           ELSE ''
+                      END
+                 ELSE ''
+           END    AS PRGRS_STTS_CD    /*진행상태 코드*/
+          , B.SLCTN_BIZ_CNT    /*선정 사업*/
+          , CONCAT(B.REPORT_CNT, "/", B.SLCTN_BIZ_CNT)    AS SBMSN_CNT /*제출 건수*/
+          , A.CNSLTNG_USE_CD    /*컨설팅 대상*/
+          , A.REG_DT
+        FROM
+            TB_SPB_PCNTST A
+        LEFT OUTER JOIN
+        (
+            SELECT
+                COUNT(A.APLYID)    AS SLCTN_BIZ_CNT
+              , A.PCNTSTID
+              /* 보고구분코드 : 중간보고, 보고상태코드 : 제출완료 */
+              , COUNT(IF(B.REPORT_SE_CD = '204101' AND B.REPORT_STTS_CD <![CDATA[<>]]> '203101' ,1,NULL))    AS REPORT_CNT
+            FROM
+                TB_SPB_APLY A
+            LEFT OUTER JOIN
+                TB_SPB_REPORT B ON A.APLYID =B.APLYID
+            WHERE
+                A.SLCTN_STTS_CD = '193102'    /* 선정 상태 코드 : 선정*/
+            GROUP BY
+                A.PCNTSTID
+        ) B ON A.PCNTSTID = B.PCNTSTID
+        WHERE 1=1
+        AND
+            A.PCNTSTID = #{pcntstid}
+    </select>
+
+    <!-- 중간보고제출 목록조회 -->
+    <select id="selectMdlRptSbmsnList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectMdlRptSbmsnList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.APLYID
+          , B.DELVRY_APLYID
+          , B.DELVRYID
+          , C.REPORTID
+          , B.RCPTNO            /*접수번호*/
+          , C.REPORT_STTS_CD    /*제출(보고)상태*/
+          , A.INST_NM           /*기관명*/
+          , A.USERID
+          , CONCAT(USR.NM,"(",USR.ACNT ,")")    AS USER_NM_ACNT /*신청자 명(ID)*/
+          , A.PRGRM_NM
+          , IF(C.REG_DT IS NULL,'-',C.REG_DT )    AS SBMSN_DT
+          , IF(C.REPORTID IS NULL, '-', IF(C.ATCH_FILEGRPID IS NULL, '미첨부','첨부'))    AS EVDNC_DCMNT_YN
+          , ''    AS CNSLTNG_USE    /*컨설팅 여부*/
+          , C.REPORT_SE_CD    /*보고서 구분 코드*/
+          , C.REG_DT
+        FROM
+            TB_SPB_APLY A
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID
+        LEFT OUTER JOIN TB_SPB_REPORT C ON A.APLYID = C.APLYID
+        LEFT OUTER JOIN TB_CMM_USER USR ON A.USERID = USR.USERID
+        WHERE 1=1
+        AND A.PCNTSTID = #{pcntstid}
+        AND C.REPORT_SE_CD = '204101'    /*보고서 구분 중간보고*/
+        <include refid="searchCondition1"/>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 중간보고제출 목록조회(엑셀) -->
+    <select id="selectMdlRptSbmsnListExcel" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectMdlRptSbmsnListExcel */
+        SELECT
+            A.APLYID
+          , B.DELVRY_APLYID
+          , B.DELVRYID
+          , C.REPORTID
+          , B.RCPTNO            /*접수번호*/
+          , C.REPORT_STTS_CD    /*제출(보고)상태*/
+          , A.INST_NM           /*기관명*/
+          , A.USERID
+          , CONCAT(USR.NM,"(",USR.ACNT ,")")    AS USER_NM_ACNT /*신청자 명(ID)*/
+          , A.PRGRM_NM
+          , IF(C.REG_DT IS NULL,'-',C.REG_DT )    AS SBMSN_DT
+          , IF(C.REPORTID IS NULL, '-', IF(C.ATCH_FILEGRPID IS NULL, '미첨부','첨부'))    AS EVDNC_DCMNT_YN
+          , ''    AS CNSLTNG_USE    /*컨설팅 여부*/
+          , C.REPORT_SE_CD    /*보고서 구분 코드*/
+          , C.REG_DT
+        FROM
+            TB_SPB_APLY A
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY B  ON A.APLYID = B.APLYID
+        LEFT OUTER JOIN TB_SPB_REPORT C ON A.APLYID = C.APLYID
+        LEFT OUTER JOIN TB_CMM_USER USR ON A.USERID = USR.USERID
+        WHERE 1=1
+        AND A.PCNTSTID = #{pcntstid}
+        AND C.REPORT_SE_CD = '204101'    /*보고서 구분 중간보고*/
+        <include refid="searchCondition1"/>
+    </select>
+
+    <!-- 중간보고상태코드 수정 -->
+    <update id="updateRptSttsCd" >
+        /* BizRptDao.updateRptSttsCd */
+        UPDATE TB_SPB_REPORT SET
+            REPORT_STTS_CD = '203106'    /*제출상태코드 : 완료*/
+          , MDFCN_DT = NOW()
+          , MDFRID   = #{user.userid}
+        WHERE REPORTID IN
+        <foreach item="item" collection="reportids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <!-- 중간보고제출 상세 조회 -->
+    <select id="selectMdlRptSbmsnDetail" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectMdlRptSbmsnDetail */
+        SELECT
+            B.APLYID
+          , C.DELVRY_APLYID
+          , C.DELVRYID
+          , A.REPORTID
+          , C.RCPTNO            /*접수번호*/
+          , B.INST_NM           /*기관명*/
+          , B.PRGRM_NM
+          , CONCAT(USR.NM,"(",USR.ACNT ,")")    AS USER_NM_ACNT /*신청자 명(ID)*/
+          , D.EDU_TRGT
+          , D.ESSNTL_SBJCT_NM
+          , A.REG_DT
+          , A.REPORT_STTS_CD    /*제출(보고)상태*/
+          , A.ETC_CN
+          , A.ATCH_FILEGRPID
+        FROM
+            TB_SPB_REPORT A
+        INNER JOIN TB_SPB_APLY B ON A.APLYID = B.APLYID
+        INNER JOIN TB_CMM_USER USR ON B.USERID = USR.USERID
+        INNER JOIN TB_SPB_DELVRY_APLY C ON B.APLYID = C.APLYID
+        LEFT OUTER JOIN TB_SPB_PRGRM D ON B.APLYID = D.APLYID
+        WHERE 1=1
+        AND A.REPORTID = #{reportid}
+    </select>
 
 </mapper>

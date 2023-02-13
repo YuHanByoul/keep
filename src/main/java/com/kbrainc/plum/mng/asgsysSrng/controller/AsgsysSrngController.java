@@ -636,6 +636,38 @@ public class AsgsysSrngController {
     }
 
     /**
+     * 교육사진파일그룹id 수정
+     *
+     * @Title       : updateEduPhotoFilegrpid
+     * @Description : 교육사진파일그룹id 수정
+     * @param asgsysSrngVo AsgsysSrngVo객체
+     * @param user 사용자세션정보
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/asgsysSrng/updateEduPhotoFilegrpid.do")
+    @ResponseBody
+    public Map<String, Object> updateEduPhotoFilegrpid(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	asgsysSrngVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = asgsysSrngService.updateEduPhotoFilegrpid(asgsysSrngVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
+
+    /**
     * 프로그램 우수성 등록
     *
     * @Title       : insertPrgrmDstnctn

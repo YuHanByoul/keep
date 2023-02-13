@@ -819,6 +819,18 @@ public interface AsgsysSrngDao {
 	 */
 	public AsgsysSrngVo selectSrngScrHeader(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 교육사진파일그룹아이디 수정
+	*
+	* @Title : updateEduPhotoFilegrpid
+	* @Description : 교육사진파일그룹아이디 수정
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateEduPhotoFilegrpid(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
 
 
 
