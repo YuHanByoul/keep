@@ -265,6 +265,7 @@ const gnb = {
 	},
 	onScroll : function () {
 		if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
+			const windowHeight = $(window)
 			$(window).on('scroll', function () {
 				$headerOffsetTop = $header.offset().top;
 				gnb.onResize();
@@ -604,7 +605,7 @@ const layerPopup = {
 		layerPopup.resize();
 		
 	},
-	open : function ({target, w, h, l, t}) {
+	open : function ({target, w, h, l, t}, callback) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		ZINDEX++;
 		
@@ -659,7 +660,7 @@ const layerPopup = {
 			targetWrap.css('z-index',ZINDEX);
 		});
 	},
-	close : function (target) {
+	close : function (target, callback) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		const trigger = $('[data-layer-href="' + target + '"]');
 		
