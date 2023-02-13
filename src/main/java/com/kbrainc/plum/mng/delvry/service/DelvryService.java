@@ -2,7 +2,7 @@ package com.kbrainc.plum.mng.delvry.service;
 
 import java.util.List;
 
-import com.kbrainc.plum.mng.delvry.model.DelvryVo;
+import com.kbrainc.plum.mng.delvry.model.PcntstVo;
 
 /**
  * 
@@ -23,15 +23,28 @@ import com.kbrainc.plum.mng.delvry.model.DelvryVo;
 public interface DelvryService {
     
     /**
-    * 교부 목록 조회
+    * 공모 목록 조회
     *
-    * @Title : selectDelvryList 
+    * @Title : selectPcntstList 
     * @Description : 교부 목록 조회
-    * @param delvryVo DelvryVo객체
-    * @return List<DelvryVo> 교부 목록
+    * @param pcntstVo PcntstVo객체
+    * @return List<PcntstVo> 교부 목록
     * @throws Exception 예외
     */
-    public List<DelvryVo> selectDelvryList(DelvryVo delvryVo) throws Exception;
+    public List<PcntstVo> selectPcntstList(PcntstVo pcntstVo) throws Exception;
+    
+    /**
+    * 공모 정보 조회
+    *
+    * @Title : selectPcntstInfo 
+    * @Description : 공모 정보 조회
+    * @param pcntstVo PcntstVo객체
+    * @return PcntstVo 공모 정보
+    * @throws Exception 예외
+    */
+    public PcntstVo selectPcntstInfo(PcntstVo pcntstVo) throws Exception;
+    
+    
 //    
 //    /**
 //     * 교구 목록 조회

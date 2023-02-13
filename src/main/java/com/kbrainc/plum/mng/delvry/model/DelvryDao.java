@@ -24,15 +24,26 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 public interface DelvryDao {
     
     /**
-    * 교부 목록 조회
+    * 공모 목록 조회
     *
-    * @Title : selectDelvryList
-    * @Description : 교부 목록 조회
-    * @param delvryVo DelvryVo 객체
-    * @return List<DelvryVo> 교부 목록
+    * @Title : selectPcntstList
+    * @Description : 공모 목록 조회
+    * @param pcntstVo PcntstVo 객체
+    * @return List<PcntstVo> 공모 목록
     * @throws Exception 예외
     */
-    public List<DelvryVo> selectDelvryList(DelvryVo delvryVo) throws Exception;
+    public List<PcntstVo> selectPcntstList(PcntstVo pcntstVo) throws Exception;
+    
+    /**
+    * 공모 정보 조회
+    *
+    * @Title : selectPcntstInfo
+    * @Description : 공모 정보 조회
+    * @param pcntstVo PcntstVo 객체
+    * @return PcntstVo 공모 정보
+    * @throws Exception 예외
+    */
+    public PcntstVo selectPcntstInfo(PcntstVo pcntstVo) throws Exception;
 //    
 //    /**
 //     * 교구 목록 조회

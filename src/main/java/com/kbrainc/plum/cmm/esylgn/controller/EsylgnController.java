@@ -99,11 +99,11 @@ public class EsylgnController {
     * @param response 응답객체
     * @param session 세션객체
     * @param user 사용자세션정보
-    * @return ModelAndView 모델뷰객체
+    * @return String 이동화면경로
     * @throws Exception 예외
     */
     @RequestMapping("/onepass/acs.html")
-    public ModelAndView onepassAcs(HttpServletRequest request, HttpServletResponse response, HttpSession session, @UserInfo UserVo user) throws Exception {
+    public String onepassAcs(HttpServletRequest request, HttpServletResponse response, HttpSession session, @UserInfo UserVo user) throws Exception {
         ModelAndView mav = new ModelAndView();
         OnepassResponse onepassResponse = OnepassResponseHandler.check(request);
         String returnUrl = request.getParameter("returnUrl");
@@ -320,8 +320,8 @@ public class EsylgnController {
                             System.out.println("어린이 회원");
                         }
                         
-                        // onepassUser(ci, email, name, userKey, 어린이회원여부)정보를 세션에 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행), 회원정보저장시 세션에 정보없으면 진행불가)
-                        // 회원가입 리다이렉션
+                        // onepassUser(ci, email, name, userKey, 어린이회원여부)정보를 암호화해서 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행), 회원정보저장시 세션에 정보없으면 진행불가)
+                        // 회원가입 리다이렉션(post)
                         
                         
                     } else { // 정보조회 오류, 로그인 불가
@@ -335,12 +335,7 @@ public class EsylgnController {
                 OnepassResponseHandler.onepassLogout(request, response);
             }
         }
-        
-        /*RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(request.getContextPath() + "/login.html");
-        redirectView.setExposeModelAttributes(false); // 화면으로 이동시 model데이터가 query string으로 붙는것을 막는다.
-        mav.setView(redirectView);
-        return mav;*/
+
         return null;
     }
     

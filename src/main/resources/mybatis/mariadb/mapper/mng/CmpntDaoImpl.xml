@@ -48,7 +48,6 @@
              AND CMPNTID = #{cmpntid}
         <include refid="PaginationMapper.footer"/>
    </select>
-   
    <!-- 구성품 상세 정보  --> 
    <select id="selectCmpnt" parameterType="CmpntVo" resultType="CmpntVo">
           /* CmpntDao.selectCmpnt */
@@ -65,8 +64,6 @@
          WHERE 1=1
          AND CMPNTID = #{cmpntid}
    </select>
-   
-   
    <!-- 구성품 등록 --> 
    <insert id="insertCmpnt" parameterType="CmpntVo" >
         /* CmpntDao.insertCmpnt */
@@ -113,7 +110,9 @@
             <if test="cmpntNm != null and cmpntNm != '' ">
             CMPNT_NM     = #{cmpntNm     },
             </if>
-            QNTY_INVNTRY = (SELECT IFNULL(SUM(QNTY) ,0) FROM TB_THA_CMPNT_WRHOUSNG WHERE CMPNTID = #{cmpntid}),   
+            <if test="plusQnty != null and plusQnty != '' ">
+            QNTY_INVNTRY   =  IFNULL(QNTY_INVNTRY,0) + IFNULL(#{plusQnty},0) ,
+            </if>
             MDFCN_DT     = NOW(),             
             MDFRID       = #{user.userid  }  
          WHERE 1=1 

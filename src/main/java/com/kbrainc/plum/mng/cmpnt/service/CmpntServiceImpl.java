@@ -85,6 +85,8 @@ public class CmpntServiceImpl extends PlumAbstractServiceImpl implements CmpntSe
         resInt = cmpntDao.insertCmpntWrhousng(cmpntWrhousngVo);
         
         CmpntVo cmpntVo = new CmpntVo();
+        cmpntVo.setUser(cmpntWrhousngVo.getUser());
+        cmpntVo.setPlusQnty(cmpntWrhousngVo.getQnty());
         cmpntVo.setCmpntid(cmpntWrhousngVo.getCmpntid());
         resInt += cmpntDao.updateCmpnt(cmpntVo);
         

@@ -1,12 +1,16 @@
-package com.kbrainc.plum.mng.cmpnt.model;
+package com.kbrainc.plum.mng.tchaid.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -14,31 +18,36 @@ import lombok.Data;
 * [클래스 요약].
 *
 * <pre>
-* com.kbrainc.plum.tchaid.CmpntVo.model
-* - CmpntVo.java
+* com.kbrainc.plum.tchaid.model
+* - TchaidCmpntCmpstnVo.java
 * </pre>
 *
-* @ClassName   : CmpntVo 
-* @Description : TODO 
+* @ClassName   : TchaidCmpntCmpstnVo 
+* @Description : 교구 구성품 구성 VO 
 * @author      : KBRAINC
-* @date        : 2023.02.02
+* @date        : 2023.02.06
 * @Version     : 
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Data
-public class CmpntVo extends ParentRequestVo {
+public class TchaidCmpntCmpstnVo extends ParentRequestVo {
     
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 구성품 아이이디 */
-    private int cmpntid;
+    /** 교구 아이이디 */
+    private int tchaidid;
     
-    /** 구성품 이름   */
-    @Size(max = 100, message = "구성품명은 100자를 넘을 수 없습니다.")
+    /** 구성품 아이이디 */
+    private Integer cmpntid;
+    
+    /** 구성품명 */
     private String cmpntNm;
     
-    /** 수량_재고   */
+    /** 구성품 구성 수량 */
+    private Integer qntyCmpstn;
+    
+    /** 구성품 재고 */
     private Integer qntyInvntry;
     
     /** 수정일시 */
@@ -54,11 +63,5 @@ public class CmpntVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private String rgtrid;
-    
-    /** 수량_재고 추가분   */
-    private Integer plusQnty;
-    
-    /** 등록,수정 모드 */
-    private String mode;
     
 }

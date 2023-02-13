@@ -1,7 +1,5 @@
 package com.kbrainc.plum.front.member.model;
 
-import java.util.Map;
-
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.rte.model.UserVo;
@@ -57,6 +55,28 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public int checkDuplicationUser(MemberVo memberVo) throws Exception;    
+
+    /**
+    * ci에 해당하는 userid 조회.
+    *
+    * @Title : selectUseridByCI
+    * @Description : ci에 해당하는 userid 조회
+    * @param memberVo MemberVo객체
+    * @return String userid
+    * @throws Exception 예외
+    */
+    public String selectUseridByCI(MemberVo memberVo) throws Exception;
+    
+    /**
+    * 부모ci와 이름에 해당하는 userid 조회.
+    *
+    * @Title : selectUseridByParntsCIandName
+    * @Description : 부모ci와 이름에 해당하는 userid 조회
+    * @param memberVo MemberVo객체
+    * @return String userid
+    * @throws Exception 예외
+    */
+    public String selectUseridByParntsCIandName(MemberVo memberVo) throws Exception;
     
     /**
     *
@@ -83,26 +103,24 @@ public interface MemberDao {
     public int updateMember(MemberVo memberVo) throws Exception;
     
     /**
-    * ci에 해당하는 userid 조회.
+    * 관심 환경분야 저장
     *
-    * @Title : selectUseridByCI
-    * @Description : ci에 해당하는 userid 조회
+    * @Title       : insertEnvfld 
+    * @Description : 사용자수정.
     * @param memberVo MemberVo객체
-    * @return String userid
+    * @return int update로우수
     * @throws Exception 예외
     */
-    public String selectUseridByCI(MemberVo memberVo) throws Exception;
+    public int insertEnvfld(MemberVo memberVo) throws Exception;
     
     /**
-    * 부모ci와 이름에 해당하는 userid 조회.
+    * 환경분야 저장
     *
-    * @Title : selectUseridByParntsCIandName
-    * @Description : 부모ci와 이름에 해당하는 userid 조회
+    * @Title       : insertItrstyfld 
+    * @Description : 사용자수정.
     * @param memberVo MemberVo객체
-    * @return String userid
+    * @return int update로우수
     * @throws Exception 예외
     */
-    public String selectUseridByParntsCIandName(MemberVo memberVo) throws Exception;
-    
-    
+    public int insertItrstfld(MemberVo memberVo) throws Exception;
 }

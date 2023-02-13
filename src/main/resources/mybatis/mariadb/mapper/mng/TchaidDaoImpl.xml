@@ -7,92 +7,380 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.tchaid.model.TchaidDao">
 
-   <!-- 구성품 목록 호출 --> 
-   <select id="selectCmpntList" parameterType="CmpntVo" resultType="CmpntVo">
-          /* TchaidDao.selectCmpntList */
+   <!-- 교구 목록 호출 --> 
+   <select id="selectTchaidList" parameterType="TchaidVo" resultType="TchaidVo">
+          /* TchaidDao.selectTchaidList */
           <include refid="PaginationMapper.header"/>
-          SELECT 
-            CMPNTID
-            ,CMPNT_NM
-            ,QNTY_INVNTRY
-            ,MDFCN_DT
-            ,MDFRID
-            ,REG_DT
-            ,RGTRID
-          FROM 
-            TB_THA_TCHAID_CMPNT
-         WHERE 1=1
+           SELECT
+               TCHAIDID
+               ,TCHAID_NM
+               ,QNTY_INVNTRY
+               ,TCHAID_TYPE_CD
+               ,EDU_TYPE_CD
+               ,TEAM_CMPSTN_CD
+               ,USE_YN
+               ,MDFCN_DT
+               ,MDFRID
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_THA_TCHAID
+            WHERE 1=1 
            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
-              AND CMPNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+              AND TCHAID_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchTchaidTypeCd != null and searchTchaidTypeCd != '' ">
+              AND TCHAID_TYPE_CD = #{searchTchaidTypeCd}
+           </if>
+           <if test="searchEduTypeCd != null and searchEduTypeCd != '' ">
+              AND EDU_TYPE_CD = #{searchEduTypeCd}
+           </if>
+           <if test="searchTeamCmpstnCd != null and searchTeamCmpstnCd != '' ">
+              AND TEAM_CMPSTN_CD = #{searchTeamCmpstnCd}
            </if>
          <include refid="PaginationMapper.footer"/>
    </select>
-   <!-- 구성품 입고 내역 호출 --> 
-   <select id="selectCmpntWrhousngList" parameterType="CmpntWrhousngVo" resultType="CmpntWrhousngVo">
-          /* TchaidDao.selectCmpntWrhousngList */
-          <include refid="PaginationMapper.header"/>
-          SELECT 
-              WRHOUSNGID
-              ,CMPNTID
-              ,WRHOUSNGDE
-              ,QNTY
-              ,RMRK
-              ,REG_DT
-              ,RGTRID
-            FROM    
-               TB_THA_CMPNT_WRHOUSNG
-           WHERE 1=1 
-             AND CMPNTID = #{cmpntid}
-        <include refid="PaginationMapper.footer"/>
-   </select>
-   <!-- 구성품 등록 --> 
-   <insert id="insertCmpnt" parameterType="CmpntVo" >
-        /* TchaidDao.insertCmpnt */
-        INSERT INTO TB_THA_TCHAID_CMPNT (
-            CMPNT_NM
-            ,QNTY_INVNTRY
-            ,MDFCN_DT
-            ,MDFRID
-            ,REG_DT
-            ,RGTRID
+  
+   <!-- 교구 등록-->
+   <insert id="insertTchaid" parameterType="TchaidVo" useGeneratedKeys="true" keyProperty="tchaidid" >
+        /* TchaidDao.insertTchaid */
+        INSERT INTO TB_THA_TCHAID (
+             TCHAID_NM
+             ,QNTY_INVNTRY
+             ,TCHAID_TYPE_CD
+             ,EDU_TYPE_CD
+             ,TEAM_CMPSTN_CD
+             ,USE_YN
+             ,MDFCN_DT
+             ,MDFRID
+             ,REG_DT 
+             ,RGTRID
         )VALUES(
-             #{cmpntNm     }
-            ,#{qntyInvntry }
+             #{tchaidNm      }
+            ,#{qntyInvntry   }
+            ,#{tchaidTypeCd }
+            ,#{eduTypeCd    }
+            ,#{teamCmpstnCd }
+            ,#{useYn         }
             ,NOW()
             ,#{user.userid  }
             ,NOW()
             ,#{user.userid  }
         )
    </insert>
-   <!-- 구성품 입고 등록 --> 
-   <insert id="insertCmpntWrhousng" parameterType="CmpntWrhousngVo" >
-        /* TchaidDao.insertCmpntWrhousng */
-        INSERT INTO TB_THA_CMPNT_WRHOUSNG (
-              CMPNTID
-              ,WRHOUSNGDE
+   <!-- 교구 대상 코드 맵핑 등록-->
+   <insert id="insertTchaidEduTrgt" parameterType="TchaidVo"  >
+        /* TchaidDao.insertTchaidEduTrgt */
+        INSERT INTO TB_THA_TCHAID_EDU_TRGT_MAPNG (
+             TCHAIDID
+             ,EDU_TRGT_CD
+             ,REG_DT
+             ,RGTRID
+        )VALUES
+        <foreach item="eduTrgtCd" collection="eduTrgtCds" separator=",">
+         (
+            #{tchaidid    }
+           ,#{eduTrgtCd }
+           ,NOW()
+           ,#{user.userid }
+          )
+        </foreach>
+   </insert>
+   <!-- 교구 주제 코드 맵핑 등록-->
+   <insert id="insertTchaidEduSbjct" parameterType="TchaidVo"  >
+        /* TchaidDao.insertTchaidEduTrgt */
+        INSERT INTO TB_THA_TCHAID_EDU_SBJCT_MAPNG (
+             TCHAIDID
+             ,EDU_SBJCT_CD
+             ,REG_DT
+             ,RGTRID
+        )VALUES
+        <foreach item="eduSbjctCd" collection="eduSbjctCds" separator=",">
+         (
+            #{tchaidid    }
+           ,#{eduSbjctCd }
+           ,NOW()
+           ,#{user.userid }
+         )
+        </foreach>
+   </insert>
+   <!-- 교구 수정 -->
+   <update id="updateTchaid" parameterType="TchaidVo"  >
+        /* TchaidDao.updateTchaid */
+        UPDATE TB_THA_TCHAID
+           SET 
+             <if test="tchaidNm != null and tchaidNm != ''">
+             TCHAID_NM      = #{tchaidNm     },
+             </if>
+             <if test="plusQnty != null and plusQnty != ''">
+             QNTY_INVNTRY   =  IFNULL(QNTY_INVNTRY,0) + IFNULL(#{plusQnty},0) ,
+             </if>
+             <if test="tchaidTypeCd != null and tchaidTypeCd != ''">
+             TCHAID_TYPE_CD = #{tchaidTypeCd },
+             </if>
+             <if test="eduTypeCd != null and eduTypeCd != ''">
+             EDU_TYPE_CD    = #{eduTypeCd    },
+             </if>
+             <if test="teamCmpstnCd != null and teamCmpstnCd != ''">
+             TEAM_CMPSTN_CD = #{teamCmpstnCd },
+             </if>
+             <if test="useYn != null and useYn != ''">
+             USE_YN         = #{useYn        },
+             </if>
+             MDFCN_DT       = NOW(),
+             MDFRID         = #{user.userid  }
+         WHERE 1=1
+           AND TCHAIDID = #{tchaidid}
+   </update>
+   <!-- 교구 삭제 -->
+   <delete id="deleteTchaid" parameterType="TchaidVo"  >
+        /* TchaidDao.deleteTchaid */
+        DELETE FROM TB_THA_TCHAID
+         WHERE TCHAIDID = #{tchaidid}
+   </delete>
+   <!-- 교구 주제 코드 삭제 -->
+   <delete id="deleteTchaidEduSbjct" parameterType="TchaidVo"  >
+        /* TchaidDao.deleteTchaidEduSbjct */
+        DELETE FROM TB_THA_TCHAID_EDU_SBJCT_MAPNG
+         WHERE TCHAIDID = #{tchaidid}
+   </delete>
+   <!-- 교구 대상코드 삭제 -->
+   <delete id="deleteTchaidEduTrgt" parameterType="TchaidVo"  >
+        /* TchaidDao.deleteTchaidEduTrgt */
+        DELETE FROM TB_THA_TCHAID_EDU_TRGT_MAPNG
+         WHERE TCHAIDID = #{tchaidid}
+   </delete>
+   <!-- 교구 구성품 구성 삭제 -->
+   <delete id="deleteTchaidCmpntCmpstn" parameterType="TchaidVo"  >
+        /* TchaidDao.deleteTchaidCmpntCmpstn */
+        DELETE FROM TB_THA_TCHAID_CMPNT_CMPSTN
+         WHERE TCHAIDID = #{tchaidid}
+   </delete>
+   
+   <!-- 교구 상세 호출 --> 
+   <select id="selectTchaid" parameterType="TchaidVo" resultType="TchaidVo">
+          /* TchaidDao.selectTchaid */
+           SELECT
+               TCHAIDID
+               ,TCHAID_NM
+               ,QNTY_INVNTRY
+               ,TCHAID_TYPE_CD
+               ,EDU_TYPE_CD
+               ,TEAM_CMPSTN_CD
+               ,USE_YN
+               ,MDFCN_DT
+               ,MDFRID
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_THA_TCHAID
+            WHERE 1=1
+              AND TCHAIDID = #{tchaidid}
+   </select>
+   <!-- 교구 교육 주제 코드 맵핑 리스트 호출 --> 
+   <select id="selectTchaidEduSbjctList" parameterType="TchaidVo" resultType="TchaidEduSbjctVo">
+          /* TchaidDao.selectTchaid */
+           SELECT
+               TCHAIDID 
+               ,EDU_SBJCT_CD
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_THA_TCHAID_EDU_SBJCT_MAPNG
+            WHERE 1=1
+              AND TCHAIDID = #{tchaidid}
+   </select>
+   <!-- 교구 교육 대상 코드 리스트 호출 --> 
+   <select id="selectTchaidEduTrgtList" parameterType="TchaidVo" resultType="TchaidEduTrgtVo">
+          /* TchaidDao.selectTchaid */
+           SELECT
+               TCHAIDID 
+               ,EDU_TRGT_CD
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_THA_TCHAID_EDU_TRGT_MAPNG
+            WHERE 1=1
+              AND TCHAIDID = #{tchaidid}
+   </select>
+   <!-- 교구 입고 등록-->
+   <insert id="insertTchaidWrhousng" parameterType="TchaidWrhousngVo"  >
+        /* TchaidDao.insertTchaidWrhousng */
+        INSERT INTO TB_THA_TCHAID_WRHOUSNG (
+              TCHAIDID 
               ,QNTY
+              ,WRHOUSNGDE
               ,RMRK
               ,REG_DT
               ,RGTRID
         )VALUES(
-               #{cmpntid    }
-              ,#{wrhousngde }
+               #{tchaidid   }
               ,#{qnty       }
+              ,#{wrhousngde }
+              ,#{rmrk       }
+              ,NOW()
+              ,#{user.userid}
+        )
+   </insert>
+   <!-- 교구 입고 목록 호출 --> 
+   <select id="selectTchaidWrhousngList" parameterType="TchaidVo" resultType="TchaidWrhousngVo">
+          /* TchaidDao.selectTchaidWrhousngList */
+          <include refid="PaginationMapper.header"/>
+          SELECT
+               A.TCHAIDID
+               ,A.WRHOUSNGID
+               ,A.QNTY 
+               ,A.WRHOUSNGDE
+               ,A.RMRK
+               ,A.REG_DT
+               ,A.RGTRID
+               ,B.NM
+             FROM 
+               TB_THA_TCHAID_WRHOUSNG A
+               INNER JOIN TB_CMM_USER B
+               ON A.RGTRID =B.USERID
+            WHERE 1=1
+          <include refid="PaginationMapper.footer"/>
+   </select>
+   <!-- 교구 구성품 등록-->
+   <insert id="insertTchaidCmpntCmpstn" parameterType="TchaidVo" >
+        /* TchaidDao.insertTchaidCmpntCmpstn */
+        INSERT INTO TB_THA_TCHAID_CMPNT_CMPSTN (
+              TCHAIDID
+              ,CMPNTID
+              ,QNTY_CMPSTN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+        )VALUES
+        <foreach item="item" collection="tchaidCmpntCmpstnList"  separator=",">
+         (
+               #{tchaidid     }
+              ,#{item.cmpntid }
+              ,#{item.qntyCmpstn   }
               ,NOW()
               ,#{user.userid  }
-        )
+              ,NOW()
+              ,#{user.userid  }
+          )
+        </foreach>
    </insert>
-   <!-- 구성품 수정 --> 
-   <update id="updateCmpnt" parameterType="CmpntVo" >
-        /* TchaidDao.insertCmpnt */
-        UPDATE TB_THA_TCHAID_CMPNT
-           SET 
-             CMPNT_NM     = #{cmpntNm     }   
-            ,QNTY_INVNTRY = #{qntyInvntry }   
-            ,MDFCN_DT     = NOW()             
-            ,MDFRID       = #{user.userid  }  
-         WHERE 1=1 
-           AND CMPNTID = #{cmpntid}
-  </update>
-  
+   
+   <!-- 교구 관련 코드 리스트 호출 --> 
+   <select id="selectTchaidCdList" parameterType="map" resultType="map">
+          /* TchaidDao.selectTchaidCdList */
+           SELECT 
+               A.CD 
+               ,concat(B.CD_NM,'>',A.CD_NM ) CD_NM 
+             FROM 
+               TB_CMM_CD A
+               INNER JOIN TB_CMM_CD B
+               ON A.UPPR_CD = B.CD 
+            WHERE 1=1
+              AND A.USE_YN = 'Y'
+              AND A.CDGRPID = #{cdgrpid}
+   </select>
+   
+   <!-- 구성품 리스트 호출 --> 
+   <select id="selectAllCmpntList" resultType="CmpntVo">
+        /* CmpntDao.selectAllCmpntList */
+        SELECT 
+           CMPNTID
+           ,CMPNT_NM
+           ,QNTY_INVNTRY
+           ,MDFCN_DT
+           ,MDFRID
+           ,REG_DT
+           ,RGTRID
+          FROM 
+            TB_THA_TCHAID_CMPNT 
+   </select>
+   <!-- 교구 구성품 리스트 호출 --> 
+   <select id="selectTchaidCmpntList" resultType="TchaidCmpntCmpstnVo">
+         /* CmpntDao.selectTchaidCmpntList */
+         SELECT 
+             A.TCHAIDID
+            ,A.CMPNTID
+            ,A.QNTY_CMPSTN
+            ,A.MDFCN_DT
+            ,A.MDFRID
+            ,A.REG_DT
+            ,A.RGTRID
+            ,B.CMPNT_NM 
+          FROM 
+            TB_THA_TCHAID_CMPNT_CMPSTN A
+            INNER JOIN TB_THA_TCHAID_CMPNT B
+            ON A.CMPNTID = B.CMPNTID 
+         WHERE 1=1
+         <if test="tchaidid != null and tchaidid != ''">
+          AND TCHAIDID = #{tchaidid}
+         </if>
+   </select>
+   
+   <!-- 교구 삭제시 구성품 재고 회귀 -->
+   <update id="updateCmpntQntyBack" parameterType="TchaidVo"  >
+    /* CmpntDao.updateCmpntQntyBack */
+    UPDATE TB_THA_TCHAID_CMPNT A
+    JOIN (
+         SELECT 
+            A.CMPNTID AS CMPNTID
+            ,A.QNTY_CMPSTN * B.QNTY_INVNTRY AS CNCL_QNTY
+          FROM 
+            TB_THA_TCHAID_CMPNT_CMPSTN A
+            INNER JOIN TB_THA_TCHAID B
+            ON A.TCHAIDID  = B.TCHAIDID  
+         WHERE 1=1
+          AND A.TCHAIDID = #{tchaidid}
+    ) B ON A.CMPNTID = B.CMPNTID
+    SET 
+      A.QNTY_INVNTRY = A.QNTY_INVNTRY +CNCL_QNTY
+   </update>
+   <!-- 꾸러미 교구 갯수(여부)호출 --> 
+   <select id="selectTchaidCntForPackage" resultType="int">
+     /* CmpntDao.selectTchaidCntForPackage */
+     SELECT 
+        COUNT(TCHAIDID) AS CNT
+      FROM 
+        TB_THA_PACKAGE_TCHAID_CMPSTN
+     WHERE 1=1
+       AND TCHAIDID = #{tchaidid}
+   </select>
+   <!-- 교구 구성 상세 내역 호출  --> 
+   <select id="selectTchaidCmpntCmpstnDetailList" parameterType="TchaidVo" resultType="TchaidCmpntCmpstnVo">
+     /* CmpntDao.selectTchaidCmpntCmpstnDetailList */
+           SELECT 
+            A.TCHAIDID 
+            ,A.CMPNTID 
+            ,A.QNTY_CMPSTN 
+            ,B.QNTY_INVNTRY 
+            ,B.CMPNT_NM 
+          FROM 
+            TB_THA_TCHAID_CMPNT_CMPSTN A
+            INNER JOIN TB_THA_TCHAID_CMPNT B
+            ON A.CMPNTID = B.CMPNTID 
+         WHERE 1=1
+           AND A.TCHAIDID = #{tchaidid}
+    </select>
+    
+   <!-- 교구 생성시 구성품 재고 감량 -->
+   <update id="updateCmpntQntyForTchaidPlus" parameterType="TchaidVo"  >
+    /* CmpntDao.updateCmpntQntyBack */
+    UPDATE TB_THA_TCHAID_CMPNT A
+    JOIN (
+         SELECT 
+            A.CMPNTID AS CMPNTID
+            ,A.QNTY_CMPSTN * #{plusQnty} AS CNCL_QNTY
+          FROM 
+            TB_THA_TCHAID_CMPNT_CMPSTN A
+            INNER JOIN TB_THA_TCHAID B
+            ON A.TCHAIDID  = B.TCHAIDID  
+         WHERE 1=1
+          AND A.TCHAIDID = #{tchaidid}
+    ) B ON A.CMPNTID = B.CMPNTID
+    SET 
+      A.QNTY_INVNTRY = A.QNTY_INVNTRY - CNCL_QNTY
+   </update>
+    
+    
 </mapper>

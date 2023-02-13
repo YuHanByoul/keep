@@ -24,7 +24,7 @@
                      <div class="row">
                          <div class="col-lg-3 mb-3">
                              <div class="mb-0 form-group row">
-                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>기관 키워드</strong></span>
+                                 <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
                                  <div class="input-group input-group-sm input-group-dropdown mb-0">
                                      <select name="searchType" id="searchType" class="form-select form-control ">
                                         <option value="">- 전체 -</option>
@@ -108,6 +108,9 @@
   
     var gridHelper1;
     var cmpntModal;
+    var clickedItem;
+    var wrhounsCmpntid=null;
+    var clickedCmpntid=null;
              
     $(function(){
         gridHelper1 = new GridHelper('jsGrid','contentPanel');
@@ -116,6 +119,8 @@
     
     function fn_searchForm(){
         gridHelper1.resetListContent();
+        $("#cmpntid").val("");
+        $("#jsGrid2").html("")
     }
     
     function fn_init() {
@@ -178,7 +183,7 @@
                 },
             },
             fields: [
-                 { title: 'cmpntid'  ,name: 'cmpntid'   ,css:"hide" }
+                 { title: 'cmpntid'  ,css:"hide" }
                 ,{ title: 'No.'      ,name: 'rowNumber'   ,type: "number", width : "50", align:"center",  sorting :false }
                 ,{ title: "구성품명"   ,name: 'cmpntNm'     ,type: "text" , width: "120" ,align:"center"}
                 ,{ title: '제고'      ,name: 'qntyInvntry' ,type: "text" , width: "50" ,align:"center"}
@@ -196,10 +201,23 @@
             rowClick: function(args) {
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
                 gridHelper1.rowClick(args);
+                clickedItem = args.item;
+                clickedCmpntid = args.item.cmpntid
                 $("#cmpntid").val(args.item.cmpntid)
                 writeJsGridData2();
-            }
+            },
             /*[/]*/
+            onDataLoaded: function(args) {
+                if(clickedCmpntid== null || args.grid.data == null || args.grid.data.length == 0) return;
+                for(var i = 0; i < args.grid.data.length; i++) {
+                    if(args.grid.data[i].cmpntid == clickedCmpntid){
+                        var items = $("#jsGrid").jsGrid("option", "data");
+                        var $row = $("#"+gridHelper1.jsGridId).jsGrid("rowByItem", items[i]);
+                        $row.toggleClass("highlight");
+                    }    
+                }
+            }
+            
         });
     }
 

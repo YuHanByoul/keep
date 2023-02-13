@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kbrainc.plum.mng.delvry.model.DelvryDao;
-import com.kbrainc.plum.mng.delvry.model.DelvryVo;
+import com.kbrainc.plum.mng.delvry.model.PcntstVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -32,18 +32,33 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     private DelvryDao delvryDao;
     
     /**
-    * 공동구매모집 목록 조회
+    * 공모 목록 조회
     *
-    * @Title : selectJntpurchsList
-    * @Description : 공동구매모집 목록 조회
-    * @param jntpurchsVo JntpurchsVo 객체
-    * @return List<JntpurchsVo> 공동구매모집 목록
+    * @Title : selectPcntstList
+    * @Description : 공모 목록 조회
+    * @param pcntstVo PcntstVo 객체
+    * @return List<PcntstVo> 공모 목록
     * @throws Exception 예외
     */
     @Override
-    public List<DelvryVo> selectDelvryList(DelvryVo delvryVo) throws Exception {
-        return delvryDao.selectDelvryList(delvryVo);
+    public List<PcntstVo> selectPcntstList(PcntstVo pcntstVo) throws Exception {
+        return delvryDao.selectPcntstList(pcntstVo);
     }
+    
+    /**
+    * 공모 정보 조회
+    *
+    * @Title : selectPcntstInfo
+    * @Description : 공모 정보 조회
+    * @param pcntstVo PcntstVo 객체
+    * @return PcntstVo 공모 정보
+    * @throws Exception 예외
+    */
+    @Override
+    public PcntstVo selectPcntstInfo(PcntstVo pcntstVo) throws Exception {
+        return delvryDao.selectPcntstInfo(pcntstVo);
+    }
+    
 //     
 //    /**
 //     * 교구 목록 조회

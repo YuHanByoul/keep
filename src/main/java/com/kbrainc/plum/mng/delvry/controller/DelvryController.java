@@ -8,12 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.delvry.model.DelvryVo;
+import com.kbrainc.plum.mng.delvry.model.PcntstVo;
 import com.kbrainc.plum.mng.delvry.service.DelvryServiceImpl;
-import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsOrderVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo.ORDER_DIRECTION;
 import com.kbrainc.plum.rte.util.excel.ExcelDownloadUtil;
 
@@ -40,17 +40,33 @@ public class DelvryController {
     private DelvryServiceImpl delvryService;
     
     /**
-    * 공동구매모집 목록 화면
+    * 공모 목록 화면
     *
-    * @Title : jntpurchsListForm
-    * @Description : 공동구매모집 목록 화면
+    * @Title : pcntstListForm
+    * @Description : 공모 목록 화면
     * @return String 화면경로
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/delvry/delvryListForm.html")
-    public String delvryListForm() throws Exception {
-        return "mng/delvry/delvryList";
+    @RequestMapping(value = "/mng/delvry/pcntstListForm.html")
+    public String pcntstListForm() throws Exception {
+        return "mng/delvry/pcntstList";
     }
+    
+    /**
+    * 교부 상세 화면
+    *
+    * @Title : DelvryDetailForm
+    * @Description : 교부 상세 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/delvry/pcntstDetailForm.html")
+    public String pcntstDetailForm(PcntstVo pcntstVo, Model model) throws Exception {
+        model.addAttribute("pcntstInfo", delvryService.selectPcntstInfo(pcntstVo));
+        return "mng/delvry/pcntstDetail";
+    }
+    
+    
 //    
 //    /**
 //     * 공동구매모집 등록 화면
@@ -153,21 +169,21 @@ public class DelvryController {
 //    }
 //    
     /**
-    * 교부 목록 조회
+    * 공모 목록 조회
     *
-    * @Title : selectDelvryList
-    * @Description : 교부 목록 조회
-    * @param delvryVo DelvryVo 객체
+    * @Title : selectPcntstList
+    * @Description : 공모 목록 조회
+    * @param pcntstVo PcntstVo 객체
     * @return Map<String, Object> 응답결과객체
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/delvry/selectDelvryList.do")
+    @RequestMapping(value = "/mng/delvry/selectPcntstList.do")
     @ResponseBody
-    public Map<String, Object> selectDelvryList(DelvryVo delvryVo) throws Exception {
+    public Map<String, Object> selectPcntstList(PcntstVo pcntstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        delvryVo.setOrderField("PRGRS_STTS_ORDR");
-        delvryVo.setOrderDirection(ORDER_DIRECTION.asc);
-        List<DelvryVo> result = delvryService.selectDelvryList(delvryVo);
+        pcntstVo.setOrderField("PRGRS_STTS_ORDR");
+        pcntstVo.setOrderDirection(ORDER_DIRECTION.asc);
+        List<PcntstVo> result = delvryService.selectPcntstList(pcntstVo);
              
         if(result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -186,20 +202,20 @@ public class DelvryController {
     * @Description : 교부 목록 엑셀다운로드
     * @param delvryVo DelvryVo 객체
     */
-    @RequestMapping(value = "/mng/delvry/downloadDelvryListExcel.do")
+    @RequestMapping(value = "/mng/delvry/downloadPcntstListExcel.do")
     @ResponseBody
-    public void downloadDelvryListExcel(DelvryVo delvryVo, HttpServletResponse response) throws Exception {
-        delvryVo.setOrderField("PRGRS_STTS_ORDR");
-        delvryVo.setOrderDirection(ORDER_DIRECTION.asc);
-        List<DelvryVo> result = delvryService.selectDelvryList(delvryVo);
-        ExcelDownloadUtil<DelvryVo> excelDownloadUtil = new ExcelDownloadUtil<>(
+    public void downloadPcntstListExcel(PcntstVo pcntstVo, HttpServletResponse response) throws Exception {
+        pcntstVo.setOrderField("PRGRS_STTS_ORDR");
+        pcntstVo.setOrderDirection(ORDER_DIRECTION.asc);
+        List<PcntstVo> result = delvryService.selectPcntstList(pcntstVo);
+        ExcelDownloadUtil<PcntstVo> excelDownloadUtil = new ExcelDownloadUtil<>(
             new String[] {"No.", "사업분야", "공모명", "진행상태", "교부신청발표기간", "사업 선정 수", "사업비 교부 횟수"}, result, (data, mapper, idx) -> {
                 mapper
                     .putData(0, data.getRowNumber(), ExcelDownloadUtil.CELL_ALIGN.CENTER)
                     .putData(1, data.getFldCdNm())
                     .putData(2, data.getPcntstNm())
                     .putData(3, data.getPrgrsStts())
-                    .putData(4, data.getDelvryCfmtnPrsntnBgngDtStr() + " ~ " + data.getDelvryCfmtnPrsntnEndDtStr())
+                    .putData(4, data.getDelvryAplyPrsntnBgngDtStr() == null ? "-" : data.getDelvryAplyPrsntnBgngDtStr() + " ~ " + data.getDelvryAplyPrsntnEndDtStr())
                     .putData(5, data.getSlctnCnt())
                     .putData(6, data.getWctDelvryCnt());
                 return true;
@@ -207,6 +223,7 @@ public class DelvryController {
         );
         excelDownloadUtil.excelDownload(response, "교부관리 검색결과");
     }
+    
     
 //    
 //    /**

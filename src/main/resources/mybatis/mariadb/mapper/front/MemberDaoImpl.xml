@@ -9,7 +9,7 @@
     
     <!-- 회원 탈퇴 -->
     <update id="updateMemberDel" parameterType="UserVo">
-        /* MemberDao.updateMemberDel */
+        /* front.MemberDao.updateMemberDel */
         UPDATE TB_CMM_USER 
         SET
             DEL_YN = 'Y',
@@ -22,63 +22,15 @@
     
     <!-- 특정 userid의 간편로그인 정보 전체 삭제 -->
     <delete id="deleteEsylgnByUserid" parameterType="UserVo">
-        /* MemberDao.deleteEsylgnByUserid */
+        /* front.MemberDao.deleteEsylgnByUserid */
         DELETE FROM TB_CMM_USER_ESYLGN WHERE USERID = #{userid}
     </delete>
     
-    <!-- 회원 등록 -->
-    <insert id="insertMember" parameterType="front.MemberVo"  useGeneratedKeys="true"  keyProperty ="userid">
-        /* MemberDao.insertMember */
-        INSERT INTO TB_CMM_USER (
-			ACNT
-			,PSWD
-			,NM
-			,MOBNO
-			,EMAIL
-			,TOS_AGRE_YN
-			,STTS_CD
-			,USER_SE_CD
-			,MDFCN_DT
-			,MDFRID
-			,REG_DT
-			,RGTRID
-        ) VALUES (
-        	 #{acnt         }
-			,#{pswd          }
-			,#{nm           }
-			,#{mobNo       }
-			,#{email        }
-			,#{tosAgreYn  }
-			,#{sttsCd      }
-			,#{userSeCd   }
-			,NOW()
-			,#{user.userid  }
-			,NOW()
-			,#{user.userid  }
-        )
-    </insert>
-    
-    <!-- 회원 정보 수정 -->
-    <update id="updateMember" parameterType="front.MemberVo">
-      /* MemberDao.updateMember */
-      UPDATE TB_CMM_USER 
-       SET
-       	ACNT          = #{acnt         }  
-		,PSWD          = #{pswd          } 
-		,NM           = #{nm           } 
-		,MOBNO        = #{mobNo       } 
-		,EMAIL        = #{email        } 
-		,USER_SE_CD   = #{userSeCd} 
-		,MDFCN_DT      = NOW()
-		,MDFRID   = #{userid } 
-	  WHERE  USERID = #{userid  }
-    </update>
-    
     <!-- acnt에 해당하는 사용자 카운트 조회  -->
     <select id="checkDuplicationUser" parameterType="front.MemberVo" resultType="int">
-        /* MemberDao.checkDuplicationUser */
+        /* front.MemberDao.checkDuplicationUser */
         SELECT 
-            1
+            COUNT(1)
 	    FROM 
             TB_CMM_USER
 	    WHERE
@@ -88,7 +40,7 @@
     
     <!-- ci에 해당하는 userid 조회  -->
     <select id="selectUseridByCI" parameterType="front.MemberVo" resultType="String">
-        /* MemberDao.selectUseridByCI */
+        /* front.MemberDao.selectUseridByCI */
         SELECT 
             USERID
         FROM
@@ -101,7 +53,7 @@
     
     <!-- 부모ci와 이름에 해당하는 userid 조회  -->
     <select id="selectUseridByParntsCIandName" parameterType="front.MemberVo" resultType="String">
-        /* MemberDao.selectUseridByParntsCIandName */
+        /* front.MemberDao.selectUseridByParntsCIandName */
         SELECT 
             USERID
         FROM
@@ -113,4 +65,136 @@
         LIMIT 1
     </select>
     
+    <!-- 사용자정보 저장 -->
+    <insert id="insertMember" parameterType="front.MemberVo" useGeneratedKeys="true" keyProperty="userid">
+        /* front.MemberDao.insertMember */
+        INSERT INTO TB_CMM_USER
+            (
+                ACNT,
+                PSWD,
+                NM,
+                MOBLPHON,
+                EML,
+                ZIP,
+                ADDR,
+                ADDR_DTL,
+                SIGNGU_CD,
+                INSTID,
+                INSTPIC_ROLE_CD,
+                TOS_AGRE_YN,
+                PRIVCY_AGRE_YN,
+                PRVC_THPTY_PVSN_AGRE_YN,
+                CHILD_JOIN_AGRE_YN,
+                WBZN_APLY_AGRE_YN,
+                PRVC_VLDTY,
+                ACNT_LOCK_YN,
+                TMPR_PSWD_YN,
+                PSWD_MDFCN_DT,
+                STTS_CD,
+                DEL_YN,
+                BLCKLST_YN,
+                CI,
+                CI_PARNTS,
+                MDFCN_DT,
+                REG_DT
+            )
+            VALUES
+            (
+                #{acnt},
+                #{pswd},
+                #{nm},
+                #{moblphon},
+                #{eml},
+                #{zip},
+                #{addr},
+                #{addrDtl},
+                #{signguCd},
+                #{instid},
+                #{instpicRoleCd},
+                #{tosAgreYn},
+                #{privcyAgreYn},
+                #{prvcThptyPvsnAgreYn},
+                #{childJoinAgreYn},
+                #{wbznAplyAgreYn},
+                #{prvcVldty},
+                'N',
+                'N',
+                NOW(),
+                1,
+                'N',
+                'N',
+                #{ci},
+                #{ciParnts},
+                NOW(),
+                NOW()
+            )
+    </insert>
+    
+    <!-- 사용자 관심분야 저장 -->
+    <insert id="insertItrstfld" parameterType="front.MemberVo" >
+        /* front.MemberDao.insertItrstfld */
+        INSERT INTO TB_CMM_USER_ITRSTFLD
+            (
+                USERID,
+                ITRSTFLD_CD,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+            )
+            VALUES
+            <foreach item="item" collection="itrstfldCds"  separator=",">
+            (
+                #{userid},
+                #{item},
+                NOW(),
+                #{userid},
+                NOW(),
+                #{userid}
+            )
+            </foreach>
+    </insert>
+
+    <!-- 사용자 환경분야 저장 -->
+    <insert id="insertEnvfld" parameterType="front.MemberVo" >
+        /* front.MemberDao.insertItrstyfld */
+        INSERT INTO TB_CMM_USER_ENVFLD
+            (
+                USERID,
+                ENVFLD_CD,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+            )
+            VALUES
+            <foreach item="item" collection="envfldCds"  separator=",">
+            (
+                #{userid},
+                #{item},
+                NOW(),
+                #{userid},
+                NOW(),
+                #{userid}
+            )
+            </foreach>
+    </insert>
+    
+    <!-- 회원 정보 수정(기존에 있던거 삭제하지않고 일단 놔둠) -->
+    <update id="updateMember" parameterType="front.MemberVo">
+        /* front.MemberDao.updateMember */
+        UPDATE 
+            TB_CMM_USER 
+        SET
+            ACNT = #{acnt},
+            PSWD = #{pswd},
+            NM = #{nm},
+            MOBNO = #{mobNo}, 
+            EMAIL = #{email},
+            USER_SE_CD = #{userSeCd}, 
+            MDFCN_DT = NOW(),
+            MDFRID = #{userid} 
+        WHERE  
+            USERID = #{userid}
+    </update>
 </mapper>
