@@ -147,6 +147,44 @@ public class BizRptVo extends ParentRequestVo {
 	/** 첨부파일그룹아이디 */
 	private int atchFilegrpid;
 
+	/** 운영 아이디 */
+	private Integer operid;
+
+	/** 시작일자 */
+	private String bgngDe;
+
+	/** 종료일자 */
+	private String endDe;
+
+	/** 구분코드 */
+	private String seCd;
+
+	/** 구분코드 이름*/
+	private String seCdNm;
+
+	/** 차시 */
+	private Integer rnd;
+
+	/** 인원 */
+	private Integer nope;
+
+	/** 분 */
+	private Integer mnt;
+
+	/** 차시 합계 */
+	private Integer sumRnd;
+
+	/** 인원 합계 */
+	private Integer sumNope;
+
+	/** 분 합계 */
+	private Integer sumMnt;
+
+	/** 계획 건수 */
+	private Integer planCnt;
+
+	/** 현재 건수 */
+	private Integer nowCnt;
 
 
     // ********************************
@@ -200,6 +238,25 @@ public class BizRptVo extends ParentRequestVo {
 				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
 				CodeInfoVo code = resCodeService.getCodeInfo(this.reportSttsCd);
 				this.reportSttsCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	/** 보고운영구분 */
+	public void setSeCd(String seCd) throws Exception{
+		this.seCd = seCd;
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.seCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.seCd);
+				this.seCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
 				return;

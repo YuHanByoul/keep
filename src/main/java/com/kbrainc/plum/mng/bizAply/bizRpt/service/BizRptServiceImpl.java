@@ -403,4 +403,19 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		return bizRptDao.selectMdlRptSbmsnDetail(bizRptVo);
 	}
 
+	/**
+	* 보고운영목록 조회
+	*
+	* @Title : selectReportOperList
+	* @Description : 보고운영목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectReportOperList(BizRptVo bizRptVo) throws Exception {
+		return bizRptDao.selectReportOperList(bizRptVo);
+	}
+
 }

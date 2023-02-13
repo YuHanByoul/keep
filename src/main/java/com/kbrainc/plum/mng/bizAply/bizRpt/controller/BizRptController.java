@@ -222,7 +222,11 @@ public class BizRptController {
 	public String mdlRptSbmsnDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
 
 		BizRptVo mdlRptSbmsnInfo = new BizRptVo();
+		//중간보고제출 상세 조회
 		mdlRptSbmsnInfo = bizRptService.selectMdlRptSbmsnDetail(bizRptVo);
+
+		//보고운영목록 조회
+		model.addAttribute("reportOperList", bizRptService.selectReportOperList(bizRptVo));
 
 		if (!StringUtil.nvl(mdlRptSbmsnInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(mdlRptSbmsnInfo.getAtchFilegrpid()).equals(0)) {
             FileVo fileVo = new FileVo();
