@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotEmpty;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +190,9 @@ public class MemberController {
     */
     @RequestMapping(value = "/front/membership/step4.html")
     public String membershipStep4(HttpServletResponse response, @Valid MemberAuthVo memberAuthVo, BindingResult bindingResult, Model model, HttpSession session, RedirectAttributes redirect) throws Exception {
+        String encodeData = "";
+        String onepassEncodeData = "";
+        
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             fieldError.getDefaultMessage();
@@ -205,8 +209,21 @@ public class MemberController {
             return null;
         }
         
-        String encodeData = memberAuthVo.getEncodeData();
+        // 디지털원패스 회원연동일때
+        onepassEncodeData = memberAuthVo.getOnepassEncodeData();
+        if (!"".equals(StringUtil.nvl(onepassEncodeData))) {
+            // 자체 복호화 수행
+            memberAuthVo.setOnepassUserYn("Y");
+        }
+        
+        
+        if ("C".equals(memberAuthVo.getType())) {
+            encodeData = memberAuthVo.getPencodeData();
+        } else {
+            encodeData = memberAuthVo.getEncodeData();
+        }
         IdntyVrfctnSuccessVo result = new IdntyVrfctnSuccessVo();
+        
         if (!"".equals(StringUtil.nvl(encodeData))) {
             result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(session, encodeData);
             
@@ -232,7 +249,15 @@ public class MemberController {
         }
         
         model.addAttribute("data", memberAuthVo);
-        model.addAttribute("authData", result);
+        
+        if ("C".equals(memberAuthVo.getType())) {
+            model.addAttribute("pauthData", result);
+            model.addAttribute("authData", new IdntyVrfctnSuccessVo());
+        } else {
+            model.addAttribute("pauthData", new IdntyVrfctnSuccessVo());
+            model.addAttribute("authData", result);
+        }
+        
         return "front/member/step4.html";
     }
     
@@ -298,6 +323,14 @@ public class MemberController {
             }
             return resultMap;
         }
+        
+        if (!"C".equals(memberVo.getType()) && "".equals(StringUtil.nvl(memberVo.getMoblphon()))) { // 어린이회원이 아닌 경우 휴대전화 필수 
+            resultMap.put("msg", "휴대전화를 입력 해주십시오.");
+            return resultMap;
+        }
+        if ("".equals(memberVo.getMoblphon())) {
+            memberVo.setMoblphon(null);
+        }
 
         // 아이디 중복 확인
         int cnt = memberService.checkDuplicationUser(memberVo);
@@ -306,13 +339,14 @@ public class MemberController {
             return resultMap;
         }
         
+        String ciParnts = null;
         String ci = null;
         String nm = null;
         String moblphon = null;
         String userKey = null;
-        
-        // 본인인증 암호화 데이터에서 추출
-        if (!"".equals(StringUtil.nvl(memberVo.getEncodeData()))) {
+
+        // 본인인증 암호화 데이터에서 추출(휴대전화를 입력하지않은 어린이 제외)
+        if (!"".equals(StringUtil.nvl(memberVo.getEncodeData())) && !("C".equals(memberVo.getType()) && "".equals(StringUtil.nvl(memberVo.getMoblphon())))) {
             IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, memberVo.getEncodeData());
             
             if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
@@ -362,6 +396,26 @@ public class MemberController {
             resultMap.put("msg", "이미 다른 사용자계정과 연동된 디지털원패스 계정입니다.");
             return resultMap;
         }*/
+        
+        // 부모CI 추출
+        if (!"".equals(StringUtil.nvl(memberVo.getPencodeData()))) {
+            IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, memberVo.getPencodeData());
+            
+            if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
+                resultMap.put("msg", result.getSMessage());
+                return resultMap;
+            } else {                
+                ciParnts = result.getSConnInfo();
+                memberVo.setCiParnts(ciParnts);
+                
+                // 부모의 ci와 나의 이름으로 중복사용자가 있는지 확인
+                String userid = memberService.selectUseridByParntsCIandName(memberVo);
+                if (userid != null) {
+                    resultMap.put("msg", "회원정보가 존재합니다.\n아이디 찾기로 확인해주시기 바랍니다.");
+                    return resultMap;
+                }
+            }
+        }
         
     	int retVal = memberService.insertMember(memberVo);
     	

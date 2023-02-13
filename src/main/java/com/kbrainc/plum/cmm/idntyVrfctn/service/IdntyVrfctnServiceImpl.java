@@ -1,5 +1,9 @@
 package com.kbrainc.plum.cmm.idntyVrfctn.service;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -52,6 +56,19 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
         String schemeHostPort = request.getRequestURL().toString().replaceFirst(request.getRequestURI(), "");
         String sReturnUrl = schemeHostPort + returnUrlPath;
         String sErrorUrl = schemeHostPort + errorUrlPath;
+        
+        String prefix = "";
+        String postfix = "";
+        String type = request.getParameter("type"); // 회원가입유형(P:개인회원, C:어린이회원, I:기관회원)
+        String kind = request.getParameter("kind"); // 본인인증종류(auth:회원가입_본인인증, info:회원가입_회원정보입력)
+        
+        if (type != null) {
+            prefix = type + "_";
+        }
+        
+        if (kind != null) {
+            postfix = "_" + kind;
+        }
 
         // 본인인증
         NiceID.Check.CPClient niceCheck = new  NiceID.Check.CPClient();
@@ -61,7 +78,7 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
 
         String sRequestNumber = "REQ0000000001"; // 요청 번호, 이는 성공/실패후에 같은 값으로 되돌려주게 되므로
         // 업체에서 적절하게 변경하여 쓰거나, 아래와 같이 생성한다.
-        sRequestNumber = niceCheck.getRequestNO(sSiteCode);
+        sRequestNumber = prefix + niceCheck.getRequestNO(sSiteCode) + postfix;
         HttpSession session = request.getSession();
         session.setAttribute("REQ_SEQ" , sRequestNumber); // 해킹등의 방지를 위하여 세션을 쓴다면, 세션에 요청번호를 넣는다.
 
@@ -184,13 +201,13 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
             result.setSMobileCo((String)mapresult.get("MOBILE_CO"));
 
             if (session != null) {
-                String session_sRequestNumber = (String)session.getAttribute("REQ_SEQ");
+                String session_sRequestNumber =  (String)session.getAttribute("REQ_SEQ");
                 if (!sRequestNumber.equals(session_sRequestNumber)) {
                     sMessage = "세션값 불일치 오류입니다.";
                     result.setSResponseNumber("");
                     result.setSAuthType("");
                 }
-            }
+            }        
         } else if (iReturn == -1) {
             sMessage = "복호화 시스템 오류입니다.";
         } else if (iReturn == -4) {

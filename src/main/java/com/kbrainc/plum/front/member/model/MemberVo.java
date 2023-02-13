@@ -36,6 +36,11 @@ public class MemberVo extends ParentRequestVo {
 
     /** 사용자아이디 */
     private Integer userid;
+    
+    /** 회원가입 유형 */
+    @NotEmpty(message = "회원가입 유형을 선택해주세요.")
+    @Pattern(regexp="[PCI]", message = "회원가입 유형을 선택해주세요.")
+    private String type;
 
     /** 이름 */
     @NotEmpty(message = "이름을 입력 해주십시오.")
@@ -53,7 +58,6 @@ public class MemberVo extends ParentRequestVo {
     private String pswd;
 
     /** 휴대폰번호 */
-    @NotEmpty(message = "휴대전화를 입력 해주십시오.")
     @Size(max = 12, message = "휴대전화는 12자를 초과할 수 없습니다.")
     private String moblphon;
 
@@ -148,8 +152,14 @@ public class MemberVo extends ParentRequestVo {
     /** 등록자 아이디 */
     private Integer rgtrid;
 
+    /** 본인인증 결과 인코딩데이터(법정대리인) */
+    private String pencodeData;
+    
     /** 본인인증 결과 인코딩데이터 */
     private String encodeData;
+    
+    /** 디지털원패스 사용자정보 인코딩데이터 */
+    private String onepassEncodeData;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user) {

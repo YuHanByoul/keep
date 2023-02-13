@@ -13,6 +13,7 @@
             <input type="hidden" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:value="${data.prvcThptyPvsnAgreYn}" />
             <input type="hidden" name="childJoinAgreYn" th:if="${data.type == 'C'}" id="childJoinAgreYn" th:value="${param.childJoinAgreYn}" />
             <input type="hidden" name="wbznAplyAgreYn" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
+            <input type="hidden" name="pencodeData" id="pencodeData" value="" />
             <input type="hidden" name="encodeData" id="encodeData" value="" />
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
             <div class="steps">
@@ -45,7 +46,9 @@
             </div>
 
             <div class="section-title">
-                <h3>개인회원 본인인증</h3>
+                <h3 th:if="${data.type == 'P'}">개인회원 본인인증</h3>
+                <h3 th:if="${data.type == 'C'}">어린이회원 본인인증</h3>
+                <h3 th:if="${data.type == 'I'}">기관회원 본인인증</h3>
             </div>
 
             <div class="cert-list">
@@ -53,7 +56,8 @@
                     <li>
                         <div class="thumb"><img src="/images/front/member/cert-list01.png" alt=""></div>
                         <dl>
-                            <dt>휴대폰 인증</dt>
+                            <dt th:if="${data.type == 'C'}">법정대리인(보호자)<br>휴대폰 인증</dt>
+                            <dt th:unless="${data.type == 'C'}">휴대폰 인증</dt>
                             <dd>&lsquo;<b class="fc-green">인증하기</b>&rsquo; 버튼을 클릭하여 실명인증을 진행해주세요.</dd>
                         </dl>
                         <div class="btn-inner">
@@ -72,15 +76,25 @@
                 </ul>
             </div>
             </form>
+            <form name="form_chk" th:action="@{/CheckPlusSafeModel/checkplus.html}" method="post">
+                <input type="hidden" name="type" th:value="${data.type}" />
+                <input type="hidden" name="kind" value="auth" />
+            </form>
             <script language='javascript'>
                 window.name ="Parent_window";
                 
                 function fnAuthPopup(){
-                    window.open('/CheckPlusSafeModel/checkplus.html', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
+                    window.open('', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
+                    document.form_chk.target = "popupChk";
+                    document.form_chk.submit();
                 }
                 
                 function setEncodeData(encodeData) {
-                    document.authForm.encodeData.value = encodeData;
+                    if($("#type").val() == 'C') {
+                        document.authForm.pencodeData.value = encodeData;
+                    } else {
+                        document.authForm.encodeData.value = encodeData;
+                    }
                     document.authForm.submit();
                 }
             </script>

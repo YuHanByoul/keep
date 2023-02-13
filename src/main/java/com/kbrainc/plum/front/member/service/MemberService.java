@@ -91,6 +91,4 @@ public interface MemberService {
     * @throws Exception 예외
     */
     public String selectUseridByParntsCIandName(MemberVo memberVo) throws Exception;
-    
-    
 }
