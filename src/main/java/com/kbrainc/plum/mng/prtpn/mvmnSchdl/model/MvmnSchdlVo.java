@@ -38,16 +38,21 @@ public class MvmnSchdlVo extends ParentRequestVo {
     
     /** 프로그램아이디 */
     private int prgrmId;
-    /** 운영권역아이디 */
+    /** 교육관아이디 */
     private int sareaId;    
     /** 프로그램_이름 */
     private String prgrmNm;
-    /** 운영권역_이름 */
+    /** 교육관_이름 */
     private String sareaNm;
     /** 접수_방법_코드 */
     private String rcptMthdCd;
     /** 접수_방법_코드명 */
     private String rcptMthdNm;
+
+    /** 운영_형식_코드 */
+    private String operFomCd;
+    /** 운영_형식_코드명 */
+    private String operFomNm;
     
     /** 교육_일자 */
     private String de;
@@ -93,7 +98,7 @@ public class MvmnSchdlVo extends ParentRequestVo {
     private String nm;
     
     /** 검색 관련 */
-    private String searchClssrmId;
-    private String searchPrgrmId;
+    private String searchSareaId;
+    private String searchSchdlId;
     
 }

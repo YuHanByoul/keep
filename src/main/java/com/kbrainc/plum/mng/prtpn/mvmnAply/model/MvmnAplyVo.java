@@ -18,10 +18,10 @@ import lombok.Data;
 **
 <pre>
 * com.kbrainc.plum.mng.prtpn.mvmnAply.model
-* - InfntAplyVo.java
+* - MvmnAplyVo.java
 * </pre>
 **
-@ClassName : InfntAplyVo
+@ClassName : MvmnAplyVo
 * @Description : 유아교육신청 -> 교육신청관리  VO 클래스
 * @author : Notebiz001
 * @date : 2023. 1. 9.
@@ -41,7 +41,7 @@ public class MvmnAplyVo extends ParentRequestVo {
     /** 신청아이디 */
     private int aplyId;
     /** 교육관아이디 */
-    private int clssrmId;    
+    private int sareaId;    
     /** 교육_연도 */
     private String eduYr;
     /** 교육_월 */
@@ -51,7 +51,7 @@ public class MvmnAplyVo extends ParentRequestVo {
     /** 프로그램_이름 */
     private String prgrmNm;
     /** 교육관_이름 */
-    private String clssrmNm;
+    private String sareaNm;
     /** 신청상태_신청완료_수 */
     private String aplyCmpltCnt;
     /** 신청상태_대기신청_수 */
@@ -62,6 +62,12 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String cnclAplyCnt;
     /** 신청상태_승인거부_수 */
     private String dnlApprvCnt;
+    
+    /** 접수_방법_코드 */
+    private String rcptMthdCd;
+    /** 접수_방법_코드명 */
+    private String rcptMthdNm;
+    
     /** 교육일자 */
     private String de;
     /** 회차ID */
@@ -87,21 +93,25 @@ public class MvmnAplyVo extends ParentRequestVo {
     /** 주소_상세 */
     private String addrDtl;
     /** 시도_코드 */
-    private String ctprvnCd;
+    private String signguCd;
+    /** 시도_코드명 */
+    private String signguNm;
+    /** 시도_코드 설명 */
+    private String signguDesc;
     /** 전화번호 */
     private String telno;
+    /** 팩스번호 */
+    private String fxno;
     /** 휴대폰번호 */
     private String moblphon;
     /** 이메일 */
     private String eml;
     /** 교육_인원수 */
     private String eduNope;
-    /** 교사_인원수 */
-    private String tcherNope;
-    /** 기타 */
-    private String etc;
-    /** 쌍방향_온라인_교육_동의_여부 */
-    private String towwayOnlnEduAgreYn;
+    /** 비고 */
+    private String rmrk;
+    /** 메모 */
+    private String memo;
     /** 상태_코드 */
     private String sttsCd;
     /** 상태_이름 */
@@ -110,6 +120,10 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String [] trgtCds;
     /** 대상_코드 */
     private String trgtCd;
+    /** 접수_코드 */
+    private String rcptCd;
+    /** 사용_유무 */
+    private String useYn;
 
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -128,8 +142,8 @@ public class MvmnAplyVo extends ParentRequestVo {
     /** 검색 관련 */
     private String searchKeyword;
     private String searchEduYr;
-    private String searchClssrmId;
-    private String searchClssrmMm;
+    private String searchSareaId;
+    private String searchSareaMm;
     private String searchRcptMthdCd;
     private String searchSttsCd;
     private String searchType;
@@ -137,4 +151,5 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String searchDeEndDt;
     private String searchRcptStartDt;
     private String searchRcptEndDt;    
+    private String searchOperFomCd;    
 }

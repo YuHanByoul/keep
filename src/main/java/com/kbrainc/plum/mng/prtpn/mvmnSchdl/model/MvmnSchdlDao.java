@@ -144,9 +144,9 @@ public interface MvmnSchdlDao {
      *
      * @Title : selectMvmnSchdlIdList
      * @Description : 교육일정관리 교육일정 리스트 조회
-     * @param clssrmId
+     * @param sareaId
      * @throws Exception 예외
      * @return int
      */
-    public List<MvmnSchdlVo> selectMvmnSchdlIdList(@Param("clssrmId") String clssrmId) throws Exception;   
+    public List<MvmnSchdlVo> selectMvmnSchdlIdList(@Param("sareaId") String sareaId) throws Exception;   
 }

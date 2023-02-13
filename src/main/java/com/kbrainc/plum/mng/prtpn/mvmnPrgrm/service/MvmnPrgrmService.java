@@ -124,5 +124,5 @@ public interface MvmnPrgrmService {
     * @throws Exception
     * @return List<MvmnPrgrmVo>
     */
-    public List<MvmnPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception;
+    public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd) throws Exception;
 }

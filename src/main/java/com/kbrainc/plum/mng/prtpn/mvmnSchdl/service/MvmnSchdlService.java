@@ -89,10 +89,10 @@ public interface MvmnSchdlService {
     **
     @Title : selectMvmnSchdlIdList
     * @Description : 교육일정관리 교육일정 리스트 조회
-    * @param clssrmId
+    * @param sareaId
     * @return
     * @throws Exception
     * @return List<MvmnSchdlVo>
     */
-    public List<MvmnSchdlVo> selectMvmnSchdlIdList(String clssrmId) throws Exception;
+    public List<MvmnSchdlVo> selectMvmnSchdlIdList(String sareaId) throws Exception;
 }
