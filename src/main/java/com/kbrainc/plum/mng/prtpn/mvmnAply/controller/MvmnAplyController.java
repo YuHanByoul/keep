@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
-import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
+import com.kbrainc.plum.mng.code.model.CodeVo;
+import com.kbrainc.plum.mng.code.service.CodeService;
+import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaVo;
+import com.kbrainc.plum.mng.prtpn.eduSarea.service.EduSareaService;
 import com.kbrainc.plum.mng.prtpn.mvmnAply.model.MvmnAplyVo;
 import com.kbrainc.plum.mng.prtpn.mvmnAply.service.MvmnAplyService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -46,7 +49,10 @@ public class MvmnAplyController {
     private MvmnAplyService mvmnAplyService;
     
     @Autowired
-    private EduClssRmService eduClssRmService; 
+    private EduSareaService eduSareaService; 
+
+    @Autowired
+    private CodeService codeService; 
     
     /**
     * 교육신청관리 리스트화면으로 이동
@@ -60,8 +66,8 @@ public class MvmnAplyController {
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyListForm.html")
     public String mvmnAplyListForm(Model model, HttpServletRequest request) throws Exception {
         
-        EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
-        model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        EduSareaVo eduSareaVo = new EduSareaVo(); 
+        model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         
         int curYear = 2022;
         Integer[] years = new Integer[4];
@@ -85,6 +91,10 @@ public class MvmnAplyController {
     @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyDetailForm.html")
     public String mvmnAplyDetailForm(MvmnAplyVo mvmnAplyVo, Model model) throws Exception {
         model.addAttribute("mvmnAplyVo", mvmnAplyVo);
+        CodeVo codeVo = new CodeVo();
+        codeVo.setCdgrpid("180");
+        model.addAttribute("sttCodeList", codeService.selectCodeList(codeVo));
+        
         return "mng/prtpn/mvmnAply/mvmnAplyDetailForm";
     }
     
@@ -107,9 +117,9 @@ public class MvmnAplyController {
         }
         model.addAttribute("years", years);
         
-        EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
+        EduSareaVo eduSareaVo = new EduSareaVo(); 
         model.addAttribute("mvmnAplyVo", mvmnAplyVo);
-        model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         
         model.addAttribute("tmeSchdlList", mvmnAplyService.selectTmeSchdlList(mvmnAplyVo));
         
@@ -136,8 +146,8 @@ public class MvmnAplyController {
         }
         model.addAttribute("years", years);
 
-        EduClssRmVo eduClssRmVo = new EduClssRmVo(); 
-        model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        EduSareaVo eduSareaVo = new EduSareaVo(); 
+        model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
         model.addAttribute("tmeSchdlList", mvmnAplyService.selectTmeSchdlList(mvmnAplyVo));        
         MvmnAplyVo result = null;
         result = mvmnAplyService.selectMvmnAplyInfo(mvmnAplyVo);
@@ -186,6 +196,44 @@ public class MvmnAplyController {
         Map<String, Object> resultMap = new HashMap<>();
         List<MvmnAplyVo> result = null;
         result =  mvmnAplyService.selectMvmnAplyDetailList(mvmnAplyVo);
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+        return resultMap;
+    }
+
+    /**
+     * 신청마감 레이어팝업화면.
+     *
+     * @Title       : infntAplyUserSearchPopup 
+     * @Description : 신청인 회원검색 레이어팝업화면.
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyClosePopup.html")
+    public String mvmnAplyClosePopup(MvmnAplyVo mvmnAplyVo, Model model, @UserInfo UserVo user) throws Exception {
+        model.addAttribute("user",user);
+        return "mng/prtpn/mvmnAply/mvmnAplyClosePopup";
+    }
+
+    /**
+     * 교육신청관리 게시글 신청마감 리스트 조회
+     *
+     * @Title : selectMvmnAplyCloseList
+     * @Description : 교육신청관리 게시글 신청마감 리스트 조회
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/selectMvmnAplyCloseList.do")
+    @ResponseBody
+    public Map<String, Object> selectMvmnAplyCloseList(MvmnAplyVo mvmnAplyVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<MvmnAplyVo> result = null;
+        result =  mvmnAplyService.selectMvmnAplyCloseList(mvmnAplyVo);
         if (result.size() > 0) {
             resultMap.put("totalCount", (result.get(0).getTotalCount()));
         } else {
@@ -261,6 +309,69 @@ public class MvmnAplyController {
         mvmnAplyVo.setUser(user);
         int retVal = 0;
         retVal = mvmnAplyService.updateMvmnAply(mvmnAplyVo);
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 교육신청관리 교육신청자 신청상태 수정 기능
+     *
+     * @Title : updateSttsCdMvmnAply
+     * @Description : 교육신청관리 교육신청자 신청상태 수정 기능
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @param bindingResult 교육신청관리 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/updateSttsCdMvmnAply.do")
+    @ResponseBody
+    public Map<String, Object> updateSttsCdMvmnAply(@Valid MvmnAplyVo mvmnAplyVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        mvmnAplyVo.setUser(user);
+        int retVal = 0;
+        retVal = mvmnAplyService.updateSttsCdMvmnAply(mvmnAplyVo);
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 교육신청관리 신청마감 수정 기능
+     *
+     * @Title : updateMvmnAplyClose
+     * @Description : 교육신청관리 신청마감 수정 기능
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @param bindingResult 교육신청관리 유효성 검증결과
+     * @param user 사용자 세션정보
+     * @throws Exception 예외
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/updateMvmnAplyClose.do")
+    @ResponseBody
+    public Map<String, Object> updateMvmnAplyClose(@Valid MvmnAplyVo mvmnAplyVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        mvmnAplyVo.setUser(user);
+        int retVal = 0;
+        retVal = mvmnAplyService.updateMvmnAplyClose(mvmnAplyVo);
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "수정에 성공하였습니다.");
@@ -406,4 +517,20 @@ public class MvmnAplyController {
 
         return resultMap;
     }    
+    
+    /**
+    * 교육일정관리 교육신청자 검색결과 엑셀 다운로드
+    **
+      @Title : mvmnAplyExcelDownList
+    * @Description : 교육일정관리 교육신청자 검색결과 엑셀 다운로드
+    * @param request
+    * @param response
+    * @param mvmnAplyVo
+    * @throws Exception
+    * @return void
+    */
+    @RequestMapping(value = "/mng/prtpn/mvmnAply/mvmnAplyExcelDownList.do")
+    public void mvmnAplyExcelDownList(HttpServletRequest request, HttpServletResponse response, MvmnAplyVo mvmnAplyVo) throws Exception {
+        mvmnAplyService.mvmnAplyExcelDownList(mvmnAplyVo, response, request);
+    }     
 }

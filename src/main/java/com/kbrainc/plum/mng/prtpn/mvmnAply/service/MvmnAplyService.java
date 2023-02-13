@@ -2,9 +2,13 @@ package com.kbrainc.plum.mng.prtpn.mvmnAply.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.mng.prtpn.mvmnAply.model.MvmnAplyVo;
+import com.kbrainc.plum.mng.prtpn.mvmnSchdl.model.MvmnSchdlVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 
@@ -47,6 +51,17 @@ public interface MvmnAplyService {
      * @return List<MvmnAplyVo>
      */
     public List<MvmnAplyVo> selectMvmnAplyDetailList(MvmnAplyVo mvmnAply) throws Exception;
+
+    /**
+     * 교육신청관리 게시글 신청마감 리스트 조회
+     *
+     * @Title : selectMvmnAplyCloseList
+     * @Description : 교육신청관리 게시글 신청마감 리스트 조회
+     * @param mvmnAply 교육신청관리 객체
+     * @throws Exception 예외
+     * @return List<MvmnAplyVo>
+     */
+    public List<MvmnAplyVo> selectMvmnAplyCloseList(MvmnAplyVo mvmnAply) throws Exception;
     
     /**
     * 교육신청관리 게시글 등록
@@ -81,6 +96,28 @@ public interface MvmnAplyService {
     * @return int
     */
     public int updateMvmnAply(MvmnAplyVo mvmnAply) throws Exception;
+
+    /**
+     * 교육신청관리 교육신청자 신청상태 수정 기능
+     *
+     * @Title : updateSttsCdMvmnAply
+     * @Description : 교육신청관리 교육신청자 신청상태 수정 기능
+     * @param mvmnAply 교육신청관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateSttsCdMvmnAply(MvmnAplyVo mvmnAply) throws Exception;
+
+    /**
+     * 교육신청관리 신청마감 수정 기능
+     *
+     * @Title : updateMvmnAplyClose
+     * @Description : 교육신청관리 신청마감 수정 기능
+     * @param mvmnAply 교육신청관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateMvmnAplyClose(MvmnAplyVo mvmnAply) throws Exception;
     
     /**
     * 교육신청관리 회차 등록
@@ -136,5 +173,19 @@ public interface MvmnAplyService {
      * @throws Exception 예외
      */
     public List<MvmnAplyVo> selectMemberList(MvmnAplyVo mvmnAply) throws Exception;
+    
+    /**
+    * 교육신청관리 교육신청자 검색결과 엑셀 다운로드
+    *
+    * @Title : mvmnAplyExcelDownList
+    * @Description : 교육신청관리 교육신청자 검색결과 엑셀 다운로드
+    * @param mvmnAply
+    * @param response
+    * @param request
+    * @throws Exception
+    * @return void
+    */
+    public void mvmnAplyExcelDownList(MvmnAplyVo mvmnAply, HttpServletResponse response, HttpServletRequest request) throws Exception;
+    
     
 }

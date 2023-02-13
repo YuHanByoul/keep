@@ -14,9 +14,9 @@
                         <div class="row">
                             <div class="col-lg-6 mb-3">
                                 <div class="mb-0 form-group">
-                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateClssrmNm"><strong>교육관</strong></label>
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="updateSareaNm"><strong>운영권역</strong></label>
                                     <div class="col-12">
-                                        <input type="text" class="form-control form-control-sm" name="updateClssrmNm" id="updateClssrmNm" th:value="${mvmnSchdl.clssrmNm}" disabled>
+                                        <input type="text" class="form-control form-control-sm" name="updateSareaNm" id="updateSareaNm" th:value="${mvmnSchdl.sareaNm}" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -41,14 +41,14 @@
                         <!-- 접수방법 선택 -->
                         <div class="row justify-content-end my-2">
                             <div class="col-auto">
-                                <label class="form-label col-form-label me-2"><strong>접수방법</strong></label>
-                                <th:block kattr:select_code="rcptMthdCd" th:attr="grpCd=156" onchange="fn_changeRcptMthdCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
+                                <label class="form-label col-form-label me-2"><strong>운영형식</strong></label>
+                                <th:block kattr:select_code="operFomCd" th:attr="grpCd=197" onchange="fn_changeOperFomCd(this)" firstOptTxt="- 선택 -" addClass="form-select form-select-sm d-inline-block" isAdmin="true"></th:block>
                             </div>
                         </div>
                         <!-- // 접수방법 선택 -->
                         <div class="row">
                             <!-- 교육일자 설정 -->
-                            <div class="col-lg-6">
+                            <div id="operFomType1" class="col-lg-6">
                                 <h3 class="sub-title"><strong>교육일자 설정</strong></h3>
                                 <div class="col-12 table-responsive">
                                     <table class="table table-framed table-bordered">
@@ -64,6 +64,63 @@
                                         <tbody id="updateCheckDayBody">
                                         </tbody>
                                     </table>
+                                </div>
+                            </div>
+                            <div id="operFomType2" class="col-lg-6" style="display:none;">
+                                <h3 class="sub-title"><strong>교육요일 설정</strong></h3>
+                                <div class="col-12 table-responsive">
+                                    <table class="table table-framed table-bordered">
+                                        <thead>
+                                            <tr class="border-bottom-inverse">
+                                                <th class="text-center v-middle"><span class="text-c-pink">일</span></th>
+                                                <th class="text-center v-middle">월</th>
+                                                <th class="text-center v-middle">화</th>
+                                                <th class="text-center v-middle">수</th>
+                                                <th class="text-center v-middle">목</th>
+                                                <th class="text-center v-middle">금</th>
+                                                <th class="text-center v-middle"><span class="text-c-blue">토</span></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td class="text-center v-middle">
+                                                    <input id="sunChk" class="form-check-input" type="checkbox" value="sun" aria-label="일요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                                <td class="text-center v-middle">
+                                                    <input id="monChk" class="form-check-input" type="checkbox" value="mon" aria-label="월요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                                <td class="text-center v-middle">
+                                                    <input id="tuesChk" class="form-check-input" type="checkbox" value="tues" aria-label="화요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                                <td class="text-center v-middle">
+                                                    <input id="wedChk" class="form-check-input" type="checkbox" value="wed" aria-label="수요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                                <td class="text-center v-middle">
+                                                    <input id="thurChk" class="form-check-input" type="checkbox" value="thur" aria-label="목요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                                <td class="text-center v-middle">
+                                                    <input id="friChk" class="form-check-input" type="checkbox" value="fri" aria-label="금요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                                <td class="text-center v-middle">
+                                                    <input id="satChk" class="form-check-input" type="checkbox" value="sat" aria-label="토요일 선택" onchange="fn_changeWeekSttSelectItem(this)">
+                                                </td>
+                                            </tr>
+                                        </tbody>                                        
+                                    </table>
+                                    <table id="hiddenTbl" class="table table-framed table-bordered" style="display:none;">
+                                        <thead>
+                                        <tr class="border-bottom-inverse">
+                                            <th class="text-center v-middle">
+                                                <input id="deSttSelectAllCheckbox" class="form-check-input" type="checkbox" value="" aria-label="전체 선택" onclick="fn_deSttSelectAllCheckbox()">
+                                            </th>
+                                            <th class="text-center v-middle">요일</th>
+                                            <th class="text-center v-middle">일자</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="insertCheckDayHiddenTblBody">
+                                        </tbody>
+                                    </table>
+                                    
                                 </div>
                             </div>
                             <!-- 교육프로그램 설정 -->
@@ -114,7 +171,7 @@
                 deSttSelectedItems.push(deArr[i]);
             }
         }else{
-        	deSttSelectedItems.push(des);
+            deSttSelectedItems.push(des);
         }
         
         var prgrmIds = [[${mvmnSchdl.prgrmIds}]];
@@ -156,6 +213,7 @@
         };
         xhr.send('');
         $("#updateCheckDayBody tr").remove();
+        $("#insertCheckDayHiddenTblBody tr").remove();
         var schdlHtml = "";
         for (var i=1; i<=lastDay.getDate(); i++){
             var day = new Date(yyyy,mm-1,i);
@@ -187,13 +245,13 @@
             schdlHtml += '<td class="text-center v-middle">';   
             var des = [[${mvmnSchdl.de}]];
             if(des.indexOf(",") >= 0) {            
-	            var deArr = des.split(",");
-	            for(var j=0; j<deArr.length;j++) {
-	            	//checked = "";
-	                if(de == deArr[j]) checked = " checked";
-	            }
+                var deArr = des.split(",");
+                for(var j=0; j<deArr.length;j++) {
+                    //checked = "";
+                    if(de == deArr[j]) checked = " checked";
+                }
             }else{
-            	if(de == des) checked = " checked";
+                if(de == des) checked = " checked";
             }
             schdlHtml += '<input id="deSttSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changeDeSttSelectItem(this);"'+checked+'>';
             schdlHtml += '</td>';
@@ -201,11 +259,24 @@
             schdlHtml += '<td class="text-center v-middle">' + de + '</td>';
             schdlHtml += '</tr>';  
        } 
-       $("#updateCheckDayBody").append(schdlHtml);          
+       if($("[name=operFomCd]").val() == "197101" || $("[name=operFomCd]").val() == ""){        
+            $("#updateCheckDayBody").append(schdlHtml);          
+       }else{
+            $("#insertCheckDayHiddenTblBody").append(schdlHtml);
+       }
     }    
-    function fn_changeRcptMthdCd(item){
+    function fn_changeOperFomCd(item){
+        fn_makeListHtml();      
+        if($(item).val() == "" || $(item).val() == "197101"){
+            $("#operFomType1").show();          
+            $("#operFomType2").hide();
+        }else{
+            $("#operFomType1").hide();
+            $("#operFomType2").show();          
+        }
+        deSttSelectedItems = [];
         var getCodeUrl = "/mng/prtpn/mvmnPrgrm/selectPrgrmSettingList.do";
-        var url = getCodeUrl + "?rcptMthdCd=" + $(item).val();
+        var url = getCodeUrl + "?operFomCd=" + $(item).val();
         var prgrmStthtml = "";
         $("#updatePrgrmSettingList tr").remove();
         $.ajax({
@@ -220,12 +291,12 @@
                     prgrmStthtml += '<td class="text-center v-middle">';
                     var prgrmIds = [[${mvmnSchdl.prgrmIds}]];
                     if(prgrmIds.indexOf(",") >= 0) {
-	                    var prgrmIdArr = prgrmIds.split(",");
-	                    for(var j=0; j<prgrmIdArr.length;j++) {
-	                        if(data.prgrmSttList[i].prgrmId == prgrmIdArr[j]) checked = " checked";
-	                    }
+                        var prgrmIdArr = prgrmIds.split(",");
+                        for(var j=0; j<prgrmIdArr.length;j++) {
+                            if(data.prgrmSttList[i].prgrmId == prgrmIdArr[j]) checked = " checked";
+                        }
                     }else{
-                    	if(data.prgrmSttList[i].prgrmId == prgrmIds)  checked = " checked";
+                        if(data.prgrmSttList[i].prgrmId == prgrmIds)  checked = " checked";
                     }
                     prgrmStthtml += '<input id="prgrmSttSingleCheckbox" class="form-check-input" type="checkbox" value="" aria-label="선택" onchange="fn_changePrgrmSttSelectItem(this);"'+checked+'>';                    
                     prgrmStthtml += '</td>';
@@ -267,11 +338,38 @@
             }
         });                
     }  
-    // 체크박스
+    // 체크박스(일일교육)
     function fn_changeDeSttSelectItem(item){
         $(item).is(":checked") ? deSttSelectItem($(item).parent().next().next().text()) : deSttUnselectItem($(item).parent().next().next().text());     
     }
     
+    // 체크박스(지속교육)
+    function fn_changeWeekSttSelectItem(item){
+        var weekTp = $(item).val();
+        var weekTpDesc = "";
+        if(weekTp == "sun")    weekTpDesc = "일";
+        if(weekTp == "mon")    weekTpDesc = "월";
+        if(weekTp == "tues")   weekTpDesc = "화";
+        if(weekTp == "wed")    weekTpDesc = "수";
+        if(weekTp == "thur")   weekTpDesc = "목";
+        if(weekTp == "fri")    weekTpDesc = "금";
+        if(weekTp == "sat")    weekTpDesc = "토";
+        if($(item).is(":checked")){
+            $('[id=deSttSingleCheckbox]').each(function() { 
+                if($(this).parent().next().text() == weekTpDesc){
+                    this.checked = true;   
+                    deSttSelectItem($(this).parent().next().next().text());
+                }
+            });             
+        }else{
+            $('[id=deSttSingleCheckbox]').each(function() { 
+                if($(this).parent().next().text() == weekTpDesc){
+                    this.checked = false;      
+                    deSttUnselectItem($(this).parent().next().next().text());
+                }
+            });  
+        }     
+    }
     var deSttSelectItem = function(item) {
         deSttSelectedItems.push(item);
         if($("[id=deSttSingleCheckbox]").length == $("[id=deSttSingleCheckbox]:checked").length) {

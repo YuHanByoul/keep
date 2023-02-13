@@ -5,7 +5,7 @@
     SQL File Name : MvmnSchdlDaoImpl.xml
     Description : 참여신청관리 -> 교육일정관리
 -->
-<mapper namespace="com.kbrainc.plum.mng.prtpn.sareaSchdl.model.MvmnSchdlDao">
+<mapper namespace="com.kbrainc.plum.mng.prtpn.mvmnSchdl.model.MvmnSchdlDao">
     
     <!-- 교육일정 관리 게시글 목록 조회 -->
     <select id="selectMvmnSchdlList" parameterType="MvmnSchdlVo" resultType="MvmnSchdlVo">
@@ -18,7 +18,9 @@
         , IF(B.RCPT_MTHD_CD = '156101','#93BE52','#FC6180') AS BACKGROUND_COLOR
         , IF(B.RCPT_MTHD_CD = '156101','#FFF','#FFF') AS TEXT_COLOR     
         , B.RCPT_MTHD_CD
+        , B.OPER_FOM_CD
         , D.CD_NM AS RCPT_MTHD_NM   
+        , E.CD_NM AS OPER_FOM_NM   
         , A.MDFCN_DT
         , A.MDFRID
         , A.REG_DT
@@ -29,21 +31,22 @@
             SELECT TB.PRGRM_SCHDLID
                   ,TA.DE
                   ,TC.RCPT_MTHD_CD
+                  ,TC.OPER_FOM_CD
               FROM TB_EDU_MVMN_PRGRM_SCHDL_DE TA
                  , TB_EDU_MVMN_PRGRM_SCHDL_PRGRM TB
-                 , (SELECT PRGRMID, RCPT_MTHD_CD, MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE MON_YN = 'Y'
+                 , (SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE MON_YN = 'Y'
                     UNION ALL 
-                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE TUES_YN = 'Y'
+                    SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, NULL MON_YN, TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE TUES_YN = 'Y'
                     UNION ALL 
-                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE WED_YN = 'Y'
+                    SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE WED_YN = 'Y'
                     UNION ALL 
-                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE THUR_YN = 'Y'
+                    SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, THUR_YN, NULL FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE THUR_YN = 'Y'
                     UNION ALL 
-                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE FRI_YN = 'Y'
+                    SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, FRI_YN, NULL SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE FRI_YN = 'Y'
                     UNION ALL 
-                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE SAT_YN = 'Y'
+                    SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, SAT_YN, NULL SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE SAT_YN = 'Y'
                     UNION ALL 
-                    SELECT PRGRMID, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE SUN_YN = 'Y'
+                    SELECT PRGRMID, OPER_FOM_CD, RCPT_MTHD_CD, NULL MON_YN, NULL TUES_YN, NULL WED_YN, NULL THUR_YN, NULL FRI_YN, NULL SAT_YN, SUN_YN FROM TB_EDU_MVMN_PRGRM WHERE SUN_YN = 'Y'
                  ) TC 
              WHERE TA.PRGRM_SCHDLID = TB.PRGRM_SCHDLID
                AND TB.PRGRMID = TC.PRGRMID
@@ -58,10 +61,11 @@
                                       END    
         ) B ON A.PRGRM_SCHDLID = B.PRGRM_SCHDLID     
         LEFT OUTER JOIN TB_CMM_CD D ON D.CD = B.RCPT_MTHD_CD    
+        LEFT OUTER JOIN TB_CMM_CD E ON E.CD = B.OPER_FOM_CD
         WHERE
         1=1
-            <if test="searchClssrmId != null and searchClssrmId != ''">
-            AND A.SAREAID = #{searchClssrmId}
+            <if test="searchSareaId != null and searchSareaId != ''">
+            AND A.SAREAID = #{searchSareaId}
             </if>
             <if test="searchSchdlId != null and searchSchdlId != ''">
             AND A.PRGRM_SCHDLID = #{searchSchdlId}
@@ -99,11 +103,11 @@
             , A.YM
             , A.SCHDL_NM
             , A.SAREAID
-            , B.CLSSRM_NM
+            , B.SAREA_NM
             ,(SELECT GROUP_CONCAT(DE SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_SCHDL_DE WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS DE
             ,(SELECT GROUP_CONCAT(PRGRMID SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_SCHDL_PRGRM WHERE PRGRM_SCHDLID = #{prgrmSchdlid} ) AS PRGRMIDS
             FROM TB_EDU_MVMN_PRGRM_SCHDL A
-            LEFT OUTER JOIN TB_EDU_CLSSRM B ON A.SAREAID = B.SAREAID
+            LEFT OUTER JOIN TB_EDU_SAREA B ON A.SAREAID = B.SAREAID
        WHERE A.PRGRM_SCHDLID = #{prgrmSchdlid}
     </select>
     

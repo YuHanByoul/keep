@@ -234,5 +234,5 @@ public interface MvmnPrgrmDao {
     * @throws Exception
     * @return List<MvmnPrgrmVo>
     */
-    public List<MvmnPrgrmVo> selectPrgrmSettingList(@Param("rcptMthdCd") String rcptMthdCd) throws Exception;
+    public List<MvmnPrgrmVo> selectPrgrmSettingList(@Param("operFomCd") String operFomCd) throws Exception;
 }

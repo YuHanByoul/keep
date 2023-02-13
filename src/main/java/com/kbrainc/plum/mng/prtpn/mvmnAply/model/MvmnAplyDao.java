@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.inst.model.InstVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
@@ -50,6 +51,17 @@ public interface MvmnAplyDao {
      * @return List<MvmnAplyVo>
      */
     public List<MvmnAplyVo> selectMvmnAplyDetailList(MvmnAplyVo mvmnAplyVo) throws Exception;
+
+    /**
+     * 교육신청관리 게시글 신청마감 리스트 조회
+     *
+     * @Title : selectMvmnAplyCloseList
+     * @Description : 교육신청관리 게시글 신청마감 리스트 조회
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @throws Exception 예외
+     * @return List<MvmnAplyVo>
+     */
+    public List<MvmnAplyVo> selectMvmnAplyCloseList(MvmnAplyVo mvmnAplyVo) throws Exception;
     
     /**
     * 교육신청관리 게시글 등록
@@ -106,6 +118,28 @@ public interface MvmnAplyDao {
     * @return int
     */
     public int updateMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception;
+
+    /**
+     * 교육신청관리 교육신청자 신청상태 수정 기능
+     *
+     * @Title : updateSttsCdMvmnAply
+     * @Description : 교육신청관리 교육신청자 신청상태 수정 기능
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateSttsCdMvmnAply(MvmnAplyVo mvmnAplyVo) throws Exception;
+
+    /**
+     * 교육신청관리 신청마감 수정 기능
+     *
+     * @Title : updateMvmnAplyClose
+     * @Description : 교육신청관리 신청마감 수정 기능
+     * @param mvmnAplyVo 교육신청관리 객체
+     * @throws Exception 예외
+     * @return int
+     */
+    public int updateMvmnAplyClose(MvmnAplyVo mvmnAplyVo) throws Exception;
     
     /**
     * 교육신청관리 회차 등록
@@ -206,5 +240,16 @@ public interface MvmnAplyDao {
      * @throws Exception 예외
      */
     public List<MvmnAplyVo> selectMemberList(MvmnAplyVo mvmnAplyVo) throws Exception;
+    
+    /**
+    * 교육신청관리 교육신청자 검색결과 엑셀 다운로드
+    *
+    * @Title : mvmnAplyExcelDownList
+    * @Description : 교육신청관리 교육신청자 검색결과 엑셀 다운로드
+    * @param mvmnAplyVo
+    * @return List<MvmnAplyVo>
+    * @throws Exception
+    */
+    public List<MvmnAplyVo> mvmnAplyExcelDownList(MvmnAplyVo mvmnAplyVo) throws Exception;
     
 }
