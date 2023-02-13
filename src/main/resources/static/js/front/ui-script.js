@@ -605,7 +605,7 @@ const layerPopup = {
 		layerPopup.resize();
 		
 	},
-	open : function ({target, w, h, l, t}, callback) {
+	open : function ({target, w, h, l, t, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		ZINDEX++;
 		
@@ -659,8 +659,13 @@ const layerPopup = {
 		$('body .layer-popup').each(function (){
 			targetWrap.css('z-index',ZINDEX);
 		});
+
+		if (callback !== undefined) {
+			callback();
+		}
+
 	},
-	close : function (target, callback) {
+	close : function ({target, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		const trigger = $('[data-layer-href="' + target + '"]');
 		
@@ -668,6 +673,11 @@ const layerPopup = {
 		targetWrap.removeAttr('tabindex style');
 		targetWrap.css('z-index','');
 		trigger.focus();
+		
+		if (callback !== undefined) {
+			callback();
+		}
+		
 	},
 	onClickTrigger : function () {
 		$(document).on('click', '[data-layer-href]' , function (e){
@@ -690,22 +700,19 @@ const layerPopup = {
 						layerPopup.open({target});
 					}
 				}
-
-			
-			
 		})
 	},
 	onClickClose : function () {
 		$(document).on('click', '[data-layer-close]' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
-			layerPopup.close(target);
+			layerPopup.close({target});
 	
 		})
 	},
 	onClickDimmed : function () {
 		$(document).on('click', '.layer-dimmed:not(.prevent-close)' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
-			layerPopup.close(target);
+			layerPopup.close({target});
 	
 		})
 	},
