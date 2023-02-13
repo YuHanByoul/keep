@@ -24,21 +24,21 @@
             <button type="submit" class="btn-medium btn-green btn-before-search" onclick="inqryMain.search()">검색</button>
         </div>
 
-        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
         <input type="hidden" id="inqryid" name="inqryid">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
-        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
     </form>
 
     <div class="table-caption flex-nowrap">
         <div class="left">
-            <p>총 <b id="totalCount" th:text="${totalCount}">0</b> 건</p>
+            <p>총 <b id="total-count">0</b> 건</p>
         </div>
         <div class="right d-flex">
-            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
-                <option value="10" th:selected="${searchVo.rowPerPage == 10}">10개씩 보기</option>
-                <option value="50" th:selected="${searchVo.rowPerPage == 50}">50개씩 보기</option>
-                <option value="100" th:selected="${searchVo.rowPerPage == 100}">100개씩 보기</option>
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="inqryMain.changeRowPerPage()">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
             </select>
             <div class="ml10">
                 <button type="button" class="btn-medium btn-blue" onclick="inqryMain.moveToInsertForm()">문의하기</button>
@@ -69,54 +69,43 @@
                 <th scope="col">등록일</th>
             </tr>
             </thead>
-            <tbody>
-            <th:block th:if="${list.size() == 0}">
-                <tr>
-                    <td class="nodata" colspan="7">
-                        <p><span class="icon icon-notice bg-black9"></span>등록된 1:1문의가 없습니다</p>
-                    </td>
-                </tr>
-            </th:block>
-            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == loginUserid)) ? true : false}">
-                <td>[[${item.rowNumber}]]</td>
-                <td>[[${item.inqryClCdNm}]]</td>
-                <td class="al article">
-                    <a href="javascript:void(0)" className="link ellipsis" th:onclick="|inqryMain.moveToDetail(${item.inqryid}, ${canGoToDetail})|">[[${item.title}]]</a>
-                </td>
-                <td>[[${item.sttsCdNm}]]</td>
-                <td>[[${item.acnt}]]</td>
-                <td>[[${item.rlsYn =='Y' ? '공개' : '비공개'}]]</td>
-                <td>[[${#dates.format(item.regDt, 'yyyy-MM-dd')}]]</td>
-            </tr>
+            <tbody id="list-area">
             </tbody>
         </table>
     </div>
 
-    <th:block kattr:pagination="pagination" onclick="moveToPage"/>
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
 
     <script th:inline="javascript">
         var inqryMain = {
             userid: /*[[${loginUserid}]]*/ null,
             listUrl: '/front/inqry/selectInqryList.do',
             detailUrl: '/front/inqry/inqryDetail.html',
+            formUrl : '/front/inqry/inqryForm.html',
+            searchVo : /*[[${searchVo}]]*/null,
 
             moveToInsertForm() {
                 if (this.userid == null) {
                     alert('로그인 후 이용하실 수 있습니다.');
                     return;
                 }
-                location.href = '/front/inqry/inqryForm.html';
+                var f = document.forms.searchForm;
+                f.action = this.formUrl;
+                f.submit();
             },
 
             search() {
                 $('#pageNumber').val(1);
-                $('#rowPerPage').val($('#selectRowPerPage').val());
-                var f = document.forms.searchForm;
-                f.submit();
+                this.selectInqryList();
             },
 
             searchInit() {
                 $('#searchKeyword, #inqryClCd').val('');
+            },
+
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
             },
 
             moveToDetail(inqryid, canGoToDetail) {
@@ -130,14 +119,65 @@
                     return;
                 }
             },
+
+            selectInqryList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: inqryMain.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData = $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(inqryMain.makeListHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<tr>
+                                <td class="nodata" colspan="7">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 1:1문의가 없습니다</p>
+                                </td>
+                            </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == inqryMain.userid));
+                        html += `<tr>
+                                    <td>${item.rowNumber}</td>
+                                    <td>${item.inqryClCdNm}</td>
+                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="inqryMain.moveToDetail(${item.inqryid}, ${canGoToDetail})">${item.title}</a></td>
+                                    <td>${item.sttsCdNm}</td>
+                                    <td>${item.acnt}</td>
+                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+                                    <td>${item.regDt}</td>
+                                </tr>`;
+                    });
+                }
+                return html;
+            }
         };
 
-        function moveToPage(num) {
+        function goPage(num) {
             $("#pageNumber").val(num);
-            $('#rowPerPage').val($('#selectRowPerPage').val());
-            var f = document.forms.searchForm;
-            f.submit();
+            inqryMain.selectInqryList();
         }
+
+        $(function() {
+            $("#pageNumber").val(inqryMain.searchVo.pageNumber);
+            $("#searchKeyword").val(inqryMain.searchVo.searchKeyword);
+            $("#inqryClCd").val(inqryMain.searchVo.inqryClCd);
+            $('#rowPerPage').val(inqryMain.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(inqryMain.searchVo.rowPerPage);
+
+            inqryMain.selectInqryList();
+        })
     </script>
 </div>
 <body>

@@ -57,14 +57,10 @@ public class InqryController {
 
     @GetMapping("/inqryList.html")
     public String inqryList(InqryVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
-        searchVo.setOrderField("REG_DT");
-        List<InqryVo> list = inqryService.selectInqryList(searchVo);
 
-        model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
         model.addAttribute("searchVo", searchVo);
-        model.addAttribute("list", list);
-        model.addAttribute("totalCount", list.size() > 0 ? list.get(0).getTotalCount() : 0);
-
+        model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
+        
         return VIEW_PATH + "/inqryList";
     }
 
