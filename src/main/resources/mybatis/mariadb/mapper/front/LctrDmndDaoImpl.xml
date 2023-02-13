@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : LctrDmndDaoImpl.xml
+    Description : 전문가 섭외 요청
+-->
+<mapper namespace="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.LctrDmndDao">
+
+    <select id="selectExprtList" resultType="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.USERID
+            , A.EXPRT_TYPE_CD
+            , A.FLD_LCTR_YN
+            , A.FLD_PLANNG_YN
+            , A.FLD_CNSLTNG_YN
+            , A.FLD_ETC_YN
+            , A.FLD_ETC_CN
+            , A.ENV_EDU_CAREER_YY
+            , A.ENV_EDU_CAREER_MM
+            , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR',') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{userid} ) AS EXPRT_TRGT_CD/* 전문분야 대상 */
+            , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{userid} ) AS EXPRT_SBJCT_CD /* 전문분야 주제 */
+            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_RGN_CD /* 주요활동지역 */
+            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_SCOPE_CD /* 가능 활동범위 */
+            , MDFCN_DT
+            , B.NM
+            , B.BRDT
+            , B.GNDR
+            FROM TB_ASS_EXPRT A
+            INNER JOIN TB_CMM_USER B
+                ON A.USERID = B.USERID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>
