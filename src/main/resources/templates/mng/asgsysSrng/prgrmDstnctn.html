@@ -286,7 +286,7 @@
                 </div>
                 <div class="mt-2 text-center">
                     <label class="btn btn-primary btn-sm">
-                        이미지 등록 <input id="eduPhotoFile1" type="file" name="eduPhotoFile" style="display: none;">
+                        이미지 등록 <input id="eduPhotoFileInpu1" type="file" name="eduPhotoFileInpu1" style="display: none;">
                     </label>
                 </div>
             </div>
@@ -306,7 +306,7 @@
                 </div>
                 <div class="mt-2 text-center">
                     <label class="btn btn-primary btn-sm">
-                        이미지 등록 <input id="eduPhotoFile2" type="file" name="eduPhotoFile" style="display: none;">
+                        이미지 등록 <input id="eduPhotoFileInpu2" type="file" name="eduPhotoFileInpu2" style="display: none;">
                     </label>
                 </div>
             </div>
@@ -326,7 +326,7 @@
                 </div>
                 <div class="mt-2 text-center">
                     <label class="btn btn-primary btn-sm">
-                        이미지 등록 <input id="eduPhotoFile3" type="file" name="eduPhotoFile" style="display: none;">
+                        이미지 등록 <input id="eduPhotoFileInpu3" type="file" name="eduPhotoFileInp3" style="display: none;">
                     </label>
                 </div>
             </div>
@@ -658,10 +658,12 @@ function readImage() {
 }
 
 
-$('[id^=eduPhotoFile]').on('change', function(event) {
+$('[id^=eduPhotoFileInpu]').on('change', function(event) {
 
 	var trgtId = event.currentTarget.id;
 	var trgtIdx = trgtId.substr(trgtId.length-1,1);
+
+	var bEduFilegrpid= false;
 
 	var objFile = document.querySelector('#'+trgtId);
 
@@ -672,7 +674,7 @@ $('[id^=eduPhotoFile]').on('change', function(event) {
         formData.append("files", objFile.files[i]);
     }
 
-    formData.append("filegrpid", $("#eduPhotoFilegrpid").val());
+    formData.append("filegrpid", $("#eduPhotoFilegrpid").val() == "" ? 0 : $("#eduPhotoFilegrpid").val());
     formData.append("filegrpNm", "dstnctnEduPhoto_file");
 
 
@@ -683,17 +685,49 @@ $('[id^=eduPhotoFile]').on('change', function(event) {
             contentType : false,
             data : formData,
             type : 'POST',
+            async : false,
             success : function(response) {
+
                 if(response.result == 'fail'){
                     alert(response.msg);
                 }else{
                     if($("#eduPhotoFilegrpid").val()=='0' || $("#eduPhotoFilegrpid").val()==''  || $("#eduPhotoFilegrpid").val()==null){
                     	$("#eduPhotoFilegrpid").val(response[0].filegrpid );
+
+
+                    }else{
+                    	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);    //재조회
                     }
+                }
+                closeWorkProgress();
+            }
+        });
 
-                    $("#regFileDiv" + trgtIdx).show();
-                    $("#delFileDiv" + trgtIdx).hide();
+    }
+    if(bEduFilegrpid)fn_eduImgFileUpdate();
 
+});
+
+function fn_eduImgFileUpdate(){
+
+	var formData = new FormData();
+	formData.append("eduPhotoFilegrpid",$("#eduPhotoFilegrpid").val())
+	formData.append("prgrmid", prgrmid);
+
+	if(displayWorkProgress()){
+        $.ajax({
+            url : "/mng/asgsysSrng/updateEduPhotoFilegrpid.do",
+            processData : false,
+            contentType : false,
+            data : formData,
+            async: false,
+            type : 'POST',
+            success : function(response) {
+
+                if(response.result == 'fail'){
+                    alert("교육사진파일그룹id를 저장중에 실패했습니다.");
+                }else{
+                	loadJdsgTabContent("/mng/asgsysSrng/prgrmDstnctn.html?prgrmid=" + prgrmid);    //재조회
                 }
                 closeWorkProgress();
             }
@@ -701,7 +735,7 @@ $('[id^=eduPhotoFile]').on('change', function(event) {
 
     }
 
-});
+}
 
 
 function fn_deleteEduPhotoFile(btnid){
@@ -710,7 +744,6 @@ function fn_deleteEduPhotoFile(btnid){
 	var vFileid        = $("#"+btnid).attr("fileid");
 	var vFileIdntfcKey = $("#"+btnid).attr("fileIdntfcKey");
 	var trgtIdx = btnid.substr(btnid.length-1,1);
-;
 
     if(!confirm("파일을 삭제하시겠습니까?")){return;}
 

@@ -1215,6 +1215,21 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     }
 
     /**
+    * 교육사진파일그룹아이디 수정
+    *
+    * @Title : updateEduPhotoFilegrpid
+    * @Description : 교육사진파일그룹아이디 수정
+    * @param asgsysSrngVo
+    * @return
+    * @return int
+    */
+    @Override
+    @Transactional
+    public int updateEduPhotoFilegrpid(AsgsysSrngVo asgsysSrngVo) throws Exception {
+		return asgsysSrngDao.updateEduPhotoFilegrpid(asgsysSrngVo);
+	}
+
+    /**
     * 회원목록 조회
     *
     * @Title : selectMbrList
@@ -1332,7 +1347,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	return asgsysSrngDao.selectSrngScrHeader(asgsysSrngVo);
     }
-
 
 
 
