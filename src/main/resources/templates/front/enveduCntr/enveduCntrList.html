@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title" th:text="${enveduCntrTitle}"></h3>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto">
+        <table>
+            <caption>[[${enveduCntrTitle}]] - 지역, 센터명, 기관명, 홈페이지</caption>
+            <colgroup>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">지역</th>
+                <th scope="col">센터명</th>
+                <th scope="col">기관명</th>
+                <th scope="col">홈페이지</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th:block th:if="${list.size() > 0}" th:each="itemList : ${list}">
+                <tr th:each="item : ${itemList.value}">
+                    <th:block th:if="${item.cntrCnt > 1}">
+                        <td th:if="${itemStat.index < 1}" th:rowspan="${itemList.value.size()}" th:text="${item.seCd == '국가' ? item.seCd+'('+item.cntrCnt+')' : item.rgnCd+'('+item.cntrCnt+')'}"></td>
+                    </th:block>
+                    <th:block th:unless="${item.cntrCnt > 1}">
+                        <td th:text="${item.seCd == '국가' ? item.seCd : item.rgnCd}"></td>
+                    </th:block>
+                    <td th:style="${item.cntrCnt > 1 ? 'border-left: 1px solid var(--graye);' : ''}" th:text="${item.cntrNm}"></td>
+                    <td th:text="${item.instNm}"></td>
+                    <td><a class="url" th:href="${item.hmpg}" target="_blank" title="새 창" th:text="${item.hmpg}"></a></td>
+                </tr>
+            </th:block>
+            <tr th:unless="${list.size() > 0}">
+                <td colspan="4">목록이 존재하지 않습니다.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:inline="javascript"></script>
+</div>
+</html>
