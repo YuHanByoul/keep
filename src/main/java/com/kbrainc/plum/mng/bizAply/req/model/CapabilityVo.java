@@ -4,9 +4,11 @@
 package com.kbrainc.plum.mng.bizAply.req.model;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -28,6 +30,9 @@ import lombok.Data;
 @Data
 public class CapabilityVo extends ParentRequestVo {
 
+    /** 로그인사용자 정보 */
+    private UserVo user;
+    
     /** 신청아이디 */
     private Integer aplyid;
     
@@ -78,36 +83,39 @@ public class CapabilityVo extends ParentRequestVo {
     /** 등록자 아이디 */
     private Integer rgtrid;
     
+    /** 프로그램_주제_상위_코드 */
+    private String prgrmSbjctCd1;
+
     /** 프로그램_주제_코드 */
     private String prgrmSbjctCd;
     
     /** 프로그램_주제_코드명 */
     private String prgrmSbjctNm;
     
-    /** SEQ */
-    private String seq;
+    /** 프로그램 주제 코드 리스트 */
+    private List<String> prgrmSbjctCds; 
     
     /** 구분_코드 */
-    private String seCd;
+    private String[] seCd;
     
     /** 구분_코드명 */
-    private String seNm;
+    private String[] seNm;
     
     /** 사업_이름 */
-    private String bsnsNm;
+    private String[] bsnsNm;
     
     /** 사업_기간 */
-    private String bsnsPrd;
+    private String[] bsnsPrd;
     
     /** 교육_인원수 */
-    private Integer eduNope;
+    private Integer[] eduNope;
     
     /** 사업_예산 */
-    private String bsnsBgt;
+    private String[] bsnsBgt;
     
     /** 운영_내용 */
-    private String operCn;
+    private String[] operCn;
     
     /** 순서 */
-    private Integer ordr;
+    private Integer[] ordr;  
 }

@@ -1,0 +1,121 @@
+<div class="col-12">
+    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailCapTabForm.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_02" role="tab" id="tabCon2Link"><strong>기관역량</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailPlanTabForm.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_03" role="tab" id="tabCon3Link"><strong>사업수행계획</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailPrgrmInfo.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_04" role="tab" id="tabCon4Link"><strong>프로그램정보</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailSmrLeader.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_05" role="tab" id="tabCon5Link"><strong>전문강사 확보</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailSafetyMng.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_06" role="tab" id="tabCon6Link"><strong>안전관리 적정성</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailSrng.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_07" role="tab" id="tabCon7Link"><strong>심사결과</strong></a></li>
+        </th:block>
+    </ul>
+</div>
+
+<div class="col-12">
+    <div id="myTabContent" class="tab-content tabs"></div>
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var aplyid = /*[[${aplyid}]]*/null;
+    var pcntstid = /*[[${pcntstid}]]*/null;
+    /*]]>*/
+
+    $('.nav-tabs a').on('show.bs.tab', function(event) {
+    	//tab set
+        var tabId = event.currentTarget.attributes.id.value;
+        selectTab(tabId);
+    });
+
+    function selectTab(tabId) {
+        if(tabId == "tabCon1Link") {
+            loadTabContent("/mng/bizAply/req/detailReqUserInfoTabForm.html?aplyid=" + aplyid + '&pcntstid=' + pcntstid);
+        } else if(tabId == "tabCon2Link") {
+            loadTabContent("/mng/bizAply/req/detailCapTabForm.html?aplyid=" + aplyid);
+        } else if(tabId == "tabCon3Link") {
+            loadTabContent("/mng/bizAply/req/detailPlanTabForm.html?aplyid=" + aplyid);
+        } else if(tabId == "tabCon4Link") {
+            loadTabContent("/mng/bizAply/req/detailPrgrmInfo.html?aplyid=" + aplyid);
+        } else if(tabId == "tabCon5Link") {
+            loadTabContent("/mng/bizAply/req/detailSmrLeader.html?aplyid=" + aplyid);
+        } else if(tabId == "tabCon6Link") {
+            loadTabContent("/mng/bizAply/req/detailSafetyMng.html?aplyid=" + aplyid);
+        } else if(tabId == "tabCon7Link") {
+            loadTabContent("/mng/bizAply/req/detailSrng.html?aplyid=" + aplyid);
+        }
+        $("#" + tabId).parent().addClass("active");
+    }
+
+    function loadTabContent(uri){
+        $.ajax({
+            cache   : false
+          , url     : uri
+          , type    : 'GET'
+          , async   : 'false'
+          , dataType: 'html'
+          , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
+              $('#myTabContent').html(result);
+              scrollIntoView('contentPanel');
+          }
+        });
+        showContent();
+    }
+
+    function initTab() {
+
+        var tabFlag = false;
+
+        if(tabFlag == false) {
+            selectTab("tabCon1Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon2Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon3Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon4Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon5Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon6Link");
+            tabFlag = true;
+        }
+        
+        if(tabFlag == false) {
+            selectTab("tabCon7Link");
+            tabFlag = true;
+        }
+
+    }
+
+    initTab();
+
+</script>
