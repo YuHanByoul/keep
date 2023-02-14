@@ -225,7 +225,7 @@ public class FileController {
             throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
         }
         
-        if ("/downloadLogo.do".equals(request.getRequestURI()) && !"site_logo".equals(fileVo.getFilegrpNm())) {
+        if ("/downloadLogo.do".equals(request.getRequestURI()) && !"site_logo".equals(fileVo.getFilegrpNm()) && !"biz_logo".equals(fileVo.getFilegrpNm())) {
             throw new FiledownloadCheckerException("You do not have access to the file. " + fileVo.getSaveFileNm());
         }
         
