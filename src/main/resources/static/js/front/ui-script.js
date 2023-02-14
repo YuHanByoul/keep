@@ -654,16 +654,18 @@ const layerPopup = {
 		targetWrap.attr('tabindex',0);
 		setTimeout(function () {
 			targetWrap.focus();
+
+			//callback
+			if (callback !== undefined) {
+				callback();
+			}
 		},ANIMATION_TIME)
 
 		$('body .layer-popup').each(function (){
 			targetWrap.css('z-index',ZINDEX);
 		});
 
-		if (callback !== undefined) {
-			callback();
-		}
-
+		
 	},
 	close : function ({target, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
