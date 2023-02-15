@@ -9,7 +9,7 @@ $(function (){
 	layerPopup.init();
 	tabContent.init();
 	accordionContent.init();
-	uploadFile();
+	// uploadFile();
 	headerSearch.init();
 	asideScrollTop();
 });
