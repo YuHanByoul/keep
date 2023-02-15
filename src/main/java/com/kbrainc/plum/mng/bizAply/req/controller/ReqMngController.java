@@ -3,6 +3,7 @@
  */
 package com.kbrainc.plum.mng.bizAply.req.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -23,8 +24,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.bizAply.req.model.BudgetVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityResultVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityVo;
+import com.kbrainc.plum.mng.bizAply.req.model.OperRndVo;
+import com.kbrainc.plum.mng.bizAply.req.model.OperVo;
 import com.kbrainc.plum.mng.bizAply.req.model.PrgrmEvlVo;
 import com.kbrainc.plum.mng.bizAply.req.model.PrgrmInfoOutlineVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ProcPlanVo;
@@ -216,6 +220,7 @@ public class ReqMngController {
 
         model.addAttribute("aplyid", reqUserVo.getAplyid());
         model.addAttribute("pcntstid", reqUserVo.getPcntstid());
+        model.addAttribute("fldCd", reqUserVo.getFldCd());
 
         return "mng/bizAply/req/reqUserTab";
     }
@@ -235,7 +240,14 @@ public class ReqMngController {
     public String detailReqUserInfoTabForm(ReqUserVo reqUserVo, Model model) throws Exception {
         
         ReqUserVo detailReqUserVo = new ReqUserVo();
-
+        String returnPage = "mng/bizAply/req/detailReqUserInfoTabForm";
+        if ("173106".equals(reqUserVo.getFldCd())) {
+            returnPage = "mng/bizAply/req/detailReqUserInfoTabForm2";
+        }
+        if ("173105".equals(reqUserVo.getFldCd())) {
+            returnPage = "mng/bizAply/req/detailReqUserInfoTabForm3";
+        }
+        
         if (reqUserVo != null) {
             if (reqUserVo.getAplyid() > 0) {
                 List<ReqUserVo> result = this.reqMngService.selectReqUserList(reqUserVo);                    
@@ -271,11 +283,13 @@ public class ReqMngController {
             } else {
                 model.addAttribute("fileList3", Collections.emptyList());
             }
+            
+            model.addAttribute("fldCd", reqUserVo.getFldCd());
         }
         
         model.addAttribute("reqUserVo", detailReqUserVo);
         
-        return "mng/bizAply/req/detailReqUserInfoTabForm";
+        return returnPage;
     }
     
     /**
@@ -983,6 +997,168 @@ public class ReqMngController {
         safetyMngVo.setUser(user);
         
         int retVal = this.reqMngService.updateSafetyMng(safetyMngVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+    * 소요예산 탭 조회. 
+    *
+    * @Title : detailBudgetTabForm
+    * @Description : TODO
+    * @param safetyMngVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/req/detailBudgetTabForm.html")
+    public String detailBudgetTabForm(BudgetVo budgetVo, Model model) throws Exception {
+        
+        List<BudgetVo> list = null;
+        
+        if (budgetVo != null) {
+            if (budgetVo.getAplyid() > 0) {
+                list = this.reqMngService.selectBudgetList(budgetVo);
+            }
+        }
+        
+        if (list == null)
+            list = new ArrayList<BudgetVo>();            
+        
+        int totalAmt = list.size() > 0 && null != list.get(0).getTotalAmt() ? list.get(0).getTotalAmt() : 0;
+        
+        model.addAttribute("totalAmt", totalAmt);
+        model.addAttribute("fldCd", budgetVo.getFldCd());
+        model.addAttribute("aplyid", budgetVo.getAplyid());
+        model.addAttribute("list", list);
+        
+        return "mng/bizAply/req/detailBudget";
+    }
+    
+    /**
+    * 소요예산 탭 수정. 
+    *
+    * @Title : updateBudget
+    * @Description : TODO
+    * @param budgetVo
+    * @param bindingResult
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/bizAply/req/updateBudget.do")
+    @ResponseBody
+    public Map<String, Object> updateBudget(@Valid BudgetVo budgetVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        budgetVo.setUser(user);
+        
+        int retVal = this.reqMngService.updateBudget(budgetVo);
+        
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패했습니다.");
+        }
+        
+        return resultMap;
+    }
+    
+    /**
+    * 운영개요 탭 조회. 
+    *
+    * @Title : detailOper
+    * @Description : TODO
+    * @param operVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/req/detailOper.html")
+    public String detailOper(OperVo operVo, Model model) throws Exception {
+         
+        OperVo detail = null;
+         List<OperVo> eduList = null; 
+         List<OperRndVo> normalList = null; 
+         List<OperRndVo> envList = null; 
+                 
+         if (operVo != null) {
+             if (operVo.getAplyid() > 0) {
+                 // 운영개요 상세 조회
+                 detail = this.reqMngService.detailOper(operVo);
+                 // 교육 주제
+                 eduList = this.reqMngService.selectOperSubjectList(operVo);
+                 
+                 // 일반주제
+                 operVo.setSbjctSeCd("219101");
+                 normalList = this.reqMngService.selectOperSubjectRndList(operVo);
+                 
+                 // 환경현안주제
+                 operVo.setSbjctSeCd("219102");
+                 envList = this.reqMngService.selectOperSubjectRndList(operVo);
+             }
+         }
+         
+         if (detail == null)
+             detail = new OperVo();
+         
+         model.addAttribute("detail", detail);
+         model.addAttribute("eduList", eduList);
+         model.addAttribute("normalList", normalList);
+         model.addAttribute("envList", envList);
+         
+         return "mng/bizAply/req/detailOper";
+    }
+    
+    /**
+    * 운영개요 탭 수정. 
+    *
+    * @Title : updateOper
+    * @Description : TODO
+    * @param operVo
+    * @param bindingResult
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/bizAply/req/updateOper.do")
+    @ResponseBody
+    public Map<String, Object> updateOper(@Valid OperVo operVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+        
+        operVo.setUser(user);
+        
+        int retVal = this.reqMngService.updateOper(operVo);
         
         if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

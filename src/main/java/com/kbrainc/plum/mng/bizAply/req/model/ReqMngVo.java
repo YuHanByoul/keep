@@ -55,6 +55,9 @@ public class ReqMngVo extends ParentRequestVo {
     /**  공모아이디 */
     private Integer pcntstid;
     
+    /** 분야_코드 */
+    private String fldCd;
+    
     /** 분야_코드명 */
     private String fldNm;
     

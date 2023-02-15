@@ -1,0 +1,105 @@
+<form id="insertForm">
+    <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}" />
+    <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}" />
+    <!-- [탭] 소요예산 -->
+    <div class="tab-pane" id="tab_02" role="tabpanel">
+        <div class="card">
+            <!-- 소요예산 산출내역 -->
+            <div class="card-header p-b-0">
+                <h3 class="sub-title"><strong>소요예산 산출내역</strong></h3>
+            </div>
+            <div class="card-block-small p-t-0">
+                <div class="col-12 table-responsive">
+                    <table class="table table-framed">
+                        <thead>
+                        <tr>
+                            <th class="text-center" style="width:120px;">세부항목</th>
+                            <th class="text-center" style="width:130px;">금액(원)</th>
+                            <th class="text-center">세부내역</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.size(list) == 1}" th:each="list, i: ${list}">
+                            <td class="v-middle text-center">
+                                <input type="hidden" name="bgtid" id="bgtid" th:value="${list.bgtid}"/>
+                                <input type="hidden" name="expitmCd" id="expitmCd" th:value="${list.code}"/><!-- th:block th:text="${list.code}"/> /--> 
+                                <th:block th:text="${list.expitmNm}"/></td>
+                            <td class="v-middle text-center">
+                                <input type="text" class="form-control form-control-sm" name="amt" id="amt" th:value="${list.amt}">
+                            </td>
+                            <td class="v-middle text-center">
+                                <textarea rows="4" cols="5" class="form-control form-control-sm" placeholder="" name="dsctn" id="dsctn"><th:block th:text="${list.dsctn}"/></textarea>
+                            </td>
+                        </tr>
+                        <tr th:unless="${#lists.size(list) == 1}" th:each="list, i: ${list}">
+                            <td class="v-middle text-center">
+                                <input type="hidden" name="bgtidArr" id="bgtidArr" th:value="${list.bgtid}"/>
+                                <input type="hidden" name="codeArr" id="codeArr" th:value="${list.code}"/><!-- th:block th:text="${list.code}"/> /--> 
+                                <th:block th:text="${list.expitmNm}"/></td>
+                            <td class="v-middle text-center">
+                                <input type="text" class="form-control form-control-sm" name="amtArr" id="amtArr" th:value="${list.amt}">
+                            </td>
+                            <td class="v-middle text-center">
+                                <textarea rows="4" cols="5" class="form-control form-control-sm" placeholder="" name="dsctnArr" id="dsctnArr"><th:block th:text="${list.dsctn}"/></textarea>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td class="v-middle text-center table-active"><strong>총계</strong></td>
+                                <td class="v-middle text-center table-active" colspan="2"><strong><th:block th:text="${totalAmt}"/> 원</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!-- // -->
+            <div class="card-block-small">
+                <button class="btn btn-disabled m-r-5">취소</button>
+                <button class="btn btn-primary" onclick="fn_save(); return false;">저장</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-12">
+	    <div class="card">
+	        <div id="srngContent"></div>
+	    </div>
+	</div>
+</form>
+
+<script th:inline="javascript">
+    var updateUrl = "/mng/bizAply/req/updateBudget.do";
+    
+    $(function(){
+    });
+    
+    // 저장
+    function fn_save(){
+        if(!($("#insertForm").valid())) return;
+        
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        var data =  $("#insertForm").serialize();        
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : updateUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+//                         gridHelper1.loadContent(uri);
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+</script>

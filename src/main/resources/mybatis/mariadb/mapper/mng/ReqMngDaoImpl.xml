@@ -75,6 +75,7 @@
         </if>
         SELECT 
             A.PCNTSTID
+            , FLD_CD
             , C.CD_NM AS FLD_NM
             , A.PCNTST_NM
             <![CDATA[
@@ -272,6 +273,16 @@
             </if>
             <if test="aplcntEml != null and aplcntEml != ''">
             , APLCNT_EML = #{aplcntEml}
+            </if>
+            <if test="fldCd == '173106' or fldCd == '173105'">
+            , INST_ADDR = #{instAddr}
+            , INST_ADDR_DTL = #{instAddrDtl}
+            </if>
+            <if test="fldCd == '173105'">
+            , INST_NM = #{instNm}
+            , RPRSV_NM = #{rprsvNm}
+            , APLY_INST_TELNO = #{aplyInstTelno}
+            , REG_NO = #{regNo}
             </if>
             , INST_SAREA_CD = #{instSareaCd}
             , RGN_CD = #{rgnCd}
@@ -1294,4 +1305,190 @@
         WHERE
             APLYID = #{aplyid}                
     </update>
+    
+    <!-- 소요예산 탭 조회 -->
+    <select id="selectBudgetList" parameterType="BudgetVo" resultType="BudgetVo">
+        /* ReqMngDao.selectBudgetList */
+        WITH T AS (
+            SELECT
+                BGTID
+                , APLYID
+                , EXPITM_CD 
+                , AMT
+                , DSCTN
+                , SUM(AMT) OVER (PARTITION BY APLYID) AS TOTAL_AMT
+                , MDFCN_DT
+                , MDFRID
+                , REG_DT
+                , RGTRID
+            FROM
+                TB_SPB_REQRE_BGT
+            WHERE APLYID = #{aplyid}
+        )
+        SELECT 
+            T.*
+            , B.CD AS CODE
+            , B.CD_NM  AS EXPITM_NM
+        FROM TB_CMM_CD B
+            LEFT OUTER JOIN T ON T.EXPITM_CD = B.CD 
+        WHERE 1 = 1 
+        AND B.CDGRPID = '212'
+        <if test="fldCd == '173106'">
+        AND B.CD IN ('212102103', '212101117', '212102105', '212102107')
+        </if>
+        <if test="fldCd == '173105'">
+        AND B.CD IN ('212101106', '212101108', '212102103', '212102104', '212102105', '212102106', '212102107')
+        </if>
+        <if test="fldCd == '173104'">
+        AND B.CD IN ('212101106', '212107', '212101117', '212102107')
+        </if>
+        <if test="fldCd == '173107'">
+        AND B.CD = '212107'
+        </if>
+        ORDER BY B.CD
+    </select>
+    
+    <!-- 소요예산 수정 -->
+    <update id="updateBudget" parameterType="BudgetVo">
+        /* ReqMngDao.updateBudget */
+        REPLACE INTO TB_SPB_REQRE_BGT 
+        VALUES (
+            #{bgtid}
+            , #{aplyid}
+            , #{expitmCd}
+            , #{amt}
+            , #{dsctn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </update>
+    
+    <!-- 운영개요 탭 상세조회 -->
+    <select id="detailOper" parameterType="OperVo" resultType="OperVo">
+        SELECT 
+            APLYID
+            , CLUB_NM
+            , EDU_NOPE
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID 
+        FROM 
+            TB_SPB_OPER_SUMRY
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 운영개요 탭 교육주제 목록 -->
+    <select id="selectOperSubjectList" parameterType="OperVo" resultType="OperVo">
+        /* ReqMngDao.selectOperSubjectList */
+        SELECT 
+            APLYID
+            , SUBSTRING(EDU_SBJCT_CD, 1, 6) AS EDU_SBJCT_CD1
+            , EDU_SBJCT_CD
+            , B.CD_NM AS EDU_SBJCT_NM 
+            , A.REG_DT
+            , A.RGTRID 
+        FROM 
+            TB_SPB_OPER_EDU_SBJCT_MAPNG A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.EDU_SBJCT_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON SUBSTRING(A.EDU_SBJCT_CD, 1, 6) = C.CD
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 운영개요 탭 운영차시 목록 -->
+    <select id="selectOperSubjectRndList" parameterType="OperVo" resultType="OperRndVo">
+        SELECT 
+            RNDID
+            , APLYID
+            , SBJCT_SE_CD
+            , B.CD_NM AS SBJCT_SE_NM
+            , RND
+            , SUBSTRING(EDU_SBJCT_CD, 1, 6) AS EDU_SBJCT_CD1
+            , EDU_SBJCT_CD
+            , COUNT(SBJCT_SE_CD) OVER (PARTITION BY SBJCT_SE_CD) AS ROW_SPAN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID 
+        FROM 
+            TB_SPB_OPER_RND A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.SBJCT_SE_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON A.EDU_SBJCT_CD = C.CD
+            LEFT OUTER JOIN TB_CMM_CD D ON SUBSTRING(A.EDU_SBJCT_CD, 1, 6) = D.CD
+        WHERE APLYID = #{aplyid}
+        AND SBJCT_SE_CD = #{sbjctSeCd}
+        ORDER BY SBJCT_SE_CD, RND
+    </select>
+    
+    <!-- 운영개요 탭 수정 -->
+    <update id="updateOper" parameterType="OperVo">
+        /* ReqMngDao.updateOper */
+        UPDATE TB_SPB_OPER_SUMRY SET
+            CLUB_NM = #{clubNm}
+            , EDU_NOPE = #{eduNope}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>
+    
+    <!-- 운영개요 탭 > 교육주제 삭제 -->
+    <delete id="deleteOperSubject" parameterType="OperVo">
+        /* ReqMngDao.deleteOperSubject */
+        DELETE FROM TB_SPB_OPER_EDU_SBJCT_MAPNG
+        WHERE APLYID = #{aplyid}
+    </delete>
+    
+    <!-- 운영개요 탭 > 교육주제 등록 -->
+    <insert id="insertOperSubject" parameterType="OperVo">
+        /* ReqMngDao.insertOperSubject */
+        INSERT INTO TB_SPB_OPER_EDU_SBJCT_MAPNG (
+            APLYID
+            , EDU_SBJCT_CD
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach item="item" collection="eduSbjctCds" separator=",">
+        (
+            #{aplyid}
+            , #{item}
+            , NOW()
+            , #{user.userid}
+        ) 
+        </foreach>
+    </insert>
+    
+    <!-- 운영개요 탭 > 운영차시 삭제 -->
+    <delete id="deleteOperSubjectRnd" parameterType="OperVo">
+        /* ReqMngDao.deleteOperSubjectRnd */
+        DELETE FROM TB_SPB_OPER_RND
+        WHERE APLYID = #{aplyid}
+    </delete>
+    
+    <!-- 운영개요 탭 > 운영차시 등록 -->
+    <insert id="insertOperSubjectRnd" parameterType="OperRndVo" useGeneratedKeys="true" keyProperty="rndid">
+        /* ReqMngDao.insertOperSubjectRnd */
+        INSERT INTO TB_SPB_OPER_RND (
+            RNDID
+            , APLYID
+            , SBJCT_SE_CD
+            , RND
+            , EDU_SBJCT_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{rndid}
+            , #{aplyid}
+            , #{sbjctSeCd}
+            , #{rnd}
+            , #{eduSbjctCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
 </mapper>
