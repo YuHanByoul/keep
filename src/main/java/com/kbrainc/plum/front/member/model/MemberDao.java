@@ -1,5 +1,7 @@
 package com.kbrainc.plum.front.member.model;
 
+import java.util.List;
+
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.rte.model.UserVo;
@@ -89,19 +91,7 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public int insertMember(MemberVo memberVo) throws Exception;
-    
-    /**
-    *
-    * 회원 정보 수정
-    *
-    * @Title : updateMember
-    * @Description : 회원 정보 수정 
-    * @param memberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
-    public int updateMember(MemberVo memberVo) throws Exception;
-    
+
     /**
     * 관심 환경분야 저장
     *
@@ -123,4 +113,27 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public int insertItrstfld(MemberVo memberVo) throws Exception;
+    
+    /**
+    * 기관 검색 리스트 조회
+    *
+    * @Title       : selectInstSearchList 
+    * @Description : 기관 검색 리스트 조회
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return List<MemberInstSearchVo> 기관검색목록
+    * @throws Exception 예외
+    */
+    public List<MemberInstSearchVo> selectInstSearchList(MemberInstSearchVo memberInstSearchVo) throws Exception;
+    
+    /**
+    *
+    * 회원 정보 수정
+    *
+    * @Title : updateMember
+    * @Description : 회원 정보 수정 
+    * @param memberVo MemberVo객체
+    * @return int 
+    * @throws Exception 예외
+    */
+    public int updateMember(MemberVo memberVo) throws Exception;
 }
