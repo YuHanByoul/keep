@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<div class="table-view">
+			<div class="table-view-header">
+				<h3>
+					<span><th:block th:text="${evnt.ttl}"></th:block></span>
+				</h3>
+				<dl>
+					<div class="list">
+						<dt>상태</dt>
+						<dd><th:block th:text="${evnt.stts}"></th:block></dd>
+					</div>
+					<div class="list">
+						<dt>등록기관</dt>
+						<dd><th:block th:text="${evnt.instNm}"></th:block></dd>
+					</div>
+				</dl>
+				<dl>
+					<div class="list">
+						<dt>등록일</dt>
+						<dd><th:block th:text="${evnt.regDt}"></th:block></dd>
+					</div>
+					<div class="list">
+						<dt>조회수</dt>
+						<dd><th:block th:text="${evnt.hits}"></th:block></dd>
+					</div>
+				</dl>
+				<dl class="table-view-file">
+					<div class="list">
+						<dt>첨부파일</dt>
+						<dd>
+							<div class="form-input-file">
+								<ul>
+									<th:block th:each="item : ${file}">
+									<li class="file-block" th:data_ext="${item.ext}"><span class="name"><a href="javascript:void(0)" th:onclick="javascript:downloadFileByFileid([[${item.fileid}]],[[${item.fileIdntfcKey}]])"><th:block th:text="${item.orginlFileNm}"></th:block></a></span></li>
+									</th:block>
+								</ul>
+							</div>
+						</dd>
+					</div>
+				</dl>
+				<dl>
+					<div class="list">
+						<dt>접수기간</dt>
+						<dd><th:block th:text="${evnt.bgngDe}"></th:block> ~ <th:block th:text="${evnt.endDe}"></th:block></dd>
+					</div>
+					<div class="list">
+						<dt>당첨자 발표일</dt>
+						<dd><th:block th:text="${evnt.prsntnDe}"></th:block></dd>
+					</div>
+				</dl>
+			</div>
+			<div class="table-view-body">
+				<div class="table-view-content">
+					<div class="cont" style="word-break:break-word;">
+						<th:block th:text="${evnt.cn}"></th:block>
+					</div>
+				</div>
+				<div class="btn-wrap">
+					<div class="center">
+						<button type="button" class="btn-large btn-green" id="aplyBtn" onclick="moveToAply();">이벤트 참여하기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="btn-wrap">
+			<div class="center">
+				<button type="button" class="btn-medium btn-gray" onclick="moveToDetail();">목록</button>
+			</div>
+		</div>
+
+			<div class="page-navigation">
+				<th:block th:if="${evnt.beforeEvntid} != null">
+				<a th:href="@{/front/evnt/evntDetailForm.html?evntid=}+${evnt.beforeEvntid}">
+					<dl>
+						<dt>이전글</dt>
+						<dd><span class="ellipsis"><th:block th:text="${evnt.beforeEvntTtl}"></th:block></span></dd>
+					</dl>
+				</a>
+				</th:block>
+				<th:block th:unless="${evnt.beforeEvntid} != null">
+					<a style="cursor:auto">
+						<dl>
+							<dt>이전글</dt>
+							<dd><span class="ellipsis">이전글이 없습니다.</th:block></span></dd>
+						</dl>
+					</a>
+				</th:block>						
+				
+				<th:block th:if="${evnt.nextEvntid} != null">
+					<a th:href="@{/front/evnt/evntDetailForm.html?evntid=}+${evnt.nextEvntid}">
+						<dl>
+							<dt>다음글</dt>
+							<dd><span class="ellipsis"><th:block th:text="${evnt.nextEvntTtl}"></th:block></span></dd>
+						</dl>
+					</a>
+				</th:block>
+				<th:block th:unless="${evnt.nextEvntid} != null">
+					<a style="cursor:auto">
+						<dl>
+							<dt>다음글</dt>
+							<dd><span class="ellipsis">다음글이 없습니다.</th:block></span></dd>
+						</dl>
+					</a>
+				</th:block>					
+			</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">
+			var aplyUrl = /*[[${evnt.aplyUrl}]]*/ null
+			
+			if(aplyUrl == '') {
+				$('#aplyBtn').hide();
+			}
+			
+			function moveToAply() {
+				if(aplyUrl == '') {
+					alert('등록된 이벤트 주소가 없습니다.');
+					return false;
+				}
+				
+				var urlTest1 = aplyUrl.includes('https://');
+				var urlTest2 = aplyUrl.includes('http://');
+				
+				if(urlTest1 || urlTest2) {
+					window.open(aplyUrl);
+				}else{
+					window.open('https://'+aplyUrl);
+				}
+				
+			}
+		
+	        function moveToDetail() {
+	            location.href = '/front/evnt/evntListForm.html';
+	        }
+		</script>
+	</div>
+
+</body>
+</html>

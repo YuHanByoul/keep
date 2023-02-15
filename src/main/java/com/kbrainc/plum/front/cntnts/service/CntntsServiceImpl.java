@@ -22,7 +22,7 @@ import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 * @ClassName : CntntsServiceImpl
 * @Description : 컨텐츠 관리 서비스 구현 클래스
 * @author : JD
-* @date : 2023. 1. 12.
+* @date : 2023. 2. 2.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */
@@ -37,7 +37,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * 컨텐츠 관리 게시글 목록 조회
     *
     * @Title : selectCntntsList
-    * @Description : 컨텐츠 관리 게시글 목록 조회
+    * @Description : 컨텐츠 게시글 목록 조회
     * @param cntntsVo 객체
     * @throws Exception 예외
     * @return List<CntntsVo>
@@ -50,7 +50,7 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
     * 컨텐츠 관리 게시글 상세조회
     *
     * @Title : selectCntntsInfo
-    * @Description : 컨텐츠 관리 게시글 상세조회
+    * @Description : 컨텐츠 게시글 상세조회
     * @param cntntsVo 객체
     * @throws Exception 예외
     * @return CntntsVo
@@ -59,10 +59,28 @@ public class CntntsServiceImpl extends PlumAbstractServiceImpl implements Cntnts
         return cntntsDao.selectCntntsInfo(cntntsVo);
     }
     
+    /**
+    * 조회수 증가
+    *
+    * @Title : updateCntntsHits
+    * @Description : 조회수 증가
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return int
+    */
     public int updateCntntsHits(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.updateCntntsHits(cntntsVo);
     };
     
+    /**
+    * 콘텐츠 썸네일 파일리스트
+    *
+    * @Title : selectCntntsFileList
+    * @Description : 콘텐츠 썸네일 파일리스트
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return List<CntntsVo>
+    */
     public List<CntntsVo> selectCntntsFileList(CntntsVo cntntsVo) throws Exception {
         return cntntsDao.selectCntntsFileList(cntntsVo);
     };
