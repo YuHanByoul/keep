@@ -71,6 +71,8 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
         String addStyle = "";
         String isAdmin = "";
         String applyClass = "";
+        String title = "";
+        String dataWidth = "";
         boolean disabled = tag.hasAttribute("disabled");
 
         List<CodeInfoVo> codeList = new ArrayList<CodeInfoVo>();
@@ -100,6 +102,14 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
             if (tag.hasAttribute("addStyle")) {
                 addStyle = tag.getAttribute("addStyle").getValue();
             }
+            
+            if (tag.hasAttribute("title")) {
+                title = tag.getAttribute("title").getValue();
+            }
+            
+            if (tag.hasAttribute("dataWidth")) {
+                dataWidth = tag.getAttribute("dataWidth").getValue();
+            }
 
             if (tag.hasAttribute("upprCd")) {
                 upprCd = tag.getAttribute("upprCd").getValue();
@@ -119,7 +129,7 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
             if (codeList.size() <= 0) {
                 result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
             } else {
-                result.append("<select  class ='").append(applyClass+" ").append(addClass).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
+                result.append("<select  class ='").append(applyClass+" ").append(addClass).append("' title='").append(title).append("' data-width='").append(dataWidth).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                     String changeFunction = tag.getAttribute("onchange").getValue();
                     result.append("    onchange ='").append(changeFunction).append("()' ");

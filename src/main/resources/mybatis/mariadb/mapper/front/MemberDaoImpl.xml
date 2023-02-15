@@ -179,6 +179,28 @@
             )
             </foreach>
     </insert>
+
+    <!-- 기관 검색 리스트 조회  -->
+    <select id="selectInstSearchList" parameterType="MemberInstSearchVo" resultType="MemberInstSearchVo">
+        /* front.MemberDao.selectInstSearchList */
+        <include refid="PaginationMapper.header"/>
+            SELECT 
+                ARTCLID,
+                INST_NM, 
+                INST_TYPE_CD, 
+                BRNO
+            FROM 
+                TB_CMM_INST_POOL
+            WHERE
+                1 = 1
+            <if test="instNm != null and instNm != ''">
+            AND INST_NM LIKE CONCAT('%',#{instNm},'%')
+            </if>
+            <if test="brno != null and brno != ''">
+            AND BRNO LIKE CONCAT('%',#{brno},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
     
     <!-- 회원 정보 수정(기존에 있던거 삭제하지않고 일단 놔둠) -->
     <update id="updateMember" parameterType="front.MemberVo">

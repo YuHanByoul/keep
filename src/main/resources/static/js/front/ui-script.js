@@ -9,7 +9,7 @@ $(function (){
 	layerPopup.init();
 	tabContent.init();
 	accordionContent.init();
-	uploadFile();
+	// uploadFile();
 	headerSearch.init();
 	asideScrollTop();
 });
@@ -407,7 +407,7 @@ const formStyle = {
 		})
 	},
 	tableRowCheck : function () {
-		$(document).on('click', '.table-col .tr-check input[type=checkbox]' , function () {
+		$(document).on('click', '.table-col .tr-check input[type=checkbox],.table-col .tr-check input[type=radio]' , function () {
 			const tr = $(this).closest('.tr-check');
 			if ($(this).is(':checked')) {
 				tr.addClass('tr-checked');
@@ -417,7 +417,7 @@ const formStyle = {
 		})
 	},
 	widthEnabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
+		$('.form-input input,.form-input select,.form-input textarea,.form-input-file').each(function () {
 			if ($(this).data('width')) {
 				$(this).css({
 					'width': $(this).data('width'),
@@ -427,7 +427,7 @@ const formStyle = {
 		})
 	},
 	widthDisabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
+		$('.form-input input,.form-input select,.form-input textarea,.form-input-file').each(function () {
 			if ($(this).data('width')) {
 				$(this).removeAttr('style');
 			}

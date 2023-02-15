@@ -85,6 +85,7 @@
         var detailUrl = '/front/envPrpsl/envPrpslDetail.html';
         var formUrl = '/front/envPrpsl/envPrpslForm.html';
         var searchVo = /*[[${searchVo}]]*/null;
+        var loginUserid = /*[[${loginUserid}]]*/null;
 
         function changeRowPerPage() {
             $('#rowPerPage').val($('#selectRowPerPage').val());
@@ -138,10 +139,11 @@
                         </tr>`;
             } else {
                 list.forEach(function (item) {
+                    let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == loginUserid));
                     html += `<tr>
                                 <td>${item.rowNumber}</td>
                                 <td>${item.prcsSttsCdNm}</td>
-                                <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToDetail(${item.prpslid})">${item.ttl}</a></td>
+                                <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToDetail(${item.prpslid}, ${canGoToDetail})">${item.ttl}</a></td>
                                 <td>${item.clsfCdNm}</td>
                                 <td>${item.acnt}</td>
                                 <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
@@ -158,11 +160,16 @@
             f.submit();
         }
 
-        function moveToDetail(prpslid) {
-            var f = document.forms.searchForm;
-            f.prpslid.value = prpslid;
-            f.action = detailUrl;
-            f.submit();
+        function moveToDetail(prpslid, canGoToDetail) {
+            if (canGoToDetail) {
+                var f = document.forms.searchForm;
+                f.prpslid.value = prpslid;
+                f.action = detailUrl;
+                f.submit();
+            } else {
+                alert('비공개 글의 경우 작성자만 볼 수 있습니다.');
+                return;
+            }
         }
 
         function goPage(num) {

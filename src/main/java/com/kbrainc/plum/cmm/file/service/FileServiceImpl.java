@@ -51,7 +51,8 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
     	
         // 파일저장
         FileVo fileVo = fileStorageService.storeFile(file, fileGrpVo);
-        fileGrpVo.setRgtrid(Integer.parseInt(userVo.getUserid()));
+        Integer rgtrid = userVo.getUserid() != null ? Integer.parseInt(userVo.getUserid()) : null;
+        fileGrpVo.setRgtrid(rgtrid);
         fileVo.setUser(userVo);
         //DB처리
         try {
