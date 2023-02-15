@@ -17,7 +17,7 @@ import com.kbrainc.plum.front.cntnts.service.CntntsService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
-* 컨텐츠 관리 컨트롤러 클래스
+* 컨텐츠 컨트롤러 클래스
 *
 * <pre>
 * com.kbrainc.plum.front.cntnts.controller
@@ -25,7 +25,7 @@ import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 * </pre>
 *
 * @ClassName : CntntsController
-* @Description : 컨텐츠 관리 컨트롤러 클래스
+* @Description : 콘텐츠 컨트롤러 클래스
 * @author : JD
 * @date : 2023. 2. 2.
 * @Version :
@@ -39,7 +39,7 @@ public class CntntsController {
     private CntntsService cntntsService;
     
     /**
-    * 컨텐츠관리 목록화면 이동
+    * 콘텐츠 게시글 목록 화면 이동
     *
     * @Title : cntntsListForm
     * @Description : 컨텐츠관리 목록화면 이동
@@ -53,6 +53,16 @@ public class CntntsController {
     }
     
     
+    /**
+    * 콘텐츠 상세 페이지 이동
+    *
+    * @Title : cntntsDetailForm
+    * @Description : 콘텐츠 상세 페이지 이동
+    * @param model 객체
+    * @param cntntsVo 객체
+    * @throws Exception 예외
+    * @return String
+    */
     @RequestMapping(value = "/front/cntnts/cntntsDetailForm.html")
     public String cntntsDetailForm(Model model, CntntsVo cntntsVo) throws Exception {
         cntntsService.updateCntntsHits(cntntsVo); 
@@ -82,7 +92,7 @@ public class CntntsController {
     
     
     /**
-    * 컨텐츠 관리 게시글 목록 조회
+    * 콘텐츠 게시글 목록 조회
     *
     * @Title : selectCntntsList
     * @Description : 컨텐츠 관리 게시글 목록 조회

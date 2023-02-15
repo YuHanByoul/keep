@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : PrgrmDaoImpl.xml
+	Description : 프로그램
+-->
+<mapper namespace="com.kbrainc.plum.front.envEdu.model.PrgrmDao">
+    
+    <!-- 프로그램 목록 조회 -->
+    <select id="selectPrgrmList" parameterType="front.PrgrmVo" resultType="front.PrgrmVo">
+        /* PrgrmDao.selectPrgrmList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                  A.PRGRMID
+                , A.PRGRM_NM
+                , ADDR.CTPRVN_NM
+                , A.INST_NM
+                , CONCAT_WS(', ',
+                         CASE WHEN B.INFNT = 'Y' THEN '유아' END
+                       , CASE WHEN B.SCHBOY = 'Y' THEN '초등학생' END
+                       , CASE WHEN B.MSKLSD = 'Y' THEN '중학생' END
+                       , CASE WHEN B.HGSCHST = 'Y' THEN '고등학생' END
+                       , CASE WHEN B.ADULT = 'Y' THEN '성인' END
+                       ) AS EDU_TARGET
+                , B.WHOL_AGE
+                , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+                , C.DSGN_NO
+                , A.DSGN_DE
+                , A.REG_DT
+                , D.FILEID
+                , D.FILE_IDNTFC_KEY
+            FROM
+            	TB_ASS_PRGRM A
+            	LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+            	LEFT OUTER JOIN (SELECT PRGRMID, DSGN_NO, DSGN_CYCL FROM TB_ASS_DSGN_HSTRY ORDER BY DSGN_CYCL DESC LIMIT 1) C ON A.PRGRMID = C.PRGRMID
+            	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
+                LEFT OUTER JOIN (SELECT FILEID, FILEGRPID, FILE_IDNTFC_KEY FROM TB_CMM_FILE GROUP BY FILEGRPID) D ON B.EDU_PHOTO_FILEGRPID = D.FILEGRPID
+            WHERE
+            	A.STTS_CD = 111111
+                <!-- 프로그램명 -->
+                <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+                AND A.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+                </if>
+                <!-- 기관명 -->
+                <if test="searchInstNm != null and searchInstNm != ''">
+                AND A.INST_NM LIKE CONCAT('%',#{searchInstNm},'%')
+                </if>
+                <!-- 지역 -->
+                <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtlCn'">
+                AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
+                AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <!-- 교육대상 -->
+                <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'infnt'">
+                AND B.INFNT = 'Y'
+                </if>
+                <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'schboy'">
+                AND B.SCHBOY = 'Y'
+                </if>
+                <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'msklsd'">
+                AND B.MSKLSD = 'Y'
+                </if>
+                <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'hgschst'">
+                AND B.HGSCHST = 'Y'
+                </if>
+                <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'adult'">
+                AND B.ADULT = 'Y'
+                </if>
+                <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'all'">
+                AND B.WHOL_AGE = 'Y'
+                </if>            
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 프로그램 게시글 상세조회 -->
+    <select id="selectPrgrmInfo" parameterType="front.PrgrmVo" resultType="front.PrgrmVo"> 
+        /* PrgrmDao.selectPrgrmInfo */
+            SELECT
+                /* 프로그램 정보 및 기관 정보 */
+                A.PRGRMID
+                , A.PRGRM_NM
+                , C.DSGN_NO
+                , A.INSTID
+                , A.INST_NM
+                , D.RPRSV_NM
+                , A.INST_ADDR
+                , A.INST_DTLADDR
+                , A.DSGN_DE
+                , A.INST_HMPG
+                , ADDR.CTPRVN_NM
+            
+                /* 프로그램 개요 */
+                , B.STY_NIGHT
+                , B.STY_DAYTM
+                , B.STY_YN
+                , CD.CD_NM
+                , CONCAT_WS(', ',
+                         CASE WHEN B.JAN = 'Y' THEN '1월' END
+                       , CASE WHEN B.FEB = 'Y' THEN '2월' END
+                       , CASE WHEN B.MAR = 'Y' THEN '3월' END
+                       , CASE WHEN B.APR = 'Y' THEN '4월' END
+                       , CASE WHEN B.MAY = 'Y' THEN '5월' END
+                       , CASE WHEN B.JUNE = 'Y' THEN '6월' END
+                       , CASE WHEN B.JULY = 'Y' THEN '7월' END
+                       , CASE WHEN B.AUG = 'Y' THEN '8월' END
+                       , CASE WHEN B.SEPT = 'Y' THEN '9월' END
+                       , CASE WHEN B.OCT = 'Y' THEN '10월' END
+                       , CASE WHEN B.NOV = 'Y' THEN '11월' END
+                       , CASE WHEN B.DCM = 'Y' THEN '12월' END
+                       ) AS TARGETMM
+                , EDU.EDU_SBJCT_CD
+                , GROUP_CONCAT(EDUCD.CD_NM separator ', ') AS EDU_SBJCT_CD_NM
+                , CONCAT_WS(', ',
+                         CASE WHEN B.INFNT = 'Y' THEN '유아' END
+                       , CASE WHEN B.SCHBOY = 'Y' THEN '초등학생' END
+                       , CASE WHEN B.MSKLSD = 'Y' THEN '중학생' END
+                       , CASE WHEN B.HGSCHST = 'Y' THEN '고등학생' END
+                       , CASE WHEN B.ADULT = 'Y' THEN '성인' END
+                       ) AS EDU_TARGET
+                , B.EDU_PLC
+                , B.EDU_NOPE
+                , CONCAT(B.EDU_HR, EDU_MNT) AS EDU_TIME
+                , B.PCHRG_YN
+                , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+                , A.APLCNT_NM
+                , A.APLCNT_MOBLPHON
+            
+                /* 프로그램 소개 */
+                , B.EDU_PRPS
+                , B.APPRO
+                , B.DSTNCTN
+                , B.EDU_CN
+            
+                /* 해당 기관 지정 프로그램 목록 */
+                /* TO-DO 해당 기관 차수?? 물어볼것 */
+            FROM
+            	TB_ASS_PRGRM A
+            	LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+            	LEFT OUTER JOIN (SELECT PRGRMID, DSGN_NO, DSGN_CYCL FROM TB_ASS_DSGN_HSTRY ORDER BY DSGN_CYCL DESC LIMIT 1) C ON A.PRGRMID = C.PRGRMID
+            	LEFT OUTER JOIN TB_CMM_INST D ON A.INSTID = D.INSTID
+            	LEFT OUTER JOIN TB_CMM_CD CD ON B.OPER_FRM_CD = CD.CD
+            	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
+            	LEFT OUTER JOIN  TB_ASS_PRGRM_EDU_SBJCT EDU ON A.PRGRMID = EDU.PRGRMID
+            	LEFT OUTER JOIN TB_CMM_CD EDUCD ON EDU.EDU_SBJCT_CD = EDUCD.CD
+            WHERE
+            	A.STTS_CD = 111111
+                AND A.PRGRMID = #{prgrmid}
+            GROUP BY A.PRGRMID;
+    </select>
+    
+    <!-- 프로그램 교육사진 파일 목록 조회 -->
+    <select id="selectEduPhotoFileList" parameterType="front.PrgrmVo" resultType="front.PrgrmVo">
+        /* PrgrmDao.selectInstPrgrmList */
+            SELECT
+                C.FILEID
+              , C.FILE_IDNTFC_KEY
+            FROM
+            	TB_ASS_PRGRM A
+            	LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+            	LEFT OUTER JOIN tb_cmm_file C ON B.EDU_PHOTO_FILEGRPID = C.FILEGRPID                
+            WHERE
+                A.STTS_CD = 111111
+                AND A.PRGRMID = #{prgrmid}
+    </select>
+    
+    <!-- 프로그램 해당기업 프로그램 목록 조회 -->
+    <select id="selectInstPrgrmList" parameterType="front.PrgrmVo" resultType="front.PrgrmVo">
+        /* PrgrmDao.selectInstPrgrmList */
+            SELECT
+                A.PRGRMID
+              , A.PRGRM_NM
+              , ADDR.CTPRVN_NM
+              , A.INST_NM
+              , CONCAT(CASE WHEN B.INFNT = 'Y' THEN '유아, 'ELSE '' END
+                     , CASE WHEN B.SCHBOY = 'Y' THEN '초등학생, 'ELSE '' END
+                     , CASE WHEN B.MSKLSD = 'Y' THEN '중학생, 'ELSE '' END
+                     , CASE WHEN B.HGSCHST = 'Y' THEN '고등학생, 'ELSE '' END
+                     , CASE WHEN B.ADULT = 'Y' THEN '성인'ELSE '' END
+                     ) AS EDU_TARGET
+              , B.WHOL_AGE
+              , GROUP_CONCAT(EDUCD.CD_NM separator ', ') AS EDU_SBJCT_CD_NM
+              , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+              , C.DSGN_NO
+              , A.DSGN_DE
+              , A.REG_DT
+            FROM
+                TB_ASS_PRGRM A
+                LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+                LEFT OUTER JOIN (SELECT PRGRMID, DSGN_NO, DSGN_CYCL FROM TB_ASS_DSGN_HSTRY ORDER BY DSGN_CYCL DESC LIMIT 1) C ON A.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
+                LEFT OUTER JOIN  TB_ASS_PRGRM_EDU_SBJCT EDU ON A.PRGRMID = EDU.PRGRMID
+                LEFT OUTER JOIN TB_CMM_CD EDUCD ON EDU.EDU_SBJCT_CD = EDUCD.CD                
+            WHERE
+                A.STTS_CD = 111111
+                AND A.INSTID = #{instid}
+                AND A.PRGRMID NOT IN (#{prgrmid})
+    </select>    
+</mapper>

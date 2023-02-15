@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<form class="search-filter" id="searchForm" name="searchForm">
+			<div class="form-input-wrap">
+				<div class="form-row">
+					<div class="form-header"><strong class="label">제목 검색</strong></div>
+					<div class="form-body">
+						<input type="search" id="ttl" name="ttl" title="제목 검색" placeholder="검색어를 입력해 주세요.">
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-header"><strong class="label">상태</strong></div>
+					<div class="form-body">
+						<div class="form-check-list">
+							<label class="inp"><input type="radio" id="stts1" name="stts" value="all" checked><b>전체</b></label>
+							<label class="inp"><input type="radio" id="stts2" name="stts" value="before"><b>접수전</b></label>
+							<label class="inp"><input type="radio" id="stts3" name="stts" value="ongoing"><b>접수중</b></label>
+							<label class="inp"><input type="radio" id="stts4" name="stts" value="clased"><b>마감</b></label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="search-filter-submit">
+				<button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="evnt.searchInit()">초기화</button>
+				<button type="button" class="btn-medium btn-green btn-before-search" onclick="evnt.search()">검색</button>
+			</div>
+			
+	        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+	        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+	        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+	        <input type="hidden" id="cntntsid" name="evntid">
+		</form>
+
+		<div class="table-caption flex-nowrap">
+			<div class="left">
+				<p>총 <b id="totalCount">0</b> 건</p>
+			</div>
+		</div>
+
+		<div class="table-col table-layout-auto table-col-mo">
+			<table>
+				<caption>신청정보 - 번호, 상태, 제목, 등록기관, 접수기간, 당첨자 발표일, 조회수</caption>
+				<colgroup>
+					<col>
+					<col>
+					<col style="width:30%;">
+					<col>
+					<col>
+					<col>
+					<col>
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">번호</th>
+						<th scope="col">상태</th>
+						<th scope="col">제목</th>
+						<th scope="col">등록기관</th>
+						<th scope="col">접수기간</th>
+						<th scope="col">당첨자 발표일</th>
+						<th scope="col">조회수</th>
+					</tr>
+				</thead>
+				<tbody id="list-area">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="pagination" aria-label="pagination">
+		</div>
+		<!-- //content -->
+				
+		<script th:inline="javascript">
+        var evnt = {
+                listUrl: '/front/evnt/selectEvntList.do',
+                detailUrl : '/front/evnt/evntDetailForm.html',
+
+                init(rowPerPage) {
+                	if(rowPerPage != null) {
+	                    $("#rowPerPage").val(parseInt(rowPerPage));
+	                    $('#pageNumber').val('1');
+                	}
+                    this.selectEvntList();
+                },
+
+                moveToDetail() {
+                    if (this.userid == null) {
+                        alert('로그인 후 이용하실 수 있습니다.');
+                        return;
+                    }
+                    location.href = '/front/evnt/evntDetailForm.html';
+                },
+
+                search() {
+                    $('#pageNumber').val('1');
+                    this.selectEvntList();
+                },
+
+                searchInit() {
+                	$('#ttl').val('');
+                	$("input[name='stts']").prop('checked', false);
+    				this.selectEvntList();
+                },
+
+                selectEvntList() {
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: evnt.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	evnt.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                moveToDetail(evntid) {
+                    var f = document.forms.searchForm ;
+                    f.evntid.value=evntid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                },
+
+                makeListHtml(data) {
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `
+                        <tr>
+                            <td class="nodata" colSpan="7">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+                            </td>
+                        </tr>
+                        `;
+                    } else {
+                        data.list.forEach(function(item) {
+   							if(`${item.newEvnt}` == 'NEW'){
+   								listHtml += `
+	   	         					<tr>
+	   	     						<td>${item.rowNumber}</td>
+	   	     						<td>${item.stts}</td>
+	   	     						<td class="al article"><a href="javascript:void(0)" onclick="evnt.moveToDetail(${item.evntid})" class="link new">${item.ttl}</a></td>
+	   	     						<td>${item.instNm}</td>
+	   	     						<td>${item.bgngDe} ~ ${item.endDe}</td>
+	   	     						<td>${item.prsntnDe}</td>
+	   	     						<td>${item.hits}</td>
+	   	     						</tr>
+   	    						`;
+   							}else {
+   								listHtml += `
+	   	         					<tr>
+	   	     						<td>${item.rowNumber}</td>
+	   	     						<td>${item.stts}</td>
+	   	     						<td class="al article"><a href="javascript:void(0)" onclick="evnt.moveToDetail(${item.evntid})" class="link ellipsis">${item.ttl}</a></td>
+	   	     						<td>${item.instNm}</td>
+	   	     						<td>${item.bgngDe} ~ ${item.endDe}</td>
+	   	     						<td>${item.prsntnDe}</td>
+	   	     						<td>${item.hits}</td>
+	   	     						</tr>
+   	    						`;
+   							}
+                        });
+                    }
+                    $('#list-area').html(listHtml);
+                    $("#pagination").html(data.pagination);
+                    $("#totalCount").html(data.totalCount);
+                }
+            };
+
+            $(function () {
+            	evnt.init();
+            })
+			
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				
+				evnt.selectEvntList();
+			}            
+		</script>
+	</div>
+
+</body>
+</html>

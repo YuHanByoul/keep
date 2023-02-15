@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.prtpn.eduClssRm.model.EduClssRmVo;
-import com.kbrainc.plum.mng.prtpn.eduClssRm.service.EduClssRmService;
+import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaVo;
+import com.kbrainc.plum.mng.prtpn.eduSarea.service.EduSareaService;
 import com.kbrainc.plum.mng.prtpn.mvmnPrgrm.model.MvmnPrgrmVo;
 import com.kbrainc.plum.mng.prtpn.mvmnSchdl.model.MvmnSchdlVo;
 import com.kbrainc.plum.mng.prtpn.mvmnSchdl.service.MvmnSchdlService;
@@ -50,7 +50,7 @@ public class MvmnSchdlController {
     private MvmnSchdlService mvmnSchdlService;
 
     @Autowired
-    private EduClssRmService eduClssRmService;
+    private EduSareaService eduSareaService;
 
     /**
      * 교육일정관리 리스트화면으로 이동
@@ -64,8 +64,8 @@ public class MvmnSchdlController {
     @RequestMapping(value = "/mng/prtpn/mvmnSchdl/mvmnSchdlListForm.html")
     public String mvmnSchdlListForm(Model model, HttpServletRequest request) throws Exception {
 
-        EduClssRmVo eduClssRmVo = new EduClssRmVo();
-        model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        EduSareaVo eduSareaVo = new EduSareaVo();
+        model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
 
         int curYear = 2022;
         Integer[] years = new Integer[4];
@@ -83,20 +83,20 @@ public class MvmnSchdlController {
      *
      * @Title : mvmnSchdlInsertPopup
      * @Description : 교육일정관리 입력 팝업화면으로 이동
-     * @param clssrmId
-     * @param clssrmNm 
+     * @param sareaId
+     * @param sareaNm 
      * @param model 객체
      * @throws Exception 예외
      * @return String
      */
     @RequestMapping(value = "/mng/prtpn/mvmnSchdl/mvmnSchdlInsertPopup.html")
-    public String mvmnSchdlInsertPopup(@RequestParam(value ="clssrmId",required = false) int clssrmId, @RequestParam(value ="ym",required = false) String ym, Model model, HttpServletRequest request) throws Exception {
+    public String mvmnSchdlInsertPopup(@RequestParam(value ="sareaId",required = false) int sareaId, @RequestParam(value ="ym",required = false) String ym, Model model, HttpServletRequest request) throws Exception {
         
-        //model.addAttribute("clssrmId", mvmnSchdlVo.getClssrmId());
-        //model.addAttribute("clssrmNm", mvmnSchdlVo.getClssrmNm());
-        EduClssRmVo eduClssRmVo = new EduClssRmVo();
-        eduClssRmVo.setClssrmId(clssrmId);
-        model.addAttribute("eduClssRm", eduClssRmService.selectEduClssRmInfo(eduClssRmVo));
+        //model.addAttribute("sareaId", mvmnSchdlVo.getSareaId());
+        //model.addAttribute("sareaNm", mvmnSchdlVo.getSareaNm());
+        EduSareaVo eduSareaVo = new EduSareaVo();
+        eduSareaVo.setSareaId(sareaId);
+        model.addAttribute("eduSarea", eduSareaService.selectEduSareaInfo(eduSareaVo));
         model.addAttribute("ym", ym);
         
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM");
@@ -114,8 +114,8 @@ public class MvmnSchdlController {
      *
      * @Title : mvmnSchdlInsertPopup
      * @Description : 교육일정관리 수정 팝업화면으로 이동
-     * @param clssrmId
-     * @param clssrmNm 
+     * @param sareaId
+     * @param sareaNm 
      * @param model 객체
      * @throws Exception 예외
      * @return String
@@ -177,8 +177,8 @@ public class MvmnSchdlController {
     @RequestMapping(value = "/mng/prtpn/mvmnSchdl/mvmnSchdlInsertForm.html")
     public String mvmnSchdlInsertForm(Model model) throws Exception {
 
-        EduClssRmVo eduClssRmVo = new EduClssRmVo();
-        model.addAttribute("clssList", eduClssRmService.selectEduClssRmList(eduClssRmVo));
+        EduSareaVo eduSareaVo = new EduSareaVo();
+        model.addAttribute("sareaList", eduSareaService.selectEduSareaList(eduSareaVo));
 
         int curYear = 2022;
         Integer[] years = new Integer[4];
@@ -310,9 +310,9 @@ public class MvmnSchdlController {
     */
     @RequestMapping(value = "/mng/prtpn/mvmnSchdl/selectMvmnSchdlIdList.do")
     @ResponseBody
-    public Map<String, Object> selectMvmnSchdlIdList(String clssrmId) throws Exception {
+    public Map<String, Object> selectMvmnSchdlIdList(String sareaId) throws Exception {
         List<MvmnSchdlVo> result = null;
-        result =  mvmnSchdlService.selectMvmnSchdlIdList(clssrmId);
+        result =  mvmnSchdlService.selectMvmnSchdlIdList(sareaId);
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("schdlIdList", result);
         return resultMap;

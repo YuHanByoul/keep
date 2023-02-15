@@ -9,7 +9,7 @@ $(function (){
 	layerPopup.init();
 	tabContent.init();
 	accordionContent.init();
-	uploadFile();
+	// uploadFile();
 	headerSearch.init();
 	asideScrollTop();
 });
@@ -265,6 +265,7 @@ const gnb = {
 	},
 	onScroll : function () {
 		if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
+			const windowHeight = $(window)
 			$(window).on('scroll', function () {
 				$headerOffsetTop = $header.offset().top;
 				gnb.onResize();
@@ -406,7 +407,7 @@ const formStyle = {
 		})
 	},
 	tableRowCheck : function () {
-		$(document).on('click', '.table-col .tr-check input[type=checkbox]' , function () {
+		$(document).on('click', '.table-col .tr-check input[type=checkbox],.table-col .tr-check input[type=radio]' , function () {
 			const tr = $(this).closest('.tr-check');
 			if ($(this).is(':checked')) {
 				tr.addClass('tr-checked');
@@ -416,7 +417,7 @@ const formStyle = {
 		})
 	},
 	widthEnabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
+		$('.form-input input,.form-input select,.form-input textarea,.form-input-file').each(function () {
 			if ($(this).data('width')) {
 				$(this).css({
 					'width': $(this).data('width'),
@@ -426,7 +427,7 @@ const formStyle = {
 		})
 	},
 	widthDisabled : function () {
-		$('.form-input input,.form-input select,.form-input textarea,.form-input-file .inp-file-text').each(function () {
+		$('.form-input input,.form-input select,.form-input textarea,.form-input-file').each(function () {
 			if ($(this).data('width')) {
 				$(this).removeAttr('style');
 			}
@@ -604,7 +605,7 @@ const layerPopup = {
 		layerPopup.resize();
 		
 	},
-	open : function ({target, w, h, l, t}) {
+	open : function ({target, w, h, l, t, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		ZINDEX++;
 		
@@ -653,13 +654,20 @@ const layerPopup = {
 		targetWrap.attr('tabindex',0);
 		setTimeout(function () {
 			targetWrap.focus();
+
+			//callback
+			if (callback !== undefined) {
+				callback();
+			}
 		},ANIMATION_TIME)
 
 		$('body .layer-popup').each(function (){
 			targetWrap.css('z-index',ZINDEX);
 		});
+
+		
 	},
-	close : function (target) {
+	close : function ({target, callback}) {
 		const targetWrap = $('[data-layer-id="' + target + '"]');
 		const trigger = $('[data-layer-href="' + target + '"]');
 		
@@ -667,6 +675,11 @@ const layerPopup = {
 		targetWrap.removeAttr('tabindex style');
 		targetWrap.css('z-index','');
 		trigger.focus();
+		
+		if (callback !== undefined) {
+			callback();
+		}
+		
 	},
 	onClickTrigger : function () {
 		$(document).on('click', '[data-layer-href]' , function (e){
@@ -689,22 +702,19 @@ const layerPopup = {
 						layerPopup.open({target});
 					}
 				}
-
-			
-			
 		})
 	},
 	onClickClose : function () {
 		$(document).on('click', '[data-layer-close]' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
-			layerPopup.close(target);
+			layerPopup.close({target});
 	
 		})
 	},
 	onClickDimmed : function () {
 		$(document).on('click', '.layer-dimmed:not(.prevent-close)' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
-			layerPopup.close(target);
+			layerPopup.close({target});
 	
 		})
 	},

@@ -1,0 +1,362 @@
+			    <!-- 필터 부분 -->
+                <div class="col-12">
+					<form name="searchDtlFrm" id="searchDtlFrm" action="@{/}" onsubmit="return false;" class="card">
+					<input type="hidden" id="prgrmSchdlid" name="prgrmSchdlid" th:value="${mvmnAplyVo.prgrmSchdlid}">
+						<!-- 필터 부분 -->
+						<div class="card-block-small">
+							<!-- 키워드 filter -->
+							<div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청상태</strong></div>
+                                        <div class="col-sm-12"> 
+                                            <th:block kattr:select_code="searchSttsCd" grpCd="180" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+							
+								<div class="col-lg-3 col-md-6 mb-3">
+									<div class="mb-0 form-group row">
+                                    <span class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></span>
+	                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+	                                        <select name="searchType" id="searchType" class="form-select form-control ">
+	                                           <option value="">- 전체 -</option>
+	                                           <option value="searchInstNm">신청기관명</option>
+	                                           <option value="searchUserNm">신청자명</option>
+	                                           <option value="searchUserId">신청자아이디</option>
+	                                           <option value="searchTelNo">휴대전화번호</option>
+	                                        </select>
+	                                        <input type="text" name="searchKeyword" id="searchKeyword" class="form-control" aria-label="Text input with dropdown button">
+	                                    </div>
+									</div>
+								</div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchDeStartDt"><strong>교육일자-검색시작일</strong></label>
+                                        <div class="col-sm-12">
+                                            <input class="form-control form-control-sm" type="date" name="searchDeStartDt" id="searchDeStartDt">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchDeEndDt"><strong>교육일자 -검색종료일</strong></label>
+                                        <div class="col-sm-12">
+                                            <input class="form-control form-control-sm" name="searchDeEndDt" id="searchDeEndDt" type="date">
+                                        </div>
+                                    </div>
+                                </div>                                
+							</div>
+							<div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영형식</strong></div>
+                                        <div class="col-sm-12"> 
+                                            <th:block kattr:select_code="searchOperFomCd" grpCd="197" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1">
+                                            <strong>신청지역</strong>
+                                        </div>
+		                                <div class="col-6 pe-1">
+		                                    <th:block kattr:select_code="searchCtprvnCd_1" grpCd="143" upprCd="0" selectedCd="" onchange='setNextDepth(143,this.value,"searchCtprvnCd_2" )' firstOptTxt="- 전체 -" isAdmin="true"></th:block>
+		                                </div>
+		                                <div class="col-6 ps-1">
+		                                    <select id="searchCtprvnCd_2" name="searchCtprvnCd_2" class="form-select form-select-sm form-control-sm">
+		                                         <option value="">- 전체 -</option>
+		                                    </select>
+		                                </div>
+	                                </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcptStartDt"><strong>접수일자-검색시작일</strong></label>
+                                        <div class="col-sm-12">
+                                            <input class="form-control form-control-sm" type="date" name="searchRcptStartDt" id="searchRcptStartDt">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRcptEndDt"><strong>접수일자 -검색종료일</strong></label>
+                                        <div class="col-sm-12">
+                                            <input class="form-control form-control-sm" name="searchRcptEndDt" id="searchRcptEndDt" type="date">
+                                        </div>
+                                    </div>
+                                </div>							
+                            </div>
+							<!-- //키워드 filter -->
+							<!-- 키워드 filter-btn -->
+							<div class="mt-1 p-t-20 text-center border-top">
+								<button class="btn btn-disabled m-r-5" onclick="fn_init()">초기화</button>
+								<button type="submit" class="btn btn-primary" onclick="fn_searchDtlForm()">검색</button>
+							</div>
+						</div>
+					</form>
+                </div>
+                <div class="col-12">
+					<div class="card">
+						<div class="row p-20 p-b-0">
+							<div class="col-12 col-md-6">
+								<h5>
+									<strong>교육신청자 검색결과</strong>
+								</h5>
+							</div>
+ 							<div class="col-12 col-md-6 text-right">
+ 							    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_excelDownload();">엑셀다운로드</button>
+                                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_openAplyCloseModal();">신청마감</button> 							    
+								<button type="button" class="btn btn-primary waves-effect waves-light" onclick="fn_goInsertForm();">신청등록</button>
+							</div>
+ 						</div>
+						<div class="card-block-small">
+							<div class="dt-responsive table-responsive">
+								<div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+									<table id="jsDetailGrid" class="table-responsive"></table>
+									<div id="listDetailPager" class="text-center"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+                <!-- Content Area -->
+                <div class="col-12">
+                   <div id="contentDetailPanel" style="display: none" class="card"></div>
+                </div>   
+<div class="modal fade" id="aplyClosePopup" data-bs-backdrop="static"></div>				
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+<script th:inline="javascript">
+var aplyClosePopupUrl = "/mng/prtpn/mvmnAply/mvmnAplyClosePopup.html";
+var aplyCloseModal;
+
+fn_openAplyCloseModal = () => {
+    $("#aplyClosePopup").load(aplyClosePopupUrl, function(response, status, xhr) {
+        if (status == "success") {
+            aplyCloseModal = new bootstrap.Modal($('#aplyClosePopup'));
+            aplyCloseModal.show();
+        }
+    });
+}
+	/* 엑셀 다운로드 */
+	function fn_excelDownload(){
+	    var f = document.searchDtlFrm;
+	    f.action ="/mng/prtpn/mvmnAply/mvmnAplyExcelDownList.do";
+	    f.submit();
+	}
+    //var selectedItems;
+    //커스텀 테그 라이브러리 임시 설정
+       var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
+       function fn_getNextDepthList(grpcd , upprcd, targetId){
+           $.ajax({
+               url : getCodeListUrl,
+               type: 'GET',
+               cache : false,
+               dataType: 'json',
+               data: {
+                     grpcd  : grpcd
+                   , upprcd : upprcd
+               }, 
+               success : function (data){
+                   writeHtml(grpcd,targetId,data,"");
+               },
+               error : function (error){
+               } 
+           });
+       }
+       
+          function writeHtml(grpcd,targetId,list,selected){
+              var cntArr = targetId.split("_");
+              var nextCnt = Number(cntArr[1])+1;
+              var nextTarget =  cntArr[0]+"_"+nextCnt;
+              var html ="<select id='"+targetId+"' class ='form-control' onchange=setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"') >";
+                  html +="    <option  >전체</option>";
+                  for(var i=0 ; i < list.length;i++){
+                    if(list[i].cdid==selected){
+                        html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+                    }else{
+                        html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+                    }
+                  }
+                  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+                     writeHtml(grpcd,nextTarget,list,selected);
+                  }
+                  html +="    </select>";
+                  $("#"+targetId).html(html);
+          }
+          
+          function setNextDepth(grpcd , upprcd , targetId){
+              fn_getNextDepthList(grpcd , upprcd , targetId);
+          }
+       
+	//var selectedItems = [];
+	
+	var gridHelper2;
+	
+	$(function() {
+		gridHelper2 = new GridHelper('jsDetailGrid', 'contentDetailPanel');
+		writeJsDetailGridData();
+	});
+
+	function fn_goInsertForm() {
+		var insertUrl = "/mng/prtpn/mvmnAply/mvmnAplyInsertForm.html?prgrmSchdlid="+$("#prgrmSchdlid").val();
+		gridHelper2.loadContent(insertUrl);
+	}
+
+	function fn_searchDtlForm() {
+		gridHelper2.resetListContent();
+	}
+
+	function fn_init() {
+		$("#searchKeyword").val('');
+		$("#searchEduYr").val('');
+		$("#searchSareaId").val('');
+		$("#searchSareaMm").val('');
+		$("#searchRcptMthdCd").val('');
+		$("#searchSttsCd").val('');
+		gridHelper2.resetListContent();
+	}
+
+	function writeJsDetailGridData() {
+        $("#jsDetailGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            selecting: true,
+            editing: true,
+            paging: true,
+            pagerContainer: "#listDetailPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchDtlFrm').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        url: "/mng/prtpn/mvmnAply/selectMvmnAplyDetailList.do",
+                        dataType: "json",
+                        data: formData,
+                      }).done(function(response){
+                          var da = {
+                                  data : escapeGridData(response.list)
+                                  ,itemsCount : response.totalCount
+                              };
+                        data.resolve(da);
+                      });
+                      return data.promise();
+                  },	
+                  onItemInserting: function(args) {
+                	  debugger;
+//                       return $.ajax({
+//                           type: "POST",
+//                           url: "/items",
+//                           data: item
+//                       });
+                  },
+                  onItemUpdating: function(args) {
+                	  debugger;
+//                       return $.ajax({
+//                           type: "PUT",
+//                           url: "/items",
+//                           data: item
+//                       });
+                  },
+                  onItemEditing: function(args){
+                	  debugger;
+                  }
+			},
+			
+			fields : [
+			   { name : 'aplyId', css : 'hide' }
+			  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false, editing : false }
+			  , { title : '접수번호', name : 'aplyId', type : "text", width : "135", align : "center", editing : false }
+			  , { title : '교육일자', name : 'de', type : "text", width : "135", align : "center", editing : false }
+			  , { title : '회차', name : 'tmeNm', type : "text", width : "135", align : "center", editing : false }
+			  , { title : '신청상태', name : 'sttsCd', type : "select", items : /*[[${sttCodeList}]]*/, valueField : "cd", textField : "cdNm", width : "130", sorting : false, editing : true, editTemplate: function (value, item) {
+                  var grid = this._grid;
+                  var selectedAplyId = grid.fields[0]._value;
+                  var $editControl = jsGrid.fields.select.prototype.editTemplate.call(this, value);
+                  $editControl.change(function (value, item) {
+                	  debugger;
+                      var selectedSttsCd = $(this).val();
+                      
+                      var data = "aplyId="+selectedAplyId+"&sttsCd="+selectedSttsCd;
+                      
+                      if(displayWorkProgress()){
+                          $.ajax({
+                              url : "/mng/prtpn/mvmnAply/updateSttsCdMvmnAply.do",
+                              type: 'POST',
+                              cache : false,
+                              dataType: 'json',
+                              data : data,
+                              success : function (data){
+                                  if(data.result=="success"){
+                                      gridHelper2.resetListContent();
+                                  }else{
+                                      alert(data.msg);
+                                  }
+                                  closeWorkProgress();
+                              }
+                          });
+                      }
+                  });
+                  return $editControl;
+              }}
+			  , { title : '접수일시', name : 'rcptDt', type : "text", width : "160", align : "center", editing : false }
+			  , { title : '신청지역', name : 'signguDesc', type : "text", width : "160", align : "center", editing : false }
+			  , { title : '신청기관', name : 'instNm', type : "text", width : "160", align : "center", editing : false }
+			  , { title : '신청자', name : 'aplyUserNm', type : "text", width : "100", align : "center", editing : false }
+			  , { title : '신청인원', name : 'eduNope', type : "text", width : "80", align : "center", editing : false }
+			  , { title : '휴대전화번호', name : 'moblphon', type : "text", width : "120", align : "center", editing : false }
+			],
+			
+			rowClick : function(args) {
+				if(args.event.originalEvent.target.cellIndex == 4){
+				    jsGrid.Grid.prototype.rowClick.call(this, args);
+				      //gridHelper2.rowClick(args);
+				}
+				if (args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+				
+				var detailUrl = detailUrl = "/mng/prtpn/mvmnAply/mvmnAplyUpdateForm.html?aplyId=" + args.item.aplyId+"&prgrmSchdlid=" + args.item.prgrmSchdlid;
+				if(args.event.originalEvent.target.cellIndex != 4) {
+				    gridHelper2.loadContent(detailUrl);
+				    gridHelper2.rowClick(args);
+				}
+
+			}
+		});
+	}
+</script>
+<script src="/js/ckeditor/ckeditor.js"></script>
+
+	</div>
+</body>
+</html>

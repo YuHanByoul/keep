@@ -168,7 +168,7 @@
             , G.CD_NM AS APLY_STTS_NM
             , SLCTN_STTS_CD
             , H.CD_NM AS SLCTN_STTS_NM
-            , BSNS_CNCL_YN
+<!--             , BSNS_CNCL_YN -->
             , EXCCLC_STTS_CD
             , I.CD_NM AS EXCCLC_STTS_NM
             , BNKB_FILEID
@@ -441,13 +441,15 @@
         /* ReqMngDao.selectInstPrgrmList */
         SELECT 
             APLYID
+            , SUBSTRING(PRGRM_SBJCT_CD, 1, 6) AS PRGRM_SBJCT_CD1
             , PRGRM_SBJCT_CD
             , B.CD_NM AS PRGRM_SBJCT_NM 
             , REG_DT
             , RGTRID 
         FROM 
-            TB_SPB_BFRYY_PRGRM_SBJCT
+            TB_SPB_BFRYY_PRGRM_SBJCT A
             LEFT OUTER JOIN TB_CMM_CD B ON A.PRGRM_SBJCT_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_CD C ON SUBSTRING(A.PRGRM_SBJCT_CD, 1, 6) = C.CD
         WHERE APLYID = #{aplyid}
     </select>
     
@@ -466,19 +468,22 @@
             , PRGRM_SBJCT_CD
             , REG_DT
             , RGTRID
-        ) VALUES (
+        ) VALUES
+        <foreach item="item" collection="prgrmSbjctCds" separator=",">
+        (
             #{aplyid}
-            , #{prgrmSbjctCd}
+            , #{item}
             , NOW()
             , #{user.userid}
         ) 
+        </foreach>
     </insert>
     
     <!-- 기관역량 탭 > 환경교육 운영성과 목록 조회 -->
-    <select id="selectInstOperRsltList" parameterType="CapabilityVo" resultType="CapabilityVo">
+    <select id="selectInstOperRsltList" parameterType="CapabilityResultVo" resultType="CapabilityResultVo">
         /* ReqMngDao.selectInstOperRsltList */
         SELECT 
-            SEQ
+            RSLTID
             , APLYID
             , SE_CD
             , B.CD_NM AS SE_NM
@@ -488,14 +493,16 @@
             , BSNS_BGT
             , OPER_CN
             , ORDR
-            , MDFCN_DT
-            , MDFRID
-            , REG_DT
-            , RGTRID 
+            , COUNT(SE_CD) OVER (PARTITION BY SE_CD) AS ROW_SPAN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID 
         FROM 
             TB_SPB_ENVEDU_OPER_RSLT A
             LEFT OUTER JOIN TB_CMM_CD B ON A.SE_CD = B.CD
         WHERE APLYID = #{aplyid}
+        AND A.SE_CD = #{seCd}
     </select>
     
     <!-- 기관역량 탭 > 환경교육 운영성과 삭제 -->
@@ -506,10 +513,10 @@
     </delete>
     
     <!-- 기관역량 탭 > 환경교육 운영성과 저장 -->
-    <insert id="insertInstOperRslt" parameterType="CapabilityVo">
+    <insert id="insertInstOperRslt" parameterType="CapabilityResultVo">
         /* ReqMngDao.insertInstOperRslt */
         INSERT INTO TB_SPB_ENVEDU_OPER_RSLT (
-            SEQ
+            RSLTID
             , APLYID
             , SE_CD
             , BSNS_NM
@@ -523,7 +530,7 @@
             , REG_DT
             , RGTRID
         ) VALUES (
-            #{seq}
+            #{rsltid}
             , #{aplyid}
             , #{seCd}
             , #{bsnsNm}
@@ -549,6 +556,7 @@
             , TRVCT_SUM
             , EXPENS_SUM
             , REFUND_SUM
+            , IFNULL(LBCST_SUM, 0) + IFNULL(ORPNS_SUM, 0) + IFNULL(TRVCT_SUM, 0) + IFNULL(EXPENS_SUM, 0) + IFNULL(REFUND_SUM, 0) AS TOTAL_SUM
             , OPER_BFR_PRMTN_SE
             , OPER_BFR_PRMTN_SESS
             , OPER_BFR_PRMTN_MTHD
@@ -841,7 +849,7 @@
     </update>
     
     <!-- 프로그램 정보 탭 > 프로그램 개요 목록 조회 -->
-    <select id="selectPrgrmList" parameterType="ProgramInfoVo" resultType="ProgramInfoVo">
+    <select id="selectPrgrmList" parameterType="ProgramInfoVo" resultType="PrgrmInfoOutlineVo">
         /* ReqMngDao.selectPrgrmList */
         SELECT
             PRGRMSUMRYID
@@ -859,15 +867,15 @@
     </select>
     
     <!-- 프로그램 정보 탭 > 프로그램 개요 삭제 -->
-    <delete id="deletePrgrm" parameterType="ProgramInfoVo">
-        /* ReqMngDao.deletePrgrm */
+    <delete id="deletePrgrmOutline" parameterType="ProgramInfoVo">
+        /* ReqMngDao.deletePrgrmOutline */
         DELETE FROM TB_SPB_PRGRM_SUMRY
         WHERE APLYID = #{aplyid}
     </delete>
     
     <!-- 프로그램 정보 탭 > 프로그램 개요 저장 -->
-    <insert id="insertPrgrm" parameterType="ProgramInfoVo" useGeneratedKeys="true" keyProperty="prgrmsumryid">
-        /* ReqMngDao.insertPrgrm */
+    <insert id="insertPrgrmOutline" parameterType="PrgrmInfoOutlineVo" useGeneratedKeys="true" keyProperty="prgrmsumryid">
+        /* ReqMngDao.insertPrgrmOutline */
         INSERT INTO TB_SPB_PRGRM_SUMRY (
             PRGRMSUMRYID
             , APLYID
@@ -886,110 +894,404 @@
             , #{ordr}
             , NOW()
             , #{user.userid}
-        )
+        ) 
     </insert>
 
     <!-- 전문강사 확보 탭 > 전문인력 보유현황 및 운영계획 목록 조회 -->
-    <select id="selectLeaderPlanList" parameterType="ReqUserVo" resultType="ReqUserVo">
+    <select id="selectLeaderPlanList" parameterType="SmrLeaderVo" resultType="SmrLeaderJobVo">
         /* ReqMngDao.selectLeaderPlanList */
-        
+        SELECT
+            LDRID
+            , SE
+            , NM
+            , TASK_CN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            , APLYID
+        FROM
+            TB_SPB_LDR
+        WHERE APLYID = #{aplyid}
     </select>
 
     <!-- 전문강사 확보 탭 > 전문인력 보유현황 및 운영계획 삭제 -->
-    <delete id="deleteLeaderPlan" parameterType="ReqUserVo">
+    <delete id="deleteLeaderPlan" parameterType="SmrLeaderJobVo">
         /* ReqMngDao.deleteLeaderPlan */
+        DELETE FROM TB_SPB_LDR
+        WHERE APLYID = #{aplyid}
     </delete>
     
     <!-- 전문강사 확보 탭 > 전문인력 보유현황 및 운영계획 저장 -->
-    <insert id="insertLeaderPlan" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+    <insert id="insertLeaderPlan" parameterType="SmrLeaderJobVo" useGeneratedKeys="true" keyProperty="ldrid">
         /* ReqMngDao.insertLeaderPlan */
-        
+        INSERT INTO TB_SPB_LDR (
+            LDRID
+            , SE
+            , NM
+            , TASK_CN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            , APLYID
+        ) VALUES (
+            #{ldrid}
+            , #{se}
+            , #{nm}
+            , #{taskCn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+            , #{aplyid}
+        )
     </insert>
 
     <!-- 전문강사 확보 탭 > 지도자 관리방안 / 총괄 운영 담당자 지도자 자격 조회 -->
-    <select id="detailSmrLeader" parameterType="ReqUserVo" resultType="ReqUserVo">
+    <select id="detailSmrLeader" parameterType="SmrLeaderVo" resultType="SmrLeaderVo">
         /* ReqMngDao.detailSmrLeader */
-        
+        SELECT
+            A.APLYID
+            , NM
+            , BRDT
+            , B.LDR_MNG_MTHD
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM
+            TB_SPB_SMRIZELDR_HSTRY A
+            INNER JOIN TB_SPB_APLY B ON A.APLYID = B.APLYID
+        WHERE A.APLYID = #{aplyid}
     </select>
 
     <!-- 전문강사 확보 탭 > 지도자 관리방안 저장 -->
-    <update id="updateSmrLeaderMgt" parameterType="ReqUserVo">
+    <update id="updateSmrLeaderMgt" parameterType="SmrLeaderVo">
         /* ReqMngDao.updateSmrLeaderMgt */
-        
+        UPDATE TB_SPB_APLY SET
+            LDR_MNG_MTHD = #{ldrMngMthd}
+        WHERE APLYID = #{aplyid}
     </update>
     
+    <insert id="insertSmrLeaderInfo" parameterType="SmrLeaderVo">
+        /* ReqMngDao.insertSmrLeaderInfo */
+        INSERT INTO TB_SPB_SMRIZELDR_HSTRY (
+            APLYID
+            , NM
+            , BRDT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{nm}
+            , #{brdt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
     <!-- 전문강사 확보 탭 > 총괄 운영 담당자 지도자 자격 저장 -->
-    <update id="updateSmrLeaderInfo" parameterType="ReqUserVo">
+    <update id="updateSmrLeaderInfo" parameterType="SmrLeaderVo">
         /* ReqMngDao.updateSmrLeaderInfo */
-        
+        UPDATE TB_SPB_SMRIZELDR_HSTRY SET
+            NM = #{nm}
+            , BRDT = #{brdt}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
     </update>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 학력사항 목록 조회 -->
-    <select id="selectLeaderAbilList" parameterType="ReqUserVo" resultType="ReqUserVo">
+    <select id="selectLeaderAbilList" parameterType="SmrLeaderVo" resultType="SmrLeaderAcbgVo">
         /* ReqMngDao.selectLeaderAbilList */
-        
+        SELECT
+            ACBGID
+            , APLYID
+            , BGNG_DE
+            , END_DE
+            , CONCAT(BGNG_DE, ' ~ ', END_DE) AS EDU_DE
+            , SCHL_NM
+            , MJR
+            , DGR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_SMRIZELDR_ACBG
+        WHERE APLYID = #{aplyid}        
     </select>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 학력사항 삭제 -->
-    <delete id="deleteLeaderAbil" parameterType="ReqUserVo">
+    <delete id="deleteLeaderAbil" parameterType="SmrLeaderAcbgVo">
         /* ReqMngDao.deleteLeaderAbil */
+        DELETE FROM TB_SPB_SMRIZELDR_ACBG
+        WHERE APLYID = #{aplyid}
     </delete>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 학력사항 저장 -->
-    <insert id="insertLeaderAbil" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+    <insert id="insertLeaderAbil" parameterType="SmrLeaderAcbgVo" useGeneratedKeys="true" keyProperty="acbgid">
         /* ReqMngDao.insertLeaderAbil */
-        
+        INSERT INTO TB_SPB_SMRIZELDR_ACBG (
+            ACBGID
+            , APLYID
+            , BGNG_DE
+            , END_DE
+            , SCHL_NM
+            , MJR
+            , DGR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES(
+            #{acbgid}
+            , #{aplyid}
+            , #{bgngDe}
+            , #{endDe}
+            , #{schlNm}
+            , #{mjr}
+            , #{dgr}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
     </insert>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 자격사항 목록 조회 -->
-    <select id="selectLeaderLicList" parameterType="ReqUserVo" resultType="ReqUserVo">
+    <select id="selectLeaderLicList" parameterType="SmrLeaderVo" resultType="SmrLeaderLicVo">
         /* ReqMngDao.selectLeaderLicList */
-        
+        SELECT
+            QLFCID
+            , APLYID
+            , QLFC_NM
+            , GRD
+            , ACQS_DE
+            , WRKPLC
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_SMRIZELDR_QLFC
+        WHERE APLYID = #{aplyid}           
     </select>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 자격사항 삭제 -->
-    <delete id="deleteLeaderLic" parameterType="ReqUserVo">
+    <delete id="deleteLeaderLic" parameterType="SmrLeaderLicVo">
         /* ReqMngDao.deleteLeaderLic */
+        DELETE FROM TB_SPB_SMRIZELDR_QLFC
+        WHERE APLYID = #{aplyid}
     </delete>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 자격사항 저장 -->
-    <insert id="insertLeaderLic" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+    <insert id="insertLeaderLic" parameterType="SmrLeaderLicVo" useGeneratedKeys="true" keyProperty="qlfcid">
         /* ReqMngDao.insertLeaderLic */
-        
+        INSERT INTO TB_SPB_SMRIZELDR_QLFC (
+            QLFCID
+            , APLYID
+            , QLFC_NM
+            , GRD
+            , ACQS_DE
+            , WRKPLC
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{qlfcid}
+            , #{aplyid}
+            , #{qlfcNm}
+            , #{grd}
+            , #{acqsDe}
+            , #{wrkplc}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )                
     </insert>
 
     <!-- 전문강사 확보 탭 > 환경교육관련 경력사항 목록 조회 -->
-    <select id="selectLeaderCarrList" parameterType="ReqUserVo" resultType="ReqUserVo">
+    <select id="selectLeaderCarrList" parameterType="SmrLeaderVo" resultType="SmrLeaderCarrVo">
         /* ReqMngDao.selectLeaderCarrList */
-        
+        SELECT
+            CAREERID
+            , APLYID
+            , PRD
+            , ACTVT_NM
+            , ACTVT_TYPE
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_SMRIZELDR_CAREER
+        WHERE APLYID = #{aplyid}        
     </select>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 경력사항 삭제 -->
-    <delete id="deleteLeaderCarr" parameterType="ReqUserVo">
+    <delete id="deleteLeaderCarr" parameterType="SmrLeaderCarrVo">
         /* ReqMngDao.deleteLeaderCarr */
+        DELETE FROM TB_SPB_SMRIZELDR_CAREER
+        WHERE APLYID = #{aplyid}
     </delete>
     
     <!-- 전문강사 확보 탭 > 환경교육관련 경력사항 저장 -->
-    <insert id="insertLeaderCarr" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
+    <insert id="insertLeaderCarr" parameterType="SmrLeaderCarrVo" useGeneratedKeys="true" keyProperty="careerid">
         /* ReqMngDao.insertLeaderCarr */
-        
+        INSERT INTO TB_SPB_SMRIZELDR_CAREER (
+            CAREERID
+            , APLYID
+            , PRD
+            , ACTVT_NM
+            , ACTVT_TYPE
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{careerid}
+            , #{aplyid}
+            , #{prd}
+            , #{actvtNm}
+            , #{actvtType}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )       
     </insert>
     
     <!-- 안전관리 적정성 탭 조회 -->
-    <select id="detailSafety" parameterType="ReqUserVo" resultType="ReqUserVo">
-        /* ReqMngDao.detailSafety */
-        
+    <select id="detailSafetyMng" parameterType="SafetyMngVo" resultType="SafetyMngVo">
+        /* ReqMngDao.detailSafetyMng */
+        SELECT
+            APLYID
+            , QLFC_YN
+            , QLFC_NO
+            , LDR_EDU_SESS
+            , LDR_EDU_PIC
+            , LDR_EDU_CN
+            , PRTCPNT_EDU_SESS
+            , PRTCPNT_EDU_PIC
+            , PRTCPNT_EDU_CN
+            , PIC_NM
+            , PIC_TELNO
+            , MAIN_TCHER_ROLE
+            , ASSTN_TCHER_ROLE
+            , FRSTT_NM
+            , FRSTT_TELNO
+            , POLCSTTN_NM
+            , POLCSTTN_TELNO
+            , PARMACY_NM
+            , PARMACY_TELNO
+            , HSPTL_NM
+            , HSPTL_TELNO
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_SFTY_MNG
+        WHERE APLYID = #{aplyid}
+    </select>
+    
+    <!-- 안전관리 적정성 탭 > 평가방식 -->
+    <select id="detailPrgrmEvl" parameterType="SafetyMngVo" resultType="PrgrmEvlVo">
+        /* ReqMngDao.detailPrgrmEvl */
+        SELECT
+            APLYID
+            , EVL_PRPS
+            , BFR_LDR_EVL_ARTCL
+            , BFR_LDR_EVL_TL
+            , AFTR_LDR_EVL_ARTCL
+            , AFTR_LDR_EVL_TL
+            , BFR_PRTPNT_EVL_ARTCL
+            , BFR_PRTPNT_EVL_TL
+            , AFTR_PRTPNT_EVL_ARTCL
+            , AFTR_PRTPNT_EVL_TL
+            , BFR_GDR_EVL_ARTCL
+            , BFR_GDR_EVL_TL
+            , AFTR_GDR_EVL_ARTCL
+            , AFTR_GDR_EVL_TL
+            , DATABASE_WRT_YN
+            , CLSJRNL_WRT_YN
+            , ETC_YN
+            , ETC_CN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_PRGRM_EVL
+        WHERE APLYID = #{aplyid}
     </select>
     
     <!-- 안전관리 적정성 탭 > 안전관리 저장 -->
-    <insert id="insertEduInfo" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
-        /* ReqMngDao.insertEduInfo */
-        
-    </insert>
+    <update id="updateSafetyMng" parameterType="SafetyMngVo">
+        /* ReqMngDao.updateSafetyMng */
+        UPDATE
+            TB_SPB_SFTY_MNG
+        SET
+            QLFC_YN = #{qlfcYn}
+            , QLFC_NO = #{qlfcNo}
+            , LDR_EDU_SESS = #{ldrEduSess}
+            , LDR_EDU_PIC = #{ldrEduPic}
+            , LDR_EDU_CN = #{ldrEduCn}
+            , PRTCPNT_EDU_SESS = #{prtcpntEduSess}
+            , PRTCPNT_EDU_PIC = #{prtcpntEduPic}
+            , PRTCPNT_EDU_CN = #{prtcpntEduCn}
+            , PIC_NM = #{picNm}
+            , PIC_TELNO = #{picTelno}
+            , MAIN_TCHER_ROLE = #{mainTcherRole}
+            , ASSTN_TCHER_ROLE = #{asstnTcherRole}
+            , FRSTT_NM = #{frsttNm}
+            , FRSTT_TELNO = #{frsttTelno}
+            , POLCSTTN_NM = #{polcsttnNm}
+            , POLCSTTN_TELNO = #{polcsttnTelno}
+            , PARMACY_NM = #{parmacyNm}
+            , PARMACY_TELNO = #{parmacyTelno}
+            , HSPTL_NM = #{hsptlNm}
+            , HSPTL_TELNO = #{hsptlTelno}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}
+    </update>
     
     <!-- 안전관리 적정성 탭 > 프로그램 평가 저장 -->
-    <insert id="insertPrgrmTest" parameterType="ReqUserVo" useGeneratedKeys="true" keyProperty="pcntstid">
-        /* ReqMngDao.insertPrgrmTest */
-        
-    </insert>
+    <update id="updatePrgrmEvl" parameterType="SafetyMngVo">
+        /* ReqMngDao.updatePrgrmEvl */
+        UPDATE
+            TB_SPB_PRGRM_EVL
+        SET
+            EVL_PRPS = #{evlPrps}
+            , BFR_LDR_EVL_ARTCL = #{bfrLdrEvlArtcl}
+            , BFR_LDR_EVL_TL = #{bfrLdrEvlTl}
+            , AFTR_LDR_EVL_ARTCL = #{aftrLdrEvlArtcl}
+            , AFTR_LDR_EVL_TL = #{aftrLdrEvlTl}
+            , BFR_PRTPNT_EVL_ARTCL = #{bfrPrtpntEvlArtcl}
+            , BFR_PRTPNT_EVL_TL = #{bfrPrtpntEvlTl}
+            , AFTR_PRTPNT_EVL_ARTCL = #{aftrPrtpntEvlArtcl}
+            , AFTR_PRTPNT_EVL_TL = #{aftrPrtpntEvlTl}
+            , BFR_GDR_EVL_ARTCL = #{bfrGdrEvlArtcl}
+            , BFR_GDR_EVL_TL = #{bfrGdrEvlTl}
+            , AFTR_GDR_EVL_ARTCL = #{aftrGdrEvlArtcl}
+            , AFTR_GDR_EVL_TL = #{aftrGdrEvlTl}
+            , DATABASE_WRT_YN = #{databaseWrtYn}
+            , CLSJRNL_WRT_YN = #{clsjrnlWrtYn}
+            , ETC_YN = #{etcYn}
+            , ETC_CN = #{etcCn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}                
+    </update>
 </mapper>

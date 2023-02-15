@@ -196,7 +196,7 @@ public class MvmnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Mvm
     * @throws Exception 예외
     * @return List<MvmnPrgrmVo>
     */
-    public List<MvmnPrgrmVo> selectPrgrmSettingList(String rcptMthdCd) throws Exception {
-        return mvmnPrgrmDao.selectPrgrmSettingList(rcptMthdCd);
+    public List<MvmnPrgrmVo> selectPrgrmSettingList(String operFomCd) throws Exception {
+        return mvmnPrgrmDao.selectPrgrmSettingList(operFomCd);
     }    
 }

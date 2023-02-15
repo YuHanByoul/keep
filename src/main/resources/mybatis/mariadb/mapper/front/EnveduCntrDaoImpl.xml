@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EnveduCntrDaoImpl.xml
+	Description : 지역 환경교육센터
+-->
+<mapper namespace="com.kbrainc.plum.front.enveduCntr.model.EnveduCntrDao">
+    <!-- 지역 환경교육센터 목록 조회 -->
+    <select id="selectEnveduCntrList" resultType="EnveduCntrVO">
+        /* EnveduCntrDao.selectEnveduCntrList */
+        SELECT
+            A.ORDRID
+            , B.CD_NM AS SE_CD
+            , C.CTPRVN_NM AS RGN_CD
+            , A.CNTR_NM
+            , A.INST_NM
+            , A.HMPG
+            , A.REG_DT
+            , (SELECT COUNT(0) FROM TB_CMM_ENVEDU_CNTR WHERE RGN_CD = A.RGN_CD GROUP BY RGN_CD) CNTR_CNT
+        FROM TB_CMM_ENVEDU_CNTR A
+        LEFT OUTER JOIN TB_CMM_CD B ON A.SE_CD = B.CD
+        LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN C ON A.RGN_CD = C.CTPRVN_CD
+        WHERE
+            1=1
+        <if test="seCd != null and seCd != ''">
+            AND SE_CD = #{seCd}
+        </if>
+    </select>
+</mapper>

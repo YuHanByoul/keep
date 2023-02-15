@@ -9,6 +9,7 @@ import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -30,6 +31,9 @@ import lombok.Data;
 @Data
 public class ProcPlanVo extends ParentRequestVo {
 
+    /** 로그인사용자 정보 */
+    private UserVo user;
+    
     /** 신청아이디 */
     private Integer aplyid;
     
@@ -47,6 +51,9 @@ public class ProcPlanVo extends ParentRequestVo {
     
     /** 반환금_합계 */
     private Integer refundSum;
+    
+    /** 총계 */
+    private Integer totalSum;
     
     /** 운영_이전_홍보_구분 */
     private String operBfrPrmtnSe;

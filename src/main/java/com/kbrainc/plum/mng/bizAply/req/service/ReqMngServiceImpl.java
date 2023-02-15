@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -21,12 +22,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.bizAply.req.model.CapabilityResultVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityVo;
+import com.kbrainc.plum.mng.bizAply.req.model.PrgrmEvlVo;
+import com.kbrainc.plum.mng.bizAply.req.model.PrgrmInfoOutlineVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ProcPlanVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ProgramInfoVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ReqMngDao;
 import com.kbrainc.plum.mng.bizAply.req.model.ReqMngVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ReqUserVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SafetyMngVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderAcbgVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderCarrVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderJobVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderLicVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -399,6 +409,7 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
 
     @Transactional
     @Override
+    @Deprecated
     public int insertInst(CapabilityVo capabilityVo) throws Exception {
         // TODO Auto-generated method stub
         int result = 0;
@@ -410,26 +421,43 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         result += reqMngDao.insertInstPrgrm(capabilityVo);
         
         // 환경교육 운영성과
-        result += reqMngDao.insertInstOperRslt(capabilityVo);
+//        result += reqMngDao.insertInstOperRslt(capabilityVo);
         
         return result;
     }
 
+    @Transactional
     @Override
     public int updateInst(CapabilityVo capabilityVo) throws Exception {
         // TODO Auto-generated method stub
         int result = 0;
         
         // 기관역량
-        result += reqMngDao.insertInst(capabilityVo);
+        result += reqMngDao.updateInst(capabilityVo);
         
-        // 전년도 지원사업 프로그램 주제
-        result += reqMngDao.deleteInstPrgrm(capabilityVo);
-        result += reqMngDao.insertInstPrgrm(capabilityVo);
+        if (CollectionUtils.isNotEmpty(capabilityVo.getPrgrmSbjctCds())) {
+            // 전년도 지원사업 프로그램 주제
+            result += reqMngDao.deleteInstPrgrm(capabilityVo);
+            result += reqMngDao.insertInstPrgrm(capabilityVo);            
+        }
         
-        // 환경교육 운영성과
-        result += reqMngDao.deleteInstOperRslt(capabilityVo);
-        result += reqMngDao.insertInstOperRslt(capabilityVo);
+        if (null != capabilityVo.getSeCd() && capabilityVo.getSeCd().length > 0) {
+            result += reqMngDao.deleteInstOperRslt(capabilityVo);
+            for (int i = 0; i < capabilityVo.getSeCd().length; i++) {
+                CapabilityResultVo param = new CapabilityResultVo();
+                param.setUser(capabilityVo.getUser());
+                param.setAplyid(capabilityVo.getAplyid());                
+                param.setSeCd(capabilityVo.getSeCd()[i]);
+                param.setBsnsNm(capabilityVo.getBsnsNm()[i]);
+                param.setBsnsPrd(capabilityVo.getBsnsPrd()[i]);
+                param.setEduNope(capabilityVo.getEduNope()[i]);
+                param.setBsnsBgt(capabilityVo.getBsnsBgt()[i]);
+                param.setOperCn(capabilityVo.getOperCn()[i]);
+                param.setOrdr(i+1);
+                
+                result += reqMngDao.insertInstOperRslt(param);
+            }
+        }
         
         return result;
     }
@@ -441,7 +469,7 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
     }
 
     @Override
-    public List<CapabilityVo> selectInstOperRsltList(CapabilityVo capabilityVo) throws Exception {
+    public List<CapabilityResultVo> selectInstOperRsltList(CapabilityResultVo capabilityVo) throws Exception {
         // TODO Auto-generated method stub
         return reqMngDao.selectInstOperRsltList(capabilityVo);
     }
@@ -449,55 +477,192 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
     @Override
     public ProcPlanVo detailPlan(ProcPlanVo procPlanVo) throws Exception {
         // TODO Auto-generated method stub
-        return null;
+        return reqMngDao.detailPlan(procPlanVo);
     }
 
     @Override
+    @Deprecated
     public int insertPlan(ProcPlanVo procPlanVo) throws Exception {
         // TODO Auto-generated method stub
-        return 0;
+        return reqMngDao.insertPlan(procPlanVo);
     }
 
     @Override
     public int updatePlan(ProcPlanVo procPlanVo) throws Exception {
         // TODO Auto-generated method stub
-        return 0;
+        return reqMngDao.updatePlan(procPlanVo);
     }
 
     @Override
     public ProgramInfoVo detailPrgrmInfo(ProgramInfoVo programInfoVo) throws Exception {
         // TODO Auto-generated method stub
-        return null;
+        return reqMngDao.detailPrgrmInfo(programInfoVo);
     }
 
     @Override
+    @Deprecated
     public int insertPrgrmInfo(ProgramInfoVo programInfoVo) throws Exception {
         // TODO Auto-generated method stub
-        return 0;
+        return reqMngDao.insertPrgrmInfo(programInfoVo);
     }
 
+    @Transactional
     @Override
     public int updatePrgrmInfo(ProgramInfoVo programInfoVo) throws Exception {
         // TODO Auto-generated method stub
-        return 0;
+        int result = 0;
+        result = reqMngDao.updatePrgrmInfo(programInfoVo);
+        
+        if (null != programInfoVo.getPrgrmNm() && programInfoVo.getPrgrmNm().length > 0) {
+            result += reqMngDao.deletePrgrmOutline(programInfoVo);
+            for (int i = 0; i < programInfoVo.getPrgrmNm().length; i++) {
+                PrgrmInfoOutlineVo param = new PrgrmInfoOutlineVo();
+                param.setUser(programInfoVo.getUser());
+                param.setAplyid(programInfoVo.getAplyid());
+                param.setOrdr(i+1);
+                param.setPrgrmNm(programInfoVo.getPrgrmNm()[i]);
+                param.setEduRnd(programInfoVo.getEduRnd()[i]);
+                param.setEduNope(programInfoVo.getEduNope()[i]);
+                
+                result += reqMngDao.insertPrgrmOutline(param);
+            }
+        }
+        
+        return result;
     }
 
     @Override
-    public List<ProgramInfoVo> selectPrgrmList(ProgramInfoVo programInfoVo) throws Exception {
+    public List<PrgrmInfoOutlineVo> selectPrgrmList(ProgramInfoVo programInfoVo) throws Exception {
         // TODO Auto-generated method stub
-        return null;
+        return reqMngDao.selectPrgrmList(programInfoVo);
     }
 
     @Override
-    public int insertPrgrm(ProgramInfoVo programInfoVo) throws Exception {
+    public SmrLeaderVo detailSmrLeader(SmrLeaderVo smrLeaderVo) throws Exception {
         // TODO Auto-generated method stub
-        return 0;
+        return reqMngDao.detailSmrLeader(smrLeaderVo);
+    }
+
+
+    @Override
+    public List<SmrLeaderJobVo> selectLeaderPlanList(SmrLeaderVo smrLeaderVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectLeaderPlanList(smrLeaderVo);
+    }
+
+
+    @Override
+    public List<SmrLeaderAcbgVo> selectLeaderAbilList(SmrLeaderVo smrLeaderVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectLeaderAbilList(smrLeaderVo);
+    }
+
+
+    @Override
+    public List<SmrLeaderLicVo> selectLeaderLicList(SmrLeaderVo smrLeaderVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectLeaderLicList(smrLeaderVo);
+    }
+
+
+    @Override
+    public List<SmrLeaderCarrVo> selectLeaderCarrList(SmrLeaderVo smrLeaderVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectLeaderCarrList(smrLeaderVo);
+    }
+
+    @Transactional
+    @Override
+    public int updateSmrLeader(SmrLeaderVo smrLeaderVo) throws Exception {
+        // TODO Auto-generated method stub
+        int result = 0;
+        
+        result += reqMngDao.updateSmrLeaderMgt(smrLeaderVo);
+        result += reqMngDao.updateSmrLeaderInfo(smrLeaderVo);
+        
+        if (null != smrLeaderVo.getSe() && smrLeaderVo.getSe().length > 0) {
+            result += reqMngDao.deleteLeaderPlan(smrLeaderVo);   
+            for (int i = 0; i < smrLeaderVo.getSe().length; i++) {
+                SmrLeaderJobVo param = new SmrLeaderJobVo();
+                param.setUser(smrLeaderVo.getUser());
+                param.setAplyid(smrLeaderVo.getAplyid());
+                param.setSe(smrLeaderVo.getSe()[i]);
+                param.setNm(smrLeaderVo.getLdrnm()[i]);
+                param.setTaskCn(smrLeaderVo.getTaskCn()[i]);
+                
+                result += reqMngDao.insertLeaderPlan(param);
+            }
+        }
+        
+        if (null != smrLeaderVo.getSchlNm() && smrLeaderVo.getSchlNm().length > 0) {
+            result += reqMngDao.deleteLeaderAbil(smrLeaderVo);   
+            for (int i = 0; i < smrLeaderVo.getSchlNm().length; i++) {
+                SmrLeaderAcbgVo param = new SmrLeaderAcbgVo();
+                param.setUser(smrLeaderVo.getUser());
+                param.setAplyid(smrLeaderVo.getAplyid());
+                param.setDgr(smrLeaderVo.getDgr()[i]);
+                param.setBgngDe(smrLeaderVo.getBgngDe()[i]);
+                param.setEndDe(smrLeaderVo.getEndDe()[i]);
+                param.setMjr(smrLeaderVo.getMjr()[i]);
+                param.setSchlNm(smrLeaderVo.getSchlNm()[i]);
+                
+                result += reqMngDao.insertLeaderAbil(param);
+            }
+        }
+        
+        if (null != smrLeaderVo.getQlfcNm() && smrLeaderVo.getQlfcNm().length > 0) {
+            result += reqMngDao.deleteLeaderLic(smrLeaderVo);   
+            for (int i = 0; i < smrLeaderVo.getQlfcNm().length; i++) {
+                SmrLeaderLicVo param = new SmrLeaderLicVo();
+                param.setUser(smrLeaderVo.getUser());
+                param.setAplyid(smrLeaderVo.getAplyid());
+                param.setAcqsDe(smrLeaderVo.getAcqsDe()[i]);
+                param.setGrd(smrLeaderVo.getGrd()[i]);
+                param.setQlfcNm(smrLeaderVo.getQlfcNm()[i]);
+                param.setWrkplc(smrLeaderVo.getWrkplc()[i]);
+                
+                result += reqMngDao.insertLeaderLic(param);
+            }
+        }
+        
+        if (null != smrLeaderVo.getPrd() && smrLeaderVo.getPrd().length > 0) {
+            result += reqMngDao.deleteLeaderCarr(smrLeaderVo);   
+            for (int i = 0; i < smrLeaderVo.getPrd().length; i++) {
+                SmrLeaderCarrVo param = new SmrLeaderCarrVo();
+                param.setUser(smrLeaderVo.getUser());
+                param.setAplyid(smrLeaderVo.getAplyid());
+                param.setActvtNm(smrLeaderVo.getActvtNm()[i]);
+                param.setActvtType(smrLeaderVo.getActvtType()[i]);
+                param.setPrd(smrLeaderVo.getPrd()[i]);
+                
+                result += reqMngDao.insertLeaderCarr(param);
+            }
+        }
+        
+        return result;
     }
 
     @Override
-    public int deletePrgrm(ProgramInfoVo programInfoVo) throws Exception {
+    public SafetyMngVo detailSafetyMng(SafetyMngVo safetyMngVo) throws Exception {
         // TODO Auto-generated method stub
-        return 0;
+        return reqMngDao.detailSafetyMng(safetyMngVo);
+    }
+    
+    @Override
+    public PrgrmEvlVo detailPrgrmEvl(SafetyMngVo safetyMngVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.detailPrgrmEvl(safetyMngVo);
+    }
+
+    @Transactional
+    @Override
+    public int updateSafetyMng(SafetyMngVo safetyMngVo) throws Exception {
+        // TODO Auto-generated method stub
+        int result = 0;
+        result = reqMngDao.updateSafetyMng(safetyMngVo);
+        result += reqMngDao.updatePrgrmEvl(safetyMngVo);
+        
+        return result;
     }
 
 }
