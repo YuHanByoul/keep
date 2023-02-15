@@ -143,6 +143,7 @@ public interface ReqMngDao {
     * @throws Exception
     * @return int
      */
+    @Deprecated
     int insertInst(CapabilityVo capabilityVo) throws Exception;
     
     /**
@@ -201,9 +202,9 @@ public interface ReqMngDao {
     * @param operationResultVo
     * @return
     * @throws Exception
-    * @return List<OperationResultVo>
+    * @return List<CapabilityResultVo>
      */
-    List<CapabilityVo> selectInstOperRsltList(CapabilityVo capabilityVo) throws Exception;
+    List<CapabilityResultVo> selectInstOperRsltList(CapabilityResultVo capabilityVo) throws Exception;
     
     /**
     * 환경교육 운영성과 저장. 
@@ -215,7 +216,7 @@ public interface ReqMngDao {
     * @throws Exception
     * @return int
      */
-    int insertInstOperRslt(CapabilityVo capabilityVo) throws Exception;
+    int insertInstOperRslt(CapabilityResultVo capabilityVo) throws Exception;
     
     /**
     * 환경교육 운영성과 삭제. 
@@ -251,6 +252,7 @@ public interface ReqMngDao {
     * @throws Exception
     * @return int
      */
+    @Deprecated
     int insertPlan(ProcPlanVo procPlanVo) throws Exception;
     
     /**
@@ -287,6 +289,7 @@ public interface ReqMngDao {
     * @throws Exception
     * @return int
      */
+    @Deprecated
     int insertPrgrmInfo(ProgramInfoVo programInfoVo) throws Exception;
     
     /**
@@ -311,29 +314,257 @@ public interface ReqMngDao {
     * @throws Exception
     * @return List<ProgramInfoVo>
      */
-    List<ProgramInfoVo> selectPrgrmList(ProgramInfoVo programInfoVo) throws Exception;
+    List<PrgrmInfoOutlineVo> selectPrgrmList(ProgramInfoVo programInfoVo) throws Exception;
     
     /**
     * 프로그램 개요 등록. 
     *
-    * @Title : insertPrgrm
+    * @Title : insertPrgrmOutline
     * @Description : TODO
     * @param programInfoVo
     * @return
     * @throws Exception
     * @return int
      */
-    int insertPrgrm(ProgramInfoVo programInfoVo) throws Exception;
+    int insertPrgrmOutline(PrgrmInfoOutlineVo programInfoVo) throws Exception;
     
     /**
     * 프로그램 개요 삭제. 
     *
-    * @Title : deletePrgrm
+    * @Title : deletePrgrmOutline
     * @Description : TODO
     * @param programInfoVo
     * @return
     * @throws Exception
     * @return int
      */
-    int deletePrgrm(ProgramInfoVo programInfoVo) throws Exception;
+    int deletePrgrmOutline(ProgramInfoVo programInfoVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 정보 조회. 
+    *
+    * @Title : detailSmrLeader
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return SmrLeaderVo
+     */
+    SmrLeaderVo detailSmrLeader(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 관리방안 수정. 
+    *
+    * @Title : updateSmrLeaderMgt
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateSmrLeaderMgt(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 정보 수정. 
+    *
+    * @Title : updateSmrLeaderInfo
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateSmrLeaderInfo(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 전문인력 보유현황 및 운영계획. 
+    *
+    * @Title : selectLeaderPlanList
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return List<SmrLeaderJobVo>
+     */
+    List<SmrLeaderJobVo> selectLeaderPlanList(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 전문인력 보유현황 및 운영계획 삭제. 
+    *
+    * @Title : deleteLeaderPlan
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteLeaderPlan(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 전문인력 보유현황 및 운영계획 등록 
+    *
+    * @Title : insertLeaderPlan
+    * @Description : TODO
+    * @param smrLeaderJobVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertLeaderPlan(SmrLeaderJobVo smrLeaderJobVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 학력 조회. 
+    *
+    * @Title : selectLeaderAbilList
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return List<SmrLeaderAcbgVo>
+     */
+    List<SmrLeaderAcbgVo> selectLeaderAbilList(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 학력 삭제. 
+    *
+    * @Title : deleteLeaderAbil
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteLeaderAbil(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 학력 등록. 
+    *
+    * @Title : insertLeaderAbil
+    * @Description : TODO
+    * @param smrLeaderAcbgVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertLeaderAbil(SmrLeaderAcbgVo smrLeaderAcbgVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 자격 조회
+    *
+    * @Title : selectLeaderLicList
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return List<SmrLeaderLicVo>
+     */
+    List<SmrLeaderLicVo> selectLeaderLicList(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 자격 삭제. 
+    *
+    * @Title : deleteLeaderLic
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteLeaderLic(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 자격 등록. 
+    *
+    * @Title : insertLeaderLic
+    * @Description : TODO
+    * @param smrLeaderLicVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertLeaderLic(SmrLeaderLicVo smrLeaderLicVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 경력 조회. 
+    *
+    * @Title : selectLeaderCarrList
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return List<SmrLeaderCarrVo>
+     */
+    List<SmrLeaderCarrVo> selectLeaderCarrList(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 경력 삭제. 
+    *
+    * @Title : deleteLeaderCarr
+    * @Description : TODO
+    * @param smrLeaderVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteLeaderCarr(SmrLeaderVo smrLeaderVo) throws Exception;
+    
+    /**
+    * 총괄 지도자 경력 등록. 
+    *
+    * @Title : insertLeaderCarr
+    * @Description : TODO
+    * @param smrLeaderCarrVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertLeaderCarr(SmrLeaderCarrVo smrLeaderCarrVo) throws Exception;
+    
+    /**
+    * 안전관리 조회. 
+    *
+    * @Title : detailSafetyMng
+    * @Description : TODO
+    * @param safetyMngVo
+    * @return
+    * @throws Exception
+    * @return SafetyMngVo
+     */
+    SafetyMngVo detailSafetyMng(SafetyMngVo safetyMngVo) throws Exception;
+    
+    /**
+    * 평가방식 조회. 
+    *
+    * @Title : detailPrgrmEvl
+    * @Description : TODO
+    * @param safetyMngVo
+    * @return
+    * @throws Exception
+    * @return SafetyMngVo
+     */
+    PrgrmEvlVo detailPrgrmEvl(SafetyMngVo safetyMngVo) throws Exception;
+    
+    /**
+    * 안전관리 수정. 
+    *
+    * @Title : updateSafetyMng
+    * @Description : TODO
+    * @param safetyMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateSafetyMng(SafetyMngVo safetyMngVo) throws Exception;
+    
+    /**
+    * 평가방식 수정. 
+    *
+    * @Title : updatePrgrmEvl
+    * @Description : TODO
+    * @param safetyMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updatePrgrmEvl(SafetyMngVo safetyMngVo) throws Exception;
 }

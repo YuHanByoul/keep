@@ -4,9 +4,12 @@
 package com.kbrainc.plum.mng.bizAply.req.model;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
+import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
@@ -28,6 +31,9 @@ import lombok.Data;
 @Data
 public class ProgramInfoVo extends ParentRequestVo {
 
+    /** 로그인사용자 정보 */
+    private UserVo user;
+    
     /** 신청아이디 */
     private Integer aplyid;
     
@@ -139,6 +145,17 @@ public class ProgramInfoVo extends ParentRequestVo {
     /** 12월_횟수 */
     private Integer dcmCnt;
     
+    /** 프로그램_이름 */
+    private String[] prgrmNm;
+    
+    /** 교육_차시 */
+    private String[] eduRnd;
+    
+    /** 교육_인원수 */
+    private Integer[] eduNope;
+    
+    /** 순서 */
+    private Integer[] ordr;
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date mdfcnDt;
@@ -152,19 +169,4 @@ public class ProgramInfoVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private Integer rgtrid;
-    
-    /** 프로그램개요아이디 */
-    private Integer prgrmsumryid;
-    
-    /** 프로그램_이름 */
-    private String prgrmNm;
-    
-    /** 교육_차시 */
-    private String eduRnd;
-    
-    /** 교육_인원수 */
-    private Integer eduNope;
-    
-    /** 순서 */
-    private Integer ordr;
 }

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EvntDaoImpl.xml
+	Description : 참여신청 관리 > 이벤트 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.evnt.model.EvntDao">
+    <select id="selectEvntList" resultType="front.EvntVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.EVNTID
+            , A.TTL
+            , A.BGNG_DE
+            , A.END_DE
+            , A.PRSNTN_DE
+            , A.REG_DT
+            , CASE WHEN NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL 1 DAY) THEN 'NEW' ELSE 'OLD' END AS NEW_EVNT
+            , CASE WHEN A.END_DE <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y-%m-%d') THEN '마감'
+              WHEN A.BGNG_DE <![CDATA[>]]> DATE_FORMAT(NOW(),'%Y-%m-%d') THEN '접수전'
+              ELSE '접수중' END AS STTS
+            , B.NM
+            , A.HITS
+            , B.ACNT
+            , C.INST_NM
+        FROM TB_CMM_EVNT A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C
+                ON B.INSTID = C.INSTID
+        WHERE 1=1
+            <!-- 제목 검색 -->
+            <if test="ttl != null and ttl != ''">
+            AND A.TTL LIKE CONCAT('%',#{ttl},'%')
+            </if>
+            
+            <!-- 상태 -->
+            <if test="stts != null and stts != '' and stts == 'before'">
+                AND A.BGNG_DE <![CDATA[>]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+            </if>
+            <if test="stts != null and stts != '' and stts == 'ongoing'">
+                AND A.BGNG_DE <![CDATA[<]]> DATE_FORMAT(NOW(),'%Y-%m-%d')
+                AND A.END_DE <![CDATA[>]]> DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>
+            <if test="stts != null and stts != '' and stts == 'clased'">
+                AND A.END_DE <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y-%m-%d')
+            </if>                        
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectEvntInfo" resultType="front.EvntVo">
+        SELECT
+            A.EVNTID
+            , A.TTL
+            , A.CN
+            , CASE WHEN A.END_DE <![CDATA[<]]> DATE_FORMAT(NOW(), '%Y-%m-%d') THEN '마감'
+              WHEN A.BGNG_DE <![CDATA[>]]> DATE_FORMAT(NOW(),'%Y-%m-%d') THEN '접수전'
+              ELSE '접수중' END AS STTS          
+            , NVL(A.HITS,0) AS HITS  
+            , A.APLY_URL
+            , A.FILEGRPID
+            , A.BGNG_DE
+            , A.END_DE
+            , A.PRSNTN_DE
+            , A.REG_DT
+            , C.INST_NM
+            
+            <![CDATA[
+            , (SELECT EVNTID FROM tb_cmm_evnt WHERE EVNTID > #{evntid} LIMIT 1) AS NEXT_EVNTID
+            , (SELECT TTL FROM tb_cmm_evnt WHERE EVNTID > #{evntid} LIMIT 1) AS NEXT_EVNT_TTL
+            , (SELECT EVNTID FROM tb_cmm_evnt WHERE EVNTID < #{evntid} ORDER BY EVNTID DESC LIMIT 1) AS BEFORE_EVNTID
+            , (SELECT TTL FROM tb_cmm_evnt WHERE EVNTID < #{evntid} ORDER BY EVNTID DESC LIMIT 1) AS BEFORE_EVNT_TTL
+            ]]>            
+        FROM TB_CMM_EVNT A
+        INNER JOIN TB_CMM_USER B
+            ON A.RGTRID = B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C
+            ON B.INSTID = C.INSTID
+        WHERE EVNTID = #{evntid}
+    </select>
+    
+    <update id="updateEvntHits" parameterType="front.EvntVo">
+        UPDATE TB_CMM_EVNT SET HITS = IFNULL(HITS,0) + 1 
+        WHERE EVNTID = #{evntid}
+    </update>
+    
+    <!-- 컨텐츠 관리 게시글 상세조회 -->
+    <select id="selectEvntFileList" parameterType="front.EvntVo" resultType="front.EvntVo"> 
+        /* EvntDao.selectEvntFileList */
+        SELECT
+            A.FILEGRPID
+            , B.FILEID
+            , B.FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM
+            , TRIM(LEADING '.' FROM B.FILE_EXTSN) AS EXT
+        FROM
+            TB_CMM_EVNT A
+            LEFT OUTER JOIN TB_CMM_FILE B ON A.FILEGRPID = B.FILEGRPID
+        WHERE EVNTID = #{evntid}
+    </select>
+</mapper>
