@@ -1,0 +1,172 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title">강의요청서 작성</h3>
+        </div>
+        <div class="right">
+            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+        </div>
+    </div>
+
+    <div class="table-row table-row-mo">
+        <table>
+            <caption>강의요청서_정보입력 - 공개여부, 분야, 제목, 내용, 첨부파일</caption>
+            <colgroup>
+                <col style="width:140px;">
+                <col>
+                <col style="width:140px;">
+                <col>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row">제목<i class="ast" title="필수입력">*</i></th>
+                <td colspan="3">
+                    <div class="form-input">
+                        <input type="text" title="제목" placeholder="제목을 입력해주세요.">
+                    </div>
+                    <p class="feedback"></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">강의 시작 일시<i class="ast" title="필수입력">*</i></th>
+                <td>
+                    <div class="form-input">
+                        <input type="datetime-local" title="시작일">
+                    </div>
+                    <p class="feedback"></p>
+                </td>
+                <th scope="row">강의 종료 일시<i class="ast" title="필수입력">*</i></th>
+                <td>
+                    <div class="form-input">
+                        <input type="datetime-local" title="종료일">
+                    </div>
+                    <p class="feedback"></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">강의 장소(지역)<i class="ast" title="필수입력">*</i></th>
+                <td colspan="3">
+                    <div class="form-input mo-flex-wrap">
+                        <div class="form-input">
+                            <div class="bul">지번/도로명</div>
+                        </div>
+                        <div class="form-input">
+                            <input type="text" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
+                            <button type="button" class="btn-medium btn-gray">검색</button>
+                        </div>
+                    </div>
+                    <p class="feedback"></p>
+                    <p class="desc">지번주소 : 동/읍/면/리 이름을 입력하세요.  예) 역삼동, 화도읍, 둔내면 <br> 도로명주소(새주소) : 도로명을 입력하세요.  예) 중앙로, 불정로432번길</p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
+                <td colspan="3">
+                    <div class="form-input">
+                        <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요.">
+                    </div>
+                    <!-- <p class="feedback invalid">상세주소는 100자를 초과할 수 없습니다.</p> -->
+                    <p class="feedback"></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">신청자 휴대전화<i class="ast" title="필수입력">*</i></th>
+                <td colspan="3">
+                    <div class="form-input">
+                        <input type="number" title="신청자 휴대전화" placeholder="하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요" data-width="300">
+                    </div>
+                    <p class="feedback"></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">신청자 이메일<i class="ast" title="필수입력">*</i></th>
+                <td colspan="3">
+                    <div class="form-input">
+                        <input type="email" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160">
+                        <div class="bul">@</div>
+                        <input type="email" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
+                        <select title="이메일 도메인" data-width="120">
+                            <option value="직접입력">직접입력</option>
+                            <option value="select">select</option>
+                        </select>
+                    </div>
+                    <!-- <p class="feedback invalid">이메일 형식이 올바르지 않습니다.</p> -->
+                    <p class="feedback"></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">요청 내용<i class="ast" title="필수입력">*</i></th>
+                <td colspan="3">
+                    <div class="form-input">
+                        <textarea title="요청 내용" placeholder="강의 요청 내용을 입력해주세요."></textarea>
+                    </div>
+                    <p class="feedback"></p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">첨부파일</th>
+                <td colspan="3">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input type="file" class="blind" accept=".jpeg,.jpg,.png,.gif,.hwp,.hwpx,.doc,.docx,.xls,.xlsx,.pdf,.txt" title="파일첨부" maxcount="5">
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul></ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="box-desc-list bg7 mt10">
+        <ul>
+            <li>첨부 가능 확장자 :
+                <th:block>
+                    <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtsn}">
+                        [[${item.value}]]
+                        <th:block th:if="${!itemStat.last}">,&nbsp;</th:block>
+                    </th:block>
+                </th:block>
+            </li>
+            <li>첨부 가능 총 용량 : [[${fileConfiguration.uploadFileTotalSize}]]Mbyte</li>
+            <li>첨부 가능 개별 용량 : [[${fileConfiguration.uploadFileSize}]]Mbyte</li>
+        </ul>
+    </div>
+
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" onclick="frontLctrDmndForm.previous()">이전</button>
+            <button type="button" class="btn-medium btn-blue" onclick="frontLctrDmndForm.save()">요청</button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+    let frontLctrDmndForm = {
+        init() {
+            this.validateForm();
+        },
+
+        validateForm() {
+
+        },
+
+        previous() {
+            history.back();
+        },
+
+        save() {
+
+        }
+    }
+
+    $(function() {
+
+    })
+    </script>
+</div>

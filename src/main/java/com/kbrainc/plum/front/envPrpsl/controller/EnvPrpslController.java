@@ -53,9 +53,11 @@ public class EnvPrpslController {
     private FileServiceImpl fileService;
 
     @GetMapping("/envPrpslList.html")
-    public String envPrpslList(EnvPrpslVo searchVO, Model model) throws Exception {
+    public String envPrpslList(EnvPrpslVo searchVO, Model model, @UserInfo UserVo user) throws Exception {
 
         model.addAttribute("searchVo", searchVO);
+        model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
+
         return VIEW_PATH + "/envPrpslList.html";
     }
 
