@@ -9,9 +9,9 @@ public class FileGrpVo {
     private int filegrpid;
     private String filegrpNm;
     private String mdfcnDt;
-    private int mdfrid;
+    private Integer mdfrid;
     private String regDt;
-    private int rgtrid;
+    private Integer rgtrid;
     private int bbsid;
 
     public FileGrpVo(int filegrpid) {

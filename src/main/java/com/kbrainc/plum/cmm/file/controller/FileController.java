@@ -76,14 +76,21 @@ public class FileController {
      *
      * @Title       : uploadFile 
      * @Description : TODO
+     * @param request :
      * @param file :
      * @param fileGrpVo :
      * @param user :
      * @return FileVO
      */
-    @PostMapping("/uploadFile.do")
-    public FileVo uploadFile(@RequestParam("file") MultipartFile file, FileGrpVo fileGrpVo, @UserInfo UserVo user, boolean isMulti) throws Exception {
+    @PostMapping(value = {"/uploadFile.do", "/registFile.do"})
+    public FileVo uploadFile(HttpServletRequest request, @RequestParam("file") MultipartFile file, FileGrpVo fileGrpVo, @UserInfo UserVo user, boolean isMulti) throws Exception {
 
+        if ("/registFile.do".equals(request.getRequestURI()) && ("biz_file".equals(fileGrpVo.getFilegrpNm()) || "biz_logo".equals(fileGrpVo.getFilegrpNm()))) {
+            if (user == null) {
+                user = new UserVo();
+            }
+        }
+        
         if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
             Integer uploadFileSize = (Integer) this.filegrpName.get(fileGrpVo.getFilegrpNm()).get("uploadFileSize");
             if (uploadFileSize != null) {
@@ -133,10 +140,11 @@ public class FileController {
      * @param files :
      * @param fileGrpVo :
      * @param user :
+     * @Param request : 
      * @return List FileVO 
      */
     @PostMapping("/uploadMultipleFiles.do")
-    public List<FileVo> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, FileGrpVo fileGrpVo, @UserInfo UserVo user) throws Exception {
+    public List<FileVo> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files, FileGrpVo fileGrpVo, @UserInfo UserVo user, HttpServletRequest request) throws Exception {
         
         if (this.filegrpName.containsKey(fileGrpVo.getFilegrpNm())) {
             FileVo fileVo = new FileVo();
@@ -177,7 +185,7 @@ public class FileController {
             
             for (MultipartFile file : files) {
                 try {
-                    uploadFileList.add(uploadFile(file, fileGrpVo, user, true));
+                    uploadFileList.add(uploadFile(request, file, fileGrpVo, user, true));
                 } catch (Exception e) {
                     for (FileVo uploadFile : uploadFileList) {
                         fileVo = fileService.selectFile(uploadFile);   
