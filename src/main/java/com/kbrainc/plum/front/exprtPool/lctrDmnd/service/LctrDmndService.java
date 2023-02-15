@@ -1,6 +1,6 @@
 package com.kbrainc.plum.front.exprtPool.lctrDmnd.service;
 
-import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo;
+import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.*;
 import com.kbrainc.plum.front.inqry.model.InqryVo;
 
 import java.util.List;
@@ -31,5 +31,27 @@ public interface LctrDmndService {
      * @Description : 전문가 목록 조회
      */
     public List<ExprtVo> selectExprtList(ExprtVo searchVo) throws Exception;
+
+    /**
+     * 전문가 상세 조회
+     *
+     * @param exprtVo
+     * @return exprt vo
+     * @throws Exception
+     * @Title : selectExprt
+     * @Description : 전문가 상세 조회
+     */
+    public ExprtVo selectExprt(ExprtVo exprtVo) throws Exception;
+
+    /**
+     * 전문가 섭외 요청 등록
+     *
+     * @param lctrDmndVo
+     * @return int
+     * @throws Exception
+     * @Title : insertLctrDmnd
+     * @Description : 전문가 섭외 요청 등록
+     */
+    public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception;
 
 }

@@ -7,30 +7,198 @@
     Description : 전문가 섭외 요청
 -->
 <mapper namespace="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.LctrDmndDao">
+    <insert id="insertLctrDmnd" parameterType="front.LctrDmndVo">
+        INSERT INTO TB_ASS_LCTR_DMND (
+            EXPRTID
+            , USERID
+            , INSTID
+            , TTL
+            , LCTR_BGNG_DT
+            , LCTR_END_DT
+            , ZIP
+            , ADDR
+            , ADDR_DTL
+            , MOBLPHON
+            , EML
+            , DMND_CN
+            , FILEGRPID
+            , DMND_STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        VALUES (
+            #{exprtid}
+            , #{user.userid}
+            , #{user.instid}
+            , #{ttl}
+            , #{lctrBgngDt}
+            , #{lctrEndDt}
+            , #{zip}
+            , #{addr}
+            , #{addrDtl}
+            , #{moblphon}
+            , #{eml}
+            , #{dmndCn}
+            , #{filegrpid}
+            , '139101'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
 
     <select id="selectExprtList" resultType="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo">
         <include refid="PaginationMapper.header"/>
-        SELECT
-            A.USERID
-            , A.EXPRT_TYPE_CD
-            , A.FLD_LCTR_YN
-            , A.FLD_PLANNG_YN
-            , A.FLD_CNSLTNG_YN
-            , A.FLD_ETC_YN
-            , A.FLD_ETC_CN
-            , A.ENV_EDU_CAREER_YY
-            , A.ENV_EDU_CAREER_MM
-            , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR',') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{userid} ) AS EXPRT_TRGT_CD/* 전문분야 대상 */
-            , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{userid} ) AS EXPRT_SBJCT_CD /* 전문분야 주제 */
-            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_RGN_CD /* 주요활동지역 */
-            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{userid} ) AS EXPRT_ACTVT_SCOPE_CD /* 가능 활동범위 */
-            , MDFCN_DT
-            , B.NM
-            , B.BRDT
-            , B.GNDR
-            FROM TB_ASS_EXPRT A
-            INNER JOIN TB_CMM_USER B
+        SELECT AA.*
+        FROM
+            (
+                SELECT
+                    A.USERID
+                    , A.EXPRT_TYPE_CD
+                    , A.FLD_LCTR_YN
+                    , A.FLD_PLANNG_YN
+                    , A.FLD_CNSLTNG_YN
+                    , A.FLD_ETC_YN
+                    , A.FLD_ETC_CN
+                    , A.ENV_EDU_CAREER_YY
+                    , A.ENV_EDU_CAREER_MM
+                    , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
+                    , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID) AS EXPRT_ACTVT_SCOPE_CD_NM
+                    , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
+                    , (SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID) AS EXPRT_CRTFCT_NM
+                    , A.MDFCN_DT
+                    , B.NM
+                    , B.BRDT
+                    , B.GNDR
+                FROM TB_ASS_EXPRT A
+                INNER JOIN TB_CMM_USER B
                 ON A.USERID = B.USERID
+                WHERE 1 = 1
+                    <if test="exprtTypeCd != null and exprtTypeCd != ''">
+                        AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
+                    </if>
+
+                    <if test="exprtField != null and exprtField != ''">
+                        <choose>
+                            <when test='exprtField == "1"'>
+                                AND A.FLD_LCTR_YN = 'Y'
+                            </when>
+                            <when test='exprtField == "2"'>
+                                AND A.FLD_PLANNG_YN = 'Y'
+                            </when>
+                            <when test='exprtField == "3"'>
+                                AND A.FLD_CNSLTNG_YN = 'Y'
+                            </when>
+                            <when test='exprtField == "4"'>
+                                AND A.FLD_ETC_YN = 'Y'
+                            </when>
+                        </choose>
+                    </if>
+                    AND A.STTS_CD = '134103' /* 승인 상태의 전문가만 조회 */
+            ) AA
+            WHERE 1 = 1
+
+            <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
+                AND AA.EXPRT_TRGT_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm}, '%')
+            </if>
+
+            <if test="exprtSbjctCdNm != null and exprtSbjctCdNm != ''">
+                AND AA.EXPRT_SBJCT_CD_NM LIKE CONCAT('%', #{exprtSbjctCdNm}, '%')
+            </if>
+
+            <if test="exprtActvtScopeCdNm != null and exprtActvtScopeCdNm != ''">
+                AND AA.EXPRT_ACTVT_SCOPE_CD_NM LIKE CONCAT('%', #{exprtActvtScopeCdNm}, '%')
+            </if>
         <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectExprt" resultType="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo">
+        SELECT
+            A.EXPRT_TYPE_CD
+             , A.USERID
+             , A.FLD_LCTR_YN
+             , A.FLD_PLANNG_YN
+             , A.FLD_CNSLTNG_YN
+             , A.FLD_ETC_YN
+             , A.FLD_ETC_CN
+             , A.ENV_EDU_CAREER_YY
+             , A.ENV_EDU_CAREER_MM
+             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = #{userid}) AS EXPRT_SBJCT_CD_NM
+             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= #{userid}) AS EXPRT_ACTVT_SCOPE_CD_NM
+             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = #{userid}) AS EXPRT_TRGT_CD_NM
+             , A.MOBLPHON_RLS_YN
+             , A.EML_RLS_YN
+             , A.QLFC_RLS_YN /* 자격 공개 여부 */
+             , A.HDOF_RLS_YN /* 재직 공개 여부 */
+             , A.CAREER_RLS_YN /* 경력 공개 여부 */
+             , B.NM
+             , B.GNDR
+             , B.BRDT
+             , B.MOBLPHON
+             , B.TELNO
+             , B.EML
+        FROM TB_ASS_EXPRT A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE A.USERID = #{userid}
+    </select>
+
+    <!-- 전문가 경력사항 조회 -->
+    <select id="selectExprtCareerList" resultType="front.ExprtCareerVo">
+        SELECT
+            EXPRT_CAREER_ID
+             , FLD_NM
+             , ACTVT_BGNG_DE
+             , ACTVT_END_DE
+             , ACTVT_YN
+             , IF(ACTVT_YN= 'Y', CONCAT(ACTVT_BGNG_DE, ' ~ 활동중' ), CONCAT(ACTVT_BGNG_DE, ' ~ ' , ACTVT_END_DE )) AS ACTVT_DE
+             , ACTVT_HR
+             , IDNTY_INST_NM
+             , ACTVT_CN
+             , IDNTY_DE
+             , CRTF_FILEID
+             , ARTCLASS_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{userid}
+        ORDER BY ORDR
+    </select>
+
+    <!-- 전문가 자격증 조회 -->
+    <select id="selectExprtCrtfctList" resultType="front.ExprtCrtfctVo">
+        SELECT
+            EXPRT_CRTFCT_ID
+             , CRTFCT_NM
+             , ACQS_INST
+             , ACQS_NO
+             , ACQS_GRD
+             , ACQS_DE
+             , CRTFCT_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_CRTFCT
+        WHERE USERID= #{userid}
+        ORDER BY ORDR
+    </select>
+
+    <!-- 전문가 재직 조회 -->
+    <select id="selectExprtHdofList" resultType="front.ExprtHdofVo">
+        SELECT
+            EXPRT_HDOF_ID
+             , HDOF_SE_CD
+             , INST_NM
+             , DEPT_NM
+             , JBGD_NM
+             , HDOF_BGNG_DE
+             , HDOF_END_DE
+             , HDOF_YN
+             , IF(HDOF_YN= 'Y', CONCAT(HDOF_BGNG_DE, ' ~ 재직중' ), CONCAT(HDOF_BGNG_DE, ' ~ ' , HDOF_END_DE )) AS HDOF_DE
+             , HDOFCRTF_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_HDOF
+        WHERE USERID= #{userid}
+        ORDER BY ORDR
     </select>
 </mapper>

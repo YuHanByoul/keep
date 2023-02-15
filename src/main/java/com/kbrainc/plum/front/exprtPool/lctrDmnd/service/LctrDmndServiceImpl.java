@@ -1,7 +1,6 @@
 package com.kbrainc.plum.front.exprtPool.lctrDmnd.service;
 
-import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo;
-import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.LctrDmndDao;
+import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,42 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
      */
     @Override
     public List<ExprtVo> selectExprtList(ExprtVo searchVo) throws Exception {
-        return null;
+        return lctrDmndDao.selectExprtList(searchVo);
     }
 
+    /**
+     * 전문가 상세 조회
+     *
+     * @param exprtVo
+     * @return exprt vo
+     * @throws Exception
+     * @Title : selectExprt
+     * @Description : 전문가 상세 조회
+     */
+    @Override
+    public ExprtVo selectExprt(ExprtVo exprtVo) throws Exception {
+        ExprtVo exprt = lctrDmndDao.selectExprt(exprtVo);
+
+        if(exprt.getQlfcRlsYn().equals("Y")) {
+            List<ExprtCareerVo> exprtCareerList = lctrDmndDao.selectExprtCareerList(exprtVo);
+            exprt.setExprtCareerList(exprtCareerList);
+        }
+
+        if(exprt.getHdofRlsYn().equals("Y")) {
+            List<ExprtHdofVo> exprtHdofList = lctrDmndDao.selectExprtHdofList(exprtVo);
+            exprt.setExprtHdofList(exprtHdofList);
+        }
+
+        if(exprt.getCareerRlsYn().equals("Y")) {
+            List<ExprtCareerVo> exprtCareerList = lctrDmndDao.selectExprtCareerList(exprtVo);
+            exprt.setExprtCareerList(exprtCareerList);
+        }
+
+        return exprt;
+    }
+
+    @Override
+    public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception {
+        return lctrDmndDao.insertLctrDmnd(lctrDmndVo);
+    }
 }
