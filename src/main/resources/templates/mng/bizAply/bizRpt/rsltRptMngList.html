@@ -43,7 +43,7 @@
                                 </div>
                                 <div class="col-lg-3 col-md-6 mb-3">
                                     <div class="mb-0 form-group row">
-                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>중간보고제출기간</strong></label>
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterSearchSelectDate"><strong>결과보고제출기간</strong></label>
                                         <div class="col-sm-12">
                                             <input type="text" name="filterSearchSelectDate" id="filterSearchSelectDate" class="form-control form-control-sm" value=""/>
                                         </div>
@@ -59,8 +59,8 @@
                                 </div>
                             </div>
                             <div class="mt-1 p-t-20 text-center border-top">
-                                <button type="button" class="btn btn-disabled m-r-5" onclick="mdlRptMng.initSearch();">초기화</button>
-                                <button type="submit" class="btn btn-primary" onclick="mdlRptMng.onSearch();">검색</button>
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="rsltRptMng.initSearch();">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="rsltRptMng.onSearch();">검색</button>
                             </div>
                         </div>
                     </form>
@@ -70,15 +70,15 @@
                     <div class="card">
                         <div class="row p-20 p-b-0">
                             <div class="col-12 col-md-8 mb-2 mb-md-0">
-                                <h5><strong>중간보고관리 검색결과</strong></h5>
+                                <h5><strong>결과보고관리 검색결과</strong></h5>
                             </div>
                             <div class="col-12 col-md-4 text-right">
-                                <button type="button" class="btn btn-primary" onclick="mdlRptMng.downGridExcel();">엑셀다운로드</button>
+                                <button type="button" class="btn btn-primary" onclick="rsltRptMng.downGridExcel();">엑셀다운로드</button>
                             </div>
                         </div>
                         <div class="card-block-small">
-                            <table id="mdlRptMngGrid" class="table-responsive"></table>
-                            <div id="mdlRptMngPager" class="text-center"></div>
+                            <table id="rsltRptMngGrid" class="table-responsive"></table>
+                            <div id="rsltRptMngPager" class="text-center"></div>
                         </div>
                     </div>
                 </div>
@@ -94,17 +94,17 @@
         <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
         <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
         <script th:inline="javascript">
-            var mdlRptMngGridHelper1;
+            var rsltRptMngGridHelper1;
 
-            var mdlRptMng = {
-                listUrl  : "/mng/bizAply/bizRpt/selectMdlRptMngList.do"
-              , excelUrl : "/mng/bizAply/bizRpt/selectMdlRptMngListExcel.do"
-              , dtlUrl   : "/mng/bizAply/bizRpt/mdlRptMngDetailForm.html"
+            var rsltRptMng = {
+                listUrl  : "/mng/bizAply/bizRpt/selectRsltRptMngList.do"
+              , excelUrl : "/mng/bizAply/bizRpt/selectRsltRptMngListExcel.do"
+              , dtlUrl   : "/mng/bizAply/bizRpt/rsltRptMngDetailForm.html"
               , init :
             	  function() {
             	      //$("#searchFrm").prop("onsubmit","return false;")
-                      mdlRptMngGridHelper1 = new GridHelper('mdlRptMngGrid','contentPanel');
-                      $("#reportSeCd").val("204101");    /* 보고관리 구분 : 중간보고*/
+                      rsltRptMngGridHelper1 = new GridHelper('rsltRptMngGrid','contentPanel');
+                      $("#reportSeCd").val("204102");    /* 보고관리 구분 : 결과보고*/
 
                       this.initSearch();
                       this.setGrid();
@@ -130,18 +130,18 @@
               , onSearch :
             	  function() {
 
-                      mdlRptMngGridHelper1.resetListContent();
+                      rsltRptMngGridHelper1.resetListContent();
             	  }
               , setGrid :
                   function() {
 
-            	      $("#mdlRptMngGrid").jsGrid({
+            	      $("#rsltRptMngGrid").jsGrid({
             	    	  height: "auto"
             	    	 , width: "100%"
                          , autoload: true
                          , sorting: false
                          , paging: true
-                         , pagerContainer: "#mdlRptMngPager"
+                         , pagerContainer: "#rsltRptMngPager"
                          , pagerFormat: "{first} {prev} {pages} {next} {last}"
                          , pagePrevText: "이전"
                          , pageNextText: "다음"
@@ -166,7 +166,7 @@
                                    $.ajax({
                                      type: "GET"
                                    , contentType: "application/json; charset=utf-8"
-                                   , url      : mdlRptMng.listUrl
+                                   , url      : rsltRptMng.listUrl
                                    , data     : formData
                                    , dataType : "json"
                                    }).done(function(response) {
@@ -185,7 +185,7 @@
                               , {title: "사업분야"         , name: "fldCdNm"        , type: "text"  , align: "left"   , width: "100"}
                               , {title: "공모명"           , name: "pcntstNm"       , type: "text"  , align: "left"   , width: "200"}
                               , {title: "진행상태"         , name: "prgrsSttsCdNm"  , type: "text"  , align: "center" , width: "80" }
-                              , {title: "중간보고제출기간" , name: "mdlReportPrd"   , type: "text"  , align: "center" , width: "200"}
+                              , {title: "결과보고제출기간" , name: "rsltReportPrd"   , type: "text"  , align: "center" , width: "200"}
                               , {title: "선정사업"         , name: "slctnBizCnt"    , type: "text"  , align: "center" , width: "80" }
                               , {title: "제출"             , name: "sbmsnCnt"       , type: "text"  , align: "center" , width: "80" }
                               , {title: "컨설팅 대상"      , name: "cnsltngUseCnt"  , type: "text"  , align: "center" , width: "80" }
@@ -195,28 +195,28 @@
 
                                if(args.event.originalEvent.target.cellIndex == 3 ){
 
-                                   var detailUrl = mdlRptMng.dtlUrl + "?pcntstid=" +args.item.pcntstid;
+                                   var detailUrl = rsltRptMng.dtlUrl + "?pcntstid=" +args.item.pcntstid;
 //                                    location.href= detailUrl;
-                                   mdlRptMngGridHelper1.loadContent(detailUrl);
-                                   mdlRptMngGridHelper1.rowClick(args);
+                                   rsltRptMngGridHelper1.loadContent(detailUrl);
+                                   rsltRptMngGridHelper1.rowClick(args);
                                }
                            }
                            , resetGrid: function() {
-                               mdlRptMng.resetListContent();
+                               rsltRptMng.resetListContent();
                            }
             	      });
                   }
               , downGridExcel :
             	   function () {
             	       var f = document.searchFrm;
-            	       f.action = mdlRptMng.excelUrl;
+            	       f.action = rsltRptMng.excelUrl;
             	       f.submit();
 				   }
         }
 
         $(function() {
 
-            mdlRptMng.init();
+            rsltRptMng.init();
         });
         </script>
     </div>

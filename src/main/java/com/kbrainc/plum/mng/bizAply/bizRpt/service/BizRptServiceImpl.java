@@ -322,7 +322,7 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 				cell.setCellStyle(style);
 				/*컨설팅 대상 여부*/
 				cell = row.createCell(cellnum++);
-				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngUseYn(), ""));
+				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngUseCnt(), ""));
 				cell.setCellStyle(style);
 			}
 
@@ -416,6 +416,429 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 	@Override
 	public List<BizRptVo> selectReportOperList(BizRptVo bizRptVo) throws Exception {
 		return bizRptDao.selectReportOperList(bizRptVo);
+	}
+
+	/**
+	* 보완요청 목록 조회
+	*
+	* @Title : selectSplmntDmndList
+	* @Description : 보완 요청 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectSplmntDmndList(BizRptVo bizRptVo) throws Exception{
+		return bizRptDao.selectSplmntDmndList(bizRptVo);
+	}
+
+	/**
+	* 보완요청 상세 조회
+	*
+	* @Title : getRptSplmntDmnd
+	* @Description : 보완요청 상세 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	@Override
+	public BizRptVo selectRptSplmntDmnd(BizRptVo bizRptVo) throws Exception{
+		return bizRptDao.selectRptSplmntDmnd(bizRptVo);
+	}
+
+	/**
+	* 보고보완 등록
+	*
+	* @Title : insertRptSplmnt
+	* @Description : 보고보완등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertRptSplmnt(BizRptVo bizRptVo) throws Exception{
+
+		int ret = 0;
+		bizRptVo.setAnsSttsCd("203104");    //답변상태코드 : 보완요청
+		ret = bizRptDao.insertRptSplmnt(bizRptVo);
+
+		return ret ;
+	}
+
+	/**
+	* 결과보고관리 목록조회
+	*
+	* @Title : selectRsltRptMngList
+	* @Description : 결과보고관리 목록조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectRsltRptMngList(BizRptVo bizRptVo) throws Exception{
+		return bizRptDao.selectRsltRptMngList(bizRptVo);
+	}
+
+	/**
+    * 결과보고관리 목록 엑셀다운로드
+    *
+    * @Title : aplyExcelDownList
+    * @Description : 결과보고관리 목록 엑셀다운로드
+    * @param request
+    * @param response
+    * @param BizRptVo
+    * @return void
+    * @throws Exception
+    */
+	public void selectRsltRptMngListExcel(BizRptVo bizRptVo, HttpServletResponse response, HttpServletRequest request) throws Exception{
+		List<BizRptVo> list = null;
+		String realName = "";
+		BizRptVo modelVo = null;
+
+		realName = "mdlRptSbmsnList.xls";
+
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		//Font 설정.
+		HSSFFont font = workbook.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		//제목의 스타일 지정
+		HSSFCellStyle titlestyle = workbook.createCellStyle();
+		titlestyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+		titlestyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		titlestyle.setAlignment(CellStyle.ALIGN_CENTER);
+		titlestyle.setBorderRight(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderLeft(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderTop(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderBottom(CellStyle.BORDER_THIN);//얇은 테두리 설정
+		titlestyle.setFont(font);
+
+		//내용 스타일 지정
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(CellStyle.ALIGN_CENTER);
+		style.setFont(font);
+		HSSFCellStyle styleR = workbook.createCellStyle();
+		styleR.setAlignment(CellStyle.ALIGN_RIGHT);
+		styleR.setFont(font);
+
+		HSSFCellStyle styleL = workbook.createCellStyle();
+		styleL.setAlignment(CellStyle.ALIGN_LEFT);
+		styleL.setFont(font);
+		HSSFSheet sheet = null;
+
+		sheet = workbook.createSheet("sheet1");
+
+		String [] titleArr = {
+				"사업분야"
+				,"공모명"
+				,"진행상태"
+				,"결과보고제출기간"
+				,"선정사업"
+				,"제출"
+				,"컨설팅 대상"
+		};
+
+		//Row 생성
+		HSSFRow row = sheet.createRow(0);
+		//Cell 생성
+		HSSFCell cell = null;
+
+		ArrayList<String> titleList = new ArrayList<>();
+		for (String element : titleArr) {
+			titleList.add(element);
+		}
+
+		int titleCnt = 0;
+		for(String title : titleList){
+			cell = row.createCell(titleCnt++);
+			cell.setCellValue(title);
+			cell.setCellStyle(titlestyle);
+		}
+
+		list = bizRptDao.selectRsltRptMngListExcel(bizRptVo);
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+
+		if(list != null && list.size() > 0){
+			int cellnum = 0;
+			for (int i=0; i<list.size();i++){
+				modelVo = list.get(i);
+
+				//타이틀이 1개 row에 write 되어있음 따라서 i+1
+				row = sheet.createRow((i+1));
+				cellnum = 0;
+
+				/*사업분야*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getFldCdNm(), ""));
+				cell.setCellStyle(style);
+				/*공모명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getPcntstNm(), ""));
+				cell.setCellStyle(style);
+				/*진행상태*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getPrgrsSttsCdNm(), ""));
+				cell.setCellStyle(style);
+				/*결과보고제출기간*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+				cell.setCellStyle(style);
+				/*선정사업*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+				cell.setCellStyle(style);
+				/*제출*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+				cell.setCellStyle(style);
+				/*컨설팅 대상*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getRsltReportPrd(), ""));
+				cell.setCellStyle(style);
+			}
+
+			for(int i=0;i<titleList.size();i++){
+				sheet.autoSizeColumn((short)i);
+				sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+			}
+		}
+
+		ExcelUtils.excelInfoSet(response,realName);
+
+		//엑셀 파일을 만듬
+		OutputStream fileOutput = response.getOutputStream();
+
+		workbook.write(fileOutput);
+		fileOutput.flush();
+		fileOutput.close();
+
+	}
+
+	/**
+	* 결과보고제출목록 엑셀 다운로드
+	*
+	* @Title : selectRsltRptSbmsnListExcel
+	* @Description : 결과보고제출목록 엑셀 다운로드
+	* @param bizRptVo
+	* @param response
+	* @param request
+	* @return void
+	*/
+	public void selectRsltRptSbmsnListExcel(BizRptVo bizRptVo, HttpServletResponse response, HttpServletRequest request) throws Exception {
+		List<BizRptVo> list = null;
+		String realName = "";
+		BizRptVo modelVo = null;
+
+		realName = "mdlRptSbmsnList.xls";
+
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		//Font 설정.
+		HSSFFont font = workbook.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		//제목의 스타일 지정
+		HSSFCellStyle titlestyle = workbook.createCellStyle();
+		titlestyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+		titlestyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		titlestyle.setAlignment(CellStyle.ALIGN_CENTER);
+		titlestyle.setBorderRight(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderLeft(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderTop(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderBottom(CellStyle.BORDER_THIN);//얇은 테두리 설정
+		titlestyle.setFont(font);
+
+		//내용 스타일 지정
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(CellStyle.ALIGN_CENTER);
+		style.setFont(font);
+		HSSFCellStyle styleR = workbook.createCellStyle();
+		styleR.setAlignment(CellStyle.ALIGN_RIGHT);
+		styleR.setFont(font);
+
+		HSSFCellStyle styleL = workbook.createCellStyle();
+		styleL.setAlignment(CellStyle.ALIGN_LEFT);
+		styleL.setFont(font);
+		HSSFSheet sheet = null;
+
+		sheet = workbook.createSheet("sheet1");
+
+		String [] titleArr = {
+				"접수번호"
+				,"제출상태"
+				,"신청기관명"
+				,"신청자"
+				,"프로그램명"
+				,"제출일시"
+				,"증빙서류"
+				,"컨설팅대상"
+		};
+
+		//Row 생성
+		HSSFRow row = sheet.createRow(0);
+		//Cell 생성
+		HSSFCell cell = null;
+
+		ArrayList<String> titleList = new ArrayList<>();
+		for (String element : titleArr) {
+			titleList.add(element);
+		}
+
+		int titleCnt = 0;
+		for(String title : titleList){
+			cell = row.createCell(titleCnt++);
+			cell.setCellValue(title);
+			cell.setCellStyle(titlestyle);
+		}
+
+		list = bizRptDao.selectRsltRptSbmsnListExcel(bizRptVo);
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+
+		if(list != null && list.size() > 0){
+			int cellnum = 0;
+			for (int i=0; i<list.size();i++){
+				modelVo = list.get(i);
+
+				//타이틀이 1개 row에 write 되어있음 따라서 i+1
+				row = sheet.createRow((i+1));
+				cellnum = 0;
+
+				/*접수번호*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getRcptno(), ""));
+				cell.setCellStyle(style);
+				/*제출상태*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getReportSttsCdNm(), ""));
+				cell.setCellStyle(style);
+				/*신청기관명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getInstNm(), ""));
+				cell.setCellStyle(style);
+				/*신청자 명(계정)*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getUserNmAcnt(), ""));
+				cell.setCellStyle(style);
+				/*프로그램 명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getPrgrmNm(), ""));
+				cell.setCellStyle(style);
+				/*제출일시*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(dateFormat.format(modelVo.getRegDt()), ""));
+				cell.setCellStyle(style);
+				/*증빙서류 여부*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getEvdncDcmntYn(), ""));
+				cell.setCellStyle(style);
+				/*컨설팅 대상 여부*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngUseCnt(), ""));
+				cell.setCellStyle(style);
+			}
+
+			for(int i=0;i<titleList.size();i++){
+				sheet.autoSizeColumn((short)i);
+				sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+			}
+		}
+
+		ExcelUtils.excelInfoSet(response,realName);
+
+		//엑셀 파일을 만듬
+		OutputStream fileOutput = response.getOutputStream();
+
+		workbook.write(fileOutput);
+		fileOutput.flush();
+		fileOutput.close();
+
+	}
+
+	/**
+	* 결과보고관리 상세 조회
+	*
+	* @Title : selectRsltRptMng
+	* @Description : 결과보고관리 상세 조회
+	* @param bizRptVo
+	* @return
+	* @return BizRptVo
+	*/
+	@Override
+	public BizRptVo selectRsltRptMng(BizRptVo bizRptVo) throws Exception {
+		return bizRptDao.selectRsltRptMng(bizRptVo);
+	}
+
+	/**
+	* 결과보고제출 목록 조회
+	*
+	* @Title : selectRsltRptSbmsnList
+	* @Description : 결과보고제출 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectRsltRptSbmsnList(BizRptVo bizRptVo) throws Exception {
+		return bizRptDao.selectRsltRptSbmsnList(bizRptVo);
+	}
+
+	/**
+	* 컨설팅관리 목록 조회
+	*
+	* @Title : selectCnsltngMngList
+	* @Description : selectCnsltngMngList
+	* @param bizRptVo
+	* @return
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectCnsltngMngList(BizRptVo bizRptVo) throws Exception {
+		return bizRptDao.selectCnsltngMngList(bizRptVo);
+	}
+
+	/**
+	* 컨설팅관리 상세 조회
+	*
+	* @Title : selectCnsltngMng
+	* @Description : 컨설팅관리 상세 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	@Override
+	public BizRptVo selectCnsltngMng(BizRptVo bizRptVo) throws Exception {
+		return bizRptDao.selectCnsltngMng(bizRptVo);
+	}
+
+	/**
+	* 컨설팅관리 등록
+	*
+	* @Title : insertCnsltngMng
+	* @Description : 컨설팅관리 등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	public int insertCnsltngMng(BizRptVo bizRptVo) throws Exception {
+		int ret = 0;
+
+		if (!StringUtil.nvl(bizRptVo.getCnsltngid()).equals("") && !StringUtil.nvl(bizRptVo.getCnsltngid()).equals(0)) {
+			//컨설팅관리 수정
+			ret = bizRptDao.updateCnsltngMng(bizRptVo);
+		}else {
+			//컨설팅관리 등록
+			ret = bizRptDao.insertCnsltngMng(bizRptVo);
+		}
+
+		return ret;
 	}
 
 }

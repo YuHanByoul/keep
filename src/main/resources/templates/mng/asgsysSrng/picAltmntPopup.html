@@ -1,5 +1,5 @@
 <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content type_2">
+    <div class="modal-content type_2" style="width: 1000px;">
         <div class="modal-header">
             <h4 class="modal-title">담당자 배정</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
@@ -89,7 +89,6 @@
 <!--             <button type="button" class="btn btn-primary waves-effect waves-light " onclick="fn_picChct()">선택</button> -->
         </div>
     </div>
-</div>
 
 
 <script th:inline="javascript">
@@ -383,60 +382,57 @@
               , "sprtgrpid"    : ""
               , "bfrSprtgrpid" : ""
               , "srngSttsCd"   : "114102"    //심사전
-              , "srgnSttsCd"   : "114102"    //심사전
               }
 
         for(var item of selectedItems) {
-
             var tempNo="";
 
-        	if(item.telno != "" && item.telno.length == 11) {
-                tempNo = item.telno;
-                item.telno = tempNo.substr(0,3)+"-"+tempNo.substr(3,4)+"-"+tempNo.substr(7,4);
-            }
+        	if(item.userid !=""){
 
-            if(item.telno != "" && item.telno.length == 10) {
-                tempNo = item.telno;
-                item.telno = tempNo.substr(0,3)+"-"+tempNo.substr(3,3)+"-"+tempNo.substr(7,4);
-            }
-
-            if($("#picId-"+item.userid).length > 0  ) {
-                duplicate = true;
-            } else {
-                var content = "<span class='label label-inverse' id='picId-" + item.userid
-                content    += "' name='picInfo' id='"+item.userid+"'>" + item.nm + "("+ item.acnt+ ") | " + item.eml +" | " +item.telno
-                content    += "&nbsp; <a href='javascript:void(0)' onclick='removePicInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
-
-
-                if("Y" != picSe){
-                	$("#jdgsPicList").append(content);    //심사위원
-
-                	if(data.jdgsid == "" ) {
-                		data.jdgsid = item.userid;
-
-                	}else{
-                		data.jdgsid = data.jdgsid +"," + item.userid;
-                	}
+            	if(item.telno != "" && item.telno.length == 11) {
+                    tempNo = item.telno;
+                    item.telno = tempNo.substr(0,3)+"-"+tempNo.substr(3,4)+"-"+tempNo.substr(7,4);
                 }
-                else{
 
-
-                	data.sprtgrpid=item.userid;
-
-                	var bfrSprtgrpid = $("#sprtgrpPicList").children().prop("id");
-
-                	if(bfrSprtgrpid != "" && bfrSprtgrpid != item.userid){
-                		data.bfrSprtgrpid = bfrSprtgrpid;
-                		$("#"+bfrSprtgrpid).remove();
-                	}
-
-                	//$("#"+$("#sprtgrpPicList").children().prop("id")).remove()
-                	$("#sprtgrpPicList").append(content);    //지원단
-
-
-
+                if(item.telno != "" && item.telno.length == 10) {
+                    tempNo = item.telno;
+                    item.telno = tempNo.substr(0,3)+"-"+tempNo.substr(3,3)+"-"+tempNo.substr(7,4);
                 }
-            }
+
+                if($("#picId-"+item.userid).length > 0  ) {
+                    duplicate = true;
+                } else {
+                    var content = "<span class='label label-inverse' id='picId-" + item.userid
+                    content    += "' name='picInfo' id='"+item.userid+"'>" + item.nm + "("+ item.acnt+ ") | " + item.eml +" | " +item.telno
+                    content    += "&nbsp; <a href='javascript:void(0)' onclick='removePicInfo(" + item.userid+ ")' class='text-white'>X</a> </span>";
+
+
+                    if("Y" != picSe){
+                    	$("#jdgsPicList").append(content);    //심사위원
+
+                    	if(data.jdgsid == "" ) {
+                    		data.jdgsid = item.userid;
+
+                    	}else{
+                    		data.jdgsid = data.jdgsid +"," + item.userid;
+                    	}
+                    }
+                    else{
+
+                    	data.sprtgrpid=item.userid;
+
+                    	var bfrSprtgrpid = $("#sprtgrpPicList").children().prop("id");
+
+                    	if(bfrSprtgrpid != "" && bfrSprtgrpid != item.userid){
+                    		data.bfrSprtgrpid = bfrSprtgrpid;
+                    		$("#"+bfrSprtgrpid).remove();
+                    	}
+
+                    	$("#sprtgrpPicList").append(content);    //지원단
+                    }
+                }
+        	}
+
         }
 
         if(data.jdgsid != "" || data.sprtgrpid != ""){
