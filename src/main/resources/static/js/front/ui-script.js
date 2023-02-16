@@ -385,14 +385,16 @@ const formStyle = {
 	// },
 	textareaResize : function () {
 		$.each($('textarea'), function() {
-			const offset = this.offsetHeight - this.clientHeight;
-			const resizeTextarea = function(el) {
-				$(el).css('height', 'auto').css('height', el.scrollHeight + offset);
-				$(el).addClass('areaResize')
-			};
-			$(this).on('keyup input', function() {
-				resizeTextarea(this);
-			});
+			if (!$(this).is('[readonly]')) {
+				const offset = this.offsetHeight - this.clientHeight;
+				const resizeTextarea = function(el) {
+					$(el).css('height', 'auto').css('height', el.scrollHeight + offset);
+					$(el).addClass('areaResize')
+				};
+				$(this).on('keyup input', function() {
+					resizeTextarea(this);
+				});
+			}
 		});
 	},
 	passwordTypeChange : function () {
