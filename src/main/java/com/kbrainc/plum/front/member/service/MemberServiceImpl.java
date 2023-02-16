@@ -132,10 +132,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     }
     
     /**
-    * 기관 검색 리스트 조회
+    * 기관풀 검색 리스트 조회
     *
     * @Title       : selectInstSearchList 
-    * @Description : 기관 검색 리스트 조회
+    * @Description : 기관풀 검색 리스트 조회
     * @param memberInstSearchVo MemberInstSearchVo객체
     * @return List<MemberInstSearchVo> 기관검색목록
     * @throws Exception 예외
@@ -145,23 +145,17 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     }
     
     /**
+    * 기관 정보 조회(기관풀)
     *
-    * 회원 정보 수정
-    *
-    * @Title : updateMember
-    * @Description : 회원 정보 수정 
-    * @param MemberVo MemberVo객체
-    * @return int 
+    * @Title       : selectInstPoolInfo 
+    * @Description : 기관 정보 조회(기관풀)
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return MemberInstSearchVo 기관정보
     * @throws Exception 예외
     */
-    @Transactional
-    public int updateMember(MemberVo memberVo) throws Exception{
-       
-        String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
-       
-        memberVo.setPswd(password);
-       
-        int resInt = memberDao.updateMember(memberVo);
-        return resInt;
+    public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception {
+        return memberDao.selectInstPoolInfo(memberInstSearchVo);
     }
+    
+    
 }

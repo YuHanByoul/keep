@@ -465,10 +465,10 @@ public class MemberController {
     }
     
     /**
-    * 기관 검색 리스트 조회
+    * 기관풀 검색 리스트 조회
     *
     * @Title       : selectInstSearchList 
-    * @Description : 기관 검색 리스트 조회
+    * @Description : 기관풀 검색 리스트 조회
     * @param memberInstSearchVo MemberInstSearchVo객체
     * @return Map<String,Object> 응답결과객체
     * @throws Exception 예외
@@ -491,35 +491,20 @@ public class MemberController {
 
         return resultMap;
     }
-    
+
     /**
-    * 회원 정보 수정
+    * 기관 정보 조회(기관풀).
     *
-    * @Title       : insertMember 
-    * @Description : 회원 정보 수정
-    * @param memberVo MemberVo
-    * @param user 사용자세션정보
-    * @return Map<String,Object> 응답결과객체
+    * @Title : selectInstPoolInfo
+    * @Description : 기관 정보 조회(기관풀)
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return MemberInstSearchVo 기관정보
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/member/updateMember.do")
+    @RequestMapping(value = "/front/membership/selectInstPoolInfo.do")
     @ResponseBody
-    public Map<String, Object> updateMember(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
-    	Map<String, Object> resultMap = new HashMap<>();
-    	List<MemberVo> result = null;
-    	
-    	memberVo.setUser(user);
-    	memberVo.setUserid(Integer.parseInt(user.getUserid()));
-
-    	int checkDuplicationID = memberService.updateMember(memberVo);
-    	
-    	if(checkDuplicationID > 0) {
-    		resultMap.put("result", true);
-    	}else {
-    		resultMap.put("result", false);
-    	}
-    	return resultMap;
+    public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception {
+        MemberInstSearchVo result = memberService.selectInstPoolInfo(memberInstSearchVo);
+        return result;
     }
-
-    
 }

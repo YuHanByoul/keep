@@ -180,7 +180,7 @@
             </foreach>
     </insert>
 
-    <!-- 기관 검색 리스트 조회  -->
+    <!-- 기관풀 검색 리스트 조회  -->
     <select id="selectInstSearchList" parameterType="MemberInstSearchVo" resultType="MemberInstSearchVo">
         /* front.MemberDao.selectInstSearchList */
         <include refid="PaginationMapper.header"/>
@@ -202,21 +202,23 @@
         <include refid="PaginationMapper.footer"/>
     </select>
     
-    <!-- 회원 정보 수정(기존에 있던거 삭제하지않고 일단 놔둠) -->
-    <update id="updateMember" parameterType="front.MemberVo">
-        /* front.MemberDao.updateMember */
-        UPDATE 
-            TB_CMM_USER 
-        SET
-            ACNT = #{acnt},
-            PSWD = #{pswd},
-            NM = #{nm},
-            MOBNO = #{mobNo}, 
-            EMAIL = #{email},
-            USER_SE_CD = #{userSeCd}, 
-            MDFCN_DT = NOW(),
-            MDFRID = #{userid} 
-        WHERE  
-            USERID = #{userid}
-    </update>
+    <!-- 기관 정보 조회(기관풀)  -->
+    <select id="selectInstPoolInfo" parameterType="MemberInstSearchVo" resultType="MemberInstSearchVo">
+        /* front.MemberDao.selectInstPoolInfo */
+        SELECT 
+            INST_NM, 
+            INST_TYPE_CD, 
+            BRNO,
+            RPRSV_NM,
+            TELNO,
+            ZIP,
+            ADDR,
+            ADDR_DTL
+        FROM 
+            TB_CMM_INST_POOL
+        WHERE
+            ARTCLID = #{artclid}
+    </select>
+    
+    
 </mapper>

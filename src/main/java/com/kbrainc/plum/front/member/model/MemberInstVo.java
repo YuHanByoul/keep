@@ -81,8 +81,11 @@ public class MemberInstVo extends ParentRequestVo {
     /** 홈페이지 */
     private String hmpg;
     
+    /** 사업자등록증 파일그룹아이디 */
+    private Integer bizfileFilegrpid;
+    
     /** 로고 파일아이디 */
-    private Integer logoFileid;
+    private Integer bizlogoFileid;
 
     public void setInstTypeCd(String instTypeCd) {
         this.instTypeCd = instTypeCd;

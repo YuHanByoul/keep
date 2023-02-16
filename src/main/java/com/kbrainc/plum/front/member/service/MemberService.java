@@ -88,10 +88,10 @@ public interface MemberService {
     public String selectUseridByParntsCIandName(MemberVo memberVo) throws Exception;
     
     /**
-    * 기관 검색 리스트 조회
+    * 기관풀 검색 리스트 조회
     *
     * @Title       : selectInstSearchList 
-    * @Description : 기관 검색 리스트 조회
+    * @Description : 기관풀 검색 리스트 조회
     * @param memberInstSearchVo MemberInstSearchVo객체
     * @return List<MemberInstSearchVo> 기관검색목록
     * @throws Exception 예외
@@ -99,14 +99,15 @@ public interface MemberService {
     public List<MemberInstSearchVo> selectInstSearchList(MemberInstSearchVo memberInstSearchVo) throws Exception;
     
     /**
+    * 기관 정보 조회(기관풀)
     *
-    * 회원 정보 수정
-    *
-    * @Title : updateMember
-    * @Description : 회원 정보 수정 
-    * @param memberVo MemberVo객체
-    * @return int 
+    * @Title       : selectInstPoolInfo 
+    * @Description : 기관 정보 조회(기관풀)
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return MemberInstSearchVo 기관정보
     * @throws Exception 예외
     */
-    public int updateMember(MemberVo memberVo) throws Exception;
+    public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception;
+    
+    
 }

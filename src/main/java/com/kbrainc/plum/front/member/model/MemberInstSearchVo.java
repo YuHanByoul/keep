@@ -42,6 +42,24 @@ public class MemberInstSearchVo extends ParentRequestVo {
         
     /** 사업자등록번호 */
     private String brno;
+    
+    /** 대표자 이름 */
+    private String rprsvNm;
+    
+    /** 전화번호 */
+    private String telno;
+    
+    /** 팩스번호 */
+    private String fxno;
+    
+    /** 우편번호 */
+    private String zip;
+
+    /** 주소 */
+    private String addr;
+    
+    /** 주소 상세 */
+    private String addrDtl;
 
     public void setInstTypeCd(String instTypeCd) {
         this.instTypeCd = instTypeCd;
