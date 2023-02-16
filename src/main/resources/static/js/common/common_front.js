@@ -115,6 +115,65 @@ function o(e) {
     return e = (e = (e = (e = (e = (e = encodeURIComponent(e)).replace(/\!/g, "%21")).replace(/\*/g, "%2A")).replace(/\'/g, "%27")).replace(/\(/g, "%28")).replace(/\)/g, "%29")
 }
 
+/*
+* table 태그 내에서 파일 첨부 기능 사용시 업로드 이벤트를 등록하는 함수
+* inputTagId : file 타입의 input 태그 id 입력
+* filegrpNm : application.yml에서 설정한 uploadPath 입력
+* uploadSuccessTagId : 파일 등록 후 추가 되는 li 태그의 부모 ul 태그 id 입력
+* */
+function addFileUploadEvent(inputTagId, filegrpNm, uploadSuccessTagId) {
+    $('#' + inputTagId).on("change", function (event) {
+        var objFile = document.querySelector('#' + inputTagId);
+        var formData = new FormData();
+
+        for (i = 0; i < objFile.files.length; i++) {
+            formData.append("files", objFile.files[i]);
+        }
+
+        formData.append("filegrpid", $("#filegrpid").val());
+        formData.append("filegrpNm", filegrpNm);
+
+        if (displayWorkProgress(true)) {
+            $.ajax({
+                url: '/uploadMultipleFiles.do',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: 'POST',
+                success: function (response) {
+                    if (response.result == 'fail') {
+                        alert(response.msg);
+                    } else {
+                        if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                            $("#filegrpid").val(response[0].filegrpid);
+                        }
+
+                        for (i = 0; i < response.length; i++) {
+                            var result = `
+                                    <li class='file-block' data_ext='${response[i].fileExtsn.substr(1)}' id="${response[i].fileid}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" data-fileid="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
+                                             onclick="javascript:downloadFileByFileid(this.dataset.fileid, this.dataset.fileIdntfcKey)"> ${response[i].orginlFileNm}
+                                            </a>
+                                        </span>
+
+                                        <button type="button" class="file-delete" title="삭제" data-fileid="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
+                                              onclick="deleteFile(this.dataset.fileid, this.dataset.fileIdntfcKey)">
+                                            <span class="icon icon-circle-close"></span>
+                                        </button>
+                                    </li>
+                                `;
+                            $('#' + uploadSuccessTagId).append(result);
+                        }
+                    }
+                    closeWorkProgress();
+                }
+            });
+            $("#" + inputTagId).val("");
+        }
+    });
+};
+
 function deleteFile(fileid, fileIdntfcKey) {
 
     if (!confirm("파일을 삭제하시겠습니까?")) {
