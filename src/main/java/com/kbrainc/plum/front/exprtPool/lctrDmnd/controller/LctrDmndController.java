@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -58,6 +59,17 @@ public class LctrDmndController {
 
     @Value("${crypto.key}")
     private String encryptKey;
+
+    StandardPBEStringEncryptor encryptor;
+
+    @PostConstruct
+    public void init() throws Exception {
+        encryptor = new StandardPBEStringEncryptor();
+        encryptor.setSaltGenerator(new RandomSaltGenerator());
+        encryptor.setPassword(encryptKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+    }
+
     /**
      * 섭외요청 목록 화면
      *
@@ -68,8 +80,9 @@ public class LctrDmndController {
      * @Description : 섭외요청 목록 화면
      */
     @GetMapping("/lctrDmndList.html")
-    public String lctrDmndList(ExprtVo searchVo, Model model) throws Exception {
+    public String lctrDmndList(ExprtVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
         model.addAttribute("searchVo", searchVo);
+        model.addAttribute("user", user);
         return VIEW_PATH + "/lctrDmndList";
     }
 
@@ -86,10 +99,6 @@ public class LctrDmndController {
     public String lctrDmndDetail(ExprtVo searchVo, Model model) throws Exception {
         ExprtVo exprt = lctrDmndService.selectExprt(searchVo);
 
-        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
         String decStr = encryptor.decrypt(exprt.getGndr());
         exprt.setGndr(decStr);
 
@@ -103,7 +112,7 @@ public class LctrDmndController {
      *
      * @param searchVo
      * @return string
-     * @throws Exception
+     * @throws Exception/
      * @Title : lctrDmndForm
      * @Description : 섭외 요청 등록 화면
      */
@@ -140,7 +149,7 @@ public class LctrDmndController {
     /**
      * 전문가 목록 조회
      *
-     * @param searchVO
+     * @param searchVo
      * @return map
      * @throws Exception
      * @Title : selectExprtList
@@ -155,6 +164,10 @@ public class LctrDmndController {
         searchVo.setUser(user);
 
         List<ExprtVo> list = lctrDmndService.selectExprtList(searchVo);
+        for (ExprtVo exprtVo : list) {
+            String decStr = encryptor.decrypt(exprtVo.getGndr());
+            exprtVo.setGndr(decStr);
+        }
 
         if (list.size() > 0) {
             response.put("totalCount", list.get(0).getTotalCount());
@@ -192,14 +205,65 @@ public class LctrDmndController {
         }
 
         lctrDmndVo.setUser(user);
- /*       int retVal = lctrDmndService.insertLctrDmnd(lctrDmndVo);
+        int retVal = lctrDmndService.insertLctrDmnd(lctrDmndVo);
 
         if(retVal > 0) {
             response.put("result", Constant.REST_API_RESULT_SUCCESS);
-        }*/
+        }
 
         return response;
     }
 
+    /**
+     * 관심인력 등록
+     *
+     * @param exprtVo
+     * @param user
+     * @return map
+     * @Title : insertLtrstExprt
+     * @Description : 관심인력 등록
+     */
+    @PostMapping("/insertItrstExprt.do")
+    @ResponseBody
+    public Map<String,Object> insertItrstExprt(ExprtVo exprtVo , @UserInfo UserVo user) throws Exception {
+        Map<String,Object> response = new HashMap<>();
+        exprtVo.setUser(user);
+
+        boolean checkAlreadyRegistedItrstExprt = lctrDmndService.checkAlreadyRegistedItrstExprt(exprtVo);
+        if(checkAlreadyRegistedItrstExprt) {
+            response.put("msg", "이미 등록한 관심인력입니다. ");
+            return response;
+        }
+        
+        if (lctrDmndService.insertItrstExprt(exprtVo) > 0) {
+            response.put("msg", "관심인력으로 등록되었습니다.");
+        } else
+            response.put("msg", "관심인력 등록이 실패하였습니다.");
+
+        return response;
+    }
+
+    /**
+     * 관심인력 삭제
+     *
+     * @param exprtVo
+     * @param user
+     * @return map
+     * @Title : deleteItrstExprt
+     * @Description : 관심인력 삭제
+     */
+    @PostMapping("/deleteItrstExprt.do")
+    @ResponseBody
+    public Map<String,Object> deleteItrstExprt(ExprtVo exprtVo , @UserInfo UserVo user) throws Exception {
+        Map<String,Object> response = new HashMap<>();
+        exprtVo.setUser(user);
+
+        if (lctrDmndService.deleteItrstExprt(exprtVo) > 0) {
+            response.put("msg", "관심인력으로 등록되었습니다.");
+        } else
+            response.put("msg", "관심인력 등록이 실패하였습니다.");
+
+        return response;
+    }
 
 }

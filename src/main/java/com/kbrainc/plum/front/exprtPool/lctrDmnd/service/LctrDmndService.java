@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.exprtPool.lctrDmnd.service;
 
 import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.*;
 import com.kbrainc.plum.front.inqry.model.InqryVo;
+import com.kbrainc.plum.mng.expertPoolMng.model.ExpertVo;
 
 import java.util.List;
 
@@ -53,5 +54,38 @@ public interface LctrDmndService {
      * @Description : 전문가 섭외 요청 등록
      */
     public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception;
+
+    /**
+     * 관심인력 등록
+     *
+     * @param exprtVo
+     * @return int
+     * @throws Exception
+     * @Title : insertLtrstExprt
+     * @Description : 관심인력 등록
+     */
+    public int insertItrstExprt(ExprtVo exprtVo) throws Exception;
+
+    /**
+     * 이미 등록된 관심인력인지 확인
+     *
+     * @param exprtVo
+     * @return boolean
+     * @throws Exception
+     * @Title : checkAlreadyRegistedInrstExprt
+     * @Description : 이미 등록된 관심인력인지 확인
+     */
+    public boolean checkAlreadyRegistedItrstExprt(ExprtVo exprtVo) throws Exception;
+
+    /**
+     * 관심인력 삭제
+     *
+     * @param exprtVo
+     * @return int
+     * @throws Exception
+     * @Title : deleteItrstExprt
+     * @Description : 관심인력 삭제
+     */
+    public int deleteItrstExprt(ExprtVo exprtVo) throws Exception;
 
 }

@@ -13,7 +13,7 @@
             <div class="btn-wrap mt0">
                 <div class="left">
                     <button type="button" class="btn-small btn-outline-blue" data-layer-href="layer-popup08">메시지 보내기</button>
-                    <button type="button" class="btn-small btn-outline-blue">관심인력 등록 </button>
+                    <button type="button" class="btn-small btn-outline-blue" onclick="lctrDmndDetail.insertLtrstExprt()">관심인력 등록</button>
                 </div>
             </div>
         </div>
@@ -74,13 +74,13 @@
                 <th scope="row">생년월일</th>
                 <td th:text="${exprt.brdt}"></td>
                 <th scope="row">휴대전화</th>
-                <td th:text="${exprt.moblphon}"></td>
+                <td th:text="${exprt.moblphonRlsYn == 'Y' ? exprt.moblphon : '비공개'}"></td>
             </tr>
             <tr>
                 <th scope="row">전화번호</th>
-                <td th:text="${exprt.telno}"></td>
+                <td th:text="${exprt.telnoRlsYn == 'Y'? exprt.telno: '비공개'}"></td>
                 <th scope="row">이메일</th>
-                <td th:text="${exprt.eml}"></td>
+                <td th:text="${exprt.emlRlsYn == 'Y'  ? exprt.eml : '비공개'}"></td>
             </tr>
             </tbody>
         </table>
@@ -100,35 +100,43 @@
     </th:block>
 
     <th:block th:unless="${exprt.hdofRlsYn == 'N'}">
-        <div class="table-row">
-            <table th:each="exprtHdof : ${exprt.exprtHdofList}">
-                <caption></caption>
-                <colgroup>
-                    <col style="width:140px;">
-                    <col>
-                    <col style="width:140px;">
-                    <col>
-                </colgroup>
-                <tbody >
-                <tr>
-                    <th scope="row">재직기관 구분</th>
-                    <td th:text="${exprtHdof.hdofSeCdNm}"></td>
-                    <th scope="row">재직기관명</th>
-                    <td th:text="${exprtHdof.instNm}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">부서(소속)</th>
-                    <td th:text="${exprtHdof.deptNm}"></td>
-                    <th scope="row">지위(직급)</th>
-                    <td th:text="${exprtHdof.jbgdNm}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">재직기간</th>
-                    <td colspan="3" th:text="${exprtHdof.hdofDe}"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <th:block th:if="${exprt.exprtHdofList.size() == 0}">
+            <div class="nodata">
+                <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>등록된 재직사항이 없습니다.</p>
+            </div>
+        </th:block>
+
+        <th:block th:unless="${exprt.exprtHdofList.size() == 0}">
+            <div class="table-row">
+                <table th:each="exprtHdof : ${exprt.exprtHdofList}">
+                    <caption></caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">재직기관 구분</th>
+                        <td th:text="${exprtHdof.hdofSeCdNm}"></td>
+                        <th scope="row">재직기관명</th>
+                        <td th:text="${exprtHdof.instNm}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">부서(소속)</th>
+                        <td th:text="${exprtHdof.deptNm}"></td>
+                        <th scope="row">지위(직급)</th>
+                        <td th:text="${exprtHdof.jbgdNm}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">재직기간</th>
+                        <td colspan="3" th:text="${exprtHdof.hdofDe}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </th:block>
     </th:block>
 
 
@@ -146,38 +154,43 @@
     </th:block>
 
     <th:block th:unless="${exprt.qlfcRlsYn == 'N'}">
-        <div class="table-row">
-            <table th:each="exprtCrtfct : ${exprt.exprtCrtfctList}">
-                <caption></caption>
-                <colgroup>
-                    <col style="width:140px;">
-                    <col>
-                    <col style="width:140px;">
-                    <col>
-                </colgroup>
-                <tbody >
-                <tr >
-                    <th scope="row">자격증명</th>
-                    <td th:text="${exprtCrtfct.crtfctNm}"></td>
-                    <th scope="row">취득기관</th>
-                    <td th:text="${exprtCrtfct.acqsInst}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">취득번호</th>
-                    <td th:text="${exprtCrtfct.acqsNo}"></td>
-                    <th scope="row">취득등급</th>
-                    <td th:text="${exprtCrtfct.acqsGrd}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">취득일</th>
-                    <td colspan="3" th:text="${exprtCrtfct.acqsDe}"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <th:block th:if="${exprt.exprtCrtfctList.size() == 0}">
+            <div class="nodata">
+                <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>등록된 자격취득사항이 없습니다.</p>
+            </div>
+        </th:block>
+        <th:block th:unless="${exprt.exprtCrtfctList.size() == 0}">
+            <div class="table-row">
+                <table th:each="exprtCrtfct : ${exprt.exprtCrtfctList}">
+                    <caption></caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">자격증명</th>
+                        <td th:text="${exprtCrtfct.crtfctNm}"></td>
+                        <th scope="row">취득기관</th>
+                        <td th:text="${exprtCrtfct.acqsInst}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">취득번호</th>
+                        <td th:text="${exprtCrtfct.acqsNo}"></td>
+                        <th scope="row">취득등급</th>
+                        <td th:text="${exprtCrtfct.acqsGrd}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">취득일</th>
+                        <td colspan="3" th:text="${exprtCrtfct.acqsDe}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </th:block>
     </th:block>
-
-
 
     <!-- 환경교육 경력(실적) 사항 -->
     <div class="table-caption">
@@ -209,40 +222,49 @@
                 </tbody>
             </table>
 
-            <table th:each="exprtCareer : ${exprt.exprtCareerList}">
-                <caption></caption>
-                <colgroup>
-                    <col style="width:162px;">
-                    <col style="width:318px;">
-                    <col style="width:140px;">
-                    <col>
-                </colgroup>
-                <tbody >
-                <tr>
-                    <th scope="row">활동분야</th>
-                    <td th:text="${exprtCareer.fldNm}"></td>
-                    <th scope="row">활동기간</th>
-                    <td th:text="${exprtCareer.actvtDe}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">활동시간</th>
-                    <td th:text="${exprtCareer.actvtHr}"></td>
-                    <th scope="row">확인기관</th>
-                    <td th:text="${exprtCareer.idntyInstNm}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">활동내용</th>
-                    <td colspan="3" th:text="${exprtCareer.actvtCn}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">확인일</th>
-                    <td colspan="3" th:text="${exprtCareer.idntyDe}"></td>
-                </tr>
-                </tbody>
-            </table>
+            <th:block th:if="${exprt.exprtCareerList.size() == 0}">
+                <div class="nodata">
+                    <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>등록된 경력(실적) 사항이 없습니다.</p>
+                </div>
+            </th:block>
+
+            <th:block th:unless="${exprt.exprtCareerList.size() == 0}">
+                <table th:each="exprtCareer : ${exprt.exprtCareerList}">
+                    <caption></caption>
+                    <colgroup>
+                        <col style="width:162px;">
+                        <col style="width:318px;">
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">활동분야</th>
+                        <td th:text="${exprtCareer.fldNm}"></td>
+                        <th scope="row">활동기간</th>
+                        <td th:text="${exprtCareer.actvtDe}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">활동시간</th>
+                        <td th:text="|${exprtCareer.actvtHr}시간|"></td>
+                        <th scope="row">확인기관</th>
+                        <td th:text="${exprtCareer.idntyInstNm}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">활동내용</th>
+                        <td colspan="3">
+                            <th:block th:utext="${exprtCareer.actvtCn}"></th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">확인일</th>
+                        <td colspan="3" th:text="${exprtCareer.idntyDe}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </th:block>
         </div>
     </th:block>
-
     <!-- // -->
 
     <div class="btn-wrap">
@@ -252,14 +274,54 @@
         </div>
     </div>
 
+
+    <form name="listForm" id="listForm" method="get">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="userid" name="userid" th:value="${searchVo.userid}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="exprtTypeCd" name="exprtTypeCd" th:value="${searchVo.exprtTypeCd}">
+        <input type="hidden" id="exprtField" name="exprtField" th:value="${searchVo.exprtField}">
+        <input type="hidden" id="exprtTrgtCd" name="exprtTrgtCd" th:value="${searchVo.exprtTrgtCd}">
+        <input type="hidden" id="exprtSbjctCd" name="exprtSbjctCd" th:value="${searchVo.exprtSbjctCd}">
+        <input type="hidden" id="exprtActvtScopeCd" name="exprtActvtScopeCd" th:value="${searchVo.exprtActvtScopeCd}">
+    </form>
+
     <script th:inline="javascript">
         let lctrDmndDetail = {
+            listUrl: '/front/exprtPool/lctrDmndList.html',
+            formUrl: '/front/exprtPool/lctrDmndForm.html',
+            insertItrstExprtUrl : '/front/exprtPool/insertItrstExprt.do',
+
             moveToList() {
-
+                let f = document.forms.listForm;
+                f.action = this.listUrl;
+                f.submit();
             },
-            moveToInsertForm() {
 
+            moveToInsertForm() {
+                let f = document.forms.listForm;
+                f.action = this.formUrl;
+                f.submit();
+            },
+
+            insertLtrstExprt() {
+                if(!confirm('관심인력으로 등록하시겠습니까?')) return;
+
+                var data = [
+                    {name : "userid" , value : $('#userid').val()}
+                ];
+                $.ajax({
+                    method:'post',
+                    dataType:'json',
+                    url: lctrDmndDetail.insertItrstExprtUrl,
+                    data: data,
+                    success : function(response) {
+                        alert(response.msg);
+                    }
+                })
             }
+
         }
 
     </script>

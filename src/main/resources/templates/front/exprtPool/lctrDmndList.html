@@ -74,6 +74,7 @@
             formUrl: '/front/exprtPool/lctrDmndForm.html',
             detailUrl: '/front/exprtPool/lctrDmndDetail.html',
             searchVo:/*[[${searchVo}]]*/null,
+            user: /*[[${user}]]*/null,
 
             search() {
                 $('#pageNumber').val(1);
@@ -110,7 +111,7 @@
                     html += `<div class="card-list card-list-n2"> <ul>`;
                     list.forEach(function (item) {
                         /*let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == inqryMain.userid));*/
-                        var exprtField = [];
+                        let exprtField = [];
                         if (item.fldLctrYn == 'Y') exprtField.push('강의');
                         if (item.fldPlanngYn == 'Y') exprtField.push('기획');
                         if (item.fldCnsltngYn == 'Y') exprtField.push('컨설팅');
@@ -120,10 +121,12 @@
                                         <div class="resume-top">
                                             <div class="resume-name">
                                                 <span class="tag tag-green">${item.exprtTypeCdNm}</span>
-                                                <strong>${item.nm} (38세, 남)</strong>
+                                                <strong>${item.nm} (${item.age}, ${item.gndr == 'M' ? '남성' : '여성'})</strong>
                                             </div>
                                             <div class="resume-favorite">
-                                                <label class="inp inp-star"><input type="checkbox" title="관심인력 등록"></label>
+                                                <label class="inp inp-star">
+                                                <input type="checkbox" title="관심인력 등록" ${item.isItrstExprt ? 'checked' : ''} data-exprtid=${item.userid} onclick="lctrDmndList.changeItrstExprt(this)">
+                                                </label>
                                             </div>
                                         </div>
                                         <a onclick="lctrDmndList.moveToDetail(${item.userid})">
@@ -133,6 +136,7 @@
                                                         <div class="list">
                                                             <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
                                                             <dd>${exprtField.join(', ')}
+
                                                                 ${isNull(item.exprtTrgtCdNm) ? '' : '/' + item.exprtTrgtCdNm}
                                                                 ${isNull(item.exprtSbjctCdNm) ? '' : '/' + item.exprtSbjctCdNm}
                                                             </dd>
@@ -147,14 +151,18 @@
                                                         </div>
                                                         <div class="list">
                                                             <dt><span class="icon icon-location bg-blue"></span>가능 활동범위</dt>
-                                                            <dd>${item.exprtActvtScopeCd}</dd>
+                                                            <dd>${item.exprtActvtScopeCdNm}</dd>
                                                         </div>
                                                     </dl>
                                                 </div>
                                                 <div class="resume-update">
                                                     <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
                                                     <div class="link">
-                                                        <a href="#" class="btn-medium btn-blue" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>
+                                                        ${item.completeLctrDmnd ?
+                            `<a href="#" class="btn-medium btn-gray">요청 완료</a>` :
+                            `<a href="#" class="btn-medium btn-blue" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>`
+                        }
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -167,7 +175,35 @@
                 return html;
             },
 
+            changeItrstExprt(tag) {
+
+                let $tag = $(tag);
+                if($tag.is(":checked")) {
+                // 등록
+                    console.log('등록');
+                } else {
+                // 제거
+                    console.log('제거');
+                }
+
+              /*  if(!confirm('관심인력으로 등록하시겠습니까?')) return;
+
+                var data = [
+                    {name : "userid" , value : $('#userid').val()}
+                ];
+                $.ajax({
+                    method:'post',
+                    dataType:'json',
+                    url: lctrDmndDetail.insertItrstExprtUrl,
+                    data: data,
+                    success : function(response) {
+                        alert(response.msg);
+                    }
+                })*/
+            },
+
             moveToInsertForm(userid) {
+                // userType : null일수도 있고 어린이인 경우는 'C', 'E' 는 전문가.
                 /*
                 어린이 회원을 제외한 모든 회원이 신청 가능.
                 비회원 클릭 시, “14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다” alert 출력
@@ -180,7 +216,6 @@
             },
 
             moveToDetail(userid) {
-
                 var f = document.forms.searchForm;
                 f.userid.value = userid;
                 f.action = this.detailUrl;

@@ -70,6 +70,8 @@ public class ExprtVo extends ParentRequestVo {
 
     private String moblphonRlsYn;
 
+    private String telnoRlsYn;
+
     private String emlRlsYn;
 
     private String qlfcRlsYn;
@@ -97,6 +99,14 @@ public class ExprtVo extends ParentRequestVo {
     private List<ExprtHdofVo> exprtHdofList;
 
     private String exprtField;
+
+    private Integer completeLctrDmnd;
+
+    private Integer isItrstExprt;
+
+    private Integer age;
+
+    private String exprtCrtfctNm;
 
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;
