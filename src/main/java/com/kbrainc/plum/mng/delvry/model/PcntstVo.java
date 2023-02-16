@@ -35,6 +35,9 @@ public class PcntstVo extends ParentRequestVo {
     /** 공모 아이디 */
     private int pcntstid;
     
+    /** 차수 */
+    private int cycl;
+    
     /** 사업분야 코드 */
     private String fldCd;
     
@@ -55,6 +58,24 @@ public class PcntstVo extends ParentRequestVo {
     
     /** 사업비 교부 횟수 */
     private int wctDelvryCnt;
+    
+    /** 교부 신청 수 */
+    private int aplyCnt;
+    
+    /** 교부 확정 수 */
+    private int cfmtnCnt;
+    
+    /** 교부 신청 수 1차 */
+    private int aplyCntFirst;
+    
+    /** 교부 신청 수 2차 */
+    private int aplyCntScnd;
+    
+    /** 교부 확정 수 1차 */
+    private int cfmtnCntFirst;
+    
+    /** 교부 신청 수 2차 */
+    private int cfmtnCntScnd;
     
     /** 검색 사업분야 코드 */
     private String searchFldCd;
@@ -102,6 +123,188 @@ public class PcntstVo extends ParentRequestVo {
     
     public void setDelvryAplyPrsntnEndDt(Date delvryAplyPrsntnEndDt) {
         this.delvryAplyPrsntnEndDt = delvryAplyPrsntnEndDt != null ? (Date) delvryAplyPrsntnEndDt.clone() : null;
+    }
+    
+    /** 교부 신청 시작일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryAplyBgngDt;
+    
+    /** 교부 신청 시작일시 정보 */
+    public Date getDelvryAplyBgngDt() {
+        return delvryAplyBgngDt != null ? (Date) delvryAplyBgngDt.clone() : null;
+    }
+    
+    public void setDelvryAplyBgngDt(Date delvryAplyBgngDt) {
+        this.delvryAplyBgngDt = delvryAplyBgngDt != null ? (Date) delvryAplyBgngDt.clone() : null;
+    }
+    
+    /** 교부 신청 종료일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryAplyEndDt;
+    
+    /** 교부 신청 종료일시 정보 */
+    public Date getDelvryAplyEndDt() {
+        return delvryAplyEndDt != null ? (Date) delvryAplyEndDt.clone() : null;
+    }
+    
+    public void setDelvryAplyEndDt(Date delvryAplyEndDt) {
+        this.delvryAplyEndDt = delvryAplyEndDt != null ? (Date) delvryAplyEndDt.clone() : null;
+    }
+    
+    /** 교부 신청 시작일시 1차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryAplyBgngDtFirst;
+    
+    /** 교부 신청 시작일시 1차 정보 */
+    public Date getDelvryAplyBgngDtFirst() {
+        return delvryAplyBgngDtFirst != null ? (Date) delvryAplyBgngDtFirst.clone() : null;
+    }
+    
+    public void setDelvryAplyBgngDtFirst(Date delvryAplyBgngDtFirst) {
+        this.delvryAplyBgngDtFirst = delvryAplyBgngDtFirst != null ? (Date) delvryAplyBgngDtFirst.clone() : null;
+    }
+    
+    /** 교부 신청 종료일시 1차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryAplyEndDtFirst;
+    
+    /** 교부 신청 종료일시 1차 정보 */
+    public Date getDelvryAplyEndDtFirst() {
+        return delvryAplyEndDtFirst != null ? (Date) delvryAplyEndDtFirst.clone() : null;
+    }
+    
+    public void setDelvryAplyEndDtFirst(Date delvryAplyEndDtFirst) {
+        this.delvryAplyEndDtFirst = delvryAplyEndDtFirst != null ? (Date) delvryAplyEndDtFirst.clone() : null;
+    }
+    
+    /** 교부 신청 시작일시 2차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryAplyBgngDtScnd;
+    
+    /** 교부 신청 시작일시 2차 정보 */
+    public Date getDelvryAplyBgngDtScnd() {
+        return delvryAplyBgngDtScnd != null ? (Date) delvryAplyBgngDtScnd.clone() : null;
+    }
+    
+    public void setDelvryAplyBgngDtScnd(Date delvryAplyBgngDtScnd) {
+        this.delvryAplyBgngDtScnd = delvryAplyBgngDtScnd != null ? (Date) delvryAplyBgngDtScnd.clone() : null;
+    }
+    
+    /** 교부 신청 종료일시 2차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryAplyEndDtScnd;
+    
+    /** 교부 신청 종료일시 2차 정보 */
+    public Date getDelvryAplyEndDtScnd() {
+        return delvryAplyEndDtScnd != null ? (Date) delvryAplyEndDtScnd.clone() : null;
+    }
+    
+    public void setDelvryAplyEndDtScnd(Date delvryAplyEndDtScnd) {
+        this.delvryAplyEndDtScnd = delvryAplyEndDtScnd != null ? (Date) delvryAplyEndDtScnd.clone() : null;
+    }
+    
+    /** 교부 확정 발표 시작일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryCfmtnPrsntnBgngDt;
+    
+    /** 교부 확정 발표 시작일시 정보 */
+    public Date getDelvryCfmtnPrsntnBgngDt() {
+        return delvryCfmtnPrsntnBgngDt != null ? (Date) delvryCfmtnPrsntnBgngDt.clone() : null;
+    }
+    
+    public void setDelvryCfmtnPrsntnBgngDt(Date delvryCfmtnPrsntnBgngDt) {
+        this.delvryCfmtnPrsntnBgngDt = delvryCfmtnPrsntnBgngDt != null ? (Date) delvryCfmtnPrsntnBgngDt.clone() : null;
+    }
+    
+    /** 교부 확정 발표 종료일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date delvryCfmtnPrsntnEndDt;
+    
+    /** 교부 확정 발표 종료일시 정보 */
+    public Date getDelvryCfmtnPrsntnEndDt() {
+        return delvryCfmtnPrsntnEndDt != null ? (Date) delvryCfmtnPrsntnEndDt.clone() : null;
+    }
+    
+    public void setDelvryCfmtnPrsntnEndDt(Date delvryCfmtnPrsntnEndDt) {
+        this.delvryCfmtnPrsntnEndDt = delvryCfmtnPrsntnEndDt != null ? (Date) delvryCfmtnPrsntnEndDt.clone() : null;
+    }
+    
+    /** 자금 집행 시작일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date cptalExcutBgngDt;
+    
+    /** 자금 집행 시작일시 정보 */
+    public Date getCptalExcutBgngDt() {
+        return cptalExcutBgngDt != null ? (Date) cptalExcutBgngDt.clone() : null;
+    }
+    
+    public void setCptalExcutBgngDt(Date cptalExcutBgngDt) {
+        this.cptalExcutBgngDt = cptalExcutBgngDt != null ? (Date) cptalExcutBgngDt.clone() : null;
+    }
+    
+    /** 자금 집행 종료일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date cptalExcutEndDt;
+    
+    /** 자금 집행 종료일시 정보 */
+    public Date getCptalExcutEndDt() {
+        return cptalExcutEndDt != null ? (Date) cptalExcutEndDt.clone() : null;
+    }
+    
+    public void setCptalExcutEndDt(Date cptalExcutEndDt) {
+        this.cptalExcutEndDt = cptalExcutEndDt != null ? (Date) cptalExcutEndDt.clone() : null;
+    }
+    
+    /** 자금 집행 시작일시 1차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date cptalExcutBgngDtFirst;
+    
+    /** 자금 집행 시작일시 1차 정보 */
+    public Date getCptalExcutBgngDtFirst() {
+        return cptalExcutBgngDtFirst != null ? (Date) cptalExcutBgngDtFirst.clone() : null;
+    }
+    
+    public void setCptalExcutBgngDtFirst(Date cptalExcutBgngDtFirst) {
+        this.cptalExcutBgngDtFirst = cptalExcutBgngDtFirst != null ? (Date) cptalExcutBgngDtFirst.clone() : null;
+    }
+    
+    /** 자금 집행 종료일시 1차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date cptalExcutEndDtFirst;
+    
+    /** 자금 집행 종료일시 1차 정보 */
+    public Date getCptalExcutEndDtFirst() {
+        return cptalExcutEndDtFirst != null ? (Date) cptalExcutEndDtFirst.clone() : null;
+    }
+    
+    public void setCptalExcutEndDtFirst(Date cptalExcutEndDtFirst) {
+        this.cptalExcutEndDtFirst = cptalExcutEndDtFirst != null ? (Date) cptalExcutEndDtFirst.clone() : null;
+    }
+    
+    /** 자금 집행 시작일시 2차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date cptalExcutBgngDtScnd;
+    
+    /** 자금 집행 시작일시 2차 정보 */
+    public Date getCptalExcutBgngDtScnd() {
+        return cptalExcutBgngDtScnd != null ? (Date) cptalExcutBgngDtScnd.clone() : null;
+    }
+    
+    public void setCptalExcutBgngDtScnd(Date cptalExcutBgngDtScnd) {
+        this.cptalExcutBgngDtScnd = cptalExcutBgngDtScnd != null ? (Date) cptalExcutBgngDtScnd.clone() : null;
+    }
+    
+    /** 자금 집행종료일시 2차 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date cptalExcutEndDtScnd;
+    
+    /** 자금 집행 종료일시 2차 정보 */
+    public Date getCptalExcutEndDtScnd() {
+        return cptalExcutEndDtScnd != null ? (Date) cptalExcutEndDtScnd.clone() : null;
+    }
+    
+    public void setCptalExcutEndDtScnd(Date cptalExcutEndDtScnd) {
+        this.cptalExcutEndDtScnd = cptalExcutEndDtScnd != null ? (Date) cptalExcutEndDtScnd.clone() : null;
     }
     
     /** 수정일시 */
