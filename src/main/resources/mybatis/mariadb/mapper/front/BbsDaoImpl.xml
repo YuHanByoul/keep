@@ -487,30 +487,31 @@
                     'N' new_yn,
                 </otherwise>
             </choose>
-            CASE WHEN FXD_NTC_YN = 'Y' THEN 1
-            ELSE 2
-            END AS FIXORDER ,
-            A.MDFCN_DT,
-            D.NM
+                CASE WHEN FXD_NTC_YN = 'Y' THEN 1
+                ELSE 2
+                END AS FIXORDER ,
+                A.MDFCN_DT,
+                D.NM
             FROM
-            TB_CMM_PST A
-            INNER JOIN
-            TB_CMM_BBS B
-            ON A.BBSID = B.BBSID
-            LEFT OUTER JOIN (
-            SELECT
-            PSTID
-            ,COUNT(Cmntid) cmntCnt
-            FROM
-            TB_CMM_CMNT
-            GROUP BY PSTID
-            ) C ON  A.PSTID =C.PSTID
-            INNER JOIN
-            TB_CMM_USER D
-            ON A.RGTRID = D.USERID
+                TB_CMM_PST A
+                INNER JOIN
+                TB_CMM_BBS B
+                ON A.BBSID = B.BBSID
+                LEFT OUTER JOIN (
+                    SELECT
+                    PSTID
+                    ,COUNT(Cmntid) cmntCnt
+                    FROM
+                    TB_CMM_CMNT
+                    GROUP BY PSTID
+                ) C ON  A.PSTID =C.PSTID
+                INNER JOIN
+                    TB_CMM_USER D
+                ON A.RGTRID = D.USERID
             WHERE 1=1
                 AND A.DEL_YN = 'N'
                 AND A.SITEID = #{site.siteid}
+                AND A.PRNTS_PSTID IS NULL
             <if test="bbsid != null and bbsid != 0">
                 AND A.BBSID= #{bbsid}
             </if>
