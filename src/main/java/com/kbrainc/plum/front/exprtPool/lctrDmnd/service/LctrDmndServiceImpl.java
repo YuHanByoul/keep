@@ -58,8 +58,8 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
         ExprtVo exprt = lctrDmndDao.selectExprt(exprtVo);
 
         if(exprt.getQlfcRlsYn().equals("Y")) {
-            List<ExprtCareerVo> exprtCareerList = lctrDmndDao.selectExprtCareerList(exprtVo);
-            exprt.setExprtCareerList(exprtCareerList);
+            List<ExprtCrtfctVo> exprtCrtfctList = lctrDmndDao.selectExprtCrtfctList(exprtVo);
+            exprt.setExprtCrtfctList(exprtCrtfctList);
         }
 
         if(exprt.getHdofRlsYn().equals("Y")) {
@@ -78,5 +78,46 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Override
     public int insertLctrDmnd(LctrDmndVo lctrDmndVo) throws Exception {
         return lctrDmndDao.insertLctrDmnd(lctrDmndVo);
+    }
+
+    /**
+     * 관심인력 등록
+     *
+     * @param exprtVo
+     * @return int
+     * @throws Exception
+     * @Title : insertLtrstExprt
+     * @Description : 관심인력 등록
+     */
+    public int insertItrstExprt(ExprtVo exprtVo) throws Exception {
+        return lctrDmndDao.insertItrstExprt(exprtVo);
+    }
+
+    /**
+     * 이미 등록된 관심인력인지 확인
+     *
+     * @param exprtVo
+     * @return boolean
+     * @throws Exception
+     * @Title : checkAlreadyRegistedInrstExprt
+     * @Description : 이미 등록된 관심인력인지 확인
+     */
+    @Override
+    public boolean checkAlreadyRegistedItrstExprt(ExprtVo exprtVo) throws Exception {
+        return lctrDmndDao.checkAlreadyRegistedItrstExprt(exprtVo) > 0 ;
+    }
+
+    /**
+     * 관심인력 삭제
+     *
+     * @param exprtVo
+     * @return int
+     * @throws Exception
+     * @Title : deleteItrstExprt
+     * @Description : 관심인력 삭제
+     */
+    @Override
+    public int deleteItrstExprt(ExprtVo exprtVo) throws Exception {
+        return lctrDmndDao.deleteItrstExprt(exprtVo);
     }
 }

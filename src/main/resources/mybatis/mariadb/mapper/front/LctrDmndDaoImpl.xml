@@ -49,6 +49,24 @@
             , #{user.userid}
         )
     </insert>
+    <insert id="insertItrstExprt">
+        INSERT INTO TB_ASS_EXPRT_ITRST(
+           USERID
+            , EXPRTID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{user.userid}
+            , #{userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    <delete id="deleteItrstExprt">
+        DELETE FROM TB_ASS_EXPRT_ITRST
+        WHERE USERID = #{user.userid}
+            AND EXPRTID = #{userid}
+    </delete>
 
     <select id="selectExprtList" resultType="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo">
         <include refid="PaginationMapper.header"/>
@@ -66,13 +84,31 @@
                     , A.ENV_EDU_CAREER_YY
                     , A.ENV_EDU_CAREER_MM
                     , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
-                    , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID) AS EXPRT_ACTVT_SCOPE_CD_NM
+                    , IFNULL((SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID), '') AS EXPRT_ACTVT_SCOPE_CD_NM
                     , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
-                    , (SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID) AS EXPRT_CRTFCT_NM
+                    , IFNULL((SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID),'') AS EXPRT_CRTFCT_NM
                     , A.MDFCN_DT
                     , B.NM
                     , B.BRDT
                     , B.GNDR
+                    , A.MOBLPHON_RLS_YN
+                    , A.EML_RLS_YN
+                    , A.QLFC_RLS_YN /* 자격 공개 여부 */
+                    , A.HDOF_RLS_YN /* 재직 공개 여부 */
+                    , A.CAREER_RLS_YN /* 경력 공개 여부 */
+                    , (
+                        SELECT COUNT(1)
+                        FROM TB_ASS_LCTR_DMND
+                        WHERE EXPRTID = A.USERID
+                          AND USERID = #{user.userid}
+                          AND DMND_STTS_CD = '139101'
+                        ORDER BY REG_DT DESC LIMIT 1
+                        ) AS COMPLETE_LCTR_DMND
+                    , (SELECT COUNT(1)
+                       FROM TB_ASS_EXPRT_ITRST
+                       WHERE EXPRTID = A.USERID AND USERID = #{user.userid}
+                       ) AS IS_ITRST_EXPRT
+                    , YEAR(NOW()) - LEFT(B.BRDT,4) + 1 AS AGE
                 FROM TB_ASS_EXPRT A
                 INNER JOIN TB_CMM_USER B
                 ON A.USERID = B.USERID
@@ -130,6 +166,7 @@
              , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= #{userid}) AS EXPRT_ACTVT_SCOPE_CD_NM
              , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = #{userid}) AS EXPRT_TRGT_CD_NM
              , A.MOBLPHON_RLS_YN
+             , A.TELNO_RLS_YN
              , A.EML_RLS_YN
              , A.QLFC_RLS_YN /* 자격 공개 여부 */
              , A.HDOF_RLS_YN /* 재직 공개 여부 */
@@ -200,5 +237,13 @@
         FROM TB_ASS_EXPRT_HDOF
         WHERE USERID= #{userid}
         ORDER BY ORDR
+    </select>
+
+    <select id="checkAlreadyRegistedItrstExprt" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM TB_ASS_EXPRT_ITRST
+        WHERE
+            USERID = #{user.userid}
+            AND EXPRTID = #{userid}
     </select>
 </mapper>

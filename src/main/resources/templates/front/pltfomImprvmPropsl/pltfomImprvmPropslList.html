@@ -9,13 +9,13 @@
             <div class="form-row">
                 <div class="form-header"><strong class="label">제목 검색</strong></div>
                 <div class="form-body">
-                    <input type="search" id="searchKeyword" name="searchKeyword" title="제목 검색" placeholder="검색어를 입력해 주세요." th:value="${searchVo.searchKeyword}">
+                    <input type="search" id="searchKeyword" name="searchKeyword" title="제목 검색" placeholder="검색어를 입력해 주세요.">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-header"><strong class="label">분류</strong></div>
                 <div class="form-body">
-                    <span kattr:select_code="clsfCd" grpCd="189" th:attr="selectedCd=${searchVo.clsfCd}" firstOptTxt="- 전체 -"></span>
+                    <span kattr:select_code="clsfCd" grpCd="189" firstOptTxt="- 전체 -"></span>
                 </div>
             </div>
         </div>
@@ -24,21 +24,21 @@
             <button type="submit" class="btn-medium btn-green btn-before-search" onclick="pltfomPropslList.search()">검색</button>
         </div>
 
-        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
         <input type="hidden" id="prpslid" name="prpslid">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
-        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
     </form>
 
     <div class="table-caption flex-nowrap">
         <div class="left">
-            <p>총 <b id="totalCount" th:text="${totalCount}">0</b> 건</p>
+            <p>총 <b id="total-count">0</b> 건</p>
         </div>
         <div class="right d-flex">
-            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
-                <option value="10" th:selected="${searchVo.rowPerPage == 10}">10개씩 보기</option>
-                <option value="50" th:selected="${searchVo.rowPerPage == 50}">50개씩 보기</option>
-                <option value="100" th:selected="${searchVo.rowPerPage == 100}">100개씩 보기</option>
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="pltfomPropslList.changeRowPerPage()">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
             </select>
             <div class="ml10">
                 <button type="button" class="btn-medium btn-blue" onclick="pltfomPropslList.moveToInsertForm()">제안하기</button>
@@ -69,42 +69,29 @@
                 <th scope="col">등록일</th>
             </tr>
             </thead>
-            <tbody>
-            <th:block th:if="${list.size() == 0}">
-                <tr>
-                    <td class="nodata" colspan="7">
-                        <p><span class="icon icon-notice bg-black9"></span>등록된 플랫폼 개선 제안이 없습니다</p>
-                    </td>
-                </tr>
-            </th:block>
-            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == loginUserid)) ? true : false}">
-                <td>[[${item.rowNumber}]]</td>
-                <td>[[${item.clsfCdNm}]]</td>
-                <td class="al article"><a href="javascript:void(0)" class="link ellipsis" th:onclick="|pltfomPropslList.moveToDetail(${item.prpslid}, ${canGoToDetail})|">[[${item.ttl}]]</a>
-                </td>
-                <td>[[${item.prcsSttsCdNm}]]</td>
-                <td>[[${item.acnt}]]</td>
-                <td>[[${item.rlsYn == 'Y'? '공개' : '비공개'}]]</td>
-                <td>[[${#dates.format(item.regDt,'yyyy-MM-dd')}]]</td>
-            </tr>
+            <tbody id="list-area">
             </tbody>
         </table>
     </div>
 
-    <th:block kattr:pagination="pagination" onclick="moveToPage"/>
+    <div class="pagination" aria-label="pagination" id="pagination"/>
 
     <script th:inline="javascript">
         let pltfomPropslList = {
             userid: /*[[${loginUserid}]]*/ null,
+            searchVo: /*[[${searchVo}]]*/null,
             listUrl: '/front/pltfomImprvmPropsl/selectPltfomImprvmPropslList.do',
             detailUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslDetail.html',
+            formUrl: '/front/pltfomImprvmPropsl/pltfomImprvmPropslForm.html',
 
             moveToInsertForm() {
                 if (this.userid == null) {
                     alert('로그인 후 이용하실 수 있습니다.');
                     return;
                 }
-                location.href = '/front/pltfomImprvmPropsl/pltfomImprvmPropslForm.html';
+                var f = document.forms.searchForm;
+                f.action = this.formUrl;
+                f.submit();
             },
 
             moveToDetail(prpslid, canGoToDetail) {
@@ -119,25 +106,77 @@
                 }
             },
 
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+            },
+
             search() {
                 $('#pageNumber').val(1);
-                $('#rowPerPage').val($('#selectRowPerPage').val());
-                var f = document.forms.searchForm;
-                f.submit();
+                this.selectPltfomImprvmPropslList();
             },
 
             searchInit() {
                 $('#searchKeyword, #clsfCd').val('');
             },
+
+            selectPltfomImprvmPropslList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: pltfomPropslList.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(pltfomPropslList.makeListHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<tr>
+                                <td class="nodata" colspan="7">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 플랫폼 개선 제안이 없습니다.</p>
+                                </td>
+                            </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == pltfomPropslList.userid));
+                        html += `<tr>
+                                    <td>${item.rowNumber}</td>
+                                    <td>${item.clsfCdNm}</td>
+                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="pltfomPropslList.moveToDetail(${item.prpslid}, ${canGoToDetail})">${item.ttl}</a></td>
+                                    <td>${item.prcsSttsCdNm}</td>
+                                    <td>${item.acnt}</td>
+                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+                                    <td>${item.regDt}</td>
+                                </tr>`;
+                    });
+                }
+                return html;
+            }
         }
 
-        function moveToPage(num) {
+        function goPage(num) {
             $("#pageNumber").val(num);
-            $('#rowPerPage').val($('#selectRowPerPage').val());
-            var f = document.forms.searchForm;
-            f.submit();
+            pltfomPropslList.selectPltfomImprvmPropslList();
         }
 
+        $(function () {
+            $("#pageNumber").val(pltfomPropslList.searchVo.pageNumber);
+            $("#searchKeyword").val(pltfomPropslList.searchVo.searchKeyword);
+            $("#clsfCd").val(pltfomPropslList.searchVo.clsfCd);
+            $('#rowPerPage').val(pltfomPropslList.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(pltfomPropslList.searchVo.rowPerPage);
+
+            pltfomPropslList.selectPltfomImprvmPropslList();
+        });
     </script>
 </div>
 

@@ -4,7 +4,6 @@
       layout:decorator="layout/front/subLayout">
 
 <div layout:fragment="content">
-
     <form class="search-filter" id="searchForm" name="searchForm">
         <div class="form-input-wrap">
             <div class="form-row">
@@ -13,8 +12,8 @@
                     <div class="form-input">
                         <select title="검색어" id="searchType" name="searchType">
                             <option value="">- 전체 -</option>
-                            <option value="">제목</option>
-                            <option value="">내용</option>
+                            <option value="ttl">제목</option>
+                            <option value="cn">내용</option>
                         </select>
                         <input type="search" id="searchKeyword" name="searchKeyword" title="검색어" placeholder="검색어를 입력해 주세요.">
                     </div>
@@ -32,10 +31,10 @@
             <button type="submit" class="btn-medium btn-green btn-before-search" onclick="helpdeskList.search()">검색</button>
         </div>
 
-        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
         <input type="hidden" id="inqryid" name="inqryid">
-        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
-        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
     </form>
 
     <div class="steps-list">
@@ -71,13 +70,13 @@
 
     <div class="table-caption flex-nowrap">
         <div class="left">
-            <p>총 <b th:text="${totalCount}">0</b> 건</p>
+            <p>총 <b id="total-count">0</b> 건</p>
         </div>
         <div class="right">
-            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
-                <option value="10" th:selected="${searchVo.rowPerPage == 10}">10개씩 보기</option>
-                <option value="50" th:selected="${searchVo.rowPerPage == 50}">50개씩 보기</option>
-                <option value="100" th:selected="${searchVo.rowPerPage == 100}">100개씩 보기</option>
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="helpdeskList.changeRowPerPage()">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
             </select>
         </div>
     </div>
@@ -105,43 +104,33 @@
                 <th scope="col">등록일</th>
             </tr>
             </thead>
-            <tbody>
-            <th:block th:if="${list.size() == 0}">
-                <tr>
-                    <td class="nodata" colspan="7">
-                        <p><span class="icon icon-notice bg-black9"></span>등록된 환경교육 헬프 신청 내역이 없습니다</p>
-                    </td>
-                </tr>
-            </th:block>
-
-            <tr th:each="item : ${list}" th:with="canGoToDetail= ${ item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == loginUserid)) ? true : false}">
-                <td>[[${item.rowNumber}]]</td>
-                <td>[[${item.clsfCdNm}]]</td>
-                <td class="al article"><a href="javascript:void(0)" className="link ellipsis" th:onclick="|helpdeskList.moveToDetail(${item.inqryid}, ${canGoToDetail})|">[[${item.ttl}]]</a></td>
-                <td>[[${item.sttsCdNm}]]</td>
-                <td>[[${item.acnt}]]</td>
-                <td>[[${item.rlsYn =='Y' ? '공개' : '비공개'}]]</td>
-                <td>[[${#dates.format(item.regDt, 'yyyy-MM-dd')}]]</td>
+            <tbody id="list-area">
             </tbody>
         </table>
     </div>
 
-    <th:block kattr:pagination="pagination" onclick="moveToPage"/>
+    <div class="pagination" aria-label="pagination" id="pagination"/>
+
 
     <script th:inline="javascript">
         var helpdeskList = {
             userid: /*[[${loginUserid}]]*/ null,
+            searchVo: /*[[${searchVo}]]*/null,
             detailUrl: '/front/helpdesk/helpdeskDetail.html',
+            formUrl: '/front/helpdesk/helpdeskForm.html',
+            listUrl: '/front/helpdesk/selectHelpdeskList.do',
 
             search() {
                 $('#pageNumber').val(1);
-                $('#rowPerPage').val($('#selectRowPerPage').val());
-                var f = document.forms.searchForm;
-                f.submit();
+                this.selectHelpdeskList();
             },
 
             searchInit() {
                 $('#searchType, #searchKeyword, #clsfCd').val('');
+            },
+
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
             },
 
             moveToInsertForm() {
@@ -149,7 +138,9 @@
                     alert('로그인 후 이용하실 수 있습니다.');
                     return;
                 }
-                location.href = '/front/helpdesk/helpdeskForm.html';
+                var f = document.forms.searchForm;
+                f.action = this.formUrl;
+                f.submit();
             },
 
             moveToDetail(inqryid, canGoToDetail) {
@@ -163,13 +154,65 @@
                     return;
                 }
             },
+
+            selectHelpdeskList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: helpdeskList.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData = $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(helpdeskList.makeListHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<tr>
+                                <td class="nodata" colspan="7">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 환경교육 헬프 신청 내역이 없습니다.</p>
+                                </td>
+                            </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == helpdeskList.userid));
+                        html += `<tr>
+                                    <td>${item.rowNumber}</td>
+                                    <td>${item.clsfCdNm}</td>
+                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="helpdeskList.moveToDetail(${item.inqryid}, ${canGoToDetail})">${item.ttl}</a></td>
+                                    <td>${item.sttsCdNm}</td>
+                                    <td>${item.acnt}</td>
+                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+                                    <td>${item.regDt}</td>
+                                </tr>`;
+                    });
+                }
+                return html;
+            }
         }
 
-        function moveToPage(num) {
+        function goPage(num) {
             $("#pageNumber").val(num);
-            $('#rowPerPage').val($('#selectRowPerPage').val());
-            var f = document.forms.searchForm;
-            f.submit();
+            helpdeskList.selectHelpdeskList();
         }
+
+        $(function () {
+            $("#pageNumber").val(helpdeskList.searchVo.pageNumber);
+            $("#searchKeyword").val(helpdeskList.searchVo.searchKeyword);
+            $('#searchType').val(helpdeskList.searchVo.searchType);
+            $("#clsfCd").val(helpdeskList.searchVo.clsfCd);
+            $('#rowPerPage').val(helpdeskList.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(helpdeskList.searchVo.rowPerPage);
+
+            helpdeskList.selectHelpdeskList();
+        });
     </script>
 </div>

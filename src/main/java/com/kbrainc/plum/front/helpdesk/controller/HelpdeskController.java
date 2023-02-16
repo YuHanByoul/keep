@@ -8,6 +8,7 @@ import com.kbrainc.plum.front.inqry.model.InqryAnsVo;
 import com.kbrainc.plum.front.inqry.model.InqryVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import groovyjarjarpicocli.CommandLine;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class HelpdeskController {
 
     @Autowired
     private FileServiceImpl fileService;
+
     /**
      * 헬프데스크 신청 목록화면
      *
@@ -67,12 +69,9 @@ public class HelpdeskController {
     @GetMapping("/helpdeskList.html")
     public String helpdeskList(HelpdeskVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
         searchVo.setOrderField("REG_DT");
-        List<HelpdeskVo> list = helpdeskService.selectHelpdeskList(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
         model.addAttribute("searchVo", searchVo);
-        model.addAttribute("list", list);
-        model.addAttribute("totalCount", list.size() > 0 ? list.get(0).getTotalCount() : 0);
 
         return VIEW_PREFIX + "/helpdeskList";
     }
@@ -124,9 +123,40 @@ public class HelpdeskController {
         return VIEW_PREFIX + "/helpdeskForm";
     }
 
+    /**
+     * 헬프데스크 신청 목록 조회
+     *
+     * @param searchVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : selectHelpdeskList
+     * @Description : 헬프데스크 신청 목록 조회
+     */
+    @GetMapping(value = "/selectHelpdeskList.do")
+    @ResponseBody
+    public Map<String, Object> selectHelpdeskList(HelpdeskVo searchVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        searchVo.setUser(user);
+
+        List<HelpdeskVo> list = helpdeskService.selectHelpdeskList(searchVo);
+
+        if (list.size() > 0) {
+            result.put("totalCount", list.get(0).getTotalCount());
+
+            result.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("list", list);
+
+        return result;
+    }
+
     @PostMapping("/insertHelpdesk.do")
     @ResponseBody
-    public Map<String, Object> insertHelpdesk(@Valid HelpdeskVo helpdeskVo , BindingResult bindingResult, @UserInfo UserVo userVo) throws Exception {
+    public Map<String, Object> insertHelpdesk(@Valid HelpdeskVo helpdeskVo, BindingResult bindingResult, @UserInfo UserVo userVo) throws Exception {
         Map<String, Object> response = new HashMap<>();
 
         if (bindingResult.hasErrors()) {

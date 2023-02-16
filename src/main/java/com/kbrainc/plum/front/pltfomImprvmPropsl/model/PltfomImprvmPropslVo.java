@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.pltfomImprvmPropsl.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -62,6 +63,7 @@ public class PltfomImprvmPropslVo extends ParentRequestVo {
 
     private String rlsYn;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
 
     private List<FileVo> fileList;
