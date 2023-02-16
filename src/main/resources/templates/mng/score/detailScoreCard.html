@@ -1,0 +1,123 @@
+<form id="insertForm">
+    <input type="hidden" name="formid" id="formid" th:value="${detail.formid}" />
+    <input type="hidden" name="useYn" id="useYn" th:value="${detail.useYn}"/>
+    <!-- [탭] 심사양식정보 -->
+    <div class="tab-pane active" id="tab_01" role="tabpanel">
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-12 col-sm-6 mb-3">
+                    <div class="mb-2 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="formNm"><strong>심사양식명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="formNm" id="formNm" placeholder="" th:value="${detail.formNm}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-3 mb-3">
+                    <div class="mb-sm-0 form-group required">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="totScr"><strong>점수</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="totScr" id="totScr" th:value="${#numbers.formatInteger(detail.totScr, 0, 'COMMA')}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group required mb-3">
+                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="formExpln"><strong>심사양식 설명</strong></label>
+                <div class="col-sm-12">
+                    <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="formExpln" name="formExpln"><th:block th:text="${detail.formExpln}"/></textarea>
+                </div>
+            </div>
+            <div class="form-group required mb-3">
+                <input type="hidden" class="js-single"/>
+                <input type="checkbox" class="js-single-small" name="useYnSwitch" id="useYnSwitch" th:checked="${detail.useYn == 'Y' ? true : false}"/>
+                <label for="useYn" class="v-middle">설문지 사용</label>
+            </div>
+        </div>
+
+        <div class="card-block-small">
+            <button class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+            <button class="btn btn-primary" onclick="fn_save(); return false;">저장</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/swithces.js"></script>
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+<script th:inline="javascript">
+    var insertUrl = "/mng/score/insertScoreCard.do";
+    var updateUrl = "/mng/score/updateScoreCard.do";
+    var formid = $("#formid").val();
+    
+    $(document).ready(function(){
+    	if (formid == 0) { toggleSwitch("#useYnSwitch", true); }
+    });
+    
+    var validator= $("#insertForm").validate({
+        rules    : { 
+        	formNm : { required: true, maxlength: 500 } 
+        	, totScr : { required: true } 
+        	, formExpln : { required: true } 
+        }
+        , messages : { 
+        	formNm : { required:"심사양식명을 입력해 주십시오." , maxlength: "심사양식명은 100자를 넘을 수 없습니다." } 
+        	, totScr : { required:"점수를 입력해 주십시오." } 
+        	, formExpln : { required:"심사양식 설명을 입력해 주십시오." , maxlength: "심사양식 설명은 200자를 넘을 수 없습니다."	} 
+        }
+    });
+    
+    // 저장
+    function fn_save(){
+        if(!($("#insertForm").valid())) return;
+        
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        var data =  $("#insertForm").serialize();
+        if ($("#useYnSwitch").is(":checked")) {
+        	$("#useYn").val("Y");
+        } else {
+        	$("#useYn").val("N");
+        }
+        console.log("checked = ", $("#useYnSwitch").is(":checked"));
+        console.log("useYn = ", $("#useYn").val());
+        var saveUrl = Number(formid) > 0 ? updateUrl : insertUrl;
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : saveUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        if (Number(formid) == 0) {
+                            gridHelper1.resetListContent();                         
+                        } else {
+                            gridHelper1.resetPageContent();                         
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+    //천단위 콤마
+    function addComma(value){
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return value; 
+    }
+    
+    //콤마 제거
+    function removeComma(value){
+        if (value == "" || value == null) {
+            return 0;               
+        }
+        value = value.replace(/[^\d]+/g, "");
+        return value; 
+    }
+</script>

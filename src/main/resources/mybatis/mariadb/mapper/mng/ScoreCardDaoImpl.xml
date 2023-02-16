@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : ScoreCardDaoImpl.xml
+    Description : 심사표관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.score.model.ScoreCardDao">
+    
+    <!-- 심사표 관리 목록 조회 -->
+    <select id="selectScoreCardList" parameterType="ScoreCardVo" resultType="ScoreCardVo">
+        /** ScoreCardDaoImpl.selectScoreCardList **/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            FORMID
+            , FORM_NM
+            , FORM_EXPLN
+            , TOT_SCR
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_SRNG_FORM
+        WHERE 1 = 1
+        <if test="searchKeyword != null and searchKeyword != ''">
+        AND FORM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if> 
+        <if test="formid != null and formid != ''">
+        AND FORMID = #{formid}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 심사양식 등록 -->
+    <insert id="insertScoreCard" parameterType="ScoreCardVo" useGeneratedKeys="true" keyProperty="formid">
+        /** ScoreCardDaoImpl.insertScoreCard **/
+        INSERT INTO TB_SPB_SRNG_FORM (
+            FORMID
+            , FORM_NM
+            , FORM_EXPLN
+            , TOT_SCR
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{formid}
+            , #{formNm}
+            , #{formExpln}
+            , #{totScr}
+            , #{useYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 심사양식 수정 -->
+    <update id="updateScoreCard" parameterType="ScoreCardVo">
+        /** ScoreCardDaoImpl.updateScoreCard **/
+        UPDATE TB_SPB_SRNG_FORM SET
+            FORM_NM = #{formNm}
+            , FORM_EXPLN = #{formExpln}
+            , TOT_SCR = #{totScr}
+            , USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE FORMID = #{formid}
+    </update>
+    
+    <!-- 문항 목록 조회 -->
+    <select id="selectQuestionList" parameterType="QuestionVo" resultType="QuestionVo">
+        /** ScoreCardDaoImpl.selectQuestionList **/
+        SELECT 
+            QITEMID
+            , QITEM_SE_CD
+            , B.CD_NM AS QITEM_SE_NM
+            , QITEM
+            , A.ORDR
+            , ALTM
+            , SUM(ALTM) OVER (PARTITION BY A.FORMID) AS TOTAL_ALTM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , A.FORMID 
+            , C.TOT_SCR
+        FROM 
+            TB_SPB_SRNG_FORM_QITEM A
+            INNER JOIN TB_SPB_SRNG_FORM C ON A.FORMID = C.FORMID
+            LEFT OUTER JOIN TB_CMM_CD B ON A.QITEM_SE_CD = B.CD
+        WHERE A.FORMID = #{formid}
+        ORDER BY ORDR
+    </select>
+    
+    <!-- 문항 삭제 -->
+    <delete id="deleteQuestion" parameterType="QuestionVo">
+        /** ScoreCardDaoImpl.deleteQuestion **/
+        DELETE FROM TB_SPB_SRNG_FORM_QITEM
+        WHERE FORMID = #{formid}
+    </delete>
+    
+    <!-- 문항 등록 -->
+    <insert id="insertQuestion" parameterType="QuestionVo" useGeneratedKeys="true" keyProperty="qitemid">
+        /** ScoreCardDaoImpl.insertQuestion **/
+        INSERT INTO TB_SPB_SRNG_FORM_QITEM (
+            QITEMID
+            , QITEM_SE_CD
+            , FORMID
+            , QITEM
+            , ORDR
+            , ALTM
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{qitemid}
+            , #{qitemSeCd}
+            , #{formid}
+            , #{qitem}
+            , #{ordr}
+            , #{altm}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+</mapper>

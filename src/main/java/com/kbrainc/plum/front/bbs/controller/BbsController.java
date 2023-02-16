@@ -10,6 +10,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.kbrainc.plum.rte.model.SiteInfoVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -487,7 +489,7 @@ public class BbsController {
 	 * @return
 	 */
 	@RequestMapping(value = "/front/bbs/{bbsid}/selectPstList.do")
-	public @ResponseBody Map<String, Object> getPstList(@PathVariable Integer bbsid, PstVo paramVO, @UserInfo UserVo user) throws Exception {
+	public @ResponseBody Map<String, Object> getPstList(@PathVariable Integer bbsid, PstVo paramVO, @UserInfo UserVo user, @SiteInfo SiteInfoVo site) throws Exception {
 		Map<String, Object> resultMap = new HashMap<>();
 		List<PstVo> result = new ArrayList<PstVo>();
 		try {
@@ -502,17 +504,16 @@ public class BbsController {
 			bbsVo.setRowPerPage(bbsVo.getPagePstCnt());
 			bbsVo.setPageNumber(paramVO.getPageNumber());
 			bbsVo.setUser(user);
+			bbsVo.setSite(site);
 
 			bbsVo.setOrderDirection(paramVO.getOrderDirection());
 			bbsVo.setOrderField(paramVO.getOrderField());
 
-			result = bbsService.selectTotalPstList(bbsVo);
+			result = bbsService.selectAllPstList(bbsVo);
 
 			if (result.size() > 0) {
 				resultMap.put("totalCount", (result.get(0).getTotalCount()));
-				
-				//PaginationUtil.getPagingHtml(총페이지 갯수,현재페이지번호,페이지번호 표출 갯수)
-				resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+				resultMap.put("pagination",PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
 			} else {
 				resultMap.put("totalCount", 0);
 			}

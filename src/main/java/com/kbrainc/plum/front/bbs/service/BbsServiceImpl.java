@@ -407,7 +407,9 @@ public class BbsServiceImpl extends PlumAbstractServiceImpl implements BbsServic
         
     	return list;	
     }
-    
 
-
+    @Override
+    public List<PstVo> selectAllPstList(BbsVo paramVo) throws Exception {
+        return bbsDao.selectAllPstList(paramVo);
+    }
 }

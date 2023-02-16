@@ -685,7 +685,7 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         if ("173107".equals(budgetVo.getFldCd())) {
             result = reqMngDao.updateBudget(budgetVo);
         } else {
-            if (budgetVo != null && budgetVo.getCodeArr().length > 0) {
+            if (budgetVo != null && budgetVo.getCodeArr() != null) {
                 for (int i = 0; i < budgetVo.getCodeArr().length; i++) {
                     budgetVo.setBgtid(budgetVo.getBgtidArr()[i]);
                     budgetVo.setAmt(budgetVo.getAmtArr()[i]);

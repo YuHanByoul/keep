@@ -1,240 +1,206 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout/front/intro/oldDetailLayout">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
 <body>
-	<div layout:fragment="content">
+<div layout:fragment="content">
 
-		<form id="bbsForm" th:action="@{/}" method="POST" class="form-inline" onsubmit="return false;">
+    <form id="bbsForm" th:action="@{/}" method="GET" class="search-filter" onsubmit="return false;">
+        <div class="form-input mo-flex-wrap">
+            <strong class="label">검색어</strong>
+            <div class="form-input">
+                <select title="검색어" id="searchType" name="searchType">
+                    <option value="">- 전체 -</option>
+                    <option value="title">제목</option>
+                    <option value="cntnts">내용</option>
+                </select>
+                <input type="search" title="검색어" placeholder="검색어를 입력해 주세요." id="searchKeyword" name="searchKeyword">
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+            </div>
+        </div>
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="DESC">
+        <input type="hidden" id="orderField" name="orderField" value="FIXORDER ASC,GRP DESC,ORD">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="pstid" name="pstid" value="0">
+    </form>
 
-			<article class="notice-wrap">
-				<h3 class="title">
-					<th:block th:text="${bbsInfo.nm}">
-				</h3>
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="total-count">0</b> 건</p>
+        </div>
+        <div class="right">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
 
-				<div class="search-board">
-				
-				   <th:block  th:if ="${bbsInfo.clUseYn == 'Y'}">
-					<fieldset>
-						<legend>
-							<span>검색</span>
-						</legend>
-						<div class="search-board-in">
-							<select title="구분" class="select-search" id="bbsClid" name="bbsClid">
-								<option value="">분류선택</option>
-								
-								<th:block th:each="item : ${clList}">
-								    <option th:value="${item.bbsClid}"><th:block th:text="${item.clNm}"/></option>
-								</th:block>
-							</select> 
-						</div>
-					</fieldset>
-				   </th:block>
-					
-					<div style="height:10px;">
-					</div>
-					
-					<fieldset>
-						<legend>
-							<span>검색</span>
-						</legend>
-						<div class="search-board-in">
-							<select title="구분" class="select-search" id="searchType"
-								name="searchType">
-								<option value="">전체선택</option>
-								<option value="TITLE">제목</option>
-								<option value="CNTNTS">내용</option>
-							</select> 
-							<input type="search" id="searchKeyword" name="searchKeyword" title="검색어" class="input-search">
-							<button type="button" class="btn-search"onclick="searchPstList()">검색</button>
-						</div>
-					</fieldset>
-				</div>
-             
-				<div class="board-wrap" >
-					<div class="board-top">
-						<span class="count">전체 : <span id="pstTotalCount"></span> <!-- <em><th:block th:text="${totalCount}"></th:block></em> -->
-							<!--                                     ( &nbsp;<th:block th:text="${pageNumber}"></th:block>/<th:block th:text="${totalPage}"></th:block> ) -->
-						</span>
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>채용정보 - 번호, 제목, 첨부파일, 등록일, 조회수</caption>
+            <colgroup>
+                <col>
+                <col style="width:50%;">
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">제목</th>
+                <th scope="col">첨부파일</th>
+                <th scope="col">등록일</th>
+                <th scope="col">조회수</th>
+            </tr>
+            </thead>
+            <tbody id="list-area">
+            </tbody>
+        </table>
+    </div>
 
-						<div class="util">
-							<button type="button" class="btn-reset">
-								<span class="ir">초기화</span>
-							</button>
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
 
-							<button type="button" class="btn-list">
-								<span class="ir">목록설정</span>
-							</button>
-						</div>
-					</div>
 
-					<table class="board-list">
-						<caption>
-							<span>공지사항 목록</span>
-						</caption>
-						<colgroup>
-							<col width="5%">
-                            <th:block  th:if ="${bbsInfo.clUseYn == 'Y'}">
- 							<col width="15%">
-							</th:block>
-							<col width="50%">
-							<col width="10%">
-							<col width="10%">
-							<col width="15%">
-						</colgroup>
-						<thead>
-						    <tr>
-						      <th scope="col">No.</th>
-                              <th:block  th:if ="${bbsInfo.clUseYn == 'Y'}">
-						      <th scope="col">분류</th>
-						      </th:block>
-						      <th scope="col">제목</th>
-						      <th scope="col">작성자</th>
-						      <th scope="col">조회수</th>
-						      <th scope="col">등록일</th>
-						    </tr>
-						</thead>
+    <script th:inline="javascript">
+        var BbsVo = /*[[${BbsVo}]]*/null;
+        var bbsInfo = /*[[${bbsInfo}]]*/null;
+        var selectPstListUrl = "/front/bbs/" + bbsInfo.bbsid + "/selectPstList.do"
+        var goReadUrl = "/front/bbs/" + bbsInfo.bbsid + "/view.html"
+        var goWriteUrl = "/front/bbs/" + bbsInfo.bbsid + "/write.html"
 
-						<tbody id="list_area">
-						</tbody>
-					</table>
-					
-				</div>
-				
- 				<div class="notice-button">
-				    <a href="javascript:goWriteForm()" class="btn-medium btn-color1">글쓰기</a>
-                </div>
-                
-			</article>
-			
-			    <!-- paging -->
-			    <div class="notice-button">&nbsp;</div>
-			    <!-- paging -->
-			    <div class="paging"></div>
-			    
-				<input type="hidden" id="pageNumber" name="pageNumber" value="1">
-				<input type="hidden" id="ORDER_DIRECTION" name="ORDER_DIRECTION" value="DESC"> 
-				<input type="hidden" id="orderField" name="orderField" value="order_num ASC, hot_order_num desc, ord_reg_dt desc, ord_mdfcn_dt ">
-			    <input type="hidden" id="pstid" name="pstid" value="0">
-		</form>
-		
-		<script th:inline="javascript">
-		    var BbsVo = /*[[${BbsVo}]]*/null;
-		    var bbsInfo = /*[[${bbsInfo}]]*/null;
-			var selectPstListUrl = "/front/bbs/"+bbsInfo.bbsid+"/selectPstList.do"
-			var goReadUrl = "/front/bbs/"+bbsInfo.bbsid+"/view.html"
-			var goWriteUrl = "/front/bbs/"+bbsInfo.bbsid+"/write.html"
-			
-			$(document).ready(function() {
-				
-				if(BbsVo!=null && BbsVo.pageNumber != 0 ){
-					$("#pageNumber").val(BbsVo.pageNumber);
-					$("#searchType").val(BbsVo.searchType);
-					$("#searchKeyword").val(BbsVo.searchKeyword);
-					$("#bbsClid").val(BbsVo.bbsClid);
-				}
-				
-				selectPstList();
-			})
-			
-			function selectPstList() {
+        $(document).ready(function () {
+            if (BbsVo != null && BbsVo.pageNumber != 0) {
+                $("#pageNumber").val(BbsVo.pageNumber);
+                $("#searchType").val(BbsVo.searchType);
+                $("#searchKeyword").val(BbsVo.searchKeyword);
+                $("#bbsClid").val(BbsVo.bbsClid);
+                $('#rowPerPage').val(BbsVo.rowPerPage);
+            }
 
-				if (displayWorkProgress()){
-					$.ajax({
-						url : selectPstListUrl,
-						cache : false,
-						dataType : 'json',
-						data : $("#bbsForm").serialize(),
-						type : 'POST',
-						success : function(data) {
-							$("#list_area").html(fn_makeListHtml(data.list));
-							$(".paging").html(data.pagination);
-							$("#pstTotalCount").html(data.totalCount);
-							closeWorkProgress();
-						}
-					});
-				}
-			}
-			
-			function fn_makeListHtml(list) {
-				var html = "";
-				if (list == null || list.length <= 0) {
-					html += '<tr><td colspan="5"> 데이터가 없습니다.</td></tr>'
-				} else {
+            selectPstList();
+        })
 
-					list.forEach(function(item) {
+        function selectPstList() {
 
-				    	html += '<tr>'
-				    	html += '<td>' + item.rowNumber + '</td>'
-				    	
-				    	if (bbsInfo.clUseYn == 'Y') {
-				 	   		html += '<td>' + item.clNm + '</td>'
-				    	}
-				    	
-				    	html += '<td class="align-lft">'
-				    	html += '    <a href="javascript:void(0);" onclick="goDetail('+ item.pstid + ')">'
-				    	
-				    	if (bbsInfo.fxdNtcUseYn =='Y' && item.fxdNtcYn == 'Y') {
-				    		html += '<span style="color:#045FB4;">[공지] </span> '
-				    	}
-				    	if (bbsInfo.hotUseYn =='Y' && item.hotYn == 'Y') {
-				    		html += '<span style="color:#DF3A01;">[HOT] </span> '
-				    	}
-				    	if (bbsInfo.newUseYn =='Y' && item.newYn == 'Y') {
-				    		html += '<span style="color:#00FF00;">[NEW] </span> '
-				    	}
-				    	
-				    	html += item.title
-				    	html += '</a></td>'
-				    	html += '<td>' + item.nm + '</td>'
-				    	html += '<td>' + item.hits + '</td>'
-				    	html += '<td>' + item.regDt + '</td>'
-				    })
-			}
+            if (displayWorkProgress()) {
+                $.ajax({
+                    url: selectPstListUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: $("#bbsForm").serialize(),
+                    type: 'GET',
+                    success: function (data) {
+                        $("#list-area").html(fn_makeListHtml(data.list));
+                        $("#pagination").html(data.pagination);
+                        $("#total-count").html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
 
-				return html;
-			}
+        function fn_makeListHtml(list) {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `
+                        <tr>
+                            <td class="nodata" colspan="5">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 채용정보가 없습니다.</p>
+                            </td>
+                        </tr>`;
+            } else {
 
-			function searchPstList() {
-				var searchType = $("#searchType").val()
-				var searchKeyword = $("#searchKeyword").val()
+                list.forEach(function (item) {
+                    /*<div className="icon icon-speaker-large bg-sred" title="중요 공지">${item.rowNumber}</div> 공지태그*/
+                    html += `
+                            <tr>
+                                <td>
+                                    ${bbsInfo.fxdNtcUseYn == 'Y' && item.fxdNtcYn == 'Y' ? '공지' : item.rowNumber}
+                                </td>
+                                <td class="al article"><a href="#" class="link ellipsis ${bbsInfo.newUseYn == 'Y' && item.newYn == 'Y' ? 'new' : ''}" title="새 글" onclick="goDetail(${item.pstid})">${item.title}</a></td>
+                                <td><i class="icon icon-attachment bg-blue" title="첨부파일"></i></td>
+                                <td>${item.regDt}</td>
+                                <td>${item.hits}</td>
+                            </tr>`;
 
-				if (searchType != null && searchType != "") {
-					if (searchKeyword == null || searchKeyword == "") {
-						alert("검색어를 입력해주십시오");
-						return;
-					}
-				} else {
-					if (searchKeyword != null && searchKeyword != "") {
-						alert("검색조건을 입력해주십시오");
-						return;
-					}
-				}
-				$("#pageNumber").val(1);
-				selectPstList();
-			}
-			
-			//공통 Pagination 사용시 function name 일괄 적용 할것
-			function goPage(page) {
-				$("#pageNumber").val(page);
-				selectPstList();
-			}
-			
-			function goWriteForm(){
-				var f = document.forms.bbsForm ;
-				f.action = goWriteUrl;
-				f.submit();
-			}
-			
-			function goDetail(pstid){
-				var f = document.forms.bbsForm ;
-				f.pstid.value=pstid;
-				f.action = goReadUrl;
-				f.submit();
-			}
-		</script>
-	</div>
+                    /*html += '<tr>'
+                    html += '<td>' + item.rowNumber + '</td>'
+
+                    if (bbsInfo.clUseYn == 'Y') {
+                        html += '<td>' + item.clNm + '</td>'
+                    }
+
+                    html += '<td class="align-lft">'
+                    html += '    <a href="javascript:void(0);" onclick="goDetail(' + item.pstid + ')">'
+
+                    if (bbsInfo.fxdNtcUseYn == 'Y' && item.fxdNtcYn == 'Y') {
+                        html += '<span style="color:#045FB4;">[공지] </span> '
+                    }
+                    if (bbsInfo.hotUseYn == 'Y' && item.hotYn == 'Y') {
+                        html += '<span style="color:#DF3A01;">[HOT] </span> '
+                    }
+                    if (bbsInfo.newUseYn == 'Y' && item.newYn == 'Y') {
+                        html += '<span style="color:#00FF00;">[NEW] </span> '
+                    }
+
+                    html += item.title
+                    html += '</a></td>'
+                    html += '<td>' + item.nm + '</td>'
+                    html += '<td>' + item.hits + '</td>'
+                    html += '<td>' + item.regDt + '</td>'*/
+                })
+            }
+
+            return html;
+        }
+
+        function searchPstList() {
+            var searchType = $("#searchType").val()
+            var searchKeyword = $("#searchKeyword").val()
+
+            if (searchType != null && searchType != "") {
+                if (searchKeyword == null || searchKeyword == "") {
+                    alert("검색어를 입력해주십시오");
+                    return;
+                }
+            } else {
+                if (searchKeyword != null && searchKeyword != "") {
+                    alert("검색조건을 입력해주십시오");
+                    return;
+                }
+            }
+            $("#pageNumber").val(1);
+            selectPstList();
+        }
+
+        //공통 Pagination 사용시 function name 일괄 적용 할것
+        function goPage(page) {
+            $("#pageNumber").val(page);
+            selectPstList();
+        }
+
+        function goWriteForm() {
+            var f = document.forms.bbsForm;
+            f.action = goWriteUrl;
+            f.submit();
+        }
+
+        function goDetail(pstid) {
+            var f = document.forms.bbsForm;
+            f.pstid.value = pstid;
+            f.action = goReadUrl;
+            f.submit();
+        }
+    </script>
+</div>
 
 </body>
 </html>

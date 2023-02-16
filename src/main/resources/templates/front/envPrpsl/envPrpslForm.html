@@ -65,7 +65,6 @@
                             <label class="form-input">
                                 <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
                                        th:attr="accept=${acceptUploadFileExt}">
-                                <span class="inp-file-text placeholder" data-width="400">파일첨부</span>
                                 <span class="btn-medium btn-gray">파일선택</span>
                             </label>
                             <ul id="multipleFileUploadSuccess">
@@ -195,59 +194,9 @@
             }
         };
 
-
-        $('#multiFileInput').on("change", function (event) {
-            var objFile = document.querySelector('#multiFileInput');
-            var formData = new FormData();
-
-            for (i = 0; i < objFile.files.length; i++) {
-                formData.append("files", objFile.files[i]);
-            }
-
-            formData.append("filegrpid", $("#filegrpid").val());
-            formData.append("filegrpNm", "envPrpsl_file");
-
-            if (displayWorkProgress()) {
-                $.ajax({
-                    url: '/uploadMultipleFiles.do',
-                    processData: false,
-                    contentType: false,
-                    data: formData,
-                    type: 'POST',
-                    success: function (response) {
-                        if (response.result == 'fail') {
-                            alert(response.msg);
-                        } else {
-                            if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
-                                $("#filegrpid").val(response[0].filegrpid);
-                            }
-
-                            for (i = 0; i < response.length; i++) {
-                                var result = `
-                                    <li class='file-block' data_ext='${response[i].fileExtsn.substr(1)}' id="${response[i].fileid}">
-                                        <span class="name">
-                                            <a href="javascript:void(0)" data-fileid="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
-                                             onclick="javascript:downloadFileByFileid(this.dataset.fileid, this.dataset.fileIdntfcKey)"> ${response[i].orginlFileNm}
-                                            </a>
-                                        </span>
-                                        <button type="button" class="file-delete" title="삭제" name="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
-                                             data-id=${response[i].fileid} onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
-                                            <span class="icon icon-circle-close"></span>
-                                        </button>
-                                    </li>
-                                `;
-                                $('#multipleFileUploadSuccess').append(result);
-                            }
-                        }
-                        closeWorkProgress();
-                    }
-                });
-                $("#multiFileInput").val("");
-            }
-        });
-
         $(function () {
             frontEnvPrpslForm.init();
+            addFileUploadEvent('multiFileInput', 'envPrpsl_file', 'multipleFileUploadSuccess');
 
         });
 

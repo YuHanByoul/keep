@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.bbs.model;/** **/
 
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
@@ -32,6 +33,9 @@ public class BbsVo extends ParentRequestVo {
 
     /** 로그인사용자정보 */
     private UserVo user;
+
+    /** 사이트 정보 */
+    private SiteInfoVo site;
     
     /** 게시판 아이디 **/
     private Integer bbsid;
