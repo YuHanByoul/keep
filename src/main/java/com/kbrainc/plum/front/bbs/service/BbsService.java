@@ -197,7 +197,7 @@ public interface BbsService {
      */
 
     public List<PstVo> selectTotalPstList(BbsVo paramVO) throws Exception;
-    
+
     /**
      * @Title : updatePstHitsCount
      * @Description : 게시물 조회수 증가 
@@ -215,5 +215,6 @@ public interface BbsService {
      * @return List
      */
     public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception;
-    
+
+    public List<PstVo> selectAllPstList(BbsVo paramVo) throws Exception;
 }

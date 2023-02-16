@@ -275,6 +275,7 @@ public interface BbsDao {
      * @return List
      */
     public List<PstVo> selectReplyPstList(PstVo paramVO) throws Exception;
-    
-    
+
+    public List<PstVo> selectAllPstList(BbsVo paramVo) throws Exception;
+
 }
