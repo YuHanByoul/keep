@@ -32,4 +32,14 @@ public interface EnveduCntrDao {
      * @return list
      */
     List<EnveduCntrVO> selectEnveduCntrList(EnveduCntrVO enveduCntrVO);
+    
+    /**
+     * 민간 환경교육단체 목록 조회
+     * Title : selectPrivateEnvEduCntrList
+     * Description : 민간 환경교육단체 목록 조회
+     *
+     * @param 
+     * @return list
+     */
+    List<EnveduCntrVO> selectPrvtEnvEduCntrList();
 }

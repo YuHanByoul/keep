@@ -125,4 +125,24 @@ public class EnveduCntrController {
         model.addAttribute("enveduCntrTitle","기초 환경교육센터");
         return "front/enveduCntr/enveduCntrList";
     }
+    
+    /**
+     * 민간 환경교육단체 목록 화면
+     * Title : privateEnveduCntrList
+     * Description : 민간 환경교육단체 목록 화면
+     *
+     * @param enveduCntrVO
+     * @param model
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value="/front/enveduCntr/prvtEnveduCntrList.html")
+    public String prvtEnveduCntrList(Model model) {
+        List<EnveduCntrVO> list  = enveduCntrService.selectPrvtEnvEduCntrList();
+        
+        model.addAttribute("list",list);
+        model.addAttribute("prvtEnveduCntrList","민간환경교육단체");
+        return "front/enveduCntr/prvtEnveduCntrList";
+    }
+    
 }
