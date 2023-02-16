@@ -1,11 +1,13 @@
 package com.kbrainc.plum.front.pltfomImprvmPropsl.controller;
 
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
+import com.kbrainc.plum.front.inqry.model.InqryVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslAnsVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslVo;
 import com.kbrainc.plum.front.pltfomImprvmPropsl.serivce.PltfomImprvmPropslService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,13 +55,8 @@ public class PltfomImprvmPropslController {
 
     @GetMapping("/pltfomImprvmPropslList.html")
     public String pltfomImprvPropslList(PltfomImprvmPropslVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
-        searchVo.setOrderField("REG_DT");
-        List<PltfomImprvmPropslVo> list = pltfomImprvmPropslService.selectPltfomImprvmPropslList(searchVo);
-
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
         model.addAttribute("searchVo", searchVo);
-        model.addAttribute("list", list);
-        model.addAttribute("totalCount", list.size() > 0 ? list.get(0).getTotalCount() : 0);
 
         return VIEW_PREFIX + "/pltfomImprvmPropslList";
     }
@@ -95,9 +92,29 @@ public class PltfomImprvmPropslController {
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("propsl", propsl);
         model.addAttribute("propslAns", propslAns);
+
         return VIEW_PREFIX + "/pltfomImprvmPropslDetail";
     }
 
+    @GetMapping("/selectPltfomImprvmPropslList.do")
+    @ResponseBody
+    public Map<String, Object> selectPltfomImprvmPropslList(PltfomImprvmPropslVo searchVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        searchVo.setUser(user);
+
+        List<PltfomImprvmPropslVo> list = pltfomImprvmPropslService.selectPltfomImprvmPropslList(searchVo);
+
+        if (list.size() > 0) {
+            result.put("totalCount", list.get(0).getTotalCount());
+            result.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("list", list);
+
+        return result;
+    }
     @PostMapping("/insertPltfomImprvmPropsl.do")
     @ResponseBody
     public Map<String, Object> insertPltfomImprvPropsl(@Valid PltfomImprvmPropslVo pltfomImprvmPropslVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
