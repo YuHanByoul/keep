@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/mainLayout">
+
+<body>
+    <div layout:fragment="content">
+    <style>
+        .hide
+        {
+           display:none;
+        }
+        </style>
+
+        <div class="page-body">
+            <div class="row">
+                <div class="col-12">
+
+                    <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+                        <div class="card-block-small">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>컨설턴트</strong></div>
+                                        <div class="col-12">
+                                            <select name="" class="form-select form-select-sm form-control-sm">
+                                                <option value="opt1">Select One Value Only</option>
+                                                <option value="opt2">Type 2</option>
+                                                <option value="opt3">Type 3</option>
+                                                <option value="opt4">Type 4</option>
+                                                <option value="opt5">Type 5</option>
+                                                <option value="opt6">Type 6</option>
+                                                <option value="opt7">Type 7</option>
+                                                <option value="opt8">Type 8</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업분야</strong></div>
+                                        <div class="col-12">
+                                            <th:block kattr:select_code="searchFldCd" grpCd="173" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                            <select id="searchType" name="searchType" class="form-select form-control">
+                                                <option value="pcntstNm">공모명</option>
+                                                <option value="prgrmNm">프로그램명</option>
+                                            </select>
+                                            <input type="text" class="form-control" aria-label="Text input with dropdown button" id="searchKeyword" name="searchKeyword" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1" firstOptTxt="- 전체 -" ><strong>상태</strong></div>
+                                        <div class="col-12">
+                                            <select id="searchSttsCd" name="searchSttsCd" class="form-select form-select-sm form-control-sm">
+                                                <option value="before">컨설팅전</option>
+                                                <option value="after">컨설팅완료</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-1 p-t-20 text-center border-top">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="cnsltngMng.initSearch();">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="cnsltngMng.onSearch();">검색</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-12">
+                    <div class="card">
+                        <div class="row p-20 p-b-0">
+                            <div class="col-12 col-md mb-2 mb-md-0">
+                                <h5><strong>컨설팅관리 검색결과</strong></h5>
+                            </div>
+                            <div class="col-12 col-md-auto text-right">
+                                <button type="button" class="btn btn-primary" onclick="cnsltngMng.downGridExcel();">엑셀다운로드</button>
+                            </div>
+                        </div>
+                        <div class="card-block-small">
+                            <table id="cnsltngMngGrid" class="table-responsive"></table>
+                            <div id="cnsltngMngPager" class="text-center"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div id="contentPanel" class="card" style="display: none;"></div>
+                </div>
+
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            var cnsltngMngGridHelper;
+
+            var cnsltngMng = {
+            	listUrl  : "/mng/bizAply/bizRpt/selectCnsltngMngList.do",
+            	excelUrl : "/mng/bizAply/bizRpt/selectCnsltngMngExcelList.do",
+            	dtlUrl : "/mng/bizAply/bizRpt/cnsltngMngDetailForm.html",
+
+            	init : function() {
+                    cnsltngMngGridHelper = new GridHelper('cnsltngMngGrid','contentPanel');
+                    this.initSearch();
+                    this.setGrid();
+                },
+
+                initSearch : function() {
+                    $("#searchFldCd, #searchKeyword, #searchPrgrsSttsCd ,#searchSttsCd").val('');
+                },
+
+                setGrid : function() {
+                    $("#cnsltngMngGrid").jsGrid({
+                        height: "auto"
+                       , width: "100%"
+                       , autoload: true
+                       , sorting: false
+                       , paging: true
+                       , pagerContainer: "#cnsltngMngPager"
+                       , pagerFormat: "{first} {prev} {pages} {next} {last}"
+                       , pagePrevText: "이전"
+                       , pageNextText: "다음"
+                       , pageFirstText: "< 처음 ㅣ"
+                       , pageLastText: "ㅣ 마지막 >"
+                       , noDataContent: "데이터가 없습니다."
+                       , pageSize: 10
+                       , pageButtonCount: 10
+                       , pageLoading: true
+                       , pageIndex: 1
+                       , controller: {
+                             loadData: function(filter) {
+                                 var data = $.Deferred();
+                                 var formData = $('#searchFrm').serializeArray();
+                                 var params = [
+                                     {name:"pageNumber", value:filter.pageIndex}
+                                   , {name:"rowPerPage", value:filter.pageSize}
+                                   , {name:"orderField", value:"VST_DT"}
+                                   , {name:"orderDirection", value:"desc"} ]
+                                 formData = formData.concat(params);
+
+                                 $.ajax({
+                                   type: "GET"
+                                 , contentType: "application/json; charset=utf-8"
+                                 , url      : cnsltngMng.listUrl
+                                 , data     : formData
+                                 , dataType : "json"
+                                 }).done(function(response) {
+                                     var da = {
+                                         data       : escapeGridData(response.list)
+                                       , itemsCount : response.totalCount
+                                     };
+                                     data.resolve(da);
+                                 });
+                                 return data.promise();
+                             }
+                         },
+                         fields: [
+                              {name: "aplyid"       , css: 'hide'}
+                            , {name: "cnsltngid"    , css: 'hide'}
+                            , {name: "cnstntid"     , css: 'hide'}
+                            , {title: "No."         , name: "rowNumber"     , type: "number", width: "80"     , align: "center", sorting: false}
+                            , {title: "컨설턴트"    , name: "nm"            , type: "text"  , align: "left"   , width: "100"}
+                            , {title: "공모명"      , name: "pcntstNm"      , type: "text"  , align: "left"   , width: "200"}
+                            , {title: "프로그램명"  , name: "prgrmNm"       , type: "text"  , align: "left"   , width: "200"}
+                            , {title: "방문일시"    , name: "vstDt"         , type: "text"  , align: "center" , width: "80"}
+                            , {title: "상태"        , name: "cnsltngSttsNm" , type: "text"  , align: "center" , width: "80" }
+                         ]
+                         , rowClick: function(args) {
+                             if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+
+                             if(args.event.originalEvent.target.cellIndex == 6 ){
+
+                                 var detailUrl = cnsltngMng.dtlUrl + "?aplyid=" +args.item.aplyid;
+
+                                 cnsltngMngGridHelper.loadContent(detailUrl);
+                                 cnsltngMngGridHelper.rowClick(args);
+                             }
+                         }
+                         , resetGrid: function() {
+                             cnsltngMng.resetListContent();
+                         }
+                    });
+                },
+
+                onSearch : function() {
+                    cnsltngMngGridHelper.resetListContent();
+                }
+            }
+
+            $(function() {
+                cnsltngMng.init();
+            });
+        </script>
+    </div>
+</body>
+</html>

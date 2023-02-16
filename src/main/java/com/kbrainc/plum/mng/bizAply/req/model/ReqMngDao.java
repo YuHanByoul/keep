@@ -567,4 +567,125 @@ public interface ReqMngDao {
     * @return int
      */
     int updatePrgrmEvl(SafetyMngVo safetyMngVo) throws Exception;
+    
+    /**
+    * 소요예산 탭 조회. 
+    *
+    * @Title : selectBudgetList
+    * @Description : TODO
+    * @param budgetVo
+    * @return
+    * @throws Exception
+    * @return List<BudgetVo>
+     */
+    List<BudgetVo> selectBudgetList(BudgetVo budgetVo) throws Exception;
+    
+    /**
+    * 소요예산 수정. 
+    *
+    * @Title : updateBudget
+    * @Description : TODO
+    * @param safetyMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateBudget(BudgetVo safetyMngVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 조회. 
+    *
+    * @Title : detailOper
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return OperVo
+     */
+    OperVo detailOper(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 교육주제 목록 조회. 
+    *
+    * @Title : selectOperSubjectList
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return List<OperVo>
+     */
+    List<OperVo> selectOperSubjectList(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 운영차시 목록 조회 
+    *
+    * @Title : selectOperSubjectRndList
+    * @Description : TODO
+    * @param operRndVo
+    * @return
+    * @throws Exception
+    * @return List<OperRndVo>
+     */
+    List<OperRndVo> selectOperSubjectRndList(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 수정. 
+    *
+    * @Title : updateOper
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateOper(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 교육주제 목록 삭제. 
+    *
+    * @Title : deleteOperSubject
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteOperSubject(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 교육주제 등록. 
+    *
+    * @Title : insertOperSubject
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertOperSubject(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 교육차시 목록 삭제. 
+    *
+    * @Title : deleteOperSubjectRnd
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteOperSubjectRnd(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 교육차시 등록. 
+    *
+    * @Title : insertOperSubjectRnd
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertOperSubjectRnd(OperRndVo operVo) throws Exception;
+    
 }

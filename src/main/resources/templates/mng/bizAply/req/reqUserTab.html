@@ -1,4 +1,4 @@
-<div class="col-12">
+<div class="col-12" th:if="${fldCd == '173101' or fldCd == '173102' or fldCd == '173103'}">
     <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
         <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
             <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
@@ -23,6 +23,35 @@
         </th:block>
     </ul>
 </div>
+<div class="col-12" th:if="${fldCd == '173105' or fldCd == '173106' or fldCd == '173107'}">
+    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailBudgetTabForm.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_08" role="tab" id="tabCon8Link"><strong>소요예산</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailSrng.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_07" role="tab" id="tabCon7Link"><strong>심사결과</strong></a></li>
+        </th:block>
+    </ul>
+</div>
+<div class="col-12" th:if="${fldCd == '173104'}">
+    <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+        <th:block sec:authorize-url="/mng/bizAply/req/detailReqUserInfoTabForm.html">
+            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>신청정보</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailOper.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_09" role="tab" id="tabCon9Link"><strong>운영개요</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailCapTabForm.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_08" role="tab" id="tabCon8Link"><strong>소요예산</strong></a></li>
+        </th:block>
+        <th:block sec:authorize-url="/mng/bizAply/req/detailSrng.html">
+            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_07" role="tab" id="tabCon7Link"><strong>심사결과</strong></a></li>
+        </th:block>
+    </ul>
+</div>
 
 <div class="col-12">
     <div id="myTabContent" class="tab-content tabs"></div>
@@ -33,8 +62,11 @@
     /*<![CDATA[*/
     var aplyid = /*[[${aplyid}]]*/null;
     var pcntstid = /*[[${pcntstid}]]*/null;
+    var fldCd = /*[[${fldCd}]]*/null;
     /*]]>*/
 
+    console.log(fldCd);
+    
     $('.nav-tabs a').on('show.bs.tab', function(event) {
     	//tab set
         var tabId = event.currentTarget.attributes.id.value;
@@ -43,7 +75,7 @@
 
     function selectTab(tabId) {
         if(tabId == "tabCon1Link") {
-            loadTabContent("/mng/bizAply/req/detailReqUserInfoTabForm.html?aplyid=" + aplyid + '&pcntstid=' + pcntstid);
+            loadTabContent("/mng/bizAply/req/detailReqUserInfoTabForm.html?aplyid=" + aplyid + '&pcntstid=' + pcntstid + '&fldCd=' + fldCd);
         } else if(tabId == "tabCon2Link") {
             loadTabContent("/mng/bizAply/req/detailCapTabForm.html?aplyid=" + aplyid);
         } else if(tabId == "tabCon3Link") {
@@ -55,7 +87,11 @@
         } else if(tabId == "tabCon6Link") {
             loadTabContent("/mng/bizAply/req/detailSafetyMng.html?aplyid=" + aplyid);
         } else if(tabId == "tabCon7Link") {
-            loadTabContent("/mng/bizAply/req/detailSrng.html?aplyid=" + aplyid);
+            loadTabContent("/mng/bizAply/req/detailSrng.html?aplyid=" + aplyid + '&fldCd=' + fldCd);
+        } else if(tabId == "tabCon8Link") {
+            loadTabContent("/mng/bizAply/req/detailBudgetTabForm.html?aplyid=" + aplyid + '&fldCd=' + fldCd);
+        } else if(tabId == "tabCon9Link") {
+            loadTabContent("/mng/bizAply/req/detailOper.html?aplyid=" + aplyid);
         }
         $("#" + tabId).parent().addClass("active");
     }
@@ -111,6 +147,16 @@
         
         if(tabFlag == false) {
             selectTab("tabCon7Link");
+            tabFlag = true;
+        }
+        
+        if(tabFlag == false) {
+            selectTab("tabCon8Link");
+            tabFlag = true;
+        }
+        
+        if(tabFlag == false) {
+            selectTab("tabCon9Link");
             tabFlag = true;
         }
 

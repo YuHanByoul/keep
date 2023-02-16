@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +16,6 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.constraints.NotEmpty;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +29,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.kbrainc.plum.cmm.esylgn.service.EsylgnService;
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
 import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
 import com.kbrainc.plum.front.member.model.MemberAgreVo;
 import com.kbrainc.plum.front.member.model.MemberAuthVo;
+import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
 import com.kbrainc.plum.front.member.model.MemberTypeVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.member.service.MemberService;
@@ -40,6 +42,7 @@ import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
 * 회원정보 컨트롤러 클래스.
@@ -68,6 +71,9 @@ public class MemberController {
     
     @Autowired
     private EsylgnService esylgnService;
+    
+    @Autowired
+    private FileServiceImpl fileService;
     
     /**
     * 회원가입 0단계 : 회원가입 유형 선택 화면.
@@ -247,6 +253,23 @@ public class MemberController {
                 }
             }
         }
+        
+        Map<String, Object> bizFileConf = fileService.getConfigurationByFilegrpName("biz_file");
+        String bizFileExtsn = ((HashMap<String, String>) bizFileConf.get("uploadFileExtsn"))
+                .entrySet()
+                .stream()
+                .map(stringStringEntry -> "." + stringStringEntry.getValue())
+                .collect(Collectors.joining(", "));
+        
+        Map<String, Object> bizLogoConf = fileService.getConfigurationByFilegrpName("biz_logo");
+        String bizLogoExtsn = ((HashMap<String, String>) bizLogoConf.get("uploadFileExtsn"))
+                .entrySet()
+                .stream()
+                .map(stringStringEntry -> "." + stringStringEntry.getValue())
+                .collect(Collectors.joining(", "));
+
+        model.addAttribute("acceptUploadBizFileExt", bizFileExtsn);
+        model.addAttribute("acceptUploadBizLogoExt", bizLogoExtsn);
         
         model.addAttribute("data", memberAuthVo);
         
@@ -429,33 +452,59 @@ public class MemberController {
     }
     
     /**
-    * 회원 정보 수정
+    * 기관 검색 팝업.
     *
-    * @Title       : insertMember 
-    * @Description : 회원 정보 수정
-    * @param memberVo MemberVo
-    * @param user 사용자세션정보
+    * @Title       : membershipStep5 
+    * @Description : 기관 검색 팝업
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/instSearchPopup.html")
+    public String instSearchPopup() throws Exception {
+        return "front/member/instSearch.html";
+    }
+    
+    /**
+    * 기관풀 검색 리스트 조회
+    *
+    * @Title       : selectInstSearchList 
+    * @Description : 기관풀 검색 리스트 조회
+    * @param memberInstSearchVo MemberInstSearchVo객체
     * @return Map<String,Object> 응답결과객체
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/front/member/updateMember.do")
+    @RequestMapping(value = "/front/membership/selectInstSearchList.do")
     @ResponseBody
-    public Map<String, Object> updateMember(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
-    	Map<String, Object> resultMap = new HashMap<>();
-    	List<MemberVo> result = null;
-    	
-    	memberVo.setUser(user);
-    	memberVo.setUserid(Integer.parseInt(user.getUserid()));
+    public Map<String, Object> selectInstSearchList(MemberInstSearchVo memberInstSearchVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<MemberInstSearchVo> result = null;
+        
+        result = memberService.selectInstSearchList(memberInstSearchVo);
+        
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+            resultMap.put("pagination",PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
 
-    	int checkDuplicationID = memberService.updateMember(memberVo);
-    	
-    	if(checkDuplicationID > 0) {
-    		resultMap.put("result", true);
-    	}else {
-    		resultMap.put("result", false);
-    	}
-    	return resultMap;
+        return resultMap;
     }
 
-    
+    /**
+    * 기관 정보 조회(기관풀).
+    *
+    * @Title : selectInstPoolInfo
+    * @Description : 기관 정보 조회(기관풀)
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return MemberInstSearchVo 기관정보
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/selectInstPoolInfo.do")
+    @ResponseBody
+    public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception {
+        MemberInstSearchVo result = memberService.selectInstPoolInfo(memberInstSearchVo);
+        return result;
+    }
 }

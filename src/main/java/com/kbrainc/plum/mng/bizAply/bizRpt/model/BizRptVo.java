@@ -31,6 +31,9 @@ public class BizRptVo extends ParentRequestVo {
 	/** 로그인사용자정보 */
     private UserVo user;
 
+    /** (검색) 사용자 아이디 */
+    private UserVo searchUserid;
+
     /** (검색) 분야 코드 */
     private String searchFldCd;
 
@@ -45,6 +48,9 @@ public class BizRptVo extends ParentRequestVo {
 
     /** (검색) 진행상태 코드 */
     private String searchPrgrsSttsCd;
+
+    /** (검색) 상태 코드 */
+    private String searchSttsCd;
 
     /** (검색) 제출상태 코드 */
     private String searchReportSttsCd;
@@ -64,11 +70,20 @@ public class BizRptVo extends ParentRequestVo {
     /** 중간 보고 시작 일시 */
     private Date mdlReportBgngDt;
 
-    /** 중간 보고 종료 일시 */
+    /** 결과 보고 종료 일시 */
     private Date mdlReportEndDt;
 
-    /** 중간 보고 기간 */
+    /** 결과 보고 기간 */
     private String mdlReportPrd;
+
+    /** 결과 보고 시작 일시 */
+    private Date rsltReportBgngDt;
+
+    /** 중간 보고 종료 일시 */
+    private Date rsltReportEndDt;
+
+    /** 중간 보고 기간 */
+    private String rsltReportPrd;
 
     /** 진행상태 코드 */
     private String prgrsSttsCd;
@@ -86,7 +101,7 @@ public class BizRptVo extends ParentRequestVo {
     private String cnsltngUseCnt;
 
     /** 컨설팅 대상 여부 */
-    private String cnsltngUseYn;
+    private String cnsltngTrgtYn;
 
     /** 접수번호 */
     private String rcptno;
@@ -171,6 +186,9 @@ public class BizRptVo extends ParentRequestVo {
 	/** 분 */
 	private Integer mnt;
 
+	/** 비고 */
+	private String rmrk;
+
 	/** 차시 합계 */
 	private Integer sumRnd;
 
@@ -185,6 +203,87 @@ public class BizRptVo extends ParentRequestVo {
 
 	/** 현재 건수 */
 	private Integer nowCnt;
+
+	/** 보완요청 아이디 */
+	private Integer splmntid;
+
+	/** 답변상태코드 */
+	private String ansSttsCd;
+
+	/** 답변상태코드 명 */
+	private String ansSttsCdNm;
+
+	/** 요청내용 */
+	private String dmndCn;
+
+	/** 답변내용 */
+	private String ansCn;
+
+	/** 권역코드 */
+	private String instSareaCd;
+
+	/** 권역코드 명*/
+	private String instSareaCdNm;
+
+	/** 요청일 */
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+	private Date dmndDt;
+
+	/** 완료처리일 */
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+	private Date ansDt;
+
+	/** mode */
+	private String mode;
+
+	/** 컨설팅상태 이름 */
+	private String cnsltngSttsNm;
+
+	/** 컨설팅아이디 */
+	private Integer cnsltngid;
+
+	/** 컨설턴트 */
+	private Integer cnstntid;
+
+	/** 신청아이디 */
+	private Integer aplyid;
+
+	/** 신청자 이름 */
+	private String aplcntNm;
+
+	/** 신청자 전화번호 */
+	private String aplcntTelno;
+
+	/** 신청자 이메일 */
+	private String aplcntEml;
+
+	/** 지역 코드 */
+	private String rgnCd;
+
+	/** 지역 코드 명*/
+	private String rgnCdNm;
+
+	/** 기관 우편번호 */
+	private String instZip;
+
+	/** 기관 주소 */
+	private String instAddr;
+
+	/** 기관 주소 상세 */
+	private String instAddrDtl;
+
+	/** 방문 일시 */
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")
+    private String vstDt;
+
+    /** 사전 내용 */
+    private String cnBfr;
+
+    /** 사후 내용 */
+    private String cnAftr;
+
+    /** 결과 */
+    private String rslt;
 
 
     // ********************************
@@ -257,6 +356,44 @@ public class BizRptVo extends ParentRequestVo {
 				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
 				CodeInfoVo code = resCodeService.getCodeInfo(this.seCd);
 				this.seCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	/** 보고상태코드 */
+	public void setAnsSttsCd(String ansSttsCd) throws Exception{
+		this.ansSttsCd = ansSttsCd;
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.ansSttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.ansSttsCd);
+				this.ansSttsCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	/** 권역코드 */
+	public void setInstSareaCd(String instSareaCd) throws Exception{
+		this.instSareaCd = instSareaCd;
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.instSareaCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.instSareaCd);
+				this.instSareaCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
 				return;

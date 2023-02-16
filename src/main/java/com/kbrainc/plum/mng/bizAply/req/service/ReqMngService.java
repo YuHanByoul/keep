@@ -8,8 +8,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.kbrainc.plum.mng.bizAply.req.model.BudgetVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityResultVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityVo;
+import com.kbrainc.plum.mng.bizAply.req.model.OperRndVo;
+import com.kbrainc.plum.mng.bizAply.req.model.OperVo;
 import com.kbrainc.plum.mng.bizAply.req.model.PrgrmEvlVo;
 import com.kbrainc.plum.mng.bizAply.req.model.PrgrmInfoOutlineVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ProcPlanVo;
@@ -417,4 +420,76 @@ public interface ReqMngService {
      * @return int
       */
     int updateSafetyMng(SafetyMngVo safetyMngVo) throws Exception;
+    
+    /**
+    * 소요예산 탭 조회. 
+    *
+    * @Title : selectBudgetList
+    * @Description : TODO
+    * @param budgetVo
+    * @return
+    * @throws Exception
+    * @return List<BudgetVo>
+     */
+    List<BudgetVo> selectBudgetList(BudgetVo budgetVo) throws Exception;
+    
+    /**
+    * 소요예산 수정. 
+    *
+    * @Title : updateBudget
+    * @Description : TODO
+    * @param safetyMngVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateBudget(BudgetVo safetyMngVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 조회. 
+    *
+    * @Title : detailOper
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return OperVo
+     */
+    OperVo detailOper(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 교육주제 목록 조회. 
+    *
+    * @Title : selectOperSubjectList
+    * @Description : TODO
+    * @param operVo
+    * @return
+    * @throws Exception
+    * @return List<OperVo>
+     */
+    List<OperVo> selectOperSubjectList(OperVo operVo) throws Exception;
+    
+    /**
+    * 운영개요 탭 운영차시 목록 조회 
+    *
+    * @Title : selectOperSubjectRndList
+    * @Description : TODO
+    * @param operRndVo
+    * @return
+    * @throws Exception
+    * @return List<OperRndVo>
+     */
+    List<OperRndVo> selectOperSubjectRndList(OperVo operVo) throws Exception;
+    
+    /**
+     * 운영개요 탭 수정. 
+     *
+     * @Title : updateOper
+     * @Description : TODO
+     * @param operVo
+     * @return
+     * @throws Exception
+     * @return int
+      */
+    int updateOper(OperVo operVo) throws Exception;
 }

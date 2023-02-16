@@ -173,6 +173,7 @@
 	                            <td th:if="${i.index == 0}" th:rowspan="${list.rowSpan}" class="table-active v-middle text-center"><th:block th:text="${list.seNm}"/></td>
 	                            <td class="v-middle text-center"><th:block th:text="${list.ordr}"/></td>
 	                            <td>
+	                                <input type="hidden" name="ordr" id="ordr" th:value="${list.ordr}"/>
 	                                <input type="hidden" name="seCd" id="seCd" th:value="${list.seCd}"/>
 	                                <input type="text" class="form-control form-control-sm" placeholder="" id="bsnsNm" name="bsnsNm" th:value="${list.bsnsNm}">
 	                            </td>
@@ -190,15 +191,18 @@
 	                            </td>
 	                            <td class="v-middle">
 	                                <button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm" th:if="${i.last}">추가</button>
+	                                <!-- 첫번째 로우 삭제 버튼 비노출 -->
+<!-- 	                                <button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm" th:if="${i.index > 0}">삭제</button> -->
 	                                <button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>
 	                            </td>
 	                        </tr>
 	                    </tbody>
                         <tbody id="eduTable" th:unless="${#lists.size(eduList) > 0}">
                             <tr>
-                                <td rowspan="" class="table-active v-middle text-center">환경교육사업</td>
+                                <td rowspan="1" class="table-active v-middle text-center">환경교육사업</td>
                                 <td class="v-middle text-center">1</td>
                                 <td>
+                                    <input type="hidden" name="ordr" id="ordr" value="1"/>
                                     <input type="hidden" name="seCd" id="seCd" value="213101"/>
                                     <input type="text" class="form-control form-control-sm" placeholder="" id="bsnsNm" name="bsnsNm">
                                 </td>
@@ -224,6 +228,7 @@
                                 <td th:if="${i.index == 0}" th:rowspan="${list.rowSpan}" class="table-active v-middle text-center"><th:block th:text="${list.seNm}"/></td>
                                 <td class="v-middle text-center"><th:block th:text="${list.ordr}"/></td>
                                 <td>
+                                    <input type="hidden" name="ordr" id="ordr" th:value="${list.ordr}"/>
                                     <input type="hidden" name="seCd" id="seCd" th:value="${list.seCd}"/>
                                     <input type="text" class="form-control form-control-sm" placeholder="" id="bsnsNm" name="bsnsNm" th:value="${list.bsnsNm}">
                                 </td>
@@ -241,15 +246,18 @@
                                 </td>
                                 <td class="v-middle">
                                     <button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm" th:if="${i.last}">추가</button>
+                                    <!-- 첫번째 로우 삭제 버튼 비노출 -->
+<!--                                     <button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm" th:if="${i.index > 0}">삭제</button> -->
                                     <button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>
                                 </td>
                             </tr>
                         </tbody>
                         <tbody id="etcTable" th:unless="${#lists.size(etcList) > 0}">
                             <tr>
-                                <td rowspan="" class="table-active v-middle text-center">기타 공익사업</td>
+                                <td rowspan="1" class="table-active v-middle text-center">기타 공익사업</td>
                                 <td class="v-middle text-center">1</td>
                                 <td>
+                                    <input type="hidden" name="ordr" id="ordr" value="1"/>
                                     <input type="hidden" name="seCd" id="seCd" value="213102"/>
                                     <input type="text" class="form-control form-control-sm" placeholder="" id="bsnsNm" name="bsnsNm">
                                 </td>
@@ -304,7 +312,7 @@
        	$(prgrmList).each(function(i){
             setTimeout(function(){
                 $('#prgrmSbjctCd_'+(i+1)).val(prgrmList[i].prgrmSbjctCd).prop("selected", true);              
-            }, 300);
+            }, 500);
         });
         
         $(".subjectCode").each(function(idx){
@@ -367,28 +375,56 @@
         var newrow = clickedRow.clone();
         newrow.find("td > input").val("");
         newrow.find("td:last").html(html);
-        console.log(tbody, ", rowspan=> ", rowspan);
         if (Number(rowspan) == 1) {
         	newrow.find("td:first").remove();
         }
         $("#"+tbody).find("tr:first").find("td:first").attr("rowspan", Number(rowspan)+1);
         newrow.insertAfter($("#"+tbody).find("tr:last"));
+        
+        $("#"+tbody).find("tr").each(function(i){
+            if (i == 0) {
+                $(this).find("td:eq(1)").text(i+1);             
+            } else {
+                $(this).find("td:eq(0)").text(i+1);
+            }
+            $(this).find("input[name='ordr']").val(i+1);   
+            $(this).find("input[name='seCd']").val(tbody == "eduTable" ? "213101" : "213102");   
+        });
     }
 
     // 테이블 로우 삭제
     function removeRow(obj) {
-        var html = '<button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm">추가</button>';
-        html += '<button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>';
+        var addHtml = '<button onclick="addRow(this);" type="button" class="btn btn-primary btn-sm">추가</button>';
+        var delHtml = '<button onclick="removeRow(this);" type="button" class="btn btn-inverse btn-sm">삭제</button>';
         var tableObj = $(obj).parent().parent().parent();
         var clickedRow = $(obj).parent().parent();
         var tbody = clickedRow.parent().attr("id");
         
-        if (Number(clickedRow.find("td:eq(1)").text()) == 1) {
+        if (clickedRow.index() == 0) {
+        	alert("구분값의 첫번째 항목은 삭제할수 없습니다.");
         	return;
         }
         
-        $(obj).parent().parent().remove();
-        tableObj.find("tr:last").find("td:last").html(html);
+        clickedRow.remove();
+//         console.log("삭제 후 => ", tbody, ", length ==> ", $("#"+tbody).find("tr").length, ", index => ", clickedRow.index());
+        
+        $("#"+tbody).find("tr:first").find("td:first").attr("rowspan", $("#"+tbody).find("tr").length);
+        if ($("#"+tbody).find("tr").length == 1) {
+        	$("#"+tbody).find("tr:last").find("td:last").html(addHtml);
+        } else {
+            var html = addHtml + delHtml;        	
+	        $("#"+tbody).find("tr:last").find("td:last").html(html);
+        }
+        
+        $("#"+tbody).find("tr").each(function(i){
+        	if (i == 0) {
+	        	$(this).find("td:eq(1)").text(i+1);        		
+        	} else {
+        		$(this).find("td:eq(0)").text(i+1);
+        	}
+        	$(this).find("input[name='ordr']").val(i+1);
+        	$(this).find("input[name='seCd']").val(tbody == "eduTable" ? "213101" : "213102");   
+        });
     }
     
     function fn_getNextDepthList(grpcd , upprcd, targetId){

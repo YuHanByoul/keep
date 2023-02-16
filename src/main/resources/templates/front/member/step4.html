@@ -196,8 +196,8 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" name="addr" id="addr" onclick="daumPostcode()" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
-                                            <button type="button" class="btn-medium btn-gray" onclick="daumPostcode()">검색</button>
+                                            <input type="text" name="addr" id="addr" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
+                                            <button type="button" class="btn-medium btn-gray" onclick="daumPostcode1()">검색</button>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -266,7 +266,7 @@
                 </table>
             </div>
 
-            <div class="table-caption" th:if="${data.type == 'I'}">
+            <div class="table-caption" th:if="${data.type = 'I'}">
                 <div class="left">
                     <h3 class="sub-title">기관정보 입력</h3>
                 </div>
@@ -275,7 +275,7 @@
                 </div>
             </div>
 
-            <div class="table-row table-row-mo" th:if="${data.type == 'I'}">
+            <div class="table-row table-row-mo" th:if="${data.type = 'I'}">
                 <table>
                     <caption>기관 회원가입  - 기관명, 기관유형, 사업자등록번호, 사업자등록증, 대표자 이름, 대표 전화번호, 대표 팩스번호, 홈페이지 주소, 기관 로고, 주소, 상세주소</caption>
                     <colgroup>
@@ -286,49 +286,86 @@
                         <tr>
                             <th scope="row">기관명<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <input type="text" title="기관명" placeholder="기관명 입력" data-width="304" readonly>
-                                    <button type="button" class="btn-medium btn-gray">기관 검색</button>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="text" title="기관명" placeholder="기관명 입력" data-width="304">
+                                            <button type="button" class="btn-medium btn-gray" id="instSearchBtn">기관 검색</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">기관유형</th>
+                            <th scope="row">기관유형<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <input type="text" title="기관유형" placeholder="기관유형 입력" data-width="304" readonly>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <span kattr:select_code="acnt_lock_cd" grpCd="108" title="기관유형" dataWidth="304" firstOptTxt="선택하세요"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">사업자등록번호</th>
+                            <th scope="row">사업자등록번호<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="form-input">
-                                    <input type="number" title="사업자등록번호" placeholder="사업자등록번호 입력" data-width="304" readonly>
+                                    <input type="text" title="사업자등록번호" placeholder="사업자등록번호 입력" data-width="304">
+                                    <button type="button" class="btn-medium btn-gray">중복확인</button>
                                 </div>
+                                <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">사업자등록증</th>
+                            <th scope="row">사업자등록증<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <a href="#" class="underline">사업자등록증.pdf</a>
+                                <div class="form-input form-input-file">
+                                    <label>
+                                        <input type="file" id="bizFile" name="bizFile" class="blind" th:attr="accept=${acceptUploadBizFileExt}" title="파일첨부">
+                                        <span class="btn-medium btn-gray">파일선택</span>
+                                    </label>
+                                    <ul id="bizFileUploadSuccess"></ul>
+                                    <input type="hidden" name="bizfileFilegrpid" id="bizfileFilegrpid" value="0">
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">대표자 이름<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <input type="text" title="대표자 이름" placeholder="대표자 이름 입력" data-width="414">
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="text" title="대표자 이름" placeholder="대표자 이름 입력" data-width="414">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">대표전화번호<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <input type="number" title="대표전화번호" placeholder="대표전화번호 입력" data-width="414">
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="number" title="대표전화번호" placeholder="대표전화번호 입력" data-width="414">
+                                        </div>
+                                        <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback"></p>
+                                    </div>
                                 </div>
-                                <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
                             </td>
                         </tr>
                         <tr>
@@ -353,14 +390,17 @@
                             <th scope="row">기관 로고</th>
                             <td>
                                 <div class="form-input-file form-input-thumb">
-                                    <label class="form-input">
-                                        <input type="file" class="blind" accept=".jpeg,.jpg,.png" title="파일첨부" maxcount="1">
+                                    <div class="form-input">
                                         <div class="logo-image">
-                                            <img src="" alt="">
+                                            <img src="" alt="" id="bizLogoImage">
                                             <span class="logo-text">LOGO IMAGE</span>
+                                            <input type="hidden" name="bizlogoFileid" id="bizlogoFileid" value="0">
                                         </div>
-                                        <span class="btn-medium btn-gray">파일선택</span>
-                                    </label>
+                                        <label>
+                                            <input type="file" id="bizLogo" class="blind" accept=".jpeg,.jpg,.png" title="파일첨부">
+                                            <span class="btn-medium btn-gray">파일선택</span>
+                                        </label>
+                                    </div>
                                 </div>
                                 <p class="desc">* 로고사진 파일은 10MB 미만의 JPG, PNG파일만 업로드 가능</p>
                                 <p class="desc">* 로고사진 크기는 240*120px이 권장사이즈입니다.</p>
@@ -369,14 +409,21 @@
                         <tr>
                             <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <div class="bul">지번/도로명</div>
-                                    <input type="text" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500">
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="text" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
+                                            <button type="button" class="btn-medium btn-gray" onclick="daumPostcode2()">검색</button>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">상세주소</th>
+                            <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
@@ -385,7 +432,7 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback invalid">상세주소는 100자를 초과할 수 없습니다.</p>
+                                        <p class="feedback"></p>
                                     </div>
                                 </div>
                             </td>
@@ -417,6 +464,12 @@
                 <input type="hidden" name="type" th:value="${data.type}" />
                 <input type="hidden" name="kind" value="info" />
             </form>
+            
+            <!-- layerpopup -->
+            <div id="layer-popup05">
+            </div>
+            <!-- //layerpopup -->
+    
             <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
             <script th:inline="javascript">
                 var validator= $("#memberInfoForm").validate({
@@ -611,7 +664,27 @@
                     $("#checkMoblphonMsg").text("휴대전화 본인인증이 완료되었습니다.").removeClass("invalid").addClass("valid");
                 }
                 
-                function daumPostcode(){
+                function setInstArtclid(artclid) {
+                    // 기관풀정보 조회
+                    if (displayWorkProgress(true)){
+                        $.ajax({
+                            url : "/front/membership/selectInstPoolInfo.do",
+                            cache : false,
+                            dataType : 'json',
+                            data : { artclid : artclid },
+                            type : 'POST',
+                            success : function(data) {
+                                
+                            }
+                        });
+                    }
+                }
+                
+                function directInput() {
+                    alert("직접입력");
+                }
+        
+                function daumPostcode1(){
                     new daum.Postcode({
                         oncomplete: function(data) {
                             let addr = '';
@@ -628,11 +701,110 @@
                     }).open();
                 }
                 
+                function daumPostcode2(){
+                    new daum.Postcode({
+                        oncomplete: function(data) {
+                            let addr = '';
+                            if (data.userSelectedType === 'R') {
+                                addr = data.roadAddress;
+                            } else {
+                                addr = data.jibunAddress;
+                            }
+                            $('#instSignguCd').val(data.sigunguCode);
+                            $('#instZip').val(data.zonecode);
+                            $('#instAddr').val(addr);
+                            $('#instAddrDtl').focus();
+                        }
+                    }).open();
+                }
+                
+                $('#bizFile').on("change", function (event) {
+                    var objFile = event.target;
+                    var formData = new FormData();
+        
+                    formData.append("file", objFile.files[0]);
+                    formData.append("filegrpNm", "biz_file");
+        
+                    if (displayWorkProgress(true)) {
+                        $.ajax({
+                            url: '/registFile.do',
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.result == 'fail') {
+                                    alert(response.msg);
+                                }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                                    $("#bizfileFilegrpid").val(response.filegrpid);
+                                    var result = `
+                                            <li id="${response.fileid}" class='file-block' data_ext='${response.fileExtsn.substr(1)}'>
+                                                <span class="name">
+                                                    <a href="javascript:void(0)" data-fileid="${response.fileid}" data-file-idntfc-key="${response.fileIdntfcKey}"
+                                                     onclick="javascript:downloadFileByFileid(this.dataset.fileid, this.dataset.fileIdntfcKey)"> ${response.orginlFileNm}
+                                                    </a>
+                                                </span>
+                                                <button type="button" class="file-delete" title="삭제" data-fileid="${response.fileid}" onclick="deleteBizFile(this.dataset.fileid)">
+                                                    <span class="icon icon-circle-close"></span>
+                                                </button>
+                                            </li>
+                                        `; 
+                                    $('#bizFileUploadSuccess').html(result);
+                                }
+                                closeWorkProgress();
+                            }
+                        });
+                        $("#bizFile").val("");
+                    }
+                });
+                
+                function deleteBizFile(fileid) {
+                    $("#"+fileid).remove();
+                    $("#bizfileFilegrpid").val(0);
+                }
+                
+                $('#bizLogo').on("change", function (event) {
+                    var objFile = event.target;
+                    var formData = new FormData();
+        
+                    formData.append("file", objFile.files[0]);
+                    formData.append("filegrpNm", "biz_logo");
+        
+                    if (displayWorkProgress(true)) {
+                        $.ajax({
+                            url: '/registFile.do',
+                            processData: false,
+                            contentType: false,
+                            data: formData,
+                            type: 'POST',
+                            success: function (response) {
+                                if (response.result == 'fail') {
+                                    alert(response.msg);
+                                }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                                    $("#bizlogoFileid").val(response.fileid);
+                                    //response.fileIdntfcKey
+                                    $("#bizLogoImage").attr("src",`/downloadLogo.do?fileid=${response.fileid}&file_idntfc_key=${response.fileIdntfcKey}`);
+                                }
+                                closeWorkProgress();
+                            }
+                        });
+                        $("#bizLogo").val("");
+                    }
+                });
+                
                 $(function(){
                     $('#emailList').change(function(e){
                         var self = $(this);
                         var val = self.val();
                         $('input#eml2').val(val);
+                    });
+                    
+                    jQuery("#instSearchBtn").bind("click",function(){     
+                        $("#layer-popup05").load("/front/membership/instSearchPopup.html", function(response, status, xhr) {
+                            if (status == "success") {
+                                layerPopup.open({target:'layer-popup05', h: "640px", callback: function(){ initInstSearchPopup(); }});
+                            }
+                        });
                     });
                 });
             </script>

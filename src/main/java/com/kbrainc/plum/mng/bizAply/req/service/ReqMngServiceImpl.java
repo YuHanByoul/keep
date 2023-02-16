@@ -22,8 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.bizAply.req.model.BudgetVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityResultVo;
 import com.kbrainc.plum.mng.bizAply.req.model.CapabilityVo;
+import com.kbrainc.plum.mng.bizAply.req.model.OperRndVo;
+import com.kbrainc.plum.mng.bizAply.req.model.OperVo;
 import com.kbrainc.plum.mng.bizAply.req.model.PrgrmEvlVo;
 import com.kbrainc.plum.mng.bizAply.req.model.PrgrmInfoOutlineVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ProcPlanVo;
@@ -41,6 +44,8 @@ import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.excel.ExcelUtils;
+
+import kr.go.onepass.client.org.apache.commons.lang.StringUtils;
 
 /**
 * 체험환경교육 지원사업 > 사업신청 관리 > 신청관리 서비스 클래스. 
@@ -453,7 +458,7 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 param.setEduNope(capabilityVo.getEduNope()[i]);
                 param.setBsnsBgt(capabilityVo.getBsnsBgt()[i]);
                 param.setOperCn(capabilityVo.getOperCn()[i]);
-                param.setOrdr(i+1);
+                param.setOrdr(capabilityVo.getOrdr()[i]);
                 
                 result += reqMngDao.insertInstOperRslt(param);
             }
@@ -661,6 +666,92 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         int result = 0;
         result = reqMngDao.updateSafetyMng(safetyMngVo);
         result += reqMngDao.updatePrgrmEvl(safetyMngVo);
+        
+        return result;
+    }
+
+    @Override
+    public List<BudgetVo> selectBudgetList(BudgetVo budgetVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectBudgetList(budgetVo);
+    }
+
+    @Transactional
+    @Override
+    public int updateBudget(BudgetVo budgetVo) throws Exception {
+        // TODO Auto-generated method stub
+        int result = 0;
+        
+        if ("173107".equals(budgetVo.getFldCd())) {
+            result = reqMngDao.updateBudget(budgetVo);
+        } else {
+            if (budgetVo != null && budgetVo.getCodeArr().length > 0) {
+                for (int i = 0; i < budgetVo.getCodeArr().length; i++) {
+                    budgetVo.setBgtid(budgetVo.getBgtidArr()[i]);
+                    budgetVo.setAmt(budgetVo.getAmtArr()[i]);
+                    budgetVo.setExpitmCd(budgetVo.getCodeArr()[i]);
+                    budgetVo.setDsctn(budgetVo.getDsctnArr()[i]);
+                    
+                    result += reqMngDao.updateBudget(budgetVo);                
+                }
+            }
+        }
+    
+        return result;
+    }
+
+
+    @Override
+    public OperVo detailOper(OperVo operVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.detailOper(operVo);
+    }
+
+
+    @Override
+    public List<OperVo> selectOperSubjectList(OperVo operVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectOperSubjectList(operVo);
+    }
+
+
+    @Override
+    public List<OperRndVo> selectOperSubjectRndList(OperVo operVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectOperSubjectRndList(operVo);
+    }
+
+    @Transactional
+    @Override
+    public int updateOper(OperVo operVo) throws Exception {
+        // TODO Auto-generated method stub
+        int result = 0;
+        
+        // 운영개요
+        result += reqMngDao.updateOper(operVo);
+        
+        if (CollectionUtils.isNotEmpty(operVo.getEduSbjctCds())) {
+            // 교육 주제
+            result += reqMngDao.deleteOperSubject(operVo);
+            result += reqMngDao.insertOperSubject(operVo);            
+        }
+        
+        if (null != operVo.getRnd() && operVo.getRnd().length > 0) {
+            result += reqMngDao.deleteOperSubjectRnd(operVo);
+            for (int i = 0; i < operVo.getRnd().length; i++) {
+                if (operVo.getRnd()[i] != null) {
+                    OperRndVo param = new OperRndVo();
+                    param.setUser(operVo.getUser());
+                    param.setAplyid(operVo.getAplyid());                
+                    param.setEduSbjctCd(StringUtils.defaultIfEmpty(operVo.getEduSbjctCdArr()[i], ""));
+                    param.setRnd(operVo.getRnd()[i]);
+                    param.setSbjctSeCd(operVo.getSbjctSeCdArr()[i]);
+                    
+                    // 운영 차시
+                    result += reqMngDao.insertOperSubjectRnd(param);                    
+                }
+            }
+        }
         
         return result;
     }

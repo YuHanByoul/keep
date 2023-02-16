@@ -110,4 +110,110 @@ public interface BizRptService {
 	*/
 	public List<BizRptVo> selectReportOperList(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 보완요청 목록 조회
+	*
+	* @Title : selectSplmntDmndList
+	* @Description : 보완 요청 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectSplmntDmndList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 보완요청 상세 조회
+	*
+	* @Title : getRptSplmntDmnd
+	* @Description : 보완요청 상세 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	public BizRptVo selectRptSplmntDmnd(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 보고보완 등록
+	*
+	* @Title : insertRptSplmnt
+	* @Description : 보고보완등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertRptSplmnt(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 결과보고관리 목록조회
+	*
+	* @Title : selectRsltRptMngList
+	* @Description : 결과보고관리 목록조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectRsltRptMngList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 결과보고관리 상세 조회
+	*
+	* @Title : selectRsltRptMng
+	* @Description : 결과보고관리 상세 조회
+	* @param bizRptVo
+	* @return
+	* @return BizRptVo
+	*/
+	public BizRptVo selectRsltRptMng(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 결과보고제출 목록 조회
+	*
+	* @Title : selectRsltRptSbmsnList
+	* @Description : 결과보고제출 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectRsltRptSbmsnList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 컨설팅관리 목록 조회
+	*
+	* @Title : selectCnsltngMngList
+	* @Description : selectCnsltngMngList
+	* @param bizRptVo
+	* @return
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectCnsltngMngList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 컨설팅관리 상세 조회
+	*
+	* @Title : selectCnsltngMng
+	* @Description : 컨설팅관리 상세 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return BizRptVo
+	*/
+	public BizRptVo selectCnsltngMng(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 컨설팅관리 등록
+	*
+	* @Title : insertCnsltngMng
+	* @Description : 컨설팅관리 등록
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertCnsltngMng(BizRptVo bizRptVo) throws Exception;
+
 }

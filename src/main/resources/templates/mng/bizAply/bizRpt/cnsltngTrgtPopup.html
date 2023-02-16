@@ -1,0 +1,143 @@
+<!-- [팝업] 컨설팅 대상 -->
+<form id="cnsltngTrgtPopupFrm">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">컨설팅 대상</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="mb-0 form-group row required">
+                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popInput00"><strong>내용</strong></label>
+                            <div class="col-12">
+                                <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="popInput00" name="popInput00"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-0 form-group row required">
+                            <label class="form-label col-sm-12 col-form-label p-t-10 pb-1" for="popInput00"><strong>컨설턴트 배정</strong></label>
+                            <div class="col-12">
+
+                                <div class="col-sm-12 btn-group-sm">
+                                    <button type="button" class="btn btn-inverse" onclick="fn_opencnsltngPicModal();">담당자 검색</button>
+<!--                                     <button type="button" class="btn btn-inverse" onclick="fn_openInstManagerSearchModal();">담당자 검색</button> -->
+                                </div>
+
+                                <div class="m-0 row">
+                                    <div class="col-12 row border rounded p-t-10 p-b-10 m-0 mt-2">
+                                        <div id="jdgsPicList" class="col-auto"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="cnsltngTrgtPop.saveFrm();">저장</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- 컨설팅담당자 팝업 -->
+<div class="modal fade" id="cnsltngPicPopup" aria-hidden="true" data-bs-backdrop="static"/>
+<!-- //[팝업] 컨설팅 대상 -->
+
+<div class="modal fade" id="cnslngModal" aria-hidden="true" data-bs-backdrop="static"></div>
+<script th:inline="javascript">
+
+var validator= $("#rptSplmntDmndPopupFrm").validate({
+    rules: {
+        dmmCn : { required: true, maxlength:500 }
+    },
+    messages: {
+        dmmCn : { required:"내용을 입력해주십시오", maxlength:"내용은 500자 이하여야 합니다."}
+    }
+});
+
+//컨설팅담당자 팝업
+var cnsltngPicUrl = "/mng/bizAply/bizRpt/cnsltngPicPopup.html";
+var cnsltngTrgtModal;
+var fn_opencnsltngPicModal =()=> {
+
+    var keyid = $("#reportid").val();
+    var url = cnsltngPicUrl + "?reportid="+keyid+"&mode=req";
+
+    $("#cnsltngPicPopup").load(url, function(response, status, xhr) {
+        if (status == "success") {
+            cnsltngPicModal = new bootstrap.Modal($('#cnsltngPicPopup'));
+            cnsltngPicModal.show();
+        }
+    });
+}
+
+var cnstntSearchModal;
+var cnsltngid="";
+var url = "/mng/cnsltng/cnsltngManagerPopup.html?cnsltngid="+cnsltngid;
+
+//회원 검색 모달 오픈
+var fn_openInstManagerSearchModal =()=> {
+    $("#cnslngModal").load(url, function(response, status, xhr) {
+        if (status == "success") {
+            cnstntSearchModal = new bootstrap.Modal($('#cnslngModal'));
+            cnstntSearchModal.show();
+        }
+    });
+}
+
+var cnsltngTrgtPop = {
+
+    insertUrl: "/mng/bizAply/bizRpt/insertRptSplmnt.do",
+    init:function(){
+
+    },
+    saveFrm : function(){
+
+
+        if(!($("#rptSplmntDmndPopupFrm").valid())) return;
+
+        if(!confirm("저장하시겠습니까?")) return;
+
+        var data = $("#rptSplmntDmndPopupFrm").serialize();
+
+        if(displayWorkProgress()){
+            $.ajax({
+                url : rptSplmntDmndPopupFrm.insertUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    debugger;
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        rptSplmntDmndModal.hide();
+                        mdlRptSbmsnDtl.setGrid();
+
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+};
+
+
+
+$(function() {
+	cnsltngTrgtPop.init();
+});
+
+
+</script>

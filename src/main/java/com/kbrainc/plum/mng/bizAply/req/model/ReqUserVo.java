@@ -51,6 +51,9 @@ public class ReqUserVo extends ParentRequestVo {
     private String searchRegEndDe;
     // 검색조건 end
     
+    /** 분야 코드 */
+    private String fldCd;
+    
     /** 로그인사용자 정보 */
     private UserVo user;
     

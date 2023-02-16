@@ -52,7 +52,7 @@ public class BizRptController {
 
 	/*******************************************************************************
 	 중간보고관리
-	********************************************************************************/
+	 ******************************************************************************/
 	/**
      * @Title : mdlRptMngList.html
      * @Description : 중간보고관리 메뉴 이동
@@ -60,7 +60,7 @@ public class BizRptController {
      * @throws Exception :
      */
     @RequestMapping(value = "/mng/bizAply/bizRpt/mdlRptMngListForm.html")
-    public String userTempListForm() throws Exception {
+    public String mdlRptMngListForm(HttpServletRequest request) throws Exception {
         return "mng/bizAply/bizRpt/mdlRptMngList";
     }
 
@@ -258,7 +258,7 @@ public class BizRptController {
 
 		List<BizRptVo> result = null;
 
-		// result = bizRptService.selectSplmntDmndList(bizRptVo);
+		result = bizRptService.selectSplmntDmndList(bizRptVo);
 
 		if (result.size() > 0) {
 			resultMap.put("totalCount", (result.get(0).getTotalCount()));
@@ -269,6 +269,63 @@ public class BizRptController {
 
 		return resultMap;
 	}
+
+ 	/**
+ 	 * 보완요청팝업
+ 	 *
+ 	 * @Title : rptSplmntDmndPopup
+ 	 * @Description : 보완요청팝업
+ 	 * @param bizRptVo
+ 	 * @param model
+ 	 * @param user
+ 	 * @return
+ 	 * @throws Exception
+ 	 * @return String
+ 	 */
+ 	@RequestMapping(value = "/mng/bizAply/bizRpt/rptSplmntDmndPopup.html")
+ 	public String rptSplmntDmndPopup(BizRptVo bizRptVo, Model model) throws Exception {
+ 		model.addAttribute("mode", bizRptVo.getMode());
+ 		model.addAttribute("reportid", bizRptVo.getReportid());
+
+ 		//BizRptVo rptSplmntDmndDtlInfo = bizRptService.selectRptSplmntDmnd(bizRptVo);
+ 		//bizRptService.selectRptSplmntDmnd(bizRptVo);
+
+ 		//model.addAttribute("rptSplmntDmndDtlInfo", rptSplmntDmndDtlInfo);
+ 		return "mng/bizAply/bizRpt/rptSplmntDmndPopup";
+ 	}
+
+ 	/**
+ 	 * 보고보완 등록
+ 	 *
+ 	 * @Title : insertSplmnt
+ 	 * @Description : 보고보완 등록
+ 	 * @param bizRptVo
+ 	 * @param model
+ 	 * @param user
+ 	 * @return
+ 	 * @throws Exception
+ 	 * @return String
+ 	 */
+ 	@RequestMapping(value = "/mng/bizAply/bizRpt/insertRptSplmnt.do")
+    @ResponseBody
+ 	public Map<String, Object> insertSplmnt(BizRptVo bizRptVo, Model model,@UserInfo UserVo user) throws Exception {
+ 		Map<String, Object> resultMap = new HashMap<>();
+
+ 		int ret=0;
+ 		bizRptVo.setUser(user);
+ 		ret = bizRptService.insertRptSplmnt(bizRptVo);
+
+ 		if (ret > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "보완요청 처리에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "보완요청 처리에 실패했습니다.");
+        }
+
+ 		//model.addAttribute("rptSplmntDmndDtlInfo", rptSplmntDmndDtlInfo);
+ 		return resultMap;
+ 	}
 
  	/**
  	* 컨설팅 대상 팝업
@@ -287,5 +344,415 @@ public class BizRptController {
         //model.addAttribute("user",user);
         return "mng/bizAply/bizRpt/cnsltngTrgtPopup";
     }
+
+ 	/**
+ 	 * 컨설팅 대상 저장
+ 	 *
+ 	 * @Title : insertCnsltngTrgt
+ 	 * @Description : 컨설팅 대상 저장
+ 	 * @param bizRptVo
+ 	 * @param model
+ 	 * @param user
+ 	 * @return
+ 	 * @throws Exception
+ 	 * @return String
+ 	 */
+ 	@RequestMapping(value = "/mng/bizAply/bizRpt/insertCnsltngTrgt.do")
+    @ResponseBody
+ 	public Map<String, Object> insertCnsltngTrgt(BizRptVo bizRptVo, Model model,@UserInfo UserVo user) throws Exception {
+ 		Map<String, Object> resultMap = new HashMap<>();
+
+ 		int ret=0;
+ 		bizRptVo.setUser(user);
+ 		//ret = bizRptService.insertCnsltngTrgt(bizRptVo);
+
+ 		if (ret > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "컨설팅 대상 처리에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "컨설팅 대상 처리에 실패했습니다.");
+        }
+
+ 		//model.addAttribute("rptSplmntDmndDtlInfo", rptSplmntDmndDtlInfo);
+ 		return resultMap;
+ 	}
+
+ 	/**
+ 	 * 컨설팅 대상 삭제
+ 	 *
+ 	 * @Title : deleteCnsltngTrgt
+ 	 * @Description : 컨설팅 대상 저장
+ 	 * @param bizRptVo
+ 	 * @param model
+ 	 * @param user
+ 	 * @return
+ 	 * @throws Exception
+ 	 * @return String
+ 	 */
+ 	@RequestMapping(value = "/mng/bizAply/bizRpt/deleteCnsltngTrgt.do")
+ 	@ResponseBody
+ 	public Map<String, Object> deleteCnsltngTrgt(BizRptVo bizRptVo, Model model,@UserInfo UserVo user) throws Exception {
+ 		Map<String, Object> resultMap = new HashMap<>();
+
+ 		int ret=0;
+ 		bizRptVo.setUser(user);
+ 		//ret = bizRptService.deleteCnsltngTrgt(bizRptVo);
+
+ 		if (ret > 0) {
+ 			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+ 			resultMap.put("msg", "컨설팅 대상 취소 처리에 성공하였습니다.");
+ 		} else {
+ 			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+ 			resultMap.put("msg", "컨설팅 대상 취소 처리에 실패했습니다.");
+ 		}
+
+ 		return resultMap;
+ 	}
+
+ 	/**
+ 	 * 컨설팅 담당자 팝업
+ 	 *
+ 	 * @Title : cnsltngPicPopup
+ 	 * @Description : 컨설팅 담당자 팝업
+ 	 * @param bizRptVo
+ 	 * @param model
+ 	 * @param user
+ 	 * @return
+ 	 * @throws Exception
+ 	 * @return String
+ 	 */
+ 	@RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngPicPopup.html")
+ 	public String cnsltngPicPopup(BizRptVo bizRptVo, Model model, @UserInfo UserVo user) throws Exception {
+ 		//model.addAttribute("user",user);
+ 		return "mng/bizAply/bizRpt/cnsltngPicPopup";
+ 	}
+
+    /**
+    * 컨설팅 담당자 목록 조회
+    *
+    * @Title : cnsltngPicList
+    * @Description : 컨설팅 담당자 목록 조회
+    * @param bizRptVo
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngPicList.do")
+	@ResponseBody
+	public Map<String, Object> cnsltngPicList(BizRptVo bizRptVo) throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+
+		List<BizRptVo> result = null;
+
+		//result = bizRptService.cnsltngPicList(bizRptVo);
+
+		if (result.size() > 0) {
+			resultMap.put("totalCount", (result.get(0).getTotalCount()));
+		} else {
+			resultMap.put("totalCount", 0);
+		}
+		resultMap.put("list", result);
+
+		return resultMap;
+	}
+
+	/*******************************************************************************
+	 * 결과보고관리
+	 ******************************************************************************/
+	/**
+	 * @Title : rsltRptMngList.html
+	 * @Description : 결과보고관리 메뉴 이동
+	 * @return String 이동화면경로
+	 * @throws Exception :
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/rsltRptMngListForm.html")
+	public String rsltRptMngListForm(HttpServletRequest request) throws Exception {
+		return "mng/bizAply/bizRpt/rsltRptMngList";
+	}
+
+	/**
+	 * 결과보고관리 목록조회
+	 *
+	 * @Title : selectRsltRptMngList
+	 * @Description : 결과보고관리 목록조회
+	 * @param bizRptVo
+	 * @return
+	 * @throws Exception
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/selectRsltRptMngList.do")
+	@ResponseBody
+	public Map<String, Object> selectRsltRptMngList(BizRptVo bizRptVo) throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+
+		List<BizRptVo> result = null;
+
+		result = bizRptService.selectRsltRptMngList(bizRptVo);
+
+		if (result.size() > 0) {
+			resultMap.put("totalCount", (result.get(0).getTotalCount()));
+		} else {
+			resultMap.put("totalCount", 0);
+		}
+		resultMap.put("list", result);
+
+		return resultMap;
+	}
+
+	/**
+	 * 결과보고관리 목록 엑셀다운로드
+	 *
+	 * @Title : aplyExcelDownList
+	 * @Description : 결과보고관리 목록 엑셀다운로드
+	 * @param request
+	 * @param response
+	 * @param asgsysSrngVo
+	 * @return void
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/selectRsltRptMngListExcel.do")
+	public void selectRsltRptMngListExcel(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo)
+			throws Exception {
+//		bizRptService.selectRsltRptMngListExcel(bizRptVo, response, request);
+	}
+
+	/**
+	 * 결과보고관리 상세이동
+	 *
+	 * @Title : rsltRptMngDetailForm
+	 * @Description : 결과보고관리 상세이동
+	 * @param bizRptVo
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @return String
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/rsltRptMngDetailForm.html")
+	public String rsltRptMngDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
+//		model.addAttribute("bizMngInfo", bizRptService.selectRsltRptMng(bizRptVo));
+		return "mng/bizAply/bizRpt/rsltRptMngDetail";
+	}
+
+	/**
+	 * 결과보고제출 목록조회
+	 *
+	 * @Title : selectRsltRptSbmsnList
+	 * @Description : 결과보고제출 목록조회
+	 * @param bizRptVo
+	 * @return
+	 * @throws Exception
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/selectRsltRptSbmsnList.do")
+	@ResponseBody
+	public Map<String, Object> selectRsltRptSbmsnList(BizRptVo bizRptVo) throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+
+		List<BizRptVo> result = null;
+
+//		result = bizRptService.selectRsltRptSbmsnList(bizRptVo);
+
+		if (result.size() > 0) {
+			resultMap.put("totalCount", (result.get(0).getTotalCount()));
+		} else {
+			resultMap.put("totalCount", 0);
+		}
+		resultMap.put("list", result);
+
+		return resultMap;
+	}
+
+	/**
+	 * 결과보고제출 목록 엑셀다운로드
+	 *
+	 * @Title : aplyExcelDownList
+	 * @Description : 결과보고제출 목록 엑셀다운로드
+	 * @param request
+	 * @param response
+	 * @param asgsysSrngVo
+	 * @return void
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/selectRsltRptSbmsnListExcel.do")
+	public void selectRsltRptSbmsnListExcel(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo)
+			throws Exception {
+		// bizRptService.selectRsltRptSbmsnListExcel(bizRptVo, response, request);
+	}
+
+	/**
+	 * 결과보고제출 상세이동
+	 *
+	 * @Title : rsltRptMngDetailForm
+	 * @Description : 결과보고제출 상세이동
+	 * @param bizRptVo
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @return String
+	 */
+	@RequestMapping(value = "/mng/bizAply/bizRpt/rsltRptSbmsnDetailForm.html")
+
+	public String rsltRptSbmsnDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
+
+		BizRptVo rsltRptSbmsnInfo = new BizRptVo();
+		// 결과보고제출 상세 조회
+		// rsltRptSbmsnInfo = bizRptService.selectRsltRptSbmsnDetail(bizRptVo);
+
+		// 보고운영목록 조회
+		model.addAttribute("reportOperList", bizRptService.selectReportOperList(bizRptVo));
+
+		if (!StringUtil.nvl(rsltRptSbmsnInfo.getAtchFilegrpid()).equals("")
+				&& !StringUtil.nvl(rsltRptSbmsnInfo.getAtchFilegrpid()).equals(0)) {
+			FileVo fileVo = new FileVo();
+			fileVo.setFilegrpid(rsltRptSbmsnInfo.getAtchFilegrpid());
+			model.addAttribute("fileList", fileService.getFileList(fileVo)); // 증빙서류
+		} else {
+			model.addAttribute("fileList", Collections.emptyList());
+		}
+
+		model.addAttribute("rsltRptSbmsnInfo", rsltRptSbmsnInfo);
+
+		return "mng/bizAply/bizRpt/rsltRptSbmsnDetail";
+	}
+
+	/*******************************************************************************
+	 * 컨설팅 관리
+	 ******************************************************************************/
+
+    /**
+    * 컨설팅관리 메뉴 이동
+    *
+    * @Title : cnsltngMngList
+    * @Description : 컨설팅관리 메뉴 이동
+    * @param request
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngMngList.html")
+    public String cnsltngMngList(HttpServletRequest request) throws Exception {
+        return "mng/bizAply/bizRpt/cnsltngMngList";
+    }
+
+	/**
+	* 컨설팅관리 목록조회
+	*
+	* @Title : selectCnsltngMngList
+	* @Description : 컨설팅관리 목록조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/mng/bizAply/bizRpt/selectCnsltngMngList.do")
+	@ResponseBody
+	public Map<String, Object> selectCnsltngMngList(BizRptVo bizRptVo) throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+
+		List<BizRptVo> result = null;
+
+		result = bizRptService.selectCnsltngMngList(bizRptVo);
+
+		if (result.size() > 0) {
+			resultMap.put("totalCount", (result.get(0).getTotalCount()));
+		} else {
+			resultMap.put("totalCount", 0);
+		}
+		resultMap.put("list", result);
+
+		return resultMap;
+	}
+
+	/**
+    * 컨설팅관리 목록 엑셀다운로드
+    *
+    * @Title : selectCnsltngMngExcelList
+    * @Description : 컨설팅관리 목록 엑셀다운로드
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @return void
+    * @throws Exception
+    */
+    @RequestMapping(value = "/mng/bizAply/bizRpt/selectCnsltngMngExcelList.do")
+    public void selectCnsltngMngExcelList(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo) throws Exception {
+    	//bizRptService.selectCnsltngMngExcelList(bizRptVo, response, request);
+    }
+
+    /**
+     * 컨설팅관리 상세이동
+     *
+     * @Title : cnsltngMngDetailForm
+     * @Description : 컨설팅관리 상세이동
+     * @param request
+     * @return
+     * @throws Exception
+     * @return String
+     */
+     @RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngMngDetailForm.html")
+     public String cnsltngMngDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
+    	 BizRptVo cnsltngDtlInfo = new BizRptVo();
+    	 cnsltngDtlInfo = bizRptService.selectCnsltngMng(bizRptVo);
+
+    	 if (!StringUtil.nvl(cnsltngDtlInfo.getAtchFilegrpid()).equals("") && !StringUtil.nvl(cnsltngDtlInfo.getAtchFilegrpid()).equals(0)) {
+             FileVo fileVo = new FileVo();
+             fileVo.setFilegrpid(cnsltngDtlInfo.getAtchFilegrpid());
+             model.addAttribute("fileList", fileService.getFileList(fileVo));    // 증빙서류
+         } else {
+         	model.addAttribute("fileList", Collections.emptyList());
+         }
+
+    	 model.addAttribute("cnsltngDtlInfo", bizRptService.selectCnsltngMng(bizRptVo));
+
+         return "mng/bizAply/bizRpt/cnsltngMngDetail";
+     }
+
+  	/**
+  	* 컨설팅관리 저장
+  	*
+  	* @Title : insertCnsltngMng
+  	* @Description : 컨설팅관리 저장
+  	* @param bizRptVo
+  	* @param model
+  	* @param user
+  	* @return
+  	* @throws Exception
+  	* @return Map<String,Object>
+  	*/
+  	@RequestMapping(value = "/mng/bizAply/bizRpt/insertCnsltngMng.do")
+    @ResponseBody
+ 	public Map<String, Object> insertCnsltngMng(BizRptVo bizRptVo, Model model,@UserInfo UserVo user) throws Exception {
+ 		Map<String, Object> resultMap = new HashMap<>();
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " + bizRptVo.toString());
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
+
+ 		int ret = 0;
+ 		bizRptVo.setUser(user);
+ 		ret = bizRptService.insertCnsltngMng(bizRptVo);
+
+ 		if (ret > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "컨설팅관리 저장에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "컨설팅관리 저장에 실패했습니다.");
+        }
+
+ 		return resultMap;
+ 	}
 
 }

@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.member.service;
 
 import java.security.MessageDigest;
+import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.member.model.MemberDao;
+import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -102,28 +104,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 	   
 	    return retVal;
     }
-   
-    /**
-    *
-    * 회원 정보 수정
-    *
-    * @Title : updateMember
-    * @Description : 회원 정보 수정 
-    * @param MemberVo MemberVo객체
-    * @return int 
-    * @throws Exception 예외
-    */
-    @Transactional
-    public int updateMember(MemberVo memberVo) throws Exception{
-	   
-	    String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
-	   
-	    memberVo.setPswd(password);
-	   
-	    int resInt = memberDao.updateMember(memberVo);
- 	    return resInt;
-    }
-      
+
     /**
     * ci에 해당하는 userid 조회.
     *
@@ -149,4 +130,32 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     public String selectUseridByParntsCIandName(MemberVo memberVo) throws Exception {
         return memberDao.selectUseridByParntsCIandName(memberVo);
     }
+    
+    /**
+    * 기관풀 검색 리스트 조회
+    *
+    * @Title       : selectInstSearchList 
+    * @Description : 기관풀 검색 리스트 조회
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return List<MemberInstSearchVo> 기관검색목록
+    * @throws Exception 예외
+    */
+    public List<MemberInstSearchVo> selectInstSearchList(MemberInstSearchVo memberInstSearchVo) throws Exception {
+        return memberDao.selectInstSearchList(memberInstSearchVo);
+    }
+    
+    /**
+    * 기관 정보 조회(기관풀)
+    *
+    * @Title       : selectInstPoolInfo 
+    * @Description : 기관 정보 조회(기관풀)
+    * @param memberInstSearchVo MemberInstSearchVo객체
+    * @return MemberInstSearchVo 기관정보
+    * @throws Exception 예외
+    */
+    public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception {
+        return memberDao.selectInstPoolInfo(memberInstSearchVo);
+    }
+    
+    
 }
