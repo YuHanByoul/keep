@@ -1,0 +1,71 @@
+<div class="col-12">
+	<div class="card">
+	    <div class="card-header p-b-0">
+	        <ul class="nav nav-tabs tabs" role="tablist">
+	            <th:block sec:authorize-url="/mng/score/detailScoreCardForm.html">
+		            <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>심사양식정보</strong></a></li>
+		        </th:block>
+		        <th:block sec:authorize-url="/mng/score/selectQuestionListForm.html">
+		            <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_02" role="tab" id="tabCon2Link"><strong>문항정보</strong></a></li>		        
+		        </th:block>
+	        </ul>
+	    </div>
+	    
+	    <div id="myTabContent" class="tab-content tabs p-t-20"></div>
+	</div>
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var formid = /*[[${formid}]]*/null;
+    var totScr = /*[[${totScr}]]*/null;
+    /*]]>*/
+
+    $('.nav-tabs a').on('show.bs.tab', function(event) {
+    	//tab set
+        var tabId = event.currentTarget.attributes.id.value;
+        selectTab(tabId);
+    });
+
+    function selectTab(tabId) {
+        if(tabId == "tabCon1Link") {
+            loadTabContent("/mng/score/detailScoreCardForm.html?formid=" + formid);
+        } else if(tabId == "tabCon2Link") {
+            loadTabContent("/mng/score/selectQuestionListForm.html?formid=" + formid + '&totScr=' + totScr);
+        }
+        $("#" + tabId).parent().addClass("active");
+    }
+
+    function loadTabContent(uri){
+        $.ajax({
+            cache   : false
+          , url     : uri
+          , type    : 'GET'
+          , async   : 'false'
+          , dataType: 'html'
+          , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
+              $('#myTabContent').html(result);
+              scrollIntoView('contentPanel');
+          }
+        });
+        showContent();
+    }
+
+    function initTab() {
+        var tabFlag = false;
+
+        if(tabFlag == false) {
+            selectTab("tabCon1Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon2Link");
+            tabFlag = true;
+        }
+    }
+
+    initTab();
+
+</script>

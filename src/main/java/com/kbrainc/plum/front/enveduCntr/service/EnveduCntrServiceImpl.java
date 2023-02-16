@@ -42,4 +42,17 @@ public class EnveduCntrServiceImpl extends PlumAbstractServiceImpl implements En
     public List<EnveduCntrVO> selectEnveduCntrList(EnveduCntrVO enveduCntrVO) {
         return enveduCntrDao.selectEnveduCntrList(enveduCntrVO);
     }
+    
+    /**
+     * 민간 환경교육단체 목록 조회
+     * Title : selectPrivateEnvEduCntrList
+     * Description : 민간 환경교육단체 목록 조회
+     *
+     * @param 
+     * @return list
+     */
+    @Override
+    public List<EnveduCntrVO> selectPrvtEnvEduCntrList() {
+        return enveduCntrDao.selectPrvtEnvEduCntrList();
+    }
 }

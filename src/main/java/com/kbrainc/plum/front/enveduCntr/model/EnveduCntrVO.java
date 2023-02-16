@@ -49,4 +49,17 @@ public class EnveduCntrVO extends ParentRequestVo {
     private Integer rgtrid;
     /** 기관 개수 */
     private Integer cntrCnt;
+    
+    /** 기관 전화번호 */
+    private String telno;
+    /** 기관 주소 */
+    private String addr;
+    /** 기관 주소상세 */
+    private String addrDtl;
+    /** 기관 로고파일아이디 */
+    private String logoFileid;
+    /** 기관 파일식별키 */
+    private String fileIdntfcKey;
+    
+    
 }

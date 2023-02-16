@@ -1,0 +1,54 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title" th:text="${prvtEnveduCntrList}"></h3>                    
+        </div>
+    </div>
+    <th:block th:if="${list.size() > 0}">
+        <div class="edu-list type1">
+            <ul>
+                <li th:each="item : ${list}">
+                    <dl>
+                        <dt>
+                            <a th:if="${#strings.length(item.hmpg) > 8}" th:href="${item.hmpg}" th:text="|${item.instNm}|" class="links" title="새창" target="_blank"></a>
+                            <span th:if="${#strings.length(item.hmpg) < 9}" th:text="|${item.instNm}|"></span>
+                        </dt>
+                        <dd class="logo"><img th:src="'/downloadFileByFileid.do?fileid='+${item.logoFileid}+'&file_idntfc_key='+${item.fileIdntfcKey}" th:alt="${item.instNm}"></dd>
+                        <dd>
+                            <ul class="dot-list">
+                                <li class="d-flex">
+                                    <span class="tit">TEL</span>
+                                    <span class="dc" th:text="${item.telno}"></span>
+                                </li>
+                                <li class="d-flex">
+                                    <span class="tit">주소</span>
+                                    <span class="dc" th:text="${item.addr}"></span>
+                                </li>
+                            </ul>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </th:block>
+    <th:block th:if="${list.size() == 0}">
+        <div class="nodata bg3">
+            <p><span class="icon icon-notice bg-black9"></span>등록된 민간환경교육 단체가 없습니다.</p>
+        </div>
+    </th:block>
+    <div class="btn-wrap">
+        <div class="center">
+            <th:block th:if="${session.user}"> 
+                <button type="button" class="btn-medium btn-blue" th:onclick="alert('이미 회원가입 되어 신청이 불가합니다.');">등록신청</button>
+            </th:block>
+            <th:block th:unless="${session.user}"> 
+                <button type="button" class="btn-medium btn-blue" th:onclick="moveLoginPage();">등록신청</button>
+            </th:block>
+        </div>
+    </div>
+</div>
+</html>
