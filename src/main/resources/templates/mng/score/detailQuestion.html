@@ -1,0 +1,203 @@
+<form id="insertForm">
+    <input type="hidden" name="formid" id="formid" th:value="${formid}" />
+    <!-- [탭] 문항정보 -->
+    <div class="tab-pane" id="tab_02" role="tabpanel">
+        <div class="card-block-small p-t-0">
+            <div class="row align-items-center mb-1">
+                <div class="col">
+                    <strong class="d-inline-block">문항수 : <span><th:block th:text="${#lists.size(list)}"></span>개,</strong> 
+                    <strong class="d-inline-block">배점 : <span class="text-c-pink"><th:block th:text="${totalAltm}"></span>/<span class="text-c-pink"><th:block th:text="${totScr}"></span></strong>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-inverse btn-sm" onclick="addRow();">문항추가</button>
+                </div>
+            </div>
+            <!-- 임시그리드 -->
+            <div class="col-12 table-responsive">
+                <table id="qTable" class="table table-framed">
+                    <thead>
+                    <tr>
+                        <th class="text-center v-middle" style="width: 60px;">-</th>
+                        <th class="text-center v-middle">문항구분</th>
+                        <th class="text-center v-middle">문항</th>
+                        <th class="text-center v-middle" style="width: 100px;">배점</th>
+                        <th class="text-center v-middle" style="width: 100px;">순서</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.size(list) > 0}" th:each="list, i: ${list}">
+                        <td class="v-middle text-center"><button class="input-group-text btn btn-disabled btn-sm" aria-label="delete" onclick="removeRow(this); return false;">X</button></td>
+                        <td class="v-middle text-center">
+<!--                             <input type="text" class="form-control form-control-sm" name="qitemSeCdArr" id="qitemSeCdArr" th:value="${list.qitemSeCd}"> 221 -->
+                            <span kattr:select_code="qitemSeCdArr" th:attr="selectedCd=${list.qitemSeCd}" grpCd="221" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true">
+                        </td>
+                        <td class="v-middle text-center">
+                            <input type="text" class="form-control form-control-sm" name="qitemArr" id="qitemArr" th:value="${list.qitem}">
+                        </td>
+                        <td class="v-middle text-center">
+                            <input type="text" class="form-control form-control-sm" name="altmArr" id="altmArr" th:value="${list.altm}">
+                        </td>
+                        <td class="v-middle text-center">
+                            <input type="hidden" name="ordrArr" id="ordrArr" th:value="${list.ordr}">
+                            <button class="input-group-text btn btn-primary btn-sm" onclick="rowUp(this); return false;"><i class="fa fa-angle-up me-0"></i></button>
+                            <button class="input-group-text btn btn-primary btn-sm" onclick="rowDown(this); return false;"><i class="fa fa-angle-down me-0"></i></button>
+                        </td>
+                    </tr>
+                    <tr th:unless="${#lists.size(list) > 0}">
+                        <td class="v-middle text-center"><button class="input-group-text btn btn-disabled btn-sm" aria-label="delete" onclick="removeRow(this); return false;">X</button></td>
+                        <td class="v-middle text-center">
+                            <span kattr:select_code="qitemSeCdArr" grpCd="221" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true">
+                        </td>
+                        <td class="v-middle text-center">
+                            <input type="text" class="form-control form-control-sm" name="qitemArr" id="qitemArr">
+                        </td>
+                        <td class="v-middle text-center">
+                            <input type="text" class="form-control form-control-sm" name="altmArr" id="altmArr">
+                        </td>
+                        <td class="v-middle text-center">
+                            <input type="hidden" class="form-control form-control-sm" name="ordrArr" id="ordrArr" value="1">
+                            <button class="input-group-text btn btn-primary btn-sm" onclick="rowUp(this); return false;"><i class="fa fa-angle-up me-0"></i></button>
+                            <button class="input-group-text btn btn-primary btn-sm" onclick="rowDown(this); return false;"><i class="fa fa-angle-down me-0"></i></button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- //임시그리드 -->
+        </div>
+
+        <div class="card-block-small">
+            <button class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()">취소</button>
+            <button class="btn btn-primary" onclick="fn_save(); return false;">저장</button>
+        </div>
+    </div>
+    <!-- // [탭] -->
+</form>
+
+<script th:inline="javascript">
+    var saveUrl = "/mng/score/saveQuestion.do";
+    
+    $(document).ready(function() {
+    });
+
+    var moveRowUp = function(element) {
+        if( element.prev().html() != null  && element.prev().attr("id") != "header"){
+            element.insertBefore(element.prev());
+            changNum();
+        } else {
+            alert("첫번째 행은 위로 이동할수 없습니다.");
+            return;
+        }
+    };
+    
+    var moveRowDown = function(element) {
+        if( element.next().html() != null ){
+            element.insertAfter(element.next());
+            changNum();
+        }  else {
+            alert("마지막 행은 아래로 이동할수 없습니다.");
+            return;
+        }
+    };
+    
+    var changNum = function() {
+        var num = 0;
+        $('input[name=ordrArr]').each(function(){
+            num++;
+            $(this).val(num);
+        });
+    };
+    
+    function rowUp(obj) {
+        var clickRow = $(obj).parent().parent();
+        moveRowUp(clickRow);
+    }
+    
+    function rowDown(obj) {
+    	var clickRow = $(obj).parent().parent();
+    	moveRowDown(clickRow);
+    }
+    
+    var validator= $("#insertForm").validate({
+//         rules    : { 
+//         	formNm : { required: true, maxlength: 500 } 
+//         	, totScr : { required: true } 
+//         	, formExpln : { required: true } 
+//         }
+//         , messages : { 
+//         	formNm : { required:"심사양식명을 입력해 주십시오." , maxlength: "심사양식명은 100자를 넘을 수 없습니다." } 
+//         	, totScr : { required:"점수를 입력해 주십시오." } 
+//         	, formExpln : { required:"심사양식 설명을 입력해 주십시오." , maxlength: "심사양식 설명은 200자를 넘을 수 없습니다."	} 
+//         }
+    });
+    
+    // 테이블 로우 추가
+    function addRow(obj) {
+        var trObj = $("#qTable").find("tr:last");
+        var newrow = trObj.clone();
+        newrow.find("td > input").val("");
+        newrow.insertAfter(trObj);
+        $('input[name=ordrArr]').each(function(i){
+            $(this).val(i+1);
+        });
+    }
+
+    // 테이블 로우 삭제
+    function removeRow(obj) {
+    	if ($(obj).parent().parent().index() == 0) {
+    		alert("첫번째 행은 삭제할수 없습니다.");
+    		return;
+    	}
+        $(obj).parent().parent().remove();
+        $('input[name=ordrArr]').each(function(i){
+            $(this).val(i+1);
+        });
+    }
+    
+    // 저장
+    function fn_save(){
+        if(!($("#insertForm").valid())) return;
+        
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        var data =  $("#insertForm").serialize();        
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : saveUrl,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        if (Number(formid) == 0) {
+                            gridHelper1.resetListContent();                         
+                        } else {
+                            gridHelper1.resetPageContent();                         
+                        }
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+    //천단위 콤마
+    function addComma(value){
+        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return value; 
+    }
+    
+    //콤마 제거
+    function removeComma(value){
+        if (value == "" || value == null) {
+            return 0;               
+        }
+        value = value.replace(/[^\d]+/g, "");
+        return value; 
+    }
+</script>
