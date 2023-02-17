@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+
 /**
  * 
  * 교부관리 DAO
@@ -44,137 +46,148 @@ public interface DelvryDao {
     * @throws Exception 예외
     */
     public PcntstVo selectPcntstInfo(PcntstVo pcntstVo) throws Exception;
-//    
-//    /**
-//     * 교구 목록 조회
-//     *
-//     * @Title : selectTchaidList
-//     * @Description : 교구 목록 조회
-//     * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
-//     * @return List<JntpurchsTchaidVo> 교구 목록
-//     * @throws Exception 예외
-//     */
-//    public List<JntpurchsTchaidVo> selectTchaidList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 상세 정보 조회
-//     *
-//     * @Title : selectJntpurchsInfo
-//     * @Description : 공동구매모집 상세 정보 조회
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return JntpurchsVo 공동구매모집 상세 정보
-//     * @throws Exception 예외
-//     */
-//    public JntpurchsVo selectJntpurchsInfo(JntpurchsVo jntpurchsVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 상품 목록 조회
-//     *
-//     * @Title : selectGoodsList
-//     * @Description : 공동구매모집 상품 목록 조회
-//     * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
-//     * @return List<JntpurchsTchaidVo> 공동구매모집 상품 목록
-//     * @throws Exception 예외
-//     */
-//    public List<JntpurchsTchaidVo> selectGoodsList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 수량별 가격 목록 조회
-//     *
-//     * @Title : selectAmtList
-//     * @Description : 공동구매모집 수량별 가격 목록 조회
-//     * @param jntpurchsAmtVo JntpurchsAmtVo 객체
-//     * @return List<JntpurchsTchaJntpurchsAmtVoidVo> 공동구매모집 수량별 가격 목록
-//     * @throws Exception 예외
-//     */
-//    public List<JntpurchsAmtVo> selectAmtList(JntpurchsAmtVo jntpurchsAmtVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 신청여부 조회
-//     *
-//     * @Title : isExistOrder
-//     * @Description : 공동구매모집 신청여부 조회
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return JntpurchsVo 공동구매모집 상세 정보
-//     * @throws Exception 예외
-//     */
-//    public JntpurchsVo isExistOrder(JntpurchsVo jntpurchsVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 정보 업데이트
-//     *
-//     * @Title : updateJntpurchs
-//     * @Description : 공동구매모집 정보 업데이트
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    public int updateJntpurchs(JntpurchsVo jntpurchsVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 정보 삭제
-//     *
-//     * @Title : deleteJntpurchs
-//     * @Description : 공동구매모집 정보 삭제
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return int delete 로우수
-//     * @throws Exception 예외
-//     */
-//    public int deleteJntpurchs(JntpurchsVo jntpurchsVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 상품 삭제
-//     *
-//     * @Title : deleteGoods
-//     * @Description : 공동구매모집 상품 삭제
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return int delete 로우수
-//     * @throws Exception 예외
-//     */
-//    public int deleteGoods(JntpurchsVo jntpurchsVo) throws Exception;
-//    
-//    /**
-//     * 공동구매모집 수량별 가격 삭제
-//     *
-//     * @Title : deleteAmt
-//     * @Description : 공동구매모집 수량별 가격 삭제
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return int delete 로우수
-//     * @throws Exception 예외
-//     */
-//    public int deleteAmt(JntpurchsVo jntpurchsVo) throws Exception;
-//    
-//    /**
-//     * 공동구매신청 목록 조회
-//     *
-//     * @Title : selectJntpurchsOrderList
-//     * @Description : 공동구매신청 목록 조회
-//     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
-//     * @return List<JntpurchsOrderVo> 공동구매신청 목록
-//     * @throws Exception 예외
-//     */
-//    public List<JntpurchsOrderVo> selectJntpurchsOrderList(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
-//    
-//    /**
-//     * 공동구매신청 상세 정보 조회
-//     *
-//     * @Title : selectJntpurchsOrderInfo
-//     * @Description : 공동구매신청 상세 정보 조회
-//     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
-//     * @return JntpurchsOrderVo 공동구매신청 상세 정보
-//     * @throws Exception 예외
-//     */
-//    public JntpurchsOrderVo selectJntpurchsOrderInfo(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
-//    
-//    /**
-//     * 공동구매신청 정보 업데이트
-//     *
-//     * @Title : updateJntpurchsOrder
-//     * @Description : 공동구매신청 정보 업데이트
-//     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    public int updateJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 교부 신청 목록 조회
+    *
+    * @Title : selectDelvryAplyList
+    * @Description : 교부 신청 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<DelvryAplyVo> 교부 신청 목록
+    * @throws Exception 예외
+    */
+    public List<DelvryAplyVo> selectDelvryAplyList(DelvryAplyVo delvryAplyVo) throws Exception;
+    
+    /**
+    * 교부 상태 업데이트
+    *
+    * @Title : updateDelvryStts
+    * @Description : 교부 상태 업데이트
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int updateDelvryStts(DelvryAplyVo delvryAplyVo) throws Exception;
+    
+    /**
+    * 교부 신청 정보 조회
+    *
+    * @Title : selectDelvryAplyInfo
+    * @Description : 교부 신청 정보 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return DelvryAplyVo 교부 신청 정보
+    * @throws Exception 예외
+    */
+    public DelvryAplyVo selectDelvryAplyInfo(DelvryAplyVo delvryAplyVo) throws Exception;
+     
+    /**
+    * 교부 신청 업데이트
+    *
+    * @Title : updateDelvryAply
+    * @Description : 교부 신청 업데이트
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int updateDelvryAply(DelvryAplyVo delvryAplyVo) throws Exception;
+     
+    /**
+    * 교부 신청 산출내역 목록 조회
+    *
+    * @Title : selectDelvryAplyComputList
+    * @Description : 교부 신청 산출내역 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<DelvryAplyComputVo> 교부 신청 산출내역 목록
+    * @throws Exception 예외
+    */
+    public List<DelvryAplyComputVo> selectDelvryAplyComputList(DelvryAplyVo delvryAplyVo) throws Exception;
+      
+    /**
+    * 교부 신청 산출내역 등록
+    *
+    * @Title : insertDelvryAplyComput
+    * @Description : 교부 신청 산출내역 등록
+    * @param delvryAplyComptVo DelvryAplyComputVo 객체
+    * @return int insert 로우수
+    * @throws Exception 예외
+    */
+    public int insertDelvryAplyComput(DelvryAplyComputVo delvryAplyComptVo) throws Exception;
+       
+    /**
+    * 교부 신청 산출내역 업데이트
+    *
+    * @Title : updateDelvryAplyComput
+    * @Description : 교부 신청 산출내역 업데이트
+    * @param delvryAplyComptVo DelvryAplyComputVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int updateDelvryAplyComput(DelvryAplyComputVo delvryAplyComptVo) throws Exception;
+    
+    /**
+    * 교부 신청 산출내역 삭제
+    *
+    * @Title : deleteDelvryAplyComput
+    * @Description : 교부 신청 산출내역 삭제
+    * @param delvryAplyComptVo DelvryAplyComputVo 객체
+    * @return int delete 로우수
+    * @throws Exception 예외
+    */
+    public int deleteDelvryAplyComput(DelvryAplyComputVo delvryAplyComptVo) throws Exception;
+        
+    /**
+    * 교부 신청 보완요청 목록 조회
+    *
+    * @Title : selectDelvryAplySplmntList
+    * @Description : 교부 신청 보완요청 목록 조회
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return List<DelvryAplySplmntVo> 교부 신청 보완요청 목록
+    * @throws Exception 예외
+    */
+    public List<DelvryAplySplmntVo> selectDelvryAplySplmntList(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+    
+    /**
+    * 교부 신청 보완요청 정보 조회
+    *
+    * @Title : selectDelvryAplySplmntInfo
+    * @Description : 교부 신청 보완요청 정보 조회
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return DelvryAplySplmntVo 교부 신청 보완요청 정보
+    * @throws Exception 예외
+    */
+    public DelvryAplySplmntVo selectDelvryAplySplmntInfo(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+    
+    /**
+    * 교부 신청 보완요청 등록
+    *
+    * @Title : insertDelvryAplyComput
+    * @Description : 교부 신청 보완요청 등록
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return int insert 로우수
+    * @throws Exception 예외
+    */
+    public int insertDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+       
+    /**
+    * 교부 신청 보완요청 업데이트
+    *
+    * @Title : updateDelvryAplyComput
+    * @Description : 교부 신청 보완요청 업데이트
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int updateDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+    
+    /**
+    * 교부 신청 파일 목록 조회
+    *
+    * @Title : selectDelvryAplyFileList
+    * @Description : 교부 신청 파일 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<FileVo> 교부 신청 파일 목록
+    * @throws Exception 예외
+    */
+    public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception;
     
 }

@@ -73,6 +73,8 @@
             listUrl: '/front/exprtPool/selectExprtList.do',
             formUrl: '/front/exprtPool/lctrDmndForm.html',
             detailUrl: '/front/exprtPool/lctrDmndDetail.html',
+            insertItrstExprtUrl: '/front/exprtPool/insertItrstExprt.do',
+            deleteItrstExprtUrl: '/front/exprtPool/deleteItrstExprt.do',
             searchVo:/*[[${searchVo}]]*/null,
             user: /*[[${user}]]*/null,
 
@@ -110,12 +112,12 @@
                 } else {
                     html += `<div class="card-list card-list-n2"> <ul>`;
                     list.forEach(function (item) {
-                        /*let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == inqryMain.userid));*/
                         let exprtField = [];
                         if (item.fldLctrYn == 'Y') exprtField.push('강의');
                         if (item.fldPlanngYn == 'Y') exprtField.push('기획');
                         if (item.fldCnsltngYn == 'Y') exprtField.push('컨설팅');
-                        if (item.fldEtcYn == 'Y') exprtField.push('기타');
+                        if (item.fldEtcYn == 'Y') exprtField.push('기타(' + item.fldEtcCn + ')');
+
                         html += `<li>
                                     <div class="resume-wrap">
                                         <div class="resume-top">
@@ -125,7 +127,7 @@
                                             </div>
                                             <div class="resume-favorite">
                                                 <label class="inp inp-star">
-                                                <input type="checkbox" title="관심인력 등록" ${item.isItrstExprt ? 'checked' : ''} data-exprtid=${item.userid} onclick="lctrDmndList.changeItrstExprt(this)">
+                                                <input type="checkbox" title="관심인력 등록" ${item.itrstYn =='Y' ? 'checked' : ''} data-exprtid=${item.userid} onclick='lctrDmndList.changeItrstExprt(event,this)'>
                                                 </label>
                                             </div>
                                         </div>
@@ -136,18 +138,17 @@
                                                         <div class="list">
                                                             <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
                                                             <dd>${exprtField.join(', ')}
-
                                                                 ${isNull(item.exprtTrgtCdNm) ? '' : '/' + item.exprtTrgtCdNm}
                                                                 ${isNull(item.exprtSbjctCdNm) ? '' : '/' + item.exprtSbjctCdNm}
                                                             </dd>
                                                         </div>
                                                         <div class="list">
                                                             <dt><span class="icon icon-career bg-blue"></span>경력</dt>
-                                                            <dd>총 ${item.envEduCareerYy}년 ${item.envEduCareerMm}개월</dd>
+                                                            <dd>총 ${item.envEduCareerYy == null ? '0' : item.envEduCareerYy}년 ${item.envEduCareerMm == null ? '0' : item.envEduCareerMm}개월</dd>
                                                         </div>
                                                         <div class="list">
                                                             <dt><span class="icon icon-cert bg-blue"></span>자격</dt>
-                                                            <dd>${item.exprtCrtfctNm}</dd>
+                                                            <dd>${item.qlfcRlsYn == 'Y' ? item.exprtCrtfctNm : '비공개'}</dd>
                                                         </div>
                                                         <div class="list">
                                                             <dt><span class="icon icon-location bg-blue"></span>가능 활동범위</dt>
@@ -158,11 +159,9 @@
                                                 <div class="resume-update">
                                                     <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
                                                     <div class="link">
-                                                        ${item.completeLctrDmnd ?
+                                                        ${item.lctrDmndYn =='Y' ?
                             `<a href="#" class="btn-medium btn-gray">요청 완료</a>` :
-                            `<a href="#" class="btn-medium btn-blue" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>`
-                        }
-
+                            `<a href="#" class="btn-medium btn-blue" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>`}
                                                     </div>
                                                 </div>
                                             </div>
@@ -175,49 +174,61 @@
                 return html;
             },
 
-            changeItrstExprt(tag) {
-
-                let $tag = $(tag);
-                if($tag.is(":checked")) {
-                // 등록
-                    console.log('등록');
-                } else {
-                // 제거
-                    console.log('제거');
+            changeItrstExprt(event, checkbox) {
+                var $checkbox = $(checkbox);
+                event.preventDefault();
+                if (this.user.userid == null) {
+                    alert('로그인 후 관심인력 등록이 가능합니다. ');
+                    return;
                 }
 
-              /*  if(!confirm('관심인력으로 등록하시겠습니까?')) return;
+                let url = this.insertItrstExprtUrl;
 
-                var data = [
-                    {name : "userid" , value : $('#userid').val()}
+                if ($checkbox.is(":checked")) {
+                    if (!confirm('관심인력으로 등록하시겠습니까?')) return;
+                } else {
+                    if (!confirm('관심인력을 삭제하시겠습니까?')) return;
+                    url = this.deleteItrstExprtUrl;
+                }
+
+                let data = [
+                    {name: "userid", value: $checkbox.data('exprtid')}
                 ];
+
                 $.ajax({
-                    method:'post',
-                    dataType:'json',
-                    url: lctrDmndDetail.insertItrstExprtUrl,
+                    method: 'post',
+                    dataType: 'json',
+                    url: url,
                     data: data,
-                    success : function(response) {
+                    success: function (response) {
+                        if (response.success) {
+                            $checkbox.prop('checked', $checkbox.is(':checked') ? false : true)
+                        }
                         alert(response.msg);
                     }
-                })*/
+                })
             },
 
             moveToInsertForm(userid) {
-                // userType : null일수도 있고 어린이인 경우는 'C', 'E' 는 전문가.
-                /*
-                어린이 회원을 제외한 모든 회원이 신청 가능.
-                비회원 클릭 시, “14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다” alert 출력
-                어린이 회원 클릭 시, “14세 미만 어린이 회원은 전문가 요청을 할 수 없습니다”
-                * */
+                if (this.user.userid == null) {
+                    alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');
+                    return;
+                }
+
+                if (this.user.userType != null && this.user.userType == 'C') {
+                    alert('14세 미만 어린이 회원은 전문가 요청을 할 수 없습니다.');
+                    return;
+                }
+
                 var f = document.forms.searchForm;
                 f.userid.value = userid;
                 f.action = this.formUrl;
                 f.submit();
             },
 
-            moveToDetail(userid) {
+            moveToDetail(exprtid) {
                 var f = document.forms.searchForm;
-                f.userid.value = userid;
+                f.userid.value = exprtid;
                 f.action = this.detailUrl;
                 f.submit();
             },
@@ -238,6 +249,6 @@
             $('#exprtActvtScopeCd').val(lctrDmndList.searchVo.exprtActvtScopeCd);
 
             lctrDmndList.selectExprtList();
-        })
+        });
     </script>
 </div>

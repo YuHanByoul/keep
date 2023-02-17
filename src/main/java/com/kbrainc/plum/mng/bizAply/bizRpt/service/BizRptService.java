@@ -216,4 +216,40 @@ public interface BizRptService {
 	*/
 	public int insertCnsltngMng(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 사업포기관리 목록 조회
+	*
+	* @Title : selectBizAbndMngList
+	* @Description : 사업포기관리 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectBizAbndMngList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 사업포기관리 상세 조회
+	*
+	* @Title : selectBizAbndMng
+	* @Description : 사업포기관리 상세 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return Object
+	*/
+	public BizRptVo selectBizAbndMng(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 사업포기 수정
+	*
+	* @Title : updateBizAbnd
+	* @Description : 사업포기 수정
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateBizAbnd(BizRptVo bizRptVo) throws Exception;
+
 }

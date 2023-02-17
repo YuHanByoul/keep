@@ -100,9 +100,9 @@ public class ExprtVo extends ParentRequestVo {
 
     private String exprtField;
 
-    private Integer completeLctrDmnd;
+    private String lctrDmndYn;
 
-    private Integer isItrstExprt;
+    private String itrstYn;
 
     private Integer age;
 

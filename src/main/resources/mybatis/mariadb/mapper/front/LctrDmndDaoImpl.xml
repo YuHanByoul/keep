@@ -70,71 +70,80 @@
 
     <select id="selectExprtList" resultType="com.kbrainc.plum.front.exprtPool.lctrDmnd.model.ExprtVo">
         <include refid="PaginationMapper.header"/>
-        SELECT AA.*
-        FROM
-            (
-                SELECT
-                    A.USERID
-                    , A.EXPRT_TYPE_CD
-                    , A.FLD_LCTR_YN
-                    , A.FLD_PLANNG_YN
-                    , A.FLD_CNSLTNG_YN
-                    , A.FLD_ETC_YN
-                    , A.FLD_ETC_CN
-                    , A.ENV_EDU_CAREER_YY
-                    , A.ENV_EDU_CAREER_MM
-                    , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
-                    , IFNULL((SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID), '') AS EXPRT_ACTVT_SCOPE_CD_NM
-                    , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
-                    , IFNULL((SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID),'') AS EXPRT_CRTFCT_NM
-                    , A.MDFCN_DT
-                    , B.NM
-                    , B.BRDT
-                    , B.GNDR
-                    , A.MOBLPHON_RLS_YN
-                    , A.EML_RLS_YN
-                    , A.QLFC_RLS_YN /* 자격 공개 여부 */
-                    , A.HDOF_RLS_YN /* 재직 공개 여부 */
-                    , A.CAREER_RLS_YN /* 경력 공개 여부 */
-                    , (
-                        SELECT COUNT(1)
-                        FROM TB_ASS_LCTR_DMND
-                        WHERE EXPRTID = A.USERID
-                          AND USERID = #{user.userid}
-                          AND DMND_STTS_CD = '139101'
-                        ORDER BY REG_DT DESC LIMIT 1
-                        ) AS COMPLETE_LCTR_DMND
-                    , (SELECT COUNT(1)
-                       FROM TB_ASS_EXPRT_ITRST
-                       WHERE EXPRTID = A.USERID AND USERID = #{user.userid}
-                       ) AS IS_ITRST_EXPRT
-                    , YEAR(NOW()) - LEFT(B.BRDT,4) + 1 AS AGE
-                FROM TB_ASS_EXPRT A
-                INNER JOIN TB_CMM_USER B
-                ON A.USERID = B.USERID
-                WHERE 1 = 1
-                    <if test="exprtTypeCd != null and exprtTypeCd != ''">
-                        AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
-                    </if>
+            SELECT AA.*
+            FROM
+                (
+                    SELECT
+                        A.USERID
+                        , A.EXPRT_TYPE_CD
+                        , A.FLD_LCTR_YN
+                        , A.FLD_PLANNG_YN
+                        , A.FLD_CNSLTNG_YN
+                        , A.FLD_ETC_YN
+                        , A.FLD_ETC_CN
+                        , A.ENV_EDU_CAREER_YY
+                        , A.ENV_EDU_CAREER_MM
+                        , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
+                        , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
+                        , IFNULL((SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID), '') AS EXPRT_ACTVT_SCOPE_CD_NM
+                        , IFNULL((SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID),'') AS EXPRT_CRTFCT_NM
+                        , A.MDFCN_DT
+                        , B.NM
+                        , B.BRDT
+                        , B.GNDR
+                        , A.MOBLPHON_RLS_YN
+                        , A.EML_RLS_YN
+                        , A.QLFC_RLS_YN /* 자격 공개 여부 */
+                        , A.HDOF_RLS_YN /* 재직 공개 여부 */
+                        , A.CAREER_RLS_YN /* 경력 공개 여부 */
+                        , (
+                            CASE WHEN (
+                                SELECT COUNT(1)
+                                FROM TB_ASS_LCTR_DMND
+                                WHERE EXPRTID = A.USERID
+                                AND USERID = #{user.userid}
+                                AND (DMND_STTS_CD = '139101')
+                                ORDER BY REG_DT DESC LIMIT 1
+                                ) <![CDATA[>]]> 0 THEN 'Y'
+                            ELSE 'N'
+                            END
+                            ) AS LCTR_DMND_YN /* 이미 섭외 요청 했는지 */
+                        , (
+                            CASE WHEN
+                                (SELECT COUNT(1)
+                                 FROM TB_ASS_EXPRT_ITRST
+                                 WHERE EXPRTID = A.USERID AND USERID = #{user.userid}
+                                 ) <![CDATA[>]]> 0 THEN 'Y'
+                            ELSE 'N'
+                            END
+                            ) AS ITRST_YN
+                        , YEAR(NOW()) - LEFT(B.BRDT,4) + 1 AS AGE
+                    FROM TB_ASS_EXPRT A
+                    INNER JOIN TB_CMM_USER B
+                    ON A.USERID = B.USERID
+                    WHERE 1 = 1
+                        <if test="exprtTypeCd != null and exprtTypeCd != ''">
+                            AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
+                        </if>
 
-                    <if test="exprtField != null and exprtField != ''">
-                        <choose>
-                            <when test='exprtField == "1"'>
-                                AND A.FLD_LCTR_YN = 'Y'
-                            </when>
-                            <when test='exprtField == "2"'>
-                                AND A.FLD_PLANNG_YN = 'Y'
-                            </when>
-                            <when test='exprtField == "3"'>
-                                AND A.FLD_CNSLTNG_YN = 'Y'
-                            </when>
-                            <when test='exprtField == "4"'>
-                                AND A.FLD_ETC_YN = 'Y'
-                            </when>
-                        </choose>
-                    </if>
-                    AND A.STTS_CD = '134103' /* 승인 상태의 전문가만 조회 */
-            ) AA
+                        <if test="exprtField != null and exprtField != ''">
+                            <choose>
+                                <when test='exprtField == "1"'>
+                                    AND A.FLD_LCTR_YN = 'Y'
+                                </when>
+                                <when test='exprtField == "2"'>
+                                    AND A.FLD_PLANNG_YN = 'Y'
+                                </when>
+                                <when test='exprtField == "3"'>
+                                    AND A.FLD_CNSLTNG_YN = 'Y'
+                                </when>
+                                <when test='exprtField == "4"'>
+                                    AND A.FLD_ETC_YN = 'Y'
+                                </when>
+                            </choose>
+                        </if>
+                        AND A.STTS_CD = '134103' /* 승인 상태의 전문가만 조회 */
+                ) AA
             WHERE 1 = 1
 
             <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
@@ -177,6 +186,27 @@
              , B.MOBLPHON
              , B.TELNO
              , B.EML
+             , (
+                CASE WHEN (
+                              SELECT COUNT(1)
+                              FROM TB_ASS_LCTR_DMND
+                              WHERE EXPRTID = A.USERID
+                                AND USERID = #{user.userid}
+                                AND (DMND_STTS_CD = '139101')
+                              ORDER BY REG_DT DESC LIMIT 1
+                          ) <![CDATA[>]]> 0 THEN 'Y'
+                ELSE 'N'
+                END
+                ) AS LCTR_DMND_YN /* 이미 섭외 요청 했는지 */
+             , (
+                CASE WHEN
+                         (SELECT COUNT(1)
+                          FROM TB_ASS_EXPRT_ITRST
+                          WHERE EXPRTID = A.USERID AND USERID = #{user.userid}
+                         ) <![CDATA[>]]> 0 THEN 'Y'
+                ELSE 'N'
+                END
+                ) AS ITRST_YN
         FROM TB_ASS_EXPRT A
         INNER JOIN TB_CMM_USER B
             ON A.USERID = B.USERID

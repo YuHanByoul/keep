@@ -270,10 +270,14 @@
     <div class="btn-wrap">
         <div class="center">
             <button type="button" class="btn-medium btn-gray" onclick="lctrDmndDetail.moveToList()">목록</button>
-            <button type="button" class="btn-medium btn-blue" onclick="lctrDmndDetail.moveToInsertForm()">요청서 작성</button>
+            <th:block th:if="${exprt.lctrDmndYn == 'Y'}">
+                <button type="button" class="btn-medium btn-gray">요청 완료</button>
+            </th:block>
+            <th:block th:unless="${exprt.lctrDmndYn == 'Y'}">
+                <button type="button" class="btn-medium btn-blue" onclick="lctrDmndDetail.moveToInsertForm()">요청서 작성</button>
+            </th:block>
         </div>
     </div>
-
 
     <form name="listForm" id="listForm" method="get">
         <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
@@ -292,6 +296,7 @@
             listUrl: '/front/exprtPool/lctrDmndList.html',
             formUrl: '/front/exprtPool/lctrDmndForm.html',
             insertItrstExprtUrl : '/front/exprtPool/insertItrstExprt.do',
+            user:/*[[${user}]]*/null,
 
             moveToList() {
                 let f = document.forms.listForm;
@@ -300,12 +305,27 @@
             },
 
             moveToInsertForm() {
+                if (this.user.userid == null) {
+                    alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');
+                    return;
+                }
+
+                if (this.user.userType != null && this.user.userType == 'C') {
+                    alert('14세 미만 어린이 회원은 전문가 요청을 할 수 없습니다.');
+                    return;
+                }
+
                 let f = document.forms.listForm;
                 f.action = this.formUrl;
                 f.submit();
             },
 
             insertLtrstExprt() {
+                if (this.user.userid == null) {
+                    alert('로그인 후 관심인력 등록이 가능합니다. ');
+                    return;
+                }
+
                 if(!confirm('관심인력으로 등록하시겠습니까?')) return;
 
                 var data = [
