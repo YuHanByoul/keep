@@ -51,7 +51,7 @@ public class LctrDmndVo {
     private String addrDtl;
 
     @NotEmpty(message="휴대전화를 입력해 주십시오.")
-    @Size(max = 12, message="휴대전화는 12자를 넘을 수 없습니다.")
+    @Size(max = 11, message="휴대전화는 11자를 넘을 수 없습니다.")
     private String moblphon;
 
     @NotEmpty(message="이메일을 입력해 주십시오.")

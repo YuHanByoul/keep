@@ -9,20 +9,13 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.apache.ibatis.type.Alias;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.jasypt.salt.RandomSaltGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -51,24 +44,11 @@ import java.util.stream.Collectors;
 public class LctrDmndController {
     private static final String VIEW_PATH = "/front/exprtPool";
 
-    @Resource(name="front.lctrDmndService")
+    @Resource(name = "front.lctrDmndService")
     private LctrDmndService lctrDmndService;
 
     @Autowired
     private FileServiceImpl fileService;
-
-    @Value("${crypto.key}")
-    private String encryptKey;
-
-    StandardPBEStringEncryptor encryptor;
-
-    @PostConstruct
-    public void init() throws Exception {
-        encryptor = new StandardPBEStringEncryptor();
-        encryptor.setSaltGenerator(new RandomSaltGenerator());
-        encryptor.setPassword(encryptKey);
-        encryptor.setAlgorithm("PBEWithMD5AndDES");
-    }
 
     /**
      * 섭외요청 목록 화면
@@ -80,9 +60,7 @@ public class LctrDmndController {
      * @Description : 섭외요청 목록 화면
      */
     @GetMapping("/lctrDmndList.html")
-    public String lctrDmndList(ExprtVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
-        model.addAttribute("searchVo", searchVo);
-        model.addAttribute("user", user);
+    public String lctrDmndList(@ModelAttribute("searchVo") ExprtVo searchVo, Model model, @UserInfo @ModelAttribute("user") UserVo user) throws Exception {
         return VIEW_PATH + "/lctrDmndList";
     }
 
@@ -96,13 +74,10 @@ public class LctrDmndController {
      * @Description : 섭외요청 상세 화면
      */
     @GetMapping("/lctrDmndDetail.html")
-    public String lctrDmndDetail(ExprtVo searchVo, Model model) throws Exception {
+    public String lctrDmndDetail(@ModelAttribute("searchVo") ExprtVo searchVo, Model model, @UserInfo @ModelAttribute("user") UserVo user) throws Exception {
+        searchVo.setUser(user);
         ExprtVo exprt = lctrDmndService.selectExprt(searchVo);
 
-        String decStr = encryptor.decrypt(exprt.getGndr());
-        exprt.setGndr(decStr);
-
-        model.addAttribute("searchVo",searchVo);
         model.addAttribute("exprt", exprt);
         return VIEW_PATH + "/lctrDmndDetail";
     }
@@ -117,7 +92,7 @@ public class LctrDmndController {
      * @Description : 섭외 요청 등록 화면
      */
     @GetMapping("/lctrDmndForm.html")
-    public String lctrDmndForm(ExprtVo searchVo, Model model) throws Exception {
+    public String lctrDmndForm(@ModelAttribute("searchVo") ExprtVo searchVo, Model model) throws Exception {
 
         Map<String, Object> fileConfiguration = fileService.getConfigurationByFilegrpName("lctrDmnd_file");
         String uploadFileExtsn = ((HashMap<String, String>) fileConfiguration.get("uploadFileExtsn"))
@@ -126,7 +101,6 @@ public class LctrDmndController {
                 .map(fileExtsnKey -> "." + fileExtsnKey.getValue())
                 .collect(Collectors.joining(", "));
 
-        model.addAttribute("searchVo", searchVo);
         model.addAttribute("fileConfiguration", fileConfiguration);
         model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
 
@@ -157,17 +131,12 @@ public class LctrDmndController {
      */
     @GetMapping("/selectExprtList.do")
     @ResponseBody
-    public Map<String,Object> selectExprtList(ExprtVo searchVo, @UserInfo UserVo user) throws Exception{
-
-        Map<String,Object> response = new HashMap<>();
+    public Map<String, Object> selectExprtList(ExprtVo searchVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> response = new HashMap<>();
 
         searchVo.setUser(user);
 
         List<ExprtVo> list = lctrDmndService.selectExprtList(searchVo);
-        for (ExprtVo exprtVo : list) {
-            String decStr = encryptor.decrypt(exprtVo.getGndr());
-            exprtVo.setGndr(decStr);
-        }
 
         if (list.size() > 0) {
             response.put("totalCount", list.get(0).getTotalCount());
@@ -192,8 +161,8 @@ public class LctrDmndController {
      */
     @PostMapping("/insertLctrDmnd.do")
     @ResponseBody
-    public Map<String,Object> insertLctrDmnd(@Valid LctrDmndVo lctrDmndVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
-        Map<String,Object> response = new HashMap<>();
+    public Map<String, Object> insertLctrDmnd(@Valid LctrDmndVo lctrDmndVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> response = new HashMap<>();
         response.put("result", Constant.REST_API_RESULT_FAIL);
 
         if (bindingResult.hasErrors()) {
@@ -207,7 +176,7 @@ public class LctrDmndController {
         lctrDmndVo.setUser(user);
         int retVal = lctrDmndService.insertLctrDmnd(lctrDmndVo);
 
-        if(retVal > 0) {
+        if (retVal > 0) {
             response.put("result", Constant.REST_API_RESULT_SUCCESS);
         }
 
@@ -225,18 +194,20 @@ public class LctrDmndController {
      */
     @PostMapping("/insertItrstExprt.do")
     @ResponseBody
-    public Map<String,Object> insertItrstExprt(ExprtVo exprtVo , @UserInfo UserVo user) throws Exception {
-        Map<String,Object> response = new HashMap<>();
+    public Map<String, Object> insertItrstExprt(ExprtVo exprtVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
         exprtVo.setUser(user);
 
         boolean checkAlreadyRegistedItrstExprt = lctrDmndService.checkAlreadyRegistedItrstExprt(exprtVo);
-        if(checkAlreadyRegistedItrstExprt) {
+        if (checkAlreadyRegistedItrstExprt) {
             response.put("msg", "이미 등록한 관심인력입니다. ");
             return response;
         }
-        
+
         if (lctrDmndService.insertItrstExprt(exprtVo) > 0) {
             response.put("msg", "관심인력으로 등록되었습니다.");
+            response.put("success", true);
         } else
             response.put("msg", "관심인력 등록이 실패하였습니다.");
 
@@ -254,14 +225,16 @@ public class LctrDmndController {
      */
     @PostMapping("/deleteItrstExprt.do")
     @ResponseBody
-    public Map<String,Object> deleteItrstExprt(ExprtVo exprtVo , @UserInfo UserVo user) throws Exception {
-        Map<String,Object> response = new HashMap<>();
+    public Map<String, Object> deleteItrstExprt(ExprtVo exprtVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
         exprtVo.setUser(user);
 
         if (lctrDmndService.deleteItrstExprt(exprtVo) > 0) {
-            response.put("msg", "관심인력으로 등록되었습니다.");
+            response.put("msg", "관심인력을 삭제하였습니다.");
+            response.put("success", true);
         } else
-            response.put("msg", "관심인력 등록이 실패하였습니다.");
+            response.put("msg", "관심인력 삭제가 실패하였습니다.");
 
         return response;
     }

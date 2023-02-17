@@ -3,8 +3,12 @@ package com.kbrainc.plum.front.exprtPool.lctrDmnd.service;
 import com.kbrainc.plum.front.exprtPool.lctrDmnd.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.apache.ibatis.type.Alias;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -30,6 +34,20 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Resource(name = "front.lctrDmndDao")
     private LctrDmndDao lctrDmndDao;
 
+    @Value("${crypto.key}")
+    private String encryptKey;
+
+    StandardPBEStringEncryptor encryptor;
+
+    @PostConstruct
+    public void init() throws Exception {
+        encryptor = new StandardPBEStringEncryptor();
+        encryptor.setSaltGenerator(new RandomSaltGenerator());
+        encryptor.setPassword(encryptKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+    }
+
+
     /**
      * 전문가 목록 조회
      *
@@ -41,7 +59,13 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
      */
     @Override
     public List<ExprtVo> selectExprtList(ExprtVo searchVo) throws Exception {
-        return lctrDmndDao.selectExprtList(searchVo);
+        List<ExprtVo> exprts = lctrDmndDao.selectExprtList(searchVo);
+        for (ExprtVo exprt : exprts) {
+            String decStr = encryptor.decrypt(exprt.getGndr());
+            exprt.setGndr(decStr);
+        }
+
+        return exprts;
     }
 
     /**
@@ -56,6 +80,9 @@ public class LctrDmndServiceImpl extends PlumAbstractServiceImpl implements Lctr
     @Override
     public ExprtVo selectExprt(ExprtVo exprtVo) throws Exception {
         ExprtVo exprt = lctrDmndDao.selectExprt(exprtVo);
+
+        String decStr = encryptor.decrypt(exprt.getGndr());
+        exprt.setGndr(decStr);
 
         if(exprt.getQlfcRlsYn().equals("Y")) {
             List<ExprtCrtfctVo> exprtCrtfctList = lctrDmndDao.selectExprtCrtfctList(exprtVo);
