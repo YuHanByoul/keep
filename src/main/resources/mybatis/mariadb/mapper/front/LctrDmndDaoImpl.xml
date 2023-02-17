@@ -187,6 +187,18 @@
              , B.TELNO
              , B.EML
              , (
+                CASE WHEN (
+                              SELECT COUNT(1)
+                              FROM TB_ASS_LCTR_DMND
+                              WHERE EXPRTID = A.USERID
+                                AND USERID = #{user.userid}
+                                AND (DMND_STTS_CD = '139101')
+                              ORDER BY REG_DT DESC LIMIT 1
+                          ) <![CDATA[>]]> 0 THEN 'Y'
+                ELSE 'N'
+                END
+                ) AS LCTR_DMND_YN /* 이미 섭외 요청 했는지 */
+             , (
                 CASE WHEN
                          (SELECT COUNT(1)
                           FROM TB_ASS_EXPRT_ITRST

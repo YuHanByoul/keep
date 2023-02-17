@@ -74,11 +74,13 @@ public class LctrDmndController {
      * @Description : 섭외요청 상세 화면
      */
     @GetMapping("/lctrDmndDetail.html")
-    public String lctrDmndDetail(@ModelAttribute("searchVo") ExprtVo searchVo, Model model, @UserInfo @ModelAttribute("user") UserVo user) throws Exception {
+    public String lctrDmndDetail(@RequestParam("userid") Integer userid, @ModelAttribute("searchVo") ExprtVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
         searchVo.setUser(user);
+        searchVo.setUserid(userid); /* RequestParam으로 받아오지 않을 경우 UserVo의 userid에도 전문가 아이디가 들어가기 때문에 사용 */
         ExprtVo exprt = lctrDmndService.selectExprt(searchVo);
 
         model.addAttribute("exprt", exprt);
+        model.addAttribute("user", user);
         return VIEW_PATH + "/lctrDmndDetail";
     }
 
