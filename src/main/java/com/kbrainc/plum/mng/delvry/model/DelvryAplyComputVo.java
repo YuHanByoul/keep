@@ -41,6 +41,12 @@ public class DelvryAplyComputVo extends ParentRequestVo {
     /** 산출내역 항목 코드 */
     private String expitmCd;
     
+    /** 산출내역 상위항목 코드명 */
+    private String expitmUpprCdNm;
+    
+    /** 산출내역 항목 코드명 */
+    private String expitmCdNm;
+    
     /** 금액 */
     private int amt;
     

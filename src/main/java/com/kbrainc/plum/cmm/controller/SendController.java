@@ -60,17 +60,17 @@ public class SendController {
     }
     
     /**
-     * 알림톡 발송
-     *
-     * @Title : sendAlimtalk
-     * @Description : 알림톡 발송
-     * @return Map<String, Object> 발송결과
-     * @throws Exception 예외
-     */
-     @RequestMapping(value = "/mng/alimtalk/sendAlimtalk.do")
-     @ResponseBody
-     public Map<String, Object> sendAlimtalk(@RequestParam(value="templateCode") String templateCode, @RequestParam("recipientList") String recipientList) throws Exception {
-         return alimtalkService.sendAlimtalk(templateCode, recipientList);
-     }
+    * 알림톡 발송
+    *
+    * @Title : sendAlimtalk
+    * @Description : 알림톡 발송
+    * @return Map<String, Object> 발송결과
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/alimtalk/sendAlimtalk.do")
+    @ResponseBody
+    public Map<String, Object> sendAlimtalk(@RequestParam(value="templateCode") String templateCode, @RequestParam("recipientList") String recipientList) throws Exception {
+        return alimtalkService.sendAlimtalk(templateCode, recipientList);
+    }
     
 }
