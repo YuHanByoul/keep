@@ -118,6 +118,9 @@ public class BizRptVo extends ParentRequestVo {
     /** 보고 상태 코드 이름*/
     private String reportSttsCdNm;
 
+    /** 기관 아이디 */
+    private String instid;
+
     /** 기관 이름 */
     private String instNm;
 
@@ -285,6 +288,42 @@ public class BizRptVo extends ParentRequestVo {
     /** 결과 */
     private String rslt;
 
+    /** 사업취소 아이디 */
+    private Integer dmndid;
+
+    /** 반환시작일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private String rturnBgngDe;
+
+
+    /** 반환종료일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private String rturnEndDe;
+
+    /** 취소일시(취소신청일) */
+    private String cnclDt;
+
+    /** 사업취소 상태 코드 */
+    private String dmndSttsCd;
+
+    /** 사업취소 상태 코드 이름*/
+    private String dmndSttsCdNm;
+
+    /** 사업취소 여부 */
+    private String bsnsCnclYn;
+
+    /** 은행 코드 */
+    private String bankCd;
+
+    /** 계좌번호 */
+    private String bacntno;
+
+    /** 예금주 이름 */
+    private String dpstrNm;
+
+    /** 내용 */
+    private String cn;
+
 
     // ********************************
     //  코드 명
@@ -394,6 +433,25 @@ public class BizRptVo extends ParentRequestVo {
 				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
 				CodeInfoVo code = resCodeService.getCodeInfo(this.instSareaCd);
 				this.instSareaCdNm = code.getCdNm();
+			}catch(NoClassDefFoundError e) {
+				//e.printStackTrace();
+				return;
+			}catch(Exception e) {
+				//e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	/** 권역코드 */
+	public void setDmndSttsCd(String dmndSttsCd) throws Exception{
+		this.dmndSttsCd = dmndSttsCd;
+		//이미 코드이름이 있다면, 무시.
+		if(CommonUtil.isEmpty(this.dmndSttsCdNm)) {
+			try {
+				ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+				CodeInfoVo code = resCodeService.getCodeInfo(this.dmndSttsCd);
+				this.dmndSttsCdNm = code.getCdNm();
 			}catch(NoClassDefFoundError e) {
 				//e.printStackTrace();
 				return;
