@@ -4,7 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.delvry.model.DelvryAplyComputVo;
+import com.kbrainc.plum.mng.delvry.model.DelvryAplySplmntVo;
+import com.kbrainc.plum.mng.delvry.model.DelvryAplyVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryDao;
 import com.kbrainc.plum.mng.delvry.model.PcntstVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -59,182 +63,156 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
         return delvryDao.selectPcntstInfo(pcntstVo);
     }
     
-//     
-//    /**
-//     * 교구 목록 조회
-//     *
-//     * @Title : selectTchaidList
-//     * @Description : 교구 목록 조회
-//     * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
-//     * @return List<JntpurchsTchaidVo> 교구 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<JntpurchsTchaidVo> selectTchaidList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception {
-//        return jntpurchsDao.selectTchaidList(jntpurchsTchaidVo);
-//    }
-//     
-//    /**
-//     * 공동구매모집 상세 정보 조회
-//     *
-//     * @Title : selectJntpurchsInfo
-//     * @Description : 공동구매모집 상세 정보 조회
-//     * @param jntpurchsVo JntpurchsVo 객체
-//     * @return JntpurchsVo 공동구매모집 상세 정보
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public JntpurchsVo selectJntpurchsInfo(JntpurchsVo jntpurchsVo) throws Exception {
-//        return jntpurchsDao.selectJntpurchsInfo(jntpurchsVo);
-//    }
-//     
-//    /**
-//     * 공동구매모집 상품 목록 조회
-//     *
-//     * @Title : selectGoodsList
-//     * @Description : 공동구매모집 상품 목록 조회
-//     * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
-//     * @return List<JntpurchsTchaidVo> 공동구매모집 상품 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<JntpurchsTchaidVo> selectGoodsList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception {
-//        return jntpurchsDao.selectGoodsList(jntpurchsTchaidVo);
-//    }
-//     
-//    /**
-//     * 공동구매모집 수량별 가격 목록 조회
-//     *
-//     * @Title : selectGoodsList
-//     * @Description : 공동구매모집 수량별 가격 목록 조회
-//     * @param jntpurchsAmtVo JntpurchsAmtVo 객체
-//     * @return List<JntpurchsAmtVo> 공동구매모집 수량별 가격 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<JntpurchsAmtVo> selectAmtList(JntpurchsAmtVo jntpurchsAmtVo) throws Exception {
-//        return jntpurchsDao.selectAmtList(jntpurchsAmtVo);
-//    }
-//    
-//    /**
-//     * 공동구매모집 정보 업데이트
-//     *
-//     * @Title : updateJntpurchs 
-//     * @Description : 공동구매모집 정보 업데이트
-//     * @param jntpurchsVo JntpurchsVo
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    @Transactional
-//    public int updateJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
-//        int retVal = 0;
-//        
-//        // 모집에 해당하는 신청건이 있는지 확인
-//        JntpurchsVo orderInfo = jntpurchsDao.isExistOrder(jntpurchsVo);
-//        if("Y".equals(orderInfo.getIsExistOrder())) {
-//            return -1;
-//        }
-//        // 상품 등록 목록
-//        List<JntpurchsTchaidVo> goodsList = jntpurchsVo.getGoodsList();
-//        // 금액설정 등록 목록
-//        List<JntpurchsAmtVo> amtList = jntpurchsVo.getAmtList();
-//        // 1. 공동구매모집 업데이트
-//        retVal += jntpurchsDao.updateJntpurchs(jntpurchsVo);
-//        int jntpurchsid = jntpurchsVo.getJntpurchsid();
-//        // 2-1. 상품 삭제
-//        retVal += jntpurchsDao.deleteGoods(jntpurchsVo);
-//        // 2-2. 상품 등록
-//        if(goodsList != null && goodsList.size() > 0) {
-//            JntpurchsTchaidVo goods = null;
-//            for(int i = 0 ; i < goodsList.size() ; i++) {
-//                goods = goodsList.get(i);
-//                goods.setUser(jntpurchsVo.getUser());
-//                goods.setJntpurchsid(jntpurchsid);
-//                retVal += jntpurchsDao.insertJntpurchsGoods(goods);
-//            }
-//        }
-//        // 3-1. 금액 삭제
-//        retVal += jntpurchsDao.deleteAmt(jntpurchsVo);
-//        // 3-2. 금액 등록
-//        if(amtList != null && amtList.size() > 0) {
-//            JntpurchsAmtVo amt = null;
-//            for(int i = 0 ; i < amtList.size() ; i++) {
-//                amt = amtList.get(i);
-//                amt.setUser(jntpurchsVo.getUser());
-//                amt.setJntpurchsid(jntpurchsid);
-//                retVal += jntpurchsDao.insertJntpurchsAmt(amt);
-//            }
-//        }
-//        
-//        return retVal;
-//    }
-//    
-//    /**
-//     * 공동구매모집 정보 삭제
-//     *
-//     * @Title : deleteJntpurchs 
-//     * @Description : 공동구매모집 정보 삭제
-//     * @param jntpurchsVo JntpurchsVo
-//     * @return int delete 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    @Transactional
-//    public int deleteJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
-//        int retVal = 0;
-//        
-//        // 모집에 해당하는 신청건이 있는지 확인
-//        JntpurchsVo orderInfo = jntpurchsDao.isExistOrder(jntpurchsVo);
-//        if("Y".equals(orderInfo.getIsExistOrder())) {
-//            return -1;
-//        }
-//        retVal += jntpurchsDao.deleteJntpurchs(jntpurchsVo);        
-//        return retVal;
-//    }
-//    
-//    /**
-//     * 공동구매신청 목록 조회
-//     *
-//     * @Title : selectJntpurchsOrderList
-//     * @Description : 공동구매신청 목록 조회
-//     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
-//     * @return List<JntpurchsOrderVo> 공동구매신청 목록
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public List<JntpurchsOrderVo> selectJntpurchsOrderList(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
-//        return jntpurchsDao.selectJntpurchsOrderList(jntpurchsOrderVo);
-//    }
-//    
-//    /**
-//     * 공동구매신청 상세 정보 조회
-//     *
-//     * @Title : selectJntpurchsOrderInfo
-//     * @Description : 공동구매신청 상세 정보 조회
-//     * @param jntpurchsOrderVo JntpurchsOrderVo 객체
-//     * @return JntpurchsOrderVo 공동구매신청 상세 정보
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public JntpurchsOrderVo selectJntpurchsOrderInfo(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
-//        return jntpurchsDao.selectJntpurchsOrderInfo(jntpurchsOrderVo);
-//    }
-//    
-//    /**
-//     * 공동구매신청 정보 업데이트
-//     *
-//     * @Title : updateJntpurchsOrder 
-//     * @Description : 공동구매신청 정보 업데이트
-//     * @param jntpurchsOrderVo JntpurchsOrderVo
-//     * @return int update 로우수
-//     * @throws Exception 예외
-//     */
-//    @Override
-//    public int updateJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
-//        int retVal = 0;
-//        
-//        return retVal += jntpurchsDao.updateJntpurchsOrder(jntpurchsOrderVo);
-//    }
+    /**
+    * 교부 신청 목록 조회
+    *
+    * @Title : selectDelvryAplyList
+    * @Description : 교부 신청 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<DelvryAplyVo> 교부 신청 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<DelvryAplyVo> selectDelvryAplyList(DelvryAplyVo delvryAplyVo) throws Exception {
+        return delvryDao.selectDelvryAplyList(delvryAplyVo);
+    }
+    
+    /**
+    * 교부 상태 업데이트
+    *
+    * @Title : updateDelvryStts
+    * @Description : 교부 상태 업데이트
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    @Override
+    public int updateDelvryStts(DelvryAplyVo delvryAplyVo) throws Exception {
+        return delvryDao.updateDelvryStts(delvryAplyVo);
+    }
+    
+    /**
+    * 교부 신청 정보 조회
+    *
+    * @Title : selectDelvryAplyInfo
+    * @Description : 교부 신청 정보 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return DelvryAplyVo 교부 신청 정보
+    * @throws Exception 예외
+    */
+    @Override
+    public DelvryAplyVo selectDelvryAplyInfo(DelvryAplyVo delvryAplyVo) throws Exception {
+        return delvryDao.selectDelvryAplyInfo(delvryAplyVo);
+    }
+    
+    /**
+    * 교부 신청 산출내역 목록 조회
+    *
+    * @Title : selectDelvryAplyComputList
+    * @Description : 교부 신청 산출내역 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<DelvryAplyComputVo> 교부 신청 산출내역 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<DelvryAplyComputVo> selectDelvryAplyComputList(DelvryAplyVo delvryAplyVo) throws Exception {
+        return delvryDao.selectDelvryAplyComputList(delvryAplyVo);
+    }
+    
+    /**
+    * 교부 신청 업데이트
+    *
+    * @Title : updateDelvryAply
+    * @Description : 교부 신청 업데이트
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return int insert 로우수
+    * @throws Exception 예외
+    */
+    @Override
+    @Transactional
+    public int updateDelvryAply(DelvryAplyVo delvryAplyVo) throws Exception {
+        int retVal = 0;
+        // 1. 신청정보 업데이트
+        retVal += delvryDao.updateDelvryAply(delvryAplyVo);
+        
+        // 2. 산출내역 등록/업데이트
+        List<DelvryAplyComputVo> computList = delvryAplyVo.getComputList();
+        int delvryAplyid = delvryAplyVo.getDelvryAplyid();
+        if(computList != null && computList.size() > 0) {
+            for(int i = 0; i < computList.size(); i++) {
+                DelvryAplyComputVo computVo = computList.get(i);
+                computVo.setUser(delvryAplyVo.getUser());
+                if(computVo.getComputid() == 0) { // 산출내역 등록
+                    retVal += delvryDao.insertDelvryAplyComput(computVo);
+                } else { // 업데이트
+                    retVal += delvryDao.updateDelvryAplyComput(computVo);
+                }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    /**
+    * 교부 신청 보완요청 목록 조회
+    *
+    * @Title : selectDelvryAplySplmntList
+    * @Description : 교부 신청 보완요청 목록 조회
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return List<DelvryAplySplmntVo> 교부 신청 보완요청 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<DelvryAplySplmntVo> selectDelvryAplySplmntList(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
+        return delvryDao.selectDelvryAplySplmntList(delvryAplySplmntVo);
+    }
+    
+    /**
+    * 교부 신청 보완요청 정보 조회
+    *
+    * @Title : selectDelvryAplySplmntInfo
+    * @Description : 교부 신청 보완요청 정보 조회
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return DelvryAplySplmntVo 교부 신청 보완요청 정보
+    * @throws Exception 예외
+    */
+    @Override
+    public DelvryAplySplmntVo selectDelvryAplySplmntInfo(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
+        return delvryDao.selectDelvryAplySplmntInfo(delvryAplySplmntVo);
+    }
+    
+    /**
+    * 교부 신청 보완요청 등록
+    *
+    * @Title : insertDelvrySplmntAply
+    * @Description : 교부 신청 보완요청 등록
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    @Override
+    public int insertDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
+        int retVal = 0;
+        retVal = delvryDao.insertDelvryAplySplmnt(delvryAplySplmntVo);
+        
+        return retVal;
+    }
+    
+    /**
+    * 교부 신청 보완요청 업데이트
+    *
+    * @Title : updateDelvrySplmntAply
+    * @Description : 교부 신청 보완요청 업데이트
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    @Override
+    public int updateDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
+        int retVal = 0;
+        retVal = delvryDao.updateDelvryAplySplmnt(delvryAplySplmntVo);
+        
+        return retVal;
+    }
     
 }

@@ -184,7 +184,7 @@ function fileUploader($wrapper, filegrpNm, name, fileData, options) {
         }
         $fileList.append(
             $fileItemTemplate.clone(true).data({fileid: item.fileid, filegrpid: item.filegrpid, fileIdntfcKey: item.fileIdntfcKey})
-                .find('.file-uploader-filename-param').text(item.orginlFileNm).end()
+                .find('.file-uploader-filename-param').text(item.orginlFileNm).css("text-transform", "none").end()
                 .find('.file-uploader-filesize-param').text(fileSizePretty(item.fileSize)).end()
         )
         fileDataArr.push(item);

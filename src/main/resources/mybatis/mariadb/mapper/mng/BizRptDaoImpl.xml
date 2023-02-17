@@ -670,5 +670,134 @@
             CNSLTNGID = #{cnsltngid}
     </update>
 
+    <!--# 사업포기관리 #############################-->
+
+    <!-- 사업포기관리 목록 조회-->
+        <sql id="selectBizAbndMngListSql">
+             SELECT
+                A.APLYID
+              , Z.DMNDID
+              , Z.RTURN_BGNG_DE
+              , Z.RTURN_END_DE
+              , Z.INSTID
+              , Z.CN
+              , Z.DMND_STTS_CD
+              , B.FLD_CD          /* 사업분야 */
+              , B.PCNTST_NM       /* 공모명 */
+              , A.PRGRM_NM        /* 프로그램명/동아리명*/
+              , A.BSNS_CNCL_YN    /* 상태 */
+              , A.INST_NM         /* 기관명 */
+              , CONCAT(A.APLCNT_NM,'(', USR.ACNT, ')')    AS USER_NM_ACNT    /*신청자 명(ID)*/
+              , Z.CNCL_DT
+              , A.REG_DT
+            FROM TB_SPB_BSNS_CNCL_DMND Z
+            INNER JOIN
+                TB_SPB_APLY A ON Z.APLYID = A.APLYID
+            INNER JOIN
+                TB_SPB_PCNTST B ON A.PCNTSTID = B.PCNTSTID
+            LEFT OUTER JOIN
+                TB_CMM_USER USR ON A.USERID = USR.USERID
+            WHERE 1=1
+                <!-- 사업분야 -->
+            <if test="searchFldCd != null and searchFldCd != '' ">
+                AND B.FLD_CD = #{searchFldCd}
+            </if>
+                <!-- 키워드.공모명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'pcntstNm'">
+                AND B.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+            </if>
+                <!-- 키워드.프로그램명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'prgrmNm'">
+                AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+                <!-- 키워드.기관명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'instNm'">
+                AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+                <!-- 상태코드 -->
+            <if test="searchSttsCd!= null and searchSttsCd != '' ">
+                AND Z.DMND_STTS_CD = #{searchSttsCd}
+            </if>
+        </sql>
+
+    <!-- 사업포기관리 목록 조회-->
+    <select id="selectBizAbndMngList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectBizAbndMngList */
+        <include refid="PaginationMapper.header"/>
+        <include refid="selectBizAbndMngListSql"/>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 사업포기관리 엑셀 목록 조회-->
+    <select id="selectBizAbndMngExcelList" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectBizAbndMngList */
+        <include refid="selectBizAbndMngListSql"/>
+    </select>
+
+    <!-- 사업포기관리 상세 조회-->
+    <select id="selectBizAbndMng" parameterType="BizRptVo" resultType="BizRptVo">
+        /* BizRptDao.selectBizAbndMng */
+       SELECT
+            A.APLYID
+          , Z.DMNDID
+          , D.RCPTNO               /*접수번호*/
+          , A.INSTID
+          , A.INST_NM              /*기관명*/
+          , A.PRGRM_NM             /*프로그램명*/
+          , A.USERID               /*신청자 ID*/
+          , Z.RTURN_BGNG_DE
+          , Z.RTURN_END_DE
+          , CONCAT(A.APLCNT_NM,'(', USR.ACNT, ')')    AS USER_NM_ACNT
+          , D.BANK_CD
+          , D.BACNTNO
+          , D.DPSTR_NM
+          , Z.DMND_STTS_CD
+          , Z.CN    /*기타*/
+          , Z.CNCL_DT    /*취소일시(신청일)*/
+        FROM
+            TB_SPB_BSNS_CNCL_DMND Z
+        INNER JOIN
+            TB_SPB_APLY A ON Z.APLYID = A.APLYID
+        LEFT OUTER JOIN
+            TB_SPB_DELVRY_APLY D ON A.APLYID = D.APLYID
+        LEFT OUTER JOIN
+            TB_CMM_USER USR ON A.USERID = USR.USERID
+        WHERE 1=1
+        AND A.APLYID = #{aplyid}
+    </select>
+
+    <!-- 사업포기관리 수정 -->
+    <insert id="updateBizAbnd" parameterType="BizRptVo" >
+    /* BizRptDao.updateBizAbnd */
+    UPDATE
+        TB_SPB_BSNS_CNCL_DMND
+    SET
+        RTURN_BGNG_DE  = #{rturnBgngDe}
+      , RTURN_END_DE   = #{rturnEndDe}
+      , CN             = #{cn}
+      , DMND_STTS_CD   = #{dmndSttsCd}
+      , APRV_DT        = NOW()
+      , MDFCN_DT       = NOW()
+      , MDFRID         = #{user.userid}
+    WHERE
+        DMNDID = #{dmndid}
+
+    </insert>
+
+    <!-- 사업취소상태 여부 수정-->
+    <update id="updateBsnsCnclYn">
+        UPDATE
+            TB_SPB_APLY
+        SET
+            BSNS_CNCL_YN = #{bsnsCnclYn}
+          , MDFCN_DT = NOW()
+          , MDFRID = #{user.userid}
+        WHERE
+            APLYID = #{aplyid}
+    </update>
+
+
+
+
 
 </mapper>

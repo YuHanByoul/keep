@@ -176,7 +176,7 @@ public interface BizRptDao {
 	*
 	* @Title : selectRsltRptMngListExcel
 	* @Description : 결과보고관리 목록 엑셀다운로드
-	* @param BizRptVo
+	* @param BizAbndVo
 	* @return void
 	* @throws Exception
 	*/
@@ -263,5 +263,64 @@ public interface BizRptDao {
 	 */
 	public int updateCnsltngMng(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 사업포기관리 목록 조회
+	*
+	* @Title : selectBizAbndMngList
+	* @Description : 사업포기관리 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectBizAbndMngList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 사업포기관리목록 엑셀 다운로드
+	*
+	* @Title : selectBizAbndMngExcelList
+	* @Description : 사업포기관리목록 엑셀 다운로드
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectBizAbndMngExcelList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 사업포기관리 상세 조회
+	*
+	* @Title : selectBizAbndMng
+	* @Description : 사업포기관리 상세 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return Object
+	*/
+	public BizRptVo selectBizAbndMng(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 사업포기 수정
+	*
+	* @Title : updateBizAbnd
+	* @Description : 사업포기 수정
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateBizAbnd(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 사업취소여부 수정
+	*
+	* @Title : updateBsnsCnclYn
+	* @Description : 사업취소여부 수정
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateBsnsCnclYn(BizRptVo bizRptVo) throws Exception;
 
 }

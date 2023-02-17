@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
@@ -171,13 +172,10 @@ public class BizRptController {
     public Map<String, Object> updateRptSttsCd(HttpServletRequest request, @UserInfo UserVo user) throws Exception {
     	Map<String, Object> resultMap = new HashMap<String, Object>();
         int ret = 0;
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1 ");
+
         String[] reportids = request.getParameterValues("reportids");
 
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2 : " + reportids[0].toString());
-
         ret = bizRptService.updateRptSttsCd(user, reportids);
-        log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3 ");
 
         if (ret > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -186,7 +184,6 @@ public class BizRptController {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "제출 완료처리에 실패했습니다.");
         }
-
         return resultMap;
     }
 
@@ -724,21 +721,6 @@ public class BizRptController {
     @ResponseBody
  	public Map<String, Object> insertCnsltngMng(BizRptVo bizRptVo, Model model,@UserInfo UserVo user) throws Exception {
  		Map<String, Object> resultMap = new HashMap<>();
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " + bizRptVo.toString());
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
-log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
 
  		int ret = 0;
  		bizRptVo.setUser(user);
@@ -754,5 +736,117 @@ log.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ : " );
 
  		return resultMap;
  	}
+
+  	/*******************************************************************************
+	 사업포기관리
+	 ******************************************************************************/
+  	/**
+  	* 사업포기관리 메뉴 이동
+  	*
+  	* @Title : bizAbndMngList
+  	* @Description : 사업포기관리 메뉴 이동
+  	* @param request
+  	* @return
+  	* @throws Exception
+  	* @return String
+  	*/
+  	@RequestMapping(value = "/mng/bizAply/bizRpt/bizAbndMngList.html")
+  	public String bizAbndMngList() throws Exception {
+        return "mng/bizAply/bizRpt/bizAbndMngList";
+    }
+
+	/**
+	* 사업포기관리 목록 조회
+	*
+	* @Title : selectBizAbndMngList
+	* @Description : 사업포기관리 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/mng/bizAply/bizRpt/selectBizAbndMngList.do")
+	@ResponseBody
+	public Map<String, Object> selectBizAbndMngList(BizRptVo bizRptVo) throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+
+		List<BizRptVo> result = null;
+
+		result = bizRptService.selectBizAbndMngList(bizRptVo);
+
+		if (result.size() > 0) {
+			resultMap.put("totalCount", (result.get(0).getTotalCount()));
+		} else {
+			resultMap.put("totalCount", 0);
+		}
+		resultMap.put("list", result);
+
+		return resultMap;
+	}
+
+	/**
+    * 컨설팅관리 목록 엑셀다운로드
+    *
+    * @Title : selectBizAbndMngExcelList
+    * @Description : 컨설팅관리 목록 엑셀다운로드
+    * @param request
+    * @param response
+    * @param asgsysSrngVo
+    * @return void
+    * @throws Exception
+    */
+    @RequestMapping(value = "/mng/bizAply/bizRpt/selectBizAbndMngExcelList.do")
+    public void selectBizAbndMngExcelList(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo) throws Exception {
+    	bizRptService.selectBizAbndMngExcelList(bizRptVo, response, request);
+    }
+
+	/**
+  	* 사업포기관리 상세
+  	*
+  	* @Title : bizAbndMngForm
+  	* @Description : 사업포기관리 상세 이동
+  	* @param request
+  	* @return
+  	* @throws Exception
+  	* @return String
+  	*/
+  	@RequestMapping(value = "/mng/bizAply/bizRpt/bizAbndMngDetailForm.html")
+  	public String bizAbndMngDetailForm(BizRptVo bizRptVo, Model model) throws Exception {
+  		model.addAttribute("bizAbndMngInfo", bizRptService.selectBizAbndMng(bizRptVo));
+        return "mng/bizAply/bizRpt/bizAbndMngDetail";
+    }
+
+
+
+    /**
+    * 사업포기 수정
+    *
+    * @Title : updateBizAbnd
+    * @Description : 사업포기 수정
+    * @param bizRptVo
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/mng/bizAply/bizRpt/updateBizAbnd.do")
+    @ResponseBody
+    public Map<String, Object> updateBizAbnd(BizRptVo bizRptVo, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+        int ret = 0;
+
+        bizRptVo.setUser(user);
+        ret = bizRptService.updateBizAbnd(bizRptVo);
+
+        if (ret > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "포기승인 처리에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "포기승인 처리에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
 
 }
