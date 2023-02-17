@@ -20,6 +20,10 @@
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
             <input type="hidden" name="signguCd" id="signguCd" />
             <input type="hidden" name="zip" id="zip" />
+            <input type="hidden" name="artclid" id="artclid" />
+            <input type="hidden" name="instSignguCd" id="instSignguCd" />
+            <input type="hidden" name="instZip" id="instZip" />
+            <input type="hidden" name="directYn" id="directYn" />
             
             <div class="steps">
                 <ol>
@@ -201,7 +205,7 @@
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback" id="checkAddrMsg"></p>
+                                        <p class="feedback" id="checkAddrMsg1"></p>
                                     </div>
                                 </div>
                             </td>
@@ -266,7 +270,7 @@
                 </table>
             </div>
 
-            <div class="table-caption" th:if="${data.type = 'I'}">
+            <div class="table-caption" th:if="${data.type == 'I'}">
                 <div class="left">
                     <h3 class="sub-title">기관정보 입력</h3>
                 </div>
@@ -275,7 +279,7 @@
                 </div>
             </div>
 
-            <div class="table-row table-row-mo" th:if="${data.type = 'I'}">
+            <div class="table-row table-row-mo" th:if="${data.type == 'I'}">
                 <table>
                     <caption>기관 회원가입  - 기관명, 기관유형, 사업자등록번호, 사업자등록증, 대표자 이름, 대표 전화번호, 대표 팩스번호, 홈페이지 주소, 기관 로고, 주소, 상세주소</caption>
                     <colgroup>
@@ -289,7 +293,7 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" title="기관명" placeholder="기관명 입력" data-width="304">
+                                            <input type="text" name="instNm" id="instNm" maxlength="100" title="기관명" placeholder="기관명 입력" data-width="304" readonly>
                                             <button type="button" class="btn-medium btn-gray" id="instSearchBtn">기관 검색</button>
                                         </div>
                                     </div>
@@ -305,7 +309,7 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <span kattr:select_code="acnt_lock_cd" grpCd="108" title="기관유형" dataWidth="304" firstOptTxt="선택하세요"></span>
+                                            <span kattr:select_code="instTypeCd" grpCd="108" title="기관유형" dataWidth="304" firstOptTxt="선택하세요" readonly></span>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -317,23 +321,37 @@
                         <tr>
                             <th scope="row">사업자등록번호<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input">
-                                    <input type="text" title="사업자등록번호" placeholder="사업자등록번호 입력" data-width="304">
-                                    <button type="button" class="btn-medium btn-gray">중복확인</button>
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input">
+                                            <input type="number" name="brno" id="brno" maxlength="10" title="사업자등록번호" placeholder="사업자등록번호 입력" data-width="304" readonly>
+                                            <button type="button" class="btn-medium btn-gray" onclick="checkBizIdYn()">중복확인</button>
+                                        </div>
+                                        <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback" id="checkBizIdMsg"></p>
+                                    </div>
                                 </div>
-                                <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="bizFileTr" style="display:none">
                             <th scope="row">사업자등록증<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="form-input form-input-file">
-                                    <label>
-                                        <input type="file" id="bizFile" name="bizFile" class="blind" th:attr="accept=${acceptUploadBizFileExt}" title="파일첨부">
-                                        <span class="btn-medium btn-gray">파일선택</span>
-                                    </label>
-                                    <ul id="bizFileUploadSuccess"></ul>
-                                    <input type="hidden" name="bizfileFilegrpid" id="bizfileFilegrpid" value="0">
+                                <div class="row row-auto flex-wrap">
+                                    <div class="col">
+                                        <div class="form-input form-input-file">
+                                            <label>
+                                                <input type="file" id="bizFile" name="bizFile" class="blind" th:attr="accept=${acceptUploadBizFileExt}" title="파일첨부">
+                                                <span class="btn-medium btn-gray">파일선택</span>
+                                            </label>
+                                            <ul id="bizFileUploadSuccess"></ul>
+                                            <input type="hidden" name="bizfileFilegrpid" id="bizfileFilegrpid" value="0">
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <p class="feedback" id="checkBizFileMsg"></p>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -343,7 +361,7 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" title="대표자 이름" placeholder="대표자 이름 입력" data-width="414">
+                                            <input type="text" name="rprsvNm" id="rprsvNm" maxlength="20" title="대표자 이름" placeholder="대표자 이름 입력" data-width="414" readonly>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -358,7 +376,7 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="number" title="대표전화번호" placeholder="대표전화번호 입력" data-width="414">
+                                            <input type="number" name="telno" id="telno" maxlength="12" title="대표전화번호" placeholder="대표전화번호 입력" data-width="414" readonly>
                                         </div>
                                         <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
                                     </div>
@@ -372,7 +390,7 @@
                             <th scope="row">대표팩스번호</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="number" title="대표팩스번호" placeholder="대표팩스번호 입력" data-width="414">
+                                    <input type="number" name="fxno" id="fxno" maxlength="12" title="대표팩스번호" placeholder="대표팩스번호 입력" data-width="414">
                                 </div>
                                 <p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
                             </td>
@@ -381,7 +399,7 @@
                             <th scope="row">홈페이지 주소</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="text" title="홈페이지 주소" placeholder="홈페이지 주소 입력" data-width="414">
+                                    <input type="text" name="hmpg" id="hmpg" maxlength="100" title="홈페이지 주소" placeholder="홈페이지 주소 입력" data-width="414">
                                 </div>
                                 <p class="desc">* 예) https://keep.go.kr</p>
                             </td>
@@ -412,12 +430,12 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
+                                            <input type="text" name="instAddr" id="instAddr" maxlength="200" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
                                             <button type="button" class="btn-medium btn-gray" onclick="daumPostcode2()">검색</button>
                                         </div>
                                     </div>
                                     <div class="col">
-                                        <p class="feedback"></p>
+                                        <p class="feedback" id="checkAddrMsg2"></p>
                                     </div>
                                 </div>
                             </td>
@@ -428,7 +446,7 @@
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585">
+                                            <input type="text" name="instAddrDtl" id="instAddrDtl" maxlength="400" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" readonly>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -475,10 +493,10 @@
                 var validator= $("#memberInfoForm").validate({
                         onsubmit: false,
                         rules: {
-                             nm         :   { required: true, isBlank : true, maxlength: 20 }
-                            ,acnt       :   { required: true, isBlank : true, minlength: 6, maxlength: 10, idPolicy1: true }
-                            ,pswd       :   { required: true, isBlank : true, passwordPolicy2: true, minlength: 9, maxlength: 12 ,isHangulOff: true }
-                            ,pswdConfirm:   { required: true, isBlank : true, passwordPolicy2: true, isHangulOff: true }
+                             nm         :   { required: true, isBlank: true, maxlength: 20 }
+                            ,acnt       :   { required: true, isBlank: true, minlength: 6, maxlength: 10, idPolicy1: true }
+                            ,pswd       :   { required: true, isBlank: true, passwordPolicy2: true, minlength: 9, maxlength: 12 ,isHangulOff: true }
+                            ,pswdConfirm:   { required: true, isBlank: true, passwordPolicy2: true, isHangulOff: true }
                             ,moblphon   :   { 
                             /*[# th:if="${data.type != 'C'}"]*/
                                                 required: true,
@@ -486,113 +504,76 @@
                                                 number : true, 
                                                 maxlength: 12
                                             }
-                            ,eml1       :   { required: true, isBlank : true, maxlength: 50 }
-                            ,eml2       :   { required: true, isBlank : true, maxlength: 50, emailDomain: true }
+                            ,eml1       :   { required: true, isBlank: true, maxlength: 50 }
+                            ,eml2       :   { required: true, isBlank: true, maxlength: 50, emailDomain: true }
                             ,addr       :   { required: true, maxlength: 200 }
                             ,addrDtl    :   { required: true, maxlength: 400 }
+                            /*[# th:if="${data.type == 'I'}"]*/
+                            ,instNm     :   { required: true, isBlank: true, maxlength: 100 }
+                            ,instTypeCd :   { required: true }
+                            ,brno       :   { required: true, number:true, maxlength: 10}
+                            ,rprsvNm    :   { required: true, isBlank: true, maxlength: 20 }
+                            ,telno      :   { required: true, number: true, maxlength: 12}
+                            ,fxno       :   { number: true, maxlength: 12}
+                            ,hmpg       :   { url: true, maxlength: 100 }
+                            ,instAddr   :   { required: true, maxlength: 200 }
+                            ,instAddrDtl:   { required: true, maxlength: 400 }
+                            /*[/]*/
                         },
                         messages: {
-                             nm         :   { required: "이름을 입력 해주십시오.", isBlank : "이름에 공백이 있습니다.", maxlength: "이름은 20자를 초과할 수 없습니다." }
-                            ,acnt       :   { required: "아이디를 입력 해주십시오.", isBlank : "아이디에 공백이 있습니다.", minlength:"아이디 형식이 올바르지 않습니다.", maxlength: "아이디 형식이 올바르지 않습니다.", idPolicy1: "아이디 형식이 올바르지 않습니다." }  
-                            ,pswd       :   { required: "비밀번호를 입력 해주십시오.", isBlank : "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2 : "비밀번호 조건이 일치하지 않습니다.", minlength:"비밀번호 조건이 일치하지 않습니다.", maxlength: "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
-                            ,pswdConfirm:   { required: "비밀번호 확인을 입력 해주십시오.", isBlank : "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2 : "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
+                             nm         :   { required: "이름을 입력 해주십시오.", isBlank: "이름에 공백이 있습니다.", maxlength: "이름은 20자를 초과할 수 없습니다." }
+                            ,acnt       :   { required: "아이디를 입력 해주십시오.", isBlank: "아이디에 공백이 있습니다.", minlength:"아이디 형식이 올바르지 않습니다.", maxlength: "아이디 형식이 올바르지 않습니다.", idPolicy1: "아이디 형식이 올바르지 않습니다." }  
+                            ,pswd       :   { required: "비밀번호를 입력 해주십시오.", isBlank: "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2: "비밀번호 조건이 일치하지 않습니다.", minlength:"비밀번호 조건이 일치하지 않습니다.", maxlength: "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
+                            ,pswdConfirm:   { required: "비밀번호 확인을 입력 해주십시오.", isBlank: "비밀번호 조건이 일치하지 않습니다.", passwordPolicy2: "비밀번호 조건이 일치하지 않습니다.", isHangulOff: "비밀번호 조건이 일치하지 않습니다." }
                             ,moblphon   :   { 
                             /*[# th:if="${data.type != 'C'}"]*/
                                                 required: "휴대전화를 입력 해주십시오.",
                             /*[/]*/ 
                                                 number : "숫자만 입력 가능합니다.", 
                                                 maxlength:"휴대전화는 12자를 초과할 수 없습니다." }  
-                            ,eml1       :   { required: "이메일을 입력 해주십시오.", isBlank : "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
-                            ,eml2       :   { required: "이메일을 입력 해주십시오.", isBlank : "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
+                            ,eml1       :   { required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
+                            ,eml2       :   { required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
                             ,addr       :   { required: "주소를 입력 해주십시오.", maxlength: "주소는 200자를 초과할 수 없습니다." }
                             ,addrDtl    :   { required: "상세주소를 입력 해주십시오.", maxlength: "상세주소는 400자를 초과할 수 없습니다." }
+                            /*[# th:if="${data.type == 'I'}"]*/
+                            ,instNm     :   { required: "기관명을 입력 해주십시오.", isBlank: "기관명에 공백이 있습니다.", maxlength: "기관명은 100자를 초과할 수 없습니다." }
+                            ,instTypeCd :   { required: "기관유형을 선택 해주십시오." }
+                            ,brno       :   { required: "사업자등록번호를 입력 해주십시오." ,number: "숫자만 입력가능합니다.", maxlength:"사업자등록번호는 10자를 초과할 수 없습니다." }
+                            ,rprsvNm    :   { required: "대표자 이름을 입력 해주십시오.", isBlank: "대표자 이름에 공백이 있습니다.", maxlength: "대표자 이름은 20자를 초과할 수 없습니다." }
+                            ,telno      :   { required: "대표전화번호를 입력 해주십시오." ,number: "숫자만 입력가능합니다.", maxlength:"대표전화번호는 12자를 초과할 수 없습니다." }
+                            ,fxno       :   { number: "숫자만 입력가능합니다.", maxlength:"대표팩스번호는 12자를 초과할 수 없습니다." }
+                            ,hmpg       :   { url: "홈페이지 주소의 형식이 올바르지 않습니다.", maxlength: "홈페이지 주소는 100자를 초과할 수 없습니다." }
+                            ,instAddr   :   { required: "주소를 입력 해주십시오.", maxlength: "주소는 200자를 초과할 수 없습니다." }
+                            ,instAddrDtl:   { required: "상세주소를 입력 해주십시오.", maxlength: "상세주소는 400자를 초과할 수 없습니다." }
+                            /*[/]*/
                         }
-                    })
-            </script>
-            <script type="text/javascript">
-                var checkId = "";
-                var isDuplicatedId = false;
-
-                //아이디 중복 체크 
-                function checkIdYn(){
+                    });
                     
-                    if(!$('#acnt').valid()) return;
-                    
-                    if(displayWorkProgress(true)){
-                        $.ajax({
-                            url : "/front/member/checkDuplicationUser.do",
-                            type: 'POST',
-                            cache : false,
-                            dataType: 'json',
-                            data : { acnt: $("#acnt").val() },
-                            success : function (data){
-                                if(!data.result){
-                                    $("#checkIdMsg").text("이미 사용중인 아이디입니다.").removeClass("valid").addClass("invalid");
-                                    checkId = "";
-                                    isDuplicatedId = true;
-                                }else{
-                                    $("#checkIdMsg").text("사용가능한 아이디입니다.").removeClass("invalid").addClass("valid");
-                                    checkId = $("#acnt").val();
-                                    isDuplicatedId = false;
-                                }
-                                closeWorkProgress();
-                            }
-                        });
-                    }
-                }
-                
-                function changePswd(){
-                    if($('#pswd').valid()) {
-                        $("#checkPswdMsg").text("사용 가능한 비밀번호입니다.").removeClass("invalid").addClass("valid");
-                    }
-                    
-                    if($("#pswdConfirm").val().length > 0) {
-                        changePswdConfirm();
-                    }
-                }
-                
-                function changePswdConfirm() {
-                    if($("#pswd").val()!=$("#pswdConfirm").val()) {
-                        $("#checkPswdConfirmMsg").text("비밀번호가 일치하지 않습니다.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }else{
-                        
-                        $("#checkPswdConfirmMsg").text("비밀번호가 일치합니다.").removeClass("invalid").addClass("valid");
-                        return true;
-                    }
-                }   
-                
-                function checkIdDup() {
-                    if(checkId !=  $("#acnt").val()){
-                        $("#checkIdMsg").text("아이디 중복확인을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }else{
-                        return true;
-                    }   
-                }
-                
-                function checkAddr() {
-                    if($("#addr").val() == "") {
-                        $("#checkAddrMsg").text("주소를 입력 해주십시오.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }else if($("#addr").val().length > 200){
-                        $("#checkAddrMsg").text("주소는 200자를 초과할 수 없습니다.").removeClass("valid").addClass("invalid");
-                        return false;
-                    }
-                    return truel;
-                }
-                
                 function join(){
                     if(!($("#memberInfoForm").valid())){
-                        if($("#checkIdMsg").text() == "" || checkId !=  $("#acnt").val()) $("#acnt").focus();
+                        if($("#checkIdMsg").text() == "") {
+                            checkIdDup();
+                        }
+                        /*[# th:if="${data.type == 'I'}"]*/
+                        if($("#checkBizIdMsg").text() == "") {
+                            checkBizIdDup();
+                        }
+                        /*[/]*/
                         if($("#checkPswdMsg").text() == "") changePswd();
-                        if($("#checkPswdConfirmMsg").text() == "") $("#pswdConfirm").focus();   
+                        if($("#checkPswdConfirmMsg").text() == "") $("#pswdConfirm").focus();
                         // readonly라 별도 처리
-                        if(!checkAddr()) {
+                        /*if(!checkAddr1()) {
                           if($(".feedback.invalid", "#memberInfoForm").length == 1) {
-                              window.scrollTo({top: document.getElementById("addr").getBoundingClientRect().top-128 + window.pageYOffset});
+                              $("#addr").focus();
+                              //window.scrollTo({top: document.getElementById("addr").getBoundingClientRect().top-128 + window.pageYOffset});
                           }  
-                        } 
+                        }
+                        if(!checkAddr2()) {
+                          if($(".feedback.invalid", "#memberInfoForm").length == 1) {
+                              $("#instAddr").focus();
+                              //window.scrollTo({top: document.getElementById("instAddr").getBoundingClientRect().top-128 + window.pageYOffset});
+                          }  
+                        }*/ 
                         return;
                     }
 
@@ -600,14 +581,29 @@
                     
                     var checkIdDupResult = checkIdDup();
                     var checkPswdConfirmResult = changePswdConfirm();
+                    var checkMoblphoneResult = checkMoblphon();
+                    var checkBizIdDupResult = true;
+                    var checkBizFileResult = true;
+                    /*[# th:if="${data.type == 'I'}"]*/
+                    checkBizIdDupResult = checkBizIdDup();
+                    if($("#directYn").val() == 'Y') {
+                        checkBizFileResult = checkBizFile();
+                    }
+                    /*[/]*/
                     
-                    if($("#moblphon").val() != '' && $("#encodeData").val() == '') {
+                    if(!checkIdDupResult) {
+                        $("#acnt").focus();
+                    }else if(!checkPswdConfirmResult) {
+                        $("#pswdConfirm", "#memberInfoForm").focus();
+                    }else if(!checkMoblphoneResult) {
                         $("#moblphon").focus();
-                        $("#checkMoblphonMsg").text("휴대전화 본인인증을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
-                        return;
+                    }else if(!checkBizIdDupResult) {
+                        $("#brno", "#memberInfoForm").focus();
+                    }else if(!checkBizFileResult) {
+                        $("#bizFile").focus();
                     }
                     
-                    if(checkIdDupResult && checkPswdConfirmResult){
+                    if(checkIdDupResult && checkPswdConfirmResult && checkMoblphoneResult && checkBizIdDupResult && checkBizFileResult){
                         if($("input[name=envfldCds1]:checked").length > 3) {
                             alert("맞춤 환경정보는 최대 3개 까지만 선택가능합니다.");
                             return;
@@ -647,12 +643,159 @@
                                 }
                             });
                         }
-                    }else{
-                        if(!checkPswdConfirmResult) $("#pswdConfirm").focus();
-                        if(!checkIdDupResult) $("#acnt").focus();
+                    }
+                }
+            </script>
+            <script type="text/javascript">
+                var checkId = "";
+                var checkBizId = "";
+                var isDuplicatedId = false;
+                var isDuplicatedBizId = false;
+
+                //아이디 중복 체크 
+                function checkIdYn(){
+                    
+                    if(!$('#acnt').valid()) return;
+                    
+                    if(displayWorkProgress(true)){
+                        $.ajax({
+                            url : "/front/member/checkDuplicationUser.do",
+                            type: 'POST',
+                            cache : false,
+                            dataType: 'json',
+                            data : { acnt: $("#acnt").val() },
+                            success : function (data){
+                                if(!data.result){
+                                    $("#checkIdMsg").text("이미 사용중인 아이디입니다.").removeClass("valid").addClass("invalid");
+                                    checkId = "";
+                                    isDuplicatedId = true;
+                                }else{
+                                    $("#checkIdMsg").text("사용가능한 아이디입니다.").removeClass("invalid").addClass("valid");
+                                    checkId = $("#acnt").val();
+                                    isDuplicatedId = false;
+                                }
+                                closeWorkProgress();
+                            }
+                        });
                     }
                 }
                 
+                //사업자등록번호 중복 체크 
+                function checkBizIdYn(){
+                    
+                    if(!$('#brno', "#memberInfoForm").valid()) return;
+                    
+                    if(displayWorkProgress(true)){
+                        $.ajax({
+                            url : "/front/member/checkDuplicationBrno.do",
+                            type: 'POST',
+                            cache : false,
+                            dataType: 'json',
+                            data : { brno: $("#brno", "#memberInfoForm").val(), directYn: $("#directYn").val() },
+                            success : function (data){
+                                if(!data.result){
+                                    alert(data.msg);
+                                    //$("#checkBizIdMsg").text(data.msg).removeClass("valid").addClass("invalid");
+                                    checkBizId = "";
+                                    isDuplicatedBizId = true;
+                                }else{
+                                    
+                                    checkBizId = $("#brno", "#memberInfoForm").val();
+                                    isDuplicatedBizId = false;
+                                    if(data.dataLoad) {
+                                        alert(data.msg);
+                                        searchInput(data);
+                                        $("#checkBizIdMsg").text("사용가능한 사업자등록번호입니다.").removeClass("invalid").addClass("valid");
+                                    }else{
+                                        $("#checkBizIdMsg").text(data.msg).removeClass("invalid").addClass("valid");
+                                    }
+                                }
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+                
+                function changePswd(){
+                    if($('#pswd').valid()) {
+                        $("#checkPswdMsg").text("사용 가능한 비밀번호입니다.").removeClass("invalid").addClass("valid");
+                    }
+                    
+                    if($("#pswdConfirm").val().length > 0) {
+                        changePswdConfirm();
+                    }
+                }
+                
+                function changePswdConfirm() {
+                    if($("#pswd").val()!=$("#pswdConfirm").val()) {
+                        $("#checkPswdConfirmMsg").text("비밀번호가 일치하지 않습니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        
+                        $("#checkPswdConfirmMsg").text("비밀번호가 일치합니다.").removeClass("invalid").addClass("valid");
+                        return true;
+                    }
+                }   
+                
+                function checkIdDup() {
+                    if(checkId == "" || checkId !=  $("#acnt").val()){
+                        $("#checkIdMsg").text("아이디 중복확인을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        return true;
+                    }   
+                }
+                
+                function checkBizIdDup() {
+                    if(checkBizId == "" || checkBizId !=  $("#brno", "#memberInfoForm").val()){
+                        $("#checkBizIdMsg").text("사업자등록번호 중복확인을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        return true;
+                    }   
+                }
+                
+                function checkMoblphon() {
+                    if($("#moblphon").val() != '' && $("#encodeData").val() == '') {
+                        $("#checkMoblphonMsg").text("휴대전화 본인인증을 해주시기 바랍니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+                
+                function checkBizFile() {
+                    if($("#bizfileFilegrpid").val() == 0) {
+                        $("#checkBizFileMsg").text("사업자등록증 파일을 첨부 해주십시오.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+                    
+                /*
+                function checkAddr1() {
+                    if($("#addr").val() == "") {
+                        $("#checkAddrMsg1").text("주소를 입력 해주십시오.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else if($("#addr").val().length > 200){
+                        $("#checkAddrMsg1").text("주소는 200자를 초과할 수 없습니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }
+                    return true;
+                }
+                
+                function checkAddr2() {
+                    if($("#instAddr").val() == "") {
+                        $("#checkAddrMsg2").text("주소를 입력 해주십시오.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }else if($("#instAddr").val().length > 200){
+                        $("#checkAddrMsg2").text("주소는 200자를 초과할 수 없습니다.").removeClass("valid").addClass("invalid");
+                        return false;
+                    }
+                    return true;
+                }*/
+
                 function fnAuthPopup(){
                     window.open('', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
                     document.form_chk.target = "popupChk";
@@ -674,14 +817,78 @@
                             data : { artclid : artclid },
                             type : 'POST',
                             success : function(data) {
-                                
+                                searchInput(data);
                             }
                         });
                     }
                 }
                 
+                function setReadonlyInstForm() {
+                    $("#instNm", "#memberInfoForm").attr("readonly", true);
+                    $("#instTypeCd").attr("readonly", true);
+                    $("#brno", "#memberInfoForm").attr("readonly", true);
+                    $("#rprsvNm").attr("readonly", true);
+                    $("#telno").attr("readonly", true);
+                    $("#instAddrDtl").attr("readonly", true);
+                }
+                
+                // 불러온 기관정보 셋팅시
+                function searchInput(data) {
+                    $("#checkBizIdMsg").text('').removeClass("valid").removeClass("invalid");
+                    setReadonlyInstForm();
+                    $("#directYn").val('N');
+                    $("#bizfileFilegrpid").val(0);
+                    $("#bizFileUploadSuccess").html('');
+                    $("#bizFileTr").hide();
+                    $("#artclid").val('');
+                    $("#artclid").val(data.artclid);
+                    $("#instNm", "#memberInfoForm").val(data.instNm);
+                    $("#instTypeCd").val(data.instTypeCd);
+                    $("#brno", "#memberInfoForm").val(data.brno);
+                    $("#rprsvNm").val(data.rprsvNm);
+                    $("#telno").val(data.telno);
+                    
+                    if(data.signguCd != '') { // 없는경우 빈값으로 넘어옴
+                        $("#instAddr").val(data.addr);
+                        $("#instAddrDtl").val(data.addrDtl);
+                        $("#instZip").val(data.zip);
+                        $("#instSignguCd").val(data.signguCd);
+                    }else{
+                        $("#instAddr").val('');
+                        $("#instAddrDtl").val('');
+                        $("#instZip").val('');
+                        $("#instSignguCd").val('');
+                        $("#instAddrDtl").removeAttr("readonly");
+                    }
+                }
+                
+                // 기관정보 직접입력시 초기화
                 function directInput() {
-                    alert("직접입력");
+                    $("#checkBizIdMsg").text('').removeClass("valid").removeClass("invalid");
+                    $("#directYn").val('Y');
+                    $("#artclid").val('');
+                    $("#instNm", "#memberInfoForm").val('');
+                    $("#instTypeCd").val('');
+                    $("#brno"," #memberInfoForm").val('');
+                    $("#rprsvNm").val('');
+                    $("#telno").val('');
+                    $("#fxno").val('');
+                    $("#hmpg").val('');
+                    $("#instAddr").val('');
+                    $("#instAddrDtl").val('');
+                    $("#instZip").val('');
+                    $("#instSignguCd").val('');
+                    $("#instNm", "#memberInfoForm").removeAttr("readonly");
+                    $("#instTypeCd").removeAttr("readonly");
+                    $("#brno", "#memberInfoForm").removeAttr("readonly");
+                    $("#rprsvNm").removeAttr("readonly");
+                    $("#telno").removeAttr("readonly");
+                    $("#instAddrDtl").removeAttr("readonly");
+                    $("#bizfileFilegrpid").val(0);
+                    $("#bizFileUploadSuccess").html('');
+                    $("#bizlogoFileid").val(0);
+                    $("#bizLogoImage").attr("src",'')
+                    $("#bizFileTr").show();
                 }
         
                 function daumPostcode1(){
@@ -782,7 +989,6 @@
                                     alert(response.msg);
                                 }else if(response.filegrpid != undefined && response.filegrpid != ''){
                                     $("#bizlogoFileid").val(response.fileid);
-                                    //response.fileIdntfcKey
                                     $("#bizLogoImage").attr("src",`/downloadLogo.do?fileid=${response.fileid}&file_idntfc_key=${response.fileIdntfcKey}`);
                                 }
                                 closeWorkProgress();

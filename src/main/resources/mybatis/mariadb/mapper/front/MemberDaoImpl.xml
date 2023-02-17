@@ -79,8 +79,6 @@
                 ADDR,
                 ADDR_DTL,
                 SIGNGU_CD,
-                INSTID,
-                INSTPIC_ROLE_CD,
                 TOS_AGRE_YN,
                 PRIVCY_AGRE_YN,
                 PRVC_THPTY_PVSN_AGRE_YN,
@@ -109,8 +107,6 @@
                 #{addr},
                 #{addrDtl},
                 #{signguCd},
-                #{instid},
-                #{instpicRoleCd},
                 #{tosAgreYn},
                 #{privcyAgreYn},
                 #{prvcThptyPvsnAgreYn},
@@ -206,6 +202,7 @@
     <select id="selectInstPoolInfo" parameterType="MemberInstSearchVo" resultType="MemberInstSearchVo">
         /* front.MemberDao.selectInstPoolInfo */
         SELECT 
+            ARTCLID,
             INST_NM, 
             INST_TYPE_CD, 
             BRNO,
@@ -220,5 +217,123 @@
             ARTCLID = #{artclid}
     </select>
     
+    <!-- 사업자등록번호에 해당하는 기관POOL 정보 조회 -->
+    <select id="selectInstPoolInfoByBrno" parameterType="MemberInstVo" resultType="MemberInstVo">
+        /* front.MemberDao.selectInstPoolInfoByBrno */
+        SELECT 
+            INST_NM, 
+            INST_TYPE_CD, 
+            BRNO,
+            RPRSV_NM,
+            TELNO,
+            ZIP,
+            ADDR,
+            ADDR_DTL
+        FROM 
+            TB_CMM_INST_POOL
+        WHERE 
+            BRNO = #{brno}
+    </select>
+    
+    <!-- 기관 테이블 존재여부와 상태값, 기관담당자 존재여부 조회 -->
+    <select id="selectInstInfoByBrno" parameterType="MemberInstVo" resultType="MemberInstVo">
+        /* front.MemberDao.selectInstInfoByBrno */
+        SELECT 
+            I.INSTID,
+            I.APRV_STTS_CD,
+            (SELECT USERID FROM TB_CMM_USER WHERE INSTID = I.INSTID LIMIT 1) AS INST_USERID
+        FROM 
+            TB_CMM_INST I
+        WHERE 
+            I.BRNO = #{brno}
+    </select>
+    
+    <!-- 기관정보 저장 -->
+    <insert id="insertInst" parameterType="MemberInstVo" useGeneratedKeys="true" keyProperty="instid">
+        /* front.MemberDao.insertInst */
+        INSERT INTO TB_CMM_INST
+            (
+                INST_NM,
+                INST_TYPE_CD,
+                BRNO,
+                RPRSV_NM,
+                TELNO,
+                FXNO,
+                ZIP,
+                ADDR,
+                ADDR_DTL,
+                RGN_CD,
+                HMPG,
+                LOGO_FILEID,
+                FILEGRPID,
+                APRV_STTS_CD,
+                USE_YN,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+            )
+            VALUES
+            (
+                #{instNm},
+                #{instTypeCd},
+                #{brno},
+                #{rprsvNm},
+                #{telno},
+                #{fxno},
+                #{instZip},
+                #{instAddr},
+                #{instAddrDtl},
+                #{instSignguCd},
+                #{hmpg},
+                #{bizlogoFileid},
+                #{bizfileFilegrpid},
+                '1',
+                'Y',
+                NOW(),
+                #{userid},
+                NOW(),
+                #{userid}
+            )
+    </insert>
+    
+    <!-- 기관정보 수정 -->
+    <update id="updateInst" parameterType="MemberInstVo">
+        /* front.MemberDao.updateInst */
+        UPDATE 
+            TB_CMM_INST 
+        SET
+            INST_NM = #{instNm},
+            INST_TYPE_CD = #{instTypeCd},
+            BRNO = #{brno},
+            RPRSV_NM = #{rprsvNm},
+            TELNO = #{telno},
+            FXNO = #{fxno},
+            ZIP = #{instZip},
+            ADDR = #{instAddr},
+            ADDR_DTL = #{instAddrDtl},
+            RGN_CD = #{instSignguCd},
+            HMPG = #{hmpg},
+            LOGO_FILEID = #{bizlogoFileid},
+            FILEGRPID = #{bizfileFilegrpid},
+            APRV_STTS_CD = '1',
+            USE_YN = 'Y',
+            MDFCN_DT = NOW(),
+            MDFRID = #{userid}
+        WHERE INSTID = #{instid}
+    </update>
+    
+    <!-- 회원을 기관회원 마스터로 update -->
+    <update id="updateUserInstMaster" parameterType="MemberInstVo">
+        /* front.MemberDao.updateUserInstMaster */
+        UPDATE 
+            TB_CMM_USER 
+        SET
+            INSTID = #{instid},
+            INSTPIC_ROLE_CD = '109101',
+            MDFCN_DT = NOW(),
+            MDFRID = #{userid}
+        WHERE USERID = #{userid}
+    </update>
     
 </mapper>

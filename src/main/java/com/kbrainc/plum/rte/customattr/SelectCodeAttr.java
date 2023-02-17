@@ -129,7 +129,7 @@ public class SelectCodeAttr extends AbstractAttributeTagProcessor {
             if (codeList.size() <= 0) {
                 result.append(" <p> 조회 된 코드 목록이 없습니다.</p>");
             } else {
-                result.append("<select  class ='").append(applyClass+" ").append(addClass).append("' title='").append(title).append("' data-width='").append(dataWidth).append("' style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
+                result.append("<select  class ='").append(applyClass+" ").append(addClass).append("' title='").append(title).append("' data-width='").append(dataWidth).append("'").append(tag.hasAttribute("readonly") ? " readonly" : "").append(" style='").append(addStyle).append("'  id='").append(attributeValue).append("'  name='").append(attributeValue).append("' ");
                 if (tag.hasAttribute("onchange") && !tag.getAttribute("onchange").getValue().equals("")) {
                     String changeFunction = tag.getAttribute("onchange").getValue();
                     result.append("    onchange ='").append(changeFunction).append("()' ");

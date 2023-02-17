@@ -136,5 +136,58 @@ public interface MemberDao {
     */
     public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception;
     
+    /**
+    * 사업자등록번호에 해당하는 기관POOL 정보 조회.
+    *
+    * @Title : selectInstPoolInfoByBrno
+    * @Description : 사업자등록번호에 해당하는 기관POOL 정보 조회
+    * @param memberInstVo MemberInstVo객체
+    * @return MemberInstVo 기관정보(pool)
+    * @throws Exception 예외
+    */
+    public MemberInstVo selectInstPoolInfoByBrno(MemberInstVo memberInstVo) throws Exception;
     
+    /**
+    * 기관 테이블 존재여부와 상태값, 기관담당자 존재여부 조회.
+    *
+    * @Title : selectInstInfoByBrno
+    * @Description : 기관 테이블 존재여부와 상태값, 기관담당자 존재여부 조회
+    * @param memberInstVo MemberInstVo객체
+    * @return MemberInstVo 기관정보
+    * @throws Exception 예외
+    */
+    public MemberInstVo selectInstInfoByBrno(MemberInstVo memberInstVo) throws Exception;
+    
+    /**
+    * 기관정보 insert.
+    *
+    * @Title : insertInst
+    * @Description : 기관정보 insert
+    * @param memberInstVo MemberInstVo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertInst(MemberInstVo memberInstVo) throws Exception;
+    
+    /**
+    * 기관정보 update.
+    *
+    * @Title : updateInst
+    * @Description : 기관정보 update
+    * @param memberInstVo MemberInstVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateInst(MemberInstVo memberInstVo) throws Exception;
+    
+    /**
+    * 회원을 기관회원 마스터로 update.
+    *
+    * @Title : updateUserInstMaster
+    * @Description : 회원을 기관회원 마스터로 update
+    * @param memberVo MemberVo객체
+    * @return int udpate로우수
+    * @throws Exception 예외
+    */
+    public int updateUserInstMaster(MemberVo memberVo) throws Exception;
 }
