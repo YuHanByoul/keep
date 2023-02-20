@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+<body>
+<div layout:fragment="content">
+    <div class="tab-content tab-sub dropDown">
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">환경보전협회</button>
+        <ul class="tab-list target" role="tablist">
+            <li class="tab" th:classappend="${BbsVo.tabType != 2} ? 'active'">
+                <button id="tab-sub01" aria-controls="tab-subpanel01" role="tab">환경보전협회</button>
+            </li>
+            <li class="tab" th:classappend="${BbsVo.tabType  == 2} ? 'active'">
+                <button id="tab-sub02" aria-controls="tab-subpanel02" role="tab">유관기관</button>
+            </li>
+        </ul>
+
+        <!--환경보전협회-->
+        <div>
+            <form class="search-filter" id="searchForm" name="searchForm" method="get">
+                <div class="form-input mo-flex-wrap">
+                    <strong class="label">검색어</strong>
+                    <div class="form-input">
+                        <select title="검색어" id="searchType" name="searchType" >
+                            <option value="">- 전체 -</option>
+                            <option value="title"  th:selected="${BbsVo.searchType =='title'}">제목</option>
+                            <option value="cntnts" th:selected="${BbsVo.searchType =='cntnts'}" >내용</option>
+                        </select>
+                        <input type="search" title="검색어" placeholder="검색어를 입력해 주세요." id="searchKeyword" name="searchKeyword" th:value="${BbsVo.searchKeyword}">
+                    </div>
+                    <div class="search-filter-submit">
+                        <button type="button" class="btn-medium btn-green btn-before-search" onclick="searchPstList()">검색</button>
+                    </div>
+                </div>
+                <input type="hidden" id="pageNumber" name="pageNumber" th:value="${BbsVo.pageNumber}"/>
+                <input type="hidden" id="orderField" name="orderField" value="FIXORDER ASC,GRP DESC,ORD"/>
+                <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${BbsVo.rowPerPage}"/>
+                <input type="hidden" id="pstid" name="pstid" value="0"/>
+                <input type="hidden" id="tabType" name="tabType" th:value="${BbsVo.tabType}"/>
+            </form>
+
+            <div class="table-caption flex-nowrap">
+                <div class="left">
+                    <p>총 <b id="totalCount" th:text="${totalCount}">0</b> 건</p>
+                </div>
+                <div class="right">
+                    <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onclick="changeRowPerPage()">
+                        <option value="10" th:selected="${BbsVo.rowPerPage== 10}">10개씩 보기</option>
+                        <option value="50" th:selected="${BbsVo.rowPerPage== 50}">50개씩 보기</option>
+                        <option value="100" th:selected="${BbsVo.rowPerPage== 100}">100개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-col table-layout-auto table-col-mo">
+                <table>
+                    <caption>공지사항 - 번호, 등록기관, 제목, 첨부파일, 등록일, 조회수</caption>
+                    <colgroup>
+                        <col>
+                        <col>
+                        <col style="width:50%;">
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">등록기관</th>
+                        <th scope="col">제목</th>
+                        <th scope="col">첨부파일</th>
+                        <th scope="col">등록일</th>
+                        <th scope="col">조회수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <th:block th:if="${list.size() == 0}">
+                        <tr>
+                            <td class="nodata" colspan="6">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 게시글이 없습니다.</p>
+                            </td>
+                        </tr>
+                    </th:block>
+                    <th:block th:unless="${list.size() == 0}">
+                        <tr th:each="notice : ${list}">
+                            <td>
+                                <th:block th:if="${bbsInfo.fxdNtcUseYn== 'Y' && notice.fxdNtcYn == 'Y'}">
+                                    <div class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                </th:block>
+                                <th:block th:unless="${bbsInfo.fxdNtcUseYn== 'Y' && notice.fxdNtcYn == 'Y'}">
+                                    [[${notice.rowNumber}]]
+                                </th:block>
+                            </td>
+                            <td th:text="${notice.instNm}">등록기관</td>
+                            <td class="al article">
+                                <th:block th:if="${bbsInfo.newUseYn == 'Y' and notice.newYn == 'Y'}">
+                                    <a href="#" class="link ellipsis new" title="새 글" th:onclick="|moveToDetail(${notice.pstid})|">[[${notice.title}]]</a>
+                                </th:block>
+                                <th:block th:unless="${bbsInfo.newUseYn == 'Y' and notice.newYn == 'Y'}">
+                                    <a href="#" class="link ellipsis" th:onclick="|moveToDetail(${notice.pstid})|">[[${notice.title}]]</a>
+                                </th:block>
+                            </td>
+                            <td>
+                                <th:block th:if="${notice.filegrpid != 0 && notice.fileCount > 0}">
+                                    <i class="icon icon-attachment bg-blue" title="첨부파일"></i>
+                                </th:block>
+                            </td>
+                            <td th:text="${#dates.format(notice.regDt,'yyyy-MM-dd')}">등록일</td>
+                            <td th:text="${notice.hits}">조회수</td>
+                        </tr>
+                    </th:block>
+                    </tbody>
+                </table>
+            </div>
+
+            <th:block kattr:pagination="list" onclick="goPage"/>
+        </div>
+
+    </div>
+    <script th:inline="javascript">
+        var BbsVo = /*[[${BbsVo}]]*/null;
+        var bbsInfo = /*[[${bbsInfo}]]*/null;
+        var goReadUrl = "/front/bbs/" + bbsInfo.bbsid + "/view.html"
+        var listUrl = "/front/bbs/" + bbsInfo.bbsid + "/main.html";
+        var selectPstListUrl = "/front/bbs/" + bbsInfo.bbsid + "/selectPstList.do";
+
+        function changeRowPerPage(tabId) {
+            $('#rowPerPage').val($('#selectRowPerPage').val());
+        };
+
+        function moveToDetail(pstid, tabId) {
+            var f = document.forms.searchForm;
+            f.pstid.value = pstid;
+            f.action = goReadUrl;
+            f.submit();
+        };
+
+        function fn_makeListHtml(list, tabId) {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `
+                        <tr>
+                            <td class="nodata" colspan="6">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 게시글이 없습니다.</p>
+                            </td>
+                        </tr>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `
+                            <tr>
+                                <td>
+                                    ${bbsInfo.fxdNtcUseYn == 'Y' && item.fxdNtcYn == 'Y' ?
+                        `<div class="icon icon-speaker-large bg-sred" title="중요 공지"></div>` : item.rowNumber}
+                                </td>
+                                <td> --- 환경 보전 협회 ---</td>
+                                <td class="al article"><a href="#" class="link ellipsis ${bbsInfo.newUseYn == 'Y' && item.newYn == 'Y' ? 'new' : ''}" title="새 글" onclick="moveToDetail(${item.pstid},${tabId})">${item.title}</a></td>
+                                <td>${item.filegrpid != 0 && item.fileCount > 0 ? '<i class="icon icon-attachment bg-blue" title="첨부파일"></i>' : ''}</td>
+                                <td>${item.regDt}</td>
+                                <td>${item.hits}</td>
+                            </tr>`;
+                })
+            }
+            return html;
+        };
+
+        function searchPstList() {
+            var searchType = $("#searchType").val()
+            var searchKeyword = $("#searchKeyword").val()
+
+            if (searchType != '' && searchKeyword == '') {
+                alert('검색어를 입력해 주십시오.');
+                return;
+            }
+
+            $("#pageNumber").val(1);
+            submitForm();
+        }
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            submitForm();
+        }
+
+        $(function () {
+
+            $(document).on('click', '#tab-sub01', function (e) {
+                $('#tabType').val(1);
+                $('#searchType, #searchKeyword').val('')
+                $('#rowPerPage').val(10);
+                submitForm();
+            }).on('click', '#tab-sub02', function (e) {
+                $('#tabType').val(2);
+                $('#searchType, #searchKeyword').val('')
+                $('#rowPerPage').val(10);
+                submitForm();
+            });
+        });
+
+        function submitForm() {
+            var f = document.forms.searchForm;
+            f.action = listUrl;
+            f.submit();
+        }
+
+    </script>
+</div>

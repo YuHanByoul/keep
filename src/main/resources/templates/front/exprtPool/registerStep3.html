@@ -1,0 +1,795 @@
+`
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/nolnbSubLayout">
+<div layout:fragment="content">
+    <div class="steps">
+        <ol>
+            <li>
+                <div class="steps-inner">
+                    <span>01</span>
+                    <strong>약관동의</strong>
+                </div>
+            </li>
+            <li class="active" title="현재 단계">
+                <div class="steps-inner">
+                    <span>02</span>
+                    <strong>신청정보입력</strong>
+                </div>
+            </li>
+            <li>
+                <div class="steps-inner">
+                    <span>03</span>
+                    <strong>가입완료</strong>
+                </div>
+            </li>
+        </ol>
+    </div>
+    <form id="registerForm" name="registerForm">
+        <!-- 인적사항 입력 -->
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">인적사항 입력</h3>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>인적사항 입력 - 이름, 성별, 생년월일, 휴대전화, 전화번호, 이메일, 주소, 상세주소</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">이름</th>
+                    <td th:text="${defaultMemberInfo.nm}">홍길동</td>
+                    <th scope="row">성별<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-check-list">
+                            <label class="inp"><input type="radio" th:checked="${defaultMemberInfo.gndr == 'M'}"><b>남성</b></label>
+                            <label class="inp"><input type="radio" th:checked="${defaultMemberInfo.gndr != 'M'}"><b>여성</b></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">생년월일<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <select title="년" data-width="90" id="brdtYear">
+                                <option value="" disabled selected>년</option>
+                                <option value="select">2023</option>
+                            </select>
+                            <select title="월" data-width="90" id="brdtMonth">
+                                <option value="" disabled selected>월</option>
+                                <option value="1">01</option>
+                                <option value="2">02</option>
+                                <option value="3">03</option>
+                                <option value="4">04</option>
+                                <option value="5">05</option>
+                                <option value="6">06</option>
+                                <option value="7">07</option>
+                                <option value="8">08</option>
+                                <option value="9">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                            </select>
+                            <select title="일" data-width="90" id="brdtDay">
+                                <option value="" disabled selected>일</option>
+                            </select>
+                        </div>
+                        <p class="feedback"></p>
+                    </td>
+                    <th scope="row">휴대전화</th>
+                    <td th:text="${defaultMemberInfo.moblphon}"></td>
+                </tr>
+                <tr>
+                    <th scope="row">전화번호</th>
+                    <td>
+                        <div class="form-input">
+                            <input type="number" title="휴대전화" placeholder="하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요" data-width="290">
+                        </div>
+                    </td>
+                    <th scope="row">이메일</th>
+                    <td th:text="${defaultMemberInfo.eml}">email@email.com</td>
+                </tr>
+                <tr>
+                    <th scope="row">주소</th>
+                    <td th:text="${defaultMemberInfo.addr}">서울특별시 마포구 성암로330</td>
+                    <th scope="row">상세주소</th>
+                    <td th:text="${defaultMemberInfo.addrDtl}">C동 323호</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 재직사항 입력 -->
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">재직사항 입력</h3>
+            </div>
+        </div>
+
+        <div class="table-add-group">
+            <div class="table-row table-row-mo" name="hdofTable">
+                <table>
+                    <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 취득등급, 취득일, 재직증명서</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">재직구분</th>
+                        <td>
+                            <th:block kattr:radio_code="hdofSeCd" grpCd="136"></th:block>
+                        </td>
+                        <th scope="row">재직기관명</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="재직기관명" placeholder="재직기관명 입력" id="instNm" name="instNm" maxlength="50">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">부서(소속)</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="부서(소속)" placeholder="부서(소속) 입력" id="deptNm" name="deptNm" maxlength="50">
+                            </div>
+                        </td>
+                        <th scope="row">지위(직급)</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="지위(직급)" placeholder="지위(직급) 입력" id="jbgdNm" name="jbgdNm" maxlength="50">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">취득일</th>
+                        <td>
+                            <div class="form-input flex-wrap">
+                                <div class="form-input">
+                                    <input type="date" title="시작일" id="hdofBgngDe" name="hdofBgngDe">
+                                    <div class="bul">~</div>
+                                    <input type="date" title="종료일" id="hdofEndDe" name="hdofEndDe">
+                                </div>
+                                <div class="form-check-list">
+                                    <label class="inp">
+                                        <input type="checkbox" id="hdofYn" name="hdofYn" onclick="hdofYnCheck(this)">
+                                        <b>재직중</b>
+                                    </label>
+                                </div>
+                            </div>
+                        </td>
+                        <th scope="row">재직증명서</th>
+                        <td>
+                            <div class="form-input-file form-input-button">
+                                <label class="form-input">
+                                    <input type="file" class="blind" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="1">
+                                    <span class="btn-medium btn-green">업로드</span>
+                                </label>
+                                <input type="hidden" name="filegrpid" value="0">
+                                <ul></ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="table-add-button">
+                    <button type="button" class="btn-remove-table" title="테이블 삭제"><span class="icon icon-remove"></span></button>
+                    <button type="button" class="btn-move-up-table" title="테이블 순서 위로 이동"><span class="icon icon-up"></span></button>
+                    <button type="button" class="btn-move-down-table" title="테이블 순서 아래로 이동"><span class="icon icon-down"></span></button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
+                <span class="icon icon-row-add"></span>
+            </button>
+
+        </div>
+
+        <!-- 자격취득사항 입력 -->
+        <div class="table-caption">
+            <h3 class="sub-title">자격취득사항 입력</h3>
+        </div>
+
+        <div class="table-add-group">
+            <div class="table-row table-row-mo" name="crtfctTable">
+                <table>
+                    <caption>자격취득사항 입력 - 자격증명, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">자격증명</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="취득기관" placeholder="자격증명 입력" id="crtfctNm" name="crtfctNm">
+                            </div>
+                        </td>
+                        <th scope="row">취득기관</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="취득기관" placeholder="취득기관 입력" id="acqsInst" name="acqsInst">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">취득번호</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="취득번호" placeholder="취득번호 입력" id="acqsNo" name="acqsNo">
+                            </div>
+                        </td>
+                        <th scope="row">취득등급</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="취득등급" placeholder="취득등급 입력" id="acqsGrd" name="acqsGrd">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">취득일</th>
+                        <td>
+                            <div class="form-input">
+                                <div class="form-input">
+                                    <input type="date" title="취득일" id="acqsDe" name="acqsDe">
+                                </div>
+                            </div>
+                        </td>
+                        <th scope="row">자격증명서</th>
+                        <td>
+                            <div class="form-input-file form-input-button">
+                                <label class="form-input">
+                                    <input type="file" class="blind" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="자격증명서" maxcount="1">
+                                    <span class="btn-medium btn-green">업로드</span>
+                                </label>
+                                <input type="hidden" name="filegrpid" value="0">
+                                <ul></ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="table-add-button">
+                    <button type="button" class="btn-remove-table" title="테이블 삭제"><span class="icon icon-remove"></span></button>
+                    <button type="button" class="btn-move-up-table" title="테이블 순서 위로 이동"><span class="icon icon-up"></span></button>
+                    <button type="button" class="btn-move-down-table" title="테이블 순서 아래로 이동"><span class="icon icon-down"></span></button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
+                <span class="icon icon-row-add"></span>
+            </button>
+
+        </div>
+
+        <!-- 환경교육 경력(실적) 사항 -->
+        <div class="table-caption">
+            <h3 class="sub-title">환경교육 경력(실적) 사항</h3>
+        </div>
+
+        <div class="table-add-group">
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>환경교육 경력(실적) 사항 - 총 환경교육 경력 입력</caption>
+                    <colgroup>
+                        <col style="width:160px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">총 환경교육 경력</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="활동분야 년" placeholder="" data-width="90" id="envEduCareerYy" name="envEduCareerYy">
+                                <div class="bul">년</div>
+                                <input type="text" title="활동분야 개월" placeholder="" data-width="90" id="envEduCareerMm" name="envEduCareerMm">
+                                <div class="bul">개월</div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-row table-row-mo" name="careerTable">
+                <table>
+                    <caption>환경교육 경력(실적) 사항 입력 - 활동분야, 활동기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서</caption>
+                    <colgroup>
+                        <col style="width:160px;">
+                        <col style="width:380px">
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">활동분야</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="활동분야" placeholder="활동분야 입력" id="fldNm" name="fldNm">
+                            </div>
+                        </td>
+                        <th scope="row">활동기간</th>
+                        <td>
+                            <div class="form-input flex-wrap">
+                                <div class="form-input">
+                                    <input type="date" title="시작일" id="actvtBgngDe" name="actvtBgngDe">
+                                    <div class="bul">~</div>
+                                    <input type="date" title="종료일" id="actvtEndDe" name="actvtEndDe">
+                                </div>
+                                <div class="form-check-list"><label class="inp"><input type="checkbox" id="actvtYn" name="actvtYn" onclick="actvtYnCheck(this)"><b>활동중</b></label></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">활동시간</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="활동시간" placeholder="활동시간 입력" id="actvtHr" name="actvtHr">
+                                <div class="bul">시간</div>
+                            </div>
+                        </td>
+                        <th scope="row">확인기관</th>
+                        <td>
+                            <div class="form-input">
+                                <input type="text" title="확인기관" placeholder="확인기관 입력" id="idntyInstNm" name="idntyInstNm">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">활동내용</th>
+                        <td colspan="3">
+                            <div class="form-input">
+                                <textarea title="활동내용" placeholder="활동내용 입력 (500자 이내)" id="actvtCn" name="actvtCn" maxlength="500"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">확인일</th>
+                        <td colspan="3">
+                            <div class="form-input">
+                                <div class="form-input">
+                                    <input type="date" title="확인일" id="idntyDe" name="idntyDe">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">확인서</th>
+                        <td>
+                            <div class="form-input-file form-input-button">
+                                <label class="form-input">
+                                    <input type="file" class="blind" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="확인서" maxcount="1">
+                                    <span class="btn-medium btn-green">업로드</span>
+                                </label>
+                                <ul></ul>
+                            </div>
+                        </td>
+                        <th scope="row">정관</th>
+                        <td>
+                            <div class="form-input-file form-input-button">
+                                <label class="form-input">
+                                    <input type="file" class="blind" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="정관" maxcount="1">
+                                    <span class="btn-medium btn-green">업로드</span>
+                                </label>
+                                <input type="hidden" name="filegrpid" value="0">
+                                <ul></ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="table-add-button">
+                    <button type="button" class="btn-remove-table" title="테이블 삭제"><span class="icon icon-remove"></span></button>
+                    <button type="button" class="btn-move-up-table" title="테이블 순서 위로 이동"><span class="icon icon-up"></span></button>
+                    <button type="button" class="btn-move-down-table" title="테이블 순서 아래로 이동"><span class="icon icon-down"></span></button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
+                <span class="icon icon-row-add"></span>
+            </button>
+
+        </div>
+
+        <!-- 전문 분야 정보 입력 -->
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">전문 분야 정보 입력</h3>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>전문 분야 정보 입력 - 전문가 유형, 전문분야, 전문분야(대상), 전문분야(환경주제), 전문분야(환경주제), 주요 활동지역, 가능 활동범위</caption>
+                <colgroup>
+                    <col style="width:180px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">전문가 유형<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:radio_code="exprtTypeCd" grpCd="133"></th:block>
+                        <p class="feedback"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">전문분야<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input mo-flex-wrap">
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox" id="fldLctrYn" name="fldLctrYn"><b>강의</b></label>
+                                <label class="inp"><input type="checkbox" id="fldPlanngYn" name="fldPlanngYn"><b>기획</b></label>
+                                <label class="inp"><input type="checkbox" id="fldCnsltngYn" name="fldCnsltngYn"><b>사업자문 및 컨설팅</b></label>
+                                <label class="inp"><input type="checkbox" id="fldEtcYn" name="fldEtcYn">
+                                    <b>기타</b>
+                                    <input type="text" title="기타" placeholder="" data-width="160" class="ml10" id="fldEtcCn" name="fldEtcCn" style="display:none" maxlength="15">
+                                </label>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">전문분야(대상)<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:check_code="trgtCd" grpCd="135" firstOptTxt="- 전체 - "></th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">전문분야(환경주제)<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:check_code="sbjctCd" grpCd="126" firstOptTxt="- 전체 - "></th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">주요 활동지역<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:check_code="actvtRgn" grpCd="125" firstOptTxt="- 전체 - "></th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">가능 활동범위<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:check_code="actvtScope" grpCd="125" firstOptTxt="- 전체 - "></th:block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 정보 공개 범위 설정 -->
+        <div class="table-caption">
+            <div class="left">
+                <div class="d-flex a-center">
+                    <h3 class="sub-title">정보 공개 범위 설정</h3>
+                    <div class="toggleParent toggle-layer ml5">
+                        <button class="toggleTrigger" title="툴팁">
+                            <span class="icon icon-question"></span>
+                            <span class="blind">
+                            <span class="on" aria-hidden="false">툴팁 열기</span>
+                            <span class="off" aria-hidden="true">툴팁 닫기</span>
+                        </span>
+                        </button>
+                        <div class="alarm-layer toggle-layer-inner" style="margin-left: -77px;">
+                            <button class="toggleTrigger toggle-layer-close" title="레이어팝업 닫기"></button>
+                            <div class="toggle-layer-title">
+                                <strong>정보 공개 범위 설정</strong>
+                            </div>
+                            <div class="toggle-layer-content">
+                                <p>정보 공개에 동의하면 전문가 인력풀에 등록되었을 때, 전문가 회원님의 정보를 수요자가 확인할 수 있습니다.<br>정보 공개에 동의하지 않으면 전문가 인력풀에 등록되었을 때, 전문가 회원님의 정보를 수요자가 확인할 수 없습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>정보 공개 범위 설정 입력 - 연락처 공개 범위, 재직사항 공개 설정, 자격취득사항 공개 설정, 환경교육 경력(실적) 사항 공개 설정</caption>
+                <colgroup>
+                    <col style="width:280px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">연락처 공개 범위<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-check-list">
+                            <label class="inp"><input type="checkbox" id="moblphonRlsYn" name="moblphonRlsYn"><b>휴대전화</b></label>
+                            <label class="inp"><input type="checkbox" id="telnoRlsYn" name="telnoRlsYn"><b>전화번호</b></label>
+                            <label class="inp"><input type="checkbox" id="emlRlsYn" name="emlRlsYn"><b>이메일</b></label>
+                            <label class="inp"><input type="checkbox" id="checkAll" name="checkAll"><b>모두 공개하지 않음</b></label>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">재직사항 공개 설정<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:radio_yn="hdofRlsYn" label1="공개" label2="공개하지 않음" defaultVal="Y"></th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">자격취득사항 공개 설정<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:radio_yn="qlfcRlsYn" label1="공개" label2="공개하지 않음" defaultVal="Y"></th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">환경교육 경력(실적) 사항 공개 설정<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:radio_yn="careerRlsYn" label1="공개" label2="공개하지 않음" defaultVal="Y"></th:block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 강의요청 및 홍보 알림톡 서비스 수신 여부 -->
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">강의요청 및 홍보 알림톡 서비스 수신 여부</h3>
+            </div>
+            <div class="right">
+                <p class="desc"><span class="ast">*</span>필수 입력 정보입니다.</p>
+            </div>
+        </div>
+
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>강의요청 및 홍보 알림톡 서비스 수신 여부 입력 - 기업/단체 강의요청 알림톡 수신 여부, 환경보전협회 강의요청 안내 및 홍보 알림톡 수신 여부</caption>
+                <colgroup>
+                    <col style="width:400px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">기업/단체 강의요청 알림톡 수신 여부<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:radio_yn="entLctrDmndRcptnYn" label1="받음" label2="받지 않음" defaultVal="Y"></th:block>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">환경보전협회 강의요청 안내 및 홍보 알림톡 수신 여부<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <th:block kattr:radio_yn="lctrGdncRcptnYn" label1="받음" label2="받지 않음" defaultVal="Y"></th:block>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray">이전으로</button>
+                <button type="button" class="btn-medium btn-gray">중간저장</button>
+                <button type="button" class="btn-medium btn-gray" onclick="test()">테스트함수</button>
+                <button type="button" class="btn-medium btn-blue" onclick="applyExprt()">신청하기</button>
+            </div>
+        </div>
+    </form>
+
+    <script th:inline="javascript">
+        function test() {
+            var hdofList = [];
+
+            $('div[name=hdofTable]').each(function (index, item) {
+                hdofList.push(
+                    {hdofSeCd: $(item).find('input[name=hdofSeCd]').val()},
+                    {instNm: $(item).find('input[name=instNm]').val()},
+                    {deptNm: $(item).find('input[name=deptNm]').val()},
+                    {jbgdNm: $(item).find('input[name=jbgdNm]').val()},
+                    {hdofBgngDe: $(item).find('input[name=hdofBgngDe]').val()},
+                    {hdofEndDe: $(item).find('input[name=hdofEndDe]').val()},
+                    {hdofYn: $(item).find('input[name=hdofYn]').val()}
+                )
+            });
+            console.log(JSON.stringify(hdofList));
+        }
+
+        function previous() {
+            location.href = '/front/exprtPool/registerStep2.html';
+        }
+
+        function tempSave() {
+            //임시 저장
+            if (!confirm('중간저장 하시겠습니까?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '/front/exprtPool/insertTempExprtRegisteration',
+                method: 'post',
+                data: $('#registerForm').serializeArray(),
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        alert('저장이 완료되었습니다.');
+                    }
+                }
+            })
+
+        }
+
+        function hdofYnCheck(hdofYnCheckbox) {
+            $hdofYnCheckbox = $(hdofYnCheckbox);
+            let $hdofEndDe = $hdofYnCheckbox.closest('.form-input').find('input[name=hdofEndDe]');
+
+            if ($hdofYnCheckbox.is(":checked")) {
+                $hdofEndDe.val('');
+                $hdofEndDe.prop('readonly', true);
+            } else {
+                $hdofEndDe.prop('readonly', false);
+            }
+        }
+
+        function actvtYnCheck(actvtYnCheckbox) {
+            $actvtYnCheckbox = $(actvtYnCheckbox);
+            let $actvtEndDe = $actvtYnCheckbox.closest('.form-input').find('input[name=actvtEndDe]');
+
+            if ($actvtYnCheckbox.is(":checked")) {
+                $actvtEndDe.val('');
+                $actvtEndDe.prop('readonly', true);
+            } else {
+                $actvtEndDe.prop('readonly', false);
+            }
+        }
+
+        function applyExprt() {
+
+            if($('#brdtYear').val() == null && $('#brdtMonth').val() == null && $('#brdtDay').val() == null) {
+                alert('생년월일을 선택해주십시오.');
+                $('#brdtYear').focus();
+                return;
+            }
+
+            if (!$('#fldLctrYn').is(':checked') && !$('#fldPlanngYn').is(':checked') && !$('#fldCnsltngYn').is(':checked') && !$('#fldEtcYn').is(':checked')) {
+                alert('전문분야를 선택해 주십시오.');
+                $('#fldLctrYn').focus();
+                return;
+            }
+
+            if ($('#fldEtcYn').is(':checked') && $('#fldEtcCn').val() == '') {
+                alert("기타 내용을 입력해주십시오.")
+                $('#fldEtcYn').focus();
+                return;
+            }
+
+            if ($("input[name=trgtCd]:checked").length == 0) {
+                alert('전문분야(대상)을 선택해주십시오.')
+                $('#trgtCd1').focus();
+                return;
+            }
+            if ($("input[name=sbjctCd]:checked").length == 0) {
+                alert('전문분야(환경주제)를 선택해주십시오.')
+                $('#sbjctCd1').focus();
+                return;
+            }
+            if ($("input[name=actvtRgn]:checked").length == 0) {
+                alert('주요 활동지역을 선택해주십시오.')
+                $('#actvtRgn1').focus();
+                return;
+            }
+            if ($("input[name=actvtScope]:checked").length == 0) {
+                alert("가능 활동범위를 선택해주십시오.");
+                $('#actvtScope1').focus();
+                return;
+            }
+
+
+            if (!$('#registerForm').valid()) return;
+
+        }
+
+        function cloneTable(rowAddBtn) {
+            let $rowAddBtn = $(rowAddBtn);
+            let $cloneTable = $rowAddBtn.prev().clone();
+
+            $cloneTable.find('input, textarea').val('');
+            $cloneTable.find('input[type=checkbox], input[type=radio]').prop('checked', false);
+            $cloneTable.find('file-block').remove();
+            $cloneTable.find('input[type=radio]').attr('name', $cloneTable.find('input[type=radio]').attr('name') + "1");
+            $rowAddBtn.before($cloneTable);
+        }
+
+        function validateForm() {
+            $('#registerForm').validate({
+                rules: {
+                    brdt: {required: true}
+                    , exprtTypeCd: {required: true}
+                    , envEduCareerYy: {number: true}
+                    , envEduCareerMm: {number: true}
+                },
+                messages: {
+                    brdt: {required: '생년월일을 입력해 주십시오.'}
+                    , exprtTypeCd: {requried: '전문가 유형을 선택해 주십시오.'}
+                    , envEduCareerYy: {number: "숫자만 입력 가능합니다."}
+                    , envEduCareerMm: {number: "숫자만 입력 가능합니다."}
+                }
+            });
+        }
+
+        $(function () {
+            let $brdtYear = $('#brdtYear')
+            let $brdtDay = $('#brdtDay');
+            let isYearOptionExisted = false;
+
+            $brdtYear.on('focus', function () {
+                if (!isYearOptionExisted) {
+                    isYearOptionExisted = true
+                    for (let i = new Date().getFullYear(); i >= 1920; i--) {
+                        const YearOption = document.createElement('option')
+                        YearOption.setAttribute('value', i)
+                        YearOption.innerText = i
+                        this.appendChild(YearOption);
+                    }
+                }
+            })
+
+            $brdtDay.on('focus', function () {
+                let date = new Date($brdtYear.val(), $('#brdtMonth').val(), 0).getDate();
+                $brdtDay.empty();
+                const dayOption = document.createElement('option')
+                dayOption.setAttribute('value', '');
+                dayOption.setAttribute('disable', true);
+                dayOption.setAttribute('selected', true);
+                for (let d = 1; d <= date; d += 1) {
+                    const dayOption = document.createElement('option')
+                    dayOption.setAttribute('value', d)
+                    this.appendChild(dayOption)
+                    if (d < 10) {
+                        dayOption.innerText = "0" + d
+                    } else {
+                        dayOption.innerText = d
+                    }
+                }
+            })
+
+            $('#checkAll').on('click', function (e) {
+                if (e.target.checked) {
+                    $('#moblphonRlsYn').prop('checked', false);
+                    $('#telnoRlsYn').prop('checked', false);
+                    $('#emlRlsYn').prop('checked', false);
+                } else {
+                    $('#moblphonRlsYn').prop('checked', true);
+                    $('#telnoRlsYn').prop('checked', true);
+                    $('#emlRlsYn').prop('checked', true);
+                }
+            });
+
+            $('#fldEtcYn').on('click', function (e) {
+                if (e.target.checked) {
+                    $('#fldEtcCn').show();
+                } else {
+                    $('#fldEtcCn').hide();
+                    $('#fldEtcCn').val('');
+                }
+            });
+            validateForm();
+        })
+    </script>
+</div>
+`
