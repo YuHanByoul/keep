@@ -204,6 +204,23 @@ public class JntpurchsServiceImpl extends PlumAbstractServiceImpl implements Jnt
     }
     
     /**
+     * 공동구매 모집상태 업데이트
+     *
+     * @Title : updateJntpurchsStts 
+     * @Description : 공동구매 모집상태 업데이트
+     * @param jntpurchsVo JntpurchsVo
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    @Override
+    public int updateJntpurchsStts(JntpurchsVo jntpurchsVo) throws Exception {
+        int retVal = 0;
+        
+        retVal += jntpurchsDao.updateJntpurchsStts(jntpurchsVo);
+        return retVal;
+    }
+    
+    /**
      * 공동구매모집 정보 삭제
      *
      * @Title : deleteJntpurchs 

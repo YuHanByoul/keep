@@ -8,7 +8,7 @@
 <div layout:fragment="content">
         <div class="table-view">
         <div class="table-view-header">
-            <h3><span>유아환경교육 교사연수 및 교보재 보급 안내 </span></h3>
+            <h3><span>[[${pstInfo.title}]]</span></h3>
             <dl>
                 <div class="list">
                     <dt>등록기관</dt>
@@ -16,7 +16,7 @@
                 </div>
                 <div class="list">
                     <dt>등록일</dt>
-                    <dd>[[${pstInfo.regDt}]]</dd>
+                    <dd>[[${#dates.format(pstInfo.regDt, 'yyyy-MM-dd')}]]</dd>
                 </div>
                 <div class="list">
                     <dt>조회수</dt>
@@ -29,7 +29,7 @@
                     <dd>
                         <div class="form-input-file">
                             <ul th:each="file : ${fileMap}">
-                                <li class="file-block" th:data_ext="${file.ext}">
+                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                     <span class="name">
                                         <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
                                            th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
@@ -51,34 +51,45 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <!-- <button type="button" class="btn-medium btn-gray">삭제</button>
-                <button type="button" class="btn-medium btn-gray">수정</button> -->
-                <button type="button" class="btn-medium btn-gray">목록</button>
+                <button type="button" class="btn-medium btn-gray" onclick="goListPage()">목록</button>
             </div>
         </div>
 
         <div class="page-navigation">
-            <a href="#">
-                <dl>
-                    <dt>이전글</dt>
-                    <dd><span class="ellipsis">2022년 아이돌봄지원사업 안내(인쇄용)</span></dd>
-                </dl>
-            </a>
-            <a href="#">
-                <dl>
-                    <dt>다음글</dt>
-                    <dd><span class="ellipsis">2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)</span>
-                    </dd>
-                </dl>
-            </a>
-        </div>
+            <th:block th:if="${pstInfo.prevPstid != null}">
+                <a href="#" th:onclick="|goToOtherPst(${pstInfo.prevPstid})|">
+                    <dl>
+                        <dt>이전글</dt>
+                        <dd><span class="ellipsis">[[${pstInfo.prevTitle}]]</span></dd>
+                    </dl>
+                </a>
+            </th:block>
 
+            <th:block th:if="${pstInfo.nextPstid != null}">
+                <a href="#" th:onclick="|goToOtherPst(${pstInfo.nextPstid})|">
+                    <dl>
+                        <dt>다음글</dt>
+                        <dd><span class="ellipsis">[[${pstInfo.nextTitle}]]</span>
+                        </dd>
+                    </dl>
+                </a>
+            </th:block>
+        </div>
     </div>
 
-    <script th:inline="javascript">
+    <form name="listForm" id="listForm" method="GET">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${PstVo.pageNumber}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${PstVo.rowPerPage}">
+        <input type="hidden" id="searchType" name="searchType" th:value="${PstVo.searchType}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${PstVo.searchKeyword}">
+        <input type="hidden" id="tabType" name="tabType" th:value="${PstVo.tabType}">
+        <input type="hidden" id="pstid" name="pstid">
+    </form>
 
+    <script th:inline="javascript">
         var PstVo = /*[[${PstVo}]]*/null;
         var bbsInfo = /*[[${bbsInfo}]]*/null;
+        var goReadUrl = "/front/bbs/" + bbsInfo.bbsid + "/view.html"
         var goListFormUrl = "/front/bbs/" + bbsInfo.bbsid + "/main.html";
         var selectCmntListUrl = "/front/bbs/" + bbsInfo.bbsid + "/selectCmntList.do";
         var insertCmnturl = "/front/bbs/" + bbsInfo.bbsid + "/insertCmnt.do";
@@ -93,6 +104,15 @@
                 fn_selectCmntList();
             }
         })
+
+        function goToOtherPst(pstid) {
+            console.log(pstid);
+            debugger;
+            let f = document.forms.listForm;
+            f.action = goReadUrl;
+            f.pstid.value = pstid;
+            f.submit();
+        }
 
         function goModifyPage() {
             var f = document.forms.modifyForm;

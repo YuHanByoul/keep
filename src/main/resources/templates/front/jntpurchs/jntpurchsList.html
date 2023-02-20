@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">공동구매명</strong></div>
+                    <div class="form-body">
+                        <input type="search" id="searchJntpurchsNm" name="searchJntpurchsNm" title="공동구매명" placeholder="공동구매명을 입력해 주세요.">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">모집상태</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchSttsCd" grpCd="172" title="모집상태" firstOptTxt="전체" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="jntpurchs.initSearch();">초기화</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search" onclick="jntpurchs.onSearch();">검색</button>
+            </div>
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="3">
+            <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+            <input type="hidden" id="orderField" name="orderField" value="END_DT">
+        </form>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+        </div>
+        <div class="card-list card-list-n3">
+            <ul id="jntpurchsList">
+            </ul>
+        </div>
+        <div id="pagination">
+        </div>
+
+        <!-- //content -->
+        <script th:inline="javascript">
+            var jntpurchs = {
+                listUrl: "/front/jntpurchs/selectJntpurchsList.do"
+                
+                , init: function() {
+                    this.onLoadData();
+                    this.registEvent();                
+                }
+                
+                , registEvent: function() {
+                    // TODO
+                }
+                
+                , onLoadData: function() {
+                    if(displayWorkProgress(true)) {
+                        var param = $('#searchForm').serializeArray();
+                        $.ajax({
+                            url: jntpurchs.listUrl
+                            , cache: false
+                            , dataType: "json"
+                            , data: param
+                            , type: "GET"
+                            , success: function(response) {
+                                jntpurchs.setList(response);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+                
+                , setList: function(data) {
+                    $("#jntpurchsList, #pagination").empty();
+                    $("#totalCount").text(data.totalCount);
+                    if(data.totalCount == 0) {
+                        $("#jntpurchsList").append(jntpurchs.getNoData());
+                    } else {
+                        $(data.list).each(function(index, data) {
+                            $("#jntpurchsList").append(jntpurchs.getListItem(data));
+                        });                        
+                    }
+                    $("#pagination").html(data.pagination);
+                }
+                
+                , getNoData: function() {
+                    var el = '<li>등록된 공동구매가 없습니다.</li>';
+                    
+                    return el;
+                }
+                , getListItem: function(data) {
+                    var stts = data.sttsCdNm;
+                    var tagClass = stts == "모집중" ? "tag-green" : stts == "모집대기" ? "tag-blue" : stts == "모집종료" ? "tag-red" : "tag-gray";
+                    var qntyWhol = data.qntyWholLmtYn == "Y" ? "제한없음" : addComma3(data.qntyWhol) + "개";
+                    var orderQnty = addComma3(data.orderQnty) + "개";
+                    var item = '<li>';
+                    item += '<a href="/front/jntpurchs/jntpurchsDetailForm.html?jntpurchsid=' + data.jntpurchsid + '">';
+                    item += '<div class="thumb" style="height:163px;">';
+                    item += '<img src="/downloadFileByFileid.do?fileid=' + data.rprsImgFileid + '&file_idntfc_key=' + data.rprsImgFilekey + '" alt="' + data.jntpurchsNm + ' 대표이미지">';
+                    item += '</div>';
+                    item += '<dl class="card-program-dot-list">';
+                    item += '<dt><div class="tag ' + tagClass + '">' + data.sttsCdNm + '</div></dt>';
+                    item += '<dd>';
+                    item += '<p class="ellipsis" data-ellipsis="2">' + data.jntpurchsNm + '</p>';
+                    item += '<ul class="dot-list fc-black3">';
+                    item += '<li class="d-flex">';
+                    item += '<span class="tit">교구명 :</span>';
+                    item += '<span class="dc">' + data.tchaidNm + '</span>';
+                    item += '</li>';
+                    item += '<li class="d-flex">';
+                    item += '<span class="tit">신청기간 :</span>';
+                    item += '<span class="dc">' + data.bgngDt + '  ~ <br/>' + data.endDt + '</span>';
+                    item += '</li>';
+                    item += '<li class="d-flex">';
+                    item += '<span class="tit">신청수량 :</span>';
+                    item += '<span class="dc"><span class="fc-blue">' + orderQnty+ '</span>' + ' / ' + qntyWhol + '</span>';
+                    item += '</li>';
+                    item += '</ul>';
+                    item += '</dd>';
+                    item += '</dl>';
+                    item += '</a>';
+                    item += '</li>';
+                    
+                    return item;
+                }
+                
+                , initSearch: function() {
+                     $("#searchJntpurchsNm, #searchSttsCd").val("");
+                }
+                
+                , onSearch: function() {
+                    $("#pageNumber").val("1");
+                    this.onLoadData();
+                }
+                
+                , setGrid: function() {
+                }
+            };
+            
+            function goPage(pageNumber) {
+                $("#pageNumber").val(pageNumber);
+                jntpurchs.onLoadData();
+            }
+            
+            $(function() {
+                jntpurchs.init();
+            });
+        </script>
+    </div>
+</body>
+</html>

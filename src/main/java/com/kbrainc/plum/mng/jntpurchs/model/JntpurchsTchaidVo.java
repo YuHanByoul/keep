@@ -47,20 +47,32 @@ public class JntpurchsTchaidVo extends ParentRequestVo {
     /** 교구유형 코드 */
     private String tchaidTypeCd;
     
-    /** 교구유형명 */
-    private String tchaidTypeNm;
+    /** 교구유형 코드명 */
+    private String tchaidTypeCdNm;
     
     /** 교육유형 코드 */
     private String eduTypeCd;
     
-    /** 교육유형명 */
-    private String eduTypeNm;
+    /** 교육유형 코드명 */
+    private String eduTypeCdNm;
+    
+    /** 모듬구성 코드 */
+    private String teamCmpstnCd;
+    
+    /** 모듬구성 코드명 */
+    private String teamCmpstnCdNm;
     
     /** 검색 유형 */
-    private String tchaidSearchType;
+    private String searchTchaidType;
     
     /** 검색 키워드 */
-    private String tchaidSearchKeyword;
+    private String searchTchaidKeyword;
+    
+    /** 검색 교육유형 */
+    private String searchEduTypeCd;
+    
+    /** 검색 교구유형 */
+    private String searchTchaidTypeCd;
 
     
     /** 수정일시 */

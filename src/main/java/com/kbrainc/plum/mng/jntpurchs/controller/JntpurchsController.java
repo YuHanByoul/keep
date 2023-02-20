@@ -127,9 +127,9 @@ public class JntpurchsController {
             model.addAttribute("dtlImgFileList", dtlImgFileList);
         }
         if(jntpurchsInfo.getMapFilegrpid() != null && jntpurchsInfo.getMapFilegrpid() != 0) {
-            fileVo.setFilegrpid(jntpurchsInfo.getMapFilegrpid());
-            ArrayList<FileVo> mapFileList = fileService.getFileList(fileVo);
-            model.addAttribute("mapFileList", mapFileList);
+            fileVo.setFileid(jntpurchsInfo.getMapFilegrpid());
+            FileVo mapFileInfo = fileService.getFileInfo(fileVo);
+            model.addAttribute("mapFileInfo", mapFileInfo);
         }
         if(jntpurchsInfo.getEduPhotoFilegrpid() != null && jntpurchsInfo.getEduPhotoFilegrpid() != 0) {
             fileVo.setFilegrpid(jntpurchsInfo.getEduPhotoFilegrpid());
@@ -284,6 +284,48 @@ public class JntpurchsController {
         int retVal = 0;
         jntpurchsVo.setUser(user);
         retVal = jntpurchsService.updateJntpurchs(jntpurchsVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else if(retVal == -1) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "공동구매신청 이력이 있어 수정할 수 없습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    /**
+     * 공동구매 모집상태  업데이트
+     *
+     * @Title : updateJntpurchs
+     * @Description : 공동구매 모집상태 업데이트
+     * @param jntpurchsVo JntpurchsVo 객체
+     * @param bindingResult jntpurchsVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/updateJntpurchsStts.do")
+    @ResponseBody
+    public Map<String, Object> updateJntpurchsStts(@Valid JntpurchsVo jntpurchsVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsVo.setUser(user);
+        retVal = jntpurchsService.updateJntpurchsStts(jntpurchsVo);
           
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
