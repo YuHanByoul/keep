@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.egovframe.rte.psl.dataaccess.util.EgovMap;
 
+import com.kbrainc.plum.mng.bizAply.pcntst.model.GradeVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 
@@ -67,6 +68,18 @@ public interface PublicContestService {
     List<EgovMap> selectEvalSheetList(PublicContestVo publicContestVo) throws Exception;
     
     /**
+     * 교부 정보 조회. 
+     *
+     * @Title : selectDelevery
+     * @Description : TODO
+     * @param publicContestVo
+     * @return
+     * @throws Exception
+     * @return List<PublicContestVo>
+      */
+     List<PublicContestVo> selectDelevery(PublicContestVo publicContestVo) throws Exception;
+     
+    /**
     * 공모관리 등록. 
     *
     * @Title : insertContest
@@ -90,6 +103,18 @@ public interface PublicContestService {
      */
     int updateContest(PublicContestVo publicContestVo) throws Exception;
     
+    /**
+     * 심사배분율 조회. 
+     *
+     * @Title : selectDelevery
+     * @Description : TODO
+     * @param gradeVo
+     * @return
+     * @throws Exception
+     * @return List<GradeVo>
+      */
+     List<GradeVo> selectGradeList(GradeVo gradeVo) throws Exception;
+     
     /**
     * 공모관리 목록 엑셀 다운로드. 
     *
