@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryAplyComputVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryAplySplmntVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryAplyVo;
@@ -135,15 +136,19 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
         // 1. 신청정보 업데이트
         retVal += delvryDao.updateDelvryAply(delvryAplyVo);
         
-        // 2. 산출내역 등록/업데이트
+        // 2. 산출내역 등록/업데이트/삭제
         List<DelvryAplyComputVo> computList = delvryAplyVo.getComputList();
-        int delvryAplyid = delvryAplyVo.getDelvryAplyid();
         if(computList != null && computList.size() > 0) {
             for(int i = 0; i < computList.size(); i++) {
                 DelvryAplyComputVo computVo = computList.get(i);
                 computVo.setUser(delvryAplyVo.getUser());
-                if(computVo.getComputid() == 0) { // 산출내역 등록
+                int computid = computVo.getComputid(); 
+                int amt = computVo.getAmt();
+                String cn = computVo.getCn();
+                if(computid == 0 && (amt != 0 || (cn != null && !cn.equals("")))) { // 등록
                     retVal += delvryDao.insertDelvryAplyComput(computVo);
+                } else if(computid > 0 && amt == 0 && (cn == null || cn.equals(""))) { // 삭제
+                    retVal += delvryDao.deleteDelvryAplyComput(computVo);
                 } else { // 업데이트
                     retVal += delvryDao.updateDelvryAplyComput(computVo);
                 }
@@ -213,6 +218,20 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
         retVal = delvryDao.updateDelvryAplySplmnt(delvryAplySplmntVo);
         
         return retVal;
+    }
+    
+    /**
+    * 교부 신청 파일 목록 조회
+    *
+    * @Title : selectDelvryAplyFileList
+    * @Description : 교부 신청 보완요청 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<DelvryAplyVo> 교부 신청 보완요청 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception {
+        return delvryDao.selectDelvryAplyFileList(delvryAplyVo);
     }
     
 }

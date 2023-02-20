@@ -114,7 +114,6 @@ public class DelvryController {
     *
     * @Title : delvryAplySplmntInsertPopup
     * @Description : 교부 신청 보완요청 등록 팝업
-    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
     * @return String 화면경로
     * @throws Exception 예외
     */
@@ -124,20 +123,35 @@ public class DelvryController {
     }
     
     /**
-     * 교부 신청 보완요청 수정 팝업
-     *
-     * @Title : delvryAplySplmntUpdatePopup
-     * @Description : 교부 신청 보완요청 수정 팝업
-     * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
-     @RequestMapping(value = "/mng/delvry/delvryAplySplmntUpdatePopup.html")
-     public String delvryAplySplmntUpdatePopup(DelvryAplySplmntVo delvryAplySplmntVo, Model model) throws Exception {
-         model.addAttribute("splmntInfo", delvryService.selectDelvryAplySplmntInfo(delvryAplySplmntVo));
-         return "mng/delvry/splmntUpdatePopup";
-     }
-    
+    * 교부 신청 보완요청 수정 팝업
+    *
+    * @Title : delvryAplySplmntUpdatePopup
+    * @Description : 교부 신청 보완요청 수정 팝업
+    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/delvry/delvryAplySplmntUpdatePopup.html")
+    public String delvryAplySplmntUpdatePopup(DelvryAplySplmntVo delvryAplySplmntVo, Model model) throws Exception {
+        model.addAttribute("splmntInfo", delvryService.selectDelvryAplySplmntInfo(delvryAplySplmntVo));
+        return "mng/delvry/splmntUpdatePopup";
+    }
+     
+    /**
+    * 교부 신청서 팝업
+    *
+    * @Title : delvryAplyPopup
+    * @Description : 교부 신청서 팝업
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/delvry/delvryAplyPopup.html")
+    public String delvryAplyPopup(DelvryAplyVo delvryAplyVo, Model model) throws Exception {
+        //model.addAttribute("splmntInfo", delvryService.selectDelvryAplySplmntInfo(delvryAplyVo));
+        return "mng/delvry/delvryAplyPopup";
+    }
+      
     /**
     * 공모 목록 조회
     *
@@ -388,6 +402,69 @@ public class DelvryController {
             resultMap.put("msg", "등록에 실패하였습니다");
         }
               
+        return resultMap;
+    }
+    
+    /**
+     * 교부 신청 보완요청 업데이트
+     *
+     * @Title : updateDelvryAplySplmnt
+     * @Description : 교부 신청 보완요청 업데이트
+     * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+     * @param bindingResult delvryAplySplmntVo 유효성 검증결과
+     * @param user 사용자 세션 정보
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/delvry/updateDelvryAplySplmnt.do")
+    @ResponseBody
+    public Map<String, Object> updateDelvryAplySplmnt(@Valid DelvryAplySplmntVo delvryAplySplmntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        delvryAplySplmntVo.setUser(user);
+        retVal = delvryService.updateDelvryAplySplmnt(delvryAplySplmntVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정에 성공하였습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    /**
+    * 교부 신청 파일 목록 조회
+    *
+    * @Title : selectDelvryAplyFileList
+    * @Description : 교부 신청 파일 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/delvry/selectDelvryAplyFileList.do")
+    @ResponseBody
+    public Map<String, Object> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<FileVo> result = delvryService.selectDelvryAplyFileList(delvryAplyVo);
+        if(result.size() > 0) {
+            resultMap.put("totalCount", result.size());
+         } else {
+             resultMap.put("totalCount", 0);
+         }
+        resultMap.put("list", result);
+        
         return resultMap;
     }
     

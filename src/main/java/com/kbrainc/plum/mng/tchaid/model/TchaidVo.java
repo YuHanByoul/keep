@@ -40,28 +40,28 @@ public class TchaidVo extends ParentRequestVo {
     private int tchaidid;
     
     /** 교구명   */
-    @Size(max = 100, message = "교구명은 100자를 넘을 수 없습니다.")
+    @Size(max = 100, message = "교구명은 20자를 넘을 수 없습니다.")
     private String tchaidNm;
     
     /** 수량_재고   */
     private Integer qntyInvntry;
     
     /** 교구 유형 코드 */
-    @Size(max = 20, message = "교구 유형 코드는 100자를 넘을 수 없습니다.")
+    @Size(max = 20, message = "교구 유형 코드는 20자를 넘을 수 없습니다.")
     private String tchaidTypeCd;
     
     /** 교구 유형 코드명 */
     private String tchaidTypeCdNm;
     
     /** 교육 유형 코드 */
-    @Size(max = 20, message = "교구 유형 코드는 100자를 넘을 수 없습니다.")
+    @Size(max = 20, message = "교구 유형 코드는 20자를 넘을 수 없습니다.")
     private String eduTypeCd;
     
     /** 교육 유형 코드명 */
     private String eduTypeCdNm;
     
     /** 모둠 구성 코드 */
-    @Size(max = 20, message = "교구 유형 코드는 100자를 넘을 수 없습니다.")
+    @Size(max = 20, message = "교구 유형 코드는 20자를 넘을 수 없습니다.")
     private String teamCmpstnCd;
     
     /** 모둠 구성 코드명 */

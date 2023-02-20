@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
+import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
@@ -55,15 +56,28 @@ public interface MemberService {
     
     /**
     *
+    * 사업자등록번호 중복 체크
+    *
+    * @Title : checkDuplicationBrno
+    * @Description : 사업자등록번호 중복 체크
+    * @param memberInstVo MemberInstVo객체
+    * @return MemberInstVo result와 msg리턴 
+    * @throws Exception 예외
+    */
+    public MemberInstVo checkDuplicationBrno(MemberInstVo memberInstVo) throws Exception;
+    
+    /**
+    *
     * 회원 정보 등록
     *
     * @Title : insertMember
     * @Description : 
     * @param memberVo MemberVo객체
+    * @param memberInstVo MemmberInstVo객체
     * @return int 
     * @throws Exception 예외
     */
-    public int insertMember(MemberVo memberVo) throws Exception;
+    public int insertMember(MemberVo memberVo, MemberInstVo memberInstVo) throws Exception;
     
     /**
     * ci에 해당하는 userid 조회.
@@ -109,5 +123,15 @@ public interface MemberService {
     */
     public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception;
     
+    /**
+    * 주소로 시군구 코드를 가져온다(카카오 주소API).
+    *
+    * @Title : getSignguCdWithaddress
+    * @Description : 주소로 시군구 코드를 가져온다(카카오 주소API)
+    * @param addr 주소
+    * @return String 시군구코드
+    */
+    public String getSignguCdWithaddress(String addr);
+
     
 }

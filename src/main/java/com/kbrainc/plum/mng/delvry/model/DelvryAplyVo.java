@@ -105,6 +105,8 @@ public class DelvryAplyVo extends ParentRequestVo {
     /** 산출내역 목록 */
     private List<DelvryAplyComputVo> computList;
     
+    /** 첨부파일 그룹아이디 목록 */
+    private String[] atchFilegrpids;
     
     /** 사업 시작 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")

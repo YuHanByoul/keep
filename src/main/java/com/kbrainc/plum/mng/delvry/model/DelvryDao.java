@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
+
 /**
  * 
  * 교부관리 DAO
@@ -121,6 +123,17 @@ public interface DelvryDao {
     * @throws Exception 예외
     */
     public int updateDelvryAplyComput(DelvryAplyComputVo delvryAplyComptVo) throws Exception;
+    
+    /**
+    * 교부 신청 산출내역 삭제
+    *
+    * @Title : deleteDelvryAplyComput
+    * @Description : 교부 신청 산출내역 삭제
+    * @param delvryAplyComptVo DelvryAplyComputVo 객체
+    * @return int delete 로우수
+    * @throws Exception 예외
+    */
+    public int deleteDelvryAplyComput(DelvryAplyComputVo delvryAplyComptVo) throws Exception;
         
     /**
     * 교부 신청 보완요청 목록 조회
@@ -165,5 +178,16 @@ public interface DelvryDao {
     * @throws Exception 예외
     */
     public int updateDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+    
+    /**
+    * 교부 신청 파일 목록 조회
+    *
+    * @Title : selectDelvryAplyFileList
+    * @Description : 교부 신청 파일 목록 조회
+    * @param delvryAplyVo DelvryAplyVo 객체
+    * @return List<FileVo> 교부 신청 파일 목록
+    * @throws Exception 예외
+    */
+    public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception;
     
 }

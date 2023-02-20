@@ -1,0 +1,111 @@
+  <div class="card-header p-b-0">
+        <ul class="nav nav-tabs tabs" role="tablist">
+        
+            <th:block sec:authorize-url="/mng/package/packageindvdCmpstnDetail.html">
+            <li class="nav-item" id="cmpstn_tab">
+                <a class="nav-link cmpstn active" href="javascript:moveTab('cmpstn')" ><strong>기본정보</strong></a>
+            </li>
+            </th:block>
+            
+            <th:block sec:authorize-url="/mng/package/packageindvdWrhousngDetail.html">
+            <li class="nav-item" id="wrhousng_tab" >
+                <a class="nav-link wrhousng "  href="javascript:moveTab('wrhousng')" ><strong>입출고 내역</strong></a>
+            </li>
+            </th:block>
+            
+            <th:block sec:authorize-url="/mng/package/packageindvdAbnrmlDetail.html">
+            <li class="nav-item" id="abnrml_tab" >
+                <a class="nav-link abnrml "  href="javascript:moveTab('abnrml')" ><strong>이상 내역</strong></a>
+            </li>
+            </th:block>
+            
+        </ul>
+  </div>
+
+  <div class="tab-content tabs p-t-20"  id="packageindvd_tab_content_area">
+        
+          <div class="card-block-small p-t-0">
+               <div class="table-responsive">
+                   <table class="table table-framed table-bordered mb-0">
+                       <thead>
+                       <tr class="border-bottom-inverse">
+                           <th class="text-center v-middle">교구명</th>
+                           <th class="text-center v-middle">교구구성품</th>
+                           <th class="text-center v-middle">꾸러미당 교구 세트수</th>
+                       </tr>
+                       </thead>
+                       <tbody>
+                           <tr th:each="item,stat : ${CmpstnList}" >
+                               <th class="text-left v-middle"><th:block th:text="${item.tchaidNm}"></th:block></th>
+                               <td class="text-left v-middle"><th:block th:text="${item.cmpntNms}"></th:block></td>
+                               <td class="text-center v-middle"><th:block th:text="${item.qntyCmpstn}"></th:block> 세트</td>
+                           </tr>
+                       </tbody>
+                   </table>
+               </div>
+           </div>
+        
+ </div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+	var PackageindvdVo = /*[[${PackageindvdVo}]]*/null; 
+    /*]]>*/
+    
+    $(function(){
+	    setTimeout(function(){scrollIntoView('packageindvd_tab_content_area');},100 )
+    });
+    
+    function initTab() {
+         var tabFlag = false;
+         /*[# sec:authorize-url="/mng/package/packageindvdCmpstnDetail.html"]*/
+         if(tabFlag == false) {
+             moveTab("cmpstn");
+             tabFlag = true;
+         }
+         /*[/]*/
+         
+         /*[# sec:authorize-url="/mng/package/packageindvdWrhousngDetail.html"]*/
+         if(tabFlag == false) {
+             moveTab("wrhousng");
+             tabFlag = true;
+         }
+         /*[/]*/
+         
+         /*[# sec:authorize-url="/mng/package/packageindvdAbnrml.html"]*/
+         if(tabFlag == false) {
+             moveTab("abnrml");
+             tabFlag = true;
+         }
+         /*[/]*/
+   }
+   
+   var moveTab =(target)=>{
+
+	    var moveTabUrl =""; 
+       
+        $(".nav-link").removeClass("active");
+        
+        currentTab = target;
+        
+        if(target=="cmpstn"){
+	        moveTabUrl ="/mng/package/packageindvdCmpstnDetail.html?packageindvdid="+PackageindvdVo.packageindvdid
+        	loadHtml("#detailContentPanel",moveTabUrl);
+
+        }else if(target=="wrhousng"){
+	        moveTabUrl ="/mng/package/packageindvdWrhousngDetail.html?packageindvdid="+PackageindvdVo.packageindvdid
+            $("#packageindvd_tab_content_area").load(moveTabUrl);
+            
+        }else{
+	        moveTabUrl ="/mng/package/packageindvdAbnrmlDetail.html?packageindvdid="+PackageindvdVo.packageindvdid
+            $("#packageindvd_tab_content_area").load(moveTabUrl);
+        }
+        $("."+currentTab).addClass("active");
+        setTimeout(function(){scrollIntoView('packageindvd_tab_content_area');},500 )
+    }
+    
+    
+    
+            
+</script>

@@ -8,7 +8,7 @@
                         <strong>신청정보</strong>
                     </div>
                     <div class="col-auto btn-group-sm">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#popup01">교부신청서</button>
+                        <button type="button" class="btn btn-primary" onclick="delvryAplyUpdate.onDelvryAplyPopup();">교부신청서</button>
                     </div>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     <div class="mb-0 form-group">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>신청자</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" id="" placeholder="" th:value="${aplcntNm}" readonly>
+                            <input type="text" class="form-control form-control-sm" id="" placeholder="" th:value="${delvryAplyInfo.aplcntNm}" readonly>
                         </div>
                     </div>
                 </div>
@@ -490,15 +490,14 @@
     </div>
 </div>
 
-<div class="modal fade" id="aplcntPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+<div class="modal fade" id="delvryAplyPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <div class="modal fade" id="splmntInsertPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 <div class="modal fade" id="splmntUpdatePopup" aria-hidden="true" data-bs-backdrop="static"></div>
-<div class="modal fade" id="ansPopup" aria-hidden="true" data-bs-backdrop="static"></div>
-
 
 <script th:inline="javascript">
     var delvryAplyUpdate = {
-        fileList: /*[[${fileList}]]*/
+        delvryAplyInfo: /*[[${delvryAplyInfo}]]*/
+        , fileList: /*[[${fileList}]]*/
         , computList: /*[[${computList}]]*/
         , listUrl: "/mng/delvry/selectDelvryAplySplmntList.do"
         
@@ -535,7 +534,6 @@
         
         , onUpdateDelvryAply: function() {
             if(!($("#delvryAplyUpdateForm").valid())) return;
-            
             var param = $("#delvryAplyUpdateForm").serialize();
             var count = 0;
             $("[data-expitm-cd]").each(function(index, item) {
@@ -551,7 +549,6 @@
                 param += "&computList[" + count + "].delvryAplyid=" + $("input[name='delvryAplyid']").val();
                 count += 1;
             });
-            
             if(displayWorkProgress()) {
                 $.ajax({
                     url : "/mng/delvry/updateDelvryAply.do",
@@ -594,6 +591,7 @@
                         loadData: function(filter) {
                             var data = $.Deferred();
                             var params = {
+                                "delvryAplyid": $("input[name='delvryAplyid']").val(),
                                 "pageNumber": filter.pageIndex,
                                 "rowPerPage": filter.pageSize,
                                 "orderField": "REG_DT",
@@ -626,14 +624,24 @@
                     , rowClick: function(args) { 
                         if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
                         var splmntid = args.item.splmntid;
-                        console.log("splmntid: " + splmntid);
-                        /*
-                        var detailUrl = "/mng/delvry/pcntstDetailForm.html?pcntstid=" + pcntstid + "&cycl=" + delvry.cycl;
-                        $("input[name='pcntstid']").val(pcntstid);
-                        delvry.pcntstid = pcntstid;
-                        delvryGrid.loadContent(detailUrl);
-                        delvryGrid.rowClick(args);
-                        */
+                        var sttsCd = args.item.ansSttsCd;
+                        if(sttsCd == "201101") {
+                            var url = "/mng/delvry/delvryAplySplmntUpdatePopup.html?splmntid=" + splmntid;
+                            $("#splmntUpdatePopup").load(url, function(response, status, xhr) {
+                                if(status == "success") {
+                                    splmntUpdateModal = new bootstrap.Modal($("#splmntUpdatePopup"));
+                                    splmntUpdateModal.show();
+                                }
+                            });
+                        } else if(sttsCd == "201102") {
+                            var url = "/mng/delvry/delvryAplySplmntUpdatePopup.html?splmntid=" + splmntid;
+                            $("#splmntUpdatePopup").load(url, function(response, status, xhr) {
+                                if(status == "success") {
+                                    splmntUpdateModal = new bootstrap.Modal($("#splmntUpdatePopup"));
+                                    splmntUpdateModal.show();
+                                }
+                            });                            
+                        }
                     }
                 });
         }
@@ -669,6 +677,16 @@
             $("#splmntInsertPopup").load(url, function(response, status, xhr) {
                 if(status == "success") {
                     splmntInsertModal = new bootstrap.Modal($("#splmntInsertPopup"));
+                    splmntInsertModal.show();
+                }
+            });
+        }
+        
+        , onDelvryAplyPopup: function() {
+            var url = "/mng/delvry/delvryAplyPopup.html";
+            $("#delvryAplyPopup").load(url, function(response, status, xhr) {
+                if(status == "success") {
+                    splmntInsertModal = new bootstrap.Modal($("#delvryAplyPopup"));
                     splmntInsertModal.show();
                 }
             });

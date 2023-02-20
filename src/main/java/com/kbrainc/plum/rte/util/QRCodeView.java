@@ -1,9 +1,13 @@
 package com.kbrainc.plum.rte.util;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,13 +37,13 @@ public class QRCodeView extends AbstractView {
         String userAgent = request.getHeader("User-Agent");
         boolean ie = userAgent.indexOf("MSIE") > -1;
 
-        String fileName = "QRCode.png";
-
-        if(ie){
-            fileName = URLEncoder.encode(fileName, "UTF-8");
-        }else{
-            fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
-        }
+        //String fileName = "QRCode.png";
+        //
+        //if(ie){
+        //    fileName = URLEncoder.encode(fileName, "UTF-8");
+        //}else{
+        //    fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+        //}
 
         //res.setHeader("Content-Disposition", "attachment; filename=\""+fileName + "\";");
         response.setHeader("Content-Transfer-Encoding", "binary");
@@ -49,10 +53,34 @@ public class QRCodeView extends AbstractView {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         String text = (String)model.get("qrText");
         text = new String(text.getBytes("UTF-8"), "ISO-8859-1");
-        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 150, 150);
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, 250, 250);
 
         //zxing에서 스트림에 파일을 뿌릴수있도록 메소드를 지원함.
         MatrixToImageWriter.writeToStream(bitMatrix, "png", out);
         out.flush();
     }
+   
+    
+    public static String encodeToString(BufferedImage image, String type) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+
+            Base64.Encoder encoder = Base64.getEncoder();
+            imageString = encoder.encodeToString(imageBytes);
+
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageString;
+    }
+    
+    
+    
+    
+    
 }

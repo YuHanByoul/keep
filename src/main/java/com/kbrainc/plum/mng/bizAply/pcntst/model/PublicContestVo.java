@@ -113,8 +113,47 @@ public class PublicContestVo extends ParentRequestVo {
     /** 컨설팅_사용_코드명 */
     private String cnsltngUseNm;
     
+    /** 컨설팅_운영_코드 */
+    private String cnsltngOperCd;
+    
     /** 사업비_교부_횟수 */
     private Integer wctDelvryCnt;
+    
+    /** 배분율 사용여부 */
+    private String rtUseYn;
+    
+    /** 심사 배분율 사용여부 */
+    private String srngRtUseYn;
+    
+    /** 1차 비율 */
+    private Integer rtFirst;
+    
+    /** 2차 비율 */
+    private Integer rtScnd;
+
+    /** 최고점 제외 사용여부 */
+    private String topScrExclYn;
+    
+    /** 최저점 제외 사용여부 */
+    private String lwetScrExclYn;
+    
+    /** 인원수 제한 사용여부 */
+    private String nopeLmtUseYn;
+    
+    /** 인원수 제한 */
+    private Integer nopeLmt;
+    
+    /** 최저 기준 평균점수 사용여부 1차 */
+    private String lwetCrtrScrUseYnFirst;
+    
+    /** 최저 기준 평균점수 1차 */
+    private String lwetCrtrScrFirst;
+    
+    /** 최저 기준 평균점수 사용여부 2차 */
+    private String lwetCrtrScrUseYnScnd;
+    
+    /** 최저 기준 평균점수 2차 */
+    private String lwetCrtrScrScnd;
     
     /** 사업비_교부_횟수_YN */
     private String wctDelvryCntYn;
@@ -148,6 +187,12 @@ public class PublicContestVo extends ParentRequestVo {
     /** 교부_신청_발표_종료_일시 */
     private String delvryAplyPrsntnEndDt;
     
+    /** 교부_아이디_1차 */
+    private Integer delvryidFirst;
+    
+    /** 교부_아이디_2차 */
+    private Integer delvryidScnd;
+    
     /** 교부_신청_시작_일시_1차 */
     @NotEmpty(message = "교부신청기간 시작일시를 선택해주십시오.")
     private String delvryAplyBgngDtFirst;
@@ -162,13 +207,21 @@ public class PublicContestVo extends ParentRequestVo {
     /** 교부_신청_종료_일시_2차 */
     private String delvryAplyEndDtScnd;
     
-    /** 교부_확정_발표_시작_일시 */    
+    /** 교부_확정_발표_시작_일시 1차 */    
     @NotEmpty(message = "교부확정발표기간 시작일시를 선택해주십시오.")
-    private String delvryCfmtnPrsntnBgngDt;
+    private String delvryCfmtnPrsntnBgngDtFirst;
     
-    /** 교부_확정_발표_종료_일시 */
+    /** 교부_확정_발표_종료_일시 1차 */
     @NotEmpty(message = "교부확정발표기간 종료일시를 선택해주십시오.")
-    private String delvryCfmtnPrsntnEndDt;
+    private String delvryCfmtnPrsntnEndDtFirst;
+    
+    /** 교부_확정_발표_시작_일시 2차 */    
+//    @NotEmpty(message = "교부확정발표기간 시작일시를 선택해주십시오.")
+    private String delvryCfmtnPrsntnBgngDtScnd;
+    
+    /** 교부_확정_발표_종료_일시 2차 */
+//    @NotEmpty(message = "교부확정발표기간 종료일시를 선택해주십시오.")
+    private String delvryCfmtnPrsntnEndDtScnd;
     
     /** 자금_집행_시작_일시_1차 */
     @NotEmpty(message = "자금집행기간 시작일시를 선택해주십시오.")
@@ -177,12 +230,18 @@ public class PublicContestVo extends ParentRequestVo {
     /** 자금_집행_종료_일시_1차 */
     @NotEmpty(message = "자금집행기간 종료일시를 선택해주십시오.")
     private String cptalExcutEndDtFirst;
-
+    
     /** 자금_집행_시작_일시_2차 */
     private String cptalExcutBgngDtScnd;
     
     /** 자금_집행_종료_일시_2차 */
     private String cptalExcutEndDtScnd;
+    
+    /** 컨설팅 신청기간 시작일시 */
+    private String cnsltngAplyBgngDt;
+    
+    /** 컨설팅 신청기간 종료일시 */
+    private String cnsltngAplyEndDt;
     
     /** 중간_보고_시작_일시 */
     private String mdlReportBgngDt;
@@ -228,6 +287,17 @@ public class PublicContestVo extends ParentRequestVo {
     /** 등록자아이디 */
     private String rgtrid;
     
+    /******* 심사배분율 *******/
+    private String jsonString;
+    
+    /*********** 교부 정보 ************/
+    private Integer delvryid;
+    private String delvryAplyBgngDt;
+    private String delvryAplyEndDt;
+    private String delvryCfmtnPrsntnBgngDt;
+    private String delvryCfmtnPrsntnEndDt;
+    private String cptalExcutBgngDt;
+    private String cptalExcutEndDt;
 
     /*********** 엑셀 출력용 ***********/
     /** 신청_기간 */

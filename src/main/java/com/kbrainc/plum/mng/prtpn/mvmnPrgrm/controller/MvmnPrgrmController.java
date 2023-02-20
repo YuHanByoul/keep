@@ -134,18 +134,18 @@ public class MvmnPrgrmController {
         //if(mvmnPrgrmVo.getEduIntrcnFileid() != 0 && result.getEduIntrcnFileIdntfcKey() != null) {
         if(result.getEduIntrcnFileIdntfcKey() != null) {
             StringBuffer eduIntrcnFileBtn = new StringBuffer();
-            eduIntrcnFileBtn.append("<div class ='label label-inverse text-white' id='" + mvmnPrgrmVo.getEduIntrcnFileid() + "'>");
-            eduIntrcnFileBtn.append("<a href=javascript:downloadFileByFileid('" + mvmnPrgrmVo.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>" + result.getEduIntrcnOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            eduIntrcnFileBtn.append("<a href=javascript:fn_deleteFileList('" + mvmnPrgrmVo.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            eduIntrcnFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getEduIntrcnFileid() + "'>");
+            eduIntrcnFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>" + result.getEduIntrcnOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            eduIntrcnFileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getEduIntrcnFileid() + "','" + result.getEduIntrcnFileIdntfcKey() + "') class='text-white'>X</a></div>");
             model.addAttribute("eduIntrcnFileBtn", eduIntrcnFileBtn);
         }
         //교육사진 첨부파일
         //if(mvmnPrgrmVo.getEduPhotoFileid() != 0 && result.getEduPhotoFileIdntfcKey() != null) {
         if(result.getEduPhotoFileIdntfcKey() != null) {
             StringBuffer eduPhotoFileBtn = new StringBuffer();
-            eduPhotoFileBtn.append("<div class ='label label-inverse text-white' id='" + mvmnPrgrmVo.getEduPhotoFileid() + "'>");
-            eduPhotoFileBtn.append("<a href=javascript:downloadFileByFileid('" + mvmnPrgrmVo.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>" + result.getEduPhotoOrginlFileNm() + "&nbsp;&nbsp;</a>");
-            eduPhotoFileBtn.append("<a href=javascript:fn_deleteFileList('" + mvmnPrgrmVo.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>X</a></div>");
+            eduPhotoFileBtn.append("<div class ='label label-inverse text-white' id='" + result.getEduPhotoFileid() + "'>");
+            eduPhotoFileBtn.append("<a href=javascript:downloadFileByFileid('" + result.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>" + result.getEduPhotoOrginlFileNm() + "&nbsp;&nbsp;</a>");
+            eduPhotoFileBtn.append("<a href=javascript:fn_deleteFileList('" + result.getEduPhotoFileid() + "','" + result.getEduPhotoFileIdntfcKey() + "') class='text-white'>X</a></div>");
             model.addAttribute("eduPhotoFileBtn", eduPhotoFileBtn);
         }
         model.addAttribute("mvmnPrgrm", result);

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.mng.bizAply.pcntst.model.GradeVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.service.PublicContestService;
@@ -133,6 +134,36 @@ public class PublicContestController {
             // 2차심사 담당자 조회
             publicContestMngGrpVo.setCycl(2);
             model.addAttribute("mngList_2", this.publicContestService.selectMngList(publicContestMngGrpVo));
+            
+            // 교부정보조회
+            List<PublicContestVo> deleveryList = this.publicContestService.selectDelevery(publicContestVo);
+            if (CollectionUtils.isNotEmpty(deleveryList)) {
+                for (PublicContestVo map : deleveryList) {
+                    if (map.getCycl() == 1) {
+                        detailPublicContestVo.setDelvryidFirst(map.getDelvryid());
+                        detailPublicContestVo.setDelvryAplyBgngDtFirst(map.getDelvryAplyBgngDt());
+                        detailPublicContestVo.setDelvryAplyEndDtFirst(map.getDelvryAplyEndDt());
+                        detailPublicContestVo.setDelvryCfmtnPrsntnBgngDtFirst(map.getDelvryCfmtnPrsntnBgngDt());
+                        detailPublicContestVo.setDelvryCfmtnPrsntnEndDtFirst(map.getDelvryCfmtnPrsntnEndDt());
+                        detailPublicContestVo.setCptalExcutBgngDtFirst(map.getCptalExcutBgngDt());
+                        detailPublicContestVo.setCptalExcutEndDtFirst(map.getCptalExcutEndDt());
+                    }
+                    if (map.getCycl() == 2) {
+                        detailPublicContestVo.setDelvryidScnd(map.getDelvryid());
+                        detailPublicContestVo.setDelvryAplyBgngDtScnd(map.getDelvryAplyBgngDt());
+                        detailPublicContestVo.setDelvryAplyEndDtScnd(map.getDelvryAplyEndDt());
+                        detailPublicContestVo.setDelvryCfmtnPrsntnBgngDtScnd(map.getDelvryCfmtnPrsntnBgngDt());
+                        detailPublicContestVo.setDelvryCfmtnPrsntnEndDtScnd(map.getDelvryCfmtnPrsntnEndDt());
+                        detailPublicContestVo.setCptalExcutBgngDtScnd(map.getCptalExcutBgngDt());
+                        detailPublicContestVo.setCptalExcutEndDtScnd(map.getCptalExcutEndDt());
+                    }
+                }
+            }
+            
+            // 심사배분율 조회
+            GradeVo gradeVo = new GradeVo();
+            gradeVo.setPcntstid(publicContestVo.getPcntstid());
+            model.addAttribute("gradeList", this.publicContestService.selectGradeList(gradeVo));
             
             if (!StringUtil.nvl(publicContestVo.getFilegrpid()).equals("") && !StringUtil.nvl(publicContestVo.getFilegrpid()).equals(0)) {
                 FileVo fileVo = new FileVo();
@@ -248,6 +279,23 @@ public class PublicContestController {
         model.addAttribute("cycl", publicContestVo.getCycl());
         model.addAttribute("sidoList", cnsltngService.selectAddrCtprvnList(paramMap));
         return "mng/bizAply/pcntst/managerSearchPopup";
+    }
+    
+    /**
+    * 심사배분율 설정 팝업. 
+    *
+    * @Title : srngPopup
+    * @Description : TODO
+    * @param publicContestVo
+    * @param model
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/pcntst/srngPopup.html")
+    public String srngPopup(PublicContestVo publicContestVo, Model model) throws Exception {
+        model.addAttribute("pcntstid", publicContestVo.getPcntstid());
+        return "mng/bizAply/pcntst/srngPopup";
     }
     
     /**

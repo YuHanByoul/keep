@@ -1,6 +1,7 @@
 package com.kbrainc.plum.cmm.file.service;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -241,4 +242,26 @@ public class FileStorageServiceImpl extends PlumAbstractServiceImpl implements F
         
         ImageIO.write(destImg, fileExt.toUpperCase(new Locale(fileExt)), thumbFile);
     }
+    
+    public static String encodeToString(BufferedImage image, String type) {
+        String imageString = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+        try {
+            ImageIO.write(image, type, bos);
+            byte[] imageBytes = bos.toByteArray();
+
+            Base64.Encoder encoder = Base64.getEncoder();
+            imageString = encoder.encodeToString(imageBytes);
+
+            bos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imageString;
+    }
+    
+    
+    
+    
 }

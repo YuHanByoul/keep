@@ -2,6 +2,7 @@ package com.kbrainc.plum.mng.delvry.service;
 
 import java.util.List;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryAplyComputVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryAplySplmntVo;
 import com.kbrainc.plum.mng.delvry.model.DelvryAplyVo;
@@ -145,5 +146,16 @@ public interface DelvryService {
     * @throws Exception 예외
     */
     public int updateDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception;
+    
+    /**
+    * 교부 신청 파일 목록 조회
+    *
+    * @Title : selectDelvryAplyFileList 
+    * @Description : 교부 신청 파일 목록 조회
+    * @param delvryAplyVo DelvryAplyVo객체
+    * @return List<FileVo> 교부 신청 파일 목록
+    * @throws Exception 예외
+    */
+    public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception;
     
 }

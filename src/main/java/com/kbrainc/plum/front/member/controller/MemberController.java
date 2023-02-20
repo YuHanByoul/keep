@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.member.controller;
 
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,18 +17,34 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.constraints.NotNull;
 
 import org.apache.ibatis.type.Alias;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kbrainc.plum.cmm.esylgn.service.EsylgnService;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
@@ -35,6 +52,7 @@ import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
 import com.kbrainc.plum.front.member.model.MemberAgreVo;
 import com.kbrainc.plum.front.member.model.MemberAuthVo;
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
+import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberTypeVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.member.service.MemberService;
@@ -74,7 +92,7 @@ public class MemberController {
     
     @Autowired
     private FileServiceImpl fileService;
-    
+            
     /**
     * 회원가입 0단계 : 회원가입 유형 선택 화면.
     *
@@ -134,14 +152,13 @@ public class MemberController {
     * @param request 요청객체
     * @param response 응답객체
     * @param memberAgreVo MemberAgreVo객체
-    * @param bindingResult 유효성검증결과
     * @param model 모델객체
     * @param redirect 리다이렉트속성객체
     * @return String 이동화면경로
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/membership/step3.html")
-    public String membershipStep3(HttpServletRequest request, HttpServletResponse response, @Valid MemberAgreVo memberAgreVo, BindingResult bindingResult, Model model, RedirectAttributes redirect) throws Exception {
+    public String membershipStep3(HttpServletRequest request, HttpServletResponse response, MemberAgreVo memberAgreVo, Model model, RedirectAttributes redirect) throws Exception {
         Map<String, ?> flashMap = RequestContextUtils.getInputFlashMap(request);
         MemberAuthVo memberAuthVo = null;
         
@@ -311,7 +328,6 @@ public class MemberController {
     @ResponseBody
     public Map<String, Object> chekcDuplicationUser(MemberVo memberVo) throws Exception {
     	Map<String, Object> resultMap = new HashMap<>();
-    	List<MemberVo> result = null;
     	
     	int cnt = memberService.checkDuplicationUser(memberVo);
     	
@@ -324,18 +340,38 @@ public class MemberController {
     }
     
     /**
+    * 사업자등록번호 중복 체크
+    *
+    * @Title       : checkDuplicationBrno 
+    * @Description : 사업자등록번호 중복 체크
+    * @param memberVo MemberVo객체
+    * @param user 사용자세션정보
+    * @return MemberInstVo 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/member/checkDuplicationBrno.do")
+    @ResponseBody
+    public MemberInstVo checkDuplicationBrno(MemberInstVo memberInstVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();    
+        MemberInstVo returnInfo = memberService.checkDuplicationBrno(memberInstVo);
+    
+        return returnInfo;
+    }
+    
+    /**
     * 회원등록.
     *
     * @Title : insertMember
     * @Description : 회원등록
     * @param memberVo MemberVo객체
-    * @param bindingResult 유효성검증결과
+    * @param bindingResult 유효성검증결과(회원정보)
+    * @param memberInstVo MemberInstVo(기관정보)
     * @return Map<String,Object> 응답결과객체
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/member/insertMember.do")
     @ResponseBody
-    public Map<String, Object> insertMember(@Valid MemberVo memberVo, BindingResult bindingResult) throws Exception {
+    public Map<String, Object> insertMember(@Valid MemberVo memberVo, BindingResult bindingResult, MemberInstVo memberInstVo) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         resultMap.put("result", Constant.REST_API_RESULT_FAIL);
         
@@ -440,7 +476,33 @@ public class MemberController {
             }
         }
         
-    	int retVal = memberService.insertMember(memberVo);
+        if ("I".equals(memberVo.getType())) { // 기관회원일때
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+            Validator validator = factory.getValidator();
+            Set<ConstraintViolation<MemberInstVo>> violations = validator.validate(memberInstVo);
+            
+            for (ConstraintViolation<MemberInstVo> violation : violations) {
+                resultMap.put("msg", violation.getMessage());
+                return resultMap;
+            }
+            
+            if ("Y".equals(memberInstVo.getDirectYn())) { // 직접입력시 사업자등록증을 첨부했는지 체크한다.
+                if (memberInstVo.getBizfileFilegrpid() == null || memberInstVo.getBizfileFilegrpid() == 0) {
+                    resultMap.put("msg", "사업자등록증을 등록 해주십시오.");
+                    return resultMap;
+                }
+            }
+            
+            MemberInstVo returnInfo = memberService.checkDuplicationBrno(memberInstVo);
+            if (!returnInfo.isResult()) {
+                resultMap.put("msg", returnInfo.getMsg());
+                return resultMap;
+            } else {
+                memberInstVo.setInstid(returnInfo.getInstid());
+            }
+        }
+        
+    	int retVal = memberService.insertMember(memberVo, memberInstVo);
     	
     	if(retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -505,6 +567,10 @@ public class MemberController {
     @ResponseBody
     public MemberInstSearchVo selectInstPoolInfo(MemberInstSearchVo memberInstSearchVo) throws Exception {
         MemberInstSearchVo result = memberService.selectInstPoolInfo(memberInstSearchVo);
+
+        // 주소로 시군구코드 조회
+        result.setSignguCd(memberService.getSignguCdWithaddress(result.getAddr()));
+        
         return result;
     }
 }

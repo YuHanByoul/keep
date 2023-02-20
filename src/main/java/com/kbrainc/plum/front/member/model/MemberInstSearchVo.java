@@ -60,6 +60,9 @@ public class MemberInstSearchVo extends ParentRequestVo {
     
     /** 주소 상세 */
     private String addrDtl;
+    
+    /** 시군구코드 */
+    private String signguCd;
 
     public void setInstTypeCd(String instTypeCd) {
         this.instTypeCd = instTypeCd;

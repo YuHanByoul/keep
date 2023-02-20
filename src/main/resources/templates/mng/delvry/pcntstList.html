@@ -100,6 +100,13 @@
                 </ul>
             </div>
             
+            <div class="col-12 d-none" id="detailTitle">
+                <div class="box-desc-list mb-3 f-20">
+                    <strong id="fldCdNm"></strong>
+                    <span id="pcntstNm"></span>
+                </div>
+            </div>
+            
             <div class="col-12">
                 <!-- insert 부분 -->
                 <div id="contentPanel" class="card" style="display: none;">
@@ -167,7 +174,7 @@
                                     <button type="button" class="btn btn-disabled" onclick="delvry.onUpdateDelvryStts('202106');">교부취소</button>
                                     <button type="button" class="btn btn-inverse" onclick="delvry.onUpdateDelvryStts('202105');">탈락</button>
                                     <button type="button" class="btn btn-primary" onclick="delvry.onUpdateDelvryStts('202102');">확정</button>
-                                    <button type="button" class="btn btn-primary" onclick="delvry.onFileDownload();">첨부파일 다운로드</button>
+                                    <button type="button" class="btn btn-primary" onclick="delvry.onLoadFileList();">첨부파일 다운로드</button>
                                     <button type="button" class="btn btn-primary" onclick="delvry.onExcelDownload('aply');">엑셀다운로드</button>
                                 </div>
                             </div>
@@ -378,6 +385,7 @@
                                     itemsCount : response.totalCount
                                 };
                                 data.resolve(da);
+                                $("#selectAllCheckbox").prop("checked", false);
                             });
                             
                             return data.promise();
@@ -437,7 +445,7 @@
             }
         
             , selectItem: function(delvryid) {
-                this.selectedItems.push(delvryid);
+                this.selectedItems.push(parseInt(delvryid, 10));
                 if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
                     $("#selectAllCheckbox").prop("checked", true);
                 } else {
@@ -447,7 +455,7 @@
         
             , unselectItem: function(delvryid) {
                 this.selectedItems = $.grep(this.selectedItems, function(i) {
-                    return i !== delvryid;
+                    return i !== parseInt(delvryid, 10);
                 });
                 if(this.selectedItems.length == 0) {
                     $('#selectAllCheckbox').attr("checked", false);
@@ -490,14 +498,58 @@
                 }
             }
             
-            , onFileDownload: function() {
+            , onLoadFileList: function() {
                 if(this.selectedItems.length == 0) {
                     alert("선택한 신청이 없습니다.");
                     return false;
                 }
-                // 선택한 파일의 아이디가 존재 하지 않는경우
-                // alert("첨부된 파일이 없습니다.");
-                alert("첨부 파일 다운로드 필요");
+                
+                var dataList = $("#aplyGrid").jsGrid("option", "data");
+                var len = dataList.length;
+                var atchFilegrpids = [];
+                for(var i = 0; i < len; i++) {
+                    var data = dataList[i];
+                    if(this.selectedItems.indexOf(data.delvryAplyid) > -1) {
+                        if(data.atchFilegrpid) atchFilegrpids.push(data.atchFilegrpid);
+                    }
+                }
+                if(atchFilegrpids.length == 0) {
+                    alert("첨부파일이 존재하지 않습니다.");
+                    return false;
+                }
+                
+                var param = {atchFilegrpids: atchFilegrpids.join(",")};
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url : "/mng/delvry/selectDelvryAplyFileList.do",
+                        type: "POST",
+                        cache: false,
+                        dataType: "json",
+                        data: param,
+                        success: function(response) {
+                            var fileList = response.list;
+                            if(fileList == null || fileList.length == 0) {
+                                alert("첨부파일이 존재하지 않습니다.");
+                            } else {
+                                delvry.onFileDownload(fileList);
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+            
+            , onFileDownload: function(fileList) {
+                for(var i = 0, len = fileList.length; i < len; i++) {
+                    var data = fileList[i];
+                    downloadFileByFileid(data.fileid, data.fileIdntfcKey);
+                    this.onDelay(500);
+                }                              
+            }
+            
+            , onDelay: function(time) {
+                var start = new Date().getTime();
+                while(start + time > new Date().getTime());
             }
             
             , onExcelDownload: function(type) {

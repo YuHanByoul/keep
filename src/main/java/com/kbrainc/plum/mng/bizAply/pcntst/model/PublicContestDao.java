@@ -63,6 +63,18 @@ public interface PublicContestDao {
     List<EgovMap> selectEvalSheetList(PublicContestVo publicContestVo) throws Exception;
     
     /**
+    * 교부 정보 조회. 
+    *
+    * @Title : selectDelevery
+    * @Description : TODO
+    * @param publicContestVo
+    * @return
+    * @throws Exception
+    * @return List<PublicContestVo>
+     */
+    List<PublicContestVo> selectDelevery(PublicContestVo publicContestVo) throws Exception;
+    
+    /**
     * 공모관리 등록. 
     *
     * @Title : insertContest
@@ -109,6 +121,66 @@ public interface PublicContestDao {
     * @return int
      */
     int deleteMng(PublicContestMngGrpVo publicContestMngGrpVo) throws Exception;
+    
+    /**
+    * 교부 정보 등록. 
+    *
+    * @Title : insertDelevery
+    * @Description : TODO
+    * @param publicContestVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertDelevery(PublicContestVo publicContestVo) throws Exception;
+    
+    /**
+    * 교부 정보 수정. 
+    *
+    * @Title : updateDelevery
+    * @Description : TODO
+    * @param publicContestVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int updateDelevery(PublicContestVo publicContestVo) throws Exception;
+    
+    /**
+    * 심사배분율 조회. 
+    *
+    * @Title : selectDelevery
+    * @Description : TODO
+    * @param gradeVo
+    * @return
+    * @throws Exception
+    * @return List<GradeVo>
+     */
+    List<GradeVo> selectGradeList(GradeVo gradeVo) throws Exception;
+    
+    /**
+    * 심사배분율 등록. 
+    *
+    * @Title : insertGrade
+    * @Description : TODO
+    * @param gradeVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int insertGrade(GradeVo gradeVo) throws Exception;
+    
+    /**
+    * 심사배분율 삭제. 
+    *
+    * @Title : deleteGrade
+    * @Description : TODO
+    * @param gradeVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteGrade(GradeVo gradeVo) throws Exception;
     
     /**
     * 공모관리 목록 엑셀 다운로드. 
