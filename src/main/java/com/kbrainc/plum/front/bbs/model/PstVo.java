@@ -1,7 +1,10 @@
 package com.kbrainc.plum.front.bbs.model;/** **/
 
 import java.util.ArrayList;
+import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.rte.model.SiteInfoVo;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
@@ -34,8 +37,16 @@ public class PstVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
 
+    /** 사이트 정보 */
+    private SiteInfoVo site;
+    
     /** 게시글 아이디 **/
-    private int pstid;
+    private Integer pstid;
+
+    private Integer siteid;
+
+    private Integer fileCount;
+
     /** **/
     private Integer bbsid;
     /** **/
@@ -72,7 +83,8 @@ public class PstVo extends ParentRequestVo {
     /** 수정자_아이디 **/
     private int mdfrid;
     /** 등록_일시 **/
-    private String regDt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private Date regDt;
     /** 등록_아이디 **/
     private int rgtrid;
     
@@ -107,6 +119,15 @@ public class PstVo extends ParentRequestVo {
 	
 	//현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer curFxdNtcCnt;
+
+    private Integer nextPstid;
+    private String nextTitle;
+    private Integer prevPstid;
+    private String prevTitle;
+
+    /*탭 식별용(공지사항에만 사용)*/
+    private Integer tabType;
+    private String instNm;
 	
     /** 로그인사용자정보 */
     public void setUser(UserVo user){

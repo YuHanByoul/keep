@@ -65,6 +65,64 @@
     <!-- 게시물 정보를 가져온다. -->
     <select id="selectPst"  parameterType="front.PstVo" resultType ="front.PstVo" >
         /* BbsDao.selectPst */
+        WITH
+        rowNumPstList
+        AS
+        (
+            SELECT
+            (ROW_NUMBER()OVER(ORDER BY FIXORDER ASC,GRP DESC,ORD  ASC)) AS rowNumber,
+            A.PSTID,
+            A.SITEID,
+            A.TITLE,
+            A.CNTNTS,
+            A.DEL_YN,
+            A.FILEGRPID,
+            A.GRP,
+            A.ORD,
+            A.DPTH,
+            A.FXD_NTC_YN,
+            IFNULL(A.HITS,0) AS HITS,
+            B.FXD_NTC_USE_YN,
+            A.REG_DT,
+            CASE WHEN FXD_NTC_YN = 'Y' THEN 1
+            ELSE 2
+            END AS FIXORDER ,
+            A.MDFCN_DT
+        FROM
+            TB_CMM_PST A
+        INNER JOIN
+            TB_CMM_BBS B
+        ON A.BBSID = B.BBSID
+        WHERE 1=1
+            AND A.DEL_YN = 'N'
+            AND A.BBSID= #{bbsid}
+            <choose>
+                <when test="bbsid == 1"> /* 공지사항인 경우 */
+                    <if test="tabType == 1 ">
+                        AND A.SITEID = ${site.siteid}
+                    </if>
+
+                    <if test="tabType == 2 ">
+                        AND A.SITEID IN (SELECT SITEID FROM TB_CMM_SITE WHERE SYS_KND_CD = 'T')
+                    </if>
+                </when>
+                <otherwise>
+                    AND A.SITEID = #{site.siteid}
+                </otherwise>
+            </choose>
+        )
+        SELECT
+        *
+        , (SELECT PSTID FROM rowNumPstList WHERE rowNumber <![CDATA[ > ]]> A.rowNumber ORDER BY rowNumber ASC LIMIT 1) next_pstid
+        , (SELECT TITLE FROM rowNumPstList WHERE rowNumber <![CDATA[ > ]]> A.rowNumber ORDER BY rowNumber ASC LIMIT 1) next_title
+        , (SELECT PSTID FROM rowNumPstList WHERE rowNumber <![CDATA[ < ]]> A.rowNumber ORDER BY rowNumber DESC LIMIT 1) prev_pstid
+        , (SELECT TITLE FROM rowNumPstList WHERE rowNumber <![CDATA[ < ]]> A.rowNumber ORDER BY rowNumber DESC LIMIT 1) prev_title
+        FROM
+        ROWNUMPSTLIST A
+        WHERE 1=1
+        AND PSTID = #{pstid};
+
+<!--
         SELECT 
             A.PSTID      as pstid,
             B.BBSID      as bbsid,
@@ -102,7 +160,7 @@
             1=1
             AND A.BBSID = B.BBSID
             AND A.RGTRID = C.USERID
-            AND A.PSTID = #{pstid}
+            AND A.PSTID = #{pstid} -->
     </select>
     
     
@@ -455,6 +513,8 @@
             IFNULL(A.HITS,0) AS HITS,
             B.FXD_NTC_USE_YN,
             IFNULL(C.cmntcnt,0) cmnt_cnt,
+            A.FILEGRPID,
+            (SELECT COUNT(1) FROM TB_CMM_FILE WHERE FILEGRPID = A.FILEGRPID) AS FILE_COUNT,
             A.REG_DT,
             <choose>
                 <when test='hotUseYn == "Y"'>
@@ -491,7 +551,8 @@
                 ELSE 2
                 END AS FIXORDER ,
                 A.MDFCN_DT,
-                D.NM
+                D.NM,
+                E.INST_NM
             FROM
                 TB_CMM_PST A
                 INNER JOIN
@@ -508,13 +569,28 @@
                 INNER JOIN
                     TB_CMM_USER D
                 ON A.RGTRID = D.USERID
+                LEFT OUTER JOIN TB_CMM_INST E
+                ON D.INSTID = E.INSTID
             WHERE 1=1
                 AND A.DEL_YN = 'N'
-                AND A.SITEID = #{site.siteid}
-                AND A.PRNTS_PSTID IS NULL
             <if test="bbsid != null and bbsid != 0">
                 AND A.BBSID= #{bbsid}
             </if>
+
+            <choose>
+                <when test="bbsid == 1"> /* 공지사항인 경우 */
+                    <if test="tabType == 1 ">
+                        AND A.SITEID = ${site.siteid}
+                    </if>
+
+                    <if test="tabType == 2 ">
+                        AND A.SITEID IN (SELECT SITEID FROM TB_CMM_SITE WHERE SYS_KND_CD = 'T')
+                    </if>
+                </when>
+                <otherwise>
+                    AND A.SITEID = #{site.siteid}
+                </otherwise>
+            </choose>
 
             <if test="searchType != null and searchType == 'title' ">
                 AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
