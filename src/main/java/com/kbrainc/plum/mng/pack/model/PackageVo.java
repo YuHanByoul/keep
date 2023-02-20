@@ -1,9 +1,8 @@
-package com.kbrainc.plum.mng.tchaid.model;
+package com.kbrainc.plum.mng.pack.model;
 
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,57 +18,57 @@ import lombok.Data;
 * [클래스 요약].
 *
 * <pre>
-* com.kbrainc.plum.tchaid.model
-* - TchaidVo.java
+* com.kbrainc.plum.package.model
+* - PackageVo.java
 * </pre>
 *
-* @ClassName   : TchaidVo 
+* @ClassName   : PackageVo 
 * @Description : TODO 
 * @author      : KBRAINC
-* @date        : 2023.02.06
+* @date        : 2023.02.13
 * @Version     : 
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Data
-public class TchaidVo extends ParentRequestVo {
+public class PackageVo extends ParentRequestVo {
     
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 교구 아이이디 */
-    private int tchaidid;
+    /** 꾸러미 아이이디 */
+    private int packageid;
     
-    /** 교구명   */
-    @Size(max = 100, message = "교구명은 20자를 넘을 수 없습니다.")
-    private String tchaidNm;
+    /** 꾸러미 개체 수량 */
+    private Integer packageindvdCnt;
     
-    /** 수량_재고   */
-    private Integer qntyInvntry;
+    /** 꾸러미명   */
+    @Size(max = 200, message = "꾸러미명은 200자를 넘을 수 없습니다.")
+    private String packageNm;
     
-    /** 교구 유형 코드 */
-    @Size(max = 20, message = "교구 유형 코드는 20자를 넘을 수 없습니다.")
-    private String tchaidTypeCd;
+    /** 꾸러미 번호   */
+    //@Size(max = 20, message = "꾸러미 번호는 20자를 넘을 수 없습니다.")
+    //private String packageNo;
     
-    /** 교구 유형 코드명 */
-    private String tchaidTypeCdNm;
+    /** 유형 코드   */
+    @Size(max = 20, message = "유형 코드는 20자를 넘을 수 없습니다.")
+    private String typeCd;
+    
+    /** 꾸러미 유형 코드명 */
+    private String typeCdNm;
     
     /** 교육 유형 코드 */
-    @Size(max = 20, message = "교구 유형 코드는 20자를 넘을 수 없습니다.")
+    @Size(max = 20, message = "교구 유형 코드는 100자를 넘을 수 없습니다.")
     private String eduTypeCd;
     
     /** 교육 유형 코드명 */
     private String eduTypeCdNm;
     
     /** 모둠 구성 코드 */
-    @Size(max = 20, message = "교구 유형 코드는 20자를 넘을 수 없습니다.")
+    @Size(max = 20, message = "교구 유형 코드는 100자를 넘을 수 없습니다.")
     private String teamCmpstnCd;
     
     /** 모둠 구성 코드명 */
     private String teamCmpstnCdNm;
-    
-    /** 사용여부 */
-    @Pattern(regexp="[YN]")
-    private String useYn;
     
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -92,8 +91,8 @@ public class TchaidVo extends ParentRequestVo {
     /** 교육 대상 코드(s) */
     private String[] eduTrgtCds;
     
-    /** 교구구성품 리스트  */
-    private List<TchaidCmpntCmpstnVo> tchaidCmpntCmpstnList;
+    /** 꾸러미 교구 리스트  */
+    private List<PackageTchaidCmpstnVo> packageTchaidCmpstnList;
     
     /** 재고 추가분 */
     private Integer plusQnty;
@@ -104,21 +103,21 @@ public class TchaidVo extends ParentRequestVo {
     /** 교육 유형 코드 */
     private String searchEduTypeCd;
     /** 교구 유형 코드 */
-    private String searchTchaidTypeCd;
+    private String searchTypeCd;
     /** 모둠 구성 코드 */
     private String searchTeamCmpstnCd;
     
     
     
-    public void setTchaidTypeCd(String tchaidTypeCd) throws Exception{
-        this.tchaidTypeCd = tchaidTypeCd;
+    public void setTypeCd(String typeCd) throws Exception{
+        this.typeCd = typeCd;
         
         //이미 코드이름이 있다면, 무시.
-        if(CommonUtil.isEmpty(this.tchaidTypeCdNm)) { 
+        if(CommonUtil.isEmpty(this.typeCdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
-                CodeInfoVo code = resCodeService.getCodeInfo(this.tchaidTypeCd);
-                this.tchaidTypeCdNm = code.getCdNm();
+                CodeInfoVo code = resCodeService.getCodeInfo(this.typeCd);
+                this.typeCdNm = code.getCdNm();
             }catch(NoClassDefFoundError e) {
                 //e.printStackTrace();
                 return ;
@@ -166,13 +165,5 @@ public class TchaidVo extends ParentRequestVo {
             }
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
     
 }

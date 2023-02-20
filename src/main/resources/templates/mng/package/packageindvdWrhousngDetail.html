@@ -1,0 +1,90 @@
+
+<div class="card-block-small">
+    <div class="dt-responsive table-responsive">
+        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <table id="wdJsGrid" class="table-responsive"></table>
+                <div id="wdListPager" class="text-center"></div>
+       </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+	var PackageindvdVo = /*[[${PackageindvdVo}]]*/null; 
+    /*]]>*/
+    
+    $(function(){
+    	writeWdJsGridData();
+    });
+    
+    function writeWdJsGridData(){
+        $("#wdJsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#wdListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "packageindvdid", value: PackageindvdVo.packageindvdid},
+                            {name: "orderField", value: 'PRCS_DT '},
+                            //{name: "orderDirection", value: "DESC"}
+                    ]
+                    
+                    $.ajax({ 
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/package/packageindvdWrhousngList.do",
+                      dataType: "json",
+                      data: params,
+                    }).done(function(response){
+                        
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 { title: 'No.'      ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '내역'      ,type: "text" , width: "100", align:"center" 
+                    ,itemTemplate: function(value, item){
+                        var returnStr = "[";
+                            if(item.wdcd =='D'){
+	                            returnStr += "<span style='red'>출고</span>";
+                            }else{
+	                            returnStr += "<span style='blue'>입고</span>";
+                            }
+                            returnStr += "]["+item.prcs_dt+"][담당자:"+item.nm+"]";
+                            if(item.wdcd =='D'){
+	                            returnStr += "["+item.rcrit_nm+"]["+item.dlvy_addr+" "+item.dlvy_addr_dtl+"]"
+                            }else{
+                            	var sttsStr = (Number(itm.wrhousng_abnrml_cd) > 0)? "이상 ":"정상 ";
+	                            returnStr += "["+sttsStr+" 입고]";
+                            }
+                        return returnStr; 
+                    }
+                 } 
+            ],
+        });
+    }
+</script>

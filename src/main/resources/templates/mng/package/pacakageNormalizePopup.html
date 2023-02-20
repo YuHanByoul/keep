@@ -1,0 +1,195 @@
+<!-- [팝업] 정상처리 -->
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">정상처리</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card m-b-10">
+                    <div class="card-header p-b-0">
+                        <ul class="nav nav-tabs tabs m-0" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#tablistPopup01" onclick="chgTab('cnt')"   role="tab" aria-selected="true"><strong>교구수량추가</strong></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#tablistPopup02" onclick="chgTab('stts')"role="tab"><strong>상태변경</strong></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-content tabs p-t-20">
+                    
+                        <!-- [탭] 교구수량추가 -->
+                        <div class="tab-pane active" id="tablistPopup01" role="tabpanel">
+                            <div class="card-block-small p-t-0">
+                            
+                                <div class="row mb-3 align-items-center  cnt-form" th:each ="item:${tchaidCmpstnList}" th:id="'id'+${item.tchaidid}">
+                                    <input type="hidden" th:value="${item.qntyInvntry}" th:id="'qntyInvntry'+${item.tchaidid}">
+                                    <div class="col-sm-auto">&middot; <th:block th:text="${item.tchaidNm}"/> ( <span th:id="'qntyInvntryCnt'+${item.tchaidid}"  th:text="${item.qntyInvntry}"></span> ) </div>
+                                    <div class="col-sm-auto">
+                                        <div class="input-group input-group-sm input-group-dropdown mb-0" style="width:120px;">
+                                            <div class="input-group-text btn btn-primary"    th:tchaidid ="${item.tchaidid}" th:onclick="decreaseCnt(this.getAttribute('tchaidid'))" >-</div>
+                                            <input type="text" min="0" readonly class="form-control text-center" aria-label="교구 생성 수량 입력" value="0" th:id="${item.tchaidid}+'tachiadCnt'">
+                                            <div class="input-group-text btn btn-primary" th:tchaidid ="${item.tchaidid}" th:onclick="increaseCnt(this.getAttribute('tchaidid'))" >+</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        
+                        <!-- [탭] 상태변경 -->
+                        <div class="tab-pane" id="tablistPopup02" role="tabpanel">
+                            <div class="card-block-small p-t-0">
+                                <div class="mb-3 form-group row">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popupDate"><strong>꾸러미 상태</strong></label>
+                                    <div class="col-12">
+                                        <div class="form-radio">
+                                            <div class="radio radio-inline">
+                                                <label class="mb-0 form-label">
+                                                    <input type="radio" name="fixNoticeStatus" checked="">
+                                                    <i class="helper"></i>정상
+                                                </label>
+                                            </div>
+                                            <div class="radio radio-inline">
+                                                <label class="mb-0 form-label">
+                                                    <input type="radio" name="fixNoticeStatus" disabled>
+                                                    <i class="helper"></i>이상
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- //[탭] -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="normalizeSave()">정상처리</button>
+            </div>
+        </div>
+    </div>
+  <!-- //[팝업] 정상처리 -->
+  
+  <script th:inline="javascript">
+
+	/*<![CDATA[*/ 
+	var abnrmlid = /*[[${abnrmlid}]]*/null; 
+	var PackageindvdVo = /*[[${resVo}]]*/null; 
+	/*]]>*/
+  
+    var mode = "cnt";
+    
+    decreaseCnt =(tchaidid)=>{
+
+       var qntyInvntry = Number($("#qntyInvntry"+tchaidid).val());
+       var curNum = Number($("#"+tchaidid+"tachiadCnt").val());
+       var futureNum = curNum-1; 
+       
+       if(curNum == 0){return};
+       if(qntyInvntry < futureNum) {return};
+       $("#"+tchaidid+"tachiadCnt").val(futureNum);
+       $("#qntyInvntryCnt"+tchaidid).text(qntyInvntry-futureNum);
+       
+    }
+    
+    increaseCnt =(tchaidid)=>{
+
+        var qntyInvntry = Number($("#qntyInvntry"+tchaidid).val());
+        var curNum = Number($("#"+tchaidid+"tachiadCnt").val());
+        var futureNum = curNum+1; 
+        
+        if(qntyInvntry < futureNum) {return};
+        $("#"+tchaidid+"tachiadCnt").val(futureNum);
+        $("#qntyInvntryCnt"+tchaidid).text(qntyInvntry-futureNum);
+        
+    }
+
+    chgTab =(chgMode)=>{
+    	mode = chgMode;
+        if(mode=='stts'){
+        	$(".cnt-form").each(function(){
+            	var id = ($(this).attr("id")).replace("id","")
+                var qntyInvntry = Number($("#qntyInvntry"+id).val());
+                $("#"+id+"tachiadCnt").val("0")
+		        $("#qntyInvntryCnt"+id).text(qntyInvntry);
+            })
+        }
+    }
+    
+    normalizeSave=()=>{
+
+    	let params={}
+    	var paramArr =[]
+    	
+    	if(mode=='cnt'){
+        	
+    		var isAllzero = true;
+    		
+            $(".cnt-form").each(function(){
+                var id = ($(this).attr("id")).replace("id","");
+                var curNum = Number($("#"+id+"tachiadCnt").val());
+                if(curNum > 0){
+                    isAllzero = false;
+                    paramArr.push({
+                        tchaidid : id
+                        ,packageindvdid:PackageindvdVo.packageindvdid
+                        ,qntyCmpstn : curNum
+                    })
+                }
+            })
+            
+            if(isAllzero){
+                alert("수량이 추가 되지 않았습니다.");
+	            $(".cnt-form").each(function(){
+	                var id = ($(this).attr("id")).replace("id","");
+	                showErrorMark("#"+id+"tachiadCnt");
+	            })
+                return;
+            }
+            
+            params={
+            		 abnrmlid:abnrmlid
+            		 ,packageindvdid:PackageindvdVo.packageindvdid
+            		 ,packageindvdTchaidCmpstnVoList :paramArr
+            		 ,mode:"cnt"
+                   }
+            
+        }else{
+            params={ abnrmlid:abnrmlid
+                    ,packageindvdid:PackageindvdVo.packageindvdid 
+                    ,packageindvdid:PackageindvdVo.packageindvdid
+            		,mode:"stts"
+                   }
+        }
+        
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/package/packageindvdNormalize.do",
+                type: 'POST',
+                cache : false,
+                traditional : true, //필수
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                data : JSON.stringify(params),
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        $("#detailJsGrid").jsGrid("openPage", $("#detailJsGrid").jsGrid("option", "pageIndex"));
+                        $("#abnrmlJsGrid").jsGrid("openPage", $("#abnrmlJsGrid").jsGrid("option", "pageIndex"));
+                        packageModal.hide();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+</script>

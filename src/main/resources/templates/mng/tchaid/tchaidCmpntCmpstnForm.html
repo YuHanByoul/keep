@@ -15,20 +15,19 @@
             </div>
         </div>
     </div>
-
-    <!-- 하단 버튼 -->
-    <div class="card-block-small">
-        <button type="button" class="btn btn-primary" onclick="createTchaid()">교구 생성 실행</button>
-    </div>
-
+    
+   <!-- 하단 버튼 -->
+   <div class="card-block-small">
+       <button type="button" class="btn btn-primary" onclick="createTchaid()">교구 생성 실행</button>
+   </div>
 <script th:inline="javascript">
+
     /*<![CDATA[*/ 
 	var cmpntLsit = /*[[${cmpntLsit}]]*/null; 
 	var tchaidVo = /*[[${tchaidVo}]]*/null; 
     /*]]>*/
     var cmpntUrl ="/mng/tchaid/tchaidCmpntCmpstnForm.html?tchaidid="+tchaidVo.tchaidid;
     var formArr=[];
-
     
     $(function(){
         makeListHtml();
@@ -38,10 +37,10 @@
     	var html = "";
     	cmpntLsit.forEach(function(item){
     		formArr.push(item.cmpntid);
-    		var classYn = (item.qntyInvntry <item.qntyCmpstn)?'class="text-c-pink"':'';
+    		var classYn = (item.qntyInvntry <item.qntyCmpstn)?'text-c-pink':'';
         	
 	    	html +='<li>'+item.cmpntNm
-	    	html +=' ( <span id="leftCnt'+item.cmpntid+'"  '+classYn+'>'+item.qntyInvntry+'</span> / '+item.qntyCmpstn+' )';
+	    	html +=' ( <span id="leftCnt'+item.cmpntid+'"  class="text-cnt  '+classYn+'">'+item.qntyInvntry+'</span> / '+item.qntyCmpstn+' )';
 	    	html +='<form id="listFrm'+item.cmpntid+'" class="list-frm" >';
 	    	html +='<input type="hidden" id="standardCnt" value="'+item.qntyCmpstn+'">';
 	    	html +='<input type="hidden" id="invntry" value="'+item.qntyInvntry+'">';
@@ -57,27 +56,28 @@
     	var cnt = Number($("#cmpntCnt").val());
     	//default 0 이상
     	if(mode=='M' && cnt==0){return;}
+
+    	$(".text-cnt").removeClass("text-c-pink");
     	
         var isEnough = true;
     	var selectCnt = (mode=='P')? (cnt+1):(cnt-1);
     	
         if(mode=='P'){
-            
         	formArr.forEach(function(item){
-            	
 	        	var standardCnt =	Number($("#listFrm"+item+"  #standardCnt").val()); 
 	        	var invntry     =	Number($("#listFrm"+item+"  #invntry").val());
 	        	if(standardCnt*selectCnt > invntry){
+	        		$("#leftCnt"+item).addClass("text-c-pink");
 	        		isEnough = false;
 		        } 
             })
         }
-    	
+        
         if(!isEnough){return;}
         
         formArr.forEach(function(item){
-            var standardCnt =   Number($("#listFrm"+item+"  #standardCnt").val()); 
-            var invntry     =   Number($("#listFrm"+item+"  #invntry").val());
+            var standardCnt = Number($("#listFrm"+item+"  #standardCnt").val()); 
+            var invntry     = Number($("#listFrm"+item+"  #invntry").val());
             $("#leftCnt"+item).html(invntry-(standardCnt)*selectCnt);
         })
     	$("#cmpntCnt").val(selectCnt);
