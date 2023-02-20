@@ -1,9 +1,9 @@
-package com.kbrainc.plum.mng.jntpurchs.model;
+package com.kbrainc.plum.front.jntpurchs.model;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.ibatis.type.Alias;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -13,21 +13,22 @@ import lombok.Data;
 
 /**
  * 
- * 공동구매모집Vo 클래스
+ * 환경교육 교구 공동구매 Vo 클래스
  *
  * <pre>
- * com.kbrainc.plum.mng.jntpurchs.model
+ * com.kbrainc.plum.front.jntpurchs.model
  * - JntpurchsVo.java
  * </pre> 
  *
  * @ClassName : JntpurchsVo
- * @Description : 공동구매모집Vo 클래스 
+ * @Description : 환경교육 교구 공동구매 Vo 클래스 
  * @author : KBRAINC
- * @date : 2023. 01. 18.
+ * @date : 2023. 02. 17.
  * @Version : 
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
+@Alias("front.JntpurchsVo")
 public class JntpurchsVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보 */
@@ -36,14 +37,11 @@ public class JntpurchsVo extends ParentRequestVo {
     /** 공동구매 아이디 */
     private int jntpurchsid;
     
-    /** 공동구매 번호 */
-    private String jntpurchsno;
+    /** 모집상태 코드명 */
+    private String sttsCdNm;
     
     /** 공동구매 모집명 */
     private String jntpurchsNm;
-    
-    /** 모집상태 코드 */
-    private String sttsCd;
     
     /** 총 판매 수량 */
     private Integer qntyWhol;
@@ -51,14 +49,17 @@ public class JntpurchsVo extends ParentRequestVo {
     /** 총 판매 수량 제한여부 */
     private String qntyWholLmtYn;
     
+    /** 총 주문 수량 */
+    private Integer orderQnty;
+    
+    
+    
+    
     /** 1인당 신청 가능 수량 */
     private Integer qntyLmt;
     
     /** 1인당 신청 가능 제한여부 */
     private String qntyLmtYn;
-    
-    /** 일시정지 여부 */
-    private String pauseYn;
     
     /** 상세내용 */
     private String dtlCn;
@@ -71,6 +72,9 @@ public class JntpurchsVo extends ParentRequestVo {
     
     /** 대표이미지 파일 아이디 */
     private Integer rprsImgFileid;
+    
+    /** 대표이미지 파일 식별키 */
+    private String rprsImgFilekey;
     
     /** 상세이미지 파일 그룹 아이디 */
     private Integer dtlImgFilegrpid;
@@ -90,9 +94,6 @@ public class JntpurchsVo extends ParentRequestVo {
     /** 등록처 */
     private String instNm;
     
-    /** 모집상태 코드명 */
-    private String sttsCdNm;
-    
     /** 등록자 계정 */
     private String acnt;
     
@@ -106,22 +107,13 @@ public class JntpurchsVo extends ParentRequestVo {
     private String searchSttsCd;
     
     /** 검색 등록처 */
-    private String searchInstType;
-    
-    /** 검색 모집 시작일 */
-    private String searchBgngDt;
-    
-    /** 검색 모집 종료일 */
-    private String searchEndDt;
-    
-    private String isExistOrder;
-    
+    private String searchJntpurchsNm;
     
     /** 교구목록 */
-    private List<JntpurchsTchaidVo> goodsList;
+    //private List<JntpurchsTchaidVo> goodsList;
     
     /** 수량별 가격설정 목록 */
-    private List<JntpurchsAmtVo> amtList;
+    //private List<JntpurchsAmtVo> amtList;
     
     
     /** 시작일시 */

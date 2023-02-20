@@ -9,17 +9,18 @@
         <div class="modal-body">
             <div class="card">
                 <div class="card-block-small">
+                    <form name="searchTchaidFrm" id="searchTchaidFrm" action="" onsubmit="return false;">
                     <div class="row">
                         <div class="col-12 col-lg-4 mb-3">
                             <div class="mb-0 form-group row">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
                                 <div class="input-group input-group-sm input-group-dropdown mb-0">
-                                    <select name="tchaidSearchType" id="tchaidSearchType" class="form-select form-control">
+                                    <select name="searchTchaidType" id="searchTchaidType" class="form-select form-control">
                                         <option value="">- 선택 -</option>
                                         <option value="tchaidNm">교구명</option>
                                         <option value="tchaidNo">교구번호</option>
                                     </select>
-                                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="tchaidSearchKeyword" id="tchaidSearchKeyword"/>
+                                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchTchaidKeyword" id="searchTchaidKeyword"/>
                                 </div>
                             </div>
                         </div>
@@ -27,16 +28,7 @@
                             <div class="mb-0 form-group">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육유형</strong></div>
                                 <div class="col-12">
-                                    <select name="eduTypeCd" id="eduTypeCd" class="form-select form-select-sm">
-                                        <option value="">- 전체 -</option>
-                                        <option value="opt2">Type 2</option>
-                                        <option value="opt3">Type 3</option>
-                                        <option value="opt4">Type 4</option>
-                                        <option value="opt5">Type 5</option>
-                                        <option value="opt6">Type 6</option>
-                                        <option value="opt7">Type 7</option>
-                                        <option value="opt8">Type 8</option>
-                                    </select>
+                                    <th:block kattr:select_code="searchEduTypeCd" grpCd="187" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
                                 </div>
                             </div>
                         </div>
@@ -44,24 +36,16 @@
                             <div class="mb-0 form-group">
                                 <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교구유형</strong></div>
                                 <div class="col-12">
-                                    <select name="tchaidTypeCd" id="tchaidTypeCd" class="form-select form-select-sm">
-                                        <option value="">- 전체 -</option>
-                                        <option value="opt2">Type 2</option>
-                                        <option value="opt3">Type 3</option>
-                                        <option value="opt4">Type 4</option>
-                                        <option value="opt5">Type 5</option>
-                                        <option value="opt6">Type 6</option>
-                                        <option value="opt7">Type 7</option>
-                                        <option value="opt8">Type 8</option>
-                                    </select>
+                                    <th:block kattr:select_code="searchTchaidTypeCd" grpCd="184" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="m-t-20 text-center">
-                        <button class="btn btn-disabled m-r-5" onclick="tchaidListPopup.initSearch();">초기화</button>
-                        <button class="btn btn-primary" onclick="tchaidListPopup.onSearch();">검색</button>
+                        <button type="button" class="btn btn-disabled m-r-5" onclick="tchaidListPopup.initSearch();">초기화</button>
+                        <button type="submit" class="btn btn-primary" onclick="tchaidListPopup.onSearch();">검색</button>
                     </div>
+                    </form>
                 </div>
             </div>
             <div class="card m-b-10">
@@ -94,10 +78,21 @@
         }
         
         , initSearch: function() {
-             $("#tchaidSearchType, #tchaidSearchKeyword, #eduTypeCd, #tchaidTypeCd").val("");
+             $("#searchTchaidType, #searchTchaidKeyword, #searchEduTypeCd, #searchTchaidTypeCd").val("");
         }
         
         , onSearch: function() {
+            var searchType = $("#searchTchaidType").val();
+            var searchKeyword = $("#searchTchaidKeyword").val();
+            if(searchType != '' && searchKeyword == "") {
+                alert("검색어를 입력해 주세요.");
+                return false;
+            }
+            if(searchType == '' && searchKeyword != "") {
+                alert("키워드를 선택해 주세요.");
+                return false;
+            }
+            
             tchaidGrid.resetListContent();
         }
         
@@ -123,8 +118,10 @@
                     loadData: function(filter) {
                         var data = $.Deferred();
                         var params = {
-                            "tchaidSearchType": $("#tchaidSearchType").val(),
-                            "tchaidSearchKeyword": $("#tchaidSearchKeyword").val(),
+                            "searchTchaidType": $("#searchTchaidType").val(),
+                            "searchTchaidKeyword": $("#searchTchaidKeyword").val(),
+                            "searchEduTypeCd": $("#searchEduTypeCd").val(),
+                            "searchTchaidTypeCd": $("#searchTchaidTypeCd").val(),
                             "pageNumber": filter.pageIndex,
                             "rowPerPage": filter.pageSize,
                             "orderField": "REG_DT",
@@ -163,13 +160,11 @@
                         align: "center", width: "30", sorting: false
                     },
                     {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false},
-                    {title: "교구유형", name: "", type: "text", width: "80", align: "center", sorting: false},
+                    {title: "교구유형", name: "tchaidTypeCdNm", type: "text", width: "100", align: "center", sorting: false},
                     {title: "교구번호", name: "tchaidNo", type: "text", width: "80", align: "center", sorting: false},
-                    {title: "교구명", name: "tchaidNm", type: "text", width: "80", align: "center", sorting: false},
-                    {title: "교육유형", name: "", type: "text", width: "80", align: "center", sorting: false},
-                    {title: "교육주제", name: "", type: "text", width: "80", align: "center", sorting: false},
-                    {title: "교육대상", name: "", type: "text", width: "80", align: "center", sorting: false},
-                    {title: "모듬구성", name: "", type: "text", width: "80", align: "center", sorting: false}
+                    {title: "교구명", name: "tchaidNm", type: "text", width: "200", align: "center", sorting: false},
+                    {title: "교육유형", name: "eduTypeCdNm", type: "text", width: "100", align: "center", sorting: false},
+                    {title: "모듬구성", name: "teamCmpstnCdNm", type: "text", width: "100", align: "center", sorting: false}
                 ]
             });
         }

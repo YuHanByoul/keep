@@ -5,13 +5,20 @@
     </div>
     <div class="card-block-small p-t-0">
         <div class="row">
-            <div class="col-lg-6 mb-3">
+            <div class="col-lg-4 mb-3">
                 <div class="mb-0 form-group">
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>공동구매모집번호</strong></div>
                     <div class="col-12 p-t-5 p-b-5" th:text="${jntpurchsInfo.jntpurchsno}"></div>
                 </div>
             </div>
-            <div class="col-lg-6 mb-3">
+            <div class="col-lg-4 mb-3">
+                <div class="mb-0 form-group">
+                    <input type="hidden" name="sttsCd" value="" />
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>모집상태</strong></div>
+                    <div class="col-12 p-t-5 p-b-5" th:text="${jntpurchsInfo.sttsCdNm}"></div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-3">
                 <div class="mb-0 form-group required">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="jntpurchsNm"><strong>공동구매모집명</strong></label>
                     <div class="col-12">
@@ -21,15 +28,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6 mb-3">
-                <div class="mb-0 form-group required">
-                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>모집상태</strong></div>
-                    <div class="col-12">
-                        <span  kattr:select_code="sttsCd" th:attr="grpcd=172, selectedCd=${jntpurchsInfo.sttsCd}" isAdmin="true"></span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 mb-3">
+            <div class="col-lg-12 mb-3">
                 <div class="mb-0 form-group required">
                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교구 불러오기</strong></div>
                     <div class="col-12">
@@ -60,9 +59,9 @@
                         <div class="col-auto">
                             <div class="border-checkbox-section">
                                 <div class="border-checkbox-group border-checkbox-group-inverse">
-                                    <input type="hidden" name="qntyWholYn" id="qntyWholYn">
-                                    <input class="border-checkbox" type="checkbox" id="qntyWholCheck" th:checked="${jntpurchsInfo.qntyWhol == 0}">
-                                    <label class="form-label form-label-sm border-checkbox-label mb-0" for="qntyWholCheck">
+                                    <input type="hidden" name="qntyWholLmtYn" id="qntyWholLmtYn" th:value="${jntpurchsInfo.qntyWholLmtYn}">
+                                    <input class="border-checkbox" type="checkbox" id="qntyWholLmtCheck" th:checked="${jntpurchsInfo.qntyWholLmtYn eq 'Y'}">
+                                    <label class="form-label form-label-sm border-checkbox-label mb-0" for="qntyWholLmtCheck">
                                         제한없음
                                     </label>
                                 </div>
@@ -256,6 +255,9 @@
         <th:block sec:authorize-url="/mng/jntpurchs/deleteJntpurchs.do">
             <button type="button" class="btn btn-disabled m-r-5" onclick="jntpurchsUpdate.onDeleteJntpurchs();">삭제</button>
         </th:block>
+        <th:block sec:authorize-url="/mng/jntpurchs/updateJntpurchsStts.do">
+            <button type="button" class="btn btn-disabled m-r-5" onclick="jntpurchsUpdate.onUpdateJntpurchsStts();">일시정지</button>
+        </th:block>
         <th:block sec:authorize-url="/mng/jntpurchs/updateJntpurchs.do">
             <button type="button" class="btn btn-primary" onclick="jntpurchsUpdate.onUpdatetJntpurchs();">저장</button>
         </th:block>
@@ -274,14 +276,14 @@
         , amtList: /*[[${amtList}]]*/
         , rprsImgFileInfo: /*[[${rprsImgFileInfo}]]*/
         , dtlImgFileList: /*[[${dtlImgFileList}]]*/
-        , mapFileList: /*[[${mapFileList}]]*/
+        , mapFileInfo: /*[[${mapFileInfo}]]*/
         , eduPhotoFileList: /*[[${eduPhotoFileList}]]*/
         
         , init: function() {
             jntpurchs.mode = "update";
             fileUploader($("#rprsImgFileUploader"), "jntpurchsRprsImgFile", "rprsImgFileid", this.rprsImgFileInfo, {accept: ".jpeg,.jpg,image/png,image/gif"});
             fileUploader($("#dtlImgFileUploader"), "jntpurchsDtlImgFile", "dtlImgFilegrpid", this.dtlImgFileList, {multiple: true, accept: ".jpeg,.jpg,image/png,image/gif"});
-            fileUploader($("#mapFileUploader"), "jntpurchsMapFile", "mapFilegrpid", this.mapFileList, {multiple: true, accept: ".jpeg,.jpg,image/png,image/gif"});
+            fileUploader($("#mapFileUploader"), "jntpurchsMapFile", "mapFilegrpid", this.mapFileInfo, {accept: ".pdf"});
             fileUploader($("#eduPhotoFileUploader"), "jntpurchsEduPhotoFile", "eduPhotoFilegrpid", this.eduPhotoFileList, {multiple: true, accept: ".jpeg,.jpg,image/png,image/gif"});
             
             this.amtTmplat = $(".amt-row").clone();
@@ -436,9 +438,31 @@
             });
         }
         
+        , onUpdateJntpurchsStts: function() {
+            if(!confirm("일시정지 처리하시겠습니까?")) {
+                return false;
+            }
+            $.ajax({
+                url : "/mng/jntpurchs/updateJntpurchsStts.do",
+                type: "POST",
+                cache: false,
+                dataType: "json",
+                data: {jntpurchsid: $("input[name='jntpurchsid']").val(), sttsCd: "172104"},
+                success: function(response) {
+                    if(response.result == "success") {
+                        alert(response.msg);
+                        jntpurchsGrid.resetPageContent();
+                    } else {
+                        alert(response.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+        
         , onUpdatetJntpurchs: function() {
             if(!($("#jntpurchsUpdateForm").valid())) return;
-            $("input[name='qntyWholYn']").val($("#qntyWholCheck").is(":checked") ? "Y" : "N");
+            $("input[name='qntyWholLmtYn']").val($("#qntyWholLmtCheck").is(":checked") ? "Y" : "N");
             $("input[name='qntyLmtYn']").val($("#qntyLmtCheck").is(":checked") ? "Y" : "N");
             $("#dtlCn").val(this.dtlCnEditor.getData());
             $("#atentMttr").val(this.atentMttrEditor.getData());
