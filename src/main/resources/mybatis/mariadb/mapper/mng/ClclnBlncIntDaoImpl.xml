@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : ClclnBlncIntDaoImpl.xml
+    Description : 체험환경교육 지원사업 -> 정산관리 -> 잔액및이자관리
+-->
+<mapper namespace="com.kbrainc.plum.mng.clclnMng.clclnBlncInt.model.ClclnBlncIntDao">
+    
+    <!-- 잔액및이자관리 목록 조회 -->
+    <select id="selectClclnBlncIntList" parameterType="ClclnBlncIntVo" resultType="ClclnBlncIntVo">
+        /* ClclnBlncIntDao.selectClclnBlncIntList */
+        <include refid="PaginationMapper.header"/>
+        WITH t1 AS (
+            SELECT APLYID, SUM(COALESCE(TOT_AMT,0)) TOT_AMT FROM TB_SPB_DELVRY_APLY WHERE 1=1 GROUP BY APLYID
+        )        
+        SELECT 
+          B.DSCTNID
+        , C.FLD_CD
+        , D.CD_NM FLD_NM  
+        , C.PCNTSTID
+        , C.PCNTST_NM
+        , COALESCE(t1.TOT_AMT,0) TOT_AMT
+        -- , COALESCE(G.TOT_AMT,0) TOT_AMT
+        , COALESCE(A.RTURN_AMT,0) RTURN_AMT
+        , (SELECT COUNT(Z.APLYID) FROM TB_SPB_DELVRY_APLY Z LEFT OUTER JOIN TB_SPB_APLY X ON X.APLYID = Z.APLYID  WHERE X.PCNTSTID = A.PCNTSTID and X.RTURN_YN = 'Y' ) RTURN_CMPTN_CNT -- 완료
+        , (SELECT COUNT(Z.APLYID) FROM TB_SPB_DELVRY_APLY Z LEFT OUTER JOIN TB_SPB_APLY X ON X.APLYID = Z.APLYID  WHERE X.PCNTSTID = A.PCNTSTID and X.RTURN_YN = 'N' OR X.RTURN_YN = NULL ) RTURN_INCMPTN_CNT -- 미완료
+        , A.REG_DT
+        FROM TB_SPB_PCNTST C
+        LEFT OUTER JOIN TB_SPB_APLY A ON A.PCNTSTID = C.PCNTSTID        
+        LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN B ON B.APLYID = A.APLYID
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = C.FLD_CD
+        LEFT OUTER JOIN TB_SPB_DELVRY F ON F.PCNTSTID = C.PCNTSTID          
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY G ON G.APLYID = A.APLYID AND G.DELVRYID = F.DELVRYID
+        LEFT OUTER JOIN t1 ON t1.APLYID = A.APLYID
+        WHERE
+        1=1
+        <if test="searchFldCd != null and searchFldCd != ''">
+        AND C.FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+        AND C.PCNTST_NM = #{searchPcntstNm}
+        </if>
+        GROUP BY C.PCNTSTID
+        <include refid="PaginationMapper.footer"/>        
+    </select>
+    
+    <!-- 잔액및이자관리 상세목록 조회 -->
+    <select id="selectClclnBlncIntDetailList" parameterType="ClclnBlncIntVo" resultType="ClclnBlncIntVo">
+        /* ClclnBlncIntDao.selectClclnBlncIntDetailList */
+        <include refid="PaginationMapper.header"/>
+        WITH t1 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) TOT_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210102' GROUP BY APLYID
+        ),   t2 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) INT_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210101' AND UTZTN_SECD = '214101' GROUP BY APLYID
+        ),   t3 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) ETC_DPST_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210101' AND UTZTN_SECD = '214103' GROUP BY APLYID
+        ) 
+        SELECT 
+            B.PCNTSTID
+          , E.RCPTNO  
+          , B.RTURN_YN
+          , B.INST_NM          
+          , B.APLCNT_NM
+          , B.PRGRM_NM
+          , COALESCE(E.TOT_AMT,0) IMPL_AMT
+          , COALESCE(t1.TOT_AMT,0) - COALESCE(t3.ETC_DPST_AMT,0) EXPND_AMT
+          , COALESCE(E.TOT_AMT,0) - (COALESCE(t1.TOT_AMT,0) - COALESCE(t3.ETC_DPST_AMT,0)) BLNC_AMT 
+          , COALESCE(t2.INT_AMT,0) INT_AMT 
+          , A.REG_DT
+          , A.APLYID  
+        FROM TB_SPB_DELVRY_APLY E 
+        LEFT OUTER JOIN TB_SPB_APLY B ON B.APLYID = E.APLYID
+        LEFT OUTER JOIN TB_SPB_PCNTST C ON C.PCNTSTID = B.PCNTSTID
+        LEFT OUTER JOIN TB_SPB_DELVRY D ON D.PCNTSTID = C.PCNTSTID AND D.DELVRYID = E.DELVRYID       
+        LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN A ON A.APLYID = E.APLYID  
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY_COMPUT F ON F.DELVRY_APLYID = E.DELVRY_APLYID 
+        LEFT OUTER JOIN t1 ON t1.APLYID = A.APLYID
+        LEFT OUTER JOIN t2 ON t2.APLYID = A.APLYID
+        LEFT OUTER JOIN t3 ON t3.APLYID = A.APLYID
+        WHERE B.PCNTSTID = #{pcntstid}
+            <!-- 키워드.전체 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
+                AND (B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%') OR B.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <!-- 키워드.기관명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+                AND B.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.프로그램명 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
+                AND B.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            <!-- 키워드.신청자ID -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserId'">
+                AND B.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR B.APLCNT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>        
+            GROUP BY E.RCPTNO
+        <include refid="PaginationMapper.footer"/>        
+    </select>    
+
+    <!-- 잔액및이자관리 상세목록 정보 조회 -->
+    <select id="selectClclnBlncIntDetailInfo" parameterType="ClclnBlncIntVo" resultType="ClclnBlncIntVo">
+        /* ClclnBlncIntDao.selectClclnBlncIntDetailInfoList */
+        WITH t1 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) TOT_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210102' GROUP BY APLYID
+        ),   t2 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) INT_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210101' AND UTZTN_SECD = '214101' GROUP BY APLYID
+        ),   t3 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) CASHB_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210101' AND UTZTN_SECD = '214102' GROUP BY APLYID
+        ),   t4 AS (
+            SELECT APLYID, SUM(COALESCE(AMT,0)) ETC_DPST_AMT FROM TB_SPB_EXCUT_DSCTN WHERE 1=1 AND SE_CD = '210101' AND UTZTN_SECD = '214103' GROUP BY APLYID
+        ) 
+        SELECT 
+            B.PCNTSTID
+          , E.RCPTNO  
+          , H.SBMSN_STTS_CD
+          , B.INST_NM          
+          , B.APLCNT_NM
+          , B.PRGRM_NM
+          , COALESCE(E.TOT_AMT,0) BGT_AMT
+          , COALESCE(t1.TOT_AMT,0) - COALESCE(t4.ETC_DPST_AMT, 0) AS EXPND_AMT
+          , COALESCE(E.TOT_AMT,0) - (COALESCE(t1.TOT_AMT,0) - COALESCE(t4.ETC_DPST_AMT,0)) AS IMPL_BLNC_AMT
+          , COALESCE(t2.INT_AMT,0) + COALESCE(t3.CASHB_AMT,0) AS INT_CASHB_AMT 
+          , COALESCE(E.TOT_AMT,0) - (COALESCE(t1.TOT_AMT,0) - COALESCE(t4.ETC_DPST_AMT,0)) + (COALESCE(t2.INT_AMT,0) + COALESCE(t3.CASHB_AMT,0)) AS IMPL_BLNC_INT_AMT
+          -- , H.SBMSN_DT
+          , B.RTURN_YN
+          , B.RTURN_DT
+          , B.RTURN_AMT
+          , A.APLYID  
+          , A.ATCH_FILEGRPID ATCH_FILEID
+        FROM TB_SPB_EXCUT_DSCTN A 
+        LEFT OUTER JOIN TB_SPB_APLY B ON B.APLYID = A.APLYID
+        LEFT OUTER JOIN TB_SPB_PCNTST C ON C.PCNTSTID = B.PCNTSTID
+        LEFT OUTER JOIN TB_SPB_DELVRY D ON D.PCNTSTID = C.PCNTSTID        
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY E ON E.APLYID = A.APLYID AND E.DELVRYID = D.DELVRYID 
+        LEFT OUTER JOIN TB_SPB_DELVRY_APLY_COMPUT F ON F.DELVRY_APLYID = E.DELVRY_APLYID 
+        LEFT OUTER JOIN TB_SPB_REQRE_BGT G ON G.APLYID = A.APLYID
+        LEFT OUTER JOIN TB_SPB_SRNG_SBMSN H ON H.APLYID = A.APLYID
+        LEFT OUTER JOIN t1 ON t1.APLYID = A.APLYID
+        LEFT OUTER JOIN t2 ON t2.APLYID = A.APLYID
+        LEFT OUTER JOIN t3 ON t3.APLYID = A.APLYID
+        LEFT OUTER JOIN t4 ON t4.APLYID = A.APLYID
+        WHERE B.PCNTSTID = #{pcntstid}
+         AND  A.APLYID = #{aplyid}         
+         AND  E.RCPTNO = #{rcptno}
+        GROUP BY E.RCPTNO
+    </select>  
+    
+    <!-- 잔액및이자관리 상세정보 집행내역 개요서 리스트 조회 -->
+    <select id="selectClclnBlncIntDetailOutlList" parameterType="ClclnBlncIntVo" resultType="ClclnBlncIntVo">
+        /* ClclnBlncIntDao.selectClclnBlncIntDetailOutlList */
+        WITH t1 AS (
+            SELECT APLYID, ARTCL_CD, SUM(COALESCE(AMT,0)) AS EXPND_AMT FROM TB_SPB_EXCUT_DSCTN WHERE APLYID = #{aplyid} GROUP BY ARTCL_CD
+        ),   t2 AS (
+            SELECT APLYID, ARTCL_CD, COUNT(ARTCL_CD) AS IMPL_CNT FROM TB_SPB_EXCUT_DSCTN WHERE APLYID = #{aplyid} GROUP BY ARTCL_CD
+        ),   t3 AS (
+        SELECT 
+             D.UPPR_CD
+            ,(SELECT X.CD_NM FROM TB_CMM_CD X WHERE X.CD = D.UPPR_CD) AS UPPR_NM
+            , A.EXPITM_CD
+            , D.CD_NM EXPITM_NM
+            , COALESCE(A.AMT,0) BGT_AMT
+            , COALESCE(t1.EXPND_AMT,0) EXPND_AMT
+            , COALESCE(t2.IMPL_CNT,0) IMPL_CNT
+            , COALESCE(A.AMT,0) - COALESCE(t1.EXPND_AMT,0) AS IMPL_BLNC_AMT
+            , ROUND((COALESCE(t1.EXPND_AMT,0) / COALESCE(A.AMT,0)) * 100) IMPL_RT   
+        FROM (
+            SELECT COMPUTID, EXPITM_CD, AMT, CN, ORDR, DELVRY_APLYID
+              FROM TB_SPB_DELVRY_APLY_COMPUT
+            UNION ALL 
+            SELECT 1, '212102101', 160000, NULL, 1, 8
+              FROM DUAL
+            UNION ALL 
+            SELECT 2, '212102102', 250000, NULL, 2, 8
+              FROM DUAL
+            UNION ALL 
+            SELECT 3, '212102103', 1070000, NULL, 3, 8
+              FROM DUAL
+            UNION ALL 
+            SELECT 4, '212102105', 200000, NULL, 4, 8
+              FROM DUAL
+            UNION ALL 
+            SELECT 5, '212102107', 320000, NULL, 5, 8
+              FROM DUAL
+            ) A 
+        LEFT OUTER JOIN ( 
+            SELECT DELVRY_APLYID, APLYID, DELVRYID, TOT_AMT
+              FROM TB_SPB_DELVRY_APLY
+            UNION ALL
+            SELECT 8, 2, 1, 2000000
+              FROM DUAL               
+            ) B ON B.DELVRY_APLYID = A.DELVRY_APLYID 
+        LEFT OUTER JOIN TB_SPB_EXCUT_DSCTN C ON C.APLYID = B.APLYID
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.EXPITM_CD
+        LEFT OUTER JOIN t1 ON t1.APLYID = B.APLYID AND t1.ARTCL_CD = A.EXPITM_CD
+        LEFT OUTER JOIN t2 ON t2.APLYID = B.APLYID AND t2.ARTCL_CD = A.EXPITM_CD
+        WHERE B.APLYID = #{aplyid}       
+        GROUP BY B.APLYID, A.EXPITM_CD ORDER BY A.EXPITM_CD
+        )
+        SELECT 
+              t3.UPPR_CD
+            , t3.UPPR_NM
+            , t3.EXPITM_CD
+            , t3.EXPITM_NM
+            , COALESCE(t3.BGT_AMT,0) BGT_AMT
+            , COALESCE(t3.EXPND_AMT,0) EXPND_AMT
+            , COALESCE(t3.IMPL_CNT,0) IMPL_CNT
+            , COALESCE(t3.IMPL_BLNC_AMT,0) IMPL_BLNC_AMT
+            , COALESCE(t3.IMPL_RT,0) IMPL_RT  
+            , COALESCE(t4.BGT_AMT_RP,0) BGT_AMT_RP  
+            , COALESCE(t4.EXPND_AMT_RP,0) EXPND_AMT_RP
+            , COALESCE(t4.IMPL_CNT_RP,0) IMPL_CNT_RP
+            , COALESCE(t4.IMPL_BLNC_AMT_RP,0) IMPL_BLNC_AMT_RP
+            , COALESCE(t4.IMPL_RT_RP,0) IMPL_RT_RP
+        FROM t3
+        LEFT OUTER JOIN (SELECT UPPR_CD
+                              , SUM(COALESCE(BGT_AMT,0)) BGT_AMT_RP 
+                              , SUM(COALESCE(EXPND_AMT,0)) EXPND_AMT_RP
+                              , SUM(COALESCE(IMPL_CNT,0)) IMPL_CNT_RP
+                              , SUM(COALESCE(IMPL_BLNC_AMT,0)) IMPL_BLNC_AMT_RP
+                              , ROUND((SUM(COALESCE(EXPND_AMT,0)) / SUM(COALESCE(BGT_AMT,0))) * 100) IMPL_RT_RP
+                           FROM t3 
+                           GROUP BY UPPR_CD WITH ROLLUP) t4 ON t4.UPPR_CD = t3.UPPR_CD         
+    </select>          
+
+    <!-- 잔액및이자관리 상세정보 집행상세내역 개요서 리스트 조회 -->
+    <select id="selectClclnBlncIntDetailOutlDtlList" parameterType="ClclnBlncIntVo" resultType="ClclnBlncIntVo">
+        /* ClclnBlncIntDao.selectClclnBlncIntDetailOutlDtlList */
+        SELECT 
+              A.DSCTNID
+            , A.SE_CD -- 입금, 출금
+            , B.CD_NM SE_NM
+            , A.UTZTN_SECD -- 이자,캐쉬백,기타입금액
+            , C.CD_NM UTZTN_SENM -- 이자,캐쉬백,기타입금액
+            , A.DPST_SECD -- 입금대기,입금취소,입금완료
+            , A.DE -- 일자
+            , A.AMT
+            , (SELECT X.CD_NM FROM TB_CMM_CD X WHERE X.CD = E.UPPR_CD) AS UPPR_NM
+            , A.ARTCL_CD -- 비목코드
+            , A.ARTCL_NM -- 세부항목
+            , A.USE_PRPS -- 사용목적
+            , A.DSCTN -- 내역
+            , A.PRUF_KND_CD -- 증빙_종류_코드
+            , A.ATCH_FILEGRPID -- 첨부_파일그룹아이디
+            , A.INSTID -- 기관아이디
+            , A.USERID -- 사용자아이디
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , A.APLYID  -- 신청ID 
+        FROM TB_SPB_EXCUT_DSCTN A
+        LEFT OUTER JOIN TB_CMM_CD B ON B.CD = A.SE_CD
+        LEFT OUTER JOIN TB_CMM_CD C ON C.CD = A.UTZTN_SECD
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.DPST_SECD
+        LEFT OUTER JOIN TB_CMM_CD E ON E.CD = A.ARTCL_CD
+        WHERE A.APLYID = #{aplyid}       
+    </select>      
+    
+    <!-- 잔액및이자관리 상세목록 반납여부 수정 -->
+    <update id="updateClclnBlncIntRturnYn" parameterType="ClclnBlncIntVo" keyProperty="ClclnBlncIntVo">
+        /* ClclnBlncIntDao.updateClclnBlncIntRturnYn */
+        UPDATE TB_SPB_APLY SET
+                  RTURN_YN                      = 'Y'
+                , RTURN_DT                      = NOW()
+                , RTURN_AMT                     = #{implBlncIntAmt}
+                , MDFCN_DT                      = NOW()
+                , MDFRID                        = #{user.userid}
+         WHERE PCNTSTID                         = #{pcntstid}
+           AND APLYID                           = #{aplyid}
+    </update>        
+</mapper>
