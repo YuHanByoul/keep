@@ -1,6 +1,25 @@
 package com.kbrainc.plum.rte.util;
 
 
+import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
+import com.kbrainc.plum.rte.crypto.CryptoAES256;
+import com.kbrainc.plum.rte.exception.CustomRuntimeException;
+import com.kbrainc.plum.rte.idgnr.UUIdGnr;
+import liquibase.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.configuration.Configuration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,32 +30,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.configuration.Configuration;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
-import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
-import com.kbrainc.plum.rte.crypto.CryptoAES256;
-import com.kbrainc.plum.rte.exception.CustomRuntimeException;
-import com.kbrainc.plum.rte.idgnr.UUIdGnr;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 /**
  * 
@@ -355,4 +349,27 @@ public class CommonUtil {
          } 
          return encodedFilename; 
      }
+
+    /**
+     * 공통 마스킹 처리
+     * Title : maskingText
+     * Description : 공통 마스킹 처리 추후 규칙은 변경 예정
+     *
+     * @param text
+     * @return string
+     */
+    public static String maskingText(String text){
+        String maskText = "";
+        String replaceStr = "*";
+        Integer textLength = text.length();
+        Integer maskLength = 2;
+
+        if(textLength > 2){
+            maskText = text.substring(0,1) + StringUtils.repeat(replaceStr,textLength-2) + text.substring(textLength-1,textLength);
+        }else{
+            maskText = text.substring(0,1) + StringUtils.repeat(replaceStr,1);
+        }
+
+        return maskText;
+    }
 }

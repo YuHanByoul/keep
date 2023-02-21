@@ -390,6 +390,7 @@ const formStyle = {
 				const resizeTextarea = function(el) {
 					$(el).css('height', 'auto').css('height', el.scrollHeight + offset);
 					$(el).addClass('areaResize')
+					if($(el).parent().find('#txtSize') !== undefined) $(el).parent().find('#txtSize').text($(el).val().length);
 				};
 				$(this).on('keyup input', function() {
 					resizeTextarea(this);
@@ -564,7 +565,6 @@ const toggleActiveClass = {
 					par.find('.toggleTrigger:not(.toggle-layer-close)').focus();
 				}
 			} else {
-				toggleActiveClass.open();
 				if (par.hasClass('toggle-layer')) {
 					toggleActiveClass.onClickToggleLayer();
 				}
@@ -573,6 +573,10 @@ const toggleActiveClass = {
 						$(this).removeClass('active');
 					})
 				}
+				if (par.hasClass('pigeon')) {
+					$('body').find('.pigeon.active').removeClass('active');
+				}
+				toggleActiveClass.open();
 			}
 		})
 	},
@@ -685,25 +689,29 @@ const layerPopup = {
 	},
 	onClickTrigger : function () {
 		$(document).on('click', '[data-layer-href]' , function (e){
-
+			let callback = undefined;
 			// a link
 			if ($(this).is('a')){
 				e.preventDefault();
 			}
-
+			// only msgForm
+			if ($(this).data('layer-href') === 'layer-popup08') {
+				const {layerHref, trgtId} = $(this).data();
+				callback = msgSendFormInit(layerHref,trgtId,);
+			}
 			const target = $(this).attr('data-layer-href');
 			if ($('[data-layer-id="' + target + '"]').hasClass('active')) {
 					layerPopup.close({target});
-				} else {
-					//checkbox flag
-					if ($(this).is('.inp')) {
-						if ($(this).find('input').is(':checked')){
-							layerPopup.open({target});
-						}
-					} else {
+			} else {
+				//checkbox flag
+				if ($(this).is('.inp')) {
+					if ($(this).find('input').is(':checked')){
 						layerPopup.open({target});
 					}
+				} else {
+					layerPopup.open({target,callback});
 				}
+			}
 		})
 	},
 	onClickClose : function () {

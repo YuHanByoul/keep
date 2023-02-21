@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : MsgDaoImpl.xml
+	Description : 쪽지
+-->
+<mapper namespace="com.kbrainc.plum.front.msg.model.MsgDao">
+    <!-- 쪽지 발송 -->
+    <insert id="insertMsg">
+        /* MsgDao.insertMsg */
+        INSERT INTO TB_CMM_MSG
+        (
+            MSGID,
+            USERID,
+            TRGTID,
+            CN,
+            INQ_YN,
+            USER_DEL_YN,
+            TRGT_DEL_YN,
+            MDFCN_DT,
+            MDFRID,
+            REG_DT,
+            RGTRID
+        ) VALUES (
+             #{msgid}
+             , #{user.userid}
+             , #{trgtid}
+             , #{cn}
+             , 'N'
+             , 'N'
+             , 'N'
+             , NOW()
+             , #{user.userid}
+             , NOW()
+             , #{user.userid}
+        )
+    </insert>
+
+    <!-- 쪽지 발송 대상자 정보 조회 -->
+    <select id="selectTrgtInfo" resultType="com.kbrainc.plum.front.msg.model.MsgVo">
+        /* MsgDao.selectTrgtInfo */
+        SELECT
+            ACNT TRGT_ACNT
+            , NM TRGT_NM
+        FROM TB_CMM_USER
+        WHERE USERID = #{trgtId}
+    </select>
+</mapper>
