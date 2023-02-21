@@ -2,7 +2,7 @@ package com.kbrainc.plum.front.evnt.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.front.cntst.model.CntstVO;
+import com.kbrainc.plum.front.cntst.model.CntstVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;

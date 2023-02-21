@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CntstDaoImpl.xml
+	Description : 공모전 등록
+-->
+<mapper namespace="com.kbrainc.plum.front.cntst.model.CntstDao">
+    <!--공모전 목록 조회-->
+    <select id="selectCntstList" resultType="front.CntstVO">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.CNTSTID
+                , A.TTL
+                , A.THMBN_FILEID
+                , E.FILE_IDNTFC_KEY
+                , DATE_FORMAT(A.APLY_BGNG_DT, '%Y-%m-%d %H:%i') APLY_BGNG_DT
+                , DATE_FORMAT(A.APLY_END_DT, '%Y-%m-%d %H:%i') APLY_END_DT
+                , DATE_FORMAT(A.PRSNTN_DT, '%Y-%m-%d %H:%i') PRSNTN_DT
+                , B.CD_NM AS CLSF_CD
+                , (CASE
+                    WHEN DATE_FORMAT(NOW(), '%Y%m%d') <![CDATA[<]]> DATE_FORMAT(A.APLY_BGNG_DT, '%Y%m%d') THEN '접수전'
+                    WHEN DATE_FORMAT(NOW(), '%Y%m%d') <![CDATA[>]]> DATE_FORMAT(A.APLY_END_DT, '%Y%m%d') THEN '마감'
+                    ELSE '접수중'
+                  END) STTS
+                , A.REG_DT
+            FROM
+                TB_CMM_CNTST A
+            LEFT OUTER JOIN TB_CMM_CD B ON A.CLSF_CD = B.CD
+            LEFT OUTER JOIN TB_CMM_FILE E ON A.THMBN_FILEID = E.FILEID
+            WHERE 1=1
+            <!-- 제목검색 -->
+            <if test="searchTtl != null and searchTtl != ''">
+            AND A.TTL LIKE CONCAT('%',#{searchTtl},'%')
+            </if>
+            <!-- 상택검색 -->
+            <if test="searchStts != null and searchStts != '' ">
+                AND (CASE
+                WHEN DATE_FORMAT(NOW(), '%Y%m%d') &lt; DATE_FORMAT(A.APLY_BGNG_DT, '%Y%m%d') THEN '159101'
+                WHEN DATE_FORMAT(NOW(), '%Y%m%d') &gt; DATE_FORMAT(A.APLY_END_DT, '%Y%m%d') THEN '159103'
+                ELSE '159102'
+                END) = #{searchStts}
+            </if>
+            <!-- 분류검색 -->
+            <if test="searchType != null and searchType != ''">
+            AND A.CLSF_CD = #{searchType}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!--공모전 정보 조회-->
+    <select id="selectCntstInfo" resultType="front.CntstVO">        
+        SELECT
+              A.CNTSTID
+            , D.CD_NM AS CLSF_CD
+            , A.TTL
+            <![CDATA[
+            , (CASE
+                 WHEN DATE_FORMAT(NOW(), '%Y%m%d') < DATE_FORMAT(A.APLY_BGNG_DT, '%Y%m%d') THEN '접수전'
+                 WHEN DATE_FORMAT(NOW(), '%Y%m%d') > DATE_FORMAT(A.APLY_END_DT, '%Y%m%d') THEN '마감'
+                 ELSE '접수중'
+            END) STTS
+            ]]>
+            , C.INST_NM
+            , DATE(A.REG_DT) AS REG_DT
+            , NVL(A.HITS,0) AS HITS
+            , DATE_FORMAT(A.APLY_BGNG_DT, '%Y-%m-%d %H:%i') APLY_BGNG_DT
+            , DATE_FORMAT(A.APLY_END_DT, '%Y-%m-%d %H:%i') APLY_END_DT
+            , DATE_FORMAT(A.PRSNTN_DT, '%Y-%m-%d %H:%i') PRSNTN_DT
+            , A.GDNC
+            , A.TRMS
+            , A.CN
+            , A.ATCH_FILEGRPID
+            , A.DPCN_PSBLTY_YN
+            
+            , (SELECT RIGHT(APLYNO, 4) APLYNO FROM TB_CMM_CNTST_APLY WHERE CNTSTID = #{cntstid} ORDER BY APLYNO DESC LIMIT 1) AS APLYNO
+            , (SELECT USERID FROM TB_CMM_CNTST_APLY WHERE CNTSTID = #{cntstid} AND USERID = #{user.userid} ORDER BY APLYNO DESC LIMIT 1) DPCN_USERID
+            
+            <![CDATA[
+            , (SELECT CNTSTID FROM TB_CMM_CNTST WHERE CNTSTID > #{cntstid} LIMIT 1) AS NEXT_CNTSTID
+            , (SELECT TTL FROM TB_CMM_CNTST WHERE CNTSTID > #{cntstid} LIMIT 1) AS NEXT_CNTST_TTL
+            , (SELECT CNTSTID FROM TB_CMM_CNTST WHERE CNTSTID < #{cntstid} ORDER BY CNTSTID DESC LIMIT 1) AS BEFORE_CNTSTID
+            , (SELECT TTL FROM TB_CMM_CNTST WHERE CNTSTID < #{cntstid} ORDER BY CNTSTID DESC LIMIT 1) AS BEFORE_CNTST_TTL
+            ]]>
+        FROM
+            TB_CMM_CNTST A
+        LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C ON B.INSTID = C.INSTID
+        LEFT OUTER JOIN TB_CMM_CD D ON A.CLSF_CD = D.CD
+        WHERE
+            A.CNTSTID = #{cntstid}        
+    </select>
+    
+    <!-- 공모전 첨부파일 조회 -->
+    <select id="selectCntstFileList" parameterType="front.CntstVo" resultType="front.CntstVo"> 
+        /* CntstDao.selectCntstFileList */
+        SELECT
+            A.ATCH_FILEGRPID
+            , B.FILEID
+            , B.FILE_IDNTFC_KEY
+            , B.ORGINL_FILE_NM
+            , TRIM(LEADING '.' FROM B.FILE_EXTSN) AS EXT
+        FROM
+            TB_CMM_CNTST A
+            LEFT OUTER JOIN TB_CMM_FILE B ON A.ATCH_FILEGRPID = B.FILEGRPID
+        WHERE CNTSTID = #{cntstid}
+    </select>
+    
+    <!-- 조회수 증가 -->
+    <update id="updateCntstHits" parameterType="front.CntstVo">
+        UPDATE TB_CMM_CNTST SET HITS = IFNULL(HITS,0) + 1 
+        WHERE CNTSTID = #{cntstid}
+    </update>
+    
+    <!--공모전 정보 조회-->
+    <select id="selectCntstFldMapngInfo" resultType="front.CntstVo">        
+        SELECT
+            A.FLD_CD, CD_NM AS FlD_MAPNG_NM
+        FROM TB_CMM_CNTST_FLD_MAPNG A
+        LEFT OUTER JOIN TB_CMM_CD B ON A.FLD_CD = B.CD
+        WHERE
+            A.CNTSTID = #{cntstid}        
+    </select>
+    
+    <!--공모전 정보 조회-->
+    <select id="selectUserAplyInfo" resultType="front.CntstAplyVo">        
+        SELECT
+        	A.NM AS RPRSV_NM
+          , A.USERID
+          , B.INSTID
+          , B.INST_NM
+          , CASE WHEN C.STTS_CD = 134103 THEN A.BRDT END AS BRDT
+          , REGEXP_REPLACE(A.MOBLPHON, '(02|.{3})(.+)(.{4})', '\\1-\\2-\\3') AS RPRSV_MOBLPHON
+          , A.EML
+          , A.ZIP
+          , A.ADDR
+          , A.ADDR_DTL
+        FROM
+        	TB_CMM_USER A
+        	LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+        	LEFT OUTER JOIN (SELECT USERID, STTS_CD FROM TB_ASS_EXPRT WHERE STTS_CD = 134103) C ON A.USERID = C.USERID
+        WHERE 1=1
+        AND A.USERID = #{userid}
+    </select>
+    
+    <insert id="insertCntstAply" parameterType="front.CntstAplyVo" useGeneratedKeys="true" keyProperty="aplyid">
+        INSERT INTO TB_CMM_CNTST_APLY (
+        	APLYNO
+            , CNTSTID
+        	, USERID
+        	, INSTID
+        	, APLY_SE_CD
+        	, PCNTST_FLD_CD
+        	, APLY_PATH_CD
+        	, RPRSV_NM
+        	, BRDT
+        	, RPRSV_MOBLPHON
+        	, EML
+        	, ZIP
+        	, ADDR
+        	, ADDR_DTL
+        	, PRDCT_TTL
+        	, PRDCT_EXPLN
+        	, PRDCT_FILEGRPID
+        	, TRMS_AGRE_YN
+        	, MDFCN_DT
+        	, MDFRID
+        	, REG_DT
+        	, RGTRID
+        ) VALUES (
+            #{aplyno}
+            , #{cntstid}
+            , #{userid}
+            , #{instid}
+            , #{aplySeCd}
+            , #{pcntstFldCd}
+            , #{aplyPathCd}
+            , #{rprsvNm}
+            , #{brdt}
+            , #{rprsvMoblphon}
+            , #{eml}
+            , #{zip}
+            , #{addr}
+            , #{addrDtl}
+            , #{prdctTtl}
+            , #{prdctExpln}
+            , #{prdctFilegrpid}
+            , #{trmsAgreYn}
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}               
+        )
+    </insert>
+    
+    <insert id="insertCntstAplySchl" parameterType="java.util.List">
+        INSERT INTO TB_CMM_CNTST_APLY_SCHL(
+            APLYID
+            , SCHL_NM
+            , TCHER_NM
+            , TCHER_GNDR
+            , TELNO
+            , PCNTST_FLD_CD
+            , STDNT_MALE
+            , STDNT_FEMALE
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID           
+        ) VALUES
+        <foreach item="item" collection="list" separator=",">
+        (
+            #{item.aplyid}
+            , #{item.schlNm}
+            , #{item.tcherNm}
+            , #{item.tcherGndr}
+            , #{item.telno}
+            , #{item.pcntstFldCd}
+            , #{item.stdntMale}
+            , #{item.stdntFemale}
+            , NOW()
+            , #{item.user.userid}
+            , NOW()
+            , #{item.user.userid}
+        )
+        </foreach>
+    </insert>    
+</mapper>
