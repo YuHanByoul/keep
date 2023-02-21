@@ -34,9 +34,15 @@ public class MemberTypeVo {
     @Pattern(regexp="[PCI]", message = "회원가입 유형을 선택해주세요.")
     private String type;
     
-    /** 회원가입완료호면에서 로그인 버튼 클릭후 로그인 성공시 되돌아갈 URL */
+    /** 디지털원패스 사용자정보 인코딩데이터 */
+    private String onepassEncodeData;
+    
+    /** 회원가입완료화면에서 로그인 버튼 클릭후 로그인 성공시 되돌아갈 URL */
     private String returnUrl;
 
+    /** 화면에 띄울 alert메시지 */
+    private String alertMsg;
+    
     public String getTosAgreYn() {
         return null;
     }
@@ -57,7 +63,7 @@ public class MemberTypeVo {
         return null;
     }
     
-    public String getAlertMsg() {
+    public String getAllAgreYn() {
         return null;
     }
 }

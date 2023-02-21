@@ -70,6 +70,17 @@ public interface MemberDao {
     public String selectUseridByCI(MemberVo memberVo) throws Exception;
     
     /**
+    * ci에 해당하는 사용자정보 조회.
+    *
+    * @Title : selectUserInfoByCI
+    * @Description : ci에 해당하는 사용자정보 조회
+    * @param memberVo MemberVo객체
+    * @return MemberVo 사용자정보
+    * @throws Exception 예외
+    */
+    public MemberVo selectUserInfoByCI(MemberVo memberVo) throws Exception;
+    
+    /**
     * 부모ci와 이름에 해당하는 userid 조회.
     *
     * @Title : selectUseridByParntsCIandName
@@ -92,6 +103,17 @@ public interface MemberDao {
     */
     public int insertMember(MemberVo memberVo) throws Exception;
 
+    /**
+    * 회원정보 수정(동의여부, 개인정보 유효기간만 update).
+    *
+    * @Title : updateMemberAgreYnAndPrvcVldty
+    * @Description : 회원정보 수정(동의여부, 개인정보 유효기간만 update)
+    * @param memberVo MemberVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateMemberAgreYnAndPrvcVldty(MemberVo memberVo) throws Exception;
+    
     /**
     * 관심 환경분야 저장
     *

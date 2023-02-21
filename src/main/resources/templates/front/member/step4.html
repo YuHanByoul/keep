@@ -24,6 +24,7 @@
             <input type="hidden" name="instSignguCd" id="instSignguCd" />
             <input type="hidden" name="instZip" id="instZip" />
             <input type="hidden" name="directYn" id="directYn" />
+            <input type="hidden" name="userid" id="userid" th:value="${memberInfo.userid}" />
             
             <div class="steps">
                 <ol>
@@ -48,7 +49,8 @@
                     <li>
                         <div class="steps-inner">
                             <span>04</span>
-                            <strong>가입완료</strong>
+                            <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">가입완료</strong>
+                            <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">연동완료</strong>
                         </div>
                     </li>
                 </ol>
@@ -56,10 +58,10 @@
 
             <div class="table-caption">
                 <div class="left">
-                    <h3 class="sub-title">회원정보 입력</h3>
+                    <h3 class="sub-title">회원정보<th:block th:if="${memberInfo.userid == null}"> 입력</th:block></h3>
                 </div>
                 <div class="right">
-                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                    <p class="desc"><th:block th:if="${memberInfo.userid == null}"><span class="ast">*</span>표시는 필수 입력 정보입니다.</th:block></p>
                 </div>
             </div>
 
@@ -80,12 +82,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">이름<i class="ast" title="필수입력">*</i></th>
+                            <th scope="row">이름<th:block th:if="${memberInfo.userid == null}"><i class="ast" title="필수입력">*</i></th:block></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" name="nm" id="nm" maxlength="20" title="이름" placeholder="이름 입력" data-width="304" th:value="${authData.sName}" th:readonly="${authData.sName}">
+                                            <input type="text" name="nm" id="nm" maxlength="20" title="이름" placeholder="이름 입력" data-width="304" th:value="${authData.sName != null ? authData.sName : memberInfo.nm}" th:readonly="${authData.sName != null or  memberInfo.nm != null}">
                                         </div>
                                     </div>
                                     <div class="col">
@@ -94,24 +96,24 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <th scope="row">아이디<i class="ast" title="필수입력">*</i></th>
+                        <tr th:if="${#strings.isEmpty(data.onepassEncodeData)}">
+                            <th scope="row">아이디<th:block th:if="${memberInfo.userid == null}"><i class="ast" title="필수입력">*</i></th:block></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" name="acnt" id="acnt" maxlength="10" title="아이디" placeholder="아이디 입력" data-width="304">
-                                            <button type="button" class="btn-medium btn-gray" onclick="checkIdYn()">중복확인</button>
+                                            <input type="text" name="acnt" id="acnt" maxlength="10" title="아이디" placeholder="아이디 입력" data-width="304" th:value="${memberInfo.acnt}" th:readonly="${memberInfo.userid}">
+                                            <button type="button" class="btn-medium btn-gray" onclick="checkIdYn()" th:if="${memberInfo.userid == null}">중복확인</button>
                                         </div>
                                     </div>
                                     <div class="col">
                                         <p class="feedback" id="checkIdMsg"></p>
                                     </div>
                                 </div>
-                                <p class="desc">* 아이디 영문소문자+숫자 6~10자 이내</p>
+                                <p class="desc"><th:block th:if="${memberInfo.userid == null}">* 아이디 영문소문자+숫자 6~10자 이내</th:block></p>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null and #strings.isEmpty(data.onepassEncodeData)}">
                             <th scope="row">비밀번호<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
@@ -125,7 +127,7 @@
                                 <p class="desc">* 비밀번호 영문+숫자+특수문자(!@#$) 각 1자 이상 포함아여 9~12자 이내</p>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null and #strings.isEmpty(data.onepassEncodeData)}">
                             <th scope="row">비밀번호 확인<i class="ast" title="필수입력">*</i></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
@@ -139,13 +141,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">휴대전화<i class="ast" title="필수입력" th:if="${data.type != 'C'}">*</i></th>
+                            <th scope="row">휴대전화<th:block th:if="${memberInfo.userid == null}"><i class="ast" title="필수입력" th:if="${data.type != 'C'}">*</i></th:block></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
                                             <input type="number" name="moblphon" id="moblphon" maxlength="12" title="휴대전화" placeholder="숫자만 입력" data-width="304" th:value="${authData.sMobileNo}" th:readonly="${data.encodeData != '' and authData.sName != null}">
-                                            <button type="button" class="btn-medium btn-gray" th:if="${data.encodeData == ''}" onclick="fnAuthPopup()">본인인증</button>
+                                            <button type="button" class="btn-medium btn-gray" th:if="${#strings.isEmpty(data.encodeData)}" onclick="fnAuthPopup()">본인인증</button>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -155,15 +157,15 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">이메일<i class="ast" title="필수입력">*</i></th>
+                            <th scope="row">이메일<th:block th:if="${memberInfo.userid == null}"><i class="ast" title="필수입력">*</i></th:block></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" name="eml1" id="eml1" maxlength="50" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160">
+                                            <input type="text" name="eml1" id="eml1" maxlength="50" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160" th:value="${memberInfo.eml1}" th:readonly="${memberInfo.userid}">
                                             <div class="bul">@</div>
-                                            <input type="text" name="eml2" id="eml2" maxlength="50" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160">
-                                            <select id="emailList" title="이메일 도메인" data-width="150">
+                                            <input type="text" name="eml2" id="eml2" maxlength="50" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160" th:value="${memberInfo.eml2}" th:readonly="${memberInfo.userid}">
+                                            <select id="emailList" title="이메일 도메인" data-width="150" th:readonly="${memberInfo.userid}">
                                                 <option value="">직접입력</option>
                                                 <option value="chol.com">chol.com</option>
                                                 <option value="dreamwiz.com">dreamwiz.com</option>
@@ -195,13 +197,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
+                            <th scope="row">주소<th:block th:if="${memberInfo.userid == null}"><i class="ast" title="필수입력">*</i></th:block></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" name="addr" id="addr" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly>
-                                            <button type="button" class="btn-medium btn-gray" onclick="daumPostcode1()">검색</button>
+                                            <input type="text" name="addr" id="addr" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly th:value="${memberInfo.addr}">
+                                            <button type="button" class="btn-medium btn-gray" onclick="daumPostcode1()" th:if="${memberInfo.userid == null}">검색</button>
                                         </div>
                                     </div>
                                     <div class="col">
@@ -211,12 +213,12 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
+                            <th scope="row">상세주소<th:block th:if="${memberInfo.userid == null}"><i class="ast" title="필수입력">*</i></th:block></th>
                             <td>
                                 <div class="row row-auto flex-wrap">
                                     <div class="col">
                                         <div class="form-input">
-                                            <input type="text" name="addrDtl" id="addrDtl" maxlength="400" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585">
+                                            <input type="text" name="addrDtl" id="addrDtl" maxlength="400" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" th:value="${memberInfo.addrDtl}" th:readonly="${memberInfo.userid}">
                                         </div>
                                     </div>
                                     <div class="col">
@@ -225,7 +227,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null}">
                             <th scope="row" rowspan="4">관심분야 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
                             <td>
                                 <div class="form-input mo-flex-wrap">
@@ -234,7 +236,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null}">
                             <td>
                                 <div class="form-input mo-flex-wrap">
                                     <strong class="label">지원사업</strong>
@@ -242,7 +244,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null}">
                             
                             <td>
                                 <div class="form-input mo-flex-wrap">
@@ -251,7 +253,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null}">
                             <td>
                                 <div class="form-input mo-flex-wrap">
                                     <strong class="label">기타</strong>
@@ -259,7 +261,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr th:if="${memberInfo.userid == null}">
                             <th scope="row">맞춤 환경정보 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
                             <td>
                                 <span kattr:check_code="envfldCds1" grpCd="104" addClass="envfldCds" selectedCd="104101,104105,104106" />
@@ -338,7 +340,7 @@
                         <tr id="bizFileTr" style="display:none">
                             <th scope="row">사업자등록증<i class="ast" title="필수입력">*</i></th>
                             <td>
-                                <div class="row row-auto flex-wrap">
+                                <div class="row row-auto flex-wrap flex-column">
                                     <div class="col">
                                         <div class="form-input form-input-file">
                                             <label>
@@ -474,7 +476,7 @@
             
             <div class="btn-wrap">
                 <div class="center">
-                    <button type="button" class="btn-medium btn-green" onclick="join()">가입하기</button>
+                    <button type="button" class="btn-medium btn-green" onclick="join()"><th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block>하기</button>
                 </div>
             </div>
             </form>
@@ -482,7 +484,11 @@
                 <input type="hidden" name="type" th:value="${data.type}" />
                 <input type="hidden" name="kind" value="info" />
             </form>
-            
+            <form id="typeForm" th:action="@{/front/membership/step5.html}" method="post">
+                <input type="hidden" name="type" id="type" th:value="${data.type}" />
+                <input type="hidden" name="onepassEncodeData" id="onepassEncodeData" th:value="${data.onepassEncodeData}" />
+                <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
+            </form>
             <!-- layerpopup -->
             <div id="layer-popup05">
             </div>
@@ -493,6 +499,7 @@
                 var validator= $("#memberInfoForm").validate({
                         onsubmit: false,
                         rules: {
+                            /*[# th:if="${memberInfo.userid == null}"]*/
                              nm         :   { required: true, isBlank: true, maxlength: 20 }
                             ,acnt       :   { required: true, isBlank: true, minlength: 6, maxlength: 10, idPolicy1: true }
                             ,pswd       :   { required: true, isBlank: true, passwordPolicy2: true, minlength: 9, maxlength: 12 ,isHangulOff: true }
@@ -507,9 +514,10 @@
                             ,eml1       :   { required: true, isBlank: true, maxlength: 50 }
                             ,eml2       :   { required: true, isBlank: true, maxlength: 50, emailDomain: true }
                             ,addr       :   { required: true, maxlength: 200 }
-                            ,addrDtl    :   { required: true, maxlength: 400 }
+                            ,addrDtl    :   { required: true, maxlength: 400 },
+                            /*[/]*/
                             /*[# th:if="${data.type == 'I'}"]*/
-                            ,instNm     :   { required: true, isBlank: true, maxlength: 100 }
+                             instNm     :   { required: true, isBlank: true, maxlength: 100 }
                             ,instTypeCd :   { required: true }
                             ,brno       :   { required: true, isRightBizNo: true}
                             ,rprsvNm    :   { required: true, isBlank: true, maxlength: 20 }
@@ -551,16 +559,17 @@
                     
                 function join(){
                     if(!($("#memberInfoForm").valid())){
-                        if($("#checkIdMsg").text() == "") {
-                            checkIdDup();
-                        }
-                        /*[# th:if="${data.type == 'I'}"]*/
-                        if($("#checkBizIdMsg").text() == "") {
-                            checkBizIdDup();
-                        }
-                        /*[/]*/
+                        /*[# th:if="${memberInfo.userid == null}"]*/
+                          /*[# th:if="${#strings.isEmpty(data.onepassEncodeData)}"]*/
+                        if($("#checkIdMsg").text() == "") checkIdDup();
                         if($("#checkPswdMsg").text() == "") changePswd();
                         if($("#checkPswdConfirmMsg").text() == "") $("#pswdConfirm").focus();
+                          /*[/]*/
+                        if($("#checkMoblphonMsg").text() == "") checkMoblphon();
+                        /*[/]*/
+                        /*[# th:if="${data.type == 'I'}"]*/
+                        if($("#checkBizIdMsg").text() == "") checkBizIdDup();
+                        /*[/]*/
                         // readonly라 별도 처리
                         /*if(!checkAddr1()) {
                           if($(".feedback.invalid", "#memberInfoForm").length == 1) {
@@ -577,13 +586,19 @@
                         return;
                     }
 
-                    changePswd();
-                    
-                    var checkIdDupResult = checkIdDup();
-                    var checkPswdConfirmResult = changePswdConfirm();
-                    var checkMoblphoneResult = checkMoblphon();
+                    var checkIdDupResult = true;                    
+                    var checkPswdConfirmResult = true;
+                    var checkMoblphoneResult = true;
                     var checkBizIdDupResult = true;
                     var checkBizFileResult = true;
+                    /*[# th:if="${memberInfo.userid == null}"]*/
+                      /*[# th:if="${#strings.isEmpty(data.onepassEncodeData)}"]*/
+                    changePswd();
+                    checkIdDupResult = checkIdDup();                    
+                    checkPswdConfirmResult = changePswdConfirm();
+                      /*[/]*/
+                    checkMoblphoneResult = checkMoblphon();
+                    /*[/]*/
                     /*[# th:if="${data.type == 'I'}"]*/
                     checkBizIdDupResult = checkBizIdDup();
                     if($("#directYn").val() == 'Y') {
@@ -631,11 +646,11 @@
                                 data : data,
                                 success : function (data){
                                     if(data.result=="success"){
-                                        if($("#returnUrl").val() != ''){
-                                            location.href="/front/membership/step5.html?type=" + $("#type").val() + "&returnUrl=" + $("#returnUrl").val();
-                                        }else{
-                                            location.href="/front/membership/step5.html?type=" + $("#type").val();
+                                        if(data.msg != undefined) {
+                                            const paramAlertMsg = $("<input type='hidden' name='alertMsg' value='" + data.msg + "'>");
+                                            $("#typeForm").append(paramAlertMsg);
                                         }
+                                        $("#typeForm").submit();
                                     }else{
                                         alert(data.msg);
                                     }

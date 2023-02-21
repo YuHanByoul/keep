@@ -29,6 +29,9 @@ import lombok.Data;
 @Data
 public class MemberAuthVo {
     
+    /** 사용자아이디 */
+    private Integer userid;
+    
     /** 회원가입 유형 */
     @NotEmpty(message = "회원가입 유형을 선택해주세요.")
     @Pattern(regexp="[PCI]", message = "회원가입 유형을 선택해주세요.")
@@ -55,6 +58,9 @@ public class MemberAuthVo {
     /** 웹진 신청 동의 여부 */
     @Pattern(regexp="[YN]", message = "올바른 값을 입력해주세요.")
     private String wbznAplyAgreYn = "N";
+    
+    /** 약관 전체 동의 여부 */
+    private String allAgreYn;
 
     /** 본인인증 결과 인코딩데이터(법정대리인) */
     private String pencodeData;
@@ -64,9 +70,6 @@ public class MemberAuthVo {
     
     /** 디지털원패스 사용자정보 인코딩데이터 */
     private String onepassEncodeData;
-    
-    /** 디지털원패스 회원연동 여부 */
-    private String onepassUserYn = "N";
 
     /** 회원가입완료호면에서 로그인 버튼 클릭후 로그인 성공시 되돌아갈 URL */
     private String returnUrl;

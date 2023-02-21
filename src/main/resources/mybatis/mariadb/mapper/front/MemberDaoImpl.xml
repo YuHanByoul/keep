@@ -51,6 +51,28 @@
         LIMIT 1
     </select>
     
+    <!-- ci에 해당하는 userid 조회  -->
+    <select id="selectUserInfoByCI" parameterType="front.MemberVo" resultType="front.MemberVo">
+        /* front.MemberDao.selectUseridByCI */
+        SELECT 
+            USERID,
+            ACNT,
+            NM,
+            MOBLPHON,
+            EML,
+            ZIP,
+            ADDR,
+            ADDR_DTL,
+            SIGNGU_CD,
+            INSTID
+        FROM
+            TB_CMM_USER
+        WHERE
+            CI = #{ci}
+        AND DEL_YN = 'N' 
+        LIMIT 1
+    </select>
+    
     <!-- 부모ci와 이름에 해당하는 userid 조회  -->
     <select id="selectUseridByParntsCIandName" parameterType="front.MemberVo" resultType="String">
         /* front.MemberDao.selectUseridByParntsCIandName */
@@ -125,6 +147,23 @@
                 NOW()
             )
     </insert>
+    
+    <!-- 회원정보 수정(동의여부, 개인정보 유효기간만 update) -->
+    <update id="updateMemberAgreYnAndPrvcVldty" parameterType="MemberVo">
+        /* front.MemberDao.updateMemberAgreYnAndPrvcVldty */
+        UPDATE 
+            TB_CMM_USER 
+        SET
+            TOS_AGRE_YN = #{tosAgreYn},
+            PRIVCY_AGRE_YN = #{privcyAgreYn},
+            PRVC_THPTY_PVSN_AGRE_YN = #{prvcThptyPvsnAgreYn},
+            CHILD_JOIN_AGRE_YN = #{childJoinAgreYn},
+            WBZN_APLY_AGRE_YN = #{wbznAplyAgreYn},
+            PRVC_VLDTY = NVL(#{prvcVldty}, 1),
+            MDFCN_DT = NOW(),
+            MDFRID = #{userid}
+        WHERE USERID = #{userid}
+    </update>
     
     <!-- 사용자 관심분야 저장 -->
     <insert id="insertItrstfld" parameterType="front.MemberVo" >

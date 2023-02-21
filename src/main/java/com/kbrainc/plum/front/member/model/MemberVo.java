@@ -8,6 +8,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
+import com.kbrainc.plum.cmm.esylgn.model.EsylgnVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
@@ -48,13 +49,9 @@ public class MemberVo extends ParentRequestVo {
     private String nm;
 
     /** 계정 */
-    @NotEmpty(message = "아이디를 입력 해주십시오.")
-    @Size(min = 6, max = 10, message = "아이디 형식이 올바르지 않습니다.")
     private String acnt;
 
     /** 비밀번호 */
-    @NotEmpty(message = "비밀번호를 입력 해주십시오.")
-    @Size(min = 9, max = 12, message = "비밀번호 조건이 일치하지 않습니다.")
     private String pswd;
 
     /** 휴대폰번호 */
@@ -161,6 +158,9 @@ public class MemberVo extends ParentRequestVo {
     /** 디지털원패스 사용자정보 인코딩데이터 */
     private String onepassEncodeData;
 
+    /** 간편로그인Vo 객체 */
+    private EsylgnVo esylgnVo;
+    
     /** 로그인사용자정보 */
     public void setUser(UserVo user) {
         UserVo clone = (UserVo) SerializationUtils.clone(user);
@@ -175,5 +175,13 @@ public class MemberVo extends ParentRequestVo {
     public void setEml2(String eml2) {
         this.eml2 = eml2;
         this.eml = this.eml1 + "@" + this.eml2;
+    }
+    
+    public void setEml(String eml) {
+        if (eml != null) {
+            String[] emls = eml.split("@");
+            this.eml1 = emls[0];
+            this.eml2 = emls[1];
+        }
     }
 }

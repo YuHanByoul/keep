@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -106,15 +107,15 @@ public class IdntyVrfctnController {
         String kind = ""; // 본인인증종류(auth:회원가입_본인인증, info:회원가입_회원정보입력)
         IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(session, encodeData);
         
-        String session_sRequestNumber =  (String)session.getAttribute("REQ_SEQ");
-        if (session_sRequestNumber != null) {
-            if (session_sRequestNumber.startsWith("P_") || session_sRequestNumber.startsWith("C_") || session_sRequestNumber.startsWith("I_")) {
-                type = session_sRequestNumber.substring(0, 1);
+        String sessionRequestNumber =  (String)session.getAttribute("REQ_SEQ");
+        if (sessionRequestNumber != null) {
+            if (sessionRequestNumber.startsWith("P_") || sessionRequestNumber.startsWith("C_") || sessionRequestNumber.startsWith("I_")) {
+                type = sessionRequestNumber.substring(0, 1);
                 isMembership = true;
             }
-            if (session_sRequestNumber.endsWith("_auth")) {
+            if (sessionRequestNumber.endsWith("_auth")) {
                 kind = "auth";
-            } else if (session_sRequestNumber.endsWith("_info")) {
+            } else if (sessionRequestNumber.endsWith("_info")) {
                 kind = "info";
             }
         }
@@ -122,7 +123,7 @@ public class IdntyVrfctnController {
             String birth = result.getSBirthDate();
             
             // 만나이 계산(어린이회원인지 확인하기위해)
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
             Date birthDate = formatter.parse(birth);
             Calendar currentCal = Calendar.getInstance();
             Calendar brithCal = Calendar.getInstance();
@@ -162,12 +163,24 @@ public class IdntyVrfctnController {
                 // CI값이 동일한 회원이 있는지 확인한다.
                 MemberVo memberVo = new MemberVo();
                 memberVo.setCi(result.getSConnInfo());
-                String userid = memberService.selectUseridByCI(memberVo);
-                if (userid != null) {
-                    response.setContentType("text/html;charset=UTF-8");
-                    PrintWriter writer = response.getWriter();
-                    writer.print("<script>alert('회원정보가 존재합니다.\\n아이디 찾기로 확인해주시기 바랍니다.');window.close();</script>");
-                    return null;
+                MemberVo memberInfo = memberService.selectUserInfoByCI(memberVo);
+                if (memberInfo != null) {
+                    if ("I".equals(type) && memberInfo.getInstid() != null) { // 기관회원가입시 이미기관회원인경우
+                        response.setContentType("text/html;charset=UTF-8");
+                        PrintWriter writer = response.getWriter();
+                        writer.print("<script>alert('이미 기관담당자로 가입된 정보입니다.\\n관리자에게 문의하세요.');window.close();</script>");
+                        return null;
+                    } else if ("I".equals(type)) { // 기관회원가입 현재
+                        response.setContentType("text/html;charset=UTF-8");
+                        PrintWriter writer = response.getWriter();
+                        writer.print("<script>try{opener.setEncodeData('" + encodeData + "', '" + memberInfo.getUserid() + "');}catch(e){}window.close();</script>");
+                        return null;
+                    } else {
+                        response.setContentType("text/html;charset=UTF-8");
+                        PrintWriter writer = response.getWriter();
+                        writer.print("<script>alert('회원정보가 존재합니다.\\n아이디 찾기로 확인해주시기 바랍니다.');window.close();</script>");
+                        return null;
+                    }
                 }
             }
             response.setContentType("text/html;charset=UTF-8");

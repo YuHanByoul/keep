@@ -6,8 +6,9 @@
 >
     <body>
         <th:block layout:fragment="content">
-            <form id="agreeForm" th:action="@{/front/membership/step3.html}" method="post">
+            <form name="agreeForm" id="agreeForm" th:action="@{/front/membership/step3.html}" method="post">
             <input type="hidden" name="type" id="type" th:value="${data.type}" />
+            <input type="hidden" name="onepassEncodeData" id="onepassEncodeData" th:value="${data.onepassEncodeData}" />
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
             <div class="steps">
                 <ol>
@@ -32,7 +33,8 @@
                     <li>
                         <div class="steps-inner">
                             <span>04</span>
-                            <strong>가입완료</strong>
+                            <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">가입완료</strong>
+                            <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">연동완료</strong>
                         </div>
                     </li>
                 </ol>
@@ -379,19 +381,19 @@
             </div>
 
             <div class="form-check-all">
-                <label class="inp"><input type="checkbox" name="agreAll" id="agreAll"><b>전체 약관 동의</b></label>
+                <label class="inp"><input type="checkbox" name="allAgreYn" id="allAgreYn" value="Y" th:checked="${data.allAgreYn == 'Y'}"><b>전체 약관 동의</b></label>
             </div>
 
             <div class="btn-wrap">
                 <div class="center">
-                    <button type="button" class="btn-medium btn-gray" onclick="location.href='/front/membership/step1.html'">이전</button>
+                    <button type="button" class="btn-medium btn-gray" onclick="prev()">이전</button>
                     <button type="button" class="btn-medium btn-green" onclick="next()">확인</button>
                 </div>
             </div>
             </form>
             <script th:inline="javascript">
                 $(function(){
-                   $("#agreAll").on("click", function(e) {
+                   $("#allAgreYn").on("click", function(e) {
                        if (e.target.checked) {
                            $("#tosAgreYn").prop('checked', true);
                            $("#privcyAgreYn").prop('checked', true);
@@ -412,9 +414,19 @@
                    /*[/]*/
                 });
                 
+                function prev() {
+                    document.agreeForm.action = "/front/membership/step1.html";
+                    $("#agreeForm").submit();
+                    document.agreeForm.action = "/front/membership/step3.html";
+                }
+                
                 function next() {
                     if(!valid()) return false;
+                    /*[# th:if="${data.type != 'C' and not #strings.isEmpty(data.onepassEncodeData)}"]*/
+                    document.agreeForm.action = "/front/membership/step4.html";
+                    /*[/]*/
                     $("#agreeForm").submit();
+                    document.agreeForm.action = "/front/membership/step3.html";
                     
                 }
                 

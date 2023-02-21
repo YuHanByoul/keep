@@ -201,8 +201,8 @@ public class IdntyVrfctnServiceImpl extends PlumAbstractServiceImpl implements I
             result.setSMobileCo((String)mapresult.get("MOBILE_CO"));
 
             if (session != null) {
-                String session_sRequestNumber =  (String)session.getAttribute("REQ_SEQ");
-                if (!sRequestNumber.equals(session_sRequestNumber)) {
+                String sessionRequestNumber =  (String)session.getAttribute("REQ_SEQ");
+                if (!sRequestNumber.equals(sessionRequestNumber)) {
                     sMessage = "세션값 불일치 오류입니다.";
                     result.setSResponseNumber("");
                     result.setSAuthType("");

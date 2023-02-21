@@ -15,7 +15,9 @@
             <input type="hidden" name="wbznAplyAgreYn" id="wbznAplyAgreYn" th:value="${data.wbznAplyAgreYn}" />
             <input type="hidden" name="pencodeData" id="pencodeData" value="" />
             <input type="hidden" name="encodeData" id="encodeData" value="" />
+            <input type="hidden" name="onepassEncodeData" id="onepassEncodeData" th:value="${data.onepassEncodeData}" />
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
+            <input type="hidden" name="userid" id="userid" value="" />
             <div class="steps">
                 <ol>
                     <li>
@@ -39,7 +41,8 @@
                     <li>
                         <div class="steps-inner">
                             <span>04</span>
-                            <strong>가입완료</strong>
+                            <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">가입완료</strong>
+                            <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">연동완료</strong>
                         </div>
                     </li>
                 </ol>
@@ -82,21 +85,34 @@
             </form>
             <script language='javascript'>
                 window.name ="Parent_window";
+                var popupChk = null;
                 
                 function fnAuthPopup(){
-                    window.open('', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
+                    popupChk = window.open('', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
                     document.form_chk.target = "popupChk";
                     document.form_chk.submit();
                 }
                 
-                function setEncodeData(encodeData) {
-                    if($("#type").val() == 'C') {
-                        document.authForm.pencodeData.value = encodeData;
-                    } else {
-                        document.authForm.encodeData.value = encodeData;
-                    }
-                    document.authForm.submit();
+                function setEncodeData(encodeData, userid) {
+                    popupChk.close();
+                    setTimeout(function(){
+                        if($("#type").val() == 'C') {
+                            document.authForm.pencodeData.value = encodeData;
+                        } else {
+                            document.authForm.encodeData.value = encodeData;
+                            if(userid != undefined) {
+                                if(!confirm("가입된 정보로 계속 하시겠습니까?")) {
+                                    alert("이미가입된 정보입니다.");
+                                    return;
+                                }else{
+                                    document.authForm.userid.value = userid;
+                                }
+                            }
+                        }
+                        document.authForm.submit();
+                    }, 300);
                 }
+                
             </script>
             <script th:inline="javascript">
 

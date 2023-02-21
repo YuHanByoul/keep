@@ -91,6 +91,17 @@ public interface MemberService {
     public String selectUseridByCI(MemberVo memberVo) throws Exception;
     
     /**
+    * ci에 해당하는 사용자정보 조회.
+    *
+    * @Title : selectUserInfoByCI
+    * @Description : ci에 해당하는 사용자정보 조회
+    * @param memberVo MemberVo객체
+    * @return MemberVo 사용자정보
+    * @throws Exception 예외
+    */
+    public MemberVo selectUserInfoByCI(MemberVo memberVo) throws Exception;
+    
+    /**
     * 부모ci와 이름에 해당하는 userid 조회.
     *
     * @Title : selectUseridByParntsCIandName

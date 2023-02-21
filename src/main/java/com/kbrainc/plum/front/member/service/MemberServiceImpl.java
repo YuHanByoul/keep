@@ -13,6 +13,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,12 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.kbrainc.plum.cmm.esylgn.model.EsylgnDao;
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
 import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 /**
 * 회원정보 서비스 구현 클래스.
@@ -52,6 +55,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
 
     @Resource(name = "front.memberDao")
     private MemberDao memberDao;
+    
+    @Autowired
+    private EsylgnDao esylgnDao;
     
     @Value("${kakao.restapi.key}")
     private String kakaoRestapiKey;
@@ -224,11 +230,19 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     public int insertMember(MemberVo memberVo, MemberInstVo memberInstVo) throws Exception {
         int retVal = 0;
         
-        String password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
-        memberVo.setPswd(password);
-
-        // 회원정보 입력(추후 기업회원 전환 구현이면 insert하지않도록 수정필요)
-	    retVal += memberDao.insertMember(memberVo);
+        if (memberVo.getUserid() == null) {
+            String password = null;
+            if (memberVo.getPswd() != null) {
+                password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
+                memberVo.setPswd(password);
+            }
+    
+            // 회원정보 입력
+    	    retVal += memberDao.insertMember(memberVo);
+        } else {
+            // 회원정보 수정(동의여부, 개인정보 유효기간만 update)
+            retVal += memberDao.updateMemberAgreYnAndPrvcVldty(memberVo);
+        }
 	    memberInstVo.setUserid(memberVo.getUserid());
 	    
 	    // 기관정보 입력 또는 수정
@@ -254,7 +268,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         }
 
 	    // 디지털원패스 userKey 입력
-	     
+	    if (memberVo.getEsylgnVo() != null) {
+	        memberVo.getEsylgnVo().setUserid(String.valueOf(memberVo.getUserid()));
+	        retVal += esylgnDao.insertEsylgnUserkey(memberVo.getEsylgnVo());
+	    }
 	   
 	    return retVal;
     }
@@ -270,6 +287,19 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     public String selectUseridByCI(MemberVo memberVo) throws Exception {
         return memberDao.selectUseridByCI(memberVo);
+    }
+    
+    /**
+    * ci에 해당하는 사용자정보 조회.
+    *
+    * @Title : selectUserInfoByCI
+    * @Description : ci에 해당하는 사용자정보 조회
+    * @param memberVo MemberVo객체
+    * @return MemberVo 사용자정보
+    * @throws Exception 예외
+    */
+    public MemberVo selectUserInfoByCI(MemberVo memberVo) throws Exception {
+        return memberDao.selectUserInfoByCI(memberVo);
     }
     
     /**

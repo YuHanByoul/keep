@@ -2,15 +2,21 @@ package com.kbrainc.plum.cmm.esylgn.controller;
 
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -18,12 +24,20 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kbrainc.plum.cmm.esylgn.model.EsylgnVo;
 import com.kbrainc.plum.cmm.esylgn.service.EsylgnService;
+import com.kbrainc.plum.front.member.model.MemberAgreVo;
+import com.kbrainc.plum.front.member.model.MemberParamVo;
+import com.kbrainc.plum.front.member.model.MemberTypeVo;
 import com.kbrainc.plum.front.member.service.MemberService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -63,6 +77,12 @@ public class EsylgnController {
     
     @Resource(name = "front.memberServiceImpl")
     private MemberService memberService;
+    
+    @Resource(name="ariaCryptoService")
+    EgovCryptoService cryptoService;
+    
+    @Value("${crypto.key}")
+    private String cryptoKey;
 
     /**
     * 디지털원패스 연동/연동해제 화면.
@@ -99,11 +119,12 @@ public class EsylgnController {
     * @param response 응답객체
     * @param session 세션객체
     * @param user 사용자세션정보
+    * @param redirect 리다이렉트속성객체
     * @return String 이동화면경로
     * @throws Exception 예외
     */
     @RequestMapping("/onepass/acs.html")
-    public String onepassAcs(HttpServletRequest request, HttpServletResponse response, HttpSession session, @UserInfo UserVo user) throws Exception {
+    public String onepassAcs(HttpServletRequest request, HttpServletResponse response, HttpSession session, @UserInfo UserVo user, RedirectAttributes redirect) throws Exception {
         ModelAndView mav = new ModelAndView();
         OnepassResponse onepassResponse = OnepassResponseHandler.check(request);
         String returnUrl = request.getParameter("returnUrl");
@@ -295,7 +316,7 @@ public class EsylgnController {
             
                         // 3. 모두 일치하지 않을때(신규회원연동)
                         // 만나이 계산(어린이회원인지 확인하기위해)
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd", Locale.KOREA);
                         Date birthDate = formatter.parse(birth);
                         Calendar currentCal = Calendar.getInstance();
                         Calendar brithCal = Calendar.getInstance();
@@ -316,14 +337,58 @@ public class EsylgnController {
                             manAge--;
                         }
                         
+                        Map<String,Object> resultMap = new HashMap<>();
+                        resultMap.put("ci", ci);
+                        resultMap.put("email", email);
+                        resultMap.put("name", name);
+                        resultMap.put("userKey", userKey);
+                        
                         if (manAge < 14) {
-                            System.out.println("어린이 회원");
+                            resultMap.put("type", "C"); // 어린이
                         }
                         
-                        // onepassUser(ci, email, name, userKey, 어린이회원여부)정보를 자체암호화해서 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행))
+                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        String jsonRes = gson.toJson(resultMap);
+                        
+                        // onepassUser(ci, email, name, userKey)/어린이회원여부 정보를 자체암호화해서 넣고 회원연동(회원가입)진행(회원가입 유형 선택(만14세 미만 자동으로 어린이 회원) -> 약관동의부터, 일반/기관회원은 본인인증은 건너뜀(어린이회원은 부모본인인증진행))
+                        byte[] encrypted = cryptoService.encrypt(jsonRes.getBytes("UTF-8"), cryptoKey);
+                        
+                        CsrfTokenRepository csrfTokenRepository = ((CsrfTokenRepository)CommonUtil.getBean("csrfTokenRepository"));
+                        CsrfToken token = csrfTokenRepository.generateToken(request);
+                        csrfTokenRepository.saveToken(token, request, response);
+                        //CsrfToken token = csrfTokenRepository.loadToken(request);
+                        
                         // 회원가입 리다이렉션(post)
-                        
-                        
+                        if (manAge < 14) { // 어린이 회원 -> 약관동의부터진행
+                            StringBuffer sb = new StringBuffer();
+                            sb.append("<form name='typeForm' action='/front/membership/step2.html' method='post'>");
+                            sb.append("<input type='hidden' name='_csrf' value='").append(token.getToken()).append("'>");
+                            sb.append("<input type='hidden' name='type' value='").append("C").append("'>");
+                            sb.append("<input type='hidden' name='onepassEncodeData' value='").append(Base64.getEncoder().encodeToString(encrypted)).append("'>");
+                            sb.append("<input type='hidden' name='returnUrl' value='").append(request.getParameter("returnUrl").split("::")[0]).append("'>");
+                            sb.append("</form>");
+                            sb.append("<script>");
+                            sb.append("document.typeForm.submit();");
+                            sb.append("</script>");
+                            response.setContentType("text/html;charset=UTF-8");
+                            writer = response.getWriter();
+                            writer.print(sb.toString());
+                            return null;
+                        } else { // 회원유형 선택부터
+                            StringBuffer sb = new StringBuffer();
+                            sb.append("<form name='typeForm' action='/front/membership/step1.html' method='post'>");
+                            sb.append("<input type='hidden' name='_csrf' value='").append(token.getToken()).append("'>");
+                            sb.append("<input type='hidden' name='onepassEncodeData' value='").append(Base64.getEncoder().encodeToString(encrypted)).append("'>");
+                            sb.append("<input type='hidden' name='returnUrl' value='").append(request.getParameter("returnUrl").split("::")[0]).append("'>");
+                            sb.append("</form>");
+                            sb.append("<script>");
+                            sb.append("document.typeForm.submit();");
+                            sb.append("</script>");
+                            response.setContentType("text/html;charset=UTF-8");
+                            writer = response.getWriter();
+                            writer.print(sb.toString());
+                            return null;
+                        }                        
                     } else { // 정보조회 오류, 로그인 불가
                         response.setContentType("text/html;charset=UTF-8");
                         writer = response.getWriter();

@@ -3,13 +3,16 @@
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
     layout:decorator="layout/front/membershipLayout"
-    th:with="returnUrl=${param.returnUrl != null ? 
-                    param.returnUrl[0] : null}"
 >
     <body>
         <th:block layout:fragment="content">
+            <form id="typeForm" th:action="@{/front/membership/step2.html}" method="post">
+            <input type="hidden" name="type" id="type" />
+            <input type="hidden" name="onepassEncodeData" id="onepassEncodeData" th:value="${data.onepassEncodeData}" />
+            <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
             <div class="section-title">
-                <h3>회원가입 유형 선택</h3>
+                <h3 th:if="${#strings.isEmpty(data.onepassEncodeData)}">회원가입 유형 선택</h3>
+                <h3 th:unless="${#strings.isEmpty(data.onepassEncodeData)}">회원연동 유형 선택</h3>
             </div>
     
             <div class="member-type-list">
@@ -20,7 +23,7 @@
                             <dd>만 <b>14세 이상</b> 내국인</dd>
                             <dd><div class="thumb"><img src="/images/front/member/member-type-list01.png" alt=""></div></dd>
                         </dl>
-                        <div class="btn-inner"><a th:href="|/front/membership/step2.html?type=P${returnUrl != null ? '&returnUrl='+returnUrl : ''}|" class="btn-large btn-green">개인회원 가입</a></div>
+                        <div class="btn-inner"><a href="javascript:next('P')" class="btn-large btn-green">개인회원 <th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block></a></div>
                     </li>
                     <li>
                         <dl>
@@ -28,7 +31,7 @@
                             <dd>만 <b>14세 미만</b> 내국인</dd>
                             <dd><div class="thumb"><img src="/images/front/member/member-type-list02.png" alt=""></div></dd>
                         </dl>
-                        <div class="btn-inner"><a th:href="|/front/membership/step2.html?type=C${returnUrl != null ? '&returnUrl='+returnUrl : ''}|" class="btn-large btn-green">어린이회원 가입</a></div>
+                        <div class="btn-inner"><a href="javascript:next('C')" class="btn-large btn-green">어린이회원 <th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block></a></div>
                     </li>
                     <li>
                         <dl>
@@ -36,10 +39,18 @@
                             <dd>정부 및 지자체(산하 공공기관 포함) <br> 민간 환경교육 기관 및 단체, 학교, 유치원, 어린이집 등 <br> <b>기관의 대표</b> 계정 생성</dd>
                             <dd><div class="thumb"><img src="/images/front/member/member-type-list03.png" alt=""></div></dd>
                         </dl>
-                        <div class="btn-inner"><a th:href="|/front/membership/step2.html?type=I${returnUrl != null ? '&returnUrl='+returnUrl : ''}|" class="btn-large btn-blue">기관회원 가입</a></div>
+                        <div class="btn-inner"><a href="javascript:next('I')" class="btn-large btn-blue">기관회원 <th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block></a></div>
                     </li>
                 </ul>
             </div>
+            </form>
+            <script type="text/javascript">
+                function next(type) {
+                    $("#type").val(type);
+                    $("#typeForm").submit();
+                    
+                }
+            </script>
         </th:block>
     </body>
 </html>

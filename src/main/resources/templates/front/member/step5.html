@@ -29,28 +29,30 @@
                     <li class="active" title="현재 단계">
                         <div class="steps-inner">
                             <span>04</span>
-                            <strong>가입완료</strong>
+                            <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">가입완료</strong>
+                            <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">연동완료</strong>
                         </div>
                     </li>
                 </ol>
             </div>
 
             <div class="section-title">
-                <h3>회원가입</h3>
+                <h3 th:if="${#strings.isEmpty(data.onepassEncodeData)}">회원가입</h3>
+                <h3 th:unless="${#strings.isEmpty(data.onepassEncodeData)}">회원연동</h3>
             </div>
 
             <div class="box-step-end">
                 <div class="thumb"><span class="icon icon-step-end"></span></div>
-                <dl th:if="${#request.getParameter('type') == 'P'}">
-                    <dt>개인회원 가입이 완료되었습니다.</dt>
+                <dl th:if="${data.type == 'P'}">
+                    <dt>개인회원 <th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block>이 완료되었습니다.</dt>
                     <dd>지금 바로 환경교육포털을 이용해보세요.</dd>
                 </dl>
-                <dl th:if="${#request.getParameter('type') == 'C'}">
-                    <dt>어린이회원 가입이 완료되었습니다.</dt>
+                <dl th:if="${data.type == 'C'}">
+                    <dt>어린이회원 <th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block>이 완료되었습니다.</dt>
                     <dd>지금 바로 환경교육포털을 이용해보세요.</dd>
                 </dl>
-                <dl th:if="${#request.getParameter('type') == 'I'}">
-                    <dt>기관 회원가입 신청이 완료되었습니다. <br> 개인회원 권한으로 이용하실 수 있으며, 기관회원 권한은 관리자 승인 후 이용하실 수 있습니다.</dt>
+                <dl th:if="${data.type == 'I'}">
+                    <dt>기관 회원<th:block th:text="${#strings.isEmpty(data.onepassEncodeData)} ? '가입' : '연동'"></th:block> 신청이 완료되었습니다. <br> 개인회원 권한으로 이용하실 수 있으며, 기관회원 권한은 관리자 승인 후 이용하실 수 있습니다.</dt>
                     <dd>(기관회원 승인 검토 과정은 2~3일 정도 소요되며, 승인 결과는 회원님의 이메일로 발송됩니다.)</dd>
                 </dl>
                 <div class="btn-inner">
@@ -59,7 +61,7 @@
             </div>
             <script th:inline="javascript">
                 function login() {
-                    var returnUrl = /*[[${param.returnUrl}]]*/"";
+                    var returnUrl = /*[[${data.returnUrl}]]*/"";
                     if(returnUrl != null && returnUrl != ""){
                         location.href = "/login.html?returnUrl=" + returnUrl;
                     }else{
