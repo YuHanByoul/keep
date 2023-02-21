@@ -703,7 +703,7 @@ const layerPopup = {
 				e.preventDefault();
 			}
 			// only msgForm
-			if ($(this).data('layer-href') === 'layer-popup08') {
+			if ($(this).data('layer-href') === 'msgFormPopup') {
 				const {layerHref, trgtId} = $(this).data();
 				callback = msgSendFormInit(layerHref,trgtId,);
 			}

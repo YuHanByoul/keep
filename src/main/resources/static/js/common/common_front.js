@@ -217,7 +217,7 @@ jQuery(function (){
                 data : data,
                 success : function (result){
                     alert(result.msg);
-                    layerPopup.close({target:'layer-popup08'});
+                    layerPopup.close({target:'msgFormPopup'});
                 }
             });
         }
