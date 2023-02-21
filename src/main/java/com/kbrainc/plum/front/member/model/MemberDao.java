@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.member.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
@@ -212,4 +213,26 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public int updateUserInstMaster(MemberVo memberVo) throws Exception;
+    
+    /**
+    * 기관 유형 코드 호출 
+    *
+    * @Title       : selectInstTypeCdList 
+    * @Description : 기관 유형 코드 호출 
+    * @param Map<String,String> 객체
+    * @return List<Map<String,String>> 기관 유형 코드 목록
+    * @throws Exception 예외
+    */
+    public List<Map<String,String>> selectInstTypeCdList() throws Exception;
+    
+    /**
+    * 기관코드 수정.
+    *
+    * @Title : updateInstCd
+    * @Description : 기관코드 수정
+    * @param instid 기관아이디
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateInstCd(Integer instid) throws Exception;
 }

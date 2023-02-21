@@ -144,5 +144,14 @@ public interface MemberService {
     */
     public String getSignguCdWithaddress(String addr);
 
-    
+    /**
+    * 기관 유형 코드 호출 
+    *
+    * @Title       : selectInstTypeCdList 
+    * @Description : 기관 유형 코드 호출 
+    * @param Map<String,String> 객체
+    * @return List<Map<String,String>> 기관 유형 코드 목록
+    * @throws Exception 예외
+    */
+    public List<Map<String,String>> selectInstTypeCdList() throws Exception;
 }

@@ -310,6 +310,8 @@ public class MemberController {
             }
         }
         
+        model.addAttribute("instTypeCdList", memberService.selectInstTypeCdList());
+        
         Map<String, Object> bizFileConf = fileService.getConfigurationByFilegrpName("biz_file");
         String bizFileExtsn = ((HashMap<String, String>) bizFileConf.get("uploadFileExtsn"))
                 .entrySet()

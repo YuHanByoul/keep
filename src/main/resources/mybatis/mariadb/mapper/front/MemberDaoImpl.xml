@@ -375,4 +375,26 @@
         WHERE USERID = #{userid}
     </update>
     
+    <!-- 기관 유형 코드 리스트 호출 --> 
+    <select id="selectInstTypeCdList" parameterType="map" resultType="map">
+        /* front.MemberDao.selectInstTypeCdList */
+        SELECT 
+            A.CD,
+            concat(B.CD_NM,' > ',A.CD_NM ) CD_NM 
+        FROM 
+            TB_CMM_CD A INNER JOIN TB_CMM_CD B ON A.UPPR_CD = B.CD 
+        WHERE
+            A.USE_YN = 'Y'
+        AND A.CDGRPID = '108'
+   </select>
+   
+   <!-- 기관코드 수정 -->
+   <update id="updateInstCd" parameterType="Integer">
+       /* front.MemberDao.updateInstCd */
+       UPDATE 
+           TB_CMM_INST I
+       SET
+           INST_CD = CONCAT((SELECT OPTN1 FROM TB_CMM_CD WHERE CD = I.INST_TYPE_CD), INSTID + 100000)
+       WHERE I.INSTID = #{instid}
+   </update>
 </mapper>

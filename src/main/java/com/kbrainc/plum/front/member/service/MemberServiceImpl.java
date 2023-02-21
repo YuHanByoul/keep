@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.member.service;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -251,6 +252,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 retVal += memberDao.updateInst(memberInstVo);
             } else { // 기관insert
                 retVal += memberDao.insertInst(memberInstVo);
+                retVal += memberDao.updateInstCd(memberInstVo.getInstid());
             }
             memberVo.setInstid(memberInstVo.getInstid());
             // 기관담당자_역할_코드(마스터) update
@@ -378,5 +380,16 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         return "";
     }
     
-    
+    /**
+    * 기관 유형 코드 호출 
+    *
+    * @Title       : selectInstTypeCdList 
+    * @Description : 기관 유형 코드 호출 
+    * @param Map<String,String> 객체
+    * @return List<Map<String,String>> 기관 유형 코드 목록
+    * @throws Exception 예외
+    */
+    public List<Map<String,String>> selectInstTypeCdList() throws Exception {
+        return memberDao.selectInstTypeCdList();
+    }
 }
