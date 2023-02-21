@@ -335,6 +335,7 @@ const formStyle = {
 		formStyle.onResize();
 		formStyle.onNumberClick();
 		formStyle.onNumberKeydown();
+		formStyle.readonly();
 	},
 	// typing : function (){
 	// 	$(document).on('focusin keypress keydown','.form-input input:not([type="checkbox"]), .form-input input:not([type="radio"]), .form-input textarea', function () {
@@ -486,6 +487,13 @@ const formStyle = {
 				numInput.val(valueMin)
 			}
 		});
+	},
+	readonly : function () {
+		$('input[type="checkbox"], input[type="radio"]').each(function () {
+			if ($(this)[0].readOnly === true) {
+				$(this).attr('aria-readonly',true)
+			}
+		});
 	}
 } 
 
@@ -564,7 +572,6 @@ const toggleActiveClass = {
 					par.find('.toggleTrigger:not(.toggle-layer-close)').focus();
 				}
 			} else {
-				toggleActiveClass.open();
 				if (par.hasClass('toggle-layer')) {
 					toggleActiveClass.onClickToggleLayer();
 				}
@@ -573,6 +580,10 @@ const toggleActiveClass = {
 						$(this).removeClass('active');
 					})
 				}
+				if (par.hasClass('pigeon')) {
+					$('body').find('.pigeon.active').removeClass('active');
+				}
+				toggleActiveClass.open();
 			}
 		})
 	},
@@ -694,16 +705,16 @@ const layerPopup = {
 			const target = $(this).attr('data-layer-href');
 			if ($('[data-layer-id="' + target + '"]').hasClass('active')) {
 					layerPopup.close({target});
-				} else {
-					//checkbox flag
-					if ($(this).is('.inp')) {
-						if ($(this).find('input').is(':checked')){
-							layerPopup.open({target});
-						}
-					} else {
+			} else {
+				//checkbox flag
+				if ($(this).is('.inp')) {
+					if ($(this).find('input').is(':checked')){
 						layerPopup.open({target});
 					}
+				} else {
+					layerPopup.open({target});
 				}
+			}
 		})
 	},
 	onClickClose : function () {
