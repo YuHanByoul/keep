@@ -199,3 +199,59 @@ function deleteFile(fileid, fileIdntfcKey) {
     })
 }
 
+jQuery(function (){
+    $('#msgSendBtn').on('click',function (){
+        const $cn = $('#msgForm textarea[name=cn]');
+        if($cn.val() === null || $cn.val() === ''){
+            alert('쪽지 내용을 입력해주세요.');
+            $cn.focus();
+            return;
+        }
+        let data = $('#msgForm').serialize();
+        if (displayWorkProgress(true)) {
+            $.ajax({
+                url : "/front/msg/insertMsg.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (result){
+                    alert(result.msg);
+                    layerPopup.close({target:'layer-popup08'});
+                }
+            });
+        }
+    });
+
+    msgAddBtn();
+});
+function msgSendFormInit(target, trgtId) {
+    const targetWrap = $('[data-layer-id="' + target + '"]');
+    $.ajax({
+        url : "/front/msg/selectTrgtInfo.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : {trgtId: trgtId},
+        success : function (result){
+            targetWrap.find('input[name=trgtid]').val(trgtId).end()
+                .find('textarea[name=cn]').val('').css({height: '70px'}).end()
+                .find('#trgtAcnt').val(result.data.trgtNm+'('+result.data.trgtAcnt+')').end()
+                .find('#txtSize').text('0').end();
+        }
+    });
+}
+function msgAddBtn(){
+    const $listMsgAddBtn = $('.list-msg-add-btn');
+    const $clone = $('.msgContextMenuClone > .toggleParent');
+
+    $listMsgAddBtn.each(function (){
+        let $cloneBody = $clone.clone(true);
+        let {trgtId} = $(this).data();
+        let maskAcnt = $(this).text();
+        $(this).text('').append(
+            $cloneBody.find('.user-acnt-span > span').text(maskAcnt).end()
+                .find('.data-btn').data({'trgt-id':trgtId}).end()
+        );
+    });
+}
