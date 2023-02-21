@@ -166,4 +166,14 @@ public interface InstDao {
      */
     public int updateInstRoleAllUser(MemberVo memberVo) throws Exception;
     
+    /**
+    * 기관풀 정보 저장.
+    *
+    * @Title       : insertInstPool 
+    * @Description : 기관풀 정보 저장.
+    * @param instVo Instvo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertInstPool(InstVo instVo) throws Exception;
 }

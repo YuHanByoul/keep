@@ -353,4 +353,32 @@
             AND INSTID            = #{instid}
     </update>
     
+    <!-- 기관풀 정보 저장 --> 
+    <insert id="insertInstPool" parameterType="InstVo">
+        /* InstDao.insertInstPool */
+        INSERT TB_CMM_INST_POOL
+            (
+                INST_NM,
+                INST_TYPE_CD,
+                BRNO, RPRSV_NM,
+                TELNO, ZIP,
+                ADDR,
+                ADDR_DTL,
+                REG_DT
+            )
+        SELECT
+            #{instNm},
+            #{instTypeCd},
+            #{brno},
+            #{rprsvNm},
+            #{telno},
+            #{zip},
+            #{addr},
+            #{addrDtl},
+            NOW()
+        FROM 
+            DUAL
+        WHERE
+            NOT EXISTS(SELECT 1 FROM TB_CMM_INST_POOL WHERE BRNO = #{brno})
+    </insert>
 </mapper>
