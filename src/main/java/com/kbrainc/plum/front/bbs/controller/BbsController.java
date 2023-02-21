@@ -70,7 +70,7 @@ public class BbsController {
 
         paramVo.setBbsid(bbsid);
         BbsVo bbsInfo = bbsService.selectOneBbs(paramVo);
-
+        String returnUrl = "front/bbs/bbsMain";
 
         BbsClVo bbsClVo = new BbsClVo();
         if (!StringUtil.nvl(paramVo.getBbsid()).equals("")) {
@@ -79,17 +79,14 @@ public class BbsController {
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
         if(bbsInfo.getBbsid().equals(1)) {
-            /*공지사항인 경우 submit 페이징 방식으로 처리 */
+            /* 공지사항인 경우 submit 페이징 방식으로 처리 */
             paramVo.setUser(user);
             paramVo.setSite(site);
             if(paramVo.getTabType() == null) paramVo.setTabType(1);
             List<PstVo> list = bbsService.selectAllPstList(paramVo);
             model.addAttribute("list", list);
             model.addAttribute("totalCount", list.size() > 0 ? list.get(0).getTotalCount() : 0);
-            model.addAttribute("bbsid", bbsid);
-            model.addAttribute("BbsVo", paramVo);
-            model.addAttribute("bbsInfo", bbsInfo);
-            return "front/bbs/noticeView";
+            returnUrl = "front/bbs/noticeView";
         }
 
         model.addAttribute("bbsid", bbsid);
@@ -505,7 +502,6 @@ public class BbsController {
             bbsVo.setSite(site);
             bbsVo.setOrderDirection(paramVO.getOrderDirection());
             bbsVo.setOrderField("FIXORDER ASC,GRP DESC,ORD");
-            bbsVo.setTabType(paramVO.getTabType());
             result = bbsService.selectAllPstList(bbsVo);
 
             if (result.size() > 0) {

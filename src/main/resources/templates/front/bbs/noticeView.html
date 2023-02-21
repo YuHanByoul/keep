@@ -8,15 +8,14 @@
     <div class="tab-content tab-sub dropDown">
         <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">환경보전협회</button>
         <ul class="tab-list target" role="tablist">
-            <li class="tab" th:classappend="${BbsVo.tabType != 2} ? 'active'">
+            <li class="tab" th:classappend="${BbsVo.tabType == 1} ? 'active'">
                 <button id="tab-sub01" aria-controls="tab-subpanel01" role="tab">환경보전협회</button>
             </li>
-            <li class="tab" th:classappend="${BbsVo.tabType  == 2} ? 'active'">
+            <li class="tab" th:classappend="${BbsVo.tabType == 2} ? 'active'">
                 <button id="tab-sub02" aria-controls="tab-subpanel02" role="tab">유관기관</button>
             </li>
         </ul>
 
-        <!--환경보전협회-->
         <div>
             <form class="search-filter" id="searchForm" name="searchForm" method="get">
                 <div class="form-input mo-flex-wrap">
@@ -129,39 +128,11 @@
             $('#rowPerPage').val($('#selectRowPerPage').val());
         };
 
-        function moveToDetail(pstid, tabId) {
+        function moveToDetail(pstid) {
             var f = document.forms.searchForm;
             f.pstid.value = pstid;
             f.action = goReadUrl;
             f.submit();
-        };
-
-        function fn_makeListHtml(list, tabId) {
-            var html = "";
-            if (list == null || list.length <= 0) {
-                html += `
-                        <tr>
-                            <td class="nodata" colspan="6">
-                                <p><span class="icon icon-notice bg-black9"></span>등록된 게시글이 없습니다.</p>
-                            </td>
-                        </tr>`;
-            } else {
-                list.forEach(function (item) {
-                    html += `
-                            <tr>
-                                <td>
-                                    ${bbsInfo.fxdNtcUseYn == 'Y' && item.fxdNtcYn == 'Y' ?
-                        `<div class="icon icon-speaker-large bg-sred" title="중요 공지"></div>` : item.rowNumber}
-                                </td>
-                                <td> --- 환경 보전 협회 ---</td>
-                                <td class="al article"><a href="#" class="link ellipsis ${bbsInfo.newUseYn == 'Y' && item.newYn == 'Y' ? 'new' : ''}" title="새 글" onclick="moveToDetail(${item.pstid},${tabId})">${item.title}</a></td>
-                                <td>${item.filegrpid != 0 && item.fileCount > 0 ? '<i class="icon icon-attachment bg-blue" title="첨부파일"></i>' : ''}</td>
-                                <td>${item.regDt}</td>
-                                <td>${item.hits}</td>
-                            </tr>`;
-                })
-            }
-            return html;
         };
 
         function searchPstList() {
@@ -183,7 +154,6 @@
         }
 
         $(function () {
-
             $(document).on('click', '#tab-sub01', function (e) {
                 $('#tabType').val(1);
                 $('#searchType, #searchKeyword').val('')
