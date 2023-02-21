@@ -3,9 +3,6 @@ package com.kbrainc.plum.mng.jntpurchs.model;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -43,8 +40,6 @@ public class JntpurchsVo extends ParentRequestVo {
     private String jntpurchsno;
     
     /** 공동구매 모집명 */
-    @NotEmpty(message = "공동구매 모집명을 입력해주세요.")
-    @Size(max = 40, message = "공동구매 모집명은 40자 이하여야 합니다.")
     private String jntpurchsNm;
     
     /** 모집상태 코드 */
@@ -53,11 +48,17 @@ public class JntpurchsVo extends ParentRequestVo {
     /** 총 판매 수량 */
     private Integer qntyWhol;
     
+    /** 총 판매 수량 제한여부 */
+    private String qntyWholLmtYn;
+    
     /** 1인당 신청 가능 수량 */
     private Integer qntyLmt;
     
     /** 1인당 신청 가능 제한여부 */
     private String qntyLmtYn;
+    
+    /** 일시정지 여부 */
+    private String pauseYn;
     
     /** 상세내용 */
     private String dtlCn;

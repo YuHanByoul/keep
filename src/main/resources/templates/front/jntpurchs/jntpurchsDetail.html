@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+    	<div class="product-wrap sub-banner-swiper">
+            <div class="thumb-swiper">
+                <div class="swiper gallery-thumb">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${rprsImgFileInfo.fileid}+@{&file_idntfc_key=}+${rprsImgFileInfo.fileIdntfcKey}" /></div>
+                        </div>
+                        <th:block th:each="item : ${dtlImgFileList}">
+                        <div class="swiper-slide">
+                            <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"/></div>
+                        </div>
+                        </th:block>
+                    </div>
+                    <button type="button" class="swiper-button-next"></button>
+                    <button type="button" class="swiper-button-prev"></button>
+                </div>
+                <div thumbsSlider="" class="swiper gallery-list">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${rprsImgFileInfo.fileid}+@{&file_idntfc_key=}+${rprsImgFileInfo.fileIdntfcKey}" /></div>
+                        </div>
+                        <th:block th:each="item : ${dtlImgFileList}">
+                        <div class="swiper-slide">
+                            <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"/></div>
+                        </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+            <div class="product-section">
+                <div class="title">
+                    <th:block th:switch="${jntpurchsInfo.sttsCdNm}">
+                        <div th:case="모집대기" class="tag tag-blue" th:text="${jntpurchsInfo.sttsCdNm}"></div>
+                        <div th:case="모집중" class="tag tag-green" th:text="${jntpurchsInfo.sttsCdNm}"></div>
+                        <div th:case="모집종료" class="tag tag-red" th:text="${jntpurchsInfo.sttsCdNm}"></div>
+                        <div th:case="*" class="tag tag-gray" th:text="${jntpurchsInfo.sttsCdNm}"></div>
+                    </th:block>
+                
+                    
+                    <h3 th:text=${jntpurchsInfo.jntpurchsNm}></h3>
+                    <dl>
+                        <div class="list">
+                            <dt>교구명 :</dt>
+                            <dd th:text=${jntpurchsInfo.tchaidNm}></dd>
+                        </div>
+                        <!--
+                        <div class="list">
+                            <dt>교육주제 :</dt>
+                            <dd>환경교육교구세트</dd>
+                        </div>
+                        <div class="list">
+                            <dt>교육대상 :</dt>
+                            <dd>아동기(8~13세)
+                            </dd>
+                        </div>
+                        <div class="list">
+                            <dt>모둠구성 :</dt>
+                            <dd>없음</dd>
+                        </div>
+                        <div class="list">
+                            <dt>교육유형 :</dt>
+                            <dd>학생중심형</dd>
+                        </div>
+                        -->
+                    </dl>
+                </div>
+                <div class="btn-wrap">
+                    <div class="left">
+                        <th:block th:if="${mapFileInfo != null}">
+                        <a href="javascript:void(0);" class="btn-medium btn-outline-blue btn-before-blank">지도안 보기</a>
+                        <a href="javascript:void(0);" th:data-fileid="${mapFileInfo.fileid}" th:data-fileIdntfcKey="${mapFileInfo.fileIdntfcKey}" class="btn-medium btn-outline-black btn-before-download" onclick="javascript:downloadFileByFileid(this.getAttribute('data-fileid'), this.getAttribute('data-fileIdntfcKey'))">지도안 다운로드</a>
+                        </th:block>
+                        <th:block th:if="${eduPhotoFileList != null}">
+                        <a href="javascript:void(0);" class="btn-medium btn-outline-black btn-before-download" onclick="jntpurchsDetail.onDownloadEduPhoto();">교육사진 다운로드</a>
+                        </th:block>
+                    </div>
+                </div>
+                <div class="detail">
+                    <dl>
+                        <div class="list">
+                            <dt>신청기간</dt>
+                            <dd>2023년 1월 15일 11:00 ~ 2023년 2월 28일 14:00</dd>
+                        </div>
+                    </dl>
+                    <dl>
+                        <div class="list">
+                            <dt>현재까지 신청된 총 수량</dt>
+                            <dd><span class="fc-blue">150개</span> / 200개</dd>
+                        </div>
+                        <div class="list">
+                            <dt>공동구매 예상 가격(개당)</dt>
+                            <dd>35,000원</dd>
+                        </div>
+                    </dl>
+                    <dl class="total">
+                        <div class="list">
+                            <dt>
+                                <div class="form-input form-input-number">
+                                    <input type="number" placeholder="Plaeholder" value="2" min="0" max="100" title="신청갯수" data-width="90">
+                                    <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
+                                </div>
+                            </dt>
+                            <dd><span class="fc-blue">70,000원</span></dd>
+                        </div>
+                    </dl>
+                    <dl>
+                        <div class="list">
+                            <dt>
+                                <label class="inp vm" id="terms-checkbox" data-layer-href="layer-terms01"><input type="checkbox" title="개인정보 수집 및 이용에 대한 동의"><b class="normal-wrap">개인정보 수집 및 이용에 대한 동의</b></label>
+                            </dt>
+                            <dd>
+                                <button type="button" class="btn-medium btn-green">신청</button>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    
+        <div class="tab-content tab-sub dropDown">
+            <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
+            <ul class="tab-list target" role="tablist">
+                <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
+                <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">유의사항</button></li>
+                <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">후기</button></li>
+            </ul>
+            <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
+    
+                <div class="table-col table-layout-auto">
+                    <table>
+                        <caption>상세정보 - 상품명, 판매기간, 총 신청 수량 별 가격 정보</caption>
+                        <colgroup>
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">상품명</th>
+                                <th scope="col">판매기간</th>
+                                <th scope="col">총 신청 수량 별 가격 정보</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>탄소절감 패키지</td>
+                                <td>2023년 1월 15일 ~ 2월 28일</td>
+                                <td>
+                                    <ul>
+                                        <li>① 0개 ~ 100개 : 35,000원</li>
+                                        <li>② 101개 ~ 200개 : 30,000원</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+    
+                <div class="youtube-frame mt45"><iframe src="https://www.youtube.com/embed/5Peo-ivmupE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+    
+            </div>
+            <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+    
+                <div class="box-desc-list bg7">
+                    <strong class="box-desc-tit">유의사항</strong>
+                    <ul>
+                        <li>공동구매 상품은 신청 기간 내에 일정 수량 이상 신청 시 판매가 가능한 상품입니다.</li>
+                        <li>신청기간 완료 후 입금관련 안내를 별도로 드립니다.</li>
+                        <li>공동구매 판매 관련, 환경보전협회는 중개만하고, 제휴사에서 판매관련 일체의 업무를 진행하며, 이에 따른 판매/배송/입금/환불/납품 등 일련의 의무 및 책임은 제휴사에 있음을 알려드립니다.</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
+                <div class="accordion-content acc-list">
+                    <h3 class="acc-title active">
+                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel0" id="accordion-0" title="질문" aria-expanded="false">
+                            <span class="name">ti**23</span>
+                            <strong>결제는 어떻게 진행하나요?</strong>
+                            <span class="rate" title="별점4">
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                            </span>
+                        </button>
+                    </h3>
+                    <div id="accordion-panel0" role="region" aria-labelledby="accordion-0" class="acc-panel active">
+                        <span class="blind">답변</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
+                    </div>
+                    <h3 class="acc-title">
+                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel1" id="accordion-1" title="질문" aria-expanded="true">
+                            <span class="name">ti**23</span>
+                            <strong>결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?</strong>
+                            <span class="rate" title="별점0"></span>
+                        </button>
+                    </h3>
+                    <div id="accordion-panel1" role="region" aria-labelledby="accordion-1" class="acc-panel">
+                        <span class="blind">답변</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
+                    </div>
+                    <h3 class="acc-title">
+                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel2" id="accordion-2" title="질문" aria-expanded="true">
+                            <span class="name">ti**23</span>
+                            <strong>결제는 어떻게 진행하나요?</strong>
+                            <span class="rate" title="별점5">
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                            </span>
+                        </button>
+                    </h3>
+                    <div id="accordion-panel2" role="region" aria-labelledby="accordion-2" class="acc-panel">
+                        <span class="blind">답변</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
+                    </div>
+                    <h3 class="acc-title">
+                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel3" id="accordion-3" title="질문" aria-expanded="true">
+                            <span class="name">ti**23</span>
+                            <strong>결제는 어떻게 진행하나요?</strong>
+                            <span class="rate" title="별점4">
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                                <span class="icon icon-star" title=""></span>
+                            </span>
+                        </button>
+                    </h3>
+                    <div id="accordion-panel3" role="region" aria-labelledby="accordion-3" class="acc-panel">
+                        <span class="blind">답변</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray">목록</button>
+            </div>
+        </div>
+	
+    	<script th:inline="javascript">
+    	   var jntpurchsDetail = {
+               jntpurchsInfo: /*[[${jntpurchsInfo}]]*/
+               , mapFileInfo: /*[[${mapFileInfo}]]*/
+               , eduPhotoFileList: /*[[${eduPhotoFileList}]]*/
+               
+               , init: function() {
+                   this.setSwiper();
+               }
+               
+               , addEvent: function() {
+               }
+               
+               , setSwiper: function() {
+                   var listSwiper = new Swiper(".gallery-list", {
+                       loop: false
+                       , spaceBetween: 0
+                       , slidesPerView: 5
+                       , freeMode: true
+                       , watchSlidesProgress: true
+                   });
+                   
+                   var thumbSwiper = new Swiper(".gallery-thumb", {
+                       loop: false
+                       , spaceBetween: 10
+                       , thumbs: {
+                           swiper: listSwiper
+                       }
+                       , navigation: {
+                           nextEl: ".swiper-button-next"
+                           , prevEl: ".swiper-button-prev"
+                       }
+                       , ally: {
+                           nextSlideMessage: "다음 슬라이드"
+                           , prevSlideMessage: "이전 슬라이드"
+                       }
+                   });
+               }
+               
+               , onDownloadEduPhoto: function() {
+                   for(var i = 0, len = this.eduPhotoFileList.length; i < len; i++) {
+                       var data = this.eduPhotoFileList[i];
+                       downloadFileByFileid(data.fileid, data.fileIdntfcKey);
+                       this.onDelay(1000);
+                   }
+               }
+               
+               , onDelay: function(time) {
+                    var start = new Date().getTime();
+                    while(start + time > new Date().getTime());
+                }
+           };
+           
+           $(function() {
+               jntpurchsDetail.init();
+           });
+    	</script>
+	</div>
+
+</body>
+</html>

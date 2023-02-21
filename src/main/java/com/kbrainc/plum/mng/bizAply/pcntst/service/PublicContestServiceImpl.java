@@ -13,6 +13,8 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -21,10 +23,14 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.egovframe.rte.psl.dataaccess.util.EgovMap;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.mng.bizAply.pcntst.model.GradeVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestDao;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestVo;
@@ -72,6 +78,19 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
     }
     
     @Override
+    public List<PublicContestVo> selectDelevery(PublicContestVo publicContestVo) throws Exception {
+        // TODO Auto-generated method stub
+        return publicContestDao.selectDelevery(publicContestVo);
+    }
+    
+
+    @Override
+    public List<GradeVo> selectGradeList(GradeVo gradeVo) throws Exception {
+        // TODO Auto-generated method stub
+        return publicContestDao.selectGradeList(gradeVo);
+    }
+    
+    @Override
     @Transactional
     public int insertContest(PublicContestVo publicContestVo) throws Exception {
         // TODO Auto-generated method stub
@@ -100,6 +119,42 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
                 publicContestDao.insertMng(publicContestMngGrpVo);                            
             }
         }
+        
+        if (publicContestVo.getWctDelvryCnt() > 0) {
+            publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtFirst());
+            publicContestVo.setDelvryAplyEndDt(publicContestVo.getDelvryAplyEndDtFirst());
+            publicContestVo.setDelvryCfmtnPrsntnBgngDt(publicContestVo.getDelvryCfmtnPrsntnBgngDtFirst());
+            publicContestVo.setDelvryCfmtnPrsntnEndDt(publicContestVo.getDelvryCfmtnPrsntnEndDtFirst());
+            publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtFirst());
+            publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtFirst());
+            publicContestVo.setCycl(1);
+            publicContestDao.insertDelevery(publicContestVo);
+            
+            if (publicContestVo.getWctDelvryCnt() == 2) {
+                publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtScnd());
+                publicContestVo.setDelvryAplyEndDt(publicContestVo.getDelvryAplyEndDtScnd());
+                publicContestVo.setDelvryCfmtnPrsntnBgngDt(publicContestVo.getDelvryCfmtnPrsntnBgngDtScnd());
+                publicContestVo.setDelvryCfmtnPrsntnEndDt(publicContestVo.getDelvryCfmtnPrsntnEndDtScnd());
+                publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtScnd());
+                publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtScnd());
+                publicContestVo.setCycl(2);
+                publicContestDao.insertDelevery(publicContestVo);
+            }            
+        }
+        
+        String data = publicContestVo.getJsonString();
+        JSONParser json = new JSONParser();
+        JSONObject jsonobj = (JSONObject)json.parse(data);
+        
+        JSONArray bookInfoArray = (JSONArray)jsonobj.get("data");
+        
+        for(int i=0; i<bookInfoArray.size(); i++){
+             //배열 안에 있는것도 JSON형식 이기 때문에 JSON Object 로 추출
+              JSONObject bookObject = (JSONObject) bookInfoArray.get(i);
+              System.out.println("bookInfo: name==>"+bookObject.get("grdNm"));
+              System.out.println("bookInfo: name==>"+bookObject.get("rt"));
+              System.out.println("bookInfo: name==>"+bookObject.get("rkng"));
+          }
         
         return returnVal;
     }
@@ -133,6 +188,66 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
                 
                 publicContestDao.deleteMng(publicContestMngGrpVo);
                 publicContestDao.insertMng(publicContestMngGrpVo);                            
+            }
+        }
+        
+        if (publicContestVo.getWctDelvryCnt() > 0) {
+            publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtFirst());
+            publicContestVo.setDelvryAplyEndDt(publicContestVo.getDelvryAplyEndDtFirst());
+            publicContestVo.setDelvryCfmtnPrsntnBgngDt(publicContestVo.getDelvryCfmtnPrsntnBgngDtFirst());
+            publicContestVo.setDelvryCfmtnPrsntnEndDt(publicContestVo.getDelvryCfmtnPrsntnEndDtFirst());
+            publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtFirst());
+            publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtFirst());
+            publicContestVo.setCycl(1);
+            
+            if (publicContestVo.getDelvryidFirst() == null) {
+                publicContestVo.setDelvryid(null);
+                publicContestDao.insertDelevery(publicContestVo);                
+            } else {
+                publicContestVo.setDelvryid(publicContestVo.getDelvryidFirst());
+                publicContestDao.updateDelevery(publicContestVo);
+            }
+            
+            if (publicContestVo.getWctDelvryCnt() == 2) {
+                publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtScnd());
+                publicContestVo.setDelvryAplyEndDt(publicContestVo.getDelvryAplyEndDtScnd());
+                publicContestVo.setDelvryCfmtnPrsntnBgngDt(publicContestVo.getDelvryCfmtnPrsntnBgngDtScnd());
+                publicContestVo.setDelvryCfmtnPrsntnEndDt(publicContestVo.getDelvryCfmtnPrsntnEndDtScnd());
+                publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtScnd());
+                publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtScnd());
+                publicContestVo.setCycl(2);
+                
+                if (publicContestVo.getDelvryidScnd() == null) {
+                    publicContestVo.setDelvryid(null);
+                    publicContestDao.insertDelevery(publicContestVo);
+                } else {
+                    publicContestVo.setDelvryid(publicContestVo.getDelvryidScnd());
+                    publicContestDao.updateDelevery(publicContestVo);    
+                }
+            }
+        }
+        String data = publicContestVo.getJsonString();
+        if (StringUtils.isNotBlank(data)) {
+            JSONParser json = new JSONParser();
+            JSONObject jsonobj = (JSONObject)json.parse(data);
+            
+            JSONArray dataArray = (JSONArray)jsonobj.get("data");
+            if (CollectionUtils.isNotEmpty(dataArray)) {
+                GradeVo gradeVo = new GradeVo();
+                gradeVo.setUser(publicContestVo.getUser());
+                gradeVo.setPcntstid(publicContestVo.getPcntstid());
+                publicContestDao.deleteGrade(gradeVo);
+                for(int i = 0; i < dataArray.size(); i++){
+                    JSONObject jsonObj = (JSONObject) dataArray.get(i);
+                    String grdNm = jsonObj.get("grdNm") != null ? jsonObj.get("grdNm").toString() : "";
+                    String rt = jsonObj.get("rt") != null ? jsonObj.get("rt").toString() : "";
+                    String rkng = jsonObj.get("rkng") != null ? jsonObj.get("rkng").toString() : "";
+                    gradeVo.setGrdNm(grdNm);
+                    gradeVo.setRt(Integer.valueOf("".equals(rt) ? "0" : rt));
+                    gradeVo.setRkng(Integer.valueOf("".equals(rkng) ? "0" : rkng));
+                    
+                    publicContestDao.insertGrade(gradeVo);
+                }
             }
         }
         

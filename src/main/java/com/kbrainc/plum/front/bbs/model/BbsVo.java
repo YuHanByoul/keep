@@ -97,7 +97,9 @@ public class BbsVo extends ParentRequestVo {
     
     //현재 고정 게시글 수 (insert or update시 제한 두기 위함 ) 
     private Integer curFxdNtcCnt;
-    
+
+    private Integer tabType;
+
     public BbsVo(Integer bbsid) {
         this.setBbsid(bbsid);
         this.setSearchKeyword("All");

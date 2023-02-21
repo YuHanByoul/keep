@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : JntpurchsDaoImpl.xml
+    Description : 환경교육 교구 공동구매
+-->
+<mapper namespace="com.kbrainc.plum.front.jntpurchs.model.JntpurchsDao">
+    
+    <!-- 공동구매 목록 조회 -->
+    <select id="selectJntpurchsList" parameterType="front.JntpurchsVo" resultType="front.JntpurchsVo">
+        /* JntpurchsDao.selectJntpurchsList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.JNTPURCHSID
+            , CASE WHEN NOW() <![CDATA[>]]> A.END_DT THEN '모집종료' WHEN A.STTS_CD <![CDATA[=]]> '172104' THEN '일시중지'
+              WHEN NOW() <![CDATA[<]]> A.BGNG_DT THEN '모집대기' 
+              WHEN A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND D.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL THEN '재고소진'
+              ELSE '모집중' END AS STTS_CD_NM
+            , A.JNTPURCHS_NM
+            , A.BGNG_DT
+            , A.END_DT
+            , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
+            , A.QNTY_WHOL
+            , A.QNTY_WHOL_LMT_YN
+            , A.RPRS_IMG_FILEID
+            , G.FILE_IDNTFC_KEY AS RPRS_IMG_FILEKEY
+            , IFNULL(D.ORDER_QNTY, 0) AS ORDER_QNTY
+    , G.FILE_IDNTFC_KEY
+        FROM
+            TB_THA_TCHAID_JNTPURCHS A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_GOODS B ON (B.JNTPURCHSID = A.JNTPURCHSID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
+        LEFT OUTER JOIN (
+            SELECT
+                JNTPURCHSID
+                , SUM(QNTY) AS ORDER_QNTY
+                FROM (
+                    SELECT
+                        B.JNTPURCHSID
+                        , B.QNTY
+                    FROM
+                        TB_THA_TCHAID_JNTPURCHS_ORDER A
+                    LEFT OUTER JOIN
+                        TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+                    WHERE
+                        A.STTS_CD = '181100'
+                    GROUP BY
+                        A.ORDERID
+                        , B.JNTPURCHSID
+            ) ORDR
+            GROUP BY
+                JNTPURCHSID
+        ) D ON (D.JNTPURCHSID = A.JNTPURCHSID)
+        INNER JOIN (
+            SELECT
+                USERID
+                , INSTID
+                , ACNT
+            FROM
+                TB_CMM_USER
+        ) E ON (E.USERID = A.RGTRID)
+        LEFT OUTER JOIN
+            TB_CMM_INST F ON (F.INSTID = E.INSTID)
+        LEFT OUTER JOIN
+            TB_CMM_FILE G ON (G.FILEID = A.RPRS_IMG_FILEID)
+        WHERE 1 = 1
+        <if test="searchJntpurchsNm != null and searchJntpurchsNm != ''">
+            AND A.JNTPURCHS_NM LIKE CONCAT('%',#{searchJntpurchsNm},'%')
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172100'">
+            AND NOW() <![CDATA[<]]> A.BGNG_DT
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172101'">
+            AND (NOW() <![CDATA[>=]]> A.BGNG_DT AND NOW() <![CDATA[<=]]> A.END_DT) 
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172102'">
+            AND NOW() <![CDATA[>]]> A.END_DT
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172103'">
+            AND (A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND D.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL)
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172104'">
+            AND (NOW() <![CDATA[>=]]> A.BGNG_DT AND NOW() <![CDATA[<=]]> A.END_DT AND A.STTS_CD = '172104')
+        </if>
+        GROUP BY
+            B.JNTPURCHSID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공동구매 상세 정보 조회 -->
+    <select id="selectJntpurchsInfo" parameterType="front.JntpurchsVo" resultType="front.JntpurchsVo">
+        /* JntpurchsDao.selectJntpurchsInfo */
+        SELECT
+            A.JNTPURCHSID
+            , CASE WHEN NOW() <![CDATA[>]]> A.END_DT THEN '모집종료' WHEN A.STTS_CD <![CDATA[=]]> '172104' THEN '일시중지'
+              WHEN NOW() <![CDATA[<]]> A.BGNG_DT THEN '모집대기' 
+              WHEN A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND B.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL THEN '재고소진'
+              ELSE '모집중' END AS STTS_CD_NM
+            , A.JNTPURCHS_NM
+            , GROUP_CONCAT(D.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
+            , A.BGNG_DT
+            , A.END_DT
+            , A.QNTY_WHOL
+            , A.QNTY_WHOL_LMT_YN
+            , A.QNTY_LMT
+            , A.QNTY_LMT_YN
+            , B.ORDER_QNTY
+            , A.DTL_CN
+            , A.MVP_URL
+            , A.MVP_PSTN_CD
+            , A.RPRS_IMG_FILEID
+            , A.DTL_IMG_FILEGRPID
+            , A.MAP_FILEGRPID
+            , A.EDU_PHOTO_FILEGRPID
+            , A.ATENT_MTTR
+        FROM
+            TB_THA_TCHAID_JNTPURCHS A
+        LEFT OUTER JOIN (
+            SELECT
+                SUM(QNTY) AS ORDER_QNTY
+            FROM (
+                SELECT
+                    B.JNTPURCHSID
+                    , B.QNTY
+                FROM
+                    TB_THA_TCHAID_JNTPURCHS_ORDER A
+                LEFT OUTER JOIN
+                    TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+                WHERE
+                    A.STTS_CD = '181100'
+                    AND B.JNTPURCHSID = #{jntpurchsid}
+                GROUP BY
+                    A.ORDERID
+                    , B.JNTPURCHSID
+            ) ORDR
+            GROUP BY
+                JNTPURCHSID
+        ) B ON 1 = 1
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_GOODS C ON (C.JNTPURCHSID = A.JNTPURCHSID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID D ON (D.TCHAIDID = C.TCHAIDID)
+        WHERE
+            A.JNTPURCHSID = #{jntpurchsid}
+    </select>
+    
+</mapper>

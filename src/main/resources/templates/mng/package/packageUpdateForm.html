@@ -1,0 +1,363 @@
+  <div class="card-header p-b-0">
+        <ul class="nav nav-tabs tabs" role="tablist">
+            <li class="nav-item" id="modify_tab">
+                <a class="nav-link modify active" href="javascript:void(0)" ><strong>기본정보</strong></a>
+            </li>
+        </ul>
+  </div>
+  <div class="tab-content tabs p-t-20" id="tab_content_area" >
+  <form id="modifyFrm" action="" onsubmit="return false;">
+   <div class="tab-pane active" id="tablist01" role="tabpanel">
+       <div class="card-header p-t-0 p-b-0">
+           <h3 class="sub-title"><strong>기본 정보</strong></h3>
+       </div>
+       <div class="card-block-small p-t-0">
+          <div class="row">
+               <div class="col-12 mb-3">
+                   <div class="mb-0 form-group required">
+                       <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="packageNm"><strong>꾸러미명</strong></label>
+                       <div class="col-12">
+                           <input type="text" class="form-control form-control-sm" name="packageNm" id="packageNm" th:value="${packageVo.packageNm}"/>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-lg-6 mb-3">
+                   <div class="mb-0 form-group required">
+                       <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>꾸러미 유형</strong></div>
+                       <div class="col-12">
+                           <span kattr:select_code="typeCd" grpCd="184" firstOptTxt="-선택 -"  addClass="form-select form-select-sm" 
+                           th:attr="selectedCd=${packageVo.typeCd}"></span>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="col-lg-6 mb-3">
+                   <div class="mb-0 form-group required">
+                       <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육유형</strong></div>
+                       
+                       <div class="form-radio">
+                           <span kattr:radio_code="eduTypeCd" grpCd=187 selectedCd="187101" isAdmin="true"
+                           th:attr="selectedCd=${packageVo.eduTypeCd}" ></span>
+                       </div>
+                       
+                   </div>
+               </div>
+           </div>
+           <div class="row">
+               <div class="col-12 mb-3">
+                   <div class="mb-0 form-group required">
+                       <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육주제</strong></div>
+                       
+                       <div id="sbjctArea" >
+	                       <th:block th:each="sbjct,stat : ${mySbjctLsit}">
+		                       <div class="row mb-3 mb-md-2 subject-form" th:id="subject+${stat.count}" th:name="${stat.count}">
+		                           <div class="col-md-auto">
+		                               <button class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+		                               <button class="input-group-text btn btn-primary btn-sm"  th:count ="${stat.count}"  th:onclick="removeSubjectForm(this.getAttribute('count'))" th:disabled="${stat.count == 1}">-</button>
+		                           </div>
+		                           <div class="col-md-5 mt-1 mt-md-0">
+		                               <select th:id="subjectSelect+${stat.count}" name="eduSbjctCds" class="form-select form-select-sm" th:count ="${stat.count}" th:onchange="duplCheck(this.getAttribute('count'))">
+		                                   <option value="" >-선택-</option>
+		                                   <option th:each="item : ${sbjctCdLsit}"   th:value="${item.CD}" th:selected="${sbjct.eduSbjctCd == item.CD}"> <th:block th:text="${item.CD_NM}" /> </option>
+		                               </select>
+		                           </div>
+		                       </div>
+	                       </th:block>
+                       </div>
+                       
+                   </div>
+               </div>
+           </div>
+           
+           <div class="row">
+               <div class="col-12 mb-3">
+                   <div class="mb-0 form-group required">
+                       <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육대상</strong></div>
+                       <div class="border-checkbox-section">
+                       <span kattr:check_code="eduTrgtCds" grpCd="185"  isAdmin="true" th:attr="selectedCd=${mytrgtCds}"></span>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           
+           <div class="row">
+               <div class="col-lg-6 mb-3">
+                   <div class="mb-0 form-group required">
+                       <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>모둠구성</strong></div>
+                       <div class="col-12">
+                           <span kattr:select_code="teamCmpstnCd" grpCd="186" firstOptTxt="-선택 -"  
+                           th:attr="selectedCd=${packageVo.teamCmpstnCd}" addClass="form-select form-select-sm" ></span>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           
+       </div>
+       
+       <div class="card-header p-t-0 p-b-0">
+           <h3 class="sub-title" style="border:none;"><strong>교구 구성</strong></h3>
+       </div>
+       
+       <div class="card-block-small p-t-0">
+           <div class="table-responsive">
+               <table class="table table-framed table-bordered mb-3">
+                   <thead>
+                   <tr class="border-bottom-inverse">
+                       <th class="text-center v-middle">교구명</th>
+                       <th class="text-center v-middle">교구구성품</th>
+                       <th class="text-center v-middle">꾸러미당 교구 세트수</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   
+                   <tr   th:each="item,stat : ${myTchaidLsit}" >
+                       <th class="text-left v-middle"><th:block th:text="${item.tchaidNm}"></th:block></th>
+                       <td class="text-left v-middle"><th:block th:text="${item.cmpntNms}"></th:block></td>
+                       <td class="text-center v-middle"><th:block th:text="${item.qntyCmpstn}"></th:block> 세트</td>
+                   </tr>
+                   
+                   </tbody>
+               </table>
+           </div>
+       </div>
+       
+       
+       
+       <div class="card-block-small">
+           <th:block sec:authorize-url="/mng/tchaid/insertTchaid.do">
+           <button type="button" class="btn btn-primary " onclick = "save()" >저장</button>
+           </th:block>
+           <button type="button" class="btn btn-disabled m-r-5" onclick="javascript:gridHelper1.removeHighlight(); gridHelper1.toggleContent();">취소</button>
+       </div>
+       
+   </div>
+</form>
+</div>
+
+<script type="text/javascript" src="/files/assets/pages/advance-elements/select2-custom.js"></script>
+
+
+<script  id="subjectFrm" type="text/x-handlebars-template">
+
+    <div class="row mb-3 mb-md-2 subject-form" id="subject{{frmNum}}" name="{{frmNum}}">
+         <div class="col-md-auto">
+            <button class="input-group-text btn btn-primary btn-sm"  onclick="plusSubjectForm()" >+</button>
+            <button class="input-group-text btn btn-primary btn-sm"  onclick="removeSubjectForm('{{frmNum}}')">-</button>
+         </div>
+         <div class="col-md-5 mt-1 mt-md-0">
+
+             <select id="subjectSelect{{frmNum}}" name="eduSbjctCds" class="form-select form-select-sm" onchange="duplCheck('{{frmNum}}')">
+                 <option value="" >-선택-</option>
+                 {{#each list}}
+                 <option value="{{CD}}">{{CD_NM}}</option>
+                 {{/each}}
+             </select>
+
+         </div>
+     </div>
+</script>
+<script  id="tchaidFrm" type="text/x-handlebars-template">
+   <div class="row mb-3 mb-md-2 tchaid_form" id="tchaidForm{{tchaidid}}" name="{{tchaidid}}" >
+      <div class="col-md-auto">
+          <button class="input-group-text btn btn-primary btn-sm" onclick="removeTchaid('{{tchaidid}}')" >-</button>
+      </div>
+      <div class="col-md-auto mt-1 mt-md-0 align-self-center">{{tchaidNm}}</div>
+      
+      <div class="col-md-auto mt-1 mt-md-0">
+          <input type="number" min="0" class="form-control form-control-sm d-inline-block" aria-label="수량" style="width:60px" id="tchaid_cnt_{{tchaidid}}" value = '0'>
+          <span class="ps-2">세트</span>
+      </div>
+   </div>
+</script>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+	var sbjctCdLsit = /*[[${sbjctCdLsit}]]*/null; 
+	var packageVo = /*[[${packageVo}]]*/null; 
+	var mySbjctLsit = /*[[${mySbjctLsit}]]*/null; 
+	var myTchaidLsit = /*[[${myTchaidLsit}]]*/null; 
+    /*]]>*/
+    
+    var subjectLength = 0; 
+    var subjectNum = [1]; 
+     
+    var cmpntLength = 0; 
+    var cmpntNumArr = [1]; 
+    var tchaidNum = 0;
+	
+    $(function(){
+
+    	if(sbjctCdLsit!= null && sbjctCdLsit.length > 0 ){
+	    	subjectLength = sbjctCdLsit.length 
+        }
+    	//등록되어 있는 교육 주제 폼 넘버   
+        for(var i = 0;i < mySbjctLsit.length;i++){
+            subjectNum.push((i+1));
+        }
+    })
+    
+    duplCheck=(frmNum)=>{
+        var isDupl = false;
+    	var selectCd = $("#subjectSelect"+frmNum).val();
+    	if(selectCd==""){return;}
+
+    	$(".subject-form").each(function(){
+    		var itemId = ($(this).attr("id")).replace("subject","")
+        	if( itemId != frmNum  &&  $("#subjectSelect"+itemId).val() == selectCd){
+        		isDupl = true;
+            }
+        })
+        if(isDupl){
+        	$("#subjectSelect"+frmNum).val("");
+            alert("교육주제는 중복 선택 할 수 없습니다."); 
+            return; 
+        }
+    }
+    
+    plusSubjectForm =()=>{
+
+    	var subjectFormCnt = 0 ; 
+    	$(".subject-form").each(function(){	subjectFormCnt++ })
+    	
+    	if(subjectFormCnt >= subjectLength){
+        	alert("더이상 생성 할수 없습니다.");
+        	return;
+        }
+    	var maxValue = Math.max.apply(null, subjectNum);
+    	subjectNum.push(maxValue+1);
+        
+	    var source = $("#subjectFrm").html();
+        var template = Handlebars.compile(source);
+        var data = {
+                    'frmNum' : maxValue+1
+                    ,'list':sbjctCdLsit 
+                   };
+        $("#sbjctArea").append(template(data));
+    }
+
+    removeSubjectForm=(frmNum)=>{
+    	$("#subject"+frmNum).remove();
+    	var filterArr = subjectNum.filter(function(data) {return data != frmNum;});
+    	subjectNum = filterArr;
+    }
+    
+    //교구 검색 모달 
+    openSearchTchaidModal=()=>{
+    	  var url = "/mng/package/searchTchaidPopup.html";
+    	  openModal(url);
+    }
+    
+    openWrhousngModal=(tchaidid) => {
+        
+        var url = "/mng/tchaid/tchaidWrhousngPopup.html?tchaidid="+tchaidid;
+        
+        $("#packageModal").load(url, function(response, status, xhr) {
+            if (status == "success") {
+                packageModal = new bootstrap.Modal($('#packageModal'));
+                packageModal.show();
+            }
+        });
+    }
+
+    addTchaid=(list)=>{
+
+      list.forEach(function(item){
+
+    	  var sourceHtml = $("#tchaidFrm").html();
+          var handlebarTemplate = Handlebars.compile(sourceHtml);
+          var data = {
+                      'tchaidid' : item.tchaidid
+                      ,'tchaidNm': item.tchaidNm
+                     };
+          $("#tchaidArea").append(handlebarTemplate(data));
+      })
+    }
+
+    removeTchaid=(frmNum)=>{
+        $("#tchaidForm"+frmNum).remove();
+    }
+    var validator= $("#modifyFrm").validate({
+		    onsubmit: false,
+	          rules: {
+	        	  typeCd :   { required: true }
+	        	    ,packageNm    :   { required: true , maxlength: 100}
+	        	    ,eduTrgtCds   :   { required: true }
+	        	    ,teamCmpstnCd :   { required: true }
+	            },
+	            messages: {
+	        	     typeCd       : { required: "꾸러미 유형을 선택 해주십시오" }
+	        	    ,packageNm    : { required: "꾸러미명을 입력해주십시오" ,maxlength :"꾸러미명은  100자를 넘을 수 없습니다."}
+	        	    ,eduTrgtCds   : { required: "교육대상을 체크해주십시오" }
+	        	    ,teamCmpstnCd : { required: "모둠구성을 선택 해주십시오" }
+	            }
+	})
+    
+ 	function save(){
+     	
+	 	if(!($("#modifyFrm").valid())) return;
+
+
+  	 	var subjectParamArr=[];
+  	 	var errorFrmNum = 0;
+  	 	if(subjectNum.length<=0){
+  	  	 	alert("교육 주제를 선택해주십시오.")
+  	  	 	return;
+  	  	}else{
+  	  	   $(".subject-form").each(function(){
+  	  	  	    var frmNum = $(this).attr("name");
+	  	  		subjectParamArr.push($("#subjectSelect"+frmNum).val());
+	            if($("#subjectSelect"+frmNum).val() == ""){
+	                errorFrmNum = (errorFrmNum > 0)? errorFrmNum : frmNum;
+	            }
+  	  	   })
+  	  	}
+  	  	  	
+  	  	if(errorFrmNum > 0){
+  	  	   alert("교육 주제를 선택해주십시오.");
+  	  	   showErrorMark("#subjectSelect"+errorFrmNum);
+           return;
+  	  	}
+  	  	
+  	 	if(!confirm("저장하시겠습니까?")) return;
+  	  	
+  	  	var trgtParamArr = [];
+  	  	$("input[name=eduTrgtCds]").each(function(){
+  	  	  	if($(this).is(":checked")){trgtParamArr.push($(this).val())}
+  	  	})
+  	  	
+  	 	let params = {
+  	  	    packageid :packageVo.packageid,
+  	 		typeCd : $("#typeCd").val(),
+  	 		packageNm : $("#packageNm").val(),
+  	 		eduTypeCd : $("input[name=eduTypeCd]:checked").val(),
+  	 		teamCmpstnCd : $("#teamCmpstnCd").val(),
+  	 		eduSbjctCds : subjectParamArr,
+  	 		eduTrgtCds : trgtParamArr
+  	  	}
+  	  	
+	    if(displayWorkProgress()){
+			$.ajax({
+				url : "/mng/package/updatePackage.do",
+				type: 'POST',
+				cache : false,
+				traditional : true, //필수
+				dataType: 'json',
+				contentType: "application/json; charset=utf-8",
+				data : JSON.stringify(params),
+				success : function (data){
+					if(data.result=="success"){
+						alert(data.msg);
+						gridHelper1.resetListContent();
+					}else{
+						alert(data.msg);
+					}
+					closeWorkProgress();
+				}
+			});
+		}
+	}
+    
+</script>

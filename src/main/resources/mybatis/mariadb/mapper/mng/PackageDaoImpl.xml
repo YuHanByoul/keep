@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : PackageDaoImpl.xml
+	Description : 교구관리 
+-->
+<mapper namespace="com.kbrainc.plum.mng.pack.model.PackageDao">
+
+   <!-- 꾸러미 목록 호출 --> 
+   <select id="selectPackageList" parameterType="PackageVo" resultType="PackageVo">
+          /* PackageDao.selectPackageList */
+          <include refid="PaginationMapper.header"/>
+            SELECT
+                A.PACKAGEID
+               ,A.PACKAGE_NM
+               ,A.TYPE_CD
+               ,A.EDU_TYPE_CD
+               ,A.TEAM_CMPSTN_CD
+               ,A.MDFCN_DT
+               ,A.MDFRID
+               ,A.REG_DT
+               ,A.RGTRID
+               ,IFNULL(B.PACKAGEINDVD_CNT,0) AS PACKAGEINDVD_CNT
+            FROM 
+               TB_THA_PACKAGE A
+               LEFT OUTER JOIN (
+               SELECT 
+                PACKAGEID
+                ,COUNT(PACKAGEINDVDID) AS PACKAGEINDVD_CNT
+                FROM 
+                  TB_THA_PACKAGEINDVD
+                  GROUP BY PACKAGEID
+               )B
+               ON A.PACKAGEID = B.PACKAGEID
+           WHERE 1=1 
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+              AND TCHAID_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchTypeCd != null and searchTypeCd != '' ">
+              AND TCHAID_TYPE_CD = #{searchTypeCd}
+           </if>
+           <if test="searchEduTypeCd != null and searchEduTypeCd != '' ">
+              AND EDU_TYPE_CD = #{searchEduTypeCd}
+           </if>
+           <if test="searchTeamCmpstnCd != null and searchTeamCmpstnCd != '' ">
+              AND TEAM_CMPSTN_CD = #{searchTeamCmpstnCd}
+           </if>
+         <include refid="PaginationMapper.footer"/>
+   </select>
+  
+   <!-- 꾸러미 등록-->
+   <insert id="insertPackage" parameterType="PackageVo" useGeneratedKeys="true" keyProperty="packageid" >
+        /* PackageDao.insertPackage */
+        INSERT INTO TB_THA_PACKAGE (
+            PACKAGE_NM
+            ,TYPE_CD
+            ,EDU_TYPE_CD
+            ,TEAM_CMPSTN_CD
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+        )VALUES(
+            #{packageNm   }
+            ,#{typeCd      }
+            ,#{eduTypeCd   }
+            ,#{teamCmpstnCd}
+            ,NOW()
+            ,#{user.userid }
+            ,NOW()
+            ,#{user.userid }
+        )
+   </insert>
+   <!-- 꾸러미 대상 코드 맵핑 등록-->
+   <insert id="insertPackageEduTrgt" parameterType="PackageVo"  >
+        /* PackageDao.insertPackageEduTrgt */
+        INSERT INTO TB_THA_PACKAGE_EDU_TRGT_MAPNG (
+             PACKAGEID
+             ,EDU_TRGT_CD
+             ,REG_DT
+             ,RGTRID
+        )VALUES
+        <foreach item="eduTrgtCd" collection="eduTrgtCds" separator=",">
+         (
+            #{packageid    }
+           ,#{eduTrgtCd }
+           ,NOW()
+           ,#{user.userid }
+          )
+        </foreach>
+   </insert>
+   <!-- 꾸러미 주제 코드 맵핑 등록-->
+   <insert id="insertPackageEduSbjct" parameterType="PackageVo"  >
+        /* PackageDao.insertPackageEduSbjct */
+        INSERT INTO TB_THA_PACKAGE_EDU_SBJCT_MAPNG (
+             PACKAGEID
+             ,EDU_SBJCT_CD
+             ,REG_DT
+             ,RGTRID
+        )VALUES
+        <foreach item="eduSbjctCd" collection="eduSbjctCds" separator=",">
+         (
+            #{packageid    }
+           ,#{eduSbjctCd }
+           ,NOW()
+           ,#{user.userid }
+         )
+        </foreach>
+   </insert>
+   
+   <!-- 꾸러미 수정 -->
+   <update id="updatePackage" parameterType="PackageVo"  >
+        /* PackageDao.updatePackage */
+        UPDATE TB_THA_PACKAGE
+           SET 
+             <if test="packageNm != null and packageNm != ''">
+             PACKAGE_NM      = #{packageNm     },
+             </if>
+             <if test="typeCd != null and typeCd != ''">
+             TYPE_CD = #{typeCd },
+             </if>
+             <if test="eduTypeCd != null and eduTypeCd != ''">
+             EDU_TYPE_CD    = #{eduTypeCd    },
+             </if>
+             <if test="teamCmpstnCd != null and teamCmpstnCd != ''">
+             TEAM_CMPSTN_CD = #{teamCmpstnCd },
+             </if>
+             MDFCN_DT       = NOW(),
+             MDFRID         = #{user.userid  }
+         WHERE 1=1
+           AND PACKAGEID = #{packageid}
+   </update>
+   
+   <!-- 꾸러미 주제 코드 삭제 -->
+   <delete id="deletePackageEduSbjct" parameterType="PackageVo"  >
+        /* PackageDao.deletePackageEduSbjct */
+        DELETE FROM TB_THA_PACKAGE_EDU_SBJCT_MAPNG
+         WHERE PACKAGEID = #{packageid}
+   </delete>
+   <!-- 꾸러미 대상코드 삭제 -->
+   <delete id="deletePackageEduTrgt" parameterType="PackageVo"  >
+        /* PackageDao.deletePackageEduTrgt */
+        DELETE FROM TB_THA_PACKAGE_EDU_TRGT_MAPNG
+         WHERE PACKAGEID = #{packageid}
+   </delete>
+   <!-- 꾸러미 상세 호출 --> 
+   <select id="selectPackage" parameterType="PackageVo" resultType="PackageVo">
+          /* PackageDao.selectPackage */
+            SELECT
+               PACKAGEID
+               ,PACKAGE_NM
+               ,TYPE_CD
+               ,EDU_TYPE_CD
+               ,TEAM_CMPSTN_CD
+               ,MDFCN_DT
+               ,MDFRID
+               ,REG_DT
+               ,RGTRID
+            FROM 
+               TB_THA_PACKAGE 
+           WHERE 1=1
+             AND PACKAGEID = #{packageid}
+   </select>
+   
+   <!-- 꾸러미 교구 구성 등록-->
+   <insert id="insertPackageTchaidCmpstn" parameterType="PackageVo" >
+        /* PackageDao.insertTchaidCmpntCmpstn */
+        INSERT INTO TB_THA_PACKAGE_TCHAID_CMPSTN(
+              PACKAGEID
+              ,TCHAIDID
+              ,QNTY_CMPSTN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+        )VALUES
+        <foreach item="item" collection="packageTchaidCmpstnList"  separator=",">
+         (
+               #{packageid }
+              ,#{item.tchaidid     }
+              ,#{item.qntyCmpstn   }
+              ,NOW()
+              ,#{user.userid  }
+              ,NOW()
+              ,#{user.userid  }
+          )
+        </foreach>
+   </insert>
+   <!-- 꾸러미 교육 주제 코드 맵핑 리스트 호출 --> 
+   <select id="selectTchaidEduSbjctList" parameterType="PackageVo" resultType="PackageEduSbjctVo">
+          /* PackageDao.selectTchaidEduSbjctList */
+           SELECT
+               PACKAGEID 
+               ,EDU_SBJCT_CD
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_THA_PACKAGE_EDU_SBJCT_MAPNG
+            WHERE 1=1
+              AND PACKAGEID = #{packageid}
+   </select>
+   <!-- 꾸러미 교육 대상 코드 리스트 호출 --> 
+   <select id="selectTchaidEduTrgtList" parameterType="PackageVo" resultType="PackageEduTrgtVo">
+          /* PackageDao.selectTchaidEduTrgtList */
+           SELECT
+               PACKAGEID 
+               ,EDU_TRGT_CD
+               ,REG_DT
+               ,RGTRID
+             FROM 
+               TB_THA_PACKAGE_EDU_TRGT_MAPNG
+            WHERE 1=1
+              AND PACKAGEID = #{packageid}
+   </select>
+   <!-- 꾸러미 구성 교구 리스트 호출 --> 
+   <select id="selectPackageTchaidList" parameterType="PackageVo" resultType="PackageTchaidCmpstnVo">
+          /* PackageDao.selectPackageTchaidList */
+           SELECT 
+                 A.PACKAGEID
+                ,A.TCHAIDID
+                ,A.QNTY_CMPSTN
+                ,A.MDFCN_DT
+                ,A.MDFRID
+                ,A.REG_DT
+                ,A.RGTRID
+                ,B.TCHAID_NM
+                ,B.CMPNT_NMS
+                ,B.QNTY_INVNTRY
+            FROM 
+              TB_THA_PACKAGE_TCHAID_CMPSTN A
+              INNER JOIN (
+                 SELECT 
+                     A.TCHAIDID 
+                     ,A.TCHAID_NM
+                     ,A.QNTY_INVNTRY 
+                     ,group_concat(concat(' ',C.CMPNT_NM,' ',B.QNTY_CMPSTN,'개'))  AS CMPNT_NMS
+                   FROM 
+                     TB_THA_TCHAID A
+                     INNER JOIN TB_THA_TCHAID_CMPNT_CMPSTN B
+                     ON A.TCHAIDID = B.TCHAIDID 
+                     INNER JOIN TB_THA_TCHAID_CMPNT C
+                     ON B.CMPNTID = C.CMPNTID
+                   WHERE 1=1 
+                     GROUP BY A.TCHAIDID
+              ) B
+              ON A.TCHAIDID =B.TCHAIDID
+           WHERE 1=1
+             AND PACKAGEID = #{packageid}
+   </select>
+   <!-- 꾸러미 교구 구성 삭제 -->
+   <delete id="deletePackageTchaidCmpstn" parameterType="PackageVo"  >
+        /* PackageDao.deletePackageTchaidCmpstn */
+        DELETE FROM TB_THA_PACKAGE_TCHAID_CMPSTN
+         WHERE PACKAGEID = #{packageid}
+   </delete>
+   
+   <!--*************꾸러미 개체 **********************************  -->
+   <!-- 꾸러미 개체 생성(등록) -->
+   <insert id="insertPackageindvdByPackageid" parameterType="PackageindvdVo" useGeneratedKeys="true" keyProperty="packageindvdid" >
+        /* PackageDao.insertPackageindvd */
+        INSERT INTO TB_THA_PACKAGEINDVD(
+              INDVDNO
+              ,PACKAGEINDVD_NM
+              ,PACKAGEID
+              ,STTS_CD
+              ,PRDUCT_STTS_CD
+              ,USE_YN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+             )
+              SELECT 
+               NULL
+               ,PACKAGE_NM
+               ,PACKAGEID
+               ,'216101'
+               ,'217101'
+               ,'Y'
+               ,NOW()
+               ,#{user.userid }
+               ,NOW()
+               ,#{user.userid }
+              FROM TB_THA_PACKAGE
+             WHERE PACKAGEID =#{packageid}
+   </insert>
+   <!-- 꾸러미 개체 교구 구성 생성 -->
+   <insert id="insertPackageindvdTchaidCmpstnByPackageid" parameterType="PackageindvdVo" >
+        /* PackageDao.insertPackageindvdTchaidCmpstnByPackageid */
+           INSERT INTO TB_THA_PACKAGEINDVD_TCHAID_CMPSTN(
+               PACKAGEINDVDID
+              ,TCHAIDID
+              ,QNTY_CMPSTN
+              ,MDFCN_DT
+              ,MDFRID
+              ,REG_DT
+              ,RGTRID
+            )
+              SELECT 
+               #{packageindvdid}
+               ,TCHAIDID
+               ,QNTY_CMPSTN
+               ,NOW()
+               ,#{user.userid }
+               ,NOW()
+               ,#{user.userid }
+              FROM TB_THA_PACKAGE_TCHAID_CMPSTN
+             WHERE PACKAGEID =#{packageid}
+   </insert>
+   <!-- 꾸러미 개체 호출 --> 
+   <select id="selectPackageindvdList" parameterType="PackageindvdVo" resultType="PackageindvdVo">
+          /* PackageDao.selectPackageindvdList */
+          <include refid="PaginationMapper.header"/>
+             SELECT 
+                 A.PACKAGEINDVDID
+                 ,A.INDVDNO
+                 ,A.PACKAGEINDVD_NM
+                 ,A.PACKAGEID
+                 ,A.STTS_CD
+                 ,A.PRDUCT_STTS_CD
+                 ,A.USE_YN
+                 ,A.MDFCN_DT
+                 ,A.MDFRID
+                 ,A.REG_DT
+                 ,A.RGTRID
+                 ,B.NM  AS REG_NM
+               FROM 
+                 TB_THA_PACKAGEINDVD A
+                 INNER JOIN TB_CMM_USER B
+                 ON A.RGTRID = B.USERID 
+           WHERE 1=1
+             AND A.PACKAGEID = #{packageid} 
+         <include refid="PaginationMapper.footer"/>
+   </select>
+   <!-- 꾸러미 개체 상세 호출 --> 
+   <select id="selectPackageindvd" parameterType="PackageindvdVo" resultType="PackageindvdVo">
+          /* PackageDao.selectPackageindvd */
+             SELECT 
+                 A.PACKAGEINDVDID
+                 ,A.INDVDNO
+                 ,A.PACKAGEINDVD_NM
+                 ,A.PACKAGEID
+                 ,A.STTS_CD
+                 ,A.PRDUCT_STTS_CD
+                 ,A.USE_YN
+                 ,A.MDFCN_DT
+                 ,A.MDFRID
+                 ,A.REG_DT
+                 ,A.RGTRID
+                 ,B.NM  AS REG_NM
+               FROM 
+                 TB_THA_PACKAGEINDVD A
+                 INNER JOIN TB_CMM_USER B
+                 ON A.RGTRID = B.USERID 
+           WHERE 1=1
+             AND A.PACKAGEINDVDID = #{packageindvdid} 
+   </select>
+   
+   <!-- 꾸러미 개체 수정 -->
+   <update id="updatePackageindvd" parameterType="PackageindvdVo"  >
+        /* PackageDao.insertPackageindvd */
+        UPDATE TB_THA_PACKAGEINDVD
+           SET
+              <if test="indvdno != null and indvdno != ''">
+              INDVDNO         = #{indvdno         },
+              </if>
+              <if test="packageindvdNm != null and packageindvdNm != ''">
+              PACKAGEINDVD_NM = #{packageindvdNm  },
+              </if>
+              <if test="packageid != null and packageid != ''">
+              PACKAGEID       = #{packageid       },
+              </if>
+              <if test="sttsCd != null and sttsCd != ''">
+              STTS_CD         = #{sttsCd          },
+              </if>
+              <if test="prductSttsCd != null and prductSttsCd != ''">
+              PRDUCT_STTS_CD  = #{prductSttsCd    },
+              </if>
+              <if test="useYn != null and useYn != ''">
+              USE_YN          = #{useYn           },
+              </if>
+              MDFCN_DT        = NOW(),
+              MDFRID          = #{user.userid }
+         WHERE PACKAGEINDVDID = #{packageindvdid  }
+   </update>
+   <!-- 꾸러미 구성 개체 상세 호출 --> 
+   <select id="selectPackageindvdTchaidList" parameterType="PackageindvdVo" resultType="PackageindvdTchaidCmpstnVo">
+          /* PackageDao.selectPackageindvdTchaidList */
+            SELECT 
+                 A.PACKAGEINDVDID
+                ,A.TCHAIDID
+                ,A.QNTY_CMPSTN
+                ,A.MDFCN_DT
+                ,A.MDFRID
+                ,A.REG_DT
+                ,A.RGTRID
+                ,B.TCHAID_NM
+                ,B.CMPNT_NMS
+                ,B.QNTY_INVNTRY
+            FROM 
+              TB_THA_PACKAGEINDVD_TCHAID_CMPSTN A
+              INNER JOIN (
+                 SELECT 
+                     A.TCHAIDID 
+                     ,A.TCHAID_NM
+                     ,A.QNTY_INVNTRY 
+                     ,group_concat(concat(' ',C.CMPNT_NM,' ',B.QNTY_CMPSTN,'개'))  AS CMPNT_NMS
+                   FROM 
+                     TB_THA_TCHAID A
+                     INNER JOIN TB_THA_TCHAID_CMPNT_CMPSTN B
+                     ON A.TCHAIDID = B.TCHAIDID 
+                     INNER JOIN TB_THA_TCHAID_CMPNT C
+                     ON B.CMPNTID = C.CMPNTID
+                   WHERE 1=1 
+                     GROUP BY A.TCHAIDID
+              ) B
+              ON A.TCHAIDID =B.TCHAIDID
+           WHERE 1=1
+             AND PACKAGEINDVDID = #{packageindvdid}
+   </select>
+   
+   <!-- 꾸러미 입출고 내역 목록 호출 --> 
+   <select id="selectPackageindvdlendList" parameterType="PackageindvdVo" resultType="map">
+          /* PackageDao.selectPackageindvdlendList */
+          <include refid="PaginationMapper.header"/>
+          SELECT 
+            WDUNION.*
+           FROM 
+          (   
+           SELECT
+              'D' AS WDCD
+              ,A.APLYID
+              ,A.DLIVY_PRCS_DT AS PRCS_DT
+              ,B.NM 
+              ,C.DLVY_ADDR 
+              ,C.DLVY_ADDR_DTL
+              ,0 AS WRHOUSNG_ABNRML_CD
+              ,E.RCRIT_NM 
+             FROM 
+               TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD A
+               INNER JOIN TB_CMM_USER B
+               ON A.DLIVY_PICID = B.USERID
+               INNER JOIN TB_THA_PACKAGE_LEND_APLY C
+               ON A.APLYID  = C.APLYID
+               INNER JOIN TB_THA_PACKAGE_LEND_RND D
+               ON A.RNDID = D.RNDID 
+               INNER JOIN tb_tha_package_lend_rcrit E
+               ON E.RCRITID = D.RCRITID 
+            WHERE 1=1 
+              AND A.PACKAGEINDVDID = #{packageindvdid}
+           UNION
+           SELECT 
+              'W' AS WDCD
+              ,A.APLYID
+              ,A.WRHOUSNG_PRCS_DT AS PRCS_DT
+              ,B.NM 
+              ,'' 
+              ,'' 
+              ,IFNULL(C.ABNRMLID, 0) AS WRHOUSNG_ABNRML_CD
+              ,''
+             FROM 
+               TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD A
+               INNER JOIN TB_CMM_USER B
+               ON A.WRHOUSNG_PICID = B.USERID
+               LEFT OUTER JOIN TB_THA_PACKAGEINDVD_ABNRML C
+               ON (A.APLYID = C.APLYID AND A.RNDID = C.RNDID )
+            WHERE 1=1 
+              AND A.PACKAGEINDVDID = #{packageindvdid} 
+           ) WDUNION
+            -- ORDER BY PIC_DT DESC 
+         <include refid="PaginationMapper.footer"/>
+   </select>
+   
+   <!-- 꾸러미 이상 내역 목록 호출 --> 
+   <select id="selectPackageindvdAbnrmlList" parameterType="PackageindvdVo" resultType="PackageindvdAbnrmlVo">
+          /* PackageDao.selectPackageindvdAbnrmlList */
+          <include refid="PaginationMapper.header"/>
+           SELECT 
+              A.ABNRMLID
+              ,A.PACKAGEINDVDID
+              ,A.APLYID
+              ,A.RNDID
+              ,A.CN
+              ,A.NRMLT_YN
+              ,A.NRMLT_PRCS_YN
+              ,A.NRMLT_PRCS_PICID
+              ,A.NRMLT_PRCS_DT
+              ,A.MDFCN_DT
+              ,A.MDFRID
+              ,A.REG_DT
+              ,A.RGTRID
+              ,B.NM AS REG_NM
+           FROM 
+             TB_THA_PACKAGEINDVD_ABNRML A
+             INNER JOIN TB_CMM_USER B
+             ON A.RGTRID = B.USERID 
+          WHERE 1=1
+             AND A.PACKAGEINDVDID = #{packageindvdid} 
+         <include refid="PaginationMapper.footer"/>
+   </select>
+   
+   <!-- 꾸러미 개체 이상 등록 -->
+   <insert id="insertPackageindvdAbnrml" parameterType="PackageindvdVo" useGeneratedKeys="true" keyProperty="abnrmlid">
+        /* PackageDao.insertPackageindvdAbnrml */
+           INSERT INTO TB_THA_PACKAGEINDVD_ABNRML(
+                PACKAGEINDVDID
+                ,APLYID
+                ,RNDID
+                ,CN
+                ,NRMLT_YN
+                ,NRMLT_PRCS_YN
+                ,NRMLT_PRCS_PICID
+                ,NRMLT_PRCS_DT
+                ,MDFCN_DT
+                ,MDFRID
+                ,REG_DT
+                ,RGTRID
+            )VALUES(
+                 #{packageindvdid}
+                ,#{aplyid        }
+                ,#{rndid         }
+                ,#{cn            }
+                ,#{nrmltYn       }
+                ,#{nrmltPrcsYn   }
+                ,#{nrmltPrcsPicid}
+                ,#{nrmltPrcsDt   }
+                ,NOW()
+                ,#{user.userid   }
+                ,NOW()
+                ,#{user.userid   } 
+            )
+   </insert>
+   
+   <!-- 꾸러미 개체 이상 정상처리 업데이트  -->
+   <update id="updatePackageindvdAbnrml" parameterType="PackageindvdAbnrmlVo" >
+        /* PackageDao.updatePackageindvdAbnrml */
+        UPDATE TB_THA_PACKAGEINDVD_ABNRML
+           SET 
+            <if test="packageindvdid != null and packageindvdid != ''">
+               PACKAGEINDVDID = #{packageindvdid},       
+            </if>
+            <if test="aplyid != null and aplyid != ''">
+               APLYID = #{aplyid        },
+            </if>       
+            <if test="rndid != null and rndid != ''">
+               RNDID = #{rndid         },       
+            </if>       
+            <if test="cn != null and cn != ''">
+               CN = #{cn            },       
+            </if>       
+            <if test="nrmltYn != null and nrmltYn != ''">
+               NRMLT_YN = #{nrmltYn       },       
+            </if>       
+            <if test="nrmltPrcsYn != null and nrmltPrcsYn != ''">
+               NRMLT_PRCS_YN     = #{nrmltPrcsYn   },
+            </if>       
+            <if test='nrmltPrcsYn != null and nrmltPrcsYn == "Y" '>
+               NRMLT_PRCS_PICID  = #{user.userid   },    
+               NRMLT_PRCS_DT     = NOW(),       
+            </if>   
+               MDFCN_DT          = NOW()            ,       
+               MDFRID            = #{user.userid   }
+         WHERE ABNRMLID = #{abnrmlid}       
+   </update>
+   <!-- 꾸러미 개체 구성 내역 (망실 교구 입력) -->
+   <insert id="insertPackageindvdTchaidCmpstnDsctn" parameterType="PackageindvdTchaidCmpstnDsctnVo" useGeneratedKeys="true" keyProperty="abnrmlid">
+        /* PackageDao.insertPackageindvdTchaidCmpstnDsctn */
+       INSERT INTO TB_THA_PACKAGEINDVD_TCHAID_CMPSTN_DSCTN(
+           PACKAGEINDVDID
+           ,TCHAIDID
+           ,QNTY
+           ,REG_DT
+           ,RGTRID
+        )VALUES(
+            #{packageindvdid}
+           ,#{tchaidid      }
+           ,#{qnty          }
+           ,NOW()           
+           ,#{user.userid   }
+        )
+   </insert>
+   <!-- 꾸러미 개체 교구 구성 삭제-->
+   <delete id="deletePackageindvdTchaidCmpstn" parameterType="PackageindvdVo" >
+        /* PackageDao.deletePackageindvdTchaidCmpstn */
+           DELETE FROM  TB_THA_PACKAGEINDVD_TCHAID_CMPSTN
+           WHERE PACKAGEINDVDID = #{packageindvdid}
+   </delete>
+   <!-- 꾸러미 개체 생성시 교구 재고 감량 -->
+   <update id="updateTchaidQntyForPackageindvdPlus" parameterType="PackageindvdVo"  >
+        /* PackageDao.updateTchaidQntyForPackageindvdPlus */
+        UPDATE TB_THA_TCHAID A
+         JOIN (
+              SELECT 
+                 TCHAIDID AS TCHAIDID
+                 ,QNTY_CMPSTN  AS CUT_QNTY
+               FROM 
+                 TB_THA_PACKAGEINDVD_TCHAID_CMPSTN  
+              WHERE 1=1
+               AND PACKAGEINDVDID = #{packageindvdid}
+         ) B ON A.TCHAIDID = B.TCHAIDID
+         SET 
+           A.QNTY_INVNTRY = A.QNTY_INVNTRY - CUT_QNTY
+           ,A.MDFRID      = #{user.userid}
+           ,A.MDFCN_DT    = NOW()
+   </update>
+   
+   <!-- 꾸러미 개체 교구 추가시 재고 초과 확인 --> 
+   <select id="selectInvtryOverYn" parameterType="PackageindvdVo" resultType="String">
+          /* PackageDao.selectInvtryOverYn */
+          SELECT 
+              MAX(CASE WHEN A.QNTY_INVNTRY -B.CHG_CNT <![CDATA[<]]> 0 THEN 'Y'
+                   ELSE 'N'
+              END) AS isOver
+            FROM 
+              TB_THA_TCHAID A
+              INNER JOIN (
+                 <foreach collection="packageindvdTchaidCmpstnVoList" item="item" index="index" separator="UNION">
+                     SELECT
+                         #{item.tchaidid}  AS TCHAIDID
+                        ,#{item.qntyCmpstn} AS CHG_CNT
+                 </foreach>
+              )B
+              ON A.TCHAIDID  = B.TCHAIDID
+   </select>
+   <!-- 꾸러미 개체 정상화 처리시 일괄 재고 감량 -->
+   <update id="updateTchaidQntyForPackageindvdNormalize" parameterType="PackageindvdVo"  >
+          /* PackageDao.updateTchaidQntyForPackageindvdNormalize */
+          UPDATE TB_THA_TCHAID A
+          JOIN (
+             <foreach collection="packageindvdTchaidCmpstnVoList" item="item" index="index" separator="UNION">
+                 SELECT
+                     #{item.tchaidid}  AS TCHAIDID
+                     ,#{item.qntyCmpstn} AS CUT_QNTY
+             </foreach>
+          ) B ON A.TCHAIDID = B.TCHAIDID
+          SET 
+            A.QNTY_INVNTRY = A.QNTY_INVNTRY - CUT_QNTY
+           ,A.MDFRID       = #{user.userid}
+           ,A.MDFCN_DT     = NOW()
+    </update>
+    
+    <!-- 꾸러미 개체 정상화 처리시 교구 구성 업데이트 (기존 수량보다 추가 수량이 많을시  )-->
+    <update id="updateTchaidCmpstnForPackageindvdNormalize" parameterType="PackageindvdVo"  >
+        /* PackageDao.updateTchaidQntyForPackageindvdNormalize */
+        UPDATE TB_THA_PACKAGEINDVD_TCHAID_CMPSTN A
+             JOIN (    
+                  SELECT 
+                     B.TCHAIDID
+                     ,B.PACKAGEINDVDID
+                     ,A.QNTY_CMPSTN 
+                     ,B.CHG_CNT
+                   FROM 
+                     tb_tha_packageindvd_tchaid_cmpstn A
+                     INNER JOIN (
+                        <foreach collection="packageindvdTchaidCmpstnVoList" item="item" index="index" separator="UNION">
+                            SELECT
+                                #{item.tchaidid}  AS TCHAIDID
+                                ,#{item.packageindvdid}  AS PACKAGEINDVDID
+                                ,#{item.qntyCmpstn} AS CHG_CNT
+                        </foreach>
+                     )B
+                     ON A.TCHAIDID  = B.TCHAIDID AND A.PACKAGEINDVDID = B.PACKAGEINDVDID
+                   WHERE A.QNTY_CMPSTN <![CDATA[<]]>B.CHG_CNT
+               ) B ON A.TCHAIDID  = B.TCHAIDID AND A.PACKAGEINDVDID = B.PACKAGEINDVDID
+               SET 
+                 A.QNTY_CMPSTN  = B.CHG_CNT
+                 ,A.MDFRID      = #{user.userid}
+                 ,A.MDFCN_DT    = NOW()
+   </update>
+   
+   <!-- 꾸러미 개체 구성 내역 (망실 교구 입력) 일괄 등록 -->
+   <insert id="insertPackageindvdTchaidCmpstnDsctnByList" parameterType="PackageindvdVo">
+        /* PackageDao.insertPackageindvdTchaidCmpstnDsctnByList */
+                INSERT INTO TB_THA_PACKAGEINDVD_TCHAID_CMPSTN_DSCTN(
+                   PACKAGEINDVDID
+                   ,TCHAIDID
+                   ,QNTY
+                   ,REG_DT
+                   ,RGTRID
+                )
+                 SELECT 
+                     B.TCHAIDID
+                     ,B.PACKAGEINDVDID
+                     ,CASE WHEN A.QNTY_CMPSTN <![CDATA[<]]> B.CHG_CNT THEN A.QNTY_CMPSTN
+                           ELSE B.CHG_CNT
+                      END AS QNTY
+                     ,NOW()           
+                     ,#{user.userid   }
+                   FROM 
+                     tb_tha_packageindvd_tchaid_cmpstn A
+                     INNER JOIN (
+                        <foreach collection="packageindvdTchaidCmpstnVoList" item="item" index="index" separator="UNION">
+                            SELECT
+                                #{item.tchaidid}  AS TCHAIDID
+                                ,#{item.packageindvdid}  AS PACKAGEINDVDID
+                                ,#{item.qntyCmpstn} AS CHG_CNT
+                        </foreach>
+                     )B
+                     ON A.TCHAIDID  = B.TCHAIDID AND A.PACKAGEINDVDID = B.PACKAGEINDVDID
+                  WHERE CHG_CNT <![CDATA[>]]> 0
+    </insert>
+    
+</mapper>

@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
-	SQL File Name : JntpurchsDaoImpl.xml
-	Description : 공동구매관리
+    SQL File Name : JntpurchsDaoImpl.xml
+    Description : 공동구매관리
 -->
 <mapper namespace="com.kbrainc.plum.mng.jntpurchs.model.JntpurchsDao">
     
@@ -18,7 +18,10 @@
             , GROUP_CONCAT(C.TCHAID_NM SEPARATOR ', ') AS TCHAID_NM
             , A.BGNG_DT
             , A.END_DT
-            , D.CD_NM AS STTS_CD_NM
+            , CASE WHEN NOW() <![CDATA[>]]> A.END_DT THEN '모집종료' WHEN A.STTS_CD <![CDATA[=]]> '172104' THEN '일시중지'
+              WHEN NOW() <![CDATA[<]]> A.BGNG_DT THEN '모집대기' 
+              WHEN A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND D.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL THEN '재고소진'
+              ELSE '모집중' END AS STTS_CD_NM
             , E.ACNT
             , F.INST_NM
             , A.REG_DT
@@ -28,15 +31,27 @@
             TB_THA_TCHAID_JNTPURCHS_GOODS B ON (B.JNTPURCHSID = A.JNTPURCHSID)
         LEFT OUTER JOIN
             TB_THA_TCHAID C ON (C.TCHAIDID = B.TCHAIDID)
-        INNER JOIN (
+        LEFT OUTER JOIN (
             SELECT
-                CD
-                , CD_NM
-            FROM
-                TB_CMM_CD
-            WHERE
-                CDGRPID = '172'
-        ) D ON (D.CD = A.STTS_CD)
+                JNTPURCHSID
+                , SUM(QNTY) AS ORDER_QNTY
+                FROM (
+                    SELECT
+                        B.JNTPURCHSID
+                        , B.QNTY
+                    FROM
+                        TB_THA_TCHAID_JNTPURCHS_ORDER A
+                    LEFT OUTER JOIN
+                        TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+                    WHERE
+                        A.STTS_CD = '181100'
+                    GROUP BY
+                        A.ORDERID
+                        , B.JNTPURCHSID
+            ) ORDR
+            GROUP BY
+                JNTPURCHSID
+        ) D ON (D.JNTPURCHSID = A.JNTPURCHSID)
         INNER JOIN (
             SELECT
                 USERID
@@ -47,15 +62,28 @@
         ) E ON (E.USERID = A.RGTRID)
         LEFT OUTER JOIN
           TB_CMM_INST F ON (F.INSTID = E.INSTID)
-        WHERE 1 = 1
+        WHERE
+            A.STTS_CD != -1
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNm'">
             AND A.JNTPURCHS_NM LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'jntpurchsNo'">
             AND A.JNTPURCHSNO LIKE CONCAT('%',#{searchKeyword},'%')
         </if>
-        <if test="searchSttsCd != null and searchSttsCd != ''">
-            AND A.STTS_CD = #{searchSttsCd}
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172100'">
+            AND NOW() <![CDATA[<]]> A.BGNG_DT
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172101'">
+            AND (NOW() <![CDATA[>=]]> A.BGNG_DT AND NOW() <![CDATA[<=]]> A.END_DT) 
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172102'">
+            AND NOW() <![CDATA[>]]> A.END_DT
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172103'">
+            AND (A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND D.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL)
+        </if>
+        <if test="searchSttsCd != null and searchSttsCd != '' and searchSttsCd == '172104'">
+            AND (NOW() <![CDATA[>=]]> A.BGNG_DT AND NOW() <![CDATA[<=]]> A.END_DT AND A.STTS_CD = '172104')
         </if>
         <if test="searchInstType != null and searchInstType != '' and searchInstType == 'epa'">
             AND F.INST_CD = 'epa'
@@ -82,6 +110,7 @@
             , JNTPURCHS_NM
             , STTS_CD
             , QNTY_WHOL
+            , QNTY_WHOL_LMT_YN
             , QNTY_LMT
             , QNTY_LMT_YN
             , BGNG_DT
@@ -103,6 +132,7 @@
             , #{jntpurchsNm}
             , #{sttsCd}
             , #{qntyWhol}
+            , #{qntyWholLmtYn}
             , #{qntyLmt}
             , #{qntyLmtYn}
             , #{bgngDtStr}
@@ -172,44 +202,58 @@
         <include refid="PaginationMapper.header"/>
         SELECT
             A.TCHAIDID
-<!--             , A.TCHAID_TYPE_CD -->
-<!--             , B.CD_NM AS TCHAID_TYPE_NM -->
-            , CONCAT('TA-', LPAD(A.TCHAIDID, 3, '0')) AS TCHAID_NO
+            , A.TCHAID_TYPE_CD
+            , B.CD_NM AS TCHAID_TYPE_CD_NM
+            , CONCAT('TA-', LPAD(A.TCHAIDID, 4, '0')) AS TCHAID_NO
             , A.TCHAID_NM
+            , A.EDU_TYPE_CD
+            , C.CD_NM AS EDU_TYPE_CD_NM
+            , A.TEAM_CMPSTN_CD
+            , D.CD_NM AS TEAM_CMPSTN_CD_NM
             , A.REG_DT
-<!--             , A.EDU_TYPE_CD -->
-<!--             , C.CD_NM AS EDU_TYPE_NM -->
         FROM
             TB_THA_TCHAID A
-<!--         INNER JOIN ( -->
-<!--             SELECT -->
-<!--                 CD -->
-<!--                 , CD_NM -->
-<!--             FROM -->
-<!--                 TB_CMM_CD -->
-<!--             WHERE -->
-<!--                 CDGRPID = 172 -->
-<!--         ) B ON (B.CD = A.TCHAID_TYPE_CD) -->
-<!--         INNER JOIN ( -->
-<!--             SELECT -->
-<!--                 CD -->
-<!--                 , CD_NM -->
-<!--             FROM -->
-<!--                 TB_CMM_CD -->
-<!--             WHERE -->
-<!--                 CDGRPID = 172 -->
-<!--         ) C ON (C.CD = A.EDU_TYPE_CD)     -->
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '184'
+        ) B ON (B.CD = A.TCHAID_TYPE_CD)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '187'
+        ) C ON (C.CD = A.EDU_TYPE_CD)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '186'
+        ) D ON (D.CD = A.TEAM_CMPSTN_CD)
         WHERE 
             1 = 1
-        <if test="tchaidSearchKeyword != null and tchaidSearchKeyword != '' and tchaidSearchType == 'tchaidNm'">
-            AND A.TCHAID_NM LIKE CONCAT('%',#{tchaidSearchKeyword},'%')
+        <if test="searchTchaidKeyword != null and searchTchaidKeyword != '' and searchTchaidType == 'tchaidNm'">
+            AND A.TCHAID_NM LIKE CONCAT('%',#{searchTchaidKeyword},'%')
         </if>
-        <if test="tchaidSearchKeyword != null and tchaidSearchKeyword != '' and tchaidSearchType == 'tchaidNo'">
-            AND CONCAT('TA-', LPAD(A.TCHAIDID, 3, '0')) LIKE CONCAT('%',#{tchaidSearchKeyword},'%')
+        <if test="searchTchaidKeyword != null and searchTchaidKeyword != '' and searchTchaidType == 'tchaidNo'">
+            AND CONCAT('TA-', LPAD(A.TCHAIDID, 4, '0')) LIKE CONCAT('%',#{searchTchaidKeyword},'%')
         </if>
-<!--         <if test="searchSeCd != null and searchSeCd != ''"> -->
-<!--             AND A.SE_CD = #{searchSeCd} -->
-<!--         </if> -->
+        <if test="searchEduTypeCd != null and searchEduTypeCd != ''">
+            AND A.EDU_TYPE_CD = #{searchEduTypeCd}
+        </if>
+        <if test="searchTchaidTypeCd != null and searchTchaidTypeCd != ''">
+            AND A.TCHAID_TYPE_CD = #{searchTchaidTypeCd}
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -217,29 +261,55 @@
     <select id="selectJntpurchsInfo" parameterType="JntpurchsVo" resultType="JntpurchsVo">
         /* JntpurchsDao.selectJntpurchsInfo */
         SELECT
-            JNTPURCHSID
-            , JNTPURCHSNO
-            , JNTPURCHS_NM
-            , STTS_CD
-            , QNTY_WHOL
-            , QNTY_LMT
-            , QNTY_LMT_YN
-            , DATE_FORMAT(BGNG_DT, '%Y-%m-%d %H:%i:%s') AS BGNG_DT_STR
-            , DATE_FORMAT(END_DT, '%Y-%m-%d %H:%i:%s') AS END_DT_STR
-            , BGNG_DT
-            , END_DT
-            , DTL_CN
-            , MVP_URL
-            , MVP_PSTN_CD
-            , RPRS_IMG_FILEID
-            , DTL_IMG_FILEGRPID
-            , MAP_FILEGRPID
-            , EDU_PHOTO_FILEGRPID
-            , ATENT_MTTR
+            A.JNTPURCHSID
+            , A.JNTPURCHSNO
+            , A.JNTPURCHS_NM
+            , A.QNTY_WHOL
+            , A.QNTY_WHOL_LMT_YN
+            , A.QNTY_LMT
+            , A.QNTY_LMT_YN
+            , DATE_FORMAT(A.BGNG_DT, '%Y-%m-%d %H:%i:%s') AS BGNG_DT_STR
+            , DATE_FORMAT(A.END_DT, '%Y-%m-%d %H:%i:%s') AS END_DT_STR
+            , A.BGNG_DT
+            , A.END_DT
+            , A.DTL_CN
+            , A.MVP_URL
+            , A.MVP_PSTN_CD
+            , A.RPRS_IMG_FILEID
+            , A.DTL_IMG_FILEGRPID
+            , A.MAP_FILEGRPID
+            , A.EDU_PHOTO_FILEGRPID
+            , A.ATENT_MTTR
+            , B.ORDER_QNTY
+            , CASE WHEN NOW() <![CDATA[>]]> A.END_DT THEN '모집종료' WHEN A.STTS_CD <![CDATA[=]]> '172104' THEN '일시중지'
+              WHEN NOW() <![CDATA[<]]> A.BGNG_DT THEN '모집대기' 
+              WHEN A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND B.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL THEN '재고소진'
+              ELSE '모집중' END AS STTS_CD_NM
         FROM
-            TB_THA_TCHAID_JNTPURCHS
+            TB_THA_TCHAID_JNTPURCHS A
+        LEFT OUTER JOIN (
+            SELECT
+                SUM(QNTY) AS ORDER_QNTY
+            FROM (
+                SELECT
+                    B.JNTPURCHSID
+                    , B.QNTY
+                FROM
+                    TB_THA_TCHAID_JNTPURCHS_ORDER A
+                LEFT OUTER JOIN
+                    TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+                WHERE
+                    A.STTS_CD = '181100'
+                    AND B.JNTPURCHSID = #{jntpurchsid}
+                GROUP BY
+                    A.ORDERID
+                    , B.JNTPURCHSID
+            ) ORDR
+            GROUP BY
+                JNTPURCHSID
+        ) B ON 1 = 1
         WHERE
-            JNTPURCHSID = #{jntpurchsid}
+            A.JNTPURCHSID = #{jntpurchsid}
     </select>
     
     <!-- 공동구매모집 상품 정보 조회 -->
@@ -247,7 +317,7 @@
         /* JntpurchsDao.selectGoodsList */
         SELECT
             B.TCHAIDID
-            , CONCAT('TA-', LPAD(B.TCHAIDID, 3, '0')) AS TCHAID_NO
+            , CONCAT('TA-', LPAD(B.TCHAIDID, 4, '0')) AS TCHAID_NO
             , B.TCHAID_NM
         FROM
             TB_THA_TCHAID_JNTPURCHS_GOODS A
@@ -293,6 +363,7 @@
             JNTPURCHS_NM = #{jntpurchsNm}
             , STTS_CD = #{sttsCd}
             , QNTY_WHOL = #{qntyWhol}
+            , QNTY_WHOL_LMT_YN = #{qntyWholLmtYn}
             , QNTY_LMT = #{qntyLmt}
             , QNTY_LMT_YN = #{qntyLmtYn}
             , BGNG_DT = #{bgngDtStr}
@@ -311,7 +382,17 @@
             JNTPURCHSID = #{jntpurchsid}
     </update>
     
-    <!-- 공동구매모집 정보 업데이트 -->
+    <!-- 공동구매 모집상태 업데이트 -->
+    <update id="updateJntpurchsStts" parameterType="JntpurchsVo">
+        UPDATE TB_THA_TCHAID_JNTPURCHS SET
+            STTS_CD = #{sttsCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            JNTPURCHSID = #{jntpurchsid}
+    </update>
+    
+    <!-- 공동구매모집 정보 삭제 -->
     <update id="deleteJntpurchs" parameterType="JntpurchsVo">
         UPDATE TB_THA_TCHAID_JNTPURCHS SET
             STTS_CD = '-1'

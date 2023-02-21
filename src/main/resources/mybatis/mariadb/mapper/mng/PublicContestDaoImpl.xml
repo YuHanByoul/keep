@@ -74,6 +74,7 @@
             , CONCAT(BSNS_BGNG_DE, ' - ', BSNS_END_DE) AS BSNS_DE
             , MDL_REPORT_YN
             , CNSLTNG_USE_CD
+            , CNSLTNG_OPER_CD
             , D.CD_NM AS CNSLTNG_USE_NM
             , WCT_DELVRY_CNT
             , CASE WHEN WCT_DELVRY_CNT = 1 THEN 'N' ELSE 'Y' END AS WCT_DELVRY_CNT_YN  
@@ -86,16 +87,18 @@
             , SRNG_END_DT
             , DELVRY_APLY_PRSNTN_BGNG_DT
             , DELVRY_APLY_PRSNTN_END_DT
-            , DELVRY_APLY_BGNG_DT_FIRST
-            , DELVRY_APLY_END_DT_FIRST
-            , DELVRY_APLY_BGNG_DT_SCND
-            , DELVRY_APLY_END_DT_SCND
-            , DELVRY_CFMTN_PRSNTN_BGNG_DT
-            , DELVRY_CFMTN_PRSNTN_END_DT
-            , CPTAL_EXCUT_BGNG_DT_FIRST
-            , CPTAL_EXCUT_END_DT_FIRST
-            , CPTAL_EXCUT_BGNG_DT_SCND
-            , CPTAL_EXCUT_END_DT_SCND
+<!--             , DELVRY_APLY_BGNG_DT_FIRST -->
+<!--             , DELVRY_APLY_END_DT_FIRST -->
+<!--             , DELVRY_APLY_BGNG_DT_SCND -->
+<!--             , DELVRY_APLY_END_DT_SCND -->
+<!--             , DELVRY_CFMTN_PRSNTN_BGNG_DT -->
+<!--             , DELVRY_CFMTN_PRSNTN_END_DT -->
+<!--             , CPTAL_EXCUT_BGNG_DT_FIRST -->
+<!--             , CPTAL_EXCUT_END_DT_FIRST -->
+<!--             , CPTAL_EXCUT_BGNG_DT_SCND -->
+<!--             , CPTAL_EXCUT_END_DT_SCND -->
+            , CNSLTNG_APLY_BGNG_DT
+            , CNSLTNG_APLY_END_DT
             , MDL_REPORT_BGNG_DT
             , MDL_REPORT_END_DT
             , RSLT_REPORT_BGNG_DT
@@ -103,6 +106,18 @@
             , EXCCLC_REPORT_BGNG_DT
             , EXCCLC_REPORT_END_DT
             , FILEGRPID
+            , RT_USE_YN
+            , TOP_SCR_EXCL_YN
+            , LWET_SCR_EXCL_YN
+            , LWET_CRTR_SCR_USE_YN_FIRST
+            , LWET_CRTR_SCR_FIRST
+            , LWET_CRTR_SCR_USE_YN_SCND
+            , LWET_CRTR_SCR_SCND
+            , NOPE_LMT_USE_YN
+            , NOPE_LMT
+            , SRNG_RT_USE_YN
+            , RT_FIRST
+            , RT_SCND
             , A.USE_YN
             , A.MDFCN_DT
             , A.MDFRID
@@ -122,6 +137,74 @@
             </if>
         <include refid="PaginationMapper.footer"/>
     </select>
+    
+    <!-- 교부정보 조회 -->
+    <select id="selectDelevery" parameterType="PublicContestVo" resultType="PublicContestVo">
+        /* PublicContestDao.selectDelevery */
+        SELECT
+            DELVRYID
+            , PCNTSTID
+            , DELVRY_APLY_BGNG_DT
+            , DELVRY_APLY_END_DT
+            , DELVRY_CFMTN_PRSNTN_BGNG_DT
+            , DELVRY_CFMTN_PRSNTN_END_DT
+            , CPTAL_EXCUT_BGNG_DT
+            , CPTAL_EXCUT_END_DT
+            , CYCL
+        FROM
+            TB_SPB_DELVRY
+        WHERE PCNTSTID = #{pcntstid}
+        ORDER BY CYCL
+    </select>
+    
+    <!--  교부 정보 등록 -->
+    <insert id="insertDelevery" parameterType="PublicContestVo" useGeneratedKeys="true" keyProperty="delvryid">
+        /* PublicContestDao.insertDelevery */
+        INSERT INTO TB_SPB_DELVRY (
+            DELVRYID
+            , PCNTSTID
+            , DELVRY_APLY_BGNG_DT
+            , DELVRY_APLY_END_DT
+            , DELVRY_CFMTN_PRSNTN_BGNG_DT
+            , DELVRY_CFMTN_PRSNTN_END_DT
+            , CPTAL_EXCUT_BGNG_DT
+            , CPTAL_EXCUT_END_DT
+            , CYCL
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{delvryid}
+            , #{pcntstid}
+            , #{delvryAplyBgngDt}
+            , #{delvryAplyEndDt}
+            , #{delvryCfmtnPrsntnBgngDt}
+            , #{delvryCfmtnPrsntnEndDt}
+            , #{cptalExcutBgngDt}
+            , #{cptalExcutEndDt}
+            , #{cycl}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 교부 정보 수정 -->
+    <update id="updateDelevery" parameterType="PublicContestVo">
+        /* PublicContestDao.updateDelevery */
+        UPDATE TB_SPB_DELVRY SET
+            DELVRY_APLY_BGNG_DT = #{delvryAplyBgngDt}
+            , DELVRY_APLY_END_DT = #{delvryAplyEndDt}
+            , DELVRY_CFMTN_PRSNTN_BGNG_DT = #{delvryCfmtnPrsntnBgngDt}
+            , DELVRY_CFMTN_PRSNTN_END_DT = #{delvryCfmtnPrsntnEndDt}
+            , CPTAL_EXCUT_BGNG_DT = #{delvryCfmtnPrsntnEndDt}
+            , CPTAL_EXCUT_END_DT = #{cptalExcutEndDt}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DELVRYID = #{delvryid}
+    </update>
     
     <!-- 담당자 배정 조회 -->
     <select id="selectMngList" parameterType="PublicContestMngGrpVo" resultType="PublicContestMngGrpVo">
@@ -154,6 +237,56 @@
         FROM TB_SPB_SRNG_FORM
     </select>
     
+    <!-- 심사배분율 조회 -->
+    <select id="selectGradeList" parameterType="GradeVo" resultType="GradeVo">
+        /* PublicContestDao.selectGradeList */
+        SELECT
+            STNGID
+            , PCNTSTID
+            , GRD_NM
+            , RT
+            , RKNG
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_SRNG_GRD_STNG
+        WHERE PCNTSTID = #{pcntstid}
+        ORDER BY GRD_NM
+    </select>
+    
+    <!-- 심사배분율 등록 -->
+    <insert id="insertGrade" parameterType="GradeVo">
+        /* PublicContestDao.insertGrade */
+        INSERT INTO TB_SPB_SRNG_GRD_STNG (
+            PCNTSTID
+            , GRD_NM
+            , RT
+            , RKNG
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{pcntstid}
+            , #{grdNm}
+            , #{rt}
+            , #{rkng}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        ) 
+    </insert>
+    
+    <!-- 심사배분율 삭제 -->
+    <delete id="deleteGrade" parameterType="GradeVo">
+        /* PublicContestDao.deleteGrade */
+        DELETE FROM TB_SPB_SRNG_GRD_STNG
+        WHERE PCNTSTID = #{pcntstid}
+    </delete>
+    
     <!-- 공모관리 등록 -->
     <insert id="insertContest" parameterType="PublicContestVo" useGeneratedKeys="true" keyProperty="pcntstid">
         /* PublicContestDao.insertContest */
@@ -178,16 +311,18 @@
                 , SRNG_END_DT
                 , DELVRY_APLY_PRSNTN_BGNG_DT
                 , DELVRY_APLY_PRSNTN_END_DT
-                , DELVRY_APLY_BGNG_DT_FIRST
-                , DELVRY_APLY_END_DT_FIRST
-                , DELVRY_APLY_BGNG_DT_SCND
-                , DELVRY_APLY_END_DT_SCND
-                , DELVRY_CFMTN_PRSNTN_BGNG_DT
-                , DELVRY_CFMTN_PRSNTN_END_DT
-                , CPTAL_EXCUT_BGNG_DT_FIRST
-                , CPTAL_EXCUT_END_DT_FIRST
-                , CPTAL_EXCUT_BGNG_DT_SCND
-                , CPTAL_EXCUT_END_DT_SCND
+<!--                 , DELVRY_APLY_BGNG_DT_FIRST -->
+<!--                 , DELVRY_APLY_END_DT_FIRST -->
+<!--                 , DELVRY_APLY_BGNG_DT_SCND -->
+<!--                 , DELVRY_APLY_END_DT_SCND -->
+<!--                 , DELVRY_CFMTN_PRSNTN_BGNG_DT -->
+<!--                 , DELVRY_CFMTN_PRSNTN_END_DT -->
+<!--                 , CPTAL_EXCUT_BGNG_DT_FIRST -->
+<!--                 , CPTAL_EXCUT_END_DT_FIRST -->
+<!--                 , CPTAL_EXCUT_BGNG_DT_SCND -->
+<!--                 , CPTAL_EXCUT_END_DT_SCND -->
+                , CNSLTNG_APLY_BGNG_DT
+                , CNSLTNG_APLY_END_DT
                 , MDL_REPORT_BGNG_DT
                 , MDL_REPORT_END_DT
                 , RSLT_REPORT_BGNG_DT
@@ -195,11 +330,24 @@
                 , EXCCLC_REPORT_BGNG_DT
                 , EXCCLC_REPORT_END_DT
                 , FILEGRPID
+                , RT_USE_YN
+                , TOP_SCR_EXCL_YN
+                , LWET_SCR_EXCL_YN
+                , LWET_CRTR_SCR_USE_YN_FIRST
+                , LWET_CRTR_SCR_FIRST
+                , LWET_CRTR_SCR_USE_YN_SCND
+                , LWET_CRTR_SCR_SCND
+                , NOPE_LMT_USE_YN
+                , NOPE_LMT
+                , SRNG_RT_USE_YN
+                , RT_FIRST
+                , RT_SCND
                 , USE_YN
                 , MDFCN_DT
                 , MDFRID
                 , REG_DT
                 , RGTRID
+                , CNSLTNG_OPER_CD
             ) VALUES ( 
                 #{pcntstid}
                 , #{fldCd}
@@ -220,16 +368,16 @@
                 , NULLIF(#{srngEndDt}, '')
                 , NULLIF(#{delvryAplyPrsntnBgngDt}, '')
                 , NULLIF(#{delvryAplyPrsntnEndDt}, '')
-                , NULLIF(#{delvryAplyBgngDtFirst}, '')
-                , NULLIF(#{delvryAplyEndDtFirst}, '')
-                , NULLIF(#{delvryAplyBgngDtScnd}, '')
-                , NULLIF(#{delvryAplyEndDtScnd}, '')
-                , NULLIF(#{delvryCfmtnPrsntnBgngDt}, '')
-                , NULLIF(#{delvryCfmtnPrsntnEndDt}, '')
-                , NULLIF(#{cptalExcutBgngDtFirst}, '')
-                , NULLIF(#{cptalExcutEndDtFirst}, '')
-                , NULLIF(#{cptalExcutBgngDtScnd}, '')
-                , NULLIF(#{cptalExcutEndDtScnd}, '')
+<!--                 , NULLIF(#{delvryAplyBgngDtFirst}, '') -->
+<!--                 , NULLIF(#{delvryAplyEndDtFirst}, '') -->
+<!--                 , NULLIF(#{delvryAplyBgngDtScnd}, '') -->
+<!--                 , NULLIF(#{delvryAplyEndDtScnd}, '') -->
+<!--                 , NULLIF(#{delvryCfmtnPrsntnBgngDt}, '') -->
+<!--                 , NULLIF(#{delvryCfmtnPrsntnEndDt}, '') -->
+<!--                 , NULLIF(#{cptalExcutBgngDtFirst}, '') -->
+<!--                 , NULLIF(#{cptalExcutEndDtFirst}, '') -->
+<!--                 , NULLIF(#{cptalExcutBgngDtScnd}, '') -->
+<!--                 , NULLIF(#{cptalExcutEndDtScnd}, '') -->
                 , NULLIF(#{mdlReportBgngDt}, '')
                 , NULLIF(#{mdlReportEndDt}, '')
                 , NULLIF(#{rsltReportBgngDt}, '')
@@ -237,11 +385,24 @@
                 , NULLIF(#{excclcReportBgngDt}, '')
                 , NULLIF(#{excclcReportEndDt}, '')
                 , #{filegrpid}
+                , #{rtUseYn}
+                , #{topScrExclYn}
+                , #{lwetScrExclYn}
+                , #{lwetCrtrScrUseYnFirst}
+                , #{lwetCrtrScrFirst}
+                , #{lwetCrtrScrUseYnScnd}
+                , #{lwetCrtrScrScnd}
+                , #{nopeLmtUseYn}
+                , #{nopeLmt}
+                , #{srngRtUseYn}
+                , #{rtFirst}
+                , #{rtScnd}
                 , #{useYn}
                 , NOW()
                 , #{user.userid}
                 , NOW()
                 , #{user.userid}
+                , #{cnsltngOperCd}
             )
     </insert>
     
@@ -300,16 +461,18 @@
             , SRNG_END_DT = NULLIF(#{srngEndDt}, '')
             , DELVRY_APLY_PRSNTN_BGNG_DT = NULLIF(#{delvryAplyPrsntnBgngDt}, '')
             , DELVRY_APLY_PRSNTN_END_DT = NULLIF(#{delvryAplyPrsntnEndDt}, '')
-            , DELVRY_APLY_BGNG_DT_FIRST = NULLIF(#{delvryAplyBgngDtFirst}, '')
-            , DELVRY_APLY_END_DT_FIRST = NULLIF(#{delvryAplyEndDtFirst}, '')
-            , DELVRY_APLY_BGNG_DT_SCND = NULLIF(#{delvryAplyBgngDtScnd}, '')
-            , DELVRY_APLY_END_DT_SCND = NULLIF(#{delvryAplyEndDtScnd}, '')
-            , DELVRY_CFMTN_PRSNTN_BGNG_DT = NULLIF(#{delvryCfmtnPrsntnBgngDt}, '')
-            , DELVRY_CFMTN_PRSNTN_END_DT = NULLIF(#{delvryCfmtnPrsntnEndDt}, '')
-            , CPTAL_EXCUT_BGNG_DT_FIRST = NULLIF(#{cptalExcutBgngDtFirst}, '')
-            , CPTAL_EXCUT_END_DT_FIRST = NULLIF(#{cptalExcutEndDtFirst}, '')
-            , CPTAL_EXCUT_BGNG_DT_SCND = NULLIF(#{cptalExcutBgngDtScnd}, '')
-            , CPTAL_EXCUT_END_DT_SCND = NULLIF(#{cptalExcutEndDtScnd}, '')
+<!--             , DELVRY_APLY_BGNG_DT_FIRST = NULLIF(#{delvryAplyBgngDtFirst}, '') -->
+<!--             , DELVRY_APLY_END_DT_FIRST = NULLIF(#{delvryAplyEndDtFirst}, '') -->
+<!--             , DELVRY_APLY_BGNG_DT_SCND = NULLIF(#{delvryAplyBgngDtScnd}, '') -->
+<!--             , DELVRY_APLY_END_DT_SCND = NULLIF(#{delvryAplyEndDtScnd}, '') -->
+<!--             , DELVRY_CFMTN_PRSNTN_BGNG_DT = NULLIF(#{delvryCfmtnPrsntnBgngDt}, '') -->
+<!--             , DELVRY_CFMTN_PRSNTN_END_DT = NULLIF(#{delvryCfmtnPrsntnEndDt}, '') -->
+<!--             , CPTAL_EXCUT_BGNG_DT_FIRST = NULLIF(#{cptalExcutBgngDtFirst}, '') -->
+<!--             , CPTAL_EXCUT_END_DT_FIRST = NULLIF(#{cptalExcutEndDtFirst}, '') -->
+<!--             , CPTAL_EXCUT_BGNG_DT_SCND = NULLIF(#{cptalExcutBgngDtScnd}, '') -->
+<!--             , CPTAL_EXCUT_END_DT_SCND = NULLIF(#{cptalExcutEndDtScnd}, '') -->
+            , CNSLTNG_APLY_BGNG_DT = NULLIF(#{cnsltngAplyBgngDt}, '')
+            , CNSLTNG_APLY_END_DT = NULLIF(#{cnsltngAplyEndDt}, '')
             , MDL_REPORT_BGNG_DT = NULLIF(#{mdlReportBgngDt}, '')
             , MDL_REPORT_END_DT = NULLIF(#{mdlReportEndDt}, '')
             , RSLT_REPORT_BGNG_DT = NULLIF(#{rsltReportBgngDt}, '')
@@ -317,9 +480,22 @@
             , EXCCLC_REPORT_BGNG_DT = NULLIF(#{excclcReportBgngDt}, '')
             , EXCCLC_REPORT_END_DT = NULLIF(#{excclcReportEndDt}, '')
             , FILEGRPID = #{filegrpid}
+            , RT_USE_YN = #{rtUseYn}
+            , TOP_SCR_EXCL_YN = #{topScrExclYn}
+            , LWET_SCR_EXCL_YN = #{lwetScrExclYn}
+            , LWET_CRTR_SCR_USE_YN_FIRST = #{lwetCrtrScrUseYnFirst}
+            , LWET_CRTR_SCR_FIRST = #{lwetCrtrScrFirst}
+            , LWET_CRTR_SCR_USE_YN_SCND = #{lwetCrtrScrUseYnScnd}
+            , LWET_CRTR_SCR_SCND = #{lwetCrtrScrScnd}
+            , NOPE_LMT_USE_YN = #{nopeLmtUseYn}
+            , NOPE_LMT = #{nopeLmt}
+            , SRNG_RT_USE_YN = #{srngRtUseYn}
+            , RT_FIRST = #{rtFirst}
+            , RT_SCND = #{rtScnd}
             , USE_YN = #{useYn}
             , MDFCN_DT = NOW()
             , MDFRID = #{user.userid}
+            , CNSLTNG_OPER_CD = #{cnsltngOperCd}
         WHERE PCNTSTID = #{pcntstid}
     </update>
     

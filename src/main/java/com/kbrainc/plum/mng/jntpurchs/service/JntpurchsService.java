@@ -103,6 +103,17 @@ public interface JntpurchsService {
     public int updateJntpurchs(JntpurchsVo jntpurchsVo) throws Exception;
     
     /**
+     * 공동구매 모집상태 업데이트
+     *
+     * @Title : updateJntpurchsStts
+     * @Description : 공동구매 모집상태 업데이트
+     * @param jntpurchsVo JntpurchsVo 객체
+     * @return int update 로우수
+     * @throws Exception 예외
+     */
+    public int updateJntpurchsStts(JntpurchsVo jntpurchsVo) throws Exception;
+    
+    /**
      * 공동구매모집 정보 삭제
      *
      * @Title : deleteJntpurchs

@@ -1,0 +1,244 @@
+ <div class="row">
+
+   <!-- 정보 부분 -->
+   <div class="col-12">
+       <div class="card">
+          <div class="row p-20 p-b-0">
+	           <div class="card-header p-b-0 col-md-6 " >
+	               <h3 class="sub-title" style="border:none;"><strong><th:block th:text="${packageVo.packageNm}"/> 구성</strong></h3>
+	           </div>
+	           <div class="col-12 col-md-6 text-right">
+	              <button type="button" class="btn btn-primary waves-effect waves-light" onclick="returnToList()" >목록으로</button>
+	            </div>
+          </div>
+           <div class="card-block-small p-t-0">
+               <div class="table-responsive">
+                   <table class="table table-framed table-bordered mb-0">
+                       <thead>
+                       
+                       <tr class="border-bottom-inverse">
+                           <th class="text-center v-middle">교구명</th>
+                           <th class="text-center v-middle">교구구성품</th>
+                           <th class="text-center v-middle">꾸러미당 교구 세트수</th>
+                       </tr>
+                       </thead>
+                       <tbody>
+                           <tr th:each="item,stat : ${myTchaidLsit}" >
+    	                       <th class="text-left v-middle"><th:block th:text="${item.tchaidNm}"></th:block></th>
+    	                       <td class="text-left v-middle"><th:block th:text="${item.cmpntNms}"></th:block></td>
+    	                       <td class="text-center v-middle"><th:block th:text="${item.qntyCmpstn}"></th:block> 세트</td>
+    	                   </tr>
+                       </tbody>
+                   </table>
+               </div>
+           </div>
+
+       </div>
+   </div>
+   <!-- //정보 부분 -->
+   
+  <!-- 그리드 영역 -->
+  <div class="col-12">
+   <div class="card">
+   
+        <div class="row p-20 p-b-0">
+            <div class="col-12 col-md-6 mb-2 mb-md-0">
+                <h5><strong>"<th:block th:text="${packageVo.packageNm}"/>" 꾸러미 개체 검색 결과</strong></h5>
+            </div>
+            <div class="col-12 col-md-6 text-right">
+                <th:block sec:authorize-url="/mng/tchaid/tchaidDetail.html">
+                    <button type="button" class="btn btn-primary waves-effect waves-light" onclick="openPackageindvdPopup()" >꾸러미 개체 추가</button>
+                </th:block>
+            </div>
+        </div>
+        
+        <div class="card-block-small">
+            <div class="dt-responsive table-responsive">
+                <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                        <table id="detailJsGrid" class="table-responsive"></table>
+                        <div id="detailListPager" class="text-center"></div>
+               </div>
+            </div>
+        </div>
+        
+    </div>
+  </div>
+  <!-- //그리드 영역 -->
+  
+  <!-- 컨텐츠 영역 -->
+  <div class="col-12">
+  <div id="detailContentPanel" class="card"></div></div> 
+  <!-- //컨텐츠 영역 -->
+  
+</div>
+
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+	var sbjctCdLsit = /*[[${sbjctCdLsit}]]*/null; 
+	var packageVo = /*[[${packageVo}]]*/null; 
+    /*]]>*/
+    var gridHelper2;
+    var clickedPackageindvdid = null;
+    
+    openPackageindvdPopup=()=>{
+        var url = "/mng/package/addPackageindvdPopup.html?packageid="+packageVo.packageid;
+        openModal(url);
+    }
+
+    $(function(){
+        gridHelper2 = new GridHelper('detailJsGrid','detailContentPanel');
+        writeDetailJsGridData();
+    });
+    
+    function writeDetailJsGridData(){
+        $("#detailJsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#detailListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "packageid", value: packageVo.packageid},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    
+                    $.ajax({ 
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/package/selectPackageindvdList.do",
+                      dataType: "json",
+                      data: params,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                { name: 'packageindvdid', css: 'hide' }
+                ,{ title: 'No.'     ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '개체 코드' ,name: 'indvdno'    ,type: "text" , width: "120" ,align:"center"}
+                ,{ title: '상태'     ,name: 'sttsCdNm'    ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '제품상태'  ,name: 'prductSttsCdNm'    ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '사용여부'   ,name: 'useYn'    ,type: "text" , width: "100" ,align:"center" 	,itemTemplate:returnSelectUseYn                    }
+                ,{ title: '등록자'     ,name: 'regNm'   ,type: "text" , width: "150" ,align:"center"}
+                ,{ title: '등록일시'   ,name: 'regDt'   ,type: "text" , width: "150" ,align:"center"}
+                ,{ title: 'QR 코드'      ,type: "text" , width: "100", align:"center" 
+                    ,itemTemplate: function(value, item){
+                        return $("<button class='btn btn-xs btn-info btn-mini' style='width:80%;'>").text("QR출력").on("click", function(){openQRPopup(item.packageindvdid);  return false;});
+                    }
+                 } 
+                ,{ title: '비고'      ,type: "text" , width: "100", align:"center" 
+                    ,itemTemplate: function(value, item){
+                        return $("<button class='btn btn-xs btn-info btn-mini' style='width:80%;'>").text("이상등록").on("click", function(){openAddAbnrmlPopup(item.packageindvdid);  return false;});
+                    }
+                 } 
+            ],
+            /*[# sec:authorize-url="/mng/package/packageindvdCmpstnDetail.html"]*/
+            rowClick: function(args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                clickedPackageindvdid = args.item.packageindvdid;
+                var detailUrl = "/mng/package/packageindvdCmpstnDetail.html?packageindvdid=" + args.item.packageindvdid; 
+                loadHtml("#detailContentPanel",detailUrl);
+                scrollIntoView("detailContentPanel");
+                gridHelper2.rowClick(args);
+            },
+            /*[/]*/
+            onDataLoaded: function(args) {
+                
+                if(clickedPackageindvdid== null || args.grid.data == null || args.grid.data.length == 0) return;
+                
+                for(var i = 0; i < args.grid.data.length; i++) {
+                    if(args.grid.data[i].packageindvdid == clickedPackageindvdid){
+                        var items = $("#detailJsGrid").jsGrid("option", "data");
+                        var $row = $("#detailJsGrid").jsGrid("rowByItem", items[i]);
+                        $row.toggleClass("highlight");
+                    }    
+                }
+                
+            } 
+        });
+    }
+    
+    var returnSelectUseYn = (_,item) =>{
+        
+        let selectHtml ="";                                                         
+            selectHtml +="<select id='use_"+item.packageindvdid+"' name='"+item.packageindvdid+"' onchange=changeUseYn(this.name)" 
+            selectHtml +=" class='form-select form-control form-bg-info' style='align:center;height:2.4em;width:90%;font-size:12px;'>";
+            selectHtml +="<option value='Y'  "
+            selectHtml +=(item.useYn == 'Y')? "selected":""; 
+            selectHtml +=">사용</option>";
+            selectHtml +="<option value='N'  "
+            selectHtml +=(item.useYn == 'N')? "selected":""; 
+            selectHtml +=">미사용</option>";
+            selectHtml += "</select>";
+            return selectHtml;      
+    }
+    
+    changeUseYn=(packageindvdid)=>{
+        var yn = $("#use_"+packageindvdid).val();
+        if(displayWorkProgress()){
+            $.ajax({
+                url : "/mng/package/modifyPackageindvd.do",
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data :{
+                	   packageindvdid : packageindvdid
+                      ,useYn   : yn 
+                },
+                success : function (data){
+                    if(data.result!="success"){
+                        alert(data.msg);
+                        var backVal = (yn=='Y')?"N":"Y";
+                        $("#use_"+packageindvdid).val(backVal);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+    
+    openAddAbnrmlPopup = (packageindvdid) =>{
+        var url = "/mng/package/insertPackageindvdAbnrmPopup.html?packageindvdid="+packageindvdid;
+        openModal(url);
+    }
+    
+    openQRPopup = (packageindvdid) =>{
+        var url = "/mng/package/packageindvdQRPopup.html?packageindvdid="+packageindvdid;
+        openModal(url);
+    }
+
+
+
+
+    
+</script>

@@ -1,0 +1,96 @@
+
+<div class="card-block-small">
+    <div class="dt-responsive table-responsive">
+        <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <table id="abnrmlJsGrid" class="table-responsive"></table>
+                <div id="abnrmlListPager" class="text-center"></div>
+       </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    /*<![CDATA[*/ 
+    var PackageindvdVo = /*[[${PackageindvdVo}]]*/null; 
+    /*]]>*/
+    
+    $(function(){
+    	writeAbnrmlJsGridData();
+    });
+    
+    function writeAbnrmlJsGridData(){
+        $("#abnrmlJsGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: false,
+            paging: true,
+            pagerContainer: "#abnrmlListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                            {name: "packageindvdid", value: PackageindvdVo.packageindvdid},
+                            {name: "orderField", value: 'REG_DT '},
+                    ]
+                    
+                    $.ajax({ 
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/package/selectPackageindvdAbnrmlList.do",
+                      dataType: "json",
+                      data: params,
+                    }).done(function(response){
+                        
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                      
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+            	 { name: 'pacakgeid', css: 'hide' }
+                ,{ title: 'No.'        ,name: 'rowNumber',type: "number", width : "80" ,align:"center",  sorting :false }
+                ,{ title: '내용'        ,name: 'cn'       ,type: "number", width : "500" ,align:"center",  sorting :false }
+                ,{ title: '정상 처리 여부',name: 'cn'       ,type: "number", width : "150" ,align:"center",  sorting :false
+                	,itemTemplate: function(value, item){
+                		if(item.nrmltPrcsYn=='Y'){
+	                        return $("<button class='btn btn-xs btn-success btn-mini' style='width:85%;cursor:default;'>").text("처리완료").on("click", function(){});
+                    	}else{
+	                        return $("<button class='btn btn-xs btn-info btn-mini' style='width:85%;'>").text("처리하기").on("click", function(){openNormalizeSttsModal(item.abnrmlid,item.packageindvdid);  return false;});
+                        }
+                    } 
+                 }
+                ,{ title: '작성자'     ,name: 'regNm'       ,type: "number", width : "150" ,align:"center",  sorting :false }
+                ,{ title: '정상처리일시'      ,name: 'nrmltPrcsDt' ,type: "number", width : "150", align:"center",  sorting :false
+                	,itemTemplate: function(value, item){
+                            return (item.nrmltPrcsDt==null ||item.nrmltPrcsDt=="")?"-":item.nrmltPrcsDt;
+                    }  
+                }
+            ],
+
+        });
+    }
+
+    openNormalizeSttsModal=(abnrmlid,packageindvdid)=>{
+        var url = "/mng/package/packageindvdNormalizePopup.html?packageindvdid="+packageindvdid+"&abnrmlid="+abnrmlid;
+        openModal(url);
+    }
+    
+</script>
