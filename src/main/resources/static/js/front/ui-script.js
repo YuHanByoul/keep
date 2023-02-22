@@ -104,6 +104,7 @@ const gnb = {
 		// $btnInActiveGnb = $('.mobile-menu .gnb-mobile-close');
 		ANIMATION_TIME = 300;
 		// DESKTOP_GNB_ACTIVECLASS = 'gnb-active'
+		DESKTOP_GNB_ACTIVECLASS = 'desktop-gnb-active'
 		MOBILE_GNB_ACTIVECLASS = 'mobile-gnb-active'
 		gnb.onHover();
 		gnb.onClick();
@@ -128,6 +129,7 @@ const gnb = {
 	open : function () {
 		if ($WINDOW_MODE === DESKTOP || $WINDOW_MODE === TABLET) {
 			$Dep01.find('>.active').find($Dep02).stop().fadeIn(0);
+			$header.addClass(DESKTOP_GNB_ACTIVECLASS)
 		}
 		if ($WINDOW_MODE === MOBILE) {
 			$elGnb.stop().show(0, function () {
@@ -143,6 +145,7 @@ const gnb = {
 			$Dep01List.find($Dep02).stop().fadeOut(150, function () {
 				$(this).attr('style','display:none')
 			});
+			$header.removeClass(DESKTOP_GNB_ACTIVECLASS)
 		}
 		if ($WINDOW_MODE === MOBILE) {
 			setTimeout(function () {
