@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/mainLayout">
+<!-- Select 2 css -->
+<body>
+    <div layout:fragment="content">
+    <style>
+        .hide
+        {
+           display:none;
+        }
+        </style>
+    <!-- Date-range picker css  -->
+    <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+	    <div class="page-body">
+	        <div class="row">
+	            <div class="col-12">
+	                <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;" class="card">
+	                    <input type="hidden" id="searchSrngBgngDe" name="searchSrngBgngDe" value="" />
+	                    <input type="hidden" id="searchSrngEndDe" name="searchSrngEndDe" value="" />
+	                    <div class="card-block-small">
+	                        <div class="row">
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사위원</strong></label>
+	                                    <div class="col-sm-12">
+	                                        <select class="js-example-data-array col-sm-12">
+	                                        </select>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업분야</strong></div>
+	                                    <div class="col-12">
+	                                        <span kattr:select_code="searchFldCd" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="filterOperationAgency"><strong>공모명</strong></label>
+	                                    <div class="col-12">
+	                                        <input type="text" class="form-control form-control-sm" name="searchPcntstNm" id="searchPcntstNm"/>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="srngDate"><strong>심사기간</strong></label>
+	                                    <div class="col-sm-12">
+	                                        <input type="text" name="srngDate" id="srngDate" class="form-control form-control-sm" value="" />
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="row">
+	                            <div class="col-lg-3 col-md-6 mb-3">
+	                                <div class="mb-0 form-group row">
+	                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></div>
+	                                    <div class="col-12">
+	                                        <select id="searchSrngStts" name="searchSrngStts" class="form-select form-select-sm form-control-sm">
+	                                            <option value="">- 전체 -</option>
+	                                            <option value="before">심사전</option>
+	                                            <option value="ing">심사중</option>
+	                                            <option value="end">심사완료</option>
+	                                        </select>
+	                                    </div>
+	                                </div>
+	                            </div>
+	                        </div>
+	                        <div class="mt-1 p-t-20 text-center border-top">
+	                            <button class="btn btn-disabled m-r-5" onclick="searchInit(); return false;">초기화</button>
+	                            <button class="btn btn-primary" onclick="searchData(); return false;">검색</button>
+	                        </div>
+	                    </div>
+	                </form>
+	            </div>
+	
+	            <div class="col-12">
+	                <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+	                <div class="card">
+	                    <div class="row p-20 p-b-0">
+	                        <div class="col-12 col-md-6 mb-2 mb-md-0">
+	                            <h5><strong>심사관리 검색결과</strong></h5>
+	                        </div>
+	                        <div class="col-12 col-md-6 text-right">
+	<!--                                <th:block sec:authorize-url="/mng/bizAply/req/insertReqMng.do"> -->
+	                                <button type="button" class="btn btn-primary m-r-5" onclick="">심사일정 캘린더</button>
+	<!--                                </th:block> -->
+	                            <th:block sec:authorize-url="/mng/bizAply/srng/selectSrngListExcelDownload.do">
+	                                <button type="button" class="btn btn-primary" onclick="fn_excelDownload();">엑셀다운로드</button>
+	                            </th:block>
+	                        </div>
+	                    </div>
+	                    <div class="card-block-small">
+	                        <div class="dt-responsive table-responsive">
+	                            <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
+	                                <table id="jsGrid" class="table-responsive"></table>
+	                                <div id="listPager" class="text-center"></div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	                <!-- //그리드 부분(표시를 위해 임의로 넣어둠) -->
+	            </div>
+	
+	            <div id="contentPanel"></div>
+	        </div>
+	    </div>
+
+        <!-- 담당자 검색 팝업 Start -->
+        <div class="modal fade" id="searchModal" aria-hidden="true" data-bs-backdrop="static"></div>
+        <!-- 담당자 검색 팝업 end  -->
+    
+        <!-- Date-range picker js -->
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+        <script th:inline="javascript">
+            var gridHelper1;
+            var listUrl = "/mng/bizAply/srng/selectSrngList.do";
+            var detailUrl = "/mng/bizAply/srng/selectSrngUserListForm.html";
+            
+//             var data = [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }];
+//             $(".js-example-data-array").select2({
+//               data: data
+//             })
+//             $(".js-example-data-array-selected").select2({
+//               data: data
+//             })
+            
+            $(function(){
+                gridHelper1 = new GridHelper('jsGrid','contentPanel');
+                
+                $("#srngDate").daterangepicker({
+                    autoUpdateInput: false,
+                    locale: {
+                        format: "YYYY-MM-DD",
+                    },
+                });
+                
+                $("#srngDate").on('apply.daterangepicker', function(ev, picker) {
+                    $("#searchSrngBgngDe").val(picker.startDate.format('YYYY-MM-DD'));
+                    $("#searchSrngEndDe").val(picker.endDate.format('YYYY-MM-DD'));
+                    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+                });
+
+                $("#srngDate").on('cancel.daterangepicker', function(ev, picker) {
+                    $(this).val('');
+                });
+                
+                $("#jsGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#listPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    noDataContent: "데이터가 없습니다.",
+                    
+                    controller: {
+                        loadData: function (filter) {
+                            var data = $.Deferred();
+                            var formData = $('#searchFrm').serializeArray();
+                            var params = [
+                                {name: "pageNumber", value: filter.pageIndex},
+                                {name: "rowPerPage", value: filter.pageSize},
+                            ]
+
+                            if(filter.sortField != undefined) {
+                                params.push({name: "orderField", value: filter.sortField});
+                                params.push({name: "orderDirection", value: filter.sortOrder});
+                            } else {
+                                params.push({name: "orderField", value: 'reg_dt'});
+
+                            }
+                            formData = formData.concat(params);
+                            
+                            $.ajax({
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                url: listUrl,
+                                dataType: "json",
+                                data: formData
+                            }).done(function(response){
+                                var da = {
+                                    data : escapeGridData(response.list)
+                                    , itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [ 
+                        { name : 'pcntstid', css : 'hide' }
+                        , { title: '번호'      ,name: 'rowNumber' ,type: "number", width: "80" , align:"center", sorting :false }
+                        , { title: '사업분야' ,name: 'fldNm'     ,type: "text"  , width: "200" , align:"left"}
+                        , { title: '공모명' ,name: 'pcntstNm'     ,type: "text"  , width: "350" , align:"left"}
+                        , { title: '심사상태'   ,name: 'srngSttsNm'   ,type: "text"  , width: "100" , align:"center"}
+                        , { title: '심사기간'   ,name: 'srngDt'   ,type: "text"  , width: "200" , align:"center"}
+                        , { title: '신청'   ,name: 'aplynoCnt'    ,type: "text"  , width: "100" , align:"center"}
+                    ],
+                    /*[# sec:authorize-url="/mng/bizAply/srng/selectSrngUserListForm.html"]*/
+                    rowClick: function (args) {
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        gridHelper1.loadContent(detailUrl + '?pcntstid=' + args.item.pcntstid);
+                    },
+                    /*[/]*/
+                });
+            });
+
+            function searchInit() {
+                $("#searchFldCd").val('');
+                $("#searchPcntstNm").val('');
+                $("#searchSrngStts").val('');
+                $('#srngDate').val('');
+                $('#searchSrngBgngDe').val('');
+                $('#searchSrngEndDe').val('');
+                gridHelper1.resetListContent();
+            }
+
+            function searchData() {
+                gridHelper1.resetListContent();
+            }
+
+            function insertRow() {
+                gridHelper1.loadContent(detailUrl + '?pcntstid=0');
+            }
+            
+            function fn_excelDownload() {
+                var data = document.searchFrm;
+                data.action ="/mng/bizAply/srng/selectSrngListExcelDownload.do";
+                data.submit();
+            }
+        </script>
+    </div>
+</body>
+</html>

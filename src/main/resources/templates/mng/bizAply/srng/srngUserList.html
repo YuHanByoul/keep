@@ -1,5 +1,3 @@
-<!-- Date-range picker css  -->
-<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
 <div class="col-12">
     <div class="card">
         <div class="card-block-small">
@@ -9,28 +7,24 @@
                     <tr class="border-bottom-inverse">
                         <th class="text-center v-middle">사업분야</th>
                         <th class="text-center v-middle">공모명</th>
-                        <th class="text-center v-middle">신청상태</th>
+                        <th class="text-center v-middle">진행상태</th>
                         <th class="text-center v-middle">신청기간</th>
-                        <th class="text-center v-middle">심사상태</th>
                         <th class="text-center v-middle">심사기간</th>
                         <th class="text-center v-middle">신청</th>
                         <th class="text-center v-middle">1차심사</th>
-                        <th class="text-center v-middle">선정완료</th>
-                        <th class="text-center v-middle">선정탈락</th>
+                        <th class="text-center v-middle" th:if="${reqMngVo.onlnSrngTypeCd == '177102'}">2차심사</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td class="text-center v-middle"><span th:text="${reqMngVo.fldNm}"/></td>
                         <td class="text-center v-middle"><span th:text="${reqMngVo.pcntstNm}"/></td>
-                        <td class="text-center v-middle"><span th:text="${reqMngVo.aplySttsNm}"/></td>
-                        <td class="text-center v-middle"><span th:text="${reqMngVo.aplyDt}"/></td>
                         <td class="text-center v-middle"><span th:text="${reqMngVo.srngSttsNm}"/></td>
+                        <td class="text-center v-middle"><span th:text="${reqMngVo.aplyDt}"/></td>
                         <td class="text-center v-middle"><span th:text="${reqMngVo.srngDt}"/></td>
                         <td class="text-center v-middle"><span th:text="${reqMngVo.aplynoCnt}"/></td>
                         <td class="text-center v-middle"><span th:text="${reqMngVo.frtSrngCnt}"/></td>
-                        <td class="text-center v-middle"><span th:text="${reqMngVo.slctnYCnt}"/></td>
-                        <td class="text-center v-middle"><span th:text="${reqMngVo.slctnNCnt}"/></td>
+                        <td class="text-center v-middle" th:if="${reqMngVo.onlnSrngTypeCd == '177102'}"><span th:text="${reqMngVo.scdSrngCnt}"/></td>
                     </tr>
                     </tbody>
                 </table>
@@ -43,13 +37,20 @@
     <input type="hidden" id="pcntstid" name="pcntstid" th:value="${reqMngVo.pcntstid}" />
     <input type="hidden" id="searchRegStartDe" name="searchRegStartDe" value="" />
     <input type="hidden" id="searchRegEndDe" name="searchRegEndDe" value="" />
+    <input type="hidden" id="srngFormidFirst" name="srngFormidFirst" th:value="${reqMngVo.srngFormidFirst}" />
+    <input type="hidden" id="srngFormidScnd" name="srngFormidScnd" th:value="${reqMngVo.srngFormidScnd}" />
+    <input type="hidden" id="onlnSrngTypeCd" name="onlnSrngTypeCd" th:value="${reqMngVo.onlnSrngTypeCd}" />
     <div class="card-block-small">
         <div class="row">
             <div class="col-lg-3 col-md-6 mb-3">
                 <div class="mb-0 form-group row">
-                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>신청상태</strong></div>
+                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>심사상태</strong></div>
                     <div class="col-12">
-                        <span kattr:select_code="searchAplySttsCd" grpCd="192" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
+                        <select id="searchSrngStts" name="searchSrngStts" class="form-select form-select-sm form-control-sm">
+                            <option value="">- 전체 -</option>
+                            <option value="before">심사전</option>
+                            <option value="end">심사완료</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -64,14 +65,14 @@
                  </div>
              </div>
             </div>
-            <div class="col-lg-3 col-md-6 mb-3">
-                <div class="mb-0 form-group row">
-                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchSlctnSttsCd"><strong>선정결과</strong></label>
-                    <div class="col-sm-12">
-                        <span kattr:select_code="searchSlctnSttsCd" grpCd="193" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true">
-                    </div>
-                </div>
-            </div>
+<!--             <div class="col-lg-3 col-md-6 mb-3"> -->
+<!--                 <div class="mb-0 form-group row"> -->
+<!--                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchSlctnSttsCd"><strong>선정결과</strong></label> -->
+<!--                     <div class="col-sm-12"> -->
+<!--                         <span kattr:select_code="searchSlctnSttsCd" grpCd="193" firstOptTxt="- 전체 -" addClass="input-sm" isAdmin="true"> -->
+<!--                     </div> -->
+<!--                 </div> -->
+<!--             </div> -->
             <div class="col-lg-3 col-md-6 mb-3">
                 <div class="mb-0 form-group row">
                     <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="selectDate2"><strong>접수일시</strong></label>
@@ -82,8 +83,8 @@
             </div>
         </div>
         <div class="mt-1 p-t-20 text-center border-top">
-            <button class="btn btn-disabled m-r-5" onclick="searchInit2()">초기화</button>
-            <button class="btn btn-primary" onclick="searchData2()">검색</button>
+            <button class="btn btn-disabled m-r-5" onclick="detailSearchInit();">초기화</button>
+            <button class="btn btn-primary" onclick="detailSearchData();">검색</button>
             </div>
         </div>
     </form>
@@ -94,21 +95,19 @@
     <div class="card">
         <div class="row p-20 p-b-0">
             <div class="col-12 col-md-6 mb-2 mb-md-0">
-                <h5><strong>신청자 검색결과</strong></h5>
+                <h5><strong>심사대상 검색결과</strong></h5>
             </div>
             <div class="col-12 col-md-6 text-right">
-                <button type="button" class="btn btn-disabled m-r-5">미선정</button>
-                <button type="button" class="btn btn-inverse m-r-5">선정</button>
-                <th:block sec:authorize-url="/mng/bizAply/req/reqUserListExcelDownload.do">
-                    <button type="button" class="btn btn-primary" onclick="fn_excelDownload2();">엑셀다운로드</button>
+                <th:block sec:authorize-url="/mng/bizAply/srng/selectSrngUserListExcelDownload.do">
+                    <button type="button" class="btn btn-primary" onclick="userListExcelDownload(); return false;">엑셀다운로드</button>
                 </th:block>
             </div>
         </div>
         <div class="card-block-small">
             <div class="dt-responsive table-responsive">
                 <div id="order-table_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                    <table id="jsGrid2" class="table-responsive"></table>
-                    <div id="listPager2" class="text-center"></div>
+                    <table id="userGrid" class="table-responsive"></table>
+                    <div id="userListPager" class="text-center"></div>
                 </div>
             </div>
         </div>
@@ -117,28 +116,24 @@
 </div>
 
 <div class="col-12">
-    <div id="contentPanel2"></div>
+    <div id="userListPanel"></div>
 </div>
 
-
-<!-- 담당자 검색 팝업 Start -->
-<div class="modal fade" id="searchModal" aria-hidden="true" data-bs-backdrop="static"></div>
-<!-- 담당자 검색 팝업 end  -->
-
 <!-- Date-range picker js -->
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 <script th:inline="javascript">
     var gridHelper2;
-    var listUrl2 = "/mng/bizAply/req/selectReqUserList.do";
-    var detailUrl2 = "/mng/bizAply/req/reqUserTabForm.html";
-    var selectedItems = [];
+    var userListUrl = "/mng/bizAply/srng/selectSrngUserList.do";
+    var detailUserInfoUrl = "/mng/bizAply/srng/detailSrngUserInfo.html";
+    var detailUserInfoTabUrl = "/mng/bizAply/srng/detailSrngUserInfoTab.html";
     /*<![CDATA[*/
     var fldCd = /*[[${reqMngVo.fldCd}]]*/null;
+    var srngFormidFirst = /*[[${reqMngVo.srngFormidFirst}]]*/null;
+    var srngFormidScnd = /*[[${reqMngVo.srngFormidScnd}]]*/null;
+    var onlnSrngTypeCd = /*[[${reqMngVo.onlnSrngTypeCd}]]*/null;
     /*]]>*/
     
     $(function(){
-        gridHelper2 = new GridHelper('jsGrid2','contentPanel2');
+        gridHelper2 = new GridHelper('userGrid','userListPanel');
         
         $("#selectDate").daterangepicker({
             autoUpdateInput: false,
@@ -157,13 +152,13 @@
             $(this).val('');
         });
         
-        $("#jsGrid2").jsGrid({
+        $("#userGrid").jsGrid({
             height: "auto",
             width: "100%",
             autoload: true,
             sorting: false,
             paging: true,
-            pagerContainer: "#listPager2",
+            pagerContainer: "#userListPager",
             pagerFormat: "{first} {prev} {pages} {next} {last}",
             pagePrevText: "이전",
             pageNextText: "다음",
@@ -196,7 +191,7 @@
                     $.ajax({
                         type: "GET",
                         contentType: "application/json; charset=utf-8",
-                        url: listUrl2,
+                        url: userListUrl,
                         dataType: "json",
                         data: formData
                     }).done(function(response){
@@ -211,89 +206,30 @@
                 }
             },
             fields: [ 
-            	 {
-                    headerTemplate: function() {
-                        return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox")
-                    },
-                    itemTemplate: function(_, item) {
-                        return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox")
-                        .prop("checked", $.inArray(String(item.aplyid), selectedItems) > -1)
-                        .on("change", function () {
-                            $(this).is(":checked") ? selectItem($(this).parent().next().text()) : unselectItem($(this).parent().next().text());
-                        });
-                    },
-                    align: "center",
-                    width: "50",
-                    sorting: false
-                }
-                , { name : 'aplyid', css : 'hide' }
+            	{ name : 'aplyid', css : 'hide' }
                 , { name : 'pcntstid', css : 'hide' }
                 , { title: 'No.'      ,name: 'rowNumber' ,type: "number", width: "80" , align:"center", sorting :false }
-                , { title: '접수번호' ,name: 'aplyno'     ,type: "text"  , width: "100" , align:"left"}
-                , { title: '신청상태' ,name: 'aplySttsNm'     ,type: "text"  , width: "100" , align:"left"}
-                , { title: '신청기관명'   ,name: 'instNm'        ,type: "text"  , width: "150", align:"center"}
-                , { title: '신청자'   ,name: 'userNm'   ,type: "text"  , width: "150" , align:"center"}
-                , { title: '프로그램명'   ,name: 'prgrmNm'   ,type: "text"  , width: "200" , align:"center"}
-                , { title: '접수일시'   ,name: 'regDe'   ,type: "text"  , width: "100" , align:"center"}
+                , { title: '접수번호' ,name: 'aplyno'     ,type: "text"  , width: "100" , align:"center"}
                 , { title: '심사상태'   ,name: 'srngSttsNm'    ,type: "text"  , width: "100" , align:"center"}
-                , { title: '점수'   ,name: 'firstScr'    ,type: "text"  , width: "100" , align:"center"}
-                , { title: '심사등급'   ,name: ''    ,type: "text"  , width: "100" , align:"center"}
-                , { title: '심사순위'   ,name: ''    ,type: "text"  , width: "100" , align:"center"}
-                , { title: '선정결과'   ,name: 'slctnSttsNm'    ,type: "text"  , width: "100" , align:"center"}
+                , { title: '신청기관명'   ,name: 'instNm'        ,type: "text"  , width: "150", align:"left"}
+                , { title: '신청자'   ,name: 'userNm'   ,type: "text"  , width: "150" , align:"center"}
+                , { title: '프로그램명'   ,name: 'prgrmNm'   ,type: "text"  , width: "200" , align:"left"}
+                , { title: '접수일시'   ,name: 'regDe'   ,type: "text"  , width: "100" , align:"center"}
+                , { title: '1차 점수'   ,name: 'firstScr'    ,type: "text"  , width: "100" , align:"center"}
+                , { title: '2차 점수'   ,name: 'secondScr'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
+//                 , { title: '심사등급'   ,name: ''    ,type: "text"  , width: "100" , align:"center"}
+//                 , { title: '심사순위'   ,name: ''    ,type: "text"  , width: "100" , align:"center"}
             ],
-            /*[# sec:authorize-url="/mng/bizAply/req/reqUserTabForm.html"]*/
+            /*[# sec:authorize-url="/mng/bizAply/srng/detailSrngUserInfo.html"]*/
             rowClick: function (args) {
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                gridHelper2.loadContent(detailUrl2 + '?aplyid=' + args.item.aplyid + '&pcntstid=' + args.item.pcntstid + '&fldCd=' + fldCd);
-                gridHelper2.rowClick(args);
+                gridHelper2.loadContent(detailUserInfoTabUrl + '?aplyid=' + args.item.aplyid + '&pcntstid=' + args.item.pcntstid + '&srngFormidFirst=' + srngFormidFirst + '&srngFormidScnd=' + srngFormidScnd + '&onlnSrngTypeCd=' + onlnSrngTypeCd);
             },
             /*[/]*/
-		      onPageChanged: function(args) {
-		          selectedItems = [];
-		      }
-        });
-        
-        var selectItem = function(item) {
-            selectedItems.push(item);
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        };
-
-        var unselectItem = function(item) {
-            selectedItems = $.grep(selectedItems, function(i) {
-            return i !== item;
-            });
-            if(selectedItems.length == 0) {
-                $('#selectAllCheckbox').attr('checked', false);
-            }
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        };
-
-        $("#selectAllCheckbox").click(function(item) {
-            selectedItems = [];
-            if(this.checked) { // check select status
-                $('.singleCheckbox').each(function() {
-                    this.checked = true;
-                    selectItem($(this).parent().next().text());
-                });
-            }else {
-                $('.singleCheckbox').each(function() {
-                    this.checked = false;
-                    unselectItem(item);
-                });
-                selectedItems = [];
-            }
         });
     });
 
-    function searchInit2() {
+    function detailSearchInit() {
         $("#searchAplySttsCd").val('');
         $("#searchCondition").val('');
         $("#searchSlctnSttsCd").val('');
@@ -303,15 +239,13 @@
         gridHelper2.resetListContent();
     }
 
-    function searchData2() {
+    function detailSearchData() {
         gridHelper2.resetListContent();
     }
     
-    function fn_excelDownload2() {
+    function userListExcelDownload() {
         var data = document.detailSearchFrm;
-        data.action ="/mng/bizAply/req/reqUserListExcelDownload.do";
+        data.action = "/mng/bizAply/srng/selectSrngUserListExcelDownload.do";
         data.submit();
     }
 </script>
-
-<script src="/js/ckeditor/ckeditor.js"></script>

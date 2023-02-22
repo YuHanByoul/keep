@@ -1,0 +1,134 @@
+<form id="srngModalFrm" action="" onsubmit="return false;">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">심사배분율 설정</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="m-b-20 form-group border rounded p-10 px-3">
+                            <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>단계</strong></div>
+                            <select name="grade" id="grade" class="form-select form-select-sm" onchange="makeInput(this);">
+                                <option value="" selected="">- 단계 -</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                            </select>
+                        </div>
+                        <table id="nonTable" class="table table-bordered td-wrap m-b-0">
+                            <tbody>
+                            <tr>
+                                <th class="text-center v-middle table-light" style="width:83px;">등급</th>
+                                <td class="text-center v-middle" colspan="4" rowspan="3">단계를 선택해 주세요.</td>
+                            </tr>
+                            <tr>
+                                <th class="text-center v-middle table-light">배분율(%)</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center v-middle table-light">순위</th>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table id="gTable" class="table table-bordered td-wrap m-b-0" style="display:none;">
+                            <tbody>
+                            <tr>
+                                <th class="text-center v-middle table-light" style="width:83px;">등급</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center v-middle table-light">배분율(%)</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center v-middle table-light">순위</th>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary waves-effect waves-light" onclick="saveGrade(); return false;">저장</button>
+            </div>
+        </div>
+    </div>
+</form>
+  
+<!-- 담당자정보 회원검색 팝업 -->
+<script th:inline="javascript">
+   	var jsonString = {"data" : []};
+    $(document).ready(function(){
+    	if (gradeListSize == 0) {
+    		$("#nonTable").show();
+    		$("#gTable").hide();
+    	} else {
+    		$("#nonTable").hide();
+    		$("#gTable").show();
+    		var html = "";
+	    	$(gradeList).each(function(i){
+	    		$("#gTable").find("tr:eq(0)").append("<td class='v-middle'><input type='text' class='form-control form-control-sm' name='grdNm' id='grdNm_"+i+"' value='"+gradeList[i].grdNm+"'></td>");
+	    		$("#gTable").find("tr:eq(1)").append("<td class='v-middle'><input type='text' class='form-control form-control-sm' name='rt' id='rt_"+i+"' value='"+gradeList[i].rt+"'></td>");
+	    		$("#gTable").find("tr:eq(2)").append("<td class='v-middle'><input type='text' class='form-control form-control-sm' name='rkng' id='rkng_"+i+"' value='"+gradeList[i].rkng+"'></td>");
+	    	});
+    	}
+    	
+    	$("#grade").val(gradeListSize == 0 ? "" : gradeListSize);
+    });
+    
+    function makeInput(obj) {
+    	if (Number(obj.value) > 0) {
+            $("#nonTable").hide();
+            $("#gTable").show();
+            var size = $("#gTable").find("tr:eq(0)").find("td").length;
+            var loop = Number(obj.value)-size;
+            if (loop < 0) {
+            	for (var i = loop; i < 0; i++) {
+	            	$("#gTable").find("tr:eq(0)").find("td:last").remove();
+	            	$("#gTable").find("tr:eq(1)").find("td:last").remove();
+	            	$("#gTable").find("tr:eq(2)").find("td:last").remove();            		
+            	}
+            } else {
+	            for (var i = 0; i < loop; i++) {
+	                $("#gTable").find("tr:eq(0)").append("<td class='v-middle'><input type='text' class='form-control form-control-sm' name='grdNm' id='grdNm_"+i+"' value=''></td>");
+	                $("#gTable").find("tr:eq(1)").append("<td class='v-middle'><input type='text' class='form-control form-control-sm' name='rt' id='rt_"+i+"' value=''></td>");
+	                $("#gTable").find("tr:eq(2)").append("<td class='v-middle'><input type='text' class='form-control form-control-sm' name='rkng' id='rkng_"+i+"' value=''></td>");                    
+	            }            	
+            }
+        }
+    }
+    
+    function saveGrade() {
+    	var rtSummary = 0; 
+   		$("input[name='rt']").each(function(){
+   			rtSummary += Number($(this).val());
+   		});
+    	
+    	if (rtSummary != 100) {
+    		alert("전체 배분율의 합은 100(%)이 되어야 합니다.");
+    		return;
+    	}
+    	
+    	if(!confirm("심사배분율을 저장하시겠습니까?")) return;
+    	
+   		$("input[name='grdNm']").each(function(i){
+   			jsonString.data.push({
+   				grdNm: $("#grdNm_"+i).val()
+   				, rt: $("#rt_"+i).val()
+   				, rkng: $("#rkng_"+i).val()
+   			});
+   		});
+   		
+   		console.log(jsonString);
+   		if (jsonString.data.length == 0) jsonString = "";
+   		$("#jsonString").val(JSON.stringify(jsonString));
+   	    srngMngModal.hide();
+    }
+  
+</script>

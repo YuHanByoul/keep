@@ -143,18 +143,29 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
         }
         
         String data = publicContestVo.getJsonString();
-        JSONParser json = new JSONParser();
-        JSONObject jsonobj = (JSONObject)json.parse(data);
-        
-        JSONArray bookInfoArray = (JSONArray)jsonobj.get("data");
-        
-        for(int i=0; i<bookInfoArray.size(); i++){
-             //배열 안에 있는것도 JSON형식 이기 때문에 JSON Object 로 추출
-              JSONObject bookObject = (JSONObject) bookInfoArray.get(i);
-              System.out.println("bookInfo: name==>"+bookObject.get("grdNm"));
-              System.out.println("bookInfo: name==>"+bookObject.get("rt"));
-              System.out.println("bookInfo: name==>"+bookObject.get("rkng"));
-          }
+        if (StringUtils.isNotBlank(data)) {
+            JSONParser json = new JSONParser();
+            JSONObject jsonobj = (JSONObject)json.parse(data);
+            
+            JSONArray dataArray = (JSONArray)jsonobj.get("data");
+            if (CollectionUtils.isNotEmpty(dataArray)) {
+                GradeVo gradeVo = new GradeVo();
+                gradeVo.setUser(publicContestVo.getUser());
+                gradeVo.setPcntstid(publicContestVo.getPcntstid());
+                publicContestDao.deleteGrade(gradeVo);
+                for(int i = 0; i < dataArray.size(); i++){
+                    JSONObject jsonObj = (JSONObject) dataArray.get(i);
+                    String grdNm = jsonObj.get("grdNm") != null ? jsonObj.get("grdNm").toString() : "";
+                    String rt = jsonObj.get("rt") != null ? jsonObj.get("rt").toString() : "";
+                    String rkng = jsonObj.get("rkng") != null ? jsonObj.get("rkng").toString() : "";
+                    gradeVo.setGrdNm(grdNm);
+                    gradeVo.setRt(Integer.valueOf("".equals(rt) ? "0" : rt));
+                    gradeVo.setRkng(Integer.valueOf("".equals(rkng) ? "0" : rkng));
+                    
+                    publicContestDao.insertGrade(gradeVo);
+                }
+            }
+        }
         
         return returnVal;
     }

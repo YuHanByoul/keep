@@ -75,14 +75,16 @@
     <!-- 문항 목록 조회 -->
     <select id="selectQuestionList" parameterType="QuestionVo" resultType="QuestionVo">
         /** ScoreCardDaoImpl.selectQuestionList **/
-        SELECT 
-            QITEMID
-            , QITEM_SE_CD
+        SELECT DISTINCT
+            A.QITEMID
+            , A.QITEM_SE_CD
             , B.CD_NM AS QITEM_SE_NM
-            , QITEM
+            , A.QITEM
             , A.ORDR
-            , ALTM
-            , SUM(ALTM) OVER (PARTITION BY A.FORMID) AS TOTAL_ALTM
+            , A.ALTM
+            , IF(#{sbmsnid} IS NULL, NULL, TSSSQ.SCR) AS SCR
+            , IF(#{sbmsnid} IS NULL, NULL, SUM(IFNULL(TSSSQ.SCR, 0)) OVER (PARTITION BY A.FORMID)) AS TOTAL_SCR
+            , SUM(A.ALTM) OVER (PARTITION BY A.FORMID) AS TOTAL_ALTM
             , A.MDFCN_DT
             , A.MDFRID
             , A.REG_DT
@@ -93,7 +95,11 @@
             TB_SPB_SRNG_FORM_QITEM A
             INNER JOIN TB_SPB_SRNG_FORM C ON A.FORMID = C.FORMID
             LEFT OUTER JOIN TB_CMM_CD B ON A.QITEM_SE_CD = B.CD
+            LEFT OUTER JOIN TB_SPB_SRNG_SBMSN_QITEM TSSSQ ON A.QITEMID = TSSSQ.QITEMID
         WHERE A.FORMID = #{formid}
+        <if test="sbmsnid != null and sbmsnid != ''">
+        AND TSSSQ.SBMSNID = #{sbmsnid}
+        </if>
         ORDER BY ORDR
     </select>
     

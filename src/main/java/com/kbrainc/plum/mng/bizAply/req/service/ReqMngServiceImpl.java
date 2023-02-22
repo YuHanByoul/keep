@@ -40,6 +40,7 @@ import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderCarrVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderJobVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderLicVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SrngTabVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -333,19 +334,19 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 cell.setCellStyle(style);
                 /*심사상태*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo ,""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe() ,""));
                 cell.setCellStyle(style);
                 /*점수*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo,""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(),""));
                 cell.setCellStyle(style); 
                 /*심사등급*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo,""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(),""));
                 cell.setCellStyle(style); 
                 /*심사순위*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo, ""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(), ""));
                 cell.setCellStyle(style);  
                 /*선정결과*/
                 cell = row.createCell(cellnum++);
@@ -756,4 +757,28 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
         return result;
     }
 
+
+    @Override
+    public ReqUserVo detailReqUser(ReqUserVo reqUserVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.detailReqUser(reqUserVo);
+    }
+
+    @Override
+    public List<SrngTabVo> selectSrngList(SrngTabVo srngTabVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectSrngList(srngTabVo);
+    }
+
+    @Override
+    public List<SrngTabVo> detailSrngList(SrngTabVo srngTabVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.detailSrngList(srngTabVo);
+    }
+
+    @Override
+    public List<SrngTabVo> selectSrngUserList(SrngTabVo srngTabVo) throws Exception {
+        // TODO Auto-generated method stub
+        return reqMngDao.selectSrngUserList(srngTabVo);
+    }
 }

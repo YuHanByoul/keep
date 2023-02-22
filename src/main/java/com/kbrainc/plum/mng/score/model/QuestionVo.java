@@ -53,11 +53,20 @@ public class QuestionVo extends ParentRequestVo {
     /** 배점 */
     private Integer altm;
     
+    /** 심사점수 */
+    private Integer scr;
+    
+    /** 심사 총점 */
+    private Integer totalScr;
+    
     /** 심사양식 총 배점 */
     private Integer totScr;
     
     /** 총배점 */
     private Integer totalAltm;
+    
+    /** 심사 결과 점수 아이디 */
+    private Integer sbmsnid;
     
     /**  수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")

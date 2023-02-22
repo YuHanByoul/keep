@@ -48,9 +48,11 @@ public class ReqMngVo extends ParentRequestVo {
     private String searchAplyStts;
     
     /** 심사상태 */
-    private String searchSrngStts;    
+    private String searchSrngStts;
     // 검색조건 end
     
+    /** 심사위원 아이디 */
+    private Integer jdgsid;
     
     /**  공모아이디 */
     private Integer pcntstid;
@@ -93,5 +95,13 @@ public class ReqMngVo extends ParentRequestVo {
     
     /** 엑셀다운로드 여부 */
     private String excelYn;
-
+    
+    /** 1차 심사양식 */
+    private Integer srngFormidFirst;
+    
+    /** 2차 심사양식 */
+    private Integer srngFormidScnd;
+    
+    /** 온라인 심사유형 코드 */
+    private String onlnSrngTypeCd;
 }

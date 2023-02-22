@@ -1,0 +1,144 @@
+<form id="insertForm">
+    <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}" />
+    <input type="hidden" name="jsonString" id="jsonString" />
+    <input type="hidden" name="sbmsnid" id="sbmsnid" />
+    <input type="hidden" name="formid" id="formid" />
+    <input type="hidden" name="totalSum" id="totalSum" />
+    <div class="col-12">
+        <div class="tab-content tabs p-t-20">
+            <!-- [탭] 1차 심사 -->
+            <div class="tab-pane active" id="home1" role="tabpanel">
+                <div class="card-header p-t-0 p-b-0">
+                    <h3 class="sub-title"><strong>심사하기</strong></h3>
+                </div>
+                <div class="card-block-small p-t-0">
+                    <div class="mb-3 col-12 table-border-style">
+                        <div class="col-12 table-responsive">
+                            <table id="qTable" class="table table-framed table-bordered">
+                                <thead>
+                                <tr class="border-bottom-inverse">
+                                    <th class="text-center v-middle" style="width: 60px;"><strong>No</strong></th>
+                                    <th class="text-center v-middle"><strong>문항구분</strong></th>
+                                    <th class="text-center v-middle"><strong>문항</strong></th>
+                                    <th class="text-center v-middle" style="width: 100px;"><strong>배점</strong></th>
+                                    <th class="text-center v-middle" style="width: 130px;"><strong>심사점수</strong></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="border-bottom" th:if="${#lists.size(questionList) > 0}" th:each="list, i: ${questionList}">
+                                    <td class="text-center v-middle"><th:block th:text="${list.ordr}"/></td>
+                                    <td class="text-center v-middle"><th:block th:text="${list.qitemSeNm}"/></td>
+                                    <td class="v-middle"><th:block th:text="${list.qitem}"/></td>
+                                    <td class="text-center v-middle"><th:block th:text="${list.altm}"/></td>
+                                    <td class="text-center v-middle">
+                                        <input type="hidden" name="qitemid" th:value="${list.qitemid}"/>
+                                        <input type="hidden" name="altm" th:value="${list.altm}"/>
+                                        <input type="text" class="form-control form-control-sm text-center" name="scr" placeholder="" oninput="this.value=this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" th:value="${list.scr}"/>
+                                    </td>
+                                </tr>
+                                <tr class="border-bottom" th:unless="${#lists.size(questionList) > 0}">
+                                    <td class="text-center v-middle" colspan="5">등록된 문항이 없습니다.</td>
+                                </tr>
+                                </tbody>
+                                <tfoot th:if="${#lists.size(questionList) > 0}">
+                                <tr>
+                                    <th colspan="3" class="table-active text-center">총점</th>
+                                    <th class="table-active text-center"><th:block th:text="${questionList[0].totalAltm}"/></th>
+                                    <th class="table-active text-center"><th:block th:text="${questionList[0].totalScr}"/></th>
+                                </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-group row">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="judgeJudgingJudgeComment1"><strong>심사의견</strong></label>
+                        <div class="col-12">
+                            <textarea rows="5" cols="5" class="form-control form-control-sm" placeholder="Default textarea" id="srngOpnn" name="srngOpnn"><th:block th:if="${srngDetail != null}" th:text="${srngDetail.srngOpnn}"/></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-block-small">
+                    <button class="btn btn-inverse m-r-5">목록</button>
+                    <button class="btn btn-primary" onclick="fn_save(); return false;">저장</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- // 상세 -->
+</form>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	var sbmsnid = /*[[${srngDetail.sbmsnid}]]*/null;
+	var formid = /*[[${srngDetail.formid}]]*/null;
+	/*]]>*/
+    var insertUrl = "/mng/bizAply/srng/insertSrng.do";
+    var updateUrl = "/mng/bizAply/srng/updateSrng.do";
+    var url = (sbmsnid == null || sbmsnid == '') ? insertUrl : updateUrl;
+    
+    $(function(){
+    	$("#sbmsnid").val(sbmsnid);
+    	$("#formid").val(formid);
+        var validator = $("#insertForm").validate({
+            rules: {
+            	regDe    : { required: true }
+            },
+            messages: {
+            	regDe    :   { required: "등록일을 선택해주십시오." }  
+            }
+        });
+        
+    });
+
+    // 저장
+    function fn_save(){
+        if(!($("#insertForm").valid())) return;
+        
+        var jsonString = {"data" : []};
+        $("#qTable").find("tr > td").find("input[name='qitemid']").each(function(i){
+            jsonString.data.push({
+            	qitemid: $(this).val()
+                , scr: $("input[name='scr']").eq(i).val()
+            });
+        });
+        
+        if (jsonString.data.length == 0) jsonString = "";
+        $("#jsonString").val(JSON.stringify(jsonString));
+
+        var totalSum = 0;
+        for (var i = 0; i < jsonString.data.length; i++) {
+            if (Number($("input[name='altm']:eq("+i+")").val()) < Number(jsonString.data[i].scr)) {
+            	alert("최대 점수는 배점을 넘을수 없습니다.");
+            	showErrorMark("input[name='scr']:eq("+i+")");
+            	return;
+            }
+            totalSum += Number(jsonString.data[i].scr);
+        }
+        
+        $("#totalSum").val(totalSum);
+        
+        if(!confirm("저장하시겠습니까?")) return;
+        
+        var data =  $("#insertForm").serialize();
+        if(displayWorkProgress()){
+            $.ajax({
+                url : url,
+                type: 'POST',
+                cache : false,
+                dataType: 'json',
+                data : data,
+                success : function (data){
+                    if(data.result=="success"){
+                        alert(data.msg);
+                        gridHelper2.resetListContent();
+                    }else{
+                        alert(data.msg);
+                    }
+                    closeWorkProgress();
+                }
+            });
+        }
+    }
+
+</script>
