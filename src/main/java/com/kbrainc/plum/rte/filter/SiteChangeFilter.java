@@ -23,6 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.kbrainc.plum.rte.configuration.ConfigurationFactory;
+import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResSiteService;
@@ -88,6 +89,8 @@ public class SiteChangeFilter implements Filter {
                                 authorities.add(new SimpleGrantedAuthority(sysCompanyRoleid));
                                 authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
                                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                                RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("knd_cd"), (String)authority.get("se_cd"), (String)authority.get("trgt_inst_cd"), (String)authority.get("trgt_rgn_cd"));
+                                user.setRoleInfo(roleInfo);
                                 break;
                             } else if ("U".equals(siteInfo.getSysSeCd()) && "U".equals(authority.get("se_cd"))) { // 사용자사이트 & 사용자역할
                                 if (!sysCompanyRoleid.equals(authority.get("roleid"))) {
@@ -95,6 +98,8 @@ public class SiteChangeFilter implements Filter {
                                     authorities.add(new SimpleGrantedAuthority(authority.get("roleid")));
                                     authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
                                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                                    RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("knd_cd"), (String)authority.get("se_cd"), (String)authority.get("trgt_inst_cd"), (String)authority.get("trgt_rgn_cd"));
+                                    user.setRoleInfo(roleInfo);
                                     break;
                                 }
                             } else if ("A".equals(siteInfo.getSysSeCd()) && "A".equals(authority.get("se_cd")) && Arrays.asList(authority.get("allowed_siteids").split(",")).contains(siteInfo.getSiteid())) { // 관리자사이트 & 관리자역할
@@ -102,6 +107,8 @@ public class SiteChangeFilter implements Filter {
                                 authorities.add(new SimpleGrantedAuthority(authority.get("roleid")));
                                 authorities.add(new SimpleGrantedAuthority("0")); // anonymous권한 기본 부여
                                 SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user, null, authorities));
+                                RoleInfoVo roleInfo = new RoleInfoVo((String)authority.get("roleid"), (String)authority.get("nm"), (String)authority.get("knd_cd"), (String)authority.get("se_cd"), (String)authority.get("trgt_inst_cd"), (String)authority.get("trgt_rgn_cd"));
+                                user.setRoleInfo(roleInfo);
                                 break;
                             }
                         }
