@@ -78,11 +78,17 @@ public class BbsController {
         }
         model.addAttribute("clList", bbsService.selectBbsClList(bbsClVo));
 
-        if(bbsInfo.getBbsid().equals(1)) {
+        if (bbsInfo.getBbsid().equals(1)) {
             /* 공지사항인 경우 submit 페이징 방식으로 처리 */
             paramVo.setUser(user);
             paramVo.setSite(site);
-            if(paramVo.getTabType() == null) paramVo.setTabType(1);
+            if (paramVo.getTabType() == null) paramVo.setTabType(1);
+            if (paramVo.getTabType().equals(2)) {
+                paramVo.setOrderField("GRP DESC,ORD");
+            } else {
+                paramVo.setOrderField("FIXORDER ASC,GRP DESC,ORD");
+            }
+
             List<PstVo> list = bbsService.selectAllPstList(paramVo);
             model.addAttribute("list", list);
             model.addAttribute("totalCount", list.size() > 0 ? list.get(0).getTotalCount() : 0);
@@ -93,7 +99,7 @@ public class BbsController {
         model.addAttribute("BbsVo", paramVo);
         model.addAttribute("bbsInfo", bbsInfo);
 
-        return "front/bbs/bbsMain";
+        return returnUrl;
     }
 
 
@@ -120,7 +126,7 @@ public class BbsController {
 
         //조회수 증가 
         bbsService.updatePstHitsCount(paramVo);
-		
+
         BbsVo bbsVo = new BbsVo();
         bbsVo.setBbsid(bbsid);
         BbsVo bbsInfo = bbsService.selectOneBbs(bbsVo);
