@@ -25,7 +25,7 @@
                                 <strong>디지털원패스 아이디를 입력해 주십시오.</strong>
                                 <input type="email" title="디지털원패스 아이디" placeholder="디지털원패스 아이디" id="user_id" name="user_id" onkeydown="if(event.keyCode == 13){onClickSubmit(); return false;};">
                                 <label class="inp"><input type="checkbox" name="ridSave" id="ridSave" value="Y"><b>아이디 저장</b></label>
-                                <p class="invalid-feedback"></p>
+                                <p class="invalid-feedback" id="onepassInvalidFeedback"></p>
                             </dd>
                         </dl>
                         <div class="btn-inner">
@@ -42,53 +42,41 @@
             
 <script th:inline="javascript">
 
-    jQuery(document).ready(function(){      
+    $(function(){      
         var f = document.request;
         
-        if(jQuery.cookie != null)
+        if($.cookie != null)
         {           
-            if(jQuery.cookie('ruserid') && jQuery.cookie('ruserid') != 'undefined' && jQuery.cookie('ruserid') != 'null'){
+            if($.cookie('ruserid') && $.cookie('ruserid') != 'undefined' && $.cookie('ruserid') != 'null'){
                 f.user_id.value =jQuery.cookie('ruserid');
                 f.ridSave.checked = true;
             }
         }
         
         if(f.user_id.value == ""){
-            jQuery("#user_id").focus();
+            setTimeout(function(){$("#user_id").focus();}, 100);
         }
-        
-        jQuery.ajax({
-            url : /*[[${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logoutDest(#request)}]]*/"",
-            type : "POST",
-            data: $('#logOutRequest').serialize(),
-            withCredentials: true,
-            success : function(res) {
-                console.log(res + " 로그아웃 성공");
-            },
-            error : function() {
-                console.log("로그아웃 실패");
-            }
-        });
     });
     
-    function onClickSubmit() {    
+    function onClickSubmit() {
         var f = document.request;
         
         var user_id = f.user_id.value;
         if ( user_id == null || user_id == "" ) {
-            $("#onepassInvalidFeedback").text("아이디를 입력해주세요.");
+            $("#onepassInvalidFeedback").text("아이디를 입력해 주십시오.");
             f.user_id.focus();
             return;
         }
 
         if(f.ridSave.checked){
-            jQuery.cookie('ruserid', f.user_id.value, {expires:30});
+            $.cookie('ruserid', f.user_id.value, {expires:30, path: '/'});
         }else{
-            jQuery.removeCookie('ruserid');
+            $.removeCookie('ruserid', {path: '/'});
         }
         f.returnUrl.value = location.pathname;
         f.submit();
     }
+    
 </script>
         </div>
     </body>
