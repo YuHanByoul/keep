@@ -200,6 +200,13 @@ function deleteFile(fileid, fileIdntfcKey) {
 }
 
 jQuery(function (){
+    $('.open-msg-btn').on('click',function (){
+        const {target, trgtId} = $(this).data();
+        layerPopup.open({target, callback: msgSendFormInit(target, trgtId)});
+    });
+    $('#msgForm textarea[name=cn]').on('keyup input', function() {
+        $(this).parent().find('#txtSize').text($(this).val().length);
+    });
     $('#msgForm').validate({
         rules: {
             cn: {required: true}
@@ -248,7 +255,7 @@ function msgSendFormInit(target, trgtId) {
 }
 function msgAddBtn(){
     const $listMsgAddBtn = $('.list-msg-add-btn');
-    const $clone = $('.msgContextMenuClone > .toggleParent');
+    const $clone = $('.msg-context-menu-clone > .toggleParent');
 
     $listMsgAddBtn.each(function (){
         let $cloneBody = $clone.clone(true);
@@ -256,7 +263,7 @@ function msgAddBtn(){
         let maskAcnt = $(this).text();
         $(this).text('').append(
             $cloneBody.find('.user-acnt-span > span').text(maskAcnt).end()
-                .find('.data-btn').data({'trgt-id':trgtId}).end()
+                .find('.open-msg-btn').data({'trgt-id':trgtId}).end()
         );
     });
 }
