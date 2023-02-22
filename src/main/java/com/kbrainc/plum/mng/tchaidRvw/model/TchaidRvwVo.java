@@ -32,6 +32,7 @@ public class TchaidRvwVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
     
+    private String tchaidid;
     private String type;
     private Integer aplyid;
     private String aplcntid;
