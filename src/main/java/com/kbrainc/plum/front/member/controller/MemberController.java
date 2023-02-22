@@ -151,6 +151,20 @@ public class MemberController {
             return null;
         }
         
+        // 디지털원패스 회원연동일때
+        String onepassEncodeData = memberTypeVo.getOnepassEncodeData();
+        if (!"".equals(StringUtil.nvl(onepassEncodeData))) {
+            // 자체 복호화 수행
+            byte[] decode = Base64.getDecoder().decode(onepassEncodeData);
+            byte[] decrypted = cryptoService.decrypt(decode, cryptoKey);
+            String jsonRes = new String(decrypted, "UTF-8");
+            JsonObject convertedObject = new Gson().fromJson(jsonRes, JsonObject.class);
+            String type = convertedObject.get("type").getAsString();
+            if ("C".equals(type) && !"C".equals(memberTypeVo.getType())) { // 어린이가 원패스로 로그인하여 회원연동시 다른 회원유형을 골랐을때
+                memberTypeVo.setType("C");
+            }
+        }
+        
         return "front/member/step2.html";
     }
     
