@@ -1,0 +1,112 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span>[[${bsnsOperDta.ttl}]]</span></h3>
+            <dl>
+                <div class="list">
+                    <dt>분류</dt>
+                    <dd>[[${bsnsOperDta.typeCdNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>발간년도</dt>
+                    <dd>[[${bsnsOperDta.yy}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>운영기관</dt>
+                    <dd>[[${bsnsOperDta.instNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(bsnsOperDta.regDt, 'yyyy-MM-dd')}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:if="${bsnsOperDta.atchFileList != null}">
+                                <th:block th:each="file : ${bsnsOperDta.atchFileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content">
+                <iframe src="/js/pdfjs/web/viewer.html" width="500px" height="500px"></iframe>
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(bsnsOperDta.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </div>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="goToList()">목록</button>
+            </div>
+        </div>
+
+        <div class="page-navigation">
+            <a href="#" th:onclick="|goToOtherDta(${bsnsOperDta.prevDtaid})|">
+                <dl>
+                    <dt>이전글</dt>
+                    <dd><span class="ellipsis">[[${bsnsOperDta.prevDtaTtl}]]</span></dd>
+                </dl>
+            </a>
+
+            <a href="#" th:onclick="|goToOtherDta(${bsnsOperDta.nextDtaid})|">
+                <dl>
+                    <dt>다음글</dt>
+                    <dd><span class="ellipsis">[[${bsnsOperDta.nextDtaTtl}]]</span>
+                    </dd>
+                </dl>
+            </a>
+        </div>
+
+    </div>
+
+    <form name="listForm" id="listForm">
+        <input type="hidden" name="searchType" id="searchType" th:value="${bsnsOperDta.searchType}">
+        <input type="hidden" name="searchKeyword" id="searchKeyword" th:value="${bsnsOperDta.searchKeyword}">
+        <input type="hidden" name="instNm" id="instNm" th:value="${bsnsOperDta.instNm}">
+        <input type="hidden" name="searchFromRegDt" id="searchFromRegDt" th:value="${bsnsOperDta.searchFromRegDt}">
+        <input type="hidden" name="searchToRegDt" id="searchToRegDt" th:value="${bsnsOperDta.searchToRegDt}">
+        <input type="hidden" name="searchTypeCd" id="searchTypeCd" th:value="${bsnsOperDta.searchTypeCd}">
+        <input type="hidden" name="orderField" id="orderField" th:value="${bsnsOperDta.orderField}">
+        <input type="hidden" name="rowPerPage" id="rowPerPage" th:value="${bsnsOperDta.rowPerPage}">
+        <input type="hidden" id="dtaid" name="dtaid" th:value="${bsnsOperDta.dtaid}">
+    </form>
+
+    <script th:inline="javascript">
+        let detailUrl = '/front/intro/envEduPlcyDta/bsnsOperDtaDetail.html';
+        let listUrl = '/front/intro/envEduPlcyDta/bsnsOperDtaList.html';
+
+        let goToList = () => {
+            let f = document.forms.listForm;
+            f.action = listUrl;
+            f.submit();
+        }
+        let goToOtherDta = (dtaid) => {
+            let f = document.forms.listForm;
+            f.action = detailUrl;
+            f.dtaid.value = dtaid;
+            f.submit();
+        }
+    </script>
+</div>
