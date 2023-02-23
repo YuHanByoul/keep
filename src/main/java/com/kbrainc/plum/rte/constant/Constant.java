@@ -29,7 +29,7 @@ public class Constant {
     // 사용자 상태 코드
     public static final String MEMBER_STATE_CD_JOIN = "1";          //가입
     public static final String MEMBER_STATE_CD_WAIT = "2";          //대기
-    public static final String MEMBER_STATE_CD_WITHDRAWAL = "3";    //탈퇴
+    public static final String MEMBER_STATE_CD_WITHDRAWAL = "9";    //탈퇴
     
     // 사용자 역할 구분 코드
     public static final String MEMBER_ROLE_CD_USER = "U";  //사용자
