@@ -386,15 +386,65 @@
         WHERE
             A.USE_YN = 'Y'
         AND A.CDGRPID = '108'
-   </select>
+    </select>
    
-   <!-- 기관코드 수정 -->
-   <update id="updateInstCd" parameterType="Integer">
-       /* front.MemberDao.updateInstCd */
-       UPDATE 
-           TB_CMM_INST I
-       SET
-           INST_CD = CONCAT((SELECT OPTN1 FROM TB_CMM_CD WHERE CD = I.INST_TYPE_CD), INSTID + 100000)
-       WHERE I.INSTID = #{instid}
-   </update>
+    <!-- 기관코드 수정 -->
+    <update id="updateInstCd" parameterType="Integer">
+        /* front.MemberDao.updateInstCd */
+        UPDATE 
+            TB_CMM_INST I
+        SET
+            INST_CD = CONCAT((SELECT OPTN1 FROM TB_CMM_CD WHERE CD = I.INST_TYPE_CD), INSTID + 100000)
+        WHERE I.INSTID = #{instid}
+    </update>
+   
+    <!-- ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다. -->
+    <select id="selectAcntFromCiList" parameterType="MemberAcntPswdFindVo" resultType="MemberAcntPswdFindVo">
+        /* front.MemberDao.selectAcntFromCiList */
+        SELECT 
+            ACNT,
+            REG_DT
+        FROM 
+            TB_CMM_USER 
+        WHERE
+            CI = #{ci}
+        AND DEL_YN = 'N'
+        UNION ALL
+        SELECT 
+            ACNT,
+            REG_DT
+        FROM 
+            TB_CMM_USER 
+        WHERE
+            CI_PARNTS = #{ci}
+        AND DEL_YN = 'N'
+    </select>
+   
+    <!-- ci와 acnt에 해당하는 회원 정보를 조회한다. -->
+    <select id="selectAcntFromCi" parameterType="MemberAcntPswdFindVo" resultType="MemberAcntPswdFindVo">
+        /* front.MemberDao.selectAcntFromCi */
+        SELECT 
+            USERID,
+            ACNT,
+            PSWD
+        FROM 
+            TB_CMM_USER 
+        WHERE
+            (CI = #{ci} OR CI_PARNTS = #{ci})
+        AND ACNT = #{acnt}
+        AND DEL_YN = 'N'
+    </select>
+    
+    <!-- 비밀번호 수정(비밀번호 찾기). -->
+    <update id="updatePassword" parameterType="MemberAcntPswdFindVo">
+        /* front.MemberDao.updatePassword */
+        UPDATE 
+            TB_CMM_USER 
+        SET
+            PSWD = #{pswd},
+            PSWD_MDFCN_DT = NOW(),
+            MDFCN_DT = NOW(),
+            MDFRID = #{userid}
+        WHERE USERID = #{userid}
+    </update>
 </mapper>
