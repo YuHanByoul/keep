@@ -104,4 +104,22 @@ public class ReqMngVo extends ParentRequestVo {
     
     /** 온라인 심사유형 코드 */
     private String onlnSrngTypeCd;
+    
+    /** 심사위원 이름 */
+    private String nm;
+    
+    /** 프로그램명 */
+    private String prgrmNm;
+    
+    /** 심사 시작일자 */
+    private String srngBgngDt;
+    
+    /** 심사 종료일자 */
+    private String srngEndDt;
+    
+    /** 심사 시작시간 */
+    private String srngBgngTm;
+    
+    /** 심사 종료시간 */
+    private String srngEndTm;
 }

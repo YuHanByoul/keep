@@ -3,6 +3,7 @@
  */
 package com.kbrainc.plum.mng.bizAply.srng.controller;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.kbrainc.plum.mng.bizAply.req.model.ReqUserVo;
 import com.kbrainc.plum.mng.bizAply.req.service.ReqMngService;
 import com.kbrainc.plum.mng.bizAply.srng.model.BizAplySrngVo;
 import com.kbrainc.plum.mng.bizAply.srng.service.BizAplySrngService;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngExprtVo;
 import com.kbrainc.plum.mng.score.model.QuestionVo;
 import com.kbrainc.plum.mng.score.service.ScoreCardService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -76,7 +78,10 @@ public class BizAplySrngController {
     * @return String
      */
     @RequestMapping(value="/mng/bizAply/srng/selectSrngListForm.html")
-    public String publicContestListForm() throws Exception {
+    public String publicContestListForm(Model model, @UserInfo UserVo user) throws Exception {
+        List<BizAplySrngVo> result = bizAplySrngService.selectCnsltngExprtList();
+        model.addAttribute("list", result == null ? new BizAplySrngVo() : result);
+        model.addAttribute("jdgsid", user.getUserid());
         return "mng/bizAply/srng/srngList";
     }
     

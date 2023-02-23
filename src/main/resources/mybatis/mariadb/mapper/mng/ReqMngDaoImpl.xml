@@ -1798,4 +1798,35 @@
         ORDER BY TSSS.SBMSNID, QITEM_SE_CD, ORDR
     </select>
     
+    <!-- 심사일정 캘린더 -->
+    <select id="selectScheduleList" parameterType="ReqMngVo" resultType="ReqMngVo">
+        /* ReqMngDao.selectScheduleList */
+        SELECT
+            GROUP_CONCAT(TCU.NM ORDER BY TCU.NM SEPARATOR ', ') AS NM 
+            , TCC.CD_NM AS FLD_NM
+            , TSP.PCNTST_NM 
+            , TSA.PRGRM_NM
+            , CONCAT(DATE_FORMAT(TSP.SRNG_BGNG_DT, '%Y-%m-%d %H:%m'), ' ~ ', DATE_FORMAT(TSP.SRNG_END_DT, '%Y-%m-%d %H:%m')) AS SRNG_DT 
+            , DATE_FORMAT(TSP.SRNG_BGNG_DT, '%Y-%m-%d') AS SRNG_BGNG_DT 
+            , DATE_FORMAT(TSP.SRNG_END_DT, '%Y-%m-%d') AS SRNG_END_DT
+        FROM 
+            TB_SPB_PCNTST TSP
+            INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
+            INNER JOIN TB_SPB_JDGS TSJ ON TSA.PCNTSTID = TSJ.PCNTSTID
+            INNER JOIN TB_CMM_USER TCU ON TCU.USERID = TSJ.JDGSID
+            LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD 
+        WHERE 1 = 1
+        <if test="searchSrngBgngDe != null and searchSrngBgngDe != ''">
+        <![CDATA[
+        AND (DATE_FORMAT(SRNG_BGNG_DT, '%Y-%m-%d') BETWEEN #{searchSrngBgngDe} AND #{searchSrngEndDe}
+        OR DATE_FORMAT(SRNG_END_DT, '%Y-%m-%d') BETWEEN #{searchSrngBgngDe} AND #{searchSrngEndDe})
+        ]]>
+        </if>
+        <if test="jdgsid != null and jdgsid != ''">
+        AND TSJ.JDGSID = #{jdgsid}
+        </if>
+        GROUP BY TCC.CD_NM, TSP.PCNTST_NM 
+            , TSA.PRGRM_NM, TSP.SRNG_BGNG_DT, TSP.SRNG_END_DT
+        ORDER BY TSP.SRNG_BGNG_DT
+    </select>
 </mapper>
