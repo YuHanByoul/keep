@@ -94,6 +94,19 @@ public class PackageindvdVo extends ParentRequestVo {
     private Integer abnrmlid;
     
     private String mode;
+    private String typeCd;
+    private String eduTypeCd;
+    private String searchSttsCd;
+    private String searchTypeCd;
+    private String searchEduTypeCd;
+    
+    /** 출고일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date dlivyPrcsDt;
+    
+    /** 입고 예상 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    private Date endDe;
     
     
     public void setSttsCd(String sttsCd) throws Exception{
