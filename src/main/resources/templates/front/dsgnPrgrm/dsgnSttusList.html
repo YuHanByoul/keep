@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<form class="search-filter">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">프로그램명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="프로그램명" placeholder="프로그램명을 입력해 주세요." name="searchPrgrmNm" id="searchPrgrmNm">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">운영기관명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="운영기관명" placeholder="운영기관명을 입력해 주세요." name="searchInstNm" id="searchInstNm">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">지역</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchRgnCd" th:attr="grpCd=125" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" >
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">교육주제</strong></div>
+                    <div class="form-body">
+                        <div class="form-input">
+                            <select title="교육주제">
+                                <option value="제목">제목</option>
+                                <option value="제목">제목</option>
+                                <option value="제목">제목</option>
+                            </select>
+                            <select title="교육주제 상세" style="flex:auto">
+                                <option value="전체">전체</option>
+                                <option value="제목">제목</option>
+                                <option value="제목">제목</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">교육대상</strong></div>
+                    <div class="form-body">
+                        <select id="searchEduTarget" name="searchEduTarget" title="교육대상">
+                            <option value="">- 전체 -</option>
+                            <option value="INFNT">유아</option>
+                            <option value="SCHBOY">초등</option>
+                            <option value="MSKLSD">중등</option>
+                            <option value="HGSCHST">고등</option>
+                            <option value="ADULT">성인</option>
+                            <option value="WHOL_AGE">전연령</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">참가비</strong></div>
+                    <div class="form-body">
+                        <div class="form-check-list">
+                            <label class="inp"><input type="radio" name="searchEtrfee" id="searchEtrfee1"><b>전체</b></label>
+                            <label class="inp"><input type="radio" name="searchEtrfee" id="searchEtrfee2"><b>무료</b></label>
+                            <label class="inp"><input type="radio" name="searchEtrfee" id="searchEtrfee3"><b>유료</b></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="dsgnPrgrm.searchInit()">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search" onclick="dsgnPrgrm.search()">검색</button>
+            </div>
+        </form>
+
+        <div class="tab-content">
+            <div class="table-caption flex-nowrap">
+                <div class="left" id="listCount">
+                    <p>총 <b>0</b> 건</p>
+                </div>
+                <div class="right">
+                    <div class="sort-tab">
+                        <ul class="tab-list" role="tablist">
+                            <li class="active"><button role="tab" aria-controls="tab-album1" id="album-tab1"><span class="icon icon-sort-album"></span>앨범형</button></li>
+                            <li><button role="tab" aria-controls="tab-list1" id="list-tab1"><span class="icon icon-sort-list"></span>목록형</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-album1" class="tabpanel" role="tabpanel" aria-labelledby="album-tab1">
+                <div class="card-list card-list-n4" id="card-table">
+                    <ul id="cardList-area">
+                    </ul>
+                </div>
+                <div id="pagination1" aria-label="pagination">
+                </div>
+            </div>
+
+            <div id="tab-list1" class="tabpanel" role="tabpanel" aria-labelledby="list-tab1">
+
+                <div class="table-col table-layout-auto table-col-mo">
+                    <table>
+                        <caption>우수 환경교육 프로그램 지정현황 - 번호, 운영기관, 프로그램, 지역, 교육주제, 교육대상, 참가비(1인)</caption>
+                        <colgroup>
+                            <col style="width:6%;">
+                            <col style="width:15%;">
+                            <col>
+                            <col style="width:9%;">
+                            <col style="width:22%;">
+                            <col style="width:12%;">
+                            <col style="width:10%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">번호</th>
+                                <th scope="col">운영기관</th>
+                                <th scope="col">프로그램</th>
+                                <th scope="col">지역</th>
+                                <th scope="col">교육주제</th>
+                                <th scope="col">교육대상</th>
+                                <th scope="col">참가비(1인)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-area"></tbody>
+                    </table>
+                </div>
+            <div class="pagination" aria-label="pagination" id="pagination"></div>
+        </div>
+		<!-- //content -->
+
+		<script th:inline="javascript">
+
+         var dsgnSttus = {
+ 	        	listUrl: '/front/dsgnPrgrm/selectDsgnSttusList.do',
+	            detailUrl : '/front/dsgnPrgrm/dsgnSttusDetailForm.html',
+
+	            init(rowPerPage) {
+	            	if(rowPerPage != null) {
+		            	$("#rowPerPage").val(parseInt(rowPerPage));
+		                $('#pageNumber').val('1');
+	                }
+	                this.selectList();
+	            },
+
+	            moveToDetail() {
+	            	if (this.userid == null) {
+	            	    alert('로그인 후 이용하실 수 있습니다.');
+	                    return;
+	                }
+	                location.href = '/front/dsgnPrgrm/dsgnSttusDetailForm.html';
+	            },
+
+// 	            search() {
+// 	    			/* var searchType = $("#searchType").val()
+// 	    			var searchKeyword = $("#searchKeyword").val()
+
+// 	    			if (searchType != null && searchType != "") {
+// 	    				if (searchKeyword == null || searchKeyword == "") {
+// 	    					alert("검색어를 입력해주십시오");
+// 	    					return;
+// 	    				}
+// 	    			} else {
+// 	    				if (searchKeyword != null && searchKeyword != "") {
+// 	    					alert("검색조건을 선택해주십시오");
+// 	    					return;
+// 	    				}
+// 	    			} */
+
+// 	                $('#pageNumber').val('1');
+// 	                this.selectList();
+// 	            },
+
+// 	            searchInit() {
+// 	    			/* $("#searchType").val('');
+// 	    			$("#searchKeyword").val('');
+// 	    			$("#searchEduSbjctCd_1").val('');
+// 	    			$("#searchEduSbjctCd_2").val('');
+// 	    			$("#searchEduTrgtCd").val('');
+// 	    			$("#searchTypeCd_1").val('');
+// 	    			$("#searchTypeCd_2").val('');
+// 	    			$("#startDt").val('');
+// 	    			$("#endDt").val(''); */
+// 	    			this.selectList();
+// 	            },
+
+	            selectList() {
+	            	if (displayWorkProgress(true)) {
+	                	let formData = $('#searchForm').serializeArray();
+
+	                    $.ajax({
+	                    	url: dsgnSttus.listUrl,
+	                        cache: false,
+	                        dataType: 'json',
+	                        data: formData,
+	                        type: 'GET',
+	                        success: function (data) {
+	                        	dsgnSttus.makeListHtml(data);
+	                        	closeWorkProgress();
+	                        }
+	                    });
+	            	}
+	            },
+
+//                 moveToDetail(prgrmid) {
+//                     var f = document.forms.searchForm ;
+//                     f.prgrmid.value=prgrmid;
+//                     f.action = this.detailUrl;
+//                     f.submit();
+//                 },
+
+                makeListHtml(data) {
+                    var cardListHtml = "";
+                    var listHtml = "";
+                    var color ="green";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `
+                        <tr>
+                            <td className="nodata" colSpan="7">
+                                <p><span className="icon icon-notice bg-black9"></span>등록된 콘텐츠가 없습니다</p>
+                            </td>
+                        </tr>`;
+                    } else {
+
+                        debugger;
+                        listCount.innerHTML = `<p>총 <b>${data.list.length}</b> 건</p>`;
+                        debugger;
+
+                        data.list.forEach(function(item, idx) {
+                        	listHtml += `
+                            <tr>
+                            <td>${item.rowNumber}</td>
+                        	<td>${item.instNm}</td>
+                            <td className="al article"><a href="javascript:void(0)" onclick="dsgnSttus.moveToDetail(${item.prgrmid})">${item.prgrmNm}</a></td>
+   							<td>${item.ctprvnNm}</td>
+   							<td>${item.eduSbjctNmLst}</td>
+   							<td>${item.eduTarget}</td>
+   							<td>${item.etrfee}</td>
+   							<tr>
+   							`;
+
+   	                        cardListHtml += `
+   	     					<li>
+   	 							<a href="/front/dsgnPrgrm/dsgnSttusDetailForm.html?prgrmid=${item.prgrmid}">
+   	 								<div class="thumb" style="height:127px;">
+   	 								<img src="/downloadFileByFileid.do?fileid=${item.fileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+   	 								</div>
+   	 								<dl class="card-program-dot-list">
+   	 									<dt>
+   	 						`;
+   	 						cardListHtml += `
+   	 						    <div class="tag tag-${color}">${item.ctprvnNm}</div>
+   	 						 `;
+   	 						if(color=="olive") color="green";
+   	 						if(color=="red"  ) color="olive";
+   	 						if(color=="blue" ) color="red";
+   	 						if(color=="green") color="blue";
+   	 						cardListHtml +=`
+   	 									</dt>
+   	 									<dd>
+   	 										<p class="ellipsis" data-ellipsis="2">${item.prgrmNm}</p>
+   	 										<ul class="dot-list fc-black3">
+   	 											<li class="d-flex">
+   	 												<span class="tit">기관명 :</span>
+   	 												<span class="dc">${item.instNm}</span>
+   	 											</li>
+   	 											<li class="d-flex">
+   	 												<span class="tit">교육주제 :</span>
+   	 												<span class="dc">${item.eduSbjctNmLst}</span>
+   	 											</li>
+   	 											<li class="d-flex">
+   	 												<span class="tit">교육대상 :</span>
+   	 												<span class="dc">${item.eduTarget}</span>
+   	 											</li>
+   	 											<li class="d-flex">
+   	 												<span class="tit">참가비(1인) :</span>
+   	 												<span class="dc">${item.etrfee}</span>
+   	 											</li>
+   	 										</ul>
+   	 									</dd>
+   	 								</dl>
+   	 							</a>
+   	 						</li>
+  	    					`;
+                        });
+                    }
+                    $('#cardList-area').html(cardListHtml);
+                    $('#list-area').html(listHtml);
+                    $("#pagination1").html(data.pagination);
+                    $("#pagination2").html(data.pagination);
+                    $("#totalCount").html(data.totalCount);
+                }
+	        };
+
+            $(function () {
+            	dsgnSttus.init();
+            })
+
+// 			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+
+// 			var setSearchSelectBox = {
+// 			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
+// 					$.ajax({
+// 						url : getCodeListUrl,
+// 						type: 'GET',
+// 						cache : false,
+// 						dataType: 'json',
+// 						data: {
+// 							  grpcd  : grpcd
+// 							, upprcd : upprcd
+// 						},
+// 						success : function (data){
+// 							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+// 						},
+// 					 	error : function (error){
+// 						}
+
+// 					});
+// 				},
+
+// 			 	writeHtml : function(grpcd,targetId,list,selected){
+// 				 	var cntArr = targetId.split("_");
+// 				   	var nextCnt = Number(cntArr[1])+1;
+// 				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+
+// 				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+// 				        html +="    <option value='' selected>- 전체 -</option>";
+
+// 			  		  for(var i=0 ; i < list.length;i++){
+// 			  			if(list[i].cdid==selected){
+// 			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+// 			  			}else{
+// 			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+// 			  			}
+// 			  		  }
+// 			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+// 			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+// 			  		  }
+// 				   	  html +="    </select>";
+// 				   	  $("#"+targetId).html(html);
+// 			 	},
+
+// 			    setNextDepth : function(grpcd , upprcd , targetId){
+// 					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+// 				}
+// 			}
+
+// 			setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1');
+// 			setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1');
+
+            function goPage(page) {
+				$("#pageNumber").val(page);
+
+				dsgnSttus.selectList();
+			}
+		</script>
+	</div>
+
+</body>
+</html>
