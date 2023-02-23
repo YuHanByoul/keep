@@ -119,6 +119,9 @@ public class ExpertVo extends ParentRequestVo {
     /** 회원 상태 코드*/
     private String userSttsCd;
 
+    /** 회원 상태 코드 이름*/
+    private String userSttsCdNm;
+
     /** 전문가 상태 코드 이름*/
     private String expertSttsCdNm;
 
@@ -214,6 +217,25 @@ public class ExpertVo extends ParentRequestVo {
             }
         }
     }
+
+    public void setUserSttsCd(String userSttsCd) {
+        this.userSttsCd = userSttsCd;
+
+        if (CommonUtil.isEmpty(this.userSttsCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.userSttsCd);
+                this.userSttsCdNm = code.getCdNm();
+            } catch (NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return;
+            } catch (Exception e) {
+                //e.printStackTrace();
+                return;
+            }
+        }
+    }
+
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;
 
