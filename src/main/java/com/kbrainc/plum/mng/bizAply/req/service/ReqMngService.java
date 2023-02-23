@@ -25,6 +25,7 @@ import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderCarrVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderJobVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderLicVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SrngTabVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 
 /**
@@ -94,6 +95,18 @@ public interface ReqMngService {
      */
     void reqUserListExcelDownload(ReqUserVo reqUserVo, HttpServletResponse response, HttpServletRequest request) throws Exception;
     
+    /**
+     * 신청자 상세 정보 조회. 
+     *
+     * @Title : detailReqUser
+     * @Description : TODO
+     * @param reqUserVo
+     * @return
+     * @throws Exception
+     * @return ReqUserVo
+      */
+    ReqUserVo detailReqUser(ReqUserVo reqUserVo) throws Exception;
+     
     /**
     * 담당자 목록 조회. 
     *
@@ -492,4 +505,52 @@ public interface ReqMngService {
      * @return int
       */
     int updateOper(OperVo operVo) throws Exception;
+    
+    /**
+    * [심사관리 탭 조회]. 
+    *
+    * @Title : selectSrngList
+    * @Description : TODO
+    * @param srngTabVo
+    * @return
+    * @throws Exception
+    * @return List<SrngTabVo>
+     */
+    List<SrngTabVo> selectSrngList(SrngTabVo srngTabVo) throws Exception;
+    
+    /**
+    * 심사위원 목록. 
+    *
+    * @Title : selectSrngUserList
+    * @Description : TODO
+    * @param srngTabVo
+    * @return
+    * @throws Exception
+    * @return List<SrngTabVo>
+     */
+    List<SrngTabVo> selectSrngUserList(SrngTabVo srngTabVo) throws Exception;
+    
+    /**
+    * [심사관리 탭 상세조회]. 
+    *
+    * @Title : detailSrngList
+    * @Description : TODO
+    * @param srngTabVo
+    * @return
+    * @throws Exception
+    * @return List<SrngTabVo>
+     */
+    List<SrngTabVo> detailSrngList(SrngTabVo srngTabVo) throws Exception;
+    
+    /**
+    * [심사일정 조회. 
+    *
+    * @Title : selectScheduleList
+    * @Description : TODO
+    * @param 
+    * @return
+    * @throws Exception
+    * @return List<ReqMngVo>
+     */
+    List<ReqMngVo> selectScheduleList(ReqMngVo reqMngVo) throws Exception;
 }

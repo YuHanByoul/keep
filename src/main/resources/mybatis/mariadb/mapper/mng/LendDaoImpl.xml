@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : LendDaoImpl.xml
+	Description : 교구관리 
+-->
+<mapper namespace="com.kbrainc.plum.mng.lend.model.LendDao">
+
+   <!-- 대여 목록 호출 --> 
+   <select id="selectLendList" parameterType="LendVo" resultType="LendVo">
+          /* LendDao.selectLendList */
+          <include refid="PaginationMapper.header"/>
+              SELECT 
+                   A.RCRITID
+                  ,A.RCRIT_NM
+                  ,A.BGNG_DT
+                  ,A.END_DT
+                  ,A.LMT_CD
+                  ,A.DTL_CN
+                  ,A.MVP_URL
+                  ,A.MVP_PSTN_CD
+                  ,A.ATENT_MTTR
+                  ,A.RPRS_IMG_FILEID
+                  ,A.DTL_IMG_FILEGRPID
+                  ,A.MAP_FILEGRPID
+                  ,A.EDU_PHOTO_FILEGRPID
+                  ,A.OPER_YN
+                  ,A.MDFCN_DT
+                  ,A.MDFRID
+                  ,A.REG_DT
+                  ,A.RGTRID
+                  ,B.ACNT AS RGTR_ACNT
+               FROM 
+                 TB_THA_PACKAGE_LEND_RCRIT A
+                 INNER JOIN TB_CMM_USER B
+                 ON A.RGTRID = B.USERID
+              WHERE 1=1 
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'lendNm'">
+              AND RCRIT_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'lendNo'">
+              AND RCRITID = #{searchKeyword}
+           </if>
+           <if test="searchStartDt != null and searchStartDt != '' ">
+              AND date_format(BGNG_DT, '%Y-%m-%d'  )  <![CDATA[>=]]> #{searchStartDt}
+           </if>
+           
+           <if test="searchEndDt != null and searchEndDt != '' ">
+              AND date_format(END_DT, '%Y-%m-%d'  )  <![CDATA[<=]]> #{searchEndDt}
+           </if>
+         <include refid="PaginationMapper.footer"/>
+   </select>
+   <!-- 대여 등록-->
+   <insert id="insertLend" parameterType="LendVo" useGeneratedKeys="true" keyProperty="rcritid" >
+        /* LendDao.insertLend */
+        INSERT INTO TB_THA_PACKAGE_LEND_RCRIT (
+            RCRIT_NM                   
+            ,BGNG_DT                    
+            ,END_DT                     
+            ,LMT_CD                     
+            ,DTL_CN                     
+            ,MVP_URL                    
+            ,MVP_PSTN_CD                
+            ,ATENT_MTTR                 
+            ,RPRS_IMG_FILEID            
+            ,DTL_IMG_FILEGRPID          
+            ,MAP_FILEGRPID              
+            ,EDU_PHOTO_FILEGRPID        
+            ,OPER_YN        
+            ,MDFCN_DT                   
+            ,MDFRID                     
+            ,REG_DT                     
+            ,RGTRID                     
+        )VALUES(                 
+            #{rcritNm           }        
+            ,#{bgngDt            }        
+            ,#{endDt             }        
+            ,#{lmtCd             }        
+            ,#{dtlCn             }        
+            ,#{mvpUrl            }        
+            ,#{mvpPstnCd         }        
+            ,#{atentMttr         }        
+            ,#{rprsImgFileid     }        
+            ,#{dtlImgFilegrpid   }        
+            ,#{mapFilegrpid      }        
+            ,#{eduPhotoFilegrpid }
+            ,#{operYn }
+            ,NOW()
+            ,#{user.userid       }
+            ,NOW()
+            ,#{user.userid       }
+        )
+   </insert>
+   <!-- 대여 차시 등록-->
+   <insert id="insertLendRnd" parameterType="LendRndVo" useGeneratedKeys="true" keyProperty="rndid" >
+        /* LendDao.insertLendRnd */
+        INSERT INTO TB_THA_PACKAGE_LEND_RND (
+            RCRITID       
+            ,ORDR          
+            ,BGNG_DE       
+            ,END_DE        
+            ,MDFCN_DT      
+            ,MDFRID        
+            ,REG_DT        
+            ,RGTRID                             
+        )VALUES(
+             #{rcritid    }       
+            ,#{ordr       }    
+            ,#{bgngDe     }    
+            ,#{endDe      }
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+        )
+   </insert>
+   <!-- 대여 차시 꾸러미 등록-->
+   <insert id="insertRndPackageindvd" parameterType="LendRndVo"  >
+        /* LendDao.insertTchaid */
+        INSERT INTO TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD (
+             RNDID
+            ,PACKAGEINDVDID
+            ,REG_DT        
+            ,RGTRID                             
+        )VALUES
+        <foreach item="item" collection="lendRndPackageindvdids" separator=",">
+         (
+            #{rndid    }
+           ,#{item        }
+           ,NOW()
+           ,#{user.userid }
+          )
+        </foreach>
+   </insert>
+   <!-- 대여 수정 -->
+   <update id="udateLend" parameterType="LendVo" >
+        /* LendDao.udateLend */
+        UPDATE TB_THA_PACKAGE_LEND_RCRIT 
+           SET
+           <if test="rcritNm != null and rcritNm != ''">
+            RCRIT_NM             =  #{rcritNm           },             
+           </if>
+           <if test='bgngDt != null '>
+            BGNG_DT              =  #{bgngDt            },             
+            </if>             
+           <if test='endDt != null '>
+            END_DT               =  #{endDt             },             
+            </if>             
+           <if test="lmtCd != null and lmtCd != ''">
+            LMT_CD               =  #{lmtCd             },             
+            </if>             
+           <if test="dtlCn != null and dtlCn != ''">
+            DTL_CN               =  #{dtlCn             },             
+            </if>             
+           <if test="mvpUrl != null and mvpUrl != ''">
+            MVP_URL              =  #{mvpUrl            },             
+            </if>             
+           <if test="mvpPstnCd != null and mvpPstnCd != ''">
+            MVP_PSTN_CD          =  #{mvpPstnCd         },             
+            </if>             
+           <if test="atentMttr != null and atentMttr != ''">
+            ATENT_MTTR           =  #{atentMttr         },             
+            </if>             
+           <if test="rprsImgFileid != null and rprsImgFileid != ''">
+            RPRS_IMG_FILEID      =  #{rprsImgFileid     },             
+            </if>             
+           <if test="dtlImgFilegrpid != null and dtlImgFilegrpid != ''">
+            DTL_IMG_FILEGRPID    =  #{dtlImgFilegrpid   },             
+            </if>             
+           <if test="mapFilegrpid != null and mapFilegrpid != ''">
+            MAP_FILEGRPID        =  #{mapFilegrpid      },             
+            </if>             
+           <if test="eduPhotoFilegrpid != null and eduPhotoFilegrpid != ''">
+            EDU_PHOTO_FILEGRPID  =  #{eduPhotoFilegrpid },
+            </if>             
+           <if test="operYn != null and operYn != ''">
+            OPER_YN  =  #{operYn },
+            </if>             
+            MDFCN_DT             =  NOW()                ,             
+            MDFRID               =  #{user.userid       }
+       WHERE RCRITID = #{rcritid}             
+   </update>
+   <!-- 대여 삭제 -->
+   <update id="deleteLend" parameterType="LendVo" >
+        /* LendDao.udateLend */
+        DELETE FROM  TB_THA_PACKAGE_LEND_RCRIT
+        WHERE RCRITID IN(
+            <foreach item="rcritid" collection="deleteIds" separator=",">
+               #{rcritid}
+            </foreach>
+        ) 
+   </update>
+   <!-- 대여 차시 삭제 -->
+   <update id="deleteLendRnd" parameterType="LendRndVo" >
+        /* LendDao.deleteLendRnd */
+        DELETE FROM  TB_THA_PACKAGE_LEND_RND
+        WHERE  RCRITID IN(
+            <foreach item="rcritid" collection="deleteIds" separator=",">
+               #{rcritid}
+            </foreach>
+        ) 
+   </update>
+   <!-- 대여 차시 꾸러미 일괄 삭제 -->
+   <update id="deleteLendRndPackageindvd" parameterType="LendRndVo" >
+        /* LendDao.deleteLendRndPackageindvd */
+        DELETE FROM  TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD
+        WHERE RNDID IN(
+                   SELECT RNDID FROM TB_THA_PACKAGE_LEND_RND WHERE  RCRITID IN(
+                    <foreach item="rcritid" collection="deleteIds" separator=",">
+                       #{rcritid}
+                    </foreach>
+                   ) 
+              )
+   </update>
+   
+   <!-- 대여 상세 정보  --> 
+   <select id="selectLend" parameterType="LendVo" resultType="LendVo">
+        /* LendDao.selectLendList */
+        SELECT 
+            A.RCRITID
+            ,A.RCRIT_NM
+            ,A.BGNG_DT
+            ,A.END_DT
+            ,A.LMT_CD
+            ,A.DTL_CN
+            ,A.MVP_URL
+            ,A.MVP_PSTN_CD
+            ,A.ATENT_MTTR
+            ,A.RPRS_IMG_FILEID
+            ,A.DTL_IMG_FILEGRPID
+            ,A.MAP_FILEGRPID
+            ,A.EDU_PHOTO_FILEGRPID
+            ,A.OPER_YN
+            ,A.MDFCN_DT
+            ,A.MDFRID
+            ,A.REG_DT
+            ,A.RGTRID
+         FROM 
+           TB_THA_PACKAGE_LEND_RCRIT A
+        WHERE 1=1 
+          AND A.RCRITID = #{rcritid}
+   </select>
+   
+   <!-- 대여 차시 상세 리스트  --> 
+   <select id="selectLendRndList" parameterType="LendRndVo" resultType="LendRndVo">
+        /* LendDao.selectLendList */
+        SELECT 
+            RNDID
+            ,RCRITID
+            ,ORDR
+            ,BGNG_DE
+            ,END_DE 
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+         FROM 
+           TB_THA_PACKAGE_LEND_RND A
+        WHERE 1=1 
+          AND A.RCRITID = #{rcritid}
+          ORDER BY ORDR ASC
+   </select>
+   
+   <!-- 대여 차시 꾸러미 상세 리스트  --> 
+   <select id="selectLendRndPackageindvdList" parameterType="LendRndVo" resultType="LendRndPackageindvdVo">
+        /* LendDao.selectLendList */
+       SELECT
+            A.RNDID
+           ,A.PACKAGEINDVDID
+           ,A.REG_DT
+           ,A.RGTRID
+           ,B.PACKAGEINDVD_NM 
+           ,B.INDVDNO 
+         FROM 
+           TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD A
+           INNER JOIN TB_THA_PACKAGEINDVD B
+           ON A.PACKAGEINDVDID =B.PACKAGEINDVDID 
+        WHERE 1=1 
+          AND A.RNDID = #{rndid}
+   </select>
+   <!-- 꾸러미 개체 호출 --> 
+   <select id="selectPackageindvdList" parameterType="PackageindvdVo" resultType="PackageindvdVo">
+          /* PackageDao.selectPackageindvdList */
+          <include refid="PaginationMapper.header"/>
+             SELECT 
+                 A.PACKAGEINDVDID
+                 ,A.INDVDNO
+                 ,A.PACKAGEINDVD_NM
+                 ,A.PACKAGEID
+                 ,A.STTS_CD
+                 ,A.PRDUCT_STTS_CD
+                 ,A.USE_YN
+                 ,A.MDFCN_DT
+                 ,A.MDFRID
+                 ,A.REG_DT
+                 ,A.RGTRID
+                 ,B.NM  AS REG_NM
+                 ,C.TYPE_CD 
+                 ,C.EDU_TYPE_CD  
+                 ,E.DLIVY_PRCS_DT
+                 ,F.END_DE 
+               FROM 
+                 TB_THA_PACKAGEINDVD A
+                 INNER JOIN TB_CMM_USER B
+                 ON A.RGTRID = B.USERID 
+                 INNER JOIN TB_THA_PACKAGE C
+                 ON A.PACKAGEID = C.PACKAGEID
+                 LEFT OUTER JOIN (
+                   SELECT 
+                       A.PACKAGEINDVDID
+                       ,IFNULL(MAX(A.RNDID),0) AS RNDID
+                     FROM       
+                       TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD A
+                       GROUP BY A.PACKAGEINDVDID
+                 ) D
+                 ON A.PACKAGEINDVDID = D.PACKAGEINDVDID
+                 LEFT OUTER  JOIN TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD E
+                 ON E.RNDID = D.RNDID
+                 LEFT OUTER  JOIN tb_tha_package_lend_rnd F
+                 ON E.RNDID = F.RNDID      
+            WHERE 1=1
+          <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+              AND A.PACKAGEINDVD_NM LIKE CONCAT('%',#{searchKeyword},'%')
+           </if>
+           <if test="searchTypeCd != null and searchTypeCd != '' ">
+              AND C.TYPE_CD = #{searchTypeCd}
+           </if>
+           <if test="searchEduTypeCd != null and searchEduTypeCd != '' ">
+              AND C.EDU_TYPE_CD = #{searchEduTypeCd}
+           </if>
+           <if test="searchSttsCd != null and searchSttsCd != '' ">
+              AND A.STTS_CD = #{searchSttsCd}
+           </if>
+         <include refid="PaginationMapper.footer"/>
+   </select>
+   <!-- 꾸러미 개체 대여 신청여부 확인  --> 
+   <select id="selectLendApplyYn" parameterType="LendRndVo" resultType="String">
+             /* PackageDao.selectPackageindvdList */
+             SELECT
+                 CASE 
+                   WHEN COUNT(A.APLYID) > 0 THEN 'Y'
+                   ELSE 'N'
+                 END 
+              FROM 
+                tb_tha_package_lend_aply_packageindvd A
+                INNER JOIN tb_tha_package_lend_rnd_packageindvd B
+                ON A.PACKAGEINDVDID = B.PACKAGEINDVDID AND A.RNDID = B.RNDID 
+                INNER JOIN tb_tha_package_lend_rnd C
+                ON B.RNDID = C.RNDID 
+                INNER JOIN tb_tha_package_lend_rcrit D
+                ON C.RCRITID = D.RCRITID
+                WHERE D.RCRITID  IN(
+                    <foreach item="rcritid" collection="deleteIds" separator=",">
+                       #{rcritid}
+                    </foreach>
+                ) 
+  </select>
+</mapper>

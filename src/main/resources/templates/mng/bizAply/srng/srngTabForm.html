@@ -1,0 +1,153 @@
+<div class="col-12">
+    <!-- 신청정보 -->
+    <div class="card">
+        <div class="card-header p-b-0">
+            <div class="sub-title">
+                <div class="row align-items-end">
+                    <div class="col">
+                        <strong>신청정보</strong>
+                    </div>
+                    <div class="col-auto btn-group-sm">
+                        <button type="button" class="btn btn-primary">프로그램 상세보기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-block-small p-t-0">
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>접수번호</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" id="" placeholder="Text Input Validation" th:value="${detail.aplyno}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>기관명</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" id="" placeholder="Text Input Validation" th:value="${detail.instNm}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>프로그램명</strong></label>
+                        <div class="col-12">
+                            <input type="text" class="form-control form-control-sm" id="" placeholder="Text Input Validation" th:value="${detail.prgrmNm}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>신청자</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" id="" placeholder="Text Input Validation" th:value="${detail.userNm}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-3">
+                    <div class="mb-0 form-group">
+                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for=""><strong>심사상태</strong></label>
+                        <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" id="" placeholder="Text Input Validation" th:value="${detail.srngSttsNm}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-3">
+                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>증빙서류 2(운영계획서 및 증빙서류)</strong></div>
+                <div class="border rounded p-t-10 p-b-10 px-4">
+                    <div class="col-auto">
+                        <th:block th:if="${fileList2 != null}">
+                            <div class="row">
+                                <th:block th:if="${fileList2 != null}">
+                                    <div th:each="item : ${fileList2}" th:id="${item.fileid}" class="col-auto">
+                                        <th:block th:if="${item.orginlFileNm != null}">
+                                            <span th:fileid='${item.fileid}'
+                                                th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                href="javascript:void(0)" class='label label-inverse'>
+                                                <th:block th:text="${item.orginlFileNm}" />
+                                            </span>
+                                        </th:block>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+		<div class="card-header p-t-0 p-b-0" th:if="${onlnSrngTypeCd == '177102'}">
+		    <ul class="nav nav-tabs tabs" role="tablist">
+		    <th:block sec:authorize-url="/mng/bizAply/srng/detailSrngUserInfo.html">
+		        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tab_01" role="tab" id="tabCon1Link"><strong>1차 심사</strong></a></li>
+		    </th:block>
+		    <th:block sec:authorize-url="/mng/bizAply/srng/detailSrngSecond.html">
+		        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tab_02" role="tab" id="tabCon2Link"><strong>2차 심사</strong></a></li>		        
+		    </th:block>
+		    </ul>
+		</div>
+	    <div id="myTabContent" class="tab-content tabs p-t-20"></div>
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var onlnSrngTypeCd = /*[[${onlnSrngTypeCd}]]*/null;
+    var srngFormidFirst = /*[[${srngFormidFirst}]]*/null;
+    var srngFormidScnd = /*[[${srngFormidScnd}]]*/null;
+    var aplyid = /*[[${aplyid}]]*/null;
+    var pcntstid = /*[[${pcntstid}]]*/null;
+    /*]]>*/
+
+    $('.nav-tabs a').on('show.bs.tab', function(event) {
+    	//tab set
+        var tabId = event.currentTarget.attributes.id.value;
+        selectTab(tabId);
+    });
+
+    function selectTab(tabId) {
+        if(tabId == "tabCon1Link") {
+            loadTabContent("/mng/bizAply/srng/detailSrngUserInfo.html?aplyid=" + aplyid + "&formid=" + srngFormidFirst);
+        } else if(tabId == "tabCon2Link") {
+            loadTabContent("/mng/bizAply/srng/detailSrngSecond.html?aplyid=" + aplyid + "&formid=" + srngFormidScnd);
+        }
+        $("#" + tabId).parent().addClass("active");
+    }
+
+    function loadTabContent(uri){
+        $.ajax({
+            cache   : false
+          , url     : uri
+          , type    : 'GET'
+          , async   : 'false'
+          , dataType: 'html'
+          , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
+              $('#myTabContent').html(result);
+              scrollIntoView('myTabContent');
+          }
+        });
+        showContent();
+    }
+
+    function initTab() {
+        var tabFlag = false;
+
+        if(tabFlag == false) {
+            selectTab("tabCon1Link");
+            tabFlag = true;
+        }
+
+        if(tabFlag == false) {
+            selectTab("tabCon2Link");
+            tabFlag = true;
+        }
+    }
+
+    initTab();
+
+</script>
