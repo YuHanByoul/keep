@@ -541,4 +541,16 @@ public interface ReqMngService {
     * @return List<SrngTabVo>
      */
     List<SrngTabVo> detailSrngList(SrngTabVo srngTabVo) throws Exception;
+    
+    /**
+    * [심사일정 조회. 
+    *
+    * @Title : selectScheduleList
+    * @Description : TODO
+    * @param 
+    * @return
+    * @throws Exception
+    * @return List<ReqMngVo>
+     */
+    List<ReqMngVo> selectScheduleList(ReqMngVo reqMngVo) throws Exception;
 }

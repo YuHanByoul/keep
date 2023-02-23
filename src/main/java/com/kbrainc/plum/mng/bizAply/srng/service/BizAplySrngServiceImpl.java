@@ -382,4 +382,10 @@ public class BizAplySrngServiceImpl extends PlumAbstractServiceImpl implements B
         
         return result;
     }
+
+    @Override
+    public List<BizAplySrngVo> selectCnsltngExprtList() throws Exception {
+        // TODO Auto-generated method stub
+        return bizAplySrngDao.selectCnsltngExprtList();
+    }
 }

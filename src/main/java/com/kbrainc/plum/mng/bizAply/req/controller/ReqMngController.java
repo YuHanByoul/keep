@@ -1190,4 +1190,36 @@ public class ReqMngController {
         
         return resultMap;
     }
+    
+    /**
+    * 심사일정 캘린더 팝업 화면. 
+    *
+    * @Title : scheduleCalenderPopup
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/req/scheduleCalenderPopup.html")
+    public String scheduleCalenderPopup() throws Exception {
+        return "mng/bizAply/req/scheduleCalenderPopup";
+    }
+    
+    /**
+    * 심사일정 캘린더 > 심사일정 조회. 
+    *
+    * @Title : selectScheduleList
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/bizAply/req/selectScheduleList.do")
+    @ResponseBody
+    public Map<String, Object> selectScheduleList(ReqMngVo reqMngVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("list", this.reqMngService.selectScheduleList(reqMngVo));
+        
+        return resultMap;
+    }
 }

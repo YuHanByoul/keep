@@ -99,4 +99,7 @@ public class BizAplySrngVo extends ParentRequestVo {
     
     /** 총 심사배점 */
     private Integer totalSum;
+    
+    /** 심사위원 이름 */
+    private String nm;
 }

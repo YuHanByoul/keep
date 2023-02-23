@@ -3,13 +3,14 @@
  */
 package com.kbrainc.plum.mng.bizAply.srng.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.kbrainc.plum.mng.bizAply.req.model.ReqMngVo;
 import com.kbrainc.plum.mng.bizAply.req.model.ReqUserVo;
 import com.kbrainc.plum.mng.bizAply.srng.model.BizAplySrngVo;
-import com.kbrainc.plum.mng.score.model.QuestionVo;
 
 /**
 * [심사관리 Service 인터페이스]. 
@@ -89,4 +90,15 @@ public interface BizAplySrngService {
     * @return int
      */
     int updateBizAplySrng(BizAplySrngVo bizAplySrngVo) throws Exception;
+    
+    /**
+    * [심사위원 목록 조회]. 
+    *
+    * @Title : selectCnsltngExprtList
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return List<BizAplySrngVo>
+     */
+    List<BizAplySrngVo> selectCnsltngExprtList() throws Exception;
 }

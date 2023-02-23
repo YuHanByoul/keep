@@ -3,6 +3,8 @@
  */
 package com.kbrainc.plum.mng.bizAply.srng.model;
 
+import java.util.List;
+
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.score.model.QuestionVo;
@@ -84,4 +86,15 @@ public interface BizAplySrngDao {
     * @return int
      */
     int updateItem(QuestionVo questionVo) throws Exception;
+    
+    /**
+    * [심사위원 목록 조회]. 
+    *
+    * @Title : selectCnsltngExprtList
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return List<BizAplySrngVo>
+     */
+    List<BizAplySrngVo> selectCnsltngExprtList() throws Exception;
 }
