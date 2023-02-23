@@ -95,6 +95,7 @@
         /* JntpurchsDao.selectJntpurchsInfo */
         SELECT
             A.JNTPURCHSID
+            , A.JNTPURCHSNO
             , CASE WHEN NOW() <![CDATA[>]]> A.END_DT THEN '모집종료' WHEN A.STTS_CD <![CDATA[=]]> '172104' THEN '일시중지'
               WHEN NOW() <![CDATA[<]]> A.BGNG_DT THEN '모집대기' 
               WHEN A.QNTY_WHOL_LMT_YN <![CDATA[=]]> 'Y' AND B.ORDER_QNTY <![CDATA[>=]]> A.QNTY_WHOL THEN '재고소진'
@@ -107,7 +108,7 @@
             , A.QNTY_WHOL_LMT_YN
             , A.QNTY_LMT
             , A.QNTY_LMT_YN
-            , B.ORDER_QNTY
+            , IFNULL(B.ORDER_QNTY, 0) AS ORDER_QNTY
             , A.DTL_CN
             , A.MVP_URL
             , A.MVP_PSTN_CD
@@ -146,5 +147,235 @@
         WHERE
             A.JNTPURCHSID = #{jntpurchsid}
     </select>
+    
+    <!-- 공동구매 수량별 가격 정보 조회 -->
+    <select id="selectAmtList" parameterType="JntpurchsAmtVo" resultType="JntpurchsAmtVo">
+        /* JntpurchsDao.selectAmtList */
+        SELECT
+            AMTID
+            , QNTY_BGNG
+            , QNTY_END
+            , AMT
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_AMT
+        WHERE
+            JNTPURCHSID = #{jntpurchsid}
+        ORDER BY
+            QNTY_BGNG
+    </select>
+    
+    <!-- 공동구매 상품 조회 -->
+    <select id="selectGoodsList" parameterType="JntpurchsTchaidVo" resultType="JntpurchsTchaidVo">
+        /* JntpurchsDao.selectGoodsList */
+        SELECT
+            B.TCHAIDID
+            , B.TCHAID_NM
+            , C.CD_NM AS TCHAID_TYPE_CD_NM
+            , GROUP_CONCAT(E.CD_NM SEPARATOR ', ') AS EDU_SBJCT_CD_NM
+            , GROUP_CONCAT(G.CD_NM SEPARATOR ', ') AS EDU_TRGT_CD_NM
+            , H.CD_NM AS TEAM_CMPSTN_CD_NM
+            , I.CD_NM AS EDU_TYPE_CD_NM
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_GOODS A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID B ON (B.TCHAIDID = A.TCHAIDID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '184'
+        ) C ON (C.CD = B.TCHAID_TYPE_CD)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_EDU_SBJCT_MAPNG D ON (D.TCHAIDID = A.TCHAIDID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+            TB_CMM_CD
+            WHERE
+            CDGRPID = '155'
+        ) E ON (E.CD = D.EDU_SBJCT_CD)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_EDU_TRGT_MAPNG F ON (F.TCHAIDID = A.TCHAIDID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+            TB_CMM_CD
+            WHERE
+            CDGRPID = '185'
+        ) G ON (G.CD = F.EDU_TRGT_CD)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '186'
+        ) H ON (H.CD = B.TEAM_CMPSTN_CD)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '187'
+        ) I ON (I.CD = B.EDU_TYPE_CD)
+        WHERE
+            A.JNTPURCHSID = #{jntpurchsid}
+        GROUP BY
+            A.TCHAIDID
+        ORDER BY
+            A.TCHAIDID
+    </select>
+    
+    <!-- 공동구매 후기 목록 조회 -->
+    <select id="selectRvwList" parameterType="front.JntpurchsRvwVo" resultType="front.JntpurchsRvwVo">
+        /* JntpurchsDao.selectRvwList */
+        SELECT
+            C.ACNT
+            , A.RVW_CN
+            , A.RVW_SCR
+            , A.RVW_REG_DT
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_ORDER A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+        INNER JOIN
+            TB_CMM_USER C ON (C.USERID = A.RGTRID)
+        WHERE
+            A.RVW_CN IS NOT NULL
+            AND B.JNTPURCHSID = #{jntpurchsid}
+        GROUP BY
+            B.JNTPURCHSID
+        ORDER BY
+            A.RVW_REG_DT DESC
+    </select>
+    
+    <!-- 공동구매 신청 회원 정보 조회 -->
+    <select id="selectUserInfo" parameterType="front.MemberVo" resultType="front.MemberVo">
+        SELECT
+            NM
+            , MOBLPHON
+            , EML
+            , ZIP
+            , ADDR
+            , ADDR_DTL
+        FROM
+            TB_CMM_USER
+        WHERE
+            USERID = #{user.userid}
+    </select>
+    
+    <!-- 공동구매 수량 정보 조회(전체/제한/주문 수량 정보) -->
+    <select id="selectQntyInfo" parameterType="JntpurchsOrderVo" resultType="JntpurchsVo">
+        SELECT
+            A.QNTY_WHOL_LMT_YN
+            , A.QNTY_WHOL
+            , A.QNTY_LMT_YN
+            , A.QNTY_LMT
+            , IFNULL(B.ORDER_QNTY, 0) AS ORDER_QNTY
+        FROM
+            TB_THA_TCHAID_JNTPURCHS A
+        LEFT OUTER JOIN (
+            SELECT
+                SUM(QNTY) AS ORDER_QNTY
+            FROM (
+                SELECT
+                    B.JNTPURCHSID
+                    , B.QNTY
+                FROM
+                    TB_THA_TCHAID_JNTPURCHS_ORDER A
+                LEFT OUTER JOIN
+                    TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+                WHERE
+                    A.STTS_CD = '181100'
+                    AND B.JNTPURCHSID = #{jntpurchsid}
+                GROUP BY
+                    A.ORDERID
+                    , B.JNTPURCHSID
+            ) ORDR
+            GROUP BY
+                JNTPURCHSID
+        ) B ON 1 = 1
+        WHERE
+            A.JNTPURCHSID = #{jntpurchsid}
+    </select>
+    
+    <!-- 공동구매 신청 등록 -->
+    <insert id="insertJntpurchsOrder" parameterType="JntpurchsOrderVo"  useGeneratedKeys="true" keyProperty="orderid">
+        /* JntpurchsDao.insertJntpurchsOrder */
+        INSERT INTO TB_THA_TCHAID_JNTPURCHS_ORDER (
+            ORDERNO
+            , USERID
+            , INSTID
+            , USER_NM
+            , INST_NM
+            , STTS_CD
+            , TELNO
+            , EML
+            , RECPTR
+            , RECPTR_TELNO
+            , RECPTR_EML
+            , DLVY_ZIP
+            , DLVY_ADDR
+            , DLVY_ADDR_DTL
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            (SELECT CONCAT(#{jntpurchsid}, '-', IFNULL(MAX(LPAD(ORDERID + 1, 4, '0')), LPAD('1', 4, '0'))) FROM TB_THA_TCHAID_JNTPURCHS_ORDER AS A WHERE SUBSTR(ORDERNO, 1, 6) = #{jntpurchsid})
+            , #{user.userid}
+            , #{user.instid}
+            , #{user.name}
+            , (SELECT INST_NM FROM TB_CMM_INST AS A WHERE INSTID = #{user.instid})
+            , '181100'
+            , #{telno}
+            , #{eml}
+            , #{recptr}
+            , #{recptrTelno}
+            , #{recptrEml}
+            , #{dlvyZip}
+            , #{dlvyAddr}
+            , #{dlvyAddr_dtl}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 공동구매 상품 신청 등록 -->
+    <insert id="insertJntpurchsOrderGoods" parameterType="JntpurchsTchaidVo">
+        INSERT TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS (
+            ORDERID
+            , JNTPURCHSID
+            , TCHAIDID
+            , QNTY
+            , AMT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{orderid}
+            , #{jntpurchsid}
+            , #{tchaidid}
+            , #{qnty}
+            , #{amt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
     
 </mapper>

@@ -6,9 +6,15 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsDao;
+import com.kbrainc.plum.front.jntpurchs.model.JntpurchsRvwVo;
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsVo;
+import com.kbrainc.plum.front.member.model.MemberVo;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsAmtVo;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsOrderVo;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsTchaidVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -62,28 +68,106 @@ public class JntpurchsServiceImpl extends PlumAbstractServiceImpl implements Jnt
         return jntpurchsDao.selectJntpurchsInfo(jntpurchsVo);
     }
     
+    /**
+    * 환경교육 교구 공동구매 상품 목록 조회
+    *
+    * @Title : selectGoodsList
+    * @Description : 환경교육 교구 공동구매 상품 목록 조회
+    * @param jntpurchsTchaidVo JntpurchsTchaidVo 객체
+    * @return List<JntpurchsTchaidVo> 환경교육 교구 공동구매 상품 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<JntpurchsTchaidVo> selectGoodsList(JntpurchsTchaidVo jntpurchsTchaidVo) throws Exception {
+        return jntpurchsDao.selectGoodsList(jntpurchsTchaidVo);
+    }
     
-//    /**
-//    * 공동구매모집 정보 등록
-//    *
-//    * @Title : insertJntpurchs 
-//    * @Description : 공동구매모집 정보 등록
-//    * @param jntpurchsVo JntpurchsVo
-//    * @return int insert 로우수
-//    * @throws Exception 예외
-//    */
-//    @Override
-//    @Transactional
-//    public int insertJntpurchs(JntpurchsVo jntpurchsVo) throws Exception {
-//        int retVal = 0;
-//        // 상품 등록 목록
+    /**
+    * 환경교육 교구 공동구매  수량별 가격 목록 조회
+    *
+    * @Title : selectGoodsList
+    * @Description : 환경교육 교구 공동구매  수량별 가격 목록 조회
+    * @param jntpurchsAmtVo JntpurchsAmtVo 객체
+    * @return List<JntpurchsAmtVo> 환경교육 교구 공동구매  수량별 가격 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<JntpurchsAmtVo> selectAmtList(JntpurchsAmtVo jntpurchsAmtVo) throws Exception {
+        return jntpurchsDao.selectAmtList(jntpurchsAmtVo);
+    }
+    
+    /**
+    * 환경교육 교구 공동구매 후기 목록 조회
+    *
+    * @Title : selectRvwList
+    * @Description : 환경교육 교구 공동구매  후기 목록 조회
+    * @param jntpurchsRvwVo JntpurchsRvwVo 객체
+    * @return List<JntpurchsRvwVo> 후기 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<JntpurchsRvwVo> selectRvwList(JntpurchsRvwVo jntpurchsRvwVo) throws Exception {
+        return jntpurchsDao.selectRvwList(jntpurchsRvwVo);
+    }
+    
+    /**
+    * 공동구매 신청 회원 정보 조회
+    *
+    * @Title : selectUserInfo
+    * @Description : 공동구매 신청 회원 정보 조회
+    * @param memberVo MemberVo 객체
+    * @return MemberVo 공동구매 신청 회원 정보
+    * @throws Exception 예외
+    */
+    @Override
+    public MemberVo selectUserInfo(MemberVo memberVo) throws Exception {
+        return jntpurchsDao.selectUserInfo(memberVo);
+    }
+    
+    /**
+    * 공동구매 신청 등록
+    *
+    * @Title : insertJntpurchsOrder 
+    * @Description : 공동구매 신청 등록
+    * @param jntpurchsOrderVo JntpurchsOrderVo
+    * @return int insert 로우수
+    * @throws Exception 예외
+    */
+    @Override
+    @Transactional
+    public int insertJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception {
+        int retVal = 0;
+        
+        // 1. 수량확인
+        JntpurchsVo qntyInfo = jntpurchsDao.selectQntyInfo(jntpurchsOrderVo);
+        String qntyWholLmtYn = qntyInfo.getQntyWholLmtYn();
+        int qntyWhol = qntyInfo.getQntyWhol();
+        String qntyLmtYn = qntyInfo.getQntyLmtYn();
+        int qntyLmt = qntyInfo.getQntyLmt();
+        int orderQnty = qntyInfo.getOrderQnty();
+        int reqQnty = jntpurchsOrderVo.getQnty();
+        
+        if(qntyWholLmtYn.equals("Y")) { // 수량제한이 있는 경우
+            int remainQnty = qntyWhol - orderQnty;
+            if(remainQnty < reqQnty) { // 신청수량보다 남아있는 수량이 적은 경우
+                return -1;
+            }
+        }
+        if(qntyLmtYn.equals("Y") && reqQnty > qntyLmt) { // 개인 신청 수량 제한이 있고 신청수량이 제한수량보다 큰 경우
+            return -2;
+        }
+        // 2. 신청정보 등록
+        
+        // 3. 신청 상품 등록
+        
+        // 상품 등록 목록
 //        List<JntpurchsTchaidVo> goodsList = jntpurchsVo.getGoodsList();
-//        // 금액설정 등록 목록
+        // 금액설정 등록 목록
 //        List<JntpurchsAmtVo> amtList = jntpurchsVo.getAmtList();
-//        // 1. 공동구매모집 등록
+        // 1. 공동구매모집 등록
 //        retVal += jntpurchsDao.insertJntpurchs(jntpurchsVo);
 //        int jntpurchsid = jntpurchsVo.getJntpurchsid();
-//        // 2. 상품 등록
+        // 2. 상품 등록
 //        if(goodsList != null && goodsList.size() > 0) {
 //            JntpurchsTchaidVo goods = null;
 //            for(int i = 0 ; i < goodsList.size() ; i++) {
@@ -103,9 +187,9 @@ public class JntpurchsServiceImpl extends PlumAbstractServiceImpl implements Jnt
 //                retVal += jntpurchsDao.insertJntpurchsAmt(amt);
 //            }
 //        }
-//        
-//        return retVal;
-//    }
+        
+        return retVal;
+    }
 //     
 //
 //     

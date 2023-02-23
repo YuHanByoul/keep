@@ -4,8 +4,9 @@
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
     layout:decorator="layout/front/subLayout" >
 <body>
-	<div layout:fragment="content">
-    	<div class="product-wrap sub-banner-swiper">
+    <script type="text/javascript" src="../files/assets/pages/accordion/accordion.js"></script>
+    <div layout:fragment="content">
+        <div class="product-wrap sub-banner-swiper">
             <div class="thumb-swiper">
                 <div class="swiper gallery-thumb">
                     <div class="swiper-wrapper">
@@ -42,39 +43,19 @@
                         <div th:case="모집종료" class="tag tag-red" th:text="${jntpurchsInfo.sttsCdNm}"></div>
                         <div th:case="*" class="tag tag-gray" th:text="${jntpurchsInfo.sttsCdNm}"></div>
                     </th:block>
-                
-                    
                     <h3 th:text=${jntpurchsInfo.jntpurchsNm}></h3>
                     <dl>
                         <div class="list">
                             <dt>교구명 :</dt>
                             <dd th:text=${jntpurchsInfo.tchaidNm}></dd>
                         </div>
-                        <!--
-                        <div class="list">
-                            <dt>교육주제 :</dt>
-                            <dd>환경교육교구세트</dd>
-                        </div>
-                        <div class="list">
-                            <dt>교육대상 :</dt>
-                            <dd>아동기(8~13세)
-                            </dd>
-                        </div>
-                        <div class="list">
-                            <dt>모둠구성 :</dt>
-                            <dd>없음</dd>
-                        </div>
-                        <div class="list">
-                            <dt>교육유형 :</dt>
-                            <dd>학생중심형</dd>
-                        </div>
-                        -->
                     </dl>
                 </div>
                 <div class="btn-wrap">
                     <div class="left">
                         <th:block th:if="${mapFileInfo != null}">
-                        <a href="javascript:void(0);" class="btn-medium btn-outline-blue btn-before-blank">지도안 보기</a>
+                        <!-- <a href="/js/pdfjs/web/viewer.html?file=/files/sample.pdf" class="btn-medium btn-outline-blue btn-before-blank" target="_blank">지도안 보기</a> -->
+                        <a href="javascript:void(0);" class="btn-medium btn-outline-blue btn-before-blank" onclick="alert('pdf뷰어 연결');">지도안 보기</a>
                         <a href="javascript:void(0);" th:data-fileid="${mapFileInfo.fileid}" th:data-fileIdntfcKey="${mapFileInfo.fileIdntfcKey}" class="btn-medium btn-outline-black btn-before-download" onclick="javascript:downloadFileByFileid(this.getAttribute('data-fileid'), this.getAttribute('data-fileIdntfcKey'))">지도안 다운로드</a>
                         </th:block>
                         <th:block th:if="${eduPhotoFileList != null}">
@@ -86,37 +67,47 @@
                     <dl>
                         <div class="list">
                             <dt>신청기간</dt>
-                            <dd>2023년 1월 15일 11:00 ~ 2023년 2월 28일 14:00</dd>
+                            <dd th:text="${#dates.format(jntpurchsInfo.bgngDt, 'yyyy-MM-dd HH:mm:ss') + ' ~ ' + #dates.format(jntpurchsInfo.endDt, 'yyyy-MM-dd HH:mm:ss')}"></dd>
                         </div>
                     </dl>
                     <dl>
                         <div class="list">
                             <dt>현재까지 신청된 총 수량</dt>
-                            <dd><span class="fc-blue">150개</span> / 200개</dd>
+                            <dd>
+                                <th:block th:if="${jntpurchsInfo.qntyWholLmtYn == 'Y'}"> 
+                                <span class="fc-blue" id="orderQnty">0개</span> 개
+                                </th:block>
+                                <th:block th:unless="${jntpurchsInfo.qntyWholLmtYn == 'Y'}">
+                                <span class="fc-blue" id="orderQnty">0개</span> / <span id="qntyWhol">0</span>개
+                                </th:block>
+                            </dd> 
                         </div>
                         <div class="list">
                             <dt>공동구매 예상 가격(개당)</dt>
-                            <dd>35,000원</dd>
+                            <dd id="expectationPrice">0원</dd>
                         </div>
                     </dl>
                     <dl class="total">
                         <div class="list">
                             <dt>
                                 <div class="form-input form-input-number">
-                                    <input type="number" placeholder="Plaeholder" value="2" min="0" max="100" title="신청갯수" data-width="90">
-                                    <div class="btn-number"><button type="button" class="num-up" title="숫자 증가"></button><button type="button" class="num-down" title="숫자 감소"></button></div>
+                                    <input type="number" id="qnty" placeholder="" value="0" min="0" max="0" title="신청갯수" data-width="90" onkeyup="jntpurchsDetail.setPrice();">
+                                    <div class="btn-number">
+                                        <button type="button" class="num-up" title="숫자 증가" onclick="jntpurchsDetail.onChangeQnty('up');"></button>
+                                        <button type="button" class="num-down" title="숫자 감소" onclick="jntpurchsDetail.onChangeQnty('down');"></button>
+                                    </div>
                                 </div>
                             </dt>
-                            <dd><span class="fc-blue">70,000원</span></dd>
+                            <dd><span class="fc-blue" id="totalPrice">0원</span></dd>
                         </div>
                     </dl>
                     <dl>
                         <div class="list">
                             <dt>
-                                <label class="inp vm" id="terms-checkbox" data-layer-href="layer-terms01"><input type="checkbox" title="개인정보 수집 및 이용에 대한 동의"><b class="normal-wrap">개인정보 수집 및 이용에 대한 동의</b></label>
+                                <label class="inp vm" id="terms-checkbox" data-layer-href="layer-popup09"><input type="checkbox" title="개인정보 수집 및 이용에 대한 동의" id="agree"><b class="normal-wrap">개인정보 수집 및 이용에 대한 동의</b></label>
                             </dt>
                             <dd>
-                                <button type="button" class="btn-medium btn-green">신청</button>
+                                <button type="button" class="btn-medium btn-green" onclick="jntpurchsDetail.onLoadUserInfo();">신청</button>
                             </dd>
                         </div>
                     </dl>
@@ -132,139 +123,254 @@
                 <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">후기</button></li>
             </ul>
             <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
-    
                 <div class="table-col table-layout-auto">
                     <table>
-                        <caption>상세정보 - 상품명, 판매기간, 총 신청 수량 별 가격 정보</caption>
+                        <caption>상품정보</caption>
                         <colgroup>
                         </colgroup>
                         <thead>
                             <tr>
-                                <th scope="col">상품명</th>
-                                <th scope="col">판매기간</th>
-                                <th scope="col">총 신청 수량 별 가격 정보</th>
+                                <th scope="col">교구명</th>
+                                <th scope="col">교구유형</th>
+                                <th scope="col">교육주제</th>
+                                <th scope="col">교육대상</th>
+                                <th scope="col">모듬구성</th>
+                                <th scope="col">교육유형</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>탄소절감 패키지</td>
-                                <td>2023년 1월 15일 ~ 2월 28일</td>
-                                <td>
-                                    <ul>
-                                        <li>① 0개 ~ 100개 : 35,000원</li>
-                                        <li>② 101개 ~ 200개 : 30,000원</li>
-                                    </ul>
-                                </td>
+                            <tr th:each="item : ${goodsList}">
+                                <td th:text=${item.tchaidNm}></td>
+                                <td th:text=${item.tchaidTypeCdNm}></td>
+                                <td th:text=${item.eduSbjctCdNm}></td>
+                                <td th:text=${item.eduTrgtCdNm}></td>
+                                <td th:text=${item.teamCmpstnCdNm}></td>
+                                <td th:text=${item.eduTypeCdNm}></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-    
-                <div class="youtube-frame mt45"><iframe src="https://www.youtube.com/embed/5Peo-ivmupE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
-    
+                <th:block th:if="${jntpurchsInfo.mvpUrl != null and jntpurchsInfo.mvpUrl != '' and jntpurchsInfo.mvpPstnCd == 'T'}">
+                <div class="youtube-frame mt45">
+                    <iframe th:src="${'https://www.youtube.com/embed/' + jntpurchsInfo.mvpUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                </th:block>
+                
+                <div class="table-view-content mt45" th:utext="${jntpurchsInfo.dtlCn}"></div>
+                
+                <th:block th:if="${jntpurchsInfo.mvpUrl != null and jntpurchsInfo.mvpUrl != '' and jntpurchsInfo.mvpPstnCd == 'B'}">
+                <div class="youtube-frame mt45">
+                    <iframe th:src="${'https://www.youtube.com/embed/' + jntpurchsInfo.mvpUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                </th:block>
             </div>
             <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
-    
-                <div class="box-desc-list bg7">
-                    <strong class="box-desc-tit">유의사항</strong>
-                    <ul>
-                        <li>공동구매 상품은 신청 기간 내에 일정 수량 이상 신청 시 판매가 가능한 상품입니다.</li>
-                        <li>신청기간 완료 후 입금관련 안내를 별도로 드립니다.</li>
-                        <li>공동구매 판매 관련, 환경보전협회는 중개만하고, 제휴사에서 판매관련 일체의 업무를 진행하며, 이에 따른 판매/배송/입금/환불/납품 등 일련의 의무 및 책임은 제휴사에 있음을 알려드립니다.</li>
-                    </ul>
-                </div>
+                <div class="table-view-content mt45" th:utext="${jntpurchsInfo.atentMttr}"></div>
             </div>
             <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
                 <div class="accordion-content acc-list">
+                    <th:block th:if="${rvwList == null or #lists.size(rvwList) == 0}">
                     <h3 class="acc-title active">
-                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel0" id="accordion-0" title="질문" aria-expanded="false">
-                            <span class="name">ti**23</span>
-                            <strong>결제는 어떻게 진행하나요?</strong>
-                            <span class="rate" title="별점4">
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
+                        <span class="acc-trigger mo-flex-wrap">
+                        </span>
+                    </h3>
+                    <div class="acc-panel active">
+                        <span class="blind">후기</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300">
+                            등록된 후기가 없습니다.
+                        </div>
+                    </div>
+                    </th:block>
+                    <th:block th:unless="${rvwList == null or #lists.size(rvwList) == 0}">
+                    <th:block th:each="item : ${rvwList}">
+                    <h3 class="acc-title active">
+                        <span class="acc-trigger mo-flex-wrap">
+                            <span class="name" th:text="${item.acnt}"></span>
+                            <span class="rate" th:title="${'별점' + item.rvwScr}">
+                            <th:block th:each="num : ${#numbers.sequence(1, #lists.size(rvwList) + 2)}">
+                                <span class="icon icon-star" th:title="${'별' + num}"></span>
+                            </th:block>
                             </span>
-                        </button>
+                        </span>
                     </h3>
-                    <div id="accordion-panel0" role="region" aria-labelledby="accordion-0" class="acc-panel active">
-                        <span class="blind">답변</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
+                    <div class="acc-panel active">
+                        <span class="blind">후기</span>
+                        <div class="acc-content bg-white p0 fc-black6 fw-300" th:text="${item.rvwCn}">
                         </div>
                     </div>
-                    <h3 class="acc-title">
-                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel1" id="accordion-1" title="질문" aria-expanded="true">
-                            <span class="name">ti**23</span>
-                            <strong>결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?결제는 어떻게 진행하나요?</strong>
-                            <span class="rate" title="별점0"></span>
-                        </button>
-                    </h3>
-                    <div id="accordion-panel1" role="region" aria-labelledby="accordion-1" class="acc-panel">
-                        <span class="blind">답변</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
-                    <h3 class="acc-title">
-                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel2" id="accordion-2" title="질문" aria-expanded="true">
-                            <span class="name">ti**23</span>
-                            <strong>결제는 어떻게 진행하나요?</strong>
-                            <span class="rate" title="별점5">
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                            </span>
-                        </button>
-                    </h3>
-                    <div id="accordion-panel2" role="region" aria-labelledby="accordion-2" class="acc-panel">
-                        <span class="blind">답변</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
-                    <h3 class="acc-title">
-                        <button type="button" class="acc-trigger mo-flex-wrap" aria-controls="accordion-panel3" id="accordion-3" title="질문" aria-expanded="true">
-                            <span class="name">ti**23</span>
-                            <strong>결제는 어떻게 진행하나요?</strong>
-                            <span class="rate" title="별점4">
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                                <span class="icon icon-star" title=""></span>
-                            </span>
-                        </button>
-                    </h3>
-                    <div id="accordion-panel3" role="region" aria-labelledby="accordion-3" class="acc-panel">
-                        <span class="blind">답변</span>
-                        <div class="acc-content bg-white p0 fc-black6 fw-300">
-                            Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. <br>Nullam id dolor id nibh ultricies vehicula. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec ullamcorper nulla non metus auctor fringilla.
-                        </div>
-                    </div>
+                    </th:block>
+                    </th:block>
                 </div>
-                
             </div>
         </div>
         <div class="btn-wrap">
             <div class="center">
-                <button type="button" class="btn-medium btn-gray">목록</button>
+                <button type="button" class="btn-medium btn-gray" onclick="location.href='/front/jntpurchs/jntpurchsListForm.html';">목록</button>
             </div>
         </div>
-	
-    	<script th:inline="javascript">
-    	   var jntpurchsDetail = {
+        
+        <div class="layer-popup layer-medium" data-layer-id="layer-popup09">
+            <div class="layer-dimmed" title="팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">개인정보 수집 및 이용에 대한 동의</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+                    <div class="box-desc-list bg7">
+                        <ul>
+                            <li>수집‧이용 목적 : 공동구매 추진 시 활용</li>
+                            <li>수집‧이용하려는 개인정보 항목 : 이름, 직장명, 직장주소, 핸드폰연락처</li>
+                            <li>개인정보 보유 및 이용기간 : 3년</li>
+                            <li>동의 거부권리 안내 : 개인정보 수집‧이용에 대한 동의를 거부할 권리가 있으며, 동의 거부 시에도 참여는 가능하나 공동구매의 신청 시 불이익이 있을 수 있습니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="layer-popup layer-xlarge" data-layer-id="dlvyInfoPopup">
+            <div class="layer-dimmed" title="팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">배송지 정보 확인</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+                    <div class="table-caption">
+                        <!--
+                        <div class="left">
+                            <h3 class="sub-title">배송지 정보 확인</h3>
+                        </div>
+                        -->
+                        <div class="right">
+                            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-row table-row-mo">
+                        <form name="jntpurchsOrderForm" id="jntpurchsOrderForm">
+                        <table>
+                            <caption>배송지 정보 확인 - 이름, 휴대전화, 이메일, 주소, 상세주소</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">이름<i class="ast" title="필수입력">*</i></th>
+                                    <td>
+                                        <div class="form-input">
+                                            <input type="text" title="이름" placeholder="이름 입력" data-width="304" id="recptr">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">휴대전화<i class="ast" title="필수입력">*</i></th>
+                                    <td>
+                                        <div class="form-input">
+                                            <input type="number" title="휴대전화" placeholder="휴대전화번호 입력" data-width="304" value="" id="moblphon">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">이메일<i class="ast" title="필수입력">*</i></th>
+                                    <td>
+                                        <div class="row row-auto flex-wrap">
+                                            <div class="col">
+                                                <div class="form-input">
+                                                    <input type="email" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160" id="eml0">
+                                                    <div class="bul">@</div>
+                                                    <input type="email" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160" id="eml1">
+                                                    <select title="이메일 도메인" data-width="120" id="eml">
+                                                        <option value="직접입력">직접입력</option>
+                                                        <option value="chol.com">chol.com</option>
+                                                        <option value="dreamwiz.com">dreamwiz.com</option>
+                                                        <option value="empal.com">empal.com</option>
+                                                        <option value="empas.com">empas.com</option>
+                                                        <option value="freechal.com">freechal.com</option>
+                                                        <option value="gmail.com">gmail.com</option>
+                                                        <option value="hanafos.com">hanafos.com</option>
+                                                        <option value="hanmail.net">hanmail.net</option>
+                                                        <option value="hanmir.com">hanmir.com</option>
+                                                        <option value="hitel.net">hitel.net</option>
+                                                        <option value="hotmail.com">hotmail.com</option>
+                                                        <option value="korea.com">korea.com</option>
+                                                        <option value="lycos.co.kr">lycos.co.kr</option>
+                                                        <option value="megapass.net">megapass.net</option>
+                                                        <option value="nate.com">nate.com</option>
+                                                        <option value="naver.com">naver.com</option>
+                                                        <option value="paran.com">paran.com</option>
+                                                        <option value="sayclub.net">sayclub.net</option>
+                                                        <option value="shinbiro.com">shinbiro.com</option>
+                                                        <option value="yahoo.co.kr">yahoo.co.kr</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <p class="feedback invalid">이메일 형식이 올바르지 않습니다.</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
+                                    <td>
+                                        <div class="form-input">
+                                            <div class="bul normal-wrap" id="zip"></div>
+                                        </div>
+                                        <div class="form-input a-center">
+                                            <div class="bul normal-wrap" id="addr"></div>
+                                            <button type="button" class="btn-medium btn-gray">수정</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
+                                    <td>
+                                        <div class="row row-auto flex-wrap">
+                                            <div class="col">
+                                                <div class="form-input">
+                                                    <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" id="addrDtl">
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <p class="feedback invalid">상세주소는 100자를 초과할 수 없습니다.</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        </form>
+                    </div>
+
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-green">공동구매 신청</button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    
+        <script th:inline="javascript">
+           var jntpurchsDetail = {
                jntpurchsInfo: /*[[${jntpurchsInfo}]]*/
                , mapFileInfo: /*[[${mapFileInfo}]]*/
                , eduPhotoFileList: /*[[${eduPhotoFileList}]]*/
+               , amtList: /*[[${amtList}]]*/
                
                , init: function() {
+                   this.setData();
                    this.setSwiper();
+                   this.setPrice();
+                   this.registEvent();
                }
                
-               , addEvent: function() {
+               , registEvent: function() {
+                   var _this = this;
                }
                
                , setSwiper: function() {
@@ -293,6 +399,47 @@
                    });
                }
                
+               , setData: function() {
+                   var qntyWhol = this.jntpurchsInfo.qntyWhol;
+                   var qntyWholLmtYn = this.jntpurchsInfo.qntyWholLmtYn;
+                   var qntyLmt = this.jntpurchsInfo.qntyLmt;
+                   var qntyLmtYn = this.jntpurchsInfo.qntyLmtYn;
+                   var orderQnty = this.jntpurchsInfo.orderQnty;
+                   var remainQnty = qntyWhol - orderQnty;
+                   
+                   $("#orderQnty").text(addComma3(orderQnty) + "개");
+                   if(qntyWholLmtYn == "N") { // 수량제한이 없는 경우
+                       $("#qntyWhol").text(addComma3(qntyWhol));
+                   }
+                   if(qntyLmtYn == "N") { // 구매수량 제한이 없는 경우
+                       $("#qnty").prop("max", remainQnty);
+                   } else { // 구매 수량 제한이 있는 경우 남은 수량과 제한수량보다 적은 수
+                       $("#qnty").prop("max", Math.min(remainQnty, qntyLmt));
+                   }
+               }
+               
+               , setPrice: function() {
+                   var qnty = $("#qnty").val();
+                   for(var i = 0, len = this.amtList.length; i < len; i++) {
+                       var data = this.amtList[i];
+                       var qntyBgng = data.qntyBgng;
+                       var qntyEnd = data.qntyEnd;
+                       if(qnty >= qntyBgng && qnty <= qntyEnd) {
+                           $("#expectationPrice").text(addComma3(data.amt) + "원");
+                           var totalPrice = data.amt * qnty;
+                           $("#totalPrice").text(addComma3(totalPrice) + "원");
+                           break;
+                       }
+                   }
+               }
+               
+               , onChangeQnty: function(dir) {
+                   var qnty = parseInt($("#qnty").val(), 10);
+                   setTimeout(function() {
+                       jntpurchsDetail.setPrice();
+                   }, 100);
+               }
+               
                , onDownloadEduPhoto: function() {
                    for(var i = 0, len = this.eduPhotoFileList.length; i < len; i++) {
                        var data = this.eduPhotoFileList[i];
@@ -305,13 +452,54 @@
                     var start = new Date().getTime();
                     while(start + time > new Date().getTime());
                 }
+                
+                , onLoadUserInfo: function() {
+                    /*
+                    if($("#qnty").val() == 0) {
+                        alert("신청 수량을 입력해주세요.");
+                        $("#qnty").focus();
+                        return false;
+                    }
+                    if(!$("#agree").is(":checked")) {
+                        alert("개인정보 수집 및 이용에 대한 동의가 필요합니다.");
+                        return false;
+                    }
+                    */
+                    if(displayWorkProgress(true)) {
+                        $.ajax({
+                            url: "/mng/jntpurchs/selectUserInfo.do"
+                            , type: "POST"
+                            , cache: false
+                            , dataType: "json"
+                            , data: {}
+                            , success: function(response) {
+                                jntpurchsDetail.onRequestPopup(response.userInfo);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+                
+                , onRequestPopup: function(data) {
+                    console.log(data);
+                    var target = "dlvyInfoPopup";
+                    layerPopup.open({target});
+                    $("#recptr").val(data.nm);
+                    $("#moblphon").val(data.moblphon);
+                    $("#eml0").val(data.eml.split("@")[0]);
+                    var emailDomain = data.eml.split("@")[1]; 
+                    $("#eml1").val(emailDomain);
+                    $("#eml").val(emailDomain);
+                    $("#zip").text(data.zip);
+                    $("#addr").text(data.addr);
+                    $("#addrDtl").val(data.addrDtl);
+                }
            };
            
            $(function() {
                jntpurchsDetail.init();
            });
-    	</script>
-	</div>
-
+        </script>
+    </div>
 </body>
 </html>
