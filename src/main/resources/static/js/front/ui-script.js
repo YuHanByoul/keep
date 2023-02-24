@@ -377,6 +377,8 @@ const formStyle = {
 		formStyle.onNumberClick();
 		formStyle.onNumberKeydown();
 		formStyle.readonly();
+		formStyle.searchFilterSuggest();
+		suggestFlag = '';
 	},
 	// typing : function (){
 	// 	$(document).on('focusin keypress keydown','.form-input input:not([type="checkbox"]), .form-input input:not([type="radio"]), .form-input textarea', function () {
@@ -535,6 +537,14 @@ const formStyle = {
 				$(this).attr('aria-readonly',true)
 			}
 		});
+	},
+	searchFilterSuggest : function () {
+		$(document).on('focusin', '.search-suggest-position', function () {
+			$('.search-filter-suggest').addClass('suggest-active');
+		})
+		$(document).on('focusout', '.search-suggest-position', function () {
+			$('.search-filter-suggest').removeClass('suggest-active')
+		});
 	}
 } 
 
@@ -561,7 +571,8 @@ const dropDown = {
 			par = $(this).closest('.dropDown');
 			if (par.hasClass('active')) {
 				const value = $(this).html();
-				par.find('.trigger').text(value);
+				par.find('.trigger').html('');
+				par.find('.trigger').append(value);
 				dropDown.close();
 			}
 		});
@@ -810,7 +821,7 @@ const tabContent = {
 				'aria-selected': 'false'
 			});
 			// 선택된 연관된 탭 패널 활성화
-			$('#' + $(this).attr('aria-controls')).addClass('active')
+			$('#' + $(this).attr('aria-controls')).addClass('active');
 			// 기존 탭 패널 비활성화
 			$('#' + $(this).attr('aria-controls')).siblings('.tabpanel').removeClass('active');
 			if ($(this).is('button')) {
@@ -832,7 +843,8 @@ const tabContent = {
 				//mobile trigger text 
 				const $tabParent = $(this).closest('.tab-content');
 				const $mobileTrigger = $tabParent.find('.tab-mobile-trigger')
-				$mobileTrigger.text($(this).text())
+				$mobileTrigger.html('');
+				$mobileTrigger.append($(this).html());
 			} else {
 				$(this).attr({
 					'aria-selected': 'false'
