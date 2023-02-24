@@ -63,6 +63,9 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     /** 신청자 계정 */
     private String nm;
     
+    /** 신청자 기관 아이디 */
+    private String instid;
+    
     /** 신청자 기관명 */
     private String instNm;
     
@@ -83,6 +86,9 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     
     /** 수령인 이메일 */
     private String recptrEml;
+    
+    /** 배송지 우편번호 */
+    private String dlvyZip;
     
     /** 배송지 주소 */
     private String dlvyAddr;

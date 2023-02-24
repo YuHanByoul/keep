@@ -235,4 +235,37 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public int updateInstCd(Integer instid) throws Exception;
+    
+    /**
+    * ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다.
+    *
+    * @Title : selectAcntFromCiList
+    * @Description : ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return List<MemberAcntPswdFindVo> 계정 목록
+    * @throws Exception 예외
+    */
+    public List<MemberAcntPswdFindVo> selectAcntFromCiList(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception;
+    
+    /**
+    * ci와 acnt에 해당하는 회원 정보를 조회한다.
+    *
+    * @Title : selectAcntFromCi
+    * @Description : ci와 acnt에 해당하는 회원 정보를 조회한다.
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return MemberAcntPswdFindVo 계정 정보
+    * @throws Exception 예외
+    */
+    public MemberAcntPswdFindVo selectAcntFromCi(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception;
+    
+    /**
+    * 비밀번호 수정(비밀번호 찾기).
+    *
+    * @Title : updatePassword
+    * @Description : 비밀번호 수정(비밀번호 찾기).
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updatePassword(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception;
 }

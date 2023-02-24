@@ -2,6 +2,7 @@ package com.kbrainc.plum.front.member.controller;
 
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.ibatis.type.Alias;
 import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
 import org.json.simple.JSONArray;
@@ -54,6 +56,7 @@ import com.kbrainc.plum.cmm.esylgn.service.EsylgnService;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.cmm.idntyVrfctn.model.IdntyVrfctnSuccessVo;
 import com.kbrainc.plum.cmm.idntyVrfctn.service.IdntyVrfctnService;
+import com.kbrainc.plum.front.member.model.MemberAcntPswdFindVo;
 import com.kbrainc.plum.front.member.model.MemberAcntPswdVo;
 import com.kbrainc.plum.front.member.model.MemberAgreVo;
 import com.kbrainc.plum.front.member.model.MemberAuthVo;
@@ -243,7 +246,6 @@ public class MemberController {
         
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            fieldError.getDefaultMessage();
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.print("<script>alert('" + fieldError.getDefaultMessage() + "');location.href='/front/membership/step1.html';</script>");
@@ -372,7 +374,6 @@ public class MemberController {
     public String membershipStep5(HttpServletResponse response, @Valid MemberTypeVo memberTypeVo, BindingResult bindingResult, Model model) throws Exception {
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
-            fieldError.getDefaultMessage();
             response.setContentType("text/html;charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.print("<script>alert('" + fieldError.getDefaultMessage() + "');location.href='/front/membership/step1.html';</script>");
@@ -707,5 +708,138 @@ public class MemberController {
         result.setSignguCd(memberService.getSignguCdWithaddress(result.getAddr()));
         
         return result;
+    }
+    
+    /**
+    * 아이디 찾기 화면.
+    *
+    * @Title       : idFindForm 
+    * @Description : 아이디 찾기 화면
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @param model 모델객체
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/findId.html")
+    public String findIdForm(MemberAcntPswdFindVo memberAcntPswdFindVo, Model model) throws Exception {
+        
+        if (!"".equals(StringUtil.nvl(memberAcntPswdFindVo.getEncodeData()))) {
+            IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, memberAcntPswdFindVo.getEncodeData());
+            
+            if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
+                memberAcntPswdFindVo.setEncodeData(null);
+                memberAcntPswdFindVo.setAlertMsg(result.getSMessage());
+            } else {  
+                MemberAcntPswdFindVo paramVo = new MemberAcntPswdFindVo();
+                paramVo.setCi(result.getSConnInfo());
+                List<MemberAcntPswdFindVo> acntList = memberService.selectAcntFromCiList(paramVo);
+                if (acntList.size() == 0) {
+                    memberAcntPswdFindVo.setEncodeData(null);
+                    memberAcntPswdFindVo.setAlertMsg("존재하지 않는 회원입니다.");
+                } else {
+                    model.addAttribute("acntList", acntList);
+                }
+            }
+        }
+        
+        model.addAttribute("data", memberAcntPswdFindVo);
+        return "front/member/findIdForm.html";
+    }
+    
+    /**
+    * 비밀번호 찾기 화면.
+    *
+    * @Title       : pswdFindForm 
+    * @Description : 비밀번호 찾기 화면
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @param model 모델객체
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/findPswd.html")
+    public String findPswdForm(MemberAcntPswdFindVo memberAcntPswdFindVo, Model model) throws Exception {
+        
+        if (!"".equals(StringUtil.nvl(memberAcntPswdFindVo.getEncodeData()))) {
+            IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, memberAcntPswdFindVo.getEncodeData());
+            
+            if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
+                memberAcntPswdFindVo.setEncodeData(null);
+                memberAcntPswdFindVo.setAlertMsg(result.getSMessage());
+            } else {  
+                MemberAcntPswdFindVo paramVo = new MemberAcntPswdFindVo();
+                paramVo.setCi(result.getSConnInfo());
+                List<MemberAcntPswdFindVo> acntList = memberService.selectAcntFromCiList(paramVo);
+                if (acntList.size() == 0) {
+                    memberAcntPswdFindVo.setEncodeData(null);
+                    memberAcntPswdFindVo.setAlertMsg("존재하지 않는 회원입니다.");
+                }
+            }
+        }
+        
+        model.addAttribute("data", memberAcntPswdFindVo);
+        return "front/member/findPswdForm.html";
+    }
+    
+    /**
+    * 비밀번호 변경(비밀번호 찾기).
+    *
+    * @Title : insertPassword
+    * @Description : 비밀번호 변경(비밀번호 찾기)
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @param bindingResult 유효성검증결과
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/member/updatePassword.do")
+    @ResponseBody
+    public Map<String, Object> insertPassword(@Valid MemberAcntPswdFindVo memberAcntPswdFindVo, BindingResult bindingResult) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        
+        if (bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            resultMap.put("msg", fieldError.getDefaultMessage());
+            return resultMap;
+        }
+
+        // 본인인증 암호화 데이터에서 추출
+        if (!"".equals(StringUtil.nvl(memberAcntPswdFindVo.getEncodeData()))) {
+            IdntyVrfctnSuccessVo result = idntyVrfctnService.decodeIdntyVrfctnSuccessData(null, memberAcntPswdFindVo.getEncodeData());
+            
+            if (!"".equals(result.getSMessage())) { // 본인인증모듈 인코딩 실패
+                resultMap.put("msg", result.getSMessage());
+                return resultMap;
+            } else {
+                MemberAcntPswdFindVo paramVo = new MemberAcntPswdFindVo();
+                paramVo.setAcnt(memberAcntPswdFindVo.getAcnt());
+                paramVo.setCi(result.getSConnInfo());
+                MemberAcntPswdFindVo memberInfo = memberService.selectAcntFromCi(paramVo);
+                if (memberInfo == null) {
+                    resultMap.put("msg", "회원정보가 일치하지 않습니다.");
+                    return resultMap;
+                }
+                
+                String encryptPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+                if (memberInfo.getPswd().equals(encryptPassword)) {
+                    resultMap.put("msg", "변경 비밀번호가 현재 비밀번호와 동일합니다.\n다른 비밀번호를 입력해 주십시오.");
+                    return resultMap;
+                }
+                
+                memberAcntPswdFindVo.setUserid(memberInfo.getUserid());
+            }
+        } else {
+            resultMap.put("msg", "회원정보가 일치하지 않습니다.");
+            return resultMap;
+        }
+        
+        int retVal = memberService.updatePassword(memberAcntPswdFindVo);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+        }else {
+            resultMap.put("msg", "비밀번호 변경에 실패하였습니다.");
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        }
+        return resultMap;
     }
 }

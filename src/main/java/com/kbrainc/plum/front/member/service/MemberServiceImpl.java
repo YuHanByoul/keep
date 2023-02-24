@@ -27,13 +27,13 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.kbrainc.plum.cmm.esylgn.model.EsylgnDao;
+import com.kbrainc.plum.front.member.model.MemberAcntPswdFindVo;
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
 import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import com.kbrainc.plum.rte.util.StringUtil;
 
 /**
 * 회원정보 서비스 구현 클래스.
@@ -391,5 +391,48 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     */
     public List<Map<String,String>> selectInstTypeCdList() throws Exception {
         return memberDao.selectInstTypeCdList();
+    }
+    
+    /**
+    * ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다.
+    *
+    * @Title : selectAcntFromCiList
+    * @Description : ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return List<MemberAcntPswdFindVo> 계정 목록
+    * @throws Exception 예외
+    */
+    public List<MemberAcntPswdFindVo> selectAcntFromCiList(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        return memberDao.selectAcntFromCiList(memberAcntPswdFindVo);
+    }
+    
+    /**
+    * ci와 acnt에 해당하는 회원 정보를 조회한다.
+    *
+    * @Title : selectAcntFromCi
+    * @Description : ci와 acnt에 해당하는 회원 정보를 조회한다.
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return MemberAcntPswdFindVo 계정 정보
+    * @throws Exception 예외
+    */
+    public MemberAcntPswdFindVo selectAcntFromCi(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        return memberDao.selectAcntFromCi(memberAcntPswdFindVo);
+    }
+    
+    /**
+    * 비밀번호 수정(비밀번호 찾기).
+    *
+    * @Title : updatePassword
+    * @Description : 비밀번호 수정(비밀번호 찾기).
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updatePassword(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        String password = null;
+        password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+        memberAcntPswdFindVo.setPswd(password);
+        
+        return memberDao.updatePassword(memberAcntPswdFindVo);
     }
 }

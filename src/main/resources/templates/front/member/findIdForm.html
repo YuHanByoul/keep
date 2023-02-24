@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/simpleLayout"
+>
+    <body>
+        <th:block layout:fragment="content">
+            <form id="authForm" name="authForm" th:action="@{/front/membership/findId.html}" method="post">
+            <input type="hidden" name="encodeData" id="encodeData" value="" />
+            <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
+            
+            <section>        
+                <div class="underline-title">
+                    <h2>아이디 찾기</h2>
+                </div>
+
+                
+                <div class="tab-content tab-sub dropDown">
+                    <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">아이디 찾기</button>
+                    <ul class="tab-list tab-list-pc target" role="tablist">
+                        <li class="tab active"><a href="javascript:goFindId()" role="tab">아이디 찾기</a></li>
+                        <li class="tab"><a href="javascript:goFindPswd()" role="tab" >비밀번호 찾기</a></li>
+                    </ul>
+                </div>
+                <th:block th:if="${#strings.isEmpty(data.encodeData)}">
+                <div class="section-title">
+                    <h3>본인인증</h3>
+                </div>
+
+                <div class="cert-list">
+                    <ul>
+                        <li>
+                            <div class="thumb"><img src="/images/front/member/cert-list01.png" alt=""></div>
+                            <dl>
+                                <dt>휴대폰 인증</dt>
+                                <dd>&lsquo;<b class="fc-green">인증하기</b>&rsquo; 버튼을 클릭하여 실명인증을 진행해주세요.<br>본인 또는 법정대리인(보호자)명의로 등록된 휴대폰 번호를 사용해 주십시오.</dd>
+                            </dl>
+                            <div class="btn-inner">
+                                <button type="button" class="btn-medium btn-green" onclick="fnAuthPopup()">인증하기</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="box-desc-list bg7 mt50">
+                    <ul>
+                        <li>[정보통신망 이용촉진 및 정보보호 등에 관한 법률시행령에 제 29조 10에 따른 본인확인란, 공인인증기관 그 밖에 본인확인서비스를 제공하는 제3자를 통하여 본인임을 확인하는 것을 의미합니다.</li>
+                        <li>환경교육포털은 개인정보에 대한 유출 및 도용을 방지하기 위해 본인인증을 시행하고 있습니다.</li>
+                        <li>회원님의 개인정보는 항상 암호화되어 처리됩니다.</li>
+                        <li>본인인증 시 제공되는 정보는 해당 인증기관에서 직접 수집하며, 인증 이외 용도로 이용 또는 저장하지 않습니다.</li>
+                    </ul>
+                </div>
+                </th:block>
+                <th:block th:unless="${#strings.isEmpty(data.encodeData)}">
+                <div class="section-title">
+                    <h3>아이디 찾기 결과</h3>
+                </div>
+
+
+                <div class="table-row" th:each="item : ${acntList}">
+                    <table>
+                        <caption>아이디 찾기 - 아이디, 회원가입일</caption>
+                        <colgroup>
+                            <col style="width:140px;">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th scope="row" th:if="${itemStat.index == 0}">아이디</th>
+                                <th scope="row" th:unless="${itemStat.index == 0}">자녀 아이디</th>
+                                <td th:if="${item.acnt != null}" th:text="${item.acnt}"></td>
+                                <td th:unless="${item.acnt != null}">디지털원패스 사용자입니다.</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">회원가입일</th>
+                                <td th:text="${#dates.format(item.regDt, 'yyyy-MM-dd')}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-wrap">
+                    <div class="center">
+                        <button type="button" class="btn-medium btn-gray" onclick="goFindPswd()">비밀번호 찾기</button>
+                        <button type="button" class="btn-medium btn-green" onclick="moveLoginPage()">로그인</button>
+                    </div>
+                </div>
+                </th:block>
+            </section>
+            </form>
+            <form name="form_chk" th:action="@{/CheckPlusSafeModel/checkplus.html}" method="post">
+                <input type="hidden" name="kind" value="info" />
+            </form>
+            <script th:inline="javascript">
+                /*[# th:if="${#strings.isEmpty(data.encodeData)}"]*/
+                window.name ="Parent_window";
+                var popupChk = null;
+                
+                function fnAuthPopup(){
+                    popupChk = window.open('', 'popupChk', 'width=500, height=550, top=100, left=100, fullscreen=no, menubar=no, status=no, toolbar=no, titlebar=yes, location=no, scrollbar=no');
+                    document.form_chk.target = "popupChk";
+                    document.form_chk.submit();
+                }
+                
+                function setEncodeData(encodeData) {
+                    popupChk.close();
+                    setTimeout(function(){
+                        document.authForm.encodeData.value = encodeData;
+                        document.authForm.submit();
+                    }, 300);
+                }
+                /*[/]*/
+                
+                function goFindId() {
+                    /*[# th:if="${data.returnUrl != null and data.returnUrl != ''}"]*/
+                        location.href = "/front/membership/findId.html?returnUrl=" + /*[[${data.returnUrl}]]*/'';
+                    /*[/]*/
+                    /*[# th:unless="${data.returnUrl != null and data.returnUrl != ''}"]*/
+                        location.href = "/front/membership/findId.html";
+                    /*[/]*/
+                }
+                
+                function goFindPswd() {
+                    /*[# th:if="${data.returnUrl != null and data.returnUrl != ''}"]*/
+                        location.href = "/front/membership/findPswd.html?returnUrl=" + /*[[${data.returnUrl}]]*/'';
+                    /*[/]*/
+                    /*[# th:unless="${data.returnUrl != null and data.returnUrl != ''}"]*/
+                        location.href = "/front/membership/findPswd.html";
+                    /*[/]*/
+                }
+                
+                function moveLoginPage() {
+                    var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+                    /*[# th:if="${data.returnUrl != null and data.returnUrl != ''}"]*/
+                        location.href = portalUrl + "login.html?returnUrl=" + /*[[${data.returnUrl}]]*/'';
+                    /*[/]*/
+                    /*[# th:unless="${data.returnUrl != null and data.returnUrl != ''}"]*/
+                        location.href = portalUrl + "login.html";
+                    /*[/]*/
+                }
+                
+                $(function(){
+                   /*[# th:if="${data.alertMsg != null and data.alertMsg != ''}"]*/
+                       setTimeout(function(){ alert(/*[[${data.alertMsg}]]*/''); }, 100);
+                   /*[/]*/ 
+                });
+            </script>
+        </th:block>
+    </body>
+</html>

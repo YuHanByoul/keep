@@ -6,20 +6,29 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.front.jntpurchs.model.JntpurchsRvwVo;
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsVo;
 import com.kbrainc.plum.front.jntpurchs.service.JntpurchsServiceImpl;
+import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsAmtVo;
+import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsOrderVo;
 import com.kbrainc.plum.mng.jntpurchs.model.JntpurchsTchaidVo;
+import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -97,16 +106,20 @@ public class JntpurchsController {
              model.addAttribute("eduPhotoFileList", eduPhotoFileList);
          }
          
-//       // 공동구매모집 상품정보
-//       JntpurchsTchaidVo jntpurchsTchaidVo = new JntpurchsTchaidVo();
-//       jntpurchsTchaidVo.setJntpurchsid(jntpurchsVo.getJntpurchsid());
-//       model.addAttribute("goodsList", jntpurchsService.selectGoodsList(jntpurchsTchaidVo));
-//       // 공동구매모집 수량별 가격정보
-//       JntpurchsAmtVo jntpurchsAmtVo = new JntpurchsAmtVo();
-//       jntpurchsAmtVo.setJntpurchsid(jntpurchsVo.getJntpurchsid());
-//       model.addAttribute("amtList", jntpurchsService.selectAmtList(jntpurchsAmtVo));
+         // 수량별 가격정보 목록
+         JntpurchsAmtVo jntpurchsAmtVo = new JntpurchsAmtVo();
+         jntpurchsAmtVo.setJntpurchsid(jntpurchsVo.getJntpurchsid());
+         model.addAttribute("amtList", jntpurchsService.selectAmtList(jntpurchsAmtVo));
+         // 상품 목록
+         JntpurchsTchaidVo jntpurchsTchaidVo = new JntpurchsTchaidVo();
+         jntpurchsTchaidVo.setJntpurchsid(jntpurchsVo.getJntpurchsid());
+         model.addAttribute("goodsList", jntpurchsService.selectGoodsList(jntpurchsTchaidVo));
+         // 후기 목록
+         JntpurchsRvwVo jntpurchsRvwVo = new JntpurchsRvwVo();
+         jntpurchsRvwVo.setJntpurchsid(jntpurchsVo.getJntpurchsid());
+         model.addAttribute("rvwList", jntpurchsService.selectRvwList(jntpurchsRvwVo));
          
-         return "front/jntpurchs/jntpurchsDetail";
+         return "/front/jntpurchs/jntpurchsDetail";
      }
      
     
@@ -135,6 +148,71 @@ public class JntpurchsController {
         }
         resultMap.put("list", result);
         
+        return resultMap;
+    }
+    
+    /**
+     * 공동구매 신청 회원 정보 조회
+     *
+     * @Title : selectUserInfo
+     * @Description : 공동구매신청 목록 조회
+     * @param memberVo MemberVo 객체
+     * @return Map<String, Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/jntpurchs/selectUserInfo.do")
+    @ResponseBody
+    public Map<String, Object> selectUserInfo(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        memberVo.setUser(user);
+        MemberVo result = jntpurchsService.selectUserInfo(memberVo);
+        resultMap.put("userInfo", result);
+        
+        return resultMap;
+    }
+    
+    /**
+    * 공동구매 신청 등록
+    *
+    * @Title : insertJntpurchsOrder
+    * @Description : 공동구매 신청 등록
+    * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+    * @param bindingResult jntpurchsOrderVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/jntpurchs/insertJntpurchsOrder.do")
+    @ResponseBody
+    public Map<String, Object> insertJntpurchsOrder(@Valid JntpurchsOrderVo jntpurchsOrderVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsOrderVo.setUser(user);
+        retVal = jntpurchsService.insertJntpurchsOrder(jntpurchsOrderVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "신청이 완료되었습니다");
+        } else if(retVal == -1) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "신청수량이 잔여수량보다 많아 신청할 수 없습니다");
+        } else if(retVal == -2) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "1인당 신청 가능 수량을 초과하여 신청할 수 없습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "신청에 실패하였습니다");
+        }
+              
         return resultMap;
     }
     
