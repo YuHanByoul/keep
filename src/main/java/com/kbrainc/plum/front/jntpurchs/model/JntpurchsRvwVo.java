@@ -34,6 +34,7 @@ public class JntpurchsRvwVo extends ParentRequestVo {
     /** 로그인 사용자 정보 */
     private UserVo user;
     
+    
     /** 공동구매 아이디 */
     private int jntpurchsid;
     
