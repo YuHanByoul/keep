@@ -3,10 +3,10 @@
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorator="layout/front/nolnbSubLayout">
 <div layout:fragment="content">
-    <form id="agreeForm" name="agreeForm" th:action="@{/front/exprtPool/registerStep3.html}" method="get">
+    <form id="agreeForm" name="agreeForm" th:action="@{/front/exprtPool/registerStep3.html}" method="post">
         <div class="steps">
             <ol>
-                <li class="active" title="현재 단계">
+                <li class="active" title="현재 단계" aria-current="step">
                     <div class="steps-inner">
                         <span>01</span>
                         <strong>약관동의</strong>
@@ -201,7 +201,7 @@
                 </div>
             </div>
             <div class="form-check-list">
-                <label class="inp"><input type="checkbox" name="tosAgreYn" id="tosAgreYn" th:checked="${exprtRegisterVo.tosAgreYn == 'Y'}"><b>서비스 이용약관에 동의합니다.</b></label>
+                <label class="inp"><input type="checkbox" name="tosAgreYn" id="tosAgreYn" value="Y" th:checked="${exprtRegisterVo.tosAgreYn == 'Y'}"><b>서비스 이용약관에 동의합니다.</b></label>
             </div>
         </div>
 
@@ -320,7 +320,7 @@
                 </div>
             </div>
             <div class="form-check-list">
-                <label class="inp"><input type="checkbox" name="prvcClctAgreYn" id="prvcClctAgreYn" th:checked="${exprtRegisterVo.prvcClctAgreYn == 'Y'}"><b>개인정보 수집 이용안내에 동의합니다.</b></label>
+                <label class="inp"><input type="checkbox" name="prvcClctAgreYn" id="prvcClctAgreYn" value="Y" th:checked="${exprtRegisterVo.prvcClctAgreYn == 'Y'}"><b>개인정보 수집 이용안내에 동의합니다.</b></label>
             </div>
         </div>
 
@@ -377,7 +377,7 @@
                 </div>
             </div>
             <div class="form-check-list">
-                <label class="inp"><input type="checkbox" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:checked="${exprtRegisterVo.prvcThptyPvsnAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
+                <label class="inp"><input type="checkbox" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" value="Y" th:checked="${exprtRegisterVo.prvcThptyPvsnAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
             </div>
         </div>
 
@@ -394,29 +394,17 @@
     </form>
 
     <script th:inline="javascript">
-        function validateForm() {
-            $('#agreeForm').validate({
-                rules: {
-                    tosAgreYn: {required: true},
-                    prvcClctAgreYn: {required: true},
-                    prvcThptyPvsnAgreYn: {required: true}
-                },
-                messages: {
-                    tosAgreYn: {required: "필수항목을 동의해야 가입 신청이 가능합니다."},
-                    prvcClctAgreYn: {required: "필수항목을 동의해야 가입 신청이 가능합니다."},
-                    prvcThptyPvsnAgreYn: {required: "필수항목을 동의해야 가입 신청이 가능합니다."}
-                }
-            });
-        }
 
         function moveToNextStep() {
-            if (!$('#agreeForm').valid()) return false;
+            if(!$('#tosAgreYn').is(':checked') || !$('#prvcClctAgreYn').is(':checked') || !$('#prvcThptyPvsnAgreYn').is(':checked')) {
+                alert('필수항목을 동의해야 가입 신청이 가능합니다');
+                return ;
+            }
 
             $('#agreeForm').submit();
         }
 
         $(function () {
-            validateForm();
 
             $('#agreeAll').on('click', function(e) {
                 if(e.target.checked) {
