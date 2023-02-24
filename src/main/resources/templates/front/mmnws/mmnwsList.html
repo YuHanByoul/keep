@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<form class="search-filter" id="searchForm" name="searchForm">
+			<div class="form-input mo-flex-wrap">
+				<strong class="label">검색어</strong>
+				<div class="form-input">
+					<select title="검색어" name="searchType" id="searchType">
+						<option value="" selected>- 전체 - </option>	
+						<option value="searchTtl">제목</option>
+						<option value="searchOxprNm">언론사</option>
+					</select>
+					<input type="search" title="검색어" name="searchKeyword" id="searchKeyword" placeholder="검색어를 입력해 주세요.">
+				</div>
+				<div class="search-filter-submit">
+					<button type="button" class="btn-medium btn-green btn-before-search" onclick="mmnws.search()">검색</button>
+					<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="mmnws.searchInit()">초기화</button>
+				</div>
+			</div>
+			
+			<input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+	        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+	        <input type="hidden" id="orderField" name="orderField" value="REG_Dt">
+	        <input type="hidden" id="wordid" name="mmnwsid" >			
+		</form>
+
+		<div class="table-caption flex-nowrap">
+			<div class="left">
+				<p>총 <b id="totalCount">0</b> 건</p>
+			</div>
+			<div class="right">
+	            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="mmnws.changeRowPerPage()">
+	                <option value="10">10개씩 보기</option>
+	                <option value="50">50개씩 보기</option>
+	                <option value="100">100개씩 보기</option>
+	            </select>
+			</div>
+		</div>
+
+		<div class="table-col table-layout-auto table-col-mo">
+			<table>
+				<caption>언론보도 - 번호, 분류, 제목, 언론사, 등록일</caption>
+				<colgroup>
+					<col>
+					<col>
+					<col style="width:50%;">
+					<col>
+					<col>
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">번호</th>
+						<th scope="col">분류</th>
+						<th scope="col">제목</th>
+						<th scope="col">언론사</th>
+						<th scope="col">등록일</th>
+					</tr>
+				</thead>
+				<tbody id="list-area">
+				</tbody>
+			</table>
+		</div>
+
+		<div id="pagination" aria-label="pagination">
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">		
+        var mmnws = {
+                listUrl: '/front/mmnws/selectMmnwsList.do',
+                detailUrl : '/front/mmnws/mmnwsDetailForm.html',
+
+                init(rowPerPage) {
+                	if(rowPerPage != null) {
+	                    $("#rowPerPage").val(parseInt(rowPerPage));
+	                    $('#pageNumber').val('1');
+                	}
+                    this.selectMmnwsList();
+                },
+
+                moveToDetail() {
+                    if (this.userid == null) {
+                        alert('로그인 후 이용하실 수 있습니다.');
+                        return;
+                    }
+                    location.href = '/front/mmnws/mmnwsDetailForm.html';
+                },
+
+                search() {
+    				var searchType = $("#searchType").val()
+    				var searchKeyword = $("#searchKeyword").val()
+
+    				if (searchType != null && searchType != "") {
+    					if (searchKeyword == null || searchKeyword == "") {
+    						alert("검색어를 입력해주십시오");
+    						return;
+    					}
+    				} else {
+    					if (searchKeyword != null && searchKeyword != "") {
+    						alert("검색조건을 선택해주십시오");
+    						return;
+    					}
+    				}
+                	
+                    $('#pageNumber').val('1');
+                	$('#card-table').removeClass();
+                    $('#card-table').addClass('card-list card-list-n3');
+                    this.selectMmnwsList();
+                },
+
+                searchInit() {
+    				$("#searchType").val('');
+    				$("#searchKeyword").val('');
+    				$("#searchEduSbjctCd_1").val('');
+    				$("#searchEduSbjctCd_2").val('');
+    				$("#searchEduTrgtCd").val('');
+    				$("#searchTypeCd_1").val('');
+    				$("#searchTypeCd_2").val('');
+    				$("#startDt").val('');
+    				$("#endDt").val('');
+                	$('#card-table').removeClass();
+                    $('#card-table').addClass('card-list card-list-n3');
+    				this.selectMmnwsList();
+                },
+
+                selectMmnwsList() {
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: mmnws.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	mmnws.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+                
+                changeRowPerPage() {
+                    $('#rowPerPage').val($('#selectRowPerPage').val());
+                    this.selectMmnwsList();
+                },
+
+                moveToDetail(mmnwsid) {
+                    var f = document.forms.searchForm ;
+                    f.mmnwsid.value=mmnwsid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                },
+
+                makeListHtml(data) {
+                    var cardListHtml = "";
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `
+                        <tr>
+                            <td class="nodata" colSpan="7">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+                            </td>
+                        </tr>
+                        `;
+                        
+                        $('#card-table').removeClass();
+                        $('#card-table').addClass('nodata');
+                        cardListHtml += `
+            				<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+                        `;
+                    } else {
+                    	var url
+                    	var urlTest1;
+                    	var urlTest2;
+                    	
+                        data.list.forEach(function(item) {
+                        	url = `${item.url}`;
+                        	urlTest1 = url.includes('https://');
+                        	urlTest2 = url.includes('http://');
+            				if(!urlTest1 || !urlTest2) {
+            					url = "https://"+url
+            				}
+            				
+                        	if(`${item.newMmnws}` == 'NEW'){
+	                        	listHtml += `
+	           					<tr>
+	       						<td>${item.rowNumber}</td>
+	       						<td>${item.clsfCd}</td>
+	       						<td class="al article"><a href="${url}" class="link new ellipsis" target="_blank">${item.ttl}</a></td>
+	       						<td>${item.oxprNm}</td>
+	       						<td>${item.regDt}</td>
+	       						</tr>
+	   							`;                        		
+                        	}else{
+	                        	listHtml += `
+	           					<tr>
+	       						<td>${item.rowNumber}</td>
+	       						<td>${item.clsfCd}</td>
+	       						<td class="al article"><a href="${url}" class="link ellipsis" target="_blank">${item.ttl}</a></td>
+	       						<td>${item.oxprNm}</td>
+	       						<td>${item.regDt}</td>
+	       						</tr>
+	   							`;
+                        	}
+                        });
+                    }	
+                    $('#list-area').html(listHtml);
+                    $("#pagination").html(data.pagination);
+                    $("#totalCount").html(data.totalCount);
+                }
+            };
+
+            $(function () {
+            	mmnws.init();
+            })
+			
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				
+				mmnws.selectMmnwsList();
+			}            
+		</script>
+	</div>
+
+</body>
+</html>

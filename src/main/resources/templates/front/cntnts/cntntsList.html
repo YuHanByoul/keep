@@ -27,10 +27,10 @@
 					<div class="form-body">
 						<div class="form-input">
 	                        <select name="searchManinEduSbjctCd" id="searchEduSbjctCd_1" title="교육주제" onchange="setSearchSelectBox.setNextDepth(163,this.value,'searchEduSbjctCd_2')">
-	                            <option value="" selected>- 전체 -</option>
+	                            <option value="">- 전체 -</option>
 	                        </select>
 							<select name="searchMdleEduSbjctCd" id="searchEduSbjctCd_2" title="교육주제 상세" style="flex:auto">
-			                	<option value="" selected>- 전체 -</option>
+			                	<option value="">- 전체 -</option>
 			                </select>
 						</div>
 					</div>
@@ -135,7 +135,63 @@
 		</div>
 		<!-- //content -->
 	
-		<script th:inline="javascript">		
+		<script th:inline="javascript">	
+		var mainEduSbjctCd = /*[[${mainEduSbjctCd}]]*/ null;
+		var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;
+		var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+		
+		var setSearchSelectBox = {
+		 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected){
+				$.ajax({
+					url : getCodeListUrl,
+					type: 'GET',
+					cache : false,
+					dataType: 'json',
+					data: {
+						  grpcd  : grpcd
+						, upprcd : upprcd
+					}, 
+					success : function (data){
+						setSearchSelectBox.writeHtml(grpcd,targetId,data, selected);
+					},
+				 	error : function (error){
+					} 
+					
+				});
+			},
+		 	
+		 	writeHtml : function(grpcd,targetId,list,selected){
+			 	var cntArr = targetId.split("_");
+			   	var nextCnt = Number(cntArr[1])+1;
+			   	var nextTarget = cntArr[0]+"_"+nextCnt;
+			   	
+			    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+			        html +="    <option value=''>- 전체 -</option>";
+		    	   
+		  		  for(var i=0 ; i < list.length;i++){
+		  			if(list[i].cd==selected){
+		   				html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+		  			}else{
+		  				html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+		  			}
+		  		  }
+		  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+		  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+		  		  }
+			   	  html +="    </select>";
+			   	  $("#"+targetId).html(html);
+		 	},
+		 	
+		    setNextDepth : function(grpcd , upprcd , targetId, selected){
+				setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId, selected);
+			}
+		}
+		setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1', 163103);
+		setSearchSelectBox.fn_getNextDepthList(163, 163103,'searchEduSbjctCd_2', 163103101);
+		
+		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', "");
+
+		
         var cntnts = {
                 listUrl: '/front/cntnts/selectCntntsList.do',
                 detailUrl : '/front/cntnts/cntntsDetailForm.html',
@@ -196,7 +252,7 @@
                 selectCntntsList() {
                     if (displayWorkProgress(true)) {
                         let formData = $('#searchForm').serializeArray();
-
+                        console.log(formData);
                         $.ajax({
                             url: cntnts.listUrl,
                             cache: false,
@@ -291,63 +347,11 @@
                     $("#totalCount").html(data.totalCount);
                 }
             };
-
-            $(function () {
-            	cntnts.init();
+			
+            $(function () {        		
+        		cntnts.selectCntntsList();
             })
             
-			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
-			
-			var setSearchSelectBox = {
-			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
-					$.ajax({
-						url : getCodeListUrl,
-						type: 'GET',
-						cache : false,
-						dataType: 'json',
-						data: {
-							  grpcd  : grpcd
-							, upprcd : upprcd
-						}, 
-						success : function (data){
-							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
-						},
-					 	error : function (error){
-						} 
-						
-					});
-				},
-			 	
-			 	writeHtml : function(grpcd,targetId,list,selected){
-				 	var cntArr = targetId.split("_");
-				   	var nextCnt = Number(cntArr[1])+1;
-				   	var nextTarget = cntArr[0]+"_"+nextCnt;
-				   	   
-				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
-				        html +="    <option value='' selected>- 전체 -</option>";
-			    	   
-			  		  for(var i=0 ; i < list.length;i++){
-			  			if(list[i].cdid==selected){
-			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
-			  			}else{
-			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
-			  			}
-			  		  }
-			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
-			  		  }
-				   	  html +="    </select>";
-				   	  $("#"+targetId).html(html);
-			 	},
-			 	
-			    setNextDepth : function(grpcd , upprcd , targetId){
-					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
-				}
-			}
-			
-			setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1');
-			setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1');
-			
 			function goPage(page) {
 				$("#pageNumber").val(page);
 				

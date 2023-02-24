@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : MmnwsDaoImpl.xml
+	Description : 언론보도관리
+-->
+<mapper namespace="com.kbrainc.plum.front.mmnws.model.MmnwsDao">
+    
+    <!-- 언론보도관리 게시글 목록 조회 -->
+    <select id="selectMmnwsList" parameterType="front.MmnwsVo" resultType="front.MmnwsVo">
+        /* MmnwsDao.selectMmnwsList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+	        A.NSCVRGID
+          , C.CD_NM AS CLSFCD
+          , A.OXPR_NM AS OXPRNM
+          , A.TTL
+          , A.URL
+          , A.WRT_DE AS WRTDE
+          , A.MDFCN_DT
+          , A.MDFRID
+          , DATE(A.REG_DT)
+          , A.RGTRID
+          , B.NM
+          , CASE WHEN NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL 1 DAY) THEN 'NEW' ELSE 'OLD' END AS NEW_MMNWS
+        FROM 
+            TB_CMM_PRS_NSCVRG A
+            LEFT OUTER JOIN TB_CMM_USER B ON A.RGTRID = B.USERID
+            LEFT OUTER JOIN TB_CMM_CD C ON A.CLSF_CD = C.CD
+        WHERE 
+            1=1
+            AND A.RGTRID = B.USERID
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchOxprNm'">
+            AND OXPR_NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtl'">
+            AND TTL LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>
