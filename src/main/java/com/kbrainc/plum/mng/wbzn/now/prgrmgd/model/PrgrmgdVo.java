@@ -52,7 +52,7 @@ public class PrgrmgdVo extends ParentRequestVo {
     private String ttl;
     /** 일시 */
     @NotEmpty(message = "일시를 입력해주십시오.")
-    private String dt;
+    private String schdl;
     /** 유형 */
     private String typeCd;
     /** URL */
