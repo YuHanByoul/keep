@@ -1,9 +1,10 @@
-package com.kbrainc.plum.mng.wbzn.carbon.prgrmgd.model;
+package com.kbrainc.plum.front.wbzn.carbon.model;
 
-import java.util.Date;
+import java.sql.Date;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+
+import org.apache.ibatis.type.Alias;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -11,49 +12,34 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
-/**
-* 탄소중립환경교육 -> 프로그램안내관리 VO 클래스
-*
-* <pre>
-* com.kbrainc.plum.mng.wbzn.now.prgrmgd.model
-* - PrgrmgdVo.java
-* </pre>
-*
-* @ClassName : PrgrmgdVo
-* @Description : 환경교육NOW -> 프로그램안내관리 VO 클래스
-* @author : JD
-* @date : 2022. 12. 9.
-* @Version :
-* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
-*/
 @Data
-public class CarbonPrgrmgdVo extends ParentRequestVo {
+@Alias("front.CarbonEnveduVo")
+public class CarbonEnveduVo extends ParentRequestVo {
     
     /** 로그인 사용자 정보*/
     private UserVo user;
     
-    /** 프로그램안내아이디 */
-    private int prgrmid;
+    /** 환경교육아이디 */
+    private int enveduid;
     /** 분류_코드 */
     private String clsfCd;
-    /** 지역구분_코드 */
-    @NotEmpty(message = "지역구분을 선택해주십시오.")
-    private String rgnCd;
-    /** 지역구분_코드명*/
-    private String rgnCdNm;
+    /** 환경교육_구분_코드 */
+    @NotEmpty(message = "환경교육구분을 선택해주십시오.")
+    private String enveduSeCd;
+    /** 환경교육_구분_코드명 */
+    private String enveduSeCdNm;
     /** 연도 */
     @NotEmpty(message = "연도를 선택해주십시오.")
     private String yr;
     /** 분기 */
-    @NotEmpty(message = "분기를 선택해주십시오.")
     private String qu;
+    /** 월 */
+    @NotEmpty(message = "월을 선택해주십시오.")
+    private String mm;
     /** 제목 */
     @NotEmpty(message = "제목을 입력해주십시오.")
     private String ttl;
-    /** 일시 */
-    @NotEmpty(message = "일시를 입력해주십시오.")
-    private String schdl;
-    /** 유형 */
+    /** 유형 코드 */
     private String typeCd;
     /** URL */
     private String url;
@@ -62,11 +48,7 @@ public class CarbonPrgrmgdVo extends ParentRequestVo {
     /** 내용_STYLE */
     private String cnStyle;
     /** 내용 */
-    private String cn;
-    /** 내용_요약 */
-    @NotEmpty(message = "요약 내용을 입력해주십시오.")
-    @Size(max = 200, message = "요약 내용은 200자 이하여야 합니다.")
-    private String cnSumry;
+    private String cn; 
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
@@ -78,8 +60,14 @@ public class CarbonPrgrmgdVo extends ParentRequestVo {
     /** 등록자아이디 */
     private int rgtrid;
     
-    /** 연-분기 */
-    private String yrQu;
+    /** 연-월*/
+    private String yrMm;
+    
+    private String beforeMonth;
+    private String nextMonth;
+    private String nowDate;
+    private String compareDate;
+    
     
     /** 첨부파일 관련*/
     private String filegrpid;
@@ -90,7 +78,7 @@ public class CarbonPrgrmgdVo extends ParentRequestVo {
     private String nm;
     
     /** 검색 관련*/
-    private String searchRgnCd;
-    private String searchYr;
-    private String searchQu;
+    private String searchSeCd;
+    private String enveduSearchYr;
+    private String enveduSearchMm;
 }

@@ -246,6 +246,7 @@ public class CntstController {
             }
             
             cntstAplyVo.setUser(userVo);
+            cntstAplyVo.setRprsvMoblphon(cntstAplyVo.getRprsvMoblphon().replaceAll("[^0-9]", ""));
             
             retVal = cntstService.insertCntstAply(cntstAplyVo); 
         }
