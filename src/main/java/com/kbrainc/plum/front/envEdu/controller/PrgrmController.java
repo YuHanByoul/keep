@@ -10,13 +10,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.front.cntnts.model.CntntsVo;
 import com.kbrainc.plum.front.envEdu.model.PrgrmVo;
 import com.kbrainc.plum.front.envEdu.service.PrgrmService;
+import com.kbrainc.plum.mng.code.model.CodeVo;
+import com.kbrainc.plum.mng.code.service.CodeService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -41,6 +46,9 @@ public class PrgrmController {
     @Resource(name = "front.prgrmServiceImpl")
     private PrgrmService PrgrmService;
     
+    @Autowired
+    private CodeService codeService;
+    
     /**
     * 프로그램 게시글 목록 화면 이동
     *
@@ -54,6 +62,25 @@ public class PrgrmController {
     */
     @RequestMapping(value="/front/envEdu/prgrmListForm.html")
     public String prgrmListForm() throws Exception {
+        return "front/envEdu/prgrmList";
+    }
+    
+    /**
+    * 콘텐츠 게시글 목록 화면 이동
+    *
+    * @Title : cntntsListForm
+    * @Description : 컨텐츠관리 목록화면 이동
+    * @throws Exception 예외
+    * @return String
+    */
+    @RequestMapping(value = "/front/envEdu/{eduSbjctCd}/prgrmListForm.html")
+    public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CodeVo codeVo) throws Exception {
+        codeVo.setCd(eduSbjctCd);
+        CodeVo codeInfo = codeService.selectCodeInfo(codeVo);        
+        
+        model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
+        model.addAttribute("eduSbjctCd", eduSbjctCd);
+        
         return "front/envEdu/prgrmList";
     }
      

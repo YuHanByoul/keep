@@ -110,4 +110,6 @@ public class PrgrmVo extends ParentRequestVo {
     private String searchInstNm;
     private String searchRgnCd;
     private String searchEduTarget;
+    private String searchManinEduSbjctCd;
+    private String searchMdleEduSbjctCd;
 }

@@ -68,12 +68,12 @@ public class CntntsController {
     * @return String
     */
     @RequestMapping(value = "/front/cntnts/{eduSbjctCd}/cntntsListForm.html")
-    public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CntntsVo cntntsVo, CodeVo codeVo) throws Exception {
-        codeVo.setCd("163103101");
+    public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CodeVo codeVo) throws Exception {
+        codeVo.setCd(eduSbjctCd);
         CodeVo codeInfo = codeService.selectCodeInfo(codeVo);        
         
         model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
-        model.addAttribute("eduSbjctCd", 163103101);
+        model.addAttribute("eduSbjctCd", eduSbjctCd);
         
         return "front/cntnts/cntntsList";
     }
