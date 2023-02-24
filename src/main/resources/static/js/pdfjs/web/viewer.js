@@ -793,7 +793,7 @@ const defaultOptions = {
 };
 {
   defaultOptions.defaultUrl = {
-    value: "compressed.tracemonkey-pldi-09.pdf",
+    value: "/bsns_oper_dta_file/0f2ecfce-636b-4637-bf8f-6971454c58da_%5B용역 변경내역서%5D 번역아카데미 온라인 강의 콘텐츠 제작 및 운영 용역.pdf",
     kind: OptionKind.VIEWER
   };
   defaultOptions.disablePreferences = {
@@ -2928,7 +2928,18 @@ function webViewerInitialized() {
   let file;
   const queryString = document.location.search.substring(1);
   const params = (0, _ui_utils.parseQueryString)(queryString);
-  file = params.get("file") ?? _app_options.AppOptions.get("defaultUrl");
+
+  let getFileNameFromParams;
+  if(params.get("file") != null) {
+    getFileNameFromParams = params.get("file");
+    getFileNameFromParams = getFileNameFromParams.replace("[", "%5B");
+    getFileNameFromParams = getFileNameFromParams.replace("]", "%5D");
+    file = getFileNameFromParams;
+  } else{
+    file = _app_options.AppOptions.get("defaultUrl");
+  }
+
+/*  file = params.get("file") ?? _app_options.AppOptions.get("defaultUrl");*/
   validateFileURL(file);
   const fileInput = appConfig.openFileInput;
   fileInput.value = null;
