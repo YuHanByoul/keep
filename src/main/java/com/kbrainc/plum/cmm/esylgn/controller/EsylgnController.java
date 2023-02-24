@@ -43,6 +43,7 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.security.OnepassUsernameUserkeyAuthenticationToken;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 
 import kr.go.onepass.client.dto.api.send.OnepassUserResponse;
 import kr.go.onepass.client.dto.api.send.OnepassUserResponse.USER_STATUS;
@@ -128,6 +129,10 @@ public class EsylgnController {
         ModelAndView mav = new ModelAndView();
         OnepassResponse onepassResponse = OnepassResponseHandler.check(request);
         String[] paramReturnUrl = request.getParameter("returnUrl").split("::");
+        
+        if ("".equals(StringUtil.nvl(paramReturnUrl[1]))) {
+            paramReturnUrl[1] = CommonUtil.portalUrl;
+        }
         
         PrintWriter writer = null;
         
