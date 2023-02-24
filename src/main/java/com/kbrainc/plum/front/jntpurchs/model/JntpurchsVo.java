@@ -37,6 +37,9 @@ public class JntpurchsVo extends ParentRequestVo {
     /** 공동구매 아이디 */
     private int jntpurchsid;
     
+    /** 공동구매 번호 */
+    private String jntpurchsno;
+    
     /** 모집상태 코드명 */
     private String sttsCdNm;
     

@@ -38,6 +38,15 @@ public class JntpurchsTchaidVo extends ParentRequestVo {
     /** 교구 아이디 */
     private int tchaidid;
     
+    /** 주문아이디 */
+    private int orderid;
+    
+    /** 주문수량 */
+    private int qnty;
+    
+    /** 주문가격 */
+    private int amt;
+    
     /** 교구 번호 */
     private String tchaidNo;
     

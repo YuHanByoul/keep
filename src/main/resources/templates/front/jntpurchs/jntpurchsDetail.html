@@ -74,11 +74,11 @@
                         <div class="list">
                             <dt>현재까지 신청된 총 수량</dt>
                             <dd>
-                                <th:block th:if="${jntpurchsInfo.qntyWholLmtYn == 'Y'}"> 
-                                <span class="fc-blue" id="orderQnty">0개</span> 개
+                                <th:block th:if="${jntpurchsInfo.qntyWholLmtYn == 'Y'}">
+                                <span class="fc-blue" id="orderQnty">0개</span> / <span id="qntyWhol">0</span>개 
                                 </th:block>
                                 <th:block th:unless="${jntpurchsInfo.qntyWholLmtYn == 'Y'}">
-                                <span class="fc-blue" id="orderQnty">0개</span> / <span id="qntyWhol">0</span>개
+                                <span class="fc-blue" id="orderQnty">0개</span> / 제한없음                                
                                 </th:block>
                             </dd> 
                         </div>
@@ -265,16 +265,26 @@
                                 <tr>
                                     <th scope="row">이름<i class="ast" title="필수입력">*</i></th>
                                     <td>
-                                        <div class="form-input">
-                                            <input type="text" title="이름" placeholder="이름 입력" data-width="304" id="recptr">
+                                        <div class="col">
+                                            <div class="form-input">
+                                                <input type="text" title="이름" placeholder="이름 입력" data-width="304" id="recptr" name="recptr" onKeyup="jntpurchsDetail.onValid('recptr');">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <p class="feedback" id="recptrMsg"></p>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th scope="row">휴대전화<i class="ast" title="필수입력">*</i></th>
                                     <td>
-                                        <div class="form-input">
-                                            <input type="number" title="휴대전화" placeholder="휴대전화번호 입력" data-width="304" value="" id="moblphon">
+                                        <div class="col">
+                                            <div class="form-input">
+                                                <input type="number" title="휴대전화" placeholder="휴대전화번호 입력" data-width="304" value="" id="recptrTelno" name="recptrTelno" onKeyup="jntpurchsDetail.onValid('recptrTelno');">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <p class="feedback" id="recptrTelnoMsg"></p>
                                         </div>
                                     </td>
                                 </tr>
@@ -284,10 +294,10 @@
                                         <div class="row row-auto flex-wrap">
                                             <div class="col">
                                                 <div class="form-input">
-                                                    <input type="email" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160" id="eml0">
+                                                    <input type="text" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160" id="eml1" name="eml1">
                                                     <div class="bul">@</div>
-                                                    <input type="email" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160" id="eml1">
-                                                    <select title="이메일 도메인" data-width="120" id="emlDomain" onchange="jntpurchsDetail.onChangeDomain(this.value);">
+                                                    <input type="text" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160" id="eml2" name="eml2">
+                                                    <select title="이메일 도메인" data-width="120" id="emlList" onchange="jntpurchsDetail.onChangeDomain(this.value);">
                                                         <option value="직접입력">직접입력</option>
                                                         <option value="chol.com">chol.com</option>
                                                         <option value="dreamwiz.com">dreamwiz.com</option>
@@ -313,7 +323,7 @@
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <p class="feedback invalid">이메일 형식이 올바르지 않습니다.</p>
+                                                <p class="feedback"></p>
                                             </div>
                                         </div>
                                     </td>
@@ -321,12 +331,17 @@
                                 <tr>
                                     <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
                                     <td>
-                                        <div class="form-input">
-                                            <div class="bul normal-wrap" id="zip"></div>
+                                        <div class="col">
+                                            <div class="form-input">
+                                                <div class="bul normal-wrap" id="dlvyZip"></div>
+                                            </div>
+                                            <div class="form-input a-center">
+                                                <input type="text" name="dlvyAddr" id="dlvyAddr" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="585" readonly>
+                                                <button type="button" class="btn-medium btn-gray" onclick="jntpurchsDetail.onPostPopup();">수정</button>
+                                            </div>
                                         </div>
-                                        <div class="form-input a-center">
-                                            <div class="bul normal-wrap" id="addr"></div>
-                                            <button type="button" class="btn-medium btn-gray">수정</button>
+                                        <div class="col">
+                                            <p class="feedback"></p>
                                         </div>
                                     </td>
                                 </tr>
@@ -336,11 +351,11 @@
                                         <div class="row row-auto flex-wrap">
                                             <div class="col">
                                                 <div class="form-input">
-                                                    <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" id="addrDtl">
+                                                    <input type="text" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" name="dlvyAddrDtl" id="dlvyAddrDtl" onKeyup="jntpurchsDetail.onValid('dlvyAddrDtl');">
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <p class="feedback invalid">상세주소는 100자를 초과할 수 없습니다.</p>
+                                                <p class="feedback" id="dlvyAddrDtlMsg"></p>
                                             </div>
                                         </div>
                                     </td>
@@ -352,7 +367,7 @@
 
                     <div class="btn-wrap">
                         <div class="center">
-                            <button type="button" class="btn-medium btn-green">공동구매 신청</button>
+                            <button type="button" class="btn-medium btn-green" onclick="jntpurchsDetail.onJntpurchsOrder();">공동구매 신청</button>
                         </div>
                     </div>
                     
@@ -360,17 +375,20 @@
             </div>
         </div>
     
+        <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
         <script th:inline="javascript">
            var jntpurchsDetail = {
                jntpurchsInfo: /*[[${jntpurchsInfo}]]*/
                , mapFileInfo: /*[[${mapFileInfo}]]*/
                , eduPhotoFileList: /*[[${eduPhotoFileList}]]*/
                , amtList: /*[[${amtList}]]*/
+               , goodsList: /*[[${goodsList}]]*/
                
                , init: function() {
                    this.setData();
                    this.setSwiper();
                    this.setPrice();
+                   this.setValid();
                    this.registEvent();
                }
                
@@ -411,31 +429,44 @@
                    var qntyLmtYn = this.jntpurchsInfo.qntyLmtYn;
                    var orderQnty = this.jntpurchsInfo.orderQnty;
                    var remainQnty = qntyWhol - orderQnty;
-                   
                    $("#orderQnty").text(addComma3(orderQnty) + "개");
-                   if(qntyWholLmtYn == "N") { // 수량제한이 없는 경우
-                       $("#qntyWhol").text(addComma3(qntyWhol));
-                   }
-                   if(qntyLmtYn == "N") { // 구매수량 제한이 없는 경우
-                       $("#qnty").prop("max", remainQnty);
-                   } else { // 구매 수량 제한이 있는 경우 남은 수량과 제한수량보다 적은 수
-                       $("#qnty").prop("max", Math.min(remainQnty, qntyLmt));
-                   }
+                    if(qntyWholLmtYn == "Y" && qntyLmtYn == "Y") { // 수량/구매 제한
+                        $("#qntyWhol").text(addComma3(qntyWhol));
+                        $("#qnty").prop("max", Math.min(remainQnty, qntyLmt));
+                    } else if(qntyWholLmtYn == "Y" && qntyLmtYn == "N") { // 수량 제한
+                        $("#qntyWhol").text(addComma3(qntyWhol));
+                        $("#qnty").prop("max", remainQnty);
+                    } else if(qntyWholLmtYn == "N" && qntyLmtYn == "Y") { // 구매 제한
+                        $("#qnty").prop("max", qntyLmt);
+                    } else { // 제한없음
+                        $("#qnty").prop("max", 100000000);
+                    }
                }
                
                , setPrice: function() {
                    var qnty = $("#qnty").val();
+                   var minAmt = 0;
+                   var amt = 0;
                    for(var i = 0, len = this.amtList.length; i < len; i++) {
                        var data = this.amtList[i];
                        var qntyBgng = data.qntyBgng;
                        var qntyEnd = data.qntyEnd;
+                       if(i == 0) {
+                           minAmt = data.amt;
+                       } else {
+                           minAmt = Math.min(minAmt, data.amt);                            
+                       }
+                       
                        if(qnty >= qntyBgng && qnty <= qntyEnd) {
-                           $("#expectationPrice").text(addComma3(data.amt) + "원");
-                           var totalPrice = data.amt * qnty;
-                           $("#totalPrice").text(addComma3(totalPrice) + "원");
+                           amt = data.amt;
                            break;
+                       } else if(i == this.amtList.length - 1) {
+                           amt = minAmt;
                        }
                    }
+                   var totalPrice = amt * qnty;
+                   $("#expectationPrice").text(addComma3(amt) + "원");
+                   $("#totalPrice").text(addComma3(totalPrice) + "원");
                }
                
                , onChangeQnty: function(dir) {
@@ -459,7 +490,6 @@
                 }
                 
                 , onLoadUserInfo: function() {
-                    /*
                     if($("#qnty").val() == 0) {
                         alert("신청 수량을 입력해주세요.");
                         $("#qnty").focus();
@@ -469,10 +499,9 @@
                         alert("개인정보 수집 및 이용에 대한 동의가 필요합니다.");
                         return false;
                     }
-                    */
                     if(displayWorkProgress(true)) {
                         $.ajax({
-                            url: "/mng/jntpurchs/selectUserInfo.do"
+                            url: "/front/jntpurchs/selectUserInfo.do"
                             , type: "POST"
                             , cache: false
                             , dataType: "json"
@@ -486,21 +515,98 @@
                 }
                 
                 , onRequestPopup: function(data) {
-                    console.log(data);
                     var target = "dlvyInfoPopup";
                     layerPopup.open({target});
                     $("#recptr").val(data.nm);
-                    $("#moblphon").val(data.moblphon);
-                    $("#eml0").val(data.eml1);
-                    $("#eml1").val(data.eml2);
-                    $("#zip").text(data.zip);
-                    $("#addr").text(data.addr);
-                    $("#addrDtl").val(data.addrDtl);
+                    $("#recptrTelno").val(data.moblphon);
+                    $("#eml1").val(data.eml1);
+                    $("#eml2").val(data.eml2);
+                    $("#dlvyZip").text(data.zip);
+                    $("#dlvyAddr").val(data.addr);
+                    $("#dlvyAddrDtl").val(data.addrDtl);
                 }
                 
                 , onChangeDomain: function(domain) {
                     $("#eml1").val(domain);
                 }
+                
+                , onPostPopup: function() {
+                    new daum.Postcode({
+                        oncomplete: function(data) {
+                            var addr = data.userSelectedType == "R" ? data.roadAddress : data.jibunAddress;
+                            $("#dlvyZip").text(data.zonecode);
+                            $("#dlvyAddr").val(addr);
+                            $("#dlvyAddrDtl").focus();
+                        }
+                    }).open();
+                }
+                
+                , setValid: function() {
+                    var validator = $("#jntpurchsOrderForm").validate({
+                        rules: {
+                            recptr: {required: true, isBlank: true, maxlength: 20}
+                            , recptrTelno: {required: true, number: true, maxlength: 12}
+                            , eml1: {required: true, isBlank: true, maxlength: 50}
+                            , eml2: {required: true, isBlank: true, maxlength: 50, emailDomain: true}
+                            , dlvyAddr: {required: true, maxlength: 200}
+                            , dlvyAddrDtl: {required: true, maxlength: 400}
+                        }
+                        , messages: {
+                            recptr: {required: "이름을 입력해주세요.", isBlank: "공백을 허용할 수 없습니다.", maxlength: "이름은 20자 이하여야 합니다."}
+                            , recptrTelno: {required: "휴대전화를 입력해주세요.", number: "숫자만 입력 가능합니다.", maxlength: "휴대전화는 12자 이하여야 합니다."}
+                            , eml1: {required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다."}
+                            , eml2: {required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
+                            , dlvyAddr: {required: "주소를 입력해주세요.", maxlength: "주소는 200자 이하여야 합니다."}
+                            , dlvyAddrDtl: {required: "상세주소를 입력해주세요.", maxlength: "상세주소는 400자 이하여야 합니다."}
+                        }
+                    });
+                }
+                
+                , onValid: function(id) {
+                    if($("#" + id).valid()) {
+                        $("#" + id + "Msg").removeClass("invalid").text("");                        
+                    }
+                }
+                
+                , onJntpurchsOrder: function() {
+                    if(!($("#jntpurchsOrderForm").valid())) return;
+                    
+                    if(confirm("공동구매 신청하시겠습니까?")) {
+                        var param = $("#jntpurchsOrderForm").serialize();
+                        var jntpurchsid = this.jntpurchsInfo.jntpurchsid;
+                        var jntpurchsno = this.jntpurchsInfo.jntpurchsno;
+                        var qnty = $("#qnty").val();
+                        param += "&jntpurchsid=" + jntpurchsid + "&jntpurchsno=" + jntpurchsno + "&qnty=" + qnty;
+                        param += "&recptrEml=" + $("#eml1").val() + "@" + $("#eml2").val() + "&dlvyZip=" + $("#dlvyZip").text();
+                        var amt = $("#totalPrice").text().replace(/,/gi, "").replace("원", "");
+                        $(this.goodsList).each(function(index, item) {
+                            param += "&goodsList[" + index + "].jntpurchsid=" + jntpurchsid;
+                            param += "&goodsList[" + index + "].tchaidid=" + item.tchaidid;
+                            param += "&goodsList[" + index + "].qnty=" + qnty;
+                            param += "&goodsList[" + index + "].amt=" + amt;
+                        });
+                        
+                        if(displayWorkProgress(true)) {
+                            $.ajax({
+                                url : "/front/jntpurchs/insertJntpurchsOrder.do",
+                                type: "POST",
+                                cache: false,
+                                dataType: "json",
+                                data: param,
+                                success: function(response) {
+                                    if(response.result == "success") {
+                                        //alert(response.msg);
+                                        location.href = "/front/jntpurchs/jntpurchsOrderComplete.html";
+                                    } else {
+                                        alert(response.msg);
+                                    }
+                                    closeWorkProgress();
+                                }
+                            });
+                        }
+                    }
+                }
+                
            };
            
            $(function() {
