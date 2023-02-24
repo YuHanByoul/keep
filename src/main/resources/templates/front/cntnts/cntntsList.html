@@ -138,7 +138,7 @@
 		<script th:inline="javascript">	
 		var mainEduSbjctCd = /*[[${mainEduSbjctCd}]]*/ null;
 		var eduSbjctCd = /*[[${eduSbjctCd}]]*/ null;
-		var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+		var getCodeListUrl = "/mng/customAttr/grpCodeList.do";
 		
 		var setSearchSelectBox = {
 		 	fn_getNextDepthList : function(grpcd , upprcd, targetId, selected){
@@ -147,6 +147,7 @@
 					type: 'GET',
 					cache : false,
 					dataType: 'json',
+					async: false,
 					data: {
 						  grpcd  : grpcd
 						, upprcd : upprcd
@@ -159,7 +160,7 @@
 					
 				});
 			},
-		 	
+
 		 	writeHtml : function(grpcd,targetId,list,selected){
 			 	var cntArr = targetId.split("_");
 			   	var nextCnt = Number(cntArr[1])+1;
@@ -168,29 +169,31 @@
 			    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
 			        html +="    <option value=''>- 전체 -</option>";
 		    	   
-		  		  for(var i=0 ; i < list.length;i++){
+		  		for(var i=0 ; i < list.length;i++){
 		  			if(list[i].cd==selected){
 		   				html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
 		  			}else{
 		  				html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
 		  			}
-		  		  }
-		  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
-		  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
-		  		  }
-			   	  html +="    </select>";
-			   	  $("#"+targetId).html(html);
+		  		}
+		  		
+				if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+					setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+				}
+				html +="    </select>";
+				
+				$("#"+targetId).html(html);
 		 	},
 		 	
 		    setNextDepth : function(grpcd , upprcd , targetId, selected){
 				setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId, selected);
 			}
 		}
-		setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1', 163103);
-		setSearchSelectBox.fn_getNextDepthList(163, 163103,'searchEduSbjctCd_2', 163103101);
+		
+    	setSearchSelectBox.fn_getNextDepthList(163 , 0, 'searchEduSbjctCd_1', mainEduSbjctCd);
+		setSearchSelectBox.fn_getNextDepthList(163, mainEduSbjctCd,'searchEduSbjctCd_2', eduSbjctCd);
 		
 		setSearchSelectBox.fn_getNextDepthList(164 , 0, 'searchTypeCd_1', "");
-
 		
         var cntnts = {
                 listUrl: '/front/cntnts/selectCntntsList.do',
@@ -251,8 +254,7 @@
 
                 selectCntntsList() {
                     if (displayWorkProgress(true)) {
-                        let formData = $('#searchForm').serializeArray();
-                        console.log(formData);
+                    	var formData = $('#searchForm').serializeArray();
                         $.ajax({
                             url: cntnts.listUrl,
                             cache: false,
@@ -347,16 +349,17 @@
                     $("#totalCount").html(data.totalCount);
                 }
             };
-			
-            $(function () {        		
-        		cntnts.selectCntntsList();
+
+            $(function () {
+            	cntnts.init();
             })
-            
+			
 			function goPage(page) {
 				$("#pageNumber").val(page);
 				
 				cntnts.selectCntntsList();
-			}            
+			} 
+			
 		</script>
 	</div>
 

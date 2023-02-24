@@ -36,21 +36,30 @@
             	LEFT OUTER JOIN (SELECT PRGRMID, DSGN_NO, DSGN_CYCL FROM TB_ASS_DSGN_HSTRY ORDER BY DSGN_CYCL DESC LIMIT 1) C ON A.PRGRMID = C.PRGRMID
             	LEFT OUTER JOIN TB_CMM_ADDR_CTPRVN ADDR ON A.INST_RGN_CD = ADDR.CTPRVN_CD
                 LEFT OUTER JOIN (SELECT FILEID, FILEGRPID, FILE_IDNTFC_KEY FROM TB_CMM_FILE GROUP BY FILEGRPID) D ON B.EDU_PHOTO_FILEGRPID = D.FILEGRPID
+                
+                <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
+                LEFT OUTER JOIN (SELECT PRGRMID, EDU_SBJCT_CD FROM TB_ASS_PRGRM_EDU_SBJCT) E ON A.PRGRMID = E.PRGRMID
+                LEFT OUTER JOIN TB_CMM_CD CD1 ON E.EDU_SBJCT_CD = CD1.CD
+                LEFT OUTER JOIN TB_CMM_CD CD2 ON CD1.UPPR_CD = CD2.CD
+                </if>
             WHERE
             	A.STTS_CD = 111111
                 <!-- 프로그램명 -->
                 <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
                 AND A.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
                 </if>
+                
                 <!-- 기관명 -->
                 <if test="searchInstNm != null and searchInstNm != ''">
                 AND A.INST_NM LIKE CONCAT('%',#{searchInstNm},'%')
                 </if>
+                
                 <!-- 지역 -->
                 <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchTtlCn'">
                 AND A.TTL LIKE CONCAT('%',#{searchKeyword},'%')
                 AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
                 </if>
+                
                 <!-- 교육대상 -->
                 <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'infnt'">
                 AND B.INFNT = 'Y'
@@ -69,7 +78,15 @@
                 </if>
                 <if test="searchEduTarget != null and searchEduTarget != '' and searchEduTarget == 'all'">
                 AND B.WHOL_AGE = 'Y'
-                </if>            
+                </if>
+                
+                <!-- 교육주제 -->
+                <if test="searchManinEduSbjctCd != null and searchManinEduSbjctCd != ''">
+                AND CD2.CD = #{searchManinEduSbjctCd}
+                </if>
+                <if test="searchMdleEduSbjctCd != null and searchMdleEduSbjctCd != ''">
+                AND CD1.CD = #{searchMdleEduSbjctCd}
+                </if>
         <include refid="PaginationMapper.footer"/>
     </select>
     
