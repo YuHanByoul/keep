@@ -10,21 +10,21 @@
             <dl>
                 <div class="list">
                     <dt>분류</dt>
-                    <dd>연구</dd>
+                    <dd>[[${spcltyDta.clsfCdNm}]]</dd>
                 </div>
                 <div class="list">
                     <dt>발간년도</dt>
-                    <dd>2022</dd>
+                    <dd>[[${spcltyDta.yy}]]</dd>
                 </div>
             </dl>
             <dl>
                 <div class="list">
                     <dt>저자</dt>
-                    <dd>김창덕, 신지영(한국환경연구원)</dd>
+                    <dd>[[${spcltyDta.writr}]]</dd>
                 </div>
                 <div class="list">
                     <dt>등록일</dt>
-                    <dd>2022-09-08</dd>
+                    <dd>[[${#dates.format(spcltyDta.regDt, 'yyyy-MM-dd')}]]</dd>
                 </div>
             </dl>
             <dl>
@@ -32,13 +32,17 @@
                     <dt>첨부파일</dt>
                     <dd>
                         <div class="form-input-file">
-                            <ul>
-                                <li class="file-block" data_ext="xlsx"><span class="name"><a href="#">EPAFP_DE_433__메뉴구조도_v1.5_230103.xlsx</a></span></li>
-                                <li class="file-block" data_ext="png"><span class="name"><a href="#">ex-doc.png</a></span></li>
-                                <li class="file-block" data_ext="hwp"><span class="name"><a href="#">빈 문서 1.hwp</a></span></li>
-                                <li class="file-block" data_ext="pdf"><span class="name"><a href="#">현금영수증 __ 네이버페이.pdf</a></span></li>
-                                <li class="file-block" data_ext="docx"><span class="name"><a href="#">가입신청 취소 요청서.docx</a></span></li>
-                                <li class="file-block" data_ext="zip"><span class="name"><a href="#">WinMerge-2.16.24-Setup.zip</a></span></li>
+                            <ul th:if="${spcltyDta.atchFileList != null}">
+                                <th:block th:each="file : ${spcltyDta.atchFileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
                             </ul>
                         </div>
                     </dd>
@@ -47,36 +51,63 @@
         </div>
         <div class="table-view-body">
             <div class="table-view-content">
-                <p>연수페이지(로그인 필요) : <a href="https://danzzak.getsmart.co.kr/enroll-apply/course/EG00225a0">https://danzzak.getsmart.co.kr/enroll-apply/course/EG00225a0</a></p>
-                <p>교보재 신청(8.30 17:00~) : <a href="https://naver.me/GwDToPoi">https://naver.me/GwDToPoi</a></p>
-                <p></p>
-                <p>안내 공문은 8월 중에 조금 늦게 발송예정입니다.</p>
-                <p>참고해주세요.</p>
+                <th:block th:each="pdfFilePath : ${pdfFilePaths}">
+                    [[${pdfFilePath}]]
+                    <iframe th:src="|/js/pdfjs/web/viewer.html?file=${pdfFilePath}|" width="100%" height="700px"></iframe>
+                </th:block>
 
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(spcltyDta.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
             </div>
+
         </div>
 
         <div class="btn-wrap">
             <div class="center">
-                <button type="button" class="btn-medium btn-gray">목록</button>
+                <button type="button" class="btn-medium btn-gray" onclick="goToList()">목록</button>
             </div>
         </div>
 
         <div class="page-navigation">
-            <a href="#">
+            <a th:onclick="|goToOtherDta(${spcltyDta.prevDtaid})|">
                 <dl>
                     <dt>이전글</dt>
-                    <dd><span class="ellipsis">[마감] 2022년 아이돌봄지원사업 안내(인쇄용)</span></dd>
+                    <dd><span class="ellipsis">[[${spcltyDta.prevDtaTtl}]]</span></dd>
                 </dl>
             </a>
-            <a href="#">
+
+            <a th:onclick="|goToOtherDta(${spcltyDta.nextDtaid})|">
                 <dl>
                     <dt>다음글</dt>
-                    <dd><span class="ellipsis">[진행중] 2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)2022년도 코로나19 특례지원 요금표 (일반, 의료방역)</span>
+                    <dd><span class="ellipsis">[[${spcltyDta.nextDtaTtl}]]</span>
                     </dd>
                 </dl>
             </a>
         </div>
-
     </div>
+
+    <form name="listForm" id="listForm">
+        <input type="hidden" name="searchType" id="searchType" th:value="${spcltyDta.searchType}">
+        <input type="hidden" name="searchKeyword" id="searchKeyword" th:value="${spcltyDta.searchKeyword}">
+        <input type="hidden" name="instNm" id="writr" th:value="${spcltyDta.writr}">
+        <input type="hidden" name="searchFromRegDt" id="searchFromRegDt" th:value="${spcltyDta.searchFromRegDt}">
+        <input type="hidden" name="searchToRegDt" id="searchToRegDt" th:value="${spcltyDta.searchToRegDt}">
+        <input type="hidden" name="searchClsfCd" id="searchClsfCd" th:value="${spcltyDta.searchClsfCd}">
+        <input type="hidden" name="orderField" id="orderField" th:value="${spcltyDta.orderField}">
+        <input type="hidden" name="rowPerPage" id="rowPerPage" th:value="${spcltyDta.rowPerPage}">
+        <input type="hidden" id="dtaid" name="dtaid" th:value="${spcltyDta.dtaid}">
+    </form>
+    <script th:inline="javascript">
+        let goToList = () => {
+            let f = document.forms.listForm;
+            f.action = listUrl;
+            f.submit();
+        }
+
+        let goToOhterDta = (dtaid) => {
+            let f = document.forms.listForm;
+            f.action = detailUrl;
+            f.dtaid.value = dtaid;
+            f.submit();
+        }
+    </script>
 </div>

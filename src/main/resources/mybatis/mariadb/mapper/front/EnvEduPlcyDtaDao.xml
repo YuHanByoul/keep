@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kbrainc.plum.front.intro.envEduPlcyDta.model.EnvEduPlcyDtaDao">
+    <select id="selectBsnsOperDtaList" resultType="front.BsnsOperDtaVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.DTAID
+                ,A.YY
+                ,A.TYPE_CD
+                ,B.INST_NM
+                ,A.TTL
+                ,A.CN
+                ,A.PDF_FILEID
+                ,A.ATCH_FILEGRPID
+                ,A.REG_DT
+            FROM TB_CMM_BSNS_OPER_DTA A
+            INNER JOIN TB_CMM_INST B
+                ON A.INSTID = B.INSTID
+            WHERE 1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <choose>
+                    <when test="searchType == 'ttl'">
+                        AND LIKE A.TTL CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'cn'">
+                        AND LIKE A.CN CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CN LIKE CONCAT('%', #{searchKeyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+
+            <if test="instNm != null and instNm != ''">
+                AND B.INST_NM LIKE CONCAT('%', #{instNm}, '%')
+            </if>
+
+            <if test="searchFromRegDt != null and searchFromRegDt != ''">
+                AND DATE(A.REG_DT) <![CDATA[>=]]> #{searchFromRegDt}
+            </if>
+
+            <if test="searchToRegDt != null and searchToRegDt != ''">
+                AND DATE(A.REG_DT) <![CDATA[<=]]> #{searchToRegDt}
+            </if>
+
+            <if test="searchTypeCd != null">
+                AND A.TYPE_CD IN
+                    <foreach collection="searchTypeCd" item="typeCd" open="(" close=")" separator=",">
+                        #{typeCd}
+                    </foreach>
+            </if>
+
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectBsnsOperDta" resultType="front.BsnsOperDtaVo">
+        SELECT
+            A.DTAID
+            , A.YY
+            , A.TYPE_CD
+            , C.INST_NM
+            , B.CLSF_CD
+            , A.TTL
+            , A.CN
+            , A.PDF_FILEID
+            , A.ATCH_FILEGRPID
+            , A.REG_DT
+            , (SELECT A1.DTAID FROM TB_CMM_BSNS_OPER_DTA A1 WHERE A1.DTAID <![CDATA[<]]> #{dtaid} LIMIT 1) AS PREV_DTAID
+            , (SELECT A1.TTL FROM TB_CMM_BSNS_OPER_DTA A1 WHERE A1.DTAID <![CDATA[<]]> #{dtaid} LIMIT 1) AS PREV_DTA_TTL
+            , (SELECT A2.DTAID FROM TB_CMM_BSNS_OPER_DTA A2 WHERE A2.DTAID <![CDATA[>]]> #{dtaid} LIMIT 1) AS NEXT_DTAID
+            , (SELECT A2.TTL FROM TB_CMM_BSNS_OPER_DTA A2 WHERE A2.DTAID <![CDATA[>]]> #{dtaid} LIMIT 1) AS NEXT_DTA_TTL
+        FROM TB_CMM_BSNS_OPER_DTA A
+        INNER JOIN TB_CMM_INST C
+                ON A.INSTID = C.INSTID
+        LEFT OUTER JOIN TB_CMM_BSNS_OPER_DTA_CLSF_MAPNG B
+                        ON A.DTAID = B.DTAID
+        WHERE A.DTAID = #{dtaid}
+    </select>
+
+    <select id="selectSpcltyDta" resultType="front.SpcltyDtaVo">
+        SELECT DTAID
+             , CLSF_CD
+             , YY
+             , TYPE_CD
+             , WRITR
+             , TTL
+             , CN
+             , PDF_FILEID
+             , ATCH_FILEGRPID
+             , REG_DT
+             , (SELECT A1.DTAID FROM TB_CMM_SPCLTY_DTA A1 WHERE A1.DTAID <![CDATA[<]]> #{dtaid} LIMIT 1) AS PREV_DTAID
+             , (SELECT A1.TTL FROM TB_CMM_SPCLTY_DTA A1 WHERE A1.DTAID <![CDATA[<]]> #{dtaid} LIMIT 1) AS PREV_DTA_TTL
+             , (SELECT A2.DTAID FROM TB_CMM_SPCLTY_DTA A2 WHERE A2.DTAID <![CDATA[>]]> #{dtaid} LIMIT 1) AS NEXT_DTAID
+             , (SELECT A2.TTL FROM TB_CMM_SPCLTY_DTA A2 WHERE A2.DTAID <![CDATA[>]]> #{dtaid} LIMIT 1) AS NEXT_DTA_TTL
+        FROM TB_CMM_SPCLTY_DTA
+        WHERE DTAID = #{dtaid}
+    </select>
+
+    <select id="selectSpcltyDtaList" resultType="front.SpcltyDtaVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT DTAID
+            , CLSF_CD
+            , YY
+            , TYPE_CD
+            , WRITR
+            , TTL
+            , CN
+            , PDF_FILEID
+            , ATCH_FILEGRPID
+            , REG_DT
+        FROM TB_CMM_SPCLTY_DTA
+        WHERE 1=1
+            <if test="searchKeyword != null and searchKeyword != ''">
+                <choose>
+                    <when test="searchType == 'ttl'">
+                        AND LIKE TTL CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <when test="searchType == 'cn'">
+                        AND LIKE CN CONCAT ('%', #{searchKeyword}, '%')
+                    </when>
+                    <otherwise>
+                        AND (TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR CN LIKE CONCAT('%', #{searchKeyword}, '%'))
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="writr != null and writr !=''">
+                AND LIKE WRITR CONCAT('%', #{writr}, '%')
+            </if>
+            <if test="searchFromRegDt != null and searchFromRegDt != ''">
+                AND DATE(A.REG_DT) <![CDATA[>=]]> #{searchFromRegDt}
+            </if>
+
+            <if test="searchToRegDt != null and searchToRegDt != ''">
+                AND DATE(A.REG_DT) <![CDATA[<=]]> #{searchToRegDt}
+            </if>
+
+            <if test="searchClsfCd != null">
+                AND A.CLSF_CD IN
+                <foreach collection="searchClsfCd" item="clsfCd" open="(" close=")" separator=",">
+                    #{clsfCd}
+                </foreach>
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>
