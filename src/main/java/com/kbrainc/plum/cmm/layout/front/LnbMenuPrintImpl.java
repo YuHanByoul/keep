@@ -115,7 +115,7 @@ public class LnbMenuPrintImpl {
                     menuItem1 = treeNode1.getData();
 
 		            if ("02".equals(menuItem1.getPtypeCd()) && "N".equals(menuItem1.getHideYn())) {
-		                if ((user != null && isMenuAuth(menuItem1.getUrl())) || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
+		                if ((isMenuAuth(menuItem1.getUrl())) || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
 		                    isMenuView = true;
 		                } else {
 		                    isMenuView = false;
@@ -175,7 +175,7 @@ public class LnbMenuPrintImpl {
 		                        menuItem2 = treeNode2.getData();
 
 		                        if ("02".equals(menuItem2.getPtypeCd()) && "N".equals(menuItem2.getHideYn())) {
-		                            if ((user != null && isMenuAuth(menuItem2.getUrl()))
+		                            if ((isMenuAuth(menuItem2.getUrl()))
 		                                    || ("N".equals(menuItem2.getNmExpsrTrgtCd()) && user == null)) {
 		                                isMenuView = true;
 		                            } else {

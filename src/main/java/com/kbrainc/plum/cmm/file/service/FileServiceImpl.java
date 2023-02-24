@@ -168,7 +168,7 @@ public class FileServiceImpl extends PlumAbstractServiceImpl implements FileServ
                 }
             } else if (downloadChecker != null) {
                 if (downloadChecker.containsValue("login")) { // 로그인체크
-                    if(user.getUserid() == null) {
+                    if(user == null || user.getUserid() == null) {
                         return false;
                     }
                 }

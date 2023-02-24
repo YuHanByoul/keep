@@ -119,7 +119,7 @@ public class GnbMenuPrintImpl {
             menuItem1 = treeNode1.getData();
 
             if ("02".equals(menuItem1.getPtypeCd()) && "N".equals(menuItem1.getHideYn())) {
-                if ((user != null && isMenuAuth(menuItem1.getUrl())) && treeNode1.hasChildren()
+                if ((isMenuAuth(menuItem1.getUrl())) && treeNode1.hasChildren()
                         && isMenuAuth(((TreeNode<MenuItem>) treeNode1.getChildAt(0)).getData().getUrl())
                         || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
                     isMenuView = true;
@@ -168,7 +168,7 @@ public class GnbMenuPrintImpl {
                         menuItem2 = treeNode2.getData();
 
                         if ("02".equals(menuItem2.getPtypeCd()) && "N".equals(menuItem2.getHideYn())) {
-                            if ((user != null && isMenuAuth(menuItem2.getUrl()))
+                            if ((isMenuAuth(menuItem2.getUrl()))
                                     || ("N".equals(menuItem2.getNmExpsrTrgtCd()) && user == null)) {
                                 isMenuView = true;
                             } else {
@@ -212,7 +212,7 @@ public class GnbMenuPrintImpl {
                                     menuItem3 = treeNode3.getData();
 
                                     if ("02".equals(menuItem3.getPtypeCd()) && "N".equals(menuItem3.getHideYn())) {
-                                        if ((user != null && isMenuAuth(menuItem3.getUrl()))
+                                        if ((isMenuAuth(menuItem3.getUrl()))
                                                 || ("N".equals(menuItem3.getNmExpsrTrgtCd()) && user == null)) {
                                             isMenuView = true;
                                         } else {
