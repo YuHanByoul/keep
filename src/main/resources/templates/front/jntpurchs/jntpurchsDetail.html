@@ -107,7 +107,12 @@
                                 <label class="inp vm" id="terms-checkbox" data-layer-href="layer-popup09"><input type="checkbox" title="개인정보 수집 및 이용에 대한 동의" id="agree"><b class="normal-wrap">개인정보 수집 및 이용에 대한 동의</b></label>
                             </dt>
                             <dd>
+                                <th:block th:if="${jntpurchsInfo.sttsCdNm == '모집중'}">
                                 <button type="button" class="btn-medium btn-green" onclick="jntpurchsDetail.onLoadUserInfo();">신청</button>
+                                </th:block>
+                                <th:block th:unless="${jntpurchsInfo.sttsCdNm == '모집중'}">
+                                <button type="button" class="btn-medium btn-gray" onclick="alert('모집중인 공동구매만 신청가능합니다.');">신청</button>
+                                </th:block>
                             </dd>
                         </div>
                     </dl>
@@ -282,7 +287,7 @@
                                                     <input type="email" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160" id="eml0">
                                                     <div class="bul">@</div>
                                                     <input type="email" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160" id="eml1">
-                                                    <select title="이메일 도메인" data-width="120" id="eml">
+                                                    <select title="이메일 도메인" data-width="120" id="emlDomain" onchange="jntpurchsDetail.onChangeDomain(this.value);">
                                                         <option value="직접입력">직접입력</option>
                                                         <option value="chol.com">chol.com</option>
                                                         <option value="dreamwiz.com">dreamwiz.com</option>
@@ -486,13 +491,15 @@
                     layerPopup.open({target});
                     $("#recptr").val(data.nm);
                     $("#moblphon").val(data.moblphon);
-                    $("#eml0").val(data.eml.split("@")[0]);
-                    var emailDomain = data.eml.split("@")[1]; 
-                    $("#eml1").val(emailDomain);
-                    $("#eml").val(emailDomain);
+                    $("#eml0").val(data.eml1);
+                    $("#eml1").val(data.eml2);
                     $("#zip").text(data.zip);
                     $("#addr").text(data.addr);
                     $("#addrDtl").val(data.addrDtl);
+                }
+                
+                , onChangeDomain: function(domain) {
+                    $("#eml1").val(domain);
                 }
            };
            
