@@ -1,0 +1,294 @@
+<!-- [팝업] 꾸러미 개체 검색 -->
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content type_2">
+            <div class="modal-header">
+                <h4 class="modal-title">꾸러미 개체 검색</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            
+            <form name="searchFrm2" id="searchFrm2" action="" onsubmit="return false;" class="card">
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-block-small">
+                        <div class="row">
+
+                            <div class="col-12 col-lg-3 mb-3">
+                                <div class="mb-0 form-group">
+                                    <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="popFilterKeywordInput"><strong>키워드</strong></label>
+                                    <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                        <select name="searchType" class="searchType form-control">
+                                            <option value="">- 선택 -</option>
+                                            <option value="nm">꾸러미명</option>
+                                        </select>
+                                        <input type="text" class="form-control" aria-label="Text input with dropdown button" name="popFilterKeywordInput" id="popFilterKeywordInput"/>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-3 mb-3">
+                                <div class="mb-0 form-group">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>꾸러미유형</strong></div>
+                                    <div class="col-12">
+                                        <span kattr:select_code="searchTypeCd" grpCd="184" firstOptTxt="-전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-3 mb-3">
+                                <div class="mb-0 form-group">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교육유형</strong></div>
+                                    <div class="col-12">
+                                       <span kattr:select_code="searchEduTypeCd" grpCd="187" firstOptTxt="-전체 -"  addClass="form-select form-select-sm form-control-sm" ></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-3 mb-3">
+                                <div class="mb-0 form-group">
+                                    <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>상태</strong></div>
+                                    <div class="col-12">
+                                        <select name="searchSttsCd" class="form-select form-select-sm">
+                                            <option value="">primary</option>
+                                            <option value="opt2">Type 2</option>
+                                            <option value="opt3">Type 3</option>
+                                            <option value="opt4">Type 4</option>
+                                            <option value="opt5">Type 5</option>
+                                            <option value="opt6">Type 6</option>
+                                            <option value="opt7">Type 7</option>
+                                            <option value="opt8">Type 8</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="mt-1 p-t-20 text-center border-top">
+                            <button type="button" class="btn btn-disabled m-r-5" data-bs-dismiss="modal" onclick="fn_init2()"> 초기화</button>
+                            <button type="button" class="btn btn-primary" onclick="fn_searchForm2()">검색</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card m-b-10">
+                    <div class="card-block-small">
+                        <div class="row">
+                            <div class="col-12 dt-responsive table-responsive">
+                                <table id="packModalGrid" class="table-responsive"></table>
+                                <div id="packModalListPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="choosePackageindvd()">확인</button>
+            </div>
+          </form>
+          
+            
+        </div>
+    </div>
+<!-- //[팝업] 꾸러미 개체 검색 -->
+ <style>
+.hide{display:none;}
+</style>
+<script th:inline="javascript">
+
+    var selectedItems2 = [];
+    var gridHelper2;       
+      
+    $(function(){
+    	gridHelper2 = new GridHelper('packModalGrid','contentPanel');
+        writeJsGridData2();
+    });
+    function fn_searchForm2(){
+        gridHelper2.resetListContent();
+    }
+    function fn_init2() {
+        $("#searchFrm2 #searchType,#searchKeyword").val('');
+        $("#searchFrm2 #searchTypeCd").val('');
+        $("#searchFrm2 #searchEduTypeCd").val('');
+        $("#searchFrm2 #searchSttsCd").val('');
+    }
+    
+    function writeJsGridData2(){
+        $("#packModalGrid").jsGrid({
+            height: "auto",
+            width: "100%",
+            autoload: true,
+            sorting: true,
+            paging: true,
+            pagerContainer: "#packModalListPager",
+            pagerFormat: "{first} {prev} {pages} {next} {last}",
+            pagePrevText: "이전",
+            pageNextText: "다음",
+            pageFirstText: " < 처음 ㅣ",
+            pageLastText: " | 마지막 >",
+            pageSize: 10,
+            pageButtonCount: 10,
+            pageLoading: true,
+            pageIndex: 1,
+            noDataContent: "데이터가 없습니다.",
+            
+            controller: {
+                loadData: function (filter) {
+                    var data = $.Deferred();
+                                            
+                    var formData = $('#searchFrm2').serializeArray();
+                    var params = [
+                            {name: "pageNumber", value: filter.pageIndex},
+                            {name: "rowPerPage", value: filter.pageSize},
+                    ]
+                    
+                    if(filter.sortField != undefined){
+                        params.push({name: "orderField", value: filter.sortField});
+                        params.push({name: "orderDirection", value: filter.sortOrder});
+                    }else{
+                        params.push({name: "orderField", value: 'reg_dt'});
+                    }
+                    formData = formData.concat(params);
+                    
+                    $.ajax({
+                      type: "GET",
+                      contentType: "application/json; charset=utf-8",
+                      url: "/mng/lend/selectPackageindvdList.do",
+                      dataType: "json",
+                      data: formData,
+                    }).done(function(response){
+                        var da = {
+                                data : escapeGridData(response.list)
+                                ,itemsCount : response.totalCount
+                            };
+                      data.resolve(da);
+                    });
+                    return data.promise();
+                },
+            },
+            fields: [
+                 {
+                     headerTemplate: function() {
+                         return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox2")
+                     },
+                     itemTemplate: function(_, item) {
+                         return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox2")
+                         //.prop("checked", $.inArray(String(item.userid), selectedItems) > -1)
+                         .prop("checked", $.inArray(item, selectedItems2) > -1)
+                         .on("change", function () {
+                         $(this).is(":checked") ? selectItem2($(this).parent().next().text()) : unselectItem2($(this).parent().next().text());
+                         });
+                     },
+                     align: "center",
+                     width: "30",
+                     sorting: false
+                 }                  
+                ,{ name: 'packageindvdid', css: 'hide' }
+                ,{ title: 'No.'       ,name: 'rowNumber' ,type: "number", width : "80", align:"center",  sorting :false }
+                ,{ title: '꾸러미'      ,name: 'packageindvdNm'      ,type: "text" , width: "200"}
+                ,{ title: '개체번호'     ,name: 'indvdno'    ,type: "text" , width: "100" ,align:"center"}
+                ,{ title: '꾸러미 유형'  ,name: 'typeCd'   ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '교육 유형'    ,name: 'eduTypeCd'   ,type: "text" , width: "200" ,align:"center"}
+                ,{ title: '상태'      ,name: 'regDt' ,type: "text" , width: "120", align:"center" 
+                    ,itemTemplate: function(value, item){
+
+                        if(item.sttsCd =='216101'){
+	                        return item.sttsCdNm;
+                        }else{
+                        	return item.sttsCdNm+"<br/>"+item.dlivyPrcsDt+" ~ "+item.endDe
+                        }
+                    }
+                 }
+            ],
+            
+            /*[# sec:authorize-url="/mng/member/memberDetailForm.html"]*/
+            rowClick: function(args) {
+                if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+            },
+            /*[/]*/
+            onPageChanged: function(args) {
+                selectedItems2 = [];
+            }
+        });
+        
+        var selectItem2 = function(item) {
+            selectedItems2.push(item);
+            if($(".singleCheckbox2").length == $(".singleCheckbox2:checked").length) {
+                $("#selectAllCheckbox2").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox2").prop("checked", false);
+            }
+        };
+         
+        var unselectItem2 = function(item) {
+            selectedItems2 = $.grep(selectedItems2, function(i) {
+            return i !== item;
+            });
+            if(selectedItems2.length == 0) {
+                $('#selectAllCheckbox2').attr('checked', false);
+            }
+            if($(".singleCheckbox2").length == $(".singleCheckbox2:checked").length) {
+                $("#selectAllCheckbox2").prop("checked", true);
+            } else {
+                $("#selectAllCheckbox2").prop("checked", false);
+            }
+        };
+        
+        $("#selectAllCheckbox2").click(function(item) {
+            selectedItems2 = [];
+            if(this.checked) { // check select status
+                $('.singleCheckbox2').each(function() { 
+                    this.checked = true;   
+                    selectItem2($(this).parent().next().text());           
+                }); 
+            }else {
+                $('.singleCheckbox2').each(function() { 
+                    this.checked = false;      
+                    unselectItem2(item);
+                });  
+                selectedItems2 = [];
+            }
+        });
+  }
+    
+  choosePackageindvd =()=>{
+
+      if(selectedItems2.length <=0 ){
+            alert("꾸러미 개체를 선택해주십시오.");
+            return;
+      }
+
+      var isDuplicated = false;
+      $(".pack-"+modalFrmNum).each(function(){
+          var id = $(this).data("packageindvdid");
+          for(var i =0 ; i< selectedItems2.length;i++){
+              if(id==selectedItems2[i]){isDuplicated=true;}
+          }
+      })
+      
+      if(isDuplicated){
+            alert("이미 선택한 꾸러미 개체가 있습니다.");
+            return;
+      }
+      
+      var items = $("#packModalGrid").jsGrid("option", "data");
+
+      var checkedItems = []
+      items.forEach(function(item){
+          for(var i =0 ; i< selectedItems2.length;i++){
+              if(item.packageindvdid==selectedItems2[i]){
+            	  var source = $("#packageSpan").html();
+                  var template = Handlebars.compile(source);
+                  var data = { 
+                          frmNum : modalFrmNum,
+                          packageindvdid :item.packageindvdid,
+                          packageindvdNm :item.packageindvdNm,
+                          indvdno:item.indvdno
+                          };
+                  $("#frm"+modalFrmNum+ "  #packArea").append(template(data));
+              }
+          }
+      })
+      resetPackCnt(modalFrmNum);
+      lendModal.hide();
+  }
+</script>

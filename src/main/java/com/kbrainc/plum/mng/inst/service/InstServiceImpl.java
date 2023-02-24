@@ -85,8 +85,16 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
      * @return int insert로우수
      * @throws Exception 예외
      */
+    @Transactional
     public int insertInst(InstVo instVo) throws Exception{
-        return instDao.insertInst(instVo);
+        int retVal = 0;
+        
+        if ("2".equals(instVo.getAprvSttsCd())) { // 승인
+            retVal += instDao.insertInstPool(instVo);
+        }
+        retVal += instDao.insertInst(instVo);
+        retVal += instDao.updateInstCd(instVo);
+        return retVal;
     }
     
     /**
@@ -98,8 +106,16 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
      * @return int insert로우수
      * @throws Exception 예외
      */
+    @Transactional
     public int updateInst(InstVo instVo) throws Exception{
-        return instDao.updateInst(instVo);
+        int retVal = 0;
+        
+        if ("2".equals(instVo.getAprvSttsCd())) { // 승인
+            retVal += instDao.insertInstPool(instVo);
+        }
+        retVal += instDao.updateInst(instVo);
+        retVal += instDao.updateInstCd(instVo);
+        return retVal;
     }
     
     /**
@@ -229,5 +245,29 @@ public class InstServiceImpl extends PlumAbstractServiceImpl implements InstServ
      */
     public String checkDuplicatedBrnoYn(InstVo instVo) throws Exception{
         return instDao.checkDuplicatedBrnoYn(instVo);
+     }
+    /**
+    * 기관 유형 코드 목록 호출
+    *
+    * @Title       : selectInstTypeCdList 
+    * @Description : 기관 유형 코드 목록 호출
+    * @param param InstVo instVo 객체
+    * @return List<Map<String,Object>> 기관정보 목록
+    * @throws Exception 예외
+    */
+    public List<Map<String,Object>> selectInstTypeCdList(InstVo instVo) throws Exception{
+        return instDao.selectInstTypeCdList(instVo);
+     }
+    /**
+    * 기관 부여 코드 업데이트 
+    *
+    * @Title       : updateInstNo 
+    * @Description : 기관 코드 업데이트
+    * @param instVo Instvo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int updateInstCd(InstVo instVo) throws Exception{
+        return instDao.updateInstCd(instVo);
      }
 }

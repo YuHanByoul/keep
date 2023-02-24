@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<div class="sub-banner-swiper">
+			<div class="swiper ">
+				<div class="swiper-wrapper">		
+					<th:block th:each="item : ${banner}">
+						<div class="swiper-slide">
+							<a href="${item.url}">
+								<div class="thumb" style="height:260px;"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.bannerFileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}" alt=""></div>
+							</a>
+						</div>
+					</th:block>
+				</div>
+				<button type="button" class="swiper-button-next"></button>
+				<button type="button" class="swiper-button-prev"></button>
+				<div class="swiper-control">
+					<div class="swiper-pagination"></div>
+					<button type="button" class="swiper-button-play" title="자동재생 시작"></button>
+					<button type="button" class="swiper-button-stop" title="자동재생 멈춤"></button>
+				</div>
+			</div>
+		</div>
+
+		<div class="tab-content tab-sub dropDown">
+			<button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">탄소중립 환경교육</button>
+			<ul class="tab-list target" role="tablist">
+				<li class="tab active">
+					<button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">탄소중립 환경교육</button>
+				</li>
+				<li class="tab">
+					<button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">탄소중립 환경교육 프로그램</button>
+				</li>
+			</ul>
+			<div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01">
+
+				<form class="search-filter" id="enveduSearchForm" name="enveduSearchForm">
+					<div class="form-input mo-flex-wrap">
+						<strong class="label">지난호 보기</strong>
+						<div class="form-input">
+							<select title="지난호 보기 년 선택" name="enveduSearchYr" id="enveduSearchYr">
+								<option value="">- 전체 -</option>
+								<th:block th:each="item : ${enveduYr}">
+									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
+								</th:block>
+							</select>
+							<select title="지난호 보기 월 선택" name="enveduSearchMm" id="enveduSearchMm">
+								<option value="">- 전체 -</option>
+								<th:block th:each="item : ${enveduMm}">
+									<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block>분기</option>
+								</th:block>
+							</select>
+						</div>
+						<div class="search-filter-submit">
+							<button type="button" class="btn-medium btn-green btn-before-search" onclick="envedu.search()">검색</button>
+							<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="envedu.searchInit()">초기화</button>
+						</div>
+					</div>
+					<input type="hidden" id="compareDate" name="compareDate">
+					<input type="hidden" id="beforeMonth" name="beforeMonth">
+					<input type="hidden" id="nextMonth" name="nextMonth">
+				</form>
+
+				<div class="table-caption">
+					<div class="left">
+						<h3 class="sub-title" id="enveduNowDate"></h3>
+					</div>
+				</div>
+
+				<div class="card-list card-list-n4 card-list-mo-n2" id="envedu-card-list">
+					<ul id="envedu-list-area">
+					</ul>
+				</div>
+
+				<div class="btn-wrap">
+					<div class="center">
+						<button type="button" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
+						<button type="button" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+					</div>
+				</div>
+
+
+			</div>
+			<div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+				
+				<form class="search-filter" id="prgrmgdSearchForm" name="prgrmgdSearchForm">
+					<div class="form-input mo-flex-wrap">
+						<strong class="label">지난호 보기</strong>
+						<div class="form-input">
+							<select title="지난호 보기 년 선택" name="prgrmgdSearchYr" id="prgrmgdSearchYr">
+								<option value="">- 전체 -</option>
+								<th:block th:each="item : ${prgrmgdYr}">
+									<option th:value="${item.yr}"><th:block th:text="${item.yr}"></th:block>년</option>
+								</th:block>
+							</select>
+							<select title="지난호 보기 월 선택" name="prgrmgdSearchMm" id="prgrmgdSearchMm">
+								<option value="">- 전체 -</option>
+								<th:block th:each="item : ${prgrmgdMm}">
+									<option th:value="${item.qu}"><th:block th:text="${item.qu}"></th:block>분기</option>
+								</th:block>
+							</select>
+						</div>
+						<div class="search-filter-submit">
+							<button type="button" class="btn-medium btn-green btn-before-search" onclick="prgrmgd.search()">검색</button>
+							<button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="prgrmgd.searchInit()">초기화</button>
+						</div>
+					</div>
+					<input type="hidden" id="prgrmgd-compareDate" name="compareDate">
+					<input type="hidden" id="prgrmgd-beforeMonth" name="beforeMonth">
+					<input type="hidden" id="prgrmgd-nextMonth" name="nextMonth">
+				</form>
+
+				<div class="table-caption">
+					<div class="left">
+						<h3 class="sub-title" id="prgrmgdNowDate">11월 환경교육 프로그램</h3>
+					</div>
+				</div>
+
+				<div class="card-list card-list-n2" id="prgrmgd-card-list">
+					<ul id="prgrmgd-list-area">
+					</ul>
+				</div>
+
+				<div class="btn-wrap">
+					<div class="center">
+						<button type="button" class="btn-medium btn-gray btn-before-prev" onclick="beforeList()">이전호</button>
+						<button type="button" class="btn-medium btn-blue btn-after-next" onclick="nextList()">다음호</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<!-- //content -->
+		
+		<script th:inline="javascript">
+		var envedu = {
+			listUrl: '/front/wbzn/carbon/selectEnveduList.do',
+			detailUrl : '/front/wbzn/carbon/enveduDetailForm.html',
+			
+			init(rowPerPage) {
+				if(rowPerPage != null) {
+					$("#rowPerPage").val(parseInt(rowPerPage));
+					$('#pageNumber').val('1');
+				}
+				this.selectEnveduList();
+			},
+			
+			moveToDetail() {
+				if (this.userid == null) {
+					alert('로그인 후 이용하실 수 있습니다.');
+					return;
+				}
+				location.href = '/front/wbzn/carbon/enveduDetailForm.html';
+			},
+			
+			search() {
+				$('#pageNumber').val('1');
+				transformMonth("search");
+				$("#enveduNowDate").text(month+"월호 환경교육");
+				$("#compareDate").val(`${year}-${month}-${date}`)
+				
+				this.selectEnveduList();
+				prgrmgd.init();
+			},
+			
+			searchInit() {
+				$("#enveduSearchYr").val('');
+				$("#enveduSearchMm").val('');
+				
+				this.selectEnveduList();
+				prgrmgd.init();
+			},
+			
+			selectEnveduList() {
+				if (displayWorkProgress(true)) {
+					let formData = $('#enveduSearchForm').serializeArray();
+					
+					$.ajax({
+						url: envedu.listUrl,
+						cache: false,
+						dataType: 'json',
+						data: formData,
+						type: 'GET',
+						success: function (data) {
+							if(data.list.length != 0){
+								$('#envedu-card-list').removeClass();
+								$('#envedu-card-list').addClass('card-list card-list-n4 card-list-mo-n2');
+							}
+							envedu.makeListHtml(data);
+							closeWorkProgress();
+						}
+					});
+				}
+			},
+			
+			moveToDetail(enveduid) {
+				var f = document.forms.searchForm ;
+				f.enveduid.value=enveduid;
+				f.action = this.detailUrl;
+				f.submit();
+			},
+			
+			makeListHtml(data) {
+				var enveduListHtml = "";
+				
+				if (data.list == null || data.list.length <= 0) {
+					$('#compareDate').val(year+"-"+month+"-"+date)
+					
+					$('#envedu-card-list').removeClass();
+					$('#envedu-card-list').addClass('nodata');
+					
+					enveduListHtml += `
+					<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+					`;
+				} else {
+					data.list.forEach(function(item) {
+						enveduListHtml += `
+						<li>
+						<a href="/front/wbzn/carbon/enveduDetailForm.html?enveduid=${item.enveduid}">
+						<div class="thumb"><img src="https://picsum.photos/230/127" alt=""></div>
+						<dl class="card-cate-list">
+						<dt>
+						`;
+						
+						if(item.enveduSeCdNm == "현장"){
+							enveduListHtml += `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "환경시사"){
+							enveduListHtml += `<div class="tag tag-blue">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "전문자료"){
+							enveduListHtml += `<div class="tag tag-brown">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "교육자료"){
+							enveduListHtml += `<div class="tag tag-red">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "환경문화"){
+							enveduListHtml += `<div class="tag tag-purple">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "환경소식"){
+							enveduListHtml += `<div class="tag tag-olive">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "행사정보"){
+							enveduListHtml += `<div class="tag tag-purple">${item.enveduSeCdNm}</div>`;
+						}else if(item.enveduSeCdNm == "채용공모"){
+							enveduListHtml += `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
+						}else{
+							enveduListHtml += `<div class="tag tag-green">${item.enveduSeCdNm}</div>`;
+						}
+						
+						enveduListHtml += `
+						</dt>
+						<dd class="ellipsis" data-ellipsis="2">${item.ttl}</dd>
+						</dl>
+						</a>
+						</li>
+						`;
+					});
+				}
+				$('#envedu-list-area').html(enveduListHtml);
+			}
+		};
+        	
+		var prgrmgd = {
+			listUrl: '/front/wbzn/carbon/selectPrgrmgdList.do',
+			detailUrl : '/front/wbzn/carbon/prgrmgdDetailForm.html',
+			
+			init(rowPerPage) {
+				if(rowPerPage != null) {
+					$("#rowPerPage").val(parseInt(rowPerPage));
+					$('#pageNumber').val('1');
+				}
+				this.selectPrgrmgdList();
+			},
+			
+			moveToDetail() {
+				if (this.userid == null) {
+					alert('로그인 후 이용하실 수 있습니다.');
+					return;
+				}
+				location.href = '/front/wbzn/carbon/prgrmgdDetailForm.html';
+			},
+			
+			search() {
+				$('#pageNumber').val('1');
+				
+				transformMonth("search");
+				$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+				$("#compareDate").val(`${year}-${month}-${date}`)
+				
+				this.selectPrgrmgdList();
+				envedu.init();
+			},
+			
+			searchInit() {
+				$("#prgrmgdSearchYr").val('');
+				$("#prgrmgdSearchMm").val('');
+				this.selectPrgrmgdList();
+				envedu.init();
+			},
+			
+			selectPrgrmgdList() {
+				if (displayWorkProgress(true)) {
+					let formData = $('#prgrmgdSearchForm').serializeArray();
+					
+					$.ajax({
+						url: prgrmgd.listUrl,
+						cache: false,
+						dataType: 'json',
+						data: formData,
+						type: 'GET',
+						success: function (data) {
+							if(data.list.length != 0){
+								$('#prgrmgd-card-list').removeClass();
+								$('#prgrmgd-card-list').addClass('card-list card-list-n2');
+							}
+							prgrmgd.makeListHtml(data);
+							closeWorkProgress();
+						}
+					});
+				}
+			},
+			
+			moveToDetail(prgrmgdid) {
+				var f = document.forms.searchForm ;
+				f.prgrmgdid.value=prgrmgdid;
+				f.action = this.detailUrl;
+				f.submit();
+			},
+			
+			makeListHtml(data) {
+				var prgrmgdListHtml = "";
+				if (data.list == null || data.list.length <= 0) {
+					$('#compareDate').val(year+"-"+month+"-"+date)
+					
+					$('#prgrmgd-card-list').removeClass();
+					$('#prgrmgd-card-list').addClass('nodata');
+					
+					prgrmgdListHtml += `
+					<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+					`;
+				} else {
+					data.list.forEach(function(item) {
+						prgrmgdListHtml += `
+						<li>
+						<a href="/front/wbzn/carbon/prgrmgdDetailForm.html?prgrmid=${item.prgrmid}">
+						<div class="thumb"><img src="https://picsum.photos/468/127" alt=""></div>
+						<dl class="card-program-list">
+						<dt>
+						`;
+						
+						if(item.rgnCdNm == "탄소중립 교육자료"){
+							prgrmgdListHtml += `<span class="tag tag-red">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "탄소중립 영상자료"){
+							prgrmgdListHtml += `<span class="tag tag-violet">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "탄소중립 환경뉴스"){
+							prgrmgdListHtml += `<span class="tag tag-olive">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "환경교육 용어사전"){
+							prgrmgdListHtml += `<span class="tag tag-gray">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "유아 탄소중립"){
+							prgrmgdListHtml += `<span class="tag tag-green">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "초·중등 탄소중립"){
+							prgrmgdListHtml += `<span class="tag tag-purple">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "일반 탄소중립"){
+							prgrmgdListHtml += `<span class="tag tag-blue">${item.rgnCdNm}</span>`;
+						}else if(item.rgnCdNm == "교원 탄소중립"){
+							prgrmgdListHtml += `<span class="tag tag-brown">${item.rgnCdNm}</span>`;
+						}else{
+							prgrmgdListHtml += `<span class="tag tag-green">${item.rgnCdNm}</span>`;
+						}
+						
+						prgrmgdListHtml += `
+						${item.ttl}
+						</dt>
+						<dd>
+						<ul>
+						<li>
+						<span class="icon icon-datepicker"></span>
+						<p>진행일정 : ${item.schdl}</p>
+						</li>
+						<li>
+						<span class="icon icon-doc" title=""></span>
+						<p>${item.cnSumry}</p>
+						</li>
+						</ul>
+						</dd>
+						</dl>
+						</a>
+						</li>
+						`;
+						
+					});
+				}
+				$('#prgrmgd-list-area').html(prgrmgdListHtml);
+			}
+		};
+		
+		var now = new Date();
+		var year = now.getFullYear();
+		var month = now.getMonth() + 1;
+		var date = now.getDate();
+		
+		function transformMonth(type) {
+			if(type == "before"){
+				if (month === 1) {
+				  year--;
+				  month = 12;
+				} else {
+				  month--;
+				}
+				return month;
+			}else if(type == "next"){
+				if(month === 12){
+					year++;
+					month = 1;
+				}else{
+					month++;
+				}				
+				return month;
+			}else if(type == "search"){
+				if($("#enveduSearchYr").val() != '' || $("#enveduSearchMm").val() != ''){
+					year = $("#enveduSearchYr").val();
+					month = $("#enveduSearchMm").val();
+				}else if($("#prgrmgdSearchYr").val() != '' || $("#prgrmgdSearchMm").val() != ''){
+					year = $("#prgrmgdSearchYr").val();
+					month = $("#prgrmgdSearchMm").val();
+				}
+			}else{
+				return month;
+			}
+		}
+		
+		function beforeList() {
+			$("#beforeMonth").val("before");
+			$("#nextMonth").val("");
+			$("#prgrmgd-beforeMonth").val("before");
+			$("#prgrmgd-nextMonth").val("");
+			
+			transformMonth("before");
+			$("#enveduNowDate").text(month+"월호 환경교육");
+			$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+			
+			$("#compareDate").val(`${year}-${month}-${date}`);
+			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
+			
+			envedu.selectEnveduList();
+			prgrmgd.selectPrgrmgdList();
+		}
+		
+		function nextList() {
+			$("#beforeMonth").val("");
+			$("#nextMonth").val("next");
+			$("#prgrmgd-beforeMonth").val("");
+			$("#prgrmgd-nextMonth").val("next");
+			
+			transformMonth("next");
+			$("#enveduNowDate").text(month+"월호 환경교육");
+			$("#prgrmgdNowDate").text(month+"월호 환경교육 프로그램");
+			
+			$("#compareDate").val(`${year}-${month}-${date}`);
+			$("#prgrmgd-compareDate").val(`${year}-${month}-${date}`);
+			
+			envedu.selectEnveduList();
+			prgrmgd.selectPrgrmgdList();
+		}
+
+		$(function () {
+			$("#enveduNowDate").text(transformMonth()+"월호 환경교육")
+			$("#prgrmgdNowDate").text(transformMonth()+"월호 환경교육 프로그램")
+			envedu.init();
+			prgrmgd.init();
+		})
+		
+		//footer banner
+			var subBannerSwiper = new Swiper(".sub-banner-swiper .swiper", {
+				slidesPerView : 1,
+				spaceBetween: 24,
+				navigation: {
+					nextEl: ".sub-banner-swiper .swiper-button-next",
+					prevEl: ".sub-banner-swiper .swiper-button-prev",
+				},
+				pagination: {
+					el: ".sub-banner-swiper .swiper-pagination",
+				},
+				a11y: {
+					prevSlideMessage: '이전 슬라이드',
+					nextSlideMessage: '다음 슬라이드',
+				},
+				autoplay : {
+					delay : 3000,
+					disableOnInteraction : false
+				},
+				loop : true
+			});
+			$('.sub-banner-swiper .swiper').find('.swiper-button-play').bind({
+				'click':function(e){
+					subBannerSwiper.autoplay.start();
+					$(this).hide();
+					$(this).parent().find('.swiper-button-stop').show().focus();
+				}
+			});
+			$('.sub-banner-swiper .swiper').find('.swiper-button-stop').bind({
+				'click':function(e){
+					subBannerSwiper.autoplay.stop();
+					$(this).hide();
+					$(this).parent().find('.swiper-button-play').show().focus();
+				}
+			});
+		</script>
+	</div>
+
+</body>
+</html>

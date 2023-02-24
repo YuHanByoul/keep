@@ -281,6 +281,12 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         user.setEsylgnLinkCnt(Integer.parseInt(String.valueOf(resultMap.get("ESYLGN_LINK_CNT"))));
         user.setData(resultMap);
         
+        if (resultMap.get("EXPRT_USERID") != null) {
+            user.setUserType("E"); // 전문가
+        } else if(resultMap.get("CI_PARNTS") != null) {
+            user.setUserType("C"); // 어린이
+        }
+        
         if ("D".equals(loginType)) {
             user.setEsylgnCd("106101"); // 디지털원패스
         }

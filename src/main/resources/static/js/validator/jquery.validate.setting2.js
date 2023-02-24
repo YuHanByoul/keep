@@ -42,6 +42,8 @@ $.validator.setDefaults({
                             
                             if($(this.element).closest("td").find(".feedback").length == 1) { // 포털용
                                 $(this.element).closest("td").find(".feedback").text(this.message).removeClass("valid").addClass("invalid");
+                            }else if($(this.element).siblings(".feedback").length == 1){
+                                $(this.element).siblings(".feedback").text(this.message).removeClass("valid").addClass("invalid");
                             }
 
 /*                            nextSibling = this.element.nextElementSibling;

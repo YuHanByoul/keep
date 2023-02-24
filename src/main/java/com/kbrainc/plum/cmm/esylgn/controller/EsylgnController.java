@@ -127,7 +127,8 @@ public class EsylgnController {
     public String onepassAcs(HttpServletRequest request, HttpServletResponse response, HttpSession session, @UserInfo UserVo user, RedirectAttributes redirect) throws Exception {
         ModelAndView mav = new ModelAndView();
         OnepassResponse onepassResponse = OnepassResponseHandler.check(request);
-        String returnUrl = request.getParameter("returnUrl");
+        String[] paramReturnUrl = request.getParameter("returnUrl").split("::");
+        
         PrintWriter writer = null;
         
         if (onepassResponse.getStatus() == STATUS.SUCCESS  && onepassResponse.getResultCode() == RESULT_CODE.SUCCESS) {
@@ -135,11 +136,11 @@ public class EsylgnController {
                 String userKey = onepassResponse.getUserKey();
                 String intfToken = onepassResponse.getIntfToken();
                 
-                if ("/front/esylgn/onepassUnlinkPopup.html".equals(returnUrl)) { // 연동해제
+                if ("/front/esylgn/onepassUnlinkPopup.html".equals(paramReturnUrl[0])) { // 연동해제
                     if (user == null) {
                         response.setContentType("text/html;charset=UTF-8");
                         writer = response.getWriter();
-                        writer.print("<script>alert('세션이 유효하지 않습니다.\\n로그인 화면으로 이동합니다.');try{opener.location.href='/login.html';}catch(e){}window.close();</script>");
+                        writer.print(String.format("<script>alert('세션이 유효하지 않습니다.\\n로그인 화면으로 이동합니다.');try{opener.location.href='/login.html?returnUrl=%s';}catch(e){}window.close();</script>", paramReturnUrl[1]));
                         return null;
                     }
                     
@@ -205,15 +206,15 @@ public class EsylgnController {
                         onepassUser.getProcess_result();
                         response.setContentType("text/html;charset=UTF-8");
                         writer = response.getWriter();
-                        writer.print("<script>alert('디지털원패스 연동이 해지되고 회원탈퇴처리 되셨습니다.');try{opener.location.href='/';}catch(e){}window.close();</script>");
+                        writer.print(String.format("<script>alert('디지털원패스 연동이 해지되고 회원탈퇴처리 되셨습니다.');try{opener.location.href='%s';}catch(e){}window.close();</script>", paramReturnUrl[1]));
                         return null;
                     }
                     
-                } else if ("/front/esylgn/onepassLinkPopup.html".equals(returnUrl)) { // 연동
+                } else if ("/front/esylgn/onepassLinkPopup.html".equals(paramReturnUrl[0])) { // 연동
                     if (user == null) {
                         response.setContentType("text/html;charset=UTF-8");
                         writer = response.getWriter();
-                        writer.print("<script>alert('세션이 유효하지 않습니다.\\n로그인 화면으로 이동합니다.');try{opener.location.href='/login.html';}catch(e){}window.close();</script>");
+                        writer.print(String.format("<script>alert('세션이 유효하지 않습니다.\\n로그인 화면으로 이동합니다.');try{opener.location.href='/login.html?returnUrl=%s';}catch(e){}window.close();</script>", paramReturnUrl[1]));
                         return null;
                     }
                     
@@ -365,7 +366,7 @@ public class EsylgnController {
                             sb.append("<input type='hidden' name='_csrf' value='").append(token.getToken()).append("'>");
                             sb.append("<input type='hidden' name='type' value='").append("C").append("'>");
                             sb.append("<input type='hidden' name='onepassEncodeData' value='").append(Base64.getEncoder().encodeToString(encrypted)).append("'>");
-                            sb.append("<input type='hidden' name='returnUrl' value='").append(request.getParameter("returnUrl").split("::")[0]).append("'>");
+                            sb.append("<input type='hidden' name='returnUrl' value='").append(paramReturnUrl[0]).append("'>");
                             sb.append("</form>");
                             sb.append("<script>");
                             sb.append("document.typeForm.submit();");
@@ -379,7 +380,7 @@ public class EsylgnController {
                             sb.append("<form name='typeForm' action='/front/membership/step1.html' method='post'>");
                             sb.append("<input type='hidden' name='_csrf' value='").append(token.getToken()).append("'>");
                             sb.append("<input type='hidden' name='onepassEncodeData' value='").append(Base64.getEncoder().encodeToString(encrypted)).append("'>");
-                            sb.append("<input type='hidden' name='returnUrl' value='").append(request.getParameter("returnUrl").split("::")[0]).append("'>");
+                            sb.append("<input type='hidden' name='returnUrl' value='").append(paramReturnUrl[0]).append("'>");
                             sb.append("</form>");
                             sb.append("<script>");
                             sb.append("document.typeForm.submit();");

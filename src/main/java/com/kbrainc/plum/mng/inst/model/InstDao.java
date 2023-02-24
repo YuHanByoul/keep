@@ -1,16 +1,11 @@
 package com.kbrainc.plum.mng.inst.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
-import com.kbrainc.plum.mng.member.model.ContractVo;
-import com.kbrainc.plum.mng.member.model.LoginHistVo;
-import com.kbrainc.plum.mng.member.model.MemberDtlVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
-import com.kbrainc.plum.mng.member.model.TempPwdVo;
-import com.kbrainc.plum.rte.util.mail.model.MailVo;
 
 /**
  * 
@@ -165,5 +160,37 @@ public interface InstDao {
      * @throws Exception 예외
      */
     public int updateInstRoleAllUser(MemberVo memberVo) throws Exception;
+    /**
+    * 기관풀 정보 저장.
+    *
+    * @Title       : insertInstPool 
+    * @Description : 기관풀 정보 저장.
+    * @param instVo Instvo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int insertInstPool(InstVo instVo) throws Exception;
+    /**
+    * 기관 유형 코드 목록 호출
+    *
+    * @Title       : selectInstTypeCdList 
+    * @Description : 기관 유형 코드 목록 호출
+    * @param param InstVo instVo 객체
+    * @return List<Map<String,Object>> 기관정보 목록
+    * @throws Exception 예외
+    */
+    public List<Map<String,Object>> selectInstTypeCdList(InstVo instVo) throws Exception;
+    /**
+    * 기관 부여 코드 업데이트 
+    *
+    * @Title       : updateInstNo 
+    * @Description : 기관 코드 업데이트
+    * @param instVo Instvo객체
+    * @return int insert로우수
+    * @throws Exception 예외
+    */
+    public int updateInstCd(InstVo instVo) throws Exception;
+    
+    
     
 }

@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.member.service;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -26,13 +27,13 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.kbrainc.plum.cmm.esylgn.model.EsylgnDao;
+import com.kbrainc.plum.front.member.model.MemberAcntPswdFindVo;
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
 import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import com.kbrainc.plum.rte.util.StringUtil;
 
 /**
 * 회원정보 서비스 구현 클래스.
@@ -251,6 +252,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 retVal += memberDao.updateInst(memberInstVo);
             } else { // 기관insert
                 retVal += memberDao.insertInst(memberInstVo);
+                retVal += memberDao.updateInstCd(memberInstVo.getInstid());
             }
             memberVo.setInstid(memberInstVo.getInstid());
             // 기관담당자_역할_코드(마스터) update
@@ -378,5 +380,59 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         return "";
     }
     
+    /**
+    * 기관 유형 코드 호출 
+    *
+    * @Title       : selectInstTypeCdList 
+    * @Description : 기관 유형 코드 호출 
+    * @param Map<String,String> 객체
+    * @return List<Map<String,String>> 기관 유형 코드 목록
+    * @throws Exception 예외
+    */
+    public List<Map<String,String>> selectInstTypeCdList() throws Exception {
+        return memberDao.selectInstTypeCdList();
+    }
     
+    /**
+    * ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다.
+    *
+    * @Title : selectAcntFromCiList
+    * @Description : ci에 해당하는 회원과 어린이회원의 계정정보를 조회한다
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return List<MemberAcntPswdFindVo> 계정 목록
+    * @throws Exception 예외
+    */
+    public List<MemberAcntPswdFindVo> selectAcntFromCiList(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        return memberDao.selectAcntFromCiList(memberAcntPswdFindVo);
+    }
+    
+    /**
+    * ci와 acnt에 해당하는 회원 정보를 조회한다.
+    *
+    * @Title : selectAcntFromCi
+    * @Description : ci와 acnt에 해당하는 회원 정보를 조회한다.
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return MemberAcntPswdFindVo 계정 정보
+    * @throws Exception 예외
+    */
+    public MemberAcntPswdFindVo selectAcntFromCi(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        return memberDao.selectAcntFromCi(memberAcntPswdFindVo);
+    }
+    
+    /**
+    * 비밀번호 수정(비밀번호 찾기).
+    *
+    * @Title : updatePassword
+    * @Description : 비밀번호 수정(비밀번호 찾기).
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updatePassword(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception {
+        String password = null;
+        password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberAcntPswdFindVo.getPswd().getBytes("UTF-8")));
+        memberAcntPswdFindVo.setPswd(password);
+        
+        return memberDao.updatePassword(memberAcntPswdFindVo);
+    }
 }

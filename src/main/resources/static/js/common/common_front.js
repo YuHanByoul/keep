@@ -200,13 +200,23 @@ function deleteFile(fileid, fileIdntfcKey) {
 }
 
 jQuery(function (){
-    $('#msgSendBtn').on('click',function (){
-        const $cn = $('#msgForm textarea[name=cn]');
-        if($cn.val() === null || $cn.val() === ''){
-            alert('쪽지 내용을 입력해주세요.');
-            $cn.focus();
-            return;
+    $('.open-msg-btn').on('click',function (){
+        const {target, trgtId} = $(this).data();
+        layerPopup.open({target, callback: msgSendFormInit(target, trgtId)});
+    });
+    $('#msgForm textarea[name=cn]').on('keyup input', function() {
+        $(this).parent().find('#txtSize').text($(this).val().length);
+    });
+    $('#msgForm').validate({
+        rules: {
+            cn: {required: true}
+        },
+        messages: {
+            cn: {required: "쪽지 내용을 입력해 주십시오."},
         }
+    })
+    $('#msgSendBtn').on('click',function (){
+        if(!$('#msgForm').valid()) return;
         let data = $('#msgForm').serialize();
         if (displayWorkProgress(true)) {
             $.ajax({
@@ -227,6 +237,10 @@ jQuery(function (){
 });
 function msgSendFormInit(target, trgtId) {
     const targetWrap = $('[data-layer-id="' + target + '"]');
+    targetWrap.find('textarea[name=cn]').val('').css({height: '70px'}).end()
+        .find('.feedback').text('').removeClass('invalid').end()
+        .find('#txtSize').text('0').end();
+
     $.ajax({
         url : "/front/msg/selectTrgtInfo.do",
         type: 'POST',
@@ -235,15 +249,13 @@ function msgSendFormInit(target, trgtId) {
         data : {trgtId: trgtId},
         success : function (result){
             targetWrap.find('input[name=trgtid]').val(trgtId).end()
-                .find('textarea[name=cn]').val('').css({height: '70px'}).end()
                 .find('#trgtAcnt').val(result.data.trgtNm+'('+result.data.trgtAcnt+')').end()
-                .find('#txtSize').text('0').end();
         }
     });
 }
 function msgAddBtn(){
     const $listMsgAddBtn = $('.list-msg-add-btn');
-    const $clone = $('.msgContextMenuClone > .toggleParent');
+    const $clone = $('.msg-context-menu-clone > .toggleParent');
 
     $listMsgAddBtn.each(function (){
         let $cloneBody = $clone.clone(true);
@@ -251,7 +263,7 @@ function msgAddBtn(){
         let maskAcnt = $(this).text();
         $(this).text('').append(
             $cloneBody.find('.user-acnt-span > span').text(maskAcnt).end()
-                .find('.data-btn').data({'trgt-id':trgtId}).end()
+                .find('.open-msg-btn').data({'trgt-id':trgtId}).end()
         );
     });
 }

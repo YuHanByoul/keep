@@ -7,13 +7,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.front.cntnts.model.CntntsVo;
 import com.kbrainc.plum.front.cntnts.service.CntntsService;
+import com.kbrainc.plum.mng.code.model.CodeVo;
+import com.kbrainc.plum.mng.code.service.CodeService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 /**
@@ -38,6 +42,9 @@ public class CntntsController {
     @Resource(name = "front.cntntsServiceImpl")
     private CntntsService cntntsService;
     
+    @Autowired
+    private CodeService codeService;
+    
     /**
     * 콘텐츠 게시글 목록 화면 이동
     *
@@ -48,6 +55,25 @@ public class CntntsController {
     */
     @RequestMapping(value = "/front/cntnts/cntntsListForm.html")
     public String cntntsListForm(Model model, CntntsVo cntntsVo) throws Exception {
+        
+        return "front/cntnts/cntntsList";
+    }
+    
+    /**
+    * 콘텐츠 게시글 목록 화면 이동
+    *
+    * @Title : cntntsListForm
+    * @Description : 컨텐츠관리 목록화면 이동
+    * @throws Exception 예외
+    * @return String
+    */
+    @RequestMapping(value = "/front/cntnts/{eduSbjctCd}/cntntsListForm.html")
+    public String cntntsListForm(@PathVariable String eduSbjctCd, Model model, CntntsVo cntntsVo, CodeVo codeVo) throws Exception {
+        codeVo.setCd("163103101");
+        CodeVo codeInfo = codeService.selectCodeInfo(codeVo);        
+        
+        model.addAttribute("mainEduSbjctCd", codeInfo.getUpprCd());
+        model.addAttribute("eduSbjctCd", 163103101);
         
         return "front/cntnts/cntntsList";
     }

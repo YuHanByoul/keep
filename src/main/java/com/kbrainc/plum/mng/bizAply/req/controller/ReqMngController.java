@@ -41,6 +41,7 @@ import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderCarrVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderJobVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderLicVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SmrLeaderVo;
+import com.kbrainc.plum.mng.bizAply.req.model.SrngTabVo;
 import com.kbrainc.plum.mng.bizAply.req.model.SupplementVo;
 import com.kbrainc.plum.mng.bizAply.req.service.ReqMngService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -250,10 +251,11 @@ public class ReqMngController {
         
         if (reqUserVo != null) {
             if (reqUserVo.getAplyid() > 0) {
-                List<ReqUserVo> result = this.reqMngService.selectReqUserList(reqUserVo);                    
-                if (CollectionUtils.isNotEmpty(result)) {
-                    detailReqUserVo = result.get(0);
-                }
+//                List<ReqUserVo> result = this.reqMngService.selectReqUserList(reqUserVo);    
+//                if (CollectionUtils.isNotEmpty(result)) {
+//                    detailReqUserVo = result.get(0);
+//                }
+                detailReqUserVo = this.reqMngService.detailReqUser(reqUserVo);
             }
             
             if (!StringUtil.nvl(detailReqUserVo.getFilegrpid1()).equals("") && !StringUtil.nvl(detailReqUserVo.getFilegrpid1()).equals(0)) {
@@ -921,20 +923,27 @@ public class ReqMngController {
     * @return String
      */
     @RequestMapping(value="/mng/bizAply/req/detailSrng.html")
-    public String detailSrng(SafetyMngVo safetyMngVo, Model model) throws Exception {
+    public String detailSrng(SrngTabVo srngTabVo, Model model) throws Exception {
         
-        SafetyMngVo detail = null;
-        
-        if (safetyMngVo != null) {
-            if (safetyMngVo.getAplyid() > 0) {
-                detail = this.reqMngService.detailSafetyMng(safetyMngVo);
+        List<SrngTabVo> list_1 = null;
+        List<SrngTabVo> list_2 = null;
+        if (srngTabVo != null) {
+            if (srngTabVo.getAplyid() > 0) {
+                srngTabVo.setCycl(1);
+                list_1 = this.reqMngService.selectSrngList(srngTabVo);                
+                srngTabVo.setCycl(2);
+                list_2 = this.reqMngService.selectSrngList(srngTabVo);                
             }
         }
         
-        if (detail == null)
-            detail = new SafetyMngVo();
+        if (CollectionUtils.isEmpty(list_1))
+            list_1 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_2))
+            list_2 = new ArrayList<SrngTabVo>();
         
-        model.addAttribute("detail", detail);
+        model.addAttribute("aplyid", srngTabVo == null ? "" : srngTabVo.getAplyid());
+        model.addAttribute("list_1", list_1);
+        model.addAttribute("list_2", list_2);
         
         return "mng/bizAply/req/detailSrng";
     }
@@ -951,20 +960,31 @@ public class ReqMngController {
     * @return String
      */
     @RequestMapping(value="/mng/bizAply/req/detailSrngDtl.html")
-    public String detailSrngDtl(SafetyMngVo safetyMngVo, Model model) throws Exception {
+    public String detailSrngDtl(SrngTabVo srngTabVo, Model model) throws Exception {
         
-        SafetyMngVo detail = null;
-        
-        if (safetyMngVo != null) {
-            if (safetyMngVo.getAplyid() > 0) {
-                detail = this.reqMngService.detailSafetyMng(safetyMngVo);
+        List<SrngTabVo> list_1 = null;
+        List<SrngTabVo> list_2 = null;
+        List<SrngTabVo> list_3 = null;
+        if (srngTabVo != null) {
+            if (srngTabVo.getAplyid() > 0) {
+                list_1 = this.reqMngService.selectSrngList(srngTabVo);
+                list_2 = this.reqMngService.detailSrngList(srngTabVo);
+                list_3 = this.reqMngService.selectSrngUserList(srngTabVo);
             }
         }
         
-        if (detail == null)
-            detail = new SafetyMngVo();
+        if (CollectionUtils.isEmpty(list_1))
+            list_1 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_2))
+            list_2 = new ArrayList<SrngTabVo>();
+        if (CollectionUtils.isEmpty(list_3))
+            list_3 = new ArrayList<SrngTabVo>();
         
-        model.addAttribute("detail", detail);
+        model.addAttribute("aplyid", srngTabVo == null ? "" : srngTabVo.getAplyid());
+        model.addAttribute("cycl", srngTabVo == null ? "" : srngTabVo.getCycl());
+        model.addAttribute("list_1", list_1);
+        model.addAttribute("list_2", list_2);
+        model.addAttribute("list_3", list_3);
         
         return "mng/bizAply/req/detailSrngDtl";
     }
@@ -1167,6 +1187,38 @@ public class ReqMngController {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "수정에 실패했습니다.");
         }
+        
+        return resultMap;
+    }
+    
+    /**
+    * 심사일정 캘린더 팝업 화면. 
+    *
+    * @Title : scheduleCalenderPopup
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return String
+     */
+    @RequestMapping(value="/mng/bizAply/req/scheduleCalenderPopup.html")
+    public String scheduleCalenderPopup() throws Exception {
+        return "mng/bizAply/req/scheduleCalenderPopup";
+    }
+    
+    /**
+    * 심사일정 캘린더 > 심사일정 조회. 
+    *
+    * @Title : selectScheduleList
+    * @Description : TODO
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+     */
+    @RequestMapping(value="/mng/bizAply/req/selectScheduleList.do")
+    @ResponseBody
+    public Map<String, Object> selectScheduleList(ReqMngVo reqMngVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("list", this.reqMngService.selectScheduleList(reqMngVo));
         
         return resultMap;
     }

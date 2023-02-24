@@ -353,4 +353,60 @@
             AND INSTID            = #{instid}
     </update>
     
+    <!-- 기관풀 정보 저장 --> 
+    <insert id="insertInstPool" parameterType="InstVo">
+        /* InstDao.insertInstPool */
+        INSERT TB_CMM_INST_POOL
+            (
+                INST_NM,
+                INST_TYPE_CD,
+                BRNO, RPRSV_NM,
+                TELNO, ZIP,
+                ADDR,
+                ADDR_DTL,
+                REG_DT
+            )
+        SELECT
+            #{instNm},
+            #{instTypeCd},
+            #{brno},
+            #{rprsvNm},
+            #{telno},
+            #{zip},
+            #{addr},
+            #{addrDtl},
+            NOW()
+        FROM 
+            DUAL
+        WHERE
+            NOT EXISTS(SELECT 1 FROM TB_CMM_INST_POOL WHERE BRNO = #{brno})
+    </insert>
+    <!--  기관회원 조회 -->
+    <select id="selectInstTypeCdList" parameterType="InstVo" resultType="map">
+           /* InstDao.selectInstTypeCdList */
+           SELECT
+               A.CD
+               ,concat(B.CD_NM,'>',A.CD_NM ) CD_NM
+             FROM
+               TB_CMM_CD A
+               INNER JOIN TB_CMM_CD B
+               ON A.UPPR_CD = B.CD
+            WHERE 1=1
+              AND A.USE_YN = 'Y'
+              AND A.CDGRPID = 108
+    </select>
+    <!-- 기관 부여 코드 업데이트--> 
+    <update id="updateInstCd" parameterType="instVo" >
+         /* InstDao.updateInstNo */
+         UPDATE
+             TB_CMM_INST I
+         SET
+             INST_CD = CONCAT((SELECT OPTN1 FROM TB_CMM_CD WHERE CD = I.INST_TYPE_CD),INSTID + 100000)
+         WHERE I.INSTID = #{instid}
+    </update>
+    
+    
+    
+    
+    
 </mapper>

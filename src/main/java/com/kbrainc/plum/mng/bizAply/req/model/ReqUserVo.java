@@ -49,6 +49,9 @@ public class ReqUserVo extends ParentRequestVo {
     
     /** 접수일시 종료일 */
     private String searchRegEndDe;
+    
+    /** 심사상태 */
+    private String searchSrngStts;
     // 검색조건 end
     
     /** 분야 코드 */
@@ -222,5 +225,20 @@ public class ReqUserVo extends ParentRequestVo {
     
     /** 엑셀다운로드 여부 */
     private String excelYn;
+    
+    /** 1차 심사양식 */
+    private String srngFormidFirst;
+    
+    /** 2차 심사양식 */
+    private String srngFormidScnd;
+    
+    private String formid;
+    
+    /** 온라인 심사유형 코드 */
+    private String onlnSrngTypeCd;
+    private String srngSttsNm;
+    private String firstScr;
+    private String secondScr;
+    private String totalScr;
     
 }

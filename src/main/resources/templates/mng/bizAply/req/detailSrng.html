@@ -1,5 +1,5 @@
 <form id="insertForm">
-    <input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}" />
+    <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}" />
     <!-- [탭] 심사결과 -->
     <div class="tab-pane" id="tab_07" role="tabpanel">
         <div class="card">
@@ -13,36 +13,56 @@
             </div>
             <div class="card-block-small p-t-0">
                 <div class="table-responsive">
-                    <table class="table table-framed table-bordered">
+                    <table class="table table-framed table-bordered" th:if="${#lists.size(list_1) > 0}">
                         <thead>
                         <tr class="border-bottom-inverse">
-                            <th class="text-center table-active">홍길동</th>
-                            <th class="text-center table-active">ㅇㅇㅇ</th>
-                            <th class="text-center table-active">ㅇㅇㅇ</th>
-                            <th class="text-center table-active">ㅇㅇㅇ</th>
-                            <th class="text-center table-active">ㅇㅇㅇ</th>
+                            <th class="text-center table-active" th:each="list, i : ${list_1}"><th:block th:text="${list.nm}"/></th>
                             <th class="text-center table-active">총점</th>
                             <th class="text-center table-active">평균점수</th>
                             <th class="text-center table-active">평가등급</th>
                             <th class="text-center table-active">평가순위</th>
                             <th class="text-center table-active">선정결과</th>
                             <th class="text-center table-active">상세보기</th>
+                            
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="text-center v-middle"><strong>95</strong></td>
-                            <td class="text-center v-middle"><strong>95</strong></td>
-                            <td class="text-center v-middle"><strong>95</strong></td>
-                            <td class="text-center v-middle"><strong>-</strong></td>
-                            <td class="text-center v-middle"><strong>95</strong></td>
-                            <td class="text-center v-middle"><strong>345</strong></td>
-                            <td class="text-center v-middle"><strong class="text-info">86.25</strong></td>
-                            <td class="text-center v-middle"></td>
-                            <td class="text-center v-middle"></td>
-                            <td class="text-center v-middle"></td>
+                            <td class="text-center v-middle" th:each="list, i : ${list_1}"><strong><th:block th:text="${list.scr}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_1[0].totScr}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_1[0].avgScr}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_1[0].firstGrd}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_1[0].firstRkng}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_1[0].slctnSttsNm}"/></strong></td>
                             <td class="text-center v-middle">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="loadSrngContent(); return false;">상세보기</button>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="loadSrngContent('1'); return false;">상세보기</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-framed table-bordered" th:if="${#lists.size(list_2) > 0}">
+                        <thead>
+                        <tr class="border-bottom-inverse">
+                            <th class="text-center table-active" th:each="list, i : ${list_2}"><th:block th:text="${list.nm}"/></th>
+                            <th class="text-center table-active">총점</th>
+                            <th class="text-center table-active">평균점수</th>
+                            <th class="text-center table-active">평가등급</th>
+                            <th class="text-center table-active">평가순위</th>
+                            <th class="text-center table-active">선정결과</th>
+                            <th class="text-center table-active">상세보기</th>
+                            
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="text-center v-middle" th:each="list, i : ${list_2}"><strong><th:block th:text="${list.scr}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_2[0].totScr}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_2[0].avgScr}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_2[0].firstGrd}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_2[0].firstRkng}"/></strong></td>
+                            <td class="text-center v-middle"><strong><th:block th:text="${list_2[0].slctnSttsNm}"/></strong></td>
+                            <td class="text-center v-middle">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="loadSrngContent('2'); return false;">상세보기</button>
                             </td>
                         </tr>
                         </tbody>
@@ -61,52 +81,45 @@
 </form>
 
 <script th:inline="javascript">
-    var updateUrl = "/mng/bizAply/req/updateSrng.do";
+    var listUrl = "/mng/bizAply/req/selectSrngList.do";
     
     $(function(){
+//     	getList();
     });
 
-    function loadSrngContent(){
+    function loadSrngContent(cycl){
         $.ajax({
             cache   : false
-          , url     : "/mng/bizAply/req/detailSrngDtl.html?aplyid=" + $("#aplyid").val()
+          , url     : "/mng/bizAply/req/detailSrngDtl.html?aplyid=" + $("#aplyid").val() + '&cycl=' + cycl
           , type    : 'GET'
           , async   : 'false'
           , dataType: 'html'
           , success : function(result){ //요청이 성공했을때 실행되는 콜백 함수
               $('#srngContent').html(result);
-              scrollIntoView('myTabContent');
+              scrollIntoView('srngContent');
           }
         });
         showContent();
     }
     
-    // 저장
-    function fn_save(){
-        if(!($("#insertForm").valid())) return;
-        
-        if(!confirm("저장하시겠습니까?")) return;
-        
-        var data =  $("#insertForm").serialize();        
-        
-        if(displayWorkProgress()){
-            $.ajax({
-                url : updateUrl,
-                type: 'POST',
-                cache : false,
-                dataType: 'json',
-                data : data,
-                success : function (data){
-                    if(data.result=="success"){
-                        alert(data.msg);
-                        gridHelper2.resetListContent();
-                    }else{
-                        alert(data.msg);
-                    }
-                    closeWorkProgress();
-                }
-            });
-        }
+    // 조회
+    function getList(){
+        $.ajax({
+            url : listUrl + '?aplyid=' + $("#aplyid").val(),
+            type: 'GET',
+            contentType: "application/json; charset=utf-8",
+            cache : false,
+            dataType: 'json',
+            data : '',
+            success : function (data){
+            	var html = "";
+            	for(var i = 0; i < data.length; i++) {
+            		if (data[i].cycl == "1") {
+            			
+            		}
+            	}
+            }
+        });
     }
 
 </script>

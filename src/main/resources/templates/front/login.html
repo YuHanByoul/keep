@@ -2,83 +2,80 @@
 <html xmlns:th="http://www.thymeleaf.org" 
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/front/loginLayout" 
+    layout:decorator="layout/front/simpleLayout" 
 >
 <th:block layout:fragment="content">
-<div class="section-title">
-    <h3>환경교육포털에 오신 것을 환영합니다.</h3>
-    <p>로그인을 하시면 보다 다양한 서비스를 이용하실 수 있습니다.</p>
-</div>
 
-<div class="member-login">
-    <div class="member-login-type">
+<section>
+    <div class="member-login">
+        <div class="member-login-type">
+            <ul>
+                <li><label class="inp"><input type="radio" name="loginUserTypeRadio" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == '' or #request.getParameter('userType') == 'P'}"><b>개인회원</b></label></li>
+                <li><label class="inp"><input type="radio" name="loginUserTypeRadio" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI"><b>기관회원</b></label></li>
+            </ul>
+        </div>
         <ul>
-            <li><label class="inp"><input type="radio" name="loginUserTypeRadio" id="loginUserTypeP" value="P" th:checked="${#request.getParameter('userType') == null or #request.getParameter('userType') == '' or #request.getParameter('userType') == 'P'}"><b>개인회원</b></label></li>
-            <li><label class="inp"><input type="radio" name="loginUserTypeRadio" id="loginUserTypeI" value="I" th:checked="${#request.getParameter('userType') == 'I'}"><label for="loginUserTypeI"><b>기관회원</b></label></li>
+            <li>
+            <form name="login_form" id="login_form" th:action="@{/login}" method="post">
+                <input type="hidden" name="loginUserType">
+                <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
+                <dl>
+                    <dt>회원 로그인</dt>
+                    <dd>
+                        <input type="text" name="p_userid" id="p_userid" th:value="${#request.getParameter('loginType') == 'G'? param.id : ''}" title="아이디" placeholder="아이디" onkeyup="enterkey()">
+                        <input type="password" name="p_pswd" id="p_pswd" title="비밀번호" placeholder="비밀번호" onkeyup="enterkey()">
+                        <label class="inp"><input type="checkbox" name="lidSave" id="lidSave" value="Y"><b>아이디 저장</b></label>
+                        <th:block th:switch="true">
+                        <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
+                        <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and session.drmncy != null}"></p>
+                        <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and not #strings.isEmpty(param.error)}">아이디 또는 비밀번호를 다시 확인해 주십시오.</p>
+                        <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.timeout)}">세션이 유효하지 않습니다.<br>로그인 해주십시오.</p>
+                        <p class="invalid-feedback" th:case="*"></p>
+                        </th:block>
+                    </dd>
+                </dl>
+                <div class="btn-inner">
+                    <a href="javascript:login();" class="btn-large btn-green">로그인</a>
+                    <ul class="link-list">
+                        <li><a href="javascript:goFindId()">아이디 찾기</a></li>
+                        <li><a href="javascript:goFindPswd()">비밀번호 찾기</a></li>
+                        <li><a href="javascript:join()">회원가입</a></li>
+                    </ul>
+                </div>
+            </form>
+            </li>
+            <li>
+            <form id="logOutRequest">
+                <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGOUT_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logout(#request)}" />
+                <input type="hidden" name="pageType" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).pageType(#request)}" />
+            </form>
+            <form name="request" id="request" th:action="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_DEST}" method="post">
+                <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
+                <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).login()}" />
+                <dl>
+                    <dt>디지털 원패스</dt>
+                    <dd>
+                        <strong>디지털원패스 아이디를 입력해 주십시오.</strong>
+                        <input type="email" title="디지털원패스 아이디" placeholder="디지털원패스 아이디" id="user_id" name="user_id" th:value="${#request.getParameter('loginType') == 'D'? param.id : ''}" onkeydown="if(event.keyCode == 13){onClickSubmit(); return false;};">
+                        <label class="inp"><input type="checkbox" name="ridSave" id="ridSave" value="Y"><b>아이디 저장</b></label>
+                        <th:block th:switch="true">
+                        <p class="invalid-feedback" id="onepassInvalidFeedback" th:case="${#request.getParameter('loginType') == 'D' and not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
+                        <p class="invalid-feedback" id="onepassInvalidFeedback" th:case="*"></p>
+                        </th:block>
+                    </dd>
+                </dl>
+                <div class="btn-inner">
+                    <a href="javascript:onClickSubmit();" class="btn-large btn-dblue btn-fingerprint">디지털원패스로 로그인</a>
+                    <ul class="link-list">
+                        <li><a href="https://www.onepass.go.kr/membership/find/id" target="_blank">아이디 찾기</a></li>
+                        <li><a href="https://www.onepass.go.kr/regist/agree" target="_blank">디지털원패스 회원가입</a></li>
+                    </ul>
+                </div>
+            </form>
+            </li>
         </ul>
     </div>
-    <ul>
-        <li>
-        <form name="login_form" id="login_form" th:action="@{/login}" method="post">
-            <input type="hidden" name="loginUserType">
-            <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
-            <dl>
-                <dt>회원 로그인</dt>
-                <dd>
-                    <input type="text" name="p_userid" id="p_userid" th:value="${#request.getParameter('loginType') == 'G'? param.id : ''}" title="아이디" placeholder="아이디" onkeyup="enterkey()">
-                    <input type="password" name="p_pswd" id="p_pswd" title="비밀번호" placeholder="비밀번호" onkeyup="enterkey()">
-                    <label class="inp"><input type="checkbox" name="lidSave" id="lidSave" value="Y"><b>아이디 저장</b></label>
-                    <th:block th:switch="true">
-                    <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
-                    <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and session.drmncy != null}"></p>
-                    <p class="invalid-feedback" th:case="${#request.getParameter('loginType') == 'G' and not #strings.isEmpty(param.error)}">아이디 또는 비밀번호를 다시 확인해 주십시오.</p>
-                    <p class="invalid-feedback" th:case="${not #strings.isEmpty(param.timeout)}">세션이 유효하지 않습니다.<br>로그인 해주십시오.</p>
-                    <p class="invalid-feedback" th:case="*"></p>
-                    </th:block>
-                </dd>
-            </dl>
-            <div class="btn-inner">
-                <a href="javascript:login();" class="btn-large btn-green">로그인</a>
-                <ul class="link-list">
-                    <li><a href="#">아이디 찾기</a></li>
-                    <li><a href="#">비밀번호 찾기</a></li>
-                    <li><a href="/front/membership/step1.html">회원가입</a></li>
-                </ul>
-            </div>
-        </form>
-        </li>
-        <li>
-        <form id="logOutRequest">
-            <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGOUT_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).logout(#request)}" />
-            <input type="hidden" name="pageType" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).pageType(#request)}" />
-        </form>
-        <form name="request" id="request" th:action="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_DEST}" method="post">
-            <input type="hidden" name="returnUrl" th:value="${param.returnUrl}">
-            <input type="hidden" th:name="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).LOGIN_INPUT_NAME}" th:value="${T(kr.go.onepass.client.handler.saml.OnepassRequestHandler).login()}" />
-            <dl>
-                <dt>디지털 원패스</dt>
-                <dd>
-                    <strong>디지털원패스 아이디를 입력해 주십시오.</strong>
-                    <input type="email" title="디지털원패스 아이디" placeholder="디지털원패스 아이디" id="user_id" name="user_id" th:value="${#request.getParameter('loginType') == 'D'? param.id : ''}" onkeydown="if(event.keyCode == 13){onClickSubmit(); return false;};">
-                    <label class="inp"><input type="checkbox" name="ridSave" id="ridSave" value="Y"><b>아이디 저장</b></label>
-                    <th:block th:switch="true">
-                    <p class="invalid-feedback" id="onepassInvalidFeedback" th:case="${#request.getParameter('loginType') == 'D' and not #strings.isEmpty(param.msg)}"><th:block th:text="${T(com.kbrainc.plum.rte.util.StringUtil).base64DecodeFromUrlSafeString(param.msg)}" /></p>
-                    <p class="invalid-feedback" id="onepassInvalidFeedback" th:case="*"></p>
-                    </th:block>
-                </dd>
-            </dl>
-            <div class="btn-inner">
-                <a href="javascript:onClickSubmit();" class="btn-large btn-dblue btn-fingerprint">디지털원패스로 로그인</a>
-                <ul class="link-list">
-                    <li><a href="https://www.onepass.go.kr/membership/find/id" target="_blank">아이디 찾기</a></li>
-                    <li><a href="https://www.onepass.go.kr/regist/agree" target="_blank">디지털원패스 회원가입</a></li>
-                </ul>
-            </div>
-        </form>
-        </li>
-    </ul>
-</div>
-
+</section>
 
 <!-- layerpopup -->
 <div class="layer-popup layer-large" data-layer-id="layer-popup02">
@@ -168,6 +165,33 @@
         });
     });
 
+    function goFindId() {
+        /*[# th:if="${param.returnUrl}"]*/
+            location.href = "/front/membership/findId.html?returnUrl=" + /*[[${param.returnUrl}]]*/'';
+        /*[/]*/
+        /*[# th:unless="${param.returnUrl}"]*/
+            location.href = "/front/membership/findId.html";
+        /*[/]*/
+    }
+    
+    function goFindPswd() {
+        /*[# th:if="${param.returnUrl}"]*/
+            location.href = "/front/membership/findPswd.html?returnUrl=" + /*[[${param.returnUrl}]]*/'';
+        /*[/]*/
+        /*[# th:unless="${param.returnUrl}"]*/
+            location.href = "/front/membership/findPswd.html";
+        /*[/]*/
+    }
+    
+    function join() {
+        /*[# th:if="${param.returnUrl}"]*/
+            location.href = "/front/membership/step1.html?returnUrl=" + /*[[${param.returnUrl}]]*/'';
+        /*[/]*/
+        /*[# th:unless="${param.returnUrl}"]*/
+            location.href = "/front/membership/step1.html";
+        /*[/]*/
+    }
+    
 </script>
 <script type="text/javascript">
     
@@ -186,7 +210,7 @@
             },
             messages: { 
                 p_userid: {
-                    required: "아이디를 입력해주십시오"
+                    required: "아이디를 입력해 주십시오."
                    ,maxlength: "아이디는 40자를 넘을 수 없습니다."
                 },
                 p_pswd: {
@@ -202,9 +226,9 @@
         
         if(!$('#login_form').valid()) return false;
         if(f.lidSave.checked){
-            jQuery.cookie('luserid', f.p_userid.value, {expires:30});
+            $.cookie('luserid', f.p_userid.value, {expires:30, path: '/'});
         }else{
-            jQuery.removeCookie('luserid');
+            $.removeCookie('luserid', {path: '/'});
         }
         f.loginUserType.value = $("input[name=loginUserTypeRadio]:checked").val();
         f.submit();
@@ -220,7 +244,7 @@
         //alert("휴면해제");
         // ajax 휴면해제/개인정보 유효기간 update, 세션에 휴면회원 상태 정보 삭제 처리 필요
         layerPopup.close({target:'layer-popup02'});
-        alert("휴면 해제가 완료되었습니다 다시 로그인을 진행해 주세요.");
+        alert("휴면 해제가 완료되었습니다 다시 로그인을 진행해 주십시오.");
 
     }
     
@@ -229,15 +253,15 @@
         
         var user_id = f2.user_id.value;
         if ( user_id == null || user_id == "" ) {
-            $("#onepassInvalidFeedback").text("아이디를 입력해주세요.");
+            $("#onepassInvalidFeedback").text("아이디를 입력해 주십시오.");
             f2.user_id.focus();
             return;
         }
 
         if(f2.ridSave.checked){
-            jQuery.cookie('ruserid', f2.user_id.value, {expires:30});
+            $.cookie('ruserid', f2.user_id.value, {expires:30, path: '/'});
         }else{
-            jQuery.removeCookie('ruserid');
+            $.removeCookie('ruserid', {path: '/'});
         }
         f2.returnUrl.value += "::" + $("input[name=loginUserTypeRadio]:checked").val();
         f2.submit();

@@ -70,7 +70,8 @@ public class InstController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/mng/inst/instMng.html")
-    public String instMng() throws Exception {
+    public String instMng(InstVo instVo, Model model) throws Exception {
+        model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
         return "mng/inst/instList";
     }
     
@@ -126,7 +127,8 @@ public class InstController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/inst/instForm.html")
-    public String instForm(Model model) throws Exception {
+    public String instForm(InstVo instVo,Model model) throws Exception {
+        model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
         return "mng/inst/instForm";
     }
     
@@ -219,6 +221,7 @@ public class InstController {
         }
         
         model.addAttribute("inst", resultVo);
+        model.addAttribute("typeCdList", instService.selectInstTypeCdList(instVo));
         
         return "mng/inst/instUpdate";
     }

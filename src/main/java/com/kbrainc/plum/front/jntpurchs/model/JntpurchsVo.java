@@ -52,9 +52,6 @@ public class JntpurchsVo extends ParentRequestVo {
     /** 총 주문 수량 */
     private Integer orderQnty;
     
-    
-    
-    
     /** 1인당 신청 가능 수량 */
     private Integer qntyLmt;
     

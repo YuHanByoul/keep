@@ -61,6 +61,12 @@ public class CommonController {
 
     @Value("${server.port}")
     private String serverHttpsPort;
+    
+    @Value("${system.admin.tha.roleid}")
+    private String sysAdminThaRoleid;
+    
+    @Value("${system.admin.ass.roleid}")
+    private String sysAdminAssRoleid;
 
     @Autowired
     private SecurityProperties securityProperties;
@@ -183,7 +189,13 @@ public class CommonController {
         String sysSeCd = site.getSysSeCd();
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
-            return "mng/main";
+            if (sysAdminThaRoleid.equals(user.getRoleInfo().getRoleid())) {
+                return "mng/mainTha";
+            } else if (sysAdminAssRoleid.equals(user.getRoleInfo().getRoleid())) {
+                return "mng/mainAss";
+            } else {
+                return "mng/main";
+            }
         } else { // 사용자 사이트
             pstVo.setUser(user);
             pstVo.setRowPerPage(5);
