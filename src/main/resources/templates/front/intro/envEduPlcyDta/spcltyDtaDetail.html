@@ -1,0 +1,113 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span>탄소중립기본법 시행으로 강화되는 기후위기 대응: 적응을 중심으로</span></h3>
+            <dl>
+                <div class="list">
+                    <dt>분류</dt>
+                    <dd>[[${spcltyDta.clsfCdNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>발간년도</dt>
+                    <dd>[[${spcltyDta.yy}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>저자</dt>
+                    <dd>[[${spcltyDta.writr}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(spcltyDta.regDt, 'yyyy-MM-dd')}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:if="${spcltyDta.atchFileList != null}">
+                                <th:block th:each="file : ${spcltyDta.atchFileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content">
+                <th:block th:each="pdfFilePath : ${pdfFilePaths}">
+                    [[${pdfFilePath}]]
+                    <iframe th:src="|/js/pdfjs/web/viewer.html?file=${pdfFilePath}|" width="100%" height="700px"></iframe>
+                </th:block>
+
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(spcltyDta.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </div>
+
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="goToList()">목록</button>
+            </div>
+        </div>
+
+        <div class="page-navigation">
+            <a th:onclick="|goToOtherDta(${spcltyDta.prevDtaid})|">
+                <dl>
+                    <dt>이전글</dt>
+                    <dd><span class="ellipsis">[[${spcltyDta.prevDtaTtl}]]</span></dd>
+                </dl>
+            </a>
+
+            <a th:onclick="|goToOtherDta(${spcltyDta.nextDtaid})|">
+                <dl>
+                    <dt>다음글</dt>
+                    <dd><span class="ellipsis">[[${spcltyDta.nextDtaTtl}]]</span>
+                    </dd>
+                </dl>
+            </a>
+        </div>
+    </div>
+
+    <form name="listForm" id="listForm">
+        <input type="hidden" name="searchType" id="searchType" th:value="${spcltyDta.searchType}">
+        <input type="hidden" name="searchKeyword" id="searchKeyword" th:value="${spcltyDta.searchKeyword}">
+        <input type="hidden" name="instNm" id="writr" th:value="${spcltyDta.writr}">
+        <input type="hidden" name="searchFromRegDt" id="searchFromRegDt" th:value="${spcltyDta.searchFromRegDt}">
+        <input type="hidden" name="searchToRegDt" id="searchToRegDt" th:value="${spcltyDta.searchToRegDt}">
+        <input type="hidden" name="searchClsfCd" id="searchClsfCd" th:value="${spcltyDta.searchClsfCd}">
+        <input type="hidden" name="orderField" id="orderField" th:value="${spcltyDta.orderField}">
+        <input type="hidden" name="rowPerPage" id="rowPerPage" th:value="${spcltyDta.rowPerPage}">
+        <input type="hidden" id="dtaid" name="dtaid" th:value="${spcltyDta.dtaid}">
+    </form>
+    <script th:inline="javascript">
+        let goToList = () => {
+            let f = document.forms.listForm;
+            f.action = listUrl;
+            f.submit();
+        }
+
+        let goToOhterDta = (dtaid) => {
+            let f = document.forms.listForm;
+            f.action = detailUrl;
+            f.dtaid.value = dtaid;
+            f.submit();
+        }
+    </script>
+</div>

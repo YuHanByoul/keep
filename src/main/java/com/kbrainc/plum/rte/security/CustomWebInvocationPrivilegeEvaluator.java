@@ -133,10 +133,10 @@ public class CustomWebInvocationPrivilegeEvaluator implements
                     attrs);
         }
         catch (AccessDeniedException unauthorized) {
-            if (LOGGER.isDebugEnabled()) {
+            /*if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(fi.toString() + " denied for " + authentication.toString(),
                         unauthorized);
-            }
+            }*/
 
             return false;
         }

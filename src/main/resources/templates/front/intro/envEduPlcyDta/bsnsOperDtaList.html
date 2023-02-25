@@ -1,0 +1,172 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm" method="get">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">검색어</strong></div>
+                <div class="form-body">
+                    <div class="form-input">
+                        <select title="검색어" id="searchType" name="searchType">
+                            <option value="ttl" selected>제목</option>
+                            <option value="cn">내용</option>
+                            <option value="">제목+내용</option>
+                        </select>
+                        <input type="search" title="검색어" placeholder="제목을 입력해 주세요." id="searchKeyword" name="searchKeyword">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">운영기관</strong></div>
+                <div class="form-body">
+                    <input type="search" title="운영기관" placeholder="운영기관명을 입력해 주세요." id="instNm" name="instNm">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">등록일</strong></div>
+                <div class="form-body">
+                    <div class="form-input">
+                        <input type="date" title="시작일" id="searchFromRegDt" name="searchFromRegDt">
+                        <div class="bul">~</div>
+                        <input type="date" title="종료일" id="searchToRegDt" name="searchToRegDt">
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">분류</strong></div>
+                <div class="form-body">
+                    <th:block kattr:check_code="searchTypeCd" grpCd="227"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-filter-submit">
+            <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
+            <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+        </div>
+
+        <input type="hidden" id="orderField" name="orderField" value="reg_dt">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="dtaid" name="dtaid">
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="totalCount" name="totalCount">0</b> 건</p>
+        </div>
+        <div class="right">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>사업운영자료 - 번호, 분류, 제목, 운영기관, 등록일, 조회수</caption>
+            <colgroup>
+                <col>
+                <col>
+                <col style="width:40%;">
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">분류</th>
+                <th scope="col">제목</th>
+                <th scope="col">운영기관</th>
+                <th scope="col">등록일</th>
+                <th scope="col">조회수</th>
+            </tr>
+            </thead>
+            <tbody id="listArea">
+            </tbody>
+        </table>
+    </div>
+
+    <div id="pagination" aria-label="pagination"/>
+
+    <script th:inline="javascript">
+        const listUrl = '/front/intro/envEduPlcyDta/selectBsnsOperDtaList.do';
+        const detailUrl = '/front/intro/envEduPlcyDta/bsnsOperDtaDetail.html';
+        const searchVo = /*[[${searchVo}]]*/null;
+
+        $(function () {
+            $('#searchType').val(searchVo.searchType);
+            $('#searchKeyword').val(searchVo.searchKeyword);
+            $('#instNm').val(searchVo.instNm);
+            $('#searchFromRegDt').val(searchVo.searchFromRegDt);
+            $('#searchToRegDt').val(searchVo.searchToRegDt);
+            $('#searchTypeCd').val(searchVo.searchTypeCd);
+            $('#rowPerPage').val(searchVo.rowPerPage);
+
+            selectList();
+
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                selectList();
+            });
+
+            $('#selectRowPerPage').on('change', function (e) {
+                $('#rowPerPage').val($(this).val());
+            });
+
+        });
+
+        let selectList = () => {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        $('#listArea').html(makeListHtml(data.list));
+                        $('#pagination').html(data.pagination);
+                        $('#totalCount').val(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        let goToDetail = (dtaid) => {
+            let f = document.forms.searchForm;
+            f.dtaid.value = dtaid;
+            f.action = detailUrl;
+            f.submit();
+        }
+        let makeListHtml = (list) => {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<tr>
+                                <td class="nodata" colspan="6">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 사업운영자료가 없습니다.</p>
+                                </td>
+                            </tr>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `<tr>
+                                <td>${item.rowNumber}</td>
+                                <td>${item.typeCdNm}</td>
+                                <td class="al article"><a href="#" class="link ellipsis" onclick="goToDetail(${item.dtaid})">${item.ttl}</a></td>
+                                <td>${item.instNm}</td>
+                                <td>${item.regDt}</td>
+                                <td>10000</td>
+                            </tr>`;
+                });
+            }
+            return html;
+        }
+
+    </script>
+</div>

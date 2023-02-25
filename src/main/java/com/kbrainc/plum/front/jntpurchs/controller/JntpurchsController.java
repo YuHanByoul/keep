@@ -71,15 +71,15 @@ public class JntpurchsController {
     }
     
     /**
-     * 환경교육 교구 공동구매 상세 화면
-     *
-     * @Title : jntpurchsDetailForm
-     * @Description : 환경교육 교구 공동구매 상세 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
-     @RequestMapping(value = "/front/jntpurchs/jntpurchsDetailForm.html")
-     public String jntpurchsDetailForm(JntpurchsVo jntpurchsVo, Model model) throws Exception {
+    * 환경교육 교구 공동구매 상세 화면
+    *
+    * @Title : jntpurchsDetailForm
+    * @Description : 환경교육 교구 공동구매 상세 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/jntpurchsDetailForm.html")
+    public String jntpurchsDetailForm(JntpurchsVo jntpurchsVo, Model model) throws Exception {
          // 공동구매모집 상세정보
          JntpurchsVo jntpurchsInfo = jntpurchsService.selectJntpurchsInfo(jntpurchsVo);
          model.addAttribute("jntpurchsInfo", jntpurchsInfo);
@@ -122,6 +122,18 @@ public class JntpurchsController {
          return "/front/jntpurchs/jntpurchsDetail";
      }
      
+    /**
+    * 환경교육 교구 공동구매 신청 완료 화면
+    *
+    * @Title : jntpurchsListForm
+    * @Description : 환경교육 교구 공동구매 신청 완료 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/jntpurchsOrderComplete.html")
+    public String jntpurchsOrderComplete() throws Exception {
+        return "front/jntpurchs/jntpurchsOrderComplete";
+    }
     
     /**
     * 환경교육 교구 공동구매 목록 조회
@@ -160,7 +172,7 @@ public class JntpurchsController {
      * @return Map<String, Object> 응답결과객체
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/mng/jntpurchs/selectUserInfo.do")
+    @RequestMapping(value = "/front/jntpurchs/selectUserInfo.do")
     @ResponseBody
     public Map<String, Object> selectUserInfo(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
@@ -182,7 +194,7 @@ public class JntpurchsController {
     * @return Map<String, Object> 응답결과객체
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/jntpurchs/insertJntpurchsOrder.do")
+    @RequestMapping(value = "/front/jntpurchs/insertJntpurchsOrder.do")
     @ResponseBody
     public Map<String, Object> insertJntpurchsOrder(@Valid JntpurchsOrderVo jntpurchsOrderVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -204,7 +216,7 @@ public class JntpurchsController {
             resultMap.put("msg", "신청이 완료되었습니다");
         } else if(retVal == -1) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "신청수량이 잔여수량보다 많아 신청할 수 없습니다");
+            resultMap.put("msg", "잔여수량이 부족합니다");
         } else if(retVal == -2) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "1인당 신청 가능 수량을 초과하여 신청할 수 없습니다");

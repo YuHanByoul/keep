@@ -64,7 +64,7 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     private String nm;
     
     /** 신청자 기관 아이디 */
-    private String instid;
+    private Integer instid;
     
     /** 신청자 기관명 */
     private String instNm;
@@ -128,6 +128,9 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     
     /** 검색 신청일 */
     private String searchRegDt;
+    
+    /** 신청상품 목록 */
+    private List<JntpurchsTchaidVo> goodsList;
     
     
     /** 시작일시 */

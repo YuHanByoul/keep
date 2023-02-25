@@ -249,7 +249,7 @@ function msgSendFormInit(target, trgtId) {
         data : {trgtId: trgtId},
         success : function (result){
             targetWrap.find('input[name=trgtid]').val(trgtId).end()
-                .find('#trgtAcnt').val(result.data.trgtNm+'('+result.data.trgtAcnt+')').end()
+                .find('#trgtName').val(result.data.trgtNm).end()
         }
     });
 }
@@ -260,9 +260,9 @@ function msgAddBtn(){
     $listMsgAddBtn.each(function (){
         let $cloneBody = $clone.clone(true);
         let {trgtId} = $(this).data();
-        let maskAcnt = $(this).text();
+        let maskName = $(this).text();
         $(this).text('').append(
-            $cloneBody.find('.user-acnt-span > span').text(maskAcnt).end()
+            $cloneBody.find('.user-name-span > span').text(maskName).end()
                 .find('.open-msg-btn').data({'trgt-id':trgtId}).end()
         );
     });
