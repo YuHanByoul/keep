@@ -263,9 +263,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 교육시간 */
     private Integer eduHr;
 
-    /** 적절성 */
-    private String appro;
-
     /** 프로그램아이디 */
     private Integer prgrmid;
 
@@ -287,9 +284,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 6월 */
     private String june;
 
-    /** 교육목적 */
-    private String eduPrps;
-
     /** 11월 */
     private String nov;
 
@@ -310,9 +304,6 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 5월 */
     private String may;
-
-    /** 참가비 */
-    private BigDecimal etrfee;
 
     /** 10월 */
     private String oct;
@@ -559,6 +550,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 발급_합계 */
     private String issuSum;
 
+    /** 교육목적 */
+    private String eduPrps;
+
+    /** 적절성 */
+    private String appro;
+
     /** 프로그램_우수성 */
     private String prgrmDstnctn;
 
@@ -601,7 +598,32 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 제출_상태_이름      */
     private String sbmsnSttsCdNm;
 
+    /** 운영 형태 이름    */
+	private String operFrmNm;
 
+	/** 교육 주제 목록    */
+	private String eduSbjctNmLst;
+
+	/** 교육 대상 */
+	private String eduTarget;
+
+	/** 참가비 */
+    private Integer etrfee;
+
+	/** 자부담 */
+	private Integer slfpy;
+
+	/** 기타(후원) */
+	private Integer etcIncm;
+
+	/** 이력건수 */
+	private Integer hstryCnt;
+
+	/** 지정번호 그룹 */
+	private String grpDsgnNo;
+
+	/** 기관유형코드 이름*/
+	private String instTypeCdNm ;
 
     /** 제출_확인 */
     private String sbmsnIdnty;

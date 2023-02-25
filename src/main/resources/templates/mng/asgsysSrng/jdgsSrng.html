@@ -1,6 +1,7 @@
 <form id="jdgsSrngForm">
 <input type="hidden" id="aplyFilegrpid" name="aplyFilegrpid" th:value="${aplyInfo.aplyFilegrpid == null or aplyInfo.aplyFilegrpid == ''}? 0: ${aplyInfo.aplyFilegrpid}"/>
 <input type="hidden" id="bfrCertFilegrpid" name="bfrCertFilegrpid" th:value="${aplyInfo.bfrCertFilegrpid == null or aplyInfo.bfrCertFilegrpid == ''}? 0: ${aplyInfo.bfrCertFilegrpid}"/>
+<input type="hidden" id="formid" name="formid" th:value="${aplyInfo.formid}"/>
     <div class="card-header p-t-0 p-b-0">
         <h3 class="sub-title">
             <strong>신청 정보</strong>
@@ -72,17 +73,6 @@
                     </div>
                 </div>
             </div>
-
-<!--             <div class="col-12 col-lg-6"> -->
-<!--                 <div class="mb-0 form-group"> -->
-<!--                     <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"> -->
-<!--                         <strong>운영형태</strong> -->
-<!--                     </div> -->
-<!--                     <div class="col-12"> -->
-<!--                         <span id="operFrmCd" kattr:radio_code="operFrmCd" th:attr="grpCd=120, selectedCd=${aplyInfo.operFrmCd}" addStyle="" addClass="bg-form" isAdmin="true" > -->
-<!--                     </div> -->
-<!--                 </div> -->
-<!--             </div> -->
         </div>
         <div class="mb-2 row">
             <div class="col-12 col-lg-6 mb-2 mb-lg-0">
@@ -151,14 +141,66 @@
         <div class="mb-2 row">
             <div class="col-12 btn-group-sm">
                 <button type="button" class="col-auto btn btn-primary" onclick="btnSrngDtlCrtrChart()">심사세부기준표 다운로드</button>
-
-
             </div>
         </div>
+<!--
+<th:block th:unless="${#lists.isEmpty(srngFormList)}" >
+        <div class="mb-3 col-12 table-border-style">
+            <div class="col-12 table-responsive">
+                <table class="table table-border-style table-columned">
+                    <thead>
+                        <tr>
+                            <th th:colspan="4+${#lists.size(srngFormList)}" class="table-active">심사점수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-bottom-inverse">
+                            <td colspan="3" class="table-active text-center v-middle"><strong>합계평균</strong></td>
 
-        <div class="col-12 table-border-style">
+<th:block th:each="form, a : ${srngFormList}">
+                            <td class="table-active text-center v-middle"><strong>0.00</strong></td>
+</th:block>
+                            <td class="table-active text-center v-middle"><strong class="text-info">30.00</strong></td>
+                        </tr>
+
+                        <tr class="border-bottom-inverse">
+                            <td class="text-center v-middle" style="width: 60px;"><strong>No</strong></td>
+                            <td class="text-center v-middle" style="width: 150px;"><strong>심사위원</strong></td>
+                            <td class="text-center v-middle" style="width: 100px;"><strong>등록일</strong></td>
+
+<th:block th:each="form, a : ${srngFormList}">
+                            <td class="text-center v-middle"><strong><th:block th:text="${form.cdNm}" /><br /><th:block th:text="${'(' +form.sumAltm +'점)'}"></strong></td>
+</th:block>
+                            <td class="text-center v-middle"><strong>합계</strong></td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="text-center v-middle">1</td>
+                            <td class="text-center v-middle">홍길동
+                                <div class="d-inline-block btn-group-sm">
+                                    <button type="button" class="col-auto btn btn-primary">심사보기</button>
+                                </div>
+                            </td>
+                            <td class="text-center v-middle">2023-00-00</td>
+                            <td class="text-center v-middle">30</td>
+                            <td class="text-center v-middle">0</td>
+                            <td rowspan="5" class="text-center v-middle">-(15)</td>
+                            <td class="text-center v-middle">8</td>
+                            <td class="text-center v-middle">16</td>
+                            <td rowspan="5" class="text-center v-middle">-(15)</td>
+                            <td class="text-center v-middle">84</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</th:block>
+ -->
+
+        <div class="mb-3 col-12 table-border-style">
             <div class="col-12 table-responsive">
 <th:block th:unless="${#lists.isEmpty(srngScrList)}" th:if="${scrHeader != null}" >
+<th:block th:unless="${#lists.isEmpty(srngFormList)}" >
                 <table class="table table-border-style table-columned">
                     <thead>
                         <tr>
@@ -168,26 +210,19 @@
                     <tbody>
                         <tr class="border-bottom-inverse">
                             <td colspan="3" class="table-active text-center v-middle"><strong>합계평균</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal1 != null }" id="scrSumAvg1" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal2 != null }" id="scrSumAvg2" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal3 != null }" id="scrSumAvg3" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal4 != null }" id="scrSumAvg4" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal5 != null }" id="scrSumAvg5" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal6 != null }" id="scrSumAvg6" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle" th:if="${scrHeader.colVal7 != null }" id="scrSumAvg7" ><strong>0</strong></td>
-                            <td class="table-active text-center v-middle"><strong class="text-info"><th:block th:text="${srngScrList[0].sumAvg == null ? 0 : srngScrList[0].sumAvg }"></strong></td>
+<th:block th:each="form, a : ${srngFormList}">
+                            <td class="table-active text-center v-middle" th:id="'scrSumAvg' + ${a.count}" ><strong>0</strong></td>
+</th:block>
+                            <td class="table-active text-center v-middle" id="sumAvg"><strong class="text-info"><th:block th:text="${srngScrList[0].sumAvg == null ? 0 : srngScrList[0].sumAvg }"></strong></td>
                         </tr>
                         <tr class="border-bottom-inverse">
                             <td class="text-center v-middle" style="width: 60px;"><strong>No</strong></td>
                             <td class="text-center v-middle" style="width: 150px;"><strong>심사위원</strong></td>
                             <td class="text-center v-middle" style="width: 100px;"><strong>등록일</strong></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal1  != null }" id="scrHeader1" ><strong><th:block th:text="${scrHeader.colVal1}"></th:block></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal2  != null }" id="scrHeader2" ><strong><th:block th:text="${scrHeader.colVal2}"></th:block></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal3  != null }" id="scrHeader3" ><strong><th:block th:text="${scrHeader.colVal3}"></th:block></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal4  != null }" id="scrHeader4" ><strong><th:block th:text="${scrHeader.colVal4}"></th:block></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal5  != null }" id="scrHeader5" ><strong><th:block th:text="${scrHeader.colVal5}"></th:block></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal6  != null }" id="scrHeader6" ><strong><th:block th:text="${scrHeader.colVal6}"></th:block></td>
-                            <td class="text-center v-middle" th:if="${scrHeader.colVal7  != null }" id="scrHeader7" ><strong><th:block th:text="${scrHeader.colVal7}"></th:block></td>
+<th:block th:each="form, a : ${srngFormList}">
+                            <td class="text-center v-middle"><strong><th:block th:text="${form.cdNm}" /><br /><th:block th:text="${'(' +form.sumAltm +'점)'}"></strong></td>
+</th:block>
+
                             <td class="text-center v-middle"><strong>합계</strong></td>
                         </tr>
 
@@ -199,20 +234,22 @@
                                         <button type="button" class="col-auto btn btn-primary" th:id="${'btnEvlDtl'+item.jdgsid}" onclick="jdgsEvlDtlPopup(this.id)">심사보기</button>
                                     </div>
                                 </td>
-                                <td class="text-center v-middle"><th:block th:text="item.sbmsnDt == null? '' : ${#dates.format(item.sbmsnDt, 'yyyy-MM-dd HH:mm:ss')}"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal1  != null }" name="scrCol" th:id="${'scr1Col' + k.count}" th:value="${item.colVal1}"><th:block th:text="${item.colVal1  == null ? 0 : item.colVal1 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal2  != null }" name="scrCol" th:id="${'scr2Col' + k.count}" th:value="${item.colVal2}"><th:block th:text="${item.colVal2  == null ? 0 : item.colVal2 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal3  != null }" name="scrCol" th:id="${'scr3Col' + k.count}" th:value="${item.colVal3}"><th:block th:text="${item.colVal3  == null ? 0 : item.colVal3 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal4  != null }" name="scrCol" th:id="${'scr4Col' + k.count}" th:value="${item.colVal4}"><th:block th:text="${item.colVal4  == null ? 0 : item.colVal4 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal5  != null }" name="scrCol" th:id="${'scr5Col' + k.count}" th:value="${item.colVal5}"><th:block th:text="${item.colVal5  == null ? 0 : item.colVal5 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal6  != null }" name="scrCol" th:id="${'scr6Col' + k.count}" th:value="${item.colVal6}"><th:block th:text="${item.colVal6  == null ? 0 : item.colVal6 }"></th:block></td>
-                                <td class="text-center v-middle" th:if="${item.colVal7  != null }" name="scrCol" th:id="${'scr7Col' + k.count}" th:value="${item.colVal7}"><th:block th:text="${item.colVal7  == null ? 0 : item.colVal7 }"></th:block></td>
+                                <td class="text-center v-middle" th:id="'sbmsnDt'+ ${k.count}" ><th:block th:text="item.sbmsnDt == null ? '' : ${#dates.format(item.sbmsnDt, 'yyyy-MM-dd HH:mm:ss')}"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal1  != null }" th:name="${'scr1Col' + k.count}" th:id="${'scr1Col' + k.count}" th:value="${item.colVal1}"><th:block th:text="${item.colVal1  == null ? 0 : item.colVal1 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal2  != null }" th:name="${'scr2Col' + k.count}" th:id="${'scr2Col' + k.count}" th:value="${item.colVal2}"><th:block th:text="${item.colVal2  == null ? 0 : item.colVal2 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal3  != null }" th:name="${'scr3Col' + k.count}" th:id="${'scr3Col' + k.count}" th:value="${item.colVal3}"><th:block th:text="${item.colVal3  == null ? 0 : item.colVal3 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal4  != null }" th:name="${'scr4Col' + k.count}" th:id="${'scr4Col' + k.count}" th:value="${item.colVal4}"><th:block th:text="${item.colVal4  == null ? 0 : item.colVal4 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal5  != null }" th:name="${'scr5Col' + k.count}" th:id="${'scr5Col' + k.count}" th:value="${item.colVal5}"><th:block th:text="${item.colVal5  == null ? 0 : item.colVal5 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal6  != null }" th:name="${'scr6Col' + k.count}" th:id="${'scr6Col' + k.count}" th:value="${item.colVal6}"><th:block th:text="${item.colVal6  == null ? 0 : item.colVal6 }"></th:block></td>
+                                <td class="text-center v-middle" th:if="${scrHeader.colVal7  != null }" th:name="${'scr7Col' + k.count}" th:id="${'scr7Col' + k.count}" th:value="${item.colVal7}"><th:block th:text="${item.colVal7  == null ? 0 : item.colVal7 }"></th:block></td>
                                 <td class="text-center v-middle"><th:block th:text="${item.sumScr == null ? 0 : item.sumScr }"></th:block></td>
                             </tr>
                         </th:block>
                     </tbody>
                 </table>
 </th:block>
+</th:block>
+
             </div>
         </div>
         </th:if>
@@ -242,8 +279,43 @@
 
 initJdgsSrngForm();
 
+
+function setFormScr(){
+
+	var sumScr = 0 ;
+	var usrCnt = 0 ;
+	var avg = 0.00;
+	var sumAvg = 0;
+
+	$("[id^=sbmsnDt]").each(function(idx,item) {
+		if($("#"+item.id)[0].innerText !="") usrCnt++;
+	});
+
+	if(usrCnt > 0){
+
+    	$("[id^=scrSumAvg]").each(function(idx,item) {
+
+    		sumScr=0;
+
+    		$("[id^=scr"+(idx+1)+"Col]").each(function(idx,item) {
+    			sumScr = sumScr + Number($("#"+item.id)[0].innerText);
+    		});
+
+
+    		avg = parseFloat(sumScr/usrCnt);
+    		sumAvg = parseFloat(sumAvg) + parseFloat(avg);
+    		$("#"+item.id)[0].innerHTML = '<strong>'+avg+'</strong>';
+    	});
+
+        $("#sumAvg")[0].innerHTML = "<strong class=\"text-info\">"+sumAvg.toFixed(2)+"</strong>"
+
+	}
+}
+
 function initJdgsSrngForm(){
 
+	setFormScr();
+/*
     $("[id^=operFrmCd]").attr("disabled", true);
     $("[id^=styYn]").attr("disabled", true);
     $("[id^=sftyMngYn]").attr("disabled", true);
@@ -258,11 +330,13 @@ function initJdgsSrngForm(){
         $("[id^=scr"+i+"Col]").each(function(idx,item) {
 
         	colSum = isNaN($("#"+item.id).attr("value")) ? 0 : Number(colSum) + Number($("#"+item.id).attr("value"));
-        	rowCnt++;
+
+        	//if($("#sbmsnDt"+i)[0].innerText() != '') rowCnt++;
+
         });
         if(rowCnt>0) $("#scrSumAvg"+i).prop("innerHTML","<strong>"+(colSum/rowCnt).toFixed(2)+"</strong>");
-
     }
+*/
 
 }
 

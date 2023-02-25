@@ -215,7 +215,7 @@
                     <button type="button" id="dsgnRtrcnBtn" onclick="openDsgnRtrcnModal()" class="col-auto btn btn-disabled m-r-5" >지정취소</button>
                     <button type="button" class="col-auto btn btn-primary m-r-5">인쇄</button>
                     <button type="button" class="col-auto btn btn-primary m-r-5"  onclick="openDsgnPrgrmOutlModal()">지정프로그램 개요보기</button>
-                    <button type="button" class="col-auto btn btn-primary">지정프로그램 상세보기</button>
+                    <button type="button" class="col-auto btn btn-primary" onclick="openAplyInfoDtl()">지정프로그램 상세보기</button>
                 </div>
                 </div>
             </div>
@@ -306,7 +306,7 @@ function writeSplmntDmndGridData(){
                 var params = [
                         {name: "pageNumber", value: filter.pageIndex},
                         {name: "rowPerPage", value: filter.pageSize},
-                        {name: "prgrmid", value: prgrmid},
+                        {name: "prgrmid", value: $("#prgrmid").val()},
 
                 ]
 
@@ -327,9 +327,6 @@ function writeSplmntDmndGridData(){
                   data: formData
                 }).done(function(response){
 
-console.log("@@@@@1");
-//
-console.log("@@@@@2");
                     var da = {
                             data : escapeGridData(response.dsgnDsctnList)
                             ,itemsCount : response.totalCount
@@ -384,8 +381,10 @@ var openDsgnRtrcnModal = () => {
 //지정프로그램개요보기
 var dsgnPrgrmOutlModal;
 var openDsgnPrgrmOutlModal = () => {
+	var vHstryid= $("#hstryid").val();
+    var vPrgrmid= $("#prgrmid").val();
 
-    var url = "/mng/dsgnPrgrm/dsgnPrgrmOutlPopup.html?mode="+prgrmid;
+    var url = "/mng/dsgnPrgrm/dsgnPrgrmOutlPopup.html?prgrmid="+vPrgrmid+"&hstryid="+vHstryid;
 
     $("#dsgnPrgrmOutlPopup").load(url, function(response, status, xhr) {
         if (status == "success") {
@@ -393,6 +392,15 @@ var openDsgnPrgrmOutlModal = () => {
             dsgnPrgrmOutlModal.show();
         }
     });
+}
+
+var aplyInfoPop = "";
+//지정프로그램 상세
+function openAplyInfoDtl(){
+    var vPrgrmid= $("#prgrmid").val();
+    var popUrl = "/mng/dsgnPrgrm/dsgnPrgrmDtlPopup.html?prgrmid="+vPrgrmid;
+    var popupOption="scrollbars=yes,top=300, left=900,width=1000, height=600";
+    aplyInfoPop = window.open(popUrl, "_blank", popupOption);
 }
 
 //지정 정보 변경/재지정
@@ -420,6 +428,8 @@ var openDsgnInfoChgModal = (id) => {
 }
 
 function initDsgnInfoFrm(){
+
+
 
     //지정상태가 지정 탈락인 경우 탈락일 표시
     if($("#sttsCd").val() == "132102"){

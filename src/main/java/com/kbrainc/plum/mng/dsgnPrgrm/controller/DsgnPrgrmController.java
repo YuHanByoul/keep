@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -24,12 +23,13 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmObjcVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.dsgnPrgrm.service.DsgnPrgrmServiceImpl;
+import com.kbrainc.plum.mng.pop.model.PopUpNtcVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
-import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -672,8 +672,28 @@ public class DsgnPrgrmController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/dsgnPrgrm/dsgnPrgrmOutlPopup.html")
-    public String dsgnPrgrmOutlPopup() throws Exception {
+    public String dsgnPrgrmOutlPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	//지정프로그램 개요 조회
+    	model.addAttribute("dsgnPrgrmOutl", dsgnPrgrmServiceImpl.selectDsgnOutl(dsgnPrgrmVo));
     	return "mng/dsgnPrgrm/dsgnPrgrmOutlPopup";
+    }
+
+
+    /**
+     * @Title : dsgnPrgrmDtlPopup
+     * @Description : 지정신청 상세 팝업
+     * @throws Exception :
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/dsgnPrgrm/dsgnPrgrmDtlPopup.html")
+    public String dsgnPrgrmDtlPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+    	PopUpNtcVo paramVO = new PopUpNtcVo();
+    	paramVO.setTitle("지정프로그램 상세 보기");
+    	model.addAttribute("item", paramVO);
+    	model.addAttribute("dsgnPrgrmInfo", dsgnPrgrmVo);
+
+    	return "mng/dsgnPrgrm/dsgnPrgrmDtlPopup";
     }
 
     /**
