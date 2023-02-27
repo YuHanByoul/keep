@@ -163,7 +163,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin().usernameParameter("p_userid").passwordParameter("p_pswd") 
                 .successHandler(httpsLoginSuccessHandler()).failureHandler(customAuthFailureHandler());
 
-        http.logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("JSESSIONID").invalidateHttpSession(true);
+        http.logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("JSESSIONID", "ssotoken").invalidateHttpSession(true);
 
         http.addFilterBefore(channelProcessingFilter, ChannelProcessingFilter.class); // http/https 필터적용
         http.addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class); // 인가 필터 적용
