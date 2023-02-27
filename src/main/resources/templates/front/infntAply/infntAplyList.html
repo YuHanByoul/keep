@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+        <form class="search-filter" id="searchForm" name="searchForm">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">프로그램</strong></div>
+                    <div class="form-body">
+                        <input type="search" id="searchPrgrmNm" name="searchPrgrmNm" title="프로그램" placeholder="프로그램명을 입력해주세요.">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">교육관</strong></div>
+                    <div class="form-body">
+                        <input type="search" id="searchEduClssRmNm" name="searchEduClssRmNm" title="교육관" placeholder="교육관을 입력해주세요.">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">교육대상</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchTrgtCd" th:attr="grpCd=162" firstOptTxt="- 전체 -">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">교육관지역</strong></div>
+                    <div class="form-body">
+						<th:block kattr:select_code="searchCtprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -"></th:block>
+					</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">교육주제</strong></div>
+                    <div class="form-body">
+                        <div class="form-input">
+                            <th:block kattr:select_code="searchClsfCd_1" grpCd="155" upprCd="0" selectedCd="" onchange='setSearchSelectBox.setNextDepth(155,this.value,"searchClsfCd_2" )' firstOptTxt="- 전체 -"></th:block>                        
+                            <select id="searchClsfCd_2" name="searchClsfCd_2" style="flex:auto;">
+                                 <option value="">- 전체 -</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+                <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+                <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+                <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+                <input type="hidden" id="prgrmid" name="prgrmid" >              
+                
+            </div>
+            <div class="search-filter-submit">
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="infntAplyList.searchInit()">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search" onclick="infntAplyList.search()">검색</button>
+            </div>
+        </form>
+
+        <div class="box-desc-list bg7">
+            <strong class="box-desc-tit"><div class="icon icon-notice bg-black3"></div> 교육신청 안내</strong>
+            <ul>
+                <li>지역 / 주제 / 대상에 맞는 교육과정을 검색해주세요.</li>
+                <li>교육 프로그램의 상세한 교육일은 교육과정 상세페이지에서 확인하고 신청할 수 있습니다.</li>
+                <li>신청 완료 후, 교육 참여 대상자에게 회원정보에 있는 연락처를 통해 운영담당자가 승인 안내 쪽지를 발송합니다.</li>
+            </ul>
+        </div>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p id="totalCount"></p>
+            </div>
+        </div>
+        <div class="card-list card-list-n2"><ul id="card-listUl"></ul></div>
+        <div id="nodataDiv" class="nodata"></div>
+
+        <div id="pagination1" class="pagination" aria-label="pagination">
+        </div>
+		<!-- //content -->
+				
+		<script th:inline="javascript">		
+        var infntAplyList = {
+	        	listUrl: '/front/infntAply/selectInfntAplyList.do',
+	            detailUrl : '/front/infntAply/infntAplyDetailForm.html',
+
+	            init(rowPerPage) {
+	            	if(rowPerPage != null) {
+		            	$("#rowPerPage").val(parseInt(rowPerPage));
+		                $('#pageNumber').val('1');
+	                }
+	                this.selectInfntAplyList();
+	            },
+
+	            moveToDetail() {
+	            	if (this.userid == null) {
+	            	    alert('로그인 후 이용하실 수 있습니다.');
+	                    return;
+	                }
+	                location.href = '/front/infntAply/infntAplyDetailForm.html';
+	            },
+
+	            search() {
+	                $('#pageNumber').val('1');
+	                this.selectInfntAplyList();
+	            },
+
+	            searchInit() {
+	    			/* $("#searchType").val('');
+	    			$("#searchKeyword").val('');
+	    			$("#searchEduSbjctCd_1").val('');
+	    			$("#searchEduSbjctCd_2").val('');
+	    			$("#searchEduTrgtCd").val('');
+	    			$("#searchTypeCd_1").val('');
+	    			$("#searchTypeCd_2").val('');
+	    			$("#startDt").val('');
+	    			$("#endDt").val(''); */
+	    			this.selectInfntAplyList();
+	            },
+
+	            selectInfntAplyList() {
+	            	if (displayWorkProgress(true)) {
+	                	let formData = $('#searchForm').serializeArray();
+
+	                    $.ajax({
+	                    	url: infntAplyList.listUrl,
+	                        cache: false,
+	                        dataType: 'json',
+	                        data: formData,
+	                        type: 'GET',
+	                        success: function (data) {
+	                        	infntAplyList.makeListHtml(data);
+	                        	closeWorkProgress();
+	                        }
+	                    });
+	            	}
+	            },
+
+                moveToDetail(infntid) {
+                    var f = document.forms.searchForm ;
+                    f.infntid.value=infntid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                },
+
+                makeListHtml(data) {
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `<p><span class="icon icon-notice bg-black9"></span>등록된 교육 프로그램이 없습니다.</p>`;
+                    	$('#nodataDiv').html(listHtml);
+                    	$('#nodataDiv').show();
+                    	$('#card-listUl').hide();
+                    	
+                    } else {
+                        data.list.forEach(function(item) {
+                        	var rcptDescHtml = "";
+                        	if(item.rcptDesc == '모집전') rcptDescHtml = '<div class="flag bg-green">';  
+                        	if(item.rcptDesc == '모집중') rcptDescHtml = '<div class="flag bg-blue">';  
+                        	if(item.rcptDesc == '마감') rcptDescHtml = '<div class="flag bg-black6">';  
+                        	listHtml += `<li><a href="/front/infntAply/infntAplyDetailForm.html?prgrmid=${item.prgrmid}&clssrmid=${item.clssrmid}">`;
+                        	listHtml += rcptDescHtml;
+                        	listHtml += `
+                                        ${item.rcptDesc}</div>
+                                        <div class="thumb" style="height:227px;"><img src="/downloadFileByFileid.do?fileid=${item.fileid}&file_idntfc_key=${item.fileIdntfcKey}" alt=""></div>
+                                        <dl class="card-program-list">
+                                            <dt>
+                                            ${item.prgrmNm}
+                                            </dt>
+                                            <dd>
+                                                <ul class="dot-list fc-black3">
+                                                    <li class="d-flex">
+                                                        <span class="tit">교육관 :</span>
+                                                        <span class="dc">${item.clssrmNm}</span>
+                                                    </li>
+                                                    <li class="d-flex">
+                                                        <span class="tit">교육대상 :</span>
+                                                        <span class="dc">${item.trgtNm}</span>
+                                                    </li>
+                                                    <li class="d-flex">
+                                                        <span class="tit">교육관지역 :</span>
+                                                        <span class="dc">${item.ctprvnNm}</span>
+                                                    </li>
+                                                    <li class="d-flex">
+                                                        <span class="tit">교육주제 :</span>
+                                                        <span class="dc">${item.clsfNm}</span>
+                                                    </li>
+                                                    <li class="d-flex">
+                                                        <span class="tit">교육시간 :</span>
+                                                        <span class="dc">${item.eduHrMnt}분</span>
+                                                    </li>
+                                                </ul>
+                                            </dd>
+                                        </dl>
+                                    </a>
+                                </li>
+                            `;
+                        });
+                        $('#card-listUl').html(listHtml);
+                        $('#nodataDiv').hide();
+                        $('#card-listUl').show();
+
+                        $("#pagination1").html(data.pagination);
+                        $("#pagination2").html(data.pagination);
+                    }
+                    $("#totalCount").html('총 <b id="totalCount"">'+data.totalCount+'</b> 건');                    
+                }
+	        };
+
+            $(function () {
+            	infntAplyList.init();
+            })
+            
+			var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+			
+			var setSearchSelectBox = {
+			 	fn_getNextDepthList : function(grpcd , upprcd, targetId){
+					$.ajax({
+						url : getCodeListUrl,
+						type: 'GET',
+						cache : false,
+						dataType: 'json',
+						data: {
+							  grpcd  : grpcd
+							, upprcd : upprcd
+						}, 
+						success : function (data){
+							setSearchSelectBox.writeHtml(grpcd,targetId,data,"");
+						},
+					 	error : function (error){
+						} 
+						
+					});
+				},
+			 	
+			 	writeHtml : function(grpcd,targetId,list,selected){
+				 	var cntArr = targetId.split("_");
+				   	var nextCnt = Number(cntArr[1])+1;
+				   	var nextTarget = cntArr[0]+"_"+nextCnt;
+				   	   
+				    var html ="<select id='"+targetId+"' onchange=setSearchSelectBox.setNextDepth('"+grpcd+"',this.value,'"+nextTarget+"')>";
+				        html +="    <option value='' selected>- 전체 -</option>";
+			    	   
+			  		  for(var i=0 ; i < list.length;i++){
+			  			if(list[i].cdid==selected){
+			   			html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+			  			}else{
+			  			html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+			  			}
+			  		  }
+			  		  if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+			  		  	setSearchSelectBox.writeHtml(grpcd,nextTarget,list,selected);
+			  		  }
+				   	  html +="    </select>";
+				   	  $("#"+targetId).html(html);
+			 	},
+			 	
+			    setNextDepth : function(grpcd , upprcd , targetId){
+					setSearchSelectBox.fn_getNextDepthList(grpcd , upprcd , targetId);
+				}
+			}
+			
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				
+				infntAplyList.selectInfntAplyList();
+			}            
+		</script>
+	</div>
+
+</body>
+</html>

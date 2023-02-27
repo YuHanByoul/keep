@@ -143,4 +143,18 @@ public class EduSareaServiceImpl extends PlumAbstractServiceImpl implements EduS
     public List<EduSareaVo> selectSignguCodeList(EduSareaVo eduSareaVo) throws Exception{
         return eduSareaDao.selectSignguCodeList(eduSareaVo);        
     }
+    
+    /**
+     * 지역설정 목록을 조회.
+     **
+    @Title : selectCtprvnCdList
+     * @Description : 지역설정 목록을 조회
+     * @param sareaid
+     * @return
+     * @throws Exception
+     * @return List<EduSareaVo>
+     */
+    public List<EduSareaVo> selectCtprvnCdList(int sareaid) throws Exception{
+        return eduSareaDao.selectCtprvnCdList(sareaid);
+    }
 }
