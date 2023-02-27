@@ -334,19 +334,19 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
                 cell.setCellStyle(style);
                 /*심사상태*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe() ,""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getSrngSttsNm() ,""));
                 cell.setCellStyle(style);
                 /*점수*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(),""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getFrstScr(),""));
                 cell.setCellStyle(style); 
                 /*심사등급*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(),""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getFirstGrd(),""));
                 cell.setCellStyle(style); 
                 /*심사순위*/
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(StringUtil.nvl(modelVo.getRegDe(), ""));
+                cell.setCellValue(StringUtil.nvl(modelVo.getFirstRkng(), ""));
                 cell.setCellStyle(style);  
                 /*선정결과*/
                 cell = row.createCell(cellnum++);
@@ -787,5 +787,21 @@ public class ReqMngServiceImpl extends PlumAbstractServiceImpl implements ReqMng
     public List<ReqMngVo> selectScheduleList(ReqMngVo reqMngVo) throws Exception {
         // TODO Auto-generated method stub
         return reqMngDao.selectScheduleList(reqMngVo);
+    }
+
+    @Override
+    public int updateSrngScore(ReqUserVo reqUserVo) throws Exception {
+        // TODO Auto-generated method stub
+        int result = 0;
+        if (CollectionUtils.isNotEmpty(reqUserVo.getAplyids())) {
+            for (String aplyid : reqUserVo.getAplyids()) {
+                ReqUserVo vo = new ReqUserVo();
+                vo.setUser(reqUserVo.getUser());
+                vo.setAplyid(Integer.valueOf(aplyid));
+                vo.setSlctnSttsCd(reqUserVo.getSlctnSttsCd());
+                result += reqMngDao.updateSrngScore(vo);
+            }
+        }
+        return result;
     }
 }
