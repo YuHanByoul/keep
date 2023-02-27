@@ -1,0 +1,162 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input mo-flex-wrap">
+            <strong class="label">제목 검색</strong>
+            <div class="form-input">
+                <input type="search" title="제목 검색" placeholder="검색어를 입력해 주세요." id="searchKeyword" name="searchKeyword">
+            </div>
+            <div class="search-filter-submit">
+                <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+                <button type="reset" class="btn-medium btn-transparent btn-before-refresh">초기화</button>
+            </div>
+        </div>
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="inqryid" name="inqryid">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="total-count">0</b> 건</p>
+        </div>
+        <div class="right d-flex">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="inqryMain.changeRowPerPage()">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-col table-layout-auto table-col-mo">
+        <table>
+            <caption>1:1문의 목록 - 번호, 분류, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <colgroup>
+                <col>
+                <col>
+                <col style="width:30%;">
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th scope="col">번호</th>
+                <th scope="col">분류</th>
+                <th scope="col">제목</th>
+                <th scope="col">상태</th>
+                <th scope="col">작성자</th>
+                <th scope="col">공개여부</th>
+                <th scope="col">등록일</th>
+            </tr>
+            </thead>
+            <tbody id="list-area">
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
+
+    <script th:inline="javascript">
+        var inqryMain = {
+            listUrl: '/front/mypage/inqry/selectInqryList.do',
+            detailUrl: '/front/mypage/inqry/inqryDetail.html',
+            searchVo: /*[[${searchVo}]]*/null,
+
+            init() {
+                $('#searchForm').on('submit', function (e) {
+                    e.preventDefault();
+                    inqryMain.selectInqryList();
+                });
+            },
+
+            search() {
+                $('#pageNumber').val(1);
+                this.selectInqryList();
+            },
+
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+            },
+
+            moveToDetail(inqryid) {
+                var f = document.forms.searchForm;
+                f.inqryid.value = inqryid;
+                f.action = this.detailUrl;
+                f.submit();
+            },
+
+            selectInqryList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: inqryMain.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(inqryMain.makeListHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<tr>
+                                <td class="nodata" colspan="7">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 1:1문의가 없습니다.</p>
+                                </td>
+                            </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        html += `<tr>
+                                    <td>${item.rowNumber}</td>
+                                    <td>${item.inqryClCdNm}</td>
+                                    <td class="al article">
+                                        <a href="javascript:void(0)" class="link ellipsis" onclick="inqryMain.moveToDetail(${item.inqryid})">
+                                            ${item.sttsCd == '103104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.title}
+                                        </a>
+                                    </td>
+                                    <td>${item.sttsCdNm}</td>
+                                    <td>${item.acnt}</td>
+                                    <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+                                    <td>${item.regDt}</td>
+                                </tr>`;
+                    });
+                }
+                return html;
+            }
+        };
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            inqryMain.selectInqryList();
+        }
+
+        $(function () {
+            inqryMain.init();
+
+            $("#pageNumber").val(inqryMain.searchVo.pageNumber);
+            $("#searchKeyword").val(inqryMain.searchVo.searchKeyword);
+            $("#inqryClCd").val(inqryMain.searchVo.inqryClCd);
+            $('#rowPerPage').val(inqryMain.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(inqryMain.searchVo.rowPerPage);
+
+            inqryMain.selectInqryList();
+        })
+    </script>
+</div>
+<body>
