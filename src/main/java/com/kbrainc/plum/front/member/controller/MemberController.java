@@ -1,7 +1,6 @@
 package com.kbrainc.plum.front.member.controller;
 
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.HashMap;
@@ -19,22 +18,12 @@ import javax.validation.Valid;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.ibatis.type.Alias;
 import org.egovframe.rte.fdl.cryptography.EgovCryptoService;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Base64Utils;
@@ -42,12 +31,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -842,4 +828,60 @@ public class MemberController {
         }
         return resultMap;
     }
+    
+    /**
+    * 회원탈퇴 화면.
+    *
+    * @Title       : leaveMeber 
+    * @Description : 회원탈퇴 화면.
+    * @param memberAcntPswdFindVo MemberAcntPswdFindVo객체
+    * @param model 모델객체
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/leaveMeber.html")
+    public String leaveMeberForm(MemberVo memberVo ,Model model) throws Exception {
+        model.addAttribute("returnUrl", memberVo.getReturnUrl());
+        return "front/member/leaveMemberForm.html";
+    }
+    /**
+    * 회원 탈퇴 처리 
+    *
+    * @Title : leaveMeber
+    * @Description : 회원 탈퇴 처리
+    * @param MemberVo memberVo객체
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/membership/leaveMeber.do")
+    @ResponseBody
+    public Map<String, Object> leaveMeber(MemberVo memberVo, @UserInfo UserVo user,HttpSession session) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        int retVal = 0 ;
+        
+        memberVo.setUser(user);
+        MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
+        
+        String encryptPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
+        
+        if (!memberInfo.getPswd().equals(encryptPassword)) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "회원정보가 일치하지 않습니다.");
+            return resultMap;
+        }
+        
+        UserVo paramUser = memberVo.getUser(); 
+        paramUser.setSecsnRsn(memberVo.getSecsnRsn());
+        retVal = memberService.withdrawalMember(paramUser, session);
+        
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+        }else {
+            resultMap.put("msg", "비밀번호 변경에 실패하였습니다.");
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        }
+        return resultMap;
+    }
+    
 }

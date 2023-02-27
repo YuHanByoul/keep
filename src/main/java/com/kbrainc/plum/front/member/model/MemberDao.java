@@ -268,4 +268,15 @@ public interface MemberDao {
     * @throws Exception 예외
     */
     public int updatePassword(MemberAcntPswdFindVo memberAcntPswdFindVo) throws Exception;
+    
+    /**
+     * 회원 상세 정보 호출 
+     *
+     * @Title : selectMemberInfo
+     * @Description : 회원 상세 정보 호출 
+     * @param memberVo MemberVo객체
+     * @return MemberVo 사용자정보
+     * @throws Exception 예외
+     */
+     public MemberVo selectMemberInfo(MemberVo memberVo) throws Exception;
 }
