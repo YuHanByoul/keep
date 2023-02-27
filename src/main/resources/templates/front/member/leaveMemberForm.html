@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/simpleLayout"
+>
+<body>
+     <th:block layout:fragment="content">
+     
+      <section>
+      
+          <div class="underline-title">
+              <h2>내 정보</h2>
+          </div>
+          
+          
+          <div class="tab-content tab-sub dropDown">
+              <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">내 정보 수정</button>
+              <ul class="tab-list tab-list-pc target" role="tablist">
+                  <li class="tab active"><a href="#" role="tab">내 정보 수정</a></li>
+                  <li class="tab"><a href="javascript:goChangePswd()" role="tab" >비밀번호 변경</a></li>
+              </ul>
+          </div>
+          <div class="section-title">
+              <h3>회원탈퇴</h3>
+          </div>
+          
+          <div class="table-caption">
+              <div class="right">
+                  <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+              </div>
+          </div>
+
+          <th:block th:if="${session.user ne null}">
+          <th:block th:if="${session.user.onepassLinkYn=='Y'}">
+          <div class="table-row table-row-mo"   >
+                <table>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    
+                    <tbody>
+                    
+                        <tr th:if="${session.user.acnt != null}">
+                            <th scope="row">아이디<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <div class="form-input"><th:block th:text="${session.user.acnt}"/></div>
+                                    <div class="form-input"><button type="button" class="btn-medium btn-gray-dblue btn-before-digital"
+                                    onclick="popupCenter({url: '/front/esylgn/onepassUnlinkPopup.html?returnUrl=http://local.keep.go.kr:8000', title: '로그인 - 원패스', w: 500, h: 700});">디지털원패스 연동해지</button></div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr  th:if="${session.user.acnt == null }" >
+                            <th scope="row">아이디<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <div class="form-input">
+                                        <input type="text" title="아이디" placeholder="아이디 입력" value="디지털원패스 사용자입니다." data-width="414" readonly >
+                                    </div>
+                                    <div class="form-input"><button type="button" class="btn-medium btn-gray-dblue btn-before-digital" 
+                                    onclick="popupCenter({url: '/front/esylgn/onepassUnlinkPopup.html?returnUrl=http://local.keep.go.kr:8000', title: '로그인 - 원패스', w: 500, h: 700});">디지털원패스 연동해지</button></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    
+                </table>
+          </div>
+          
+          <div class="box-desc-list bg7 mt10" >
+              <strong class="box-desc-tit mb0 fw-400" th:if="${session.user.acnt == null}"><div class="icon icon-notice bg-black3"></div> <span>디지털원패스 연동해지 시 <b>회원탈퇴 처리</b>됩니다.</span></strong>
+              <strong class="box-desc-tit mb0 fw-400" th:unless="${session.user.acnt == null}"><div class="icon icon-notice bg-black3"></div> <span>디지털원패스 연동해지 시 <b>회원탈퇴 처리</b>됩니다.</span></strong>
+          </div>
+          </th:block>
+          
+          
+          <form id="authForm" name="authForm">
+          
+          <div class="table-row table-row-mo" th:if="${session.user.acnt != null and session.user.onepassLinkYn != 'Y'}">
+              <table>
+                  <caption>회원탈퇴  - 아이디, 비밀번호, 탈퇴사유</caption>
+                  <colgroup>
+                      <col style="width:140px;">
+                      <col>
+                  </colgroup>
+                  <tbody>
+                  
+                      <tr>
+                          <th scope="row">비밀번호<i class="ast" title="필수입력">*</i></th>
+                          <td>
+                              <div class="form-input">
+                                  <input type="password" title="비밀번호" placeholder="비밀번호 입력" data-width="414" id="pswd" name= "pswd">
+                              </div>
+                              <div class="col">
+                                  <p class="feedback" id="checkPswdMsg"></p>
+                              </div>
+                          </td>
+                      </tr>
+                      <tr>
+                          <th scope="row">탈퇴사유</th>
+                          <td>
+                              <textarea title="탈퇴사유" placeholder="탈퇴사유를 입력해주세요." maxlength="1000" style="resize: none;" id="secsnRsn" name="secsnRsn" rows="6"></textarea>
+                              <div class="desc ar size"><span id="textLength" >0</span> / 1,000자</div>
+                          </td>
+                      </tr>
+                      
+                  </tbody>
+              </table>
+          </div>
+          <div class="btn-wrap">
+              <div class="center">
+                  <button type="button" class="btn-medium btn-gray" onclick="leaveMember()">탈퇴</button>
+                  <button type="button" class="btn-medium btn-green" onclick="goModifyMyInfo()">취소</button>
+              </div>
+          </div>
+	      </form>
+	      </th:block>
+          
+          
+          <th:block th:if ="${session.user ==null}">
+          <div class="box-step-end"  >
+              <div class="thumb"><span class="icon icon-info-leave"></span></div>
+              <dl>
+                  <dt>회원탈퇴가 완료되었습니다.</dt>
+                  <dd>그동안 이용해 주셔서 감사합니다.</dd>
+              </dl>
+              <div class="btn-inner"><a href="/" class="btn-large btn-green">메인으로</a></div>
+          </div>
+          </th:block>
+     </section>
+     <input type="hidden" name="returnUrl" id="returnUrl" th:value="${returnUrl}" />
+     
+     <script th:inline="javascript">
+     
+	     $(function(){
+
+	    	 $("#secsnRsn").keyup(function(e){
+	    		 var textCn = $("#secsnRsn").val();
+	    		 if(textCn.length <= 1000){
+		    		 $("#textLength").text(textCn.length)
+		    	 }
+		    	 
+		     })
+	     });
+         function goChangePswd(){
+             var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+             /*[# th:if="${returnUrl != null and returnUrl != ''}"]*/
+                 location.href = portalUrl + "login.html?returnUrl=" + /*[[${returnUrl}]]*/''; //비밀번호 수정 url 입력 할 것   
+             /*[/]*/
+             /*[# th:unless="${returnUrl != null and returnUrl != ''}"]*/
+                 location.href = portalUrl + "login.html";
+             /*[/]*/
+         }
+         function goModifyMyInfo(){
+             var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+             /*[# th:if="${returnUrl != null and returnUrl != ''}"]*/
+                 location.href = portalUrl + "login.html?returnUrl=" + /*[[${returnUrl}]]*/''   
+             /*[/]*/
+             /*[# th:unless="${returnUrl != null and returnUrl != ''}"]*/
+                 location.href = portalUrl + "login.html";
+             /*[/]*/
+         }
+         
+         var validator= $("#authForm").validate({
+             onsubmit: false,
+             rules: {
+                 pswd : { required: true}
+                 ,secsnRsn : { maxlength:1000}
+             },
+             messages: {
+                 pswd : { required: "비밀번호를 입력 해주십시오."}
+                 ,secsnRsn : { maxlength: "1000자 이하로 입력 해주십시오."}
+             }
+         });
+         function leaveMember(){
+
+        	 if(!($("#authForm").valid()))return;
+        	 
+	         if(!confirm("탈퇴 하시겠습니까?")) return;
+	         
+	         if(displayWorkProgress(true)){
+	             $.ajax({
+	                 url : "/front/membership/leaveMeber.do",
+	                 type: 'POST',
+	                 cache : false,
+	                 dataType: 'json',
+	                 data : $("#authForm").serialize(),
+	                 success : function (data){
+		                 if(data.result == "success"){
+		                	 var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+		                	 location.href =portalUrl+"front/membership/leaveMeber.html";
+			             }else{
+				             alert(data.msg);
+				         }
+		                 
+	                     closeWorkProgress();
+	                 }
+	             });
+	         }
+         }
+
+     </script>
+  </th:block>
+ </body>
+</html>

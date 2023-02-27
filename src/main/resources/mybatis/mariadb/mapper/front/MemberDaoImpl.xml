@@ -15,6 +15,9 @@
             DEL_YN = 'Y',
             ACNT_LOCK_YN = 'Y',
             ACNT_LOCK_CD = '101106',
+            <if test="secsnRsn != null and secsnRsn != ''">
+            SECSN_RSN = #{secsnRsn},
+            </if>
             STTS_CD = '9'
         WHERE
             USERID = #{userid}
@@ -449,4 +452,57 @@
             MDFRID = #{userid}
         WHERE USERID = #{userid}
     </update>
+    <!-- 사용자정보 조회 -->
+    <select id="selectMemberInfo" parameterType="front.MemberVo" resultType="front.MemberVo">
+        /* MemberDao.selectMemberInfo */
+             SELECT
+                A.USERID
+               ,A.ACNT
+               ,A.PSWD
+               ,A.NM
+               ,A.NCNM
+               ,A.MOBLPHON
+               ,A.TELNO
+               ,A.EML
+               ,A.BRDT
+               ,A.GNDR
+               ,A.ZIP
+               ,A.ADDR
+               ,A.ADDR_DTL
+               ,A.INSTID
+               ,A.INSTPIC_ROLE_CD
+               ,A.TOS_AGRE_YN
+               ,A.PRIVCY_AGRE_YN
+               ,A.MARKT_EML_AGRE_YN
+               ,A.MARKT_SMS_AGRE_YN
+               ,A.PRVC_VLDTY
+               ,A.ACNT_LOCK_YN
+               ,A.ACNT_LOCK_CD
+               ,A.TMPR_PSWD_YN
+               ,A.PSWD_MDFCN_DT
+               ,A.STTS_CD
+               ,A.DEL_YN
+               ,A.BLCKLST_YN
+               ,A.LGN_DT
+               ,A.LGN_FAIL_CNT
+               ,A.MDFCN_DT
+               ,A.MDFRID
+               ,A.REG_DT
+               ,A.RGTRID
+               ,(SELECT GROUP_CONCAT(ITRSTFLD_CD SEPARATOR',') FROM TB_CMM_USER_ITRSTFLD  WHERE USERID = #{user.userid} ) AS ITRSTFLD_CD
+               ,(SELECT GROUP_CONCAT(ENVFLD_CD SEPARATOR',') FROM TB_CMM_USER_ENVFLD  WHERE USERID = #{user.userid} ) AS ENVFLD_CD
+               <!-- ,(SELECT GROUP_CONCAT(ESYLGN_CD SEPARATOR',') FROM TB_CMM_USER_ESYLGN  WHERE USERID = #{userid} ) AS ESYLGN_CD -->
+               ,IFNULL(B.ROLECD ,'' ) AS ROLEIDS
+               ,CASE WHEN INSTR(B.ROLECD,'1') > 0 OR INSTR(B.ROLECD,'5') > 0 THEN 'A'
+                     WHEN A.INSTID IS NOT NULL THEN 'C'
+                     ELSE 'U'
+               END AS ROLECD
+             FROM
+               TB_CMM_USER A
+               LEFT OUTER JOIN (
+                 SELECT USERID , GROUP_CONCAT(ROLEID SEPARATOR  ',') AS ROLECD FROM TB_CMM_ROLE_USER  WHERE USERID = #{user.userid}
+               )B
+               ON(A.USERID =B.USERID)
+           WHERE A.USERID = #{user.userid}
+    </select>
 </mapper>
