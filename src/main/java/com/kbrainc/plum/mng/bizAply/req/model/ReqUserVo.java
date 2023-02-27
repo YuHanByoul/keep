@@ -4,6 +4,7 @@
 package com.kbrainc.plum.mng.bizAply.req.model;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Pattern;
 
@@ -209,6 +210,30 @@ public class ReqUserVo extends ParentRequestVo {
     /** 반납일시 */
     private String rturnDt;
     
+    /** 2차심사 대상여부 */
+    private String scndSrngTrgtYn;
+    
+    /** 1차 점수 */
+    private String frstScr;
+    
+    /** 1차 등급 */
+    private String firstGrd;
+    
+    /** 1차 순위 */
+    private String firstRkng;
+    
+    /** 2차 점수 */
+    private String scndScr;
+    
+    /** 2차 등급 */
+    private String scndGrd;
+    
+    /** 2차 순위 */
+    private String scndRkng;
+
+    /** 심사 종료 여부 */
+    private String srngEndYn;
+    
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date mdfcnDt;
@@ -222,6 +247,9 @@ public class ReqUserVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private Integer rgtrid;
+    
+    /** 체크 항목 */
+    private List<String> aplyids;
     
     /** 엑셀다운로드 여부 */
     private String excelYn;

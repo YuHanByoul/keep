@@ -553,4 +553,16 @@ public interface ReqMngService {
     * @return List<ReqMngVo>
      */
     List<ReqMngVo> selectScheduleList(ReqMngVo reqMngVo) throws Exception;
+    
+    /**
+     * [심사 정보 수정]. 
+     *
+     * @Title : updateSrngScore
+     * @Description : TODO
+     * @param reqUserVo
+     * @return
+     * @throws Exception
+     * @return int
+      */
+    int updateSrngScore(ReqUserVo reqUserVo) throws Exception;
 }
