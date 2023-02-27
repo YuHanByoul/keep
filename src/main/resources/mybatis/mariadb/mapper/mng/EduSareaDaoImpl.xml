@@ -124,12 +124,20 @@
         SELECT A.UPPR_CD AS CTPRVN_CD
              , A.CD_NM AS SIGNGU_NM
              , A.CD AS SIGNGU_CD 
+             , #{sareaId} AS SAREAID 
              , CASE WHEN B.SIGNGU_CD IS NULL THEN 'N' ELSE 'Y' END USE_YN
              , B.HR_SE_CD
         FROM TB_CMM_CD A
-        LEFT OUTER JOIN TB_EDU_SAREA_SIGNGU B ON B.SIGNGU_CD = A.CD AND B.CTPRVN_CD = A.UPPR_CD
+        LEFT OUTER JOIN ( SELECT SAREAID
+                               , HR_SE_CD
+                               , SIGNGU_CD
+                               , CTPRVN_CD 
+                            FROM TB_EDU_SAREA_SIGNGU
+                            WHERE SAREAID = #{sareaId}
+                        ) B ON B.SIGNGU_CD = A.CD AND B.CTPRVN_CD = A.UPPR_CD         
         WHERE A.USE_YN = 'Y' 
           AND A.UPPR_CD = #{ctprvnCd}
+          AND A.UPPR_CD IN (SELECT CTPRVN_CD FROM tb_edu_sarea_ctprvn_mapng WHERE SAREAID = #{sareaId})
         ORDER BY A.CDGRPID, A.UPPR_CD, A.ORD
     </select>
     
@@ -147,7 +155,7 @@
                 , REG_DT         
                 , RGTRID                         
             ) VALUES (
-                  1                 
+                  #{item.sareaId}                 
                 , #{item.ctprvnCd}    
                 , #{item.signguCd}    
                 , #{item.hrSeCd}      
@@ -164,7 +172,17 @@
          /* EduSareaDao.deleteEduSareaSignguSetting */
          DELETE FROM TB_EDU_SAREA_SIGNGU
          WHERE 1=1
-           AND SAREAID = 1
+           AND SAREAID = #{sareaId}
     </insert>    
     
+    <!-- 지역설정 목록 조회 -->
+    <select id="selectCtprvnCdList" resultType="EduSareaVo">
+        /* EduSareaDao.selectCtprvnCdList */
+        SELECT A.CTPRVN_CD
+             , B.CD_NM CTPRVN_NM
+             , A.SAREAID
+        FROM TB_EDU_SAREA_CTPRVN_MAPNG A
+        LEFT OUTER JOIN TB_CMM_CD B ON B.CD = A.CTPRVN_CD
+        WHERE A.SAREAID = #{sareaid}
+    </select>    
 </mapper>

@@ -139,4 +139,16 @@ public interface EduSareaDao {
     * @return int
     */
     public int deleteEduSareaSignguSetting(EduSareaVo eduSareaVo) throws Exception;
+    
+    /**
+     * 지역설정 목록을 조회.
+     **
+     * @Title : selectCtprvnCdList
+     * @Description : 지역설정 목록을 조회
+     * @param sareaid
+     * @return
+     * @throws Exception
+     * @return List<EduSareaVo>
+     */
+    public List<EduSareaVo> selectCtprvnCdList(@Param("sareaid") int sareaid) throws Exception;    
 }
