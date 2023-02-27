@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/front/mypage/inqry")
 public class MyInqryController {
-    private static final String VIEW_PATH = "/mypage/inqry";
+    private static final String VIEW_PATH = "/front/mypage/inqry";
 
     @Resource(name = "front.inqryService")
     private InqryService inqryService;
