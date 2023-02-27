@@ -45,6 +45,11 @@ public class InqryServiceImpl extends PlumAbstractServiceImpl implements InqrySe
     }
 
     @Override
+    public List<InqryVo> selectMypageInqryList(InqryVo inqryVo) throws Exception {
+        return inqryDao.selectMypageInqryList(inqryVo);
+    }
+
+    @Override
     public InqryVo selectInqry(InqryVo inqryVo) throws Exception {
         InqryVo inqry = inqryDao.selectInqry(inqryVo);
 

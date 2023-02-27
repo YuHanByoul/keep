@@ -66,7 +66,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
-    <select id="selectInqryList" resultType="com.kbrainc.plum.front.inqry.model.InqryVo">
+    <select id="selectInqryList" resultType="front.InqryVo">
         <include refid="PaginationMapper.header"/>
         SELECT
             A.INQRYID
@@ -104,7 +104,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
-    <select id="selectInqry" resultType="com.kbrainc.plum.front.inqry.model.InqryVo">
+    <select id="selectInqry" resultType="front.InqryVo">
         SELECT
             A.INQRYID
              , A.SITEID
@@ -149,5 +149,41 @@
             INNER JOIN TB_CMM_USER C
                 ON A.OPETRID = C.USERID
             WHERE A.INQRYID = #{inqryid}
+    </select>
+
+    <select id="selectMypageInqryList" resultType="front.InqryVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+        A.INQRYID
+        , A.SITEID
+        , A.USERID
+        , A.TITLE
+        , A.CNTNTS
+        , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+        CONCAT(
+        SUBSTRING(B.ACNT, 1, 1)
+        ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+        ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+        )
+        ELSE CONCAT(
+        SUBSTRING(B.ACNT, 1, 1)
+        ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+        )
+        END AS ACNT
+        , A.FILEGRPID
+        , A.INQRY_CL_CD
+        , A.STTS_CD
+        , A.RLS_YN
+        , A.REG_DT
+        FROM TB_CMM_INQRY A
+        INNER JOIN TB_CMM_USER B
+        ON A.USERID = B.USERID
+        WHERE
+        A.DEL_YN = 'N'
+        AND A.USERID = #{user.userid}
+        <if test="searchKeyword != null and searchKeyword!= ''">
+            AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
     </select>
 </mapper>

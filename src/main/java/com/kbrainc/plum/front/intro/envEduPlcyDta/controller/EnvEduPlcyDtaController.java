@@ -1,17 +1,19 @@
 package com.kbrainc.plum.front.intro.envEduPlcyDta.controller;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.front.inqry.model.InqryVo;
+import com.kbrainc.plum.cmm.file.service.FileStorageServiceImpl;
 import com.kbrainc.plum.front.intro.envEduPlcyDta.model.BsnsOperDtaVo;
 import com.kbrainc.plum.front.intro.envEduPlcyDta.model.SpcltyDtaVo;
 import com.kbrainc.plum.front.intro.envEduPlcyDta.service.EnvEduPlcyDtaService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +43,9 @@ public class EnvEduPlcyDtaController {
     @Resource(name = "front.envEduPlcyDtaService")
     private EnvEduPlcyDtaService envEduPlcyDtaService;
 
+    @Autowired
+    private FileStorageServiceImpl fileStorageService;
+
     /**
      * 사업운영 자료 목록 화면
      *
@@ -68,17 +73,11 @@ public class EnvEduPlcyDtaController {
     public String bsnsOperDtaDetail(BsnsOperDtaVo searchVo, Model model) throws Exception {
         BsnsOperDtaVo bsnsOperDta = envEduPlcyDtaService.selectBsnsOperDta(searchVo);
         List<FileVo> pdfFileList = bsnsOperDta.getPdfFileList();
-        List<String> pdfFilePaths = new ArrayList<>();
-        for (FileVo fileVo : pdfFileList) {
-            String saveFileNm = fileVo.getSaveFileNm();
-            String filePath = "/bsns_oper_dta_file/";
-            pdfFilePaths.add(filePath + saveFileNm);
-        }
+        List<String> pdfFilePaths = getPdfFilePaths(pdfFileList);
         model.addAttribute("bsnsOperDta", bsnsOperDta);
         model.addAttribute("pdfFilePaths", pdfFilePaths);
         return VIEW_PATH + "/bsnsOperDtaDetail";
     }
-
 
     /**
      * 전문자료 목록 화면
@@ -107,15 +106,12 @@ public class EnvEduPlcyDtaController {
     public String spcltyDtaDetail(SpcltyDtaVo searchVo, Model model) throws Exception {
         SpcltyDtaVo spcltyDta = envEduPlcyDtaService.selectSpcltyDta(searchVo);
         List<FileVo> pdfFileList = spcltyDta.getPdfFileList();
-        List<String> pdfFilePaths = new ArrayList<>();
-        for (FileVo fileVo : pdfFileList) {
-            String saveFileNm = fileVo.getSaveFileNm();
-            String filePath = "/bsns_oper_dta_file/";
-            pdfFilePaths.add(filePath + saveFileNm);
-        }
+        List<org.springframework.core.io.Resource> resources = new ArrayList<>();
+        List<String> pdfFilePaths = getPdfFilePaths(pdfFileList);
 
         model.addAttribute("spcltyDta", spcltyDta);
         model.addAttribute("pdfFilePaths", pdfFilePaths);
+        model.addAttribute("resources", resources);
         return VIEW_PATH + "/spcltyDtaDetail";
     }
 
@@ -173,6 +169,18 @@ public class EnvEduPlcyDtaController {
         response.put("list", list);
 
         return response;
+    }
+
+    private List<String> getPdfFilePaths(List<FileVo> pdfFileList) {
+        List<String> pdfFilePaths = new ArrayList<>();
+        for (FileVo fileVo : pdfFileList) {
+            String filePath = "/pdf_view_file/";
+            String saveFileNm = fileVo.getSaveFileNm();
+            saveFileNm = saveFileNm.replaceAll("\\[", "%5B");
+            saveFileNm = saveFileNm.replaceAll("\\]", "%5D");
+            pdfFilePaths.add(filePath + saveFileNm);
+        }
+        return pdfFilePaths;
     }
 
 }
