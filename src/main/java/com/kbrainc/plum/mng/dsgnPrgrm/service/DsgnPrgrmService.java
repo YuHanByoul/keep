@@ -370,6 +370,18 @@ public interface DsgnPrgrmService {
 	*/
 	public List<DsgnPrgrmVo> selectDsgnHstry(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 지정프로그램 개요 조회
+	*
+	* @Title : selectDsgnOutl
+	* @Description : 지정프로그램 개요 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectDsgnOutl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 
 }

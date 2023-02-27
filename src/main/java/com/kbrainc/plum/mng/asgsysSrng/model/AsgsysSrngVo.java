@@ -270,11 +270,20 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 체크리스트 2LV 코드 */
 	private String chkLv2Cd;
 
+	/** 체크리스트 구분 코드 */
+	private String chklstSeCd;
+
 	/** 체크리스트 내용 */
 	private String cn;
 
 	/** 체크리스트 결과 내용*/
     private String chklstRsltCn;
+
+    /** 체크리스트 결과 내용*/
+    private Integer aplcntSbmsnid;
+
+    /** 신청자 자가진단 점수*/
+    private Integer aplcntScr;
 
 	/** 문항 id*/
 	private Integer qitemid;
@@ -628,6 +637,18 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 제출ID */
     private Integer sbmsnid;
+
+    /** 확인사항 */
+    private String idntyMttr;
+
+    /** 코드명 */
+    private String cdNm;
+
+    /** 합계 배점 */
+    private Integer sumAltm;
+
+    /** 체크리스트 점수 */
+    private Integer chkLstScr;
 
     /** 제출 일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd 00:00")

@@ -297,12 +297,21 @@
             , CASE WHEN SRNG_STTS_NM = '심사완료' THEN ((SELECT SCR FROM CNT_FIRST CNT WHERE CNT.APLYID = T.APLYID) + IFNULL((SELECT SCR FROM CNT_SECOND CNT WHERE CNT.APLYID = T.APLYID), 0)) / 
                                                         IF((SELECT COUNT(1) FROM CNT_SECOND CNT WHERE CNT.APLYID = T.APLYID) <![CDATA[ > ]]> 0, 2, 1)
                 ELSE '-' END AS TOTAL_SCR
-            , SLCTN_STTS_NM
+            , IFNULL(SLCTN_STTS_NM, '-') AS SLCTN_STTS_NM
+            , SCND_SRNG_TRGT_YN
+            , FRST_SCR
+            , FIRST_GRD
+            , FIRST_RKNG
+            , SCND_SCR
+            , SCND_GRD
+            , SCND_RKNG
+            , SRNG_END_YN
             , REG_DT
             , MDFCN_DT
             , FILEGRPID1
             , FILEGRPID2
             , FILEGRPID3
+            , ONLN_SRNG_TYPE_CD
         FROM (
             SELECT 
                 TSA.PCNTSTID
@@ -323,11 +332,19 @@
                     END AS SRNG_STTS_NM
                 , IF(SLCTN_STTS_CD = '193101', '-', TCCB.CD_NM) AS SLCTN_STTS_NM
                 , SCND_SRNG_TRGT_YN
+                , IFNULL(FIRST_SCR, '-') AS FRST_SCR
+                , IFNULL(FIRST_GRD, '-') AS FIRST_GRD
+                , IFNULL(FIRST_RKNG, '-') AS FIRST_RKNG
+                , IFNULL(SCND_SCR, '-') AS SCND_SCR
+                , IFNULL(SCND_GRD, '-') AS SCND_GRD
+                , IFNULL(SCND_RKNG, '-') AS SCND_RKNG 
+                , SRNG_END_YN
                 , TSA.REG_DT
                 , TSA.MDFCN_DT
                 , FILEGRPID1
                 , FILEGRPID2
                 , FILEGRPID3
+                , TSP.ONLN_SRNG_TYPE_CD
             FROM 
                 TB_SPB_PCNTST TSP 
                 INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
@@ -1829,4 +1846,40 @@
             , TSA.PRGRM_NM, TSP.SRNG_BGNG_DT, TSP.SRNG_END_DT
         ORDER BY TSP.SRNG_BGNG_DT
     </select>
+    
+    <!-- 심사 정보 수정 -->
+    <update id="updateSrngScore" parameterType="ReqUserVo">
+        UPDATE TB_SPB_APLY SET
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+            <if test="scndSrngTrgtYn != null and scndSrngTrgtYn != ''">
+            , SCND_SRNG_TRGT_YN = #{scndSrngTrgtYn}
+            </if>
+            <if test="firstScr != null and firstScr != ''">
+            , FIRST_SCR = #{firstScr}
+            </if>
+            <if test="firstGrd != null and firstGrd != ''">
+            , FIRST_GRD = #{firstGrd}
+            </if>
+            <if test="firstRkng != null and firstRkng != ''">
+            , FIRST_RKNG = #{firstRkng}
+            </if>
+            <if test="scndScr != null and scndScr != ''">
+            , SCND_SCR = #{scndScr}
+            </if>
+            <if test="scndGrd != null and scndGrd != ''">
+            , SCND_GRD = #{scndGrd}
+            </if>
+            <if test="scndRkng != null and scndRkng != ''">
+            , SCND_RKNG = #{scndRkng}
+            </if>
+            <if test="srngEndYn != null and srngEndYn != ''">
+            , SRNG_END_YN = #{srngEndYn}
+            </if>
+            <if test="slctnSttsCd != null and slctnSttsCd != ''">
+            , SLCTN_STTS_CD = #{slctnSttsCd}
+            </if>
+        WHERE APLYID = #{aplyid}
+    </update>
+    
 </mapper>

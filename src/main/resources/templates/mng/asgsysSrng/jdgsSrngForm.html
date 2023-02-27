@@ -115,7 +115,7 @@
     								<strong>진행상태</strong>
     							</div>
     							<div class="col-12">
-    				                <span kattr:select_code="srngSttsCd" th:attr="grpCd=119,selectedCd=${jdgsSrngInfo.srngSttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" disabled>
+    				                <span kattr:select_code="srngSttsCd" th:attr="grpCd=114, selectedCd=${jdgsSrngInfo.srngSttsCd}" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true" disabled>
     							</div>
     						</div>
     					</div>
@@ -154,7 +154,8 @@
                                                 <td class="text-center v-middle"><th:block th:text="${item.idntyMttr}"></td>
                                                 <td class="text-center v-middle" th:id="${'altm' + i.count}"><th:block th:text="${item.altm}"></td></td>
                                                 <td class="text-center v-middle">
-                                                    <input type="text" class="form-control form-control-sm" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
+                                                    <input th:if     ="${item.chklstSeCd != ''}" type="text" class="text-center v-middle form-control form-control-sm" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.chkLstScr}" disabled/>
+                                                    <input th:unless ="${item.chklstSeCd != ''}" type="text" class="text-center v-middle form-control form-control-sm" th:name="${'scr'+ i.count}" th:id="${'scr'+ i.count}" placeholder="0" th:value="${item.scr}" />
                                                 </td>
                                                 <input type="hidden"
                                                     th:id="${'ansData' + i.count}"
@@ -238,7 +239,6 @@ function fn_insertJdgsSrngInfo() {
 
 	if(!confirm("저장하시겠습니까?")) return;
 
-
 	var param={};
 	 //프로그램 일정
     $("#jdgsSrngInfoFrm input").each(function(index, item) {
@@ -250,6 +250,11 @@ function fn_insertJdgsSrngInfo() {
             param[item.id] = item.value;
         }
     });
+
+	/*심사자id*/
+	param["userid"] = $("#jdgsid").val();
+	/*심사의견*/
+    param["srngOpnn"] = $("#srngOpnn").val()
 
 	//총점
     param["scr"] = Number(sumScr.innerText);

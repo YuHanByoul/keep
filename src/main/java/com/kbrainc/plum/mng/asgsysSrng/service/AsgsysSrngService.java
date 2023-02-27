@@ -611,11 +611,19 @@ public interface AsgsysSrngService {
 	*/
 	public int updateEduPhotoFilegrpid(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 심사양식 목록 조회
+	*
+	* @Title : selectSrngFormQitemList
+	* @Description : 심사양식 목록 조회
+	* @param dsgnSrngFormVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnSrngFormVo>
+	*/
+	public List<DsgnSrngFormVo> selectSrngFormQitemList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
-
-
-
-
+	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 
 

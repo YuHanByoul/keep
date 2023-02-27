@@ -1,0 +1,109 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/nolnbSubLayout">
+<div layout:fragment="content">
+    <form id="trmsForm" name="trmsForm" th:action="@{/front/mvmnAply/mvmnAplyRegStep2.html}" method="get">
+    <input type="hidden" id="prgrmid" name="prgrmid" th:value="${mvmnAplyParamVo.prgrmid}" />
+    <input type="hidden" id="tmeSchdlid" name="tmeSchdlid" th:value="${mvmnAplyParamVo.tmeSchdlid}" />
+    <input type="hidden" id="sareaSignguCd" name="sareaSignguCd" th:value="${mvmnAplyParamVo.sareaSignguCd}" />
+    
+        <div class="steps">
+            <ol>
+                <li class="active" title="현재 단계" aria-current="step">
+                    <div class="steps-inner">
+                        <span>01</span>
+                        <strong>약관동의</strong>
+                    </div>
+                </li>
+                <li>
+                    <div class="steps-inner">
+                        <span>02</span>
+                        <strong>신청정보 입력</strong>
+                    </div>
+                </li>
+                <li>
+                    <div class="steps-inner">
+                        <span>03</span>
+                        <strong>신청완료</strong>
+                    </div>
+                </li>
+            </ol>
+        </div>
+
+        <div class="terms-content">
+            <div class="terms-title">개인정보 수집 이용동의 <strong class="fc-sred">(필수)</strong></div>
+            <div class="terms-inner" tabindex="0">
+                <div class="agree-txt">
+                    1. (수집〮이용 목적) [유아환경교육관] 심사 및 운영 <br>
+                    2. (수집항목) - 필수정보 : 이름, 연락처, 이메일, 소속기관 등 <br>
+                    3. (보유〮이용기간) 3년 (지정만료〮취소 시 1년) &rarr; 근거 : 공공기록물관리에 관한 법률 등 <br>
+                    4. (동의 거부권리 안내) 본 개인정보 수집〮이용에 대한 동의를 거부할 수 있으나, 환경교육프로그램 심사접수가 불가하여 심사대상이 될 수 없습니다.
+
+                </div>
+            </div>
+            <div class="form-check-list">
+                <label class="inp"><input type="checkbox" name="prvcClctAgreYn" id="prvcClctAgreYn" th:checked="${mvmnAplyParamVo.prvcClctAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
+            </div>
+        </div>
+        <div class="terms-content">
+            <div class="terms-title">개인정보 제3자 제공동의 <strong class="fc-sred">(필수)</strong></div>
+            <div class="terms-inner" tabindex="0">
+                <div class="agree-txt">
+                    1. (제공목적) [유아환경교육관] 교육 신청 <br>
+                    2. (개인정보를 제공받는 자) 유아환경교육관 담당자 <br>
+                    3. (제공하는 개인정보 항목) 이름, 연락처, 이메일, 소속기관 등 <br>
+                    4. (보유〮이용기간) 제출일-심사일까지 (심사이후 즉시 파기) &rarr; 근거 : 공공기록물관리에 관한 법률 등 <br>
+                    5. (동의 거부권리 안내) 본 개인정보 수집〮이용에 대한 동의를 거부할 수 있으나, 환경교육프로그램 심사접수가 불가하여 심사대상이 될 수 없습니다. 
+                </div>
+            </div>
+            <div class="form-check-list">
+                <label class="inp"><input type="checkbox" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:checked="${mvmnAplyParamVo.prvcThptyPvsnAgreYn == 'Y'}"><b>개인정보 제 3자 제공 동의안내에 동의합니다.</b></label>
+            </div>
+        </div>
+
+        <div class="form-check-all">
+            <label class="inp"><input type="checkbox" id="trmsAll" name="trmsAll"><b>전체 약관 동의</b></label>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-green" onclick="mvmnAplyRegStep1.moveToNextStep()">다음</button>
+            </div>
+        </div>
+    </form>
+
+    <script th:inline="javascript">
+    $(function () {
+    	mvmnAplyRegStep1.validateForm();
+        $('#trmsAll').on('click', function(e) {
+            if(e.target.checked) {
+                $('#prvcClctAgreYn').prop('checked', true);
+                $('#prvcThptyPvsnAgreYn').prop('checked', true);
+            } else {
+                $('#prvcClctAgreYn').prop('checked', false);
+                $('#prvcThptyPvsnAgreYn').prop('checked', false);
+            }
+        });
+    })
+    
+    var mvmnAplyRegStep1 = {
+    	validateForm() {
+            $('#trmsForm').validate({
+                rules: {
+                    prvcClctAgreYn: {required: true},
+                    prvcThptyPvsnAgreYn: {required: true}
+                },
+                messages: {
+                    prvcClctAgreYn: {required: "필수항목을 동의해야 가입 신청이 가능합니다."},
+                    prvcThptyPvsnAgreYn: {required: "필수항목을 동의해야 가입 신청이 가능합니다."}
+                }
+            });
+        },
+        moveToNextStep() {
+            if (!$('#trmsForm').valid()) return false;
+            $('#trmsForm').submit();
+        }
+    }
+    </script>
+</div>

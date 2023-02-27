@@ -152,15 +152,15 @@ public class InfntSchdlController {
     @RequestMapping(value = "/mng/prtpn/infntSchdl/selectInfntSchdlList.do")
     @ResponseBody
     public List<InfntSchdlVo> selectInfntSchdlList(InfntSchdlVo infntSchdlVo) throws Exception {
-        Map<String, Object> resultMap = new HashMap<>();
+        //Map<String, Object> resultMap = new HashMap<>();
         List<InfntSchdlVo> result = null;
         result = infntSchdlService.selectInfntSchdlList(infntSchdlVo);
-        if (result.size() > 0) {
-            resultMap.put("totalCount", (result.get(0).getTotalCount()));
-        } else {
-            resultMap.put("totalCount", 0);
-        }
-        resultMap.put("list", result);
+//        if (result.size() > 0) {
+//            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+//        } else {
+//            resultMap.put("totalCount", 0);
+//        }
+//        resultMap.put("list", result);
 
         return result;
     }

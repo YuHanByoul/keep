@@ -53,7 +53,7 @@ public class MemberVo extends ParentRequestVo {
 
     /** 비밀번호 */
     private String pswd;
-
+    
     /** 휴대폰번호 */
     @Size(max = 12, message = "휴대전화는 12자를 초과할 수 없습니다.")
     private String moblphon;
@@ -136,6 +136,10 @@ public class MemberVo extends ParentRequestVo {
     
     /** 개인정보 유효기간 */
     private int prvcVldty;
+    
+    /** 탈퇴사유 */
+    @Size(max = 1000, message = "탈퇴사유는 1000자를 초과할 수 없습니다.")
+    private String secsnRsn ;
 
     /** 수정 일시 */
     private String mdfcnDt;
@@ -160,6 +164,9 @@ public class MemberVo extends ParentRequestVo {
 
     /** 간편로그인Vo 객체 */
     private EsylgnVo esylgnVo;
+    
+    /** 파라미터로 받고 로그인 버튼 클릭시 파라미터로 넘길 URL */
+    private String returnUrl;
     
     /** 로그인사용자정보 */
     public void setUser(UserVo user) {

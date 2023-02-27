@@ -7,41 +7,8 @@
 -->
 <mapper namespace="com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao">
 
-    <!-- 지정신청 목록 조회. -->
-    <select id="selectDsgnAplyList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
-        /* AsgsysSrngDao.selectDsgnAplyList */
-        <include refid="PaginationMapper.header"/>
-        SELECT
-            A.PRGRM_NM
-          , A.PRGRMID
-          , A.INST_NM
-          , A.STTS_CD
-          , A.APLY_DT
-          , A.REG_DT
-          , B.SRNG_STTS_CD
-          , C.SRGN_STTS_CD
-          , C.VST_DE
-          , C.VST_HR
-          , C.VST_MNT
-          , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
-          , C.SPLMNT_DMND_OPNN
-          , C.SRNG_OPNN
-        FROM
-            TB_ASS_PRGRM A
-        LEFT OUTER JOIN    /* 심사위원 */
-        (
-            SELECT
-                PRGRMID
-              , SRNG_STTS_CD
-              , JDGSID
-              , COUNT(1) AS CNT
-            FROM TB_ASS_PRGRM_JDGS
-        ) B ON A.PRGRMID  = B.PRGRMID
-        LEFT OUTER JOIN    /* 지원단 */
-            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
-        LEFT OUTER JOIN
-            TB_CMM_INST D ON A.INSTID  = D.INSTID
-        WHERE 1=1
+    <!-- 프로그램 목록 조회 -->
+    <sql id="searchCondition1">
         <!-- 키워드.프로그램명 -->
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
             AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
@@ -78,6 +45,45 @@
         <if test="searchChckDsgnEndDt != null and searchChckDsgnEndDt != ''">
             AND C.VST_DE <![CDATA[<]]> CAST(CONCAT(#{searchChckDsgnEndDt},' 23:59:59') AS DATETIME)
         </if>
+    </sql>
+
+    <!-- 지정신청 목록 조회. -->
+    <select id="selectDsgnAplyList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectDsgnAplyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRGRM_NM
+          , A.PRGRMID
+          , A.INST_NM
+          , A.STTS_CD
+          , A.APLY_DT
+          , A.REG_DT
+          , B.SRNG_STTS_CD
+          , C.SRGN_STTS_CD
+          , C.VST_DE
+          , C.VST_HR
+          , C.VST_MNT
+          , CONCAT(C.VST_DE , " " , C.VST_HR , ":" , C.VST_MNT) AS VST_DT
+          , C.SPLMNT_DMND_OPNN
+          , C.SRNG_OPNN
+          , A.MDFCN_DT
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN    /* 심사위원 */
+        (
+            SELECT
+                PRGRMID
+              , SRNG_STTS_CD
+              , JDGSID
+              , COUNT(1) AS CNT
+            FROM TB_ASS_PRGRM_JDGS
+        ) B ON A.PRGRMID  = B.PRGRMID
+        LEFT OUTER JOIN    /* 지원단 */
+            TB_ASS_SPRTGRP_SRNG C ON A.PRGRMID  = C.PRGRMID
+        LEFT OUTER JOIN
+            TB_CMM_INST D ON A.INSTID  = D.INSTID
+        WHERE 1=1
+        <include refid="searchCondition1"/>
         <include refid="PaginationMapper.footer"/>
     </select>
 
@@ -96,6 +102,7 @@
           , C.VST_DE
           , C.VST_HR
           , C.VST_MNT
+          , A.MDFCN_DT
         FROM
             TB_ASS_PRGRM A
         LEFT OUTER JOIN
@@ -116,46 +123,7 @@
         LEFT OUTER JOIN
         TB_CMM_INST D ON A.INSTID  = D.INSTID
         WHERE 1=1
-        <!-- 키워드.프로그램명 -->
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchPrgrmNm'">
-            AND A.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
-        </if>
-        <!-- 키워드.기관명 -->
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
-            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
-        </if>
-        <!-- 키워드.사업자번호 -->
-        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchBrno'">
-            AND D.BRNO LIKE CONCAT('%',#{searchKeyword},'%')
-        </if>
-        <!-- 진행상태  -->
-        <if test="searchSttsCd != null and searchSttsCd != ''">
-            AND A.STTS_CD = #{searchSttsCd}
-        </if>
-        <!-- 신청일 검색시작일  -->
-        <if test="searchAplyStartDt != null and searchAplyStartDt != ''">
-            AND A.APLY_DT >= #{searchAplyStartDt}
-        </if>
-        <!-- 신청일 검색종료일  -->
-        <if test="searchAplyEndDt  != null and searchAplyEndDt != ''">
-            AND A.APLY_DT <![CDATA[<]]> CAST(CONCAT(#{searchAplyEndDt},' 23:59:59') AS DATETIME)
-        </if>
-        <!-- 심사위원 심사상태-->
-        <if test="searchSrngSttsCd != null and searchSrngSttsCd != ''">
-            AND B.SRNG_STTS_CD = #{searchSrngSttsCd}
-        </if>
-        <!-- 지원단 심사상태-->
-        <if test="searchSrgnSttsCd != null and searchSrgnSttsCd != ''">
-            AND C.SRGN_STTS_CD = #{searchSrgnSttsCd }
-        </if>
-        <!-- 현장점검지정일 시작일-->
-        <if test="searchChckDsgnStartDt != null and searchChckDsgnStartDt != ''">
-            AND C.VST_DE >= #{searchChckDsgnStartDt}
-        </if>
-        <!-- 현장점검지정일 종료일-->
-        <if test="searchChckDsgnEndDt != null and searchChckDsgnEndDt != ''">
-            AND C.VST_DE <![CDATA[<]]> CAST(CONCAT(#{searchChckDsgnEndDt},' 23:59:59') AS DATETIME)
-        </if>
+        <include refid="searchCondition1"/>
     </select>
 
     <!-- 지정신청프로그램상세 조회. -->
@@ -250,7 +218,17 @@
                 TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
         ) D ON A.PRGRMID = D.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_CHKLST_SBMSN E ON A.PRGRMID = E.PRGRMID
+        (
+        /*지원단 체크리스트*/
+            SELECT
+                SRNG.PRGRMID
+              , CHK.SBMSNID
+            FROM
+                TB_ASS_SPRTGRP_SRNG SRNG
+            LEFT OUTER JOIN
+                TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
+                                       AND SRNG.SPRTGRPID = CHK.USERID
+        ) E ON A.PRGRMID = E.PRGRMID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
@@ -258,8 +236,8 @@
     <!-- 프로그램 우수성 조회. -->
     <select id="selectPrgrmDstnctn" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
-            A.PRGRMID    AS PRGRM_KEY    /* 프로그램아이디           */
-          , B.PRGRMID                /* 우수성 아이디            */
+            A.PRGRMID                /* 프로그램아이디           */
+          , B.PRGRMID    AS PRGRM_KEY    /* 우수성 아이디            */
           , A.PRGRM_NM               /* 프로그램이름             */
           , A.CNSLTNG_PRGRS_YN       /* 컨설팅 진행여부          */
           , C.CNSLTNG_KND_CD         /* 컨설팅 종류코드          */
@@ -1454,7 +1432,17 @@
                 TB_CMM_USER BB ON AA.SPRTGRPID = BB.USERID
         ) D ON A.PRGRMID = D.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_CHKLST_SBMSN E ON A.PRGRMID = E.PRGRMID
+        (
+        /*지원단 체크리스트*/
+            SELECT
+                SRNG.PRGRMID
+              , CHK.SBMSNID
+            FROM
+                TB_ASS_SPRTGRP_SRNG SRNG
+            LEFT OUTER JOIN
+                TB_ASS_CHKLST_SBMSN CHK ON SRNG.PRGRMID = CHK.PRGRMID
+                                       AND SRNG.SPRTGRPID = CHK.USERID
+        ) E ON A.PRGRMID = E.PRGRMID
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
@@ -1512,6 +1500,7 @@
                 , A.ORDR
                 , ROW_NUMBER() OVER(PARTITION BY C.DSGNCRTR_CD ORDER BY A.ORDR ASC) AS RNK
                 , COUNT(1) OVER (PARTITION  BY C.DSGNCRTR_CD ASC) AS ROWSPAN
+                , CHK.SCR    as CHK_LST_SCR
             FROM TB_ASS_SRNG_SBMSN SBMSN
             LEFT OUTER JOIN
                 TB_ASS_SRNG_FORM_QITEM_MAPNG A    ON SBMSN.FORMID = A.FORMID
@@ -1523,12 +1512,126 @@
                 TB_ASS_PRGRM_JDGS D    ON SBMSN.PRGRMID = D.PRGRMID  AND SBMSN.USERID =D.JDGSID
             LEFT OUTER JOIN
                 TB_ASS_SRNG_ANS   E    ON SBMSN.SBMSNID = E.SBMSNID  AND A.QITEMID = E.QITEMID
+            LEFT OUTER JOIN
+                TB_CMM_CD CD ON A.CHKLST_SE_CD = CD.CD
+            LEFT OUTER JOIN
+            (
+                SELECT
+                    A.QITEMID
+                  , A.SE_CD
+                  , SUM(A.SCR) SCR
+                  , SBMSNID
+                FROM
+                    TB_ASS_CHKLST_ANS A
+                WHERE A.SBMSNID = #{sbmsnid}
+                GROUP BY A.SE_CD
+            ) CHK ON A.CHKLST_SE_CD = CHK.SE_CD
             WHERE SBMSN.PRGRMID = #{prgrmid}
             AND   D.JDGSID = #{jdgsid}
             AND   SBMSN.SBMSNID = #{sbmsnid}
             ORDER BY
                 C.DSGNCRTR_CD , C.ORDR ,A.ORDR
     </select>
+
+    <!-- 심사양식 문항목록 조회 -->
+    <select id="selectSrngFormQitemList" parameterType="DsgnSrngFormVO" resultType="DsgnSrngFormVO">
+        /* SrngDao.selectSrngFormQitemList */
+        WITH RECURSIVE CODE_VIEW(DSGNCRTR_CD, IDNTY_MTTR, DSGNCRTR_ORDR, TREE_ORD, QITEMID, CHKLST_SE_CD)  AS (
+            SELECT
+                SFDO.DSGNCRTR_CD AS DSGNCRTR_CD
+                , CONCAT(CD_NM) AS IDNTY_MTTR
+                , SFDO.ORDR AS DSGNCRTR_ORDR
+                , 1 AS TREE_ORD
+                , 0 AS QITEMID
+                , 0 AS CHKLST_SE_CD
+            FROM
+                TB_CMM_CD CCD
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+                ON SFDO.DSGNCRTR_CD = CCD.CD
+            WHERE
+                1 = 1
+                AND CCD.CDGRPID != 'G0001'
+                AND CCD.CDGRPID  = '149'
+                AND SFDO.FORMID = #{formid}
+            UNION ALL
+            SELECT
+                C.DSGNCRTR_CD
+                , B.IDNTY_MTTR
+                , C.ORDR AS DSGNCRTR_ORDR
+                , 2 AS TREE_ORD
+                , A.QITEMID AS QITEMID
+                , A.CHKLST_SE_CD AS CHKLST_SE_CD
+            FROM
+                TB_ASS_SRNG_FORM_QITEM_MAPNG A
+            LEFT OUTER JOIN TB_ASS_SRNG_QITEM B
+                ON B.QITEMID = A.QITEMID
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR C
+                ON C.FORMID = A.FORMID AND B.DSGNCRTR_CD = C.DSGNCRTR_CD
+            WHERE
+                A.FORMID = #{formid}
+        )
+        SELECT
+            CV.DSGNCRTR_CD
+            , CV.IDNTY_MTTR
+            , CV.DSGNCRTR_ORDR
+            , CV.TREE_ORD
+            , CV.QITEMID
+            , CV.CHKLST_SE_CD
+            , BB.QITEM_ORDR
+            , BB.ALTM
+            , ROW_NUMBER() OVER(PARTITION BY CV.DSGNCRTR_CD ORDER BY BB.QITEM_ORDR ASC) AS RNK
+            , COUNT(1) OVER (PARTITION  BY CV.DSGNCRTR_CD ASC) AS ROWSPAN
+        FROM
+            CODE_VIEW CV
+        LEFT OUTER JOIN (
+            SELECT
+                SFQM.FORMID
+                , SQ.DSGNCRTR_CD
+                , SFQM.QITEMID
+                , SQ.IDNTY_MTTR
+                , SFQM.ORDR QITEM_ORDR
+                , SFDO.ORDR DSGNCRTR_ORDR
+                , SFQM.CHKLST_SE_CD
+                , SQ.ALTM
+            FROM
+                TB_ASS_SRNG_FORM_QITEM_MAPNG SFQM
+            LEFT OUTER JOIN TB_ASS_SRNG_QITEM SQ
+                ON SQ.QITEMID = SFQM.QITEMID
+            LEFT OUTER JOIN TB_ASS_SRNG_FORM_DSGNCRTR_ORDR SFDO
+                ON SFDO.FORMID = SFQM.FORMID AND SQ.DSGNCRTR_CD = SFDO.DSGNCRTR_CD
+            WHERE
+                SFQM.FORMID = #{formid}
+        ) BB ON BB.QITEMID = CV.QITEMID
+                ORDER BY CV.DSGNCRTR_ORDR, CV.TREE_ORD,BB.QITEM_ORDR
+    </select>
+
+    <!-- 심사양식 문항목록 조회 -->
+    <select id="selectChkScrList" parameterType="DsgnSrngFormVO" resultType="DsgnSrngFormVO">
+        SELECT
+            A.PRGRMID
+          , B.SBMSNID
+          , B.USERID
+          , C.SCR
+        FROM
+        TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+        TB_ASS_CHKLST_SBMSN B ON A.PRGRMID = B.PRGRMID
+         LEFT OUTER JOIN
+         (
+            SELECT
+                A.SBMSNID
+              , SUM(A.SCR)   SCR
+              , CD.UPPR_CD
+            FROM TB_ASS_CHKLST_ANS A
+            INNER JOIN
+            TB_CMM_CD CD ON A.SE_CD = CD.CD
+            WHERE 1=1
+            GROUP BY SBMSNID
+            ORDER BY SBMSNID
+         ) C ON B.SBMSNID =  C.SBMSNID
+         WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
 
     <!-- 심사위원심사 등록 -->
     <insert id="insertJdgsSrngDetail" parameterType="AsgsysSrngVo" >
@@ -1569,7 +1672,7 @@
         UPDATE
             TB_ASS_SRNG_SBMSN
         SET
-            USERID        = #{user.userid}
+            USERID        = #{userid}
           , SBMSN_DT      = NOW()
           , SBMSN_STTS_CD = #{sbmsnSttsCd}
           , USER_IP       = #{userIp     }
@@ -1619,6 +1722,25 @@
 
     </select>
 
+    <select id="selectSrngFormList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        SELECT
+            A.QITEMID
+          , A.DSGNCRTR_CD
+          , A.IDNTY_MTTR
+          , SUM(A.ALTM ) AS SUM_ALTM
+          , CD.CD_NM
+          , B.CHKLST_SE_CD
+        FROM
+            TB_ASS_SRNG_QITEM A
+        INNER JOIN
+            TB_ASS_SRNG_FORM_QITEM_MAPNG B ON A.QITEMID =B.QITEMID
+        LEFT OUTER JOIN
+            TB_CMM_CD CD ON A.DSGNCRTR_CD =CD.CD
+        WHERE B.FORMID = #{formid}
+        GROUP BY DSGNCRTR_CD
+
+    </select>
+
 
     <select id="selectSrngScrList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         SELECT
@@ -1636,7 +1758,7 @@
           , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL5) OVER() THEN IFNULL(COL_VAL5,0) END AS COL_VAL5
           , CASE WHEN 0 <![CDATA[<]]> SUM(COL_VAL6) OVER() THEN IFNULL(COL_VAL6,0) END AS COL_VAL6
           , B.SCR    AS SUM_SCR
-          , ROUND( SUM(SCR) OVER()/COUNT(A.JDGSID) OVER(),2) AS SUM_AVG
+          , ROUND(SUM(SCR) / COUNT(A.JDGSID),2)          AS SUM_AVG
           , B.SRNG_OPNN
         FROM
             TB_ASS_PRGRM_JDGS A
@@ -1674,7 +1796,6 @@
             A.JDGSID
     </select>
 
-
     <!-- 심사위원심사 답변 등록 -->
     <insert id="insertJdgsSrngAns" parameterType="DsgnSrngFormVo" >
         /* AsgsysSrngDao.insertJdgsSrngAns */
@@ -1705,6 +1826,35 @@
               , #{user.userid}
         )
     </insert>
+
+    <!-- ASS_심사_양식_지정기준_순서_답변 등록 -->
+    <insert id="insertJdgsSrngOrdrAns" parameterType="DsgnSrngFormVo" >
+        /* AsgsysSrngDao.insertJdgsSrngOrdrAns */
+        INSERT INTO TB_ASS_SRNG_FORM_DSGNCRTR_ORDR_ANS
+        (
+            SBMSNID
+          , SE_CD
+          , ORDR
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES (
+            #{sbmsnid}
+          , #{qitemid}
+          , #{ordr   }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <delete id="deleteJdgsSrngOrdrAns" parameterType="DsgnSrngFormVo" >
+        DELETE FROM
+            TB_ASS_SRNG_FORM_DSGNCRTR_ORDR_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
 
     <!-- 심사위원심사 답변 수정 -->
     <update id="updateJdgsSrngAns" parameterType="DsgnSrngFormVo" >
@@ -1812,9 +1962,10 @@
     --        , '증빙서류'
               , CONCAT(A.VST_DE , " " , A.VST_HR , ":" , A.VST_MNT) AS VST_DT
               , B.CHKLSTID
-              , F.CHKLST_RSLT_CN
-              , F.SBMSNID
-              , F.SCR
+              , G.CHKLST_RSLT_CN
+              , G.SBMSNID
+              , G.SCR
+              , H.SBMSNID    AS APLCNT_SBMSNID
         FROM
             TB_ASS_SPRTGRP_SRNG A
         LEFT OUTER JOIN
@@ -1824,10 +1975,13 @@
         LEFT OUTER JOIN
             TB_ASS_SFTY_MNG E ON A.PRGRMID = E.PRGRMID
         LEFT OUTER JOIN
-            TB_ASS_CHKLST_SBMSN F ON A.PRGRMID = F.PRGRMID
+            TB_ASS_SPRTGRP_SRNG F ON A.PRGRMID = F.PRGRMID
+        LEFT OUTER JOIN
+            TB_ASS_CHKLST_SBMSN G ON A.PRGRMID = G.PRGRMID AND F.SPRTGRPID = G.USERID
+        LEFT OUTER JOIN
+            TB_ASS_CHKLST_SBMSN H ON A.PRGRMID = H.PRGRMID AND B.APLCNTID = H.USERID /*자가진단*/
         WHERE 1=1
         AND  A.PRGRMID = #{prgrmid}
-        AND  A.SPRTGRPID= #{sprtgrpid}
     </select>
 
     <!-- 지원단심사 체크리스트 조회 -->
@@ -1883,6 +2037,7 @@
            , B.ALTM
            , B.ORDR
            , B.SCR
+           , B.APLCNT_SCR
         FROM
             CODE_CTE A
         LEFT OUTER JOIN (
@@ -1900,6 +2055,7 @@
               , B.CHKLSTID
               , B.ORDR
               , D.SCR
+              , E.SCR    AS APLCNT_SCR
             FROM
                 TB_ASS_CHKLST_QITEM_MAPNG B
             LEFT OUTER JOIN
@@ -1915,6 +2071,17 @@
                 WHERE
                     SBMSNID = #{sbmsnid}
             ) D ON (C.QITEMID = D.QITEMID)
+            LEFT OUTER JOIN
+            (
+                SELECT
+                    SBMSNID
+                  , QITEMID
+                  , SCR
+                FROM
+                    TB_ASS_CHKLST_ANS
+                WHERE
+                    SBMSNID = #{aplcntSbmsnid}
+            ) E ON (C.QITEMID = E.QITEMID)
             WHERE
                 B.CHKLSTID = #{chklstid}
         ) B ON (A.QITEMID = B.QITEMID)
@@ -1941,7 +2108,7 @@
             ) VALUES(
                 #{chklstid     }
               , #{prgrmid      }
-              , #{user.userid}
+              , #{userid}
               , #{sbmsnDt      }
               , #{sbmsnSttsCd  }
               , #{userIp       }
@@ -1965,12 +2132,41 @@
           , USER_IP         = #{userIp}
           , SBMSN_STTS_CD   = #{sbmsnSttsCd}
           , SBMSN_DT        = NOW()
-          , USERID          = #{user.userid}
+          , USERID          = #{userid}
           , MDFCN_DT        = NOW()
           , MDFRID          = #{user.userid}
         WHERE SBMSNID       = #{sbmsnid}
 
     </update>
+
+   <!-- 체크리스트 순서 답변 등록 -->
+    <insert id="insertChklstSeOrdrAnsList" parameterType="ChklstAnsVo" >
+    INSERT INTO TB_ASS_CHKLST_SE_ORDR_ANS
+    (
+        SBMSNID
+      , SE_CD
+      , ORDR
+      , MDFCN_DT
+      , MDFRID
+      , REG_DT
+      , RGTRID
+    ) VALUES (
+        #{sbmsnid}
+      , #{seCd}
+      , #{ordr}
+      , NOW()
+      , #{user.userid}
+      , NOW()
+      , #{user.userid}
+    )
+    </insert>
+
+    <!-- 체크리스트 순서 답변 삭제 -->
+    <delete id="deleteChklstSeOrdrAnsList" parameterType="ChklstAnsVo" >
+        DELETE FROM
+            TB_ASS_CHKLST_SE_ORDR_ANS
+        WHERE SBMSNID = #{sbmsnid}
+    </delete>
 
     <!-- 지원단심사 수정 -->
     <update id="updateSprtgrpSrng" parameterType="AsgsysSrngVo" >
@@ -1978,7 +2174,6 @@
         UPDATE
             TB_ASS_SPRTGRP_SRNG
         SET
-
             MDFCN_DT  = NOW()
           , MDFRID    = #{user.userid}
           <if test="srngOpnn!= null and srngOpnn != ''">
@@ -2096,7 +2291,14 @@
         LEFT OUTER JOIN
             TB_CMM_INST B ON A.INSTID = B.INSTID
         WHERE 1=1
-<!--         AND A.INSTID = #{instid} -->
+        <!-- 키워드.사용자 명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchUserNm'">
+            AND A.NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
+        <!-- 키워드.기관명 -->
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'searchInstNm'">
+            AND A.INST_NM LIKE CONCAT('%',#{searchKeyword},'%')
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
 

@@ -632,6 +632,30 @@ public interface AsgsysSrngDao {
 	*/
 	public int selectKeyCntChklstAns(ChklstAnsVo chklstAnsVo) throws Exception;
 
+	 /**
+	* 체크리스트답변순서목록 등록
+	*
+	* @Title : insertChklstSeOrdrAnsList
+	* @Description : 체크리스트답변순서 등록
+	* @param dsgnSrngFormVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertChklstSeOrdrAnsList (ChklstAnsVo chklstAnsVo) throws Exception;
+
+	/**
+	* 체크리스트답변순서목록 삭제
+	*
+	* @Title : deleteChklstSeOrdrAnsList
+	* @Description : TODO
+	* @param dsgnSrngFormVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteChklstSeOrdrAnsList (ChklstAnsVo chklstAnsVo) throws Exception;
+
 	/**
 	 * 체크리스트 제출 수정
 	 *
@@ -831,9 +855,52 @@ public interface AsgsysSrngDao {
 	*/
 	public int updateEduPhotoFilegrpid(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 심사양식 항목 목록  조회
+	*
+	* @Title : selectSrngFormQitemList
+	* @Description : 심사양식 항목 목록  조회
+	* @param dsgnSrngFormVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnSrngFormVo>
+	*/
+	public List<DsgnSrngFormVo> selectSrngFormQitemList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
+	/**
+	* 심사양식목록 조회
+	*
+	* @Title : selectSrngFormList
+	* @Description : 심사양식목록  조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 지정심사순서답변 등록
+	*
+	* @Title : insertJdgsSrngOrdrAns
+	* @Description : 지정심사순서답변 등록
+	* @param dsgnSrngFormVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertJdgsSrngOrdrAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
-
+	/**
+	 * 지정심사순서답변 삭제
+	 *
+	 * @Title : deleteJdgsSrngOrdrAns
+	 * @Description : 지정심사순서답변 삭제
+	 * @param dsgnSrngFormVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int deleteJdgsSrngOrdrAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 }

@@ -95,6 +95,9 @@ public class DsgnSrngFormVo {
 	/** COLSPAN */
 	private Integer rowspan;
 
+	/** 체크리스트 점수 */
+    private Integer chkLstScr;
+
 	/** 수정일자 정보 */
     public Date getMdfcnDt() {
         return mdfcnDt != null ? (Date) mdfcnDt.clone() : null;
