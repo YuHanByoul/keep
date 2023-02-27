@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">신청 정보</h3>
+            </div>
+        </div>
+
+        <div class="table-row">
+            <table>
+                <caption>공동구매 정보  - 공동구매모집명, 교구명, 교구유형, 교육주제, 교육대상, 교육유형, 모둠구성, 구매수량, 총 신청수량, 예상 금액 (개당), 신청일, 신청상태</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th scope="row">공동구매 모집명</th>
+                        <td th:text="${orderInfo.jntpurchsNm}"></td>
+                        <th scope="row">공동구매 신청기간</th>
+                        <td th:text="${#dates.format(orderInfo.bgngDt, 'yyyy-MM-dd HH:mm:ss') + ' ~ ' + #dates.format(orderInfo.endDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">총 신청수량</th>
+                        <td><span th:text="${#numbers.formatInteger(orderInfo.qnty, 0, 'COMMA')}"></span>개</td>
+                        <th scope="row">금액</th>
+                        <td><span th:text="${#numbers.formatInteger(orderInfo.amt, 0, 'COMMA')}"></span>원</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">신청일</th>
+                        <td th:text="${#dates.format(orderInfo.regDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <th scope="row">신청상태</th>
+                        <td th:text="${orderInfo.sttsCdNm}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">교구 정보</h3>
+            </div>
+        </div>
+        
+        <div class="table-row">
+            <table>
+                <caption>상품정보</caption>
+                <colgroup>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">교구명</th>
+                        <th scope="col">교구유형</th>
+                        <th scope="col">교육주제</th>
+                        <th scope="col">교육대상</th>
+                        <th scope="col">모듬구성</th>
+                        <th scope="col">교육유형</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${goodsList}">
+                        <td th:text=${item.tchaidNm}></td>
+                        <td th:text=${item.tchaidTypeCdNm}></td>
+                        <td th:text=${item.eduSbjctCdNm}></td>
+                        <td th:text=${item.eduTrgtCdNm}></td>
+                        <td th:text=${item.teamCmpstnCdNm}></td>
+                        <td th:text=${item.eduTypeCdNm}></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">배송지 정보</h3>
+            </div>
+        </div>
+
+        <div class="table-row">
+            <table>
+                <caption>배송지 정보  - 이름, 휴대전화, 이메일, 주소, 상세주소</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th scope="row">이름</th>
+                        <td th:text="${orderInfo.recptr}">홍길동</td>
+                        <th scope="row">휴대전화</th>
+                        <td th:text="${orderInfo.recptrTelno}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">이메일</th>
+                        <td th:text="${orderInfo.recptrEml}"></td>
+                        <th scope="row">주소</th>
+                        <td th:text="${'(' + orderInfo.dlvyZip + ') ' + orderInfo.dlvyAddr}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">상세주소</th>
+                        <td colspan="3" th:text="${orderInfo.dlvyAddrDtl}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="btn-wrap">
+            <div class="center">
+                <th:block th:if="${orderInfo.cancelYn == 'Y'}">
+                <button type="button" class="btn-medium btn-gray" onclick="jntpurchsOrderHstryDetail.onDeleteOrder();">신청취소</button>
+                </th:block>
+                <button type="button" class="btn-medium btn-gray" onclick="location.href='/front/jntpurchs/jntpurchsOrderHstryListForm.html'">목록</button>
+            </div>
+        </div>
+        <script th:inline="javascript">
+            var jntpurchsOrderHstryDetail = {
+                orderid: /*[[${orderInfo.orderid}]]*/
+                
+                , init: function() {
+                    this.registEvent();
+                }
+                
+                , registEvent: function() {
+                    // TODO
+                }
+                
+                , onDeleteOrder: function() {
+                    if(confirm("신청을 취소 하시겠습니까?")) {
+                        if(displayWorkProgress(true)) {
+                            $.ajax({
+                                url : "/front/jntpurchs/deleteJntpurchsOrder.do"
+                                , type: "POST"
+                                , cache: false
+                                , dataType: "json"
+                                , data: {orderid: jntpurchsOrderHstryDetail.orderid}
+                                , success: function(response) {
+                                    if(response.result == "success") {
+                                        alert(response.msg);
+                                        location.href = "/front/jntpurchs/jntpurchsOrderHstryListForm.html"                                        
+                                    } else {
+                                        alert(response.msg);
+                                    }
+                                    closeWorkProgress();
+                                }
+                            });
+                        }
+                    }
+                }
+            };
+            
+            $(function() {
+                jntpurchsOrderHstryDetail.init();
+            });
+        </script>
+    </div>
+    <!-- //content -->
+</body>
+</html>

@@ -29,6 +29,7 @@
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="3">
             <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
             <input type="hidden" id="orderField" name="orderField" value="END_DT">
+            <input type="hidden" id="jntpurchsid" name="jntpurchsid" value="0">
         </form>
 
         <div class="table-caption flex-nowrap">
@@ -47,6 +48,7 @@
         <script th:inline="javascript">
             var jntpurchs = {
                 listUrl: "/front/jntpurchs/selectJntpurchsList.do"
+                , detailUrl: "/front/jntpurchs/jntpurchsDetailForm.html"
                 
                 , init: function() {
                     this.onLoadData();
@@ -88,17 +90,18 @@
                 }
                 
                 , getNoData: function() {
-                    var el = '<li>등록된 공동구매가 없습니다.</li>';
+                    var el = '<li class="block"><div class="nodata"><p><span class="icon icon-notice bg-black9"></span>모집중인 공동구매가 없습니다.</p></div></li>';
                     
                     return el;
                 }
+                
                 , getListItem: function(data) {
                     var stts = data.sttsCdNm;
                     var tagClass = stts == "모집중" ? "tag-green" : stts == "모집대기" ? "tag-blue" : stts == "모집종료" ? "tag-red" : "tag-gray";
                     var qntyWhol = data.qntyWholLmtYn == "N" ? "제한없음" : addComma3(data.qntyWhol) + "개";
                     var orderQnty = addComma3(data.orderQnty) + "개";
                     var item = '<li>';
-                    item += '<a href="/front/jntpurchs/jntpurchsDetailForm.html?jntpurchsid=' + data.jntpurchsid + '">';
+                    item += '<a href="javascript:void(0);" onclick="jntpurchs.onDetail(' + data.jntpurchsid + ');">';
                     item += '<div class="thumb" style="height:163px;">';
                     item += '<img src="/downloadFileByFileid.do?fileid=' + data.rprsImgFileid + '&file_idntfc_key=' + data.rprsImgFilekey + '" alt="' + data.jntpurchsNm + ' 대표이미지">';
                     item += '</div>';
@@ -137,7 +140,11 @@
                     this.onLoadData();
                 }
                 
-                , setGrid: function() {
+                , onDetail: function(jntpurchsid) {
+                    var form = document.forms.searchForm;
+                    form.jntpurchsid.value = jntpurchsid;
+                    form.action = this.detailUrl;
+                    form.submit();
                 }
             };
             
