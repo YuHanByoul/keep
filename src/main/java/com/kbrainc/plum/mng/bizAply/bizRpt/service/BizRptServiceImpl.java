@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptDao;
 import com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptVo;
+import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.StringUtil;
@@ -1027,6 +1028,162 @@ public class BizRptServiceImpl extends PlumAbstractServiceImpl implements BizRpt
 		ret = bizRptDao.updateBsnsCnclYn(bizRptVo);
 
 		return ret;
+	}
+
+	/**
+	* 컨설팅전문가 목록 조회
+	*
+	* @Title : selectCnsltngExprtList
+	* @Description : 컨설팅전문가 목록 조회
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectCnsltngExprtList() throws Exception{
+		return bizRptDao.selectCnsltngExprtList();
+	}
+
+	/**
+	* 컨설팅관리 목록 엑셀다운로드
+	*
+	* @Title : selectCnsltngMngExcelList
+	* @Description : 컨설팅관리 목록 엑셀다운로드
+	* @param bizRptVo
+	* @param response
+	* @param request
+	* @throws Exception
+	* @return void
+	*/
+	@Override
+	public void selectCnsltngMngExcelList(BizRptVo bizRptVo, HttpServletResponse response, HttpServletRequest request) throws Exception{
+		List<BizRptVo> list = null;
+		String realName = "";
+		BizRptVo modelVo = null;
+
+		realName = "cnsltngMngExcelList.xls";
+
+		HSSFWorkbook workbook = new HSSFWorkbook();
+		//Font 설정.
+		HSSFFont font = workbook.createFont();
+		font.setFontName(HSSFFont.FONT_ARIAL);
+		//제목의 스타일 지정
+		HSSFCellStyle titlestyle = workbook.createCellStyle();
+		titlestyle.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
+		titlestyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		titlestyle.setAlignment(CellStyle.ALIGN_CENTER);
+		titlestyle.setBorderRight(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderLeft(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderTop(CellStyle.BORDER_THIN);    //얇은 테두리 설정
+		titlestyle.setBorderBottom(CellStyle.BORDER_THIN);//얇은 테두리 설정
+		titlestyle.setFont(font);
+
+		//내용 스타일 지정
+		HSSFCellStyle style = workbook.createCellStyle();
+		style.setAlignment(CellStyle.ALIGN_CENTER);
+		style.setFont(font);
+		HSSFCellStyle styleR = workbook.createCellStyle();
+		styleR.setAlignment(CellStyle.ALIGN_RIGHT);
+		styleR.setFont(font);
+
+		HSSFCellStyle styleL = workbook.createCellStyle();
+		styleL.setAlignment(CellStyle.ALIGN_LEFT);
+		styleL.setFont(font);
+		HSSFSheet sheet = null;
+
+		sheet = workbook.createSheet("sheet1");
+
+		String [] titleArr = {
+				"컨설턴트"
+				,"공모명"
+				,"프로그램명"
+				,"방문일시"
+				,"상태"
+		};
+
+		//Row 생성
+		HSSFRow row = sheet.createRow(0);
+		//Cell 생성
+		HSSFCell cell = null;
+
+		ArrayList<String> titleList = new ArrayList<>();
+		for (String element : titleArr) {
+			titleList.add(element);
+		}
+
+		int titleCnt = 0;
+		for(String title : titleList){
+			cell = row.createCell(titleCnt++);
+			cell.setCellValue(title);
+			cell.setCellStyle(titlestyle);
+		}
+
+		list = bizRptDao.selectCnsltngMngExcelList(bizRptVo);
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  hh:mm:ss", Locale.getDefault());
+
+		if(list != null && list.size() > 0){
+			int cellnum = 0;
+			for (int i=0; i<list.size();i++){
+				modelVo = list.get(i);
+
+				//타이틀이 1개 row에 write 되어있음 따라서 i+1
+				row = sheet.createRow((i+1));
+				cellnum = 0;
+
+				/*컨설턴트*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getNm(), ""));
+				cell.setCellStyle(style);
+				/*공모명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getPcntstNm(), ""));
+				cell.setCellStyle(style);
+				/*프로그램명*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getPrgrmNm(), ""));
+				cell.setCellStyle(style);
+				/*방문일시*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getVstDt(), ""));
+				cell.setCellStyle(style);
+				/*상태*/
+				cell = row.createCell(cellnum++);
+				cell.setCellValue(StringUtil.nvl(modelVo.getCnsltngSttsNm(), ""));
+				cell.setCellStyle(style);
+
+			}
+
+			for(int i=0;i<titleList.size();i++){
+				sheet.autoSizeColumn((short)i);
+				sheet.setColumnWidth(i, sheet.getColumnWidth(i)+512);
+			}
+		}
+
+		ExcelUtils.excelInfoSet(response,realName);
+
+		//엑셀 파일을 만듬
+		OutputStream fileOutput = response.getOutputStream();
+
+		workbook.write(fileOutput);
+		fileOutput.flush();
+		fileOutput.close();
+
+	}
+
+	/**
+	* 담당자그룹 목록 조회
+	*
+	* @Title : selectMngGrpList
+	* @Description : 담당자그룹 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	@Override
+	public List<BizRptVo> selectMngGrpList(BizRptVo bizRptVo) throws Exception{
+		return bizRptDao.selectMngGrpList(bizRptVo);
 	}
 
 }

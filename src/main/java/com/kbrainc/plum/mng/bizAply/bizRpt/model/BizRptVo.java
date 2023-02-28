@@ -32,7 +32,7 @@ public class BizRptVo extends ParentRequestVo {
     private UserVo user;
 
     /** (검색) 사용자 아이디 */
-    private UserVo searchUserid;
+    private Integer searchUserid;
 
     /** (검색) 분야 코드 */
     private String searchFldCd;
@@ -323,6 +323,39 @@ public class BizRptVo extends ParentRequestVo {
 
     /** 내용 */
     private String cn;
+
+    /** 내용 */
+    private String userid;
+
+    /** 이름 */
+    private String nm;
+
+    /** 그룹 아이디 */
+    private Integer grpid     ;
+
+    /** 그룹명 */
+    private String grpNm      ;
+
+    /** 전문가수 */
+    private String exprtCnt   ;
+
+    /** 그룹전문가 이름 */
+    private String grpExprtNm ;
+
+    /** 검색 그룹 이름 */
+    private String searchGrpNm ;
+
+    /** 그룹전문가 아이디*/
+    private String grpExprtIds;
+
+    /** 그룹 세부사항  */
+    private String grpExprtStr;
+
+    private Integer cycl;
+
+
+
+
 
 
     // ********************************
