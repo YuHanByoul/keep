@@ -100,7 +100,6 @@ public class PltfomImprvmPropslController {
     @ResponseBody
     public Map<String, Object> selectPltfomImprvmPropslList(PltfomImprvmPropslVo searchVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        searchVo.setUser(user);
 
         List<PltfomImprvmPropslVo> list = pltfomImprvmPropslService.selectPltfomImprvmPropslList(searchVo);
 

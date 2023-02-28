@@ -65,6 +65,11 @@ public class PltfomImprvmPropslServiceImpl extends PlumAbstractServiceImpl imple
     }
 
     @Override
+    public List<PltfomImprvmPropslVo> selectMyPltfomImprvmPropslList(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
+        return pltfomImprvmPropslDao.selectMyPltfomImprvmPropslList(pltfomImprvmPropslVo);
+    }
+
+    @Override
     public PltfomImprvmPropslVo selectPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         PltfomImprvmPropslVo propsl = pltfomImprvmPropslDao.selectPropsl(pltfomImprvmPropslVo);
 
