@@ -214,9 +214,13 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
      public boolean updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
          boolean retVal = false;
          if(chklstDao.selectChklstQitemOrdr(chklstQitemMapngVo) > 0) {
-             if(chklstDao.deleteChklstSeCdOrdr(chklstQitemMapngVo)) retVal = chklstDao.insertChklstSeCdOrdr(chklstQitemMapngVo);
+             retVal = chklstDao.deleteChklstSeCdOrdr(chklstQitemMapngVo);
+         }else{
+             retVal = chklstDao.insertChklstSeCdOrdr(chklstQitemMapngVo);
          }
-         if(chklstDao.selectChklstQitemMang(chklstQitemMapngVo) > 0) retVal = chklstDao.deleteChklstQitem(chklstQitemMapngVo);
+         if(chklstDao.selectChklstQitemMang(chklstQitemMapngVo) > 0){
+             retVal = chklstDao.deleteChklstQitem(chklstQitemMapngVo);
+         }
          if(chklstQitemMapngVo.getQitemids() != null){
              if(chklstDao.insertChklstQitemMapng(chklstQitemMapngVo)) retVal = true;
              else retVal = false;

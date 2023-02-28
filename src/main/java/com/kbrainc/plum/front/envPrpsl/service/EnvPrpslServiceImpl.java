@@ -53,6 +53,20 @@ public class EnvPrpslServiceImpl extends PlumAbstractServiceImpl implements EnvP
     }
 
     /**
+     * 마이페이지 > 환경교육제안 관리 목록 조회
+     *
+     * @param envPrpslVo
+     * @return list
+     * @throws Exception
+     * @Title : selectMyEnvPrpslList
+     * @Description : 마이페이지 > 환경교육제안 관리 목록 조회
+     */
+    @Override
+    public List<EnvPrpslVo> selectMyEnvPrpslList(EnvPrpslVo envPrpslVo) throws Exception {
+        return envPrpslDao.selectMyEnvPrpslList(envPrpslVo);
+    }
+
+    /**
      * 환경교육제안 정보 조회
      * Title : selectEnvPrpsl
      * Description : 환경교육제안 정보 조회

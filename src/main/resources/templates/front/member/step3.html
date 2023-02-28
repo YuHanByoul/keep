@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" 
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
-    layout:decorator="layout/front/membershipLayout"
+    layout:decorator="layout/front/simpleLayout"
 >
     <body>
         <th:block layout:fragment="content">
@@ -18,66 +18,75 @@
             <input type="hidden" name="onepassEncodeData" id="onepassEncodeData" th:value="${data.onepassEncodeData}" />
             <input type="hidden" name="returnUrl" id="returnUrl" th:value="${data.returnUrl}" />
             <input type="hidden" name="userid" id="userid" value="" />
-            <div class="steps">
-                <ol>
-                    <li>
-                        <div class="steps-inner">
-                            <span>01</span>
-                            <strong>약관동의</strong>
-                        </div>
-                    </li>
-                    <li class="active" title="현재 단계">
-                        <div class="steps-inner">
-                            <span>02</span>
-                            <strong>본인인증</strong>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="steps-inner">
-                            <span>03</span>
-                            <strong>회원정보입력</strong>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="steps-inner">
-                            <span>04</span>
-                            <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">가입완료</strong>
-                            <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">연동완료</strong>
-                        </div>
-                    </li>
-                </ol>
-            </div>
-
-            <div class="section-title">
-                <h3 th:if="${data.type == 'P'}">개인회원 본인인증</h3>
-                <h3 th:if="${data.type == 'C'}">어린이회원 본인인증</h3>
-                <h3 th:if="${data.type == 'I'}">기관회원 본인인증</h3>
-            </div>
-
-            <div class="cert-list">
-                <ul>
-                    <li>
-                        <div class="thumb"><img src="/images/front/member/cert-list01.png" alt=""></div>
-                        <dl>
-                            <dt th:if="${data.type == 'C'}">법정대리인(보호자)<br>휴대폰 인증</dt>
-                            <dt th:unless="${data.type == 'C'}">휴대폰 인증</dt>
-                            <dd>&lsquo;<b class="fc-green">인증하기</b>&rsquo; 버튼을 클릭하여 실명인증을 진행해주세요.</dd>
-                        </dl>
-                        <div class="btn-inner">
-                            <button type="button" class="btn-medium btn-green" onclick="fnAuthPopup()">인증하기</button>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="box-desc-list bg7 mt50">
-                <ul>
-                    <li>[정보통신망 이용촉진 및 정보보호 등에 관한 법률시행령에 제 29조 10에 따른 본인확인란, 공인인증기관 그 밖에 본인확인서비스를 제공하는 제3자를 통하여 본인임을 확인하는 것을 의미합니다.</li>
-                    <li>환경교육포털은 개인정보에 대한 유출 및 도용을 방지하기 위해 본인인증을 시행하고 있습니다.</li>
-                    <li>회원님의 개인정보는 항상 암호화되어 처리됩니다.</li>
-                    <li>본인인증 시 제공되는 정보는 해당 인증기관에서 직접 수집하며, 인증 이외 용도로 이용 또는 저장하지 않습니다.</li>
-                </ul>
-            </div>
+            
+            <section>
+                <div class="underline-title">
+                    <h2 th:if="${#strings.isEmpty(data.onepassEncodeData)}">회원가입</h2>
+                    <h2 th:unless="${#strings.isEmpty(data.onepassEncodeData)}">회원연동</h2>
+                </div>
+        
+                <div class="steps">
+                    <ol>
+                        <li>
+                            <div class="steps-inner">
+                                <span>01</span>
+                                <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">회원가입 유형</strong>
+                                <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">회원연동 유형</strong>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="steps-inner">
+                                <span>02</span>
+                                <strong>약관동의</strong>
+                            </div>
+                        </li>
+                        <li class="active" title="현재 단계" aria-current="step">
+                            <div class="steps-inner">
+                                <span>03</span>
+                                <strong>본인인증</strong>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="steps-inner">
+                                <span>04</span>
+                                <strong>회원정보입력</strong>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="steps-inner">
+                                <span>05</span>
+                                <strong th:if="${#strings.isEmpty(data.onepassEncodeData)}">가입완료</strong>
+                                <strong th:unless="${#strings.isEmpty(data.onepassEncodeData)}">연동완료</strong>
+                            </div>
+                        </li>
+                    </ol>
+                </div>
+    
+                <div class="cert-list">
+                    <ul>
+                        <li>
+                            <div class="thumb"><img src="/images/front/member/cert-list01.png" alt=""></div>
+                            <dl>
+                                <dt th:if="${data.type == 'C'}">법정대리인(보호자)<br>휴대폰 인증</dt>
+                                <dt th:unless="${data.type == 'C'}">휴대폰 인증</dt>
+                                <dd>&lsquo;<b class="fc-green">인증하기</b>&rsquo; 버튼을 클릭하여 실명인증을 진행해주세요.</dd>
+                            </dl>
+                            <div class="btn-inner">
+                                <button type="button" class="btn-medium btn-green" onclick="fnAuthPopup()">인증하기</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+    
+                <div class="box-desc-list bg7 mt50">
+                    <ul>
+                        <li>[정보통신망 이용촉진 및 정보보호 등에 관한 법률시행령에 제 29조 10에 따른 본인확인란, 공인인증기관 그 밖에 본인확인서비스를 제공하는 제3자를 통하여 본인임을 확인하는 것을 의미합니다.</li>
+                        <li>환경교육포털은 개인정보에 대한 유출 및 도용을 방지하기 위해 본인인증을 시행하고 있습니다.</li>
+                        <li>회원님의 개인정보는 항상 암호화되어 처리됩니다.</li>
+                        <li>본인인증 시 제공되는 정보는 해당 인증기관에서 직접 수집하며, 인증 이외 용도로 이용 또는 저장하지 않습니다.</li>
+                    </ul>
+                </div>
+            </section>
             </form>
             <form name="form_chk" th:action="@{/CheckPlusSafeModel/checkplus.html}" method="post">
                 <input type="hidden" name="type" th:value="${data.type}" />

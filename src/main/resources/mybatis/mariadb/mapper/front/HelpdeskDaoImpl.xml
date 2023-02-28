@@ -152,4 +152,39 @@
         WHERE A.INQRYID = #{inqryid}
     </select>
 
+    <select id="selectMyHelpdeskList" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.INQRYID
+            , A.TTL
+            , A.CLSF_CD
+            , A.CN
+            , A.FILEGRPID
+            , A.STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+            , A.USERID
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+            CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+            ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+            )
+            ELSE CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+            )
+            END AS ACNT
+        FROM TB_CMM_HELPDESK A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE 1 = 1
+            AND A.DEL_YN = 'N'
+            AND A.USERID = #{user.userid}
+        <if test="searchKeyword != null and searchKeyword!= ''">
+            AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
 </mapper>

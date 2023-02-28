@@ -8,7 +8,7 @@
         <div class="form-input mo-flex-wrap">
             <strong class="label">제목 검색</strong>
             <div class="form-input">
-                <input type="search" title="제목 검색" placeholder="검색어를 입력해 주세요." id="searchKeyword" name="searchKeyword">
+                <input type="search" id="searchKeyword" name="searchKeyword" title="제목 검색" placeholder="검색어를 입력해 주세요.">
             </div>
             <div class="search-filter-submit">
                 <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
@@ -16,7 +16,7 @@
             </div>
         </div>
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
-        <input type="hidden" id="inqryid" name="inqryid">
+        <input type="hidden" id="prpslid" name="prpslid">
         <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
         <input type="hidden" id="orderField" name="orderField" value="REG_DT">
     </form>
@@ -26,7 +26,7 @@
             <p>총 <b id="total-count">0</b> 건</p>
         </div>
         <div class="right d-flex">
-            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="inqryMain.changeRowPerPage()">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="pltfomPropslList.changeRowPerPage()">
                 <option value="10">10개씩 보기</option>
                 <option value="50">50개씩 보기</option>
                 <option value="100">100개씩 보기</option>
@@ -36,11 +36,11 @@
 
     <div class="table-col table-layout-auto table-col-mo">
         <table>
-            <caption>1:1문의 목록 - 번호, 분류, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+            <caption>플랫폼 개선 제안 - 번호, 제목, 상태, 작성자, 공개여부, 등록일</caption>
             <colgroup>
                 <col>
                 <col>
-                <col style="width:30%;">
+                <col style="width:40%;">
                 <col>
                 <col>
                 <col>
@@ -62,46 +62,45 @@
         </table>
     </div>
 
-    <div class="pagination" aria-label="pagination" id="pagination">
-    </div>
+    <div class="pagination" aria-label="pagination" id="pagination"/>
 
     <script th:inline="javascript">
-        let inqryMain = {
-            listUrl: '/front/mypage/inqry/selectInqryList.do',
-            detailUrl: '/front/mypage/inqry/inqryDetail.html',
+        let pltfomPropslList = {
             searchVo: /*[[${searchVo}]]*/null,
+            listUrl: '/front/mypage/inqry/selectPltfomImprvmPropslList.do',
+            detailUrl: '/front/mypage/inqry/pltfomImprvmPropslDetail.html',
+            formUrl: '/front/mypage/inqry/pltfomImprvmPropslForm.html',
 
             init() {
                 $('#searchForm').on('submit', function (e) {
                     e.preventDefault();
 
                     $('#pageNumber').val(1);
-                    inqryMain.selectInqryList();
-                });
+                    pltfomPropslList.selectPltfomImprvmPropslList();
+                })
             },
 
+            moveToDetail(prpslid) {
+                var f = document.forms.searchForm;
+                f.prpslid.value = prpslid;
+                f.action = this.detailUrl;
+                f.submit();
+            },
 
             changeRowPerPage() {
                 $('#rowPerPage').val($('#selectRowPerPage').val());
             },
 
-            moveToDetail(inqryid) {
-                let f = document.forms.searchForm;
-                f.inqryid.value = inqryid;
-                f.action = this.detailUrl;
-                f.submit();
-            },
-
-            selectInqryList() {
+            selectPltfomImprvmPropslList() {
                 if (displayWorkProgress(true)) {
                     $.ajax({
-                        url: inqryMain.listUrl,
+                        url: pltfomPropslList.listUrl,
                         cache: false,
                         dataType: 'json',
                         data: $('#searchForm').serializeArray(),
                         type: 'GET',
                         success: function (data) {
-                            $("#list-area").html(inqryMain.makeListHtml(data.list));
+                            $("#list-area").html(pltfomPropslList.makeListHtml(data.list));
                             $("#pagination").html(data.pagination);
                             $("#total-count").html(data.totalCount);
                             closeWorkProgress();
@@ -115,20 +114,17 @@
                 if (list == null || list.length <= 0) {
                     html += `<tr>
                                 <td class="nodata" colspan="7">
-                                    <p><span class="icon icon-notice bg-black9"></span>1:1문의 내역이 없습니다.</p>
+                                    <p><span class="icon icon-notice bg-black9"></span>플랫폼 개선 제안 내역이 없습니다.</p>
                                 </td>
                             </tr>`;
                 } else {
                     list.forEach(function (item) {
                         html += `<tr>
                                     <td>${item.rowNumber}</td>
-                                    <td>${item.inqryClCdNm}</td>
-                                    <td class="al article">
-                                        <a href="javascript:void(0)" class="link ellipsis" onclick="inqryMain.moveToDetail(${item.inqryid})">
-                                            ${item.sttsCd == '103104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.title}
-                                        </a>
-                                    </td>
-                                    <td>${item.sttsCdNm}</td>
+                                    <td>${item.clsfCdNm}</td>
+                                    <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="pltfomPropslList.moveToDetail(${item.prpslid})">
+                                          ${item.prcsSttsCd == '188104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.ttl}</a></td>
+                                    <td>${item.prcsSttsCdNm}</td>
                                     <td>${item.acnt}</td>
                                     <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
                                     <td>${item.regDt}</td>
@@ -137,23 +133,25 @@
                 }
                 return html;
             }
-        };
+        }
 
         function goPage(num) {
             $("#pageNumber").val(num);
-            inqryMain.selectInqryList();
+            pltfomPropslList.selectPltfomImprvmPropslList();
         }
 
         $(function () {
-            inqryMain.init();
+            pltfomPropslList.init();
 
-            $("#pageNumber").val(inqryMain.searchVo.pageNumber);
-            $("#searchKeyword").val(inqryMain.searchVo.searchKeyword);
-            $('#rowPerPage').val(inqryMain.searchVo.rowPerPage);
-            $('#selectRowPerPage').val(inqryMain.searchVo.rowPerPage);
+            $("#pageNumber").val(pltfomPropslList.searchVo.pageNumber);
+            $("#searchKeyword").val(pltfomPropslList.searchVo.searchKeyword);
+            $('#rowPerPage').val(pltfomPropslList.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(pltfomPropslList.searchVo.rowPerPage);
 
-            inqryMain.selectInqryList();
-        })
+            pltfomPropslList.selectPltfomImprvmPropslList();
+        });
     </script>
 </div>
-<body>
+
+
+</html>

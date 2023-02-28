@@ -43,9 +43,6 @@ public class EnvEduPlcyDtaController {
     @Resource(name = "front.envEduPlcyDtaService")
     private EnvEduPlcyDtaService envEduPlcyDtaService;
 
-    @Autowired
-    private FileStorageServiceImpl fileStorageService;
-
     /**
      * 사업운영 자료 목록 화면
      *

@@ -6,8 +6,8 @@
 <div layout:fragment="content">
     <div class="table-caption">
         <div class="left">
-            <h3 class="sub-title">1:1문의
-                <th:block th:text="${inqry.inqryid == null? '등록' : '수정'}"/>
+            <h3 class="sub-title">탄소중립 헬프데스크 신청
+                <th:block th:text="${helpdesk.inqryid == null? '등록' : '수정'}"/>
             </h3>
         </div>
         <div class="right">
@@ -15,26 +15,27 @@
         </div>
     </div>
 
-    <form id="inqryForm" name="inqryForm" method="post">
+    <form id="helpdeskForm" name="helpdeskForm" action="post">
         <div class="table-row table-row-mo">
             <table>
-                <caption>1:1문의_정보입력 - 공개여부, 분류, 분류, 내용, 첨부파일</caption>
+                <caption>탄소중립 헬프데스크 신청_정보입력 - 공개여부, 분야, 제목, 내용, 첨부파일</caption>
                 <colgroup>
                     <col style="width:140px;">
                     <col>
                 </colgroup>
                 <tbody>
                 <tr>
-                    <th scope="row">공개여부</th>
+                    <th scope="row">공개여부<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <span kattr:radio_yn="rlsYn" label1="예" label2="아니요" addClass=" inp" th:attr="defaultVal=${inqry.rlsYn == 'Y' ? 'Y':'N'}"></span>
+                        <span kattr:radio_yn="rlsYn" label1="예" label2="아니요" addClass=" inp" th:attr="defaultVal=${helpdesk.rlsYn == 'Y' ? 'Y':'N'}"></span>
+                        <p class="feedback"></p>
                     </td>
                 </tr>
                 <tr>
-                    <th scope="row">분류<i class="ast" title="필수입력">*</i></th>
+                    <th scope="row">분야<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-input">
-                            <span kattr:select_code="inqryClCd" grpCd="102" th:attr="selectedCd=${inqry.inqryClCd}" firstOptTxt="- 선택 -"></span>
+                            <span kattr:select_code="clsfCd" grpCd="112" th:attr="selectedCd=${helpdesk.clsfCd}" firstOptTxt="- 선택 -"></span>
                         </div>
                         <p class="feedback"></p>
                     </td>
@@ -43,7 +44,7 @@
                     <th scope="row">제목<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-input">
-                            <input type="text" id="title" name="title" title="제목" placeholder="제목을 입력해주세요." th:value="${inqry.title}">
+                            <input type="text" id="ttl" name="ttl" title="제목" placeholder="제목을 입력해주세요." th:value="${helpdesk.ttl}">
                         </div>
                         <p class="feedback"></p>
                     </td>
@@ -53,7 +54,7 @@
                     <th scope="row">내용<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-input">
-                            <textarea title="내용" id="cntnts" name="cntnts" placeholder="내용을 입력해주세요." th:text="${inqry.cntnts}"></textarea>
+                            <textarea title="내용" id="cn" name="cn" placeholder="내용을 입력해주세요." th:text="${helpdesk.cn}"></textarea>
                         </div>
                         <p class="feedback"></p>
                     </td>
@@ -68,8 +69,8 @@
                                 <span class="btn-medium btn-gray">파일선택</span>
                             </label>
                             <ul id="multipleFileUploadSuccess">
-                                <th:block th:if="${inqry.fileList != null}">
-                                    <th:block th:each="file : ${inqry.fileList}">
+                                <th:block th:if="${helpdesk.fileList != null}">
+                                    <th:block th:each="file : ${helpdesk.fileList}">
                                         <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                             <span class="name">
                                                 <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
@@ -86,13 +87,14 @@
                                     </th:block>
                                 </th:block>
                             </ul>
-                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(inqry.filegrpid == '' or inqry.filegrpid == null) ? 0 : inqry.filegrpid}"/>
+                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(helpdesk.filegrpid == '' or helpdesk.filegrpid == null) ? 0 : helpdesk.filegrpid}"/>
                         </div>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
         <div class="box-desc-list bg7 mt10">
             <ul>
                 <li>첨부 가능 확장자 :
@@ -110,9 +112,9 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <button type="button" class="btn-medium btn-gray" onclick="frontInqryForm.cancel()">취소</button>
-                <button type="button" class="btn-medium btn-blue" onclick="frontInqryForm.save()">
-                    <th:block th:text="${inqry.inqryid == null? '등록' : '저장'}"/>
+                <button type="button" class="btn-medium btn-gray" onclick="frontHelpdeskForm.cancel()">취소</button>
+                <button type="button" class="btn-medium btn-blue" onclick="frontHelpdeskForm.save()">
+                    <th:block th:text="${helpdesk.inqryid == null? '등록' : '저장'}"/>
                 </button>
             </div>
         </div>
@@ -123,33 +125,49 @@
         <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
         <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
         <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
-        <input type="hidden" id="inqryid" name="inqryid" th:value="${inqry.inqryid}">
+        <input type="hidden" id="inqryid" name="inqryid" th:value="${searchVo.inqryid}">
     </form>
 
-
     <script th:inline="javascript">
-        let frontInqryForm = {
-            insertUrl: '/front/inqry/insertInqry.do',
-            updateUrl: '/front/inqry/updateInqry.do',
-            listUrl: '/front/mypage/inqry/inqryList.html',
-            detailUrl: '/front/mypage/inqry/inqryDetail.html',
-            inqryid: /*[[${inqry.inqryid}]]*/null,
+        let cnTemplate =
+            `□ 적용 학교급 *아래의 유형 중 해당 사항 필수 기재
+             - 초등저
+             - 초등고
+             - 중등
+             - 고등
+             - 기타
+
+            □ 문의유형 *아래의 유형 중 해당 사항을 필수 기재
+             - 자료요청(교재, 지도안, 영상, 안내서 등)
+             - 정보제공(사이트, 지원사업 등)
+             - 컨설팅제공
+             - 기타
+
+            ※ 강의(강사)요청은 전문가ㆍ강사 > 환경교육 전문가 풀 > 섭외 요청 게시판에 글을
+            작성해주시기바랍니다.`;
+
+        let frontHelpdeskForm = {
+            insertUrl: '/front/helpdesk/insertHelpdesk.do',
+            updateUrl: '/front/helpdesk/updateHelpdesk.do',
+            listUrl: '/front/mypage/inqry/helpdeskList.html',
+            detailUrl: '/front/mypage/inqry/helpdeskDetail.html',
+            inqryid: /*[[${helpdesk.inqryid}]]*/null,
 
             init() {
                 this.validateForm();
             },
 
             save() {
-                if (!$('#inqryForm').valid()) return;
+                if (!$('#helpdeskForm').valid()) return;
 
                 let url = this.insertUrl;
                 if (this.inqryid != null) url = this.updateUrl;
 
                 if (displayWorkProgress(true)) {
-                    let formData = $('#inqryForm').serializeArray();
+                    let formData = $('#helpdeskForm').serializeArray();
                     let params = [];
 
-                    params.push({name: 'inqryid', value: frontInqryForm.inqryid});
+                    params.push({name: 'inqryid', value: frontHelpdeskForm.inqryid});
                     formData = formData.concat(params);
 
                     $.ajax({
@@ -162,7 +180,7 @@
                             alert(response.msg);
                             if (response.success) {
                                 let f = document.forms.listForm;
-                                f.action = frontInqryForm.listUrl;
+                                f.action = frontHelpdeskForm.listUrl;
                                 f.submit();
                             }
                         }
@@ -171,16 +189,16 @@
             },
 
             validateForm() {
-                $('#inqryForm').validate({
+                $('#helpdeskForm').validate({
                     rules: {
-                        inqryClCd: {required: true},
-                        title: {required: true},
-                        cntnts: {required: true},
+                        clsfCd: {required: true},
+                        ttl: {required: true, maxlength: 100},
+                        cn: {required: true, maxlength: 4000},
                     },
                     messages: {
-                        inqryClCd: {required: "분류를 선택해 주십시오."},
-                        title: {required: "제목을 입력해 주십시오."},
-                        cntnts: {required: "내용을 입력해 주십시오."},
+                        clsfCd: {required: "분류를 선택해 주십시오."},
+                        ttl: {required: "제목을 입력해 주십시오.", maxlength: "제목은 100자를 넘을 수 없습니다."},
+                        cn: {required: "내용을 입력해 주십시오.", maxlength: "내용은 4000자를 넘을 수 없습니다."},
                     }
                 })
             },
@@ -192,16 +210,15 @@
                 f.action = (this.inqryid == null ? this.listUrl : this.detailUrl);
                 f.submit();
             },
-
         };
 
         $(function () {
-            addFileUploadEvent('multiFileInput', 'inqry_file', 'multipleFileUploadSuccess');
-            frontInqryForm.init();
+            frontHelpdeskForm.init();
+            addFileUploadEvent('multiFileInput', 'helpdesk_file', 'multipleFileUploadSuccess');
+
+            if ($('#cn').val() == null || $('#cn').val() == '') {
+                $('#cn').val(cnTemplate);
+            }
         })
     </script>
 </div>
-
-
-
-

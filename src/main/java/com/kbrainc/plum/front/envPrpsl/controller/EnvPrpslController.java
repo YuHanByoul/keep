@@ -54,7 +54,6 @@ public class EnvPrpslController {
 
     @GetMapping("/envPrpslList.html")
     public String envPrpslList(EnvPrpslVo searchVO, Model model, @UserInfo UserVo user) throws Exception {
-
         model.addAttribute("searchVo", searchVO);
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
 

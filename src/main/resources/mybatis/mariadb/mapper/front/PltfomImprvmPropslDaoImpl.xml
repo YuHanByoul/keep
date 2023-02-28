@@ -142,4 +142,37 @@
             ON A.USERID = C.USERID
         WHERE A.PRPSLID = #{prpslid}
     </select>
+    <select id="selectMyPltfomImprvmPropslList" resultType="com.kbrainc.plum.front.pltfomImprvmPropsl.model.PltfomImprvmPropslVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRPSLID
+            , A.USERID
+            , A.TTL
+            , A.CN
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+            CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+            ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+            )
+            ELSE CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+            )
+            END AS ACNT
+            , A.FILEGRPID
+            , A.CLSF_CD
+            , A.PRCS_STTS_CD
+            , A.RLS_YN
+            , A.REG_DT
+        FROM TB_CMM_PLTFOM_IMPRVM_PRPSL A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE
+            A.DEL_YN = 'N' AND A.USERID= #{user.userid}
+        <if test="searchKeyword != null and searchKeyword!= ''">
+            AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
 </mapper>

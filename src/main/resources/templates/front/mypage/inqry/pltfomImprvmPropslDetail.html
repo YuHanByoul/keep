@@ -4,27 +4,27 @@
       layout:decorator="layout/front/subLayout">
 
 <div layout:fragment="content">
-
-    <!-- 문의 내용 -->
+    <!--문의 내용-->
     <div class="table-view">
         <div class="table-view-header">
-            <h3><span> <th:block th:text="|[${inqry.inqryClCdNm}]|"/> [[${inqry.title}]]</span>
-                <th:block th:if="${inqry.rlsYn == 'N'}">
+            <h3><span><th:block th:text="|[${propsl.clsfCdNm}]|"/> [[${propsl.ttl}]]</span>
+                <th:block th:if="${propsl.rlsYn == 'N'}">
                     <span class="icon icon-lockon" title="비밀글"></span>
                 </th:block>
             </h3>
+
             <dl>
                 <div class="list">
                     <dt>상태</dt>
-                    <dd>[[${inqry.sttsCdNm}]]</dd>
+                    <dd>[[${propsl.prcsSttsCdNm}]]</dd>
                 </div>
                 <div class="list">
                     <dt>등록일</dt>
-                    <dd>[[${#dates.format(inqry.regDt, 'yyyy-MM-dd')}]]</dd>
+                    <dd>[[${#dates.format(propsl.regDt, 'yyyy-MM-dd')}]]</dd>
                 </div>
                 <div class="list">
                     <dt>작성자</dt>
-                    <dd>[[${inqry.acnt}]]</dd>
+                    <dd>[[${propsl.acnt}]]</dd>
                 </div>
             </dl>
             <dl class="table-view-file">
@@ -32,8 +32,8 @@
                     <dt>첨부파일</dt>
                     <dd>
                         <div class="form-input-file">
-                            <ul th:if="${inqry.fileList != null}">
-                                <th:block th:each="file : ${inqry.fileList}">
+                            <ul th:if="${propsl.fileList != null}">
+                                <th:block th:each="file : ${propsl.fileList}">
                                     <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                         <span class="name">
                                             <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
@@ -49,28 +49,29 @@
                 </div>
             </dl>
         </div>
+
         <div class="table-view-body">
             <div class="table-view-content">
-                <th:block th:utext="${#strings.replace(#strings.escapeXml(inqry.cntnts),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(propsl.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
             </div>
         </div>
 
         <!-- 답변 완료 -->
-        <th:block th:if="${inqry.sttsCd == '103104'}">
+        <th:block th:if="${propsl.prcsSttsCd == '188104'}">
             <div class="table-view">
                 <div class="table-view-header">
                     <h3>
                         <span class="box-tag tag-green">답변완료</span>
-                        <span th:text="${inqryAns.title}">답변제목</span>
+                        <span th:text="${propslAns.ttl}"></span>
                     </h3>
                     <dl>
                         <div class="list">
                             <dt>작성자</dt>
-                            <dd th:text="${inqryAns.opetrAcnt}"/>
+                            <dd th:text="${propslAns.opetrAcnt}"></dd>
                         </div>
                         <div class="list">
                             <dt>답변일</dt>
-                            <dd th:text="${inqryAns.ansDe}"/>
+                            <dd th:text="${#dates.format(propslAns.ansDt,'yyyy-MM-dd')}"></dd>
                         </div>
                     </dl>
                     <dl class="table-view-file">
@@ -78,8 +79,8 @@
                             <dt>첨부파일</dt>
                             <dd>
                                 <div class="form-input-file">
-                                    <ul th:if="${inqryAns.fileList != null}">
-                                        <th:block th:each="file : ${inqryAns.fileList}">
+                                    <ul th:if="${propslAns.fileList != null}">
+                                        <th:block th:each="file : ${propslAns.fileList}">
                                             <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
                                                 <span class="name">
                                                     <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
@@ -97,7 +98,9 @@
                 </div>
                 <div class="table-view-body">
                     <div class="table-view-content">
-                        <th:block th:utext="${#strings.replace(#strings.escapeXml(inqryAns.cntnts),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                        <div class="table-view-content">
+                            <th:block th:utext="${#strings.replace(#strings.escapeXml(propslAns.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -105,16 +108,16 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <th:block th:if="${inqry.sttsCd == '103101'}">
-                    <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.update('cancel')">접수취소</button>
+                <th:block th:if="${propsl.prcsSttsCd == '188101'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="pltfomPropslDetail.update('cancel')">접수취소</button>
                 </th:block>
-                <th:block th:if="${inqry.sttsCd == '103104'}">
-                    <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.update('delete')">삭제</button>
+                <th:block th:if="${propsl.prcsSttsCd == '188104'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="pltfomPropslDetail.update('delete')">삭제</button>
                 </th:block>
-                <th:block th:if="${inqry.sttsCd == '103101'}">
-                    <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToUpdateForm()">수정</button>
+                <th:block th:if="${propsl.prcsSttsCd == '188101'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="pltfomPropslDetail.moveToUpdateForm()">수정</button>
                 </th:block>
-                <button type="button" class="btn-medium btn-gray" onclick="inqryDetail.moveToList()">목록</button>
+                <button type="button" class="btn-medium btn-gray" onclick="pltfomPropslDetail.moveToList()">목록</button>
             </div>
         </div>
     </div>
@@ -124,58 +127,59 @@
         <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
         <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
         <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
-        <input type="hidden" id="inqryid" name="inqryid" th:value="${inqry.inqryid}">
+        <input type="hidden" id="prpslid" name="prpslid" th:value="${propsl.prpslid}">
     </form>
 
     <script th:inline="javascript">
-        let inqryDetail = {
-            inqryid: /*[[${inqry.inqryid}]]*/null,
-            updateFormUrl: '/front/mypage/inqry/inqryForm.html',
-            listUrl: '/front/mypage/inqry/inqryList.html',
-            deleteUrl: '/front/inqry/deleteInqry.do',
-            cancelUrl: '/front/inqry/cancelInqry.do',
+        let pltfomPropslDetail = {
+             prpslid: /*[[${propsl.prpslid}]]*/null,
+             updateFormUrl: '/front/mypage/inqry/pltfomImprvmPropslForm.html',
+             listUrl: '/front/mypage/inqry/pltfomImprvmPropslList.html',
+             deleteUrl: '/front/pltfomImprvmPropsl/deletePltfomImprvmPropsl.do',
+             cancelUrl: '/front/pltfomImprvmPropsl/cancelPltfomImprvmPropsl.do',
 
-            update(mode) {
-                if (mode == 'cancel') {
-                    if (!confirm('접수를 취소 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(inqryDetail.cancelUrl);
-                } else if (mode == 'delete') {
-                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
-                    this.ajaxForSttsUpdate(inqryDetail.deleteUrl);
-                }
-            },
+             update(mode) {
+                 if (mode == 'cancel') {
+                     if (!confirm('접수를 취소 하시겠습니까?')) return;
+                     this.ajaxForSttsUpdate(pltfomPropslDetail.cancelUrl);
+                 } else if (mode == 'delete') {
+                     if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
+                     this.ajaxForSttsUpdate(pltfomPropslDetail.deleteUrl);
+                 }
+             },
 
-            ajaxForSttsUpdate(url) {
-                if (displayWorkProgress(true)) {
-                    $.ajax({
-                        method: 'post',
-                        url: url,
-                        dataType: 'json',
-                        data: {inqryid: inqryDetail.inqryid},
-                        success: function (response) {
-                            closeWorkProgress();
-                            alert(response.msg);
-                            if (response.success)
-                                inqryDetail.submit(inqryDetail.listUrl);
-                        }
-                    })
-                }
-            },
+             ajaxForSttsUpdate(url) {
+                 if (displayWorkProgress(true)) {
+                     $.ajax({
+                         method: 'post',
+                         url: url,
+                         dataType: 'json',
+                         data: {prpslid: pltfomPropslDetail.prpslid},
+                         success: function (response) {
+                             closeWorkProgress();
+                             alert(response.msg);
+                             if (response.success)
+                                 pltfomPropslDetail.submit(pltfomPropslDetail.listUrl);
+                         }
+                     })
+                 }
+             },
 
-            moveToList() {
-                this.submit(this.listUrl);
-            },
+             moveToList() {
+                 this.submit(this.listUrl);
+             },
 
-            moveToUpdateForm() {
-                this.submit(this.updateFormUrl);
-            },
+             moveToUpdateForm() {
+                 this.submit(this.updateFormUrl);
+             },
 
-            submit(url) {
-                let f = document.forms.listForm;
-                f.action = url;
-                f.submit();
-            }
+             submit(url) {
+                 let f = document.forms.listForm;
+                 f.action = url;
+                 f.submit();
+             }
         }
+
     </script>
 </div>
-
+</html>
