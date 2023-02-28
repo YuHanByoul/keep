@@ -1,18 +1,16 @@
 package com.kbrainc.plum.mng.chklst.service;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.kbrainc.plum.mng.chklst.model.ChklstDao;
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemMapngVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstVo;
 import com.kbrainc.plum.mng.code.model.CodeVo;
-import com.kbrainc.plum.mng.qestnr.model.QitemExVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 
@@ -201,35 +199,33 @@ public class ChklstServiceImpl extends PlumAbstractServiceImpl implements Chklst
      public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
          return chklstDao.selectChklstQitemMapngList(chklstQitemMapngVo);
      }
-     
-     /**
-      * 체크리스트 문항구성 업데이트
-      *
-      * @Title : updateChklstQitemMapng
-      * @Description : 체크리스트 문항구성 업데이트
-      * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
-      * @return int update 로우수
-      * @throws Exception 예외
-      */
+
+    /**
+     * 체크리스트 문항구성 업데이트
+     * Title : updateChklstQitemMapng
+     * Description : 체크리스트 문항구성 업데이트
+     *
+     * @param chklstQitemMapngVo
+     * @return boolean
+     * @throws Exception
+     */
      @Override
      @Transactional
-     public int updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
-         int retVal = 0;
-         
-         List<ChklstQitemVo> qitemList = chklstQitemMapngVo.getQitemList();
-         if(qitemList != null && qitemList.size() > 0) {
-             ChklstQitemVo qitemVo = null;
-             for(int i = 0 ; i < qitemList.size() ; i++) {
-                 qitemVo = qitemList.get(i);
-                 qitemVo.setUser(chklstQitemMapngVo.getUser());
-                 if("Y".equals(qitemVo.getNewYn())) { // 추가된 항목 insert
-                     retVal += chklstDao.insertChklstQitemMapng(qitemVo);
-                 } else { // 업데이트
-                     retVal += chklstDao.updateChklstQitemMapng(qitemVo);
-                 }
-             }
+     public boolean updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception {
+         boolean retVal = false;
+         if(chklstDao.selectChklstQitemOrdr(chklstQitemMapngVo) > 0) {
+             retVal = chklstDao.deleteChklstSeCdOrdr(chklstQitemMapngVo);
+         }else{
+             retVal = chklstDao.insertChklstSeCdOrdr(chklstQitemMapngVo);
          }
-         
+         if(chklstDao.selectChklstQitemMang(chklstQitemMapngVo) > 0){
+             retVal = chklstDao.deleteChklstQitem(chklstQitemMapngVo);
+         }
+         if(chklstQitemMapngVo.getQitemids() != null){
+             if(chklstDao.insertChklstQitemMapng(chklstQitemMapngVo)) retVal = true;
+             else retVal = false;
+         }
+
          return retVal;
      }
     

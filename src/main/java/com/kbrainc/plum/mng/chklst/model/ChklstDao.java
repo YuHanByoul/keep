@@ -1,10 +1,9 @@
 package com.kbrainc.plum.mng.chklst.model;
 
-import java.util.List;
-
+import com.kbrainc.plum.mng.code.model.CodeVo;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.code.model.CodeVo;
+import java.util.List;
 
 /**
  * 
@@ -145,27 +144,65 @@ public interface ChklstDao {
      * @throws Exception 예외
      */
     public List<ChklstQitemMapngVo> selectChklstQitemMapngList(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
-    
+
+    /**
+     * 체크리스트 1,2뎁스 순서 삭제 전 있는지 체크
+     * Title : selectChklstQitemOrdr
+     * Description : 체크리스트 1,2뎁스 순서 삭제 전 있는지 체크
+     *
+     * @param chklstQitemMapngVo
+     * @return boolean
+     */
+    int selectChklstQitemOrdr(ChklstQitemMapngVo chklstQitemMapngVo);
+
+    /**
+     * 체크리스트 1,2뎁스 순서 삭제
+     * Title : deleteChklstSeCdOrdr
+     * Description : 체크리스트 1,2뎁스 순서 삭제
+     *
+     * @param chklstQitemMapngVo
+     * @return boolean
+     */
+    boolean deleteChklstSeCdOrdr(ChklstQitemMapngVo chklstQitemMapngVo);
+
+    /**
+     * 체크리스트 1,2뎁스 순서 등록
+     * Title : insertChklstSeCdOrdr
+     * Description : 체크리스트 1,2뎁스 순서 등록
+     *
+     * @param chklstQitemMapngVo
+     * @return boolean
+     */
+    boolean insertChklstSeCdOrdr(ChklstQitemMapngVo chklstQitemMapngVo);
+
+    /**
+     * 체크리스트 문항 매핑 삭제 전 있는지 체크
+     * Title : selectChklstQitemMang
+     * Description : 체크리스트 문항 매핑 삭제 전 있는지 체크
+     *
+     * @param chklstQitemMapngVo
+     * @return boolean
+     */
+    int selectChklstQitemMang(ChklstQitemMapngVo chklstQitemMapngVo);
+
+    /**
+     * 체크리스트 문항 매핑 삭제
+     * Title : deleteChklstQitem
+     * Description : 체크리스트 문항 매핑 삭제
+     *
+     * @param chklstQitemMapngVo
+     * @return boolean
+     */
+    boolean deleteChklstQitem(ChklstQitemMapngVo chklstQitemMapngVo);
+
     /**
      * 체크리스트 문항구성 등록
+     * Title : insertChklstQitemMapng
+     * Description : 체크리스트 문항구성 등록
      *
-     * @Title : insertChklstQitemMapng 
-     * @Description : 체크리스트 문항구성 등록
-     * @param chklstQitemVo ChklstQitemVo객체
-     * @return int insert 로우수
-     * @throws Exception 예외
+     * @param chklstQitemMapngVo
+     * @return boolean
+     * @throws Exception
      */
-    public int insertChklstQitemMapng(ChklstQitemVo chklstQitemVo) throws Exception;
-    
-    /**
-     * 체크리스트 문항구성 업데이트
-     *
-     * @Title : updateChklstQitemMapng
-     * @Description : 체크리스트 문항 업데이트
-     * @param chklstQitemVo ChklstQitemVo 객체
-     * @return int update 로우수
-     * @throws Exception 예외
-     */
-    public int updateChklstQitemMapng(ChklstQitemVo chklstQitemVo) throws Exception;
-    
+    boolean insertChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
 }
