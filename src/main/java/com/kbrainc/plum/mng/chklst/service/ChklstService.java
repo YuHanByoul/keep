@@ -1,11 +1,11 @@
 package com.kbrainc.plum.mng.chklst.service;
 
-import java.util.List;
-
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemMapngVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstVo;
 import com.kbrainc.plum.mng.code.model.CodeVo;
+
+import java.util.List;
 
 /**
  * 
@@ -148,13 +148,13 @@ public interface ChklstService {
     
     /**
      * 체크리스트 문항구성 업데이트
+     * Title : updateChklstQitemMapng
+     * Description : 체크리스트 문항구성 업데이트
      *
-     * @Title : updateChklstQitemMapng
-     * @Description : 체크리스트 문항 업데이트
-     * @param chklstQitemMapngVo ChklstQitemMapngVo 객체
-     * @return int update 로우수
-     * @throws Exception 예외
+     * @param chklstQitemMapngVo
+     * @return boolean
+     * @throws Exception
      */
-    public int updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
+    public boolean updateChklstQitemMapng(ChklstQitemMapngVo chklstQitemMapngVo) throws Exception;
      
 }

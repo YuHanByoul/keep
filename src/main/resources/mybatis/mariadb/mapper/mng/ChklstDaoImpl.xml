@@ -91,6 +91,14 @@
         <if test="searchSeCd != null and searchSeCd != ''">
             AND A.SE_CD = #{searchSeCd}
         </if>
+        <if test="qitemArr != null">
+            AND A.QITEMID NOT IN(
+            -1,
+            <foreach collection="qitemArr" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+        </if>
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -240,84 +248,134 @@
     <!-- 체크리스트 문항구성 목록 조회 -->
     <select id="selectChklstQitemMapngList" parameterType="ChklstQitemMapngVo" resultType="ChklstQitemMapngVo">
         /* ChklstDao.selectChklstQitemMapngList */
-        WITH RECURSIVE CODE_CTE(LV1KEY, LV2KEY, TITLE, TREE_ORD, QITEMID) AS (
+        WITH RECURSIVE CODE_VIEW(PSE_CD, SE_CD, CN, QITM_ORDR, TREE_ORD, QITEMID)  AS (
             SELECT
-                IFNULL(UPPR_CD , '')  AS LV1KEY
-                , CD AS LV2KEY
-                , CONCAT(CD_NM) AS TITLE
-                , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
-                , 0 AS QITEMID
+                '-' AS PSE_CD
+                 , CD AS SE_CD
+                 , CONCAT(CD_NM) AS CN
+                 , 0 AS QITM_ORDR
+                 , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
+                 , 0 AS QITEMID
             FROM
-                TB_CMM_CD
-            WHERE 
+                TB_CMM_CD CCD
+            WHERE
                 1 = 1
-                AND CDGRPID != 'G0001'
-                AND CDGRPID  = '140'
+              AND CCD.CDGRPID != 'G0001'
+              AND CCD.CDGRPID  = '140'
+              AND CCD.UPPR_CD = 0
             UNION ALL
             SELECT
-                IFNULL(UPPR_CD, '') AS LV1KEY
-                , CD AS LV2KEY
-                , CD_NM AS TITLE
-                , 3 AS TREE_ORD
-                , D.QITEMID AS QITEMID
-            FROM (
-                SELECT  
-                    (SELECT UPPR_CD FROM TB_CMM_CD WHERE C.SE_CD = CD) AS UPPR_CD
-                    , C.SE_CD AS CD
-                    , C.CN AS CD_NM
-                    , B.ORDR AS ORD
-                    , C.QITEMID
-                FROM
-                    TB_ASS_CHKLST_QITEM_MAPNG B
-                LEFT OUTER JOIN
-                    TB_ASS_CHKLST_QITEM C ON (B.QITEMID = C.QITEMID)
-                WHERE 
-                    1 = 1
-                    AND B.CHKLSTID = #{chklstid}
-                    AND C.USE_YN = 'Y'
-            ) D
-            JOIN
-                CODE_CTE C
+                IFNULL(CCD.UPPR_CD, '-') AS PSE_CD
+                 , CD AS SE_CD
+                 , CONCAT(CD_NM) AS CN
+                 , 0 AS QITM_ORDR
+                 , CASE WHEN UPPR_CD  = 0 THEN 1 ELSE 2 END AS TREE_ORD
+                 , 0 AS QITEMID
+            FROM
+                TB_CMM_CD CCD
             WHERE
-                UPPR_CD = C.LV2KEY
+                1 = 1
+              AND CCD.CDGRPID != 'G0001'
+              AND CCD.CDGRPID  = '140'
+              AND CCD.UPPR_CD != 0
+            UNION ALL
+            SELECT
+                B.SE_CD AS PSE_CD
+                 , '-' AS SE_CD
+                 , B.IDNTY_MTTR
+                 , A.ORDR AS QITM_ORDR
+                 , 3 AS TREE_ORD
+                 , A.QITEMID AS QITEMID
+            FROM
+                TB_ASS_CHKLST_QITEM_MAPNG A
+                    LEFT OUTER JOIN TB_ASS_CHKLST_QITEM B
+                                    ON B.QITEMID = A.QITEMID
+            WHERE
+                A.CHKLSTID = #{chklstid}
         )
         SELECT
-            A.LV1KEY
-            , A.LV2KEY
-            , A.TITLE AS CN
-            , A.TREE_ORD
-            , A.QITEMID
-            , B.ALTM
-            , 'N' AS NEW_YN
-        FROM
-            CODE_CTE A
-        LEFT OUTER JOIN (
+            CV.PSE_CD
+             , CV.SE_CD
+             , CV.CN
+             , CV.QITM_ORDR
+             , CV.TREE_ORD
+             , CV.QITEMID
+             , BB.SE_ORDR
+        FROM CODE_VIEW CV
+                 LEFT OUTER JOIN (
             SELECT
-                B.QITEMID
-                , C.SE_CD
-                , C.CN
-                , C.IDNTY_MTTR
-                , C.ALTM
-                , C.USE_YN
-                , C.MDFCN_DT
-                , C.MDFRID
-                , C.REG_DT
-                , C.RGTRID
-                , B.CHKLSTID
-                , B.ORDR
+                ACSO.CHKLSTID
+                 , ACSO.SE_CD
+                 , ACSO.ORDR SE_ORDR
             FROM
-                TB_ASS_CHKLST_QITEM_MAPNG B
-            LEFT OUTER JOIN
-                TB_ASS_CHKLST_QITEM C ON (B.QITEMID = C.QITEMID)
+                TB_ASS_CHKLST_SE_ORDR ACSO
             WHERE
-                B.CHKLSTID = #{chklstid} 
-        ) B ON (A.QITEMID = B.QITEMID)
-        ORDER BY  
-            A.LV2KEY, A.TREE_ORD, B.ORDR
+                ACSO.CHKLSTID = #{chklstid}
+        ) BB ON BB.SE_CD = CV.SE_CD
+        ORDER BY CV.TREE_ORD, CV.QITM_ORDR, BB.SE_ORDR, CV.SE_CD
     </select>
-    
+
+    <!-- 체크리스트 1,2뎁스 순서 삭제 전 있는지 체크 -->
+    <select id="selectChklstQitemOrdr" resultType="int">
+        /* ChklstDao.selectChklstQitemOrdr */
+        SELECT
+            COUNT(0)
+        FROM TB_ASS_CHKLST_SE_ORDR
+        WHERE CHKLSTID = #{chklstid}
+    </select>
+
+    <!-- 체크리스트 문항 매핑 삭제 전 있는지 체크 -->
+    <select id="selectChklstQitemMang" resultType="int">
+        /* ChklstDao.selectChklstQitemMang */
+        SELECT
+            COUNT(0)
+        FROM TB_ASS_CHKLST_QITEM_MAPNG
+        WHERE CHKLSTID = #{chklstid}
+    </select>
+
+    <!-- 체크리스트 1,2뎁스 순서 삭제 -->
+    <delete id="deleteChklstSeCdOrdr">
+        /* ChklstDao.deleteChklstSeCdOrdr */
+        DELETE FROM TB_ASS_CHKLST_SE_ORDR
+        WHERE
+            CHKLSTID = #{chklstid}
+    </delete>
+
+    <!-- 체크리스트 문항 매핑 삭제 -->
+    <delete id="deleteChklstQitem">
+        /* ChklstDao.deleteChklstQitem */
+        DELETE FROM TB_ASS_CHKLST_QITEM_MAPNG
+        WHERE
+            CHKLSTID = #{chklstid}
+    </delete>
+
+    <!-- 체크리스트 1,2뎁스 순서 등록 -->
+    <insert id="insertChklstSeCdOrdr">
+        /* ChklstDao.insertChklstSeCdOrdr */
+        INSERT INTO TB_ASS_CHKLST_SE_ORDR (
+            CHKLSTID
+            , SE_CD
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach item="item" collection="seCds" separator="," index="index">
+            (
+            #{chklstid}
+            , #{item}
+            , #{index}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
+    </insert>
+
     <!-- 체크리스트 문항구성 등록 -->
-    <insert id="insertChklstQitemMapng" parameterType="ChklstQitemVo">
+    <insert id="insertChklstQitemMapng">
         /* ChklstDao.insertChklstQitemMapng */
         INSERT INTO TB_ASS_CHKLST_QITEM_MAPNG (
             CHKLSTID
@@ -327,27 +385,17 @@
             , MDFRID
             , REG_DT
             , RGTRID
-        ) VALUES (
+        ) VALUES
+        <foreach item="item" collection="qitemids" separator="," index="index">
+            (
             #{chklstid}
-            , #{qitemid}
-            , #{ordr}
+            , #{item}
+            , #{index}
             , NOW()
             , #{user.userid}
             , NOW()
             , #{user.userid}
-        )
+            )
+        </foreach>
     </insert>
-    
-    <!-- 체크리스트 문항구성 업데이트 -->
-    <update id="updateChklstQitemMapng" parameterType="ChklstQitemVo">
-        /* ChklstDao.updateChklstQitemMapng */
-        UPDATE TB_ASS_CHKLST_QITEM_MAPNG SET
-            ORDR = #{ordr}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
-        WHERE 
-            CHKLSTID = #{chklstid} 
-            AND QITEMID = #{qitemid}
-    </update>
-    
 </mapper>
