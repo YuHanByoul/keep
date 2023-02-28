@@ -5,6 +5,9 @@
     layout:decorator="layout/front/nolnbSubLayout" >
 <body>
     <div layout:fragment="content">
+    <form id="evdnDataForm" name="evdnDataForm" th:action="@{/front/dsgnPrgrm/prgrmDstnctnForm.html}" method="post">
+        <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${instInfo.prgrmid}" />
+
         <!-- content -->
         <div class="steps">
             <ol>
@@ -65,7 +68,10 @@
                     </tr>
                     <tr>
                         <th scope="row">담당자 연락처</th><td><th:block th:text="${instInfo.aplcntMoblphon}" /></td>
-                        <th scope="row">기관 이메일</th><td><th:block th:text="${instInfo.aplcntEml}" /></td>
+                        <th scope="row">기관 이메일</th>
+                        <td>
+                            <input type="text" title="이메일 아이디" placeholder="이메일 주소" data-width="140" id="instEml" name="instEml" th:value="${instInfo.aplcntEml}">
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row">담당자 이메일</th><td><th:block th:text="${instInfo.aplcntEml}" /></td>
@@ -103,16 +109,34 @@
                 </colgroup>
                 <tbody>
                     <tr>
-                        <th scope="row">기관명</th>
+                        <th scope="row">증빙자료</th>
                         <td>
                             <div class="form-input-file">
                                 <label class="form-input">
-                                    <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
-                                    <span class="btn-medium btn-gray">파일선택</span>
+                                    <span class="btn-medium btn-gray">파일선택
+                                    <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;"></span>
                                 </label>
-                                <ul></ul>
+                            <ul th:if="${fileList != null}">
+                                <th:block th:each="file : ${fileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+
+                                <div class="upload-response">
+                                    <div id="multipleFileUploadError"></div>
+                                    <div id="multipleFileUploadSuccess"></div>
+                                </div>
+                                <input type="hidden"  id = "filegrpid" name = "filegrpid" th:value="${instInfo.filegrpid}" />
                             </div>
                         </td>
+
                     </tr>
                 </tbody>
             </table>
@@ -128,17 +152,144 @@
         </div>
         <!-- //content -->
 
-        <script th:inline="javascript">
+    </form>
 
-        function goPrev(){
-            location.href = "/front/dsgnPrgrm/trmsAgreForm.html";    //약관동의
-        }
-        function goNext(){
-            location.href = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //프로그램 우수성
-        }
+    <script th:inline="javascript">
 
-        </script>
-    </div>
+    var insertUrl = "/front/dsgnPrgrm/insertEvdncDataForm.do";
+    var updateUrl = "/front/dsgnPrgrm/updateEvdncDataForm.do";
+    var nextUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html"    //프로그램 우수성
+    var prevUrl = "/front/dsgnPrgrm/trmsAgreForm.html";    //약관동의
+
+    function goPrev(){
+        document.evdnDataForm.action = prevUrl;
+        $("#evdnDataForm").submit();
+    }
+
+    function goNext(){
+    	var url = ($("#prgrmid").val() == null || $("#prgrmid").val() == "" || $("#prgrmid").val() == 0) ? insertUrl : updateUrl;
+
+        if(!valid()) return false;
+
+        $("#sttsCd").val("111101");    //작성중
+        var data =  $("#evdnDataForm").serialize() ;
+
+        $.ajax({
+            url : url,
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data : data,
+            success : function (data){
+                if(data.result=="success"){
+                    //alert(data.msg);
+                    document.evdnDataForm.action = nextUrl;
+                    $("#evdnDataForm").submit();
+
+                }else{
+                    alert(data.msg);
+                }
+            },
+            error : function (error){
+            }
+        });
+
+    }
+
+    function valid() {
+        if(!$('#evdncFile').val() == "") {
+            alert("증빙 자료는 필수입력사항입니다..");
+        }
+        return true;
+    }
+
+    function fn_deleteFileList(fileid, fileIdntfcKey){
+
+        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+        fn_deleteFile(fileid, fileIdntfcKey);
+        $("#inputFiles"+fileid).remove();
+
+    }
+
+    function fn_deleteFile(fileid, fileIdntfcKey){
+
+      var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+
+          $.ajax({
+             url : deleteFileUrl,
+             type: 'GET',
+             cache : false,
+             dataType: 'json',
+             success : function (data){
+                 if(data.result=="success"){
+                     $("#"+fileid).remove();
+                     if(uploadFileCnt > 0){
+                         uploadFileCnt = uploadFileCnt-1;
+                     }
+                     alert("파일삭제가 완료 되었습니다.");
+                 }else{
+                     alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                 }
+             },
+             error : function (error){
+             }
+           })
+    };
+
+    var uploadFileCnt = 0 ;
+
+    $(function() {
+
+    	   $('#multiFileInput').on("change", function(event) {
+
+               var objFile = document.querySelector('#multiFileInput');
+               var formData = new FormData();
+               var content = "";
+
+               for( i = 0 ; i < objFile.files.length ; i++) {
+            	   formData.append("files", objFile.files[i]);
+            	   uploadFileCnt++;
+               }
+
+               formData.append("filegrpid", $("#filegrpid").val());
+               formData.append("filegrpNm", "dsgnAply_file");
+
+               if(uploadFileCnt >0 ){
+                   $.ajax({
+                       url : '/uploadMultipleFiles.do',
+                       processData : false,
+                       contentType : false,
+                       data : formData,
+                       type : 'POST',
+                       success : function(response) {
+                    	   debugger;
+                           if(response.result == 'fail'){
+                               alert(response.msg);
+                           }else{
+                               if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                                   $("#filegrpid").val( response[0].filegrpid );
+                               }
+
+                               for(i = 0 ;i < response.length; i++ ){
+                                   content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginlFileNm ;
+                                   content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick = fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>";
+                                   $('#multipleFileUploadSuccess').append(content);
+                               }
+                           }
+                       }
+                   })
+                  if (detectBrowser() == "other") {
+                      $("#multiFileInput").val("");
+                  } else {
+                     $("#multiFileInput").replaceWith( $("#multiFileInput").clone(true))
+                  }
+               }
+       });
+
+    });
+
+    </script>
+</div>
 
 </body>
 </html>

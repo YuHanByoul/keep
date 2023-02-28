@@ -2,6 +2,8 @@ package com.kbrainc.plum.front.dsgnPrgrm.service;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 
@@ -94,6 +96,56 @@ public interface DsgnPrgrmService {
 	* @return DsgnPrgrmVo
 	*/
 	public DsgnPrgrmVo selectInstInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 신청정보 조회
+	*
+	* @Title : selectAplyInfo
+	* @Description : 신청정보 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectAplyInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 등록
+	*
+	* @Title : insertPrgrmAssPrgrm
+	* @Description : 지정프로그램 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 지정프로그램 수정
+	 *
+	 * @Title : updatePrgrmAssPrgrm
+	 * @Description : 지정프로그램 수정
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updatePrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 프로그램우수성 등록
+	*
+	* @Title : insertPrgrmDstnctnForm
+	* @Description : 프로그램우수성 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+
 
 
 }

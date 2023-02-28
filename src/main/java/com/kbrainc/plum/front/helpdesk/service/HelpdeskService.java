@@ -1,7 +1,6 @@
 package com.kbrainc.plum.front.helpdesk.service;
 
 import com.kbrainc.plum.front.helpdesk.model.HelpdeskAnsVo;
-import com.kbrainc.plum.front.helpdesk.model.HelpdeskDao;
 import com.kbrainc.plum.front.helpdesk.model.HelpdeskVo;
 
 import java.util.List;
@@ -32,6 +31,17 @@ public interface HelpdeskService {
      * @Description : 헬프데스크 신청 목록 조회
      */
     public List<HelpdeskVo> selectHelpdeskList(HelpdeskVo helpdeskVo) throws Exception;
+
+    /**
+     * 마이페이지 > 헬프데스크 신청 목록 조회
+     *
+     * @param helpdeskVo
+     * @return list
+     * @throws Exception
+     * @Title : selectHelpdeskList
+     * @Description : 마이페이지 > 헬프데스크 신청 목록 조회
+     */
+    public List<HelpdeskVo> selectMyHelpdeskList(HelpdeskVo helpdeskVo) throws Exception;
 
     /**
      * 헬프데스크 상세 조회
