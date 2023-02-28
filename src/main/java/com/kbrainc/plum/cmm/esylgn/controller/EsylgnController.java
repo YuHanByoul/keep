@@ -351,6 +351,8 @@ public class EsylgnController {
                         
                         if (manAge < 14) {
                             resultMap.put("type", "C"); // 어린이
+                        } else {
+                            resultMap.put("type", "");
                         }
                         
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
