@@ -95,17 +95,25 @@ public class GnbMenuPrintImpl {
             return "";
         }
         
-        String curMenuid = "";
-        String upprMenuid = "";
+        String activeMenuidL1 = "";
+        String activeMenuidL2 = "";
+        String activeMenuidL3 = "";
+        String ariaCurrentL1Attr = null;
+        String ariaCurrentL2Attr = null;
+        String ariaCurrentL3Attr = null;
+        StringBuffer classL2 = null;
 
         if ("3".equals(menuItem.getDpth())) {
-            curMenuid = menuItem.getUpprMenuid();
-            upprMenuid = menuTree.getMenuItemByMenuID(curMenuid).getUpprMenuid();
-        } else {
-            curMenuid = menuItem.getMenuid();
-            upprMenuid = menuItem.getUpprMenuid();
-        }
-
+            activeMenuidL1 = menuTree.getMenuItemByMenuID(menuItem.getUpprMenuid()).getUpprMenuid();
+            activeMenuidL2 = menuItem.getUpprMenuid();
+            activeMenuidL3 = menuItem.getMenuid();
+        } else if ("2".equals(menuItem.getDpth())) {
+            activeMenuidL1 = menuItem.getUpprMenuid();
+            activeMenuidL2 = menuItem.getMenuid();
+        } else if ("1".equals(menuItem.getDpth())) {
+            activeMenuidL1 = menuItem.getMenuid();
+        } 
+        
         MenuItem menuItem1 = null;
         MenuItem menuItem2 = null;
         MenuItem menuItem3 = null;
@@ -131,32 +139,40 @@ public class GnbMenuPrintImpl {
             }
             if (isMenuView) { // 프로그램유형코드가 메뉴/디렉토리이면서 숨김여부가 N이면서 현재역할로 메뉴에 접근가능할때만
                 i++;
-
-                menuTag.append("    <li>\n");
+                
+                ariaCurrentL1Attr = "";
+                
+                if (menuItem1.getMenuid().equals(activeMenuidL1)) {
+                    menuTag.append("    <li class=\"current-page active\">\n");
+                    ariaCurrentL1Attr = " aria-current=\"page\"";
+                } else {
+                    menuTag.append("    <li>\n");
+                }
+                
                 if ("D".equals(menuItem1.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                     mkey = menuItem1.getRefMenuid();
                     if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
-                        menuTag.append("        <a href=\"javascript:void(0)\">");
+                        menuTag.append("        <a href=\"javascript:void(0)\"").append(ariaCurrentL1Attr).append(">");
                     } else {
-                        menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                        menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
                     }
                 } else {
                     if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
-                        menuTag.append("        <a href=\"javascript:void(0)\">");
+                        menuTag.append("        <a href=\"javascript:void(0)\"").append(ariaCurrentL1Attr).append(">");
                     } else {
                         mkey = menuItem1.getMenuid();
 
                         if ("Y".equals(menuItem1.getPopupYn())) {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("        <a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">");
+                                menuTag.append("        <a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\"").append(ariaCurrentL1Attr).append(">");
                             } else { // 현재창
-                                menuTag.append("        <a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                menuTag.append("        <a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
                             }
                         } else {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\">");
+                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\"").append(ariaCurrentL1Attr).append(">");
                             } else { // 현재창
-                                menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL1Attr).append(">");
                             }
                         }
                     }
@@ -181,32 +197,50 @@ public class GnbMenuPrintImpl {
                         } else {
                             isMenuView = false;
                         }
+                        
                         if (isMenuView) {
-                            menuTag.append("                    <li>");
+                            
+                            classL2 = new StringBuffer("");
+                            ariaCurrentL2Attr = "";
+
+                            if (treeNode2.hasChildren()) {
+                                classL2.append("hasDep03 ");
+                            }
+                            
+                            if (menuItem2.getMenuid().equals(activeMenuidL2)) {
+                                classL2.append("current-page active");
+                                ariaCurrentL2Attr = " aria-current=\"page\"";
+                            }
+                            
+                            if (treeNode2.hasChildren() || menuItem2.getMenuid().equals(activeMenuidL2)) {
+                                menuTag.append("                    <li class=\"").append(classL2).append("\">");
+                            } else {
+                                menuTag.append("                    <li>");
+                            }
                             if ("D".equals(menuItem2.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                                 mkey = menuItem2.getRefMenuid();
                                 if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
-                                    menuTag.append("<a href=\"javascript:void(0)\">");
+                                    menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL2Attr).append(">");
                                 } else {
-                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">\n");
+                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">\n");
                                 }
                             } else {
                                 if ("".equals(StringUtil.nvl(menuItem2.getUrl(), ""))) {
-                                    menuTag.append("<a href=\"javascript:void(0)\">");
+                                    menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL2Attr).append(">");
                                 } else {
                                     mkey = menuItem2.getMenuid();
 
                                     if ("Y".equals(menuItem2.getPopupYn())) {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("<a href=\"javascript:goMenuNewWin('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">");
+                                            menuTag.append("<a href=\"javascript:goMenuNewWin('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\"").append(ariaCurrentL2Attr).append(">");
                                         } else { // 현재창
-                                            menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                            menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">");
                                         }
                                     } else {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\">");
+                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\"").append(ariaCurrentL2Attr).append(">");
                                         } else { // 현재창
-                                            menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                            menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL2Attr).append(">");
                                         }
                                     }
                                 }
@@ -229,32 +263,41 @@ public class GnbMenuPrintImpl {
                                     } else {
                                         isMenuView = false;
                                     }
+                                    
                                     if (isMenuView) {
-                                        menuTag.append("                            <li>\n");
+                                        
+                                        ariaCurrentL3Attr = "";
+
+                                        if (menuItem3.getMenuid().equals(activeMenuidL3)) {
+                                            menuTag.append("                            <li class=\"current-page\">\n");
+                                            ariaCurrentL3Attr = " aria-current=\"page\"";
+                                        } else {
+                                            menuTag.append("                            <li>\n");
+                                        }
                                         if ("D".equals(menuItem3.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                                             mkey = menuItem3.getRefMenuid();
                                             if (StringUtil.isNumber(menuItem3.getUrl()) || "".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
-                                                menuTag.append("<a href=\"javascript:void(0)\">");
+                                                menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL3Attr).append(">");
                                             } else {
-                                                menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                                menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
                                             }
                                         } else {
                                             if ("".equals(StringUtil.nvl(menuItem3.getUrl(), ""))) {
-                                                menuTag.append("<a href=\"javascript:void(0)\">");
+                                                menuTag.append("<a href=\"javascript:void(0)\"").append(ariaCurrentL3Attr).append(">");
                                             } else {
                                                 mkey = menuItem3.getMenuid();
 
                                                 if ("Y".equals(menuItem3.getPopupYn())) {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("<a href=\"javascript:goMenuNewWin('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">");
+                                                        menuTag.append("<a href=\"javascript:goMenuNewWin('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\"").append(ariaCurrentL3Attr).append(">");
                                                     } else { // 현재창
-                                                        menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getPopupWd()).append("','").append(menuItem3.getPopupHg()).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                                        menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getPopupWd()).append("','").append(menuItem3.getPopupHg()).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
                                                     }
                                                 } else {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\">");
+                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\"").append(ariaCurrentL3Attr).append(">");
                                                     } else { // 현재창
-                                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(ariaCurrentL3Attr).append(">");
                                                     }
                                                 }
                                             }
