@@ -1,23 +1,28 @@
 package com.kbrainc.plum.front.dsgnPrgrm.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.front.dsgnPrgrm.service.DsgnPrgrmService;
-import com.kbrainc.plum.mng.bizAply.bizRpt.controller.BizRptController;
-import com.kbrainc.plum.mng.inst.service.InstServiceImpl;
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
@@ -147,7 +152,8 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/dsgnAplyForm.html")
-	public String dsgnAplyForm(Model model) throws Exception {
+	public String dsgnAplyForm(Model model, @UserInfo UserVo user) throws Exception {
+		model.addAttribute("user", user);
 		return "front/dsgnPrgrm/dsgnAplyForm";
 	}
 
@@ -178,15 +184,117 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/evdncDataForm.html")
-	public String evdncDataForm(Model model, @UserInfo UserVo user) throws Exception {
-		//기관정보 조회
-		DsgnPrgrmVo dsgnPrgrmVo = new DsgnPrgrmVo();
-		//dsgnPrgrmVo.setAplcntid(user.getUserId); todo
-		dsgnPrgrmVo.setAplcntid(10000073);
-		model.addAttribute("instInfo", dsgnPrgrmService.selectInstInfo(dsgnPrgrmVo));
+	public String evdncDataForm(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+
+		DsgnPrgrmVo instInfo = new DsgnPrgrmVo();
+
+		//로그인 사용자 정보
+		dsgnPrgrmVo.setAplcntid(Integer.parseInt(user.getUserid()));
+
+		instInfo = dsgnPrgrmService.selectInstInfo(dsgnPrgrmVo);
+
+		model.addAttribute("instInfo", instInfo);
+
+		if(instInfo.getFilegrpid() !=null && instInfo.getFilegrpid() !=  "") {
+			FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(instInfo.getFilegrpid().toString()));
+            ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+            model.addAttribute("fileList", fileList);
+            model.addAttribute("fileListCnt", fileList.size());
+        } else {
+        	model.addAttribute("fileMap", null);
+        	model.addAttribute("fileListCnt", 0);
+        }
 
 		return "front/dsgnPrgrm/evdncDataForm";
 	}
+
+
+    /**
+    * 증빙자료 등록
+    *
+    * @Title : insertEvdncDataForm
+    * @Description : 증빙자료 등록
+    * @param dsgnPrgrmVo
+    * @param bindingResult1
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnPrgrm/insertEvdncDataForm.do")
+    @ResponseBody
+    public Map<String, Object> insertEvdncDataForm(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        dsgnPrgrmVo.setAplcntid(Integer.parseInt(user.getUserid()));
+
+        int retVal = 0;
+
+        //지정프로그램 저장
+        retVal = dsgnPrgrmService.insertPrgrmAssPrgrm(dsgnPrgrmVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
+    /**
+     * 증빙자료 수정
+     *
+     * @Title : updateEvdncDataForm
+     * @Description : 증빙자료 수정
+     * @param dsgnPrgrmVo
+     * @param bindingResult1
+     * @param user
+     * @return
+     * @throws Exception
+     * @return Map<String,Object>
+     */
+    @RequestMapping(value = "/front/dsgnPrgrm/updateEvdncDataForm.do")
+    @ResponseBody
+    public Map<String, Object> updateEvdncDataForm(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+    		FieldError fieldError = bindingResult1.getFieldError();
+    		if (fieldError != null) {
+    			resultMap.put("msg", fieldError.getDefaultMessage());
+    		}
+    		return resultMap;
+    	}
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	int retVal = 0;
+
+    	//지정프로그램 수정
+    	retVal = dsgnPrgrmService.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "수정에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "수정에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
 
 	/**
 	* 프로그램우수성 화면 이동
@@ -199,9 +307,55 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmDstnctnForm.html")
-	public String prgrmDstnctnForm(Model model) throws Exception {
+	public String prgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+		model.addAttribute("aplyInfo", dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo));
+
 		return "front/dsgnPrgrm/prgrmDstnctnForm";
 	}
+
+
+	/**
+	* 프로그램 우수성 등록
+	*
+	* @Title : insertPrgrmDstnctnForm
+	* @Description : TODO
+	* @param dsgnPrgrmVo
+	* @param bindingResult1
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmDstnctnForm.do")
+    @ResponseBody
+    public Map<String, Object> insertPrgrmDstnctnForm(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+    	Map<String, Object> resultMap = new HashMap<String, Object>();
+
+    	if (bindingResult1.hasErrors()) {
+    		FieldError fieldError = bindingResult1.getFieldError();
+    		if (fieldError != null) {
+    			resultMap.put("msg", fieldError.getDefaultMessage());
+    		}
+    		return resultMap;
+    	}
+
+    	dsgnPrgrmVo.setUser(user);
+
+    	int retVal = 0;
+
+    	retVal = dsgnPrgrmService.insertPrgrmDstnctnForm(dsgnPrgrmVo);
+
+    	if (retVal > 0) {
+    		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+    		resultMap.put("msg", "저장에 성공하였습니다.");
+    	} else {
+    		resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+    		resultMap.put("msg", "저장에 실패했습니다.");
+    	}
+
+    	return resultMap;
+    }
 
 	/**
 	* 프로그램 운영관리 화면이동
@@ -222,7 +376,6 @@ public class DsgnPrgrmController {
 //	public iprgrmDstnctn(Model model) throws Exception {
 //		return "front/dsgnPrgrm/prgrmDstnctn";
 //	}
-
 
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmEvlForm.html")
 	public String prgrmEvlForm(Model model) throws Exception {

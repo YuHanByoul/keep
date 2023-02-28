@@ -54,6 +54,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 프로그램아이디 */
 	private Integer prgrmid;
 
+	/** 우수성 아이디*/
+	private Integer dstnctnid;
+
 	/** 프로그램 명 */
 	private String prgrmNm;
 
@@ -157,7 +160,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	private String pchrgYn;
 
 	/** 참가비 */
-	private String etrfee;
+	private double etrfee;
 
 	/** 자부담 */
 	private String slfpy;
@@ -210,6 +213,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 기관_홈페이지*/
     private String instHmpg;
 
+    /** 기관_이메일*/
+    private String instEml;
+
     /** 코드 명*/
     private String cdNm;
 
@@ -259,8 +265,7 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	private Integer bgngHr;
 
     /** 과정*/
-	private String  crs;
-
+	private String crs;
 
 	/** 수정 일시 */
 	private Date mdfcnDt;
@@ -270,6 +275,43 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
 	/** 등록 일시 */
 	private Date regDt;
+
+	/** 기관 연락처 */
+	private String instCntct;
+
+	/** 기관 우편번호 */
+	private String instZip;
+
+	/** 기관 상세 주소*/
+	private String instDtladdr;
+
+	/** 상태 코드*/
+	private String sttsCd;
+
+	/** 지정 차수 */
+	private String dsgnCycl;
+
+	/** 지정 시작 일시 */
+	private String dsgnBgngDe;
+
+	/** 지정 종료 일시 */
+	private String dsgnEndDe;
+
+	/** 승인자 id */
+	private String autzrid;
+
+	/** 체크리스트 id  */
+	private String chklstid;
+
+	/** 컨설팅 진행 여부   */
+	private String cnsltngPrgrsYn;
+
+	/** 컨설팅 id */
+	private String cnsltngid;
+
+	/** 신청일시 */
+	private String aplyDt;
+
 
 	/** 첨부파일 */
     private String fileid;
@@ -292,6 +334,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 기관유형코드 */
     @Size(max = 20, message = "기관유형코드는 20자를 넘을 수 없습니다.")
     private String instTypeCd;
+
+    /** 기관 코드명 */
+    private String instCdNm;
 
     /** 기관유형코드명 */
     private String instTypeCdNm;

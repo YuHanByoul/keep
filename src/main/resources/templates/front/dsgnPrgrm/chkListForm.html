@@ -5,6 +5,8 @@
     layout:decorator="layout/front/nolnbSubLayout" >
 <body>
     <div layout:fragment="content">
+    <form id="chkListForm" name="chkListForm" th:action="@{/front/dsgnPrgrm/aplyCmptnForm.html}" method="post">
+
         <!-- content -->
         <div class="steps">
             <ol>
@@ -482,9 +484,70 @@
         </div>
         <!-- //content -->
         <script th:inline="javascript">
-        function goNext(){
-            location.href = "/front/dsgnPrgrm/aplyCmptnForm.html";    //안전관리
+        var insertUrl = "/front/dsgnPrgrm/insertChkListForm.do";
+        var updateUrl = "/front/dsgnPrgrm/updateChkListForm.do";
+
+        function validate(){
+
+            $("#chkListForm").validate({
+                ignore: [],
+                rules: {
+                    title       : { required: true , maxlength:200  }
+                    ,cntnts      : { required: true , maxlength:4000}
+                    ,bbs_clid    : { required: true }
+                 },
+                 messages: {
+                    title       : { required: "게시판명을 입력해 주십시오."  , maxlength : "게시판 제목은 200자를 넘을 수 없습니다."  }
+                    ,cntnts      : { required: "게시글 내용을 입력해 주십시오." , maxlength: "게시판 내용은 4000자를 넘을 수 없습니다." }
+                    ,bbs_clid    : { required:"게시글 분류를 선택해주십시오 "}
+                 }
+            });
+
         }
+
+        function goPrev(){
+            document.dstnctnForm.action = "/front/dsgnPrgrm/evlForm.html";    //평가
+            $("#chkListForm").submit();
+        }
+
+        function goNext(){
+            if($("#chkListForm").valid() == false) return;
+            doSave();
+
+        }
+
+        function doSave(){
+
+            if(!confirm("저장하시겠습니까?")) return;
+
+            var data =  $("#chkListForm").serialize() ;
+
+//             $.ajax({
+//                 url : insertPstUrl,
+//                 type: 'POST',
+//                 cache : false,
+//                 dataType: 'json',
+//                 data : data,
+//                 success : function (data){
+//                     if(data.result=="success"){
+//                         alert("등록이 완료 되었습니다.");
+//                         goBbsMain();
+//                     }else{
+//                         alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+//                     }
+//                 },
+//                 error : function (error){
+//                 }
+//             });
+
+            document.chkListForm.action = "/front/dsgnPrgrm/aplyCmptnForm.html";    //신청완료
+            $("#chkListForm").submit();
+        }
+
+        $(function() {
+
+        });
+
         </script>
     </div>
 

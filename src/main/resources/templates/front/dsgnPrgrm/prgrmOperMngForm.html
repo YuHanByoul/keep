@@ -5,6 +5,8 @@
     layout:decorator="layout/front/nolnbSubLayout" >
 <body>
     <div layout:fragment="content">
+    <form id="prgrmOperMngForm" name="prgrmOperMngForm" th:action="@{/front/dsgnPrgrm/prgrmDstnctnForm}" method="post">
+
         <!-- content -->
         <div class="steps">
             <ol>
@@ -479,12 +481,72 @@
             </div>
         </div>
     <!-- //content -->
+    </form>
 
     <script th:inline="javascript">
+    var insertUrl = "/front/dsgnPrgrm/insertPrgrmOperMngForm.do";
+    var updateUrl = "/front/dsgnPrgrm/updatePrgrmOperMngForm.do";
+    function validate(){
+
+        $("#prgrmOperMngForm").validate({
+            ignore: [],
+            rules: {
+                title       : { required: true , maxlength:200  }
+                ,cntnts      : { required: true , maxlength:4000}
+                ,bbs_clid    : { required: true }
+             },
+             messages: {
+                title       : { required: "게시판명을 입력해 주십시오."  , maxlength : "게시판 제목은 200자를 넘을 수 없습니다."  }
+                ,cntnts      : { required: "게시글 내용을 입력해 주십시오." , maxlength: "게시판 내용은 4000자를 넘을 수 없습니다." }
+                ,bbs_clid    : { required:"게시글 분류를 선택해주십시오 "}
+             }
+        });
+
+    }
+
+
+    function doSave(){
+
+        if(!confirm("저장하시겠습니까?")) return;
+
+        var data =  $("#prgrmOperMngForm").serialize() ;
+
+//         $.ajax({
+//             url : insertPstUrl,
+//             type: 'POST',
+//             cache : false,
+//             dataType: 'json',
+//             data : data,
+//             success : function (data){
+//                 if(data.result=="success"){
+//                     alert("등록이 완료 되었습니다.");
+//                     goBbsMain();
+//                 }else{
+//                     alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+//                 }
+//             },
+//             error : function (error){
+//             }
+//         });
+
+        document.prgrmOperMngForm.action = "/front/dsgnPrgrm/prgrmEvlForm.html";    //프로그램 평가
+        $("#prgrmOperMngForm").submit();
+
+    }
+
+    function goPrev(){
+        document.prgrmOperMngForm.action = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //증빙자료
+        $("#prgrmEvlForm").submit();
+    }
 
     function goNext(){
-        location.href = "/front/dsgnPrgrm/prgrmEvlForm.html";    //프로그램 운영관리
+        if($("#prgrmOperMngForm").valid() == false) return;
+        doSave();
     }
+
+    $(function() {
+
+    });
 
     </script>
     </div>

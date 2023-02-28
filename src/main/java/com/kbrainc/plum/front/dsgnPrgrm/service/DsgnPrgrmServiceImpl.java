@@ -3,9 +3,11 @@ package com.kbrainc.plum.front.dsgnPrgrm.service;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
@@ -121,6 +123,77 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectInstInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectInstInfo(dsgnPrgrmVo);
+	}
+
+	/**
+	* 신청정보 조회
+	*
+	* @Title : selectAplyInfo
+	* @Description : 신청정보 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	@Override
+	public DsgnPrgrmVo selectAplyInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectAplyInfo(dsgnPrgrmVo);
+	}
+
+	/**
+	* 지정프로그램 등록
+	*
+	* @Title : insertPrgrmAssPrgrm
+	* @Description : 지정프로그램 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertPrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.insertPrgrmAssPrgrm(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 지정프로그램 수정
+	 *
+	 * @Title : updatePrgrmAssPrgrm
+	 * @Description : 지정프로그램 수정
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	@Override
+	@Transactional
+	public int updatePrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+	}
+
+	/**
+	* 프로그램우수성 등록
+	*
+	* @Title : insertPrgrmDstnctnForm
+	* @Description : 프로그램우수성 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertPrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		int ret = 0;
+		//지정프로그램 수정
+		ret =+ dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+		if(dsgnPrgrmVo.getDstnctnid() != null && dsgnPrgrmVo.getDstnctnid() > 0) {
+			ret += dsgnPrgrmDao.updatePrgrmDstnctnForm(dsgnPrgrmVo);    //수정
+		}else {
+			ret += dsgnPrgrmDao.insertPrgrmDstnctnForm(dsgnPrgrmVo);    //등록
+		}
+		return ret;
 	}
 
 
