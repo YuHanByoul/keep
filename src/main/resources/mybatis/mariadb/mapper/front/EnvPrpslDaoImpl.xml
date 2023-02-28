@@ -146,4 +146,38 @@
             ON A.USERID = B.USERID
         WHERE A.PRPSLID = #{prpslid}
     </select>
+
+    <select id="selectMyEnvPrpslList" resultType="com.kbrainc.plum.front.envPrpsl.model.EnvPrpslVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PRPSLID
+            , A.CLSF_CD
+            , A.TTL
+            , A.CN
+            , A.RLS_YN
+            , A.PRCS_STTS_CD
+            , A.REG_DT
+            , A.USERID
+            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
+            CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+            ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+            )
+            ELSE CONCAT(
+            SUBSTRING(B.ACNT, 1, 1)
+            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+            )
+            END AS ACNT
+        FROM TB_CMM_ENV_EDU_PRPSL A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE
+            A.DEL_YN != 'Y'
+            AND A.USERID= #{user.userid}
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
 </mapper>

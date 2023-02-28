@@ -33,6 +33,17 @@ public interface EnvPrpslDao {
     List<EnvPrpslVo> selectEnvPrpslList(EnvPrpslVo envPrpslVo);
 
     /**
+     * 마이페이지 > 환경교육제안 관리 목록 조회
+     *
+     * @param envPrpslVo
+     * @return list
+     * @throws Exception
+     * @Title : selectMyEnvPrpslList
+     * @Description : 마이페이지 > 환경교육제안 관리 목록 조회
+     */
+    List<EnvPrpslVo> selectMyEnvPrpslList(EnvPrpslVo envPrpslVo) throws Exception;
+
+    /**
      * 환경교육제안 정보 조회
      * Title : selectEnvPrpsInfo
      * Description : 환경교육제안 정보 조회
