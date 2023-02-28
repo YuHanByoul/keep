@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">공동구매명</strong></div>
+                    <div class="form-body">
+                        <input type="search" id="searchJntpurchsNm" name="searchJntpurchsNm" title="공동구매명" placeholder="공동구매명을 입력해 주세요.">
+                    </div>
+                </div>
+                <!--
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">모집상태</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="searchSttsCd" grpCd="172" title="모집상태" firstOptTxt="전체" readonly>
+                    </div>
+                </div>
+                -->
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="jntpurchsOrderHstry.initSearch();">초기화</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search" onclick="jntpurchsOrderHstry.onSearch();">검색</button>
+            </div>
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+            <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+            <input type="hidden" id="orderid" name="orderid" value="0">
+        </form>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+            <div class="right">
+                <select title="글 보기 개수" id="viewNumber" onchange="jntpurchsOrderHstry.onChangeRowPerPage();">
+                    <option value="10">10개씩 보기</option>
+                    <option value="50">50개씩 보기</option>
+                    <option value="100">100개씩 보기</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="pc-only">
+            <div class="table-col table-layout-auto table-col-mo">
+                <table>
+                    <caption>공동구매 모집명 - 번호, 공동구매 모집명, 신청기간, 수량, 신청상태, 후기작성, 신청일</caption>
+                    <colgroup>
+                        <col style="width:6%;">
+                        <col>
+                        <col style="width:22%;">
+                        <col style="width:6%;">
+                        <col style="width:10%;">
+                        <col style="width:11%;">
+                        <col style="width:11%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">공동구매 모집명</th>
+                            <th scope="col">신청기간</th>
+                            <th scope="col">수량</th>
+                            <th scope="col">신청상태</th>
+                            <th scope="col">후기작성</th>
+                            <th scope="col">신청일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pcList">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mo-only">
+            <div class="table-list">
+                <ul id="mobileList">
+                </ul>
+            </div>
+        </div>
+        
+        <div id="pagination">
+        </div>
+
+        <div class="layer-popup layer-medium" data-layer-id="rvwInsertPopup">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap" id="rvwInsertPopup">
+            </div>
+        </div>
+        
+        <div class="layer-popup layer-medium" data-layer-id="rvwUpdatePopup">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap" id="rvwUpdatePopup">
+            </div>
+        </div>
+
+        <!-- //content -->
+        <script th:inline="javascript">
+            var jntpurchsOrderHstry = {
+                listUrl: "/front/jntpurchs/selectJntpurchsOrderHstryList.do"
+                , detailUrl: "/front/jntpurchs/jntpurchsOrderHstryDetailForm.html"
+                , orderid: null
+                
+                , init: function() {
+                    this.onLoadData();
+                    this.registEvent();  
+                }
+                
+                , registEvent: function() {
+                    // TODO
+                }
+                
+                , onLoadData: function() {
+                    if(displayWorkProgress(true)) {
+                        var param = $('#searchForm').serializeArray();
+                        $.ajax({
+                            url: jntpurchsOrderHstry.listUrl
+                            , cache: false
+                            , dataType: "json"
+                            , data: param
+                            , type: "GET"
+                            , success: function(response) {
+                                jntpurchsOrderHstry.setList(response);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                }
+                
+                , setList: function(data) {
+                    $("#pcList, #mobileList, #pagination").empty();
+                    $("#totalCount").text(data.totalCount);
+                    if(data.totalCount == 0) {
+                        $("#pcList").append(jntpurchsOrderHstry.getNoData("pc"));
+                        $("#mobileList").append(jntpurchsOrderHstry.getNoData("mobile"));
+                    } else {
+                        $(data.list).each(function(index, data) {
+                            $("#pcList").append(jntpurchsOrderHstry.getListItem(data, "pc"));
+                            $("#mobileList").append(jntpurchsOrderHstry.getListItem(data, "mobile"));
+                        });                        
+                    }
+                    $("#pagination").html(data.pagination);
+                }
+                
+                , getNoData: function(type) {
+                    var el= '';
+                    if(type == "pc") {
+                        el += '<tr><td class="nodata" colspan="7"><p><span class="icon icon-notice bg-black9"></span>공동구매 신청 이력이 없습니다.</p></td></tr>';
+                    } else {
+                        el += '<li class="block"><div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 공동구매 신청 이력이 없습니다</p></div></li>';
+                    }
+                    return el;
+                    return false;
+                    var el = '<li>등록된 공동구매가 없습니다.</li>';
+                    
+                    return el;
+                }
+                
+                , getListItem: function(data, type) {
+                    var item = '';
+                    if(type == "pc") {
+                        item += '<tr>';
+                        item += '<td>' + data.rowNumber + '</td>';
+                        item += '<td class="al article"><a href="javascript:void(0);" class="link ellipsis" onclick="jntpurchsOrderHstry.onDetail(' + data.orderid + ');">' + data.jntpurchsNm + '</a></td>';
+                        item += '<td>' + data.bgngDt.split(' ')[0] + ' ~ ' + data.endDt.split(' ')[0] + '</td>';
+                        item += '<td>' + data.qnty + '</td>';
+                        item += '<td>' + data.sttsCdNm + '</td>';
+                        if(data.sttsCd == "181101") { // 신청취소
+                            item += '<td>-</td>';
+                        } else if(data.sttsCd == "181100" && data.rvwRegDt) { // 신청완료, 후기 작성완료
+                            item += '<td><button type="button" class="link" onclick="jntpurchsOrderHstry.onRvwPopup(true, ' + data.orderid + ');">작성완료</button></td>';
+                        } else {
+                            item += '<td><button type="button" class="btn-small btn-outline-blue" onclick="jntpurchsOrderHstry.onRvwPopup(false, ' + data.orderid + ');">작성</button></td>';
+                        }
+                        item += '<td>' + data.regDt.split(' ')[0] + '</td>';
+                        item += '</tr>'; 
+                    } else {
+                        item += '<li class="block"><div class="tbody"><dl>';
+                        
+                        item += '<div class="list"><dt>번호</dt><dd>' + data.rowNumber + '</dd></div>';
+                        item += '<div class="list"><dt>공동구매모집명</dt><dd><a href="#" class="link ellipsis">';
+                        item += data.jntpurchsNm + '</a></dd></div>';
+                        item += '<div class="list"><dt>신청기간</dt><dd>' + data.rowNumber + '</dd></div>';
+                        item += '<div class="list"><dt>번호</dt><dd>' + data.bgngDt.split(' ')[0] + ' ~ ' + data.endDt.split(' ')[0] + '</dd></div>';
+                        item += '<div class="list"><dt>수량</dt><dd>' + data.qnty + '</dd></div>';
+                        item += '<div class="list"><dt>신청상태</dt><dd>' + data.sttsCdNm + '</dd></div>';
+                        item += '<div class="list"><dt>신청일</dt><dd>' + data.regDt.split(' ')[0] + '</dd></div>';
+                        if(data.sttsCd == "181100" && data.rvwRegDt) { // 후기 작성완료
+                            item += '<div class="list"><dt>후기</dt><dd><button type="button" class="link" onclick="jntpurchsOrderHstry.onRvwPopup(true, ' + data.orderid + ');">작성완료</button></dd></div>';
+                        }
+                        item += '</dl></div>';
+                        if(data.sttsCd == "181100" && !data.rvwRegDt) { // 후기 미작성
+                            item += '<div class="btn-wrap"><div class="center">';
+                            item += '<a href="javascript:jntpurchsOrderHstry.onRvwPopup(false, ' + data.orderid + ');" class="btn-small btn-outline-blue">후기작성</a>';
+                            item += '</div></div>';
+                        }
+                        item += '</li>'; 
+                    }
+                    
+                    return item;
+                }
+                
+                , initSearch: function() {
+                     $("#searchJntpurchsNm").val("");
+                }
+                
+                , onSearch: function() {
+                    $("#pageNumber").val("1");
+                    this.onLoadData();
+                }
+                
+                , onChangeRowPerPage: function() {
+                    $("#pageNumber").val("1");
+                    $("#rowPerPage").val($("#viewNumber").val());
+                    this.onLoadData();
+                }
+                
+                , onRvwPopup: function(isWrite, orderid) {
+                    this.orderid = orderid;
+                    var url = !isWrite ? "/front/jntpurchs/rvwInsertPopup.html" : "/front/jntpurchs/rvwUpdatePopup.html?orderid=" + orderid;
+                    var id = !isWrite ? "#rvwInsertPopup" : "#rvwUpdatePopup";
+                    $("#rvwInsertPopup, #rvwUpdatePopup").empty();
+                    $(id).load(url, function(response, status, xhr) {
+                        if(status == "success") {
+                            var target = !isWrite ? "rvwInsertPopup" : "rvwUpdatePopup";
+                            layerPopup.open({target});
+                        }
+                    });
+                }
+                
+                , onDetail: function(orderid) {
+                    var form = document.forms.searchForm;
+                    form.orderid.value = orderid;
+                    form.action = this.detailUrl;
+                    form.submit();
+                }
+            };
+            
+            function goPage(pageNumber) {
+                $("#pageNumber").val(pageNumber);
+                jntpurchsOrderHstry.onLoadData();
+            }
+            
+            $(function() {
+                jntpurchsOrderHstry.init();
+            });
+        </script>
+    </div>
+</body>
+</html>

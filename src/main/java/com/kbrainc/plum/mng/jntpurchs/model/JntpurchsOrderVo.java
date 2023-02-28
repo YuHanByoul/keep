@@ -3,9 +3,6 @@ package com.kbrainc.plum.mng.jntpurchs.model;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -114,6 +111,18 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     /** 신청상태 코드명 */
     private String sttsCdNm;
     
+    /** 후기 점수 */
+    private Integer rvwScr;
+    
+    /** 후기 내용 */
+    private String rvwCn;
+    
+    /** 후기 파일 그룹아이디 */
+    private Integer rvwFilegrpid;
+    
+    /** 신청취소 가능 여부 */
+    private String cancelYn;
+    
     /** 신청일시 */
     private String regDtStr;
     
@@ -128,6 +137,9 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     
     /** 검색 신청일 */
     private String searchRegDt;
+    
+    /** 검색 공동구매 모집명 */
+    private String searchJntpurchsNm;
     
     /** 신청상품 목록 */
     private List<JntpurchsTchaidVo> goodsList;
@@ -157,6 +169,19 @@ public class JntpurchsOrderVo extends ParentRequestVo {
     
     public void setEndDt(Date endDt) {
         this.endDt = endDt != null ? (Date) endDt.clone() : null;
+    }
+    
+    /** 후기 작성 일시 */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
+    private Date rvwRegDt;
+    
+    /** 후기 작성 일시 정보 */
+    public Date getRvwRegDt() {
+        return rvwRegDt != null ? (Date) rvwRegDt.clone() : null;
+    }
+    
+    public void setRvwRegDt(Date rvwRegDt) {
+        this.rvwRegDt = rvwRegDt != null ? (Date) rvwRegDt.clone() : null;
     }
     
     /** 수정일시 */

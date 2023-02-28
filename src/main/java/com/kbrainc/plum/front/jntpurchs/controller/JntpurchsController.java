@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsRvwVo;
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsVo;
 import com.kbrainc.plum.front.jntpurchs.service.JntpurchsServiceImpl;
@@ -55,7 +57,7 @@ public class JntpurchsController {
     private JntpurchsServiceImpl jntpurchsService;
     
     @Autowired
-    private FileService fileService;
+    private FileServiceImpl fileService;
     
     /**
     * 환경교육 교구 공동구매 목록 화면
@@ -134,6 +136,93 @@ public class JntpurchsController {
     public String jntpurchsOrderComplete() throws Exception {
         return "front/jntpurchs/jntpurchsOrderComplete";
     }
+    
+    /**
+    * 공동구매 신청 이력 화면
+    *
+    * @Title : jntpurchsOrderHstryListForm
+    * @Description : 공동구매 신청 이력 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/jntpurchsOrderHstryListForm.html")
+    public String jntpurchsOrderHstryListForm() throws Exception {
+        return "front/jntpurchs/jntpurchsOrderHstryList";
+    }
+    
+    /**
+    * 공동구매 신청 상세 화면
+    *
+    * @Title : jntpurchsOrderHstryDetailForm
+    * @Description : 공동구매 신청 상세 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/jntpurchsOrderHstryDetailForm.html")
+    public String jntpurchsOrderHstryDetailForm(JntpurchsOrderVo jntpurchsOrderVo, Model model) throws Exception {
+        JntpurchsOrderVo orderInfo = jntpurchsService.selectJntpurchsOrderInfo(jntpurchsOrderVo);
+        model.addAttribute("orderInfo", orderInfo);
+        // 상품 목록
+        JntpurchsTchaidVo jntpurchsTchaidVo = new JntpurchsTchaidVo();
+        jntpurchsTchaidVo.setJntpurchsid(orderInfo.getJntpurchsid());
+        model.addAttribute("goodsList", jntpurchsService.selectGoodsList(jntpurchsTchaidVo));
+        
+        return "front/jntpurchs/jntpurchsOrderHstryDetail";
+    }
+    
+    /**
+    * 후기 등록 팝업
+    *
+    * @Title : rvwInsertPopup
+    * @Description : 후기 등록 팝업
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/rvwInsertPopup.html")
+    public String rvwInsertPopup(Model model) throws Exception {
+        Map<String, Object> fileConfig = fileService.getConfigurationByFilegrpName("jntpurchsRvwfile");
+        String uploadFileExtsn = ((HashMap<String, String>) fileConfig.get("uploadFileExtsn"))
+                .entrySet()
+                .stream()
+                .map(fileExtsnName -> "." + fileExtsnName.getValue())
+                .collect(Collectors.joining(", "));
+         
+        model.addAttribute("fileConfig", fileConfig);
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
+         
+         
+        return "front/jntpurchs/rvwInsertPopup";
+    }
+     
+    /**
+    * 후기 정보 팝업
+    *
+    * @Title : rvwUpdatePopup
+    * @Description : 후기 정보 팝업
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/rvwUpdatePopup.html")
+    public String rvwUpdatePopup(JntpurchsOrderVo jntpurchsOrderVo, Model model) throws Exception {
+        Map<String, Object> fileConfig = fileService.getConfigurationByFilegrpName("jntpurchsRvwfile");
+        String uploadFileExtsn = ((HashMap<String, String>) fileConfig.get("uploadFileExtsn"))
+                .entrySet()
+                .stream()
+                .map(fileExtsnName -> "." + fileExtsnName.getValue())
+                .collect(Collectors.joining(", "));
+          
+        JntpurchsOrderVo rvwInfo = jntpurchsService.selectJntpurchsOrderRvwInfo(jntpurchsOrderVo);
+        model.addAttribute("rvwInfo", rvwInfo);
+        if(rvwInfo.getRvwFilegrpid() != null && rvwInfo.getRvwFilegrpid() != 0) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(rvwInfo.getRvwFilegrpid());
+            ArrayList<FileVo> rvwFileList = fileService.getFileList(fileVo);
+            model.addAttribute("rvwFileList", rvwFileList);
+        }
+          
+        return "front/jntpurchs/rvwUpdatePopup";
+    }
+      
     
     /**
     * 환경교육 교구 공동구매 목록 조회
@@ -223,6 +312,152 @@ public class JntpurchsController {
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "신청에 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    /**
+    * 환경교육 교구 관리 공동구매 신청 이력 목록 조회
+    *
+    * @Title : selectjntpurchsOrderHstryList
+    * @Description : 환경교육 교구 관리 공동구매 신청 이력 목록 조회
+    * @param jntpurchsVo JntpurchsOrderVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value="/front/jntpurchs/selectJntpurchsOrderHstryList.do")
+    @ResponseBody
+    public Map<String, Object> selectjntpurchsOrderHstryList(JntpurchsOrderVo jntpurchsOrderVo, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        List<JntpurchsOrderVo> result = null;
+        
+        jntpurchsOrderVo.setUser(user);
+        result = jntpurchsService.selectjntpurchsOrderHstryList(jntpurchsOrderVo);
+        
+        if(result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+            resultMap.put("pagination", PaginationUtil.getFrontPaginationHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+        
+        return resultMap;
+    }
+    
+    /**
+    * 공동구매 신청 취소
+    *
+    * @Title : deleteJntpurchsOrder
+    * @Description : 공동구매 신청 취소
+    * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+    * @param bindingResult jntpurchsOrderVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/deleteJntpurchsOrder.do")
+    @ResponseBody
+    public Map<String, Object> deleteJntpurchsOrder(@Valid JntpurchsOrderVo jntpurchsOrderVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsOrderVo.setUser(user);
+        retVal = jntpurchsService.deleteJntpurchsOrder(jntpurchsOrderVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "신청취소가 완료되었습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "신청취소가 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    /**
+    * 공동구매 후기 등록
+    *
+    * @Title : insertJntpurchsOrderRvw
+    * @Description : 공동구매 후기 등록
+    * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+    * @param bindingResult jntpurchsOrderVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/insertJntpurchsOrderRvw.do")
+    @ResponseBody
+    public Map<String, Object> insertJntpurchsOrderRvw(@Valid JntpurchsOrderVo jntpurchsOrderVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsOrderVo.setUser(user);
+        retVal = jntpurchsService.insertJntpurchsOrderRvw(jntpurchsOrderVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "후기등록이 완료되었습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "후기등록에 실패하였습니다");
+        }
+              
+        return resultMap;
+    }
+    
+    /**
+    * 공동구매 후기 삭제
+    *
+    * @Title : deleteJntpurchsOrderRvw
+    * @Description : 공동구매 후기 삭제
+    * @param jntpurchsOrderVo JntpurchsOrderVo 객체
+    * @param bindingResult jntpurchsOrderVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/jntpurchs/deleteJntpurchsOrderRvw.do")
+    @ResponseBody
+    public Map<String, Object> deleteJntpurchsOrderRvw(@Valid JntpurchsOrderVo jntpurchsOrderVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+          
+        if(bindingResult.hasErrors()) {
+            FieldError fieldError = bindingResult.getFieldError();
+            if(fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+          
+        int retVal = 0;
+        jntpurchsOrderVo.setUser(user);
+        retVal = jntpurchsService.deleteJntpurchsOrderRvw(jntpurchsOrderVo);
+          
+        if(retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "후기삭제가 완료되었습니다");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "후기삭제가 실패하였습니다");
         }
               
         return resultMap;
