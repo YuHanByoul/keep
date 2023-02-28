@@ -1,53 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-    layout:decorator="layout/mng/popupLayout">
+    layout:decorator="layout/front/popupLayout">
     
-    
- <div layout:fragment="content">
-
-         <div class="modal-content type_2">
-                <div class="modal-header">
-                    <h4 class="modal-title"><th:block th:text="${item.title}"></h4>
-                    <a type="button" class="btn-close" href="javascript:this.close()" >
-                        <span aria-hidden="true"></span>
-                    </a>
-                </div>
-                <div class="modal-body">
-                    <div class="card m-b-10">
-                        <div class="card-block-small" >
-                            <div th:remove="tag" th:utext="${item.cntnts}"></div>
-                        </div>
+ <body>   
+ <th:block layout:fragment="content">
+    <div class="layer-popup layer-window-alert layer-alert active">
+        <div class="layer-wrap pb0">
+            <div class="layer-header">
+                <strong class="tit"><th:block th:text="${item.title}"></strong>
+                <button type="button" class="btn-layer-close" title="레이어팝업 닫기" onclick="window.close()"></button>
+            </div>
+            <div class="layer-content">
+                <div th:remove="tag" th:utext="${item.cntnts}"></div>
+            </div>
+            <div class="layer-footer">
+                <div class="layer-cookie j-between a-center">
+                    <div class="form-input d-flex">
+                        <label class="inp vt"><input type="checkbox" th:id="'checkCookie'+${item.popupntcid}"><b class="fc-grayc">오늘 그만 보기</b></label>
+                    </div>
+                    <div>
+                        <button type="button" class="btn-small btn-popup-close" th:onclick="|fn_setCookie('checkCookie${item.popupntcid}')|">닫기</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
                 
-                <div class="modal-footer text-left" style="display:block;">
-                   <div class="border-checkbox-section text-left">                                                                        
-                     <div class="border-checkbox-group border-checkbox-group-inverse text-left">                                                                        
-                           <input type="checkbox" class="border-checkbox text-left" th:id="'checkCookie'+${item.popupntcid}"  onclick="fn_setCookie(this.id)">
-                           <label class="form-label border-checkbox-label" th:for="'checkCookie'+${item.popupntcid}">다시 보지 않기</label>                                                 
-                     </div>
-                    </div>
-                  </div>
-              </div>
-     
  <script type="text/javascript">
- var width = '[[${item.widthSize}]]';
- var height = '[[${item.vrticlSize}]]';
-
- $(document).ready(function(){
-     
-  });
  
  function fn_setCookie(id){
        if($("#"+id).is(":checked")){
-              $.cookie("commonPop_cookie_"+id, "Y", 365);
+              $.cookie("commonPop_cookie_"+id, "Y", {expires:1, path: '/'});
               this.close();
-       }else{ 
-              $.cookie("commonPop_cookie_"+id, "N", 365);   
+       }else{
+              this.close();
        }
  }
  </script>
  
- </div>
+ </th:block>
+ </body>
 </html>
