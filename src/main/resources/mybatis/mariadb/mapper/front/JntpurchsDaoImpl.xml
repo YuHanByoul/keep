@@ -378,4 +378,141 @@
         )
     </insert>
     
+    <!-- 공동구매 신청 이력 조회 -->
+    <select id="selectjntpurchsOrderHstryList" parameterType="JntpurchsOrderVo" resultType="JntpurchsOrderVo">
+        /* JntpurchsDao.selectJntpurchsList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.ORDERID
+            , C.JNTPURCHS_NM
+            , C.BGNG_DT
+            , C.END_DT
+            , B.QNTY
+            , A.STTS_CD
+            , D.CD_NM AS STTS_CD_NM
+            , A.RVW_REG_DT
+            , A.REG_DT
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_ORDER A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS C ON (C.JNTPURCHSID = B.JNTPURCHSID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '181'
+        ) D ON (D.CD = A.STTS_CD)
+        WHERE 
+            A.USERID = #{user.userid}
+        <if test="searchJntpurchsNm != null and searchJntpurchsNm != ''">
+            AND C.JNTPURCHS_NM LIKE CONCAT('%',#{searchJntpurchsNm},'%')
+        </if>
+        GROUP BY
+            A.ORDERID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공동구매 신청 정보 조회 -->
+    <select id="selectJntpurchsOrderInfo" parameterType="JntpurchsOrderVo" resultType="JntpurchsOrderVo">
+        /* JntpurchsDao.selectJntpurchsOrderInfo */
+        SELECT
+            A.ORDERID
+            , C.JNTPURCHSID
+            , C.JNTPURCHS_NM
+            , C.BGNG_DT
+            , C.END_DT
+            , B.QNTY
+            , B.AMT
+            , A.REG_DT
+            , A.STTS_CD
+            , D.CD_NM AS STTS_CD_NM
+            , A.RECPTR
+            , A.RECPTR_TELNO
+            , A.RECPTR_EML
+            , A.DLVY_ZIP
+            , A.DLVY_ADDR
+            , A.DLVY_ADDR_DTL
+            , CASE WHEN NOW() <![CDATA[>]]> C.END_DT THEN 'N' ELSE 'Y' END AS CANCEL_YN
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_ORDER A
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS_ORDER_GOODS B ON (B.ORDERID = A.ORDERID)
+        LEFT OUTER JOIN
+            TB_THA_TCHAID_JNTPURCHS C ON(C.JNTPURCHSID = B.JNTPURCHSID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '181'
+        ) D ON (D.CD = A.STTS_CD)
+        WHERE
+            A.ORDERID = #{orderid}
+        GROUP BY
+            A.ORDERID
+    </select>
+    
+    <!-- 공동구매 신청 취소 -->
+    <update id="deleteJntpurchsOrder" parameterType="JntpurchsOrderVo">
+        /* JntpurchsDao.deleteJntpurchsOrder */
+        UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+            STTS_CD = '181101'
+            , RVW_SCR = NULL
+            , RVW_CN = NULL
+            , RVW_FILEGRPID = NULL
+            , RVW_REG_DT = NULL
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            ORDERID = #{orderid}
+    </update>
+    
+    <!-- 공동구매 후기 등록 -->
+    <update id="insertJntpurchsOrderRvw" parameterType="JntpurchsOrderVo">
+        /* JntpurchsDao.insertJntpurchsOrderRvw */
+        UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+            RVW_SCR = #{rvwScr}
+            , RVW_CN = #{rvwCn}
+            , RVW_FILEGRPID = #{rvwFilegrpid}
+            , RVW_REG_DT = NOW()
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            ORDERID = #{orderid}
+    </update>
+    
+    <!-- 공동구매 후기 정보 조회 -->
+    <select id="selectJntpurchsOrderRvwInfo" parameterType="JntpurchsOrderVo" resultType="JntpurchsOrderVo">
+        /* JntpurchsDao.selectJntpurchsOrderRvwInfo */
+        SELECT
+            RVW_SCR
+            , RVW_CN
+            , RVW_FILEGRPID
+        FROM
+            TB_THA_TCHAID_JNTPURCHS_ORDER
+        WHERE
+            ORDERID = #{orderid}
+    </select>
+    
+    <!-- 공동구매 후기 삭제 -->
+    <update id="deleteJntpurchsOrderRvw" parameterType="JntpurchsOrderVo">
+        /* JntpurchsDao.deleteJntpurchsOrderRvw */
+        UPDATE TB_THA_TCHAID_JNTPURCHS_ORDER SET
+            RVW_SCR = NULL
+            , RVW_CN = NULL
+            , RVW_FILEGRPID = NULL
+            , RVW_REG_DT = NULL
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE
+            ORDERID = #{orderid}
+    </update>
+    
 </mapper>

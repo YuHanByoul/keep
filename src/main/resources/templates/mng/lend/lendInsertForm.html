@@ -576,30 +576,34 @@
         var noPackageErrorNum = 0;
         var isBeforeBgngDtErrorNum = 0;
         var isOverChasiDtErrorNum = 0;
+        var isBgngOverNum = 0;
         var bgngDt = ($("#bgngDt").val()).substring(0,10).replaceAll("-","") ;
         var isError = false;
         var preItem = null;
         
         rndArr.forEach(function(item){
             
-            if((item.bgngDe==null || item.bgngDe=="" || typeof  item.bgngDe=="undefined" )&& !isError ){
+            if( (item.bgngDe==null || item.bgngDe==''|| item.bgngDe==' ') && !isError){
                 bgngDeErrorNum = ( bgngDeErrorNum > 0)? bgngDeErrorNum:item.frmNum;
                 isError = true;
             }
-            if((item.endDe==null || item.endDe=="" || typeof item.endDe=="undefined")&& !isError ){
+            if((item.endDe==null || item.endDe==''|| item.endDe==' ' ) && !isError ){
                 endDeErrorNum = ( endDeErrorNum > 0)? endDeErrorNum:item.frmNum;
                 isError = true;
             }
-            if((item.lendRndPackageindvdids==null || item.lendRndPackageindvdids=="" || typeof item.lendRndPackageindvdids=="undefined")&& !isError ){
+            if((item.lendRndPackageindvdids==null || item.lendRndPackageindvdids=='' || typeof item.lendRndPackageindvdids=="undefined")&& !isError ){
                 noPackageErrorNum = ( noPackageErrorNum > 0)? noPackageErrorNum:item.frmNum;
                 isError = true;
             }
-            if((bgngDt > item.endDe)&& !isError ){
+            if((item.bgngDe).replaceAll("-","")>(item.endDe).replaceAll("-","") && !isError ){
+                isBgngOverNum = (isBgngOverNum>0)?isBgngOverNum :item.frmNum ;
+                isError = true;
+            }
+            if((bgngDt > (item.endDe).replaceAll("-",""))&& !isError ){
                 isBeforeBgngDtErrorNum = ( isBeforeBgngDtErrorNum > 0)? isBeforeBgngDtErrorNum:item.frmNum;
                 isError = true;
             }
-            
-            if(preItem != null && preItem.bgngDe > item.bgngDe &&  preItem.endDe > item.endDe){
+            if(preItem != null && preItem.bgngDe > item.bgngDe &&  preItem.endDe > item.endDe && !isError){
                 isOverChasiDtErrorNum = ( isOverChasiDtErrorNum > 0)? isOverChasiDtErrorNum:item.frmNum;
                 isError = true;
             }
@@ -622,7 +626,13 @@
             showErrorMark("#frm"+noPackageErrorNum+"  .dropdown");
             return;
         }
-        if(noPackageErrorNum > 0 ){
+        if(isBgngOverNum > 0 ){
+            alert("시작일자와 종료일자를 확인해주십시오.");
+            showErrorMark("#frm"+isBgngOverNum+" #bgngDe");
+            showErrorMark("#frm"+isBgngOverNum+" #endDe");
+            return;
+        }
+        if(isBeforeBgngDtErrorNum > 0 ){
             alert("대여 반납일은 대여접수 시작일시 이후여야 합니다.");
             showErrorMark("#frm"+isBeforeBgngDtErrorNum+"  #endDe");
             return;
@@ -634,36 +644,25 @@
             return;
         }
         
-        //대여일자 중복 체크 
-        var isBgngOverNum = 0;
-        var isThereDuplData = false;
+        //대여일자 시작/종료 중복 체크 
+        var isThereDuplicatedData = false;
+        
         rndArr.forEach(function(map){
-        	if((map.bgngDe).replaceAll("-","")>(map.endDe).replaceAll("-","")){
-        		isBgngOverNum = (isBgngOverNum>0)?isBgngOverNum :map.frmNum	;
-            }
-        	rndArr.forEach(function(item){
-                
-                let  compareBgngDe= (item.bgngDe).replaceAll("-","") 
-                let  compareEndDe= (item.endDe).replaceAll("-","")
-                
-                if( bgngDe > compareBgngDe && bgngDe < compareEndDe ){
-                	isThereDuplData = true;
+            rndArr.forEach(function(item){
+                let compareBgngDe = (item.bgngDe).replaceAll("-",""); 
+                let compareEndDe  = (item.endDe).replaceAll("-","");
+
+                if( (map.bgngDe).replaceAll("-","") >= compareBgngDe && (map.bgngDe).replaceAll("-","") <= compareEndDe ){
+                    isThereDuplicatedData = true;
                 } 
-                if( endDe > compareBgngDe && endDe < compareEndDe ){
-                	isThereDuplData = true;
+                if( (map.endDe).replaceAll("-","") >= compareBgngDe && (map.endDe).replaceAll("-","") <= compareEndDe ){
+                    isThereDuplicatedData = true;
                 } 
             })
         })
         
-        if(isBgngOverNum > 0 ){
-            alert("시작일자와 종료일자를 확인해주십시오.");
-            showErrorMark("#frm"+isBgngOverNum+" #bgngDe");
-            showErrorMark("#frm"+isBgngOverNum+" #endDe");
-            return;
-        }
-        
-        if(isThereDuplData){
-            alert("중복된 일자가 있습니다.");
+        if(isThereDuplicatedData){
+            alert("대여차시 설정중 중복된 일자가 있습니다.");
             return;
         }
 

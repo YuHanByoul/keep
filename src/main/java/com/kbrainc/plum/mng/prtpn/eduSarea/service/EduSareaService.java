@@ -2,6 +2,8 @@ package com.kbrainc.plum.mng.prtpn.eduSarea.service;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.prtpn.eduSarea.model.EduSareaVo;
 
@@ -102,4 +104,16 @@ public interface EduSareaService {
     * @return List<EduSareaVo>
     */
     public List<EduSareaVo> selectSignguCodeList(EduSareaVo eduSareaVo) throws Exception;
+
+    /**
+     * 지역설정 목록을 조회.
+     **
+    @Title : selectCtprvnCdList
+     * @Description : 지역설정 목록을 조회
+     * @param sareaid
+     * @return
+     * @throws Exception
+     * @return List<EduSareaVo>
+     */
+    public List<EduSareaVo> selectCtprvnCdList(int sareaid) throws Exception;
 }

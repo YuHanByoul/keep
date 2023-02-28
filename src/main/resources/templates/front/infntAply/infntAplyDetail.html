@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+	    <form id="infntAplyForm" name="infntAplyForm" th:action="@{/front/infntAply/infntAplyRegStep1.html}" >
+	        <input type="hidden" id="prgrmid" name="prgrmid" th:value="${infntAply.prgrmid}" />
+	        <input type="hidden" id="tmeSchdlid" name="tmeSchdlid"/>
+	        <div class="product-wrap sub-banner-swiper">
+	            <div class="thumb-swiper">
+			        <div class="swiper gallery-thumb">
+			            <div class="swiper-wrapper">
+			                <th:block th:each="item : ${eduPhotoFileList}">
+			                    <th:block th:if="${item.fileid != null}">
+				                    <div class="swiper-slide">
+				                        <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"/></div>
+				                    </div>
+			                    </th:block>
+			                </th:block>
+			            </div>
+			        </div>
+			        <div thumbsSlider="" class="swiper gallery-list">
+			            <div class="swiper-wrapper">
+			                <th:block th:each="item : ${eduPhotoFileList}">
+	                            <th:block th:if="${item.fileid != null}">		                
+				                    <div class="swiper-slide">
+				                        <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"/></div>
+				                    </div>
+			                    </th:block>
+			                </th:block>
+			            </div>
+			        </div>
+	            </div>
+	            <div class="product-section">
+	                <div class="title">
+	                    <th:block th:if="${infntAply.rcptDesc eq '모집전'}">
+	                        <div class="tag tag-gray"><th:block th:text="${infntAply.rcptDesc}"></th:block></div>
+	                    </th:block>
+	                    <th:block th:if="${infntAply.rcptDesc eq '모집중'}">
+	                        <div class="tag tag-blue"><th:block th:text="${infntAply.rcptDesc}"></th:block></div>
+	                    </th:block>
+	                    <th:block th:if="${infntAply.rcptDesc eq '마감'}">
+	                        <div class="tag tag-gray"><th:block th:text="${infntAply.rcptDesc}"></th:block></div>
+	                    </th:block>
+	                    <h3><th:block th:text="${infntAply.prgrmNm}"></th:block></h3>
+	                    <dl>
+	                        <div class="list">
+	                            <dt>교육관 :</dt>
+	                            <dd><th:block th:text="${infntAply.clssrmNm}"></th:block></dd>
+	                        </div>
+	                        <div class="list">
+	                            <dt>교육대상 :</dt>
+	                            <dd><th:block th:text="${infntAply.trgtNm}"></th:block></dd>
+	                        </div>
+	                        <div class="list">
+	                            <dt>교육관지역 :</dt>
+	                            <dd><th:block th:text="${infntAply.ctprvnNm}"></th:block></dd>
+	                        </div>
+	                        <div class="list">
+	                            <dt>교육주제 :</dt>
+	                            <dd><th:block th:text="${infntAply.clsfNm}"></th:block></dd>
+	                        </div>
+	                        <div class="list">
+	                            <dt>교육시간 :</dt>
+	                            <dd><th:block th:text="|${infntAply.eduHrMnt}분|"></th:block></dd>
+	                        </div>
+	                        <div class="list">
+	                            <dt>교육정원 :</dt>
+	                            <dd><th:block th:text="|${infntAply.eduNope}명|"></th:block></dd>
+	                        </div>
+	                        <div class="list">
+	                            <dt>접수방법 :</dt>
+	                            <dd><th:block th:text="${infntAply.rcptMthdNm}"></th:block></dd>
+	                        </div>
+	                    </dl>
+	                </div>
+	                <div class="btn-wrap">
+	                    <div class="left">
+	                        <a th:href="|javascript:downloadFileByFileid('${infntAply.eduIntrcnFileid}','${infntAply.eduIntrcnFileIdntfcKey}')|" class="btn-medium btn-outline-black btn-before-download">교육자료소개</a>
+	                    </div>
+	                </div>
+	                <div class="detail">
+	                    <dl>
+	                        <div class="list">
+	                            <dt>선택일</dt>
+	                            <dd>
+	                                <div class="form-input">
+	                                    <input type="date" datepicker="true">
+	                                </div>
+	                            </dd>
+	                        </div>
+	                    </dl>
+	                    <dl>
+	                        <div class="list">
+	                            <dt>교육회차</dt>
+	                            <dd>
+	                                <div id="tmeDataDiv" class="form-check-list flex-column" style="display:none;">
+			                            <th:block th:if="${infntAplyTmeList != 'null'}">
+			                                <th:block th:each="item : ${infntAplyTmeList}">
+			                                    <label class="inp j-start">
+			                                        <th:block th:if="${item.sttsDesc ne '마감'}">   
+			                                          <input name="tmeId" type="radio" th:value="${item.tmeid}"/>
+			                                        </th:block>
+			                                        <th:block th:if="${item.sttsDesc eq '마감'}">   
+			                                          <input name="tmeId" type="radio" th:value="${item.tmeid}" disabled/>
+			                                        </th:block>
+			                                        <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">
+			                                            <span class="al pr5"><th:block th:text="${item.tmeNm}"></th:block></span>
+			                                            <span class="ar pl5"><th:block th:text="|${item.sttsDesc}/대기 ${item.waitCnt}팀|"></th:block></span>
+			                                        </b>
+			                                    </label>
+		                                    </th:block>
+	                                    </th:block>
+	                                </div>
+	                                <div id="tmeBasicDiv" class="form-check-list flex-column" style="display:block;">
+                                        <b class="d-flex j-between normal-wrap" style="flex:1 1 100%;">
+                                            <span id="tmeBasicDivSpan" class="al pr5">날짜를 선택해 주세요</span>
+                                        </b>
+	                                </div>
+	                            </dd>
+	                        </div>
+	                    </dl>
+	                    <dl>
+	                        <div class="list">
+	                            <dt></dt>
+	                            <dd>
+	                                <button type="button" class="btn-medium btn-green" onclick="infntAplyDetail.moveToRegForm()">신청</button>
+	                            </dd>
+	                        </div>
+	                    </dl>
+	                </div>
+	            </div>
+	        </div>
+        </form>	        
+        <div class="tab-content tab-sub dropDown">
+            <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
+            <ul class="tab-list target" role="tablist">
+                <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
+                <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">유의사항</button></li>
+                <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab">동일 교육관 교육 프로그램</button></li>
+            </ul>
+            <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
+                <th:block th:text="${infntAply.eduExpln}"></th:block>
+            </div>
+            <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+                <th:block th:text="${infntAply.mttrat}"></th:block>
+            </div>
+            <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
+                <div class="pc-only">
+                    <div class="table-col table-layout-auto">
+                        <table>
+                            <caption>동일 교육관 교육 프로그램 - 프로그램, 교육대상, 교육관지역, 교육주제, 교육시간</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">프로그램</th>
+                                    <th scope="col">교육대상</th>
+                                    <th scope="col">교육관지역</th>
+                                    <th scope="col">교육주제</th>
+                                    <th scope="col">교육시간</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+	                            <th:block th:if="${infntAplyEduClssRmList != 'null'}">
+	                                <th:block th:each="item : ${infntAplyEduClssRmList}">
+		                                <tr>
+		                                    <td class="al"><a th:href="|/front/infntAply/infntAplyDetailForm.html?prgrmid=${item.prgrmid}&clssrmid=${item.clssrmid}|" class="link url"><th:block th:text="${item.prgrmNm}"></th:block></a></td>
+		                                    <td><th:block th:text="${item.trgtNm}"></th:block></td>
+		                                    <td><th:block th:text="${item.ctprvnNm}"></th:block></td>
+		                                    <td><th:block th:text="${item.clsfNm}"></td>
+		                                    <td><th:block th:text="|${item.eduHrMnt}분|"></td>
+		                                </tr>
+	                                </th:block>
+	                            </th:block>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="mo-only">
+                    <div class="table-list">
+                        <ul>
+                            <li class="block">
+                                <div class="tbody">
+	                                <th:block th:if="${infntAplyEduClssRmList != 'null'}">
+	                                    <th:block th:each="item : ${infntAplyEduClssRmList}">
+		                                    <dl>
+		                                        <div class="list">
+		                                            <dt>프로그램</dt>
+		                                            <dd><a href="|/front/infntAply/infntAplyDetailForm.html?prgrmid=${item.prgrmid}&clssrmid=${item.clssrmid}|" class="link url"><th:block th:text="${item.prgrmNm}"></th:block></a></dd>
+		                                        </div>
+		                                        <div class="list">
+		                                            <dt>교육대상</dt>
+		                                            <dd><th:block th:text="${item.trgtNm}"></th:block></dd>
+		                                        </div>
+		                                        <div class="list">
+		                                            <dt>교육관지역</dt>
+		                                            <dd><th:block th:text="${item.ctprvnNm}"></th:block></dd>
+		                                        </div>
+		                                        <div class="list">
+		                                            <dt>교육주제</dt>
+		                                            <dd><th:block th:text="${item.clsfNm}"></dd>
+		                                        </div>
+		                                        <div class="list">
+		                                            <dt>교육시간</dt>
+		                                            <dd><th:block th:text="|${item.eduHrMnt}분|"></dd>
+		                                        </div>
+		                                    </dl>
+	                                    </th:block>
+                                    </th:block>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+        
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="infntAplyDetail.moveToList();">목록</button>
+            </div>
+        </div>
+		<link rel="stylesheet" href="/css/front/flatpickr.min.css">
+		<script src="/js/front/flatpickr.js"></script>
+		<script src="/js/front/flatpickr-locale-ko.js"></script>
+		<script th:inline="javascript">
+           $(function() {
+           	infntAplyDetail.validateForm();
+           	infntAplyDetail.fn_makeCalendarEvent();
+           });       
+		
+        var infntAplyDetail = {			
+	        moveToList() {
+	            location.href = '/front/infntAply/infntAplyList.html';
+	        },
+	        moveToRegForm() {
+	        	$('#infntAplyForm').submit();
+	        },
+	        fn_makeCalendarEvent() {
+                   var swiper = new Swiper(".gallery-list", {
+                       loop: false,
+                       spaceBetween: 0,
+                       slidesPerView: 5,
+                       freeMode: true,
+                       watchSlidesProgress: true,
+                   });
+                   var swiper2 = new Swiper(".gallery-thumb", {
+                       loop: false,
+                       spaceBetween: 10,
+                       thumbs: {
+                           swiper: swiper,
+                       },
+                       navigation: {
+                           nextEl: ".swiper-button-next",
+                           prevEl: ".swiper-button-prev",
+                       },
+                       a11y: {
+                           prevSlideMessage: '이전 슬라이드',
+                           nextSlideMessage: '다음 슬라이드',
+                       },
+                   });
+                  const objData = [];
+                  $.ajax({
+                      url : "/front/infntAply/selectInfntAplyDeList.do",
+                      type: "GET",
+                      dataType: 'json',
+                      data : {
+                          "prgrmid" : $("#prgrmid").val()
+                      },
+                      success : function (data){
+                         $.each(data, function(i){
+                           const obj = {};                           
+                           obj.tmeid = data[i].tmeid;
+                           obj.tmeSchdlid = data[i].tmeSchdlid;
+                           obj.de = data[i].de;
+                           obj.cd = data[i].sttsDesc == "신청가능" ? "0" : "1";
+                           objData.push(obj);
+                         });
+                          const classDict01 = {
+                                  '0' : ['dot-green','신청가능'],
+                                  '1' : ['dot-gray','마감'],
+                              };
+                          const list01 = `<ul><li class="dot-green">신청가능</li><li class="dot-gray">마감</li></ul>`;
+                          
+                          // Better always use a two digit format in your dates obj
+                          function get2DigitFmt(val) {
+                               return ('0' + val).slice(-2);
+                          }
+                              
+                          function fn_btnEvent(instance){
+                              $($(instance.rContainer.querySelectorAll(".flatpickr-day")).not(".prevMonthDay, .nextMonthDay")).each(function(index, item){
+                                  var dayElem = item; 
+                                  var date = dayElem.dateObj;
+                                  var key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate());
+                                  const result = objData.filter((elem) => {
+                                      return (elem.de === key);
+                                  });
+                                  if(typeof result != 'undefined'){
+                                      if(result.length > 0){
+                                          var value = classDict01[result[0].cd];
+                                           //value = classDict01[dates01[key]];
+                                           if (value) {
+                                               dayElem.className += ' ' + value[0];
+                                               dayElem.title = value[1]
+                                           }
+                                      }/* else{
+                                   	   dayElem.className = "flatpickr-day flatpickr-disabled";
+                                      } */
+                                  }
+                              });
+                          }                               
+                          const datepicker = flatpickr("[datepicker=true]",{
+                              mode: "single",
+                              minDate: "today",
+                              defaultDate:false,
+                              dateFormat: "Y-m-d",
+                              //disable: disableDates,
+                              locale: "ko",
+                              position: "bottom center",
+                              onDayCreate: function(dObj, dStr, fp, dayElem) {
+                           	   var date = dayElem.dateObj;
+                                  var key = date.getFullYear() + '-' + get2DigitFmt(date.getMonth() + 1) + '-' + get2DigitFmt(date.getDate());
+                                  const result = objData.filter((elem) => {
+                                      return (elem.de === key);
+                                  });
+                                  if(typeof result != 'undefined'){
+                                      if(result.length > 0){
+                                	   var value = classDict01[result[0].cd];
+                                        if (value) {
+	                                        dayElem.className += ' ' + value[0];
+	                                        dayElem.title = value[1]
+                                        }
+                                      }/* else{
+                                          dayElem.className = "flatpickr-day flatpickr-disabled";
+                                      } */
+                                  }
+                              },
+                              onReady : function () {
+                                  const datepickerWrap = this.calendarContainer;
+                                  const datepickerList = document.createElement('div')
+                                  datepickerList.classList.add('datepicker-list')
+                                  datepickerWrap.appendChild(datepickerList)
+                                  datepickerList.insertAdjacentHTML('beforeend', list01);
+                                  $(".flatpickr-input").val("날짜를 선택해 주세요");                                  
+                              },
+                              onValueUpdate: function(selectedDates, dateStr, instance){
+                                  const result = objData.filter((elem) => {
+                                      return (elem.de === dateStr);
+                                  });
+                                  if(typeof result != 'undefined'){
+	                                   if(result.length > 0){
+	                                       if(result[0].cd != '0'){
+	                                           alert("신청가능한 날짜를 선택해 주세요.");
+	                                           datepicker.clear();
+	                                           return true;
+	                                       }else{
+	                                    	   $("#tmeSchdlid").val(result[0].tmeSchdlid);
+	                                           $("input[name='tmeId']").each(function(){
+	                                               if($(this).val() == result[0].tmeid) $(this).prop("checked", true);
+	                                           })     
+                                               $("#tmeBasicDiv").hide();
+                                               $("#tmeDataDiv").show();
+	                                       }
+	                                   }else{
+	                                       alert("신청가능한 날짜를 선택해 주세요.");
+	                                       datepicker.clear();
+	                                       return true;
+	                                   }
+                                  }
+                              },
+                              onMonthChange: function(selectedDates, dateStr, instance) {
+                           	   fn_btnEvent(instance);
+                              },
+                              onYearChange: function(selectedDates, dateStr, instance) {
+                           	   fn_btnEvent(instance);
+                              }                                   
+                          });                            
+                      }
+                  });		        	
+	        },
+	        validateForm() {
+	            $('#infntAplyForm').validate({
+	                rules: {
+	                	prgrmid: {required: true}
+	                    , tmeSchdlid: {required: true}
+	                }
+	            });
+	        }
+	    }
+		</script>
+    </div>	
+</body>
+</html>

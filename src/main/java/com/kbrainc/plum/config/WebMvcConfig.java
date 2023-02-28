@@ -64,5 +64,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
         .setCachePeriod(3600)
         .resourceChain(true)
         .addResolver(new PathResourceResolver());
+
+        registry.addResourceHandler("/pdf_view_file/**")
+        .addResourceLocations("file:///" +uploadImagesPath + "/pdf_view_file/")
+        .setCachePeriod(3600)
+        .resourceChain(true)
+        .addResolver(new PathResourceResolver());
     }
 }

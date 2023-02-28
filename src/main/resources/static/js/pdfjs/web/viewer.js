@@ -793,7 +793,7 @@ const defaultOptions = {
 };
 {
   defaultOptions.defaultUrl = {
-    value: "/bsns_oper_dta_file/0f2ecfce-636b-4637-bf8f-6971454c58da_%5B용역 변경내역서%5D 번역아카데미 온라인 강의 콘텐츠 제작 및 운영 용역.pdf",
+    value: "compressed.tracemonkey-pldi-09.pdf",
     kind: OptionKind.VIEWER
   };
   defaultOptions.disablePreferences = {

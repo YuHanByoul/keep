@@ -50,11 +50,17 @@
 			var signguSettingPopupUrl = "/mng/prtpn/eduSarea/eudSareaSignguSettingPopup.html";
 			//var eduSareaSettingPopupUrl = "/mng/prtpn/eduSarea/eudSareaSettingPopup.html";
 		    var signguSettingModal;
+			var selectedItem;
 			var selectedItems = [];
 			var gridHelper1;
 			
 		    fn_openSignguSettingModal = () => {
-		        $("#signguSettingPopup").load(signguSettingPopupUrl, function(response, status, xhr) {
+		    	if(selectedItem == undefined || selectedItem == ""){
+		    		alert("운영권역을 선택해 주세요.");
+		    		return false;
+		    	}
+		    	var url = signguSettingPopupUrl + "?sareaid="+selectedItem;
+		        $("#signguSettingPopup").load(url, function(response, status, xhr) {
 		            if (status == "success") {
 		            	signguSettingModal = new bootstrap.Modal($('#signguSettingPopup'));
 		            	signguSettingModal.show();
@@ -126,7 +132,18 @@
 					},
 					
 					fields : [
-						{ name : 'sareaId', css : 'hide' }
+				      {
+	                    itemTemplate: function(_, item) {
+	                        return $("<input>").attr("type", "radio").attr("name", "selectCellRadio")
+	                        .on("click", function () {
+	                        if($(this).is(":checked")) selectItem($(this).parent().next().text());
+	                        });
+	                    },
+	                    align: "center",
+	                    width: "30",
+	                    sorting: false
+	                  }   						
+					  ,	{ name : 'sareaId', css : 'hide' }
 					  , { title : 'No.', name : 'rowNumber', type : "number", width : "80", align : "center", sorting : false }
 					  , { title : '운영권역', name : 'sareaNm', type : "text", width : "120", align : "center" }
 					  , { title : '운영기관', name : 'cnsgnInstNm', type : "text", width : "120", align : "center" }
@@ -152,9 +169,16 @@
 			            
 					},
 					onPageChanged : function(args) {
-						selectedItems = [];
+						selectedItem = "";
+						//selectedItems = [];
 					}
 				});
+		        
+		        var selectItem = function(item) {
+		        	//selectedItems = [];
+		            //selectedItems.push(item);
+		        	selectedItem = item;
+		        };
 			}
 		</script>
 

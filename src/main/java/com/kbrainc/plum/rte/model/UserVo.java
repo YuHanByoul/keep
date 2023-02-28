@@ -47,6 +47,9 @@ public class UserVo extends ParentVo implements AuthenticatedPrincipal, Serializ
     /** 디지털원패스 연동여부 */
     private String onepassLinkYn;
     
+    /** 삭제 사유  */
+    private String secsnRsn;
+    
     /** 간편로그인 연결갯수 */
     private int esylgnLinkCnt;
     

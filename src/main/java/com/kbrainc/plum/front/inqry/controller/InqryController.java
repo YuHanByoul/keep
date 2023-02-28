@@ -97,12 +97,10 @@ public class InqryController {
         return VIEW_PATH + "/inqryDetail";
     }
 
-
     @GetMapping(value = "/selectInqryList.do")
     @ResponseBody
     public Map<String, Object> selectInqryList(InqryVo inqryVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        inqryVo.setUser(user);
 
         List<InqryVo> list = inqryService.selectInqryList(inqryVo);
         if (list.size() > 0) {

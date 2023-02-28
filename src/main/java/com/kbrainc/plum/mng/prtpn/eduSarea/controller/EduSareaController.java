@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.service.CommonService;
@@ -67,11 +68,13 @@ public class EduSareaController {
     }
     
     @RequestMapping(value = "/mng/prtpn/eduSarea/eudSareaSignguSettingPopup.html")
-    public String infntSchdlInsertPopup(Model model, HttpServletRequest request) throws Exception {
+    public String infntSchdlInsertPopup(@RequestParam(value ="sareaid",required = false) int sareaid, Model model, HttpServletRequest request) throws Exception {
         CodeVo codeVo = new CodeVo();        
         codeVo.setCdgrpid("143");
+        codeVo.setUpprCd("0");
         codeVo.setRowPerPage(100);
-        model.addAttribute("ctprvnCdList", codeService.selectCodeList(codeVo));
+        model.addAttribute("sareaid", sareaid);
+        model.addAttribute("ctprvnCdList", eduSareaService.selectCtprvnCdList(sareaid));
         
         return "mng/prtpn/eduSarea/eudSareaSignguSettingPopup";
     }
@@ -111,6 +114,7 @@ public class EduSareaController {
     public String eduSareaInsertForm(Model model) throws Exception {
         CodeVo codeVo = new CodeVo();
         codeVo.setCdgrpid("143");
+        codeVo.setUpprCd("0");
         codeVo.setRowPerPage(100);
         model.addAttribute("ctprvnCdList", codeService.selectCodeList(codeVo));
         
@@ -135,6 +139,7 @@ public class EduSareaController {
         
         CodeVo codeVo = new CodeVo();
         codeVo.setCdgrpid("143");
+        codeVo.setUpprCd("0");
         codeVo.setRowPerPage(100);
         model.addAttribute("ctprvnCdList", codeService.selectCodeList(codeVo));
 

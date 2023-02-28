@@ -77,7 +77,7 @@ public interface JntpurchsService {
     * @Title : selectRvwList 
     * @Description : 환경교육 교구 공동구매 후기 목록 조회
     * @param jntpurchsRvwVo JntpurchsRvwVo객체
-    * @return List<JntpurchsRvwVo> jntpurchsRvwVo 후기 목록
+    * @return List<JntpurchsRvwVo> jntpurchsRvwVo 환경교육 교구 공동구매 후기 목록
     * @throws Exception 예외
     */
     public List<JntpurchsRvwVo> selectRvwList(JntpurchsRvwVo jntpurchsRvwVo) throws Exception;
@@ -99,9 +99,75 @@ public interface JntpurchsService {
     * @Title : insertJntpurchsOrder 
     * @Description : 공동구매 신청 등록
     * @param jntpurchsOrderVo JntpurchsOrderVo객체
-    * @return int qestrnid
+    * @return int insert 로우수
     * @throws Exception 예외
     */
     public int insertJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 환경교육 교구 관리 공동구매 신청 이력 목록 조회
+    *
+    * @Title : selectjntpurchsOrderHstryList 
+    * @Description : 환경교육 교구 관리 공동구매 신청 이력 목록 조회
+    * @param jntpurchsOrderVo JntpurchsOrderVo객체
+    * @return List<JntpurchsOrderVo> jntpurchsRvwVo 환경교육 교구 관리 공동구매 신청 이력 목록
+    * @throws Exception 예외
+    */
+    public List<JntpurchsOrderVo> selectjntpurchsOrderHstryList(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 공동구매 신청 정보 조회
+    *
+    * @Title : selectJntpurchsOrderInfo 
+    * @Description : 공동구매 신청 정보 조회
+    * @param jntpurchsOrderVo JntpurchsOrderVo객체
+    * @return JntpurchsOrderVo 공동구매 후기 정보
+    * @throws Exception 예외
+    */
+    public JntpurchsOrderVo selectJntpurchsOrderInfo(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 공동구매 신청 취소
+    *
+    * @Title : deleteJntpurchsOrder 
+    * @Description : 공동구매 신청 취소
+    * @param jntpurchsOrderVo JntpurchsOrderVo객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int deleteJntpurchsOrder(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 공동구매 후기 등록
+    *
+    * @Title : insertJntpurchsOrderRvw 
+    * @Description : 공동구매 후기 등록
+    * @param jntpurchsOrderVo JntpurchsOrderVo객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int insertJntpurchsOrderRvw(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 공동구매 후기 정보 조회
+    *
+    * @Title : selectJntpurchsOrderRvwInfo 
+    * @Description : 공동구매 후기 정보 조회
+    * @param jntpurchsOrderVo JntpurchsOrderVo객체
+    * @return JntpurchsOrderVo 공동구매 후기 정보
+    * @throws Exception 예외
+    */
+    public JntpurchsOrderVo selectJntpurchsOrderRvwInfo(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
+    
+    /**
+    * 공동구매 후기 삭제
+    *
+    * @Title : deleteJntpurchsOrderRvw 
+    * @Description : 공동구매 후기 삭제
+    * @param jntpurchsOrderVo JntpurchsOrderVo객체
+    * @return int update 로우수
+    * @throws Exception 예외
+    */
+    public int deleteJntpurchsOrderRvw(JntpurchsOrderVo jntpurchsOrderVo) throws Exception;
     
 }

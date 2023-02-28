@@ -48,7 +48,7 @@
                                     <th:block th:each="item : ${ctprvnCdList}" >
 	                                    <tr>
 	                                        <td class="text-center v-middle">
-	                                           <th:block th:text="${item.cdNm}"></th:block>
+	                                           <th:block th:text="${item.ctprvnNm}"></th:block>
 	                                        </td>
 	                                        <td class="text-center v-middle">
 	                                            <button type="button" class="btn btn-disabled btn-sm" th:onclick="fn_signguDetail([[${item}]])">세부설정</button>
@@ -96,9 +96,9 @@
 
 function fn_signguDetail(item){
     var getCodeUrl = "/mng/prtpn/eduSarea/signguCodeList.do";
-    var ctprvnCd = item.cd;
     var params = {
-            "ctprvnCd": ctprvnCd
+    		"sareaId": item.sareaId,
+            "ctprvnCd": item.ctprvnCd
     }
     var signguDetailHtml = "";
     $("#signguDetailTbody tr").remove();
@@ -111,6 +111,7 @@ function fn_signguDetail(item){
         success: function (data) {
             for(var i = 0; i < data.list.length; i++){
                 signguDetailHtml += '<tr>';
+                signguDetailHtml += '   <input type="hidden" name="sareaId" value="'+data.list[i].sareaId+'"/>';                
                 signguDetailHtml += '   <input type="hidden" name="ctprvnCd" value="'+data.list[i].ctprvnCd+'"/>';                
                 signguDetailHtml += '   <input type="hidden" name="signguCd" value="'+data.list[i].signguCd+'"/>';
                 signguDetailHtml += '   <td class="text-center v-middle">'+data.list[i].signguNm+'</td>';
@@ -149,7 +150,7 @@ function fn_signguDetail(item){
             	signguDetailHtml += '  </td>';
             	signguDetailHtml += '</tr>';
             }
-            $("#areaNmTxt").text("지역 : " + item.cdNm);
+            $("#areaNmTxt").text("지역 : " + item.ctprvnNm);
             $("#signguDetailTbody").append(signguDetailHtml);
         }
     });    
@@ -166,6 +167,7 @@ function fn_updateEduSareaSignguSetting(){
     	$("#signguDetailTbody tr").each(function(index, item){
             debugger;
     		if($(this).find("[name=useYn]").prop("checked")) {
+	            param["signguList[" + index + "].sareaId"] = $(this).find("[name=sareaId]").val();
 	            param["signguList[" + index + "].ctprvnCd"] = $(this).find("[name=ctprvnCd]").val();
 	            param["signguList[" + index + "].signguCd"] = $(this).find("[name=signguCd]").val();
 	            param["signguList[" + index + "].hrSeCd"] = $(this).find("[name=hrSeCd"+index+"]:checked").val();

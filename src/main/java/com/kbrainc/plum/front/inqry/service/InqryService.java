@@ -24,6 +24,8 @@ import java.util.List;
 public interface InqryService {
     public List<InqryVo> selectInqryList(InqryVo inqryVo) throws Exception;
 
+    public List<InqryVo> selectMypageInqryList(InqryVo inqryVo) throws Exception;
+
     public InqryVo selectInqry(InqryVo inqryVo) throws Exception;
 
     public InqryAnsVo selectInqryAns(InqryVo inqryVo) throws Exception;
