@@ -1,17 +1,14 @@
 package com.kbrainc.plum.mng.chklst.model;
 
-import java.util.Date;
-
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
-
 import lombok.Data;
+import org.apache.commons.lang3.SerializationUtils;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import java.util.Date;
 
 /**
  * 
@@ -72,8 +69,10 @@ public class ChklstQitemVo extends ParentRequestVo {
     
     /** 문항 순서 */
     private int ordr;
-    
-    
+
+    /** 문항아이디 배열 */
+    private String[] qitemArr;
+
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

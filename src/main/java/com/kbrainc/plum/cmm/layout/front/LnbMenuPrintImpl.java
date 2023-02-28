@@ -151,7 +151,11 @@ public class LnbMenuPrintImpl {
 		                                menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
 		                            }
 		                        } else {
-		                            menuTag.append("<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+		                            if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
+		                                menuTag.append("<a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\">");
+                                    } else { // 현재창
+                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                    }
 		                        }
 		                    }
 		                }
@@ -212,7 +216,11 @@ public class LnbMenuPrintImpl {
 		                                            menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
 		                                        }
 		                                    } else {
-		                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+		                                        if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
+		                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\">");
+                                                } else { // 현재창
+                                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\">");
+                                                }
 		                                    }
 		                                }
 		                            }

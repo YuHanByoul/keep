@@ -36,12 +36,13 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="qitemListPopup.onAddQitem();">선택</button>
+            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="qitemMapng.addQitem();">선택</button>
         </div>
     </div>
 </div>
 
 <script th:inline="javascript">
+    var qitemArr = /*[[${qitemArr}]]*/null;
     var qitemListPopup = {
         listUrl: "/mng/chklst/selectChklstQitemList.do"
         , dataList: []
@@ -86,14 +87,19 @@
                 controller: {
                     loadData: function(filter) {
                         var data = $.Deferred();
-                        var params = {
-                            "searchSeCd": $('#searchSeCd').val(),
-                            "useYn": "Y",
-                            "pageNumber": filter.pageIndex,
-                            "rowPerPage": filter.pageSize,
-                            "orderField": "REG_DT",
-                            "orderDirection": "asc"
-                        };
+                        var params = [
+                            {name:"searchSeCd", value:$('#searchSeCd').val()},
+                            {name:"useYn", value:"Y"},
+                            {name:"pageNumber", value:filter.pageIndex},
+                            {name:"rowPerPage", value:filter.pageSize},
+                            {name:"orderField", value:"REG_DT"},
+                            {name:"orderDirection", value:"asc"}
+                        ];
+                        if(qitemArr !== null){
+                            for (const qitemId of qitemArr) {
+                                params.push({name: "qitemArr", value: qitemId})
+                            }
+                        }
                         $.ajax({
                           type: "GET",
                           contentType: "application/json; charset=utf-8",
@@ -116,85 +122,40 @@
                     {
                         headerTemplate: function() {
                             return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
-                               qitemListPopup.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                                qitemListPopup.allSelectItem($(this).is(":checked"));
                             });
                         },
-                        itemTemplate: function(value, item) {
-                            return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr('qitemid', item.qitemid).prop("checked", $.inArray(item, qitemListPopup.selectedItems) > -1).on("change", function() {
-                                $(this).is(":checked") ? qitemListPopup.selectItem($(this).attr("qitemid")) : qitemListPopup.unselectItem($(this).attr("qitemid"));
-                            });
+                        itemTemplate: function(_, item) {
+                            return $("<input>").attr("type", "checkbox").attr({class: "singleCheckbox",id: "checkBox"+item.rowNumber})
+                                .data({"seCd":item.seCd, "qitemid": item.qitemid, "cn":item.cn});
                         },
-                        align: "center", width: "30", sorting: false
+                        align: "center",
+                        width: "30",
+                        sorting: false
                     },
                     {title: "문항", name: "", type: "number", width: "150", align: "left", itemTemplate: function(value, item) {
                         var el = "<strong>" + item.upprCdNm + " > " + item.cdNm + "</strong></br>"; 
                         el += item.cn + " (" + item.altm + "점)";
-                        return el;
+                        return $("<label/>").attr({for: "checkBox"+item.rowNumber}).html(el).css({display: "block"});
                     }}
                 ]
             });
         }
-        
+
         , allSelectItem: function(isChecked) {
-            this.selectedItems = [];
             if(isChecked) {
                 $('.singleCheckbox').each(function() {
                     this.checked = true;
-                    qitemListPopup.selectItem($(this).attr("qitemid"));           
-                }); 
+                });
             } else {
                 $('.singleCheckbox').each(function() {
-                    this.checked = false; 
-                    qitemListPopup.unselectItem($(this).attr("qitemid"));
-                });  
-                this.selectedItems = [];
-            }
-        }
-        
-        , selectItem: function(qitemid) {
-            this.selectedItems.push(qitemid);
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
-            }
-        }
-        
-        , unselectItem: function(qitemid) {
-            var items = $("#qitemGrid").jsGrid("option", "data");
-            this.selectedItems = $.grep(this.selectedItems, function(i) {
-                return i !== qitemid;
-            });
-            if(this.selectedItems.length == 0) {
-                $('#selectAllCheckbox').attr("checked", false);
-            }
-            if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
-                $("#selectAllCheckbox").prop("checked", true);
-            } else {
-                $("#selectAllCheckbox").prop("checked", false);
+                    this.checked = false;
+                });
             }
         }
         
         , onAddQitem: function() {
-            if(this.selectedItems.length == 0) {
-                alert("선택한 문항이 없습니다.");
-                return false;
-            }
-            var dataList = this.dataList;
-            $(this.selectedItems).each(function(index, item) {
-                if($("[data-qitemid=" + item + "]").length == 0) {
-                    var list = $.grep(dataList, function(d, i) {
-                        return item == d.qitemid;
-                    });
-                    var data = list[0];
-                    data.treeOrd = 3;
-                    data.lv2key = data.seCd;
-                    data.newYn = "Y";
-                    qitemMapng.addItem(data);
-                }
-            });
-            qitemListModal.hide();
-            /* 
+            /*
             return false;
             if(!confirm("선택하신 회원을 설문 대상자에 추가 하시겠습니까?\n(이미 설문 대상자인 회원은 추가 되지 않습니다.")) {
                 return false;

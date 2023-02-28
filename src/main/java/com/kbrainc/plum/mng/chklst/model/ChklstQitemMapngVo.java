@@ -1,15 +1,12 @@
 package com.kbrainc.plum.mng.chklst.model;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.SerializationUtils;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
-
 import lombok.Data;
+import org.apache.commons.lang3.SerializationUtils;
+
+import java.util.Date;
 
 /**
  * 
@@ -34,29 +31,32 @@ public class ChklstQitemMapngVo extends ParentRequestVo {
     private UserVo user;
     
     /** 체크리스트 아이디 */
-    private int chklstid;
+    private Integer chklstid;
     
     /** 문항 아이디 */
-    private int qitemid;
+    private Integer qitemid;
     
     /** 상위 구분 코드 */
-    private String lv1key;
+    private String pseCd;
     
     /** 구분 코드 */
-    private String lv2key;
+    private String seCd;
     
     /** 구분 코드명 */
     private String cn;
     
     /** 트리 뎁스 */
-    private int treeOrd;
+    private Integer treeOrd;
     
     /** 배점 */
-    private int altm;
-    
-    /** 문항 목록 */
-    private List<ChklstQitemVo> qitemList; 
-    
+    private Integer altm;
+
+    /** 구분 코드 배열 */
+    private String[] seCds;
+
+    /** 문항 아이디 배열 */
+    private Integer[] qitemids;
+
     /** 수정일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

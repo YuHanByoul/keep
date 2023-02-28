@@ -10,23 +10,34 @@
         list-style-type: none;
         padding-left: 0;
     }
+    #expendable .ui-state-highlight{
+        height: 51px;
+        margin-bottom: .5rem;
+    }
+    #expendable .ui-sortable-helper{
+        opacity: .8;
+    }
 </style>
-<div class="card-block-small p-t-0">
-    <div class="mb-2 row">
-        <div class="col-12 btn-group-sm">
-            <button type="button" class="col-auto btn btn-inverse m-r-5" id="expandAllBtn">모두 펼치기</button>
-            <button type="button" class="col-auto btn btn-disabled m-r-5" id="collapseAllBtn">모두 접기</button>
-            <button type="button" class="col-auto btn btn-primary" id="qitemLoadBtn">문항 불러오기</button>
+<form id="chklstFormQitemMapgForm">
+    <div class="card-block-small p-t-0">
+        <div class="mb-2 row">
+            <div class="col-12 btn-group-sm">
+                <button type="button" class="col-auto btn btn-inverse m-r-5" id="expandAllBtn">모두 펼치기</button>
+                <button type="button" class="col-auto btn btn-disabled m-r-5" id="collapseAllBtn">모두 접기</button>
+                <button type="button" class="col-auto btn btn-primary" id="qitemLoadBtn">문항 불러오기</button>
+            </div>
+        </div>
+        <div class="col-12 expendable-wrapper" id="expendable">
+            <ol>
+                <!-- js 처리 -->
+            </ol>
         </div>
     </div>
-    <div class="col-12 expendable-wrapper" id="expendable">
-    <ol></ol>
+    <div class="card-block-small">
+        <button class="btn btn-disabled m-r-5" type="button" onclick="qitemMapng.offQitemMapngList();">취소</button>
+        <button class="btn btn-primary" type="button" onclick="qitemMapng.onInsertQitemMapngList();">저장</button>
     </div>
-</div>
-<div class="card-block-small">
-    <button class="btn btn-disabled m-r-5" onclick="qitemMapng.offQitemMapngList();">취소</button>
-    <button class="btn btn-primary" onclick="qitemMapng.onInsertQitemMapngList();">저장</button>
-</div>
+</form>
 
 <ol id="itemTmplat" style="display: none;">
     <li class="col-12 mb-2 item" style="min-height: 41px;">
@@ -34,56 +45,97 @@
             <div class="col-12 p-10">
                 <div class="row align-items-center justify-content-between">
                     <div class="col-auto">
+                        <input type="hidden" name="seCds" />
                         <p class="card-text"></p>
                     </div>
                 </div>
             </div>
         </div>
         <ol></ol>
+    </li>
 </ol>
 
 <div class="modal fade" id="qitemListPopup" aria-hidden="true" data-bs-backdrop="static"></div>
 
 <script th:inline="javascript">
+    var $listBody = $("#expendable > ol");
+    var $itemTemp = $("#itemTmplat > li.item");
+    var qitemArrParam = '';
+    var qitemMapngList = /*[[${qitemMapngList}]]*/null;
+    var chklstid = /*[[${param.chklstid}]]*/null;
     var qitemMapng = {
-        qitemMapngList: /*[[${qitemMapngList}]]*/
-        , chklstid: /*[[${param.chklstid}]]*/ 
-        , expendable: null
+        expendable: null
         
         , init: function() {
             this.expendable = fnExpendable($("#expendable"));
-            this.setItems();
+            this.setQitemList(qitemMapngList);
             this.setSortable();
             this.expendable.refresh();
             this.registEvent();
         }
-        
-        , setItems: function() {
-            var _this = this;
-            var list = this.qitemMapngList;
-            
-            $(list).each(function(index, item) {
-                _this.addItem(item);
-            });
-        }
-        
-        , addItem: function(data) {
-            var item = $("#itemTmplat .item").clone(true);
-            var container = data.treeOrd == 1 ? $("#expendable > ol") : data.treeOrd == 2 ? $("[data-cd='" + data.lv1key + "'] > ol") : $("[data-cd='" + data.lv2key + "'] > ol").first();
-            var newYn = data.newYn ? data.newYn : "N";
-            container.append(
-                data.treeOrd == 3 ? item.find(".card-text").text(data.cn).end().attr("data-cd", data.lv2key).attr("data-qitemid", data.qitemid).attr("data-newyn", newYn) : item.find(".card-text").text(data.cn).end().attr("data-cd", data.lv2key) 
-            );
-            if(data.treeOrd == 3) { // 드래그 가능 뎁스 제한
-                container.addClass("draggable");
-            } else { // 커서
-                //container.find(".card-sub").css("cursor", "default");
+
+        , setQitemList: function (list) {
+            const parentMap = {};
+            const childMap = {};
+            for(let item of list){
+                if(item.treeOrd === 1){
+                    const $item = $itemTemp.clone(true);
+                    parentMap[item.seCd] = $item.children('ol');
+                    $listBody.append(
+                        $item.find('.card-text').text(item.cn).end()
+                            .find('input[name=seCds]').val(item.seCd).end()
+                            .find('ol').addClass('qitem-parent').end()
+                    );
+                }else if(item.treeOrd === 2){
+                    const $item = $itemTemp.clone(true);
+                    childMap[item.seCd] = $item.children('ol');
+                    parentMap[item.pseCd].append(
+                        $item.find('.card-text').text(item.cn).end()
+                            .find('input[name=seCds]').val(item.seCd).end()
+                    );
+                }else{
+                    const $item = $itemTemp.clone(true);
+                    childMap[item.pseCd].append(
+                        $item.find('input[name=seCds]').remove().end()
+                            .find('.card-text').text(item.cn).data('qitem-id',item.qitemid).addClass('qitem-id').end()
+                    );
+                    qitemArrParam += "&qitemArr="+item.qitemid;
+                }
             }
+        }
+
+        , addQitem: function() {
+            const $modalBody = $('#qitemGrid');
+            const $checked = $modalBody.find(".singleCheckbox:checked");
+
+            if ($checked.length === 0) {
+                alert("문항을 선택해주세요.");
+                return;
+            }
+
+            const parentMap = {};
+            $('#expendable ol.qitem-parent > li').each(function () {
+                const seCds = $(this).find("input[name=seCds]").val();
+                parentMap[seCds] = $(this);
+            });
+
+            $checked.each(function () {
+                const {seCd, qitemid, cn} = $(this).data();
+                let $li = parentMap[seCd];
+                const $item = $itemTemp.clone(true);
+                $li.children('ol').append(
+                    $item.find('input[name=seCds]').remove().end()
+                        .find('.card-text').text(cn).data('qitem-id',qitemid).addClass('qitem-id').end()
+                );
+                qitemArrParam += "&qitemArr="+qitemid;
+            });
+            qitemListModal.hide();
+            this.expendable.refresh();
             this.setSortable();
         }
         
         , setSortable: function() {
-            $("#expendable .draggable").sortable({
+            $("#expendable ol").sortable({
                 axis: "y"
                 , placeholder: "ui-state-highlight"
             });
@@ -100,7 +152,7 @@
             });
             
             $("#qitemLoadBtn").on("click", function() {
-                var url = "/mng/chklst/chklstQitemListPopup.html";
+                var url = "/mng/chklst/chklstQitemListPopup.html?" + qitemArrParam;
                 $("#qitemListPopup").load(url, function(response, status, xhr) {
                     if(status == "success") {
                         qitemListModal = new bootstrap.Modal($("#qitemListPopup"));
@@ -111,28 +163,32 @@
         }
         
         , onInsertQitemMapngList: function() {
-            var param = {};
-            var chklstid = this.chklstid[0];
+            let params = [
+                {name:'chklstid', value:chklstid[0]},
+            ];
+            $('#chklstFormQitemMapgForm input[name=seCds]').each(function (){
+                params.push(
+                    {name:'seCds', value:$(this).val()}
+                )
+            });
+            $('#chklstFormQitemMapgForm .qitem-id').each(function (){
+                params.push(
+                    {name:'qitemids', value:$(this).data('qitem-id')}
+                )
+            });
             
-            if($("[data-qitemid]").length == 0) {
+            if($('#chklstFormQitemMapgForm .qitem-id').length == 0) {
                 alert("추가된 문항이 없습니다.");
                 return false;
             }
-            
-            $("[data-qitemid]").each(function(index, item) {
-                param["qitemList[" + index + "].chklstid"] = chklstid;
-                param["qitemList[" + index + "].ordr"] = index + 1;
-                param["qitemList[" + index + "].qitemid"] = $(item).attr("data-qitemid");
-                param["qitemList[" + index + "].newYn"] = $(item).attr("data-newyn");
-            });
-            
+
             if(displayWorkProgress()) {
                 $.ajax({
                     url : "/mng/chklst/updateChklstQitemMapng.do",
                     type: "POST",
                     cache: false,
                     dataType: "json",
-                    data: param,
+                    data: params,
                     success: function(response) {
                         if(response.result == "success") {
                             alert(response.msg);

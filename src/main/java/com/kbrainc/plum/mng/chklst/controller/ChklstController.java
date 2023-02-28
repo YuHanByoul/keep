@@ -1,19 +1,5 @@
 package com.kbrainc.plum.mng.chklst.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemMapngVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstQitemVo;
 import com.kbrainc.plum.mng.chklst.model.ChklstVo;
@@ -22,6 +8,18 @@ import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -187,8 +185,9 @@ public class ChklstController {
      * @throws Exception 예외
      */
     @RequestMapping(value = "/mng/chklst/chklstQitemListPopup.html")
-    public String chklstQitemListPopup(CodeVo codeVo, Model model) throws Exception {
+    public String chklstQitemListPopup(ChklstQitemVo chklstQitemVo, CodeVo codeVo, Model model) throws Exception {
         model.addAttribute("codeList", chklstService.selectChklstQitemCdList(codeVo));
+        model.addAttribute("qitemArr",chklstQitemVo.getQitemArr());
         return "mng/chklst/chklstQitemListPopup";
     }
     
@@ -442,11 +441,11 @@ public class ChklstController {
             return resultMap;
         }
         
-        int retVal = 0;
+        boolean retVal = false;
         chklstQitemMapngVo.setUser(user);
         retVal = chklstService.updateChklstQitemMapng(chklstQitemMapngVo);
         
-        if(retVal > 0) {
+        if(retVal) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "문항구성 저장에 성공하였습니다");
         } else {
