@@ -1,0 +1,224 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title">탄소중립 헬프데스크 신청
+                <th:block th:text="${helpdesk.inqryid == null? '등록' : '수정'}"/>
+            </h3>
+        </div>
+        <div class="right">
+            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+        </div>
+    </div>
+
+    <form id="helpdeskForm" name="helpdeskForm" action="post">
+        <div class="table-row table-row-mo">
+            <table>
+                <caption>탄소중립 헬프데스크 신청_정보입력 - 공개여부, 분야, 제목, 내용, 첨부파일</caption>
+                <colgroup>
+                    <col style="width:140px;">
+                    <col>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th scope="row">공개여부<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <span kattr:radio_yn="rlsYn" label1="예" label2="아니요" addClass=" inp" th:attr="defaultVal=${helpdesk.rlsYn == 'Y' ? 'Y':'N'}"></span>
+                        <p class="feedback"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">분야<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <span kattr:select_code="clsfCd" grpCd="112" th:attr="selectedCd=${helpdesk.clsfCd}" firstOptTxt="- 선택 -"></span>
+                        </div>
+                        <p class="feedback"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">제목<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <input type="text" id="ttl" name="ttl" title="제목" placeholder="제목을 입력해주세요." th:value="${helpdesk.ttl}">
+                        </div>
+                        <p class="feedback"></p>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th scope="row">내용<i class="ast" title="필수입력">*</i></th>
+                    <td>
+                        <div class="form-input">
+                            <textarea title="내용" id="cn" name="cn" placeholder="내용을 입력해주세요." th:text="${helpdesk.cn}"></textarea>
+                        </div>
+                        <p class="feedback"></p>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">첨부파일</th>
+                    <td>
+                        <div class="form-input-file">
+                            <label class="form-input">
+                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;"
+                                       th:attr="accept=${acceptUploadFileExt}">
+                                <span class="btn-medium btn-gray">파일선택</span>
+                            </label>
+                            <ul id="multipleFileUploadSuccess">
+                                <th:block th:if="${helpdesk.fileList != null}">
+                                    <th:block th:each="file : ${helpdesk.fileList}">
+                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                            <span class="name">
+                                                <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                   th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                    [[${file.orginlFileNm}]]
+                                                </a>
+                                            </span>
+                                            <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                    th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                    th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                <span class="icon icon-circle-close"></span>
+                                            </button>
+                                        </li>
+                                    </th:block>
+                                </th:block>
+                            </ul>
+                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(helpdesk.filegrpid == '' or helpdesk.filegrpid == null) ? 0 : helpdesk.filegrpid}"/>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="box-desc-list bg7 mt10">
+            <ul>
+                <li>첨부 가능 확장자 :
+                    <th:block>
+                        <th:block th:each="item, itemStat : ${fileConfiguration.uploadFileExtsn}">
+                            [[${item.value}]]
+                            <th:block th:if="${!itemStat.last}">,&nbsp;</th:block>
+                        </th:block>
+                    </th:block>
+                </li>
+                <li>첨부 가능 총 용량 : [[${fileConfiguration.uploadFileTotalSize}]]Mbyte</li>
+                <li>첨부 가능 개별 용량 : [[${fileConfiguration.uploadFileSize}]]Mbyte</li>
+            </ul>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="frontHelpdeskForm.cancel()">취소</button>
+                <button type="button" class="btn-medium btn-blue" onclick="frontHelpdeskForm.save()">
+                    <th:block th:text="${helpdesk.inqryid == null? '등록' : '저장'}"/>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <form id="listForm" th:action="@{/}" method="get" onsubmit="return false;">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="inqryid" name="inqryid" th:value="${searchVo.inqryid}">
+    </form>
+
+    <script th:inline="javascript">
+        let cnTemplate =
+            `□ 적용 학교급 *아래의 유형 중 해당 사항 필수 기재
+             - 초등저
+             - 초등고
+             - 중등
+             - 고등
+             - 기타
+
+            □ 문의유형 *아래의 유형 중 해당 사항을 필수 기재
+             - 자료요청(교재, 지도안, 영상, 안내서 등)
+             - 정보제공(사이트, 지원사업 등)
+             - 컨설팅제공
+             - 기타
+
+            ※ 강의(강사)요청은 전문가ㆍ강사 > 환경교육 전문가 풀 > 섭외 요청 게시판에 글을
+            작성해주시기바랍니다.`;
+
+        let frontHelpdeskForm = {
+            insertUrl: '/front/helpdesk/insertHelpdesk.do',
+            updateUrl: '/front/helpdesk/updateHelpdesk.do',
+            listUrl: '/front/mypage/inqry/helpdeskList.html',
+            detailUrl: '/front/mypage/inqry/helpdeskDetail.html',
+            inqryid: /*[[${helpdesk.inqryid}]]*/null,
+
+            init() {
+                this.validateForm();
+            },
+
+            save() {
+                if (!$('#helpdeskForm').valid()) return;
+
+                let url = this.insertUrl;
+                if (this.inqryid != null) url = this.updateUrl;
+
+                if (displayWorkProgress(true)) {
+                    let formData = $('#helpdeskForm').serializeArray();
+                    let params = [];
+
+                    params.push({name: 'inqryid', value: frontHelpdeskForm.inqryid});
+                    formData = formData.concat(params);
+
+                    $.ajax({
+                        method: 'POST',
+                        url: url,
+                        data: formData,
+                        dataType: 'json',
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success) {
+                                let f = document.forms.listForm;
+                                f.action = frontHelpdeskForm.listUrl;
+                                f.submit();
+                            }
+                        }
+                    });
+                }
+            },
+
+            validateForm() {
+                $('#helpdeskForm').validate({
+                    rules: {
+                        clsfCd: {required: true},
+                        ttl: {required: true, maxlength: 100},
+                        cn: {required: true, maxlength: 4000},
+                    },
+                    messages: {
+                        clsfCd: {required: "분류를 선택해 주십시오."},
+                        ttl: {required: "제목을 입력해 주십시오.", maxlength: "제목은 100자를 넘을 수 없습니다."},
+                        cn: {required: "내용을 입력해 주십시오.", maxlength: "내용은 4000자를 넘을 수 없습니다."},
+                    }
+                })
+            },
+
+            cancel() {
+                if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
+
+                let f = document.forms.listForm;
+                f.action = (this.inqryid == null ? this.listUrl : this.detailUrl);
+                f.submit();
+            },
+        };
+
+        $(function () {
+            frontHelpdeskForm.init();
+            addFileUploadEvent('multiFileInput', 'helpdesk_file', 'multipleFileUploadSuccess');
+
+            if ($('#cn').val() == null || $('#cn').val() == '') {
+                $('#cn').val(cnTemplate);
+            }
+        })
+    </script>
+</div>

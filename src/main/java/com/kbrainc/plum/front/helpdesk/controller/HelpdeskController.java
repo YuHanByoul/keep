@@ -4,12 +4,9 @@ import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.helpdesk.model.HelpdeskAnsVo;
 import com.kbrainc.plum.front.helpdesk.model.HelpdeskVo;
 import com.kbrainc.plum.front.helpdesk.service.HelpdeskService;
-import com.kbrainc.plum.front.inqry.model.InqryAnsVo;
-import com.kbrainc.plum.front.inqry.model.InqryVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
-import groovyjarjarpicocli.CommandLine;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -137,8 +134,6 @@ public class HelpdeskController {
     @ResponseBody
     public Map<String, Object> selectHelpdeskList(HelpdeskVo searchVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        searchVo.setUser(user);
-
         List<HelpdeskVo> list = helpdeskService.selectHelpdeskList(searchVo);
 
         if (list.size() > 0) {

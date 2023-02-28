@@ -54,6 +54,20 @@ public class HelpdeskServiceImpl extends PlumAbstractServiceImpl implements Help
     }
 
     /**
+     * 마이페이지 > 헬프데스크 신청 목록 조회
+     *
+     * @param helpdeskVo
+     * @return list
+     * @throws Exception
+     * @Title : selectHelpdeskList
+     * @Description : 마이페이지 > 헬프데스크 신청 목록 조회
+     */
+    @Override
+    public List<HelpdeskVo> selectMyHelpdeskList(HelpdeskVo helpdeskVo) throws Exception {
+        return helpdeskDao.selectMyHelpdeskList(helpdeskVo);
+    }
+
+    /**
      * 헬프데스크 상세 조회
      *
      * @param helpdeskVo

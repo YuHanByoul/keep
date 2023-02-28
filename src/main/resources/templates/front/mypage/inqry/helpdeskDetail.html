@@ -1,0 +1,176 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span><th:block th:text="|[${helpdesk.clsfCdNm}]|"/> [[${helpdesk.ttl}]]</span>
+                <th:block th:if="${helpdesk.rlsYn == 'N'}">
+                    <span class="icon icon-lockon" title="비밀글"></span>
+                </th:block>
+            </h3>
+            <dl>
+                <div class="list">
+                    <dt>상태</dt>
+                    <dd>[[${helpdesk.sttsCdNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(helpdesk.regDt, 'yyyy-MM-dd')}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>작성자</dt>
+                    <dd>[[${helpdesk.acnt}]]</dd>
+                </div>
+            </dl>
+            <dl class="table-view-file">
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:if="${helpdesk.fileList != null}">
+                                <th:block th:each="file : ${helpdesk.fileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content">
+                <th:block th:utext="${#strings.replace(#strings.escapeXml(helpdesk.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+            </div>
+        </div>
+
+        <th:block th:if="${helpdesk.sttsCd == '113104' && helpdeskAns.rlsYn == 'Y' }">
+            <div class="table-view">
+                <div class="table-view-header">
+                    <h3><span class="box-tag tag-green">답변완료</span>
+                        <span th:text="${helpdeskAns.ttl}">답변제목</span>
+                    </h3>
+                    <dl>
+                        <div class="list">
+                            <dt>작성자</dt>
+                            <dd th:text="${helpdeskAns.acnt}">관리자ID</dd>
+                        </div>
+                        <div class="list">
+                            <dt>답변일</dt>
+                            <dd th:text="${helpdeskAns.ansDe}">2022-03-08</dd>
+                        </div>
+                    </dl>
+                    <dl class="table-view-file">
+                        <div class="list">
+                            <dt>첨부파일</dt>
+                            <dd>
+                                <div class="form-input-file">
+                                    <ul th:if="${helpdeskAns.fileList != null}">
+                                        <th:block th:each="file : ${helpdeskAns.fileList}">
+                                            <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                                <span class="name">
+                                                    <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                       th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        [[${file.orginlFileNm}]]
+                                                    </a>
+                                                </span>
+                                            </li>
+                                        </th:block>
+                                    </ul>
+                                </div>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="table-view-body">
+                    <div class="table-view-content">
+                        <th:block th:utext="${#strings.replace(#strings.escapeXml(helpdeskAns.cn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <th:block th:if="${helpdesk.sttsCd == '113101'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.update('cancel')">접수취소</button>
+                </th:block>
+                <th:block th:if="${helpdesk.sttsCd == '113104'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.update('delete')">삭제</button>
+                </th:block>
+                <th:block th:if="${helpdesk.sttsCd == '113101'}">
+                    <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.moveToUpdateForm()">수정</button>
+                </th:block>
+                <button type="button" class="btn-medium btn-gray" onclick="helpdeskDetail.moveToList()">목록</button>
+            </div>
+        </div>
+    </div>
+
+    <form id="listForm" th:action="@{/}" method="get" onsubmit="return false;">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" id="orderField" name="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" id="inqryid" name="inqryid" th:value="${helpdesk.inqryid}">
+    </form>
+
+    <script th:inline="javascript">
+        let helpdeskDetail = {
+            inqryid: /*[[${helpdesk.inqryid}]]*/null,
+            updateFormUrl: '/front/mypage/inqry/helpdeskForm.html',
+            listUrl: '/front/mypage/inqry/helpdeskList.html',
+            deleteUrl: '/front/helpdesk/deleteHelpdesk.do',
+            cancelUrl: '/front/helpdesk/cancelHelpdesk.do',
+
+            update(mode) {
+                if (mode == 'cancel') {
+                    if (!confirm('접수를 취소 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(this.cancelUrl);
+                } else if (mode == 'delete') {
+                    if (!confirm('등록하신 게시글을 삭제 하시겠습니까?')) return;
+                    this.ajaxForSttsUpdate(this.deleteUrl);
+                }
+            },
+
+            ajaxForSttsUpdate(url) {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'post',
+                        url: url,
+                        dataType: 'json',
+                        data: {inqryid: helpdeskDetail.inqryid},
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.success)
+                                helpdeskDetail.submit(helpdeskDetail.listUrl);
+                        }
+                    })
+                }
+            },
+            moveToList() {
+                this.submit(this.listUrl);
+            },
+
+            moveToUpdateForm() {
+                this.submit(this.updateFormUrl);
+            },
+
+            submit(url) {
+                let f = document.forms.listForm;
+                f.action = url;
+                f.submit();
+            }
+        };
+    </script>
+</div>
