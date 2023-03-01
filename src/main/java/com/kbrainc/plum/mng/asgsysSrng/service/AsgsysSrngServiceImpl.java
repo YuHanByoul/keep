@@ -1247,7 +1247,7 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     		}
     	}
     	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@6");
-    	//비상조치계획 저장*/
+    	/*비상조치계획 저장
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
     	if( 0 < planLst.size()) {
@@ -1260,19 +1260,21 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     			ret += asgsysSrngDao.insertEmrgcyActnPlan(emrgcyActnPlanVo);
     		}
     	}
-
+    	*/
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@7");
     	//교육주제 저장
     	if(CommonUtil.isNotEmpty(asgsysSrngVo.getEduSbjctCdLst())){
-
+    		logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     		String [] eduSbjctCdArr = asgsysSrngVo.getEduSbjctCdLst().split(",");
 
     		asgsysSrngDao.deleteEduSbjct(asgsysSrngVo);
 
     		ret += asgsysSrngDao.insertEduSbjct(asgsysSrngVo, eduSbjctCdArr, asgsysSrngVo.getUser());
     	}
-
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@9");
     	// 프로그램 우수성 수정
     	ret += asgsysSrngDao.updatePrgrmDstnctn(asgsysSrngVo);
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@10");
 
     	return ret;
     }

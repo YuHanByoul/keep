@@ -9,11 +9,14 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -22,6 +25,7 @@ import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.front.dsgnPrgrm.service.DsgnPrgrmService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -52,6 +56,9 @@ public class DsgnPrgrmController {
 
 	@Resource(name = "front.dsgnPrgrmServiceImpl")
     private DsgnPrgrmService dsgnPrgrmService;
+
+    @Autowired
+    private AsgsysSrngServiceImpl asgsysSrngService;
 
     @Autowired
     private FileServiceImpl fileService;
@@ -309,7 +316,17 @@ public class DsgnPrgrmController {
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmDstnctnForm.html")
 	public String prgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 
+		//신청정보
 		model.addAttribute("aplyInfo", dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo));
+
+		//프로그램 일정 목록
+		List<DsgnPrgrmVo> schdlList = dsgnPrgrmService.selectPrgrmSchdlList(dsgnPrgrmVo);
+
+		//프로그램 대처 계획
+    	List<DsgnPrgrmVo> planList  = dsgnPrgrmService.selectPlanList(dsgnPrgrmVo);
+
+		model.addAttribute("schdlList", schdlList);
+		model.addAttribute("planList", planList );
 
 		return "front/dsgnPrgrm/prgrmDstnctnForm";
 	}
@@ -329,22 +346,18 @@ public class DsgnPrgrmController {
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmDstnctnForm.do")
     @ResponseBody
-    public Map<String, Object> insertPrgrmDstnctnForm(@Valid DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertPrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, @UserInfo UserVo user) throws Exception {
+
     	Map<String, Object> resultMap = new HashMap<String, Object>();
 
-    	if (bindingResult1.hasErrors()) {
-    		FieldError fieldError = bindingResult1.getFieldError();
-    		if (fieldError != null) {
-    			resultMap.put("msg", fieldError.getDefaultMessage());
-    		}
-    		return resultMap;
-    	}
+    	int retVal=0;
 
     	dsgnPrgrmVo.setUser(user);
 
-    	int retVal = 0;
+		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
 
-    	retVal = dsgnPrgrmService.insertPrgrmDstnctnForm(dsgnPrgrmVo);
+		asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -356,6 +369,45 @@ public class DsgnPrgrmController {
 
     	return resultMap;
     }
+
+	/**
+	 * 프로그램 우수성 수정
+	 *
+	 * @Title : updatePrgrmDstnctnForm
+	 * @Description : 프로그램 우수성 수정
+	 * @param dsgnPrgrmVo
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping(value = "/front/dsgnPrgrm/updatePrgrmDstnctnForm.do")
+	@ResponseBody
+	public Map<String, Object> updatePrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, @UserInfo UserVo user) throws Exception {
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		int retVal=0;
+
+		dsgnPrgrmVo.setUser(user);
+
+		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
+
+		asgsysSrngVo.setPrgrmSchdlLst(dsgnPrgrmVo.getPrgrmSchdlLst());
+
+		retVal=+asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+
+		return resultMap;
+	}
 
 	/**
 	* 프로그램 운영관리 화면이동
@@ -377,8 +429,20 @@ public class DsgnPrgrmController {
 //		return "front/dsgnPrgrm/prgrmDstnctn";
 //	}
 
+	/**
+	* 프로그램 평가 체계 화면 이동
+	*
+	* @Title : prgrmEvlForm
+	* @Description : 프로그램 평가 체계 화면 이동
+	* @param DsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return String
+	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmEvlForm.html")
-	public String prgrmEvlForm(Model model) throws Exception {
+	public String prgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+		model.addAttribute("aplyInfo", dsgnPrgrmService.selectPrgrmEvlForm(dsgnPrgrmVo));
+
 		return "front/dsgnPrgrm/prgrmEvlForm";
 	}
 

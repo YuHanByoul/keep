@@ -217,6 +217,10 @@
             PRGRMID
           , SCHDLID
           , RND
+          , BGNG_HR
+          , BGNG_MNT
+          , END_HR
+          , END_MNT
           , CONCAT(BGNG_HR, "시 ",  BGNG_MNT,"분 ~ ", END_HR, "시 ",  END_MNT, "분") AS SCHDL
           , PRGRM_NM
           , CRS
@@ -226,6 +230,59 @@
         FROM
             TB_ASS_PRGRM_SCHDL    /*ASS_프로그램_일정*/
         WHERE PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 프로그램 운영일정 등록 -->
+    <insert id="insertPrgrmSchdl" parameterType="front.dsgnPrgrmVo" >
+        INSERT INTO
+            TB_ASS_PRGRM_SCHDL (
+                PRGRMID
+              , RND
+              , BGNG_HR
+              , BGNG_MNT
+              , END_HR
+              , END_MNT
+              , PRGRM_NM
+              , CRS
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES(
+                #{schdlArr.prgrmid }
+              , #{schdlArr.rnd     }
+              , #{schdlArr.bgngHr  }
+              , #{schdlArr.bgngMnt }
+              , #{schdlArr.endHr   }
+              , #{schdlArr.endMnt  }
+              , #{schdlArr.prgrmNm }
+              , #{schdlArr.crs     }
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+    </insert>
+
+    <!-- 프로그램 운영일정 삭제 -->
+    <delete id="deletePrgrmSchdl" parameterType="front.dsgnPrgrmVo" >
+        DELETE FROM
+            TB_ASS_PRGRM_SCHDL
+        WHERE PRGRMID = #{prgrmid}
+    </delete>
+
+    <!-- 프로그램 대처계획 목록 조회 -->
+    <select id="selectPlanList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
+        /* dsgnPrgrmDao.selectPlanList */
+        SELECT
+            PLANID
+          , PRGRMID
+          , PRGRM_NM
+          , SBSTN_PRGRM_NM
+        FROM
+            TB_ASS_EMRGCY_ACTN_PLAN
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
     </select>
 
     <!-- 기관정보 조회 -->
@@ -254,7 +311,6 @@
           , B.ADDR_DTL
           , B.HMPG
           , B.LOGO_FILEID
-          , B.FILEGRPID
           , B.APRV_STTS_CD
           , B.USE_YN
           , B.MDFCN_DT
@@ -608,6 +664,40 @@
         WHERE
             PRGRMID = #{prgrmid}
     </update>
+
+    <!-- 프로그램 평가 체계 조회 -->
+    <select id="selectPrgrmEvlForm" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
+        /* DsgnPrgrmDao.selectPrgrmEvlForm*/
+        SELECT
+            A.PRGRMID                /* 프로그램아이디 */
+          , B.PRGRMID    AS EVLID
+          , B.EVL_PRPS               /* 평가_목적 */
+          , B.BFR_LDR_EVL_ARTCL      /* 사전_지도자_평가_항목 */
+          , B.BFR_LDR_EVL_TL         /* 사전_지도자_평가_도구 */
+          , B.AFTR_LDR_EVL_ARTCL     /* 사후_지도자_평가_항목 */
+          , B.AFTR_LDR_EVL_TL        /* 사후_지도자_평가_도구 */
+          , B.BFR_PRTPNT_EVL_ARTCL   /* 사전_참여자_평가_항목 */
+          , B.BFR_PRTPNT_EVL_TL      /* 사전_참여자_평가_도구 */
+          , B.AFTR_PRTPNT_EVL_ARTCL  /* 사후_참여자_평가_항목 */
+          , B.AFTR_PRTPNT_EVL_TL     /* 사후_참여자_평가_도구 */
+          , B.BFR_GDR_EVL_ARTCL      /* 사전_인솔자_평가_항목 */
+          , B.BFR_GDR_EVL_TL         /* 사전_인솔자_평가_도구 */
+          , B.AFTR_GDR_EVL_ARTCL     /* 사후_인솔자_평가_항목 */
+          , B.AFTR_GDR_EVL_TL        /* 사후_인솔자_평가_도구 */
+          , B.DATABASE_WRT_YN        /* 데이터베이스_작성_여부 */
+          , B.CLSJRNL_WRT_YN         /* 수업일지_작성_여부 */
+          , B.ETC_YN                 /* 기타_여부 */
+          , B.ETC_CN                 /* 기타_내용 */
+          , B.MDFCN_DT               /* 수정_일시 */
+          , B.MDFRID                 /* 수정자아이디 */
+          , B.REG_DT                 /* 등록_일시 */
+          , B.RGTRID                 /* 등록자아이디 */
+        FROM TB_ASS_PRGRM A
+        LEFT OUTER JOIN TB_ASS_PRGRM_EVL B    /* ASS_프로그램_평가 */
+            ON A.PRGRMID= B.PRGRMID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
+    </select>
 
 
 </mapper>

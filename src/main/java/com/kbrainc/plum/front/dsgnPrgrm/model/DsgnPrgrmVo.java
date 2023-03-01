@@ -1,11 +1,15 @@
 package com.kbrainc.plum.front.dsgnPrgrm.model;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.Size;
 
 import org.apache.ibatis.type.Alias;
 
+import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
@@ -32,6 +36,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
 	/** 로그인사용자정보 */
     private UserVo user;
+
+    /** 프로그램 운영일정 목록*/
+    private List<PrgrmSchdlVo> prgrmSchdlLst;
+
+    /** 프로그램 비상조치계획 목록*/
+    private List<EmrgcyActnPlanVo> emrgcyActnPlanLst;
 
     /** 검색.프로그램 명 */
     private String searchPrgrmNm;
@@ -243,6 +253,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 일정 */
     private String schdl;
 
+    /** 계획 아이디 */
+    private Integer planid;
+
+    /** 대체 프로그램 명*/
+    private String sbstnPrgrmNm;
+
     /** 차시*/
 	private String rnd;
 
@@ -312,6 +328,56 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 신청일시 */
 	private String aplyDt;
 
+	/** 평가아이디 */
+    private String evlid;
+
+    /** 사전지도자평가항목 */
+    private String bfrLdrEvlArtcl;
+
+    /** 사전지도자평가도구 */
+    private String bfrLdrEvlTl;
+
+    /** 사후지도자평가항목 */
+    private String aftrLdrEvlArtcl;
+
+    /** 사후지도자평가도구 */
+    private String aftrLdrEvlTl;
+
+    /** 사전참여자평가항목 */
+    private String bfrPrtpntEvlArtcl;
+
+    /** 사전참여자평가도구 */
+    private String bfrPrtpntEvlTl;
+
+    /** 사후참여자평가항목 */
+    private String aftrPrtpntEvlArtcl;
+
+    /** 사후참여자평가도구 */
+    private String aftrPrtpntEvlTl;
+
+    /** 사전인솔자평가항목 */
+    private String bfrGdrEvlArtcl;
+
+    /** 사전인솔자평가도구 */
+    private String bfrGdrEvlTl;
+
+    /** 사후인솔자평가항목 */
+    private String aftrGdrEvlArtcl;
+
+    /** 사후인솔자평가도구 */
+    private String aftrGdrEvlTl;
+
+    /** 데이터베이스작성여부 */
+    private String databaseWrtYn;
+
+    /** 수업일지작성여부 */
+    private String clsjrnlWrtYn;
+
+    /** 기타여부 */
+    private String etcYn;
+
+    /** 기타내용 */
+    private String etcCn;
 
 	/** 첨부파일 */
     private String fileid;

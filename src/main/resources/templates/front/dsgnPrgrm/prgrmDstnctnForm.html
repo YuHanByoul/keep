@@ -300,51 +300,40 @@
                                             <th scope="col"><span class="blind">열 삭제</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1차시</td>
+                                    <tbody id="schdlBody">
+
+                                        <tr th:id=" 'schdlTr' + ${i.count} " th:each="schd ,i : ${schdlList}">
+                                            <td id="rnd" name="rnd" >[[${schd.rnd}]]</td>
                                             <td>
                                                 <div class="form-input d-flex">
-                                                    <select title="시" style="flex: 1 1 100%; width: 0;">
-                                                        <option value="시">시</option>
-                                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
+                                                    <select title="시" style="flex: 1 1 100%; width:0;" id="bgngHr" name="bgngHr">
+                                                        <option th:each="num : ${#numbers.sequence(0,23)}" th:value="${num}" th:selected="${num} == ${schd.bgngHr}">[[${num}]]시</option>
+                                                    </select>
+                                                    <input type="number" title="분" style="flex: 1 1 100%; width: 0;" th:id="'bgngMnt'+${i.count}" th:name="'bgngMnt'+${i.count}" th:value="${schd.bgngMnt}">
                                                     <div class="bul">~</div>
-                                                    <select title="시" style="flex: 1 1 100%; width: 0;">
-                                                        <option value="시">시</option>
-                                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
+                                                    <select title="시" style="flex: 1 1 100%; width:0;" th:id="'endHr' + ${i.count}" th:name="'endHr' + ${i.count}" th:value="${schd.endHr}">
+                                                        <option th:each="num : ${#numbers.sequence(0,23)}" th:value="${num}" th:selected="${num} == ${schd.endHr}">[[${num}]]시</option>
+                                                    </select>
+                                                    <input type="number" title="분" style="flex: 1 1 100%; width: 0;" th:id="'endMnt'+${i.count}" th:name="'endMnt'+${i.count}" th:value="${schd.endMnt}">
                                                 </div>
                                             </td>
-                                            <td><input type="text" title="세부 단위 프로그램 명"></td>
-                                            <td><input type="text" title="관련교육과정"></td>
-                                            <td class="ac"></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1차시</td>
-                                            <td>
-                                                <div class="form-input d-flex">
-                                                    <select title="시" style="flex: 1 1 100%; width: 0;">
-                                                        <option value="시">시</option>
-                                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
-                                                    <div class="bul">~</div>
-                                                    <select title="시" style="flex: 1 1 100%; width: 0;">
-                                                        <option value="시">시</option>
-                                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
-                                                </div>
-                                            </td>
-                                            <td><input type="text" title="세부 단위 프로그램 명"></td>
-                                            <td><input type="text" title="관련교육과정"></td>
-                                            <td class="ac"><button type="button" class="btn-remove-table" title="열 삭제">
+                                            <td><input type="text" title="세부 단위 프로그램 명" th:id="'prgrmNm'+${i.count}" name="'prgrmNm'+${i.count}" th:value="${schd.prgrmNm}"></td>
+                                            <td><input type="text" title="관련교육과정" id="crs" name="crs" th:value="${schd.crs}"></td>
+                                            <td class="ac">
+                                                <button th:if="${i.count} > 1" type="button" class="btn-remove-table" title="열 삭제" th:id="'delSchdlBtn'+${i.count}" th:onclick="'delSchdl(' + ${i.count} + ')' ">
                                                     <span class="icon icon-remove"></span>
-                                                </button></td>
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn-row-add" title="열 추가">
+                            <button type="button" class="btn-row-add" title="열 추가" id="addSchdlBtn" onclick="addSchdl()" >
                                 <span class="icon icon-row-add"></span>
                             </button>
                         </div>
 
+                        <!-- mobile -->
                         <div class="mo-only">
                             <div class="table-row table-row-mo">
                                 <table>
@@ -392,11 +381,13 @@
                                                 <div class="form-input d-flex">
                                                     <select title="시" style="flex: 1 1 100%; width: 0;">
                                                         <option value="시">시</option>
-                                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
+                                                    </select>
+                                                    <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
                                                     <div class="bul">~</div>
                                                     <select title="시" style="flex: 1 1 100%; width: 0;">
                                                         <option value="시">시</option>
-                                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
+                                                    </select>
+                                                    <input type="number" title="분" style="flex: 1 1 100%; width: 0;">
                                                 </div>
                                             </td>
                                         </tr>
@@ -421,7 +412,7 @@
                                 <span class="icon icon-row-add"></span>
                             </button>
                         </div>
-
+                        <!-- mobile -->
 
                         <div class="table-caption">
                             <div class="left">
@@ -489,27 +480,34 @@
                                             <th scope="col"><span class="blind">열 삭제</span></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td><input type="text" title="본 프로그램명"></td>
-                                            <td><input type="text" title="대체 프로그램명"></td>
-                                            <td class="ac"></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="text" title="본 프로그램명"></td>
-                                            <td><input type="text" title="대체 프로그램명"></td>
-                                            <td class="ac"><button type="button" class="btn-remove-table" title="열 삭제">
+                                    <tbody id="planBody">
+                                        <tr th:id="'planTr' + ${i.count}" th:each="plan ,i : ${planList}">
+                                            <td><input type="text" title="본 프로그램명"
+                                                th:id="prgrmNm + ${i.count}"
+                                                th:name="prgrmNm + ${i.count}"
+                                                th:value="${plan.prgrmNm}">
+                                            </td>
+                                            <td><input type="text" title="대체 프로그램명"
+                                                th:id="sbstnPrgrmNm + ${i.count}"
+                                                th:name="sbstnPrgrmNm + ${i.count}"
+                                                th:value="${plan.prgrmNm}"></td>
+                                            <td class="ac">
+                                                <button th:if="${i.count} > 1" type="button" class="btn-remove-table" title="열 삭제"
+                                                th:id="delPlanBtn + ${i.count}"
+                                                th:onclick="delPlan( + ${i.count} + )">
                                                     <span class="icon icon-remove"></span>
-                                                </button></td>
+                                                </button>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <button type="button" class="btn-row-add" title="열 추가">
+                            <button type="button" class="btn-row-add" title="열 추가" id="addPlanBtn" onclick="addPlan()" >
                                 <span class="icon icon-row-add"></span>
                             </button>
                         </div>
 
+                        <!-- mobile -->
                         <div class="mo-only">
 
                             <div class="table-row table-row-mo">
@@ -573,6 +571,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- mobile -->
             </div>
         </form>
 
@@ -580,6 +579,7 @@
         <script th:inline="javascript">
 
             var insertUrl = "/front/dsgnPrgrm/insertPrgrmDstnctnForm.do";
+            var updateUrl = "/front/dsgnPrgrm/updatePrgrmDstnctnForm.do";
             var nextUrl = "/front/dsgnPrgrm/prgrmEvlForm.html";    //프로그램 평가
             var prevUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //우수성
             var reUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html";
@@ -635,6 +635,98 @@
 
             }
 
+            function doSave(call){
+
+            	var url = ($("#dstnctnid").val() == null || $("#dstnctnid").val() == "" || $("#dstnctnid").val() == 0) ? insertUrl : updateUrl;
+
+                if(call == "next") {
+                    //if(!validate()) return false;
+                }else{
+                    if(!confirm("저장하시겠습니까?")) return;
+                }
+
+                var param = {};
+
+//                 //필수체크
+//                 if(0== $("[id^=sub_eduSbjctSel]").length){
+//                     alert("교육주제는 필수 입력입니다.");
+//                     return false;
+//                 }
+
+//                 //교육주제
+//                 $("[id^=sub_eduSbjctSel]").each(function(index, item) {
+
+//                     if(item.value=="전체"){
+//                         alert("선택하지 않은 교육주제항목이 있습니다.");
+//                         $("#"+item.id).focus();
+//                         return;
+//                     }
+//                     if(index==0) param["eduSbjctCdLst"] = ""+item.value;
+//                     if(index!=0) param["eduSbjctCdLst"] += ","+item.value;
+//                 });
+
+                //프로그램 일정
+                $("[id^=schdlTr]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].prgrmid"] = $("#prgrmid").val()});    //프로그램 id (key)
+                $("[id^=rnd]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].rnd"    ] = item.textContent; });    //차수
+                $("[id^=bgngHr]").each(function(index, item)       {
+
+                    param["prgrmSchdlLst[" + index + "].bgngHr" ] = item.value;
+                });    //시작 시간
+
+                $("[id^=bgngMnt]").each(function(index, item)      { param["prgrmSchdlLst[" + index + "].bgngMnt"] = item.value; });    //시작 분
+                $("[id^=endHr]").each(function(index, item)        { param["prgrmSchdlLst[" + index + "].endHr"  ] = item.value; });    //종료 시간
+                $("[id^=endMnt]").each(function(index, item)       { param["prgrmSchdlLst[" + index + "].endMnt" ] = item.value; });    //종료 분
+                $("[id^=schdlPrgrmNm]").each(function(index, item) { param["prgrmSchdlLst[" + index + "].prgrmNm"] = item.value; });    //프로그램명
+                $("[id^=crs]").each(function(index, item)          { param["prgrmSchdlLst[" + index + "].crs"    ] = item.value; });    //과정
+
+                $("#dstnctnForm input").each(function(index, item) {
+
+                    if("checkbox" == item.type){
+                        if(item.checked ) {
+                            param[item.id] = "Y";
+                        }
+                        else{
+                            param[item.id] = "N";
+                        }
+                    }else{
+                        param[item.id] = item.value;
+                    }
+                });
+
+                param["eduCn"] = $("#eduCn").val();    //교육 내용
+
+                //프로그램 대처계획
+                $("[id^=planTr]").each(function(index, item)       { param["emrgcyActnPlanLst[" + index + "].prgrmid"     ] = $("#prgrmid").val()});       //프로그램 id (key)
+                $("[id^=sbstnPrgrmNm]").each(function(index, item) { param["emrgcyActnPlanLst[" + index + "].sbstnPrgrmNm"] = item.value; });    //차수
+                $("[id^=planPrgrmNm]").each(function(index, item)  { param["emrgcyActnPlanLst[" + index + "].prgrmNm"     ] = item.value; });    //프로그램명
+
+                $.ajax({
+                    url : url,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data: param,
+                    success : function (data){
+                        if(data.result=="success"){
+
+                            if(call == "next") {
+                                document.dstnctnForm.action = nextUrl;
+                                $("#dstnctnForm").submit();
+                            }else{
+                                alert(data.msg);
+                                document.dstnctnForm.action = reUrl;
+                            }
+                            $("#dstnctnForm").submit();
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
+
+
             function goPrev(){
                 document.dstnctnForm.action = prevUrl;
                 $("#prgrmEvlForm").submit();
@@ -645,39 +737,69 @@
             	doSave("next");
             }
 
-            function doSave(call){
+            function addSchdl(){
+            	var html="";
+                var idx = $("[id^='schdlTr']").length;
 
-            	if(call == "next") {
-            		//if(!validate()) return false;
-            	}else{
-            		if(!confirm("저장하시겠습니까?")) return;
-            	}
 
-                var data =  $("#dstnctnForm").serializeArray() ;
+            	html +=`
+                    	<tr id="schdlTr`+`${idx+1}`+`">
+                            <td>1차시</td>
+                            <td>
+                                <div class="form-input d-flex">
+                                    <select title="시" style="flex: 1 1 100%; width: 0;">`/**/
 
-                $.ajax({
-                    url : insertUrl,
-                    type: 'POST',
-                    cache : false,
-                    dataType: 'json',
-                    data : data,
-                    success : function (data){
-                        if(data.result=="success"){
-                        	if(call == "next") {
-                        	    document.dstnctnForm.action = nextUrl;
-                        	    $("#dstnctnForm").submit();
-                        	}else{
-                        	    alert(data.msg);
-                        		document.dstnctnForm.action = reUrl;
-                        	}
-                        	$("#dstnctnForm").submit();
-                        }else{
-                            alert(data.msg);
-                        }
-                    },
-                    error : function (error){
-                    }
-                });
+                for(var i=0; i<24; i++){
+                	html +=`<option value=${i}"시">${i}시</option>`/**/
+                }
+
+            	html +=`
+                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;" id="bgngMnt`+`${idx+1}`+`" name="bgngMnt`+`${idx+1}`+`">
+                                    <div class="bul">~</div>
+                                    <select title="시" style="flex: 1 1 100%; width: 0;">`/**/
+        		for(var i=0; i<24; i++){
+                    html +=`<option value=${i}"시">${i}시</option>`/**/
+                }
+            	html +=`
+                                    </select> <input type="number" title="분" style="flex: 1 1 100%; width: 0;" id="endMnt`+`${idx+1}`+`" name="endMnt`+`${idx+1}`+`">
+                                </div>
+                            </td>
+                            <td><input type="text" title="세부 단위 프로그램 명" id="prgrmNm`+`${idx+1}`+`" name="prgrmNm`+`${idx+1}`+`"></td>
+                            <td><input type="text" title="관련교육과정" id="crs`+`${idx+1}`+`" name="crs`+`${idx+1}`+`"></td>
+                            <td class="ac"><button type="button" class="btn-remove-table" title="열 삭제" id="delSchdlBtn`+`${idx+1}`+`" onclick="delSchdl(`+`${idx+1}`+`)">
+                                    <span class="icon icon-remove"></span>
+                                </button></td>
+                        </tr>`/**/
+
+            	$("#schdlBody").append(html);
+            }
+
+            function delSchdl(id){
+            	$("#schdlTr"+id).remove();
+            }
+
+            function addPlan(){
+            	var html="";
+                var idx = $("[id^='planTr']").length;
+
+
+                html +=`
+                	<tr id="planTr`+`${idx+1}`+`" >
+                        <td><input type="text" title="본 프로그램명" id="prgrmNm`+`${idx+1}`+`" name="prgrmNm`+`${idx+1}`+`" ></td>
+                        <td><input type="text" title="대체 프로그램명" id="sbstnPrgrmNm`+`${idx+1}`+`" name="sbstnPrgrmNm`+`${idx+1}`+`" ></td>
+                        <td class="ac">
+                            <button type="button" class="btn-remove-table" title="열 삭제" id="delPlanBtn`+`${idx+1}`+`" onclick="delPlan(`+`${idx+1}`+`) ">
+                                <span class="icon icon-remove"></span>
+                            </button>
+                        </td>
+                    </tr>
+                `/**/
+
+                $("#planBody").append(html);
+            }
+
+            function delPlan(id){
+            	$("#planTr"+id).remove();
             }
 
 			$(function() {
