@@ -17,6 +17,7 @@
         , IF(B.RCPT_MTHD_CD = '156101','#93BE52','#FC6180')  AS BORDER_COLOR
         , IF(B.RCPT_MTHD_CD = '156101','#93BE52','#FC6180') AS BACKGROUND_COLOR
         , IF(B.RCPT_MTHD_CD = '156101','#FFF','#FFF') AS TEXT_COLOR     
+        , (SELECT GROUP_CONCAT('· ', TB.PRGRM_NM SEPARATOR'<![CDATA[<br/>]]>') FROM TB_EDU_INFNT_PRGRM_SCHDL_PRGRM TA, TB_EDU_INFNT_PRGRM TB WHERE TA.PRGRM_SCHDLID = A.PRGRM_SCHDLID and TA.PRGRMID = TB.PRGRMID) AS PRGRM_NM
         , B.RCPT_MTHD_CD
         , D.CD_NM AS RCPT_MTHD_NM   
         , A.MDFCN_DT
@@ -209,7 +210,15 @@
                                   END    
           AND TA.PRGRM_SCHDLID = #{prgrmSchdlid}                                                       
     </insert>     
-    
+
+    <!-- EDU_유아_프로그램_일정_프로그램_회차 삭제 -->
+    <insert id="deletePrgrmTmeSchdl" parameterType="InfntSchdlVo" >
+         /* InfntSchdlDao.deletePrgrmTmeSchdl */
+         DELETE FROM TB_EDU_INFNT_PRGRM_TME_SCHDL
+         WHERE 1=1
+           AND PRGRM_SCHDLID = #{prgrmSchdlid}
+    </insert>     
+        
     <!-- EDU_유아_프로그램_일정_일자 삭제 -->
     <insert id="deleteDeSttId" parameterType="InfntSchdlVo" >
          /* InfntSchdlDao.deleteDeSttId */

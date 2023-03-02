@@ -1,97 +1,102 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-	layout:decorator="layout/mng/mainLayout">
-	<link rel="stylesheet" type="text/css" href="/files/assets/icon/ion-icon/css/ionicons.min.css">
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/mng/mainLayout">
+    <link rel="stylesheet" type="text/css" href="/files/assets/icon/ion-icon/css/ionicons.min.css">
 <body>
-	<div layout:fragment="content">
-		<!-- Calender css -->
-	    <link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.css">
-	    <link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.css" media="print">
-		<!-- calender js -->
-		<script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
-		<script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
-		<style>
-		.hide
-		{
-		   display:none;
-		}
-		.select-calendar-color
-		{
-		  background-color: #0ac282 !important;
-		}
-		/* 일요일_빨간색 */
-		.fc-sun .fc-day-number {
-		  color: red;
-		  text-decoration: none;
-		}
-		/* 토요일_파란색 */
-		.fc-sat .fc-day-number {
-		  color: blue;
-		  text-decoration: none;
-		}
-		.fc-unthemed td.fc-today {
-		  background-color : #fcf8e3 !important;
-		}		
-		</style>
-		<form id ="mvmnSchdlForm">
-	        <!-- Page-body start -->
-	        <div class="page-body">
-	            <div class="row">
-	                <div class="col-12">
-	                    <div class="card">
-	                        <div class="card-header">
-	                            <div class="row align-items-center justify-content-between">
-	                                <div class="col-lg-auto mb-3">
-	                                    <div class="row align-items-center">
-	                                        <label class="col-auto"><strong>운영권역</strong></label>
-	                                        <div class="col-auto p-l-0">
-	                                            <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeSareaId(this)">
-	                                                <option value="">- 선택 -</option>
-	                                                <th:block th:each="item : ${sareaList}">
-	                                                    <option th:value="${item.sareaId}"><th:block th:text="${item.sareaNm}" /></option>
-	                                                </th:block>
-	                                            </select>
-	                                        </div>
-	                                        <div class="col-auto p-l-0">
-	                                            <select id="searchSchdlId" name="searchSchdlId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeSchdlId(this)">
-	                                                <option value="" disabled selected>운영권역을 선택해 주세요.</option>
-	                                            </select>
-	                                        </div>
-	                                    </div>
-	                                </div>
-	                                <div class="col-lg-auto mb-3 text-right">
-	                                    <button type="button" class="btn btn-primary m-r-5" data-bs-toggle="modal" onclick="fn_popInsForm();">교육일정등록</button>
-	                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#popup02" onclick="fn_popUpdForm();">교육일정수정</button>
-	                                </div>
-	                            </div>
-	                        </div>
-	                        <div class="card-block-small p-t-0">
-	                            <div id="calendar"></div>
-	                        </div>
-	                    </div>
-	                </div>
-	            </div>
-	        </div>
+    <div layout:fragment="content">
+        <!-- Calender css -->
+        <link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.css">
+        <link rel="stylesheet" type="text/css" href="/files/bower_components/fullcalendar/dist/fullcalendar.print.css" media="print">
+        <!-- calender js -->
+        <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+        <script type="text/javascript" src="/files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+        <style>
+        .hide
+        {
+           display:none;
+        }
+        .select-calendar-color
+        {
+          background-color: #0ac282 !important;
+          border-color: #7CFC00 !important;
+        }
+        /* 일요일_빨간색 */
+        .fc-sun .fc-day-number {
+          color: red;
+          text-decoration: none;
+        }
+        /* 토요일_파란색 */
+        .fc-sat .fc-day-number {
+          color: blue;
+          text-decoration: none;
+        }
+        .fc-unthemed td.fc-today {
+          background-color : #fcf8e3 !important;
+        }
+        .fc-content .fc-title {
+            padding: 0 1px;
+            white-space: normal;
+        }       
+        </style>
+        <form id ="mvmnSchdlForm">
+            <!-- Page-body start -->
+            <div class="page-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="row align-items-center justify-content-between">
+                                    <div class="col-lg-auto mb-3">
+                                        <div class="row align-items-center">
+                                            <label class="col-auto"><strong>운영권역</strong></label>
+                                            <div class="col-auto p-l-0">
+                                                <select name="sareaId" id="sareaId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeSareaId(this)">
+                                                    <option value="">- 선택 -</option>
+                                                    <th:block th:each="item : ${sareaList}">
+                                                        <option th:value="${item.sareaId}"><th:block th:text="${item.sareaNm}" /></option>
+                                                    </th:block>
+                                                </select>
+                                            </div>
+                                            <div class="col-auto p-l-0">
+                                                <select id="searchSchdlId" name="searchSchdlId" class="form-select form-select-sm form-control-sm col-auto" onchange="fn_changeSchdlId(this)">
+                                                    <option value="" disabled selected>운영권역을 선택해 주세요.</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-auto mb-3 text-right">
+                                        <button type="button" class="btn btn-primary m-r-5" data-bs-toggle="modal" onclick="fn_popInsForm();">교육일정등록</button>
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#popup02" onclick="fn_popUpdForm();">교육일정수정</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-block-small p-t-0">
+                                <div id="calendar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </form>
-		<!-- Page-body end -->
-		<input type="hidden" id="eduTypeCd" name="eduTypeCd" value="" />        
-		<input type="hidden" id="ym" name="ym" value="" />
-		<input type="hidden" id="ymDesc" name="ymDesc" value="" />
-		<div class="modal fade" id="insertPopupModal" aria-hidden="true" data-bs-backdrop="static"></div>
-		<div class="modal fade" id="updatePopupModal" aria-hidden="true" data-bs-backdrop="static"></div>
-		
-		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-		<script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>		
-		<script th:inline="javascript">
-		
-		var popInsFormModal;
-		var popUpdFormModal;
-		var eventClickSelectItem = "";
-		
-		fn_popInsForm = () => {
+        <!-- Page-body end -->
+        <input type="hidden" id="eduTypeCd" name="eduTypeCd" value="" />        
+        <input type="hidden" id="ym" name="ym" value="" />
+        <input type="hidden" id="ymDesc" name="ymDesc" value="" />
+        <div class="modal fade" id="insertPopupModal" aria-hidden="true" data-bs-backdrop="static"></div>
+        <div class="modal fade" id="updatePopupModal" aria-hidden="true" data-bs-backdrop="static"></div>
+        
+        <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+        <script type="text/javascript" src="/js/common/jsgrid-master/dist/jsgrid.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>      
+        <script th:inline="javascript">
+        
+        var popInsFormModal;
+        var popUpdFormModal;
+        var eventClickSelectItem = "";
+        
+        fn_popInsForm = () => {
             var sareaId = $("#sareaId").val();
             var ym = $("#ym").val();
             var ymDesc = $("#ymDesc").val();
@@ -108,9 +113,9 @@
                     popInsFormModal.show();
                 }
             });
-		},
+        },
 
-		fn_popUpdForm = () => {
+        fn_popUpdForm = () => {
             var prgrmSchdlid = eventClickSelectItem;
             if(prgrmSchdlid == "" || prgrmSchdlid == null){
                 alert("수정할 교육일정을 선택해 주시기 바랍니다.");
@@ -124,7 +129,7 @@
                     popUpdFormModal.show();
                 }
             });
-		},
+        },
 
         $('#calendar').fullCalendar({
             plugins : [ 'interaction', 'dayGrid',  'resourceTimeline' ],
@@ -136,7 +141,7 @@
             editable : false,
             disable : false,
             droppable: false,
-            eventLimit: 5,
+            eventLimit: 2,
             displayEventTime: true,
             firstDay: 0, 
             fixedWeekCount :false ,
@@ -147,12 +152,13 @@
             dayNames        : ["일요일","월요일","화요일","수요일","목요일","금요일","토요일"],
             dayNamesShort   : ["일","월","화","수","목","금","토"],
             header : {
-            	left: 'prev,next,today',
-            	center: 'title',
+                left: 'prev,next,today',
+                center: 'title',
                 right  : ''
-            }, 
+            },
+            eventLimitText: "건 더보기",
             views: {month: {titleFormat: 'YYYY년 M월'}},
-        	
+            
 /*            header: {
                 left: 'prev,next today',
                 center: 'title',
@@ -173,7 +179,40 @@
             dayClick: function(date, jsEvent, view) {
             },
             eventRender:function (event,element){
-                //fn_makeCalendarEvent();            	
+                //fn_makeCalendarEvent();         
+/*              var tooltip = new Tooltip(info.el, {
+                title: info.event.extendedProps.description,//이벤트 디스크립션을 툴팁으로 가져옵니다. 
+                // title: info.event.title, 이벤트 타이틀을 툴팁으로 가져옵니다. 
+                placement: 'top',
+                trigger: 'hover',
+                container: 'body'
+                });
+ */             // $(element).tooltip({title: titleHtml});
+                //$(element).tooltip({ title: '111111111111' });
+                //일정에 hover시 요약
+                element.popover({
+                  title: $('<div />', {
+                    class: 'popoverTitleCalendar',
+                    text: event.title
+                  }).css({
+                    'background': event.backgroundColor,
+                    'color': 'white'
+                  }),
+                  content: $('<div />', {
+                      class: 'popoverInfoCalendar'
+                    })//.append('<p><strong>등록자:</strong> ' + event.id + '</p>')
+//                     .append('<p><strong>구분:</strong> ' + event.type + '</p>')
+//                     .append('<p><strong>시간:</strong> ' + getDisplayEventDate(event) + '</p>')
+                    .append('<div class="popoverDescCalendar"><b>' + event.prgrmNm + '</b></div>'),
+                  /*delay: {
+                        show: "800",
+                        hide: "50"
+                  },*/
+                  trigger: 'hover',
+                  placement: 'top',
+                  html: true,
+                  container: 'body'
+                });             
             },
             eventPositioned: function(info){
                   $(".fc-event-container").on('click', 'div', function (e) { 
@@ -185,7 +224,7 @@
             eventClick: function(calEvent, jsEvent, view) {
                 //eventBackgroundColor = jsEvent.currentTarget.style.backgroundColor;
                 $('.select-calendar-color').each(function() {
-                	$(this).removeClass("select-calendar-color");
+                    $(this).removeClass("select-calendar-color");
                 });
                 $(this).toggleClass('select-calendar-color');
                 eventClickSelectItem = calEvent.id;
@@ -195,7 +234,7 @@
             //캘린더 렌더링 이후  
             viewRender: function(view, element){
             }
-        });		
+        });     
         // 이전 날짜 클릭
         $("button.fc-prev-button").click(function() {
             var orgDate = $("#calendar").fullCalendar("getDate");
@@ -211,7 +250,7 @@
         });
         
         $(function() {
-        	fn_makeCalendarEvent();
+            fn_makeCalendarEvent();
         });
         function fn_makeCalendarEvent(){
             fn_cnvtDate($("#calendar").fullCalendar("getDate"));
@@ -246,6 +285,7 @@
                                ,textColor:data[i].textColor
                                ,rcptMthdCd:data[i].rcptMthdCd                               
                                ,rcptMthdNm:data[i].rcptMthdNm
+                               ,prgrmNm:data[i].prgrmNm
                            })                           
                             //events.push({title:data[0].title, start:data[0].start, borderColor:data[0].borderColor, backgroundColor:data[0].backgroundColor, borderColor:data[0].borderColor, textColor:data[0].textColor});
                         });
@@ -256,7 +296,7 @@
                        }
                 });            
             }
-        	
+            
         }
         // 날짜값 컨버팅
         function fn_cnvtDate(date) {
@@ -298,19 +338,19 @@
         }
         
         function fn_changeSchdlId(item){
-        	fn_makeCalendarEvent();        
+            fn_makeCalendarEvent();        
         }
         
         function fn_makeSearchSchdlIdHtml(dataList) {
             var schdlIdHtml = "";
             schdlIdHtml += '           <option value="">- 선택 -</option>   ';  
             for(var i=0; i<dataList.length; i++){  
-            	schdlIdHtml += '<option value="'+dataList[i].prgrmSchdlid+'">'+dataList[i].schdlNm+'</option>';
+                schdlIdHtml += '<option value="'+dataList[i].prgrmSchdlid+'">'+dataList[i].schdlNm+'</option>';
             }
             return schdlIdHtml;
         }
-		</script>
-		<script src="/js/ckeditor/ckeditor.js"></script>
-	</div>
+        </script>
+        <script src="/js/ckeditor/ckeditor.js"></script>
+    </div>
 </body>
 </html>

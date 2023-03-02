@@ -5,9 +5,6 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
-import com.kbrainc.plum.mng.mmnws.model.MmnwsVo;
-
 /**
 * 푸름이환경이동교실 -> 교육일정관리 Dao 클래스
 **
@@ -84,10 +81,10 @@ public interface MvmnSchdlDao {
 
     
     /**
-    * EDU_유아_프로그램_일정_일자 삭제
+    * 푸름이환경이동교실_프로그램_일정_일자 삭제
     **
     @Title : deleteDeSttId
-    * @Description : EDU_유아_프로그램_일정_일자 삭제
+    * @Description : 푸름이환경이동교실_프로그램_일정_일자 삭제
     * @param mvmnSchdlVo
     * @return
     * @throws Exception
@@ -95,10 +92,10 @@ public interface MvmnSchdlDao {
     */
     public int deleteDeSttId(MvmnSchdlVo mvmnSchdlVo) throws Exception;
     /**
-    * EDU_유아_프로그램_일정_프로그램 삭제
+    * 푸름이환경이동교실_프로그램_일정_프로그램 삭제
     **
     @Title : deletePrgrmSttId
-    * @Description : EDU_유아_프로그램_일정_프로그램 삭제
+    * @Description : 푸름이환경이동교실_프로그램_일정_프로그램 삭제
     * @param mvmnSchdlVo
     * @return
     * @throws Exception
@@ -106,10 +103,21 @@ public interface MvmnSchdlDao {
     */
     public int deletePrgrmSttId(MvmnSchdlVo mvmnSchdlVo) throws Exception;
     /**
-    * EDU_유아_프로그램_일정_일자 등록
+     * 푸름이환경이동교실_프로그램_일정_프로그램_회차 삭제
+     **
+     * @Title : deletePrgrmTmeSchdl
+     * @Description : 푸름이환경이동교실_프로그램_일정_프로그램_회차 삭제
+     * @param infntSchdlVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int deletePrgrmTmeSchdl(MvmnSchdlVo mvmnSchdlVo) throws Exception;        
+    /**
+    * 푸름이환경이동교실_프로그램_일정_일자 등록
     **
     @Title : insertDeSttId
-    * @Description : EDU_유아_프로그램_일정_일자 등록
+    * @Description : 푸름이환경이동교실_프로그램_일정_일자 등록
     * @param mvmnSchdlVo
     * @return
     * @throws Exception
@@ -117,10 +125,10 @@ public interface MvmnSchdlDao {
     */
     public int insertDeSttId(MvmnSchdlVo mvmnSchdlVo) throws Exception;
     /**
-    * EDU_유아_프로그램_일정_프로그램 등록
+    * 푸름이환경이동교실_프로그램_일정_프로그램 등록
     **
     @Title : insertPrgrmSttId
-    * @Description : EDU_유아_프로그램_일정_프로그램 등록
+    * @Description : 푸름이환경이동교실_프로그램_일정_프로그램 등록
     * @param mvmnSchdlVo
     * @return
     * @throws Exception
@@ -128,10 +136,10 @@ public interface MvmnSchdlDao {
     */
     public int insertPrgrmSttId(MvmnSchdlVo mvmnSchdlVo) throws Exception;
     /**
-    * EDU_유아_프로그램_회차_일정 등록
+    * 푸름이환경이동교실_프로그램_회차_일정 등록
     **
     @Title : insertPrgrmTmeSchdl
-    * @Description : EDU_유아_프로그램_회차_일정 등록
+    * @Description : 푸름이환경이동교실_프로그램_회차_일정 등록
     * @param mvmnSchdlVo
     * @return
     * @throws Exception
