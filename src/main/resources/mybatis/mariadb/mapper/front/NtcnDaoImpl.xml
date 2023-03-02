@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kbrainc.plum.front.ntcn.model.NtcnDao">
+
+    <select id="selectMainNtcnList"  parameterType="front.NtcnVo" resultType="front.NtcnVo" >
+          /* NtcnDao.selectMainNtcnList */
+          WITH
+           SEARCH_ORG
+            AS
+            (
+                SELECT
+                    NTCNID
+                    ,USERID
+                    ,KND_CD
+                    ,TTL
+                    ,CN
+                    ,MVMNURL
+                    ,INQ_YN
+                    ,REG_DT 
+                  FROM
+                    TB_CMM_NTCN
+                 WHERE 1=1
+                   AND USERID = #{user.userid}
+                   AND INQ_YN = 'N'
+                ),
+            totalCount                   
+            AS
+            (
+               SELECT  COUNT(1) AS totalCount
+                 FROM  SEARCH_ORG A1            
+            )
+            SELECT  
+                A1.*
+               ,B1.totalCount
+              FROM SEARCH_ORG A1
+             CROSS JOIN totalCount B1             
+             ORDER BY A1.REG_DT
+             LIMIT 5
+    </select>
+  
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
