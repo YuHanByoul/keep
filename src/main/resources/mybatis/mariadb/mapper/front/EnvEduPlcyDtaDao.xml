@@ -2,18 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <mapper namespace="com.kbrainc.plum.front.intro.envEduPlcyDta.model.EnvEduPlcyDtaDao">
+    <update id="updateBsnsOperDtaHits">
+        UPDATE TB_CMM_BSNS_OPER_DTA
+        SET HITS = IFNULL(HITS,0) + 1
+        WHERE DTAID = #{dtaid}
+    </update>
+
+    <update id="updateSpcltyDtaHits">
+        UPDATE TB_CMM_SPCLTY_DTA
+        SET HITS = IFNULL(HITS,0) + 1
+        WHERE DTAID = #{dtaid}
+    </update>
+
     <select id="selectBsnsOperDtaList" resultType="front.BsnsOperDtaVo">
         <include refid="PaginationMapper.header"/>
             SELECT
                 A.DTAID
-                ,A.YY
-                ,A.TYPE_CD
-                ,B.INST_NM
-                ,A.TTL
-                ,A.CN
-                ,A.PDF_FILEID
-                ,A.ATCH_FILEGRPID
-                ,A.REG_DT
+                , A.YY
+                , A.TYPE_CD
+                , B.INST_NM
+                , A.TTL
+                , A.CN
+                , A.PDF_FILEID
+                , A.ATCH_FILEGRPID
+                , A.REG_DT
+                , IFNULL(A.HITS,0) AS HITS
             FROM TB_CMM_BSNS_OPER_DTA A
             INNER JOIN TB_CMM_INST B
                 ON A.INSTID = B.INSTID
@@ -109,6 +122,7 @@
             , PDF_FILEID
             , ATCH_FILEGRPID
             , REG_DT
+            , IFNULL(HITS,0) AS HITS
         FROM TB_CMM_SPCLTY_DTA
         WHERE 1=1
             <if test="searchKeyword != null and searchKeyword != ''">

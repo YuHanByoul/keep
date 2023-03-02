@@ -71,6 +71,7 @@ public class EnvEduPlcyDtaController {
         BsnsOperDtaVo bsnsOperDta = envEduPlcyDtaService.selectBsnsOperDta(searchVo);
         List<FileVo> pdfFileList = bsnsOperDta.getPdfFileList();
         List<String> pdfFilePaths = getPdfFilePaths(pdfFileList);
+
         model.addAttribute("bsnsOperDta", bsnsOperDta);
         model.addAttribute("pdfFilePaths", pdfFilePaths);
         return VIEW_PATH + "/bsnsOperDtaDetail";
@@ -103,12 +104,10 @@ public class EnvEduPlcyDtaController {
     public String spcltyDtaDetail(SpcltyDtaVo searchVo, Model model) throws Exception {
         SpcltyDtaVo spcltyDta = envEduPlcyDtaService.selectSpcltyDta(searchVo);
         List<FileVo> pdfFileList = spcltyDta.getPdfFileList();
-        List<org.springframework.core.io.Resource> resources = new ArrayList<>();
         List<String> pdfFilePaths = getPdfFilePaths(pdfFileList);
 
         model.addAttribute("spcltyDta", spcltyDta);
         model.addAttribute("pdfFilePaths", pdfFilePaths);
-        model.addAttribute("resources", resources);
         return VIEW_PATH + "/spcltyDtaDetail";
     }
 
@@ -168,6 +167,15 @@ public class EnvEduPlcyDtaController {
         return response;
     }
 
+    /**
+     * PDF 파일 경로를 얻어온다.
+     * 파일명에 대괄호 포함시 문자열 변경
+     *
+     * @param pdfFileList
+     * @return list
+     * @Title : getPdfFilePaths
+     * @Description : PDF 파일 경로를 얻어온다.
+     */
     private List<String> getPdfFilePaths(List<FileVo> pdfFileList) {
         List<String> pdfFilePaths = new ArrayList<>();
         for (FileVo fileVo : pdfFileList) {
