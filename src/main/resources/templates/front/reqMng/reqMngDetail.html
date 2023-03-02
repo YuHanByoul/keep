@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${detail.pcntstid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${detail.fldCd}"/>
+            <input type="hidden" name="pcntstNm" id="pcntstNm" th:value="${detail.pcntstNm}"/>
+            <input type="hidden" name="userType" id="userType" th:value="${userType}"/>
+            <input type="hidden" name="aplyid" id="aplyid"/>
+            <input type="hidden" name="mode" id="mode"/>
+        </form>
+        <!-- content -->
+        <div id="content" class="content">
+            <div class="table-view">
+	            <div class="table-view-header">
+	                <h3><span>[<th:block th:text="${detail.status}"/>] <th:block th:text="${detail.pcntstNm}"/></span></h3>
+	                <dl>
+	                    <div class="list">
+	                        <dt>상태</dt>
+	                        <dd><th:block th:text="${detail.status}"/></dd>
+	                    </div>
+	                    <div class="list">
+	                        <dt>사업분야</dt>
+	                        <dd><th:block th:text="${detail.fldNm}"/></dd>
+	                    </div>
+	                </dl>
+	                <dl>
+	                    <div class="list">
+	                        <dt>등록일</dt>
+	                        <dd><th:block th:text="${detail.regDt}"/></dd>
+	                    </div>
+	                    <div class="list">
+	                        <dt>조회수</dt>
+	                        <dd><th:block th:text="${detail.hits}"/></dd>
+	                    </div>
+	                </dl>
+	                <dl>
+	                    <div class="list">
+	                        <dt>첨부파일</dt>
+	                        <dd>
+	                            <div class="form-input-file">
+	                                <ul th:if="${#lists.size(fileList) > 0}" th:each="list, i: ${fileList}">
+	                                    <li class="file-block" th:data_ext="${#strings.replace(list.fileExtsn,'.','')}"><span class="name"><a href="javascript:void(0)" th:onclick="javascript:downloadFileByFileid([[${list.fileid}]],[[${list.fileIdntfcKey}]])"><th:block th:text="${list.orginlFileNm}"></a></span></li>
+	                                </ul>
+	                            </div>
+	                        </dd>
+	                    </div>
+	                </dl>
+	                <dl>
+	                    <div class="list">
+	                        <dt>신청기간</dt>
+	                        <dd><th:block th:text="${detail.aplyDt}"/></dd>
+	                    </div>
+	                    <div class="list">
+	                        <dt>사업기간</dt>
+	                        <dd><th:block th:text="${detail.bsnsDe}"/></dd>
+	                    </div>
+	                </dl>
+	            </div>
+	            <div class="table-view-body">
+	                <div class="table-view-content">
+	                    <th:block th:utext="${detail.bsnsCn}"/>
+	                </div>
+	            </div>
+	
+	            <div class="btn-wrap">
+	                <div class="center">
+	                    <button type="button" class="btn-medium btn-gray" onclick="moveToDetail();">목록</button>
+	                    <th:block th:if="${detail.status != '진행전'}">
+		                    <button type="button" class="btn-medium btn-green" onclick="aplyStart();" th:if="${detail.status == '진행중'}">신청</button>
+		                    <button type="button" class="btn-medium btn-green" onclick="reqMngEnd();"  disabled th:unless="${detail.status == '진행중'}">마감</button>
+	                    </th:block>
+	                </div>
+	            </div>
+	
+	            <div class="page-navigation">
+	                <th:block th:if="${detail.beforeId} != null">
+	                <a th:href="@{/front/bizAply/reqMngDetailForm.html?pcntstid=}+${detail.beforeId}">
+	                    <dl>
+	                        <dt>이전글</dt>
+	                        <dd><span class="ellipsis"><th:block th:text="${detail.beforeTtl}"></th:block></span></dd>
+	                    </dl>
+	                </a>
+	                </th:block>
+	                <th:block th:unless="${detail.beforeId} != null">
+	                    <a style="cursor:auto">
+	                        <dl>
+	                            <dt>이전글</dt>
+	                            <dd><span class="ellipsis">이전글이 없습니다.</th:block></span></dd>
+	                        </dl>
+	                    </a>
+	                </th:block>                     
+	                
+	                <th:block th:if="${detail.nextId} != null">
+	                    <a th:href="@{/front/bizAply/reqMngDetailForm.html?pcntstid=}+${detail.nextId}">
+	                        <dl>
+	                            <dt>다음글</dt>
+	                            <dd><span class="ellipsis"><th:block th:text="${detail.nextTtl}"></th:block></span></dd>
+	                        </dl>
+	                    </a>
+	                </th:block>
+	                <th:block th:unless="${detail.nextId} != null">
+	                    <a style="cursor:auto">
+	                        <dl>
+	                            <dt>다음글</dt>
+	                            <dd><span class="ellipsis">다음글이 없습니다.</th:block></span></dd>
+	                        </dl>
+	                    </a>
+	                </th:block>                 
+	            </div>
+	        </div>
+        </div>
+        <!-- //content -->
+        
+	    <script th:inline="javascript">
+	    // 목록
+	    function moveToDetail() {
+            location.href = '/front/bizAply/reqMngListForm.html';
+        }
+	    
+	    // 마감
+	    function reqMngEnd() {
+	    	alert("공모신청이 마감되었습니다.");
+	    }
+	    
+	    // 신청
+	    function aplyStart() {
+	    	var userType = $("#userType").val();
+	    	var fldCd = $("#fldCd").val();
+	    	if (userType == "I") {
+	    		if (fldCd == "173105" || fldCd == "173106") {
+	    			alert("개인회원만 신청할 수 있습니다.");
+	    			return;
+	    		}
+	    	}
+	    	if (userType == "P") {
+	    		if (fldCd != "173105" && fldCd != "173106") {
+	    			alert("기관회원만 신청할 수 있습니다.");
+	    			return;
+	    		}
+	    	}
+	    	
+	    	if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/getAplyCnt.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : {
+                    	pcntstid: $("#pcntstid").val()
+                    },
+                    success : function (data){
+                    	console.log("reqUserVo => ", data.reqUserVo);
+                        if (data.reqUserVo != null) {
+                        	alert("이미 신청한 공모입니다.");
+                        	$("#aplyid").val(data.reqUserVo.aplyid);
+                        	$("#mode").val("U");
+                        	var f = document.forms.insertForm ;
+                            f.action = "/front/bizAply/baseInfoForm.html";
+                            f.submit();
+                        } else {
+                        	$("#mode").val("C");
+					    	var f = document.forms.insertForm ;
+				            f.action = "/front/bizAply/termsForm.html";
+				            f.submit();
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+	    }
+	    </script>
+    </div>
+</body>
+</html>

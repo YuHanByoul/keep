@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <div id="content" class="content">
+
+            <form class="search-filter" id="searchForm" name="searchForm">
+                <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+	            <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+	            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+	            <input type="hidden" id="pcntstid" name="pcntstid" >
+                <div class="form-input-wrap">
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">공모명</strong></div>
+                        <div class="form-body">
+                            <input type="search" title="공모명" placeholder="프로그램명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">상태</strong></div>
+                        <div class="form-body">
+                            <select title="상태" id="status" name="status">
+                                <option value="">- 전체 -</option>
+                                <option value="before">진행전</option>
+                                <option value="ing">진행중</option>
+                                <option value="end">마감</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-filter-submit">
+                    <button type="reset" class="btn-medium btn-gray btn-before-refresh" onclick="listPage.searchInit();">초기화</button>
+                    <button type="button" class="btn-medium btn-green btn-before-search" onclick="listPage.search();">검색</button>
+                </div>
+            </form>
+            
+            <div class="table-caption flex-nowrap">
+                <div class="left">
+                    <p>총 <b id="totalCount">0</b> 건</p>
+                </div>
+                <div class="right">
+                    <select title="글 보기 개수" id="rowPerPageChange" name="rowPerPageChange">
+                        <option value="10">10개씩 보기</option>
+                        <option value="50">50개씩 보기</option>
+                        <option value="100">100개씩 보기</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-col table-layout-auto table-col-mo">
+                <table>
+                    <caption>공모신청 - 번호, 진행상태, 사업분야, 공모명, 신청기간, 사업기간, 등록일,</caption>
+                    <colgroup>
+                        <col style="width:6%;">
+                        <col>
+                        <col>
+                        <col style="width:25%;">
+                        <col style="width:15%;">
+                        <col style="width:15%;">
+                        <col style="width:11%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">진행상태</th>
+                            <th scope="col">사업분야</th>
+                            <th scope="col">공모명</th>
+                            <th scope="col">신청기간</th>
+                            <th scope="col">사업기간</th>
+                            <th scope="col">등록일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-area">
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="pagination" aria-label="pagination"></div>
+        </div>
+        <!-- //content -->
+        
+	    <script th:inline="javascript">     
+	    var listPage = {
+	        listUrl: '/front/bizAply/selectReqMngList.do',
+	        detailUrl : '/front/bizAply/reqMngDetailForm.html',
+	
+	        init(rowPerPage) {
+	            if(rowPerPage != null) {
+	                $("#rowPerPage").val(parseInt(rowPerPage));
+	                $('#pageNumber').val('1');
+	            }
+	            this.selectList();
+	        },
+	        moveToDetail() {
+	            if (this.userid == null) {
+	                alert('로그인 후 이용하실 수 있습니다.');
+	                return;
+	            }
+	            location.href = '/front/book/bookDetailForm.html';
+	        },
+	        search() {
+	            $('#pageNumber').val('1');
+	            this.selectList();
+	        },
+	        searchInit() {
+	            $("#searchPcntstNm").val('');
+	            $("#status").val('');
+	            this.selectList();
+	        },
+	        selectList() {
+	            if (displayWorkProgress(true)) {
+	                let formData = $('#searchForm').serializeArray();
+	
+	                $.ajax({
+	                    url: listPage.listUrl,
+	                    cache: false,
+	                    dataType: 'json',
+	                    data: formData,
+	                    type: 'GET',
+	                    success: function (data) {
+	                        listPage.makeListHtml(data);
+	                        closeWorkProgress();
+	                    }
+	                });
+	            }
+	        },
+	        moveToDetail(pcntstid) {
+	            var f = document.forms.searchForm ;
+	            f.pcntstid.value = pcntstid;
+	            f.action = this.detailUrl;
+	            f.submit();
+	        },
+	        makeListHtml(data) {
+	            var listHtml = "";
+	            if (data.list == null || data.list.length <= 0) {
+	                listHtml += `
+	                <tr>
+	                    <td class="nodata" colspan="7">
+	                        <p><span class="icon icon-notice bg-black9"></span>등록된 공모신청이 없습니다.</p>
+	                    </td>
+	                </tr>
+	                `;
+	            } else {
+	                data.list.forEach(function(item) {
+	                    listHtml += `
+	                    <tr>
+	                    <td>${item.rowNumber}</td>
+	                    <td>${item.status}</td>
+	                    <td>${item.fldNm}</td>
+	                    <td className="al article"><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.pcntstid})">${item.pcntstNm}</a></td>
+	                    <td>${item.aplyDt}</td>
+	                    <td>${item.bsnsDe}</td>
+	                    <td>${item.regDt}</td>
+	                    <tr>
+	                    `;
+	                });
+	            }
+	            $('#list-area').html(listHtml);
+	            $("#pagination").html(data.pagination);
+	            $("#totalCount").html(data.totalCount);
+	        }
+	    };
+	
+	    $(function () {
+	        listPage.init();
+	        
+	        $("#rowPerPageChange").change(function(){
+	        	$("#rowPerPage").val($(this).val());
+	        	listPage.init($(this).val());
+	        });
+	    });
+	    
+	    function goPage(page) {
+	        $("#pageNumber").val(page);
+	        
+	        listPage.selectList();
+	    }            
+	    </script>
+    </div>
+</body>
+</html>
