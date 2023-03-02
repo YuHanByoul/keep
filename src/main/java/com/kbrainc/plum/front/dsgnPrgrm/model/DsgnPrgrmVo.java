@@ -172,6 +172,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 참가비 */
 	private double etrfee;
 
+	/** 참가비 Str*/
+	private String etrfeeStr;
+
 	/** 자부담 */
 	private String slfpy;
 

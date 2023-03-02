@@ -24,7 +24,7 @@
                             , IF(B.HGSCHST = 'Y', '고등학생', NULL)
                             , IF(B.ADULT   = 'Y', '성인'    , NULL)
           ) END    AS EDU_TARGET
-          , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+          , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE_STR
           , IFNULL(C.EDU_SBJCT_CD_LST, '')    AS EDU_SBJCT_CD_LST
           , IFNULL(C.EDU_SBJCT_NM_LST, '')    AS EDU_SBJCT_NM_LST    /*교육 주제*/
           , A.MDFCN_DT
@@ -86,9 +86,13 @@
                      WHEN 'ADULT'    = #{searchEduTarget} THEN B.ADULT    = 'Y'
                 END
         </if>
-            <!-- 참가비 -->
-        <if test="searchEtrfee != null and searchEtrfee != ''">
-            AND B.ETRFEE = #{searchEtrfee}
+            <!-- 참가비.유료-->
+        <if test="searchEtrfee != null and searchEtrfee == 'pchrg' "  >
+            AND B.ETRFEE > 0
+        </if>
+            <!-- 참가비.무료-->
+        <if test="searchEtrfee != null and searchEtrfee == 'free' "  >
+            AND B.ETRFEE <![CDATA[<]]> 1
         </if>
         GROUP BY A.PRGRMID
         ORDER BY A.REG_DT, A.PRGRMID
@@ -140,7 +144,7 @@
           , B.EDU_NOPE
           , CONCAT(B.EDU_HR, EDU_MNT) AS EDU_TIME
           , B.PCHRG_YN
-          , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+          , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE_STR
           , A.APLCNT_NM
           , A.APLCNT_MOBLPHON
           , B.EDU_PRPS
@@ -193,7 +197,7 @@
                      ) AS EDU_TARGET
               , B.WHOL_AGE
               , GROUP_CONCAT(EDUCD.CD_NM separator ', ') AS EDU_SBJCT_CD_NM
-              , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE
+              , CASE WHEN B.ETRFEE > 0 THEN CONCAT(FORMAT(B.ETRFEE, '0'), '원') ELSE '무료' END ETRFEE_STR
               , C.DSGN_NO
               , A.DSGN_DE
               , A.REG_DT

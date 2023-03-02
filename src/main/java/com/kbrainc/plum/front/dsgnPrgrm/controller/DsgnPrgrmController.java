@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
+import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.front.dsgnPrgrm.service.DsgnPrgrmService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
@@ -61,6 +62,9 @@ public class DsgnPrgrmController {
     private AsgsysSrngServiceImpl asgsysSrngService;
 
     @Autowired
+    private CommonService commonService;
+
+    @Autowired
     private FileServiceImpl fileService;
 
     /**
@@ -75,6 +79,7 @@ public class DsgnPrgrmController {
     */
     @RequestMapping(value = "/front/dsgnPrgrm/dsgnSttusList.html")
     public String dsgnSttusList(Model model) throws Exception {
+    	model.addAttribute("sidoList", commonService.selectCtprvnList());
         return "front/dsgnPrgrm/dsgnSttusList";
     }
 
