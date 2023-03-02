@@ -115,4 +115,17 @@ public class HelperController {
     public String copyrightPolicyForm() throws Exception {
         return "front/helper/copyrightPolicy.html";
     }
+    
+    /**
+    * 사이트맵.
+    *
+    * @Title       : siteMapForm 
+    * @Description : 사이트맵 화면
+    * @return String 이동화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/front/helper/siteMap.html")
+    public String siteMapForm() throws Exception {
+        return "front/helper/siteMap.html";
+    }
 }

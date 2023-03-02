@@ -1,4 +1,4 @@
-package com.kbrainc.plum.cmm.layout.mng;
+package com.kbrainc.plum.cmm.layout.front;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -24,22 +24,22 @@ import com.kbrainc.plum.rte.util.StringUtil;
 
 /**
  * 
- * GNB영역에 메뉴를 출력하기 위한 클래스
+ * 사이트맵을 출력하기 위한 클래스
  *
  * <pre>
- * com.kbrainc.plum.cmm.layout.mng
- * - MenuPrintImpl.java
+ * com.kbrainc.plum.cmm.layout.front
+ * - SiteMapMenuPrintImpl.java
  * </pre> 
  *
- * @ClassName : MenuPrintImpl
+ * @ClassName : SiteMapMenuPrintImpl
  * @Description : GNB영역에 메뉴를 출력하기 위한 클래스
  * @author : KBRAINC
- * @date : 2021. 2. 26.
+ * @date : 2023. 1. 16.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
 @Component
-public class MenuPrintImpl {
+public class SiteMapMenuPrintImpl {
 
     /** 인가평가자. */
     @Autowired
@@ -94,17 +94,6 @@ public class MenuPrintImpl {
         if (menuTree == null) {
             return "";
         }
-        
-        String curMenuid = "";
-        String upprMenuid = "";
-
-        if ("3".equals(menuItem.getDpth())) {
-            curMenuid = menuItem.getUpprMenuid();
-            upprMenuid = menuTree.getMenuItemByMenuID(curMenuid).getUpprMenuid();
-        } else {
-            curMenuid = menuItem.getMenuid();
-            upprMenuid = menuItem.getUpprMenuid();
-        }
 
         MenuItem menuItem1 = null;
         MenuItem menuItem2 = null;
@@ -118,8 +107,8 @@ public class MenuPrintImpl {
         for (TreeNode<MenuItem> treeNode1 : menuTree.getRoot().getChildren()) {
             menuItem1 = treeNode1.getData();
 
-            if ("02".equals(menuItem1.getPtypeCd()) && "N".equals(menuItem1.getHideYn())) {
-                if ((user != null && isMenuAuth(menuItem1.getUrl())) && treeNode1.hasChildren()
+            if ("02".equals(menuItem1.getPtypeCd()) && ("N".equals(menuItem1.getHideYn())) || treeNode1.hasHideNChildrenMenuOrFolder()) {
+                if ((isMenuAuth(menuItem1.getUrl())) && treeNode1.hasChildren()
                         && isMenuAuth(((TreeNode<MenuItem>) treeNode1.getChildAt(0)).getData().getUrl())
                         || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
                     isMenuView = true;
@@ -131,57 +120,48 @@ public class MenuPrintImpl {
             }
             if (isMenuView) { // 프로그램유형코드가 메뉴/디렉토리이면서 숨김여부가 N이면서 현재역할로 메뉴에 접근가능할때만
                 i++;
-
-                menuTag.append("    <li class=\"");
-                if (treeNode1.hasChildren()) {
-                    menuTag.append("has-sub ");
-                }
-                if (menuItem1.getMenuid().equals(curMenuid)) {
-                    menuTag.append("highlight ");
-                }
-                if (menuItem1.getMenuid().equals(upprMenuid)) {
-                    menuTag.append("highlight active ");
-                }
-
-                menuTag.append("\">\n");
+                
+                menuTag.append("    <li>\n");
                 if ("D".equals(menuItem1.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                     mkey = menuItem1.getRefMenuid();
                     if (StringUtil.isNumber(menuItem1.getUrl()) || "".equals(StringUtil.nvl(menuItem1.getUrl(), "")) || mkey == null) {
-                        menuTag.append("                <a href=\"javascript:void(0)\">\n");
+                        menuTag.append("        <a href=\"javascript:void(0)\"").append(">");
                     } else {
-                        menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
+                        menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                     }
                 } else {
                     if ("".equals(StringUtil.nvl(menuItem1.getUrl(), ""))) {
-                        menuTag.append("    <a href=\"javascript:void(0)\" class=\"nolink\">\n");
+                        menuTag.append("        <a href=\"javascript:void(0)\"").append(">");
                     } else {
                         mkey = menuItem1.getMenuid();
 
                         if ("Y".equals(menuItem1.getPopupYn())) {
                             if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
-                                menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
+                                menuTag.append("        <a href=\"javascript:goMenuNewWin('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\"").append(">");
                             } else { // 현재창
-                                menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("')\">\n");
+                                menuTag.append("        <a href=\"javascript:goMenuPop('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getPopupWd()).append("','").append(menuItem1.getPopupHg()).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                             }
                         } else {
-                            menuTag.append("    <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("')\">\n");
+                            if ("N".equals(menuItem1.getPopupTrgtCd())) { // 새창
+                                menuTag.append("        <a href=\"").append(menuItem1.getUrl()).append("\" target=\"_blank\"").append(">");
+                            } else { // 현재창
+                                menuTag.append("        <a href=\"javascript:goMenu('").append(menuItem1.getUrl()).append("','").append(mkey).append("','").append(menuItem1.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
+                            }
                         }
                     }
                 }
-                menuTag.append("<span><p class=\"glyphicon glyphicon-cloud\" aria-hidden=\"true\"></p> <strong>").append(menuItem1.getNm()).append("</strong></span></a>\n");
+                menuTag.append(menuItem1.getNm()).append("</a>\n");
                 if (treeNode1.hasChildren()) {
 
-                    if (menuItem1.getMenuid().equals(upprMenuid)) {
-                        menuTag.append("        <ul style=\"display: block\">\n");
-                    } else {
-                        menuTag.append("        <ul>\n");
-                    }
+                    menuTag.append("        <div class=\"dep02\">\n");
+                    menuTag.append("            <div class=\"dep02-inner\">\n");
+                    menuTag.append("                <ul>\n");
 
                     for (TreeNode<MenuItem> treeNode2 : treeNode1.getChildren()) {
                         menuItem2 = treeNode2.getData();
 
                         if ("02".equals(menuItem2.getPtypeCd()) && "N".equals(menuItem2.getHideYn())) {
-                            if ((user != null && isMenuAuth(menuItem2.getUrl()))
+                            if ((isMenuAuth(menuItem2.getUrl()))
                                     || ("N".equals(menuItem2.getNmExpsrTrgtCd()) && user == null)) {
                                 isMenuView = true;
                             } else {
@@ -190,48 +170,53 @@ public class MenuPrintImpl {
                         } else {
                             isMenuView = false;
                         }
+                        
                         if (isMenuView) {
-                            menuTag.append("<li>\n");
+                            String menuItemNm2 = menuItem2.getNm();
+                            menuTag.append("                    <li>");
                             if ("D".equals(menuItem2.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                                 mkey = menuItem2.getRefMenuid();
                                 if (StringUtil.isNumber(menuItem2.getUrl()) || "".equals(StringUtil.nvl(menuItem2.getUrl(), "")) || mkey == null) {
-                                    menuTag.append("                <a href=\"javascript:void(0)\">\n");
+                                    menuTag.append("<a href=\"javascript:void(0)\"").append(">");
                                 } else {
-                                    menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
+                                    menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">\n");
                                 }
                             } else {
                                 if ("".equals(StringUtil.nvl(menuItem2.getUrl(), ""))) {
-                                    menuTag.append("                <a href=\"javascript:void(0)\" class=\"nolink\">\n");
+                                    menuTag.append("<a href=\"javascript:void(0)\"").append(">");
                                 } else {
                                     mkey = menuItem2.getMenuid();
 
                                     if ("Y".equals(menuItem2.getPopupYn())) {
                                         if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
-                                            menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
+                                            menuTag.append("<a href=\"javascript:goMenuNewWin('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\"").append(">");
                                         } else { // 현재창
-                                            menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("')\">\n");
+                                            menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getPopupWd()).append("','").append(menuItem2.getPopupHg()).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                                         }
                                     } else {
-                                        menuTag.append("    <a");
-                                        if (mkey.equals(curMenuid) && "2".equals(menuItem.getDpth())) {
-                                            menuTag.append(" class=\"select\"");
+                                        if ("N".equals(menuItem2.getPopupTrgtCd())) { // 새창
+                                            menuTag.append("<a href=\"").append(menuItem2.getUrl()).append("\" target=\"_blank\"").append(">");
+                                        } else { // 현재창
+                                            if ("/login.html".equals(menuItem2.getUrl()) && user != null) {
+                                                menuItemNm2 = "로그아웃";
+                                                menuTag.append("<a href=\"javascript:logout()\">");
+                                            } else {
+                                                menuTag.append("<a href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("','").append(menuItem2.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
+                                            }
                                         }
-                                        menuTag.append(" href=\"javascript:goMenu('").append(menuItem2.getUrl()).append("','").append(mkey).append("')\">\n");
                                     }
                                 }
                             }
-                            menuTag.append("<span>").append(menuItem2.getNm()).append("</span></a>\n");
-
-                            // menuTag.append("<ul><li><a class=\"select\" style=\"padding-left:55px\"
-                            // href=\"javascript:void(0)\"><span>테스트</span></a></li></ul>\n");
+                            menuTag.append(menuItemNm2).append("</a>\n");
+                            
                             // 3depth
                             if (treeNode2.hasChildren()) {
-                                menuTag.append("        <ul>\n");
+                                menuTag.append("                        <ul class=\"dep03\">\n");
                                 for (TreeNode<MenuItem> treeNode3 : treeNode2.getChildren()) {
                                     menuItem3 = treeNode3.getData();
 
                                     if ("02".equals(menuItem3.getPtypeCd()) && "N".equals(menuItem3.getHideYn())) {
-                                        if ((user != null && isMenuAuth(menuItem3.getUrl()))
+                                        if ((isMenuAuth(menuItem3.getUrl()))
                                                 || ("N".equals(menuItem3.getNmExpsrTrgtCd()) && user == null)) {
                                             isMenuView = true;
                                         } else {
@@ -240,47 +225,51 @@ public class MenuPrintImpl {
                                     } else {
                                         isMenuView = false;
                                     }
+                                    
                                     if (isMenuView) {
-                                        menuTag.append("<li>\n");
+                                        
+                                        menuTag.append("                            <li>\n");
                                         if ("D".equals(menuItem3.getTypeCd())) { // 메뉴타입코드가 디렉토리인경우
                                             mkey = menuItem3.getRefMenuid();
                                             if (StringUtil.isNumber(menuItem3.getUrl()) || "".equals(StringUtil.nvl(menuItem3.getUrl(), "")) || mkey == null) {
-                                                menuTag.append("                <a href=\"javascript:void(0)\">\n");
+                                                menuTag.append("<a href=\"javascript:void(0)\"").append(">");
                                             } else {
-                                                menuTag.append("                <a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
+                                                menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                                             }
                                         } else {
                                             if ("".equals(StringUtil.nvl(menuItem3.getUrl(), ""))) {
-                                                menuTag.append("                <a href=\"javascript:void(0)\" class=\"nolink\">\n");
+                                                menuTag.append("<a href=\"javascript:void(0)\"").append(">");
                                             } else {
                                                 mkey = menuItem3.getMenuid();
 
                                                 if ("Y".equals(menuItem3.getPopupYn())) {
                                                     if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
-                                                        menuTag.append("    <a href=\"javascript:goMenuNewWin('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
+                                                        menuTag.append("<a href=\"javascript:goMenuNewWin('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\"").append(">");
                                                     } else { // 현재창
-                                                        menuTag.append("    <a href=\"javascript:goMenuPop('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getPopupWd()).append("','").append(menuItem3.getPopupHg()).append("')\">\n");
+                                                        menuTag.append("<a href=\"javascript:goMenuPop('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getPopupWd()).append("','").append(menuItem3.getPopupHg()).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                                                     }
                                                 } else {
-                                                    menuTag.append("    <a");
-                                                    if (mkey.equals(menuItem.getMenuid())) {
-                                                        menuTag.append(" class=\"select\" style=\"padding-left:55px\"");
+                                                    if ("N".equals(menuItem3.getPopupTrgtCd())) { // 새창
+                                                        menuTag.append("<a href=\"").append(menuItem3.getUrl()).append("\" target=\"_blank\"").append(">");
+                                                    } else { // 현재창
+                                                        menuTag.append("<a href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("','").append(menuItem3.getLoginYn()).append("','").append(user == null ? "N" : "Y").append("')\"").append(">");
                                                     }
-                                                    menuTag.append(" href=\"javascript:goMenu('").append(menuItem3.getUrl()).append("','").append(mkey).append("')\">\n");
                                                 }
                                             }
                                         }
-                                        menuTag.append("<span>").append(menuItem3.getNm()).append("</span></a></li>\n");
+                                        menuTag.append(menuItem3.getNm()).append("</a></li>\n");
                                     }
                                 }
-                                menuTag.append("</ul>\n");
+                                menuTag.append("                        </ul>\n");
                             }
-                            menuTag.append("</li>\n");
+                            menuTag.append("                    </li>\n");
                         }
                     }
-                    menuTag.append("</ul>\n");
+                    menuTag.append("                </ul>\n");
+                    menuTag.append("            </div>\n");
+                    menuTag.append("        </div>\n");
                 }
-                menuTag.append("</li>\n");
+                menuTag.append("    </li>\n");
             }
         }
         return menuTag.toString();
