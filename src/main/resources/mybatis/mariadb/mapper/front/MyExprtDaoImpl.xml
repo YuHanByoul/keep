@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--
+	SQL File Name : MyExprtDaoImpl.xml
+	Description : 마이페이지 > 환경교육 전문가 풀
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtDao">
+
+    <update id="updateRlsAndRcptn">
+        UPDATE TB_ASS_EXPRT
+        SET
+            MOBLPHON_RLS_YN = #{moblphonRlsYn}
+            , TELNO_RLS_YN = #{telnoRlsYn}
+            , EML_RLS_YN = #{emlRlsYn}
+            , QLFC_RLS_YN = #{qlfcRlsYn}
+            , HDOF_RLS_YN = #{hdofRlsYn}
+            , CAREER_RLS_YN = #{careerRlsYn}
+            , ENT_LCTR_DMND_RCPTN_YN = #{entLctrDmndRcptnYn}
+            , LCTR_GDNC_RCPTN_YN = #{lctrGdncRcptnYn}
+        WHERE USERID = #{user.userid}
+    </update>
+
+    <select id="selectMyExprt" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtVo">
+        SELECT
+            EXPRT_TYPE_CD
+            , FLD_LCTR_YN
+            , FLD_PLANNG_YN
+            , FLD_CNSLTNG_YN
+            , FLD_ETC_YN
+            , FLD_ETC_CN
+            , MOBLPHON_RLS_YN
+            , TELNO_RLS_YN
+            , EML_RLS_YN
+            , QLFC_RLS_YN
+            , HDOF_RLS_YN
+            , CAREER_RLS_YN
+            , ENT_LCTR_DMND_RCPTN_YN
+            , LCTR_GDNC_RCPTN_YN
+            , ENV_EDU_CAREER_YY
+            , ENV_EDU_CAREER_MM
+            , STTS_CD
+            , APLY_DT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            , TOS_AGRE_YN
+            , PRVC_CLCT_AGRE_YN
+            , PRVC_THPTY_PVSN_AGRE_YN
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = #{user.userid}) AS SBJCT_CD_NM
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = #{user.userid}) AS TRGT_CD_NM
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= #{user.userid}) AS ACTVT_SCOPE_CD_NM
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_RGN C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID = #{user.userid}) AS ACTVT_RGN_CD_NM
+
+        FROM TB_ASS_EXPRT
+        WHERE USERID= #{user.userid}
+    </select>
+
+
+    <select id="selectExpertCareerList" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyCareerVo">
+        SELECT
+            EXPRT_CAREER_ID
+             , FLD_NM
+             , ACTVT_BGNG_DE
+             , ACTVT_END_DE
+             , ACTVT_YN
+             , ACTVT_HR
+             , IDNTY_INST_NM
+             , ACTVT_CN
+             , IDNTY_DE
+             , CRTF_FILEID
+             , ARTCLASS_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{user.userid}
+        ORDER BY ORDR
+    </select>
+
+    <select id="selectExpertCrtfctList" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyCrtfctVo">
+        SELECT
+            EXPRT_CRTFCT_ID
+             , CRTFCT_NM
+             , ACQS_INST
+             , ACQS_NO
+             , ACQS_GRD
+             , ACQS_DE
+             , CRTFCT_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_CRTFCT
+        WHERE USERID= #{user.userid}
+        ORDER BY ORDR
+    </select>
+
+    <select id="selectExpertHdofList" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyHdofVo">
+        SELECT
+            EXPRT_HDOF_ID
+             , HDOF_SE_CD
+             , INST_NM
+             , DEPT_NM
+             , JBGD_NM
+             , HDOF_BGNG_DE
+             , HDOF_END_DE
+             , HDOF_YN
+             , HDOFCRTF_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_HDOF
+        WHERE USERID= #{user.userid}
+        ORDER BY ORDR
+    </select>
+</mapper>
