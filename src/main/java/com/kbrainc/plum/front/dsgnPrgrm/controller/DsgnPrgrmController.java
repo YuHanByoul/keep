@@ -15,8 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -400,6 +398,7 @@ public class DsgnPrgrmController {
 		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
 
 		asgsysSrngVo.setPrgrmSchdlLst(dsgnPrgrmVo.getPrgrmSchdlLst());
+		asgsysSrngVo.setEmrgcyActnPlanLst(dsgnPrgrmVo.getEmrgcyActnPlanLst());
 
 		retVal=+asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
 
@@ -414,25 +413,6 @@ public class DsgnPrgrmController {
 		return resultMap;
 	}
 
-	/**
-	* 프로그램 운영관리 화면이동
-	*
-	* @Title : prgrmOperMngForm
-	* @Description : 프로그램 운영관리 화면이동
-	* @param model
-	* @return
-	* @throws Exception
-	* @return String
-	*/
-	@RequestMapping(value = "/front/dsgnPrgrm/prgrmOperMngForm.html")
-	public String prgrmOperMngForm(Model model) throws Exception {
-		return "front/dsgnPrgrm/prgrmOperMngForm";
-	}
-
-//	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmDstnctn.do")
-//	public iprgrmDstnctn(Model model) throws Exception {
-//		return "front/dsgnPrgrm/prgrmDstnctn";
-//	}
 
 	/**
 	* 프로그램 평가 체계 화면 이동
@@ -451,9 +431,123 @@ public class DsgnPrgrmController {
 		return "front/dsgnPrgrm/prgrmEvlForm";
 	}
 
+	/**
+	* 프로그램평가 등록
+	*
+	* @Title : insertPrgrmEvlForm
+	* @Description : 프로그램평가 등록
+	* @param dsgnPrgrmVo
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmEvlForm.do")
+	@ResponseBody
+	public Map<String, Object> insertPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		int retVal=0;
+
+		dsgnPrgrmVo.setUser(user);
+
+		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
+
+		retVal=+asgsysSrngService.updatePrgrmEvl(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+		return resultMap;
+	}
+
+	/**
+	 * 프로그램 운영관리 화면이동
+	 *
+	 * @Title : prgrmOperMngForm
+	 * @Description : 프로그램 운영관리 화면이동
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 * @return String
+	 */
+	@RequestMapping(value = "/front/dsgnPrgrm/prgrmOperMngForm.html")
+	public String prgrmOperMngForm(Model model) throws Exception {
+		return "front/dsgnPrgrm/prgrmOperMngForm";
+	}
+
+//	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmDstnctn.do")
+//	public iprgrmDstnctn(Model model) throws Exception {
+//		return "front/dsgnPrgrm/prgrmDstnctn";
+//	}
+
+	/**
+	* 지도자 자격 및 배치 화면 이동
+	*
+	* @Title : ldrQlfcForm
+	* @Description : 지도자 자격 및 배치 화면 이동
+	* @param model
+	* @return
+	* @throws Exception
+	* @return String
+	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/ldrQlfcForm.html")
-	public String ldrQlfcForm(Model model) throws Exception {
+	public String ldrQlfcForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
+
+		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
+
+		//책임개발자 목록 조회
+		model.addAttribute("ldrList", asgsysSrngService.selectLdrList(asgsysSrngVo));
+		//책임개발자 이력 조회
+		model.addAttribute("snrstfdvlprHstry", asgsysSrngService.selectSnrstfdvlprHstry(asgsysSrngVo));
+		//책임개발자 학력사항 목록 조회
+		model.addAttribute("acbgList", asgsysSrngService.selectSnrstfdvlprAcbgList(asgsysSrngVo));
+		//책임개발자 경력사항 목록 조회
+		model.addAttribute("careerList", asgsysSrngService.selectSnrstfdvlprCareerList(asgsysSrngVo));
+		//책임개발자 자격사항 목록 조회
+		model.addAttribute("qlfcList", asgsysSrngService.selectSnrstfdvlprQlfcList(asgsysSrngVo));
+
 		return "front/dsgnPrgrm/ldrQlfcForm";
+	}
+
+	/**
+	* 지도자의 자격및 배치 등록
+	*
+	* @Title : insertLdrQlfcForm
+	* @Description : 지도자의 자격및 배치 등록
+	* @param dsgnPrgrmVo
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmLdrQlfcForm.do")
+	@ResponseBody
+	public Map<String, Object> insertLdrQlfcForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		int retVal=0;
+
+		asgsysSrngVo.setUser(user);
+
+
+		retVal=+asgsysSrngService.insertLdrQlfcForm(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+		return resultMap;
 	}
 
 	@RequestMapping(value = "/front/dsgnPrgrm/sftyMngForm.html")
@@ -470,6 +564,5 @@ public class DsgnPrgrmController {
 	public String aplyCmptnForm(Model model) throws Exception {
 		return "front/dsgnPrgrm/aplyCmptnForm";
 	}
-
 
 }

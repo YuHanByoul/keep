@@ -67,6 +67,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 우수성 아이디*/
 	private Integer dstnctnid;
 
+	/** 이력 아이디*/
+	private Integer hstryid;
+
 	/** 프로그램 명 */
 	private String prgrmNm;
 
@@ -334,6 +337,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 평가아이디 */
     private String evlid;
 
+    /**평가_목적 */
+    private String evlPrps;
+
     /** 사전지도자평가항목 */
     private String bfrLdrEvlArtcl;
 
@@ -381,6 +387,18 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 기타내용 */
     private String etcCn;
+
+    /** 이름 */
+    private String nm;
+
+    /** 생년월일 */
+    private String brdt;
+
+    /** 구분 */
+    private String se;
+
+    /** 업무 내용 */
+    private String taskcn;
 
 	/** 첨부파일 */
     private String fileid;

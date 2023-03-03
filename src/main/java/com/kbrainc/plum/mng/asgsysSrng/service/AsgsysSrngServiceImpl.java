@@ -27,13 +27,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.cmm.error.controller.CustomErrorController;
 import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.AcbgVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.CareerVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.ChklstAnsVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.DsgnSrngFormVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.LdrVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.QlfcVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.member.model.MemberVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -564,11 +568,151 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	public int updatePrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		AsgsysSrngVo dtlVo = asgsysSrngDao.selectPrgrmEvl(asgsysSrngVo);
 		int ret=0;
-		if(CommonUtil.isEmpty(dtlVo.getPrgrmid())){
+		if(CommonUtil.isEmpty(dtlVo.getEvlid())){
 			ret = asgsysSrngDao.insertPrgrmEvl(asgsysSrngVo);
 		}else {
 			ret = asgsysSrngDao.updatePrgrmEvl(asgsysSrngVo);
 		}
+		return ret;
+	}
+
+	/**
+	* 책임개발자 목록 조회
+	*
+	* @Title : selectLdrList
+	* @Description : 책임개발자 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	@Override
+	public List<AsgsysSrngVo> selectLdrList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectLdrList(asgsysSrngVo);
+	}
+	/**
+	* 책임개발자 이력 조회
+	*
+	* @Title : selectSnrstfdvlprHstry
+	* @Description : 책임개발자 이력 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	@Override
+	public AsgsysSrngVo selectSnrstfdvlprHstry(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSnrstfdvlprHstry(asgsysSrngVo);
+	}
+
+	/**
+	* 책임개발자 학력사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprAcbgList
+	* @Description : 책임개발자 학력사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	@Override
+	public List<AsgsysSrngVo> selectSnrstfdvlprAcbgList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSnrstfdvlprAcbgList(asgsysSrngVo);
+	}
+
+	/**
+	* 책임개발자 자격사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprQlfcList
+	* @Description : 책임개발자 자격사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	@Override
+	public List<AsgsysSrngVo> selectSnrstfdvlprQlfcList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSnrstfdvlprQlfcList(asgsysSrngVo);
+	}
+
+	/**
+	* 책임개발자 경력사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprCareerList
+	* @Description : 책임개발자 경력사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	@Override
+	public List<AsgsysSrngVo> selectSnrstfdvlprCareerList(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		return asgsysSrngDao.selectSnrstfdvlprCareerList(asgsysSrngVo);
+	}
+
+
+	/**
+	* 지도자 자격 및 배치 등록
+	*
+	* @Title : insertLdrQlfcForm
+	* @Description : 지도자 자격 및 배치 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertLdrQlfcForm(AsgsysSrngVo asgsysSrngVo) throws Exception{
+		int ret=0;
+
+		//지도자 목록
+		List<LdrVo> ldrList = asgsysSrngVo.getLdrLst();
+
+		ret += asgsysSrngDao.deleteLdrList(asgsysSrngVo);
+		for(LdrVo vo : ldrList) {
+			vo.setUser(asgsysSrngVo.getUser());
+			vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+			ret += asgsysSrngDao.insertLdr(vo);
+		}
+
+		//이력
+		if(CommonUtil.isEmpty(asgsysSrngVo.getHstryid())){
+			ret += asgsysSrngDao.insertSnrstfdvlprHstry(asgsysSrngVo);
+		}else {
+			ret += asgsysSrngDao.updateSnrstfdvlprHstry(asgsysSrngVo);
+		}
+
+		//학력 목록
+		List<AcbgVo> acbgList = asgsysSrngVo.getAcbgLst();
+
+		ret += asgsysSrngDao.deleteAcbgList(asgsysSrngVo);
+		for(AcbgVo vo : acbgList) {
+			vo.setUser(asgsysSrngVo.getUser());
+			vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+			ret += asgsysSrngDao.insertAcbg(vo);
+		}
+
+		//경력 목록
+		List<CareerVo> careerList = asgsysSrngVo.getCareerLst();
+
+		ret += asgsysSrngDao.deleteCareerList(asgsysSrngVo);
+		for(CareerVo vo : careerList) {
+			vo.setUser(asgsysSrngVo.getUser());
+			vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+			ret += asgsysSrngDao.insertCareer(vo);
+		}
+
+		//자격 목록
+		List<QlfcVo> qlfcList = asgsysSrngVo.getQlfcLst();
+
+		ret += asgsysSrngDao.deleteQlfcList(asgsysSrngVo);
+		for(QlfcVo vo : qlfcList) {
+			vo.setUser(asgsysSrngVo.getUser());
+			vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+			ret += asgsysSrngDao.insertQlfc(vo);
+		}
+
 		return ret;
 	}
 
@@ -595,7 +739,6 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     */
 	@Override
 	public List<AsgsysSrngVo> selectJdgsSrngList(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		//
 		return asgsysSrngDao.selectJdgsSrngList(asgsysSrngVo);
 	}
 
@@ -1235,9 +1378,9 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
-logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
+
     	if( 0 < schdLst.size()) {
-    		logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@7");
+
     		asgsysSrngDao.deletePrgrmSchdl(schdLst.get(0));
 
     		for(PrgrmSchdlVo prgrmSchdlVo : schdLst) {
@@ -1246,12 +1389,12 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     			ret += asgsysSrngDao.insertPrgrmSchdl(prgrmSchdlVo);
     		}
     	}
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@6");
-    	/*비상조치계획 저장
+
+
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
     	if( 0 < planLst.size()) {
-    		logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@5");
+
     		asgsysSrngDao.deleteEmrgcyActnPlan(planLst.get(0));
 
     		for(EmrgcyActnPlanVo emrgcyActnPlanVo : planLst) {
@@ -1260,21 +1403,18 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     			ret += asgsysSrngDao.insertEmrgcyActnPlan(emrgcyActnPlanVo);
     		}
     	}
-    	*/
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@7");
+
     	//교육주제 저장
     	if(CommonUtil.isNotEmpty(asgsysSrngVo.getEduSbjctCdLst())){
-    		logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
+
     		String [] eduSbjctCdArr = asgsysSrngVo.getEduSbjctCdLst().split(",");
 
     		asgsysSrngDao.deleteEduSbjct(asgsysSrngVo);
 
     		ret += asgsysSrngDao.insertEduSbjct(asgsysSrngVo, eduSbjctCdArr, asgsysSrngVo.getUser());
     	}
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@9");
     	// 프로그램 우수성 수정
     	ret += asgsysSrngDao.updatePrgrmDstnctn(asgsysSrngVo);
-    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@10");
 
     	return ret;
     }
@@ -1432,7 +1572,6 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
 	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngFormList(asgsysSrngVo);
 	}
-
 
 
 }

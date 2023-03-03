@@ -289,6 +289,179 @@ public interface AsgsysSrngDao {
 	 */
 	public int deleteEduSbjct(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
+	/**
+	* 책임개발자 목록 조회
+	*
+	* @Title : selectLdrList
+	* @Description : 책임개발자 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectLdrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	/**
+	* 책임개발자 이력 조회
+	*
+	* @Title : selectSnrstfdvlprHstry
+	* @Description : 책임개발자 이력 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectSnrstfdvlprHstry(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 이력 등록
+	*
+	* @Title : insertSnrstfdvlprHstry
+	* @Description : 책임개발자 이력 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertSnrstfdvlprHstry(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 책임개발자 이력 수정
+	 *
+	 * @Title : updateSnrstfdvlprHstry
+	 * @Description : 책임개발자 이력 수정
+	 * @param asgsysSrngVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updateSnrstfdvlprHstry(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 학력사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprAcbgList
+	* @Description : 책임개발자 학력사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSnrstfdvlprAcbgList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 지도자 등록
+	*
+	* @Title : insertAcbg
+	* @Description : 책임개발자 지도자 등록
+	* @param ldrVo
+	* @throws Exception
+	* @return void
+	*/
+	public int insertLdr(LdrVo ldrVo) throws Exception;
+
+	/**
+	* 책임개발자 지도자 목록 삭제
+	*
+	* @Title : deleteLdrList
+	* @Description : 책임개발자 지도자 목록 삭제
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteLdrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 책임개발자 학력 등록
+	 *
+	 * @Title : insertAcbg
+	 * @Description : 책임개발자 학력 등록
+	 * @param acbgVo
+	 * @throws Exception
+	 * @return void
+	 */
+	public int insertAcbg(AcbgVo acbgVo) throws Exception;
+
+	/**
+	 * 책임개발자 학력 목록 삭제
+	 *
+	 * @Title : deleteAcbgList
+	 * @Description : 책임개발자 학력 목록 삭제
+	 * @param asgsysSrngVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int deleteAcbgList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 경력 등록
+	*
+	* @Title : insertCareer
+	* @Description : 책임개발자 경력 등록
+	* @param CareerVo
+	* @throws Exception
+	* @return void
+	*/
+	public int insertCareer(CareerVo careerVo) throws Exception;
+
+	/**
+	* 책임개발자 경력 목록 삭제
+	*
+	* @Title : deleteCareerList
+	* @Description : TODO
+	* @param asgsysSrngVo
+	* @throws Exception
+	* @return void
+	*/
+	public int deleteCareerList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	 * 책임개발자 자력 등록
+	 *
+	 * @Title : insertQlfc
+	 * @Description : 책임개발자 자력 등록
+	 * @param CareerVo
+	 * @throws Exception
+	 * @return void
+	 */
+	public int insertQlfc(QlfcVo qlfcVo) throws Exception;
+
+	/**
+	 * 책임개발자 자력 삭제
+	 *
+	 * @Title : deleteCareerList
+	 * @Description : 책임개발자 자력 삭제
+	 * @param asgsysSrngVo
+	 * @throws Exception
+	 * @return void
+	 */
+	public int deleteQlfcList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 자격사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprQlfcList
+	* @Description : 책임개발자 자격사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSnrstfdvlprQlfcList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 경력사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprCareerList
+	* @Description : 책임개발자 경력사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSnrstfdvlprCareerList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
     /**
 	* 프로그램 평가 조회
 	*
@@ -902,5 +1075,8 @@ public interface AsgsysSrngDao {
 	 * @return int
 	 */
 	public int deleteJdgsSrngOrdrAns(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
+
+
+
 
 }

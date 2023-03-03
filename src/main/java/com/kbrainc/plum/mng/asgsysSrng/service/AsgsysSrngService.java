@@ -257,6 +257,77 @@ public interface AsgsysSrngService {
 	public int updatePrgrmEvl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	* 책임개발자 목록 조회
+	*
+	* @Title : selectLdrList
+	* @Description : 책임개발자 목록 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectLdrList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+	/**
+	* 책임개발자 이력 조회
+	*
+	* @Title : selectSnrstfdvlprHstry
+	* @Description : 책임개발자 이력 조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return AsgsysSrngVo
+	*/
+	public AsgsysSrngVo selectSnrstfdvlprHstry(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 학력사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprAcbgList
+	* @Description : 책임개발자 학력사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSnrstfdvlprAcbgList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 자격사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprQlfcList
+	* @Description : 책임개발자 자격사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSnrstfdvlprQlfcList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 책임개발자 경력사항 목록조회
+	*
+	* @Title : selectSnrstfdvlprCareerList
+	* @Description : 책임개발자 경력사항 목록조회
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return List<AsgsysSrngVo>
+	*/
+	public List<AsgsysSrngVo> selectSnrstfdvlprCareerList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
+	* 지도자 자격 및 배치 등록
+	*
+	* @Title : insertLdrQlfcForm
+	* @Description : 지도자 자격 및 배치 등록
+	* @param asgsysSrngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertLdrQlfcForm(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 프로그램 안전관리 조회
 	*
 	* @Title : selectSftyMng
@@ -624,7 +695,6 @@ public interface AsgsysSrngService {
 	public List<DsgnSrngFormVo> selectSrngFormQitemList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception;
-
 
 
 }

@@ -44,16 +44,16 @@
                     <strong class="tit">프로그램 정보 항목</strong>
                     <div class="sticky-steps">
                         <ul>
-                            <li><a href="#">프로그램 우수성</a></li>
-                            <li class="active"><a href="#" title="현재 단계">프로그램 운영관리</a></li>
-                            <li><a href="#">프로그램 평가</a></li>
-                            <li><a href="#">지도자의 자격 및 배치</a></li>
-                            <li><a href="#">안전관리</a></li>
-                            <li><a href="#">체크리스트</a></li>
+                            <li><a th:href="@{/front/dsgnPrgrm/prgrmDstnctnForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 우수성</a></li>
+                            <li class="active"><a th:href="@{/front/dsgnPrgrm/prgrmOperMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 운영관리</a></li>
+                            <li><a th:href="@{/front/dsgnPrgrm/prgrmEvlForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 평가</a></li>
+                            <li><a th:href="@{/front/dsgnPrgrm/ldrQlfcForm.html?prgrmid=}+${aplyInfo.prgrmid}" >지도자의 자격 및 배치</a></li>
+                            <li><a th:href="@{/front/dsgnPrgrm/sftyMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >안전관리</a></li>
+                            <li><a th:href="@{/front/dsgnPrgrm/chkListForm.html?prgrmid=}+${aplyInfo.prgrmid}" >체크리스트</a></li>
                         </ul>
                         <div class="btn-wrap">
                             <div class="center">
-                                <button type="button" class="btn-large btn-gray">중간저장</button>
+                                <button type="button" class="btn-large btn-gray"   onclick="doSave()">중간저장</button>
                                 <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
                             </div>
                         </div>
@@ -505,33 +505,37 @@
     }
 
 
-    function doSave(){
+    function doSave(call){
 
         if(!confirm("저장하시겠습니까?")) return;
-
+// debugger;
+// return;
         var data =  $("#prgrmOperMngForm").serialize() ;
 
-//         $.ajax({
-//             url : insertPstUrl,
-//             type: 'POST',
-//             cache : false,
-//             dataType: 'json',
-//             data : data,
-//             success : function (data){
-//                 if(data.result=="success"){
-//                     alert("등록이 완료 되었습니다.");
-//                     goBbsMain();
-//                 }else{
-//                     alert("등록중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
-//                 }
-//             },
-//             error : function (error){
-//             }
-//         });
+        $.ajax({
+            url : insertUrl,
+            type: 'POST',
+            cache : false,
+            dataType: 'json',
+            data: param,
+            success : function (data){
+                if(data.result=="success"){
 
-        document.prgrmOperMngForm.action = "/front/dsgnPrgrm/prgrmEvlForm.html";    //프로그램 평가
-        $("#prgrmOperMngForm").submit();
-
+                    if(call == "next") {
+                        document.prgrmOperMngForm.action = nextUrl;
+                        $("#prgrmOperMngForm").submit();
+                    }else{
+                        alert(data.msg);
+                        document.prgrmOperMngForm.action = reUrl;
+                    }
+                    $("#prgrmOperMngForm").submit();
+                }else{
+                    alert(data.msg);
+                }
+            },
+            error : function (error){
+            }
+        });
     }
 
     function goPrev(){
@@ -541,7 +545,7 @@
 
     function goNext(){
         if($("#prgrmOperMngForm").valid() == false) return;
-        doSave();
+        doSave("next");
     }
 
     $(function() {
