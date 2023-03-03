@@ -1,10 +1,10 @@
 package com.kbrainc.plum.front.exprtPool.register.model;
 
-import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * 전문가 등재신청 Dao 인터페이스
@@ -34,4 +34,40 @@ public interface ExprtRegisterDao {
     public DefaultMemberInfoVo selectDefaultMemberInfo(ExprtRegisterVo exprtRegisterVo);
 
     public String selectExprtStts(UserVo user) throws Exception;
+
+    public int insertExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertHdof(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertCrtfct(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertCareer(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertDefaultInfo(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertTrgtCds(@Param("trgtCds") String[] trgtCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertSbjctCds(@Param("sbjctCds") String[] sbjctCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertActvtRgnCds(@Param("actvtRgnCds") String[] actvtRgnCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertActvtScopeCds(@Param("actvtScopeCds") String[] actvtScopeCds, @Param("user") UserVo user) throws Exception;
+
+    public int deleteTrgtCds(@Param("user") UserVo user) throws Exception;
+    public int deleteSbjctCds(@Param("user") UserVo user) throws Exception;
+    public int deleteActvtRgnCds(@Param("user") UserVo user) throws Exception;
+    public int deleteActvtScopeCds(@Param("user") UserVo user) throws Exception;
+
+    public ExprtRegisterVo selectExpertRegister(ExprtRegisterVo exprtRegisterVo) throws Exception;
+    public List<CareerVo> selectExpertCareerList(ExprtRegisterVo exprtRegisterVo) throws Exception;
+    public List<CrtfctVo> selectExpertCrtfctList(ExprtRegisterVo exprtRegisterVo) throws Exception;
+    public List<HdofVo> selectExpertHdofList(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteHdof(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteCrtfct(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteCareer(ExprtRegisterVo exprtRegisterVo) throws Exception;
 }
