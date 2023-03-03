@@ -149,13 +149,14 @@
     <select id="getAplyCnt" parameterType="front.reqMngVo" resultType="front.ReqUserVo">
         /* ReqMngDao.getAplyCnt */
         SELECT 
-            COUNT(TSA.APLYID) OVER (PARTITION BY TSP.PCNTSTID) AS CNT
+            COUNT(TSA.APLYID) AS CNT
             , MAX(TSA.APLYID) AS APLYID 
         FROM 
             TB_SPB_PCNTST TSP 
             INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
         WHERE TSP.PCNTSTID = #{pcntstid}
             AND TSA.USERID = #{user.userid}
+        GROUP BY TSP.PCNTSTID
     </select>
     
     <!-- 신청자(기관) 기본 정보 조회 -->
@@ -243,6 +244,7 @@
             , A.MDFRID
             , A.REG_DT
             , A.RGTRID 
+            , (SELECT PCNTST_NM FROM TB_SPB_PCNTST TSP WHERE TSP.PCNTSTID = A.PCNTSTID) AS PCNTST_NM
         FROM
             TB_SPB_APLY A
             INNER JOIN TB_CMM_USER U ON A.USERID = U.USERID 
