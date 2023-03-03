@@ -225,6 +225,27 @@
     <!-- 푸름이 이동환경교실 교육신청 등록정보 상세조회 -->
     <select id="selectMvmnAplyRegInfo" parameterType="front.MvmnAplyVo" resultType="front.MvmnAplyVo"> 
         /* MvmnAplyDao.selectMvmnAplyInfo */
+            WITH T1 AS (
+                SELECT TMEID, REPLACE(DE, '.', '-') DE 
+                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL 
+                 WHERE TME_SCHDLID = #{tmeSchdlid}
+                 UNION ALL 
+                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 1 WEEK) DE 
+                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL 
+                 WHERE TME_SCHDLID = #{tmeSchdlid}
+                 UNION ALL 
+                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 2 WEEK) DE 
+                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
+                 WHERE TME_SCHDLID = #{tmeSchdlid}
+                 UNION ALL 
+                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 3 WEEK) DE 
+                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
+                 WHERE TME_SCHDLID = #{tmeSchdlid}
+                 UNION ALL 
+                SELECT TMEID, DATE_ADD(REPLACE(DE, '.', '-'), INTERVAL 4 WEEK) DE 
+                  FROM TB_EDU_MVMN_PRGRM_TME_SCHDL
+                 WHERE TME_SCHDLID = #{tmeSchdlid}
+            )        
             SELECT
                 A.PRGRMID
                 , A.SAREAID
@@ -234,9 +255,10 @@
                 , A.EDU_NOPE
                 , J.SIGNGU_CD
                 , CONCAT(E.CD_NM,' <![CDATA[>]]> ', G.CD_NM) SIGNGU_DESC
-                , C.TME_NM
-                , REPLACE(D.DE, '.', '-') DE
+                , CONCAT(C.TME_NM, C.BGNG_TM, ' ~ ', C.END_TM) TME_NM
+                , CASE WHEN A.OPER_FOM_CD = '197101' THEN REPLACE(D.DE, '.', '-') ELSE (SELECT GROUP_CONCAT(T1.DE SEPARATOR', ') FROM T1 WHERE MONTH(T1.DE) = MONTH(D.DE)) END DE
                 ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = A.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
+                ,(SELECT GROUP_CONCAT(TC.TRGT_CD SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TC WHERE TC.PRGRMID = A.PRGRMID ) AS TRGT_CD
                 , F.INSTID
                 , H.INST_NM
                 , H.TELNO
@@ -266,7 +288,7 @@
               AND D.TME_SCHDLID = #{tmeSchdlid}
               AND I.CTPRVN_CD = SUBSTRING_INDEX(SUBSTRING_INDEX(#{sareaSignguCd}, '^', -2), '^', 1)
               AND J.SIGNGU_CD = SUBSTRING_INDEX(#{sareaSignguCd}, '^', -1)
-            GROUP BY A.PRGRMID;
+            GROUP BY A.PRGRMID
     </select>    
     <!-- 푸름이 이동환경교실 교육신청 등록 --> 
     <insert id="insertMvmnAply" parameterType="front.MvmnAplyVo" useGeneratedKeys="true" keyProperty="aplyid">

@@ -8,17 +8,17 @@
         <!-- Tab Container Start -->
          <div class="card-block-small p-t-0">
              <div class="row">
-                 <div class="col-12 mb-3">                                                                    
+                 <div class="col-lg-6 mb-3">                                                                    
                      <div class="mb-0 form-group required" >
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="sareaNm"><strong>운영권역명</strong></label>
-                         <div class="col-12">
+                         <div class="col-sm-12">
                              <input type="text" class="form-control form-control-sm" name="sareaNm" id="sareaNm" placeholder="" >
                          </div>
                      </div>
                  </div>
              </div>
              <div class="row">
-                 <div class="col-12 mb-3">
+                 <div class="col-md-6 col-lg-3 mb-3">
                      <div class="mb-0 form-group required">
                          <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>운영기관</strong></div>
                          <div class="col-12 row">
@@ -34,31 +34,45 @@
                          </div>
                      </div>
                  </div>
+             </div>
+             <div class="row">
                  <div class="col-12 mb-3">
                      <div id="ctprvnDiv" class="mb-0 form-group required">
-                         <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>지역</strong></div>
-                         <div class="row">
-                             <div class="col-sm">
+                         <div class="form-label col-sm-12 col-form-label p-t-0"><strong>지역</strong></div>
+                         <div class="row pt-1">
+                             <div class="col col-md-6 col-lg-3">
                                 <th:block kattr:select_code="ctprvnCd" grpCd="143" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 선택 -" isAdmin="true"></th:block>
                              </div>
-                             <div class="mt-1 mt-sm-0" style="width:100px;">
-                                 <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowCtprvnCds(this)">+</button>
+                             <div class="col-auto ps-0">
+                                 <button class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds((this)">-</button>
+                                 <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>
                              </div>    
                          </div>
                      </div>
                  </div>
-                 <div class="col-12 mb-3">
+             </div>
+             <div class="row">
+                 <div class="col-lg-6 mb-3">
                      <div class="mb-0 form-group required">
                          <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="input01"><strong>연도별 기관당 신청 횟수 제한</strong></label>
-                         <input type="text" class="form-control form-control-sm" name="aplyLmtCnt" id="aplyLmtCnt" placeholder="신청 가능 횟수를 입력하세요.">
+                         <div class="col-sm-12">
+                            <input type="text" class="form-control form-control-sm" name="aplyLmtCnt" id="aplyLmtCnt" placeholder="신청 가능 횟수를 입력하세요.">
+                         </div>
                      </div>
                  </div>
-                 <div class="col-12">
-                     <div class="mb-0 form-group">
-                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="useStatus"><strong>사용여부</strong></label>
-                         <span kattr:switch_yn="sareaUseYn" label="사용여부" defaultVal="Y" onchange="useSwitch" isAdmin="true"></span>
-                     </div>
+             </div>
+             <div class="row form-group mb-3">
+                 <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="WorkTitle"><strong>설명</strong></label>
+                 <div class="col-sm-12">
+                     <input type="text" class="form-control form-control-sm" name="expln" id="expln" placeholder=""/>
                  </div>
+             </div>             
+             <div class="row form-group mb-3">       
+                  <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="WorkContents"><strong>사용여부</strong></label>
+                  <div class="col-12">
+                      <input type="hidden" class="js-single"/>
+                      <span kattr:switch_yn="sareaUseYn" defaultVal="Y" onchange="useSwitch()" isAdmin="true"></span>
+                  </div>
              </div>
         </div>
         <div class="card-block-small">
@@ -87,7 +101,7 @@
         for(var i = 0; i < elemsingleSmallList.length; i++) {
             new Switchery(elemsingleSmallList[i], {color: "#4680ff", jackColor: "#fff", size: "small"});
        }
-       $(".switchery").css({pointerEvents: "none"});
+       $(".switchery").css({pointerEvents: "block"});
 		
 	}
 	
@@ -102,16 +116,30 @@
     function fn_addRowCtprvnCds(item){
         var rowCnt = $("#ctprvnDiv").find('.row').length;
         //추가버튼 삭제 -> 마지막 행에만 추가한다..
-        $("#ctprvnDiv").find("#addRowCtprvnCds").hide();
+        $("#ctprvnDiv").find(".row .addRowCtprvn").hide();
         $("#ctprvnDiv").find('.row').last().after( fn_makeCtprvnCdsListHtml() );
-    }    
+    }   
+    //지역 행삭제
+    function fn_delRowCtprvnCds(item){
+        var rowCnt = $("#ctprvnDiv").find('.row').length;
+        if(rowCnt <= 1){
+            return;
+        }else{
+            $(item).parent().parent().remove();
+            //행삭제 후, 행추가 버튼 마지막 행에 동적 생성.
+            $("#ctprvnDiv").find(".row .addRowCtprvn").remove();
+            var btnHtml = '<button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
+            $("#ctprvnDiv").find('.row :button').last().after( btnHtml );
+        }    	
+    }
     
     function fn_makeCtprvnCdsListHtml() {
         var ctprvnCdsHtml = "";
         var rowCnt =  $("#ctprvnDiv").find('.row').length;
         var ctprvnCdsList = /*[[${ctprvnCdList}]]*/;
-        ctprvnCdsHtml += '<div class="row mt-1">   '
-        ctprvnCdsHtml += '  <div class="col-sm">';                         
+        
+        ctprvnCdsHtml += '<div class="row pt-1">   '
+        ctprvnCdsHtml += '  <div class="col col-md-6 col-lg-3">';                         
         ctprvnCdsHtml += '      <select class="form-select form-select-sm form-control-sm" style="" id="ctprvnCd" name="ctprvnCd">';
         ctprvnCdsHtml += '          <option value="">- 선택 -</option>';
         for(var i=0; i<ctprvnCdsList.length; i++){
@@ -119,8 +147,9 @@
         }
         ctprvnCdsHtml += '      </select>';
         ctprvnCdsHtml += '  </div>';        
-        ctprvnCdsHtml += '  <div class="mt-1 mt-sm-0" style="width:100px;">';
-        ctprvnCdsHtml += '      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm" onclick="fn_addRowCtprvnCds(this)">+</button>';
+        ctprvnCdsHtml += '  <div class="col-auto ps-0">';
+        ctprvnCdsHtml += '      <button type="button" class="input-group-text btn btn-primary btn-sm" onclick="fn_delRowCtprvnCds(this)">-</button>   '
+        ctprvnCdsHtml += '      <button type="button" id="addRowCtprvnCds" class="input-group-text btn btn-primary btn-sm addRowCtprvn" onclick="fn_addRowCtprvnCds(this)">+</button>';
         ctprvnCdsHtml += '  </div>';                             
         ctprvnCdsHtml += '</div>';                             
         

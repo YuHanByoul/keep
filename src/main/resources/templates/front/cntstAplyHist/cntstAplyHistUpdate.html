@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<form id="cntstAplyHistAplyForm">
+			<!-- content -->
+			<div class="table-caption">
+				<div class="left">
+					<div class="tag tag tag-blue mb10"><th:block th:text="${cntstAplyHist.clsfCdNm}"></th:block></div>
+					<h4 class="sub-title"><th:block th:text="${cntstAplyHist.ttl}"></th:block></h4>
+				</div>
+			</div>
+
+			<div class="table-row">
+				<table>
+					<caption>우수환경도서 및 독후감 공모 - 접수기간, 당첨자 발표일</caption>
+					<colgroup>
+						<col style="width:140px;">
+						<col>
+						<col style="width:140px;">
+						<col>
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row">접수기간</th>
+							<td><th:block th:text="${cntstAplyHist.aplyBgngDt}"></th:block> ~ <th:block th:text="${cntstAplyHist.aplyEndDt}"></th:block></td>
+							<th scope="row">당첨자 발표일</th>
+							<td><th:block th:text="${cntstAplyHist.prsntnDt}"></th:block></td>
+						</tr>
+						<tr>
+							<th scope="row">신청일</th>
+							<td colspan="3"><th:block th:text="${cntstAplyHist.aplyDt}"></th:block></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="table-caption">
+				<div class="left">
+					<h4 class="sub-title">접수정보</h4>
+				</div>
+				<div class="right">
+					<p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+				</div>
+			</div>
+
+			<div class="table-row table-row-mo">
+				<table>
+					<caption>접수정보 - 응모구분, 공모분야, 응모구분</caption>
+					<colgroup>
+						<col style="width:140px;">
+						<col>
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row">응모구분<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<span kattr:radio_code="aplySeCd" grpCd="168" th:attr="selectedCd=${cntstAplyHist.aplySeCd}"></span>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">공모분야<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<div class="form-check-list">
+									<th:block th:each="item : ${fldMapngInfo}">
+									<label class="inp">
+										<th:block th:if="${cntstAplyHist.pcntstFldCd} == ${item.fldCd}">
+											<input type="radio" name="pcntstFldCd" th:value="${item.fldCd}" checked>
+											<b><th:block th:text="${item.fldMapngNm}"></th:block></b>
+										</th:block>
+										<th:block th:unless="${cntstAplyHist.pcntstFldCd} == ${item.fldCd}">
+											<input type="radio" name="pcntstFldCd" th:value="${item.fldCd}">
+											<b><th:block th:text="${item.fldMapngNm}"></th:block></b>
+										</th:block>
+									</label>
+									</th:block>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">지원경로<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<span kattr:radio_code="aplyPathCd"grpCd="167" th:attr="selectedCd=${cntstAplyHist.aplyPathCd}"></span>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+
+			<div class="table-caption">
+				<div class="left">
+					<h4 class="sub-title">접수자 정보</h4>
+				</div>
+				<div class="right">
+					<p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+				</div>
+			</div>
+
+			<div class="table-row table-row-mo">
+				<table>
+					<caption>접수자 정보 - 접수자 성명, 생년월일, 휴대전화, 이메일, 주소, 상세주소</caption>
+					<colgroup>
+						<col style="width:140px;">
+						<col>
+						<col style="width:140px;">
+						<col>
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row">접수자 성명</th>
+							<td>
+								<th:block th:text="${cntstAplyHist.rprsvNm}"></th:block>
+								<th:block th:if="${cntstAplyHist.instNm != null}">
+									(<th:block th:text="${cntstAplyHist.instNm}"></th:block>)
+								</th:block>								
+							</td>
+							<th scope="row">생년월일<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<input type="date" name="brdt" title="생년월일" th:value="${cntstAplyHist.brdt}">
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">휴대전화</th>
+							<td>
+								<th:block th:text="${cntstAplyHist.rprsvMoblphon}"></th:block>
+							</td>
+							<th scope="row">이메일</th>
+							<td>
+								<th:block th:text="${cntstAplyHist.eml}"></th:block>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">주소</th>
+							<td>
+								<th:block th:text="${cntstAplyHist.addr}">
+							</td>
+							
+							<th scope="row">상세주소</th>
+							<td>
+								<th:block th:text="${cntstAplyHist.addrDtl}">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+
+
+			<div class="table-caption">
+				<div class="left">
+					<h4 class="sub-title">작품 정보</h4>
+				</div>
+				<div class="right">
+					<p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+				</div>
+			</div>
+
+			<div class="table-row table-row-mo">
+				<table>
+					<caption>작품 정보 - 작품제목, 작품설명, 작품 업로드</caption>
+					<colgroup>
+						<col style="width:140px;">
+						<col>
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row">작품제목<i class="ast" title="필수입력">*</i></th>
+							<td><input type="text" title="작품제목" name="prdctTtl" th:value="${cntstAplyHist.prdctTtl}"></td>
+						</tr>
+						<tr>
+							<th scope="row">작품설명<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<textarea title="작품설명" name="prdctExpln" th:value="${cntstAplyHist.prdctExpln}"><th:block th:text="${cntstAplyHist.prdctExpln}"></th:block></textarea>
+								<div class="desc ar size"><span>0</span> / 5,000</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">작품 업로드<i class="ast" title="필수입력">*</i></th>
+							<td>
+		                        <div class="form-input-file">
+		                            <label class="form-input">
+		                                <input id="multiFileInput" name="files" type="file" multiple class="blind" title="파일첨부" maxcount="5" style="display: none;" th:attr="accept=${acceptUploadFileExt}">
+		                                <span class="btn-medium btn-gray">파일선택</span>
+		                                <p>첨부파일은 최대 5개까지 가능합니다.</p>
+		                            </label>
+		                            <ul id="multipleFileUploadSuccess">
+		                                <th:block th:if="${cntstAplyHist.fileList != null}">
+		                                    <th:block th:each="file : ${cntstAplyHist.fileList}">
+		                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+		                                            <span class="name">
+		                                                <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+		                                                   th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+		                                                    [[${file.orginlFileNm}]]
+		                                                </a>
+		                                            </span>
+		                                            <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+		                                                    th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+		                                                    th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+		                                                <span class="icon icon-circle-close"></span>
+		                                            </button>
+		                                        </li>
+		                                    </th:block>
+		                                </th:block>
+		                                <th:block th:unless="${cntstAplyHist.fileList != null}">
+		                                	<p>첨부파일은 최대 5개까지 가능합니다.</p>
+		                                </th:block>
+		                            </ul>
+		                            <input type="hidden" id="filegrpid" name="prdctFilegrpid" th:value="${(cntstAplyHist.prdctFilegrpid == '' or cntstAplyHist.prdctFilegrpid == null) ? 0 : cntstAplyHist.prdctFilegrpid}"/>
+		                        </div>
+		                    </td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="box-desc-list bg7 mt10">
+				<strong class="box-desc-tit">작품 업로드 안내</strong>
+				<th:block th:utext="${cntstAplyHist.gdnc}"></th:block>
+			</div>
+
+			<div class="btn-wrap">
+				<div class="center">
+					<button type="button" class="btn-medium btn-gray" onclick="moveToDetail();">취소</button>
+					<button type="button" class="btn-medium btn-green" onclick="updateCntstAplyForm();">저장</button>
+				</div>
+			</div>
+			<!-- //content -->
+			<input type="hidden" name="aplyid" th:value="${cntstAplyHist.aplyid}">
+		</form>
+		<script th:inline="javascript">
+			var aplyid = /*[[${cntstAplyHist.aplyid}]]*/ null;
+			
+	        function moveToDetail() {
+	        	if (!confirm('작성글이 저장되지 않을 수 있습니다. 나가시겠습니까?')) return;
+	            location.href = '/front/cntstAplyHist/cntstAplyHistDetailForm.html?aplyid=' + aplyid;
+	        }
+	        
+	     	function updateCntstAplyForm(){
+	    	 	if(!($("#cntstAplyHistAplyForm").valid())) return;
+	    	 	
+	      	 	if(!confirm("저장하시겠습니까?")) return;
+	      	 	
+				var data =  $("#cntstAplyHistAplyForm").serialize();
+	    	    if(displayWorkProgress(true)){
+	    			$.ajax({
+	    				url : "/front/cntstAplyHist/updateCntstAplyHist.do",
+	    				type: 'POST',
+	    				cache : false,
+	    				dataType: 'json',
+	    				data : data,
+	    				success : function (data){
+	    					if(data.result=="success"){
+	    						alert(data.msg);
+	    						location.href = '/front/cntstAplyHist/cntstAplyHistDetailForm.html?aplyid=' + aplyid;
+	    					}else{
+	    						alert(data.msg);
+	    					}
+	    					closeWorkProgress();
+	    				}
+	    			});
+	    		}
+	     	}
+	     	
+			$(function(){
+				validator = $('#cntstAplyHistAplyForm').validate({
+	                rules: {
+	                	aplySeCd: {required: true},
+	                	pcntstAplyHistFldCd: {required: true},
+	                	aplyPathCd: {required: true},
+	                	brdt: {required: true},
+	                	prdctExpln: {required: true},
+	                },
+	                messages: {
+	                	aplySeCd: {required: "응모구분을 선택해 주십시오."},
+	                    pcntstAplyHistFldCd: {required: "공모분야를 선택해 주십시오."},
+	                    aplyPathCd: {required: "지원경로를 선택해 주십시오."},
+	                    brdt: {required: "생일을 선택해 주십시오."},
+	                    prdctExpln: {required: "작품설명을 작성해 주십시오."},
+	                }
+	            });
+				
+				addFileUploadEvent('multiFileInput', 'cntst_atch', 'multipleFileUploadSuccess');
+			});
+		</script>
+	</div>
+
+</body>
+</html>

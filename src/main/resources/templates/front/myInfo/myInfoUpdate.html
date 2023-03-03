@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/simpleLayout" >
+<body>
+	<div layout:fragment="content">
+		<form name="myInfoForm" id="myInfoForm">
+			<input type="hidden" name="userid" id="userid" th:value="${memberInfo.userid}" />
+            <input type="hidden" name="signguCd" id="signguCd" />
+            <input type="hidden" name="zip" id="zip" />
+            	
+			<section>
+				<div class="underline-title">
+					<h2>내 정보</h2>
+				</div>
+				
+				
+				<div class="tab-content tab-sub dropDown">
+					<button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">내 정보 수정</button>
+					<ul class="tab-list tab-list-pc target" role="tablist">
+						<li class="tab active"><a href="#" role="tab">내 정보 수정</a></li>
+						<li class="tab"><a href="/front/myInfo/pswdUpdate.html" role="tab">비밀번호 변경</a></li>
+					</ul>
+				</div>
+	
+				<div class="section-title">
+					<h3>회원 정보</h3>
+				</div>
+	
+				<div class="table-caption">
+					<div class="right">
+						<p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+					</div>
+				</div>
+	
+				<div class="table-row table-row-mo">
+					<table>
+						<caption>회원정보  - 이름, 아이디, 비밀번호, 비밀번호 확인, 휴대전화, 이메일, 주소, 상세주소, 관심분야, 맞춤 환경정보</caption>
+						<colgroup>
+							<col style="width:140px;">
+							<col>
+							<col style="width:140px;">
+							<col>
+						</colgroup>
+						<tbody>
+							<tr>
+								<th scope="row">이름<i class="ast" title="필수입력">*</i></th>
+								<td>
+									<div class="form-input a-center">
+										<div class="bul normal-wrap"><th:block th:text="${userVo.nm}"></th:block></div>
+									</div>
+								</td>
+								<th scope="row">아이디<i class="ast" title="필수입력">*</i></th>
+								<td>
+									<th:block th:if="${userVo.acnt} != null">
+									<th:block th:text="${userVo.acnt}"></th:block>
+										<th:block th:if="${userVo.onepassLinkYn} != 'Y'">
+											<div class="form-input a-center">
+												<button type="button" class="btn-medium btn-dblue btn-before-digital" onclick="popupCenter({url: '/front/esylgn/onepassLinkPopup.html?returnUrl=https://local.keep.go.kr:8000', title: '로그인 - 원패스', w: 500, h: 700});">디지털원패스 연동</button>
+											</div>
+										</th:block>
+										<th:block th:unless="${userVo.onepassLinkYn} != 'Y'">
+												<button type="button" class="btn-medium btn-gray-dblue btn-before-digital" onclick="popupCenter({url: '/front/esylgn/onepassUnlinkPopup.html?returnUrl=http://local.keep.go.kr:8000', title: '로그인 - 원패스', w: 500, h: 700});">디지털원패스 해지</button>
+										</th:block>
+									</th:block>
+									<th:block th:unless="${userVo.acnt} != null">
+										<th:block th:unless="${userVo.onepassLinkYn} != 'Y'">
+											<div class="form-input a-center">
+												<div class="bul normal-wrap">디지털원패스 사용자입니다.</div>
+												<button type="button" class="btn-medium btn-gray-dblue btn-before-digital" onclick="popupCenter({url: '/front/esylgn/onepassUnlinkPopup.html?returnUrl=http://local.keep.go.kr:8000', title: '로그인 - 원패스', w: 500, h: 700});">디지털원패스 해지</button>
+											</div>
+											<div class="col">
+												<p class="feedback invalid">디지털원패스 연동해지 시 회원탈퇴 처리됩니다.</p>
+											</div>													
+										</th:block>
+									</th:block>											
+								</td>
+							</tr>
+							<th:block th:if="${userVo.userType} == 'E'">
+								<tr>
+									<th scope="row">회원유형</th>
+									<td><th:block th:text="${userVo.loginUserType} == 'P' ? '개인회원' : '기관회원'"></th:block><th:block th:text="${userVo.userType} == 'E' ? '(전문가)' : ''"></th:block></td>
+									<th scope="row">성별</th>
+									<td th:text="${memberInfo.gndr} == 'M' ? '남성' : '여성'"></td>
+								</tr>
+								<tr>
+									<th scope="row">생년월일</th>
+									<td th:text="${memberInfo.brdt}"></td>
+									<th scope="row">전화번호</th>
+									<td>
+										<div class="form-input">
+											<select title="국번" style="flex:auto;width:auto;">
+												<option value="02">02</option>
+											</select>
+											<input type="number" title="전화번호" placeholder="전화번호 입력" th:value="${memberInfo.telno}" style="flex:auto;width:auto;">
+										</div>
+									</td>
+								</tr>
+							</th:block>
+							<th:block th:unless="${userVo.userType} == 'E'">
+								<tr>
+									<th scope="row">회원유형</th>
+									<td colspan="3"><th:block th:text="${userVo.loginUserType} == 'P' ? '개인회원' : '기관회원'"></th:block></td>
+								</tr>
+							</th:block>							
+							<tr>
+								<th scope="row">휴대전화</th>
+								<td colspan="3">
+									<div class="form-input">
+										<input type="number" title="휴대전화" placeholder="휴대전화번호 입력" data-width="304" th:value="${memberInfo.moblphon}" readonly>
+										<button type="button" class="btn-medium btn-gray" data-layer-href="layer-popup1">번호변경</button>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">이메일<i class="ast" title="필수입력">*</i></th>
+								<td colspan="3">
+									<div class="row row-auto flex-wrap">
+										<div class="col">
+											<div class="form-input">
+	                                             <input type="text" name="eml1" id="eml1" maxlength="50" title="이메일 아이디" placeholder="이메일 아이디 입력" data-width="160" th:value="${memberInfo.eml1}">
+	                                             <div class="bul">@</div>
+	                                             <input type="text" name="eml2" id="eml2" maxlength="50" title="이메일 도메인" placeholder="이메일 도메인 입력" data-width="160" th:value="${memberInfo.eml2}">
+	                                               <select id="emailList" title="이메일 도메인" data-width="150">
+	                                                   <option value="">직접입력</option>
+	                                                   <option value="chol.com">chol.com</option>
+	                                                   <option value="dreamwiz.com">dreamwiz.com</option>
+	                                                   <option value="empal.com">empal.com</option>
+	                                                   <option value="empas.com">empas.com</option>
+	                                                   <option value="freechal.com">freechal.com</option>
+	                                                   <option value="gmail.com">gmail.com</option>
+	                                                   <option value="hanafos.com">hanafos.com</option>
+	                                                   <option value="hanmail.net">hanmail.net</option>
+	                                                   <option value="hanmir.com">hanmir.com</option>
+	                                                   <option value="hitel.net">hitel.net</option>
+	                                                   <option value="hotmail.com">hotmail.com</option>
+	                                                   <option value="korea.com">korea.com</option>
+	                                                   <option value="lycos.co.kr">lycos.co.kr</option>
+	                                                   <option value="megapass.net">megapass.net</option>
+	                                                   <option value="nate.com">nate.com</option>
+	                                                   <option value="naver.com">naver.com</option>
+	                                                   <option value="paran.com">paran.com</option>
+	                                                   <option value="sayclub.net">sayclub.net</option>
+	                                                   <option value="shinbiro.com">shinbiro.com</option>
+	                                                   <option value="yahoo.co.kr">yahoo.co.kr</option>
+	                                               </select>
+											</div>
+										</div>
+										<div class="col">
+											<p class="feedback"></p>
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">주소</th>
+								<td colspan="3">
+									<div class="form-input a-center">
+										<input type="text" name="addr" id="addr" title="지번/도로명" placeholder="지번/도로명을 입력해주세요." data-width="500" readonly th:value="${memberInfo.addr}">
+										<button type="button" class="btn-medium btn-gray" onclick="daumPostcode()">주소변경</button>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">상세주소</th>
+								<td colspan="3">
+									<div class="form-input">
+										 <input type="text" name="addrDtl" id="addrDtl" maxlength="400" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" th:value="${memberInfo.addrDtl}">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row" rowspan="4">관심분야 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
+								<td colspan="3">
+									<div class="form-input mo-flex-wrap">
+										<strong class="label">교육 프로그램</strong>
+										<span kattr:check_code="itrstfldCds1" grpCd="105" upprCd="105101" addClass="itrstfldCds" th:attr="selectedCd=${memberInfo.itrstfldCd}"/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3">
+									<div class="form-input mo-flex-wrap">
+										<strong class="label">지원사업</strong>
+										<span kattr:check_code="itrstfldCds2" grpCd="105" upprCd="105102" addClass="itrstfldCds" th:attr="selectedCd=${memberInfo.itrstfldCd}"/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								
+								<td colspan="3">
+									<div class="form-input mo-flex-wrap">
+										<strong class="label">제도지원</strong>
+										<span kattr:check_code="itrstfldCds3" grpCd="105" upprCd="105103" addClass="itrstfldCds" th:attr="selectedCd=${memberInfo.itrstfldCd}"/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3">
+									<div class="form-input mo-flex-wrap">
+										<strong class="label">기타</strong>
+										<span kattr:check_code="itrstfldCds4" grpCd="105" upprCd="105104" addClass="itrstfldCds" th:attr="selectedCd=${memberInfo.itrstfldCd}"/>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<th scope="row">맞춤 환경정보 <br class="pc-only"><small class="vt">(최대 3개 선택)</small></th>
+								<td colspan="3">
+									<span kattr:check_code="envfldCds1" grpCd="104" addClass="envfldCds" th:attr="selectedCd=${memberInfo.envfldCd}"/>
+									<p class="desc-info mt15">선택하신 정보는 로그인 시, 메인 화면에서 위젯 형태로 확인할 수 있습니다.</p>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+	
+				<div class="box-df-list mt10">
+					<dl>
+						<dt>개인정보 유효기간</dt>
+						<dd>선택된 유효기간 동안 국가환경교육 통합플랫폼 이용 내역이 없어도 개인정보 분리보관 및 휴면회원으로 전환되지 않습니다.</dd>
+					</dl>
+					<div class="form-check-list mt10">
+	                       <label class="inp"><input type="radio" name="prvcVldty" value="1"><b>1년</b></label>
+	                       <label class="inp"><input type="radio" name="prvcVldty" value="2"><b>2년</b></label>
+	                       <label class="inp"><input type="radio" name="prvcVldty" value="5"><b>5년</b></label>
+	                       <label class="inp"><input type="radio" name="prvcVldty" value="0"><b>회원탈퇴 시</b></label>
+					</div>
+				</div>
+				
+				<div class="btn-wrap">
+					<div class="right">
+						<a href="/front/membership/leaveMeber.html" class="fc-black6 fs-14 fw-300 underline">회원탈퇴</a>
+					</div>
+				</div>
+				
+				<div class="btn-wrap">
+					<div class="center">
+						<button type="button" class="btn-medium btn-gray">취소</button>
+						<button type="button" class="btn-medium btn-green">저장</button>
+					</div>
+				</div>
+			</section>
+		</form>
+		
+		<div class="layer-popup layer-large" data-layer-id="layer-popup1">
+			<div class="layer-dimmed" title="레이어팝업 닫기"></div>
+			<div class="layer-wrap">
+				<div class="layer-header">
+					<strong class="tit">휴대전화번호 변경</strong>
+					<button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+				</div>
+				<div class="layer-content">
+					<div class="form-group">
+						<dl>
+							<dt>새로운 휴대전화번호 입력</dt>
+							<dd>
+								<div class="form-input">
+									<input type="tel" title="새로운 휴대전화번호 입력" placeholder="휴대전화번호 입력">
+									<button type="button" class="btn-medium btn-green" data-layer-close data-layer-href="layer-popup2">인증번호 발송</button>
+								</div>
+								<p class="desc fc-black9 mt5">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
+								<p class="feedback valid">인증번호가 발송 되었습니다.</p>
+							</dd>
+						</dl>
+					</div>
+				</div>
+				<div class="layer-footer">
+					<div class="btn-wrap">
+						<div class="center">
+							<button type="button" class="btn-large btn-green" style="width:100%;" disabled>변경하기</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="layer-popup layer-large" data-layer-id="layer-popup2">
+			<div class="layer-dimmed" title="레이어팝업 닫기"></div>
+			<div class="layer-wrap">
+				<div class="layer-header">
+					<strong class="tit">휴대전화번호 변경</strong>
+					<button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+				</div>
+				<div class="layer-content">
+					<div class="form-group">
+						<dl>
+							<dd>
+								<div class="form-input">
+									<input type="tel" title="새로운 휴대전화번호 입력" placeholder="휴대전화번호 입력">
+									<button type="button" class="btn-medium btn-gray btn-before-refresh">재발송</button>
+									<div class="bul fc-green fs-14">04:59</div>
+								</div>
+								<p class="desc fc-black9 mt5">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
+								<p class="feedback valid">인증번호가 발송 되었습니다.</p>
+							</dd>
+						</dl>
+						<dl>
+							<dt>인증번호 4자리 입력</dt>
+							<dd>
+								<div class="form-input">
+									<input type="number" title="인증번호 4자리 입력" placeholder="인증번호 4자리 입력" style="flex:1;">
+									<button type="button" class="btn-medium btn-gray">확인</button>
+								</div>
+								<p class="feedback invalid mt5">해당 번호를 인증하지 못했습니다.</p>
+								<p class="feedback valid mt5">인증이 완료 되었습니다.</p>
+							</dd>
+						</dl>
+					</div>
+				</div>
+				<div class="layer-footer">
+					<div class="btn-wrap">
+						<div class="center">
+							<button type="button" class="btn-large btn-green" style="width:100%;" disabled>변경하기</button>
+							<button type="button" class="btn-large btn-green" style="width:100%;">변경하기</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>				
+		
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+		<script th:inline="javascript">
+		var prvcVldty = /*[[${memberInfo.prvcVldty}]]*/ null;
+		
+        var validator= $("#myInfoForm").validate({
+            onsubmit: false,
+            rules: {
+            	eml1       :   { required: true, isBlank: true, maxlength: 50 }
+                ,eml2       :   { required: true, isBlank: true, maxlength: 50, emailDomain: true }
+            },
+            messages: { 
+                eml1       :   { required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
+                ,eml2       :   { required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
+            }
+        });
+		
+        function daumPostcode(){
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    let addr = '';
+                    if (data.userSelectedType === 'R') {
+                        addr = data.roadAddress;
+                    } else {
+                        addr = data.jibunAddress;
+                    }
+                    $('#signguCd').val(data.sigunguCode);
+                    $('#zip').val(data.zonecode);
+                    $('#addr').val(addr);
+                    $('#addrDtl').focus();
+                }
+            }).open();
+        }
+        
+        $(function(){
+        	$('#emailList').change(function(e){
+                var self = $(this);
+                var val = self.val();
+                $('input#eml2').val(val);
+            });
+        	
+        	$("input:radio[name='prvcVldty']:radio[value='"+prvcVldty+"']").prop('checked', true); 
+        });
+		</script>
+	</div>
+
+</body>
+</html>

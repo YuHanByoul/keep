@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<style>
+    .form-msg { color : red; }
+</style>        
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm"  th:action="@{/}" method="POST" submit="return:false;">
+            <input type="hidden" name="mode" id="mode" th:value="${mode}"/>
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+            <input type="hidden" name="instid" id="instid" th:value="${detail.instid}"/>
+            <input type="hidden" name="instZip" id="instZip" th:value="${detail.instZip}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">신청정보</a></li>
+	                                <li><a href="#">소요예산</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="fn_saving();">중간저장</button>
+                                        <button type="button" class="btn-large btn-green" onclick="fn_save();">다음</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	
+	                    <div class="table-caption mt0">
+	                        <h3 class="sub-title">유의사항</h3>
+	                    </div>
+	
+	                    <div class="box-desc-list bg7">
+	                        <p>
+	                            동사업은 국가 예산으로 지원하는 사업으로 기재하신 사항은 공공의 목적으로 공개될 수 있음을 양지하시기 바랍니다. <br>
+	                            신청하는 내용이 허위로 밝혀질 경우 심사에서 제외될 수 있으며, 선정이 확정된 사업이라도 취소될 수 있습니다. <br>
+	                            신청서를 제출하신 후에는 수정을 할 수 없으니, 제출하시기 전에 기재한 사항이 틀린 내용이 없는지 확인하여 주시기 바랍니다. <br>
+	                            선정이 확정된 사업이라도 일부 내용이 적절하지 않다고 판단되는 경우에는 수정을 요구할 수 있으며, 이를 불이행 시 선정 결정이 취소될 수 있습니다. 
+	                        </p>
+	                    </div>
+	                    
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">신청정보</h3>
+	                        </div>
+	                        <div class="right">
+	                            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>신청정보 - 사업공모명, 프로그램명, 기관명, 기관유형, 대표자명, 기관 연락처, 사업자등록번호, 등록일, 신청자명, 신청자 연락처, 신청자 이메일, 권역, 지역, 주소, 상세주소</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">사업공모명</th>
+	                                    <td colspan="3"><tH:block th:text="${pcntstNm}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">프로그램명<i class="ast" title="필수입력">*</i></th>
+	                                    <td colspan="3">
+	                                        <input type="text" id="prgrmNm" name="prgrmNm" title="프로그램명" th:value="${detail.prgrmNm}" placeholder="프로그램명을 입력해주세요.">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">기관명<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="text" title="기관명" name="instNm" id="instNm" th:value="${detail.instNm}" placeholder="기관명을 입력해주세요."><p class="form-msg"></p></td>
+	                                    <th scope="row">기관유형<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <span kattr:select_code="instTypeCd" th:attr="selectedCd=${detail.instTypeCd}" grpCd="108" firstOptTxt="- 선택 -" addClass="input-sm">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">대표자명<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="text" name="rprsvNm" id="rprsvNm" title="대표자명" th:value="${detail.rprsvNm}" placeholder="대표자명을 입력해주세요."><p class="form-msg"></p></td>
+	                                    <th scope="row">기관 연락처<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="text" name="aplyInstTelno" id="aplyInstTelno" th:value="${detail.aplyInstTelno}" title="기관 연락처" placeholder="기관 연락처을 입력해주세요."><p class="form-msg"></p></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">사업자등록번호<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="text" name="regNo" id="regNo" th:value="${detail.regNo}" title="사업자등록번호" placeholder="사업자등록번호를 입력해주세요."><p class="form-msg"></p></td>
+	                                    <th scope="row">등록일</th>
+	                                    <td><input type="date" id="regDe" name="regDe" th:value="${detail.regDe}" title="등록일" placeholder="등록일을 입력해주세요."></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">신청자명</th>
+	                                    <td><input type="hidden" name="aplcntNm" id="aplcntNm" th:value="${detail.aplcntNm}"/><tH:block th:text="${detail.aplcntNm}"></td>
+	                                    <th scope="row">신청자 연락처</th>
+	                                    <td><input type="hidden" name="aplcntTelno" id="aplcntTelno" th:value="${detail.aplcntTelno}"/><tH:block th:text="${detail.aplcntTelno}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">신청자 이메일</th>
+	                                    <td><input type="hidden" name="aplcntEml" id="aplcntEml" th:value="${detail.aplcntEml}"/><a href="mailto:email@email.com" class="url"><tH:block th:text="${detail.aplcntEml}"></a></td>
+	                                    <th scope="row">권역<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <span kattr:select_code="instSareaCd" th:attr="selectedCd=${detail.instSareaCd}" grpCd="195" firstOptTxt="- 선택 -" addClass="input-sm">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">지역<i class="ast" title="필수입력">*</i></th>
+	                                    <td colspan="3">
+	                                        <span kattr:select_code="rgnCd" th:attr="selectedCd=${detail.rgnCd}" grpCd="125" firstOptTxt="- 선택 -" addClass="input-sm">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="text" name="instAddr" id="instAddr" th:value="${detail.instAddr}" title="주소" placeholder="지번/도로명을 입력해주세요."><p class="form-msg"></p></td>
+	                                    <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="text" name="instAddrDtl" id="instAddrDtl" th:value="${detail.instAddrDtl}" title="상세주소" placeholder="상세주소를 입력해주세요."><p class="form-msg"></p></td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    
+	                    <!-- 증빙서류 -->
+                        <div class="table-caption">
+                            <div class="left">
+                                <h3 class="sub-title">증빙서류1</h3>
+                                <p>(지정신청서, 개인정보 수집이용 동의서, 사업자등록증 등)</p>
+                            </div>
+                            <div class="right">
+                                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                            </div>
+                        </div>
+    
+                        <div class="table-row table-row-mo">
+                            <table>
+                                <caption>증빙서류1 - 첨부파일</caption>
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">첨부파일<i class="ast" title="필수입력">*</i></th>
+                                        <td>
+                                            <div class="form-input-file">
+                                                <label class="form-input">
+                                                    <input type="file" id="multiFileInput1" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                                    <span class="btn-medium btn-gray">파일선택</span>
+                                                </label>
+                                                <div class="upload-response">
+                                                    <div id="multipleFileUploadError1"></div>
+                                                    <div id="multipleFileUploadSuccess1">
+                                                    <th:block th:if="${fileList1 != null}">
+                                                        <div th:each="item : ${fileList1}" th:id="${item.fileid}" class="col-auto">
+                                                            <ul th:if="${item.orginlFileNm != null}">
+                                                                <li th:fileid='${item.fileid}'
+                                                                    th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                                    th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                                    class='label label-inverse'
+                                                                    th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                                    <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp; 
+                                                                    <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
+                                                                    <th:block th:text="X"></th:block></a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </th:block>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="filegrpid1" name="filegrpid1" th:value="${(detail.filegrpid1 == '' or detail.filegrpid1 == null) ? 0 : detail.filegrpid1}"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+    
+                        <!-- 증빙서류 -->
+                        <div class="table-caption">
+                            <div class="left">
+                                <h3 class="sub-title">증빙서류2</h3>
+                                <p>(운영계획서 및 증빙서류)</p>
+                            </div>
+                            <div class="right">
+                                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                            </div>
+                        </div>
+    
+                        <div class="table-row table-row-mo">
+                            <table>
+                                <caption>증빙서류2 - 첨부파일</caption>
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">첨부파일<i class="ast" title="필수입력">*</i></th>
+                                        <td>
+                                            <div class="form-input-file">
+                                                <label class="form-input">
+                                                    <input type="file" id="multiFileInput2" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                                    <span class="btn-medium btn-gray">파일선택</span>
+                                                </label>
+                                                <div class="upload-response">
+                                                    <div id="multipleFileUploadError2"></div>
+                                                    <div id="multipleFileUploadSuccess2">
+                                                    <th:block th:if="${fileList2 != null}">
+                                                        <div th:each="item : ${fileList2}" th:id="${item.fileid}" class="col-auto">
+                                                            <ul th:if="${item.orginlFileNm != null}">
+                                                                <li th:fileid='${item.fileid}'
+                                                                    th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                                    th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                                    class='label label-inverse'
+                                                                    th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                                    <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp; 
+                                                                    <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
+                                                                    <th:block th:text="X"></th:block></a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </th:block>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="filegrpid2" name="filegrpid2" th:value="${(detail.filegrpid2 == '' or detail.filegrpid2 == null) ? 0 : detail.filegrpid2}"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 증빙서류 -->
+                        <div class="table-caption">
+                            <div class="left">
+                                <h3 class="sub-title">증빙서류3</h3>
+                                <p>(관인파일)</p>
+                            </div>
+                            <div class="right">
+                                <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                            </div>
+                        </div>
+    
+                        <div class="table-row table-row-mo">
+                            <table>
+                                <caption>증빙서류2 - 첨부파일</caption>
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">첨부파일<i class="ast" title="필수입력">*</i></th>
+                                        <td>
+                                            <div class="form-input-file">
+                                                <label class="form-input">
+                                                    <input type="file" id="multiFileInput3" name="files" class="blind" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                                    <span class="btn-medium btn-gray">파일선택</span>
+                                                </label>
+                                                <div class="upload-response">
+                                                    <div id="multipleFileUploadError3"></div>
+                                                    <div id="multipleFileUploadSuccess3">
+                                                    <th:block th:if="${fileList3 != null}">
+                                                        <div th:each="item : ${fileList3}" th:id="${item.fileid}" class="col-auto">
+                                                            <ul th:if="${item.orginlFileNm != null}">
+                                                                <li th:fileid='${item.fileid}'
+                                                                    th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                                    th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                                    class='label label-inverse'
+                                                                    th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                                    <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp; 
+                                                                    <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
+                                                                    <th:block th:text="X"></th:block></a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </th:block>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="filegrpid3" name="filegrpid3" th:value="${(detail.filegrpid3 == '' or detail.filegrpid3 == null) ? 0 : detail.filegrpid3}"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+	
+	                    <div class="mo-only">
+                            <div class="btn-wrap">
+                                <div class="center">
+                                    <button type="button" class="btn-medium btn-gray" onclick="fn_saving();">중간저장</button>
+                                </div>
+                            </div>
+                            <div class="btn-wrap">
+                                <div class="center">
+                                    <button type="button" class="btn-medium btn-gray" onclick="">이전</button>
+                                    <button type="button" class="btn-medium btn-green" onclick="fn_save();">다음</button>
+                                </div>
+                            </div>
+                        </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        
+        <style>
+		    .form-msg { color : red; }
+		</style>   
+	    <script th:inline="javascript">
+	    var atchfileCnt = 21;
+	    var uploadFileCnt = 0;
+	    var mode = $("#mode").val();
+	    
+	    $(function () {
+	    	var validator = $("#insertForm").validate({
+	            rules: {
+	            	prgrmNm : { required: true } 
+	                , instNm : { required: true } 
+	                , instTypeCd : { required: true } 
+	                , rprsvNm : { required: true } 
+	                , aplyInstTelno : { required: true } 
+	                , regNo : { required: true } 
+	                , instAddr : { required: true } 
+	                , instAddrDtl : { required: true } 
+	                , instSareaCd : { required: true } 
+	                , rgnCd : { required: true } 
+	            },
+	            messages: {
+	            	prgrmNm    :   { required: "프로그램명을 입력해주십시오." }  
+	                , instNm    :   { required: "기관명을 입력해주십시오." }  
+	                , instTypeCd    :   { required: "기관유형을 선택해주십시오." }  
+	                , rprsvNm    :   { required: "대표자명을 입력해주십시오." }  
+	                , aplyInstTelno    :   { required: "기관 연락처를 입력해주십시오." }  
+	                , regNo    :   { required: "사업자등록번호를 입력해주십시오." }  
+	                , instAddr    :   { required: "주소를 입력해주십시오." }  
+	                , instAddrDtl    :   { required: "상세주소를 입력해주십시오." }  
+	                , instSareaCd    :   { required: "권역을 선택해주십시오." }  
+	                , rgnCd    :   { required: "지역을 선택해주십시오." }  
+	            }
+	        });
+        });
+	    
+	    // 파일업로드
+	    $('#multiFileInput1, #multiFileInput2, #multiFileInput3').on("change", function(event) {
+	        var fileOjbId = $(this).prop("id");
+	        var objFile = document.querySelector('#'+fileOjbId);
+	        var formData = new FormData();
+	        var content = "";
+
+	        for( i = 0 ; i < objFile.files.length ; i++) {
+	            if(uploadFileCnt >= atchfileCnt){
+	                alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+	            } else {
+	                formData.append("files", objFile.files[i]);
+	                uploadFileCnt++;
+	            }
+	        }
+
+	        var regex = /[^0-9]/g;
+	        var fileNum = fileOjbId.replace(regex, "");
+	        
+	        formData.append("filegrpid", $("#filegrpid"+fileNum).val());
+	        formData.append("filegrpNm", "aply_file_"+fileNum);
+
+	        if(uploadFileCnt > 0){
+	            $.ajax({
+	                url : '/uploadMultipleFiles.do',
+	                processData : false,
+	                contentType : false,
+	                data : formData,
+	                type : 'POST',
+	                success : function(response) {
+	                    if(response.result == 'fail'){
+	                        alert(response.msg);
+	                    }else{
+	                        if($("#filegrpid"+fileNum).val()=='0' || $("#filegrpid"+fileNum).val()==''  || $("#filegrpid"+fileNum).val()==null){
+	                            $("#filegrpid"+fileNum).val( response[0].filegrpid );
+	                        }
+
+	                        for(i = 0 ;i < response.length; i++ ){
+	                        	content = '<ul>';
+	                            content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+	                            content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+	                            content += '</ul>';
+	                            $('#multipleFileUploadSuccess'+fileNum).append(content);
+	                        }
+	                    }
+	                }
+	            });
+	        }
+	    });
+
+	    // 파일삭제
+	    function fn_deleteFileList(fileid, fileIdntfcKey){
+	        if(!confirm("파일을 삭제하시겠습니까?")){return;}
+	        fn_deleteFile(fileid, fileIdntfcKey);
+	        $("#"+fileid).remove();
+	    }
+
+	    // 파일삭제
+	    function fn_deleteFile(fileid, fileIdntfcKey){
+	        var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+	          $.ajax({
+	            url : deleteFileUrl,
+	            type: 'GET',
+	            cache : false,
+	            dataType: 'json',
+	            success : function (data){
+	                console.log(data);
+	                if(data.result=="success"){
+	                    $("#"+fileid).remove();
+	                    alert("파일삭제가 완료 되었습니다.");
+	                }else{
+	                    alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+	                }
+	            },
+	            error : function (error){
+	            }
+	         })
+	    };
+	    
+	    // 중간저장
+	    function fn_saving() {
+	    	if(!($("#insertForm").valid())) return;
+	    	if(!confirm("저장하시겠습니까?")) return;
+	        var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertBaseInfo.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                            mode = "U";
+                            $("#aplyid").val(data.aplyid);
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+	    }
+	    
+	    // 다음
+	    function fn_save(){
+	        if(!($("#insertForm").valid())) return;
+	        
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertBaseInfo.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+	                    	location.href = "/front/bizAply/budgetForm.html?aplyid=" + data.aplyid + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    </script>
+    </div>
+</body>
+</html>

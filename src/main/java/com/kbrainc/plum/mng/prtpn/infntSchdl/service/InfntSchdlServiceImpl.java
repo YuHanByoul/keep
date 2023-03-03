@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlVo;
 import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlDao;
+import com.kbrainc.plum.mng.prtpn.infntSchdl.model.InfntSchdlVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -106,6 +106,9 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
         if(infntSchdlVo.getPrgrmSttIds()!=null & infntSchdlVo.getPrgrmSttIds().length > 0) {
             retVal += infntSchdlDao.insertPrgrmSttId(infntSchdlVo);
         }
+        //유아_프로그램_일정_프로그램_회차 삭제후 저장        
+        infntSchdlDao.deletePrgrmTmeSchdl(infntSchdlVo);
+        retVal += infntSchdlDao.insertPrgrmTmeSchdl(infntSchdlVo);
         
         return retVal;        
     }
@@ -133,11 +136,11 @@ public class InfntSchdlServiceImpl extends PlumAbstractServiceImpl implements In
     /**
      * 교육일정관리 교육일정 리스트 조회
      *
-     * @Title : updateInfntSchdl
+     * @Title : selectInfntSchdlIdList
      * @Description : 교육일정관리 교육일정 리스트 조회
      * @param clssrmId
      * @throws Exception 예외
-     * @return int
+     * @return List<InfntSchdlVo>
      */
     public List<InfntSchdlVo> selectInfntSchdlIdList(String clssrmId) throws Exception{
         return infntSchdlDao.selectInfntSchdlIdList(clssrmId);   

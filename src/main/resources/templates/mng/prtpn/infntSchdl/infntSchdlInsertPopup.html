@@ -49,7 +49,7 @@
                             <!-- 교육일자 설정 -->
                             <div class="col-lg-6">
                                 <h3 class="sub-title"><strong>교육일자 설정</strong></h3>
-                                <div class="col-12 table-responsive">
+                                <div class="col-12 table-responsive" style="height:440px; overflow:auto;">
                                     <table class="table table-framed table-bordered">
                                         <thead>
                                         <tr class="border-bottom-inverse">
@@ -68,7 +68,7 @@
                             <!-- 교육프로그램 설정 -->
                             <div class="col-lg-6">
                                 <h3 class="sub-title"><strong>교육프로그램 설정</strong></h3>
-                                <div class="col-12 table-responsive">
+                                <div class="col-12 table-responsive" style="height:440px; overflow:auto;">
                                     <table class="table table-framed table-bordered">
                                         <thead>
                                         <tr class="border-bottom-inverse">
@@ -80,6 +80,9 @@
                                         </tr>
                                         </thead>
                                         <tbody id="insertPrgrmSettingList">
+                                            <tr>
+                                                <td class="text-center v-middle" colspan="3">접수방법을 선택하세요.</td>
+                                            </tr>    
                                         </tbody>
                                     </table>
                                 </div>
@@ -103,7 +106,6 @@
     
     $(function() {
         fn_makeListHtml();
-        debugger;        
     });        
     
     function fn_makeListHtml(){
@@ -165,7 +167,6 @@
             schdlHtml += '<td class="text-center v-middle">' + yyyy + '.' + mm + '.' + (("00"+i.toString()).slice(-2)) + '</td>';
             schdlHtml += '</tr>';  
        }
-        debugger;
        $("#insertCheckDayBody").append(schdlHtml);          
     }    
     function fn_changeRcptMthdCd(item){
@@ -173,6 +174,13 @@
         var url = getCodeUrl + "?rcptMthdCd=" + $(item).val();
         var prgrmStthtml = "";
         $("#insertPrgrmSettingList tr").remove();
+        if($(item).val() == ""){
+        	prgrmStthtml += '<tr>';
+        	prgrmStthtml += '<td class="text-center v-middle" colspan="3">접수방법을 선택하세요.</td>';
+        	prgrmStthtml += '</tr>';
+        	$("#insertPrgrmSettingList").append(prgrmStthtml);
+        	return false;
+        } 
         $.ajax({
             url: url,
             type: 'POST',
@@ -251,7 +259,6 @@
     }
 
     $("[id=deSttSelectAllCheckbox]").click(function(item) {
-    	debugger;
         deSttSelectedItems = [];
         if(this.checked) { // check select status
             $('[id=deSttSingleCheckbox]').each(function() { 
@@ -315,7 +322,6 @@
 
     function fn_insertInfntSchdl(){
         if(!($("#infntSchdlForm").valid())) return;
-        //debugger;
         if(!confirm("저장하시겠습니까?")) return;
 
         var deSttIds = deSttSelectedItems.join(",");
@@ -334,13 +340,10 @@
                 dataType: 'json',
                 data : data,
                 success : function (data){
-                    if(data.result=="success"){
-                        alert(data.msg);
-                        gridHelper1.resetListContent();
-                    }else{
-                        alert(data.msg);
-                    }
-                    closeWorkProgress();
+	                alert(data.msg);
+	                popInsFormModal.hide();
+	                fn_makeCalendarEvent();
+                    closeWorkProgress();	                
                 }
             });
         }

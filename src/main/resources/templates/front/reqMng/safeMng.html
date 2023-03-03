@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm" submit="return:false;">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li><a href="#">신청정보</a></li>
+	                                <li><a href="#">기관역량</a></li>
+	                                <li><a href="#">사업수행계획</a></li>
+	                                <li><a href="#">프로그램정보</a></li>
+	                                <li><a href="#">전문강사 확보</a></li>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">안전관리 적정성</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="tmpSaving();">중간저장</button>
+                                        <button type="button" class="btn-large btn-green" onclick="save();">신청완료</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	
+	                    <div class="table-caption mt0">
+	                        <div class="left">
+	                            <h3 class="sub-title">안전교육계획</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>안전교육계획 - 안전관리 관련 자격 유무, 자격번호</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">안전관리 관련 자격 유무</th>
+	                                    <td>
+	                                        <div class="form-check-list">
+	                                            <span kattr:radio_yn="qlfcYn" label1="있음" label2="없음" th:attr="defaultVal=${detail.qlfcYn == null ? 'Y' : detail.qlfcYn}"></span>
+	                                        </div>
+	                                    </td>
+	                                    <th scope="col">자격번호</th>
+	                                    <td><input type="text" id="qlfcNo" name="qlfcNo" th:value="${detail.qlfcNo}" title="자격번호"></td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">프로그램 지도자 대상 교육</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>프로그램 지도자 대상 교육 - 교육시기, 담당자, 교육내용 개요</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">교육시기</th>
+	                                    <td>
+	                                        <input type="text" id="ldrEduSess" name="ldrEduSess" th:value="${detail.ldrEduSess}" title="교육시기">
+	                                    </td>
+	                                    <th scope="col">담당자</th>
+	                                    <td>
+	                                        <input type="text" id="ldrEduPic" name="ldrEduPic" th:value="${detail.ldrEduPic}" title="담당자">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="col">교육내용 개요</th>
+	                                    <td colspan="3">
+	                                        <textarea title="교육내용 개요" id="ldrEduCn" name="ldrEduCn" placeholder=""><th:block th:text="${detail.ldrEduCn}"/></textarea>
+	                                        <div class="desc ar size"><span>0</span> / 200자</div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">프로그램 참가자 대상 교육</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>프로그램 참가자 대상 교육 - 교육시기, 담당자, 교육내용 개요</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">교육시기</th>
+	                                    <td>
+	                                        <input type="text" id="prtcpntEduSess" name="prtcpntEduSess" th:value="${detail.prtcpntEduSess}" title="교육시기">
+	                                    </td>
+	                                    <th scope="col">담당자</th>
+	                                    <td>
+	                                        <input type="text" id="prtcpntEduPic" name="prtcpntEduPic" th:value="${detail.prtcpntEduPic}" title="담당자">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="col">교육내용 개요</th>
+	                                    <td colspan="3">
+	                                        <textarea title="교육내용 개요"id="prtcpntEduCn" name="prtcpntEduCn"  placeholder=""><th:block th:text="${detail.prtcpntEduCn}"/></textarea>
+	                                        <div class="desc ar size"><span>0</span> / 200자</div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">비상연락체계</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>비상연락체계 - 총괄 담당자 성명, 총괄 담당자 연락처, 주교사의 역할, 보조교사의 역할</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">총괄 담당자 성명</th>
+	                                    <td>
+	                                        <input type="text" id="picNm" name="picNm" th:value="${detail.picNm}" title="총괄 담당자 성명">
+	                                    </td>
+	                                    <th scope="col">총괄 담당자 연락처</th>
+	                                    <td>
+	                                        <input type="text" id="picTelno" name="picTelno" th:value="${detail.picTelno}" title="총괄 담당자 연락처">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="col">주교사의 역할</th>
+	                                    <td colspan="3">
+	                                        <input type="text" id="mainTcherRole" name="mainTcherRole" th:value="${detail.mainTcherRole}" title="주교사의 역할">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="col">보조교사의 역할</th>
+	                                    <td colspan="3">
+	                                        <input type="text" id="asstnTcherRole" name="asstnTcherRole" th:value="${detail.asstnTcherRole}" title="보조교사의 역할">
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">응급시설</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>응급시설 - 소방서, 연락처, 경찰서, 연락처, 근거리 약국, 연락처, 근거리 병원, 연락처</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">소방서</th>
+	                                    <td>
+	                                        <input type="text" id="frsttNm" name="frsttNm" th:value="${detail.frsttNm}" title="소방서">
+	                                    </td>
+	                                    <th scope="row">연락처</th>
+	                                    <td>
+	                                        <input type="text" id="frsttTelno" name="frsttTelno" th:value="${detail.frsttTelno}" title="소방서 연락처">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">경찰서</th>
+	                                    <td>
+	                                        <input type="text" id="polcsttnNm" name="polcsttnNm" th:value="${detail.polcsttnNm}" title="경찰서">
+	                                    </td>
+	                                    <th scope="row">연락처</th>
+	                                    <td>
+	                                        <input type="text" id="polcsttnTelno" name="polcsttnTelno" th:value="${detail.polcsttnTelno}" title="경찰서 연락처">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">근거리 약국</th>
+	                                    <td>
+	                                        <input type="text" id="parmacyNm" name="parmacyNm" th:value="${detail.parmacyNm}" title="근거리 약국">
+	                                    </td>
+	                                    <th scope="row">연락처</th>
+	                                    <td>
+	                                        <input type="text" id="parmacyTelno" name="parmacyTelno" th:value="${detail.parmacyTelno}" title="근거리 약국 연락처">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">근거리 병원</th>
+	                                    <td>
+	                                        <input type="text" id="hsptlNm" name="hsptlNm" th:value="${detail.hsptlNm}" title="근거리 병원">
+	                                    </td>
+	                                    <th scope="row">연락처</th>
+	                                    <td>
+	                                        <input type="text" id="hsptlTelno" name="hsptlTelno" th:value="${detail.hsptlTelno}" title="근거리 병원 연락처">
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">프로그램 평가 체계</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>프로그램 평가 체계 - 평가목적</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">평가목적</th>
+	                                    <td>
+	                                        <textarea title="평가목적" id="evlPrps" name="evlPrps" placeholder=""><th:block th:text="${detail2.evlPrps}"/></textarea>
+	                                        <div class="desc ar size"><span>0</span> / 100자</div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">평가방식</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-combi">
+	                        <table>
+	                            <caption>평가방식 - 구분(지도자 평가, 참여자 평가, 인솔자 평가), 평가 시기(사전,사후), 평가 목표 및 항목, 평가 도구</caption>
+	                            <colgroup>
+	                                <col style="width:15%">
+	                                <col style="width:50px">
+	                                <col>
+	                                <col>
+	                            </colgroup>
+	                            <thead>
+	                                <tr>
+	                                    <th scope="col">구분</th>
+	                                    <th scope="col">평가 <br class="mo-only">시기</th>
+	                                    <th scope="col">평가목표 및 항목</th>
+	                                    <th scope="col">평가도구</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row" rowspan="2">지도자 평가</th>
+	                                    <th scope="row" class="bg-white">사전</th>
+	                                    <td class="al vt">
+	                                        <input type="text" id="bfrLdrEvlArtcl" name="bfrLdrEvlArtcl" th:value="${detail2.bfrLdrEvlArtcl}" title="지도자 평가 (사전)">
+	                                        <p class="desc">* 예)교육 전 점검평가</p>
+	                                    </td>
+	                                    <td class="al vt">
+	                                        <input type="text" id="bfrLdrEvlTl" name="bfrLdrEvlTl" th:value="${detail2.bfrLdrEvlTl}" title="지도자 평가 (평가도구)">
+	                                        <p class="desc">* 예)문항지</p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row" class="bg-white">사후</th>
+	                                    <td class="al vt">
+	                                        <input type="text" id="aftrLdrEvlArtcl" name="aftrLdrEvlArtcl" th:value="${detail2.aftrLdrEvlArtcl}" title="지도자 평가 (사전)">
+	                                        <p class="desc">* 예)교육 후 결과평가</p>
+	                                    </td>
+	                                    <td class="al vt">
+	                                        <input type="text" id="aftrLdrEvlTl" name="aftrLdrEvlTl" th:value="${detail2.aftrLdrEvlTl}" title="지도자 평가 (평가도구)">
+	                                        <p class="desc">* 예)프로그램평가발표</p>
+	                                    </td>
+	                                </tr>
+	                                
+	                                <tr>
+	                                    <th scope="row" rowspan="2">참여자 평가</th>
+	                                    <th scope="row" class="bg-white">사전</th>
+	                                    <td class="al vt">
+	                                        <input type="text" id="bfrPrtpntEvlArtcl" name="bfrPrtpntEvlArtcl" th:value="${detail2.bfrPrtpntEvlArtcl}" title="참여자 평가 (사전)">
+	                                        <p class="desc">* 예)교육 전 점검평가</p>
+	                                    </td>
+	                                    <td class="al vt">
+	                                        <input type="text" id="bfrPrtpntEvlTl" name="bfrPrtpntEvlTl" th:value="${detail2.bfrPrtpntEvlTl}" title="참여자 평가 (평가도구)">
+	                                        <p class="desc">* 예)문항지</p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row" class="bg-white">사후</th>
+	                                    <td class="al vt">
+	                                        <input type="text" id="aftrPrtpntEvlArtcl" name="aftrPrtpntEvlArtcl" th:value="${detail2.aftrPrtpntEvlArtcl}" title="참여자 평가 (사전)">
+	                                        <p class="desc">* 예)만족도조사 및 이해도향상조사 </p>
+	                                    </td>
+	                                    <td class="al vt">
+	                                        <input type="text" id="aftrPrtpntEvlTl" name="aftrPrtpntEvlTl" th:value="${detail2.aftrPrtpntEvlTl}"  title="참여자 평가 (평가도구)">
+	                                        <p class="desc">* 예)문항지, 조사지</p>
+	                                    </td>
+	                                </tr>
+	                                
+	                                <tr>
+	                                    <th scope="row" rowspan="2">인솔자 평가</th>
+	                                    <th scope="row" class="bg-white">사전</th>
+	                                    <td class="al vt">
+	                                        <input type="text" id="bfrGdrEvlArtcl" name="bfrGdrEvlArtcl" th:value="${detail2.bfrGdrEvlArtcl}" title="인솔자 평가 (사전)">
+	                                        <p class="desc">* 예)교육 전 점검평가</p>
+	                                    </td>
+	                                    <td class="al vt">
+	                                        <input type="text" id="bfrGdrEvlTl" name="bfrGdrEvlTl" th:value="${detail2.bfrGdrEvlTl}" title="인솔자 평가 (평가도구)">
+	                                        <p class="desc">* 예)문항지</p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row" class="bg-white">사후</th>
+	                                    <td class="al vt">
+	                                        <input type="text" id="aftrGdrEvlArtcl" name="aftrGdrEvlArtcl" th:value="${detail2.aftrGdrEvlArtcl}" title="인솔자 평가 (사전)">
+	                                        <p class="desc">* 예)교육프로그램 만족도조사</p>
+	                                    </td>
+	                                    <td class="al vt">
+	                                        <input type="text" id="aftrGdrEvlTl" name="aftrGdrEvlTl" th:value="${detail2.aftrGdrEvlTl}" title="인솔자 평가 (평가도구)">
+	                                        <p class="desc">* 예)문항지, 조사지</p>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">교육활동 기록 및 관리</h3>
+	                        </div>
+	                    </div>
+	
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>교육활동 기록 및 관리 - 기록방법</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">기록방법</th>
+	                                    <td>
+	                                        <div class="form-input mo-flex-wrap">
+	                                            <div class="form-check-list p0">
+	                                                <label class="inp"><input type="checkbox" name="databaseWrtYn" id="databaseWrtYn" th:checked="${detail2.databaseWrtYn == 'Y' ? true : false}"><b>데이터베이스(DB) 작성</b></label>
+	                                                <label class="inp"><input type="checkbox" name="clsjrnlWrtYn" id="clsjrnlWrtYn" th:checked="${detail2.clsjrnlWrtYn == 'Y' ? true : false}"><b>수업일지 작성</b></label>
+	                                                <label class="inp"><input type="checkbox" name="etcYn" id="etcYn" th:checked="${detail2.etcYn == 'Y' ? true : false}"><b class="mr10">기타</b>
+	                                                    <span class="form-input mo-flex-wrap">
+	                                                        <input type="text" name="etcCn" id="etcCn" class="" title="기타" style="flex:0 0 140px;width:140px;" th:value="${detail2.etcCn}" th:readonly="${detail2.etcYn == 'Y' ? false : true}">
+	                                                    </span>
+	                                                </label>
+	                                            </div>
+	                                        </div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	
+	                    <div class="mo-only">
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray" onclick="tmpSaving();">중간저장</button>
+	                            </div>
+	                        </div>
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-green" onclick="save();">신청완료</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        
+	    <script th:inline="javascript">
+	    var deviceMode = "";
+    	$(function(){
+    		deviceMode = $WINDOW_MODE;
+    		var validator = $("#insertForm").validate({
+                rules: {
+                },
+                messages: {
+                }
+            });
+    		
+    		$("#etcYn").click(function(){
+                if ($(this).is(":checked")) {
+                    $("#etcCn").prop("readonly", false);                
+                } else {
+                    $("#etcCn").prop("readonly", true);
+                    $("#etcCn").val("");
+                }
+            });
+        });
+	    
+	    // 중간저장
+        function tmpSaving() {
+            if(!($("#insertForm").valid())) return;
+            if(!confirm("저장하시겠습니까?")) return;
+            
+            if ($("#databaseWrtYn").is(":checked")) {
+                $("#databaseWrtYn").val("Y");
+            } else {
+                $("#databaseWrtYn").val("N");
+            }
+            if ($("#clsjrnlWrtYn").is(":checked")) {
+                $("#clsjrnlWrtYn").val("Y");
+            } else {
+                $("#clsjrnlWrtYn").val("N");
+            }
+            if ($("#etcYn").is(":checked")) {
+                $("#etcYn").val("Y");
+            } else {
+                $("#etcYn").val("N");
+            }
+            
+            var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertSafeMng.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+	    
+	    // 저장
+	    function save(){
+	        if(!($("#insertForm").valid())) return;
+	        if(!confirm("공모신청을 완료 하시겠습니까?")) return;
+	        if ($("#databaseWrtYn").is(":checked")) {
+	            $("#databaseWrtYn").val("Y");
+	        } else {
+	            $("#databaseWrtYn").val("N");
+	        }
+	        if ($("#clsjrnlWrtYn").is(":checked")) {
+	            $("#clsjrnlWrtYn").val("Y");
+	        } else {
+	            $("#clsjrnlWrtYn").val("N");
+	        }
+	        if ($("#etcYn").is(":checked")) {
+	            $("#etcYn").val("Y");
+	        } else {
+	            $("#etcYn").val("N");
+	        }
+	        
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertSafeMng.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+	                    	alert("공모신청이 완료 되었습니다.");
+	                    	location.href = "/front/bizAply/aplyComp.html";
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    </script>
+    </div>
+</body>
+</html>

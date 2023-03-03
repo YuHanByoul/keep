@@ -11,54 +11,64 @@
     <select id="selectMvmnAplyList" parameterType="MvmnAplyVo" resultType="MvmnAplyVo">
         /* MvmnAplyDao.selectMvmnAplyList */
         <include refid="PaginationMapper.header"/>
-        SELECT 
-          C.PRGRM_SCHDLID
-        , SUBSTRING_INDEX(C.YM, '-', 1) EDU_YR  
-        , CONCAT(REPLACE(SUBSTRING_INDEX(C.YM, '-', -1), '0', ''), '월') EDU_MM
-        , D.PRGRMID
-        , E.PRGRM_NM
-        , E.EDU_NOPE
-        , C.SAREAID
-        , L.CD_NM AS RCPT_MTHD_NM
-        , F.SAREA_NM
-        , COUNT(G.STTS_CD) WTNG_APLY_CNT
-        , COUNT(H.STTS_CD) WTNG_APPRV_CNT 
-        , COUNT(I.STTS_CD) APLY_CMPLT_CNT
-        , COUNT(J.STTS_CD) CNCL_APLY_CNT
-        , COUNT(K.STTS_CD) DNL_APPRV_CNT
-        , C.YM REG_DT
-        FROM TB_EDU_MVMN_PRGRM_SCHDL C 
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID 
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM E ON E.PRGRMID = D.PRGRMID
-        LEFT OUTER JOIN TB_EDU_SAREA F ON F.SAREAID = C.SAREAID        
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY G ON (G.STTS_CD = '180101' AND G.TME_SCHDLID = B.TME_SCHDLID)
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY H ON (H.STTS_CD = '180102' AND H.TME_SCHDLID = B.TME_SCHDLID)
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY I ON (I.STTS_CD = '180103' AND I.TME_SCHDLID = B.TME_SCHDLID)
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY J ON (J.STTS_CD = '180104' AND J.TME_SCHDLID = B.TME_SCHDLID)
-        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_APLY K ON (K.STTS_CD = '180105' AND K.TME_SCHDLID = B.TME_SCHDLID)
-        LEFT OUTER JOIN TB_CMM_CD L ON L.CD = E.RCPT_MTHD_CD
-        WHERE
-        1=1
-            <if test="searchKeyword != null and searchKeyword != ''">
-            AND E.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
-            </if>
-            <if test="searchEduYr != null and searchEduYr != ''">
-            AND SUBSTRING_INDEX(C.YM, '-', 1) = #{searchEduYr}
-            </if>
-            <if test="searchSareaId != null and searchSareaId != ''">
-            AND A.SAREAID = #{searchSareaId}
-            </if>
-            <if test="searchSareaMm != null and searchSareaMm != ''">
-            AND SUBSTRING_INDEX(C.YM, '-', 2) = #{searchSareaMm}
-            </if>
-            <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
-            AND A.RCPT_MTHD_CD = #{searchRcptMthdCd}
-            </if>
-            <if test="searchSttsCd != null and searchSttsCd != ''">
-            AND A.STTS_CD = #{searchSttsCd}
-            </if>
-        GROUP BY C.PRGRM_SCHDLID, C.YM, D.PRGRMID, E.PRGRM_NM, E.EDU_NOPE, C.SAREAID, L.CD_NM, F.SAREA_NM
+        SELECT Z.PRGRM_SCHDLID
+             , Z.EDU_YR
+             , Z.EDU_MM
+             , Z.PRGRMID
+             , Z.PRGRM_NM
+             , Z.EDU_NOPE
+             , Z.SAREAID
+             , Z.RCPT_MTHD_NM
+             , Z.SAREA_NM
+             , SUM(Z.ORG_WTNG_APLY_CNT) WTNG_APLY_CNT
+             , SUM(Z.ORG_WTNG_APPRV_CNT) WTNG_APPRV_CNT
+             , SUM(Z.ORG_APLY_CMPLT_CNT) APLY_CMPLT_CNT
+             , SUM(Z.ORG_CNCL_APLY_CNT) CNCL_APLY_CNT
+             , SUM(Z.ORG_DNL_APPRV_CNT) DNL_APPRV_CNT
+             , Z.REG_DT
+        FROM (        
+                SELECT 
+                  C.PRGRM_SCHDLID
+                , SUBSTRING_INDEX(C.YM, '-', 1) EDU_YR  
+                , CONCAT(REPLACE(SUBSTRING_INDEX(C.YM, '-', -1), '0', ''), '월') EDU_MM
+                , C.YM
+                , D.PRGRMID
+                , E.PRGRM_NM
+                , E.EDU_NOPE
+                , C.SAREAID
+                , L.CD_NM AS RCPT_MTHD_NM
+                , F.SAREA_NM
+                , (SELECT COUNT(T1.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T1 WHERE T1.STTS_CD = '180101' AND T1.TME_SCHDLID = B.TME_SCHDLID) ORG_WTNG_APLY_CNT
+                , (SELECT COUNT(T2.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T2 WHERE T2.STTS_CD = '180102' AND T2.TME_SCHDLID = B.TME_SCHDLID) ORG_WTNG_APPRV_CNT
+                , (SELECT COUNT(T3.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T3 WHERE T3.STTS_CD = '180103' AND T3.TME_SCHDLID = B.TME_SCHDLID) ORG_APLY_CMPLT_CNT
+                , (SELECT COUNT(T4.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T4 WHERE T4.STTS_CD = '180104' AND T4.TME_SCHDLID = B.TME_SCHDLID) ORG_CNCL_APLY_CNT
+                , (SELECT COUNT(T5.STTS_CD) FROM TB_EDU_MVMN_PRGRM_APLY T5 WHERE T5.STTS_CD = '180105' AND T5.TME_SCHDLID = B.TME_SCHDLID) ORG_DNL_APPRV_CNT        
+                , C.YM REG_DT
+                FROM TB_EDU_MVMN_PRGRM_SCHDL C 
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.PRGRM_SCHDLID = C.PRGRM_SCHDLID 
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_SCHDL_PRGRM D ON D.PRGRM_SCHDLID = C.PRGRM_SCHDLID
+                LEFT OUTER JOIN TB_EDU_MVMN_PRGRM E ON E.PRGRMID = D.PRGRMID
+                LEFT OUTER JOIN TB_EDU_SAREA F ON F.SAREAID = C.SAREAID        
+                LEFT OUTER JOIN TB_CMM_CD L ON L.CD = E.RCPT_MTHD_CD
+                WHERE
+                1=1
+                <if test="searchKeyword != null and searchKeyword != ''">
+                AND E.PRGRM_NM LIKE CONCAT('%',#{searchKeyword},'%')
+                </if>
+                <if test="searchEduYr != null and searchEduYr != ''">
+                AND SUBSTRING_INDEX(C.YM, '-', 1) = #{searchEduYr}
+                </if>
+                <if test="searchSareaId != null and searchSareaId != ''">
+                AND C.SAREAID = #{searchSareaId}
+                </if>
+                <if test="searchSareaMm != null and searchSareaMm != ''">
+                AND SUBSTRING_INDEX(C.YM, '-', -1) = #{searchSareaMm}
+                </if>
+                <if test="searchRcptMthdCd != null and searchRcptMthdCd != ''">
+                AND E.RCPT_MTHD_CD = #{searchRcptMthdCd}
+                </if>
+                GROUP BY C.PRGRM_SCHDLID, C.YM, B.TME_SCHDLID, D.PRGRMID, C.SAREAID
+         )Z GROUP BY Z.PRGRM_SCHDLID, Z.YM, Z.PRGRMID, Z.SAREAID                
         <include refid="PaginationMapper.footer"/>        
     </select>
 
@@ -101,6 +111,10 @@
         LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID    
         LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.SIGNGU_CD  
         WHERE B.PRGRM_SCHDLID = #{prgrmSchdlid}
+            <!-- 신청상태  -->
+            <if test="searchSttsCd  != null and searchSttsCd != ''">
+                AND A.STTS_CD = #{searchSttsCd}
+            </if>                    
             <!-- 키워드.전체 -->
             <if test="searchKeyword != null and searchKeyword != '' and searchType == ''">
                 AND (E.INST_NM LIKE CONCAT('%',#{searchKeyword},'%') OR A.USERID LIKE CONCAT('%',#{searchKeyword},'%') OR F.NM LIKE CONCAT('%',#{searchKeyword},'%') OR F.MOBLPHON LIKE CONCAT('%',#{searchKeyword},'%'))
@@ -123,19 +137,19 @@
             </if>     
             <!-- 교육일 검색시작일  -->
             <if test="searchDeStartDt != null and searchDeStartDt != ''">
-                AND B.DE >= #{searchDeStartDt}
+                AND DATE_FORMAT(STR_TO_DATE(B.DE <![CDATA[>=]]> DATE_FORMAT(STR_TO_DATE(#{searchDeStartDt}, '%Y-%m-%d'),'%Y-%m-%d')
             </if>
             <!-- 교육일 검색종료일  -->
             <if test="searchDeEndDt  != null and searchDeEndDt != ''">
-                AND B.DE <![CDATA[<]]> CAST(CONCAT(#{searchDeEndDt},' 23:59:59') AS DATETIME)
+                AND DATE_FORMAT(STR_TO_DATE(B.DE <![CDATA[<]]>DATE_FORMAT(STR_TO_DATE(#{searchDeEndDt}, '%Y-%m-%d'),'%Y-%m-%d')
             </if>            
             <!-- 접수일 검색시작일  -->
             <if test="searchRcptStartDt != null and searchRcptStartDt != ''">
-                AND A.REG_DT >= #{searchRcptStartDt}
+                AND A.REG_DT <![CDATA[>=]]> DATE_FORMAT(STR_TO_DATE(#{searchRcptStartDt}, '%Y-%m-%d'),'%Y-%m-%d')
             </if>
             <!-- 접수일 검색종료일  -->
             <if test="searchRcptEndDt  != null and searchRcptEndDt != ''">
-                AND A.REG_DT <![CDATA[<]]> CAST(CONCAT(#{searchRcptEndDt},' 23:59:59') AS DATETIME)
+                AND A.REG_DT <![CDATA[<]]> DATE_FORMAT(STR_TO_DATE(#{searchRcptEndDt}, '%Y-%m-%d'),'%Y-%m-%d')
             </if>            
         <include refid="PaginationMapper.footer"/>        
     </select>

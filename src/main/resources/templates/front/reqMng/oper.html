@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm" submit="return:false;">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li><a href="#">신청정보</a></li>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">운영개요</a></li>
+	                                <li><a href="#">소요예산</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="tmpSaving();">중간저장</button>
+	                                    <button type="button" class="btn-large btn-green" onclick="save();">다음</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	                    
+	                    <div class="table-caption mt0">
+	                        <div class="left">
+	                            <h3 class="sub-title">환경동아리 운영 개요</h3>
+	                        </div>
+	                        <div class="right">
+	                            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>환경동아리 운영 개요 - 동아리명, 교육인원, 교육주제</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">동아리명<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="text" id="clubNm" name="clubNm" th:value="${detail.clubNm}" title="동아리명">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                    <th scope="row">교육인원<i class="ast" title="필수입력">*</i></th>
+	                                    <td><input type="number" id="eduNope" name="eduNope" th:value="${detail.eduNope}" title="교육인원"><p class="form-msg"></p></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row" rowspan="2">교육주제<i class="ast" title="필수입력">*</i></th>
+	                                    <td colspan="3" class="dynamicDiv">
+	                                        <th:block th:if="${#lists.size(eduList) > 0}" >
+				                                <div class="form-input mo-flex-wrap subjectCode" th:each="list, i : ${eduList}">
+				                                    <div class="form-input flex-auto">                               
+				                                        <span kattr:select_code="eduSbjctCd1" th:attr="selectedCd=${list.eduSbjctCd1}" grpCd="163" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true"/>
+				                                        <select name="eduSbjctCds" th:id="'eduSbjctCd_'+${i.index+1}" class="form-select form-select-sm">
+				                                        </select>
+				                                    </div>
+				                                    <div class="form-input">
+                                                        <div class="btn-calc btnArea">
+                                                            <button type="button" th:if="${i.last}" class="btn-plus-table btnList" title="열 추가" onclick="addCode();"></button>
+					                                        <button type="button" th:if="${i.last && i.index > 0}" class="btn-minus-table btnRemove" title="삭제" onclick="removeCode(this);"></button>
+                                                        </div>
+                                                    </div>
+				                                </div>
+				                            </th:block>
+				                            <th:block th:unless="${#lists.size(eduList) > 0}">
+				                                <div class="form-input mo-flex-wrap subjectCode">
+				                                    <div class="form-input flex-auto">
+				                                        <select name="eduSbjctCd1" id="eduSbjctCd1_1" class="form-select form-select-sm">
+				                                            <option value="" selected>- 선택 -</option>
+				                                        </select>
+				                                        <select name="eduSbjctCds" id="eduSbjctCd_1" class="form-select form-select-sm">
+				                                            <option value="" selected>- 선택 -</option>
+				                                        </select>
+				                                    </div>
+				                                    <div class="form-input">
+				                                        <div class="btn-calc btnArea">
+    				                                        <button type="button" class="btn-plus-table btnList" title="열 추가" onclick="addCode();"></button>
+				                                        </div>
+				                                    </div>
+				                                </div>
+				                            </th:block>    
+                                        </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <h3 class="sub-title">교육주제별 운영차시</h3>
+	                    </div>
+	
+	                    <div class="box-desc-list bg7">
+	                        <strong class="box-desc-tit"><div class="icon icon-notice bg-black3"></div> 작성요령</strong>
+	                        <ul>
+	                            <li>총 교육프로그램 운영횟수는 최소 8차시 이상 구성 (8차시 중 3차시 이상 환경현안 주제 필수구성)</li>
+	                            <li>교육주제는 중복선택 가능</li>
+	                        </ul>
+	                    </div>
+	                    
+	                    <div class="table-combi mt10">
+	                        <table>
+	                            <caption>교육주제별 운영차시 - 구분(일반주제, 환경현안주제), 주제, 총 운영차시</caption>
+	                            <colgroup>
+	                                <col style="width:15%;">
+	                                <col style="width:10%;">
+	                                <col>
+	                            </colgroup>
+	                            <thead>
+	                                <tr>
+	                                    <th scope="colgroup" colspan="2">구분</th>
+	                                    <th scope="col">주제</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody id="normalTable" th:if="${#lists.size(normalList) > 0}">
+	                                <tr th:each="list, i: ${normalList}">
+	                                    <th scope="rowgroup" th:if="${i.index == 0}" th:rowspan="${list.rowSpan}">일반주제</th>
+	                                    <th th:scope="${i.index == 0 ? '' : 'row'}"><th:block th:text="${list.rnd}+'차시'"/></th>
+	                                    <td>
+	                                        <input type="hidden" name="rnd" id="rnd" th:value="${list.rnd}"/>
+	                                        <input type="hidden" name="sbjctSeCdArr" id="sbjctSeCd" th:value="${list.sbjctSeCd}"/>
+	                                        <div class="form-input mo-flex-wrap">
+                                                <div class="form-input flex-auto">
+                                                    <span kattr:select_code="eduSbjctCdArr1" grpCd="163" th:attr="selectedCd=${list.eduSbjctCd1}" firstOptTxt="- 선택 -" addClass="input-sm"/>
+                                                    <select name="eduSbjctCdArr" th:id="'eduSbjctCdArr_'+${i.index+1}" class="form-select form-select-sm">
+	                                                    <option value="" selected>- 선택 -</option>
+	                                                </select>
+                                                </div>
+                                                <div class="form-input">
+                                                    <div class="btn-calc btnArea">
+                                                        <button type="button" th:if="${i.last}" class="btn-plus-table" title="열 추가" onclick="addRow(this);"></button>
+                                                        <button type="button" th:if="${i.last and i.index > 0}" class="btn-minus-table" title="열 삭제" onclick="removeRow(this);"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                            <tbody id="normalTable" th:unless="${#lists.size(normalList) > 0}">
+		                            <tr>
+		                                <th scope="rowgroup" rowspan="1">일반주제</td>
+		                                <th>1차시</td>
+		                                <td>
+		                                    <input type="hidden" name="rnd" id="rnd" value="1"/>
+		                                    <input type="hidden" name="sbjctSeCdArr" id="sbjctSeCd" value="219101"/>    
+		                                    <div class="form-input mo-flex-wrap">
+		                                        <div class="form-input flex-auto">
+		                                            <span kattr:select_code="eduSbjctCdArr1" grpCd="163" firstOptTxt="- 선택 -" addClass="input-sm"/>
+		                                            <select name="eduSbjctCdArr" id="eduSbjctCdArr_1" class="form-select form-select-sm">
+		                                                <option value="" selected>- 선택 -</option>
+		                                            </select>
+		                                        </div>
+		                                        <div class="form-input">
+                                                    <div class="btn-calc btnArea">
+                                                    </div>
+                                                </div>
+		                                    </div>
+		                                </td>
+		                            </tr>
+		                       </tbody>
+	                           <tbody id="envTable" th:if="${#lists.size(envList) > 0}">
+	                                <tr th:each="list, i: ${envList}">
+	                                    <th scope="rowgroup" th:if="${i.index == 0}" th:rowspan="${list.rowSpan}">환경현안주제</th>
+	                                    <th th:scope="${i.index == 0 ? '' : 'row'}"><th:block th:text="${list.rnd}+'차시'"/></th>
+	                                    <td>
+	                                        <input type="hidden" name="rnd" id="rnd" th:value="${list.rnd}"/>
+	                                        <input type="hidden" name="sbjctSeCdArr" id="sbjctSeCd" th:value="${list.sbjctSeCd}"/>
+	                                        <div class="form-input mo-flex-wrap">
+                                                <div class="form-input flex-auto">
+                                                    <span kattr:select_code="eduSbjctCdArr1" grpCd="163" th:attr="selectedCd=${list.eduSbjctCd1}" firstOptTxt="- 선택 -" addClass="input-sm"/>
+                                                    <select name="eduSbjctCdArr" th:id="'eduSbjctCdArr_'+${i.index+1}" class="form-select form-select-sm">
+	                                                    <option value="" selected>- 선택 -</option>
+	                                                </select>
+                                                </div>
+                                                <div class="form-input">
+                                                    <div class="btn-calc btnArea">
+                                                        <button type="button" th:if="${i.last}" class="btn-plus-table" title="열 추가" onclick="addRow(this);"></button>
+                                                        <button type="button" th:if="${i.last and i.index > 0}" class="btn-minus-table" title="열 삭제" onclick="removeRow(this);"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                            <tbody id="envTable" th:unless="${#lists.size(envList) > 0}">
+		                            <tr>
+		                                <th scope="rowgroup" rowspan="1">환경현안주제</td>
+		                                <th>1차시</td>
+		                                <td>
+		                                    <input type="hidden" name="rnd" id="rnd" value="1"/>
+		                                    <input type="hidden" name="sbjctSeCdArr" id="sbjctSeCd" value="219102"/>    
+		                                    <div class="form-input mo-flex-wrap">
+		                                        <div class="form-input flex-auto">
+		                                            <span kattr:select_code="eduSbjctCdArr1" grpCd="163" firstOptTxt="- 선택 -" addClass="input-sm"/>
+		                                            <select name="eduSbjctCdArr" id="eduSbjctCdArr_1" class="form-select form-select-sm">
+		                                                <option value="" selected>- 선택 -</option>
+		                                            </select>
+		                                        </div>
+		                                        <div class="form-input">
+                                                    <div class="btn-calc btnArea">
+                                                    </div>
+                                                </div>
+		                                    </div>
+		                                </td>
+		                            </tr>
+		                        </tbody>
+	                            <tfoot>
+	                                <tr>
+	                                    <th scope="row" colspan="2" class="bg5">총 운영차시</th>
+	                                    <td id="totalRnd">2차시</td>
+	                                </tr>
+	                            </tfoot>
+	                        </table>
+	                    </div>
+	
+	                    <div class="mo-only">
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray" onclick="tmpSaving();">중간저장</button>
+	                            </div>
+	                        </div>
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-green" onclick="save();">다음</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        
+        <style>
+            .form-msg { color : red; }
+        </style> 
+	    <script th:inline="javascript">
+	    /*<![CDATA[*/
+	    var eduListSize = /*[[${#lists.size(eduList)}]]*/null;
+	    var eduList = /*[[${eduList}]]*/null;
+	    var normalListSize = /*[[${#lists.size(normalList)}]]*/null;
+	    var normalList = /*[[${normalList}]]*/null;
+	    var envListSize = /*[[${#lists.size(envList)}]]*/null;
+	    var envList = /*[[${envList}]]*/null;
+	    /*]]>*/
+	    /* 커스텀태그(공통코드) : 교육주제 */
+	    var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
+	    var deviceMode = "";
+	    
+	    $(document).on("change", "select[name=eduSbjctCd1]", function(){
+	        var objId = $(this).attr("id");
+	        var num = objId.split("_");
+	        setNextDepth('163',$(this).val(),'eduSbjctCd_'+num[1]);
+	    });
+	    
+	    $(document).on("change", "select[name=eduSbjctCdArr1]", function(){
+	        var objId = $(this).attr("id");
+	        var num = objId.split("_");
+	        setNextDepth('163',$(this).val(),'eduSbjctCdArr_'+num[1]);
+	    });
+	    
+    	$(function(){
+    		deviceMode = $WINDOW_MODE;
+    		changeId();
+    		
+    		var validator = $("#insertForm").validate({
+                rules: {
+                	clubNm : { required: true } 
+                    , eduNope : { required: true } 
+                },
+                messages: {
+                	clubNm    :   { required: "동아리명을 입력해주십시오." }  
+                    , eduNope    :   { required: "교육인원을 입력해주십시오." }  
+                }
+            });
+    		
+    		if (eduListSize == 0) {
+                fn_getNextDepthList(163 , 0, 'eduSbjctCd1_1');
+            }
+            
+            $("select[name='eduSbjctCd1']").each(function(i){
+                $(this).prop("id", "eduSbjctCd1_"+(i+1));
+                setNextDepth('163', $(this).val(), 'eduSbjctCd_'+(i+1));
+            });
+            
+            $("#normalTable").find("select[name='eduSbjctCdArr1']").each(function(i){
+                $(this).prop("id", "eduSbjctCdArr1_"+(i+1));
+                setNextDepth('163', $(this).val(), 'eduSbjctCdArr_'+(i+1));
+            });
+            
+            $("#envTable").find("select[name='eduSbjctCdArr1']").each(function(i){
+                $(this).prop("id", "eduSbjctCdArr1_"+(i+normalListSize+1));
+                setNextDepth('163', $(this).val(), 'eduSbjctCdArr_'+(i+normalListSize+1));
+            });
+            
+            $(eduList).each(function(i){
+                setTimeout(function(){
+                    $('#eduSbjctCd_'+(i+1)).val(eduList[i].eduSbjctCd).prop("selected", true);              
+                }, 500);
+            });
+            
+            $(normalList).each(function(i){
+                setTimeout(function(){
+                    $("#normalTable").find('#eduSbjctCdArr_'+(i+1)).val(normalList[i].eduSbjctCd).prop("selected", true);              
+                }, 500);
+            });
+            
+            $(envList).each(function(i){
+                setTimeout(function(){
+                    $("#envTable").find('#eduSbjctCdArr_'+(i+normalListSize+1)).val(envList[i].eduSbjctCd).prop("selected", true);              
+                }, 500);
+            });
+            
+            $(".subjectCode").each(function(idx){
+                $(this).eq(idx).find("select[name=eduSbjctCd1]").on('change', function(){
+                    setNextDepth('163',$(this).val(),'eduSbjctCd_'+(idx+1));
+                });
+            });
+            
+            $("#normalTable").find("tr").each(function(idx){
+                $(this).eq(idx).find("select[name=eduSbjctCdArr1]").on('change', function(){
+                    setNextDepth('163',$(this).val(),'eduSbjctCdArr_'+(idx+1));
+                });
+            });
+            $("#envTable").find("tr").each(function(idx){
+                $(this).eq(idx).find("select[name=eduSbjctCdArr1]").on('change', function(){
+                    setNextDepth('163',$(this).val(),'eduSbjctCdArr_'+(idx+normalListSize+1));
+                });
+            });
+        });
+	    
+	    function addCode() {
+	        var codeSize = $(".subjectCode").length;
+            $(".dynamicDiv .btnArea").find("button").remove();
+//            	$(".btnArea:eq(0)").append('<button type="button" class="btn-plus-table btnAdd" title="추가" onclick="addCode();">');
+            
+	        for (var i = 0; i < codeSize; i++) {
+//             	if (i > 0) {
+//             		$(".btnArea").eq(i).append('<button type="button" class="btn-minus-table btnRemove" title="삭제" onclick="removeCode(this);"></button>');
+//             	}
+	            if (i+1 == codeSize) {
+                    var html = '';
+                        html += '<div class="form-input mo-flex-wrap subjectCode">';
+                        html += '    <div class="form-input flex-auto">';
+                        html += '        <select name="eduSbjctCd1" id="eduSbjctCd1_'+(i+2)+'" class="form-select form-select-sm" onchange="setNextDepth(163, this.value, \'eduSbjctCd_'+(i+2)+'\');">';
+                        html +=              $("#eduSbjctCd1_1").html();
+                        html += '        </select>';
+                        html += '        <select name="eduSbjctCds" id="eduSbjctCd_'+(i+2)+'" class="form-select form-select-sm">';
+                        html += '            <option value="" selected>- 선택 -</option>';
+                        html += '        </select>';
+                        html += '    </div>';
+                        html += '    <div class="form-input">';
+                        html += '        <div class="btn-calc btnArea">';
+                        html += '            <button type="button" class="btn-plus-table btnAdd" title="추가" onclick="addCode();"></button>';
+                        html += '            <button type="button" class="btn-minus-table btnRemove" title="삭제" onclick="removeCode(this);"></button>';
+                        html += '    </div>';
+                        html += '</div>';
+	                $(".dynamicDiv").append(html);
+	            }
+	        }
+	    }
+	    
+	    function removeCode(obj) {
+	        var codeSize = $(".subjectCode").length;
+	    	$(obj).parent().parent().parent().remove();
+	        for (var i = 0; i < codeSize; i++) {
+	            if (i+1 == codeSize) {
+			        console.log("codeSize => ", codeSize);
+	                var html = '';
+	                    html += '<button type="button" class="btn-plus-table btnAdd" title="추가" onclick="addCode();"></button>';
+	                    if (codeSize > 2) {
+	                        html += '<button type="button" class="btn-minus-table btnRemove" title="삭제" onclick="removeCode(this);"></button>';                           
+	                    }
+	                $(".dynamicDiv > .subjectCode").eq(i-1).find(".btnArea").html(html);
+	            }
+	        }
+	    }
+	    
+	    function changeId() {
+	    	$("#normalTable, #envTable").find("tr").each(function(i){
+                $(this).find("select[name='eduSbjctCdArr1']").attr("id", "eduSbjctCdArr1_"+(i+1));   
+                $(this).find("select[name='eduSbjctCdArr']").attr("id", "eduSbjctCdArr_"+(i+1));
+            });
+	    	var length = $("#normalTable, #envTable").find("tr").length;
+            $("#totalRnd").text(length + "차시");
+	    }
+	    
+	    // 테이블 로우 추가
+	    function addRow(obj) {
+	        var html = '<button type="button" class="btn-plus-table" title="열 추가" onclick="addRow(this);"></button>';
+	        html += '<button type="button" class="btn-minus-table" title="열 삭제" onclick="removeRow(this);"></button>';
+	        var clickedRow = $(obj).parent().parent().parent().parent().parent();
+	        var tbody = clickedRow.parent().attr("id");
+	        var rowspan = $("#"+tbody).find("tr:first").find("th:first").attr("rowspan");
+	        console.log("rowspan => ",rowspan);
+	        $(obj).parent().html("");
+	        var newrow = clickedRow.clone();
+	        newrow.find(".btnArea").append(html);
+	        if (Number(rowspan) == 1) {
+	            newrow.find("th:first").remove();
+	        }
+	        $("#"+tbody).find("tr:first").find("th:first").attr("rowspan", $("#"+tbody).find("tr").length+1);
+	        newrow.insertAfter($("#"+tbody).find("tr:last"));
+	        
+	        $("#"+tbody).find("tr").each(function(i){
+                $(this).find("th:last").text((i+1) + "차시");
+	            $(this).find("input[name='rnd']").val(i+1);
+	            $(this).find("input[name='sbjctSeCdArr']").val(tbody == "normalTable" ? "219101" : "219102");
+	        });
+	        changeId();
+	    }
+
+	    // 테이블 로우 삭제
+	    function removeRow(obj) {
+	        var addHtml = '<button type="button" class="btn-plus-table" title="열 추가" onclick="addRow(this);"></button>';
+	        var delHtml = '<button type="button" class="btn-minus-table" title="열 삭제" onclick="removeRow(this);"></button>';
+	        var clickedRow = $(obj).parent().parent().parent().parent().parent();
+	        var tbody = clickedRow.parent().attr("id");
+	        
+	        clickedRow.remove();
+	        
+	        $("#"+tbody).find("tr:first").find("th:first").attr("rowspan", $("#"+tbody).find("tr").length);
+	        if ($("#"+tbody).find("tr").length == 1) {
+	        	$("#"+tbody).find("tr:last").find(".btnArea").append(addHtml);
+	        } else {
+	        	$("#"+tbody).find("tr:last").find(".btnArea").append(addHtml+delHtml);
+	        }
+	        
+	        $("#"+tbody).find("tr").each(function(i){
+	        	$(this).find("th:last").text((i+1) + "차시");
+	            $(this).find("input[name='rnd']").val(i+1);
+	            $(this).find("input[name='sbjctSeCdArr']").val(tbody == "normalTable" ? "219101" : "219102");   
+	        });
+	        
+	        changeId();
+	    }
+	    
+	    function fn_getNextDepthList(grpcd , upprcd, targetId){
+	        $.ajax({
+	            url : getCodeListUrl,
+	            type: 'GET',
+	            cache : false,
+	            dataType: 'json',
+	            data: {
+	                  grpcd  : grpcd
+	                , upprcd : upprcd
+	            }, 
+	            success : function (data){
+	                writeHtml(grpcd,targetId,data,"");
+	            },
+	            error : function (error){
+	            }
+	        });
+	    }
+	    
+	    function writeHtml(grpcd,targetId,list,selected){
+	        var cntArr = targetId.split("_");
+	        var nextCnt = Number(cntArr[1])+1;
+	        var nextTarget = cntArr[0]+"_"+nextCnt;
+	           
+	        var html ="<select id='"+targetId+"' class ='form-control'>";
+	            html +="    <option value='' selected>- 전체 -</option>";
+	           
+	          for(var i=0 ; i < list.length;i++){
+	            if(list[i].cdid==selected){
+	            html +="    <option value="+list[i].cd+" selected>"+ list[i].cdNm+ "</option>";
+	            }else{
+	            html +="    <option value="+list[i].cd+">"+ list[i].cdNm+ "</option>";
+	            }
+	          }
+	          if(list.length == 0 && jQuery("#"+nextTarget)[0] != undefined){
+	              writeHtml(grpcd,nextTarget,list,selected);
+	          }
+	          html +="    </select>";
+	          $("#"+targetId).html(html);
+	    }
+	    
+	    function setNextDepth(grpcd , upprcd , targetId) {
+	        fn_getNextDepthList(grpcd , upprcd , targetId);
+	    }
+	    
+	    // 중간저장
+        function tmpSaving() {
+            if(!($("#insertForm").valid())) return;
+            if ($("#eduSbjctCd_1").val() == "") {
+            	alert("교육주제를 선택해주십시오.");
+            	return;
+            }
+            if(!confirm("저장하시겠습니까?")) return;
+            var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertOper.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+	    
+	    // 저장
+	    function save(){
+	        if(!($("#insertForm").valid())) return;
+	        
+	        if ($("select[name='eduSbjctCds']").val() == null || $("select[name='eduSbjctCds']").val() == "") {
+	        	alert("교육주제를 선택하십시오.");
+	        	return;
+	        }
+	        if ($("#normalTable, #envTable").find("tr").length < 8 || $("#envTable").find("tr").length < 3) {
+	        	alert("총 교육프로그램 운영횟수는 최소 8차시 이상 구성\n(8차시 중 3차시 이상 환경현안 주제 필수구성) 하십시오.");
+	        	return;
+	        }
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertOper.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+	                    	location.href = "/front/bizAply/budgetForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    </script>
+    </div>
+</body>
+</html>

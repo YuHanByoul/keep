@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : CntstDaoImpl.xml
+	Description : 공모전 등록
+-->
+<mapper namespace="com.kbrainc.plum.front.cntstAplyHist.model.CntstAplyHistDao">
+    <!--공모전 목록 조회-->
+    <select id="selectCntstAplyHistList" resultType="front.CntstAplyHistVO">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+            	A.APLYID
+              , C.CD_NM AS CLSF_CD_NM
+              , B.TTL
+              , E.INST_NM
+              , DATE(A.REG_DT) AS APLY_DT
+              , A.REG_DT
+            FROM
+            	TB_CMM_CNTST_APLY A
+            	LEFT OUTER JOIN TB_CMM_CNTST B ON A.CNTSTID = B.CNTSTID
+            	LEFT OUTER JOIN TB_CMM_CD C ON B.CLSF_CD = C.CD
+            	LEFT OUTER JOIN TB_CMM_USER D ON B.RGTRID = D.USERID
+            	LEFT OUTER JOIN TB_CMM_INST E ON D.INSTID = E.INSTID
+            WHERE 1=1
+            AND A.USERID = #{user.userid}
+            <!-- 제목검색 -->
+            <if test="searchTtl != null and searchTtl != ''">
+            AND B.TTL LIKE CONCAT('%',#{searchTtl},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!--공모전 정보 조회-->
+    <select id="selectCntstAplyHistInfo" resultType="front.CntstAplyHistVO">        
+        SELECT
+              A.APLYID
+            , C.CD_NM AS CLSF_CD_NM
+            , B.TTL
+            , DATE_FORMAT(B.APLY_BGNG_DT, '%Y-%m-%d %H:%i') APLY_BGNG_DT
+            , DATE_FORMAT(B.APLY_END_DT, '%Y-%m-%d %H:%i') APLY_END_DT
+            , DATE_FORMAT(B.PRSNTN_DT, '%Y-%m-%d %H:%i') PRSNTN_DT
+            , DATE(A.REG_DT) AS APLY_DT
+
+            <!-- /*접수정보*/ -->
+            , A.APLY_SE_CD
+            , A.PCNTST_FLD_CD
+            , A.APLY_PATH_CD
+            , CD1.CD_NM AS APLY_SE_CD_NM
+            , CD2.CD_NM AS PCNTST_FLD_CD_NM
+            , CD3.CD_NM AS APLY_PATH_CD_NM
+
+            <!-- /*접수자 정보*/ -->
+            , A.RPRSV_NM
+            , INST.INST_NM
+            , A.BRDT
+            , A.RPRSV_MOBLPHON
+            , A.EML
+            , A.ADDR
+            , A.ADDR_DTL
+
+            <!-- /*작품 정보*/ -->
+            , A.PRDCT_TTL
+            , A.PRDCT_EXPLN
+            , A.PRDCT_FILEGRPID
+
+            <!-- /*작품 업로드 안내*/ -->
+			, B.GDNC
+
+            <!-- /*참가서약서*/ -->
+            , B.TRMS
+        FROM
+        	TB_CMM_CNTST_APLY A
+        	LEFT OUTER JOIN TB_CMM_CNTST B ON A.CNTSTID = B.CNTSTID
+            LEFT OUTER JOIN TB_CMM_CD C ON B.CLSF_CD = C.CD
+
+            <!-- /*접수정보*/ -->
+            LEFT OUTER JOIN TB_CMM_CD CD1 ON A.APLY_SE_CD = CD1.CD
+            LEFT OUTER JOIN TB_CMM_CD CD2 ON A.PCNTST_FLD_CD = CD2.CD
+            LEFT OUTER JOIN TB_CMM_CD CD3 ON A.APLY_PATH_CD = CD3.CD
+
+            <!-- /*접수자 정보*/ -->
+            LEFT OUTER JOIN TB_CMM_USER USER ON A.USERID = USER.USERID
+            LEFT OUTER JOIN tb_cmm_inst INST ON A.INSTID = INST.INSTID
+        WHERE
+            A.APLYID = #{aplyid}
+    </select>
+    
+    <select id="selectCntstFldMapngInfo" resultType="front.CntstAplyHistVo">        
+        SELECT
+        	C.FLD_CD
+            , D.CD_NM AS FlD_MAPNG_NM 
+        FROM
+        	TB_CMM_CNTST_APLY A
+        	LEFT OUTER JOIN TB_CMM_CNTST B ON A.CNTSTID = B.CNTSTID
+        	LEFT OUTER JOIN TB_CMM_CNTST_FLD_MAPNG C ON B.CNTSTID = C.CNTSTID
+            LEFT OUTER JOIN TB_CMM_CD D ON C.FLD_CD = D.CD
+        WHERE
+        	A.APLYID = #{aplyid}
+    </select>
+    
+    <update id="updateCntstAplyHist" parameterType="front.CntstAplyHistVo" keyProperty="aplyid">
+        UPDATE TB_CMM_CNTST_APLY SET
+            APLY_SE_CD        = #{aplySeCd}
+            , PCNTST_FLD_CD   = #{pcntstFldCd}
+            , APLY_PATH_CD    = #{aplyPathCd}
+            , BRDT            = #{brdt}
+            , PRDCT_TTL       = #{prdctTtl}
+            , PRDCT_EXPLN     = #{prdctExpln}
+            , PRDCT_FILEGRPID = #{prdctFilegrpid}
+         WHERE
+            APLYID = #{aplyid}
+    </update>
+    
+    <select id="selectCntstAplySchlHistInfo" resultType="front.CntstAplyHistVo">
+        SELECT
+            APLY_SCHLID
+            , SCHL_NM
+            , TCHER_NM
+            , TCHER_GNDR
+            , TELNO
+            , B.CD AS PCNTST_FLD_CD
+            , B.CD_NM AS PCNTST_FLD_CD_NM
+            , STDNT_MALE
+            , STDNT_FEMALE
+        FROM
+        	TB_CMM_CNTST_APLY_SCHL A
+        	LEFT OUTER JOIN TB_CMM_CD B ON A.PCNTST_FLD_CD = B.CD
+        WHERE
+            A.APLYID = #{aplyid}
+    </select>
+
+    <update id="updateCntstAplySchlHist" parameterType="java.util.List" keyProperty="aplySchlid">
+        <foreach item="item" collection="list" separator=";">
+            UPDATE TB_CMM_CNTST_APLY_SCHL SET
+            	SCHL_NM       = #{item.schlNm}
+              , TCHER_NM      = #{item.tcherNm}
+              , TCHER_GNDR    = #{item.tcherGndr}
+              , TELNO         = #{item.telno}
+              , PCNTST_FLD_CD = #{item.pcntstFldCd}
+              , STDNT_MALE    = #{item.stdntMale}
+              , STDNT_FEMALE  = #{item.stdntFemale}
+            WHERE
+            	APLY_SCHLID = #{item.aplySchlid}
+        </foreach>
+    </update>    
+</mapper>

@@ -50,7 +50,7 @@
                             <!-- 교육일자 설정 -->
                             <div class="col-lg-6">
                                 <h3 class="sub-title"><strong>교육일자 설정</strong></h3>
-                                <div class="col-12 table-responsive">
+                                <div class="col-12 table-responsive" style="height:440px; overflow:auto;">
                                     <table class="table table-framed table-bordered">
                                         <thead>
                                         <tr class="border-bottom-inverse">
@@ -69,7 +69,7 @@
                             <!-- 교육프로그램 설정 -->
                             <div class="col-lg-6">
                                 <h3 class="sub-title"><strong>교육프로그램 설정</strong></h3>
-                                <div class="col-12 table-responsive">
+                                <div class="col-12 table-responsive" style="height:440px; overflow:auto;">
                                     <table class="table table-framed table-bordered">
                                         <thead>
                                         <tr class="border-bottom-inverse">
@@ -81,6 +81,9 @@
                                         </tr>
                                         </thead>
                                         <tbody id="updatePrgrmSettingList">
+                                            <tr>
+                                                <td class="text-center v-middle" colspan="3">접수방법을 선택하세요.</td>
+                                            </tr>    
                                         </tbody>
                                     </table>
                                 </div>
@@ -208,6 +211,13 @@
         var url = getCodeUrl + "?rcptMthdCd=" + $(item).val();
         var prgrmStthtml = "";
         $("#updatePrgrmSettingList tr").remove();
+        if($(item).val() == ""){
+            prgrmStthtml += '<tr>';
+            prgrmStthtml += '<td class="text-center v-middle" colspan="3">접수방법을 선택하세요.</td>';
+            prgrmStthtml += '</tr>';
+            $("#updatePrgrmSettingList").append(prgrmStthtml);
+            return false;
+        } 
         $.ajax({
             url: url,
             type: 'POST',
@@ -369,7 +379,7 @@
         
         var data =  $("#infntSchdlUpdatePopupForm").serialize();
         data = data+"&deSttIds="+deSttIds+"&prgrmSttIds="+prgrmSttIds+"&schdlNm="+schdlNm+"&ym="+ym;
-
+        debugger;
         if(displayWorkProgress()){
             $.ajax({
                 url : "/mng/prtpn/infntSchdl/updateInfntSchdl.do",
@@ -379,7 +389,8 @@
                 data : data,
                 success : function (data){
                     alert(data.msg);
-                    fn_popUpdForm.hide();
+                    closeWorkProgress();                    
+                    popUpdFormModal.hide();
                     fn_makeCalendarEvent();
                 }
             });
@@ -393,7 +404,6 @@
         var data =  $("#infntSchdlUpdatePopupForm").serialize();
         data = data+"&schdlNm="+schdlNm;
 
-        debugger;
         $.ajax({
             url : "/mng/prtpn/infntSchdl/deleteInfntSchdl.do",
             type: 'POST',
@@ -402,7 +412,9 @@
             data : data,
             success : function (data){
                 alert(data.msg);
-                fn_popUpdForm.hide();
+                closeWorkProgress();                
+                popUpdFormModal.hide();
+
                 fn_makeCalendarEvent();
             }
         });
