@@ -146,7 +146,7 @@
 	                                </tr>
 	                                <tr>
 	                                    <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
-	                                    <td><input type="text" name="instAddr" id="instAddr" th:value="${detail.instAddr}" title="주소" placeholder="지번/도로명을 입력해주세요."><p class="form-msg"></p></td>
+	                                    <td><input type="text" name="instAddr" id="instAddr" th:value="${detail.instAddr}" title="주소" placeholder="지번/도로명을 입력해주세요." readonly><p class="form-msg"></p></td>
 	                                    <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
 	                                    <td><input type="text" name="instAddrDtl" id="instAddrDtl" th:value="${detail.instAddrDtl}" title="상세주소" placeholder="상세주소를 입력해주세요."><p class="form-msg"></p></td>
 	                                </tr>
@@ -342,6 +342,7 @@
         <style>
 		    .form-msg { color : red; }
 		</style>   
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	    <script th:inline="javascript">
 	    var atchfileCnt = 21;
 	    var uploadFileCnt = 0;
@@ -373,6 +374,22 @@
 	                , instSareaCd    :   { required: "권역을 선택해주십시오." }  
 	                , rgnCd    :   { required: "지역을 선택해주십시오." }  
 	            }
+	        });
+	    	
+	    	$("#instAddr").click(function(){
+	            new daum.Postcode({
+	                oncomplete: function(data) {
+	                    let addr = '';
+	                    if (data.userSelectedType === 'R') {
+	                        addr = data.roadAddress;
+	                    } else {
+	                        addr = data.jibunAddress;
+	                    }
+	                    $('#instZip').val(data.zonecode);
+	                    $('#instAddr').val(addr);
+	                    $('#instAddrDtl').focus();
+	                }
+	            }).open();
 	        });
         });
 	    
