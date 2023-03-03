@@ -1,5 +1,7 @@
 package com.kbrainc.plum.front.mypage.exprtPool.service;
 
+import com.kbrainc.plum.front.mypage.exprtPool.model.CommonExprtVo;
+import com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtMdfcnVo;
 import com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtVo;
 
 /**
@@ -26,7 +28,18 @@ public interface MyExprtPoolService {
      * @Title : selectMyExprt
      * @Description : 전문가 정보 조회
      */
-    public MyExprtVo selectMyExprt(MyExprtVo exprtVo) throws Exception;
+    public MyExprtVo selectMyExprt(CommonExprtVo exprtVo) throws Exception;
+
+    /**
+     * 수정 화면에서 사용되는 전문가 정보 조회
+     *
+     * @param myExprtMdfcnVo
+     * @return my exprt mdfcn vo
+     * @throws Exception
+     * @Title : selectMyExprtMdfcn
+     * @Description : 수정 화면에서 사용되는 전문가 정보 조회
+     */
+    public MyExprtMdfcnVo selectMyExprtMdfcn(CommonExprtVo myExprtMdfcnVo) throws Exception;
 
     /**
      * 공개 범위 및 서비스 수신 여부 변경

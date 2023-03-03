@@ -32,7 +32,18 @@ public interface MyExprtDao {
      * @Title : selectMyExprt
      * @Description : 전문가 정보 조회
      */
-    public MyExprtVo selectMyExprt(MyExprtVo exprtVo) throws Exception;
+    public MyExprtVo selectMyExprt(CommonExprtVo exprtVo) throws Exception;
+
+    /**
+     * 수정 화면에서 사용되는 전문가 정보 조회
+     *
+     * @param myExprtMdfcnVo
+     * @return my exprt mdfcn vo
+     * @throws Exception
+     * @Title : selectMyExprtMdfcn
+     * @Description : 수정 화면에서 사용되는 전문가 정보 조회
+     */
+    public MyExprtMdfcnVo selectMyExprtMdfcn(CommonExprtVo myExprtMdfcnVo) throws Exception;
 
     /**
      * 재직 정보 목록 조회
@@ -42,7 +53,7 @@ public interface MyExprtDao {
      * @Title : selectExpertHdofList
      * @Description : 재직 정보 목록 조회
      */
-    List<MyHdofVo> selectExpertHdofList(MyExprtVo exprtVo);
+    List<MyHdofVo> selectExpertHdofList(CommonExprtVo exprtVo);
 
     /**
      * 경력 정보 목록 조회
@@ -52,7 +63,7 @@ public interface MyExprtDao {
      * @Title : selectExpertCareerList
      * @Description : 경력 정보 목록 조회
      */
-    List<MyCareerVo> selectExpertCareerList(MyExprtVo exprtVo);
+    List<MyCareerVo> selectExpertCareerList(CommonExprtVo exprtVo);
 
     /**
      * 자격 정보 목록 조회
@@ -62,7 +73,7 @@ public interface MyExprtDao {
      * @Title : selectExpertCrtfctList
      * @Description : 자격 정보 목록 조회
      */
-    List<MyCrtfctVo> selectExpertCrtfctList(MyExprtVo exprtVo);
+    List<MyCrtfctVo> selectExpertCrtfctList(CommonExprtVo exprtVo);
 
     /**
      * 공개 범위 및 서비스 수신 여부 변경

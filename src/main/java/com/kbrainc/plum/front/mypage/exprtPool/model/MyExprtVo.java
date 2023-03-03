@@ -32,21 +32,8 @@ import java.util.List;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
-public class MyExprtVo {
-    private UserVo user;
-    private Integer userid;
-
-    private String envEduCareerYy;
-    private String envEduCareerMm;
-
-    private String exprtTypeCd;
+public class MyExprtVo extends CommonExprtVo {
     private String exprtTypeCdNm;
-
-    private String fldLctrYn;
-    private String fldPlanngYn;
-    private String fldCnsltngYn;
-    private String fldEtcYn;
-    private String fldEtcCn;
 
     private String moblphonRlsYn;
     private String telnoRlsYn;
@@ -56,16 +43,10 @@ public class MyExprtVo {
     private String careerRlsYn; //경력 공개 여부
     private String entLctrDmndRcptnYn; // 강의요청 수신 여부
     private String lctrGdncRcptnYn;// 강의안내 수신 여부
-
-    List<MyHdofVo> hdofs;
-    List<MyCrtfctVo> crtfcts;
-    List<MyCareerVo> careers;
-
     private String sbjctCdNm;
     private String actvtScopeCdNm;
     private String trgtCdNm;
     private String actvtRgnCdNm;
-
     private String exprtField;
 
     public void setExprtTypeCd(String exprtTypeCd) {

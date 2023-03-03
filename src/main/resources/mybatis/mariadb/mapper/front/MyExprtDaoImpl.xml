@@ -52,7 +52,6 @@
             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = #{user.userid}) AS TRGT_CD_NM
             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= #{user.userid}) AS ACTVT_SCOPE_CD_NM
             , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_RGN C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID = #{user.userid}) AS ACTVT_RGN_CD_NM
-
         FROM TB_ASS_EXPRT
         WHERE USERID= #{user.userid}
     </select>
@@ -107,5 +106,25 @@
         FROM TB_ASS_EXPRT_HDOF
         WHERE USERID= #{user.userid}
         ORDER BY ORDR
+    </select>
+
+    <select id="selectMyExprtMdfcn" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtMdfcnVo">
+        SELECT
+            EXPRT_TYPE_CD
+             , USERID
+             , FLD_LCTR_YN
+             , FLD_PLANNG_YN
+             , FLD_CNSLTNG_YN
+             , FLD_ETC_YN
+             , FLD_ETC_CN
+             , ENV_EDU_CAREER_YY
+             , ENV_EDU_CAREER_MM
+             , STTS_CD
+             , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR',') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{user.userid} ) AS trgt_cds/* 전문분야 대상 */
+             , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{user.userid} ) AS sbjct_cds /* 전문분야 주제 */
+             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{user.userid} ) AS actvtRgn_cds /* 주요활동지역 */
+             , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{user.userid} ) AS actvtScope_cds /* 가능 활동범위 */
+        FROM TB_ASS_EXPRT
+        WHERE USERID= #{user.userid}
     </select>
 </mapper>

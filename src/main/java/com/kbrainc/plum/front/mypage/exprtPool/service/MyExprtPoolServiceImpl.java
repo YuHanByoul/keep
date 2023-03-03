@@ -2,9 +2,6 @@ package com.kbrainc.plum.front.mypage.exprtPool.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.front.exprtPool.register.model.CareerVo;
-import com.kbrainc.plum.front.exprtPool.register.model.CrtfctVo;
-import com.kbrainc.plum.front.exprtPool.register.model.HdofVo;
 import com.kbrainc.plum.front.mypage.exprtPool.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,50 +42,42 @@ public class MyExprtPoolServiceImpl extends PlumAbstractServiceImpl implements M
      * @Title : selectMyExprt
      * @Description : 전문가 정보 조회
      */
-    public MyExprtVo selectMyExprt(MyExprtVo exprtVo) throws Exception {
+    public MyExprtVo selectMyExprt(CommonExprtVo exprtVo) throws Exception {
         MyExprtVo exprt = myExprtDao.selectMyExprt(exprtVo);
-        List<MyHdofVo> expertHdofList = myExprtDao.selectExpertHdofList(exprtVo);
 
-        for (MyHdofVo item : expertHdofList) {
-            if (item.getHdofcrtfFileid() != null && !item.getHdofcrtfFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
-                item.setHdofCrtfFile(fileInfo);
-            }
-        }
+        List<MyHdofVo> expertHdofList = myExprtDao.selectExpertHdofList(exprtVo);
+        getMyHdofFiles(expertHdofList);
 
         List<MyCareerVo> expertCareerList = myExprtDao.selectExpertCareerList(exprtVo);
-        for (MyCareerVo item : expertCareerList) {
-            if (item.getCrtfFileid() != null && !item.getCrtfFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getCrtfFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
-                item.setCrtfFile(fileInfo);
-            }
-            if (item.getArtclassFileid() != null && !item.getArtclassFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getArtclassFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
-                item.setArtClassFile(fileInfo);
-            }
-        }
+        getMyCareerFiles(expertCareerList);
 
         List<MyCrtfctVo> expertCrtfctList = myExprtDao.selectExpertCrtfctList(exprtVo);
-        for (MyCrtfctVo item : expertCrtfctList) {
-            if (item.getCrtfctFileid() != null && !item.getCrtfctFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getCrtfctFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
-                item.setCrtfctFile(fileInfo);
-            }
-        }
+        getCrtfctFiles(expertCrtfctList);
 
         exprt.setHdofs(expertHdofList);
         exprt.setCareers(expertCareerList);
         exprt.setCrtfcts(expertCrtfctList);
 
         return exprt;
+    }
+
+    @Override
+    public MyExprtMdfcnVo selectMyExprtMdfcn(CommonExprtVo myExprtMdfcnVo) throws Exception {
+        MyExprtMdfcnVo exprtMdfcn = myExprtDao.selectMyExprtMdfcn(myExprtMdfcnVo);
+
+        List<MyHdofVo> expertHdofList = myExprtDao.selectExpertHdofList(myExprtMdfcnVo);
+        getMyHdofFiles(expertHdofList);
+
+        List<MyCareerVo> expertCareerList = myExprtDao.selectExpertCareerList(myExprtMdfcnVo);
+        getMyCareerFiles(expertCareerList);
+
+        List<MyCrtfctVo> expertCrtfctList = myExprtDao.selectExpertCrtfctList(myExprtMdfcnVo);
+        getCrtfctFiles(expertCrtfctList);
+
+        exprtMdfcn.setHdofs(expertHdofList);
+        exprtMdfcn.setCareers(expertCareerList);
+        exprtMdfcn.setCrtfcts(expertCrtfctList);
+        return exprtMdfcn;
     }
 
     /**
@@ -108,5 +97,44 @@ public class MyExprtPoolServiceImpl extends PlumAbstractServiceImpl implements M
         retVal += myExprtDao.updateRlsAndRcptn(exprtVo);
 
         return retVal;
+    }
+
+    private void getMyHdofFiles(List<MyHdofVo> expertHdofList) throws Exception {
+        for (MyHdofVo item : expertHdofList) {
+            if (item.getHdofcrtfFileid() != null && !item.getHdofcrtfFileid().equals(0)) {
+                FileVo fileVo = new FileVo();
+                fileVo.setFileid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
+                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                item.setHdofCrtfFile(fileInfo);
+            }
+        }
+    }
+
+    private void getMyCareerFiles(List<MyCareerVo> expertCareerList) throws Exception {
+        for (MyCareerVo item : expertCareerList) {
+            if (item.getCrtfFileid() != null && !item.getCrtfFileid().equals(0)) {
+                FileVo fileVo = new FileVo();
+                fileVo.setFileid(Integer.parseInt(item.getCrtfFileid().toString()));
+                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                item.setCrtfFile(fileInfo);
+            }
+            if (item.getArtclassFileid() != null && !item.getArtclassFileid().equals(0)) {
+                FileVo fileVo = new FileVo();
+                fileVo.setFileid(Integer.parseInt(item.getArtclassFileid().toString()));
+                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                item.setArtClassFile(fileInfo);
+            }
+        }
+    }
+
+    private void getCrtfctFiles(List<MyCrtfctVo> expertCrtfctList) throws Exception {
+        for (MyCrtfctVo item : expertCrtfctList) {
+            if (item.getCrtfctFileid() != null && !item.getCrtfctFileid().equals(0)) {
+                FileVo fileVo = new FileVo();
+                fileVo.setFileid(Integer.parseInt(item.getCrtfctFileid().toString()));
+                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                item.setCrtfctFile(fileInfo);
+            }
+        }
     }
 }

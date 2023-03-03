@@ -1,5 +1,6 @@
 package com.kbrainc.plum.front.mypage.exprtPool.controller;
 
+import com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtMdfcnVo;
 import com.kbrainc.plum.front.mypage.exprtPool.model.MyExprtVo;
 import com.kbrainc.plum.front.mypage.exprtPool.service.MyExprtPoolService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,6 +59,9 @@ public class MyExprtPoolController {
 
     @GetMapping("/exprtMdfcnForm.html")
     public String exprtMdfcnForm(MyExprtVo exprtVo, @UserInfo UserVo user, Model model) throws Exception {
+        exprtVo.setUser(user);
+        MyExprtMdfcnVo exprt = myExprtPoolService.selectMyExprtMdfcn(exprtVo);
+        model.addAttribute("exprt", exprt);
 
         return VIEW_PATH + "/exprtMdfcnForm";
     }
