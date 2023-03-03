@@ -64,7 +64,11 @@ public class CntstVo extends ParentRequestVo {
     
     /** 첨부파일 관련 */
     private List<FileVo> fileList;
+    private String filegrpid;
+    private String fileid;
     private String fileIdntfcKey;
+    private String orginlFileNm;
+    private String ext;
 
     /** 검색 영역 */
     private String searchTtl;
