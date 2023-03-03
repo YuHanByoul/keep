@@ -4,6 +4,7 @@
 package com.kbrainc.plum.front.infntAply.controller;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,6 +201,20 @@ public class InfntAplyController {
         infntAplyVo.setUser(user);        
         infntAplyRegVo = InfntAplyService.selectInfntAplyRegInfo(infntAplyVo);
         model.addAttribute("infntAplyRegVo", infntAplyRegVo);
+        
+        List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+        if(!"".equals(infntAplyRegVo.getTrgtCd())){
+            String[] splitTrgtCdStr = infntAplyRegVo.getTrgtCd().split(",");
+            String[] splitTrgtNmStr = infntAplyRegVo.getTrgtNm().split(",");
+            
+            for(int i=0; i<splitTrgtCdStr.length; i++){
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("TRGTCD", splitTrgtCdStr[i]);
+                map.put("TRGTNM", splitTrgtNmStr[i]);
+                listMap.add(map);
+            }
+        }
+        model.addAttribute("trgtList", listMap);
         
         return "front/infntAply/infntAplyRegStep2";
     }    

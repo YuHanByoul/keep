@@ -65,7 +65,7 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
         if(mvmnSchdlVo.getPrgrmSttIds()!=null & mvmnSchdlVo.getPrgrmSttIds().length > 0) {
             retVal += mvmnSchdlDao.insertPrgrmSttId(mvmnSchdlVo);
         }
-       //유아_프로그램_일정_프로그램_회차 저장 
+       //푸름이환경이동교실_프로그램_일정_프로그램_회차 저장 
        retVal += mvmnSchdlDao.insertPrgrmTmeSchdl(mvmnSchdlVo);
         
         return retVal;
@@ -106,6 +106,9 @@ public class MvmnSchdlServiceImpl extends PlumAbstractServiceImpl implements Mvm
         if(mvmnSchdlVo.getPrgrmSttIds()!=null & mvmnSchdlVo.getPrgrmSttIds().length > 0) {
             retVal += mvmnSchdlDao.insertPrgrmSttId(mvmnSchdlVo);
         }
+        //푸름이환경이동교실_프로그램_일정_프로그램_회차 삭제후 저장 
+        mvmnSchdlDao.deletePrgrmTmeSchdl(mvmnSchdlVo);
+        retVal += mvmnSchdlDao.insertPrgrmTmeSchdl(mvmnSchdlVo);
         
         return retVal;        
     }

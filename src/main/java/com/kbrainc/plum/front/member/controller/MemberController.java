@@ -758,6 +758,9 @@ public class MemberController {
                 if (acntList.size() == 0) {
                     memberAcntPswdFindVo.setEncodeData(null);
                     memberAcntPswdFindVo.setAlertMsg("존재하지 않는 회원입니다.");
+                } else if (acntList.size() == 1 && ((MemberAcntPswdFindVo)acntList.get(0)).getAcnt() == null) {
+                    memberAcntPswdFindVo.setEncodeData(null);
+                    memberAcntPswdFindVo.setAlertMsg("디지털원패스 사용자입니다.\n디지털원패스로 로그인 해주십시오.");
                 }
             }
         }

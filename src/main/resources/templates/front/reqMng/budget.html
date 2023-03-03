@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm" submit="return:false;">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li><a href="#">신청정보</a></li>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">소요예산</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="tmpSaving();">중간저장</button>
+	                                    <button type="button" class="btn-large btn-green" onclick="save();">신청완료</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	
+	                    <div class="table-caption mt0">
+	                        <div class="left">
+	                            <h3 class="sub-title">소요예산 산출내역</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-combi">
+	                        <table>
+	                            <caption>소요예산 산출내역 - 세부항목(물품구입비, 운영경비, 회의비, 여비), 금액(원), 세부내역, 총계</caption>
+	                            <colgroup>
+	                                <col style="width:15%;">
+	                                <col style="width:120px;">
+	                                <col>
+	                            </colgroup>
+	                            <thead>
+	                                <tr>
+	                                    <th scope="colgroup">세부항목</th>
+	                                    <th scope="col">금액(원)</th>
+	                                    <th scope="col">세부내역</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                                <tr th:if="${#lists.size(list) > 0}" th:each="list, i: ${list}">
+	                                    <th scope="row">
+	                                        <input type="hidden" name="bgtidArr" id="bgtidArr" th:value="${list.bgtid}"/>
+                                            <input type="hidden" name="codeArr" id="codeArr" th:value="${list.code}"/>
+                                            <th:block th:text="${list.expitmNm}"/>
+                                        </th>
+	                                    <td class="vt"><input type="text" class="ar" name="amtArr" id="amtArr" th:value="${#numbers.formatInteger(list.amt, 0, 'COMMA')}" th:title="${list.expitmNm}"></td>
+	                                    <td>
+	                                        <textarea title="물품구입비 세부내역" name="dsctnArr" id="dsctnArr" th:placeholder="${list.expitmNm} + ' 세부내역 입력'"><th:block th:text="${list.dsctn}"/></textarea>
+	                                        <div class="desc ar size"><span>0</span> / 200자</div>
+	                                    </td>
+	                                </tr>
+	                                <tr th:unless="${#lists.size(list) > 0}">
+	                                   <td colspan="3">등록된 소요예산 코드 항목이 없습니다. 관리자에게 문의하세요.</td>
+	                                </tr>
+	                            </tbody>
+	                            <tfoot>
+	                                <th scope="row" class="bg5">총계</th>
+	                                <td colspan="2"><th:block th:text="${#numbers.formatInteger(totalAmt, 0, 'COMMA')}"/> 원</td>
+	                            </tfoot>
+	                        </table>
+	                    </div>
+	
+	                    <div class="mo-only">
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray" onclick="tmpSaving();">중간저장</button>
+	                            </div>
+	                        </div>
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-green" onclick="save();">신청완료</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        
+	    <script th:inline="javascript">
+	    var deviceMode = "";
+    	$(function(){
+    		deviceMode = $WINDOW_MODE;
+    		var validator = $("#insertForm").validate({
+                rules: {
+                	bsnsPrps : { required: true } 
+                    , bsnsSumry : { required: true } 
+                },
+                messages: {
+                	bsnsPrps    :   { required: "사업목적(필요성)을 입력해주십시오." }  
+                    , bsnsSumry    :   { required: "사업개요를 입력해주십시오." }  
+                }
+            });
+        });
+	    
+	    // 중간저장
+        function tmpSaving() {
+            if(!($("#insertForm").valid())) return;
+            if(!confirm("저장하시겠습니까?")) return;
+            $("input[name='amtArr']").each(function(){
+             	$(this).val(removeComma($(this).val()));
+            });
+            var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertBudget.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                    	console.log(data);
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                            location.reload();
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+	    
+	    // 저장
+	    function save(){
+	        if(!($("#insertForm").valid())) return;
+	        if(!confirm("신청완료 하시겠습니까?")) return;
+	        $("input[name='amtArr']").each(function(){
+                $(this).val(removeComma($(this).val()));
+            });	        
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertBudget.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+                    		alert("신청이 완료 되었습니다.");
+                    		location.href = "/front/bizAply/aplyComp.html";
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    
+	    //천단위 콤마
+        function addComma(value){
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return value; 
+        }
+        
+        //콤마 제거
+        function removeComma(value){
+            if (value == "" || value == null) {
+                return 0;               
+            }
+            value = value.replace(/[^\d]+/g, "");
+            return value; 
+        }
+	    </script>
+    </div>
+</body>
+</html>

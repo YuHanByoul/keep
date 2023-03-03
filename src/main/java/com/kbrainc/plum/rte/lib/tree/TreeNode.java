@@ -130,6 +130,28 @@ public class TreeNode<T> {
         
         return false;
     }
+    
+    /**
+     * @Title : hasHideNChildrenMenuOrFolder
+     * @Description : 자식 트리노드 중 메뉴 또는 폴더중에 hideYn이 N인 자식이 있는경우
+     * @return boolean 자식 트리노드 중 메뉴 또는 폴더중에 hideYn이 N인 자식이 있는지 여부
+     */
+    public boolean hasHideNChildrenMenuOrFolder() {
+        String ptypeCd = null;
+        String typeCd = null;
+        
+        for (int i = 0; i < this.children.size(); i++) {
+            MenuItem item = ((TreeNode<MenuItem>)this.children.get(i)).getData();
+            ptypeCd = item.getPtypeCd();
+            typeCd = item.getTypeCd();
+            
+            if (("02".equals(ptypeCd) || "D".equals(typeCd)) && "N".equals(item.getHideYn())) { // 프로그램타입이 메뉴 또는 메뉴타입이 디렉토리 이면서 hideYn이 N인 경우
+                return true;
+            }
+        }
+        
+        return false;
+    }
 
     /**
      * @Title : setChildren

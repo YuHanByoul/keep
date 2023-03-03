@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm" submit="return:false;">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li><a href="#">신청정보</a></li>
+	                                <li><a href="#">기관역량</a></li>
+	                                <li><a href="#">사업수행계획</a></li>
+	                                <li><a href="#">프로그램정보</a></li>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">전문강사 확보</a></li>
+	                                <li><a href="#">안전관리 적정성</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="tmpSaving();">중간저장</button>
+                                        <button type="button" class="btn-large btn-green" onclick="save();">다음</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	
+	                    <div class="table-caption mt0">
+	                        <div class="left">
+	                            <h3 class="sub-title">전문인력 보유현황 및 운영계획</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-col table-col-scroll">
+                            <table>
+                                <caption>전문인력 보유현황 및 운영계획 - 구분, 성명, 업무내용, 열 삭제</caption>
+                                <colgroup>
+                                    <col style="width:20%;">
+                                    <col style="width:20%;">
+                                    <col>
+                                    <col style="width:55px;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">구분</th>
+                                        <th scope="col">성명</th>
+                                        <th scope="col">업무내용</th>
+                                        <th scope="col"><span class="blind">열 삭제</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table_1">
+                                    <tr th:if="${#lists.size(jobList) > 0}" th:each="list, i: ${jobList}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="se" id="se" th:value="${list.se}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="ldrnm" id="ldrnm" th:value="${list.nm}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="taskCn" id="taskCn" th:value="${list.taskCn}">
+			                            </td>
+			                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'table_1');"><span class="icon icon-remove"></span></button></td>
+			                        </tr>
+			                        <tr th:unless="${#lists.size(jobList) > 0}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="se" id="se" >
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="ldrnm" id="ldrnm">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="taskCn" id="taskCn">
+			                            </td>
+			                            <td class="ac"></td>
+			                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'table_1');">
+                            <span class="icon icon-row-add"></span>
+                        </button>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">지도자 관리방안</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>지도자 관리방안 - 지도자 관리방안</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">지도자 관리방안</th>
+	                                    <td>
+	                                        <textarea title="지도자 관리방안" id="ldrMngMthd" name="ldrMngMthd" placeholder=""><th:block th:text="${detail.ldrMngMthd}"></textarea>
+	                                        <div class="desc ar size"><span>0</span> / 50자</div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">총괄 운영 담당자 지도사 자격</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>총괄 운영 담당자 지도사 자격 - 성명, 생년월일</caption>
+	                            <colgroup>
+	                                <col style="width:140px">
+	                                <col>
+	                                <col style="width:140px">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="col">성명</th>
+	                                    <td>
+	                                        <input type="text" id="nm" name="nm" title="성명" th:value="${detail.nm}">
+	                                    </td>
+	                                    <th scope="col">생년월일</th>
+	                                    <td>
+	                                        <input type="text" id="brdt" name="brdt" title="생년월일" th:value="${detail.brdt}">
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">환경교육관련 학력사항</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-col table-col-scroll">
+                            <table>
+                                <caption>환경교육관련 학력사항 - 기간, 학교명, 전공, 학위, 열 삭제</caption>
+                                <colgroup>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col style="width:55px;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">기간</th>
+                                        <th scope="col">학교명</th>
+                                        <th scope="col">전공</th>
+                                        <th scope="col">학위</th>
+                                        <th scope="col"><span class="blind">열 삭제</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table_2">
+                                    <tr th:if="${#lists.size(acbgList) > 0}" th:each="list, i: ${acbgList}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="eduDe" th:id="'eduDe_'+${i.index+1}" th:value="${list.eduDe}">
+			                             </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="schlNm" id="schlNm" th:value="${list.schlNm}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="mjr" id="mjr" th:value="${list.mjr}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="dgr" id="dgr" th:value="${list.dgr}">
+			                            </td>
+			                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'table_2');"><span class="icon icon-remove"></span></button></td>
+			                        </tr>
+			                        <tr th:unless="${#lists.size(acbgList) > 0}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="eduDe" id="eduDe_1">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="schlNm" id="schlNm">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="mjr" id="mjr">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="dgr" id="dgr">
+			                            </td>
+			                            <td class="ac"></td>
+			                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'table_2');">
+                            <span class="icon icon-row-add"></span>
+                        </button>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">환경교육관련 자격사항</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-col table-col-scroll">
+                            <table>
+                                <caption>환경교육관련 자격사항 - 자격/번호, 급수, 취득년월, 발령청, 열 삭제</caption>
+                                <colgroup>
+                                    <col>
+                                    <col style="width:10%;">
+                                    <col>
+                                    <col>
+                                    <col style="width:55px;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">자격/번호</th>
+                                        <th scope="col">급수</th>
+                                        <th scope="col">취득년월</th>
+                                        <th scope="col">발령청</th>
+                                        <th scope="col"><span class="blind">열 삭제</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table_3">
+                                    <tr th:if="${#lists.size(licList) > 0}" th:each="list, i: ${licList}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="qlfcNm" id="qlfcNm" th:value="${list.qlfcNm}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="grd" id="grd" th:value="${list.grd}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="acqsDe" id="acqsDe" th:value="${list.acqsDe}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="wrkplc" id="wrkplc" th:value="${list.wrkplc}">
+			                            </td>
+			                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'table_3');"><span class="icon icon-remove"></span></button></td>
+			                        </tr>
+			                        <tr th:unless="${#lists.size(licList) > 0}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="qlfcNm" id="qlfcNm">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="grd" id="grd">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="acqsDe" id="acqsDe">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="wrkplc" id="wrkplc">
+			                            </td>
+			                            <td class="ac"></td>
+			                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'table_3');">
+                            <span class="icon icon-row-add"></span>
+                        </button>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">환경교육관련 경력사항</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-col table-col-scroll">
+                            <table>
+                                <caption>환경교육관련 경력사항 - 기간, 활동(기관)명, 활동유형, 열 삭제</caption>
+                                <colgroup>
+                                    <col>
+                                    <col>
+                                    <col>
+                                    <col style="width:55px;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">기간</th>
+                                        <th scope="col">활동(기관)명</th>
+                                        <th scope="col">활동유형</th>
+                                        <th scope="col"><span class="blind">열 삭제</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table_4">
+                                    <tr th:if="${#lists.size(carrList) > 0}" th:each="list, i: ${carrList}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="prd" id="prd" th:value="${list.prd}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="actvtNm" id="actvtNm" th:value="${list.actvtNm}">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="actvtType" id="actvtType" th:value="${list.actvtType}">
+			                            </td>
+			                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'table_4');"><span class="icon icon-remove"></span></button></td>
+			                        </tr>
+			                        <tr th:unless="${#lists.size(carrList) > 0}">
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="prd" id="prd">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="actvtNm" id="actvtNm">
+			                            </td>
+			                            <td class="v-middle text-center">
+			                                <input type="text" name="actvtType" id="actvtType">
+			                            </td>
+			                            <td class="ac"></td>
+			                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'table_4');">
+                            <span class="icon icon-row-add"></span>
+                        </button>
+	
+	                    <div class="mo-only">
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray" onclick="tmpSaving();">중간저장</button>
+	                            </div>
+	                        </div>
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-green" onclick="save();">다음</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        <!-- Date-range picker css  -->
+		<link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+        <!-- Date-range picker js -->
+		<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+		<script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+	    <script th:inline="javascript">
+	    var deviceMode = "";
+    	$(function(){
+    		deviceMode = $WINDOW_MODE;
+    		var validator = $("#insertForm").validate({
+                rules: {
+                },
+                messages: {
+                }
+            });
+    		
+    		// 사업기간 설정 daterangepicker
+            $("#eduDe_"+i+1).daterangepicker({
+                autoUpdateInput: false,
+                locale: {
+                    format: "YYYY-MM-DD",
+                },
+            });
+	    		
+	            // 사업기간 설정시 사업 시작일과 종료일을 각각 저장해준다.
+            $(this).on('apply.daterangepicker', function(ev, picker) {
+                $(this).val(picker.startDate.format('YYYY-MM-DD') + ' ~ ' + picker.endDate.format('YYYY-MM-DD'));
+            });    			
+   		});
+    	
+    	// 테이블 로우 추가
+        function addRow(obj, tableId) {
+            var html = '<button type="button" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, \''+tableId+'\');"><span class="icon icon-remove"></span></button>';
+            var newrow = "";
+            var i = 0;
+            $("#" + tableId).find("tr").each(function(){
+                i++;
+                $(this).find("td:last").html("");
+                newrow = $(this).clone();
+            });
+//             if (tableId == "table_2") {      	
+// 	            $("#table_2").find("tr").each(function(){
+// 	                i++;
+// 		            $(this).find("td:eq("+i+"):first > input").prop("id", "eduDe_"+(i+1));
+// 	            });
+//             }
+            
+            newrow.find("td > input").val("");
+            newrow.find("td:last").html(html);
+            
+            newrow.insertAfter($("#"+tableId).find("tr:last"));
+        }
+
+        // 테이블 로우 삭제
+        function removeRow(obj, tableId) {
+            var html = '<button type="button" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, \''+tableId+'\');"><span class="icon icon-remove"></span></button>';
+            $(obj).parent().parent().remove();
+            if ($("#" + tableId).find("tr").length > 1) {
+                $("#" + tableId).find("tr:last").find("td:last").html(html);
+            }
+        }
+	    
+	    // 중간저장
+        function tmpSaving() {
+            if(!($("#insertForm").valid())) return;
+            if(!confirm("저장하시겠습니까?")) return;
+            var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertSmrLeader.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+	    
+	    // 저장
+	    function save(){
+	        if(!($("#insertForm").valid())) return;
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertSmrLeader.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+	                    	location.href = "/front/bizAply/safeMngForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val();
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    </script>
+    </div>
+</body>
+</html>

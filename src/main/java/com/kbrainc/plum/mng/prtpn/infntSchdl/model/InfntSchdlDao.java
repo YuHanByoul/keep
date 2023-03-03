@@ -106,6 +106,17 @@ public interface InfntSchdlDao {
     */
     public int deletePrgrmSttId(InfntSchdlVo infntSchdlVo) throws Exception;
     /**
+     * 유아_프로그램_일정_프로그램_회차 삭제
+     **
+     * @Title : deletePrgrmTmeSchdl
+     * @Description : 유아_프로그램_일정_프로그램_회차 삭제
+     * @param infntSchdlVo
+     * @return
+     * @throws Exception
+     * @return int
+     */
+    public int deletePrgrmTmeSchdl(InfntSchdlVo infntSchdlVo) throws Exception;    
+    /**
     * EDU_유아_프로그램_일정_일자 등록
     **
     @Title : insertDeSttId
@@ -149,4 +160,5 @@ public interface InfntSchdlDao {
      * @return int
      */
     public List<InfntSchdlVo> selectInfntSchdlIdList(@Param("clssrmId") String clssrmId) throws Exception;   
+
 }

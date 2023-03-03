@@ -27,7 +27,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  * GNB영역에 메뉴를 출력하기 위한 클래스
  *
  * <pre>
- * com.kbrainc.plum.cmm.layout
+ * com.kbrainc.plum.cmm.layout.mng
  * - MenuPrintImpl.java
  * </pre> 
  *

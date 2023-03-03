@@ -101,4 +101,13 @@ public interface CommonService {
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
     
     
+    /**
+     * 내 주변 환경교육 시설 페이지 이동
+     *
+     * @Title       : nearbyEnveduFlct
+     * @Description : 사이트 리스트를 반환한다.
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+    public List<Map<String, Object>> nearbyEnveduFlct() throws Exception;
 }

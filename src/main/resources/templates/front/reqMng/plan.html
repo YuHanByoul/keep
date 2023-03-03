@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm" submit="return:false;">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li><a href="#">신청정보</a></li>
+	                                <li><a href="#">기관역량</a></li>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">사업수행계획</a></li>
+	                                <li><a href="#">프로그램정보</a></li>
+	                                <li><a href="#">전문강사 확보</a></li>
+	                                <li><a href="#">안전관리 적정성</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="tmpSaving();">중간저장</button>
+                                        <button type="button" class="btn-large btn-green" onclick="save();">다음</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	
+	                    <div class="table-caption mt0">
+	                        <div class="left">
+	                            <h3 class="sub-title">사업비 구성표</h3>
+	                            <p>(항목별 산출내역)</p>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>사업비 구성표 - 인건비 소계, 운영비 소계, 여비 소계, 직무 수행경비 소계, 반환금 등 소계, 총계</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">인건비 소계</th>
+	                                    <td><input type="text" class="ar" title="인건비 소계" id="lbcstSum" name="lbcstSum" onkeyup="addComma(this.value);" th:value="${#numbers.formatInteger(detail.lbcstSum, 0, 'COMMA')}"></td>
+	                                    <th scope="row">운영비 소계</th>
+	                                    <td><input type="text" class="ar" title="운영비 소계" id="orpnsSum" name="orpnsSum" onkeyup="addComma(this.value);" th:value="${#numbers.formatInteger(detail.orpnsSum, 0, 'COMMA')}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">여비 소계</th>
+	                                    <td><input type="text" class="ar" title="여비 소계" id="trvctSum" name="trvctSum" onkeyup="addComma(this.value);" th:value="${#numbers.formatInteger(detail.trvctSum, 0, 'COMMA')}"></td>
+	                                    <th scope="row">직무 수행경비 소계</th>
+	                                    <td><input type="text" class="ar" title="직무 수행경비 소계" id="expensSum" name="expensSum" onkeyup="addComma(this.value);" th:value="${#numbers.formatInteger(detail.expensSum, 0, 'COMMA')}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">반환금 등 소계</th>
+	                                    <td colspan="3"><input type="text" class="ar" title="반환금 등 소계" id="refundSum" name="refundSum" onkeyup="addComma(this.value);" th:value="${#numbers.formatInteger(detail.refundSum, 0, 'COMMA')}"></td>
+	                                </tr>
+	                            </tbody>
+	                            <tfoot>
+	                                <th scope="row" colspan="2">총계</th>
+	                                <td colspan="2"><strong><th:block th:text="${#numbers.formatInteger(detail.totalSum, 0, 'COMMA')}"/></strong></td>
+	                            </tfoot>
+	                        </table>
+	                    </div>
+	                    
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">홍보 및 참여방안</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-combi table-combi-scroll">
+                            <table>
+                                <caption>홍보 및 참여방안 - 구분, 시기, 홍보방법</caption>
+                                <colgroup>
+                                    <col>
+                                    <col style="width:40%;">
+                                    <col style="width:40%;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">구분</th>
+                                        <th scope="col">시기</th>
+                                        <th scope="col">홍보방법</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">홍보 운영 전</th>
+                                        <td class="al">
+                                            <input type="text" title="홍보 운영 전 시기" id="operBfrPrmtnSess" name="operBfrPrmtnSess" th:value="${detail.operBfrPrmtnSess}">
+                                            <p class="desc">* 예) 1~2월 운영준비</p>
+                                        </td>
+                                        <td class="al">
+                                            <input type="text" title="홍보 운영 전 홍보방법" id="operBfrPrmtnMthd" name="operBfrPrmtnMthd" th:value="${detail.operBfrPrmtnMthd}">
+                                            <p class="desc">* 예) 참가신청안내 공문 방송, 캘린더 발송 </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">홍보 운영 중</th>
+                                        <td class="al">
+                                            <input type="text" title="홍보 운영 중 시기" id="operMdlPrmtnSess" name="operMdlPrmtnSess" th:value="${detail.operMdlPrmtnSess}">
+                                            <p class="desc">* 예) 7~8월 여름방학시즌 교육 </p>
+                                        </td>
+                                        <td class="al">
+                                            <input type="text" title="홍보 운영 중 홍보방법" id="operMdlPrmtnMthd" name="operMdlPrmtnMthd" th:value="${detail.operMdlPrmtnMthd}">
+                                            <p class="desc">* 예) 인스타그램 활용한 SNS 홍보</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">홍보 운영 후</th>
+                                        <td class="al">
+                                            <input type="text" title="홍보 운영 후 시기" id="operAftrPrmtnSess" name="operAftrPrmtnSess" th:value="${detail.operAftrPrmtnSess}">
+                                            <p class="desc">* 예) 11~12월 사업종료 </p>
+                                        </td>
+                                        <td class="al">
+                                            <input type="text" title="홍보 운영 후 홍보방법" id="operAftrPrmtnMthd" name="operAftrPrmtnMthd" th:value="${detail.operAftrPrmtnMthd}">
+                                            <p class="desc">* 예) 활동기록 홈페이지 및 블로그 업로드 </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">참가 접수방법</th>
+                                        <td colspan="2">
+                                            <div class="form-input mo-flex-wrap">
+                                                <div class="form-check-list">
+                                                    <label class="inp"><input type="checkbox" name="telRcptYn" id="telRcptYn" th:checked="${detail.telRcptYn == 'Y' ? true : false}"><b>전화접수</b></label>
+                                                    <label class="inp"><input type="checkbox" name="aplyRcptYn" id="aplyRcptYn" th:checked="${detail.aplyRcptYn == 'Y' ? true : false}"><b>신청서접수</b></label>
+                                                    <label class="inp"><input type="checkbox" name="onlnRcptYn" id="onlnRcptYn" th:checked="${detail.onlnRcptYn == 'Y' ? true : false}"><b>온라인신청</b></label>
+                                                    <label class="inp"><input type="checkbox" name="etcYn" id="etcYn" th:checked="${detail.etcYn == 'Y' ? true : false}">
+                                                        <b>기타</b>
+                                                        <input type="text" title="기타" id="etcCn" name="etcCn" th:value="${detail.etcCn}" placeholder="" th:readonly="${detail.etcYn == 'Y' ? false : true}" data-width="160" class="ml10" style="width: 160px; flex: 0 1 160px;">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+	
+	                    <div class="mo-only">
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray" onclick="tmpSaving();">중간저장</button>
+	                            </div>
+	                        </div>
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-green" onclick="save();">다음</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        
+	    <script th:inline="javascript">
+	    var deviceMode = "";
+    	$(function(){
+    		deviceMode = $WINDOW_MODE;
+    		var validator = $("#insertForm").validate({
+                rules: {
+                },
+                messages: {
+                }
+            });
+//     		$("#etcCn").prop("readonly", true);
+    		$("#etcYn").click(function(){
+                if ($(this).is(":checked")) {
+                    $("#etcCn").prop("readonly", false);                
+                } else {
+                    $("#etcCn").prop("readonly", true);
+                    $("#etcCn").val("");
+                }
+            });
+        });
+	    
+	    // 중간저장
+        function tmpSaving() {
+            if(!($("#insertForm").valid())) return;
+            if(!confirm("저장하시겠습니까?")) return;
+
+            $("#lbcstSum").val(removeComma($("#lbcstSum").val()));
+            $("#orpnsSum").val(removeComma($("#orpnsSum").val()));
+            $("#trvctSum").val(removeComma($("#trvctSum").val()));
+            $("#expensSum").val(removeComma($("#expensSum").val()));
+            $("#refundSum").val(removeComma($("#refundSum").val()));
+            
+            if ($("#telRcptYn").is(":checked")) {
+                $("#telRcptYn").val("Y");
+            } else {
+                $("#telRcptYn").val("N");
+            }
+            if ($("#aplyRcptYn").is(":checked")) {
+                $("#aplyRcptYn").val("Y");
+            } else {
+                $("#aplyRcptYn").val("N");
+            }
+            if ($("#onlnRcptYn").is(":checked")) {
+                $("#onlnRcptYn").val("Y");
+            } else {
+                $("#onlnRcptYn").val("N");
+            }
+            if ($("#etcYn").is(":checked")) {
+                $("#etcYn").val("Y");
+            } else {
+                $("#etcYn").val("N");
+            }
+            
+            var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertPlan.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                    	console.log(data);
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+	    
+	    // 저장
+	    function save(){
+	        if(!($("#insertForm").valid())) return;
+	        
+	        $("#lbcstSum").val(removeComma($("#lbcstSum").val()));
+	        $("#orpnsSum").val(removeComma($("#orpnsSum").val()));
+	        $("#trvctSum").val(removeComma($("#trvctSum").val()));
+	        $("#expensSum").val(removeComma($("#expensSum").val()));
+	        $("#refundSum").val(removeComma($("#refundSum").val()));
+	        
+	        if ($("#telRcptYn").is(":checked")) {
+	            $("#telRcptYn").val("Y");
+	        } else {
+	            $("#telRcptYn").val("N");
+	        }
+	        if ($("#aplyRcptYn").is(":checked")) {
+	            $("#aplyRcptYn").val("Y");
+	        } else {
+	            $("#aplyRcptYn").val("N");
+	        }
+	        if ($("#onlnRcptYn").is(":checked")) {
+	            $("#onlnRcptYn").val("Y");
+	        } else {
+	            $("#onlnRcptYn").val("N");
+	        }
+	        if ($("#etcYn").is(":checked")) {
+	            $("#etcYn").val("Y");
+	        } else {
+	            $("#etcYn").val("N");
+	        }
+	        
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertPlan.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+	                    	location.href = "/front/bizAply/prgrmInfoForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val();
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    
+	    //천단위 콤마
+        function addComma(value){
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            return value; 
+        }
+        
+        //콤마 제거
+        function removeComma(value){
+            if (value == "" || value == null) {
+                return 0;               
+            }
+            value = value.replace(/[^\d]+/g, "");
+            return value; 
+        }
+	    </script>
+    </div>
+</body>
+</html>
