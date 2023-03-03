@@ -696,7 +696,7 @@ public class MemberController {
             resultMap.put("msg"
                     , (blcklstDsctnVo.getBlcklstYn().equals("Y"))? 
                        "이미 블랙리스트로 지정된 사용자를 제외하고 처리되었습니다."
-                       :"이미 블랙리스트에 포함되지 않은 사용자를 제외하고 처리되었습니다");
+                       :"블랙리스트에 포함되지 않은 사용자를 제외하고 처리되었습니다");
         }else {
             resultMap.put("msg"
                     , (blcklstDsctnVo.getBlcklstYn().equals("Y"))? 
@@ -754,9 +754,14 @@ public class MemberController {
     @ResponseBody
     public Map<String, Object> quitMember(MemberVo memberVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        memberVo.setUser(user);
         
-        memberVo.setUser(user);           
         int retVal = 0;
+        if(memberService.checkJoinWithOnepassYn(memberVo).equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "디지털 원패스 연동 회원입니다. 연동 해지 후 탈퇴 가능합니다.");
+            return resultMap;
+        }
         
         retVal = memberService.updateMemberDelYn(memberVo); 
         

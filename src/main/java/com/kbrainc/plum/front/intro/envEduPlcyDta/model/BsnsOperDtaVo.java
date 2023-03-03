@@ -37,6 +37,7 @@ public class BsnsOperDtaVo extends ParentRequestVo {
     private String cn;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
+    private Integer hits;
 
     private String typeCdNm;
     private String clsfCdNm;

@@ -1,0 +1,687 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="tab-content tab-sub dropDown">
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">전문가 이력 정보</button>
+        <!--<ul class="tab-list target" role="tablist">
+            <li class="tab active">
+                <button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">전문가 이력 정보</button>
+            </li>
+            <li class="tab">
+                <button aria-controls="tab-subpanel02" id="tab-sub02" role="tab">쪽지 수신 및 정보 공개 설정</button>
+            </li>
+        </ul>
+        <div id="tab-subpanel01" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub01">-->
+
+        <div>
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">재직사항</h3>
+                </div>
+            </div>
+
+            <div class="table-add-group" id="hdof">
+                <th:block th:each="item, itemStat : ${exprt.hdofs}">
+                    <div class="table-row table-row-mo" th:id="|hdofTable${itemStat.index}|" name="hdofTable">
+                        <table>
+                            <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 취득등급, 취득일, 재직증명서</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                            <tr>
+                                <th scope="row">재직구분</th>
+                                <td>
+                                    <th:block kattr:exprt_radio_code grpCd="136" th:attr="selectedCd=${item.hdofSeCd}, name=|hdofSeCd${itemStat.index}|"></th:block>
+                                </td>
+                                <th scope="row">재직기관명</th>
+                                <td>
+                                    <div class="form-input">
+                                        <input type="text" title="재직기관명" placeholder="재직기관명 입력" name="instNm" maxlength="50" th:value="${item.instNm}">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">부서(소속)</th>
+                                <td>
+                                    <div class="form-input">
+                                        <input type="text" title="부서(소속)" placeholder="부서(소속) 입력" name="deptNm" maxlength="50" th:value="${item.deptNm}">
+                                    </div>
+                                </td>
+                                <th scope="row">지위(직급)</th>
+                                <td>
+                                    <div class="form-input">
+                                        <input type="text" title="지위(직급)" placeholder="지위(직급) 입력" name="jbgdNm" maxlength="50" th:value="${item.jbgdNm}">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">재직기간</th>
+                                <td colspan="3">
+                                    <div class="form-input flex-wrap">
+                                        <div class="form-input">
+                                            <input type="date" title="시작일" data-width="124" name="hdofBgngDe" th:value="${item.hdofBgngDe}">
+                                            <div class="bul">~</div>
+                                            <input type="date" title="종료일" data-width="124" name="hdofEndDe" th:value="${item.hdofEndDe}" th:readonly="${item.hdofYn == 'Y'}">
+                                        </div>
+                                        <div class="form-check-list">
+                                            <label class="inp">
+                                                <input type="checkbox" name="hdofYn" onclick="hdofYnCheck(this)" th:checked="${item.hdofYn == 'Y'}">
+                                                <b>재직중</b>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">재직증명서</th>
+                                <td>
+                                    <div class="form-input-file form-input-button">
+                                        <label class="form-input">
+                                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
+                                            <span class="btn-medium btn-green">업로드</span>
+                                        </label>
+                                        <input type="hidden" name="hdofFilegrpid" th:value="${(item.hdofcrtfFileid == '' or item.hdofcrtfFileid == null) ? 0 : item.hdofcrtfFileid}">
+                                        <ul>
+                                            <th:block th:if="${item.hdofCrtfFile != null}">
+                                                <th:block th:with="file=${item.hdofCrtfFile}">
+                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                        <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                                th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                                th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                            <span class="icon icon-circle-close"></span>
+                                                        </button>
+                                                    </li>
+                                                </th:block>
+                                            </th:block>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="table-add-button">
+                            <button type="button" class="btn-remove-table" title="테이블 삭제" onclick="removeTable(this)"><span class="icon icon-remove"></span></button>
+                            <button type="button" class="btn-move-up-table" title="테이블 순서 위로 이동" onclick="changeOrder(this, 'up')"><span class="icon icon-up"></span></button>
+                            <button type="button" class="btn-move-down-table" title="테이블 순서 아래로 이동" onclick="changeOrder(this, 'down')"><span class="icon icon-down"></span></button>
+                        </div>
+                    </div>
+                </th:block>
+                <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
+                    <span class="icon icon-row-add"></span>
+                </button>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">자격취득사항</h3>
+                </div>
+            </div>
+
+            <div class="table-add-group" id="crtfct">
+
+                <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
+                    <span class="icon icon-row-add"></span>
+                </button>
+            </div>
+
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">환경교육 경력(실적) 사항</h3>
+                </div>
+            </div>
+            <!--class="table-row table-row-mo" -->
+            <div class="table-add-group" id="career">
+                <div class="table-row table-row-mo" id="fixTable">
+                    <table>
+                        <caption>환경교육 경력(실적) 사항 - 총 환경교육 경력</caption>
+                        <colgroup>
+                            <col style="width:140px;">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <th scope="row">총 환경교육 경력</th>
+                            <td>
+                                <div class="form-input">
+                                    <input type="number" class="ar" title="총 환경교육 경력(년)" data-width="50" th:value="${exprt.envEduCareerYy}">
+                                    <div class="bul">년</div>
+                                    <input type="number" class="ar" title="총 환경교육 경력(월)" data-width="50" th:value="${exprt.envEduCareerMm}">
+                                    <div class="bul">월</div>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
+                    <span class="icon icon-row-add"></span>
+                </button>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">전문분야 정보</h3>
+                </div>
+            </div>
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>전문분야 정보 - 자격증명, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">전문가 유형</th>
+                        <td>
+                            <th:block kattr:radio_code="exprtTypeCd" grpCd="133" th:attr="selectedCd=${exprt.exprtTypeCd}"></th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">전문분야</th>
+                        <td>
+                            <div class="form-check-list">
+                                <label class="inp"><input type="checkbox" id="fldLctrYn" name="fldLctrYn " th:checked="${exprt.fldLctrYn == 'Y'}"><b>강의</b></label>
+                                <label class="inp"><input type="checkbox" id="fldPlanngYn" name="fldPlanngYn" th:checked="${exprt.fldPlanngYn == 'Y'}"><b>기획</b></label>
+                                <label class="inp"><input type="checkbox" id="fldCnsltngYn" name="fldCnsltngYn" th:checked="${exprt.fldCnsltngYn == 'Y'}"><b>사업자문 및 컨설팅</b></label>
+                                <label class="inp"><input type="checkbox" id="fldEtcYn" name="fldEtcYn" th:checked="${exprt.fldEtcYn == 'Y'}">
+                                    <b>기타</b>
+                                    <th:block th:if="${exprt.fldEtcYn == 'Y'}">
+                                        <input type="text" title="기타" placeholder="" data-width="160" class="ml10" id="fldEtcCn" name="fldEtcCn" maxlength="15"
+                                               th:value="${exprt.fldEtcCn}">
+                                    </th:block>
+                                    <th:block th:unless="${exprt.fldEtcYn == 'Y'}">
+                                        <input type="text" title="기타" placeholder="" data-width="160" class="ml10" id="fldEtcCn" name="fldEtcCn" maxlength="15" style="display:none">
+                                    </th:block>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">전문분야(대상)</th>
+                        <td>
+                            <th:block kattr:check_code="trgtCd" grpCd="135" th:attr="selectedCd=${exprt.trgtCds}" firstOptTxt="- 전체 - "></th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">전문분야(환경주제)</th>
+                        <td>
+                            <th:block kattr:check_code="sbjctCd" grpCd="126" th:attr="selectedCd=${exprt.sbjctCds}" firstOptTxt="- 전체 - "></th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">주요 활동지역</th>
+                        <td>
+                            <th:block kattr:check_code="actvtRgnCd" grpCd="125" th:attr="selectedCd=${exprt.actvtRgnCds}" firstOptTxt="- 전체 - "></th:block>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">가능 활동범위</th>
+                        <td>
+                            <th:block kattr:check_code="actvtScopeCd" grpCd="125" th:attr="selectedCd=${exprt.actvtScopeCds}" firstOptTxt="- 전체 - "></th:block>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">정보변경 사유</h3>
+                </div>
+                <div class="right">
+                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                </div>
+            </div>
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>정보변경 사유 - 변경사유, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">변경사유<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <textarea title="변경사유"></textarea>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-gray" onclick="previous()">취소</button>
+                    <button type="button" class="btn-medium btn-green" onclick="save()">수정 요청</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+
+             <div class="table-caption">
+                 <div class="left">
+                     <div class="d-flex a-center">
+                         <h3 class="sub-title">정보 공개 범위 설정</h3>
+                         <div class="toggleParent toggle-layer ml5">
+                             <button class="toggleTrigger" title="툴팁">
+                                 <span class="icon icon-question"></span>
+                                 <span class="blind">
+                                     <span class="on" aria-hidden="false">툴팁 열기</span>
+                                     <span class="off" aria-hidden="true">툴팁 닫기</span>
+                                 </span>
+                             </button>
+                             <div class="alarm-layer toggle-layer-inner">
+                                 <button class="toggleTrigger toggle-layer-close" title="레이어팝업 닫기"></button>
+                                 <div class="toggle-layer-title">
+                                     <strong>정보 공개 범위 설정</strong>
+                                 </div>
+                                 <div class="toggle-layer-content">
+                                     <p>정보 공개에 동의 여부에 따라 전문가 회원님의 정보를 포털에 공개합니다. </p>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+                 <div class="right">
+                     <p class="desc"><span class="ast">*</span>필수 입력 정보입니다.</p>
+                 </div>
+             </div>
+
+             <div class="table-row table-row-mo">
+                 <table>
+                     <caption>정보 공개 범위 설정 입력 - 연락처 공개 범위, 재직사항 공개 설정, 자격취득사항 공개 설정, 환경교육 경력(실적) 사항 공개 설정</caption>
+                     <colgroup>
+                         <col style="width:280px;">
+                         <col>
+                     </colgroup>
+                     <tbody>
+                     <tr>
+                         <th scope="row">연락처 공개 범위<i class="ast" title="필수입력">*</i></th>
+                         <td>
+                             <div class="form-check-list">
+                                 <label class="inp"><input type="checkbox"><b>휴대전화</b></label>
+                                 <label class="inp"><input type="checkbox"><b>전화번호</b></label>
+                                 <label class="inp"><input type="checkbox"><b>이메일</b></label>
+                                 <label class="inp"><input type="checkbox"><b>모두 공개하지 않음</b></label>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+                         <th scope="row">재직사항 공개 설정<i class="ast" title="필수입력">*</i></th>
+                         <td>
+                             <div class="form-check-list">
+                                 <label class="inp"><input type="radio"><b>공개</b></label>
+                                 <label class="inp"><input type="radio"><b>공개하지 않음</b></label>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+                         <th scope="row">자격취득사항 공개 설정<i class="ast" title="필수입력">*</i></th>
+                         <td>
+                             <div class="form-check-list">
+                                 <label class="inp"><input type="radio"><b>공개</b></label>
+                                 <label class="inp"><input type="radio"><b>공개하지 않음</b></label>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+                         <th scope="row">환경교육 경력(실적) 사항 공개 설정<i class="ast" title="필수입력">*</i></th>
+                         <td>
+                             <div class="form-check-list">
+                                 <label class="inp"><input type="radio"><b>공개</b></label>
+                                 <label class="inp"><input type="radio"><b>공개하지 않음</b></label>
+                             </div>
+                         </td>
+                     </tr>
+                     </tbody>
+                 </table>
+             </div>
+
+             &lt;!&ndash; 강의요청 및 홍보 알림톡 서비스 수신 여부 &ndash;&gt;
+             <div class="table-caption">
+                 <div class="left">
+                     <h3 class="sub-title">강의요청 및 홍보 알림톡 서비스 수신 여부</h3>
+                 </div>
+                 <div class="right">
+                     <p class="desc"><span class="ast">*</span>필수 입력 정보입니다.</p>
+                 </div>
+             </div>
+
+             <div class="table-row table-row-mo">
+                 <table>
+                     <caption>강의요청 및 홍보 알림톡 서비스 수신 여부 입력 - 기업/단체 강의요청 알림톡 수신 여부, 환경보전협회 강의요청 안내 및 홍보 알림톡 수신 여부</caption>
+                     <colgroup>
+                         <col style="width:400px;">
+                         <col>
+                     </colgroup>
+                     <tbody>
+                     <tr>
+                         <th scope="row">기업/단체 강의요청 알림톡 수신 여부<i class="ast" title="필수입력">*</i></th>
+                         <td>
+                             <div class="form-check-list">
+                                 <label class="inp"><input type="radio"><b>받음</b></label>
+                                 <label class="inp"><input type="radio"><b>받지 않음</b></label>
+                             </div>
+                         </td>
+                     </tr>
+                     <tr>
+                         <th scope="row">환경보전협회 강의요청 안내 및 홍보 알림톡 수신 여부<i class="ast" title="필수입력">*</i></th>
+                         <td>
+                             <div class="form-check-list">
+                                 <label class="inp"><input type="radio"><b>받음</b></label>
+                                 <label class="inp"><input type="radio"><b>받지 않음</b></label>
+                             </div>
+                         </td>
+                     </tr>
+                     </tbody>
+                 </table>
+             </div>
+
+             <div class="btn-wrap">
+                 <div class="center">
+                     <button type="button" class="btn-medium btn-green">저장</button>
+                 </div>
+             </div>
+
+         </div>-->
+    </div>
+
+    <script th:inline="javascript">
+        let hdofCnt = /*[[${exprt.hdofs == null ? 0 : exprt.hdofs.size()}]]*/0;
+        let crtfctCnt = /*[[${exprt.crtfcts == null? 0 : exprt.crtfcts.size()}]]*/0;
+        let careerCnt = /*[[${exprt.careers == null? 0 : exprt.careers.size()}]]*/0;
+
+        previous = () => {
+
+        }
+
+        save = () => {
+
+        }
+        $(function () {
+            /* 전문분야 기타 클릭*/
+            $('#fldEtcYn').on('click', function (e) {
+                if (e.target.checked) {
+                    $('#fldEtcCn').show();
+                } else {
+                    $('#fldEtcCn').hide();
+                    $('#fldEtcCn').val('');
+                }
+            });
+        });
+
+        /* 테이블 추가 */
+        function cloneTable(rowAddBtn) {
+            let $rowAddBtn = $(rowAddBtn);
+            let tableGroupId = $rowAddBtn.parent().attr('id');
+            let $cloneTable;
+
+            if (tableGroupId == 'hdof') {
+                ++hdofCnt;
+                $cloneTable = $('#hdofTableTemplate').clone(true).attr('id', 'hdofTable' + hdofCnt).attr('name', 'hdofTable');
+                $cloneTable.find('input[type=radio]').attr('name', 'hdofSeCd' + hdofCnt);
+            } else if (tableGroupId == 'crtfct') {
+                ++crtfctCnt;
+                $cloneTable = $('#crtfctTableTemplate').clone(true).attr('id', 'crtfctTable' + crtfctCnt).attr('name', 'crtfctTable');
+            } else if (tableGroupId == 'career') {
+                ++careerCnt;
+                $cloneTable = $('#careerTableTemplate').clone(true).attr('id', 'careerTable' + careerCnt).attr('name', 'careerTable');
+            }
+
+            $cloneTable.show();
+            $rowAddBtn.before($cloneTable);
+        }
+
+        /* 테이블 제거*/
+        function removeTable(el) {
+            $(el).parent().parent().remove();
+            let tableGroupId = $(el).closest('.table-add-group').attr('id');
+            if (tableGroupId == 'hdof') {
+                --hdofCnt;
+            } else if (tableGroupId == 'crtfct') {
+                --crtfctCnt;
+            } else if (tableGroupId == 'career') {
+                --careerCnt;
+            }
+
+        }
+
+        /* 테이블 순서 변경 */
+        function changeOrder(el, mode) {
+            if (mode == 'up') {
+                var $el = $(el).parent().parent();
+                if ($el.prev().attr('id') != 'fixTable')
+                    $el.prev().before($el);
+            } else {
+                var $el = $(el).parent().parent();
+                if (!$el.next().hasClass('btn-row-add'))
+                    $el.next().after($el);
+            }
+        }
+    </script>
+
+
+    <!-- 테이블 템플릿 -->
+    <div class="table-row table-row-mo" id="hdofTableTemplate" style="display: none">
+        <table>
+            <caption>재직사항 - 재직기관 구분, 재직기관명, 부서(소속), 지위(직급), 재직기간, 재직증명서</caption>
+            <colgroup>
+                <col style="width:140px;">
+                <col>
+                <col style="width:140px;">
+                <col>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row">재직기관 구분</th>
+                <td>
+                    <div class="form-check-list">
+                        <label class="inp"><input type="radio"><b>상근직</b></label>
+                        <label class="inp"><input type="radio"><b>비상근직</b></label>
+                        <label class="inp"><input type="radio"><b>프리랜서</b></label>
+                    </div>
+                </td>
+                <th scope="row">재직기관명</th>
+                <td><input type="text" title="재직기관명"></td>
+            </tr>
+            <tr>
+                <th scope="row">부서(소속)</th>
+                <td><input type="text" title="부서(소속)"></td>
+                <th scope="row">지위(직급)</th>
+                <td><input type="text" title="지위(직급)"></td>
+            </tr>
+            <tr>
+                <th scope="row">재직기간</th>
+                <td colspan="3">
+                    <div class="form-input flex-wrap">
+                        <div class="form-input">
+                            <input type="date" title="시작일" data-width="124">
+                            <div class="bul">~</div>
+                            <input type="date" title="종료일" data-width="124">
+                        </div>
+                        <div class="form-check-list"><label class="inp"><input type="checkbox"><b>재직중</b></label></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">재직증명서</th>
+                <td colspan="3">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부"
+                                   maxcount="10">
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul>
+                            <li class="file-block" data_ext="pdf"><span class="name">(교사필수) 사전 교사연수용 안내문(3).pdf</span>
+                                <button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="table-add-button">
+            <button type="button" class="btn-remove-table" title="테이블 삭제"><span class="icon icon-remove"></span></button>
+            <button type="button" class="btn-move-up-table" title="테이블 순서 위로 이동"><span class="icon icon-up"></span></button>
+            <button type="button" class="btn-move-down-table" title="테이블 순서 아래로 이동"><span class="icon icon-down"></span></button>
+        </div>
+    </div>
+
+    <div class="table-row table-row-mo" id="crtfctTableTemplate" style="display:none;">
+        <table>
+            <caption>자격취득사항 - 자격증명, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
+            <colgroup>
+                <col style="width:140px;">
+                <col>
+                <col style="width:140px;">
+                <col>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row">자격증명</th>
+                <td><input type="text" title="자격증명"></td>
+                <th scope="row">취득기관</th>
+                <td><input type="text" title="취득기관"></td>
+            </tr>
+            <tr>
+                <th scope="row">취득번호</th>
+                <td><input type="text" title="취득번호"></td>
+                <th scope="row">취득등급</th>
+                <td><input type="text" title="취득등급"></td>
+            </tr>
+            <tr>
+                <th scope="row">취득일</th>
+                <td colspan="3"><input type="date" title="취득일"></td>
+            </tr>
+            <tr>
+                <th scope="row">자격증명서</th>
+                <td colspan="3">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부"
+                                   maxcount="10">
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul>
+                            <li class="file-block" data_ext="pdf"><span class="name">(교사필수) 사전 교사연수용 안내문(3).pdf</span>
+                                <button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="table-add-button">
+            <button type="button" class="btn-remove-table" title="테이블 삭제"><span class="icon icon-remove"></span></button>
+            <button type="button" class="btn-move-up-table" title="테이블 순서 위로 이동"><span class="icon icon-up"></span></button>
+            <button type="button" class="btn-move-down-table" title="테이블 순서 아래로 이동"><span class="icon icon-down"></span></button>
+        </div>
+    </div>
+
+    <div class="table-row table-row-mo" id="careerTableTemplate" style="display:none;">
+        <table>
+            <caption>환경교육 경력(실적) 사항 - 활동분야, 재직(활동)기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서, 정관</caption>
+            <colgroup>
+                <col style="width:140px;">
+                <col>
+                <col style="width:140px;">
+                <col>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row">활동분야</th>
+                <td><input type="text" title="활동분야"></td>
+                <th scope="row">재직(활동)기간</th>
+                <td>
+                    <div class="form-input flex-wrap">
+                        <div class="form-input">
+                            <input type="date" title="시작일" data-width="124">
+                            <div class="bul">~</div>
+                            <input type="date" title="종료일" data-width="124">
+                        </div>
+                        <div class="form-check-list"><label class="inp"><input type="checkbox"><b>재직중</b></label></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">활동시간</th>
+                <td>
+                    <div class="form-input">
+                        <input type="number" class="ar" title="활동시간" data-width="80">
+                        <div class="bul">시간</div>
+                    </div>
+                </td>
+                <th scope="row">확인기관</th>
+                <td><input type="text" title="취득기관"></td>
+            </tr>
+            <tr>
+                <th scope="row">활동내용</th>
+                <td colspan="3">
+                    <textarea title="활동내용">환경 활동을 했습니다.</textarea>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">확인일</th>
+                <td colspan="3"><input type="date" title="취득기관"></td>
+            </tr>
+            <tr>
+                <th scope="row">확인서</th>
+                <td colspan="3">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부"
+                                   maxcount="10">
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul>
+                            <li class="file-block" data_ext="pdf"><span class="name">(교사필수) 사전 교사연수용 안내문(3).pdf</span>
+                                <button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">정관</th>
+                <td colspan="3">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부"
+                                   maxcount="10">
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul>
+                            <li class="file-block" data_ext="pdf"><span class="name">(교사필수) 사전 교사연수용 안내문(3).pdf</span>
+                                <button type="button" class="file-delete" title="삭제"><span class="icon icon-circle-close"></span></button>
+                            </li>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
+

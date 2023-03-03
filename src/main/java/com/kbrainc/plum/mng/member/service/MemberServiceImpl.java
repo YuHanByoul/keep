@@ -18,6 +18,7 @@ import org.thymeleaf.context.Context;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
+import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.cmm.service.SmsService;
 import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
@@ -75,6 +76,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     
     @Autowired
     private TemplateEngine templateEngine;
+    
+    @Autowired
+    private SmsNhnServiceImpl smsNhnService;
     
     /**
     * 사용자정보 등록.
@@ -242,13 +246,14 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         // 비밀번호 암호화
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
         tempPwdVo.setPswd(hashPassword);
+        //db저장
         int retVal = memberDao.updateMemberTempPwd(tempPwdVo);
         
-        if ("nonauto".equals(tempPwdVo.getMethod())) { // 수동인 경우 DB에 저장
-            if(retVal > 0) {
-                return true;
-            }
-        } else { // 자동인 경우 전송수단에 따라서 이메일 또는 SMS발송 처리       
+        if("nonauto".equals(tempPwdVo.getMethod()) && retVal > 0) { //수동 처리 
+            return true;
+        }
+        
+        else { // 자동인 경우 전송수단에 따라서 이메일 또는 SMS발송 처리       
             String transType = tempPwdVo.getTransType();
             
             if ("email".equals(transType)) {
@@ -269,7 +274,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                     throw new MailSendFailException("메일발송에 실패하였습니다.");
                 }
             } 
-            
             //SMS 차후 처리 할것 
             else if("sms".equals(transType)) {
                 // sms 발송
@@ -277,25 +281,18 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 if ("".equals(StringUtil.nvl(phone))) {
                     return false;
                 }
+                String[] phonlist = new String[]{phone};
                 String msg = "[임시비밀번호 : " + password + "] KEEP 에서 보낸 임시비밀번호 입니다.";
-                Map<String, Object> resMap = smsService.sendOneSms(phone, msg); // sms 발송
-                String result = (String)resMap.get("result");
+                Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist); // sms 발송
+                String result = (String)((Map<String, Object>)(resMap.get("header"))).get("resultMessage");
                 
-                if ("OK".equals(result)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return ("SUCCESS".equals(result))? true:false;
             }
-            
-            
             
             else {
                 return false;
             }
         }
-
-        return true;
     }
 
     /**
@@ -595,6 +592,18 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
      */
     public int updateInstMemberRole(MemberVo memberVo) throws Exception{
         return memberDao.updateInstMemberRole(memberVo);
+    };
+    /**
+     *  원패스 가입여부 확인    
+     *
+     * @Title       : checkJoinWithOnepassYn 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return String 
+     * @throws Exception 예외
+     */
+    public String checkJoinWithOnepassYn(MemberVo memberVo) throws Exception{
+        return memberDao.checkJoinWithOnepassYn(memberVo);
     };
     
 }

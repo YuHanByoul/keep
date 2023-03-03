@@ -128,6 +128,7 @@
             LEFT OUTER JOIN TB_CMM_CD E ON A.ONLN_SRNG_TYPE_CD = E.CD
         WHERE 
             1 = 1
+            AND A.USE_YN = 'Y'
             <include refid="searchCondition"/>
             <if test="pcntstid != null and pcntstid != ''">
             AND A.PCNTSTID = #{pcntstid}
@@ -149,13 +150,14 @@
     <select id="getAplyCnt" parameterType="front.reqMngVo" resultType="front.ReqUserVo">
         /* ReqMngDao.getAplyCnt */
         SELECT 
-            COUNT(TSA.APLYID) OVER (PARTITION BY TSP.PCNTSTID) AS CNT
+            COUNT(TSA.APLYID) AS CNT
             , MAX(TSA.APLYID) AS APLYID 
         FROM 
             TB_SPB_PCNTST TSP 
             INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID 
         WHERE TSP.PCNTSTID = #{pcntstid}
             AND TSA.USERID = #{user.userid}
+        GROUP BY TSP.PCNTSTID
     </select>
     
     <!-- 신청자(기관) 기본 정보 조회 -->
@@ -243,6 +245,7 @@
             , A.MDFRID
             , A.REG_DT
             , A.RGTRID 
+            , (SELECT PCNTST_NM FROM TB_SPB_PCNTST TSP WHERE TSP.PCNTSTID = A.PCNTSTID) AS PCNTST_NM
         FROM
             TB_SPB_APLY A
             INNER JOIN TB_CMM_USER U ON A.USERID = U.USERID 
@@ -354,6 +357,7 @@
             <if test="fldCd == '173106' or fldCd == '173105'">
             , INST_ADDR = #{instAddr}
             , INST_ADDR_DTL = #{instAddrDtl}
+            , INST_ZIP = #{instZip}
             </if>
             <if test="fldCd == '173105'">
             , INST_NM = #{instNm}

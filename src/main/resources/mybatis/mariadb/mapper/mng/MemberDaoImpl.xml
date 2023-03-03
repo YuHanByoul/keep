@@ -654,15 +654,15 @@
 
     <!-- 탈퇴 처리-->
     <update id="updateMemberDelYn" parameterType="MemberVo">
-        /* MemberDao.updateLockStts */
+        /* MemberDao.updateMemberDelYn */
         UPDATE TB_CMM_USER SET
-               STTS_CD      = '9'
-               -- ,DEL_YN = #{delYn}
-               ,PRVC_VLDTY  =  0
-               ,ACNT_LOCK_YN      = 'Y'
-               ,ACNT_LOCK_CD      = '101106'
-               ,MDFCN_DT          = NOW()
-               ,MDFRID            = #{user.userid}
+               STTS_CD       = '9'
+               ,DEL_YN       = #{delYn}
+               ,PRVC_VLDTY   =  0
+               ,ACNT_LOCK_YN = 'Y'
+               ,ACNT_LOCK_CD = '101106'
+               ,MDFCN_DT     = NOW()
+               ,MDFRID        = #{user.userid}
          WHERE userid = #{userid}
     </update>
 
@@ -708,5 +708,23 @@
             AND userid = #{userid}
             AND ROLEID = #{roleid}
     </update>
+    
+    <!-- 디지털 패스 가입여부 확인 -->
+    <select id="checkJoinWithOnepassYn" parameterType="MemberVo" resultType="String"  >
+         /* MemberDao.deleteRoleUser */
+         SELECT 
+             CASE WHEN A.USERID IS NULL THEN 'Y' -- 디지털 원패스 가입자
+                   WHEN A.USERID IS NOT NULL AND B.ESYLGN_CD IS NOT NULL THEN 'Y' -- 가입후 디지털 패스 연동
+                   ELSE 'N' -- 일반회원가입자 
+              END isJoinWithOnepass 
+           FROM 
+             TB_CMM_USER A
+             LEFT OUTER JOIN TB_CMM_USER_ESYLGN B
+             ON A.USERID  = B.USERID 
+         WHERE 1=1
+           AND A.USERID = #{userid}
+    </select>    
+    
+    
 
 </mapper>

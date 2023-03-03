@@ -21,11 +21,14 @@ import java.util.List;
  */
 @Mapper("front.envEduPlcyDtaDao")
 public interface EnvEduPlcyDtaDao {
-    List<BsnsOperDtaVo> selectBsnsOperDtaList(BsnsOperDtaVo bsnsOperDtaVo);
+    List<BsnsOperDtaVo> selectBsnsOperDtaList(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
 
-    BsnsOperDtaVo selectBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo);
+    BsnsOperDtaVo selectBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
 
-    List<SpcltyDtaVo> selectSpcltyDtaList(SpcltyDtaVo spcltyDtaVo);
+    List<SpcltyDtaVo> selectSpcltyDtaList(SpcltyDtaVo spcltyDtaVo) throws Exception;
 
-    SpcltyDtaVo selectSpcltyDta(SpcltyDtaVo spcltyDtaVo);
+    SpcltyDtaVo selectSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception;
+
+    int updateBsnsOperDtaHits(BsnsOperDtaVo bsnsOperDtaVo) throws Exception;
+    int updateSpcltyDtaHits(SpcltyDtaVo spcltyDtaVo) throws Exception;
 }

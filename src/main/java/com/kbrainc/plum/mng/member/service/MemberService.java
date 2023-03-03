@@ -269,6 +269,16 @@ public interface MemberService {
      * @throws Exception 예외
      */
     public int updateInstMemberRole(MemberVo memberVo) throws Exception;
+    /**
+     *  원패스 가입여부 확인    
+     *
+     * @Title       : checkJoinWithOnepassYn 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return String 
+     * @throws Exception 예외
+     */
+    public String checkJoinWithOnepassYn(MemberVo memberVo) throws Exception;
     
     
 }
