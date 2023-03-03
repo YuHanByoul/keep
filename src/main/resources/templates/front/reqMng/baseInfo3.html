@@ -3,9 +3,6 @@
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
     layout:decorator="layout/front/nolnbSubLayout" >
-<style>
-    .form-msg { color : red; }
-</style>        
 <body>
     <div layout:fragment="content">
         <form id="insertForm"  th:action="@{/}" method="POST" submit="return:false;">
@@ -149,7 +146,7 @@
 	                                </tr>
 	                                <tr>
 	                                    <th scope="row">주소<i class="ast" title="필수입력">*</i></th>
-	                                    <td><input type="text" name="instAddr" id="instAddr" th:value="${detail.instAddr}" title="주소" placeholder="지번/도로명을 입력해주세요."><p class="form-msg"></p></td>
+	                                    <td><input type="text" name="instAddr" id="instAddr" th:value="${detail.instAddr}" title="주소" placeholder="지번/도로명을 입력해주세요." readonly><p class="form-msg"></p></td>
 	                                    <th scope="row">상세주소<i class="ast" title="필수입력">*</i></th>
 	                                    <td><input type="text" name="instAddrDtl" id="instAddrDtl" th:value="${detail.instAddrDtl}" title="상세주소" placeholder="상세주소를 입력해주세요."><p class="form-msg"></p></td>
 	                                </tr>
@@ -330,7 +327,7 @@
                             </div>
                             <div class="btn-wrap">
                                 <div class="center">
-                                    <button type="button" class="btn-medium btn-gray" onclick="">이전</button>
+<!--                                     <button type="button" class="btn-medium btn-gray" onclick="javascript:history.back();">이전</button> -->
                                     <button type="button" class="btn-medium btn-green" onclick="fn_save();">다음</button>
                                 </div>
                             </div>
@@ -345,6 +342,7 @@
         <style>
 		    .form-msg { color : red; }
 		</style>   
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	    <script th:inline="javascript">
 	    var atchfileCnt = 21;
 	    var uploadFileCnt = 0;
@@ -377,27 +375,51 @@
 	                , rgnCd    :   { required: "지역을 선택해주십시오." }  
 	            }
 	        });
+	    	
+	    	$("#instAddr").click(function(){
+	            new daum.Postcode({
+	                oncomplete: function(data) {
+	                    let addr = '';
+	                    if (data.userSelectedType === 'R') {
+	                        addr = data.roadAddress;
+	                    } else {
+	                        addr = data.jibunAddress;
+	                    }
+	                    $('#instZip').val(data.zonecode);
+	                    $('#instAddr').val(addr);
+	                    $('#instAddrDtl').focus();
+	                }
+	            }).open();
+	        });
         });
 	    
 	    // 파일업로드
 	    $('#multiFileInput1, #multiFileInput2, #multiFileInput3').on("change", function(event) {
-	        var fileOjbId = $(this).prop("id");
-	        var objFile = document.querySelector('#'+fileOjbId);
-	        var formData = new FormData();
-	        var content = "";
+	    	var fileOjbId = $(this).prop("id");
+            var objFile = document.querySelector('#'+fileOjbId);
+            var formData = new FormData();
+            var content = "";
+            var regex = /[^0-9]/g;
+            var fileNum = fileOjbId.replace(regex, "");
+            var fileLength = $("#multipleFileUploadSuccess" + fileNum).find("ul > li").length;
 
-	        for( i = 0 ; i < objFile.files.length ; i++) {
-	            if(uploadFileCnt >= atchfileCnt){
-	                alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
-	            } else {
-	                formData.append("files", objFile.files[i]);
-	                uploadFileCnt++;
-	            }
-	        }
-
-	        var regex = /[^0-9]/g;
-	        var fileNum = fileOjbId.replace(regex, "");
-	        
+            for( i = 0 ; i < objFile.files.length ; i++) {
+                if (fileNum == "3") {
+                    if (fileLength+objFile.files.length > 1) {
+                        alert("증빙서류3의 첨부파일은 1개만 등록가능합니다.");
+                        break;
+                    }
+                } else {
+                    if (fileLength+objFile.files.length > 10) {
+                        alert("증빙서류1,2의 첨부파일은 최대 10개까지 등록가능합니다.");
+                        break;
+                    }
+                }
+                
+                formData.append("files", objFile.files[i]);
+                uploadFileCnt++;
+            }
+            
 	        formData.append("filegrpid", $("#filegrpid"+fileNum).val());
 	        formData.append("filegrpNm", "aply_file_"+fileNum);
 

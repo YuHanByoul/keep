@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.Alias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -261,7 +262,7 @@ public class ReqMngController {
              
              model.addAttribute("mode", reqUserVo.getMode());
              model.addAttribute("pcntstid", reqUserVo.getPcntstid());
-             model.addAttribute("pcntstNm", reqUserVo.getPcntstNm());
+             model.addAttribute("pcntstNm", StringUtils.isEmpty(reqUserVo.getPcntstNm()) ? detail.getPcntstNm() : reqUserVo.getPcntstNm());
              model.addAttribute("fldCd", reqUserVo.getFldCd());
              model.addAttribute("detail", detail);
          }

@@ -347,7 +347,7 @@
                             </div>
                             <div class="btn-wrap">
                                 <div class="center">
-                                    <button type="button" class="btn-medium btn-gray" onclick="">이전</button>
+<!--                                     <button type="button" class="btn-medium btn-gray" onclick="javascript:history.back();">이전</button> -->
                                     <button type="button" class="btn-medium btn-green" onclick="fn_save();">다음</button>
                                 </div>
                             </div>
@@ -386,18 +386,26 @@
 	        var objFile = document.querySelector('#'+fileOjbId);
 	        var formData = new FormData();
 	        var content = "";
-
-	        for( i = 0 ; i < objFile.files.length ; i++) {
-	            if(uploadFileCnt >= atchfileCnt){
-	                alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
-	            } else {
-	                formData.append("files", objFile.files[i]);
-	                uploadFileCnt++;
-	            }
-	        }
-
 	        var regex = /[^0-9]/g;
 	        var fileNum = fileOjbId.replace(regex, "");
+	        var fileLength = $("#multipleFileUploadSuccess" + fileNum).find("ul > li").length;
+
+            for( i = 0 ; i < objFile.files.length ; i++) {
+                if (fileNum == "3") {
+                    if (fileLength+objFile.files.length > 1) {
+                        alert("증빙서류3의 첨부파일은 1개만 등록가능합니다.");
+                        break;
+                    }
+                } else {
+                    if (fileLength+objFile.files.length > 10) {
+                        alert("증빙서류1,2의 첨부파일은 최대 10개까지 등록가능합니다.");
+                        break;
+                    }
+                }
+                
+                formData.append("files", objFile.files[i]);
+                uploadFileCnt++;
+            }
 	        
 	        formData.append("filegrpid", $("#filegrpid"+fileNum).val());
 	        formData.append("filegrpNm", "aply_file_"+fileNum);
@@ -462,6 +470,10 @@
 	    // 중간저장
 	    function fn_saving() {
 	    	if(!($("#insertForm").valid())) return;
+	    	if ($("#fldCd").val() == "173102" && $("#relgnCd").val() == "") {
+                alert("종단을 선택 해주십시오.");
+                return;
+            }
 	    	if ($.trim($("#multipleFileUploadSuccess1").text()) == "") {
                 alert("증빙서류1을 첨부해주십시오");
                 return;
@@ -502,6 +514,10 @@
 	    // 다음
 	    function fn_save(){
 	        if(!($("#insertForm").valid())) return;
+	        if ($("#fldCd").val() == "173102" && $("#relgnCd").val() == "") {
+	        	alert("종단을 선택 해주십시오.");
+	        	return;
+	        }
 	        if ($.trim($("#multipleFileUploadSuccess1").text()) == "") {
 	        	alert("증빙서류1을 첨부해주십시오");
 	        	return;
@@ -531,7 +547,7 @@
 	                    	} else if ($("#fldCd").val() == "173107") {   // 환경교육 우수학교
 	                    		location.href = "/front/bizAply/budgetForm.html?aplyid=" + aplyid + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
 	                    	} else {
-		                    	location.href = "/front/bizAply/bizAbleForm.html?aplyid=" + aplyid + '&pcntstid=' + $("#pcntstid").val();	                    		
+		                    	location.href = "/front/bizAply/bizAbleForm.html?aplyid=" + aplyid + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();	                    		
 	                    	}
 	                    } else {
 	                        alert(data.msg);
@@ -540,11 +556,6 @@
 	                }
 	            });
 	        }
-	    }
-	    
-	    // 단계 이동
-	    function goPage(step) {
-	    	location.href = "/front/bizAply/baseInfoForm.html";
 	    }
 	    </script>
     </div>
