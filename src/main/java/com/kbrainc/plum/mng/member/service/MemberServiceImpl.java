@@ -18,6 +18,7 @@ import org.thymeleaf.context.Context;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileStorageService;
+import com.kbrainc.plum.cmm.service.SmsNhnServiceImpl;
 import com.kbrainc.plum.cmm.service.SmsService;
 import com.kbrainc.plum.mng.member.model.BlcklstDsctnVo;
 import com.kbrainc.plum.mng.member.model.ContractVo;
@@ -75,6 +76,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     
     @Autowired
     private TemplateEngine templateEngine;
+    
+    @Autowired
+    private SmsNhnServiceImpl smsNhnService;
     
     /**
     * 사용자정보 등록.
@@ -277,8 +281,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 if ("".equals(StringUtil.nvl(phone))) {
                     return false;
                 }
+                String[] phonlist = new String[]{phone};
                 String msg = "[임시비밀번호 : " + password + "] KEEP 에서 보낸 임시비밀번호 입니다.";
-                Map<String, Object> resMap = smsService.sendOneSms(phone, msg); // sms 발송
+                Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist); // sms 발송
                 String result = (String)resMap.get("result");
                 
                 if ("OK".equals(result)) {
@@ -595,6 +600,18 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
      */
     public int updateInstMemberRole(MemberVo memberVo) throws Exception{
         return memberDao.updateInstMemberRole(memberVo);
+    };
+    /**
+     *  원패스 가입여부 확인    
+     *
+     * @Title       : checkJoinWithOnepassYn 
+     * @Description : 사용자수정.
+     * @param MemberVo memberVo 객체
+     * @return String 
+     * @throws Exception 예외
+     */
+    public String checkJoinWithOnepassYn(MemberVo memberVo) throws Exception{
+        return memberDao.checkJoinWithOnepassYn(memberVo);
     };
     
 }
