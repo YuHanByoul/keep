@@ -192,8 +192,8 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
      * @return 내 주변 환경교육 시설 목록
      * @throws Exception 예외
      */
-    public List<Map<String, Object>> nearbyEnveduFlct() throws Exception {
-        return commonDao.nearbyEnveduFlct();
+    public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception {
+        return commonDao.nearbyEnveduFlct(map);
     }
     
     
