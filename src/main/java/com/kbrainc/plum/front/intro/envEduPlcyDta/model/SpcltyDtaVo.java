@@ -38,6 +38,7 @@ public class SpcltyDtaVo extends ParentRequestVo {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
     private String clsfCdNm;
+    private Integer hits;
 
     private Integer pdfFileid;
     private Integer atchFilegrpid;

@@ -6,12 +6,322 @@
     Description : 전문가 등재신청
 -->
 <mapper namespace="com.kbrainc.plum.front.exprtPool.register.model.ExprtRegisterDao">
+    <insert id="insertExprt">
+        INSERT INTO TB_ASS_EXPRT(
+             USERID,
+             EXPRT_TYPE_CD,
+             FLD_LCTR_YN,
+             FLD_PLANNG_YN,
+             FLD_CNSLTNG_YN,
+             FLD_ETC_YN,
+             FLD_ETC_CN,
+             MOBLPHON_RLS_YN,
+             TELNO_RLS_YN,
+             EML_RLS_YN,
+             QLFC_RLS_YN,
+             HDOF_RLS_YN,
+             CAREER_RLS_YN,
+             ENT_LCTR_DMND_RCPTN_YN,
+             LCTR_GDNC_RCPTN_YN,
+             ENV_EDU_CAREER_YY,
+             ENV_EDU_CAREER_MM,
+             STTS_CD,
+             APLY_DT,
+             MDFCN_DT,
+             MDFRID,
+             REG_DT,
+             RGTRID,
+             TOS_AGRE_YN,
+             PRVC_CLCT_AGRE_YN,
+             PRVC_THPTY_PVSN_AGRE_YN
+        ) VALUES(
+            #{user.userid}
+            , #{exprtTypeCd}
+            , #{fldLctrYn}
+            , #{fldPlanngYn}
+            , #{fldCnsltngYn}
+            , #{fldEtcYn}
+            , #{fldEtcCn}
+            , #{moblphonRlsYn}
+            , #{telnoRlsYn}
+            , #{emlRlsYn}
+            , #{qlfcRlsYn}
+            , #{hdofRlsYn}
+            , #{careerRlsYn}
+            , #{entLctrDmndRcptnYn}
+            , #{lctrGdncRcptnYn}
+            , #{envEduCareerYy}
+            , #{envEduCareerMm}
+            <if test='tempSaveYn =="Y"'>
+                ,'134101'
+            </if>
+            <if test='tempSaveYn =="N"'>
+                ,'134102'
+            </if>
+            , NOW()
+            , NOW()
+            ,#{user.userid}
+            , NOW()
+            ,#{user.userid}
+            , #{tosAgreYn}
+            , #{prvcClctAgreYn}
+            , #{prvcThptyPvsnAgreYn}
+       )
+    </insert>
+
+    <insert id="insertHdof">
+        INSERT INTO TB_ASS_EXPRT_HDOF(
+                USERID
+                , HDOF_SE_CD
+                , INST_NM
+                , DEPT_NM
+                , JBGD_NM
+                , HDOF_BGNG_DE
+                , HDOF_END_DE
+                , HDOF_YN
+                , HDOFCRTF_FILEID
+                , ORDR
+                , MDFCN_DT
+                , MDFRID
+                , REG_DT
+                , RGTRID
+        ) VALUES
+        <foreach collection="hdofs" item="item" separator="," index="index">
+            (
+                #{user.userid}
+                , #{item.hdofSeCd}
+                , #{item.instNm}
+                , #{item.deptNm}
+                , #{item.jbgdNm}
+                , #{item.hdofBgngDe}
+                , #{item.hdofEndDe}
+                , #{item.hdofYn}
+                , #{item.hdofcrtfFileid}
+                , #{index}
+                , NOW()
+                , #{user.userid}
+                ,  NOW()
+                , #{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertCareer">
+        INSERT INTO TB_ASS_EXPRT_CAREER(
+            USERID
+            , FLD_NM
+            , ACTVT_BGNG_DE
+            , ACTVT_END_DE
+            , ACTVT_YN
+            , ACTVT_HR
+            , IDNTY_INST_NM
+            , ACTVT_CN
+            , IDNTY_DE
+            , CRTF_FILEID
+            , ARTCLASS_FILEID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="careers" item="item" separator="," index="index">
+            (
+             #{user.userid}
+             , #{item.fldNm}
+             , #{item.actvtBgngDe}
+             , #{item.actvtEndDe}
+             , #{item.actvtYn}
+             , #{item.actvtHr}
+             , #{item.idntyInstNm}
+             , #{item.actvtCn}
+             , #{item.idntyDe}
+             , #{item.crtfFileid}
+             , #{item.artclassFileid}
+             , #{index}
+             , NOW()
+             , #{user.userid}
+             , NOW()
+             , #{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertCrtfct">
+        INSERT INTO TB_ASS_EXPRT_CRTFCT(
+            USERID
+            , CRTFCT_NM
+            , ACQS_INST
+            , ACQS_NO
+            , ACQS_GRD
+            , ACQS_DE
+            , CRTFCT_FILEID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="crtfcts" item="item" separator="," index="index">
+          (
+            #{user.userid}
+            , #{item.crtfctNm}
+            , #{item.acqsInst}
+            , #{item.acqsNo}
+            , #{item.acqsGrd}
+            , #{item.acqsDe}
+            , #{item.crtfctFileid}
+            , #{index}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+          )
+        </foreach>
+    </insert>
+
+    <insert id="insertDefaultInfo">
+        UPDATE TB_CMM_USER SET
+            BRDT = #{brdt}
+            , TELNO = #{telno}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE USERID= #{user.userid}
+    </insert>
+
+    <insert id="insertTrgtCds">
+        INSERT INTO TB_ASS_EXPRT_TRGT(
+            USERID
+            , TRGT_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="trgtCds" item="trgtCd" separator=",">
+        (
+            #{user.userid}
+            , #{trgtCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+        </foreach>
+    </insert>
+
+    <insert id="insertSbjctCds">
+        INSERT INTO TB_ASS_EXPRT_SBJCT (
+            USERID
+            , SBJCT_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="sbjctCds" item="sbjctCd" separator=",">
+        (
+            #{user.userid}
+            , #{sbjctCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+        </foreach>
+    </insert>
+
+    <insert id="insertActvtRgnCds">
+        INSERT INTO TB_ASS_EXPRT_ACTVT_RGN(
+            USERID
+            , RGN_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="actvtRgnCds" item="actvtRgnCd" separator=",">
+            (
+             #{user.userid}
+             , #{actvtRgnCd}
+             , NOW()
+             , #{user.userid}
+             , NOW()
+             , #{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertActvtScopeCds">
+        INSERT INTO TB_ASS_EXPRT_ACTVT_SCOPE
+            (
+             USERID
+            , RGN_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            ) VALUES
+        <foreach collection="actvtScopeCds" item="actvtScopeCd" separator=",">
+            (
+            #{user.userid}
+            , #{actvtScopeCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+            )
+        </foreach>
+    </insert>
+
+    <update id="deleteExprt">
+        DELETE FROM TB_ASS_EXPRT
+        WHERE USERID = #{user.userid}
+    </update>
+
+    <delete id="deleteTrgtCds">
+        DELETE FROM TB_ASS_EXPRT_TRGT
+        WHERE USERID = #{user.userid}
+    </delete>
+
+    <delete id="deleteSbjctCds">
+        DELETE FROM TB_ASS_EXPRT_SBJCT
+        WHERE USERID= #{user.userid}
+    </delete>
+
+    <delete id="deleteActvtRgnCds">
+        DELETE FROM TB_ASS_EXPRT_ACTVT_RGN
+        WHERE USERID = #{user.userid}
+    </delete>
+
+    <delete id="deleteActvtScopeCds">
+        DELETE FROM TB_ASS_EXPRT_ACTVT_SCOPE
+        WHERE USERID = #{user.userid}
+    </delete>
+
+    <delete id="deleteHdof">
+        DELETE FROM TB_ASS_EXPRT_HDOF
+        WHERE USERID = #{user.userid}
+    </delete>
+
+    <delete id="deleteCrtfct">
+        DELETE FROM TB_ASS_EXPRT_CRTFCT
+        WHERE USERID = #{user.userid}
+    </delete>
+
+    <delete id="deleteCareer">
+        DELETE FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID = #{user.userid}
+    </delete>
+
     <select id="selectDefaultMemberInfo" resultType="front.DefaultMemberInfoVo">
         SELECT
             NM
              , GNDR
              , MOBLPHON
              , EML
+             , TELNO
+             , BRDT
              , ADDR
              , ADDR_DTL
         FROM TB_CMM_USER
@@ -22,5 +332,92 @@
         SELECT STTS_CD
         FROM TB_ASS_EXPRT
         WHERE USERID= #{userid}
+    </select>
+
+    <select id="selectExpertRegister" resultType="com.kbrainc.plum.front.exprtPool.register.model.ExprtRegisterVo">
+        SELECT
+            EXPRT_TYPE_CD,
+            FLD_LCTR_YN,
+            FLD_PLANNG_YN,
+            FLD_CNSLTNG_YN,
+            FLD_ETC_YN,
+            FLD_ETC_CN,
+            MOBLPHON_RLS_YN,
+            TELNO_RLS_YN,
+            EML_RLS_YN,
+            QLFC_RLS_YN,
+            HDOF_RLS_YN,
+            CAREER_RLS_YN,
+            ENT_LCTR_DMND_RCPTN_YN,
+            LCTR_GDNC_RCPTN_YN,
+            ENV_EDU_CAREER_YY,
+            ENV_EDU_CAREER_MM,
+            STTS_CD,
+            APLY_DT,
+            MDFCN_DT,
+            MDFRID,
+            REG_DT,
+            RGTRID,
+            TOS_AGRE_YN,
+            PRVC_CLCT_AGRE_YN,
+            PRVC_THPTY_PVSN_AGRE_YN
+            , (SELECT GROUP_CONCAT(TRGT_CD SEPARATOR',') FROM TB_ASS_EXPRT_TRGT  WHERE USERID = #{user.userid} ) AS trgt_cds/* 전문분야 대상 */
+            , (SELECT GROUP_CONCAT(SBJCT_CD SEPARATOR',') FROM TB_ASS_EXPRT_SBJCT  WHERE USERID = #{user.userid} ) AS sbjct_cds /* 전문분야 주제 */
+            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_RGN  WHERE USERID = #{user.userid} ) AS actvtRgn_cds /* 주요활동지역 */
+            , (SELECT GROUP_CONCAT(RGN_CD SEPARATOR',') FROM TB_ASS_EXPRT_ACTVT_SCOPE  WHERE USERID = #{user.userid} ) AS actvtScope_cds /* 가능 활동범위 */
+            , (SELECT COUNT(1) FROM TB_ASS_EXPRT WHERE USERID=#{user.userid}) AS TEMP_EXPRTID
+        FROM TB_ASS_EXPRT
+        WHERE USERID= #{user.userid}
+    </select>
+
+    <select id="selectExpertCareerList" resultType="front.CareerVo">
+        SELECT
+            EXPRT_CAREER_ID
+             , FLD_NM
+             , ACTVT_BGNG_DE
+             , ACTVT_END_DE
+             , ACTVT_YN
+             , ACTVT_HR
+             , IDNTY_INST_NM
+             , ACTVT_CN
+             , IDNTY_DE
+             , CRTF_FILEID
+             , ARTCLASS_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_CAREER
+        WHERE USERID= #{user.userid}
+        ORDER BY ORDR
+    </select>
+
+    <select id="selectExpertCrtfctList" resultType="front.CrtfctVo">
+        SELECT
+            EXPRT_CRTFCT_ID
+             , CRTFCT_NM
+             , ACQS_INST
+             , ACQS_NO
+             , ACQS_GRD
+             , ACQS_DE
+             , CRTFCT_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_CRTFCT
+        WHERE USERID= #{user.userid}
+        ORDER BY ORDR
+    </select>
+
+    <select id="selectExpertHdofList" resultType="front.HdofVo">
+        SELECT
+            EXPRT_HDOF_ID
+             , HDOF_SE_CD
+             , INST_NM
+             , DEPT_NM
+             , JBGD_NM
+             , HDOF_BGNG_DE
+             , HDOF_END_DE
+             , HDOF_YN
+             , HDOFCRTF_FILEID
+             , ORDR
+        FROM TB_ASS_EXPRT_HDOF
+        WHERE USERID= #{user.userid}
+        ORDER BY ORDR
     </select>
 </mapper>

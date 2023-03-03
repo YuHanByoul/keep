@@ -9,6 +9,7 @@ import com.kbrainc.plum.front.intro.envEduPlcyDta.model.SpcltyDtaVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
      * @Description : 사업운영자료 상세 조회
      */
     @Override
+    @Transactional
     public BsnsOperDtaVo selectBsnsOperDta(BsnsOperDtaVo bsnsOperDtaVo) throws Exception {
         BsnsOperDtaVo bsnsOperDta = envEduPlcyDtaDao.selectBsnsOperDta(bsnsOperDtaVo);
         if (bsnsOperDta.getPdfFileid() != null && !bsnsOperDta.getPdfFileid().equals(0)) {
@@ -80,6 +82,8 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             bsnsOperDta.setAtchFileList(fileList);
         }
+
+        envEduPlcyDtaDao.updateBsnsOperDtaHits(bsnsOperDtaVo);
 
         return bsnsOperDta;
     }
@@ -108,6 +112,7 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
      * @Description : 전문자료 상세 조회
      */
     @Override
+    @Transactional
     public SpcltyDtaVo selectSpcltyDta(SpcltyDtaVo spcltyDtaVo) throws Exception {
         SpcltyDtaVo spcltyDta = envEduPlcyDtaDao.selectSpcltyDta(spcltyDtaVo);
 
@@ -124,6 +129,8 @@ public class EnvEduPlcyDtaServiceImpl extends PlumAbstractServiceImpl implements
             ArrayList<FileVo> fileList = fileDao.getFileList(fileVo);
             spcltyDta.setAtchFileList(fileList);
         }
+
+        envEduPlcyDtaDao.updateSpcltyDtaHits(spcltyDtaVo);
 
         return spcltyDta;
     }

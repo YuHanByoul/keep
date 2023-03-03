@@ -48,6 +48,7 @@ public class AttrConfig extends AbstractProcessorDialect {
         processors.add(new SelectCodeAttr(dialectPrefix));
         processors.add(new SelectCodesAttr(dialectPrefix));
         processors.add(new RadioCodeAttr(dialectPrefix));
+        processors.add(new ExprtRadioCodeAttr(dialectPrefix));
         processors.add(new CustomDateAttr(dialectPrefix));
         processors.add(new FaqCategoryListTagProcessor(dialectPrefix));
         processors.add(new RadioYnAttr(dialectPrefix));

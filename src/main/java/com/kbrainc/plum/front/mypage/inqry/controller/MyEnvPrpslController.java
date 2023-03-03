@@ -1,4 +1,4 @@
-package com.kbrainc.plum.front.mypage.inqry;
+package com.kbrainc.plum.front.mypage.inqry.controller;
 
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.envPrpsl.model.EnvPrpslAnsVo;
