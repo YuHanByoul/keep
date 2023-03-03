@@ -723,7 +723,52 @@ public class StringUtil {
         return true;
     }
     
+    /**
+    * 쿼리트링으로 넘어오는 base64Encoding 파라미터값을 decoding한다.
+    *
+    * @Title : base64DecodeFromUrlSafeString
+    * @Description : 쿼리트링으로 넘어오는 base64Encoding 파라미터값을 decoding한다
+    * @param encodedStr base64인코딩 문자열
+    * @return String base64디코딩 문자열
+    */
     public static String base64DecodeFromUrlSafeString(String encodedStr) {
         return new String(Base64Utils.decodeFromUrlSafeString(encodedStr));
+    }
+    
+    /**
+    * queyrString에서 pwd파라미터를 제거한 url을 반환.
+    *
+    * @Title : removePwdParameterURL
+    * @Description : queyrString에서 pwd파라미터를 제거한 url을 반환
+    * @param url 요청url
+    * @param queryString 쿼리스트링
+    * @return String pwd파라미터가 제거된 쿼리스트링 포함 URL
+    */
+    public static String removePwdParameterURL(String url, String queryString) {
+        if (queryString == null) {
+            return url;
+        }
+        
+        if ("pwd".equals(queryString) || "&pwd".equals(queryString) || "pwd&".equals(queryString) || "&pwd&".equals(queryString)) {
+            return url;
+        }
+        
+        if (queryString.startsWith("pwd&")) {
+            return String.format("%s?%s", url, queryString.substring(4, queryString.length()));
+        }
+        
+        if (queryString.startsWith("&pwd&")) {
+            return String.format("%s?%s", url, queryString.substring(5, queryString.length()));
+        }
+        
+        if (queryString.endsWith("&pwd")) {
+            return String.format("%s?%s", url, queryString.substring(0, queryString.length() - 4));
+        }
+        
+        if (queryString.endsWith("&pwd&")) {
+            return String.format("%s?%s", url, queryString.substring(0, queryString.length() - 5));
+        }
+        
+        return String.format("%s?%s", url, queryString.replaceFirst("&pwd&", "&"));
     }
 }
