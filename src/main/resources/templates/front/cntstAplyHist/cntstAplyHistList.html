@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<form class="search-filter" id="searchForm" name="searchForm">
+			<div class="form-input mo-flex-wrap">
+				<strong class="label">제목 검색</strong>
+				<div class="form-input">
+					<input type="search" id="searchTtl" name="searchTtl" title="제목" placeholder="검색어를 입력해 주세요.">
+				</div>
+				<div class="search-filter-submit">
+					<button type="button" class="btn-medium btn-green btn-before-search" onclick="cntstAplyHist.search()">검색</button>
+				</div>
+			</div>
+			
+	        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+	        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
+	        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+	        <input type="hidden" id="aplyid" name="aplyid" >			
+		</form>
+		
+
+		<div class="table-caption flex-nowrap">
+			<div class="left">
+				<p>총 <b id="totalCount">0</b> 건</p>
+			</div>
+			<div class="right">
+				<select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="cntstAplyHist.changeRowPerPage()">
+					<option value="10">10개씩 보기</option>
+					<option value="50">50개씩 보기</option>
+					<option value="100">100개씩 보기</option>
+				</select>
+			</div>
+		</div>
+
+
+		<div class="table-col table-layout-auto table-col-mo">
+			<table>
+				<caption>공모전 참여 이력 - 번호, 분류, 공모전 명, 등록기관, 상태, 신청일 </caption>
+				<colgroup>
+					<col style="width:6%;">
+					<col>
+					<col style="width:39%;">
+					<col style="width:19%;">
+					<col style="width:10%;">
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope="col">번호</th>
+						<th scope="col">분류</th>
+						<th scope="col">공모전 명</th>
+						<th scope="col">등록기관</th>
+						<th scope="col">신청일 </th>
+					</tr>
+				</thead>
+				<tbody id="list-area">
+				</tbody>
+			</table>
+		</div>
+
+		<div class="pagination" aria-label="pagination">
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">
+    	var cntstAplyHist = {
+                listUrl: '/front/cntstAplyHist/selectCntstAplyHistList.do',
+                detailUrl : '/front/cntstAplyHist/cntstAplyHistDetailForm.html',
+
+                init(rowPerPage) {
+                	if(rowPerPage != null) {
+	                    $("#rowPerPage").val(parseInt(rowPerPage));
+	                    $('#pageNumber').val('1');
+                	}
+                    this.selectCntstHistList();
+                },
+
+                moveToDetail() {
+                    if (this.userid == null) {
+                        alert('로그인 후 이용하실 수 있습니다.');
+                        return;
+                    }
+                    location.href = detailUrl;
+                },
+
+                search() {
+                    $('#pageNumber').val('1');
+                    this.selectCntstHistList();
+                },
+
+                searchInit() {
+                	$('#searchTtl').val('');
+                	$("#searchStts").val('');
+                	$("#searchType").val('');
+    				this.selectCntstHistList();
+                },
+
+                selectCntstHistList() {
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: cntstAplyHist.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	cntstAplyHist.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                moveToDetail(cntstAplyHistid) {
+                    var f = document.forms.searchForm ;
+                    f.cntstAplyHistid.value=cntstAplyHistid;
+                    f.action = this.detailUrl;
+                    f.submit();
+                },
+
+                makeListHtml(data) {
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                        listHtml += `
+                        <tr>
+                            <td class="nodata" colSpan="6">
+                                <p><span class="icon icon-notice bg-black9"></span>공모전 참여 이력이 없습니다.</p>
+                            </td>
+                        </tr>
+                        `;
+                    } else {
+                        data.list.forEach(function(item) {
+                        	if(item.instNm == null){
+                        		item.instNm = ''; 
+                        	}
+                        	if(item.clsfCdNm == "환경방학 일기장 프로젝트"){
+	                        	listHtml += `
+	            				<tr>
+	        					<td>${item.rowNumber}</td>
+	        					<td>${item.clsfCdNm}</td>
+	        					<td class="al article"><a href="/front/cntstAplyHist/cntstAplySchlHistDetailForm.html?aplyid=${item.aplyid}" class="link ellipsis">${item.ttl}</a></td>
+	        					<td>${item.instNm}</td>
+	        					<td>${item.aplyDt}</td>
+	        					</tr>
+	  	    					`;
+                        	}else{
+	                        	listHtml += `
+	            				<tr>
+	        					<td>${item.rowNumber}</td>
+	        					<td>${item.clsfCdNm}</td>
+	        					<td class="al article"><a href="/front/cntstAplyHist/cntstAplyHistDetailForm.html?aplyid=${item.aplyid}" class="link ellipsis">${item.ttl}</a></td>
+	        					<td>${item.instNm}</td>
+	        					<td>${item.aplyDt}</td>
+	        					</tr>
+	  	    					`;
+                        	}
+                        });
+                    }
+                    $('#list-area').html(listHtml);
+                    $(".pagination").html(data.pagination);
+                    $("#totalCount").html(data.totalCount);
+                },
+                
+                changeRowPerPage() {
+                    $('#rowPerPage').val($('#selectRowPerPage').val());
+                    this.selectCntstHistList();
+                },
+            };
+
+            $(function () {
+            	cntstAplyHist.init();
+            })
+            
+			function goPage(page) {
+				$("#pageNumber").val(page);
+				
+				cntstAplyHist.selectCntstHistList();
+			}		
+		</script>
+	</div>
+
+</body>
+</html>
