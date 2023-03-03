@@ -395,23 +395,31 @@
 	    
 	    // 파일업로드
 	    $('#multiFileInput1, #multiFileInput2, #multiFileInput3').on("change", function(event) {
-	        var fileOjbId = $(this).prop("id");
-	        var objFile = document.querySelector('#'+fileOjbId);
-	        var formData = new FormData();
-	        var content = "";
+	    	var fileOjbId = $(this).prop("id");
+            var objFile = document.querySelector('#'+fileOjbId);
+            var formData = new FormData();
+            var content = "";
+            var regex = /[^0-9]/g;
+            var fileNum = fileOjbId.replace(regex, "");
+            var fileLength = $("#multipleFileUploadSuccess" + fileNum).find("ul > li").length;
 
-	        for( i = 0 ; i < objFile.files.length ; i++) {
-	            if(uploadFileCnt >= atchfileCnt){
-	                alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
-	            } else {
-	                formData.append("files", objFile.files[i]);
-	                uploadFileCnt++;
-	            }
-	        }
-
-	        var regex = /[^0-9]/g;
-	        var fileNum = fileOjbId.replace(regex, "");
-	        
+            for( i = 0 ; i < objFile.files.length ; i++) {
+                if (fileNum == "3") {
+                    if (fileLength+objFile.files.length > 1) {
+                        alert("증빙서류3의 첨부파일은 1개만 등록가능합니다.");
+                        break;
+                    }
+                } else {
+                    if (fileLength+objFile.files.length > 10) {
+                        alert("증빙서류1,2의 첨부파일은 최대 10개까지 등록가능합니다.");
+                        break;
+                    }
+                }
+                
+                formData.append("files", objFile.files[i]);
+                uploadFileCnt++;
+            }
+            
 	        formData.append("filegrpid", $("#filegrpid"+fileNum).val());
 	        formData.append("filegrpNm", "aply_file_"+fileNum);
 
