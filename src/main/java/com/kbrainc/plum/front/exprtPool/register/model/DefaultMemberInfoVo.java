@@ -28,4 +28,6 @@ public class DefaultMemberInfoVo {
     private String addr;
     private String addrDtl;
     private String exprtSttsCd;
+    private String telno;
+    private String brdt;
 }

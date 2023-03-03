@@ -40,10 +40,10 @@
 	                        <strong class="tit">신청정보 항목</strong>
 	                        <div class="sticky-steps">
 	                            <ul>
-	                                <li><a href="#">신청정보</a></li>
-	                                <li><a href="#">기관역량</a></li>
-	                                <li><a href="#">사업수행계획</a></li>
-	                                <li><a href="#">프로그램정보</a></li>
+	                                <li><a href="javascript:goPage('/front/bizAply/baseInfoForm.html')">신청정보</a></li>
+                                    <li><a href="javascript:goPage('/front/bizAply/bizAbleForm.html')">기관역량</a></li>
+                                    <li><a href="javascript:goPage('/front/bizAply/planForm.html')">사업수행계획</a></li>
+	                                <li><a href="javascript:goPage('/front/bizAply/prgrmInfoForm.html')">프로그램정보</a></li>
 	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">전문강사 확보</a></li>
 	                                <li><a href="#">안전관리 적정성</a></li>
 	                            </ul>
@@ -198,7 +198,7 @@
                                 <tbody id="table_2">
                                     <tr th:if="${#lists.size(acbgList) > 0}" th:each="list, i: ${acbgList}">
 			                            <td class="v-middle text-center">
-			                                <input type="text" name="eduDe" th:id="'eduDe_'+${i.index+1}" th:value="${list.eduDe}">
+			                                <input type="text" name="eduDe" class="multyDe" th:value="${list.eduDe}">
 			                             </td>
 			                            <td class="v-middle text-center">
 			                                <input type="text" name="schlNm" id="schlNm" th:value="${list.schlNm}">
@@ -213,7 +213,7 @@
 			                        </tr>
 			                        <tr th:unless="${#lists.size(acbgList) > 0}">
 			                            <td class="v-middle text-center">
-			                                <input type="text" name="eduDe" id="eduDe_1">
+			                                <input type="text" name="eduDe" class="multyDe">
 			                            </td>
 			                            <td class="v-middle text-center">
 			                                <input type="text" name="schlNm" id="schlNm">
@@ -359,7 +359,7 @@
 	                        </div>
 	                        <div class="btn-wrap">
 	                            <div class="center">
-	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-gray" onclick="javascript:history.back();">이전</button>
 	                                <button type="button" class="btn-medium btn-green" onclick="save();">다음</button>
 	                            </div>
 	                        </div>
@@ -387,15 +387,15 @@
             });
     		
     		// 사업기간 설정 daterangepicker
-            $("#eduDe_"+i+1).daterangepicker({
+            $("input[name=eduDe]").daterangepicker({
                 autoUpdateInput: false,
                 locale: {
                     format: "YYYY-MM-DD",
                 },
             });
 	    		
-	            // 사업기간 설정시 사업 시작일과 종료일을 각각 저장해준다.
-            $(this).on('apply.daterangepicker', function(ev, picker) {
+	        // 사업기간 설정시 사업 시작일과 종료일을 각각 저장해준다.
+            $("input[name=eduDe]").on('apply.daterangepicker', function(ev, picker) {
                 $(this).val(picker.startDate.format('YYYY-MM-DD') + ' ~ ' + picker.endDate.format('YYYY-MM-DD'));
             });    			
    		});
@@ -410,17 +410,22 @@
                 $(this).find("td:last").html("");
                 newrow = $(this).clone();
             });
-//             if (tableId == "table_2") {      	
-// 	            $("#table_2").find("tr").each(function(){
-// 	                i++;
-// 		            $(this).find("td:eq("+i+"):first > input").prop("id", "eduDe_"+(i+1));
-// 	            });
-//             }
             
             newrow.find("td > input").val("");
             newrow.find("td:last").html(html);
             
             newrow.insertAfter($("#"+tableId).find("tr:last"));
+            if (tableId == "table_2") {      	
+            	$(document).find("input[name=eduDe]").removeClass('hasDaterangepicker').daterangepicker({
+                    autoUpdateInput: false,
+                    locale: {
+                        format: "YYYY-MM-DD",
+                    },
+                });
+            	$(document).find("input[name=eduDe]").on('apply.daterangepicker', function(ev, picker) {
+                    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' ~ ' + picker.endDate.format('YYYY-MM-DD'));
+                });  
+            }
         }
 
         // 테이블 로우 삭제
@@ -480,6 +485,10 @@
 	            });
 	        }
 	    }
+	    
+	    function goPage(url) {
+            location.href = url + '?aplyid=' + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val() + '&mode=U';
+        }
 	    </script>
     </div>
 </body>

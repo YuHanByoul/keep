@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +39,8 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.SiteInfo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.CommonUtil;
+
+import kr.go.onepass.client.org.apache.commons.lang.StringUtils;
 
 /**
  * 
@@ -316,8 +319,27 @@ public class CommonController {
      @RequestMapping(value = "/front/nearbyEnveduFlct.html")
      public String nearbyEnveduFlct(HttpServletRequest request, Model model) throws Exception {
          
-         List<Map<String, Object>> list = commonService.nearbyEnveduFlct();
+         Map searchMap = new HashMap<>();
+         int pagePerCnt = 10;
+         int selectedPage = 1;
+         int totalPage = 0;
+         int totalCnt = 0;
+         
+         searchMap.put("pagePerCnt", pagePerCnt);
+         searchMap.put("selectedPage", selectedPage);
+         
+         List<Map<String, Object>> list = commonService.nearbyEnveduFlct(searchMap);
+         //totalCnt = commonService.nearbyEnveduFlctCnt(searchMap);
+         
          model.addAttribute("list", list);
+         if(list.size() > 0) {
+             totalPage = totalCnt / pagePerCnt + 1;
+         }
+         
+         searchMap.put("totalPage", totalPage);
+         searchMap.put("totalCnt", totalCnt);
+         
+         model.addAttribute("pagenationInfo", searchMap);
          
          return "front/nearbyEnveduFlct";
      }
@@ -330,12 +352,36 @@ public class CommonController {
       * @return List<Map<String, Object>>
       * @throws Exception 예외
       */
-      @RequestMapping(value = "/front/searchNearbyEnveduFlct.do", method = RequestMethod.POST, produces = "application/json")
+      @RequestMapping(value = "/front/map/searchNearbyEnveduFlct.do", method = RequestMethod.POST, produces = "application/json")
       @ResponseBody
-      public  Map<String, Object> searchEnveduFlct(HttpServletRequest request) throws Exception {
+      public  Map<String, Object> searchEnveduFlct(@RequestBody HashMap<String, Object> param, HttpServletRequest request) throws Exception {
           Map<String, Object> resultMap = new HashMap<>();
+          Map searchMap = new HashMap<>();
           
-          List<Map<String, Object>> list = commonService.nearbyEnveduFlct();
+          
+          int pagePerCnt = 10;
+          int selectedPage = 1;
+          
+          if(param.get("selectedPage") != null && !"".equals(param.get("selectedPage"))) {
+              selectedPage = (int) param.get("selectedPage");
+          }
+          
+          if(param.get("keyword") != null && !"".equals(param.get("keyword"))) {
+              searchMap.put("keyword", param.get("keyword"));
+          }
+          
+          if(param.get("searchType") != null && !"".equals(param.get("searchType"))) {
+              searchMap.put("searchType", param.get("type"));
+          }
+          
+          if(param.get("category") != null && !"".equals(param.get("category"))) {
+              searchMap.put("category", param.get("category"));
+          }
+          
+          searchMap.put("pagePerCnt", 10);
+          searchMap.put("selectedPage", selectedPage);
+          
+          List<Map<String, Object>> list = commonService.nearbyEnveduFlct(searchMap);
           
           resultMap.put("list", list);
           

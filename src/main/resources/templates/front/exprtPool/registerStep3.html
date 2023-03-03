@@ -1,5 +1,4 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorator="layout/front/nolnbSubLayout">
 <div layout:fragment="content">
@@ -60,39 +59,18 @@
                 <tr>
                     <th scope="row">생년월일<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <div class="form-input">
-                            <select title="년" data-width="90" id="brdtYear">
-                                <option value="" disabled selected>년</option>
-                            </select>
-                            <select title="월" data-width="90" id="brdtMonth">
-                                <option value="" disabled selected>월</option>
-                                <option value="01">01</option>
-                                <option value="02">02</option>
-                                <option value="03">03</option>
-                                <option value="04">04</option>
-                                <option value="05">05</option>
-                                <option value="06">06</option>
-                                <option value="07">07</option>
-                                <option value="08">08</option>
-                                <option value="09">09</option>
-                                <option value="10">10</option>
-                                <option value="11">11</option>
-                                <option value="12">12</option>
-                            </select>
-                            <select title="일" data-width="90" id="brdtDay">
-                                <option value="" disabled selected>일</option>
-                            </select>
+                        <div class="form-input flex-wrap">
+                            <input type="date" title="생년월일" name="brdt" id="brdt" th:value="${defaultMemberInfo.brdt}">
                         </div>
-                        <p class="feedback"></p>
                     </td>
                     <th scope="row">휴대전화</th>
-                    <td></td>
+                    <td th:text="${defaultMemberInfo.moblphon}">010-0000-0000</td>
                 </tr>
                 <tr>
                     <th scope="row">전화번호</th>
                     <td>
                         <div class="form-input">
-                            <input type="number" title="휴대전화" placeholder="하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요" data-width="290" id="telno" name="telno" th:value="${exprtRegisterVo.telno}">
+                            <input type="number" title="휴대전화" placeholder="하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요" data-width="290" id="telno" name="telno" th:value="${defaultMemberInfo.telno}">
                         </div>
                     </td>
                     <th scope="row">이메일</th>
@@ -116,7 +94,7 @@
         </div>
 
         <div class="table-add-group" id="hdof">
-            <th:block th:each="item, itemStat : ${exprtVo1.hdofs}">
+            <th:block th:each="item, itemStat : ${tempExprtRegister.hdofs}">
                 <div class="table-row table-row-mo" th:id="|hdofTable${itemStat.index}|" name="hdofTable">
                     <table>
                         <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 취득등급, 취득일, 재직증명서</caption>
@@ -130,7 +108,7 @@
                         <tr>
                             <th scope="row">재직구분</th>
                             <td>
-                                <th:block kattr:radio_code="hdofSeCd" grpCd="136"></th:block>
+                                <th:block kattr:exprt_radio_code grpCd="136" th:attr="selectedCd=${item.hdofSeCd}, name=|hdofSeCd${itemStat.index}|"></th:block>
                             </td>
                             <th scope="row">재직기관명</th>
                             <td>
@@ -154,13 +132,13 @@
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row">취득일</th>
+                            <th scope="row">재직기간</th>
                             <td>
                                 <div class="form-input flex-wrap">
                                     <div class="form-input">
                                         <input type="date" title="시작일" name="hdofBgngDe" th:value="${item.hdofBgngDe}">
                                         <div class="bul">~</div>
-                                        <input type="date" title="종료일" name="hdofEndDe" th:value="${item.hdofEndDe}">
+                                        <input type="date" title="종료일" name="hdofEndDe" th:value="${item.hdofEndDe}" th:readonly="${item.hdofYn == 'Y'}">
                                     </div>
                                     <div class="form-check-list">
                                         <label class="inp">
@@ -174,11 +152,28 @@
                             <td>
                                 <div class="form-input-file form-input-button">
                                     <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadTestFile(this,event)">
+                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="hdofFilegrpid" value="0">
+                                    <input type="hidden" name="hdofFilegrpid" th:value="${(item.hdofcrtfFileid == '' or item.hdofcrtfFileid == null) ? 0 : item.hdofcrtfFileid}">
                                     <ul>
+                                        <th:block th:if="${item.hdofCrtfFile != null}">
+                                            <th:block th:with="file=${item.hdofCrtfFile}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                    <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                            th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                            th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                        <span class="icon icon-circle-close"></span>
+                                                    </button>
+                                                </li>
+                                            </th:block>
+                                        </th:block>
                                     </ul>
                                 </div>
                             </td>
@@ -204,7 +199,7 @@
         </div>
 
         <div class="table-add-group" id="crtfct">
-            <th:block th:each="item, itemStat : ${exprtVo1.crtfcts}">
+            <th:block th:each="item, itemStat : ${tempExprtRegister.crtfcts}">
                 <div class="table-row table-row-mo" th:id="|crtfctTable${itemStat.index}|" name="crtfctTable">
                     <table>
                         <caption>자격취득사항 입력 - 자격증명, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
@@ -220,13 +215,13 @@
                             <td>
                                 <div class="form-input">
                                 </div>
-                                <input type="text" title="취득기관" placeholder="자격증명 입력" id="crtfctNm" name="crtfctNm" th:value="${item.crtfctNm}">
+                                <input type="text" title="취득기관" placeholder="자격증명 입력" name="crtfctNm" th:value="${item.crtfctNm}">
                             </td>
                             <th scope="row">취득기관</th>
                             <td>
                                 <div class="form-input">
                                 </div>
-                                <input type="text" title="취득기관" placeholder="취득기관 입력" id="acqsInst" name="acqsInst" th:value="${item.acqsInst}">
+                                <input type="text" title="취득기관" placeholder="취득기관 입력" name="acqsInst" th:value="${item.acqsInst}">
                             </td>
                         </tr>
                         <tr>
@@ -234,31 +229,49 @@
                             <td>
                                 <div class="form-input">
                                 </div>
-                                <input type="text" title="취득번호" placeholder="취득번호 입력" id="acqsNo" name="acqsNo" th:value="${item.acqsNo}">
+                                <input type="text" title="취득번호" placeholder="취득번호 입력" name="acqsNo" th:value="${item.acqsNo}">
                             </td>
                             <th scope="row">취득등급</th>
                             <td>
                                 <div class="form-input">
                                 </div>
-                                <input type="text" title="취득등급" placeholder="취득등급 입력" id="acqsGrd" name="acqsGrd" th:value="${item.acqsGrd}">
+                                <input type="text" title="취득등급" placeholder="취득등급 입력" name="acqsGrd" th:value="${item.acqsGrd}">
                             </td>
                         </tr>
                         <tr>
                             <th scope="row">취득일</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="date" title="취득일" id="acqsDe" name="acqsDe" th:value="${item.acqsDe}">
+                                    <input type="date" title="취득일" name="acqsDe" th:value="${item.acqsDe}">
                                 </div>
                             </td>
                             <th scope="row">자격증명서</th>
                             <td>
                                 <div class="form-input-file form-input-button">
                                     <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadTestFile(this,event)">
+                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="crtfctFilegrpid" value="0">
-                                    <ul></ul>
+                                    <input type="hidden" name="crtfctFilegrpid" th:value="${(item.crtfctFileid == '' or item.crtfctFileid == null) ? 0 : item.crtfctFileid}">
+                                    <ul>
+                                        <th:block th:if="${item.crtfctFile != null}">
+                                            <th:block th:with="file=${item.crtfctFile}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                <span class="name">
+                                                    <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                       th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        [[${file.orginlFileNm}]]
+                                                    </a>
+                                                </span>
+                                                    <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                            th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                            th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                        <span class="icon icon-circle-close"></span>
+                                                    </button>
+                                                </li>
+                                            </th:block>
+                                        </th:block>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
@@ -283,7 +296,7 @@
         </div>
 
         <div class="table-add-group" id="career">
-            <div class="table-row table-row-mo">
+            <div class="table-row table-row-mo" id="fixTable">
                 <table>
                     <caption>환경교육 경력(실적) 사항 - 총 환경교육 경력 입력</caption>
                     <colgroup>
@@ -295,9 +308,9 @@
                         <th scope="row">총 환경교육 경력</th>
                         <td>
                             <div class="form-input">
-                                <input type="text" title="활동분야 년" placeholder="" data-width="90" id="envEduCareerYy" name="envEduCareerYy" th:value="${exprtRegisterVo.envEduCareerYy}">
+                                <input type="text" title="활동분야 년" placeholder="" data-width="90" id="envEduCareerYy" name="envEduCareerYy" th:value="${tempExprtRegister.envEduCareerYy}">
                                 <div class="bul">년</div>
-                                <input type="text" title="활동분야 개월" placeholder="" data-width="90" id="envEduCareerMm" name="envEduCareerMm" th:value="${exprtRegisterVo.envEduCareerMm}">
+                                <input type="text" title="활동분야 개월" placeholder="" data-width="90" id="envEduCareerMm" name="envEduCareerMm" th:value="${tempExprtRegister.envEduCareerMm}">
                                 <div class="bul">개월</div>
                             </div>
                         </td>
@@ -306,8 +319,8 @@
                 </table>
             </div>
 
-            <th:block th:each="item, itemStat : ${exprtVo1.careers}">
-                <div class="table-row table-row-mo" th:id="|careerTalbe{itemStat.index}|" name="careerTable">
+            <th:block th:each="item, itemStat : ${tempExprtRegister.careers}">
+                <div class="table-row table-row-mo" th:id="|careerTable{itemStat.index}|" name="careerTable">
                     <table>
                         <caption>환경교육 경력(실적) 사항 입력 - 활동분야, 활동기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서</caption>
                         <colgroup>
@@ -321,20 +334,20 @@
                             <th scope="row">활동분야</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="text" title="활동분야" placeholder="활동분야 입력" id="fldNm" name="fldNm" th:value="${item.fldNm}">
+                                    <input type="text" title="활동분야" placeholder="활동분야 입력" name="fldNm" th:value="${item.fldNm}">
                                 </div>
                             </td>
                             <th scope="row">활동기간</th>
                             <td>
                                 <div class="form-input flex-wrap">
                                     <div class="form-input">
-                                        <input type="date" title="시작일" id="actvtBgngDe" name="actvtBgngDe" th:value="${item.actvtBgngDe}">
+                                        <input type="date" title="시작일" name="actvtBgngDe" th:value="${item.actvtBgngDe}">
                                         <div class="bul">~</div>
-                                        <input type="date" title="종료일" id="actvtEndDe" name="actvtEndDe" th:value="${item.actvtEndDe}">
+                                        <input type="date" title="종료일" name="actvtEndDe" th:value="${item.actvtEndDe}" th:readonly="${item.actvtYn == 'Y'}">
                                     </div>
                                     <div class="form-check-list">
                                         <label class="inp">
-                                            <input type="checkbox" id="actvtYn" name="actvtYn" onclick="actvtYnCheck(this)" th:checked="${item.actvtYn == 'Y'}"/>
+                                            <input type="checkbox" name="actvtYn" onclick="actvtYnCheck(this)" th:checked="${item.actvtYn == 'Y'}"/>
                                             <b>활동중</b>
                                         </label>
                                     </div>
@@ -345,14 +358,14 @@
                             <th scope="row">활동시간</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="text" title="활동시간" placeholder="활동시간 입력" id="actvtHr" name="actvtHr" th:value="${item.actvtHr}">
+                                    <input type="text" title="활동시간" placeholder="활동시간 입력" name="actvtHr" th:value="${item.actvtHr}">
                                     <div class="bul">시간</div>
                                 </div>
                             </td>
                             <th scope="row">확인기관</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="text" title="확인기관" placeholder="확인기관 입력" id="idntyInstNm" name="idntyInstNm" th:value="${item.idntyInstNm}">
+                                    <input type="text" title="확인기관" placeholder="확인기관 입력" name="idntyInstNm" th:value="${item.idntyInstNm}">
                                 </div>
                             </td>
                         </tr>
@@ -360,7 +373,7 @@
                             <th scope="row">활동내용</th>
                             <td colspan="3">
                                 <div class="form-input">
-                                    <textarea title="활동내용" placeholder="활동내용 입력 (500자 이내)" id="actvtCn" name="actvtCn" maxlength="500" th:text="${item.actvtCn}">
+                                    <textarea title="활동내용" placeholder="활동내용 입력 (500자 이내)" name="actvtCn" maxlength="500" th:text="${item.actvtCn}">
                                     </textarea>
                                 </div>
                             </td>
@@ -370,7 +383,7 @@
                             <td colspan="3">
                                 <div class="form-input">
                                     <div class="form-input">
-                                        <input type="date" title="확인일" id="idntyDe" name="idntyDe" th:value="${item.idntyDe}">
+                                        <input type="date" title="확인일" name="idntyDe" th:value="${item.idntyDe}">
                                     </div>
                                 </div>
                             </td>
@@ -380,23 +393,58 @@
                             <td>
                                 <div class="form-input-file form-input-button">
                                     <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadTestFile(this,event)">
+                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="crtfFilegrpid" value="0"/>
-
-                                    <ul></ul>
+                                    <input type="hidden" name="crtfFilegrpid" th:value="${(item.crtfFileid == '' or item.crtfFileid == null) ? 0 : item.crtfFileid}">
+                                    <ul>
+                                        <th:block th:if="${item.crtfFile != null}">
+                                            <th:block th:with="file=${item.crtfFile}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                    <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                            th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                            th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                        <span class="icon icon-circle-close"></span>
+                                                    </button>
+                                                </li>
+                                            </th:block>
+                                        </th:block>
+                                    </ul>
                                 </div>
                             </td>
                             <th scope="row">정관</th>
                             <td>
                                 <div class="form-input-file form-input-button">
                                     <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uxploadFileExtsn}" title="정관" maxcount="1" onchange="uploadTestFile(this,event)">
+                                        <input type="file" class="blind" th:accept="${uxploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="artClassFilegrpid" value="0"/>
-                                    <ul></ul>
+                                    <input type="hidden" name="artclassFileid" th:value="${(item.artclassFileid == '' or item.artclassFileid == null) ? 0 : item.artclassFileid}">
+                                    <ul>
+                                        <th:block th:if="${item.artClassFile != null}">
+                                            <th:block th:with="file=${item.artClassFile}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                    <button type="button" class="file-delete" title="삭제" th:name="${file.fileid}"
+                                                            th:attr="data-file-idntfc-key=${file.fileIdntfcKey}, data-id=${file.fileid}"
+                                                            th:onclick="deleteFile(this.name, this.dataset.fileIdntfcKey)">
+                                                        <span class="icon icon-circle-close"></span>
+                                                    </button>
+                                                </li>
+                                            </th:block>
+                                        </th:block>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
@@ -410,7 +458,6 @@
                     </div>
                 </div>
             </th:block>
-
 
             <button type="button" class="btn-row-add" title="테이블 추가" onclick="cloneTable(this)">
                 <span class="icon icon-row-add"></span>
@@ -438,7 +485,7 @@
                 <tr>
                     <th scope="row">전문가 유형<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:radio_code="exprtTypeCd" grpCd="133" th:attr="selectedCd=${exprtRegisterVo.exprtTypeCd}"></th:block>
+                        <th:block kattr:radio_code="exprtTypeCd" grpCd="133" th:attr="selectedCd=${tempExprtRegister.exprtTypeCd}"></th:block>
                         <p class="feedback"></p>
                     </td>
                 </tr>
@@ -447,12 +494,18 @@
                     <td>
                         <div class="form-input mo-flex-wrap">
                             <div class="form-check-list">
-                                <label class="inp"><input type="checkbox" id="fldLctrYn" name="fldLctrYn " th:checked="${exprtRegisterVo.fldLctrYn == 'Y'}"><b>강의</b></label>
-                                <label class="inp"><input type="checkbox" id="fldPlanngYn" name="fldPlanngYn" th:checked="${exprtRegisterVo.fldPlanngYn == 'Y'}"><b>기획</b></label>
-                                <label class="inp"><input type="checkbox" id="fldCnsltngYn" name="fldCnsltngYn" th:checked="${exprtRegisterVo.fldCnsltngYn == 'Y'}"><b>사업자문 및 컨설팅</b></label>
-                                <label class="inp"><input type="checkbox" id="fldEtcYn" name="fldEtcYn" th:checked="${exprtRegisterVo.fldEtcYn == 'Y'}">
+                                <label class="inp"><input type="checkbox" id="fldLctrYn" name="fldLctrYn " th:checked="${tempExprtRegister.fldLctrYn == 'Y'}"><b>강의</b></label>
+                                <label class="inp"><input type="checkbox" id="fldPlanngYn" name="fldPlanngYn" th:checked="${tempExprtRegister.fldPlanngYn == 'Y'}"><b>기획</b></label>
+                                <label class="inp"><input type="checkbox" id="fldCnsltngYn" name="fldCnsltngYn" th:checked="${tempExprtRegister.fldCnsltngYn == 'Y'}"><b>사업자문 및 컨설팅</b></label>
+                                <label class="inp"><input type="checkbox" id="fldEtcYn" name="fldEtcYn" th:checked="${tempExprtRegister.fldEtcYn == 'Y'}">
                                     <b>기타</b>
-                                    <input type="text" title="기타" placeholder="" data-width="160" class="ml10" id="fldEtcCn" name="fldEtcCn" style="display:none" maxlength="15">
+                                    <th:block th:if="${tempExprtRegister.fldEtcYn == 'Y'}">
+                                        <input type="text" title="기타" placeholder="" data-width="160" class="ml10" name="fldEtcCn" maxlength="15"
+                                               th:value="${tempExprtRegister.fldEtcCn}">
+                                    </th:block>
+                                    <th:block th:unless="${tempExprtRegister.fldEtcYn == 'Y'}">
+                                        <input type="text" title="기타" placeholder="" data-width="160" class="ml10" name="fldEtcCn" maxlength="15" style="display:none">
+                                    </th:block>
                                 </label>
                             </div>
                         </div>
@@ -461,25 +514,25 @@
                 <tr>
                     <th scope="row">전문분야(대상)<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:check_code="trgtCd" grpCd="135" th:attr="selectedCd=${exprtRegisterVo.trgtCds}" firstOptTxt="- 전체 - "></th:block>
+                        <th:block kattr:check_code="trgtCd" grpCd="135" th:attr="selectedCd=${tempExprtRegister.trgtCds}" firstOptTxt="- 전체 - "></th:block>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">전문분야(환경주제)<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:check_code="sbjctCd" grpCd="126" th:attr="selectedCd=${exprtRegisterVo.sbjctCds}" firstOptTxt="- 전체 - "></th:block>
+                        <th:block kattr:check_code="sbjctCd" grpCd="126" th:attr="selectedCd=${tempExprtRegister.sbjctCds}" firstOptTxt="- 전체 - "></th:block>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">주요 활동지역<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:check_code="actvtRgnCd" grpCd="125" th:attr="selectedCd=${exprtRegisterVo.actvtRgnCds}" firstOptTxt="- 전체 - "></th:block>
+                        <th:block kattr:check_code="actvtRgnCd" grpCd="125" th:attr="selectedCd=${tempExprtRegister.actvtRgnCds}" firstOptTxt="- 전체 - "></th:block>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">가능 활동범위<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:check_code="actvtScopeCd" grpCd="125" th:attr="selectedCd=${exprtRegisterVo.actvtScopeCds}" firstOptTxt="- 전체 - "></th:block>
+                        <th:block kattr:check_code="actvtScopeCd" grpCd="125" th:attr="selectedCd=${tempExprtRegister.actvtScopeCds}" firstOptTxt="- 전체 - "></th:block>
                     </td>
                 </tr>
                 </tbody>
@@ -528,9 +581,9 @@
                     <th scope="row">연락처 공개 범위<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-check-list">
-                            <label class="inp"><input type="checkbox" id="moblphonRlsYn" name="moblphonRlsYn" th:checked="${exprtRegisterVo.moblphonRlsYn =='Y'}"><b>휴대전화</b></label>
-                            <label class="inp"><input type="checkbox" id="telnoRlsYn" name="telnoRlsYn" th:checked="${exprtRegisterVo.telnoRlsYn =='Y'}"><b>전화번호</b></label>
-                            <label class="inp"><input type="checkbox" id="emlRlsYn" name="emlRlsYn" th:checked="${exprtRegisterVo.emlRlsYn =='Y'}"><b>이메일</b></label>
+                            <label class="inp"><input type="checkbox" id="moblphonRlsYn" name="moblphonRlsYn" th:checked="${tempExprtRegister.moblphonRlsYn =='Y'}"><b>휴대전화</b></label>
+                            <label class="inp"><input type="checkbox" id="telnoRlsYn" name="telnoRlsYn" th:checked="${tempExprtRegister.telnoRlsYn =='Y'}"><b>전화번호</b></label>
+                            <label class="inp"><input type="checkbox" id="emlRlsYn" name="emlRlsYn" th:checked="${tempExprtRegister.emlRlsYn =='Y'}"><b>이메일</b></label>
                             <label class="inp"><input type="checkbox" id="notOpenAll" name="notOpenAll"><b>모두 공개하지 않음</b></label>
                         </div>
                     </td>
@@ -538,19 +591,19 @@
                 <tr>
                     <th scope="row">재직사항 공개 설정<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:radio_yn="hdofRlsYn" label1="공개" label2="공개하지 않음" th:attr="defaultVal=${exprtRegisterVo.hdofRlsYn == 'N' ? 'N':'Y'}"></th:block>
+                        <th:block kattr:radio_yn="hdofRlsYn" label1="공개" label2="공개하지 않음" th:attr="defaultVal=${tempExprtRegister.hdofRlsYn == 'N' ? 'N':'Y'}"></th:block>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">자격취득사항 공개 설정<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:radio_yn="qlfcRlsYn" label1="공개" label2="공개하지 않음" th:attr="defaultVal=${exprtRegisterVo.qlfcRlsYn == 'N' ? 'N':'Y'}"></th:block>
+                        <th:block kattr:radio_yn="qlfcRlsYn" label1="공개" label2="공개하지 않음" th:attr="defaultVal=${tempExprtRegister.qlfcRlsYn == 'N' ? 'N':'Y'}"></th:block>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">환경교육 경력(실적) 사항 공개 설정<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:radio_yn="careerRlsYn" label1="공개" label2="공개하지 않음" th:attr="defaultVal=${exprtRegisterVo.careerRlsYn == 'N' ? 'N':'Y'}"></th:block>
+                        <th:block kattr:radio_yn="careerRlsYn" label1="공개" label2="공개하지 않음" th:attr="defaultVal=${tempExprtRegister.careerRlsYn == 'N' ? 'N':'Y'}"></th:block>
                     </td>
                 </tr>
                 </tbody>
@@ -578,13 +631,13 @@
                 <tr>
                     <th scope="row">기업/단체 강의요청 알림톡 수신 여부<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:radio_yn="entLctrDmndRcptnYn" label1="받음" label2="받지 않음" th:attr="defaultVal=${exprtRegisterVo.entLctrDmndRcptnYn == 'N' ? 'N':'Y'}"></th:block>
+                        <th:block kattr:radio_yn="entLctrDmndRcptnYn" label1="받음" label2="받지 않음" th:attr="defaultVal=${tempExprtRegister.entLctrDmndRcptnYn == 'N' ? 'N':'Y'}"></th:block>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">환경보전협회 강의요청 안내 및 홍보 알림톡 수신 여부<i class="ast" title="필수입력">*</i></th>
                     <td>
-                        <th:block kattr:radio_yn="lctrGdncRcptnYn" label1="받음" label2="받지 않음" th:attr="defaultVal=${exprtRegisterVo.lctrGdncRcptnYn == 'N' ? 'N':'Y'}"></th:block>
+                        <th:block kattr:radio_yn="lctrGdncRcptnYn" label1="받음" label2="받지 않음" th:attr="defaultVal=${tempExprtRegister.lctrGdncRcptnYn == 'N' ? 'N':'Y'}"></th:block>
                     </td>
                 </tr>
                 </tbody>
@@ -603,16 +656,17 @@
         <input type="hidden" name="prvcClctAgreYn" id="prvcClctAgreYn" th:value="${exprtRegisterVo.prvcClctAgreYn}"/>
         <input type="hidden" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:value="${exprtRegisterVo.prvcThptyPvsnAgreYn}"/>
         <input type="hidden" name="tempSaveYn" id="tempSaveYn" th:value="N"/>
+        <input type="hidden" name="newYn" id="newYn" th:value="${tempExprtRegister == null ? 'Y': 'N'}"/>
     </form>
 
     <script th:inline="javascript">
         /*임시저장 불러올때는 cnt 수정 필요*/
-        let hdofCnt = /*[[${exprtRegisterVo.hdofs.size()}]]*/0;
-        let crtfctCnt = /*[[${exprtRegisterVo.crtfcts.size()}]]*/0;
-        let careerCnt = /*[[${exprtRegisterVo.careers.size()}]]*/0;
+        let hdofCnt = /*[[${tempExprtRegister.hdofs == null ? 0 : tempExprtRegister.hdofs.size()}]]*/0;
+        let crtfctCnt = /*[[${tempExprtRegister.crtfcts == null? 0 : tempExprtRegister.crtfcts.size()}]]*/0;
+        let careerCnt = /*[[${tempExprtRegister.careers == null? 0 : tempExprtRegister.careers.size()}]]*/0;
 
         function previous() {
-            location.href = '/front/exprtPool/registerStep2.html';
+            history.back();
         }
 
         /* 중간 저장 */
@@ -654,7 +708,9 @@
 
         /* 신청하기 */
         function applyExprt() {
-            validateForm();
+            let valid = validateForm();
+            if (valid == false) return;
+
             insertExprt();
         }
 
@@ -663,50 +719,52 @@
             if ($('input[name=exprtTypeCd]:checked').length == 0) {
                 alert("전문가 유형을 선택해주십시오.");
                 $('#exprtTypeCd1').focus()
-                return;
+                return false;
             }
 
-            if ($('#brdtYear').val() == null && $('#brdtMonth').val() == null && $('#brdtDay').val() == null) {
+            if ($('#brdt').val() == null) {
                 alert('생년월일을 선택해주십시오.');
-                $('#brdtYear').focus();
-                return;
+                $('#brdt').focus();
+                return false;
             }
 
             if (!$('#fldLctrYn').is(':checked') && !$('#fldPlanngYn').is(':checked') && !$('#fldCnsltngYn').is(':checked') && !$('#fldEtcYn').is(':checked')) {
                 alert('전문분야를 선택해 주십시오.');
                 $('#fldLctrYn').focus();
-                return;
+                return false;
             }
 
             if ($('#fldEtcYn').is(':checked') && $('#fldEtcCn').val() == '') {
                 alert("기타 내용을 입력해주십시오.")
                 $('#fldEtcYn').focus();
-                return;
+                return false;
             }
 
             if ($("input[name=trgtCd]:checked").length == 0) {
                 alert('전문분야(대상)을 선택해주십시오.')
                 $('#trgtCd1').focus();
-                return;
+                return false;
             }
 
             if ($("input[name=sbjctCd]:checked").length == 0) {
                 alert('전문분야(환경주제)를 선택해주십시오.')
                 $('#sbjctCd1').focus();
-                return;
+                return false;
             }
 
             if ($("input[name=actvtRgnCd]:checked").length == 0) {
                 alert('주요 활동지역을 선택해주십시오.')
                 $('#actvtRgnCd1').focus();
-                return;
+                return false;
             }
 
             if ($("input[name=actvtScopeCd]:checked").length == 0) {
                 alert("가능 활동범위를 선택해주십시오.");
                 $('#actvtScopeCd1').focus();
-                return;
+                return false;
             }
+
+            return true;
         }
 
         function insertExprt() {
@@ -717,6 +775,10 @@
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 success: function (response) {
+                    alert(response.msg)
+                    if (response.success) {
+                        location.replace('/front/exprtPool/registerStep4.html');
+                    }
                 }
             });
         }
@@ -809,11 +871,12 @@
                 fldCnsltngYn: $('#fldCnsltngYn').is(':checked') ? 'Y' : 'N',
                 fldEtcYn: $('#fldEtcYn').is(':checked') ? 'Y' : 'N',
                 fldEtcCn: $('#fldEtcCn').val(),
-                brdt: $('#brdtYear').val() + "-" + $('#brdtMonth').val() + "-" + $('#brdtDay').val(),
+                brdt: $('#brdt').val(),
                 tosAgreYn: $('#tosAgreYn').val(),
                 prvcClctAgreYn: $('#prvcClctAgreYn').val(),
                 prvcThptyPvsnAgreYn: $('#prvcThptyPvsnAgreYn').val(),
-                tempSaveYn: $('#tempSaveYn').val()
+                tempSaveYn: $('#tempSaveYn').val(),
+                newYn: $('#newYn').val()
             };
 
             return data;
@@ -857,10 +920,10 @@
 
         /* 테이블 순서 변경 */
         function changeOrder(el, mode) {
-            debugger;
             if (mode == 'up') {
                 var $el = $(el).parent().parent();
-                $el.prev().before($el);
+                if ($el.prev().attr('id') != 'fixTable')
+                    $el.prev().before($el);
             } else {
                 var $el = $(el).parent().parent();
                 if (!$el.next().hasClass('btn-row-add'))
@@ -868,32 +931,7 @@
             }
         }
 
-
         $(function () {
-
-            let $brdtYear = $('#brdtYear');
-            let $brdtDay = $('#brdtDay');
-            let $brdtMonth = $('#brdtMonth');
-            let existYearOption = false;
-
-            /* 날짜 생성 */
-            $brdtYear.on('focus', function () {
-                if (!existYearOption) {
-                    existYearOption = true
-                    for (let i = new Date().getFullYear(); i >= 1920; i--) {
-                        let year = `<option value=${i}>${i}</option>`;
-                        $(this).append(year);
-                    }
-                }
-            })
-            $brdtDay.on('focus', function () {
-                let date = new Date($brdtYear.val(), $brdtMonth.val(), 0).getDate();
-                $brdtDay.empty();
-                for (let i = 1; i <= date; i++) {
-                    let v = i < 10 ? '0' + i : i;
-                    $(this).append(`<option value="${v}">${v}</option>`);
-                }
-            })
 
             /* 공개범위 체크 */
             $('#notOpenAll').on('click', function (e) {
@@ -915,12 +953,10 @@
             });
         })
 
-        function uploadTestFile(fileInput, event) {
+        function uploadExprtFile(fileInput, event) {
             var formData = new FormData();
             var $fileInput = $(fileInput);
             var $fileinputDiv = $fileInput.parent().parent();
-            /*var $filegrpid = $fileinputDiv.find('input[name=filegrpid]');
-            var $fileid = $fileinputDiv.find('input[name=fileid]');*/
 
             formData.append("file", event.target.files[0]);
             formData.append("filegrpNm", "expert_file");
@@ -1001,7 +1037,7 @@
                 </td>
             </tr>
             <tr>
-                <th scope="row">취득일</th>
+                <th scope="row">재직기간</th>
                 <td>
                     <div class="form-input flex-wrap">
                         <div class="form-input">
@@ -1021,7 +1057,7 @@
                 <td>
                     <div class="form-input-file form-input-button">
                         <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadTestFile(this,event)">
+                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
                         <input type="hidden" name="hdofFilegrpid" value="0">
@@ -1087,7 +1123,7 @@
                 <td>
                     <div class="form-input-file form-input-button">
                         <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadTestFile(this,event)">
+                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
                         <input type="hidden" name="crtfctFilegrpid" value="0">
@@ -1118,7 +1154,7 @@
                 <th scope="row">활동분야</th>
                 <td>
                     <div class="form-input">
-                        <input type="text" title="활동분야" placeholder="활동분야 입력" id="fldNm" name="fldNm">
+                        <input type="text" title="활동분야" placeholder="활동분야 입력" name="fldNm">
                     </div>
                 </td>
                 <th scope="row">활동기간</th>
@@ -1171,7 +1207,7 @@
                 <td>
                     <div class="form-input-file form-input-button">
                         <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadTestFile(this,event)">
+                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
                         <input type="hidden" name="crtfFilegrpid" value="0"/>
@@ -1183,7 +1219,7 @@
                 <td>
                     <div class="form-input-file form-input-button">
                         <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uxploadFileExtsn}" title="정관" maxcount="1" onchange="uploadTestFile(this,event)">
+                            <input type="file" class="blind" th:accept="${uxploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
                         <input type="hidden" name="artClassFilegrpid" value="0"/>

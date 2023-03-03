@@ -2,10 +2,7 @@ package com.kbrainc.plum.front.exprtPool.register.service;
 
 import com.kbrainc.plum.front.exprtPool.register.model.DefaultMemberInfoVo;
 import com.kbrainc.plum.front.exprtPool.register.model.ExprtRegisterVo;
-import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
-
-import java.util.Map;
 
 /**
  * 전문가 등재신청 서비스 인터페이스
@@ -22,7 +19,7 @@ import java.util.Map;
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
-public interface ExprtRegisterService  {
+public interface ExprtRegisterService {
 
     /**
      * 사용자 기본정보 조회
@@ -36,4 +33,7 @@ public interface ExprtRegisterService  {
 
     public String selectExprtStts(UserVo user) throws Exception;
 
+    public int insertExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public ExprtRegisterVo selectExprtRegister(ExprtRegisterVo exprtRegisterVo) throws Exception;
 }

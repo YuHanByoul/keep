@@ -1,11 +1,12 @@
 package com.kbrainc.plum.front.exprtPool.register.model;
 
-import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import java.util.List;
 
 /**
  * 전문가 등록Vo 클래스
@@ -23,6 +24,7 @@ import javax.validation.constraints.Pattern;
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
  */
 @Data
+@NoArgsConstructor
 public class ExprtRegisterVo {
     private UserVo user;
 
@@ -50,10 +52,7 @@ public class ExprtRegisterVo {
     private String fldCnsltngYn;
     private String fldEtcYn;
     private String fldEtcCn;
-    private String[] trgt;
-    private String[] sbjct;
-    private String[] actvtRgn;
-    private String[] actvtScope;
+
     private String moblphonRlsYn;
     private String telnoRlsYn;
     private String emlRlsYn;
@@ -63,46 +62,18 @@ public class ExprtRegisterVo {
     private String entLctrDmndRcptnYn; // 강의요청 수신 여부
     private String lctrGdncRcptnYn;// 강의안내 수신 여부
 
-    private String telNo;
+    private String telno;
     private String brdt;
 
-    /*
-      재직사항 프로퍼티
-    */
-    private String hdofSeCd;
-    private String instNm;
-    private String deptNm;
-    private String jbgdNm;
-    private String hdofBgngDe;
-    private String hdofEndDe;
-    private String hdofYn;
-    private Integer hdofcrtfFileid;
-    private String ordr1;
+    List<HdofVo> hdofs;
+    List<CrtfctVo> crtfcts;
+    List<CareerVo> careers;
+    private String trgtCds;
+    private String sbjctCds;
+    private String actvtRgnCds;
+    private String actvtScopeCds;
 
-    /*
-      자격취득사항 프로퍼티
-    */
-    private String crtfctNm;
-    private String acqsInst;
-    private String acqsNo;
-    private String acqsGrd;
-    private String acqsDe;
-    private String crtfctFileid;
-    private String ordr2;
-
-    /*
-      경력사항 프로퍼티
-    */
-    private String fldNm;
-    private String actvtBgngDe;
-    private String actvtEndDe;
-    private String actvtYn;
-    private String actvtHr;
-    private String idntyInstNm;
-    private String actvtCn;
-    private String idntyDe;
-    private String crtfFileid;
-    private String artclassFileid;
-    private String ordr3;
+    private String tempSaveYn;
+    private String newYn;
 
 }

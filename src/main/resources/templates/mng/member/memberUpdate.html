@@ -140,10 +140,10 @@
                            <label class="form-label col-sm-12 col-form-label p-t-0 pb-1"  for="recentDate"><strong>계정잠금 여부</strong></label>
                            <div class="col-sm-12 row">
                                <div class="col-sm-2">
-                                   <span kattr:radio_yn="acntLockYn" label1="Y" label2="N"   th:attr="defaultVal=${member.acntLockYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeAcntLockYn"></span>
+                                   <span kattr:radio_yn="acntLockYn" label1="Y" label2="N"   th:attr="defaultVal=${member.acntLockYn}" addStyle="margin-top:4px" addClass="col-sm-3" onchange="changeAcntLockYn" isAdmin="true"></span>
                                </div>
                                <div class="col-sm-2">
-                                   <span kattr:select_code="acntLockCd" grpCd="101" firstOptTxt="- 선택 -"  th:attr="selectedCd=${member.acntLockCd}" addClass="form-select form-select-sm form-control-sm" addStyle="margin-left:5px;width:150px;"></span>
+                                   <span kattr:select_code="acntLockCd" grpCd="101" firstOptTxt="- 선택 -"  th:attr="selectedCd=${member.acntLockCd}" addClass="form-select form-select-sm form-control-sm" addStyle="margin-left:5px;width:150px;" isAdmin="true"></span>
                                </div>
                                
                                <div class="col-sm-3 btn-group-sm">
@@ -226,19 +226,14 @@
            </div> -->
            
            <div class="card-block-small">
-           
-               <th:block sec:authorize-url="/mng/member/quitMember.do">
+               <th:block sec:authorize-url="/mng/member/quitMember.do" th:if = "${member.delYn ne 'Y' }">
                    <button type="button" class="btn btn-inverse m-r-5" onclick="fn_quitMember()">탈퇴</button>
                </th:block>
-               
                <button type="button" class="btn btn-disabled m-r-5" onclick="gridHelper1.toggleContent()" >취소</button>
-               
                <th:block sec:authorize-url="/mng/member/modifyMember.do">
                <button type="button" class="btn btn-primary" onclick ="fn_updateMember()" >저장</button>
                </th:block>
-               
            </div>
-       
       <input type="hidden" id="userid" name="userid"   th:value="${member.userid}">
       <input type="hidden" id="delYn" name="delYn"   th:value="${member.delYn}">
       <input type="hidden" id="sttsCd" name="sttsCd" th:value="${member.sttsCd}">
@@ -282,7 +277,6 @@
     })
 	 		 
  	function fn_updateMember(){
-
   	 	
  	    if(!($("#memberFrm").valid())) return;
 
@@ -322,7 +316,6 @@
         let itrstfldCds = $('.itrstfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
         let esylgnCds   = $('.esylgnCds:checked').map(function(){ return $(this).val();}).get().join(",");
         let envfldCds   = $('.envfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
-        
         let data =  $("#memberFrm").serialize() ;
         //&esylgnCds="+esylgnCds+" 간편 로그인 보류
         data = data+"&itrstfldCds="+itrstfldCds+"&envfldCds="+envfldCds
@@ -346,11 +339,9 @@
 			});
 		}
 	}
-
  	function init() {
  		changeAcntLockYn();
  	}
- 	
 	function changeAcntLockYn() {
 		if($('input:radio[name=acntLockYn]:checked').val() == "Y"){
 			$('#acntLockCd').show();
@@ -361,7 +352,6 @@
 			$('#btn_clear').hide();
 		}
 	} 
-    	
 	function daumPostcode(){
         new daum.Postcode({
             oncomplete: function(data) {
@@ -405,9 +395,7 @@
     }
 
     fn_quitMember = ()=>{
-
         if(!confirm("탈퇴 처리 하시겠습니까?"))return;
-        
         if(displayWorkProgress()){
                 $.ajax({
                     url : "/mng/member/quitMember.do",

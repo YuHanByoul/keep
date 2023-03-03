@@ -142,6 +142,6 @@ public interface CommonDao {
      * @return 내 주변 환경교육 시설 목록
      * @throws Exception 예외
      */
-    public List<Map<String, Object>> nearbyEnveduFlct() throws Exception;
+    public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception;
     
 }

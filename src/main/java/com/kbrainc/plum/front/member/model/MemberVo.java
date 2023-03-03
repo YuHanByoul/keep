@@ -57,6 +57,10 @@ public class MemberVo extends ParentRequestVo {
     /** 휴대폰번호 */
     @Size(max = 12, message = "휴대전화는 12자를 초과할 수 없습니다.")
     private String moblphon;
+    
+    /** 전화번호 */
+    @Size(max = 40, message = "전화번호는 40자를 넘을 수 없습니다.")
+    private String telno;
 
     /** 이메일 */
     @NotEmpty(message = "이메일을 입력 해주십시오.")
@@ -73,6 +77,13 @@ public class MemberVo extends ParentRequestVo {
     @NotEmpty(message = "이메일을 입력 해주십시오.")
     @Size(max = 50, message = "이메일 도메인은 50자를 초과할 수 없습니다.")
     private String eml2;
+    
+    /** 생년월일 */
+    @Size(max = 10, message = "생년월일은 40자를 넘을 수 없습니다.")
+    private String brdt;
+    
+    /** 성별 */
+    private String gndr;
 
     /** 우편번호 */
     @NotEmpty(message = "우편번호를 입력 해주십시오.")
@@ -127,10 +138,16 @@ public class MemberVo extends ParentRequestVo {
     /** 웹진 신청 동의 여부 */
     @Pattern(regexp = "[YN]", message = "올바른 값을 입력해주세요.")
     private String wbznAplyAgreYn = "N";
-
+    
+    /** 관심분야 코드  */
+    private String itrstfldCd;
+    
     /** 관심분야 코드 저장용 */
     private String[] itrstfldCds;
-
+    
+    /** 환경분야 코드  */
+    private String envfldCd;
+    
     /** 환경분야 코드 저장용 */
     private String[] envfldCds;
     
