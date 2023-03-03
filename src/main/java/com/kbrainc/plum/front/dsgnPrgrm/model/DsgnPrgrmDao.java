@@ -1,7 +1,11 @@
 package com.kbrainc.plum.front.dsgnPrgrm.model;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.validation.Valid;
+
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
@@ -86,6 +90,18 @@ public interface DsgnPrgrmDao {
 	public List<DsgnPrgrmVo> selectPrgrmSchdlList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 대처계획 목록 조회
+	*
+	* @Title : selectPlanList
+	* @Description : 대처계획 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectPlanList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 기관정보 조회
 	*
 	* @Title : selectInstInfo
@@ -96,6 +112,104 @@ public interface DsgnPrgrmDao {
 	* @return DsgnPrgrmVo
 	*/
 	public DsgnPrgrmVo selectInstInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 신청정보 조회
+	*
+	* @Title : selectAplyInfo
+	* @Description : 신청정보 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectAplyInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 등록
+	*
+	* @Title : insertPrgrmAssPrgrm
+	* @Description : 지정프로그램 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 지정프로그램 수정
+	 *
+	 * @Title : updatePrgrmAssPrgrm
+	 * @Description : 지정프로그램 수정
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updatePrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 프로그램 우수성 등록
+	 *
+	 * @Title : insertPrgrmDstnctnForm
+	 * @Description : 프로그램 우수성 등록
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int insertPrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 프로그램 우수성 수정
+	 *
+	 * @Title : updatePrgrmDstnctnForm
+	 * @Description : 프로그램 우수성 수정
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int updatePrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 프로그램 일정 등록
+	 * @param dsgnPrgrmVo
+	*
+	* @Title : insertPrgrmSchdl
+	* @Description : 프로그램 일정 등록
+	* @param schdlMap
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertPrgrmSchdl(DsgnPrgrmVo dsgnPrgrmVo, @Param("schdlMap") Map<String, String> schdlMap) throws Exception;
+
+	/**
+	 * 프로그램 일정 삭제
+	 *
+	 * @Title : deletePrgrmSchdl
+	 * @Description : 프로그램 일정 삭제
+	 * @param schdlMap
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int deletePrgrmSchdl(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 프로그램 평가 조회
+	*
+	* @Title : selectPrgrmEvlForm
+	* @Description : 프로그램 평가 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
 
 
 }

@@ -62,7 +62,7 @@
                         <!-- 세부설정 -->
                         <div class="col-lg-6">
                             <div class="col-12 mb-3">
-                                <strong id="areaNmTxt">지역 : 전라북도</strong>
+                                <strong id="areaNmTxt">지역 : </strong>
                             </div>
                             <h3 class="sub-title"><strong>세부설정</strong></h3>
                             <div class="col-12 table-responsive">
@@ -76,6 +76,9 @@
                                     </tr>
                                     </thead>
                                     <tbody id="signguDetailTbody">
+                                        <tr>
+	                                        <td class="text-center v-middle" colspan="3">지역을 선택하세요.</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -102,6 +105,7 @@ function fn_signguDetail(item){
     }
     var signguDetailHtml = "";
     $("#signguDetailTbody tr").remove();
+    
     $.ajax({
         url: getCodeUrl,
         type: 'GET',
@@ -123,7 +127,11 @@ function fn_signguDetail(item){
             	if(data.list[i].hrSeCd == '191101'){
             		signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd" checked>';
             	}else{
-                    signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd">';            		
+            		if(data.list[i].hrSeCd == ''){
+            			signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd" checked>';
+            		}else{
+            		    signguDetailHtml += '                  <input type="radio" name="hrSeCd'+i+'" value="191101" addClass="hrSeCd">';
+            		}
             	}
             	signguDetailHtml += '                  <i class="helper"></i>전일';
             	signguDetailHtml += '              </label>';
@@ -165,7 +173,6 @@ function fn_updateEduSareaSignguSetting(){
     if(displayWorkProgress()){
     	var param = {};
     	$("#signguDetailTbody tr").each(function(index, item){
-            debugger;
     		if($(this).find("[name=useYn]").prop("checked")) {
 	            param["signguList[" + index + "].sareaId"] = $(this).find("[name=sareaId]").val();
 	            param["signguList[" + index + "].ctprvnCd"] = $(this).find("[name=ctprvnCd]").val();
@@ -173,7 +180,6 @@ function fn_updateEduSareaSignguSetting(){
 	            param["signguList[" + index + "].hrSeCd"] = $(this).find("[name=hrSeCd"+index+"]:checked").val();
     		}
             //param["signguList[" + index + "].useYn"] = $(this).find("[name=useYn]").prop("checked") ? "Y" : "N";
-            debugger;
         });
         $.ajax({
             url : "/mng/prtpn/eduSarea/updateEduSareaSignguSetting.do",
@@ -184,6 +190,7 @@ function fn_updateEduSareaSignguSetting(){
             success : function (data){
                 if(data.result=="success"){
                     alert(data.msg);
+                    signguSettingModal.hide();                    
                     gridHelper1.resetListContent();
                 }else{
                     alert(data.msg);

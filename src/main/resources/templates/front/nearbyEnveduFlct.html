@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/fullScreenMapLayout" 
+>
+    <th:block layout:fragment="content">
+    
+        <section>
+            <div class="map-wrap toggleParent active">
+                <nav class="snb">
+                    <button type="button" class="toggleTrigger" title="검색 탭">
+                        <span class="blind">
+                            <span class="on" aria-hidden="false">검색 탭 열기</span>
+                            <span class="off" aria-hidden="true">검색 탭 닫기</span>
+                        </span>
+                    </button>
+                     <div class="map-search">
+                        <form onsubmit="searchPlaces(); return false;">
+                            <div class="d-flex form-input">
+                                <input type="search" id="keyword" title="검색어 입력">
+                                <button type="button" class="btn-medium btn-green btn-before-search" onclick="searchPlaces(1);">검색</button>
+                                <button type="button" class="btn-medium btn-green" onclick="searchPlaces(2);">위치검색</button>
+                            </div>
+                        </form>
+                        <div class="map-srh">검색결과 <b>20</b>건</div>
+                    </div>
+                    <div class="map-search-list">
+                        
+                    </div>
+                </nav>
+                <div class="map-filter">
+                    <div class="form-check-list m0">
+                        <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="0" checked ><b>전체</b></label>
+                        <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="1"><b>기관</b></label>
+                        <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="2"><b>환경교육시설</b></label>
+                        <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="3"><b>교육프로그램</b></label>
+                        <label class="inp inp-button"><input type="radio" name="map-wrap" class="blind" value="4"><b>전문가</b></label>
+                    </div>
+                    <div class="map-inner" id="map"></div>
+                </div>
+               
+                
+            </div>
+        </section>
+        
+        <script th:inline="javascript">
+            
+            var fcltList = [[${list}]];
+            var markers = [];
+            var categorys = document.querySelectorAll('input[type=radio][name="map-wrap"]');
+            var searchType = 0;
+            
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+                mapOption = { 
+                    center: new kakao.maps.LatLng(37.4020489, 127.108632), // 지도의 중심좌표
+                    level: 4, // 지도의 확대 레벨 
+                    minLevel: 3
+                }; 
+            
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+            
+            var clusterer = new kakao.maps.MarkerClusterer({
+                map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
+                averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
+                minLevel: 2, // 클러스터 할 최소 지도 레벨 
+                disableClickZoom: true // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
+            });
+            
+            var customOverlay1 = new kakao.maps.CustomOverlay({zIndex:1});
+            var customOverlay2 = new kakao.maps.CustomOverlay({zIndex:1});
+            
+            var radios = document.querySelectorAll('input[type=radio][name="map-wrap"]');
+            radios.forEach(radio => radio.addEventListener('change', () => changeCategory()));
+            
+            function searchPlaces(type) {
+
+                var keyword = document.getElementById('keyword').value;
+                searchType = type;
+                // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+                keywordSearch( keyword, type, 0); 
+            }
+            
+            function changeCategory(){
+                var keyword = document.getElementById('keyword').value;
+                var category = document.querySelector('input[name="map-wrap"]:checked').value;
+                
+                keywordSearch( keyword, searchType, category);
+            }
+            
+            function keywordSearch(keyword, type, category){
+                var reqJson = new Object();
+                reqJson.keyword = keyword;
+                reqJson.type = type;
+                reqJson.category = category;
+                
+                httpRequest = new XMLHttpRequest();
+                httpRequest.onreadystatechange = () => {
+                    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+                        if (httpRequest.status === 200) {
+                            var result = httpRequest.response;
+                            console.log(result);
+                        } else {
+                            
+                        }
+                    }
+                }
+                console.log(JSON.stringify(reqJson));
+                httpRequest.open('POST', '/front/searchNearbyEnveduFlct.do', true);
+                httpRequest.setRequestHeader('content-type', 'application/json');
+                httpRequest.responseType = "json";
+                httpRequest.send(JSON.stringify(reqJson));
+            }
+            
+            function displayPlaces(places) {
+                
+            }
+            
+        </script>
+        <script type="text/javascript">
+            
+        </script>
+    </th:block>
+</html>

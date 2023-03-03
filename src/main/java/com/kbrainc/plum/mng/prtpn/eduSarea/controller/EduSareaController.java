@@ -284,6 +284,7 @@ public class EduSareaController {
           
         int retVal = 0;
         eduSareaVo.setUser(user);
+        eduSareaVo.setSareaId(eduSareaVo.getSignguList().get(0).getSareaId());
         retVal = eduSareaService.updateEduSareaSignguSetting(eduSareaVo);
           
         if(retVal > 0) {

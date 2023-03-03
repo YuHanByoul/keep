@@ -1,14 +1,18 @@
 package com.kbrainc.plum.front.dsgnPrgrm.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -33,6 +37,9 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 	@Resource(name = "front.dsgnPrgrmDao")
 	private DsgnPrgrmDao dsgnPrgrmDao;
+
+	@Resource(name = "asgsysSrngDao")
+	private AsgsysSrngDao asgsysSrngDao;
 
 	/**
 	 * 지정현황 목록 조회
@@ -109,6 +116,21 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	}
 
 	/**
+	* 대처계획 목록 조회
+	*
+	* @Title : selectPlanList
+	* @Description : 대처계획 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectPlanList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectPlanList(dsgnPrgrmVo);
+	}
+
+	/**
 	* 기관정보 조회
 	*
 	* @Title : selectInstInfo
@@ -121,6 +143,94 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectInstInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
 		return dsgnPrgrmDao.selectInstInfo(dsgnPrgrmVo);
+	}
+
+	/**
+	* 신청정보 조회
+	*
+	* @Title : selectAplyInfo
+	* @Description : 신청정보 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	@Override
+	public DsgnPrgrmVo selectAplyInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectAplyInfo(dsgnPrgrmVo);
+	}
+
+	/**
+	* 지정프로그램 등록
+	*
+	* @Title : insertPrgrmAssPrgrm
+	* @Description : 지정프로그램 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertPrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.insertPrgrmAssPrgrm(dsgnPrgrmVo);
+	}
+
+	/**
+	 * 지정프로그램 수정
+	 *
+	 * @Title : updatePrgrmAssPrgrm
+	 * @Description : 지정프로그램 수정
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	@Override
+	@Transactional
+	public int updatePrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+	}
+
+	/**
+	* 프로그램우수성 등록
+	*
+	* @Title : insertPrgrmDstnctnForm
+	* @Description : 프로그램우수성 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertPrgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+
+		int ret = 0;
+		//지정프로그램
+		ret =+ dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+		if(dsgnPrgrmVo.getDstnctnid() != null && dsgnPrgrmVo.getDstnctnid() > 0) {
+			ret += dsgnPrgrmDao.updatePrgrmDstnctnForm(dsgnPrgrmVo);    //수정
+		}else {
+			ret += dsgnPrgrmDao.insertPrgrmDstnctnForm(dsgnPrgrmVo);    //등록
+		}
+
+		return ret;
+	}
+
+	/**
+	* 프로그램 평가 조회
+	*
+	* @Title : selectPrgrmEvlForm
+	* @Description : 프로그램 평가 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return DsgnPrgrmVo
+	*/
+	@Override
+	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectPrgrmEvlForm(dsgnPrgrmVo);
 	}
 
 

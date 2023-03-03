@@ -4,6 +4,8 @@
 </style>
 
 <form id="cnsntngExprtModalFrm" action="" onsubmit="return false;">
+    <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}" />
+    <input type="hidden" name="cycl" id="cycl" th:value="${cycl}" />
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content type_2" style="width: 1000px;">
             <div class="modal-header">
@@ -109,7 +111,7 @@
                     <div class="card-block-small">
                         <div class="row">
                             <div id="order-table_wrapper" class="col-12  " >
-                                <table id="cnslngExprtModalGrid" class="table-responsive"></table>
+                                <table id="searchGrid" class="table-responsive"></table>
                                 <div id="listPager3" class="text-center"></div>
                             </div>
                         </div>
@@ -127,6 +129,7 @@
     var selectedItems = [];
     var gridHelper1;
     var checkedMode;
+    var cycl = $("#cycl").val();
 
     $(function(){
         checkSeachArea();
@@ -153,7 +156,7 @@
     }
 
     searchManagerList = () =>{
-        $("#cnslngExprtModalGrid").jsGrid("reset");
+        $("#searchGrid").jsGrid("reset");
     }
 
     initSearchCondition = () =>{
@@ -223,7 +226,8 @@
     ]
 
     var expUrl = "/mng/cnsltng/selectExpertList.do";
-    var expGrpUrl = "/mng/cnsltng/selectJudgeList.do";
+    //var expGrpUrl = "/mng/bizAply/pcntst/selectMngGrpList.do";
+    var expGrpUrl = "/mng/bizAply/bizRpt/cnsltngPicList.do";
 
 
     function writeModalGridData(){
@@ -238,7 +242,7 @@
             url = expGrpUrl;
         }
 
-        $("#cnslngExprtModalGrid").jsGrid({
+        $("#searchGrid").jsGrid({
             height: "auto",
             width: "100%",
             autoload: true,
@@ -277,7 +281,7 @@
                         }
                     }
 
-                    params.push({name: "cnsltngid", value: cnsltngid});
+                    params.push({name: "pcntstid", value: pcntstid});
 
                     formData = formData.concat(params);
 
@@ -299,7 +303,6 @@
             },
             fields: filter,
             rowClick: function(args) {
-
                  if(checkedMode=='P'){
                      $("#memchk_"+args.item.userid).prop("checked",true);
                  }else{
@@ -309,12 +312,11 @@
         });
     }
 
-    makeCnstntHtml= (userid,introduceStr)=> {
-
-        let html  = '<span class="label label-inverse mb-2" id="cnstnt_list_'+userid+'" >';
+    makeCnstntHtml = (userid,introduceStr)=> {
+        let html  = '<span class="label label-inverse mb-2" id="mng_list_'+userid+'" >';
         html += introduceStr
-        html += '&nbsp;&nbsp;&nbsp;<a href="javascript:deleteCnstnt('+userid+')" class="text-white delete-manager">X</a>';
-        html += '<input type="hidden" id="cnstnt'+userid+'"  name="cnstntids"  value="'+userid+'">';
+        html += '&nbsp;&nbsp;&nbsp;<a href="javascript:deleteMng('+cycl+','+userid+')" class="text-white delete-manager">X</a>';
+        html += '<input type="hidden" id="pcntst'+userid+'"  name="pcntstids'+cycl+'"  value="'+userid+'">';
         html += '</span>';
 
         return html;
@@ -330,37 +332,51 @@
            return;
        }
 
-       let compareId = $('input[name=memchk]:checked').val();
-       $("#cnslngExprtModalGrid").jsGrid("search", {}).done(function(data) {
+       var compareId = $('input[name=memchk]:checked').val();
 
-
+       $("#searchGrid").jsGrid("search", {}).done(function(data) {
            data.data.forEach(function(item){
-
-                if(checkedMode=='P' ){
-                    if(compareId == item.userid){selectedItem = item;}
-                }else {
-                    if(compareId == item.grpId){selectedItem = item;}
-                }
+               if (checkedMode=='P' ) {
+                   if(compareId == item.userid){selectedItem = item;}
+               } else {
+                   if(compareId == item.grpId){selectedItem = item;}
+               }
            })
 
            if(checkedMode=='P'){
-
-               let introStr= selectedItem.nm+' ( '+selectedItem.acnt+' ) |'+selectedItem.eml+' | '+selectedItem.moblphon;
-               $("#cnstnt_list_area").append(makeCnstntHtml(selectedItem.userid,introStr))
-
-           }else{
-
+               let introStr = selectedItem.nm+' ( '+selectedItem.acnt+' ) |'+selectedItem.eml+' | '+selectedItem.moblphon;
+               var objArr = $("input[name='pcntstids"+cycl+"']");
+               for (var i = 0; i < objArr.length; i++) {
+                   if (selectedItem.userid == objArr[i].value) {
+                       alert("선택하신 전문가는 이미 담당자로 배정되어 있습니다.");
+                       return;
+                   }
+               }
+               $("#mng_list_area").append(makeCnstntHtml(selectedItem.userid,introStr));
+           } else {
                let strArr = selectedItem.grpExprtStr.split(":");
 
                if(strArr.length > 0){
+                   var dupCnt = 0;
+                   var hiddenValArr = [];
+                   $("input[name='pcntstids"+cycl+"']").each(function(){
+                       hiddenValArr.push($(this).val());
+                   });
                    strArr.forEach(function(item){
                        let idArr = item.split(",");
-                       $("#cnstnt_list_area").append(makeCnstntHtml(idArr[0],idArr[1]))
-                   })
+                       if (hiddenValArr.indexOf(idArr[0]) > -1) {
+                           dupCnt = 1;
+                           return true;
+                       }
+                       $("#mng_list_area").append(makeCnstntHtml(idArr[0],idArr[1]));
+                   });
+                   if (dupCnt > 0) {
+                       alert("이미 담당자로 배정되어있는 전문가는 등록되지 않습니다.");
+                   }
                }
            }
-
        });
-       cnstntSearchModal.hide();
+
+       cnsltngPicModal.hide();
   }
 </script>

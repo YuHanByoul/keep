@@ -214,8 +214,9 @@
                             </span>
                         </button>
                         <ul class="toggle-list toggleTarget">
-                            <li><a href="#" title="현재 언어">마이페이지</a></li>
-                            <li><a href="#">내 정보</a></li>
+                            <li><a href="#" th:if="${session.user.loginUserType == 'P'}">마이페이지</a></li>
+                            <li><a href="#" th:if="${session.user.loginUserType == 'I'}">마이페이지</a></li>
+                            <li><a href="/front/myInfo/myInfoUpdate.html">내 정보</a></li>
                             <li class="bt1"><a href="javascript:logout()">로그아웃</a></li>
                         </ul>
                     </li>
@@ -238,78 +239,33 @@
                             <li th:class="${T(org.springframework.context.i18n.LocaleContextHolder).getLocale().toLanguageTag() == 'en' ? 'active':''}"><a href="javascript:changeLocale('en')" th:title="${T(org.springframework.context.i18n.LocaleContextHolder).getLocale().toLanguageTag() == 'en' ? '현재 언어':''}">ENGLISH</a></li>
                         </ul>
                     </li>
+                    
                     <th:block th:if="${session.user}"> 
                     <li class="ico-alarm toggleParent toggle-layer">
-                        <button class="toggleTrigger">알림 <strong>20</strong>
+                        <button class="toggleTrigger">알림 <strong id="pc_ntcn_cnt"></strong>
                             <span class="blind">
                                 <span class="on" aria-hidden="false">알림 열기</span>
                                 <span class="off" aria-hidden="true">알림 닫기</span>
                             </span>
                         </button>
+                        
                         <div class="alarm-layer toggle-layer-inner">
                             <button class="toggleTrigger toggle-layer-close" title="레이어팝업 닫기"></button>
                             <div class="toggle-layer-title">
                                 <strong>내 알림</strong>
-                                <button type="button" class="btn-xsmall btn-outline-black">알림 모두 삭제</button> <!-- 알림 없을 경우 삭제-->
                             </div>
-                            <ul>
-                                <li>
-                                    <a href="#">
-                                        <strong>전문가 회원가입 승인 완료</strong>
-                                        <span>2022-10-11  10:27:23</span>
-                                    </a>
-                                    <button type="button" title="알림 삭제"></button>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <strong>전문가 회원가입 승인 완료</strong>
-                                        <span>2022-10-11  10:27:23</span>
-                                    </a>
-                                    <button type="button" title="알림 삭제"></button>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <strong>전문가 회원가입 승인 완료</strong>
-                                        <span>2022-10-11  10:27:23</span>
-                                    </a>
-                                    <button type="button" title="알림 삭제"></button>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <strong>전문가 회원가입 승인 완료</strong>
-                                        <span>2022-10-11  10:27:23</span>
-                                    </a>
-                                    <button type="button" title="알림 삭제"></button>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <strong>전문가 회원가입 승인 완료</strong>
-                                        <span>2022-10-11  10:27:23</span>
-                                    </a>
-                                    <button type="button" title="알림 삭제"></button>
-                                </li>
-                                <li class="view-all">
-                                    <a href="#">
-                                        <span>알림 전체 보기</span>
-                                    </a>
-                                </li>
+                            <ul id="alramArea">
                             </ul>
-                            <!-- <div class="alarm-nodata">
-                                <div class="thumb">
-                                    <img src="/images/front/ico/ico-alarm-large.png" alt="">
-                                    <p>내가 받은 알림이 <br> 여기에 표시됩니다.</p>
-                                </div>
-                            </div> -->
+                            <span id="noDataArea"></span>
                         </div>
                     </li>
                     </th:block>
                 </ul>
             </div>
-            
             <div class="mo-shortcut-menu">
                 <ul>
                     <th:block th:if="${session.user}">
-                    <li class="ico-alarm"><a href="#" title="알림"><span>20</span></a></li>
+                    <li class="ico-alarm"><a href="javascript:goNtcnForm()" title="알림" id="m_ntcn" ></a></li>
                     </th:block>
                     <th:block th:unless="${session.user}">
                     <li class="ico-login"><a href="javascript:moveLoginPage()" title="로그인"></a></li>
@@ -342,7 +298,7 @@
                 <button type="button" class="btn-gnb-end blind" title="GNB 종료"></button>
             </div>
             <div class="sitemap">
-                <a href="#" title="전체메뉴"></a>
+                <a href="/front/helper/siteMap.html" title="전체메뉴"></a>
                 <button type="button" class="toggleTrigger" title="GNB">
                     <div></div>
                     <span class="blind">
@@ -356,6 +312,85 @@
 </div>
 <form name="logout_form" th:action="@{/logout}" method="post" onsubmit="return false">
 </form>
+<script th:inline="javascript">
+
+    var user = /*[[${session.user}]]*/ null;
+    var isErrored = false;
+    
+    $(function(){
+        if(user!=null){
+        	getNtcnData();
+            pollingNtcn();
+        }
+    })
+    
+    pollingNtcn=()=>{
+    	setInterval(() => getNtcnData(), 10*1000);    
+    }
+    
+	getNtcnData=()=>{
+	    if(displayWorkProgress(true)){
+	        $.ajax({
+	            url : "/front/ntcn/selectMainNtcnList.do",
+	            type: 'POST',
+	            cache : false,
+	            dataType: 'json',
+	            data : $("#authForm").serialize(),
+	            success : function (data){
+	            	renderingNtcnData(data);
+	                closeWorkProgress();
+	            },
+	            error :function(){
+		        }
+	        });
+	    }
+	}
+	
+	renderingNtcnData=(data)=>{
+
+		$("#m_ntcn_mark").remove();
+		$("#pc_ntcn_cnt").html("");
+		$("#alramArea").html("");
+		$("#noDataArea").html("");
+
+        let html ="";
+        if(data.totalCount == 0 ){
+            html += '<div class="alarm-nodata">'
+            html += '<div class="thumb">'
+            html += '    <img src="/images/front/ico/ico-alarm-large.png" alt="">'
+            html += '    <p> 새로운 알림이 없습니다.</p>'
+            html += '</div>'
+            html += '</div>'
+            $("#noDataArea").prepend(html);
+        }else{
+            $("#pc_ntcn_cnt").html(data.totalCount);
+            $("#m_ntcn").html('<span id="m_ntcn_mark"></span>');
+            
+	        	data.list.forEach(function(item){
+		        html += '<li>'
+		 	    if(item.mvmnurl){
+			        html += '   <a href="'+item.mvmnurl+'">'
+			    }else{
+			        html += '   <a href="javascript:void(0)" style="cursor:default;">'
+			    }
+		        html += '       <strong>'+item.ttl+'</strong>'
+		        html += '       <span>'+item.regDt+'</span>'
+		        html += '   </a>'
+		        html += '</li> '
+			})
+			
+            html +='<li class="view-all">'
+            html +='<a href="javascript:goNtcnForm()"><span>알림 전체 보기</span></a>'
+            html +='</li>'
+            $("#alramArea").prepend(html);
+        }
+	}
+	goNtcnForm=()=>{
+        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+        location.href = portalUrl + "front/membership/leaveMeber.html";  //   
+	}
+</script>
+
 <script>
     // header search autocomplete
     const autoCompleteJS = new autoComplete({
@@ -416,5 +451,4 @@
     document.querySelector("#search-input").addEventListener("close", function (event) {
         this.closest('.header-search').classList.remove('autocomplete-open');
     });
-
 </script>

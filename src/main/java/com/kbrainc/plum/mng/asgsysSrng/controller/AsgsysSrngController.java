@@ -34,7 +34,6 @@ import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.code.model.CodeVo;
 import com.kbrainc.plum.mng.code.service.CodeServiceImpl;
 import com.kbrainc.plum.mng.member.model.MemberVo;
-import com.kbrainc.plum.mng.srng.model.SrngFormQitemMapngVO;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -620,7 +619,7 @@ public class AsgsysSrngController {
 
     		fileVo.setFilegrpid(prgrmDstnctnInfo.getEduPhotoFilegrpid());
 
-    		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);    //증빙서류파일목록
+    		eduPhotoFileList = asgsysSrngService.selectEvdncDcmntFileList(fileVo);
 
     	}
     	for(int i=1; i < 4; i++) {    //교육사진 3개 고정

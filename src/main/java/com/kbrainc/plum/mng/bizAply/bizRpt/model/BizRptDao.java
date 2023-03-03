@@ -323,4 +323,38 @@ public interface BizRptDao {
 	*/
 	public int updateBsnsCnclYn(BizRptVo bizRptVo) throws Exception;
 
+	/**
+	* 컨설팅전문가 목록 조회
+	*
+	* @Title : selectCnsltngExprtList
+	* @Description : 컨설팅전문가 목록 조회
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectCnsltngExprtList() throws Exception;
+
+	/**
+	* 컨설팅관리 목록 엑셀다운로드
+	*
+	* @Title : selectCnsltngMngExcelList
+	* @Description : 컨설팅관리 목록 엑셀다운로드
+	* @param bizRptVo
+	* @return
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectCnsltngMngExcelList(BizRptVo bizRptVo) throws Exception;
+
+	/**
+	* 담당자그룹 목록 조회
+	*
+	* @Title : selectMngGrpList
+	* @Description : 담당자그룹 목록 조회
+	* @param bizRptVo
+	* @return
+	* @throws Exception
+	* @return List<BizRptVo>
+	*/
+	public List<BizRptVo> selectMngGrpList(BizRptVo bizRptVo) throws Exception;
+
 }

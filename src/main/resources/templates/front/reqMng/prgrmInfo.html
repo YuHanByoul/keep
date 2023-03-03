@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="insertForm" submit="return:false;">
+            <input type="hidden" name="pcntstid" id="pcntstid" th:value="${pcntstid}"/>
+            <input type="hidden" name="aplyid" id="aplyid" th:value="${aplyid}"/>
+            <input type="hidden" name="fldCd" id="fldCd" th:value="${fldCd}"/>
+	        <!-- content -->
+	        <div id="content" class="content">
+	            <div class="steps">
+	                <ol>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>01</span>
+	                            <strong>약관동의</strong>
+	                        </div>
+	                    </li>
+	                    <li class="active" title="현재 단계" aria-current="step">
+	                        <div class="steps-inner">
+	                            <span>02</span>
+	                            <strong>신청정보 작성</strong>
+	                        </div>
+	                    </li>
+	                    <li>
+	                        <div class="steps-inner">
+	                            <span>03</span>
+	                            <strong>신청완료</strong>
+	                        </div>
+	                    </li>
+	                </ol>
+	            </div>
+	
+	            <div class="row row-section">
+	                <div class="col col-small">
+	                    <div class="sticky-navigation">
+	                        <strong class="tit">신청정보 항목</strong>
+	                        <div class="sticky-steps">
+	                            <ul>
+	                                <li><a href="#">신청정보</a></li>
+	                                <li><a href="#">기관역량</a></li>
+	                                <li><a href="#">사업수행계획</a></li>
+	                                <li class="active"><a href="#" title="현재 단계" aria-current="step">프로그램정보</a></li>
+	                                <li><a href="#">전문강사 확보</a></li>
+	                                <li><a href="#">안전관리 적정성</a></li>
+	                            </ul>
+	                            <div class="btn-wrap">
+	                                <div class="center">
+	                                    <button type="button" class="btn-large btn-gray" onclick="tmpSaving();">중간저장</button>
+	                                    <button type="button" class="btn-large btn-green" onclick="save();">다음</button>
+	                                </div>
+	                            </div>
+	                        </div>
+	                    </div>
+	                </div>
+	
+	                <div class="col col-wide">
+	
+	                    <div class="table-caption mt0">
+	                        <div class="left">
+	                            <h3 class="sub-title">프로그램정보</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="box-desc-list bg7">
+	                        <p>
+	                            프로그램 개요는 대상별로 각각 작성(예. 초등, 고등 프로그램 운영시 초등용 프로그램 개요 1개, 고등 프로그램 개요 1개 / 총 2개 제출) <br>
+	                            차시별 인원수는 1차시 운영당 평균인원을 기입 <br>
+	                            총 운영기수(또는 학교)의 경우 프로그램 교육대상별 1기수로 산출 <br>
+	                            총 교육차시는 ‘프로그램 차시×기수’로 산출 <br>
+	                            총 교육인원은 ‘총 교육차시×차시별 인원수’로 산출
+	                        </p>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo mt10">
+	                        <table>
+	                            <caption>프로그램 정보 - 대면/비대면, 실내/실외, 강의/체험형, 일회/다회성, 필수주제 교육차시, 선택주제 교육차시, 운영회기, 회기별 교육차시, 총운영차시, 차시별 교육인원, 총 교육인원, 교육대상, 교육장소</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">대면/비대면</th>
+	                                    <td colspan="3">
+                                            <span kattr:radio_code="eduMthdCd" grpCd="205" th:attr="selectedCd=${detail.eduMthdCd}">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">실내/실외</th>
+	                                    <td colspan="3">
+                                            <span kattr:radio_code="lctrPlcSeCd" grpCd="206" th:attr="selectedCd=${detail.lctrPlcSeCd}">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">강의/체험형</th>
+	                                    <td colspan="3">
+                                            <span kattr:radio_code="lctrFrmCd" grpCd="207" th:attr="selectedCd=${detail.lctrFrmCd}">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">일회/다회성</th>
+	                                    <td colspan="3">
+                                            <span kattr:radio_code="lctrTmeMthdCd" grpCd="208" th:attr="selectedCd=${detail.lctrTmeMthdCd}">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">필수주제 교육차시<i class="ast" title="필수입력">*</i></th>
+	                                    <td colspan="3">
+	                                        <div class="form-input">
+	                                            <input type="text" id="essntlSbjctNm" name="essntlSbjctNm" title="필수주제" th:value="${detail.essntlSbjctNm}" placeholder="필수주제를 입력해 주세요.">
+	                                            <input type="text" id="essntlSbjctRnd" name="essntlSbjctRnd" title="교육차시" th:value="${detail.essntlSbjctRnd}" placeholder="교육차시를 입력해 주세요.">
+	                                            <p class="form-msg"></p>
+	                                        </div>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">선택주제 교육차시<i class="ast" title="필수입력">*</i></th>
+	                                    <td colspan="3">
+	                                        <div class="form-input">
+	                                            <input type="text" id="choiseSbjctNm" name="choiseSbjctNm" title="선택주제" th:value="${detail.choiseSbjctNm}" placeholder="선택주제를 입력해 주세요.">
+	                                            <input type="text" id="choiseSbjctRnd" name="choiseSbjctRnd" title="교육차시" th:value="${detail.choiseSbjctRnd}" placeholder="교육차시를 입력해 주세요.">
+	                                            <p class="form-msg"></p>
+	                                        </div>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">운영회기<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="text" id="operSesn" name="operSesn" th:value="${detail.operSesn}" title="운영회기">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                    <th scope="row">회기별 교육차시<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="number" id="sesnEduRnd" name="sesnEduRnd" th:value="${detail.sesnEduRnd}" title="회기별 교육차시">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">총운영차시<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="number" id="wholOperRnd" name="wholOperRnd" th:value="${detail.wholOperRnd}" title="총운영차시">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                    <th scope="row">차시별 교육인원<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="number" id="rndEduNope" name="rndEduNope" th:value="${detail.rndEduNope}" title="차시별 교육인원">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">총 교육인원<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="number" id="wholEduNope" name="wholEduNope" th:value="${detail.wholEduNope}" title="총 교육인원">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                    <th scope="row">교육대상<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <input type="text" id="eduTrgt" name="eduTrgt" th:value="${detail.eduTrgt}" title="교육대상">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">교육장소<i class="ast" title="필수입력">*</i></th>
+	                                    <td colspan="3">
+	                                        <input type="text" id="eduPlc" name="eduPlc" th:value="${detail.eduPlc}" title="교육장소">
+	                                        <p class="form-msg"></p>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	                    
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">프로그램정보</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-col table-col-scroll">
+                            <table>
+                                <caption>프로그램정보 - 번호, 사업명, 교육차시, 교육인원, 열 삭제</caption>
+                                <colgroup>
+                                    <col style="width:6%;">
+                                    <col>
+                                    <col style="width:20%;">
+                                    <col style="width:20%;">
+                                    <col style="width:55px;">
+                                </colgroup>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">번호</th>
+                                        <th scope="col">사업명</th>
+                                        <th scope="col">교육차시</th>
+                                        <th scope="col">교육인원</th>
+                                        <th scope="col"><span class="blind">열 삭제</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="eduTable">
+                                    <tr th:if="${#lists.size(prgrmList) > 0}" th:each="list, i: ${prgrmList}">
+			                            <td><th:block th:text="${list.ordr}"/></td>
+			                            <td><input type="text" id="prgrmNm" name="prgrmNm" th:value="${list.prgrmNm}"></td>
+			                            <td><input type="text" id="eduRnd" name="eduRnd" th:value="${list.eduRnd}"></td>
+			                            <td><input type="text" id="eduNope" name="eduNope" th:value="${list.eduNope}"></td>
+			                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'eduTable');"><span class="icon icon-remove"></span></button></td>
+			                        </tr>
+			                        <tr th:unless="${#lists.size(prgrmList) > 0}">
+			                            <td>1</td>
+			                            <td><input type="text" id="prgrmNm" name="prgrmNm"></td>
+			                            <td><input type="text" id="eduRnd" name="eduRnd"></td>
+			                            <td><input type="text" id="eduNope" name="eduNope"></td>
+			                            <td class="ac"></td>
+			                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'eduTable');">
+                            <span class="icon icon-row-add"></span>
+                        </button>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">프로그램 소개</h3>
+	                        </div>
+	                        <div class="right">
+	                            <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>프로그램 소개 - 프로그램 개발 배경 및 필요성, 환경 및 환경 교육적 적절성, 프로그램 우수성</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">프로그램 개발 배경 및 필요성<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <textarea title="프로그램 개발 배경 및 필요성" id="prgrmBcrn" name="prgrmBcrn" placeholder=""><th:block th:text="${detail.prgrmBcrn}"></textarea>
+	                                        <p class="form-msg"></p>
+	                                        <div class="desc ar size"><span>0</span> / 500자</div>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">환경 및 환경 교육적 적절성<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <textarea title="환경 및 환경 교육적 적절성" id="eduAppro" name="eduAppro" placeholder=""><th:block th:text="${detail.eduAppro}"></textarea>
+	                                        <p class="form-msg"></p>
+	                                        <div class="desc ar size"><span>0</span> / 300자</div>
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">프로그램 우수성<i class="ast" title="필수입력">*</i></th>
+	                                    <td>
+	                                        <textarea title="프로그램 우수성" id="prgrmDstnctn" name="prgrmDstnctn" placeholder=""><th:block th:text="${detail.prgrmDstnctn}"></textarea>
+	                                        <p class="form-msg"></p>
+	                                        <div class="desc ar size"><span>0</span> / 300자</div>
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">연간운영계획</h3>
+	                        </div>
+	                    </div>
+	
+	                    <div class="table-row table-row-mo">
+	                        <table>
+	                            <caption>연간운영계획 - 연간운영계획, 연간 프로그램 이수 예정인원</caption>
+	                            <colgroup>
+	                                <col style="width:140px;">
+	                                <col>
+	                            </colgroup>
+	                            <tbody>
+	                                <tr>
+	                                    <th scope="row">연간운영계획</th>
+	                                    <td>
+	                                        <input type="text" id="operPlan" name="operPlan" th:value="${detail.operPlan}" title="연간운영계획">
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                    <th scope="row">연간 프로그램 이수 예정인원</th>
+	                                    <td>
+	                                        <input type="text" id="fyerComplPrearngeNope" name="fyerComplPrearngeNope" th:value="${detail.fyerComplPrearngeNope}" title="연간 프로그램 이수 예정인원">
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+	                        </table>
+	                    </div>
+	
+	                    
+	                    <div class="table-caption">
+	                        <div class="left">
+	                            <h3 class="sub-title">월별 교육운영 횟수</h3>
+	                        </div>
+	                    </div>
+	
+                        <div class="table-col table-layout-auto table-col-scroll">
+                            <table>
+                                <caption>월별 교육운영 횟수 - 1월, 2월, 3월, 4월, 5월, 6월, 7월, 8월, 9월, 10월, 11월, 12월</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">1월</th>
+                                        <th scope="col">2월</th>
+                                        <th scope="col">3월</th>
+                                        <th scope="col">4월</th>
+                                        <th scope="col">5월</th>
+                                        <th scope="col">6월</th>
+                                        <th scope="col">7월</th>
+                                        <th scope="col">8월</th>
+                                        <th scope="col">9월</th>
+                                        <th scope="col">10월</th>
+                                        <th scope="col">11월</th>
+                                        <th scope="col">12월</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><input type="number" id="janCnt" name="janCnt" th:value="${detail.janCnt}" title="1월"></td>
+                                        <td><input type="number" id="febCnt" name="febCnt" th:value="${detail.febCnt}" title="2월"></td>
+                                        <td><input type="number" id="marCnt" name="marCnt" th:value="${detail.marCnt}" title="3월"></td>
+                                        <td><input type="number" id="aprCnt" name="aprCnt" th:value="${detail.aprCnt}" title="4월"></td>
+                                        <td><input type="number" id="mayCnt" name="mayCnt" th:value="${detail.mayCnt}" title="5월"></td>
+                                        <td><input type="number" id="juneCnt" name="juneCnt" th:value="${detail.juneCnt}" title="6월"></td>
+                                        <td><input type="number" id="julyCnt" name="julyCnt" th:value="${detail.julyCnt}" title="7월"></td>
+                                        <td><input type="number" id="augCnt" name="augCnt" th:value="${detail.augCnt}" title="8월"></td>
+                                        <td><input type="number" id="septCnt" name="septCnt" th:value="${detail.septCnt}" title="9월"></td>
+                                        <td><input type="number" id="octCnt" name="octCnt" th:value="${detail.octCnt}" title="10월"></td>
+                                        <td><input type="number" id="novCnt" name="novCnt" th:value="${detail.novCnt}" title="11월"></td>
+                                        <td><input type="number" id="dcmCnt" name="dcmCnt" th:value="${detail.dcmCnt}" title="12월"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+	
+	                    <div class="mo-only">
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">중간저장</button>
+	                            </div>
+	                        </div>
+	                        <div class="btn-wrap">
+	                            <div class="center">
+	                                <button type="button" class="btn-medium btn-gray">이전</button>
+	                                <button type="button" class="btn-medium btn-green" onclick="save();">다음</button>
+	                            </div>
+	                        </div>
+	                    </div>
+	
+	                </div>
+	            </div>
+	        </div>
+        </form>
+        <!-- //content -->
+        <style>
+            .form-msg { color : red; }
+        </style>  
+	    <script th:inline="javascript">
+	    var deviceMode = "";
+    	$(function(){
+    		deviceMode = $WINDOW_MODE;
+    		var validator = $("#insertForm").validate({
+                rules: {
+                	essntlSbjctNm : { required: true } 
+                    , essntlSbjctRnd : { required: true } 
+                    , choiseSbjctNm : { required: true } 
+                    , choiseSbjctRnd : { required: true } 
+                    , operSesn : { required: true } 
+                    , sesnEduRnd : { required: true } 
+                    , wholOperRnd : { required: true } 
+                    , rndEduNope : { required: true } 
+                    , wholEduNope : { required: true } 
+                    , eduTrgt : { required: true } 
+                    , eduPlc : { required: true } 
+                    , prgrmBcrn : { required: true } 
+                    , eduAppro : { required: true } 
+                    , prgrmDstnctn : { required: true } 
+                },
+                messages: {
+                	essntlSbjctNm    :   { required: "필수주제를 입력해주십시오." }  
+                    , essntlSbjctRnd    :   { required: "필수주제 교육차시를 입력해주십시오." }  
+                    , choiseSbjctNm    :   { required: "선택주제를 입력해주십시오." }  
+                    , choiseSbjctRnd    :   { required: "선택주제 교육차시를 입력해주십시오." }  
+                    , operSesn    :   { required: "운영회기를 입력해주십시오." }  
+                    , sesnEduRnd    :   { required: "회기별 교육차시를 입력해주십시오." }  
+                    , wholOperRnd    :   { required: "총운영차시를 입력해주십시오." }  
+                    , rndEduNope    :   { required: "차시별 교육인원을 입력해주십시오." }  
+                    , wholEduNope    :   { required: "총교육인원을 입력해주십시오." }  
+                    , eduTrgt    :   { required: "교육대상을 입력해주십시오." }  
+                    , eduPlc    :   { required: "교육장소를 입력해주십시오." }  
+                    , prgrmBcrn    :   { required: "프로그램 개발 배경 및 필요성을 입력해주십시오." }  
+                    , eduAppro    :   { required: "환경 및 환경 교육적 적절성을 입력해주십시오." }  
+                    , prgrmDstnctn    :   { required: "프로그램 우수성을 입력해주십시오." }  
+                }
+            });
+        });
+	    
+    	// 테이블 로우 추가
+        function addRow(obj, tableId) {
+            var html = '<button type="button" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, \''+tableId+'\');"><span class="icon icon-remove"></span></button>';
+            var newrow = "";
+            var i = 0;
+            $("#" + tableId).find("tr").each(function(){
+                i++;
+                $(this).find("td:eq(0)").text(i);
+                $(this).find("td:last").html("");
+                newrow = $(this).clone();
+            });
+            
+            newrow.find("td > input").val("");
+            newrow.find("td:eq(0)").text(i+1);
+            newrow.find("td:last").html(html);
+            newrow.insertAfter($("#"+tableId).find("tr:last"));
+        }
+
+        // 테이블 로우 삭제
+        function removeRow(obj, tableId) {
+            var html = '<button type="button" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, \''+tableId+'\');"><span class="icon icon-remove"></span></button>';
+            $(obj).parent().parent().remove();
+            if ($("#" + tableId).find("tr").length > 1) {
+                $("#" + tableId).find("tr:last").find("td:last").html(html);
+            }
+        }
+        
+	    // 중간저장
+        function tmpSaving() {
+            if(!($("#insertForm").valid())) return;
+            if(!confirm("저장하시겠습니까?")) return;
+            var data =  $("#insertForm").serialize();
+            
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/bizAply/insertPrgrmInfo.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if (data.result == "success") {
+                            alert("저장되었습니다.");
+                        } else {
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+	    
+	    // 저장
+	    function save(){
+	        if(!($("#insertForm").valid())) return;
+	        var data =  $("#insertForm").serialize();
+	        
+	        if(displayWorkProgress(true)){
+	            $.ajax({
+	                url : "/front/bizAply/insertPrgrmInfo.do",
+	                type: 'POST',
+	                cache : false,
+	                dataType: 'json',
+	                data : data,
+	                success : function (data){
+	                    if (data.result == "success") {
+	                    	location.href = "/front/bizAply/smrLeaderForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val();
+	                    } else {
+	                        alert(data.msg);
+	                    }
+	                    closeWorkProgress();
+	                }
+	            });
+	        }
+	    }
+	    </script>
+    </div>
+</body>
+</html>

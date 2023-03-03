@@ -217,6 +217,10 @@
             PRGRMID
           , SCHDLID
           , RND
+          , BGNG_HR
+          , BGNG_MNT
+          , END_HR
+          , END_MNT
           , CONCAT(BGNG_HR, "시 ",  BGNG_MNT,"분 ~ ", END_HR, "시 ",  END_MNT, "분") AS SCHDL
           , PRGRM_NM
           , CRS
@@ -228,6 +232,59 @@
         WHERE PRGRMID = #{prgrmid}
     </select>
 
+    <!-- 프로그램 운영일정 등록 -->
+    <insert id="insertPrgrmSchdl" parameterType="front.dsgnPrgrmVo" >
+        INSERT INTO
+            TB_ASS_PRGRM_SCHDL (
+                PRGRMID
+              , RND
+              , BGNG_HR
+              , BGNG_MNT
+              , END_HR
+              , END_MNT
+              , PRGRM_NM
+              , CRS
+              , MDFCN_DT
+              , MDFRID
+              , REG_DT
+              , RGTRID
+        ) VALUES(
+                #{schdlArr.prgrmid }
+              , #{schdlArr.rnd     }
+              , #{schdlArr.bgngHr  }
+              , #{schdlArr.bgngMnt }
+              , #{schdlArr.endHr   }
+              , #{schdlArr.endMnt  }
+              , #{schdlArr.prgrmNm }
+              , #{schdlArr.crs     }
+              , NOW()
+              , #{user.userid}
+              , NOW()
+              , #{user.userid}
+        )
+    </insert>
+
+    <!-- 프로그램 운영일정 삭제 -->
+    <delete id="deletePrgrmSchdl" parameterType="front.dsgnPrgrmVo" >
+        DELETE FROM
+            TB_ASS_PRGRM_SCHDL
+        WHERE PRGRMID = #{prgrmid}
+    </delete>
+
+    <!-- 프로그램 대처계획 목록 조회 -->
+    <select id="selectPlanList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
+        /* dsgnPrgrmDao.selectPlanList */
+        SELECT
+            PLANID
+          , PRGRMID
+          , PRGRM_NM
+          , SBSTN_PRGRM_NM
+        FROM
+            TB_ASS_EMRGCY_ACTN_PLAN
+        WHERE 1=1
+        AND PRGRMID = #{prgrmid}
+    </select>
+
     <!-- 기관정보 조회 -->
     <select id="selectInstInfo" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
         /* dsgnPrgrmDao.selectInstInfo*/
@@ -237,11 +294,13 @@
           , A.NM
           , A.ACNT
           , CONCAT(A.NM, '(',A.ACNT,')')    AS APLCNT_NM
-          , A.MOBLPHON    AS APLCNT_MOBLPHON
-          , A.EML         AS APLCNT_EML
+          , A.MOBLPHON       AS APLCNT_MOBLPHON
+          , A.EML            AS APLCNT_EML
           , B.INST_NM
           , B.INST_CD
+          , CD.CD_NM         AS INST_CD_NM
           , B.INST_TYPE_CD
+          , TYPE_CD.CD_NM    AS INST_TYPE_CD_NM
           , B.RGN_CD
           , B.BRNO
           , B.RPRSV_NM
@@ -252,19 +311,393 @@
           , B.ADDR_DTL
           , B.HMPG
           , B.LOGO_FILEID
-          , B.FILEGRPID
           , B.APRV_STTS_CD
           , B.USE_YN
           , B.MDFCN_DT
           , B.MDFRID
           , B.REG_DT
           , B.RGTRID
+          , C.PRGRMID
+          , C.APLCNTID
+          , C.APLCNT_EML
+          , C.FILEGRPID
         FROM
             TB_CMM_USER A
         INNER JOIN
             TB_CMM_INST B ON A.INSTID = B.INSTID
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM C ON A.USERID = C.APLCNTID
+        LEFT OUTER JOIN
+            TB_CMM_CD TYPE_CD ON B.INST_TYPE_CD = TYPE_CD.CD
+        LEFT OUTER JOIN
+            TB_CMM_CD CD ON B.INST_TYPE_CD = CD.CD
         WHERE 1=1
             AND A.USERID = #{aplcntid}
     </select>
+
+    <!-- 신청정보 조회 -->
+    <select id="selectAplyInfo" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
+        /* dsgnPrgrmDao.selectAplyInfo*/
+        SELECT
+            A.PRGRMID
+          , A.INSTID
+          , A.APLCNTID
+          , A.APLCNT_NM
+          , A.APLCNT_EML
+          , A.APLCNT_MOBLPHON
+          , A.INST_NM
+          , A.INST_EML
+          , A.INST_CNTCT
+          , A.INST_HMPG
+          , A.INST_TYPE_CD
+          , A.INST_RGN_CD
+          , A.INST_ZIP
+          , A.INST_ADDR
+          , A.INST_DTLADDR
+          , A.PRGRM_NM
+          , A.FILEGRPID
+          , A.STTS_CD
+          , A.DSGN_CYCL
+          , A.DSGN_NO
+          , A.DSGN_DE
+          , A.DSGN_BGNG_DE
+          , A.DSGN_END_DE
+          , A.AUTZRID
+          , A.CHKLSTID
+          , A.CNSLTNG_PRGRS_YN
+          , A.CNSLTNGID
+          , A.APLY_DT
+          , A.MDFCN_DT
+          , A.MDFRID
+          , A.REG_DT
+          , A.RGTRID
+          /*프로그램 우수성*/
+          , B.PRGRMID    AS DSTNCTNID
+          , B.AUG
+          , B.STY_NIGHT
+          , B.EDU_CN
+          , B.HGSCHST
+          , B.SCHBOY
+          , B.OPER_FRM_CD
+          , B.SEPT
+          , B.JULY
+          , B.EDU_PLC
+          , B.JAN
+          , B.STY_YN
+          , B.EDU_PRPS
+          , B.DSTNCTN
+          , B.OCT
+          , B.ACTN_MTHD
+          , B.FEB
+          , B.NOV
+          , B.WHOL_AGE
+          , B.STY_DAYTM
+          , B.MAR
+          , B.INFNT
+          , B.MAY
+          , B.EDU_MNT
+          , B.EDU_CNT
+          , B.EDU_HR
+          , B.MSKLSD
+          , B.PCHRG_YN
+          , B.ADULT
+          , B.APPRO
+          , B.APR
+          , B.WETHER_STTN
+          , B.EDU_NOPE
+          , B.ETRFEE
+          , B.WHOL_MM
+          , B.DCM
+          , B.JUNE
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
+        AND A.STTS_CD = '111101'    /* 작성중 */
+    </select>
+
+    <!-- ASS 프로그램 등록 -->
+    <insert id="insertPrgrmAssPrgrm" parameterType="front.dsgnPrgrmVo" >
+        /* dsgnPrgrmDao.insertPrgrmAssPrgrm*/
+        INSERT INTO TB_ASS_PRGRM
+        (
+            INSTID
+          , APLCNTID
+          , APLCNT_NM
+          , APLCNT_EML
+          , APLCNT_MOBLPHON
+          , INST_NM
+          , INST_EML
+          , INST_CNTCT
+          , INST_HMPG
+          , INST_TYPE_CD
+          , INST_RGN_CD
+          , INST_ZIP
+          , INST_ADDR
+          , INST_DTLADDR
+          , PRGRM_NM
+          , FILEGRPID
+          , STTS_CD
+          , DSGN_CYCL
+          , DSGN_NO
+          , DSGN_DE
+          , DSGN_BGNG_DE
+          , DSGN_END_DE
+          , AUTZRID
+          , CHKLSTID
+          , CNSLTNG_PRGRS_YN
+          , CNSLTNGID
+          , APLY_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{instid}
+          , #{aplcntid}
+          , #{aplcntNm}
+          , #{aplcntEml}
+          , #{aplcntMoblphon}
+          , #{instNm}
+          , #{instEml}
+          , #{instCntct}
+          , #{instHmpg}
+          , #{instTypeCd}
+          , #{instRgnCd}
+          , #{instZip}
+          , #{instAddr}
+          , #{instDtladdr}
+          , #{prgrmNm}
+          , #{filegrpid}
+          , #{sttsCd}
+          , #{dsgnCycl}
+          , #{dsgnNo}
+          , #{dsgnDe}
+          , #{dsgnBgngDe}
+          , #{dsgnEndDe}
+          , #{autzrid}
+          , #{chklstid}
+          , #{cnsltngPrgrsYn}
+          , #{cnsltngid}
+          , NOW()
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- ASS 프로그램 수정 -->
+    <update id="updatePrgrmAssPrgrm" parameterType="front.dsgnPrgrmVo" >
+        /* dsgnPrgrmDao.updatePrgrmAssPrgrm*/
+        UPDATE TB_ASS_PRGRM SET
+            MDFCN_DT          = NOW()
+          , MDFRID            = #{user.userid}
+<if test="aplcntEml      != null and aplcntEml      != ''">   APLCNT_EML        = #{aplcntEml        } </if>
+<if test="aplcntMoblphon != null and aplcntMoblphon != ''"> , APLCNT_MOBLPHON   = #{aplcntMoblphon   } </if>
+<if test="instNm         != null and instNm         != ''"> , INST_NM           = #{instNm           } </if>
+<if test="instEml        != null and instEml        != ''"> , INST_EML          = #{instEml          } </if>
+<if test="instCntct      != null and instCntct      != ''"> , INST_CNTCT        = #{instCntct        } </if>
+<if test="instHmpg       != null and instHmpg       != ''"> , INST_HMPG         = #{instHmpg         } </if>
+<if test="instTypeCd     != null and instTypeCd     != ''"> , INST_TYPE_CD      = #{instTypeCd       } </if>
+<if test="instRgnCd      != null and instRgnCd      != ''"> , INST_RGN_CD       = #{instRgnCd        } </if>
+<if test="instZip        != null and instZip        != ''"> , INST_ZIP          = #{instZip          } </if>
+<if test="instAddr       != null and instAddr       != ''"> , INST_ADDR         = #{instAddr         } </if>
+<if test="instDtladdr    != null and instDtladdr    != ''"> , INST_DTLADDR      = #{instDtladdr      } </if>
+<if test="prgrmNm        != null and prgrmNm        != ''"> , PRGRM_NM          = #{prgrmNm          } </if>
+<if test="filegrpid      != null and filegrpid      != ''"> , FILEGRPID         = #{filegrpid        } </if>
+<if test="sttsCd         != null and sttsCd         != ''"> , STTS_CD           = #{sttsCd           } </if>
+<if test="dsgnCycl       != null and dsgnCycl       != ''"> , DSGN_CYCL         = #{dsgnCycl         } </if>
+<if test="dsgnNo         != null and dsgnNo         != ''"> , DSGN_NO           = #{dsgnNo           } </if>
+<if test="dsgnDe         != null and dsgnDe         != ''"> , DSGN_DE           = #{dsgnDe           } </if>
+<if test="dsgnBgngDe     != null and dsgnBgngDe     != ''"> , DSGN_BGNG_DE      = #{dsgnBgngDe       } </if>
+<if test="dsgnEndDe      != null and dsgnEndDe      != ''"> , DSGN_END_DE       = #{dsgnEndDe        } </if>
+<if test="autzrid        != null and autzrid        != ''"> , AUTZRID           = #{autzrid          } </if>
+<if test="chklstid       != null and chklstid       != ''"> , CHKLSTID          = #{chklstid         } </if>
+<if test="cnsltngPrgrsYn != null and cnsltngPrgrsYn != ''"> , CNSLTNG_PRGRS_YN  = #{cnsltngPrgrsYn   } </if>
+<if test="cnsltngid      != null and cnsltngid      != ''"> , CNSLTNGID         = #{cnsltngid        } </if>
+<if test="aplyDt         != null and aplyDt         != ''"> , APLY_DT           = #{aplyDt           } </if>
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 프로그램 우수성 등록 -->
+    <insert id="insertPrgrmDstnctnForm" parameterType="front.dsgnPrgrmVo" >
+    /* DsgnPrgrmDao.insertPrgrmDstnctn */
+    INSERT
+        INTO TB_ASS_PRGRM_DSTNCTN (
+            PRGRMID
+          , STY_YN
+          , STY_NIGHT
+          , STY_DAYTM
+          , OPER_FRM_CD
+          , JAN
+          , FEB
+          , MAR
+          , APR
+          , MAY
+          , JUNE
+          , JULY
+          , AUG
+          , SEPT
+          , OCT
+          , NOV
+          , DCM
+          , WHOL_MM
+          , INFNT
+          , SCHBOY
+          , MSKLSD
+          , HGSCHST
+          , ADULT
+          , WHOL_AGE
+          , EDU_PLC
+          , EDU_NOPE
+          , EDU_CNT
+          , EDU_HR
+          , EDU_MNT
+          , PCHRG_YN
+          , ETRFEE
+          , EDU_PRPS
+          , APPRO
+          , DSTNCTN
+          , EDU_CN
+          , WETHER_STTN
+          , ACTN_MTHD
+          , EDU_PHOTO_FILEGRPID
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+          ) VALUES (
+            #{prgrmid          }
+          , #{styYn            }
+          , #{styNight         }
+          , #{styDaytm         }
+          , #{operFrmCd        }
+          , #{jan              }
+          , #{feb              }
+          , #{mar              }
+          , #{apr              }
+          , #{may              }
+          , #{june             }
+          , #{july             }
+          , #{aug              }
+          , #{sept             }
+          , #{oct              }
+          , #{nov              }
+          , #{dcm              }
+          , #{wholMm           }
+          , #{infnt            }
+          , #{schboy           }
+          , #{msklsd           }
+          , #{hgschst          }
+          , #{adult            }
+          , #{wholAge          }
+          , #{eduPlc           }
+          , #{eduNope          }
+          , #{eduCnt           }
+          , #{eduHr            }
+          , #{eduMnt           }
+          , #{pchrgYn          }
+          , #{etrfee           }
+          , #{eduPrps          }
+          , #{appro            }
+          , #{dstnctn          }
+          , #{eduCn            }
+          , #{wetherSttn       }
+          , #{actnMthd         }
+          , #{eduPhotoFilegrpid}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+          )
+    </insert>
+
+    <!-- 프로그램 우수성 수정 -->
+    <update id="updatePrgrmDstnctnForm" parameterType="front.dsgnPrgrmVo" >
+    /* DsgnPrgrmDao.updatePrgrmDstnctn */
+        UPDATE
+            TB_ASS_PRGRM_DSTNCTN
+        SET
+            STY_YN                  = #{styYn            }
+          , STY_NIGHT               = #{styNight         }
+          , STY_DAYTM               = #{styDaytm         }
+          , OPER_FRM_CD             = #{operFrmCd        }
+          , JAN                     = #{jan              }
+          , FEB                     = #{feb              }
+          , MAR                     = #{mar              }
+          , APR                     = #{apr              }
+          , MAY                     = #{may              }
+          , JUNE                    = #{june             }
+          , JULY                    = #{july             }
+          , AUG                     = #{aug              }
+          , SEPT                    = #{sept             }
+          , OCT                     = #{oct              }
+          , NOV                     = #{nov              }
+          , DCM                     = #{dcm              }
+          , WHOL_MM                 = #{wholMm           }
+          , INFNT                   = #{infnt            }
+          , SCHBOY                  = #{schboy           }
+          , MSKLSD                  = #{msklsd           }
+          , HGSCHST                 = #{hgschst          }
+          , ADULT                   = #{adult            }
+          , WHOL_AGE                = #{wholAge          }
+          , EDU_PLC                 = #{eduPlc           }
+          , EDU_NOPE                = #{eduNope          }
+          , EDU_CNT                 = #{eduCnt           }
+          , EDU_HR                  = #{eduHr            }
+          , EDU_MNT                 = #{eduMnt           }
+          , PCHRG_YN                = #{pchrgYn          }
+          , ETRFEE                  = #{etrfee           }
+          , EDU_PRPS                = #{eduPrps          }
+          , APPRO                   = #{appro            }
+          , DSTNCTN                 = #{dstnctn          }
+          , EDU_CN                  = #{eduCn            }
+          , WETHER_STTN             = #{wetherSttn       }
+          , ACTN_MTHD               = #{actnMthd         }
+          , EDU_PHOTO_FILEGRPID     = #{eduPhotoFilegrpid}
+          , MDFCN_DT                = NOW()
+          , MDFRID                  = #{user.userid      }
+        WHERE
+            PRGRMID = #{prgrmid}
+    </update>
+
+    <!-- 프로그램 평가 체계 조회 -->
+    <select id="selectPrgrmEvlForm" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
+        /* DsgnPrgrmDao.selectPrgrmEvlForm*/
+        SELECT
+            A.PRGRMID                /* 프로그램아이디 */
+          , B.PRGRMID    AS EVLID
+          , B.EVL_PRPS               /* 평가_목적 */
+          , B.BFR_LDR_EVL_ARTCL      /* 사전_지도자_평가_항목 */
+          , B.BFR_LDR_EVL_TL         /* 사전_지도자_평가_도구 */
+          , B.AFTR_LDR_EVL_ARTCL     /* 사후_지도자_평가_항목 */
+          , B.AFTR_LDR_EVL_TL        /* 사후_지도자_평가_도구 */
+          , B.BFR_PRTPNT_EVL_ARTCL   /* 사전_참여자_평가_항목 */
+          , B.BFR_PRTPNT_EVL_TL      /* 사전_참여자_평가_도구 */
+          , B.AFTR_PRTPNT_EVL_ARTCL  /* 사후_참여자_평가_항목 */
+          , B.AFTR_PRTPNT_EVL_TL     /* 사후_참여자_평가_도구 */
+          , B.BFR_GDR_EVL_ARTCL      /* 사전_인솔자_평가_항목 */
+          , B.BFR_GDR_EVL_TL         /* 사전_인솔자_평가_도구 */
+          , B.AFTR_GDR_EVL_ARTCL     /* 사후_인솔자_평가_항목 */
+          , B.AFTR_GDR_EVL_TL        /* 사후_인솔자_평가_도구 */
+          , B.DATABASE_WRT_YN        /* 데이터베이스_작성_여부 */
+          , B.CLSJRNL_WRT_YN         /* 수업일지_작성_여부 */
+          , B.ETC_YN                 /* 기타_여부 */
+          , B.ETC_CN                 /* 기타_내용 */
+          , B.MDFCN_DT               /* 수정_일시 */
+          , B.MDFRID                 /* 수정자아이디 */
+          , B.REG_DT                 /* 등록_일시 */
+          , B.RGTRID                 /* 등록자아이디 */
+        FROM TB_ASS_PRGRM A
+        LEFT OUTER JOIN TB_ASS_PRGRM_EVL B    /* ASS_프로그램_평가 */
+            ON A.PRGRMID= B.PRGRMID
+        WHERE 1=1
+        AND A.PRGRMID = #{prgrmid}
+    </select>
+
 
 </mapper>

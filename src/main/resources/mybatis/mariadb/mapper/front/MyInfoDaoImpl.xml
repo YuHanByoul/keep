@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : 
+	Description : 
+-->
+<mapper namespace="com.kbrainc.plum.front.myInfo.model.MyInfoDao">
+
+    <!-- 사용자정보 조회 -->
+    <select id="selectMemberInfo" parameterType="front.MemberVo" resultType="front.MemberVo">
+        /* MemberDao.selectMemberInfo */
+             SELECT
+                 A.USERID
+               , A.ACNT
+               , A.NM
+               , A.MOBLPHON
+               , A.TELNO
+               , A.EML
+               , A.BRDT
+               , A.GNDR
+               , A.ZIP
+               , A.ADDR
+               , A.ADDR_DTL
+               ,(SELECT GROUP_CONCAT(ITRSTFLD_CD SEPARATOR',') FROM TB_CMM_USER_ITRSTFLD  WHERE USERID = #{user.userid} ) AS ITRSTFLD_CD
+               ,(SELECT GROUP_CONCAT(ENVFLD_CD SEPARATOR',') FROM TB_CMM_USER_ENVFLD  WHERE USERID = #{user.userid} ) AS ENVFLD_CD
+               , A.PRVC_VLDTY
+             FROM
+               TB_CMM_USER A
+               LEFT OUTER JOIN (
+                 SELECT USERID , GROUP_CONCAT(ROLEID SEPARATOR  ',') AS ROLECD FROM TB_CMM_ROLE_USER  WHERE USERID = #{user.userid}
+               )B
+               ON(A.USERID =B.USERID)
+           WHERE A.USERID = #{user.userid}
+    </select>
+    
+</mapper>

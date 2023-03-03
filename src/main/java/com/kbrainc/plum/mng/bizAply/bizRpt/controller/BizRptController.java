@@ -19,10 +19,13 @@ import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.mng.bizAply.bizRpt.model.BizRptVo;
 import com.kbrainc.plum.mng.bizAply.bizRpt.service.BizRptServiceImpl;
+import com.kbrainc.plum.mng.bizAply.pcntst.model.PublicContestMngGrpVo;
+import com.kbrainc.plum.mng.bizAply.srng.model.BizAplySrngVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.StringUtil;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -425,6 +428,8 @@ public class BizRptController {
  		return "mng/bizAply/bizRpt/cnsltngPicPopup";
  	}
 
+
+
     /**
     * 컨설팅 담당자 목록 조회
     *
@@ -438,20 +443,18 @@ public class BizRptController {
 	@RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngPicList.do")
 	@ResponseBody
 	public Map<String, Object> cnsltngPicList(BizRptVo bizRptVo) throws Exception {
-		Map<String, Object> resultMap = new HashMap<>();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+        List<BizRptVo> result = bizRptService.selectMngGrpList(bizRptVo);
 
-		List<BizRptVo> result = null;
+        if (result.size() > 0) {
+            resultMap.put("totalCount", result.get(0).getTotalCount());
+            resultMap.put("pagination",PaginationUtil.getPagingHtml(result.get(0).getTotalPage(), result.get(0).getPageNumber(), 10));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
 
-		//result = bizRptService.cnsltngPicList(bizRptVo);
-
-		if (result.size() > 0) {
-			resultMap.put("totalCount", (result.get(0).getTotalCount()));
-		} else {
-			resultMap.put("totalCount", 0);
-		}
-		resultMap.put("list", result);
-
-		return resultMap;
+        return resultMap;
 	}
 
 	/*******************************************************************************
@@ -628,7 +631,11 @@ public class BizRptController {
     * @return String
     */
     @RequestMapping(value = "/mng/bizAply/bizRpt/cnsltngMngList.html")
-    public String cnsltngMngList(HttpServletRequest request) throws Exception {
+    public String cnsltngMngList(Model model, @UserInfo UserVo user) throws Exception {
+    	List<BizRptVo> result = bizRptService.selectCnsltngExprtList();
+    	model.addAttribute("list", result == null ? new BizRptVo() : result);
+    	model.addAttribute("searchUserid", user.getUserid());
+
         return "mng/bizAply/bizRpt/cnsltngMngList";
     }
 
@@ -674,7 +681,7 @@ public class BizRptController {
     */
     @RequestMapping(value = "/mng/bizAply/bizRpt/selectCnsltngMngExcelList.do")
     public void selectCnsltngMngExcelList(HttpServletRequest request, HttpServletResponse response, BizRptVo bizRptVo) throws Exception {
-    	//bizRptService.selectCnsltngMngExcelList(bizRptVo, response, request);
+    	bizRptService.selectCnsltngMngExcelList(bizRptVo, response, request);
     }
 
     /**

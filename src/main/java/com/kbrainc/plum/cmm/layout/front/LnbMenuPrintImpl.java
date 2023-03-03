@@ -28,7 +28,7 @@ import com.kbrainc.plum.rte.util.StringUtil;
  * LNB영역에 메뉴를 출력하기 위한 클래스
  *
  * <pre>
- * com.kbrainc.plum.cmm.layout
+ * com.kbrainc.plum.cmm.layout.front
  * - LeftMenuPrintImpl.java
  * </pre>
  *

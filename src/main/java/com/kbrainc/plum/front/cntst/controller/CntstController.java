@@ -87,10 +87,8 @@ public class CntstController {
         model.addAttribute("cntst", result);
         
         List<CntstVo> file = cntstService.selectCntstFileList(cntstVo);
-        if(file.get(0) != null) {
-            if(file.get(0).getFileList() != null) {
-                model.addAttribute("file", file);
-            }
+        if(file.get(0).getAtchFilegrpid() != null) {
+            model.addAttribute("file", file);
         }else {
             model.addAttribute("file", "Empty");
         }
@@ -124,7 +122,7 @@ public class CntstController {
         cntstFldMapngInfo =  cntstService.selectCntstFldMapngInfo(cntstVo);
         model.addAttribute("fldMapngInfo", cntstFldMapngInfo);
         
-        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_atch");
+        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_aply_prdct");
         String uploadFileExtsn = ((HashMap<String, String>) cntstFile.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
@@ -162,7 +160,7 @@ public class CntstController {
         cntstFldMapngInfo =  cntstService.selectCntstFldMapngInfo(cntstVo);
         model.addAttribute("fldMapngInfo", cntstFldMapngInfo);
         
-        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_atch");
+        Map<String, Object> cntstFile = fileService.getConfigurationByFilegrpName("cntst_aply_prdct");
         String uploadFileExtsn = ((HashMap<String, String>) cntstFile.get("uploadFileExtsn"))
                 .entrySet()
                 .stream()
@@ -228,7 +226,7 @@ public class CntstController {
         }
         
         int retVal = 0;
-        if(cntstVo.getDpcnPsbltyYn().equals("N") && cntstVo.getDpcnUserid() != null) {
+        if(cntstVo.getDpcnPsbltyYn().equals("N") && cntstVo.getDpcnUserid() != "") {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
             resultMap.put("msg", "중복참여가 불가능한 공모전입니다.");
             return resultMap;

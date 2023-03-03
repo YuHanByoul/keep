@@ -2,6 +2,7 @@ package com.kbrainc.plum.cmm.controller;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -303,6 +304,45 @@ public class CommonController {
     public List<SiteVo> getSiteList(SiteVo site) throws Exception {
         return commonService.selectSiteList(site);
     }
+    
+    /**
+     * 내 주변 환경교육 시설 페이지 이동
+     *
+     * @Title       : nearbyEnveduFlct
+     * @Description : 내 주변 환경교육 시설 페이지 이동
+     * @return String 이동화면경로
+     * @throws Exception 예외
+     */
+     @RequestMapping(value = "/front/nearbyEnveduFlct.html")
+     public String nearbyEnveduFlct(HttpServletRequest request, Model model) throws Exception {
+         
+         List<Map<String, Object>> list = commonService.nearbyEnveduFlct();
+         model.addAttribute("list", list);
+         
+         return "front/nearbyEnveduFlct";
+     }
+     
+     /**
+      * 내 주변 환경교육 시설 검색 리스트 반환
+      *
+      * @Title       : searchEnveduFlct
+      * @Description : 내 주변 환경교육 시설 검색 리스트 반환
+      * @return List<Map<String, Object>>
+      * @throws Exception 예외
+      */
+      @RequestMapping(value = "/front/searchNearbyEnveduFlct.do", method = RequestMethod.POST, produces = "application/json")
+      @ResponseBody
+      public  Map<String, Object> searchEnveduFlct(HttpServletRequest request) throws Exception {
+          Map<String, Object> resultMap = new HashMap<>();
+          
+          List<Map<String, Object>> list = commonService.nearbyEnveduFlct();
+          
+          resultMap.put("list", list);
+          
+          return resultMap;
+      }
+     
+     
 
     
 }

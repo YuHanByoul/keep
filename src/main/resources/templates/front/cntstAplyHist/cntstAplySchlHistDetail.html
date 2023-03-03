@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<!-- content -->
+		<div class="table-caption">
+			<div class="left">
+				<div class="tag tag tag-blue mb10"><th:block th:text="${cntstAplyHist.clsfCdNm}"></th:block></div>
+				<h4 class="sub-title"><th:block th:text="${cntstAplyHist.ttl}"></th:block></h4>
+			</div>
+		</div>
+
+		<div class="box-desc-list bg7 mt10">
+			<strong class="box-desc-tit">작성방법</strong>
+			<ul>
+				<li>지도교사가 학급별로 상이하여 여러 명인 경우, 지도교사별 지도하는 학년과 학생 수를 별도로 표기하여 주시기 바랍니다.</li>
+				<li>환경일기 쓰기 사업이 22년도 환경부 성별영향평가 대상사업으로 지정됨에 따라 사업 참여 대상에 대한 성별 조사가 필요합니다. 이에 따라, 선생님과 학생들의 성별 조사가 필요하여 지도교사의 성별과 참여학생수를 남학생과 여학생으로 나누어 표기하는 것에 대하여 협조 부탁드립니다.</li>
+			</ul>
+			
+		</div>
+
+		<div class="table-row mt45">
+			<table>
+				<caption>[초등(고) / 중등] 환경일기 쓰기 신청ㆍ접수 - 접수기간, 당첨자 발표일, 신청대상</caption>
+				<colgroup>
+					<col style="width:140px;">
+					<col>
+					<col style="width:140px;">
+					<col>
+				</colgroup>
+				<tbody>
+					<tr>
+						<th scope="row">접수기간</th>
+						<td><th:block th:text="${cntstAplyHist.aplyBgngDt}"></th:block> ~ <th:block th:text="${cntstAplyHist.aplyEndDt}"></th:block></td>
+						<th scope="row">당첨자 발표일</th>
+						<td><th:block th:text="${cntstAplyHist.prsntnDt}"></th:block></td>						
+					</tr>
+					<tr>
+						<th scope="row">신청대상</th>
+						<td colspan="3">
+							<th:block th:each="item : ${fldMapngInfo}">
+								<th:block th:if="${itemStat.last}">
+									<th:block th:text="${item.fldMapngNm}"></th:block>
+								</th:block>
+								<th:block th:unless="${itemStat.last}">
+									<th:block th:text="${item.fldMapngNm + ', '}"></th:block>
+								</th:block>
+							</th:block>							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="table-caption">
+			<div class="left">
+				<h4 class="sub-title">신청정보</h4>
+			</div>
+		</div>
+
+		<div class="pc-only">
+			<div class="table-col table-layout-auto">
+				<table>
+					<caption>신청정보 - 연번, 학교명, 지도교사명(성함,성별), 연락처, 신청대상, 참여학생 수(남학생,여학생)</caption>
+					<colgroup>
+						<col style="width:55px;">
+						<col>
+						<col style="width:12%;">
+						<col style="width:9%;">
+						<col style="width:16%;">
+						<col style="width:11%;">
+						<col style="width:8%;">
+						<col style="width:8%;">
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col" rowspan="2">연변</th>
+							<th scope="col" rowspan="2">학교명</th>
+							<th scope="colgroup" colspan="2">지도교사명</th>
+							<th scope="col" rowspan="2">연락처</th>
+							<th scope="col" rowspan="2">신청대상</th>
+							<th scope="colgroup" colspan="2">참여학생수</th>
+						</tr>
+						<tr>
+							<th scope="col">성함</th>
+							<th scope="col">성별</th>
+							<th scope="col">남학생</th>
+							<th scope="col">여학생</th>
+						</tr>
+					</thead>
+					<tbody>
+						<th:block th:each="item, itemStat : ${cntstAplySchlHist}">
+							<tr>
+								<td><th:block th:text="${itemStat.count}"></th:block></td>
+								<td><th:block th:text="${item.schlNm}"></th:block></td>
+								<td><th:block th:text="${item.tcherNm}"></th:block></td>
+								<td><th:block th:text="${item.tcherGndr}"></th:block></td>
+								<td><th:block th:text="${item.telno}"></th:block></td>
+								<td><th:block th:text="${item.pcntstFldCdNm}"></th:block></td>
+								<td><th:block th:text="${item.stdntMale}"></th:block>명</td>
+								<td><th:block th:text="${item.stdntFemale}"></th:block>명</td>
+							</tr>
+						</th:block>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="mo-only">
+			<div class="table-row table-row-mo">
+				<table>
+					<caption>신청정보 - 연번, 학교명, 지도교사명(성함,성별), 연락처, 신청대상, 참여학생 수(남학생,여학생), 열 삭제</caption>
+					<colgroup>
+						<col style="width:140px;">
+						<col>
+					</colgroup>
+					<tbody>
+						<th:block th:each="item, itemStat : ${cntstAplySchlHist}">
+							<tr>
+								<th scope="row">연번</th>
+								<td><th:block th:text="${itemStat.count}"></th:block></td>
+							</tr>
+							<tr>
+								<th scope="row">학교명</th>
+								<td><th:block th:text="${item.schlNm}"></th:block></td>
+							</tr>
+							<tr>
+								<th scope="row">지도교사명</th>
+								<td><th:block th:text="${item.tcherNm}"></th:block></td>
+							</tr>
+							<tr>
+								<th scope="row">지도교사 성별</th>
+								<td><th:block th:text="${item.tcherGndr}"></th:block></td>
+							</tr>
+							<tr>
+								<th scope="row">연락처</th>
+								<td><th:block th:text="${item.telno}"></th:block></td>
+							</tr>
+							<tr>
+								<th scope="row">신청대상</th>
+								<td><th:block th:text="${item.pcntstFldCdNm}"></th:block></td>
+							</tr>
+							<tr>
+								<th scope="row">참여학생수</th>
+								<td>남학생 <th:block th:text="${item.stdntMale}"></th:block>명 <br> 여학생 <th:block th:text="${item.stdntFemale}"></th:block>명</td>
+							</tr>
+						</th:block>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="table-caption">
+			<div class="left">
+				<h4 class="sub-title">신청자료 제출</h4>
+			</div>
+		</div>
+
+		<div class="table-row table-row-mo">
+			<table>
+				<caption>신청자료 제출 - 신청자료</caption>
+				<colgroup>
+					<col style="width:140px;">
+					<col>
+				</colgroup>
+				<tbody>
+					<tr>
+						<th scope="row">신청자료</th>
+						<td>
+							<div class="form-input-file">
+								<ul>
+									<th:block th:each="file : ${cntstAplyHist.fileList}">
+										<li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+											<span class="name"><th:block th:text="${file.orginlFileNm}"></th:block></span>
+										</li>
+									</th:block>									
+								</ul>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="btn-wrap">
+			<div class="center">
+				<button type="button" class="btn-medium btn-gray" onclick="moveToUpdate();">수정</button>
+				<button type="button" class="btn-medium btn-gray" onclick="moveToList();">목록</button>
+			</div>
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">
+			var aplyid = /*[[${cntstAplyHist.aplyid}]]*/ null;
+			
+	        function moveToList() {
+	            location.href = '/front/cntstAplyHist/cntstAplyHistListForm.html';
+	        }
+	        
+	        function moveToUpdate() {
+	            location.href = '/front/cntstAplyHist/cntstAplySchlHistUpdateForm.html?aplyid='+aplyid;
+	        }
+		</script>
+	</div>
+
+</body>
+</html>

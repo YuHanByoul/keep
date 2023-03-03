@@ -8,6 +8,7 @@ import com.kbrainc.plum.rte.idgnr.UUIdGnr;
 import liquibase.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.configuration.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -58,6 +59,8 @@ public class CommonUtil {
     public static String portalUrl = applicationConfig.getString("system.portal.url");
     
     public static String kakaoJavascriptKey = applicationConfig.getString("kakao.javascript.key"); 
+    
+    public static String serverCookieDomain = applicationConfig.getString("server.servlet.session.cookie.domain");
     
     /**
      * @Title : getBean

@@ -1046,15 +1046,23 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	//체크리스트 답변 수정
     	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
-    	for(ChklstAnsVo vo : lst) {
 
-    		vo.setUser(asgsysSrngVo.getUser());
-    		vo.setSbmsnid(SbmsnInfo.getSbmsnid());
+    	if(lst.size() > 0 ) {
+    		//체크리스트 답변 순서 삭제
+    		//ret += asgsysSrngDao.deleteChklstSeOrdrAnsList(lst.get(0));todo
 
-    		if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
-    			ret += asgsysSrngDao.updateChklstAns(vo);
-    		}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
-    			ret += asgsysSrngDao.insertChklstAns(vo);
+    		for(ChklstAnsVo vo : lst) {
+
+    			vo.setUser(asgsysSrngVo.getUser());
+    			vo.setSbmsnid(SbmsnInfo.getSbmsnid());
+
+    			if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+    				ret += asgsysSrngDao.updateChklstAns(vo);
+    			}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+    				ret += asgsysSrngDao.insertChklstAns(vo);
+    			}
+    			//체크리스트 답변 순서 등록
+    			//ret += asgsysSrngDao.insertChklstSeOrdrAnsList(vo);todo
     		}
     	}
 
@@ -1081,23 +1089,27 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	//체크리스트 제출 저장
     	ret += asgsysSrngDao.updateChklstSbmsn(asgsysSrngVo);
+
     	//체크리스트 답변 수정
     	List<ChklstAnsVo> lst = asgsysSrngVo.getAnsLst();
-
-    	for(ChklstAnsVo vo : lst) {
-
-    		vo.setUser(asgsysSrngVo.getUser());
-
-    		if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
-    			ret += asgsysSrngDao.updateChklstAns(vo);
-    		}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
-    			ret += asgsysSrngDao.insertChklstAns(vo);
-    		}
-
+    	if(lst.size() > 0 ) {
     		//체크리스트 답변 순서 삭제
-    		ret += asgsysSrngDao.deleteChklstSeOrdrAnsList(vo);
-    		//체크리스트 답변 순서 등록
-    		ret += asgsysSrngDao.insertChklstSeOrdrAnsList(vo);
+    		//ret += asgsysSrngDao.deleteChklstSeOrdrAnsList(lst.get(0)); todo
+
+	    	for(ChklstAnsVo vo : lst) {
+
+	    		vo.setUser(asgsysSrngVo.getUser());
+
+	    		if(1 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+	    			ret += asgsysSrngDao.updateChklstAns(vo);
+	    		}else if(0 == asgsysSrngDao.selectKeyCntChklstAns(vo)) {
+	    			ret += asgsysSrngDao.insertChklstAns(vo);
+	    		}
+
+	    		//체크리스트 답변 순서 등록 todo
+	    		//ret += asgsysSrngDao.insertChklstSeOrdrAnsList(vo);
+
+	    	}
 
     	}
 
@@ -1235,7 +1247,7 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     		}
     	}
     	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@6");
-    	//비상조치계획 저장*/
+    	/*비상조치계획 저장
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
     	if( 0 < planLst.size()) {
@@ -1248,19 +1260,21 @@ logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     			ret += asgsysSrngDao.insertEmrgcyActnPlan(emrgcyActnPlanVo);
     		}
     	}
-
+    	*/
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@7");
     	//교육주제 저장
     	if(CommonUtil.isNotEmpty(asgsysSrngVo.getEduSbjctCdLst())){
-
+    		logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@8");
     		String [] eduSbjctCdArr = asgsysSrngVo.getEduSbjctCdLst().split(",");
 
     		asgsysSrngDao.deleteEduSbjct(asgsysSrngVo);
 
     		ret += asgsysSrngDao.insertEduSbjct(asgsysSrngVo, eduSbjctCdArr, asgsysSrngVo.getUser());
     	}
-
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@9");
     	// 프로그램 우수성 수정
     	ret += asgsysSrngDao.updatePrgrmDstnctn(asgsysSrngVo);
+    	logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@10");
 
     	return ret;
     }
