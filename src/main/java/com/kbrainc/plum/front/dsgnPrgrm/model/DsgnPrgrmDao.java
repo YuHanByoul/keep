@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 
 /**
  *
@@ -210,6 +211,50 @@ public interface DsgnPrgrmDao {
 	*/
 	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 컨설팅 등록
+	*
+	* @Title : insertCsltng
+	* @Description : 컨설팅 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertCsltng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 컨설팅 수정
+	*
+	* @Title : updateCsltng
+	* @Description : 컨설팅 수정
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int updateCsltng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 지정프로그램 컨설팅아이디 수정
+	*
+	* @Title : updateCnsltngid
+	* @Description : 지정프로그램 컨설팅아이디 수정
+	* @param dsgnPrgrmVo
+	* @throws Exception
+	* @return void
+	*/
+	public int updateCnsltngid(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 컨설팅아이디 조회
+	 *
+	 * @Title : updateCnsltngid
+	 * @Description : 컨설팅아이디 조회
+	 * @param dsgnPrgrmVo
+	 * @throws Exception
+	 * @return void
+	 */
+	public int selectCnsltngid(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

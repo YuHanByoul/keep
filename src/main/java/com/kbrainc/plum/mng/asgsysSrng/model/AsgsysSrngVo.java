@@ -171,6 +171,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 운영관리 프로그램아이디 */
 	private Integer operMngPrgrmid;
 
+	/** 안전관리 아이디*/
+	private Integer sftyMngId;
+
 	/** 트리순서 */
 	private Integer treeOrd;
 

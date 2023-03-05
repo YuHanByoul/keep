@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.dsgnPrgrm.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +25,17 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.front.dsgnPrgrm.service.DsgnPrgrmService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.ExpndArtclVo;
+import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
+import com.kbrainc.plum.mng.cnsltng.service.CnsltngServiceImpl;
+import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +66,9 @@ public class DsgnPrgrmController {
 
     @Autowired
     private AsgsysSrngServiceImpl asgsysSrngService;
+
+    @Autowired
+    private CnsltngServiceImpl cnsltngService;
 
     @Autowired
     private CommonService commonService;
@@ -400,7 +411,7 @@ public class DsgnPrgrmController {
 		asgsysSrngVo.setPrgrmSchdlLst(dsgnPrgrmVo.getPrgrmSchdlLst());
 		asgsysSrngVo.setEmrgcyActnPlanLst(dsgnPrgrmVo.getEmrgcyActnPlanLst());
 
-		retVal=+asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
+		retVal+=asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
 
 		if (retVal > 0) {
 			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -454,7 +465,7 @@ public class DsgnPrgrmController {
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
 
-		retVal=+asgsysSrngService.updatePrgrmEvl(asgsysSrngVo);
+		retVal+=asgsysSrngService.updatePrgrmEvl(asgsysSrngVo);
 
 		if (retVal > 0) {
 			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -477,14 +488,63 @@ public class DsgnPrgrmController {
 	 * @return String
 	 */
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmOperMngForm.html")
-	public String prgrmOperMngForm(Model model) throws Exception {
+	public String prgrmOperMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+
+		model.addAttribute("aplyInfo", asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo));
+
+
+		ExpndArtclVo expndArtclVo = new ExpndArtclVo();
+    	TchaidFcltVo tchaidFcltVo = new TchaidFcltVo();
+
+    	BeanUtils.copyProperties(asgsysSrngVo, expndArtclVo);
+    	BeanUtils.copyProperties(asgsysSrngVo, tchaidFcltVo);
+
+    	//프로그램 운영관리 조회
+    	model.addAttribute("prgrmOperMngInfo", asgsysSrngService.selectPrgrmOperMng(asgsysSrngVo));
+
+    	//지출항목 목록 조회
+    	List<ExpndArtclVo> expndArtclList = asgsysSrngService.selectExpndArtclList(expndArtclVo);
+    	model.addAttribute("artclList", expndArtclList);
+
+    	//교구 및 시설 목록 조회
+    	List<TchaidFcltVo> tchaidFcltList = asgsysSrngService.selectTchaidFcltList(tchaidFcltVo);
+    	model.addAttribute("fcltList", tchaidFcltList);
+
 		return "front/dsgnPrgrm/prgrmOperMngForm";
 	}
 
-//	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmDstnctn.do")
-//	public iprgrmDstnctn(Model model) throws Exception {
-//		return "front/dsgnPrgrm/prgrmDstnctn";
-//	}
+	/**
+	 * 프로그램 운영 관리 등록
+	 *
+	 * @Title : insertPrgrmOperMngForm
+	 * @Description : 프로그램 운영 관리 등록
+	 * @param dsgnPrgrmVo
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 * @return Map<String,Object>
+	 */
+	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmOperMngForm.do")
+	@ResponseBody
+	public Map<String, Object> insertPrgrmOperMngForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		int retVal=0;
+
+		asgsysSrngVo.setUser(user);
+
+		//프로그램 운영관리
+		retVal+=asgsysSrngService.insertPrgrmOperMng(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+		return resultMap;
+	}
 
 	/**
 	* 지도자 자격 및 배치 화면 이동
@@ -538,7 +598,7 @@ public class DsgnPrgrmController {
 		asgsysSrngVo.setUser(user);
 
 
-		retVal=+asgsysSrngService.insertLdrQlfcForm(asgsysSrngVo);
+		retVal+=asgsysSrngService.insertLdrQlfcForm(asgsysSrngVo);
 
 		if (retVal > 0) {
 			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -550,9 +610,79 @@ public class DsgnPrgrmController {
 		return resultMap;
 	}
 
+	/**
+	* 안전관리 화면 이동
+	*
+	* @Title : sftyMngForm
+	* @Description : 안전관리 화면 이동
+	* @param asgsysSrngVo
+	* @param model
+	* @return
+	* @throws Exception
+	* @return String
+	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/sftyMngForm.html")
-	public String sftyMngForm(Model model) throws Exception {
+	public String sftyMngForm(AsgsysSrngVo asgsysSrngVo, Model model) throws Exception {
+	    //신청정보
+		AsgsysSrngVo aplyInfo = null;
+		aplyInfo = asgsysSrngService.selectSftyMng(asgsysSrngVo);
+		model.addAttribute("aplyInfo", aplyInfo);
+
+    	//안전관리 메뉴얼 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getFilegrpid()).equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(aplyInfo.getFilegrpid());
+
+            model.addAttribute("mnlFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+        } else {
+            model.addAttribute("mnlFileList", Collections.emptyList());
+        }
+
+    	//사전인증 첨부파일
+    	if (!StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals("") && !StringUtil.nvl(aplyInfo.getBfrCertFilegrpid()).equals(0)) {
+    		FileVo fileVo = new FileVo();
+    		fileVo.setFilegrpid(aplyInfo.getBfrCertFilegrpid());
+
+    		model.addAttribute("bfrCertFileList", asgsysSrngService.selectEvdncDcmntFileList(fileVo));
+
+    	} else {
+    		model.addAttribute("bfrCertFileList", Collections.emptyList());
+    	}
+
 		return "front/dsgnPrgrm/sftyMngForm";
+	}
+
+	/**
+	* 안전관리 등록
+	*
+	* @Title : insertPrgrmSftyMngForm
+	* @Description : 안전관리 등록
+	* @param asgsysSrngVo
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/insertPrgrmSftyMngForm.do")
+	@ResponseBody
+	public Map<String, Object> insertPrgrmSftyMngForm(AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		int retVal=0;
+
+		asgsysSrngVo.setUser(user);
+
+		retVal+=asgsysSrngService.insertSftyMng(asgsysSrngVo);
+
+		if (retVal > 0) {
+			resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+			resultMap.put("msg", "저장에 성공하였습니다.");
+		} else {
+			resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+			resultMap.put("msg", "저장에 실패했습니다.");
+		}
+		return resultMap;
 	}
 
 	@RequestMapping(value = "/front/dsgnPrgrm/chkListForm.html")
@@ -563,6 +693,131 @@ public class DsgnPrgrmController {
 	@RequestMapping(value = "/front/dsgnPrgrm/aplyCmptnForm.html")
 	public String aplyCmptnForm(Model model) throws Exception {
 		return "front/dsgnPrgrm/aplyCmptnForm";
+	}
+
+	/**
+	* 컨설팅 신청 상세 화면이동
+	*
+	* @Title : cnsltngAplyDetailForm
+	* @Description : 컨설팅 신청 상세 화면이동
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return String
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/cnsltngAplyDetailForm.html")
+	public String cnsltngAplyDetailForm(Model model, @UserInfo UserVo user) throws Exception {
+		model.addAttribute("user", user);
+		return "front/dsgnPrgrm/cnsltngAplyDetailForm";
+	}
+
+	/**
+	 * 컨설팅 신청 약관동의 화면이동
+	 *
+	 * @Title : cnsltngAplyTermsForm
+	 * @Description : 컨설팅 신청 약관동의화면 이동
+	 * @param model
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 * @return String
+	 */
+	@RequestMapping(value = "/front/dsgnPrgrm/cnsltngAplyTermsForm.html")
+	public String cnsltngAplyTermsForm(Model model, @UserInfo UserVo user) throws Exception {
+		return "front/dsgnPrgrm/cnsltngAplyTermsForm";
+	}
+
+	/**
+	* 컨설팅 신청 화면이동
+	*
+	* @Title : cnsltngAplyForm
+	* @Description : 컨설팅 신청 화면이동
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return String
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/cnsltngAplyForm.html")
+	public String cnsltngAplyForm(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+		DsgnPrgrmVo instInfo = new DsgnPrgrmVo();
+		CnsltngVo cnsltngAply = new CnsltngVo();
+
+		//로그인 사용자 정보
+		dsgnPrgrmVo.setAplcntid(Integer.parseInt(user.getUserid()));
+
+		//기관정보 조회
+		instInfo = dsgnPrgrmService.selectInstInfo(dsgnPrgrmVo);
+
+		//컨설팅 조회
+		if(!CommonUtil.isEmpty(instInfo.getCnsltngid())) {
+			cnsltngAply.setCnsltngid(instInfo.getCnsltngid());
+			cnsltngAply = cnsltngService.selectCnsltngtInfo(cnsltngAply);
+		}
+
+        if(cnsltngAply.getFilegrpid() !=null && cnsltngAply.getFilegrpid() > 0) {
+        	FileVo fileVo = new FileVo();
+        	fileVo.setFilegrpid(Integer.parseInt(cnsltngAply.getFilegrpid().toString()));
+        	ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
+        	model.addAttribute("fileList", fileList);
+        	model.addAttribute("fileListCnt", fileList.size());
+        } else {
+        	model.addAttribute("fileMap", null);
+        	model.addAttribute("fileListCnt", 0);
+        }
+		model.addAttribute("instInfo", instInfo);
+		model.addAttribute("cnsltngAply", cnsltngAply);
+
+		return "front/dsgnPrgrm/cnsltngAplyForm";
+	}
+
+    /**
+    * 컨설팅신청 등록
+    *
+    * @Title : insertCnsltngAplyForm
+    * @Description : 컨설팅신청 등록
+    * @param cnsltngVo
+    * @param bindingResult1
+    * @param user
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnPrgrm/insertCnsltngAplyForm.do")
+    @ResponseBody
+    public Map<String, Object> insertCnsltngAplyForm(DsgnPrgrmVo dsgnPrgrmVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+
+        if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
+
+        dsgnPrgrmVo.setUser(user);
+
+        int retVal = 0;
+
+        //컨설팅 등록
+        retVal = dsgnPrgrmService.insertCsltng(dsgnPrgrmVo);
+
+        if (retVal > 0) {
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록에 성공하였습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패했습니다.");
+        }
+
+        return resultMap;
+    }
+
+	@RequestMapping(value = "/front/dsgnPrgrm/cnsltngAplyComp.html")
+	public String cnsltngAplyComp(Model model, @UserInfo UserVo user) throws Exception {
+		return "front/dsgnPrgrm/cnsltngAplyComp";
 	}
 
 }

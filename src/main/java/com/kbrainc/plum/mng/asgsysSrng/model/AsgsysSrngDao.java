@@ -676,11 +676,11 @@ public interface AsgsysSrngDao {
 	 *
 	 * @Title : deleteExpndArtcl
 	 * @Description : 지출항목 목록 삭제
-	 * @param expndArtclVo
+	 * @param asgsysSrngVo
 	 * @return int
 	 * @throws Exception
 	 */
-	public int deleteExpndArtcl(ExpndArtclVo expndArtclVo) throws Exception;
+	public int deleteExpndArtcl(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 교구 및 시설목록 조회
@@ -713,7 +713,7 @@ public interface AsgsysSrngDao {
 	* @return int
 	* @throws Exception
 	*/
-	public void deleteTchaidFclt(TchaidFcltVo tchaidFcltVo) throws Exception;
+	public void deleteTchaidFclt(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
 	* 프로그램운영관리 수정

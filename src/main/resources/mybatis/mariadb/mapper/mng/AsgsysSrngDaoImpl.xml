@@ -721,21 +721,23 @@
     <select id="selectExpndArtclList" parameterType="ExpndArtclVo" resultType="ExpndArtclVo">
         /* AsgsysSrngDao.selectExpndArtclList*/
         SELECT
-            ARTCLID
-          , PRGRMID
-          , EXPND_ARTCL
-          , AMT
-          , SUM(AMT) OVER() AS SUM_AMT
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.ARTCLID
+          , B.EXPND_ARTCL
+          , B.AMT
+          , SUM(B.AMT) OVER() AS SUM_AMT
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_EXPND_ARTCL
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_EXPND_ARTCL B ON A.PRGRMID= B.PRGRMID
         WHERE
-            PRGRMID = #{prgrmid}
+            A.PRGRMID = #{prgrmid}
         ORDER BY
-            ARTCLID
+            B.ARTCLID
     </select>
 
     <!-- 지출항목 등록 -->
@@ -762,7 +764,7 @@
      </insert>
 
     <!-- 지출항목 목록 삭제 -->
-    <delete id="deleteExpndArtcl" parameterType="ExpndArtclVo">
+    <delete id="deleteExpndArtcl" parameterType="AsgsysSrngVo">
         /* AsgsysSrngDao.insertExpndArtclt */
         DELETE FROM
             TB_ASS_EXPND_ARTCL
@@ -773,19 +775,21 @@
     <select id="selectTchaidFcltList" parameterType="TchaidFcltVo" resultType="TchaidFcltVo">
         /* AsgsysSrngDao.selecttchaidFcltList */
         SELECT
-            TCHAIDFCLTID
-          , PRGRMID
-          , DTL_PRGRM_NM
-          , EDU_PLC
-          , TCHAID
-          , QNTY
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.TCHAIDFCLTID
+          , B.DTL_PRGRM_NM
+          , B.EDU_PLC
+          , B.TCHAID
+          , B.QNTY
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_TCHAID_FCLT
-        WHERE PRGRMID = #{prgrmid}
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_TCHAID_FCLT B ON A.PRGRMID= B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 교구 및 시설 등록 -->
@@ -815,7 +819,7 @@
     </insert>
 
     <!-- 교구 및 시설 삭제 -->
-    <delete id="deleteTchaidFclt" parameterType="TchaidFcltVo">
+    <delete id="deleteTchaidFclt" parameterType="AsgsysSrngVo">
         DELETE FROM
             TB_ASS_TCHAID_FCLT
         WHERE PRGRMID = #{prgrmid}
@@ -1444,23 +1448,27 @@
 
     <!-- 신청정보탭 안전관리 상세 조회 -->
     <select id="selectSftyMng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSftyMng*/
         SELECT
             A.PRGRMID
-          , A.FILEGRPID
-          , A.LDR_EDU_SESS
-          , A.LDR_EDU_PIC
-          , A.LDR_EDU_CN
-          , A.PRTCPNT_EDU_SESS
-          , A.PRTCPNT_EDU_PIC
-          , A.PRTCPNT_EDU_CN
-          , A.BFR_CERT_YN
-          , A.BFR_CERT_FILEGRPID
-          , A.MDFCN_DT
-          , A.MDFRID
-          , A.REG_DT
-          , A.RGTRID
+          , B.PRGRMID   AS SFTY_MNG_ID
+          , B.FILEGRPID
+          , B.LDR_EDU_SESS
+          , B.LDR_EDU_PIC
+          , B.LDR_EDU_CN
+          , B.PRTCPNT_EDU_SESS
+          , B.PRTCPNT_EDU_PIC
+          , B.PRTCPNT_EDU_CN
+          , B.BFR_CERT_YN
+          , B.BFR_CERT_FILEGRPID
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_SFTY_MNG A
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG B ON A.PRGRMID = B.PRGRMID
         WHERE
             A.PRGRMID = #{prgrmid}
     </select>

@@ -982,6 +982,28 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	}
 
     /**
+     * 안전관리 등록
+     *
+     * @Title : insertPrgrmSftyMngForm
+     * @Description : 안전관리 등록
+     * @param asgsysSrngVo
+     * @return int
+     * @throws Exception 예외
+     */
+    @Override
+    @Transactional
+    public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception{
+    	int ret = 0;
+
+    	if(CommonUtil.isEmpty(asgsysSrngVo.getSftyMngId())){
+    		ret = asgsysSrngDao.insertSftyMng(asgsysSrngVo);
+    	}else {
+    		ret = asgsysSrngDao.updateSftyMng(asgsysSrngVo);
+    	}
+    	return ret;
+    }
+
+    /**
      * 프로그램운영 관리 조회
      *
      * @Title : selectPrgrmOperMng
@@ -1020,30 +1042,34 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     */
     @Override
     @Transactional
-	public int updatePrgrmOperMng(@Valid AsgsysSrngVo asgsysSrngVo) throws Exception {
+	public int updatePrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception {
     	int ret= 0;
 
     	List<ExpndArtclVo> expndLst = asgsysSrngVo.getExpndArtclLst();
     	List<TchaidFcltVo> fcltLst  = asgsysSrngVo.getTchaidFcltLst();
 
     	//지출항목 목록 저장
-    	asgsysSrngDao.deleteExpndArtcl(expndLst.get(0));
+    	ret+=asgsysSrngDao.deleteExpndArtcl(asgsysSrngVo);
 
-    	for(ExpndArtclVo vo : expndLst) {
-    		vo.setUser(asgsysSrngVo.getUser());
-    		asgsysSrngDao.insertExpndArtcl(vo);
+    	if(expndLst !=null && expndLst.size() > 0) {
+    		for(ExpndArtclVo vo : expndLst) {
+    			vo.setUser(asgsysSrngVo.getUser());
+    			vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+    			ret+=asgsysSrngDao.insertExpndArtcl(vo);
+    		}
     	}
 
     	//교구 및 시설 목록 저장
-    	asgsysSrngDao.deleteTchaidFclt(fcltLst.get(0));
+    	asgsysSrngDao.deleteTchaidFclt(asgsysSrngVo);
 
-    	for(TchaidFcltVo vo : fcltLst) {
-    		vo.setUser(asgsysSrngVo.getUser());
-    		asgsysSrngDao.insertTchaidFclt(vo);
+    	if(fcltLst !=null && fcltLst.size() >0) {
+	    	for(TchaidFcltVo vo : fcltLst) {
+	    		vo.setUser(asgsysSrngVo.getUser());
+	    		vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+	    		ret+=asgsysSrngDao.insertTchaidFclt(vo);
+	    	}
     	}
-
     	ret = asgsysSrngDao.updatePrgrmOperMng(asgsysSrngVo);
-
 
 		return ret;
 	}
@@ -1061,7 +1087,41 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     @Override
     @Transactional
 	public int insertPrgrmOperMng(AsgsysSrngVo asgsysSrngVo) throws Exception{
-		return asgsysSrngDao.insertPrgrmOperMng(asgsysSrngVo);
+
+    	int ret= 0;
+
+    	List<ExpndArtclVo> expndLst = asgsysSrngVo.getExpndArtclLst();
+    	List<TchaidFcltVo> fcltLst  = asgsysSrngVo.getTchaidFcltLst();
+
+    	if(CommonUtil.isEmpty(asgsysSrngVo.getOperMngPrgrmid())) {
+    		ret +=asgsysSrngDao.insertPrgrmOperMng(asgsysSrngVo);
+    	}else {
+    		ret += asgsysSrngDao.updatePrgrmOperMng(asgsysSrngVo);
+    	}
+
+    	//지출항목 목록 저장
+    	asgsysSrngDao.deleteExpndArtcl(asgsysSrngVo);
+
+    	if(expndLst !=null && expndLst.size() > 0) {
+    		for(ExpndArtclVo vo : expndLst) {
+    			vo.setUser(asgsysSrngVo.getUser());
+    			vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+    			ret+=asgsysSrngDao.insertExpndArtcl(vo);
+    		}
+    	}
+
+    	//교구 및 시설 목록 저장
+    	asgsysSrngDao.deleteTchaidFclt(asgsysSrngVo);
+
+    	if(fcltLst !=null && fcltLst.size() >0) {
+	    	for(TchaidFcltVo vo : fcltLst) {
+	    		vo.setUser(asgsysSrngVo.getUser());
+	    		vo.setPrgrmid(asgsysSrngVo.getPrgrmid());
+	    		ret+=asgsysSrngDao.insertTchaidFclt(vo);
+	    	}
+    	}
+
+		return ret;
 	}
 
     /**
@@ -1572,6 +1632,8 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception{
 		return asgsysSrngDao.selectSrngFormList(asgsysSrngVo);
 	}
+
+
 
 
 }

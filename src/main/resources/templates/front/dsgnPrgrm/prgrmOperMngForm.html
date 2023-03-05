@@ -5,7 +5,9 @@
     layout:decorator="layout/front/nolnbSubLayout" >
 <body>
     <div layout:fragment="content">
-    <form id="prgrmOperMngForm" name="prgrmOperMngForm" th:action="@{/front/dsgnPrgrm/prgrmDstnctnForm}" method="post">
+    <form id="prgrmOperMngForm" name="prgrmOperMngForm" th:action="@{/front/dsgnPrgrm/prgrmEvlForm}" method="post">
+        <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${aplyInfo.prgrmid}" />
+        <input type="hidden"  id="operMngPrgrmid" name="operMngPrgrmid" th:value="${aplyInfo.operMngPrgrmid}" />
 
         <!-- content -->
         <div class="steps">
@@ -22,7 +24,7 @@
                         <strong>신청정보 확인 및 <br class="pc-only"> 증빙자료 등록</strong>
                     </div>
                 </li>
-                <li class="active" title="현재 단계">
+                <li class="active" title="현재 단계" aria-current="step">
                     <div class="steps-inner">
                         <span>03</span>
                         <strong>프로그램 정보 작성</strong>
@@ -53,8 +55,8 @@
                         </ul>
                         <div class="btn-wrap">
                             <div class="center">
-                                <button type="button" class="btn-large btn-gray"   onclick="doSave()">중간저장</button>
-                                <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
+                                <button type="button" class="btn-large btn-gray"  onclick="doSave()">중간저장</button>
+                                <button type="button" class="btn-large btn-green" onclick="goNext()">다음</button>
                             </div>
                         </div>
                     </div>
@@ -82,23 +84,26 @@
                                 <th scope="col">자부담<i class="ast" title="필수입력">*</i></th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="ipt1">
                             <tr>
                                 <td>
                                     <div class="form-input j-center">
-                                        <input type="number" title="참가비 수입" class="ar" style="flex:0 1 80px;width:100%;">
+                                        <input type="number" title="참가비 수입" class="ar" style="flex:0 1 80px;width:100%;" name="etrfeeIncm" id="etrfeeIncm"
+                                            th:value="${aplyInfo.etrfeeIncm > 0 ? aplyInfo.etrfeeIncm : 0 }" onchange="btgSum()">
                                         <div class="bul">%</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="form-input j-center">
-                                        <input type="number" title="기타(후원 등)" class="ar" style="flex:0 1 80px;width:100%;">
+                                        <input type="number" title="기타(후원 등)" class="ar" style="flex:0 1 80px;width:100%;" name="etcIncm" id="etcIncm"
+                                            th:value="${aplyInfo.etcIncm > 0 ? aplyInfo.etcIncm : 0 }" onchange="btgSum()">
                                         <div class="bul">%</div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="form-input j-center">
-                                        <input type="number" title="자부담" class="ar" style="flex:0 1 80px;width:100%;">
+                                        <input type="number" title="자부담" class="ar" style="flex:0 1 80px;width:100%;" name="slfpy" id="slfpy"
+                                            th:value="${aplyInfo.slfpy > 0 ? aplyInfo.slfpy : 0}" onchange="btgSum()">
                                         <div class="bul">%</div>
                                     </div>
                                 </td>
@@ -106,15 +111,12 @@
                         </tbody>
                         <tfoot>
                             <th scope="row" class="bg7">총계</th>
-                            <td colspan="2" class="bg7">
-                                <span>N%</span>
-                                <span class="fc-red">N%</span>
-                            </td>
+                            <td colspan="2" class="bg7" id="btgSum"><span class="fc-red">0%</span></td>
                         </tfoot>
                     </table>
                 </div>
 
-                <div class="table-col">
+                <div class="table-col table-col-scroll">
                     <table>
                         <caption>예산구성 - 지출항목, 금액, 열 삭제</caption>
                         <colgroup>
@@ -124,36 +126,15 @@
                         </colgroup>
                         <thead>
                             <tr>
-                                <th scope="col">지출항목</th>
-                                <th scope="col">금액</th>
+                                <th scope="col">지출항목<span class="ast">*</span></th>
+                                <th scope="col">금액<span class="ast">*</span></th>
                                 <th scope="col"><span class="blind">열 삭제</span></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="text" title="지출항목" placeholder="지출항목 입력" style="flex:1 1 100%;"></td>
-                                <td>
-                                    <div class="form-input d-flex j-center">
-                                        <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;">
-                                        <div class="bul">원</div>
-                                    </div>
-                                </td>
-                                <td class="ac"></td>
-                            </tr>
-                            <tr>
-                                <td><input type="text" title="지출항목" placeholder="지출항목 입력" style="flex:1 1 100%;"></td>
-                                <td>
-                                    <div class="form-input d-flex j-center">
-                                        <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;">
-                                        <div class="bul">원</div>
-                                    </div>
-                                </td>
-                                <td class="ac"><button type="button" class="btn-remove-table" title="열 삭제"><span class="icon icon-remove"></span></button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="artclTbody"></tbody>
                     </table>
                 </div>
-                <button type="button" class="btn-row-add" title="열 추가">
+                <button type="button" class="btn-row-add" title="열 추가" id="btnAddArtcl" onclick="addArtcl()" >
                     <span class="icon icon-row-add"></span>
                 </button>
 
@@ -163,130 +144,31 @@
                     </div>
                 </div>
 
-                <div class="pc-only">
-                    <div class="table-col table-layout-auto">
-                        <table>
-                            <caption>교구 및 시설 - 세부 프로그램 명, 교육장소, 교구 및 매체 등, 수량(개) 또는 분량(장), 열 삭제</caption>
-                            <colgroup>
-                                <col>
-                                <col>
-                                <col>
-                                <col>
-                                <col style="width:55px;">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th scope="col">세부 프로그램 명</th>
-                                    <th scope="col">교육장소</th>
-                                    <th scope="col">교구 및 매체 등</th>
-                                    <th scope="col">수량(개) 또는 분량(장)</th>
-                                    <th scope="col"><span class="blind">열 삭제</span></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input type="text" title="세부 프로그램 명"></td>
-                                    <td><input type="text" title="교육장소"></td>
-                                    <td><input type="text" title="교구 및 매체 등"></td>
-                                    <td>
-                                        <div class="form-input d-flex j-center">
-                                            <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;">
-                                            <div class="bul">개/장</div>
-                                        </div>
-                                    </td>
-                                    <td class="ac"></td>
-                                </tr>
-                                <tr>
-                                    <td><input type="text" title="세부 프로그램 명"></td>
-                                    <td><input type="text" title="교육장소"></td>
-                                    <td><input type="text" title="교구 및 매체 등"></td>
-                                    <td>
-                                        <div class="form-input d-flex j-center">
-                                            <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;">
-                                            <div class="bul">개/장</div>
-                                        </div>
-                                    </td>
-                                    <td class="ac"><button type="button" class="btn-remove-table" title="열 삭제"><span class="icon icon-remove"></span></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <button type="button" class="btn-row-add" title="열 추가">
-                        <span class="icon icon-row-add"></span>
-                    </button>
+                <div class="table-col table-layout-auto table-col-scroll">
+                    <table>
+                        <caption>교구 및 시설 - 세부 프로그램 명, 교육장소, 교구 및 매체 등, 수량(개) 또는 분량(장), 열 삭제</caption>
+                        <colgroup>
+                            <col>
+                            <col>
+                            <col>
+                            <col>
+                            <col style="width:55px;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">세부 프로그램 명</th>
+                                <th scope="col">교육장소</th>
+                                <th scope="col">교구 및 매체 등</th>
+                                <th scope="col">수량(개) 또는 분량(장)</th>
+                                <th scope="col"><span class="blind">열 삭제</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="fcltTbody"></tbody>
+                    </table>
                 </div>
-
-
-                <div class="mo-only">
-                    <div class="table-row table-row-mo">
-                        <table>
-                            <caption>교구 및 시설 - 세부 프로그램 명, 교육장소, 교구 및 매체 등, 수량(개) 또는 분량(장), 열 삭제</caption>
-                            <colgroup>
-                                <col style="width:140px;">
-                                <col>
-                            </colgroup>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">세부 프로그램 명</th>
-                                    <td><input type="text" title="세부 프로그램 명"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">교육장소</th>
-                                    <td><input type="text" title="교육장소"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">교구 및 매체 등</th>
-                                    <td><input type="text" title="교육장소"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">수량(개) 또는 분량(장)</th>
-                                    <td>
-                                        <div class="form-input">
-                                            <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;">
-                                            <div class="bul">개/장</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table>
-                            <caption>교구 및 시설 - 세부 프로그램 명, 교육장소, 교구 및 매체 등, 수량(개) 또는 분량(장)</caption>
-                            <colgroup>
-                                <col style="width:140px;">
-                                <col>
-                            </colgroup>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">세부 프로그램 명</th>
-                                    <td><input type="text" title="세부 프로그램 명"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">교육장소</th>
-                                    <td><input type="text" title="교육장소"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">교구 및 매체 등</th>
-                                    <td><input type="text" title="교육장소"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">수량(개) 또는 분량(장)</th>
-                                    <td>
-                                        <div class="form-input">
-                                            <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;">
-                                            <div class="bul">개/장</div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" class="ac"><button type="button" class="btn-remove-table" title="열 삭제" style="width:100%;"><span class="icon icon-remove"></span></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <button type="button" class="btn-row-add" title="열 추가">
-                        <span class="icon icon-row-add"></span>
-                    </button>
-                </div>
+                <button type="button" class="btn-row-add" title="열 추가" id="btnAddFclt" onclick="addFclt()" >
+                    <span class="icon icon-row-add"></span>
+                </button>
 
                 <div class="table-caption">
                     <div class="left">
@@ -294,173 +176,83 @@
                     </div>
                 </div>
 
-                <div class="pc-only">
-                    <div class="table-combi">
-                        <table>
-                            <caption>홍보 및 참가접수 - 구분, 시기, 홍보방법</caption>
-                            <colgroup>
-                                <col>
-                                <col style="width:40%;">
-                                <col style="width:40%;">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th scope="col">구분</th>
-                                    <th scope="col">시기</th>
-                                    <th scope="col">홍보방법</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">홍보 운영 전</th>
-                                    <td class="al">
-                                        <input type="text" title="홍보 운영 전 시기">
-                                        <p class="desc">* 예) 1~2월 운영준비</p>
-                                    </td>
-                                    <td class="al">
-                                        <input type="text" title="홍보 운영 전 홍보방법">
-                                        <p class="desc">* 예) 참가신청안내 공문 방송, 캘린더 발송 </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">홍보 운영 중</th>
-                                    <td class="al">
-                                        <input type="text" title="홍보 운영 중 시기">
-                                        <p class="desc">* 예) 7~8월 여름방학시즌 교육 </p>
-                                    </td>
-                                    <td class="al">
-                                        <input type="text" title="홍보 운영 중 홍보방법">
-                                        <p class="desc">* 예) 인스타그램 활용한 SNS 홍보</p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">홍보 운영 후</th>
-                                    <td class="al">
-                                        <input type="text" title="홍보 운영 후 시기">
-                                        <p class="desc">* 예) 11~12월 사업종료 </p>
-                                    </td>
-                                    <td class="al">
-                                        <input type="text" title="홍보 운영 후 홍보방법">
-                                        <p class="desc">* 예) 활동기록 홈페이지 및 블로그 업로드 </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">참가 접수방법</th>
-                                    <td colspan="2">
-                                        <div class="form-input mo-flex-wrap">
-                                            <div class="form-check-list">
-                                                <label class="inp"><input type="checkbox"><b>전화접수</b></label>
-                                                <label class="inp"><input type="checkbox"><b>신청서접수</b></label>
-                                                <label class="inp"><input type="checkbox"><b>온라인신청</b></label>
-                                                <label class="inp"><input type="checkbox">
-                                                    <b>기타</b>
-                                                    <input type="text" title="기타" placeholder="" data-width="160" class="ml10" style="width: 160px; flex: 0 1 160px;">
-                                                </label>
-                                            </div>
+                <div class="table-combi table-combi-scroll">
+                    <table>
+                        <caption>홍보 및 참가접수 - 구분, 시기, 홍보방법</caption>
+                        <colgroup>
+                            <col>
+                            <col style="width:40%;">
+                            <col style="width:40%;">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th scope="col">구분</th>
+                                <th scope="col">시기</th>
+                                <th scope="col">홍보방법</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ipt2">
+                            <tr>
+                                <th scope="row">홍보 운영 전</th>
+                                <td class="al">
+                                    <input type="text" title="홍보 운영 전 시기" name="operBfrPrmtnSess" id="operBfrPrmtnSess" th:value="${aplyInfo.operBfrPrmtnSess}">
+                                    <p class="desc">* 예) 1~2월 운영준비</p>
+                                </td>
+                                <td class="al">
+                                    <input type="text" title="홍보 운영 전 홍보방법" name="operBfrPrmtnMthd" id="operBfrPrmtnMthd" th:value="${aplyInfo.operBfrPrmtnMthd}">
+                                    <p class="desc">* 예) 참가신청안내 공문 방송, 캘린더 발송 </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">홍보 운영 중</th>
+                                <td class="al">
+                                    <input type="text" title="홍보 운영 중 시기" name="operMdlPrmtnSess" id="operMdlPrmtnSess" th:value="${aplyInfo.operMdlPrmtnSess}">
+                                    <p class="desc">* 예) 7~8월 여름방학시즌 교육 </p>
+                                </td>
+                                <td class="al">
+                                    <input type="text" title="홍보 운영 중 홍보방법" name="operMdlPrmtnMthd" id="operMdlPrmtnMthd" th:value="${aplyInfo.operMdlPrmtnMthd}">
+                                    <p class="desc">* 예) 인스타그램 활용한 SNS 홍보</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">홍보 운영 후</th>
+                                <td class="al">
+                                    <input type="text" title="홍보 운영 후 시기" name="operAftrPrmtnSess" id="operAftrPrmtnSess" th:value="${aplyInfo.operAftrPrmtnSess}">
+                                    <p class="desc">* 예) 11~12월 사업종료 </p>
+                                </td>
+                                <td class="al">
+                                    <input type="text" title="홍보 운영 후 홍보방법" name="operAftrPrmtnMthd" id="operAftrPrmtnMthd" th:value="${aplyInfo.operAftrPrmtnMthd}">
+                                    <p class="desc">* 예) 활동기록 홈페이지 및 블로그 업로드 </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">참가 접수방법</th>
+                                <td colspan="2">
+                                    <div class="form-input mo-flex-wrap">
+                                        <div class="form-check-list">
+                                            <label class="inp">
+                                                <input type="checkbox" id="telRcptYn" name="telRcptYn" value="Y" th:checked ="${aplyInfo.telRcptYn=='Y'}">
+                                                <b>전화접수</b>
+                                            </label>
+                                            <label class="inp">
+                                                <input type="checkbox" name="aplfrmRcptYn" id="aplfrmRcptYn" value="Y" th:checked="${aplyInfo.aplfrmRcptYn=='Y'}">
+                                                <b>신청서접수</b>
+                                            </label>
+                                            <label class="inp">
+                                                <input type="checkbox" name="onlnAplyYn" id="onlnAplyYn" value="Y" th:checked="${aplyInfo.onlnAplyYn=='Y'}">
+                                                <b>온라인신청</b>
+                                            </label>
+                                            <label class="inp"><input type="checkbox" name="etcYn" id="etcYn" value="Y" th:checked="${aplyInfo.etcYn=='Y'}">
+                                                <b>기타</b>
+                                                <input type="text" title="기타" placeholder="" data-width="160" class="ml10" style="width: 160px; flex: 0 1 160px;"
+                                                    name="etcCn" id="etcCn" th:value="${aplyInfo.etcCn}">
+                                            </label>
                                         </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="mo-only">
-                    <div class="table-row table-row-mo">
-                        <table>
-                            <caption>홍보 및 참가접수 - 홍보 운영 전, 홍보 운영 중, 홍보 운영 후, 참가 접수방법</caption>
-                            <colgroup>
-                                <col style="width:140px;">
-                                <col>
-                                <col style="width:140px;">
-                                <col>
-                            </colgroup>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">홍보 운영 전</th>
-                                    <td>
-                                        <div class="form-input mo-flex-wrap">
-                                            <strong class="label">시기</strong>
-                                            <div class="form-input">
-                                                <input type="text" title="홍보 운영 전 시기">
-                                            </div>
-                                        </div>
-                                        <p class="desc">* 예) 1~2월 운영준비</p>
-                                    </td>
-                                    <th scope="row">홍보 운영 전</th>
-                                    <td>
-                                        <div class="form-input mo-flex-wrap">
-                                            <strong class="label">홍보방법</strong>
-                                            <div class="form-input">
-                                                <input type="text" title="홍보 운영 전 홍보방법">
-                                            </div>
-                                        </div>
-                                        <p class="desc">* 예) 참가신청안내 공문 방송, 캘린더 발송 </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">홍보 운영 중</th>
-                                    <td>
-                                        <div class="form-input mo-flex-wrap">
-                                            <strong class="label">시기</strong>
-                                            <div class="form-input">
-                                                <input type="text" title="홍보 운영 중 시기">
-                                            </div>
-                                        </div>
-                                        <p class="desc">* 예) 7~8월 여름방학시즌 교육</p>
-                                    </td>
-                                    <th scope="row">홍보 운영 중</th>
-                                    <td>
-                                        <div class="form-input mo-flex-wrap">
-                                            <strong class="label">홍보방법</strong>
-                                            <div class="form-input">
-                                                <input type="text" title="홍보 운영 중 홍보방법">
-                                            </div>
-                                        </div>
-                                        <p class="desc">* 예) 인스타그램 활용한 SNS 홍보</p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">홍보 운영 후</th>
-                                    <td>
-                                        <div class="form-input mo-flex-wrap">
-                                            <strong class="label">시기</strong>
-                                            <div class="form-input">
-                                                <input type="text" title="홍보 운영 후 시기">
-                                            </div>
-                                        </div>
-                                        <p class="desc">* 예) 11~12월 사업종료 </p>
-                                    </td>
-                                    <th scope="row">홍보 운영 후</th>
-                                    <td>
-                                        <div class="form-input mo-flex-wrap">
-                                            <strong class="label">홍보방법</strong>
-                                            <div class="form-input">
-                                                <input type="text" title="홍보 운영 후 홍보방법">
-                                            </div>
-                                        </div>
-                                        <p class="desc">* 예) 활동기록 홈페이지 및 블로그 업로드 </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">참가 접수방법</th>
-                                    <td colspan="3">
-                                        <div class="form-input mo-flex-wrap">
-                                            <div class="form-check-list">
-                                                <label class="inp"><input type="checkbox"><b>전화접수</b></label>
-                                                <label class="inp"><input type="checkbox"><b>신청서접수</b></label>
-                                                <label class="inp"><input type="checkbox"><b>온라인신청</b></label>
-                                                <label class="inp"><input type="checkbox">
-                                                    <b>기타</b>
-                                                    <input type="text" title="기타" placeholder="" data-width="160" class="ml10" style="width: 140px; flex: 0 1 140px;">
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
 
@@ -473,44 +265,293 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-medium btn-gray">이전</button>
-                            <button type="button" class="btn-medium btn-green" onclick="goNext()">다음</button>
+                            <button type="button" class="btn-medium btn-green">다음</button>
                         </div>
                     </div>
                 </div>
 
             </div>
         </div>
+
     <!-- //content -->
     </form>
 
     <script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var artclList = /*[[${artclList}]]*/null;    //지출목록
+    /*]]>*/
+    /*<![CDATA[*/
+    var fcltList = /*[[${fcltList}]]*/null;    //교구목록
+    /*]]>*/
+
     var insertUrl = "/front/dsgnPrgrm/insertPrgrmOperMngForm.do";
     var updateUrl = "/front/dsgnPrgrm/updatePrgrmOperMngForm.do";
-    function validate(){
+    var nextUrl = "/front/dsgnPrgrm/ldrQlfcForm.html";        //지도자
+    var prevUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html";   //우수성
+    var reUrl = "/front/dsgnPrgrm/prgrmOperMngForm.html";     //프로그램 운영관리
 
-        $("#prgrmOperMngForm").validate({
-            ignore: [],
-            rules: {
-                title       : { required: true , maxlength:200  }
-                ,cntnts      : { required: true , maxlength:4000}
-                ,bbs_clid    : { required: true }
-             },
-             messages: {
-                title       : { required: "게시판명을 입력해 주십시오."  , maxlength : "게시판 제목은 200자를 넘을 수 없습니다."  }
-                ,cntnts      : { required: "게시글 내용을 입력해 주십시오." , maxlength: "게시판 내용은 4000자를 넘을 수 없습니다." }
-                ,bbs_clid    : { required:"게시글 분류를 선택해주십시오 "}
-             }
-        });
+    function goPrev(){
+        document.prgrmOperMngForm.action = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //증빙자료
+        $("#prgrmEvlForm").submit();
+    }
+
+    function goNext(){
+        if($("#prgrmOperMngForm").valid() == false) return;
+        doSave("next");
+    }
+
+    function btgSum(){
+
+        var  vEtrfeeIncm = 0;
+        var  vEtcIncm    = 0;
+        var  vSlfpy      = 0;
+        var  vBtgSum     = 0;
+        vEtrfeeIncm = isNaN($("#etrfeeIncm").val()) ? 0 : $("#etrfeeIncm").val();
+        vEtcIncm    = isNaN($("#etcIncm").val()   ) ? 0 : $("#etcIncm").val()   ;
+        vSlfpy      = isNaN($("#slfpy").val()     ) ? 0 : $("#slfpy").val()     ;
+
+
+        vBtgSum = Number(vEtrfeeIncm) + Number(vEtcIncm) + Number(vSlfpy);
+
+        $("#btgSum")[0].innerHTML =  vBtgSum == 100 ? `<span>${vBtgSum}%</span>` : `<span class="fc-red">${vBtgSum}%</span>`
+    }
+
+    //####################### artclList
+    function setArtclList(){
+
+        var lst = artclList;
+
+        var idx = 1;
+        var html="";
+        var expndArtcl;
+        var amt;
+
+        for( var i=0; i < lst.length; i++ ){
+
+            expndArtcl = lst[i].expndArtcl == null ? "" : lst[i].expndArtcl;
+            amt        = lst[i].amt        == null ? "" : lst[i].amt       ;
+
+            html= `
+            <tr id="artclTr${idx}">
+                <td><input type="text" title="지출항목" placeholder="지출항목 입력" style="flex:1 1 100%;" id="expndArtcl${idx}" name="expndArtcl${idx}" value="${expndArtcl}" ></td>
+                <td>
+                    <div class="form-input d-flex j-center">
+                        <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;" id="amt${idx}" name="amt${idx}" value="${amt}" >
+                        <div class="bul">원</div>
+                    </div>
+                </td>
+            `
+            html+= (idx != 1) ?
+            `
+               <td class="ac">
+            		<button type="button" class="btn-remove-table" title="열 삭제" onclick="delArtcl(${idx})">
+            	        <span class="icon icon-remove"></span>
+                    </button>
+               </td>
+            ` : `
+               <td class="ac">
+               </td>
+           </tr>
+           `;
+
+            $("#artclTbody").append(html);
+            idx++;
+        }
 
     }
 
+    function addArtcl(){
 
+        var html ="";
+        var idx = $("[id^=artclTr]").length + 1;
+
+        html   =
+        `
+            <tr id="artclTr${idx}">
+                <td><input type="text" title="지출항목" placeholder="지출항목 입력" style="flex:1 1 100%;" id="expndArtcl${idx}" name="expndArtcl${idx}" value="" ></td>
+                <td>
+                    <div class="form-input d-flex j-center">
+                        <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;" id="amt${idx}" name="amt${idx}" value="" >
+                        <div class="bul">원</div>
+                    </div>
+                </td>
+                <td class="ac">
+                    <button type="button" class="btn-remove-table" title="열 삭제" onclick="delArtcl(${idx})">
+                        <span class="icon icon-remove"></span>
+                    </button>
+                </td>
+            </tr>
+        `
+
+        $("#artclTbody").append(html);
+    }
+
+    function delArtcl(id){
+        $("#artclTr"+id).remove();
+    }
+    //####################### artclList
+
+    //####################### fcltList
+    function setFcltList(){
+
+        var lst = fcltList;
+
+        var idx = 1;
+        var html="";
+        var dtlPrgrmNm;
+        var eduPlc;
+        var tchaid;
+        var qnty;
+
+        for( var i=0; i < lst.length; i++ ){
+            dtlPrgrmNm = lst[i].dtlPrgrmNm == null ? "" : lst[i].dtlPrgrmNm ;
+            eduPlc     = lst[i].eduPlc     == null ? "" : lst[i].eduPlc     ;
+            tchaid     = lst[i].tchaid     == null ? "" : lst[i].tchaid     ;
+            qnty       = lst[i].qnty       == null ? "" : lst[i].qnty       ;
+
+            html= `
+            <tr id="fcltTr${idx}">
+                <td><input type="text" title="세부 프로그램 명" id="dtlPrgrmNm${idx}" name="dtlPrgrmNm${idx}" value="${dtlPrgrmNm}" ></td>
+                <td><input type="text" title="교육장소"id="eduPlc${idx}" name="eduPlc${idx}" value="${eduPlc}" ></td>
+                <td><input type="text" title="교구 및 매체 등"id="tchaid${idx}" name="tchaid${idx}" value="${tchaid}" ></td>
+                <td>
+                    <div class="form-input d-flex j-center">
+                        <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;" id="qnty${idx}" name="qnty${idx}" value="${qnty}" >
+                        <div class="bul">개/장</div>
+                    </div>
+            `
+            html+= (idx != 1) ?
+            `
+               <td class="ac">
+            		<button type="button" class="btn-remove-table" title="열 삭제" onclick="delFclt(${idx})">
+            	        <span class="icon icon-remove"></span>
+                    </button>
+               </td>
+            ` : `
+               <td class="ac">
+               </td>
+           </tr>
+           `;
+
+            $("#fcltTbody").append(html);
+            idx++;
+        }
+    }
+
+    function addFclt(){
+
+        var html ="";
+        var idx = $("[id^=fcltTr]").length + 1;
+
+        html   =
+        `
+            <tr id="fcltTr${idx}">
+                <td><input type="text" title="세부 프로그램 명" id="dtlPrgrmNm${idx}" name="dtlPrgrmNm${idx}" value="" ></td>
+                <td><input type="text" title="교육장소"id="eduPlc${idx}" name="eduPlc${idx}" value="" ></td>
+                <td><input type="text" title="교구 및 매체 등"id="tchaid${idx}" name="tchaid${idx}" value="" ></td>
+                <td>
+                    <div class="form-input d-flex j-center">
+                        <input type="number" title="금액" class="ar" style="flex:0 1 150px;width:100%;" id="qnty${idx}" name="qnty${idx}" value="" >
+                        <div class="bul">개/장</div>
+                    </div>
+                </td>
+                <td class="ac">
+                    <button type="button" class="btn-remove-table" title="열 삭제" onclick="delFclt(${idx})">
+                        <span class="icon icon-remove"></span>
+                    </button>
+               </td>
+            </tr>
+        `
+
+        $("#fcltTbody").append(html);
+    }
+
+    function delFclt(id){
+        $("#fcltTr"+id).remove();
+    }
+    //####################### fcltList
+
+    //저장
     function doSave(call){
 
+        //validation
+        var valid = true;
+        if($("#btgSum")[0].innerText != "100%") {
+            alert("총합은 100%가 되어야 합니다.");
+            return false;
+        }
+
+        var param =  {};
+
+        param["prgrmid"] = $("#prgrmid").val();
+        param["operMngPrgrmid"] = $("#operMngPrgrmid").val();
+
+
+        //지출 항목
+        $("#artclTbody [id^=expndArtcl]").each(function(index, item) {
+            if(item.value == "") {
+                alert("지출항목을 입력 해주세요");
+                item.focus();
+                valid = false;
+                return false;
+            }
+            else if(item.length > 30) {
+                alert("지출항목은 30자를 넘을 수 없습니다.");
+                item.focus();
+                valid = false;
+                return false;
+            }
+            else{
+                param["expndArtclLst[" + index + "].expndArtcl"] = item.value;
+            }
+        })
+
+
+        if(!valid) return;
+
+        //지출 항목 금액
+        $("#artclTbody [id^=amt]").each(function(index, item) {
+            if(item.value < 1) {
+                alert("지출항목 금액을 입력해주세요");
+                item.focus();
+                valid = false;
+                return false;
+            }else if(item.value.length > 12) {
+                alert("금액은 12자를 넘을 수 없습니다.")
+                item.focus();
+                valid = false;
+                return false;
+            }else{
+                param["expndArtclLst[" + index + "].amt"]= item.value;;
+            }
+        });
+
+        if(!valid) return;
+
+        //교구 및 시설
+        $("#fcltTbody [id^=expndTr]"   ).each(function(index, item) { param["tchaidFcltLst[" + index + "].prgrmid"]    = prgrmid;    });   //프로그램 id (key)
+        $("#fcltTbody [id^=dtlPrgrmNm]").each(function(index, item) { param["tchaidFcltLst[" + index + "].dtlPrgrmNm"] = item.value; });   //세부 프로그램 이름
+        $("#fcltTbody [id^=eduPlc]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].eduPlc"]     = item.value; });   //교육 장소
+        $("#fcltTbody [id^=tchaid]"    ).each(function(index, item) { param["tchaidFcltLst[" + index + "].tchaid"]     = item.value; });   //교구
+        $("#fcltTbody [id^=qnty]"      ).each(function(index, item) { param["tchaidFcltLst[" + index + "].qnty"]       = item.value; });   //수량
+
+        $("#ipt1 input").each(function(index, item) { param[item.id] = item.value; });
+        $("#ipt2 input").each(function(index, item) {
+
+        	if(item.type=="checkbox") {
+        		if(item.checked) {
+        			param[item.id] = "Y"
+        		} else {
+        			param[item.id] = "N"
+        		}
+        	}else{
+        	    param[item.id] = item.value;
+        	}
+        });
+
+
         if(!confirm("저장하시겠습니까?")) return;
-// debugger;
-// return;
-        var data =  $("#prgrmOperMngForm").serialize() ;
 
         $.ajax({
             url : insertUrl,
@@ -519,6 +560,7 @@
             dataType: 'json',
             data: param,
             success : function (data){
+
                 if(data.result=="success"){
 
                     if(call == "next") {
@@ -538,17 +580,13 @@
         });
     }
 
-    function goPrev(){
-        document.prgrmOperMngForm.action = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //증빙자료
-        $("#prgrmEvlForm").submit();
-    }
 
-    function goNext(){
-        if($("#prgrmOperMngForm").valid() == false) return;
-        doSave("next");
-    }
 
     $(function() {
+debugger;
+    	btgSum();
+    	setArtclList();
+    	setFcltList();
 
     });
 

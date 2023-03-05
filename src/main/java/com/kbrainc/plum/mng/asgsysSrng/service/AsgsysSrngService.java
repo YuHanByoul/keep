@@ -406,6 +406,16 @@ public interface AsgsysSrngService {
 	public int updateSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
 
 	/**
+	 * 안전관리 등록
+	 *
+	 * @Title : insertSftyMng
+	 * @Description : 안전관리 등록
+	 * @param asgsysSrngVo
+	 * @return int
+	 */
+	public int insertSftyMng(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+	/**
 	* 심사위원심사 등록
 	*
 	* @Title : insertJdgsSrngDetail
@@ -695,6 +705,8 @@ public interface AsgsysSrngService {
 	public List<DsgnSrngFormVo> selectSrngFormQitemList(DsgnSrngFormVo dsgnSrngFormVo) throws Exception;
 
 	public List<AsgsysSrngVo> selectSrngFormList(AsgsysSrngVo asgsysSrngVo) throws Exception;
+
+
 
 
 }

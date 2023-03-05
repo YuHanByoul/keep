@@ -100,7 +100,7 @@
     </select>
 
     <select id="selectDsgnSttus" parameterType="front.DsgnPrgrmVo" resultType="front.DsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectDsgnSttus*/
+        /* front.DsgnPrgrmDao.selectDsgnSttus*/
         SELECT
             A.PRGRMID
           , A.PRGRM_NM
@@ -168,7 +168,7 @@
 
     <!-- 프로그램 교육사진 파일 목록 조회 -->
     <select id="selectEduPhotoFileList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectEduPhotoFileList */
+        /* front.DsgnPrgrmDao.selectEduPhotoFileList */
         SELECT
             C.FILEID
           , C.FILE_IDNTFC_KEY
@@ -183,7 +183,7 @@
 
     <!-- 프로그램 해당기업 프로그램 목록 조회 -->
     <select id="selectInstPrgrmList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectInstPrgrmList */
+        /* front.DsgnPrgrmDao.selectInstPrgrmList */
             SELECT
                 A.PRGRMID
               , A.PRGRM_NM
@@ -216,7 +216,7 @@
 
     <!-- 프로그램 운영일정 목록 조회 -->
     <select id="selectPrgrmSchdlList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectPrgrmSchdlList*/
+        /* front.DsgnPrgrmDao.selectPrgrmSchdlList*/
         SELECT
             PRGRMID
           , SCHDLID
@@ -277,7 +277,7 @@
 
     <!-- 프로그램 대처계획 목록 조회 -->
     <select id="selectPlanList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectPlanList */
+        /* front.DsgnPrgrmDao.selectPlanList */
         SELECT
             PLANID
           , PRGRMID
@@ -291,7 +291,7 @@
 
     <!-- 기관정보 조회 -->
     <select id="selectInstInfo" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectInstInfo*/
+        /* front.DsgnPrgrmDao.selectInstInfo*/
         SELECT
             A.INSTID
           , A.USERID
@@ -325,6 +325,7 @@
           , C.APLCNTID
           , C.APLCNT_EML
           , C.FILEGRPID
+          , C.CNSLTNGID
         FROM
             TB_CMM_USER A
         INNER JOIN
@@ -341,7 +342,7 @@
 
     <!-- 신청정보 조회 -->
     <select id="selectAplyInfo" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* dsgnPrgrmDao.selectAplyInfo*/
+        /* front.DsgnPrgrmDao.selectAplyInfo*/
         SELECT
             A.PRGRMID
           , A.INSTID
@@ -424,7 +425,7 @@
 
     <!-- ASS 프로그램 등록 -->
     <insert id="insertPrgrmAssPrgrm" parameterType="front.dsgnPrgrmVo" >
-        /* dsgnPrgrmDao.insertPrgrmAssPrgrm*/
+        /* front.DsgnPrgrmDao.insertPrgrmAssPrgrm*/
         INSERT INTO TB_ASS_PRGRM
         (
             INSTID
@@ -496,7 +497,7 @@
 
     <!-- ASS 프로그램 수정 -->
     <update id="updatePrgrmAssPrgrm" parameterType="front.dsgnPrgrmVo" >
-        /* dsgnPrgrmDao.updatePrgrmAssPrgrm*/
+        /* front.DsgnPrgrmDao.updatePrgrmAssPrgrm*/
         UPDATE TB_ASS_PRGRM SET
             MDFCN_DT          = NOW()
           , MDFRID            = #{user.userid}
@@ -529,7 +530,7 @@
 
     <!-- 프로그램 우수성 등록 -->
     <insert id="insertPrgrmDstnctnForm" parameterType="front.dsgnPrgrmVo" >
-    /* DsgnPrgrmDao.insertPrgrmDstnctn */
+    /* front.DsgnPrgrmDao.insertPrgrmDstnctn */
     INSERT
         INTO TB_ASS_PRGRM_DSTNCTN (
             PRGRMID
@@ -622,7 +623,7 @@
 
     <!-- 프로그램 우수성 수정 -->
     <update id="updatePrgrmDstnctnForm" parameterType="front.dsgnPrgrmVo" >
-    /* DsgnPrgrmDao.updatePrgrmDstnctn */
+    /* front.DsgnPrgrmDao.updatePrgrmDstnctn */
         UPDATE
             TB_ASS_PRGRM_DSTNCTN
         SET
@@ -671,7 +672,7 @@
 
     <!-- 프로그램 평가 체계 조회 -->
     <select id="selectPrgrmEvlForm" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
-        /* DsgnPrgrmDao.selectPrgrmEvlForm*/
+        /* front.DsgnPrgrmDao.selectPrgrmEvlForm*/
         SELECT
             A.PRGRMID                /* 프로그램아이디 */
           , B.PRGRMID    AS EVLID
@@ -702,6 +703,107 @@
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
     </select>
+
+    <!-- 컨설팅 등록 -->
+    <insert id="insertCsltng" parameterType="dsgnPrgrmVo" >
+        /* front.DsgnPrgrmDao.insertCsltng*/
+        INSERT INTO TB_ASS_CNSLTNG
+        (
+            INSTID
+          , USERID
+          , USER_NM
+          , PIC_TELNO
+          , INST_TELNO
+          , PIC_EML
+          , ADDR
+          , ADDR_DTL
+          , PRGRM_NM
+          , CNSLTNG_KND_CD
+          , HOPE_DE1
+          , HOPE_DE2
+          , PRGRM
+          , LDR
+          , ETC
+          , FILEGRPID
+          , STTS_CD
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{instid       }
+          , #{user.userid       }
+          , #{userNm       }
+          , #{picTelno     }
+          , #{instTelno    }
+          , #{picEml       }
+          , #{addr         }
+          , #{addrDtl      }
+          , #{prgrmNm      }
+          , #{cnsltngKndCd }
+          , #{hopeDe1      }
+          , #{hopeDe2      }
+          , #{prgrm        }
+          , #{ldr          }
+          , #{etc          }
+          , #{filegrpid    }
+          , #{sttsCd       }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 컨설팅 수정 -->
+    <update id="updateCsltng" parameterType="dsgnPrgrmVo" >
+        /* front.DsgnPrgrmDao.updateCsltng*/
+        UPDATE TB_ASS_CNSLTNG SET
+            INSTID            = #{instid}           /*기관아이디*/
+          , USERID            = #{user.userid}      /*사용자아이디*/
+          , USER_NM           = #{userNm}           /*사용자_이름*/
+          , PIC_TELNO         = #{picTelno}         /*담당자_전화번호*/
+          , INST_TELNO        = #{instTelno}        /*기관_전화번호*/
+          , PIC_EML           = #{picEml}           /*담당자_이메일*/
+          , ADDR              = #{addr}             /*주소*/
+          , ADDR_DTL          = #{addrDtl}          /*주소_상세*/
+          , PRGRM_NM          = #{prgrmNm}          /*프로그램_이름*/
+          , CNSLTNG_KND_CD    = #{cnsltngKndCd}     /*컨설팅_종류_코드*/
+          , HOPE_DE1          = #{hopeDe1}          /*희망_일자1*/
+          , HOPE_DE2          = #{hopeDe2}          /*희망_일자2*/
+          , PRGRM             = #{prgrm}            /*프로그램*/
+          , LDR               = #{ldr}              /*지도자*/
+          , ETC               = #{etc}              /*기타*/
+          , FILEGRPID         = #{filegrpid}        /*파일그룹아이디*/
+          , STTS_CD           = #{sttsCd}           /*상태_코드*/
+          , MDFCN_DT          = NOW()               /*수정_일시*/
+          , MDFRID            = #{user.userid}      /*수정자아이디*/
+        WHERE
+            CNSLTNGID         = #{cnsltngid}        /*컨설팅아이디*/
+    </update>
+
+    <!-- 지정제 프로그램 컨설팅id 수정 -->
+    <update id="updateCnsltngid" parameterType="dsgnPrgrmVo" >
+        /* front.DsgnPrgrmDao.updatePrgrm */
+        UPDATE TB_ASS_PRGRM SET
+            CNSLTNGID           = #{cnsltngid}    /* 컨설텅아이디 */
+          , MDFCN_DT            = NOW()                /* 수정_일시 */
+          , MDFRID              = #{user.userid}    /* 수정자아이디 */
+        WHERE PRGRMID = #{prgrmid}
+    </update>
+
+    <select id="selectCnsltngid" parameterType="dsgnPrgrmVo" resultType="int">
+        SELECT
+            max(CNSLTNGID) CNSLTNGID
+        FROM TB_ASS_CNSLTNG
+        WHERE INSTID = #{instid}
+        AND   USERID = #{user.userid}
+    </select>
+
+
+
+
 
 
 </mapper>
