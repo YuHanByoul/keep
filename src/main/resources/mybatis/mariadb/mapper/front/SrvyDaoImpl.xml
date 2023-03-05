@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : SrvyDaoImpl.xml
+	Description : 설문관리
+-->
+<mapper namespace="com.kbrainc.plum.front.srvy.model.SrvyDao">
+    
+    <!-- 설문지 목록 조회 -->
+    <select id="selectSrvyList" parameterType="front.SrvyVo" resultType="front.SrvyVo">
+        /* SrvyDao.selectSrvyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SRVYID
+            , A.QESTNRID
+            , A.SRVY_NM
+            , A.BGNG_DE
+            , A.END_DE
+            , CASE WHEN D.SBMSNID IS NOT NULL THEN '설문확인' WHEN NOW() > A.END_DE THEN '기간종료' ELSE '설문참여' END AS STTS_NM
+            , C.USERID
+        FROM
+            TB_CMM_SRVY A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR B ON (B.QESTNRID = A.QESTNRID)
+        INNER JOIN
+            TB_CMM_SRVY_USER C ON (C.SRVYID = A.SRVYID)
+        LEFT OUTER JOIN
+            TB_CMM_SRVY_SBMSN D ON (D.SRVYID = A.SRVYID AND D.USERID = C.USERID)
+        WHERE 
+            B.QESTNR_KND_CD = '110100'
+            AND A.USE_YN = 'Y'
+            AND NOW() >= A.BGNG_DE
+        <if test="user.loginUserType == 'P'.toString()">
+            AND C.USERID = #{user.userid}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 설문 정보 조회 -->
+    <select id="selectSrvyInfo" parameterType="front.SrvyVo" resultType="front.SrvyVo">
+        /* SrvyDao.selectSrvyInfo */
+        SELECT
+            SRVYID
+            , SRVY_NM
+        FROM
+            TB_CMM_SRVY
+        WHERE 
+            SRVYID = #{srvyid}
+    </select>
+    
+    <!-- 설문 문항 목록 조회 -->
+    <select id="selectQitemList" parameterType="front.SrvyVo" resultType="QitemVo">
+        /* SrvyDao.selectQitemList */
+        SELECT
+            A.QITEMID
+            , A.QESTNRID
+            , A.QITEM_TYPE_CD
+            , A.CN
+            , A.EX_CNT
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        WHERE
+            A.USE_YN = 'Y'
+            AND A.QESTNRID = #{qestnrid}
+        ORDER BY
+            A.ORDR
+    </select>
+    
+    <!-- 설문 문항 보기 목록 조회 -->
+    <select id="selectExList" parameterType="QitemVo" resultType="QitemExVo">
+        /* SrvyDao.selectExList */
+        SELECT
+            A.EXID
+            , A.QITEMID
+            , A.EX_NO
+            , A.CN
+            , A.SCR
+            , A.ETC_YN
+        FROM
+            TB_CMM_QESTNR_QITEM_EX A
+        WHERE
+            A.QITEMID = #{qitemid}
+        ORDER BY
+            A.EX_NO
+    </select>
+    
+    <!-- 설문 제출 정보 등록 -->
+    <insert id="insertSrvySbmsn" parameterType="front.SrvySbmsnVo" useGeneratedKeys="true" keyProperty="sbmsnid">
+        /* SrvyDao.insertSrvySbmsn */
+        INSERT INTO TB_CMM_SRVY_SBMSN (
+            SRVYID
+            , USERID
+            , INSTID
+            , APFEX_DT
+            , SBMSN_DT
+            , USER_IP
+            , BRWSR_NM
+            , DEVICE_KND_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{srvyid}
+            , #{user.userid}
+            , #{user.instid}
+            , NOW()
+            , NOW()
+            , #{userIp}
+            , #{brwsrNm}
+            , #{deviceKndCd}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 설문 답변 정보 등록 -->
+    <insert id="insertSrvySbmsnAns" parameterType="front.SrvySbmsnAnsVo">
+        /* SrvyDao.insertSrvySbmsnAns */
+        INSERT INTO TB_CMM_SRVY_SBMSN_ANS (
+            SBMSNID
+            , QITEMID
+            , ANS
+            , ANS_DSCRP
+            <if test="scale != null and scale != 0">
+            , SCALE
+            </if>
+            <if test="scr != null and scr != 0">
+            , SCR
+            </if>
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{sbmsnid}
+            , #{qitemid}
+            , #{ans}
+            , #{ansDscrp}
+            <if test="scale != null and scale != 0">
+            , #{scale}
+            </if>
+            <if test="scr != null and scr != 0">
+            , #{scr}
+            </if>
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+</mapper>
