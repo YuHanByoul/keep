@@ -13,19 +13,11 @@
 	            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
 	            <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="desc">
 	            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
-	            <input type="hidden" id="pcntstid" name="pcntstid" >
+	            <input type="hidden" id="pcntstid" name="pcntstid" />
+	            <input type="hidden" id="aplyid" name="aplyid" />
+	            <input type="hidden" id="fldCd" name="fldCd" />
+	            <input type="hidden" id="mode" name="mode" />
                 <div class="form-input-wrap">
-                    <div class="form-row">
-                        <div class="form-header"><strong class="label">진행상태</strong></div>
-                        <div class="form-body">
-                            <select title="상태" id="status" name="status">
-                                <option value="">- 전체 -</option>
-                                <option value="before">진행전</option>
-                                <option value="ing">진행중</option>
-                                <option value="end">마감</option>
-                            </select>
-                        </div>
-                    </div>
                     <div class="form-row">
                         <div class="form-header"><strong class="label">사업분야</strong></div>
                         <div class="form-body">
@@ -36,6 +28,24 @@
                         <div class="form-header"><strong class="label">공모명</strong></div>
                         <div class="form-body">
                             <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">프로그램명</strong></div>
+                        <div class="form-body">
+                            <input type="search" title="프로그램명" placeholder="프로그램명을 입력해주세요." name="searchPrgrmNm" id="searchPrgrmNm">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">진행상태</strong></div>
+                        <div class="form-body">
+                            <select title="상태" id="status" name="status">
+                                <option value="">- 전체 -</option>
+                                <option value="192101">신청중</option>
+                                <option value="192102">신청완료</option>
+                                <option value="201101">보완요청</option>
+                                <option value="201102">보완완료</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -66,20 +76,22 @@
 	                        <col style="width:6%;">
 	                        <col>
 	                        <col>
-	                        <col style="width:25%;">
-	                        <col style="width:15%;">
-	                        <col style="width:15%;">
 	                        <col style="width:11%;">
+	                        <col style="width:15%;">
+	                        <col style="width:12%;">
+	                        <col style="width:10%;">
+	                        <col style="width:9%;">
 	                    </colgroup>
 	                    <thead>
 	                        <tr>
 	                            <th scope="col">번호</th>
-	                            <th scope="col">진행상태</th>
 	                            <th scope="col">사업분야</th>
 	                            <th scope="col">공모명</th>
-	                            <th scope="col">신청기간</th>
-	                            <th scope="col">사업기간</th>
-	                            <th scope="col">등록일</th>
+	                            <th scope="col">접수번호</th>
+	                            <th scope="col">프로그램명</th>
+	                            <th scope="col">신청상태</th>
+	                            <th scope="col">접수일</th>
+	                            <th scope="col">선정결과</th>
 	                        </tr>
 	                    </thead>
 	                    <tbody id="list-area">
@@ -101,10 +113,20 @@
         </div>
         <!-- //content -->
         
-	    <script th:inline="javascript">     
+        <!-- layerpopup -->
+        <div class="layer-popup layer-large" data-layer-id="suppModalPopup">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap" id="suppModalPopup">
+            </div>
+        </div>
+            
+	    <script th:inline="javascript">
+	    /*<![CDATA[*/
+        var requestURI = /*[[${#httpServletRequest.requestURI}]]*/null;
+        /*]]>*/
 	    var listPage = {
-	        listUrl: '/front/bizAply/selectReqMngList.do',
-	        detailUrl : '/front/bizAply/reqMngDetailForm.html',
+	        listUrl: '/front/expEnv/selectMyAplyList.do',
+	        detailUrl : '/front/expEnv/baseInfoForm.html',
 	
 	        init(rowPerPage) {
 	            if(rowPerPage != null) {
@@ -113,19 +135,13 @@
 	            }
 	            this.selectList();
 	        },
-	        moveToDetail() {
-	            if (this.userid == null) {
-	                alert('로그인 후 이용하실 수 있습니다.');
-	                return;
-	            }
-	            location.href = '/front/book/bookDetailForm.html';
-	        },
 	        search() {
 	            $('#pageNumber').val('1');
 	            this.selectList();
 	        },
 	        searchInit() {
 	            $("#searchPcntstNm").val('');
+	            $("#searchPrgrmNm").val('');
 	            $("#searchFldCd").val('');
 	            $("#status").val('');
 	            this.selectList();
@@ -147,11 +163,21 @@
 	                });
 	            }
 	        },
-	        moveToDetail(pcntstid) {
+	        moveToDetail(pcntstid, aplyid, fldCd) {
 	            var f = document.forms.searchForm ;
 	            f.pcntstid.value = pcntstid;
+	            f.aplyid.value = aplyid;
+	            f.fldCd.value = fldCd;
+	            f.mode.value = 'U';
 	            f.action = this.detailUrl;
 	            f.submit();
+	        },
+	        suppPopup: function(splmntid) {
+	        	$("#suppModalPopup").load("/front/expEnv/detailSplmntForm.html?splmntid=" + splmntid, function(response, status, xhr) {
+                    if (status == "success") {
+                        layerPopup.open({target:'suppModalPopup'});
+                    }
+                });
 	        },
 	        makeListHtml(data) {
 	            var listHtml = "";
@@ -174,12 +200,18 @@
 	                    listHtml += `
 	                    <tr>
 	                    <td>${item.rowNumber}</td>
-	                    <td>${item.status}</td>
 	                    <td>${item.fldNm}</td>
-	                    <td className="al article"><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.pcntstid})">${item.pcntstNm}</a></td>
-	                    <td>${item.aplyDt}</td>
-	                    <td>${item.bsnsDe}</td>
-	                    <td>${item.regDt}</td>
+	                    <td>${item.pcntstNm}</td>
+	                    <td>${item.aplyno}</td>
+	                    <td><a href="javascript:void(0)" class="link ellipsis" onclick="listPage.moveToDetail(${item.pcntstid},${item.aplyid},${item.fldCd})">${item.prgrmNm}</a></td>`;
+	                    if(`${item.splmntid}` == 'null'){
+	                    	listHtml += `<td>${item.aplySttsNm}</td>`;
+	                    } else {
+	                    	listHtml += `<td><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid})">${item.aplySttsNm}</button></td>`;
+	                    }
+	                    listHtml += `
+	                    <td>${item.regDe}</td>
+	                    <td>${item.slctnSttsNm}</td>
 	                    <tr>
 	                    `;
 	                    mobileHtml += `
@@ -190,28 +222,42 @@
                                     <dd>${item.rowNumber}</dd>
                                 </div>
                                 <div class="list">
-                                    <dt>진행상태</dt>
-                                    <dd>${item.status}</dd>
-                                </div>
-                                <div class="list">
                                     <dt>사업분야</dt>
                                     <dd>${item.fldNm}</dd>
                                 </div>
                                 <div class="list">
                                     <dt>공모명</dt>
-                                    <dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.pcntstid})">${item.pcntstNm}</a></dd>
+                                    <dd>${item.pcntstNm}</dd>
                                 </div>
                                 <div class="list">
-                                    <dt>신청기간</dt>
-                                    <dd>${item.aplyDt}</dd>
+                                    <dt>접수번호</dt>
+                                    <dd>${item.aplyno}</dd>
                                 </div>
                                 <div class="list">
-                                    <dt>사업기간</dt>
-                                    <dd>${item.bsnsDe}</dd>
+                                    <dt>프로그램명</dt>
+                                    <dd><a href="javascript:void(0)" class="link ellipsis" onclick="listPage.moveToDetail(${item.pcntstid},${item.aplyid},${item.fldCd})">${item.prgrmNm}</a></dd>
+                                </div>`;
+	                    if(`${item.splmntid}` == 'null'){
+	                    	mobileHtml += `
+                                <div class="list">
+                                    <dt>신청상태</dt>
+                                    <dd>${item.aplySttsNm}</dd>
+                                </div>`;
+                        } else {
+                        	mobileHtml += `
+                                <div class="list">
+                                    <dt>신청상태</dt>
+                                    <dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid})">${item.aplySttsNm}</button></dd>
+                                </div>`;
+                        }        
+                        mobileHtml += `
+                                <div class="list">
+                                    <dt>접수일</dt>
+                                    <dd>${item.regDe}</dd>
                                 </div>
                                 <div class="list">
-                                    <dt>등록일</dt>
-                                    <dd>${item.regDt}</dd>
+                                    <dt>선정상태</dt>
+                                    <dd>${item.slctnSttsNm}</dd>
                                 </div>
                             </dl>
                         </div>
@@ -227,7 +273,6 @@
 	
 	    $(function () {
 	        listPage.init();
-	        
 	        $("#rowPerPageChange").change(function(){
 	        	$("#rowPerPage").val($(this).val());
 	        	listPage.init($(this).val());
@@ -238,7 +283,8 @@
 	        $("#pageNumber").val(page);
 	        
 	        listPage.selectList();
-	    }            
+	    }
+	    
 	    </script>
     </div>
 </body>

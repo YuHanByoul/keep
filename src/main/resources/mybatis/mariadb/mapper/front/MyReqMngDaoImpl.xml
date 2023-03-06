@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : MyReqMngDaoImpl.xml
+    Description : 마이페이지 > 공모신청내역
+-->
+<mapper namespace="com.kbrainc.plum.front.expEnv.model.MyReqMngDao">
+    
+    <!-- 공모신청내역 목록 검색 조건 -->
+    <sql id="searchCondition">
+        <if test="searchFldCd != null and searchFldCd != ''">
+        AND TSP.FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+        AND TSP.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+        AND PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+        <if test="status != null and status != ''">
+        AND IFNULL(TSAS.ANS_STTS_CD, APLY_STTS_CD) = #{status}
+        </if>
+    </sql>
+    
+    <!-- 공모신청내역 목록 조회 -->
+    <select id="selectMyAplyList" parameterType="front.ReqUserVo" resultType="front.ReqUserVo">
+        /* MyReqMngDao.selectMyAplyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            TSA.APLYID
+            , TSA.PCNTSTID 
+            , TCC.CD_NM AS FLD_NM
+            , TSP.PCNTST_NM
+            , APLYNO
+            , PRGRM_NM
+            , IFNULL(TSAS.CD_NM, TCC3.CD_NM) AS APLY_STTS_NM
+            , REG_DE
+            , IFNULL(TCC2.CD_NM, '-') AS SLCTN_STTS_NM
+            , TSP.FLD_CD
+            , IFNULL(TSAS.ANS_STTS_CD, APLY_STTS_CD) AS APLY_STTS_CD
+            , SLCTN_STTS_CD
+            , TSAS.SPLMNTID
+            , INSTID
+            , USERID
+            , INST_NM
+            , RPRSV_NM
+            , REG_INST_NM
+            , REG_NO
+            , INST_TYPE_CD
+            , ETC_CN
+            , INST_TYPE_DTL_CD
+            , HMPG
+            , RELGN_CD
+            , APLCNT_NM
+            , APLCNT_TELNO
+            , APLCNT_EML
+            , APLY_INST_TELNO
+            , INST_SAREA_CD
+            , INST_ZIP
+            , INST_ADDR
+            , INST_ADDR_DTL
+            , RGN_CD
+            , LDR_MNG_MTHD
+            , FILEGRPID1
+            , FILEGRPID2
+            , FILEGRPID3
+            , BSNS_CNCL_YN
+            , EXCCLC_STTS_CD
+            , BNKB_FILEID
+            , EXCCLC_ATCH_FILEGRPID
+            , RTURN_YN
+            , RTURN_AMT
+            , RTURN_DT
+            , CNSLTNG_TRGT_CN
+            , SCND_SRNG_TRGT_YN
+            , FIRST_SCR
+            , FIRST_GRD
+            , FIRST_RKNG
+            , SCND_SCR
+            , SCND_GRD
+            , SCND_RKNG
+            , SRNG_END_YN
+            , PRIVCY_AGRE_YN
+            , PRVC_THPTY_PVSN_AGRE_YN
+            , TSA.MDFCN_DT
+            , TSA.MDFRID
+            , TSA.REG_DT
+            , TSA.RGTRID
+        FROM    
+            TB_SPB_PCNTST TSP
+            INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+            LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
+            LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSA.SLCTN_STTS_CD = TCC2.CD
+            LEFT OUTER JOIN TB_CMM_CD TCC3 ON TSA.APLY_STTS_CD = TCC3.CD
+            LEFT OUTER JOIN (SELECT 
+                                SPLMNTID
+                                , APLYID 
+                                , ANS_STTS_CD
+                                , B.CD_NM
+                            FROM TB_SPB_APLY_SPLMNT A
+                            LEFT OUTER JOIN TB_CMM_CD B ON A.ANS_STTS_CD = B.CD) TSAS ON TSAS.APLYID = TSA.APLYID 
+                AND SPLMNTID = (
+                    SELECT 
+                        MAX(SPLMNTID) AS SPLMNTID
+                    FROM TB_SPB_APLY_SPLMNT TSAS
+                    LEFT OUTER JOIN TB_CMM_CD TCC ON TSAS.ANS_STTS_CD = TCC.CD
+                    WHERE TSAS.APLYID = TSA.APLYID
+                )       
+        WHERE 
+            1 = 1
+            AND TSA.USERID = #{user.userid}
+            <if test="user.loginUserType == 'P'.toString()">
+            AND TSP.FLD_CD IN ('173105','173106')
+            </if>
+            <if test="user.loginUserType == 'I'.toString()">
+            AND TSP.FLD_CD NOT IN ('173105','173106')
+            </if>
+            <include refid="searchCondition"/>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 보완요청 조회 -->
+    <select id="detailSplmnt" parameterType="front.SupplementVo" resultType="front.SupplementVo">
+        /* MyReqMngDao.detailSplmnt */
+        SELECT
+            SPLMNTID
+            , TSA.PCNTSTID  
+            , TSP.FLD_CD
+            , TSAS.APLYID
+            , DMND_CN
+            , ANS_CN
+            , ANS_STTS_CD
+        FROM
+            TB_SPB_APLY_SPLMNT TSAS
+            INNER JOIN TB_SPB_APLY TSA ON TSA.APLYID = TSAS.APLYID 
+            INNER JOIN TB_SPB_PCNTST TSP ON TSP.PCNTSTID = TSA.PCNTSTID  
+        WHERE SPLMNTID = #{splmntid}
+    </select>
+    
+    <!-- 보완요청 답변 저장 -->
+    <update id="updateSplmnt" parameterType="front.SupplementVo">
+        /* MyReqMngDao.updateSplmnt */
+        UPDATE TB_SPB_APLY_SPLMNT SET
+            ANS_CN = #{ansCn}
+            , ANS_STTS_CD = '201102'
+            , ANSWRRID = #{user.userid}
+            , ANS_DT = NOW()
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE SPLMNTID = #{splmntid}
+    </update>
+    
+</mapper>
