@@ -109,5 +109,5 @@ public interface CommonService {
      * @return String 이동화면경로
      * @throws Exception 예외
      */
-    public List<Map<String, Object>> nearbyEnveduFlct() throws Exception;
+    public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception;
 }

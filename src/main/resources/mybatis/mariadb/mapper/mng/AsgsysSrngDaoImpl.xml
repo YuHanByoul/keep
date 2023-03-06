@@ -721,21 +721,23 @@
     <select id="selectExpndArtclList" parameterType="ExpndArtclVo" resultType="ExpndArtclVo">
         /* AsgsysSrngDao.selectExpndArtclList*/
         SELECT
-            ARTCLID
-          , PRGRMID
-          , EXPND_ARTCL
-          , AMT
-          , SUM(AMT) OVER() AS SUM_AMT
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.ARTCLID
+          , B.EXPND_ARTCL
+          , B.AMT
+          , SUM(B.AMT) OVER() AS SUM_AMT
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_EXPND_ARTCL
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_EXPND_ARTCL B ON A.PRGRMID= B.PRGRMID
         WHERE
-            PRGRMID = #{prgrmid}
+            A.PRGRMID = #{prgrmid}
         ORDER BY
-            ARTCLID
+            B.ARTCLID
     </select>
 
     <!-- 지출항목 등록 -->
@@ -762,7 +764,7 @@
      </insert>
 
     <!-- 지출항목 목록 삭제 -->
-    <delete id="deleteExpndArtcl" parameterType="ExpndArtclVo">
+    <delete id="deleteExpndArtcl" parameterType="AsgsysSrngVo">
         /* AsgsysSrngDao.insertExpndArtclt */
         DELETE FROM
             TB_ASS_EXPND_ARTCL
@@ -773,19 +775,21 @@
     <select id="selectTchaidFcltList" parameterType="TchaidFcltVo" resultType="TchaidFcltVo">
         /* AsgsysSrngDao.selecttchaidFcltList */
         SELECT
-            TCHAIDFCLTID
-          , PRGRMID
-          , DTL_PRGRM_NM
-          , EDU_PLC
-          , TCHAID
-          , QNTY
-          , MDFCN_DT
-          , MDFRID
-          , REG_DT
-          , RGTRID
+            A.PRGRMID
+          , B.TCHAIDFCLTID
+          , B.DTL_PRGRM_NM
+          , B.EDU_PLC
+          , B.TCHAID
+          , B.QNTY
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_TCHAID_FCLT
-        WHERE PRGRMID = #{prgrmid}
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_TCHAID_FCLT B ON A.PRGRMID= B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
     </select>
 
     <!-- 교구 및 시설 등록 -->
@@ -815,7 +819,7 @@
     </insert>
 
     <!-- 교구 및 시설 삭제 -->
-    <delete id="deleteTchaidFclt" parameterType="TchaidFcltVo">
+    <delete id="deleteTchaidFclt" parameterType="AsgsysSrngVo">
         DELETE FROM
             TB_ASS_TCHAID_FCLT
         WHERE PRGRMID = #{prgrmid}
@@ -825,6 +829,7 @@
     <select id="selectPrgrmEvl" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
         /* AsgsysSrngDao.selectPrgrmEvl*/
         SELECT A.PRGRMID
+             , B.PRGRMID    AS EVLID
              , B.EVL_PRPS
              , B.BFR_LDR_EVL_ARTCL
              , B.BFR_LDR_EVL_TL
@@ -931,7 +936,291 @@
         WHERE PRGRMID = #{prgrmid}
     </update>
 
+    <!-- 책임개발자 목록 조회 -->
+    <select id="selectLdrList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectLdrList*/
+        SELECT
+            A.PRGRMID
+          , B.LDRID
+          , B.PRGRMID
+          , B.SE
+          , B.NM
+          , B.TASK_CN
+          , B.SNRSTFDVLPR_YN
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM_LDR B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+        ORDER BY B.SNRSTFDVLPR_YN DESC
+    </select>
 
+    <!-- 책임개발자 지도자 등록 -->
+    <insert id="insertLdr" parameterType="LdrVo" >
+        /* AsgsysSrngDao.insertLdr*/
+        INSERT INTO TB_ASS_PRGRM_LDR
+        (
+            PRGRMID
+          , SE
+          , NM
+          , TASK_CN
+          , SNRSTFDVLPR_YN
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES (
+            #{prgrmid      }
+          , #{se           }
+          , #{nm           }
+          , #{taskCn       }
+          , #{snrstfdvlprYn}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 책임개발자 지도자 목록 삭제 -->
+    <delete id="deleteLdrList" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.deleteLdrList*/
+        DELETE FROM
+            TB_ASS_PRGRM_LDR
+        WHERE
+            PRGRMID = #{prgrmid}
+    </delete>
+
+    <!-- 책임개발자 학력 등록 -->
+    <insert id="insertAcbg" parameterType="AcbgVo" >
+    /* AsgsysSrngDao.insertAcbg*/
+        INSERT INTO TB_ASS_SNRSTFDVLPR_ACBG
+        (
+             PRGRMID
+           , BGNG_DE
+           , END_DE
+           , SCHL_NM
+           , MJR
+           , DGR
+           , MDFCN_DT
+           , MDFRID
+           , REG_DT
+           , RGTRID
+        ) VALUES
+        (
+             #{prgrmid }
+           , #{bgngDe  }
+           , #{endDe   }
+           , #{schlNm  }
+           , #{mjr     }
+           , #{dgr     }
+           , NOW()
+           , #{user.userid}
+           , NOW()
+           , #{user.userid}
+        )
+    </insert>
+
+    <!-- 책임개발자 학력 목록 삭제 -->
+    <delete id="deleteAcbgList" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.deleteAcbgList*/
+        DELETE FROM
+            TB_ASS_SNRSTFDVLPR_ACBG
+        WHERE
+            PRGRMID = #{prgrmid}
+    </delete>
+
+    <!-- 책임개발자 경력 등록 -->
+    <insert id="insertCareer" parameterType="CareerVo" >
+        /* AsgsysSrngDao.insertCareer*/
+        INSERT INTO TB_ASS_SNRSTFDVLPR_CAREER
+        (
+            PRGRMID
+          , BGNG_DE
+          , END_DE
+          , ACTVT_NM
+          , ACTVT_TYPE
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (   #{prgrmid}
+          , #{bgngDe}
+          , #{endDe}
+          , #{actvtNm }
+          , #{actvtType}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 책임개발자 경력 목록 삭제 -->
+    <delete id="deleteCareerList" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.deleteCareerList*/
+        DELETE FROM
+            TB_ASS_SNRSTFDVLPR_CAREER
+        WHERE
+            PRGRMID = #{prgrmid}
+    </delete>
+
+    <!-- 책임개발자 자격 등록 -->
+    <insert id="insertQlfc" parameterType="QlfcVo" >
+        /* AsgsysSrngDao.insertQlfc*/
+        INSERT INTO TB_ASS_SNRSTFDVLPR_QLFC
+        (
+            PRGRMID
+          , QLFC_NM
+          , GRD
+          , ACQS_DE
+          , WRKPLC
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{prgrmid }
+          , #{qlfcNm  }
+          , #{grd     }
+          , #{acqsDe  }
+          , #{wrkplc  }
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 책임개발자 자격 목록 삭제 -->
+    <delete id="deleteQlfcList" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.deleteQlfcList*/
+        DELETE FROM
+            TB_ASS_SNRSTFDVLPR_QLFC
+        WHERE
+            PRGRMID = #{prgrmid}
+    </delete>
+
+    <!-- 책임개발자 이력 조회 -->
+    <select id="selectSnrstfdvlprHstry" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSnrstfdvlprHstry*/
+        SELECT
+            A.PRGRMID
+          , B.PRGRMID    AS HSTRYID
+          , B.NM
+          , B.BRDT
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SNRSTFDVLPR_HSTRY B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 책임개발자 이력 등록 -->
+    <insert id="insertSnrstfdvlprHstry" parameterType="AsgsysSrngVo" >
+    /* AsgsysSrngDao.insertSnrstfdvlprHstry*/
+        INSERT INTO TB_ASS_SNRSTFDVLPR_HSTRY
+        (
+            PRGRMID
+          , NM
+          , BRDT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{prgrmid}
+          , #{nm}
+          , #{brdt}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}
+        )
+    </insert>
+
+    <!-- 책임개발자 이력 수정 -->
+    <update id="updateSnrstfdvlprHstry" parameterType="AsgsysSrngVo" >
+        /* AsgsysSrngDao.updateSnrstfdvlprHstry*/
+        UPDATE
+            TB_ASS_SNRSTFDVLPR_HSTRY
+        SET NM         = #{nm}           /*이름*/
+          , BRDT       = #{brdt}         /*생년월일*/
+          , MDFCN_DT   = NOW()          /*수정_일시*/
+          , MDFRID     = #{user.userid} /*수정자아이디*/
+        WHERE PRGRMID  = #{prgrmid}     /*프로그램아이디*/
+    </update>
+
+    <!-- 책임개발자 학력사항 목록조회 -->
+    <select id="selectSnrstfdvlprAcbgList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSnrstfdvlprAcbgList*/
+        SELECT
+            A.PRGRMID,
+            B.ACBGID,
+            B.BGNG_DE,
+            B.END_DE,
+            B.SCHL_NM,
+            B.MJR,
+            B.DGR,
+            B.MDFCN_DT,
+            B.MDFRID,
+            B.REG_DT,
+            B.RGTRID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SNRSTFDVLPR_ACBG B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 책임개발자 자격사항 목록조회 -->
+    <select id="selectSnrstfdvlprQlfcList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSnrstfdvlprQlfcList*/
+        SELECT
+            A.PRGRMID,
+            B.QLFCID,
+            B.QLFC_NM,
+            B.GRD,
+            B.ACQS_DE,
+            B.WRKPLC,
+            B.MDFCN_DT,
+            B.MDFRID,
+            B.REG_DT,
+            B.RGTRID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SNRSTFDVLPR_QLFC B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
+
+    <!-- 책임개발자 경력사항 목록조회 -->
+    <select id="selectSnrstfdvlprCareerList" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSnrstfdvlprCareerList*/
+        SELECT
+            A.PRGRMID,
+            B.CAREERID,
+            B.BGNG_DE,
+            B.END_DE,
+            B.ACTVT_NM,
+            B.ACTVT_TYPE,
+            B.MDFCN_DT,
+            B.MDFRID,
+            B.REG_DT,
+            B.RGTRID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SNRSTFDVLPR_CAREER B ON A.PRGRMID = B.PRGRMID
+        WHERE A.PRGRMID = #{prgrmid}
+    </select>
 
     <!-- 지정제 프로그램 등록 -->
     <insert id="insertPrgrm" parameterType="AsgsysSrngVo" >
@@ -1159,23 +1448,27 @@
 
     <!-- 신청정보탭 안전관리 상세 조회 -->
     <select id="selectSftyMng" parameterType="AsgsysSrngVo" resultType="AsgsysSrngVo">
+        /* AsgsysSrngDao.selectSftyMng*/
         SELECT
             A.PRGRMID
-          , A.FILEGRPID
-          , A.LDR_EDU_SESS
-          , A.LDR_EDU_PIC
-          , A.LDR_EDU_CN
-          , A.PRTCPNT_EDU_SESS
-          , A.PRTCPNT_EDU_PIC
-          , A.PRTCPNT_EDU_CN
-          , A.BFR_CERT_YN
-          , A.BFR_CERT_FILEGRPID
-          , A.MDFCN_DT
-          , A.MDFRID
-          , A.REG_DT
-          , A.RGTRID
+          , B.PRGRMID   AS SFTY_MNG_ID
+          , B.FILEGRPID
+          , B.LDR_EDU_SESS
+          , B.LDR_EDU_PIC
+          , B.LDR_EDU_CN
+          , B.PRTCPNT_EDU_SESS
+          , B.PRTCPNT_EDU_PIC
+          , B.PRTCPNT_EDU_CN
+          , B.BFR_CERT_YN
+          , B.BFR_CERT_FILEGRPID
+          , B.MDFCN_DT
+          , B.MDFRID
+          , B.REG_DT
+          , B.RGTRID
         FROM
-            TB_ASS_SFTY_MNG A
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SFTY_MNG B ON A.PRGRMID = B.PRGRMID
         WHERE
             A.PRGRMID = #{prgrmid}
     </select>

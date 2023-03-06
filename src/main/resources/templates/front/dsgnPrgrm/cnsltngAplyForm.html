@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="cnsltngAplyForm" name="cnsltngAplyForm" th:action="@{/front/dsgnPrgrm/cnsltngAplyComp.html}" method="post">
+            <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${instInfo.prgrmid}" />
+            <input type="hidden"  id="instid" name="instid" th:value="${instInfo.instid}" />
+            <input type="hidden"  id="cnsltngid" name="cnsltngid" th:value="${cnsltngAply.cnsltngid}" />
+
+            <!-- content -->
+
+            <div class="steps">
+                <ol>
+                    <li>
+                        <div class="steps-inner">
+                            <span>01</span>
+                            <strong>약관동의</strong>
+                        </div>
+                    </li>
+                    <li class="active" title="현재 단계" aria-current="step">
+                        <div class="steps-inner">
+                            <span>02</span>
+                            <strong>컨설팅 신청</strong>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="steps-inner">
+                            <span>03</span>
+                            <strong>신청완료</strong>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+
+            <!-- 컨설팅 신청안내 -->
+            <div class="table-caption">
+                <h3 class="sub-title">컨설팅 신청안내</h3>
+            </div>
+
+            <div class="box-desc-list bg7">
+                <ul>
+                    <li>신청서에는 컨설팅이 원활히 진행될 수 있도록 필요한 정보와 컨설팅 요구사항을 최대한 자세히 기술하여 주시기 바랍니다. </li>
+                    <li>간단한 문의 및 지정정보시스템 이용에 관한 문의는 먼저 유선(02-3407-1580, 30)로 해주시기 바랍니다.</li>
+                    <li>컨설팅에 참여한 환경교육전문가는 실제 심사 시 배정되지 않습니다.</li>
+                </ul>
+            </div>
+
+            <!-- 신청기관 정보 -->
+            <div class="table-caption">
+                <h3 class="sub-title">신청기관 정보</h3>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>신청기관 정보 - 기관명, 기관 담당자명, 기관유형, 담당자 연락처, 담당자 이메일, 기관주소</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">기관명</th>
+                            <td><th:block th:text="${instInfo.instNm}" /></td>
+                            <th scope="row">기관 담당자명</th>
+                            <td><th:block th:text="${instInfo.aplcntNm}" /></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기관유형</th>
+                            <td><th:block th:text="${instInfo.instTypeCdNm}" /></td>
+                            <th scope="row">담당자 연락처</th>
+                            <td><th:block th:text="${instInfo.aplcntMoblphon}" /></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기관 연락처</th>
+                            <td>010-0000-0000</td>
+                            <th scope="row">담당자 이메일</th>
+                            <td><a th:href="'mailto:' + ${instInfo.aplcntEml}" class="url"><th:block th:text="${instInfo.aplcntEml}" /></a></td>
+                        </tr>
+                        <tr>
+                            <th>기관주소</th>
+                            <td><th:block th:text="${instInfo.addr +' '+ instInfo.addrDtl}" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 컨설팅 신청 내용 -->
+            <div class="table-caption">
+                <h3 class="sub-title">컨설팅 신청 내용</h3>
+            </div>
+
+            <div class="table-row table-row-mo" id="ipt">
+                <table>
+                    <caption>컨설팅 신청_정보입력 - 프로그램명, 아이디, 비밀번호, 비밀번호 확인, 지역선택, 휴대폰 번호, 인증번호, 알람설정</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">프로그램명</th>
+                            <td>
+                                <div class="form-input">
+                                    <input type="text" title="프로그램명" placeholder="프로그램명을 입력해주세요." id="prgrmNm" name="prgrmNm" th:value="${cnsltngAply.prgrmNm}" />
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">컨설팅 유형</th>
+                            <td>
+                                <div class="form-check-list flex-column a-start">
+                                    <label class="inp"><input type="radio"><b class="normal-wrap">온라인 : 컨설팅 담당자가 온라인으로 컨설팅 서비스를 제공해 드립니다.</b></label>
+                                    <label class="inp"><input type="radio"><b class="normal-wrap">오프라인 : 컨설팅 담당자가 현장방문을 통해 컨설팅 서비스를 제공해 드립니다. </b></label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">희망 현장방문일</th>
+                            <td>
+                                <div class="form-input mo-flex-wrap">
+                                    <div class="form-input">
+                                        <div class="bul">1차:</div>
+                                        <input type="date" style="flex:0 1 140px;" title="1차" id="hopeDe1" name="hopeDe1" th:value="${cnsltngAply.hopeDe1}" />
+                                    </div>
+                                    <div class="form-input">
+                                        <div class="bul">2차:</div>
+                                        <input type="date" style="flex:0 1 140px;" title="2차" id="hopeDe2" name="hopeDe2" th:value="${cnsltngAply.hopeDe2}" />
+                                    </div>
+                                </div>
+                                <p class="desc">※ 신청일 기준 10일 이후로 희망 현장방문일을 선택해 주세요.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">프로그램 영역</th>
+                            <td>
+                                <textarea title="프로그램 영역" placeholder="" id="prgrm" name="prgrm"><th:block th:text="${cnsltngAply.prgrm}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">지도자 영역</th>
+                            <td>
+                                <textarea title="지도자 영역" placeholder="" id="ldr" name="ldr"><th:block th:text="${cnsltngAply.ldr}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기타영역</th>
+                            <td>
+                                <textarea title="기타영역" placeholder="" id="etc" name="etc"><th:block th:text="${cnsltngAply.etc}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">첨부파일</th>
+                            <td>
+                                <div class="form-input-file">
+                                    <label class="form-input">
+                                        <input type="file" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="10">
+                                        <span class="btn-medium btn-gray">파일선택</span>
+                                    </label>
+                                    <ul></ul>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-gray" onclick="goPrev()">이전</button>
+                    <button type="button" class="btn-medium btn-green" onclick="doSave()">제출</button>
+                </div>
+            </div>
+
+        </form>
+
+        <!-- //content -->
+
+        <script th:inline="javascript">
+
+            var insertUrl = "/front/dsgnPrgrm/insertCnsltngAplyForm.do";
+            var prevUrl = "/front/dsgnPrgrm/cnsltngAplyTermsForm.html";    //약관동의
+            var nextUrl = "/front/dsgnPrgrm/cnsltngAplyComp.html"    //프로그램 우수성
+
+            function goPrev(){
+                document.cnsltngAplyForm.action = prevUrl;
+                $("#cnsltngAplyForm").submit();
+            }
+
+            function doSave(){
+
+                //if(!valid()) return false;
+
+                //$("#sttsCd").val("111101");    //작성중
+
+                var data =  $("#cnsltngAplyForm").serialize() ;
+
+                $.ajax({
+                    url : insertUrl,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if(data.result=="success"){
+                            alert(data.msg);
+                            document.cnsltngAplyForm.action = nextUrl;
+                            $("#cnsltngAplyForm").submit();
+
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+
+            }
+
+            $(function() {
+
+            	$("textArea").keyup(function (e) {
+                    var inTxt = $(this).val();
+                    if($("#"+this.id).next().prop("class")=="desc ar size"){
+                        $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+                    }
+                });
+            	$("textArea").trigger("keyup");
+
+            });
+
+        </script>
+    </div>
+
+</body>
+</html>

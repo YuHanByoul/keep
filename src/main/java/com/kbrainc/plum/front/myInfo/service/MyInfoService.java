@@ -14,6 +14,8 @@ public interface MyInfoService {
     * @throws Exception 예외
     */
     public MemberVo selectMemberInfo(MemberVo memberVo) throws Exception;
-    
-    
+
+    public int updateMyInfo(MemberVo memberVo, String itrstfldCdEpty, String envfldCdEpty) throws Exception;
+
+    public int updatePswd(MemberVo memberVo) throws Exception; 
 }
