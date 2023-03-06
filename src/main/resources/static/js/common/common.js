@@ -5233,8 +5233,7 @@
     *
     */
     function showErrorMark($el) {
-        $($el).css("border","2px solid #ff0000");
-        $($el).focus();
+        setTimeout(function() {$($el).css("border","2px solid #ff0000"); $($el).focus(); }, 300);
         setTimeout(function() { $($el).css("border","")}, 1000);
     }
 

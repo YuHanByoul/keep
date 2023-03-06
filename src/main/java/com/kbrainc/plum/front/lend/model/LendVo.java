@@ -1,4 +1,4 @@
-package com.kbrainc.plum.mng.lend.model;
+package com.kbrainc.plum.front.lend.model;
 
 import java.util.Date;
 import java.util.List;
@@ -6,7 +6,10 @@ import java.util.List;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.apache.ibatis.type.Alias;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.mng.lend.model.LendRndVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -19,31 +22,26 @@ import lombok.Data;
 * [클래스 요약].
 *
 * <pre>
-* com.kbrainc.plum.lend.model
+* com.kbrainc.plum.front.lend.model
 * - LendVo.java
 * </pre>   
 *
 * @ClassName   : LendVo 
 * @Description : TODO 
 * @author      : KBRAINC
-* @date        : 2023.02.20
+* @date        : 2023.03.03
 * @Version     : 
 * @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
 */
 @Data
+@Alias("front.lendVo")
 public class LendVo extends ParentRequestVo {
     
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 꾸러미 아이디 */
+    /** 대여  아이이디 */
     private int rcritid;
-    
-    /** 꾸러미 아이디 */
-    private Integer packageid;
-    
-    /** 꾸러미(개체) 재고 */
-    private Integer packageindvdCnt;
     
     /** 대여 모집명   */
     @Size(max = 100, message = "대여명은 100자를 넘을 수 없습니다.") 

@@ -22,6 +22,7 @@ import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
 import com.kbrainc.plum.mng.lend.model.LendVo;
 import com.kbrainc.plum.mng.lend.service.LendService;
+import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 import com.kbrainc.plum.mng.tchaid.model.TchaidVo;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -107,6 +108,8 @@ public class LendController {
      */
     @RequestMapping(value = "/mng/lend/insertLendForm.html")
     public String insertLendForm(LendVo lendVo, Model model) throws Exception {
+        PackageVo packageVo = new PackageVo();
+        model.addAttribute("packageLsit", lendService.selectPackageList(packageVo));
         return "mng/lend/lendInsertForm";
     }
     /**
@@ -157,6 +160,9 @@ public class LendController {
      */
     @RequestMapping(value = "/mng/lend/updateLend.html")
     public String updateLend(LendVo lendVo , Model model,@UserInfo UserVo user) throws Exception {
+        
+        PackageVo packageVo = new PackageVo();
+        model.addAttribute("packageLsit", lendService.selectPackageList(packageVo));
         
         lendVo.setUser(user);
         LendVo resVo =  lendService.selectLend(lendVo);
@@ -291,6 +297,34 @@ public class LendController {
             resultMap.put("msg", "삭제 실패했습니다.");
         }
         
+        return resultMap;
+    }
+    /**
+     * 대여모집 꾸러미 정보 호출
+     *
+     * @Title : selectLendList
+     * @Description : 대여모집 꾸러미 정보 호출
+     * @param CmpntVo CmpntVo 객체
+     * @return Map<String,Object> 응답결과객체
+     * @throws Exception 예외
+     */
+    @RequestMapping(value = "/mng/lend/selectPackageInfo.do")
+    @ResponseBody
+    public Map<String, Object> selectPackageInfo(PackageVo packageVo,@UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        
+        List<PackageVo> result = null;
+        packageVo.setUser(user);
+        
+        result = lendService.selectPackageList(packageVo);
+
+        if (result.size() > 0) {
+            resultMap.put("totalCount", (result.get(0).getTotalCount()));
+        } else {
+            resultMap.put("totalCount", 0);
+        }
+        resultMap.put("list", result);
+
         return resultMap;
     }
     

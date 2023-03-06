@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kbrainc.plum.front.lend.model.LendDao">
+
+    <select id="selectMainLendList"  parameterType="front.LendVo" resultType="front.LendVo" >
+          /* NtcnDao.selectMainNtcnList */
+          WITH
+           SEARCH_ORG
+            AS
+            (
+                SELECT
+                    NTCNID
+                    ,USERID
+                    ,KND_CD
+                    ,TTL
+                    ,CN
+                    ,MVMNURL
+                    ,INQ_YN
+                    ,REG_DT 
+                  FROM
+                    TB_CMM_NTCN
+                 WHERE 1=1
+                   AND USERID = #{user.userid}
+                   AND INQ_YN = 'N'
+                ),
+            totalCount                   
+            AS
+            (
+               SELECT  COUNT(1) AS totalCount
+                 FROM  SEARCH_ORG A1            
+            )
+            SELECT  
+                A1.*
+               ,B1.totalCount
+              FROM SEARCH_ORG A1
+             CROSS JOIN totalCount B1             
+             ORDER BY A1.REG_DT
+             LIMIT 5
+    </select>
+    <!-- 대여 신청 등록   -->    
+    <insert id="insertLendAply"  parameterType="front.LendAplyVo"  useGeneratedKeys="true" keyProperty="aplyid">
+          /* NtcnDao.selectMainNtcnList */
+          INSERT INTO TB_THA_PACKAGE_LEND_APLY(
+            APLCNTID
+            ,INSTID
+            ,STTS_CD
+            ,DLVY_STTS_CD
+            ,APLCNT_NM
+            ,INST_NM
+            ,TELNO
+            ,EML
+            ,EDU_CNT
+            ,EDU_NOPE
+            ,GRP_NM
+            ,CTPRVN_CD
+            ,RECPTR
+            ,RECPTR_TELNO
+            ,RECPTR_EML
+            ,DLVY_ZIP
+            ,DLVY_ADDR
+            ,DLVY_ADDR_DTL
+            ,INVCNO_DLIVY
+            ,INVCNO_WRHOUSNG
+            ,RVW_SCR
+            ,RVW_CN
+            ,RVW_FILEGRPID
+            ,RVW_REG_DT
+            ,MDFCN_DT
+            ,MDFRID
+            ,REG_DT
+            ,RGTRID
+          )VALUES(
+             #{aplcntid      }       
+            ,#{instid        }
+            ,#{sttsCd        }
+            ,#{dlvySttsCd    }
+            ,#{aplcntNm      }
+            ,#{instNm        }
+            ,#{telno         }
+            ,#{eml           }
+            ,#{eduCnt        }
+            ,#{eduNope       }
+            ,#{grpNm         }
+            ,#{ctprvnCd      }
+            ,#{recptr        }
+            ,#{recptrTelno   }
+            ,#{recptrEml     }
+            ,#{dlvyZip       }
+            ,#{dlvyAddr      }
+            ,#{dlvyAddrDtl   }
+            ,#{invcnoDlivy   }
+            ,#{invcnoWrhousng}
+            ,#{rvwScr        }
+            ,#{rvwCn         }
+            ,#{rvwFilegrpid  }
+            ,#{rvwRegDt      }
+            ,NOW()
+            ,#{user.userid}
+            ,NOW()
+            ,#{user.userid}
+          )
+    </insert>
+    <!-- 대여 순위 호출   -->
+    <select id="selectLendRankList"   resultType="map" >
+        /* NtcnDao.selectMainNtcnList */
+        SELECT 
+         (ROW_NUMBER() OVER(ORDER BY A1.CNT DESC,nm ASC)) AS ranking
+         ,A1.*
+         FROM 
+         (
+            SELECT
+                C.PACKAGE_NM AS nm 
+                ,C.PACKAGEID AS packageid 
+                ,COUNT(A.PACKAGEINDVDID) AS cnt
+              FROM 
+                TB_THA_PACKAGE_LEND_RND_PACKAGEINDVD A
+                INNER JOIN TB_THA_PACKAGEINDVD B
+                ON A.PACKAGEINDVDID = B.PACKAGEINDVDID 
+                INNER JOIN TB_THA_PACKAGE C
+                ON B.PACKAGEID = C.PACKAGEID
+                GROUP BY C.PACKAGE_NM ,C.PACKAGEID
+                -- ORDER BY cnt DESC, C.PACKAGE_NM ASC
+                LIMIT 10
+         ) A1
+    </select>
+    <!-- 대여 목록 호출 --> 
+    <select id="selectLendList" parameterType="front.LendVo" resultType="front.LendVo">
+          /* LendDao.selectLendList */
+          <include refid="PaginationMapper.header"/>
+              SELECT 
+                   A.RCRITID
+                  ,A.RCRIT_NM
+                  ,A.BGNG_DT
+                  ,A.END_DT
+                  ,A.LMT_CD
+                  ,A.DTL_CN
+                  ,A.MVP_URL
+                  ,A.MVP_PSTN_CD
+                  ,A.ATENT_MTTR
+                  ,A.RPRS_IMG_FILEID
+                  ,A.DTL_IMG_FILEGRPID
+                  ,A.MAP_FILEGRPID
+                  ,A.EDU_PHOTO_FILEGRPID
+                  ,A.OPER_YN
+                  ,A.MDFCN_DT
+                  ,A.MDFRID
+                  ,A.REG_DT
+                  ,A.RGTRID
+                  ,B.ACNT AS RGTR_ACNT
+               FROM 
+                 TB_THA_PACKAGE_LEND_RCRIT A
+                 INNER JOIN TB_CMM_USER B
+                 ON A.RGTRID = B.USERID
+              WHERE 1=1
+          <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>
+

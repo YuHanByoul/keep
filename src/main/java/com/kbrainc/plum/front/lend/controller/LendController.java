@@ -1,4 +1,4 @@
-package com.kbrainc.plum.front.ntcn.controller;
+package com.kbrainc.plum.front.lend.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -8,40 +8,36 @@ import javax.annotation.Resource;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.kbrainc.plum.front.lend.service.LendServiceImpl;
 import com.kbrainc.plum.front.ntcn.model.NtcnVo;
-import com.kbrainc.plum.front.ntcn.service.NtcnServiceImpl;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
- * 사용자 알림 컨트롤러
+ *  교구 대여(사용자) 컨트롤러
  *
  * <pre>
- * com.kbrainc.plum.mng.ntcn.controller
- * - NtcnController.java
+ * com.kbrainc.plum.front.lend.controller
+ * - LendController.java
  * </pre> 
  *
- * @ClassName : PopController
- * @Description : 사용자 알림
+ * @ClassName : LendController
+ * @Description : 교구 대여(사용자) 컨트롤러
  * @author : KBRAINC
- * @date : 2021. 2. 26.
+ * @date : 2021. 03. 03.
  * @Version : 
  * @Company : Copyright KBRAIN Company. All Rights Reserved
  */
-@Controller("front.ntcnController")
-@Alias("front.ntcnController")
-public class NtcnController {
+@Controller("front.lendController")
+@Alias("front.lendController")
+public class LendController {
 
-    @Resource(name = "front.ntcnServiceImpl")
-    private NtcnServiceImpl ntcnService;
+    @Resource(name = "front.lendServiceImpl")
+    private LendServiceImpl lendService;
     
     /**
      * @Title : selectMainNtcnList
@@ -51,7 +47,7 @@ public class NtcnController {
      * @throws Exception
      * @return Map<String,Object>
      */
-    @RequestMapping(value = "/front/ntcn/selectMainNtcnList.do")
+    @RequestMapping(value = "/front/lend/selectMainNtcnList.do")
     @ResponseBody
     public Map<String, Object> selectMainNtcnList(NtcnVo ntcnVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
@@ -59,7 +55,7 @@ public class NtcnController {
         
         if(user!=null) {
             ntcnVo.setUser(user);
-            result = ntcnService.selectMainNtcnList(ntcnVo);
+            //result = ntcnService.selectMainNtcnList(ntcnVo);
         }
         
         if (result.size() > 0) {

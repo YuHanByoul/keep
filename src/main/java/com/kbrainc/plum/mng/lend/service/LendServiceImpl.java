@@ -12,6 +12,7 @@ import com.kbrainc.plum.mng.lend.model.LendDao;
 import com.kbrainc.plum.mng.lend.model.LendRndPackageindvdVo;
 import com.kbrainc.plum.mng.lend.model.LendRndVo;
 import com.kbrainc.plum.mng.lend.model.LendVo;
+import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -70,7 +71,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
             vo.setUser(lendVo.getUser());
             vo.setRcritid(lendVo.getRcritid());
             resInt +=lendDao.insertLendRnd(vo);
-            resInt +=lendDao.insertRndPackageindvd(vo); 
+            //resInt +=lendDao.insertRndPackageindvd(vo); 
         }
         return resInt;
     }
@@ -118,7 +119,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
         List<Integer> delIds = new ArrayList();
         delIds.add(lendVo.getRcritid());
         lendRndVo.setDeleteIds(delIds);
-        resInt +=lendDao.deleteLendRndPackageindvd(lendRndVo);
+        //resInt +=lendDao.deleteLendRndPackageindvd(lendRndVo);
         resInt +=lendDao.deleteLendRnd(lendRndVo);
         
         List<LendRndVo> list = lendVo.getLendRndList();
@@ -126,7 +127,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
             vo.setUser(lendVo.getUser());
             vo.setRcritid(lendVo.getRcritid());
             resInt +=lendDao.insertLendRnd(vo);
-            resInt +=lendDao.insertRndPackageindvd(vo); 
+            //resInt +=lendDao.insertRndPackageindvd(vo); 
         }
         return resInt;
     }
@@ -224,6 +225,18 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     public String selectLendApplyYn(LendVo lendVo) throws Exception{
         return lendDao.selectLendApplyYn(lendVo);
+    }
+    /**
+     * 검색용 꾸러미 목록 호출 
+     *
+     * @Title       : selectPackageList 
+     * @Description : 검색용 꾸러미 목록 호출 
+     * @param LendVo 객체
+     * @return List<PackageVo>  목록
+     * @throws Exception 예외
+     */
+    public List<PackageVo> selectPackageList(PackageVo packageVo) throws Exception{
+        return lendDao.selectPackageList(packageVo);
     }
     
 }
