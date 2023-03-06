@@ -44,7 +44,7 @@ public class SendController {
     * @return Map<String, Object> 발송결과
     * @throws Exception 예외
     */
-    @RequestMapping(value = "/mng/sms/sendSms.do")
+    @RequestMapping(value = {"/mng/sms/sendSms.do", "/front/sms/sendSms.do"})
     @ResponseBody
     public Map<String, Object> sendSms(@RequestParam("type") String type, @RequestParam(value="title", required=false) String title, @RequestParam("msg") String msg, @RequestParam("phoneList") String[] phoneList) throws Exception {
         Map<String, Object> result = null;

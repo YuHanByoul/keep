@@ -14,11 +14,13 @@
                  A.USERID
                , A.ACNT
                , A.NM
+               , A.PSWD
                , A.MOBLPHON
                , A.TELNO
                , A.EML
                , A.BRDT
                , A.GNDR
+               , A.SIGNGU_CD
                , A.ZIP
                , A.ADDR
                , A.ADDR_DTL
@@ -33,5 +35,91 @@
                ON(A.USERID =B.USERID)
            WHERE A.USERID = #{user.userid}
     </select>
+    
+    <update id="updateMyInfo" parameterType="front.MemberVo">
+        UPDATE TB_CMM_USER SET
+        	MOBLPHON  = #{moblphon}
+          , EML       = #{eml}
+          , SIGNGU_CD = #{signguCd}
+          , ZIP       = #{zip}
+          , ADDR      = #{addr}
+          , ADDR_DTL  = #{addrDtl}
+          , PRVC_VLDTY = #{prvcVldty}
+          , MDFCN_DT  = NOW()
+          , MDFRID    = #{user.userid}
+        WHERE
+        	USERID = #{userid}
+    </update>
+    
+    <delete id="deleteItrstfld" parameterType="front.MemberVo">
+        DELETE FROM TB_CMM_USER_ITRSTFLD
+        WHERE
+            USERID = #{userid}
+    </delete>
+    
+    <!-- 사용자 관심분야 저장 -->
+    <insert id="insertItrstfld" parameterType="front.MemberVo" >
+        /* front.MemberDao.insertItrstfld */
+        INSERT INTO TB_CMM_USER_ITRSTFLD
+            (
+                USERID,
+                ITRSTFLD_CD,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+            )
+            VALUES
+            <foreach item="item" collection="itrstfldCds"  separator=",">
+            (
+                #{userid},
+                #{item},
+                NOW(),
+                #{userid},
+                NOW(),
+                #{userid}
+            )
+            </foreach>
+    </insert>
+    
+    <delete id="deleteEnvfld" parameterType="front.MemberVo">
+        DELETE FROM TB_CMM_USER_ENVFLD
+        WHERE
+            USERID = #{userid}        
+    </delete>
+
+    <!-- 사용자 환경분야 저장 -->
+    <insert id="insertEnvfld" parameterType="front.MemberVo" >
+        /* front.MemberDao.insertItrstyfld */
+        INSERT INTO TB_CMM_USER_ENVFLD
+            (
+                USERID,
+                ENVFLD_CD,
+                MDFCN_DT,
+                MDFRID,
+                REG_DT,
+                RGTRID
+            )
+            VALUES
+            <foreach item="item" collection="envfldCds"  separator=",">
+            (
+                #{userid},
+                #{item},
+                NOW(),
+                #{userid},
+                NOW(),
+                #{userid}
+            )
+            </foreach>
+    </insert>
+    
+    <update id="updatePswd" parameterType="front.MemberVo">
+        UPDATE TB_CMM_USER SET
+            PSWD      = #{pswd}
+          , MDFCN_DT  = NOW()
+          , MDFRID    = #{user.userid}
+        WHERE
+            USERID = #{user.userid}
+    </update>    
     
 </mapper>

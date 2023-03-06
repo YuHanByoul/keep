@@ -17,5 +17,17 @@ public interface MyInfoDao {
     * @throws Exception 예외
     */
     public MemberVo selectMemberInfo(MemberVo memberVo) throws Exception;
+
+    public int updateMyInfo(MemberVo memberVo) throws Exception;
+    
+    public int insertEnvfld(MemberVo memberVo) throws Exception;
+
+    public int deleteEnvfld(MemberVo memberVo) throws Exception;
+
+    public int insertItrstfld(MemberVo memberVo) throws Exception;
+
+    public int deleteItrstfld(MemberVo memberVo) throws Exception;
+
+    public int updatePswd(MemberVo memberVo) throws Exception;
     
 }

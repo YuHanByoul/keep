@@ -7,8 +7,13 @@
 	<div layout:fragment="content">
 		<form name="myInfoForm" id="myInfoForm">
 			<input type="hidden" name="userid" id="userid" th:value="${memberInfo.userid}" />
-            <input type="hidden" name="signguCd" id="signguCd" />
-            <input type="hidden" name="zip" id="zip" />
+            <input type="hidden" name="signguCd" id="signguCd" th:value="${memberInfo.signguCd}"/>
+            <input type="hidden" name="zip" id="zip" th:value="${memberInfo.zip}"/>
+            
+            <input type="hidden" name="itrstfldCdEpty" id="itrstfldCdEpty" th:value="${itrstfldCd}"/>
+            <input type="hidden" name="envfldCdEpty" id="envfldCdEpty" th:value="${envfldCd}"/>
+            
+			<input type="hidden" name="returnUrl" id="returnUrl" th:value="${returnUrl}" />
             	
 			<section>
 				<div class="underline-title">
@@ -19,8 +24,8 @@
 				<div class="tab-content tab-sub dropDown">
 					<button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">내 정보 수정</button>
 					<ul class="tab-list tab-list-pc target" role="tablist">
-						<li class="tab active"><a href="#" role="tab">내 정보 수정</a></li>
-						<li class="tab"><a href="/front/myInfo/pswdUpdate.html" role="tab">비밀번호 변경</a></li>
+						<li class="tab active"><a role="tab">내 정보 수정</a></li>
+						<li class="tab"><a href="javascript:void(0);" onclick="goUpdatePswd();" role="tab">비밀번호 변경</a></li>
 					</ul>
 				</div>
 	
@@ -108,8 +113,8 @@
 								<th scope="row">휴대전화</th>
 								<td colspan="3">
 									<div class="form-input">
-										<input type="number" title="휴대전화" placeholder="휴대전화번호 입력" data-width="304" th:value="${memberInfo.moblphon}" readonly>
-										<button type="button" class="btn-medium btn-gray" data-layer-href="layer-popup1">번호변경</button>
+										<input type="number" id="moblphon" name="moblphon" title="휴대전화" placeholder="휴대전화번호 입력" data-width="304" th:value="${memberInfo.moblphon}" readonly>
+										<button type="button" class="btn-medium btn-gray" id="moblCert" data-layer-href="layer-popup1">번호변경</button>
 									</div>
 								</td>
 							</tr>
@@ -230,98 +235,55 @@
 				
 				<div class="btn-wrap">
 					<div class="right">
-						<a href="/front/membership/leaveMeber.html" class="fc-black6 fs-14 fw-300 underline">회원탈퇴</a>
+						<a href="javascript:void(0);" onclick="goLeaveMember();"class="fc-black6 fs-14 fw-300 underline">회원탈퇴</a>
 					</div>
 				</div>
 				
 				<div class="btn-wrap">
 					<div class="center">
-						<button type="button" class="btn-medium btn-gray">취소</button>
-						<button type="button" class="btn-medium btn-green">저장</button>
+						<button type="button" class="btn-medium btn-gray" onclick="cancel();">취소</button>
+						<button type="button" class="btn-medium btn-green" onclick="myInfoUpdate();">저장</button>
 					</div>
 				</div>
 			</section>
 		</form>
 		
-		<div class="layer-popup layer-large" data-layer-id="layer-popup1">
-			<div class="layer-dimmed" title="레이어팝업 닫기"></div>
-			<div class="layer-wrap">
-				<div class="layer-header">
-					<strong class="tit">휴대전화번호 변경</strong>
-					<button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
-				</div>
-				<div class="layer-content">
-					<div class="form-group">
-						<dl>
-							<dt>새로운 휴대전화번호 입력</dt>
-							<dd>
-								<div class="form-input">
-									<input type="tel" title="새로운 휴대전화번호 입력" placeholder="휴대전화번호 입력">
-									<button type="button" class="btn-medium btn-green" data-layer-close data-layer-href="layer-popup2">인증번호 발송</button>
-								</div>
-								<p class="desc fc-black9 mt5">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
-								<p class="feedback valid">인증번호가 발송 되었습니다.</p>
-							</dd>
-						</dl>
-					</div>
-				</div>
-				<div class="layer-footer">
-					<div class="btn-wrap">
-						<div class="center">
-							<button type="button" class="btn-large btn-green" style="width:100%;" disabled>변경하기</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="layer-popup layer-large" data-layer-id="layer-popup2">
-			<div class="layer-dimmed" title="레이어팝업 닫기"></div>
-			<div class="layer-wrap">
-				<div class="layer-header">
-					<strong class="tit">휴대전화번호 변경</strong>
-					<button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
-				</div>
-				<div class="layer-content">
-					<div class="form-group">
-						<dl>
-							<dd>
-								<div class="form-input">
-									<input type="tel" title="새로운 휴대전화번호 입력" placeholder="휴대전화번호 입력">
-									<button type="button" class="btn-medium btn-gray btn-before-refresh">재발송</button>
-									<div class="bul fc-green fs-14">04:59</div>
-								</div>
-								<p class="desc fc-black9 mt5">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
-								<p class="feedback valid">인증번호가 발송 되었습니다.</p>
-							</dd>
-						</dl>
-						<dl>
-							<dt>인증번호 4자리 입력</dt>
-							<dd>
-								<div class="form-input">
-									<input type="number" title="인증번호 4자리 입력" placeholder="인증번호 4자리 입력" style="flex:1;">
-									<button type="button" class="btn-medium btn-gray">확인</button>
-								</div>
-								<p class="feedback invalid mt5">해당 번호를 인증하지 못했습니다.</p>
-								<p class="feedback valid mt5">인증이 완료 되었습니다.</p>
-							</dd>
-						</dl>
-					</div>
-				</div>
-				<div class="layer-footer">
-					<div class="btn-wrap">
-						<div class="center">
-							<button type="button" class="btn-large btn-green" style="width:100%;" disabled>변경하기</button>
-							<button type="button" class="btn-large btn-green" style="width:100%;">변경하기</button>
-						</div>
-					</div>
-				</div>
-			</div>
+		<div id="layer-popup1">
 		</div>				
 		
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 		<script th:inline="javascript">
 		var prvcVldty = /*[[${memberInfo.prvcVldty}]]*/ null;
+		
+		function goLeaveMember() {
+            var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+            /*[# th:if="${returnUrl != null and returnUrl != ''}"]*/
+                location.href = portalUrl + "front/membership/leaveMeber.html?returnUrl=" + /*[[${returnUrl}]]*/'';   
+            /*[/]*/
+            /*[# th:unless="${returnUrl != null and returnUrl != ''}"]*/
+                location.href = portalUrl + "front/membership/leaveMeber.html";
+            /*[/]*/
+		}
+		
+		function goUpdatePswd() {
+            var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+            /*[# th:if="${returnUrl != null and returnUrl != ''}"]*/
+                location.href = portalUrl + "front/myInfo/pswdUpdate.html?returnUrl=" + /*[[${returnUrl}]]*/'';   
+            /*[/]*/
+            /*[# th:unless="${returnUrl != null and returnUrl != ''}"]*/
+                location.href = portalUrl + "front/myInfo/pswdUpdate.html";
+            /*[/]*/
+		}
+		
+		function cancel() {
+            var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+            /*[# th:if="${returnUrl != null and returnUrl != ''}"]*/
+                location.href = /*[[${returnUrl}]]*/'';
+            /*[/]*/
+            /*[# th:unless="${returnUrl != null and returnUrl != ''}"]*/
+                location.href = portalUrl;
+            /*[/]*/
+		}
 		
         var validator= $("#myInfoForm").validate({
             onsubmit: false,
@@ -330,8 +292,8 @@
                 ,eml2       :   { required: true, isBlank: true, maxlength: 50, emailDomain: true }
             },
             messages: { 
-                eml1       :   { required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
-                ,eml2       :   { required: "이메일을 입력 해주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
+                eml1       :   { required: "이메일을 입력해 주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 아이디는 50자를 초과할 수 없습니다." }
+                ,eml2       :   { required: "이메일을 입력해 주십시오.", isBlank: "이메일에 공백이 있습니다.", maxlength: "이메일 도메인은 50자를 초과할 수 없습니다.", emailDomain: "이메일 형식이 올바르지 않습니다." }
             }
         });
 		
@@ -352,6 +314,46 @@
             }).open();
         }
         
+        function myInfoUpdate(){
+/*             if(!($("#myInfoForm").valid())) return;
+            
+            if($("input[name=envfldCds1]:checked").length > 3) {
+                alert("맞춤 환경정보는 최대 3개 까지만 선택가능합니다.");
+                return;
+            }
+            
+            if(($("input[name=itrstfldCds1]:checked").length + $("input[name=itrstfldCds2]:checked").length + $("input[name=itrstfldCds3]:checked").length + $("input[name=itrstfldCds4]:checked").length) > 3) {
+                alert("관심분야는 최대 3개 까지만 선택가능합니다.");
+                return;
+            } */
+            
+            if(!confirm("저장하시겠습니까?")) return;
+    
+            var itrstfldCds = $('.itrstfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
+            var envfldCds   = $('.envfldCds:checked').map(function(){ return $(this).val();}).get().join(",");
+            
+            var data =  $("#myInfoForm").serialize();
+            data = data+"&itrstfldCds="+itrstfldCds+"&envfldCds="+envfldCds;
+
+			if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/myInfo/updateMyInfo.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                        if(data.result=="success"){
+                        	alert(data.msg);
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }        
+        
         $(function(){
         	$('#emailList').change(function(e){
                 var self = $(this);
@@ -359,7 +361,15 @@
                 $('input#eml2').val(val);
             });
         	
-        	$("input:radio[name='prvcVldty']:radio[value='"+prvcVldty+"']").prop('checked', true); 
+        	$("input:radio[name='prvcVldty']:radio[value='"+prvcVldty+"']").prop('checked', true);
+        	
+            jQuery("#moblCert").bind("click",function(){
+                $("#layer-popup1").load("/front/myInfo/moblCertStep1.html", function(response, status, xhr) {
+                    if (status == "success") {
+                        layerPopup.open({target:'layer-popup1'});
+                    }
+                });
+            });
         });
 		</script>
 	</div>

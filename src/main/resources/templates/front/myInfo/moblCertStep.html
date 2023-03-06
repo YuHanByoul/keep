@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+	<div class="layer-popup layer-large" data-layer-id="layer-popup1">    
+		<div class="layer-dimmed" title="레이어팝업 닫기"></div>
+		<div class="layer-wrap">
+			<div class="layer-header">
+				<strong class="tit">휴대전화번호 변경</strong>
+				<button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+			</div>
+			<div class="layer-content">
+				<div class="form-group">
+					<dl>
+						<dt>새로운 휴대전화번호 입력</dt>
+						<dd>
+							<div class="form-input">
+								<input type="number" id="telno" title="새로운 휴대전화번호 입력" placeholder="휴대전화번호 입력" style="flex:1;">
+								<button type="button" class="btn-medium btn-green" id="sendCertNum">인증번호 발송</button>
+								<button type="button" class="btn-medium btn-gray" id="resend">재발송</button>
+								<div class="bul fc-green fs-14" id="timer">05:00</div>
+							</div>
+							<p class="desc fc-black9 mt5 alert" id="alert1">* 하이픈 ‘-’ 없이 숫자만 입력해주세요.</p>
+							<p class="feedback invalid mt5 alert" id="alert2">* 하이픈 ‘-’ 없이 숫자만 입력해주세요.</p>
+							<p class="feedback valid alert" id="alert3">인증번호가 발송 되었습니다.</p>
+							<p class="feedback valid alert" id="alert4">인증번호가 재발송 되었습니다.</p>
+						</dd>
+					</dl>
+					<dl>
+						<dt>인증번호 4자리 입력</dt>
+						<dd>
+							<div class="form-input">
+								<input type="number" id="certNum" title="인증번호 4자리 입력" placeholder="인증번호 4자리 입력" style="flex:1;">
+								<button type="button" class="btn-medium btn-gray" id="cert">확인</button>
+							</div>
+							<p class="feedback invalid mt5 alert" id="alert5">해당 번호를 인증하지 못했습니다.</p>
+							<p class="feedback valid mt5 alert" id="alert6">인증이 완료 되었습니다.</p>
+						</dd>
+					</dl>					
+				</div>
+			</div>
+			<div class="layer-footer">
+				<div class="btn-wrap">
+					<div class="center">
+						<button type="button" id="change" class="btn-large btn-green" style="width:100%;" disabled>변경하기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+    <script th:inline="javascript">
+    var intervalId;
+    
+    function startTimer(duration, display) {
+		var timer = duration, minutes, seconds;
+		
+		intervalId = setInterval(function () {
+	   	    minutes = parseInt(timer / 60, 10);
+	   	    seconds = parseInt(timer % 60, 10);
+	
+	   	    minutes = minutes < 10 ? "0" + minutes : minutes;
+	   	    seconds = seconds < 10 ? "0" + seconds : seconds;
+	
+	   	    display.textContent = minutes + ":" + seconds;
+	
+	   	    if (--timer < 0) {
+	   	   		clearInterval(intervalId);
+			}
+		}, 1000);
+   	}
+    
+    $(function(){
+    	$("#resend").hide(); // 재발송 버튼
+    	$("#timer").hide(); // 5분 타이머
+    	$(".alert").hide(); // 모든 alert
+    	$("#alert1").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+    	
+        var fiveMinutes = 60 * 5,
+        display = document.querySelector('#timer');
+        
+        var randomNumber = "";
+        
+        // 인증번호 발송 버튼 누를 시
+        $("#sendCertNum").click(function(){
+        	if($("#telno").val() == "" || $("#telno").val() == " "){
+        		$("#alert1").hide(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert2").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        	}else if(isNaN($("#telno").val())){
+        		$("#alert1").hide(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert2").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert3").hide(); // 인증번호가 발송 되었습니다.
+        	}else{
+        		$("#alert1").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert2").hide(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert3").show(); // 인증번호가 발송 되었습니다.
+        		
+        		$("#sendCertNum").hide(); // 인증번호 발송 버튼
+        		$("#resend").show(); // 재발송 버튼
+        		$("#timer").show(); // 5분 타이머
+        		
+        		// 5분 타이머
+        		clearInterval(intervalId); // 타이머 중지
+                startTimer(fiveMinutes, display); // 타이머 시작
+                
+                // 인증번호 발송
+                /*[# sec:authorize-url="/front/sms/sendSms.do"]*/
+                var phoneList = [$("#telno").val()];
+                
+                for (var i = 0; i < 4; i++) {
+                  randomNumber += Math.floor(Math.random() * 10);
+                }
+                
+                if(displayWorkProgress(true)) {
+                    $.ajax({
+                        url: "/front/sms/sendSms.do"
+                        , type: 'POST'
+                        , data: {type: "sms", msg: "[환경보전협회]\n인증번호는 ["+randomNumber+"]입니다.\n5분 안에 입력해 주십시오.", phoneList: phoneList.join(",")} 
+                        , cache: false
+                        , success: function(response) {
+                            if(response.header.resultCode != 0) {
+                                alert("인증번호 발송이 실패 하였습니다.\n잠시 후 다시 시도해주세요.");                                
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+                /*[/]*/
+                
+        	}
+        });
+        
+        
+        // 재발송 버튼 누를 시
+        $("#resend").click(function(){
+        	if($("#telno").val() == "" || $("#telno").val() == " "){
+        		$("#alert1").hide(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert2").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert3").hide(); // 인증번호가 발송 되었습니다.
+				$("#alert5").hide(); // 해당 번호를 인증하지 못했습니다.
+				$("#alert6").hide(); // 인증이 완료 되었습니다.
+				
+                clearInterval(intervalId); // 타이머 중지
+                display.textContent = "05:00"; // 타이머 초기화
+                
+                $("#change").prop("disabled", true); // 변경하기 버튼 disabled
+        	}else if(isNaN($("#telno").val())){
+        		$("#alert1").hide(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert2").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert3").hide(); // 인증번호가 발송 되었습니다.
+				$("#alert5").hide(); // 해당 번호를 인증하지 못했습니다.
+				$("#alert6").show(); // 인증이 완료 되었습니다.
+				
+                clearInterval(intervalId); // 타이머 중지
+                display.textContent = "05:00"; // 타이머 초기화
+                
+                $("#change").prop("disabled", true); // 변경하기 버튼 disabled
+        	}else{
+        		$("#alert1").show(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert2").hide(); // * 하이픈 ‘-’ 없이 숫자만 입력해주세요.
+        		$("#alert3").hide(); // 인증번호가 발송 되었습니다.
+        		$("#alert4").show(); // 인증번호가 재발송 되었습니다.
+				$("#alert5").hide(); // 해당 번호를 인증하지 못했습니다.
+				$("#alert6").hide(); // 인증이 완료 되었습니다.
+        		
+        		$("#change").prop("disabled", true); // 변경하기 버튼 disabled
+        		$("#telno").prop("disabled", false); // 휴대전화번호 입력칸 disabled false
+        		
+        		// 5분 타이머
+                clearInterval(intervalId); // 타이머 중지
+                display.textContent = "05:00"; // 타이머 초기화
+                startTimer(fiveMinutes, display); // 타이머 재시작
+                
+                /* startTimer(fiveMinutes, display); */
+                
+                // 인증번호 발송
+                /*[# sec:authorize-url="/front/sms/sendSms.do"]*/
+                var phoneList = [$("#telno").val()];
+                
+                randomNumber = "";
+                for (var i = 0; i < 4; i++) {
+                  randomNumber += Math.floor(Math.random() * 10);
+                }
+                
+                 if(displayWorkProgress(true)) {
+                    $.ajax({
+                        url: "/front/sms/sendSms.do"
+                        , type: 'POST'
+                        , data: {type: "sms", msg: "[환경보전협회]\n인증번호는 ["+randomNumber+"]입니다.\n5분 안에 입력해 주십시오.", phoneList: phoneList.join(",")} 
+                        , cache: false
+                        , success: function(response) {
+                            if(response.header.resultCode != 0) {
+                                alert("인증번호 발송이 실패 하였습니다.\n잠시 후 다시 시도해주세요.");                                
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+                /*[/]*/
+        	}
+        });
+        
+        // 확인 버튼 누를 시
+        $("#cert").click(function(){
+			if($("#certNum").val() == randomNumber){
+				$("#alert5").hide(); // 해당 번호를 인증하지 못했습니다.
+				$("#alert6").show(); // 인증이 완료 되었습니다.
+				$("#change").prop("disabled", false); // 변경하기 버튼
+				$("#telno").prop("disabled", true); // 휴대전화번호 입력칸
+			}else{
+				$("#alert5").show(); // 해당 번호를 인증하지 못했습니다.
+				$("#alert6").hide(); // 인증이 완료 되었습니다.
+				$("#change").prop("disabled", true); // 변경하기 버튼
+			}
+        });
+        
+        // 변경하기 버튼 누를 시
+        $("#change").click(function(){
+			if($("#certNum").val() == randomNumber){
+				$('#moblphon',document).val($("#telno").val());
+				layerPopup.close({target:'layer-popup1'});
+			}else{
+				
+			}
+        });
+    });
+    </script>
+</body>
+</html>
