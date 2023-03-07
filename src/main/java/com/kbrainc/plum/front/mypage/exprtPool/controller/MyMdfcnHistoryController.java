@@ -7,7 +7,6 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,18 +40,13 @@ public class MyMdfcnHistoryController {
     private MyMdfcnHistoryService myMdfcnHistoryService;
 
     @GetMapping("/mdfcnHistoryList.html")
-    public String mdfcnHistory(MyMdfcnHistoryVo searchVo, Model model) throws Exception {
-        model.addAttribute("searchVo", searchVo);
+    public String mdfcnHistory() throws Exception {
         return VIEW_PATH + "/mdfcnHistoryList";
     }
 
     @GetMapping("/selectMdfcnHistoryList.do")
     @ResponseBody
     public Map<String, Object> selectMdfcnHistoryList(MyMdfcnHistoryVo searchVo, @UserInfo UserVo user) throws Exception {
-        /*
-        	String reqUri = request.getRequestURI();
-	flashMap.put("redirectPath", reqUri + (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
-        * */
         Map<String, Object> response = new HashMap<>();
         searchVo.setUser(user);
 

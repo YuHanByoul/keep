@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 마이페이지 > 전문가 요청 관리 컨트롤러 클래스
+ * 마이페이지 > 환경교육 전문가 풀 관리 > 전문가 요청 관리 컨트롤러 클래스
  *
  * <pre>
  * com.kbrainc.plum.front.mypage.exprtPool.controller
@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @author : KBRAINC_DEV
  * @ClassName : MyExprtLctrDmndController
- * @Description : 마이페이지 > 전문가 요청 관리 컨트롤러 클래스
+ * @Description : 마이페이지 > 환경교육 전문가 풀 관리 > 전문가 요청 관리 컨트롤러 클래스
  * @date : 2023. 03. 06.
  * @Version :
  * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
@@ -54,7 +54,7 @@ public class MyLctrDmndController {
     @GetMapping("/lctrDmndList.html")
     public String lctrDmndList(MyLctrDmndVo searchVo, Model model) throws Exception {
         model.addAttribute("searchVo", searchVo);
-        return VIEW_PATH + "/lctrDmndList";
+        return VIEW_PATH + "/myLctrDmndList";
     }
 
     /**
@@ -71,7 +71,7 @@ public class MyLctrDmndController {
     public String lctrDmndDetail(MyLctrDmndVo searchVo, Model model) throws Exception {
         model.addAttribute("searchVo", searchVo);
         model.addAttribute("lctrDmnd", myLctrDmndService.selectLctrDmnd(searchVo));
-        return VIEW_PATH + "/lctrDmndDetail";
+        return VIEW_PATH + "/myLctrDmndDetail";
     }
 
     /**
