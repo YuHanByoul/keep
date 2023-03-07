@@ -100,25 +100,5 @@ public interface CommonService {
      */
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
     
-    
-    /**
-     * 내 주변 환경교육 시설 리스트를 반환한다.
-     *
-     * @Title       : nearbyEnveduFlct
-     * @Description : 내 주변 환경교육 시설 리스트를 반환한다.
-     * @return List<Map<String, Object>>
-     * @throws Exception 예외
-     */
-    public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception;
-    
-    /**
-     * 내 주변 환경교육 시설 리스트 갯수를 반환한다.
-     *
-     * @Title       : nearbyEnveduFlct
-     * @Description : 내 주변 환경교육 시설 리스트 갯수를 반환한다.
-     * @return int
-     * @throws Exception 예외
-     */
-    public int nearbyEnveduFlctCount(Map map) throws Exception;
 
 }

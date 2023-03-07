@@ -202,6 +202,7 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
             }
         }
         
+        publicContestDao.deleteDelevery(publicContestVo);
         if (publicContestVo.getWctDelvryCnt() > 0) {
             publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtFirst());
             publicContestVo.setDelvryAplyEndDt(publicContestVo.getDelvryAplyEndDtFirst());
@@ -210,14 +211,7 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
             publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtFirst());
             publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtFirst());
             publicContestVo.setCycl(1);
-            
-            if (publicContestVo.getDelvryidFirst() == null) {
-                publicContestVo.setDelvryid(null);
-                publicContestDao.insertDelevery(publicContestVo);                
-            } else {
-                publicContestVo.setDelvryid(publicContestVo.getDelvryidFirst());
-                publicContestDao.updateDelevery(publicContestVo);
-            }
+            publicContestDao.insertDelevery(publicContestVo);                
             
             if (publicContestVo.getWctDelvryCnt() == 2) {
                 publicContestVo.setDelvryAplyBgngDt(publicContestVo.getDelvryAplyBgngDtScnd());
@@ -227,14 +221,7 @@ public class PublicContestServiceImpl extends PlumAbstractServiceImpl implements
                 publicContestVo.setCptalExcutBgngDt(publicContestVo.getCptalExcutBgngDtScnd());
                 publicContestVo.setCptalExcutEndDt(publicContestVo.getCptalExcutEndDtScnd());
                 publicContestVo.setCycl(2);
-                
-                if (publicContestVo.getDelvryidScnd() == null) {
-                    publicContestVo.setDelvryid(null);
-                    publicContestDao.insertDelevery(publicContestVo);
-                } else {
-                    publicContestVo.setDelvryid(publicContestVo.getDelvryidScnd());
-                    publicContestDao.updateDelevery(publicContestVo);    
-                }
+                publicContestDao.insertDelevery(publicContestVo);
             }
         }
         String data = publicContestVo.getJsonString();

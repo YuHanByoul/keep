@@ -135,6 +135,18 @@ public interface PublicContestDao {
     int insertDelevery(PublicContestVo publicContestVo) throws Exception;
     
     /**
+    * 교부 정보 삭제. 
+    *
+    * @Title : deleteDelevery
+    * @Description : TODO
+    * @param publicContestVo
+    * @return
+    * @throws Exception
+    * @return int
+     */
+    int deleteDelevery(PublicContestVo publicContestVo) throws Exception;
+    
+    /**
     * 교부 정보 수정. 
     *
     * @Title : updateDelevery

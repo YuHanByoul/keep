@@ -194,11 +194,11 @@ public class PublicContestVo extends ParentRequestVo {
     private Integer delvryidScnd;
     
     /** 교부_신청_시작_일시_1차 */
-    @NotEmpty(message = "교부신청기간 시작일시를 선택해주십시오.")
+//    @NotEmpty(message = "교부신청기간 시작일시를 선택해주십시오.")
     private String delvryAplyBgngDtFirst;
     
     /** 교부_신청_종료_일시_1차 */
-    @NotEmpty(message = "교부신청기간 종료일시를 선택해주십시오.")
+//    @NotEmpty(message = "교부신청기간 종료일시를 선택해주십시오.")
     private String delvryAplyEndDtFirst;
     
     /** 교부_신청_시작_일시_2차 */
@@ -208,11 +208,11 @@ public class PublicContestVo extends ParentRequestVo {
     private String delvryAplyEndDtScnd;
     
     /** 교부_확정_발표_시작_일시 1차 */    
-    @NotEmpty(message = "교부확정발표기간 시작일시를 선택해주십시오.")
+//    @NotEmpty(message = "교부확정발표기간 시작일시를 선택해주십시오.")
     private String delvryCfmtnPrsntnBgngDtFirst;
     
     /** 교부_확정_발표_종료_일시 1차 */
-    @NotEmpty(message = "교부확정발표기간 종료일시를 선택해주십시오.")
+//    @NotEmpty(message = "교부확정발표기간 종료일시를 선택해주십시오.")
     private String delvryCfmtnPrsntnEndDtFirst;
     
     /** 교부_확정_발표_시작_일시 2차 */    
@@ -224,11 +224,11 @@ public class PublicContestVo extends ParentRequestVo {
     private String delvryCfmtnPrsntnEndDtScnd;
     
     /** 자금_집행_시작_일시_1차 */
-    @NotEmpty(message = "자금집행기간 시작일시를 선택해주십시오.")
+//    @NotEmpty(message = "자금집행기간 시작일시를 선택해주십시오.")
     private String cptalExcutBgngDtFirst;
     
     /** 자금_집행_종료_일시_1차 */
-    @NotEmpty(message = "자금집행기간 종료일시를 선택해주십시오.")
+//    @NotEmpty(message = "자금집행기간 종료일시를 선택해주십시오.")
     private String cptalExcutEndDtFirst;
     
     /** 자금_집행_시작_일시_2차 */
@@ -250,11 +250,11 @@ public class PublicContestVo extends ParentRequestVo {
     private String mdlReportEndDt;
     
     /** 결과_보고_시작_일시 */
-    @NotEmpty(message = "결과보고기간 시작일시를 선택해주십시오.")
+//    @NotEmpty(message = "결과보고기간 시작일시를 선택해주십시오.")
     private String rsltReportBgngDt;
     
     /** 결과_보고_종료_일시 */
-    @NotEmpty(message = "결과보고기간 종료일시를 선택해주십시오.")
+//    @NotEmpty(message = "결과보고기간 종료일시를 선택해주십시오.")
     private String rsltReportEndDt;
     
     /** 정산_보고_시작_일시 */

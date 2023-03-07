@@ -757,6 +757,11 @@
         	changeDelevery($(this).val());
         });
         
+        // 컨설팅 기간 설정
+        $("input[name='cnsltngUseCd'],input[name='cnsltngOperCd']").change(function() {
+        	setConsult();
+        });
+     
         // 중간보고 사용여부가 'Y'일 경우 중간보고기간 설정을 활성화 한다.
         $("input[name='mdlReportYn']").change(function() {
         	if ($(this).val() == "Y") {
@@ -844,6 +849,9 @@
         if ($("input[name='nopeLmtUseYn']:checked").val() == "Y") {
         	$("input[name='nopeLmt']").attr("readonly", false);
         }
+        
+        // 컨설팅 기간 설정 활성화
+        setConsult();
 	});
 	
     // 파일업로드
@@ -911,6 +919,8 @@
             $("input[name='delvryCfmtnPrsntnEndDtScnd']").attr("disabled", true);
             $("input[name='cptalExcutBgngDtScnd']").attr("disabled", true);
             $("input[name='cptalExcutEndDtScnd']").attr("disabled", true);
+            $("input[name='excclcReportBgngDt']").attr("disabled", false);
+            $("input[name='excclcReportEndDt']").attr("disabled", false);
         } else if (value == "2") {
             $("input[name='delvryAplyBgngDtFirst']").attr("disabled", false);
             $("input[name='delvryAplyEndDtFirst']").attr("disabled", false);
@@ -924,6 +934,8 @@
             $("input[name='delvryCfmtnPrsntnEndDtScnd']").attr("disabled", false);
             $("input[name='cptalExcutBgngDtScnd']").attr("disabled", false);
             $("input[name='cptalExcutEndDtScnd']").attr("disabled", false);
+            $("input[name='excclcReportBgngDt']").attr("disabled", false);
+            $("input[name='excclcReportEndDt']").attr("disabled", false);
         } else {
             $("input[name='delvryAplyBgngDtFirst']").attr("disabled", true);
             $("input[name='delvryAplyEndDtFirst']").attr("disabled", true);
@@ -937,7 +949,21 @@
             $("input[name='delvryCfmtnPrsntnEndDtScnd']").attr("disabled", true);
             $("input[name='cptalExcutBgngDtScnd']").attr("disabled", true);
             $("input[name='cptalExcutEndDtScnd']").attr("disabled", true);
+            $("input[name='excclcReportBgngDt']").attr("disabled", true);
+            $("input[name='excclcReportEndDt']").attr("disabled", true);
         }
+    }
+    
+    // 컨설팅 일정 설정
+    // 컨설팅 사용여부값이 '없음'이 아니고 컨설팅 운영방식이 '신청접수' 인경우 컨설팅 신청기간 설정 항목 활성화
+    function setConsult() {
+    	if ($("input[name='cnsltngUseCd']:checked").val() != "176103" && $("input[name='cnsltngOperCd']:checked").val() == "223102") {
+    		$("input[name='cnsltngAplyBgngDt']").attr("disabled", false);
+    		$("input[name='cnsltngAplyEndDt']").attr("disabled", false);
+    	} else {
+    		$("input[name='cnsltngAplyBgngDt']").attr("disabled", true);
+            $("input[name='cnsltngAplyEndDt']").attr("disabled", true);
+    	}
     }
 
     // 파일삭제
@@ -956,7 +982,6 @@
             cache : false,
             dataType: 'json',
             success : function (data){
-                console.log(data);
                 if(data.result=="success"){
                     $("#"+fileid).remove();
                     alert("파일삭제가 완료 되었습니다.");

@@ -169,6 +169,7 @@ public class ScoreCardController {
         int retVal = this.scoreCardService.insertScoreCard(scoreCardVo);
         
         if (retVal > 0) {
+            resultMap.put("retVal", retVal);
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "등록에 성공하였습니다.");
         } else {
@@ -233,6 +234,14 @@ public class ScoreCardController {
     @RequestMapping(value="/mng/score/selectQuestionListForm.html")
     public String detailQuestionForm(QuestionVo qqestionVo, Model model) throws Exception {
         
+        ScoreCardVo scoreCardVo = new ScoreCardVo();
+        ScoreCardVo detail = new ScoreCardVo();
+        scoreCardVo.setFormid(qqestionVo.getFormid());
+        List<ScoreCardVo> result = this.scoreCardService.selectScoreCardList(scoreCardVo);                         
+        if (CollectionUtils.isNotEmpty(result)) {
+            detail = result.get(0);
+        }
+        
         List<QuestionVo> list = null;
 
         if (qqestionVo != null) {
@@ -249,7 +258,7 @@ public class ScoreCardController {
         }
         
         model.addAttribute("formid", qqestionVo.getFormid());
-        model.addAttribute("totScr", qqestionVo.getTotScr());
+        model.addAttribute("totScr", detail.getTotScr());
         model.addAttribute("list", list);
         
         return "mng/score/detailQuestion";
