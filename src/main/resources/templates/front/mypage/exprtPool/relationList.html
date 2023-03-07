@@ -1,0 +1,588 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input-wrap">
+            <div class="form-row">
+                <div class="form-header"><strong class="label">전문가 유형</strong></div>
+                <div class="form-body">
+                    <span kattr:select_code="exprtTypeCd" grpCd="133" firstOptTxt="- 전체 -"></span>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-header"><strong class="label">진행상태</strong></div>
+                <div class="form-body">
+                    <span kattr:select_code="dmndSttsCd" grpCd="139" firstOptTxt="- 전체 -"></span>
+                </div>
+            </div>
+        </div>
+        <div class="search-filter-submit">
+            <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
+            <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+        </div>
+
+        <input type="hidden" id="orderField" name="orderField" value="reg_dt">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="dmndid" name="dmndid">
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="totalCount">0</b> 건</p>
+        </div>
+        <div class="right">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="pc-only">
+        <div class="table-col table-layout-auto">
+            <table>
+                <caption>전문가 섭외 관리 - 번호, 요청번호, 전문가 유형, 이름, 전문분야, 진행상태, 후기작성, 요청일</caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col style="width:10%;">
+                    <col style="width:25%;">
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">번호</th>
+                    <th scope="col">요청번호</th>
+                    <th scope="col">전문가 유형</th>
+                    <th scope="col">이름</th>
+                    <th scope="col">전문분야</th>
+                    <th scope="col">진행상태</th>
+                    <th scope="col">후기작성</th>
+                    <th scope="col">요청일</th>
+                </tr>
+                </thead>
+                <tbody id="pcListArea">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mo-only">
+        <div class="table-list">
+            <ul id="moListArea">
+            </ul>
+        </div>
+    </div>
+
+    <div id="pagination" aria-label="pagination"></div>
+
+    <!-- 후기 작성 layer-popup -->
+    <div class="layer-popup layer-medium" data-layer-id="layer-popup22" id="layer-popup22">
+        <form name="popupForm" id="popupForm">
+            <input type="hidden" id="reviewInsertDmndid" name="dmndid">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">후기 작성</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+
+                    <p class="fs-16 fc-black6">전문가님에 대한 <b class="fc-green">만족도를 평가</b>해 주세요.</p>
+
+                    <div class="form-group mt15">
+                        <dl>
+                            <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+                            <dd>
+                                <div class="rating-star-wrap">
+                                    <div class="rating-star-inner">
+                                        <div class="rating-star" id="ratingStar">
+                                            <input type="radio" name="scr" value="5" id="rating5" class="blind"><label for="rating5"><span class="blind">매우 만족</span></label>
+                                            <input type="radio" name="scr" value="4" id="rating4" class="blind"><label for="rating4"><span class="blind">만족</span></label>
+                                            <input type="radio" name="scr" value="3" id="rating3" class="blind"><label for="rating3"><span class="blind">보통</span></label>
+                                            <input type="radio" name="scr" value="2" id="rating2" class="blind"><label for="rating2"><span class="blind">불만족</span></label>
+                                            <input type="radio" name="scr" value="1" id="rating1" class="blind"><label for="rating1"><span class="blind">매우 불만족</span></label>
+                                        </div>
+                                    </div>
+                                    <div id="ratingDescription">
+                                    </div>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="fc-black3"><b>교육장소</b>(필수)</dt>
+                            <dd>
+                                <div class="form-input">
+                                    <input type="text" readonly title="교육장소 주소" id="popupAddr1">
+                                    <button type="button" class="btn-medium btn-gray" onclick="daumPostcode()">수정</button>
+                                </div>
+                                <input type="hidden" name="signguCd" id="signguCd">
+                                <input type="hidden" name="zip" id="zip">
+                                <input type="hidden" name="addr" id="addr">
+
+                                <div class="form-input mt10">
+                                    <input type="text" readonly title="교육장소 상세주소" id="popupAddrDtl1" name="addrDtl">
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="fc-black3"><b>교육인원</b>(필수)</dt>
+                            <dd>
+                                <div class="form-input">
+                                    <div class="form-input form-input-number">
+                                        <input type="number" value="" title="교육인원" style="width:90px;flex:0 0 90px;" id="eduNope1" name="eduNope">
+                                        <div class="btn-number">
+                                            <button type="button" class="num-up" title="숫자 증가"></button>
+                                            <button type="button" class="num-down" title="숫자 감소"></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </dd>
+                        </dl>
+
+                        <dl>
+                            <dt class="fc-black3"><b>교육내용</b>(필수)</dt>
+                            <dd>
+                                <textarea placeholder="내용을 입력해주세요." id="eduCn1" name="eduCn"></textarea>
+                                <div class="check-wrap j-end">
+                                    <div class="size"><span>0</span> / 1,000자</div>
+                                </div>
+                            </dd>
+                        </dl>
+                        <dl>
+                            <dt class="fc-black3"><b>기타의견</b></dt>
+                            <dd>
+                                <textarea placeholder="내용을 입력해주세요." id="etcOpnn1" name="etcOpnn"></textarea>
+                                <div class="check-wrap j-end">
+                                    <div class="size"><span>0</span> / 1,000자</div>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+
+                    <div class="box-desc-list bg7 mt20 p20">
+                        <p class="fs-14">작성하신 후기는 전문가님에게 제공되지 않으며, 플랫폼 관리자만 확인할 수 있습니다.</p>
+                    </div>
+                </div>
+
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" data-layer-close>취소</button>
+                            <button type="button" class="btn-medium btn-green" onclick="insertReview()">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+    <!-- //layerpopup -->
+
+    <!-- layerpopup -->
+    <div class="layer-popup layer-medium" data-layer-id="layer-popup23">
+        <input type="hidden" id="deleteReviewDmndid" name="deleteReviewDmndid">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap">
+            <div class="layer-header">
+                <strong class="tit">후기 작성</strong>
+                <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+            </div>
+            <div class="layer-content">
+
+                <p class="fs-16 fc-black6">전문가님에 대한 <b class="fc-green">만족도를 평가</b>해 주세요.</p>
+
+                <div class="form-group mt15">
+                    <dl>
+                        <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+                        <dd>
+                            <div class="rating-star-wrap">
+                                <div class="rating-star-inner">
+                                    <div class="rating-star">
+                                        <input type="radio" name="rating-1" value="5" id="rating5-1" disabled class="blind"><label for="rating5-1"><span class="blind">매우 만족</span></label>
+                                        <input type="radio" name="rating-1" value="4" id="rating4-1" disabled class="blind" checked><label for="rating4-1"><span class="blind">만족</span></label>
+                                        <input type="radio" name="rating-1" value="3" id="rating3-1" disabled class="blind"><label for="rating3-1"><span class="blind">보통</span></label>
+                                        <input type="radio" name="rating-1" value="2" id="rating2-1" disabled class="blind"><label for="rating2-1"><span class="blind">불만족</span></label>
+                                        <input type="radio" name="rating-1" value="1" id="rating1-1" disabled class="blind"><label for="rating1-1"><span class="blind">매우 불만족</span></label>
+                                    </div>
+                                </div>
+                                <div class="rating-feedback">4점(만족)</div>
+                            </div>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt class="fc-black3"><b>교육장소</b>(필수)</dt>
+                        <dd>
+                            <div class="form-input">
+                                <input type="text" readonly title="교육장소 주소" id="popupAddr2" name="popupAddr2">
+                                <button type="button" class="btn-medium btn-gray">수정</button>
+                            </div>
+                            <div class="form-input mt10">
+                                <input type="text" readonly title="교육장소 주소" id="popupAddrDtl2" name="popupAddrDtl2">
+                            </div>
+
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt class="fc-black3"><b>교육인원</b>(필수)</dt>
+                        <dd>
+                            <div class="form-input">
+                                <div class="form-input form-input-number">
+                                    <input type="number" value="" title="교육인원" style="width:90px;flex:0 0 90px;" readonly id="eduNope2" name="eduNope2">
+                                    <div class="btn-number">
+                                        <button type="button" class="num-up" title="숫자 증가"></button>
+                                        <button type="button" class="num-down" title="숫자 감소"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt class="fc-black3"><b>교육내용</b>(필수)</dt>
+                        <dd>
+                            <textarea placeholder="내용을 입력해주세요." readonly id="eduCn2" name="eduCn2"></textarea>
+                            <div class="check-wrap j-end">
+                                <div class="size"><span>0</span> / 1,000자</div>
+                            </div>
+                        </dd>
+                        <p class="feedback"></p>
+                    </dl>
+                    <dl>
+                        <dt class="fc-black3"><b>기타의견</b></dt>
+                        <dd>
+                            <textarea placeholder="내용을 입력해주세요." readonly id="etcOpnn2" name="etcOpnn2">친절해서 좋았습니다.</textarea>
+                            <div class="check-wrap j-end">
+                                <div class="size"><span>125</span> / 1,000자</div>
+                            </div>
+                        </dd>
+                        <p class="feedback"></p>
+                    </dl>
+                </div>
+
+                <div class="box-desc-list bg7 mt20 p20">
+                    <p class="fs-14">작성하신 후기는 전문가님에게 제공되지 않으며, 플랫폼 관리자만 확인할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="layer-footer">
+                <div class="btn-wrap">
+                    <div class="center">
+                        <button type="button" class="btn-medium btn-gray" onclick="deleteReview()">삭제</button>
+                        <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //layerpopup -->
+
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script th:inline="javascript">
+        let detailUrl = '/front/mypage/exprtPool/relationDetail.html';
+        let listUrl = '/front/mypage/exprtPool/selectRelationList.do';
+        let searchVo = /*[[${searchVo}]]*/null;
+
+        let insertReview = () => {
+            if (!$('input[name=scr]').is(':checked')) {
+                alert('필수 항목을 입력해 주십시오.');
+                $("#ratingStar").attr("tabindex", -1).focus();
+                return;
+            }
+
+            if (!$('#popupForm').valid()) {
+                alert('필수 항목을 입력해 주십시오.');
+                return;
+            }
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    method: 'post',
+                    data: $('#popupForm').serializeArray(),
+                    dataType: 'json',
+                    url: '/front/mypage/exprtPool/insertReview.do',
+                    success: function (response) {
+                        closeWorkProgress();
+                        alert(response.msg);
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
+
+        let deleteReview = () => {
+            if (!confirm('작성한 후기를 삭제하시겠습니까?')) return;
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    method: 'post',
+                    data: {dmndid: $('#deleteReviewDmndid').val()},
+                    dataType: 'json',
+                    url: '/front/mypage/exprtPool/deleteReview.do',
+                    success: function (response) {
+                        closeWorkProgress();
+                        alert(response.msg);
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
+        let goToDetail = (dmndid) => {
+            let f = document.forms.searchForm;
+            f.dmndid.value = dmndid;
+            f.action = detailUrl;
+            f.submit();
+        }
+
+        let makeListHtmlForPc = (list) => {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<tr>
+							<td class="nodata" colspan="8">
+								<p><span class="icon icon-notice bg-black9"></span>섭외 이력이 없습니다.</p>
+							</td>
+						 </tr>`;
+            } else {
+                list.forEach(function (item) {
+                    let reviewTag = '';
+                    if (item.reviewYn == 'Y') {
+                        reviewTag = `<button type="button" class="link" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">작성완료</button>`;
+                    } else {
+                        // 강의완료 상태의 요청 또는 수락 상태인 요청의 강의 종료일이 지난 경우
+                        if (item.dmndSttsCd == '139105' || (item.dmndSttsCd == '139104' && item.lctrEndYn == 'Y')) {
+                            reviewTag = `<button type="button" class="btn-small btn-outline-blue" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">후기작성</button>`;
+                        }
+                    }
+
+                    html += `<tr>
+								<td>${item.rowNumber}</td>
+								<td>${item.dmndid}</td>
+                                <td>${item.exprtTypeCdNm}</td>
+								<td><a class="link" onclick="goToDetail(${item.dmndid})">${item.nm}</a></td>
+								<td>
+									<span class="ellipsis">
+										${item.flds} ${isNull(item.trgtCdNm) ? '' : ' / ' + item.trgtCdNm} ${isNull(item.sbjctCdNm) ? '' : ' / ' + item.sbjctCdNm}
+									</span>
+								</td>
+								<td>${item.dmndSttsCdNm}</td>
+								<td>
+								    ${reviewTag}
+								</td>
+								<td>${item.regDt}</td>
+							</tr> `;
+                });
+            }
+            return html;
+        };
+
+        let makeListHtmlForMo = (list) => {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<li class="block">
+                            <div class="nodata">
+                                <p><span class="icon icon-notice bg-black9"></span>변경 이력이 없습니다.</p>
+                            </div>
+                        </li>`;
+            } else {
+                list.forEach(function (item) {
+                    let reviewTag = '';
+                    if (item.reviewYn == 'Y') {
+                        reviewTag = `<button type="button" class="link" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">작성완료</button>`;
+                    } else {
+                        // 강의완료 상태의 요청 또는 수락 상태인 요청의 강의 종료일이 지난 경우
+                        if (item.dmndSttsCd == '139105' || (item.dmndSttsCd == '139104' && item.lctrEndYn == 'Y')) {
+                            reviewTag = `<button type="button" class="btn-small btn-outline-blue" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">후기작성</button>`;
+                        }
+                    }
+
+                    html += `<li class="block">
+                                <div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>요청번호</dt>
+                                            <dd>${item.dmndid}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>전문가 유형</dt>
+                                            <dd>${item.exprtTypeCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>이름</dt>
+                                            <dd><a class="link" onclick="goToDetail(${item.dmndid})">${item.nm}</a></dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>전문분야</dt>
+                                            <dd>${item.flds} ${isNull(item.trgtCdNm) ? '' : ' / ' + item.trgtCdNm} ${isNull(item.sbjctCdNm) ? '' : ' / ' + item.sbjctCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>진행상태</dt>
+                                            <dd>${item.dmndSttsCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>후기작성</dt>
+                                            <dd><button type="button" class="link">작성완료</button></dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>요청일</dt>
+                                            <dd>${item.regDt}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                                <div class="btn-wrap">
+                                    <div class="center">
+                                        <button type="button" class="btn-small btn-outline-blue">후기작성</button>
+                                    </div>
+                                </div>
+                            </li> `;
+                });
+            }
+            return html;
+        };
+
+        let openLayerPopup = (dmndid, reviewYn) => {
+            if (reviewYn == 'Y') {
+                layerPopup.open({target: 'layer-popup23', callback: popupInit(dmndid, reviewYn)});
+            } else {
+                layerPopup.open({target: 'layer-popup22', callback: popupInit(dmndid, reviewYn)});
+            }
+        };
+
+        let popupInit = (dmndid, reviewYn) => {
+            if (reviewYn == 'Y') {
+                $.ajax({
+                    method: 'get',
+                    url: '/front/mypage/exprtPool/selectReviewByDmndid.do',
+                    data: {dmndid: dmndid},
+                    success: function (response) {
+                        $('#eduNope2').val(response.eduNope);
+                        $('#eduCn2').val(response.eduCn);
+                        $('#etcOpnn2').val(response.etcOpnn);
+                        $('#popupAddr2').val(response.addr);
+                        $('#popupAddrDtl2').val(response.addrDtl);
+                        $('#deleteReviewDmndid').val(response.dmndid);
+                    }
+                });
+            } else {
+                $('#ratingDescription').text('');
+                $('#eduNope').val('');
+                $('#eduCn').val('');
+                $('#etcOpnn').val('');
+                $('.feedback').text('').removeClass('invalid');
+                $('input[name=rating]').prop('checked', false);
+
+                $.ajax({
+                    method: 'get',
+                    url: '/front/mypage/exprtPool/selectAddrByDmndid.do',
+                    data: {dmndid: dmndid},
+                    success: function (response) {
+                        $('#popupAddr1').val(response.addr);
+                        $('#popupAddrDtl1').val(response.addrDtl)
+                        $('#reviewInsertDmndid').val(response.dmndid);
+                    }
+                });
+            }
+        }
+
+        let validatePopupForm = () => {
+            $('#popupForm').validate({
+                rules: {
+                    popupAddr1: {required: true},
+                    eduNope1: {required: true},
+                    eduCn1: {required: true},
+                },
+                messages: {
+                    popupAddr1: {required: '교육장소를 입력해 주십시오.'},
+                    eduNope1: {required: '교육인원을 입력해 주십시오.'},
+                    eduCn1: {required: '교육내용을 입력해 주십시오.'},
+                }
+            });
+        }
+        let daumPostcode = () => {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    let addr = '';
+                    if (data.userSelectedType === 'R') {
+                        addr = data.roadAddress;
+                    } else {
+                        addr = data.jibunAddress;
+                    }
+                    $('#signguCd').val(data.sigunguCode);
+                    $('#zip').val(data.zonecode);
+                    $('#addr').val(addr);
+                    $('#popupAddrDtl1').prop('readonly', false);
+                    $('#popupAddrDtl1').val('');
+                    $('#popupAddrDtl1').focus();
+                    $('#popupAddr1').val(addr);
+                }
+            }).open();
+        }
+
+        $(function () {
+            $('#searchType').val(searchVo.searchType);
+            $('#searchKeyword').val(searchVo.searchKeyword);
+            $('#searchTypeCd').val(searchVo.searchTypeCd);
+            $('#rowPerPage').val(searchVo.rowPerPage);
+
+            selectList();
+
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                selectList();
+            });
+
+            $('#selectRowPerPage').on('change', function (e) {
+                $('#rowPerPage').val($(this).val());
+            });
+
+            validatePopupForm();
+
+            $('input[name=rating]').on('change', function (e) {
+                let ratingNum = e.target.value;
+                $ratingDescription = $('#ratingDescription');
+                if (ratingNum == 1) {
+                    $ratingDescription.html('<div class="rating-feedback">1점(매우 불만족)</div>');
+                } else if (ratingNum == 2) {
+                    $ratingDescription.html('<div class="rating-feedback">2점(불만족)</div>');
+                } else if (ratingNum == 3) {
+                    $ratingDescription.html('<div class="rating-feedback">3점(보통)</div>');
+                } else if (ratingNum == 4) {
+                    $ratingDescription.html('<div class="rating-feedback">4점(만족)</div>');
+                } else if (ratingNum == 5) {
+                    $ratingDescription.html('<div class="rating-feedback">5점(매우 만족)</div>');
+                }
+            });
+        });
+
+        let selectList = () => {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        $('#pcListArea').html(makeListHtmlForPc(data.list));
+                        $('#moListArea').html(makeListHtmlForMo(data.list));
+                        $('#pagination').html(data.pagination);
+                        $('#totalCount').html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+    </script>
+</div>

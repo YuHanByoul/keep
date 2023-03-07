@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : MyRelationDaoImpl.xml
+	Description : 마이페이지 > 섭외 요청 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.exprtPool.model.MyRelationDao">
+    <select id="selectMyRelationList" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyRelationVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.DMND_STTS_CD
+            , A.DMNDID
+            , C.NM
+            , B.EXPRT_TYPE_CD
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C  INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = #{user.userid}) AS SBJCT_CD_NM
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = #{user.userid}) AS TRGT_CD_NM
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C  INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= #{user.userid}) AS ACTVT_SCOPE_CD_NM
+            , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_RGN C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID = #{user.userid}) AS ACTVT_RGN_CD_NM
+            , (SELECT CONCAT_WS(',',
+                CASE WHEN B.FLD_LCTR_YN = 'Y' THEN '강의' END
+                , CASE WHEN B.FLD_PLANNG_YN = 'Y' THEN '기획' END
+                , CASE WHEN B.FLD_CNSLTNG_YN = 'Y' THEN '사업자문 및 컨설팅' END
+                , CASE WHEN B.FLD_ETC_YN = 'Y' THEN CONCAT('기타(',B.FLD_ETC_CN,')') END
+            )) AS FLDS
+            , A.REG_DT
+            , A.LCTR_END_DT
+            , CASE
+                WHEN A.SCR_REG_DT IS NULL THEN 'N'
+                ELSE 'Y'
+              END AS REVIEW_YN
+            , CASE WHEN TIMESTAMPDIFF(MINUTE, A.LCTR_END_DT, NOW()) <![CDATA[<]]> 0 THEN 'Y'
+              ELSE 'N'
+              END AS LCTR_END_YN
+        FROM TB_ASS_LCTR_DMND A
+        INNER JOIN TB_ASS_EXPRT B
+            ON A.EXPRTID = B.USERID
+        INNER JOIN TB_CMM_USER C
+            ON B.USERID = C.USERID
+        WHERE A.USERID = #{user.userid}
+        <if test="exprtTypeCd != null and exprtTypeCd != ''">
+            AND B.EXPRT_TYPE_CD = #{exprtTypeCd}
+        </if>
+
+        <if test="dmndSttsCd != null and dmndSttsCd != ''">
+            AND A.DMND_STTS_CD = #{dmndSttsCd}
+        </if>
+
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectMyRelation" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyRelationVo">
+        SELECT
+            A.DMND_CN
+            , A.EXPRTID
+            , A.USERID
+            , A.DMNDID
+            , A.TTL
+            , A.DMND_STTS_CD
+            , A.LCTR_BGNG_DT
+            , A.LCTR_END_DT
+            , A.ZIP
+            , A.ADDR
+            , A.ADDR_DTL
+            , B.NM
+            , B.MOBLPHON
+            , B.EML
+            , A.FILEGRPID
+            , CASE
+                WHEN A.SCR_REG_DT IS NULL THEN 'N'
+                ELSE 'Y'
+              END AS REVIEW_YN
+            , CASE WHEN TIMESTAMPDIFF(MINUTE, A.LCTR_END_DT, NOW()) <![CDATA[<]]> 0 THEN 'Y'
+              ELSE 'N'
+              END AS LCTR_END_YN
+        FROM TB_ASS_LCTR_DMND A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID = B.USERID
+        WHERE DMNDID = #{dmndid}
+    </select>
+
+    <select id="selectAddrByDmndid" resultType="front.ReviewVo">
+        SELECT
+            ADDR
+            , ADDR_DTL
+            , DMNDID
+        FROM TB_ASS_LCTR_DMND
+        WHERE DMNDID = #{dmndid}
+    </select>
+    <select id="selectReviewByDmndid" resultType="front.ReviewVo">
+        SELECT
+            DMNDID
+            , ETC_OPNN
+            , EDU_CN
+            , EDU_NOPE
+            , SCR
+            , ADDR
+            , ADDR_DTL
+        FROM TB_ASS_LCTR_DMND
+        WHERE DMNDID = #{dmndid}
+    </select>
+
+    <!-- 요청취소 -->
+    <update id="cancelRelation">
+        UPDATE TB_ASS_LCTR_DMND
+        SET DMND_STTS_CD = '139102'
+          , CNCL_DT = NOW()
+          , MDFCN_DT = NOW()
+          , MDFRID = #{user.userid}
+        WHERE DMNDID = #{dmndid}
+    </update>
+
+    <!-- 후기작성 -->
+    <insert id="insertReview">
+        UPDATE TB_ASS_LCTR_DMND
+        SET SCR = #{scr}
+          , SCR_REG_DT = NOW()
+          , ETC_OPNN = #{etcOpnn}
+          , EDU_NOPE = #{eduNope} /* 교육 인원 */
+          , EDU_CN = #{eduCn} /* 교육 내용 */
+          , ADDR = #{addr}
+          , ADDR_DTL = #{addrDtl}
+          , MDFCN_DT = NOW()
+          , MDFRID = #{user.userid}
+        WHERE DMNDID = #{dmndid}
+    </insert>
+
+    <!--후기 삭제-->
+    <insert id="deleteReview">
+        UPDATE TB_ASS_LCTR_DMND
+        SET SCR = NULL
+          , SCR_REG_DT = NULL
+          , ETC_OPNN = NULL
+          , EDU_NOPE = NULL
+          , EDU_CN = NULL
+          , MDFCN_DT = NOW()
+          , MDFRID = #{user.userid}
+        WHERE DMNDID = #{dmndid}
+    </insert>
+</mapper>
