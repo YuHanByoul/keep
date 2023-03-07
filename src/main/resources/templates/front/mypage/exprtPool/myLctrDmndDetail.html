@@ -1,0 +1,179 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <div class="table-caption">
+        <div class="left">
+            <h3 class="sub-title">강의요청서</h3>
+        </div>
+        <div class="right">
+            <div class="btn-wrap mt0">
+                <div class="left">
+                    <button type="button" class="btn-small btn-outline-blue open-msg-btn" data-target="msgFormPopup" th:data-trgt-id="${lctrDmnd.userid}">쪽지 보내기</button>
+
+                    <!-- 요청(접수) -->
+                    <th:block th:if="${lctrDmnd.dmndSttsCd == '139101'}">
+                        <button type="button" class="btn-small btn-outline-black" onclick="updateStatus('reject')">거절</button>
+                        <button type="button" class="btn-small btn-outline-blue" onclick="updateStatus('aprv')">수락</button>
+                    </th:block>
+
+                    <!-- 승인(수락) -->
+                    <th:block th:if="${lctrDmnd.dmndSttsCd == '139104'}">
+                        <button type="button" class="btn-small btn-outline-black" onclick="updateStatus('aprvCancel')">수락취소</button>
+                        <button type="button" class="btn-small btn-outline-blue" onclick="updateStatus('cmptn')">강의완료</button>
+                    </th:block>
+
+                    <!-- 거절 -->
+                    <th:block th:if="${lctrDmnd.dmndSttsCd == '139103'}">
+                        <button type="button" class="btn-small btn-outline-black" onclick="updateStatus('rejectCancel')">거절취소</button>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-row">
+        <table>
+            <caption>강의요청서 - 제목, 진행상태, 강의 시작 일시, 강의 종료 일시, 강의 장소(지역), 상세주소, 신청자, 신청자 휴대전화, 신청자 이메일 , 요청 내용, 첨부파일</caption>
+            <colgroup>
+                <col style="width:140px;">
+                <col>
+                <col style="width:140px;">
+                <col>
+            </colgroup>
+            <tbody>
+            <tr>
+                <th scope="row">제목</th>
+                <td colspan="3" th:text="${lctrDmnd.ttl}">환경 강의 요청 드립니다.</td>
+            </tr>
+            <tr>
+                <th scope="row">진행상태</th>
+                <td colspan="3" id="dmndSttsCdNm" th:text="${lctrDmnd.dmndSttsCdNm}">접수</td>
+            </tr>
+            <tr>
+                <th scope="row">강의 시작 일시</th>
+                <td th:text="${#dates.format(lctrDmnd.lctrBgngDt,'yyyy-MM-dd HH:mm')}">2022-09-10 14:00</td>
+                <th scope="row">강의 종료 일시</th>
+                <td th:text="${#dates.format(lctrDmnd.lctrEndDt, 'yyyy-MM-dd HH:mm')}">2022-09-10 18:00</td>
+            </tr>
+            <tr>
+                <th scope="row">강의 장소(지역)</th>
+                <td colspan="3" th:text="${lctrDmnd.addr}">서울특별시 마포구 성암로330</td>
+            </tr>
+            <tr>
+                <th scope="row">상세주소</th>
+                <td colspan="3" th:text="${lctrDmnd.addrDtl}">C동 323호</td>
+            </tr>
+            <tr>
+                <th scope="row">신청자</th>
+                <td colspan="3" th:text="${lctrDmnd.nm}">케이브레인컴퍼니(kbrain001)</td>
+            </tr>
+            <tr>
+                <th scope="row">신청자 휴대전화</th>
+                <td th:text="${lctrDmnd.moblphon}">010-0000-0000</td>
+                <th scope="row">신청자 이메일</th>
+                <td th:text="${lctrDmnd.eml}"><a href="mailto:ajh@kbrainc.com" class="url">ajh@kbrainc.com</a></td>
+            </tr>
+            <tr>
+                <th scope="row">요청 내용</th>
+                <td colspan="3">
+                    <th:block th:utext="${#strings.replace(#strings.escapeXml(lctrDmnd.dmndCn),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></th:block>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">첨부파일</th>
+                <td colspan="3">
+                    <div class="form-input-file">
+                        <ul th:if="${lctrDmnd.fileList != null}">
+                            <th:block th:each="file : ${lctrDmnd.fileList}">
+                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                    <span class="name">
+                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                            [[${file.orginlFileNm}]]
+                                        </a>
+                                    </span>
+                                </li>
+                            </th:block>
+                        </ul>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" onclick="goToList()">목록</button>
+        </div>
+    </div>
+
+    <form name="listForm" id="listForm">
+        <input type="hidden" name="searchType" id="searchType" th:value="${searchVo.searchType}">
+        <input type="hidden" name="searchKeyword" id="searchKeyword" th:value="${searchVo.searchKeyword}">
+        <input type="hidden" name="dmndSttsCd" id="dmndSttsCd" th:value="${searchVo.dmndSttsCd}">
+        <input type="hidden" name="orderField" id="orderField" th:value="${searchVo.orderField}">
+        <input type="hidden" name="rowPerPage" id="rowPerPage" th:value="${searchVo.rowPerPage}">
+        <input type="hidden" id="dmndid" name="dmndid" th:value="${searchVo.dmndid}">
+    </form>
+
+    <script th:inline="javascript">
+        let dmndid = /*[[${lctrDmnd.dmndid}]]*/null;
+        let updateUrl = '/front/mypage/exprtPool/updateStatus.do';
+        let listUrl = '/front/mypage/exprtPool/lctrDmndList.html';
+
+        let updateStatus = (mode) => {
+            let msg = '';
+            let changeTo = '';
+            switch (mode) {
+                case 'reject' :
+                    msg = '전문가 요청을 거절하시겠습니까?';
+                    changeTo = '139103';
+                    break;
+                case 'rejectCancel':
+                    msg = '거절을 취소하시겠습니까?';
+                    changeTo = '139101';
+                    break;
+                case 'aprv' :
+                    msg = '전문가 요청을 수락하시겠습니까?';
+                    changeTo = '139104';
+                    break;
+                case 'aprvCancel' :
+                    msg = '수락을 취소하시겠습니까?';
+                    changeTo = '139101';
+                    break;
+                case 'cmptn' :
+                    msg = '강의를 완료하시겠습니까?';
+                    changeTo = '139105';
+                    break;
+            }
+
+            if (!confirm(msg)) return;
+
+            if(displayWorkProgress(true)) {
+                $.ajax({
+                    method: 'post',
+                    data: {dmndid: dmndid, dmndSttsCd: changeTo},
+                    dataType: 'json',
+                    url: updateUrl,
+                    success: function (response) {
+                        alert(response.msg);
+                        closeWorkProgress();
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                })
+            }
+        }
+
+        let goToList = () => {
+            let f = document.forms.listForm;
+            f.action = listUrl;
+            f.submit();
+        }
+
+    </script>
+</div>
