@@ -31,16 +31,16 @@
                         <strong class="tit">프로그램 정보 항목</strong>
                         <div class="sticky-steps">
                             <ul>
-                                <li class="active"><a href="#" title="현재 단계">프로그램 우수성</a></li>
-                                <li><a href="#">프로그램 운영관리</a></li>
-                                <li><a href="#">프로그램 평가</a></li>
-                                <li><a href="#">지도자의 자격 및 배치</a></li>
-                                <li><a href="#">안전관리</a></li>
-                                <li><a href="#">체크리스트</a></li>
+                                <li class="active"><a th:href="@{/front/dsgnPrgrm/prgrmDstnctnForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 우수성</a></li>
+                                <li><a th:href="@{/front/dsgnPrgrm/prgrmOperMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 운영관리</a></li>
+                                <li><a th:href="@{/front/dsgnPrgrm/prgrmEvlForm.html?prgrmid=}+${aplyInfo.prgrmid}" >프로그램 평가</a></li>
+                                <li><a th:href="@{/front/dsgnPrgrm/ldrQlfcForm.html?prgrmid=}+${aplyInfo.prgrmid}" >지도자의 자격 및 배치</a></li>
+                                <li><a th:href="@{/front/dsgnPrgrm/sftyMngForm.html?prgrmid=}+${aplyInfo.prgrmid}" >안전관리</a></li>
+                                <li><a th:href="@{/front/dsgnPrgrm/chkListForm.html?prgrmid=}+${aplyInfo.prgrmid}" >체크리스트</a></li>
                             </ul>
                             <div class="btn-wrap">
                                 <div class="center">
-                                    <button type="button" class="btn-large btn-gray" onclick="doSave()">중간저장</button>
+                                    <button type="button" class="btn-large btn-gray"  onclick="doSave()">중간저장</button>
                                     <button type="button" class="btn-large btn-green" onclick="goNext()">다음</button>
                                 </div>
                             </div>
@@ -142,8 +142,7 @@
                                         <th scope="row">교육주제<i class="ast" title="필수입력">*</i></th>
                                         <td>
                                             <div class="form-input">
-                                            <label class="inp">생활환경 <input type="checkbox" name="jan"  id="jan"  ><b>소음</b></label>
-
+                                                <label class="inp" >생활환경 <input type="checkbox" name="an"  id="an"  ><b>소음</b></label>
                                             </div>
                                         </td>
                                     </tr>
@@ -303,7 +302,7 @@
                                     <tbody id="schdlBody">
 
                                         <tr th:id=" 'schdlTr' + ${i.count} " th:each="schd ,i : ${schdlList}">
-                                            <td id="rnd" name="rnd" >[[${schd.rnd}]]</td>
+                                            <td id="rnd" name="rnd" >[[${{i.count}}]]차시</td>
                                             <td>
                                                 <div class="form-input d-flex">
                                                     <select title="시" style="flex: 1 1 100%; width:0;" id="bgngHr" name="bgngHr">
@@ -317,8 +316,8 @@
                                                     <input type="number" title="분" style="flex: 1 1 100%; width: 0;" th:id="'endMnt'+${i.count}" th:name="'endMnt'+${i.count}" th:value="${schd.endMnt}">
                                                 </div>
                                             </td>
-                                            <td><input type="text" title="세부 단위 프로그램 명" th:id="'prgrmNm'+${i.count}" name="'prgrmNm'+${i.count}" th:value="${schd.prgrmNm}"></td>
-                                            <td><input type="text" title="관련교육과정" id="crs" name="crs" th:value="${schd.crs}"></td>
+                                            <td><input type="text" title="세부 단위 프로그램 명" th:id="schdlPrgrmNm+${i.count}" name="schdlPrgrmNm+${i.count}" th:value="${schd.prgrmNm}"></td>
+                                            <td><input type="text" title="관련교육과정" th:id="crs+${i.count}" th:name="crs+${i.count}" th:value="${schd.crs}"></td>
                                             <td class="ac">
                                                 <button th:if="${i.count} > 1" type="button" class="btn-remove-table" title="열 삭제" th:id="'delSchdlBtn'+${i.count}" th:onclick="'delSchdl(' + ${i.count} + ')' ">
                                                     <span class="icon icon-remove"></span>
@@ -483,14 +482,14 @@
                                     <tbody id="planBody">
                                         <tr th:id="'planTr' + ${i.count}" th:each="plan ,i : ${planList}">
                                             <td><input type="text" title="본 프로그램명"
-                                                th:id="prgrmNm + ${i.count}"
-                                                th:name="prgrmNm + ${i.count}"
+                                                th:id="planPrgrmNm + ${i.count}"
+                                                th:name="planPrgrmNm + ${i.count}"
                                                 th:value="${plan.prgrmNm}">
                                             </td>
                                             <td><input type="text" title="대체 프로그램명"
                                                 th:id="sbstnPrgrmNm + ${i.count}"
                                                 th:name="sbstnPrgrmNm + ${i.count}"
-                                                th:value="${plan.prgrmNm}"></td>
+                                                th:value="${plan.sbstnPrgrmNm}"></td>
                                             <td class="ac">
                                                 <button th:if="${i.count} > 1" type="button" class="btn-remove-table" title="열 삭제"
                                                 th:id="delPlanBtn + ${i.count}"
@@ -580,9 +579,9 @@
 
             var insertUrl = "/front/dsgnPrgrm/insertPrgrmDstnctnForm.do";
             var updateUrl = "/front/dsgnPrgrm/updatePrgrmDstnctnForm.do";
-            var nextUrl = "/front/dsgnPrgrm/prgrmEvlForm.html";    //프로그램 평가
-            var prevUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //우수성
-            var reUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html";
+            var nextUrl = "/front/dsgnPrgrm/prgrmOperMngForm.html";    //프로그램 운영관리
+            var prevUrl = "/front/dsgnPrgrm/evdncDataForm.html";
+            var reUrl = "/front/dsgnPrgrm/prgrmDstnctnForm.html";    //우수성
 
             function validate(){
 
@@ -803,6 +802,15 @@
             }
 
 			$(function() {
+
+				$("textArea").keyup(function (e) {
+				    var inTxt = $(this).val();
+				    if($("#"+this.id).next().prop("class")=="desc ar size"){
+    				    $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+				    }
+				});
+				$("textArea").trigger("keyup");
+
 
 				$("input[type='radio']").on("change", function(e) {
 					var id = e.originalEvent.target.id;

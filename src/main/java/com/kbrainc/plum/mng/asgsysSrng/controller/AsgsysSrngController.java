@@ -891,9 +891,16 @@ public class AsgsysSrngController {
      */
     @RequestMapping(value = "/mng/asgsysSrng/updatePrgrmEvl.do")
     @ResponseBody
-    public Map<String, Object> updatePrgrmEvl(@Valid AsgsysSrngVo asgsysSrngVo, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updatePrgrmEvl(@Valid AsgsysSrngVo asgsysSrngVo, BindingResult bindingResult1, @UserInfo UserVo user) throws Exception {
 
     	Map<String, Object> resultMap = new HashMap<String, Object>();
+    	if (bindingResult1.hasErrors()) {
+            FieldError fieldError = bindingResult1.getFieldError();
+            if (fieldError != null) {
+                resultMap.put("msg", fieldError.getDefaultMessage());
+            }
+            return resultMap;
+        }
 
     	asgsysSrngVo.setUser(user);
 

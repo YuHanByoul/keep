@@ -13,8 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
+import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  *
@@ -208,7 +211,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		int ret = 0;
 		//지정프로그램
-		ret =+ dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+		ret += dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
 		if(dsgnPrgrmVo.getDstnctnid() != null && dsgnPrgrmVo.getDstnctnid() > 0) {
 			ret += dsgnPrgrmDao.updatePrgrmDstnctnForm(dsgnPrgrmVo);    //수정
 		}else {
@@ -231,6 +234,34 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		return dsgnPrgrmDao.selectPrgrmEvlForm(dsgnPrgrmVo);
+	}
+
+	/**
+	* 컨설팅 등록
+	*
+	* @Title : insertCsltng
+	* @Description : 컨설팅 등록
+	* @param cnsltngVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	@Override
+	@Transactional
+	public int insertCsltng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		int ret=0;
+		int cnsltngid;
+		if(dsgnPrgrmVo.getCnsltngid() > 0) {
+			ret+=dsgnPrgrmDao.updateCsltng(dsgnPrgrmVo);
+		}else {
+			ret+=dsgnPrgrmDao.insertCsltng(dsgnPrgrmVo);
+
+			cnsltngid = dsgnPrgrmDao.selectCnsltngid(dsgnPrgrmVo);
+			dsgnPrgrmVo.setCnsltngid(cnsltngid);
+			ret+=dsgnPrgrmDao.updateCnsltngid(dsgnPrgrmVo);
+		}
+
+		return ret;
 	}
 
 

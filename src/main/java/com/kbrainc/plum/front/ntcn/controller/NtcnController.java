@@ -22,15 +22,15 @@ import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
 /**
  * 
- * 팝업 공지사항 관리 컨트롤러
+ * 사용자 알림 컨트롤러
  *
  * <pre>
- * com.kbrainc.plum.mng.pop.controller
- * - PopController.java
+ * com.kbrainc.plum.mng.ntcn.controller
+ * - NtcnController.java
  * </pre> 
  *
  * @ClassName : PopController
- * @Description : 팝업 공지사항 관리 컨트롤러
+ * @Description : 사용자 알림
  * @author : KBRAINC
  * @date : 2021. 2. 26.
  * @Version : 

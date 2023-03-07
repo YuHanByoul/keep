@@ -36,8 +36,14 @@ public class LendVo extends ParentRequestVo {
     /** 로그인사용자정보 */
     private UserVo user;
     
-    /** 대여  아이이디 */
+    /** 꾸러미 아이디 */
     private int rcritid;
+    
+    /** 꾸러미 아이디 */
+    private Integer packageid;
+    
+    /** 꾸러미(개체) 재고 */
+    private Integer packageindvdCnt;
     
     /** 대여 모집명   */
     @Size(max = 100, message = "대여명은 100자를 넘을 수 없습니다.") 

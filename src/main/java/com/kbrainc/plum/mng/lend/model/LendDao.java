@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
+import com.kbrainc.plum.mng.pack.model.PackageVo;
 import com.kbrainc.plum.mng.pack.model.PackageindvdVo;
 
 /**
@@ -157,4 +158,14 @@ public interface LendDao {
      * @throws Exception 예외
      */
     public String selectLendApplyYn(LendVo lendVo) throws Exception;
+    /**
+     * 검색용 꾸러미 목록 호출 
+     *
+     * @Title       : selectPackageList 
+     * @Description : 검색용 꾸러미 목록 호출 
+     * @param LendVo 객체
+     * @return List<PackageVo>  목록
+     * @throws Exception 예외
+     */
+    public List<PackageVo> selectPackageList(PackageVo packageVo) throws Exception;
 }

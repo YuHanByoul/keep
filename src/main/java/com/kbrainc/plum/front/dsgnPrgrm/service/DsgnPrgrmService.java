@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 
 /**
  *
@@ -170,7 +171,17 @@ public interface DsgnPrgrmService {
 	*/
 	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
-
+	/**
+	* 컨설팅 등록
+	*
+	* @Title : insertCsltng
+	* @Description : 컨설팅 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertCsltng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 
 }

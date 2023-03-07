@@ -323,12 +323,22 @@ public class CommonController {
          int pagePerCnt = 10;
          int selectedPage = 1;
          int totalPage = 0;
+<<<<<<< HEAD
          
          searchMap.put("pagePerCnt", pagePerCnt);
          searchMap.put("selectedPage", selectedPage);
          
          List<Map<String, Object>> list = commonService.nearbyEnveduFlct(searchMap);
          int totalCnt = commonService.nearbyEnveduFlctCount(searchMap);
+=======
+         int totalCnt = 0;
+         
+         searchMap.put("pagePerCnt", pagePerCnt);
+         searchMap.put("selectedPage", selectedPage);
+         
+         List<Map<String, Object>> list = commonService.nearbyEnveduFlct(searchMap);
+         //totalCnt = commonService.nearbyEnveduFlctCnt(searchMap);
+>>>>>>> refs/remotes/origin/develop
          
          model.addAttribute("list", list);
          if(list.size() > 0) {
@@ -357,6 +367,7 @@ public class CommonController {
           Map<String, Object> resultMap = new HashMap<>();
           Map searchMap = new HashMap<>();
           
+<<<<<<< HEAD
           int pagePerCnt = 10;
           int selectedPage = (int) param.get("selectedPage");
           int totalPage = 0;
@@ -382,6 +393,32 @@ public class CommonController {
           
           List<Map<String, Object>> list = commonService.nearbyEnveduFlct(searchMap);
           int totalCnt = commonService.nearbyEnveduFlctCount(searchMap);
+=======
+          
+          int pagePerCnt = 10;
+          int selectedPage = 1;
+          
+          if(param.get("selectedPage") != null && !"".equals(param.get("selectedPage"))) {
+              selectedPage = (int) param.get("selectedPage");
+          }
+          
+          if(param.get("keyword") != null && !"".equals(param.get("keyword"))) {
+              searchMap.put("keyword", param.get("keyword"));
+          }
+          
+          if(param.get("searchType") != null && !"".equals(param.get("searchType"))) {
+              searchMap.put("searchType", param.get("type"));
+          }
+          
+          if(param.get("category") != null && !"".equals(param.get("category"))) {
+              searchMap.put("category", param.get("category"));
+          }
+          
+          searchMap.put("pagePerCnt", 10);
+          searchMap.put("selectedPage", selectedPage);
+          
+          List<Map<String, Object>> list = commonService.nearbyEnveduFlct(searchMap);
+>>>>>>> refs/remotes/origin/develop
           
           resultMap.put("list", list);
           if(list.size() > 0) {

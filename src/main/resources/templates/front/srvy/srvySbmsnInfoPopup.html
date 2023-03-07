@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/popupLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <div class="layer-popup layer-window-alert layer-alert active">
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">설문조사</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" onclick="window.close()"></button>
+                </div>
+                <div class="layer-content">
+    
+                    <div class="table-caption j-center mt0">
+                        <h3 class="sub-title ac" th:text="${srvyInfo.srvyNm}"></h3>
+                    </div>
+                    <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:0 0 20px 0;">
+                    <p>설문에 참여해 주셔서 감사합니다.</p>
+                    <p class="desc-info mt15">문항에 대한 귀하의 의견(찬성정도)을 평가해주십시오.  </p>
+                    <hr style="display:block;border:0;border-top:1px solid var(--graye);margin:20px 0 -22px;">
+                    <div class="table-caption">
+                        <div class="right">
+                            <p class="desc ar">설문제출일 : <span th:text="${srvyInfo.sbmsnDt}"></span></p>
+                        </div>
+                    </div>
+                    <div class="survay-list">
+                        <dl>
+                            <div class="list" th:each="item : ${ansList}" th:data-qitemid="${item.qitemid}" th:data-qitemType="${item.qitemTypeCd}">
+                                <dt>
+                                    <div class="tit">
+                                        <strong th:text=${item.cn}></strong>
+                                    </div>
+                                </dt>
+                                <dd>
+                                    <th:block th:switch="${item.qitemTypeCd}">
+                                        <div th:case="107100" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp">
+                                                    <input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:checked="${item.ans == #strings.toString(example.exNo)}" disabled>
+                                                    <b th:text="${example.cn}" style="color: initial;"></b>
+                                                </label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107101" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp" th>
+                                                    <input type="radio" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:checked="${item.ans == #strings.toString(example.exNo)}" disabled>
+                                                    <b th:text="${example.cn}" style="color: initial;"></b>
+                                                </label>
+                                            </th:block>                                                   
+                                        </div>
+                                        <div th:case="107102" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp">
+                                                    <input type="checkbox" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:checked="${#strings.contains(item.ans, #strings.toString(example.exNo))}" disabled>
+                                                    <b th:text="${example.cn}" style="color: initial;"></b>
+                                                </label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107103" class="form-check-list flex-row mo-flex-column">
+                                            <th:block th:each="example : ${item.exampleList}">
+                                                <label class="inp">
+                                                    <input type="radio"  th:data-scr="${example.scr}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:checked="${item.ans == #strings.toString(example.exNo)}" disabled>
+                                                    <b th:text="${example.cn + '(' + example.scr + '점)'}" style="color: initial;"></b>
+                                                </label>
+                                            </th:block>
+                                        </div>
+                                        <div th:case="107104" class="form-input">
+                                            <input type="text" th:title="${item.cn}" th:name="${'ans' + item.qitemid}" th:value="${item.ansDscrp}" maxlength="50" readonly>
+                                            <!-- <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 50자</div> -->
+                                        </div>
+                                        <div th:case="107105" class="form-input mt10">
+                                            <textarea th:title="${item.cn}" th:name="${'ans' + item.qitemid}" th:text="${item.ansDscrp}"maxlength="500" readonly></textarea>
+                                            <!-- <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div> -->
+                                        </div>
+                                        <th:block th:case="107106">
+                                            <div class="form-check-list flex-row mo-flex-column">
+                                                <th:block th:each="example : ${item.exampleList}">
+                                                    <label class="inp">
+                                                        <input type="radio" th:data-etcYn="${example.etcYn}" th:value="${example.exNo}" th:name="${'ans' + item.qitemid}" th:checked="${item.ans == #strings.toString(example.exNo)}" disabled>
+                                                        <b th:text="${example.cn}" style="color: initial;"></b>
+                                                    </label>
+                                                </th:block>    
+                                            </div>
+                                            <div class="form-input mt10">
+                                                <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" th:text="${item.ansDscrp}" maxlength="500" readonly></textarea>
+                                                <!-- <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div> -->
+                                            </div>    
+                                        </th:block>
+                                    </th:block>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" data-layer-close onclick="window.close();">닫기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <form id="srvySbmsnForm">
+            <input type="hidden" name="srvyid" th:value="${srvyInfo.srvyid}" />
+        </form>
+        
+
+        <!-- //content -->
+        <script th:inline="javascript">
+            var srvySbmsnInfo = {
+                init: function() {
+                    this.registEvent();                
+                }
+                
+                , registEvent: function() {
+                    // TODO
+                }
+            };
+            
+            $(function() {
+                srvySbmsnInfo.init();
+            });
+        </script>
+    </div>
+</body>
+</html>

@@ -110,6 +110,7 @@ public interface CommonService {
      * @throws Exception 예외
      */
     public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception;
+<<<<<<< HEAD
     
     /**
      * 내 주변 환경교육 시설 리스트 갯수를 반환한다.
@@ -120,4 +121,6 @@ public interface CommonService {
      * @throws Exception 예외
      */
     public int nearbyEnveduFlctCount(Map map) throws Exception;
+=======
+>>>>>>> refs/remotes/origin/develop
 }

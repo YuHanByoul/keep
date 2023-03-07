@@ -55,6 +55,15 @@ public class QitemVo extends ParentRequestVo {
     /** 보기 개수 */
     private int exCnt;
     
+    /** 답변 */
+    private String ans;
+    
+    /** 답변내용 */
+    private String ansDscrp;
+    
+    /** 점수 */
+    private int scr;
+    
     /** 척도 */
     private int scale;
     

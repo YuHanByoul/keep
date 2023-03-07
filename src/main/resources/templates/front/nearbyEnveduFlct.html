@@ -69,7 +69,7 @@
                 map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
                 averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
                 minLevel: 2, // 클러스터 할 최소 지도 레벨 
-                disableClickZoom: true // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
+                disableClickZoom: false // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
             });
             
             var customOverlay1 = new kakao.maps.CustomOverlay({zIndex:1});
@@ -105,6 +105,8 @@
                  keywordSearch( keyword, searchType, category, selectedPage);
             };
             
+            displayPlaces(fcltList);
+            
             function searchPlaces(type) {
 
                 var keyword = document.getElementById('keyword').value;
@@ -131,6 +133,7 @@
                 reqJson.category = category;
                 reqJson.selectedPage = selectedPage;
                 
+<<<<<<< HEAD
                 if (clickedOverlay1) {
                     clickedOverlay1.setMap(null);
                 }
@@ -149,6 +152,19 @@
                         displayPlaces(data.list);
                         $(".map-srh b").text(data.pagenationInfo.totalCnt);
                         setPagenation(data.pagenationInfo);
+=======
+                
+                
+                $.ajax({
+                    url:'/front/map/searchNearbyEnveduFlct.do',
+                    cache:false,
+                    contentType: 'application/json',
+                    dataType:'json',
+                    data:JSON.stringify(reqJson),
+                    type:'POST',
+                    success:function(data){
+                        displayPlaces(data.list);
+>>>>>>> refs/remotes/origin/develop
                     }
                 });
             }
@@ -157,6 +173,7 @@
                 var listEl = document.getElementsByClassName('map-search-list')[0];
                 var ul = document.createElement('ul');
                 var fragment = document.createDocumentFragment();
+<<<<<<< HEAD
                 
                 listEl.replaceChildren();
                 
@@ -182,7 +199,96 @@
                     var itemStr = '<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>검색 결과가 없습니다.</p></div>';
                     listEl.innerHTML = itemStr;
                 }
+=======
+>>>>>>> refs/remotes/origin/develop
                 
+                listEl.replaceChildren();
+                
+                removeMarker();
+                
+                if(places.length > 0){
+                    for (var i=0; i<places.length; i++){
+                        placePosition = new kakao.maps.LatLng(places[i].ADDR_LAT, places[i].ADDR_LOT);
+                        var marker = addMarker(placePosition, i), 
+                        itemEl = getListItem(i, places[i]);
+                        
+                        fragment.appendChild(itemEl);
+                    }
+                    ul.appendChild(fragment);
+                    listEl.appendChild(ul);
+                    clusterer.addMarkers(markers);
+                } else {
+                    var itemStr = '<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>검색 결과가 없습니다.</p></div>';
+                    listEl.innerHTML = itemStr;
+                }
+               
+            }
+            
+            function getListItem(index, places) {
+                var el = document.createElement('li');
+                
+                var itemStr = '<div class="map-det">';
+                if(places.TYPE == '기관'){
+                    itemStr += '<div class="tag tag-blue">' + places.CATEGORY_NM + '</div>';
+                    itemStr += '<button type="button" class="tit after-link markerbg marker_' + (index + 1) + '"><span>' + (index + 1) +'</span>' + places.INST_NM +'</button>';
+                    itemStr += '<div class="loc">' + places.ADDR + ' ' + places.ADDR_DTL + '</div>';
+                    itemStr += '<a href="tel:' + places.TELNO + '" class="tel">Tel. ' + places.TELNO + '</a>';
+                    if(places.HMPG != null && places.HMPG != ''){
+                        itemStr += '<a href="https://' + places.HMPG + '" class="link" target="_blank" title="새 창">https://' + places.HMPG + '</a>';
+                    }
+                } else if (places.TYPE == '시설'){
+                    itemStr += '<div class="tag tag-blue">시설</div>';
+                    itemStr += '<button type="button" class="tit after-link markerbg marker_' + (index + 1) + '"><span>' + (index + 1) +'</span>' + places.INST_NM +'</button>';
+                    itemStr += '<div class="loc">' + places.ADDR + ' ' + places.ADDR_DTL + '</div>';
+                } else if (places.TYPE == '프로그램'){
+                    if(places.CATEGORY_NM == '유아환경교육'){
+                        itemStr += '<div class="tag tag-red">' + places.CATEGORY_NM + '</div>';
+                    } else if(places.CATEGORY_NM == '푸름이 이동환경교실'){
+                        itemStr += '<div class="tag tag-dblue">' + places.CATEGORY_NM + '</div>';
+                    } else if(places.CATEGORY_NM == '우수 환경교육 프로그램'){
+                        itemStr += '<div class="tag tag-green">' + places.CATEGORY_NM + '</div>';
+                    }
+                    itemStr += '<button type="button" class="tit after-link markerbg marker_' + (index + 1) + '"><span>' + (index + 1) +'</span>' + places.PRGRM_NM +'</button>';
+                    itemStr += '<div class="loc">';
+                    itemStr += ' 운영기관 : ' + places.INST_NM + '<br>';
+                    itemStr += ' 교육대상 : ' + places.PRGRM_TRGT + '<br>';
+                    itemStr += ' 정원 : ' + places.EDU_NOPE + '명<br>';
+                    itemStr += ' 교육주제 : ' + places.PRGRM_SJCT ;
+                    itemStr += '</div>';
+                }
+                
+                itemStr += '</div>';
+                
+                el.innerHTML = itemStr;
+                return el;
+            }
+            
+            function addMarker(position, idx, title) {
+                var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_number_blue.png', // 마커 이미지 url, 스프라이트 이미지를 씁니다
+                    imageSize = new kakao.maps.Size(36, 37),  // 마커 이미지의 크기
+                    imgOptions =  {
+                        spriteSize : new kakao.maps.Size(36, 691), // 스프라이트 이미지의 크기
+                        spriteOrigin : new kakao.maps.Point(0, (idx*46)+10), // 스프라이트 이미지 중 사용할 영역의 좌상단 좌표
+                        offset: new kakao.maps.Point(13, 37) // 마커 좌표에 일치시킬 이미지 내에서의 좌표
+                    },
+                    markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imgOptions),
+                        marker = new kakao.maps.Marker({
+                        position: position, // 마커의 위치
+                        image: markerImage 
+                    });
+                
+                marker.setMap(map); // 지도 위에 마커를 표출합니다
+                markers.push(marker);  // 배열에 생성된 마커를 추가합니다
+            
+                return marker;
+            }
+            
+            function removeMarker() {
+                clusterer.clear();
+                for ( var i = 0; i < markers.length; i++ ) {
+                    markers[i].setMap(null);
+                }   
+                markers = [];
             }
             
             function getListItem(index, places, marker) {

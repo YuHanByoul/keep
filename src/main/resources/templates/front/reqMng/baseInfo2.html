@@ -92,7 +92,7 @@
 	                            <tbody>
 	                                <tr>
 	                                    <th scope="row">사업공모명</th>
-	                                    <td colspan="3"><tH:block th:text="${pcntstNm}"></td>
+	                                    <td colspan="3"><th:block th:text="${pcntstNm}"></td>
 	                                </tr>
 	                                <tr>
 	                                    <th scope="row">프로그램명<i class="ast" title="필수입력">*</i></th>
@@ -105,13 +105,13 @@
 	                                    <th scope="row">등록일</th>
 	                                    <td><input type="date" id="regDe" name="regDe" title="등록일" th:value="${detail.regDe}" placeholder="등록일을 입력해주세요."></td>
 	                                    <th scope="row">신청자명</th>
-	                                    <td><input type="hidden" name="aplcntNm" id="aplcntNm" th:value="${detail.aplcntNm}"/><tH:block th:text="${detail.aplcntNm}"></td>
+	                                    <td><input type="hidden" name="aplcntNm" id="aplcntNm" th:value="${detail.aplcntNm}"/><th:block th:text="${detail.aplcntNm}"></td>
 	                                </tr>
 	                                <tr>
 	                                    <th scope="row">신청자 연락처</th>
-	                                    <td><input type="hidden" name="aplcntTelno" id="aplcntTelno" th:value="${detail.aplcntTelno}"/><tH:block th:text="${detail.aplcntTelno}"></td>
+	                                    <td><input type="hidden" name="aplcntTelno" id="aplcntTelno" th:value="${detail.aplcntTelno}"/><th:block th:text="${detail.aplcntTelno}"></td>
 	                                    <th scope="row">신청자 이메일</th>
-	                                    <td><input type="hidden" name="aplcntEml" id="aplcntEml" th:value="${detail.aplcntEml}"/><a href="mailto:email@email.com" class="url"><tH:block th:text="${detail.aplcntEml}"></a></td>
+	                                    <td><input type="hidden" name="aplcntEml" id="aplcntEml" th:value="${detail.aplcntEml}"/><a href="mailto:email@email.com" class="url"><th:block th:text="${detail.aplcntEml}"></a></td>
 	                                </tr>
 	                                <tr>
 	                                    <th scope="row">권역<i class="ast" title="필수입력">*</i></th>
@@ -328,8 +328,16 @@
 	    var atchfileCnt = 21;
 	    var uploadFileCnt = 0;
 	    var mode = $("#mode").val();
-	    
+        /*<![CDATA[*/
+        var requestURI = /*[[${#strings.contains(#httpServletRequest.requestURI,'bizAply')}]]*/null;
+        /*]]>*/
+        var pathVar = requestURI ? 'bizAply' : 'expEnv';	    
 	    $(function () {
+	    	if (requestURI) {
+                $(".steps").show();
+            } else {
+                $(".steps").hide();
+            }
 	    	var validator = $("#insertForm").validate({
 	            rules: {
 	            	prgrmNm : { required: true } 
@@ -512,7 +520,7 @@
 	                data : data,
 	                success : function (data){
 	                    if (data.result == "success") {
-	                    	location.href = "/front/bizAply/budgetForm.html?aplyid=" + data.aplyid + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
+	                    	location.href = "/front/"+pathVar+"/budgetForm.html?aplyid=" + data.aplyid + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
 	                    } else {
 	                        alert(data.msg);
 	                    }
