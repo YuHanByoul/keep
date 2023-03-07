@@ -69,7 +69,7 @@
                 map: map, // 마커들을 클러스터로 관리하고 표시할 지도 객체 
                 averageCenter: true, // 클러스터에 포함된 마커들의 평균 위치를 클러스터 마커 위치로 설정 
                 minLevel: 2, // 클러스터 할 최소 지도 레벨 
-                disableClickZoom: false // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
+                disableClickZoom: true // 클러스터 마커를 클릭했을 때 지도가 확대되지 않도록 설정한다
             });
             
             var customOverlay1 = new kakao.maps.CustomOverlay({zIndex:1});
@@ -105,7 +105,6 @@
                  keywordSearch( keyword, searchType, category, selectedPage);
             };
             
-            displayPlaces(fcltList);
             
             function searchPlaces(type) {
 
@@ -133,7 +132,6 @@
                 reqJson.category = category;
                 reqJson.selectedPage = selectedPage;
                 
-<<<<<<< HEAD
                 if (clickedOverlay1) {
                     clickedOverlay1.setMap(null);
                 }
@@ -152,19 +150,6 @@
                         displayPlaces(data.list);
                         $(".map-srh b").text(data.pagenationInfo.totalCnt);
                         setPagenation(data.pagenationInfo);
-=======
-                
-                
-                $.ajax({
-                    url:'/front/map/searchNearbyEnveduFlct.do',
-                    cache:false,
-                    contentType: 'application/json',
-                    dataType:'json',
-                    data:JSON.stringify(reqJson),
-                    type:'POST',
-                    success:function(data){
-                        displayPlaces(data.list);
->>>>>>> refs/remotes/origin/develop
                     }
                 });
             }
@@ -173,7 +158,6 @@
                 var listEl = document.getElementsByClassName('map-search-list')[0];
                 var ul = document.createElement('ul');
                 var fragment = document.createDocumentFragment();
-<<<<<<< HEAD
                 
                 listEl.replaceChildren();
                 
@@ -195,28 +179,6 @@
                     listEl.appendChild(ul);
                     clusterer.addMarkers(markers);
                     
-                } else {
-                    var itemStr = '<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>검색 결과가 없습니다.</p></div>';
-                    listEl.innerHTML = itemStr;
-                }
-=======
->>>>>>> refs/remotes/origin/develop
-                
-                listEl.replaceChildren();
-                
-                removeMarker();
-                
-                if(places.length > 0){
-                    for (var i=0; i<places.length; i++){
-                        placePosition = new kakao.maps.LatLng(places[i].ADDR_LAT, places[i].ADDR_LOT);
-                        var marker = addMarker(placePosition, i), 
-                        itemEl = getListItem(i, places[i]);
-                        
-                        fragment.appendChild(itemEl);
-                    }
-                    ul.appendChild(fragment);
-                    listEl.appendChild(ul);
-                    clusterer.addMarkers(markers);
                 } else {
                     var itemStr = '<div class="nodata"><p><span class="icon icon-notice bg-black9"></span>검색 결과가 없습니다.</p></div>';
                     listEl.innerHTML = itemStr;
@@ -338,7 +300,6 @@
             
             function setPagenation(pagenationInfo){
                 var listEl = document.getElementsByClassName('map-search-list')[0];
-
                 if(pagenationInfo.totalPage > 1){
                     var el = document.createElement('div');
                     
@@ -485,7 +446,6 @@
             
             kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster) {
                 var level = map.getLevel();
-
                 if (level > 3){
                     if (clickedOverlay1) {
                         clickedOverlay1.setMap(null);
@@ -581,7 +541,7 @@
                         xAnchor: 0.5
                     });
                     //customOverlay.dk = 0.5 + (clusterMarkers.length/10 + 0.02);
-                    customOverlay.dk = 1.10;
+                    customOverlay.dk = 1.45 - (clusterMarkers.length * 0.04);
                     customOverlay.setMap(map);
                     
                     clickedOverlay1 = customOverlay;

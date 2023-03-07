@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : MyLctrDmndDaoImpl.xml
+	Description : 마이페이지 > 전문가 요청 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.exprtPool.model.MyLctrDmndDao">
+    <update id="updateStatus">
+        UPDATE TB_ASS_LCTR_DMND
+        SET
+            DMND_STTS_CD = #{dmndSttsCd}
+            <choose>
+                <when test="dmndSttsCd == '139103'">
+                    , REJECT_DT = NOW()
+                </when>
+                <when test="dmndSttsCd == '139104'">
+                    , APRV_DT = NOW()
+                </when>
+                <when test="dmndSttsCd == '139105'">
+                    , CMPTN_DT = NOW()
+                </when>
+            </choose>
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE DMNDID = #{dmndid}
+    </update>
+
+    <select id="selectLctrDmndList" resultType="front.MyLctrDmndVo">
+        <include refid="PaginationMapper.header"/>
+        SELECT *
+        FROM (
+            SELECT
+                A.DMNDID
+                , A.LCTR_BGNG_DT
+                , A.LCTR_END_DT
+                , A.DMND_STTS_CD
+                , A.REG_DT
+                , CASE WHEN B.INSTID IS NULL THEN B.NM
+                  ELSE C.INST_NM
+                  END AS NM
+                , B.ACNT
+            FROM TB_ASS_LCTR_DMND A
+            INNER JOIN TB_CMM_USER B
+                ON A.USERID = B.USERID
+            LEFT OUTER JOIN TB_CMM_INST C
+                ON B.INSTID = C.INSTID
+            WHERE EXPRTID = #{user.userid}
+        ) AA
+        WHERE 1=1
+        <if test="dmndSttsCd != null and dmndSttsCd != ''">
+            AND AA.DMND_STTS_CD = #{dmndSttsCd}
+        </if>
+        <if test="searchKeyword != null and searchKeyword != ''">
+            <if test="searchType == 'nm'">
+                AND AA.NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+            <if test="searchType == 'acnt'">
+                AND AA.ACNT LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if>
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectLctrDmnd" resultType="front.MyLctrDmndVo">
+        SELECT
+            A.DMNDID
+            , A.EXPRTID
+            , A.USERID
+            , A.TTL
+            , A.LCTR_BGNG_DT
+            , A.LCTR_END_DT
+            , A.ADDR
+            , A.ADDR_DTL
+            , A.EML
+            , A.MOBLPHON
+            , A.DMND_CN
+            , A.FILEGRPID
+            , A.DMND_STTS_CD
+            , CASE WHEN B.INSTID IS NULL THEN B.ACNT
+              ELSE CONCAT(C.INST_NM, '(', B.ACNT, ')')
+              END AS NM
+        FROM TB_ASS_LCTR_DMND A
+        INNER JOIN TB_CMM_USER B
+            ON A.USERID= B.USERID
+        LEFT OUTER JOIN TB_CMM_INST C
+            ON B.INSTID = C.INSTID
+        WHERE DMNDID = #{dmndid}
+    </select>
+</mapper>
