@@ -151,7 +151,7 @@ const gnb = {
 					$Dep01.find('>li.current-page').find('.dep02').show();
 				}
 			})
-			
+			$('.center').removeClass('active');
 			preventScrollOn();
 		}
 	},
@@ -160,6 +160,7 @@ const gnb = {
 			$Dep01List.find($Dep02).stop().fadeOut(150, function () {
 				$(this).attr('style','display:none')
 			});
+			preventScrollOff();
 		}
 		
 		if ($WINDOW_MODE === MOBILE) {
@@ -302,6 +303,9 @@ const gnb = {
 				$('.header-bottom-inner').removeClass(CLASS_DEP_ACTIVE);
 				$Dep01List.find('.dep02').hide();
 				$Dep01List.removeClass(CLASS_DEP_ACTIVE);
+				$Dep01List.find('.dep02-inner > ul > li').removeClass(CLASS_DEP_ACTIVE);
+				preventScrollOff();
+
 			}
 		})
 	},
@@ -772,6 +776,7 @@ const layerPopup = {
 		$(document).on('click', '[data-layer-close]' , function (){
 			const target = $(this).closest('.layer-popup').attr('data-layer-id');
 			layerPopup.close({target});
+			console.log(target)
 	
 		})
 	},
@@ -1091,7 +1096,7 @@ $(document).ready(function() {
 
 
 	//focusout prevent event
-	function trapTabKey(obj, evt) {
+	function trapTabKey(obj, evt, target) {
 		// if tab or shift-tab pressed
 		if (evt.which == 9) {
 			// get list of all children elements in given object
@@ -1128,8 +1133,8 @@ $(document).ready(function() {
 		if (evt.which == 27) {
 			//layer-popup
 			if (obj.hasClass('layer-popup')) {
-				const layerName = obj.attr('data-layer-id');
-				layerPopup.close(layerName);
+				const target = obj.attr('data-layer-id');
+				layerPopup.close({target});
 			}
 			//toggle layer
 			if (obj.hasClass('toggle-layer-inner')) {
