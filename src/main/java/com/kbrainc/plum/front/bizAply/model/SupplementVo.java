@@ -5,6 +5,8 @@ package com.kbrainc.plum.front.bizAply.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotEmpty;
+
 import org.apache.ibatis.type.Alias;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -48,6 +50,7 @@ public class SupplementVo extends ParentRequestVo {
     private Integer rqstrid;
     
     /** 답변_내용 */
+    @NotEmpty(message = "답변을 입력하십시오.")
     private String ansCn;
     
     /** 답변자아이디 */
@@ -80,4 +83,10 @@ public class SupplementVo extends ParentRequestVo {
     
     /** 등록자 아이디 */
     private Integer rgtrid;
+    
+    /** 분야 코드 */
+    private String fldCd;
+    
+    /** 공모아이디 */
+    private Integer pcntstid;
 }

@@ -197,7 +197,16 @@
         
 	    <script th:inline="javascript">
 	    var deviceMode = "";
+        /*<![CDATA[*/
+        var requestURI = /*[[${#strings.contains(#httpServletRequest.requestURI,'bizAply')}]]*/null;
+        /*]]>*/
+        var pathVar = requestURI ? 'bizAply' : 'expEnv';
     	$(function(){
+    		if (requestURI) {
+                $(".steps").show();
+            } else {
+                $(".steps").hide();
+            }
     		deviceMode = $WINDOW_MODE;
     		var validator = $("#insertForm").validate({
                 rules: {
@@ -312,7 +321,7 @@
 	                data : data,
 	                success : function (data){
 	                    if (data.result == "success") {
-	                    	location.href = "/front/bizAply/prgrmInfoForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val();
+	                    	location.href = "/front/"+pathVar+"/prgrmInfoForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val();
 	                    } else {
 	                        alert(data.msg);
 	                    }
@@ -338,6 +347,7 @@
         }
         
         function goPage(url) {
+        	url = url.replace('bizAply', pathVar);
             location.href = url + '?aplyid=' + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val() + '&mode=U';
         }
 	    </script>

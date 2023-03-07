@@ -42,25 +42,28 @@
     </div>
 </div>
 
+<div class="modal fade" id="qestnrPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+
 <script th:inline="javascript">
     var trprSrvy = {
-        listUrl: "/mng/srvy/selectTrprSrvyList.do",
+        listUrl: "/mng/srvy/selectTrprSrvyList.do"
+        , qestnrNm: ""
         
-        init: function() {
+        , init: function() {
             srvyGrid = new GridHelper("srvyGrid", "contentPanel");
             this.setGrid();
             this.registEvent();
-        },
+        }
         
-        registEvent: function() {
+        , registEvent: function() {
             // TODO
-        },
+        }
         
-        initSearch: function() {
+        , initSearch: function() {
              $("#searchType, #searchKeyword").val('');
-        },
+        }
         
-        onSearch: function() {
+        , onSearch: function() {
             var searchType = $("#searchType").val();
             var searchKeyword = $("#searchKeyword").val();
             if(searchType != '' && searchKeyword == "") {
@@ -73,9 +76,9 @@
             }
             
             srvyGrid.resetListContent();
-        },
+        }
         
-        setGrid: function() {
+        , setGrid: function() {
             $("#srvyGrid").jsGrid({
                 height: "auto",
                 width: "100%",
@@ -136,8 +139,8 @@
                     {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
                         if(item.qitemCnt == 0) return "-";
                         return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
-                            alert("설문지 미리보기");
-                            return false; 
+                            trprSrvy.qestnrNm = item.qestnrNm;
+                            trprSrvy.onQestnrPopup(item.qestnrid);
                         });
                     }}
                 ],
@@ -146,6 +149,17 @@
                     var detailUrl = "/mng/srvy/srvyRsltDetailForm.html?srvyid=" + args.item.srvyid + "&qestnrid=" + args.item.qestnrid; 
                     srvyGrid.loadContent(detailUrl);
                     srvyGrid.rowClick(args);
+                }
+            });
+        }
+        
+        , onQestnrPopup: function(qestnrid) {
+            var url = "/mng/qestnr/qestnrPopup.html?qestnrid=" + qestnrid;
+            $("#qestnrPopup").load(url, function(response, status, xhr) {
+                if(status == "success") {
+                    qestnrModal = new bootstrap.Modal($("#qestnrPopup"));
+                    qestnrModal.show();
+                    $("#popupTitle").text(trprSrvy.qestnrNm);
                 }
             });
         }

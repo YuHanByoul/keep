@@ -45,6 +45,12 @@ public class LendRndVo extends ParentRequestVo {
     /** 순서 */
     private Integer ordr;
     
+    /** 수량 */
+    private Integer qnty;
+    
+    /** 재고 */
+    private Integer totalCnt;
+    
     /** 대여 시작일   */
     @Size(max = 10, message = "대여 시작일은 10자를 넘을 수 없습니다.") 
     private String bgngDe;

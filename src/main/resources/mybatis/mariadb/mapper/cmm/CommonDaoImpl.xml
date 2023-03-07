@@ -294,7 +294,8 @@
             ) DL
             WHERE 
                 DL.ADDR_LAT IS NOT NULL AND DL.ADDR_LOT IS NOT NULL
-                <if test="keyword !=null and keyword != ''">
+<<<<<<< HEAD
+                <if test="keyword != null and keyword != ''">
                     <if test="searchType == 1">
                         AND 
                             CASE
@@ -306,10 +307,187 @@
                         AND DL.ADDR LIKE CONCAT('%', #{keyword}, '%')
                     </if>
                 </if>
+                <if test="category != null and category != ''">
+                    <choose>
+                        <when test="category == 1">
+                            AND DL.TYPE = '기관'
+                        </when>
+                        <when test="category == 2">
+                            AND DL.TYPE = '시설'
+                        </when>
+                        <when test="category == 3">
+                            AND DL.TYPE = '프로그램'
+                        </when>
+                        <when test="category == 4">
+                            AND DL.TYPE = '전문가'
+                        </when>
+                    </choose>
+=======
+                <if test="keyword !=null and keyword != ''">
+                    <if test="searchType == 1">
+                        AND 
+                            CASE
+                                WHEN DL.TYPE IN ('기관', '시설') THEN DL.INST_NM LIKE CONCAT('%', #{keyword}, '%')
+                                WHEN DL.TYPE IN ('프로그램') THEN DL.PRGRM_NM LIKE CONCAT('%', #{keyword}, '%')
+                            END
+                    </if>
+                    <if test="searchType == 2">
+                        AND DL.ADDR LIKE CONCAT('%', #{keyword}, '%')
+                    </if>
+>>>>>>> refs/remotes/origin/develop
+                </if>
         ) A1
         WHERE 
             A1.RN BETWEEN 1+(#{pagePerCnt} * (#{selectedPage} - 1)) AND 10+(#{pagePerCnt} * (#{selectedPage}-1))
     </select>
     
+<<<<<<< HEAD
+    <select id="nearbyEnveduFlctCount" parameterType="java.util.Map" resultType="int">
+        /* CommonDao.nearbyEnveduFlctCount */
+        SELECT 
+            COUNT(1)
+        FROM (
+            SELECT
+                ROW_NUMBER () OVER(ORDER BY DL.ADDR, DL.ORDR, DL.REG_DT) AS RN
+                , DL.* 
+            FROM (
+                SELECT 
+                    A.INSTID AS ID
+                    , '기관' AS TYPE
+                    , A.INST_TYPE_CD AS CATEGORY_CD
+                    , B.CD_NM AS CATEGORY_NM
+                    , A.INSTID
+                    , A.INST_NM AS INST_NM
+                    , NULL AS PRGRM_NM
+                    , A.TELNO 
+                    , A.HMPG AS HMPG 
+                    , A.ADDR 
+                    , A.ADDR_DTL 
+                    , A.ADDR_LAT 
+                    , A.ADDR_LOT 
+                    , NULL AS EDU_NOPE
+                    , NULL AS PRGRM_TRGT
+                    , NULL AS PRGRM_SJCT
+                    , 1 AS ORDR
+                    , A.REG_DT 
+                FROM TB_CMM_INST A
+                    LEFT JOIN TB_CMM_CD B ON A.INST_TYPE_CD = B.CD 
+                WHERE A.USE_YN = 'Y'
+                    AND A.APRV_STTS_CD = 2
+                UNION ALL 
+                SELECT 
+                    C.FCLTID AS ID
+                    , '시설' AS TYPE
+                    , NULL AS CATEGORY_CD
+                    , NULL AS CATEGORY_NM
+                    , NULL AS INSTID 
+                    , C.FCLT_NM AS INST_NM
+                    , NULL AS PRGRM_NM
+                    , NULL AS TELNO 
+                    , C.EXTNL_URL AS HMPG 
+                    , C.ADDR 
+                    , C.ADDR_DTL 
+                    , C.ADDR_LAT 
+                    , C.ADDR_LOT 
+                    , NULL AS EDU_NOPE
+                    , NULL AS PRGRM_TRGT
+                    , NULL AS PRGRM_SJCT
+                    , 2 AS ORDR
+                    , C.REG_DT 
+                FROM TB_FCL_FCLT C
+                WHERE C.USE_YN = 'Y'
+                UNION ALL 
+                SELECT 
+                    D.PRGRMID AS ID
+                    , '프로그램' AS TYPE
+                    , NULL AS CATEGORY_CD
+                    , '유아환경교육' AS CATEGORY_NM
+                    , F.INSTID 
+                    , E.CLSSRM_NM AS INST_NM 
+                    , CONCAT(EDU_YR, '년 ', D.PRGRM_NM) AS PRGRM_NM
+                    , NULL AS TELNO 
+                    , NULL AS HMPG 
+                    , F.ADDR 
+                    , F.ADDR_DTL 
+                    , F.ADDR_LAT 
+                    , F.ADDR_LOT 
+                    , D.EDU_NOPE 
+                    , GROUP_CONCAT(DISTINCT H.CD_NM ORDER BY H.CD SEPARATOR ', ') AS PRGRM_TRGT
+                    , GROUP_CONCAT(DISTINCT J.CD_NM ORDER BY J.CD SEPARATOR ', ') AS PRGRM_SJCT
+                    , 3 AS ORDR
+                    , D.REG_DT 
+                FROM TB_EDU_INFNT_PRGRM D
+                    LEFT JOIN TB_EDU_CLSSRM E ON D.CLSSRMID = E.CLSSRMID 
+                    LEFT JOIN TB_CMM_INST F ON E.CNSGN_INSTID = F.INSTID 
+                    LEFT JOIN TB_EDU_INFNT_PRGRM_TRGT_MAPNG G ON D.PRGRMID = G.PRGRMID 
+                    LEFT JOIN TB_CMM_CD H ON G.TRGT_CD = H.CD 
+                    LEFT JOIN TB_EDU_INFNT_PRGRM_CLSF_MAPNG I ON D.PRGRMID = I.PRGRMID 
+                    LEFT JOIN TB_CMM_CD J ON I.CLSF_CD = J.CD 
+                WHERE D.USE_YN = 'Y'
+                GROUP BY D.PRGRMID 
+                UNION ALL 
+                SELECT
+                    K.PRGRMID AS ID
+                    , '프로그램' AS TYPE
+                    , NULL AS CATEGORY_CD
+                    , '푸름이 이동환경교실' AS CATEGORY_NM
+                    , M.INSTID 
+                    , M.INST_NM
+                    , K.PRGRM_NM
+                    , NULL AS TELNO 
+                    , NULL AS HMPG 
+                    , M.ADDR 
+                    , M.ADDR_DTL 
+                    , M.ADDR_LAT 
+                    , M.ADDR_LOT 
+                    , K.EDU_NOPE 
+                    , GROUP_CONCAT(DISTINCT O.CD_NM ORDER BY O.CD SEPARATOR ', ') AS PRGRM_TRGT
+                    , GROUP_CONCAT(DISTINCT Q.CD_NM ORDER BY Q.CD SEPARATOR ', ') AS PRGRM_SJCT
+                    , 4 AS ORDR
+                    , K.REG_DT 
+                FROM TB_EDU_MVMN_PRGRM K
+                    LEFT JOIN TB_EDU_SAREA L ON K.SAREAID = L.SAREAID 
+                    LEFT JOIN TB_CMM_INST M ON L.INSTID = M.INSTID 
+                    LEFT JOIN TB_EDU_MVMN_PRGRM_TRGT_MAPNG N ON K.PRGRMID = N.PRGRMID 
+                    LEFT JOIN TB_CMM_CD O ON N.TRGT_CD = O.CD 
+                    LEFT JOIN TB_EDU_MVMN_PRGRM_CLSF_MAPNG P ON K.PRGRMID = P.PRGRMID 
+                    LEFT JOIN TB_CMM_CD Q ON P.CLSF_CD = Q.CD
+                WHERE K.USE_YN = 'Y'
+                GROUP BY K.PRGRMID 
+            ) DL
+            WHERE 
+                DL.ADDR_LAT IS NOT NULL AND DL.ADDR_LOT IS NOT NULL
+                <if test="keyword != null and keyword != ''">
+                    <if test="searchType == 1">
+                        AND 
+                            CASE
+                                WHEN DL.TYPE IN ('기관', '시설') THEN DL.INST_NM LIKE CONCAT('%', #{keyword}, '%')
+                                WHEN DL.TYPE IN ('프로그램') THEN DL.PRGRM_NM LIKE CONCAT('%', #{keyword}, '%')
+                            END
+                    </if>
+                    <if test="searchType == 2">
+                        AND DL.ADDR LIKE CONCAT('%', #{keyword}, '%')
+                    </if>
+                </if>
+                <if test="category != null and category != ''">
+                    <choose>
+                        <when test="category == 1">
+                            AND DL.TYPE = '기관'
+                        </when>
+                        <when test="category == 2">
+                            AND DL.TYPE = '시설'
+                        </when>
+                        <when test="category == 3">
+                            AND DL.TYPE = '프로그램'
+                        </when>
+                        <when test="category == 4">
+                            AND DL.TYPE = '전문가'
+                        </when>
+                    </choose>
+                </if>
+        ) A1
+    </select>
+=======
+>>>>>>> refs/remotes/origin/develop
     
 </mapper>

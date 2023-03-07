@@ -34,8 +34,23 @@ import lombok.Data;
 @Alias("front.ReqUserVo")
 public class ReqUserVo extends ParentRequestVo {
 
+    /** 분야_코드_검색 */
+    private String searchFldCd;
+    
+    /** 공모_이름_검색 */
+    private String searchPcntstNm;
+    
+    /** 프로그램명 */
+    private String searchPrgrmNm;
+    
+    /** 진행상태 */
+    private String status;
+    
     /** 분야 코드 */
     private String fldCd;
+    
+    /** 분야 코드명 */
+    private String fldNm;
     
     /** 공모_이름 */
     private String pcntstNm;
@@ -191,4 +206,7 @@ public class ReqUserVo extends ParentRequestVo {
     
     /** 신규,수정 모드 */
     private String mode;
+    
+    /** 보완요청아이디 */
+    private Integer splmntid;
 }

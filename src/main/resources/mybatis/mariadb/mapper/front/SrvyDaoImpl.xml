@@ -3,7 +3,7 @@
 
 <!--
 	SQL File Name : SrvyDaoImpl.xml
-	Description : 설문관리
+	Description : 설문조사
 -->
 <mapper namespace="com.kbrainc.plum.front.srvy.model.SrvyDao">
     
@@ -31,9 +31,11 @@
             B.QESTNR_KND_CD = '110100'
             AND A.USE_YN = 'Y'
             AND NOW() >= A.BGNG_DE
-        <if test="user.loginUserType == 'P'.toString()">
+            <!-- <if test="user.loginUserType == 'P'.toString()"> -->
             AND C.USERID = #{user.userid}
-        </if>
+            <!-- </if> -->
+        GROUP BY
+            A.SRVYID
         <include refid="PaginationMapper.footer"/>
     </select>
     
@@ -41,12 +43,19 @@
     <select id="selectSrvyInfo" parameterType="front.SrvyVo" resultType="front.SrvyVo">
         /* SrvyDao.selectSrvyInfo */
         SELECT
-            SRVYID
-            , SRVY_NM
+            A.SRVYID
+            , A.SRVY_NM
+            <if test="user != null">
+            , DATE_FORMAT(B.SBMSN_DT, '%Y-%m-%d') AS SBMSN_DT
+            </if>
         FROM
-            TB_CMM_SRVY
+            TB_CMM_SRVY A
+        <if test="user != null">    
+        LEFT OUTER JOIN
+            TB_CMM_SRVY_SBMSN B ON (B.SRVYID = A.SRVYID AND B.USERID = #{user.userid})
+        </if>
         WHERE 
-            SRVYID = #{srvyid}
+            A.SRVYID = #{srvyid}
     </select>
     
     <!-- 설문 문항 목록 조회 -->
@@ -63,6 +72,33 @@
         WHERE
             A.USE_YN = 'Y'
             AND A.QESTNRID = #{qestnrid}
+        ORDER BY
+            A.ORDR
+    </select>
+    
+    <!-- 설문 답변 목록 조회 -->
+    <select id="selectAnsList" parameterType="front.SrvyVo" resultType="QitemVo">
+        /* SrvyDao.selectAnsList */
+        SELECT
+            A.QITEMID
+            , A.QESTNRID
+            , A.QITEM_TYPE_CD
+            , A.CN
+            , A.EX_CNT
+            , C.ANS
+            , C.ANS_DSCRP
+            , C.SCALE
+            , C.SCR
+        FROM
+            TB_CMM_QESTNR_QITEM A
+        LEFT OUTER JOIN
+            TB_CMM_SRVY_SBMSN B ON (B.SRVYID = #{srvyid})
+        LEFT OUTER JOIN
+            TB_CMM_SRVY_SBMSN_ANS C ON (C.SBMSNID = B.SBMSNID AND C.QITEMID = A.QITEMID)
+        WHERE
+            A.USE_YN = 'Y'
+            AND A.QESTNRID = #{qestnrid}
+            AND B.USERID = #{user.userid}
         ORDER BY
             A.ORDR
     </select>

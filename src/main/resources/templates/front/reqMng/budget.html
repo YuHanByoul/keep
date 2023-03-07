@@ -123,7 +123,16 @@
         
 	    <script th:inline="javascript">
 	    var deviceMode = "";
+        /*<![CDATA[*/
+        var requestURI = /*[[${#strings.contains(#httpServletRequest.requestURI,'bizAply')}]]*/null;
+        /*]]>*/
+        var pathVar = requestURI ? 'bizAply' : 'expEnv';
     	$(function(){
+    		if (requestURI) {
+	    		$(".steps").show();
+    		} else {
+    			$(".steps").hide();
+    		}
     		deviceMode = $WINDOW_MODE;
     		var validator = $("#insertForm").validate({
                 rules: {
@@ -186,7 +195,11 @@
 	                success : function (data){
 	                    if (data.result == "success") {
                     		alert("신청이 완료 되었습니다.");
-                    		location.href = "/front/bizAply/aplyComp.html";
+                    		if (pathVar == "expEnv") {
+                                location.href = "/front/expEnv/myAplyListForm.html";
+                            } else {
+                                location.href = "/front/bizAply/aplyComp.html";
+                            }
 	                    } else {
 	                        alert(data.msg);
 	                    }
@@ -212,6 +225,7 @@
         }
         
         function goPage(url) {
+        	url = url.replace('bizAply', pathVar);
             location.href = url + '?aplyid=' + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val() + '&mode=U';
         }
 	    </script>

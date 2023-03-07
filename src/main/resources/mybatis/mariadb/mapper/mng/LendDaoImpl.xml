@@ -17,6 +17,7 @@
                   ,A.BGNG_DT
                   ,A.END_DT
                   ,A.LMT_CD
+                  ,A.PACKAGEID
                   ,A.DTL_CN
                   ,A.MVP_URL
                   ,A.MVP_PSTN_CD
@@ -58,6 +59,7 @@
             RCRIT_NM                   
             ,BGNG_DT                    
             ,END_DT                     
+            ,PACKAGEID                     
             ,LMT_CD                     
             ,DTL_CN                     
             ,MVP_URL                    
@@ -76,6 +78,7 @@
             #{rcritNm           }        
             ,#{bgngDt            }        
             ,#{endDt             }        
+            ,#{packageid         }        
             ,#{lmtCd             }        
             ,#{dtlCn             }        
             ,#{mvpUrl            }        
@@ -100,6 +103,7 @@
             ,ORDR          
             ,BGNG_DE       
             ,END_DE        
+            ,QNTY        
             ,MDFCN_DT      
             ,MDFRID        
             ,REG_DT        
@@ -109,6 +113,7 @@
             ,#{ordr       }    
             ,#{bgngDe     }    
             ,#{endDe      }
+            ,#{qnty      }
             ,NOW()
             ,#{user.userid}
             ,NOW()
@@ -149,6 +154,9 @@
             </if>             
            <if test="lmtCd != null and lmtCd != ''">
             LMT_CD               =  #{lmtCd             },             
+            </if>             
+           <if test="packageid != null and packageid != ''">
+            PACKAGEID            =  #{packageid         },             
             </if>             
            <if test="dtlCn != null and dtlCn != ''">
             DTL_CN               =  #{dtlCn             },             
@@ -222,6 +230,7 @@
             ,A.RCRIT_NM
             ,A.BGNG_DT
             ,A.END_DT
+            ,A.PACKAGEID
             ,A.LMT_CD
             ,A.DTL_CN
             ,A.MVP_URL
@@ -236,9 +245,19 @@
             ,A.MDFRID
             ,A.REG_DT
             ,A.RGTRID
+            ,packageindvdCnt
          FROM 
            TB_THA_PACKAGE_LEND_RCRIT A
-        WHERE 1=1 
+           LEFT OUTER JOIN (
+               SELECT 
+                    PACKAGEID
+                    ,COUNT(PACKAGEID) packageindvdCnt
+                 FROM 
+                    TB_THA_PACKAGEINDVD
+                 GROUP BY PACKAGEID
+           ) B 
+           ON A.PACKAGEID = B.PACKAGEID
+        WHERE 1=1
           AND A.RCRITID = #{rcritid}
    </select>
    
@@ -246,18 +265,30 @@
    <select id="selectLendRndList" parameterType="LendRndVo" resultType="LendRndVo">
         /* LendDao.selectLendList */
         SELECT 
-            RNDID
-            ,RCRITID
-            ,ORDR
-            ,BGNG_DE
-            ,END_DE 
-            ,MDFCN_DT
-            ,MDFRID
-            ,REG_DT
-            ,RGTRID
+            A.RNDID
+            ,A.RCRITID
+            ,A.ORDR
+            ,A.BGNG_DE
+            ,A.END_DE 
+            ,A.QNTY 
+            ,A.MDFCN_DT
+            ,A.MDFRID
+            ,A.REG_DT
+            ,A.RGTRID
+            ,IFNULL(C.totalCnt,0) totalCnt 
          FROM 
            TB_THA_PACKAGE_LEND_RND A
-        WHERE 1=1 
+           INNER JOIN TB_THA_PACKAGE_LEND_RCRIT B
+           ON A.RCRITID = B.RCRITID 
+           LEFT OUTER JOIN (
+                SELECT
+                    A.PACKAGEID 
+                    ,count(PACKAGEINDVDID) totalCnt
+                  FROM 
+                    TB_THA_PACKAGEINDVD A
+                   GROUP BY A.PACKAGEID
+           ) C ON B.PACKAGEID = C.PACKAGEID
+        WHERE 1=1  
           AND A.RCRITID = #{rcritid}
           ORDER BY ORDR ASC
    </select>
@@ -311,13 +342,13 @@
                        A.PACKAGEINDVDID
                        ,IFNULL(MAX(A.RNDID),0) AS RNDID
                      FROM       
-                       TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD A
+                       TB_THA_PACKAGE_LEND_APLY_DLIVY A
                        GROUP BY A.PACKAGEINDVDID
                  ) D
                  ON A.PACKAGEINDVDID = D.PACKAGEINDVDID
-                 LEFT OUTER  JOIN TB_THA_PACKAGE_LEND_APLY_PACKAGEINDVD E
+                 LEFT OUTER  JOIN TB_THA_PACKAGE_LEND_APLY_DLIVY E
                  ON E.RNDID = D.RNDID
-                 LEFT OUTER  JOIN tb_tha_package_lend_rnd F
+                 LEFT OUTER  JOIN TB_THA_PACKAGE_LEND_RND F
                  ON E.RNDID = F.RNDID      
             WHERE 1=1
           <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
@@ -336,24 +367,53 @@
    </select>
    <!-- 꾸러미 개체 대여 신청여부 확인  --> 
    <select id="selectLendApplyYn" parameterType="LendRndVo" resultType="String">
-             /* PackageDao.selectPackageindvdList */
-             SELECT
+             /* PackageDao.selectLendApplyYn */
+              SELECT
                  CASE 
                    WHEN COUNT(A.APLYID) > 0 THEN 'Y'
                    ELSE 'N'
-                 END 
-              FROM 
-                tb_tha_package_lend_aply_packageindvd A
-                INNER JOIN tb_tha_package_lend_rnd_packageindvd B
-                ON A.PACKAGEINDVDID = B.PACKAGEINDVDID AND A.RNDID = B.RNDID 
-                INNER JOIN tb_tha_package_lend_rnd C
-                ON B.RNDID = C.RNDID 
-                INNER JOIN tb_tha_package_lend_rcrit D
-                ON C.RCRITID = D.RCRITID
+                 END AS ISAPLLYED
+              FROM
+                TB_THA_PACKAGE_LEND_APLY_TRGT A
+                INNER JOIN TB_THA_PACKAGE_LEND_RND B
+                ON A.RNDID = B.RNDID 
+                INNER JOIN TB_THA_PACKAGE_LEND_RCRIT C
+                ON B.RCRITID = C.RCRITID
                 WHERE D.RCRITID  IN(
                     <foreach item="rcritid" collection="deleteIds" separator=",">
                        #{rcritid}
                     </foreach>
                 ) 
   </select>
+  <!-- 꾸러미 목록 호출 --> 
+  <select id="selectPackageList" parameterType="PackageVo" resultType="PackageVo">
+          /* PackageDao.selectPackageList */
+          SELECT
+                A.PACKAGEID
+               ,A.PACKAGE_NM
+               ,A.TYPE_CD
+               ,A.EDU_TYPE_CD
+               ,A.TEAM_CMPSTN_CD
+               ,A.MDFCN_DT
+               ,A.MDFRID
+               ,A.REG_DT
+               ,A.RGTRID
+               ,B.packageindvdCnt
+            FROM 
+               TB_THA_PACKAGE A
+               LEFT OUTER JOIN (
+                   SELECT 
+                        PACKAGEID
+                        ,COUNT(PACKAGEID) packageindvdCnt
+                     FROM 
+                        TB_THA_PACKAGEINDVD
+                     GROUP BY PACKAGEID
+               ) B 
+               ON A.PACKAGEID = B.PACKAGEID
+           WHERE 1=1
+            <if test='packageid != null and packageid != ""'>
+             AND A.PACKAGEID = #{packageid}
+            </if>
+  </select>
+  
 </mapper>

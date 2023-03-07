@@ -55,6 +55,9 @@ public class ReqMngVo extends ParentRequestVo {
     /** 사업_종료_일자_검색 */
     private String searchBsnsEndDe;
     
+    /** 프로그램명 */
+    private String searchPrgrmNm;
+    
     /** 진행상태 */
     private String status;
 
@@ -304,6 +307,9 @@ public class ReqMngVo extends ParentRequestVo {
     
     /** 이전 공모명 */
     private String beforeTtl;
+    
+    /** 프로그램명 */
+    private String prgrmNm;
     
     /******* 심사배분율 *******/
     private String jsonString;

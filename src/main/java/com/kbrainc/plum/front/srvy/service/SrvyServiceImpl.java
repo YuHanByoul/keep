@@ -76,10 +76,10 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     /**
     * 설문 문항, 보기 조회
     *
-    * @Title : selectQImrList
-    * @Description : 설문 목록 조회
+    * @Title : selectQitemList
+    * @Description : 설문 문항, 보기 조회
     * @param srvyVo SrvyVo 객체
-    * @return List<srvyVo> 설문 목록
+    * @return List<QitemVo> 설문 문항, 보기 목록
     * @throws Exception 예외
     */
     @Override
@@ -111,7 +111,7 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
     */
     @Override
     @Transactional
-    public int insertSrvySbmsn(HttpServletRequest request, SrvySbmsnVo srvySbmsnVo) throws Exception {
+    public int insertSrvySbmsn(HttpServletRequest request, SrvySbmsnVo srvySbmsnVo, List<SrvySbmsnAnsVo> srvySbmsnAnsList) throws Exception {
         int retVal = 0;
         // 아이피 확인
         srvySbmsnVo.setUserIp(CommonUtil.getClientIp(request));
@@ -150,11 +150,11 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
         // 1. 설문 제출
         retVal += srvyDao.insertSrvySbmsn(srvySbmsnVo);
         
-        List<SrvySbmsnAnsVo> ansList = srvySbmsnVo.getAnsList();
-        if(ansList != null && ansList.size() > 0) {
+        //List<SrvySbmsnAnsVo> ansList = srvySbmsnVo.getAnsList();
+        if(srvySbmsnAnsList != null && srvySbmsnAnsList.size() > 0) {
             SrvySbmsnAnsVo ans = new SrvySbmsnAnsVo();
-            for(int i = 0; i < ansList.size(); i++) {
-                ans = ansList.get(i);
+            for(int i = 0; i < srvySbmsnAnsList.size(); i++) {
+                ans = srvySbmsnAnsList.get(i);
                 ans.setSbmsnid(srvySbmsnVo.getSbmsnid());
                 ans.setUser(srvySbmsnVo.getUser());
                 // 2. 답변 등록
@@ -164,5 +164,32 @@ public class SrvyServiceImpl extends PlumAbstractServiceImpl implements SrvyServ
         
         return retVal;
      }
+    
+    /**
+    * 설문 답변 조회
+    *
+    * @Title : selectAnsList
+    * @Description : 설문 답변 조회
+    * @param srvyVo SrvyVo 객체
+    * @return List<QitemVo> 설문 답변 목록
+    * @throws Exception 예외
+    */
+    @Override
+    public List<QitemVo> selectAnsList(SrvyVo srvyVo) throws Exception {
+        List<QitemVo> qitemList = srvyDao.selectAnsList(srvyVo);
+        QitemVo qitemInfo;
+        List<QitemExVo> exList;
+        if(qitemList != null && qitemList.size() >0) {
+            for(int i = 0; i < qitemList.size(); i++) {
+                qitemInfo = qitemList.get(i);
+                if(qitemInfo.getExCnt() > 0) {
+                    exList = srvyDao.selectExList(qitemInfo);
+                    qitemInfo.setExampleList(exList);
+                }
+            }
+        }
+        
+        return qitemList;
+    }
     
 }

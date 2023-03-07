@@ -102,12 +102,25 @@ public interface CommonService {
     
     
     /**
-     * 내 주변 환경교육 시설 페이지 이동
+     * 내 주변 환경교육 시설 리스트를 반환한다.
      *
      * @Title       : nearbyEnveduFlct
-     * @Description : 사이트 리스트를 반환한다.
-     * @return String 이동화면경로
+     * @Description : 내 주변 환경교육 시설 리스트를 반환한다.
+     * @return List<Map<String, Object>>
      * @throws Exception 예외
      */
     public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception;
+<<<<<<< HEAD
+    
+    /**
+     * 내 주변 환경교육 시설 리스트 갯수를 반환한다.
+     *
+     * @Title       : nearbyEnveduFlct
+     * @Description : 내 주변 환경교육 시설 리스트 갯수를 반환한다.
+     * @return int
+     * @throws Exception 예외
+     */
+    public int nearbyEnveduFlctCount(Map map) throws Exception;
+=======
+>>>>>>> refs/remotes/origin/develop
 }
