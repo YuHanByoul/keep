@@ -64,7 +64,7 @@ public class SrvySbmsnVo extends ParentRequestVo {
     /** 디바이스 종류 */
     private String deviceKndCd;
     
-    List<SrvySbmsnAnsVo> ansList;
+//    List<SrvySbmsnAnsVo> ansList;
     
     
     /** 수정일시 */

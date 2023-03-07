@@ -33,7 +33,7 @@
                             <div class="list" th:each="item : ${qitemList}" th:data-qitemid="${item.qitemid}" th:data-qitemType="${item.qitemTypeCd}">
                                 <dt>
                                     <div class="tit">
-                                        <strong th:text=${item.cn}></strong>
+                                        <strong th:text="${item.cn}"></strong>
                                     </div>
                                 </dt>
                                 <dd>
@@ -59,12 +59,12 @@
                                             </th:block>
                                         </div>
                                         <div th:case="107104" class="form-input">
-                                            <input type="text" th:title="${item.cn}" th:name="${'ans' + item.qitemid}">
-                                            <div class="desc ar size fc-black9 mt5"><span>0</span> / 50자</div>
+                                            <input type="text" th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="50" onkeyup="srvySbmsnInsert.onChangeText(this);">
+                                            <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 50자</div>
                                         </div>
                                         <div th:case="107105" class="form-input mt10">
-                                            <textarea th:title="${item.cn}" th:name="${'ans' + item.qitemid}"></textarea>
-                                            <div class="desc ar size fc-black9 mt5"><span>0</span> / 500자</div>
+                                            <textarea th:title="${item.cn}" th:name="${'ans' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
+                                            <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
                                         </div>
                                         <th:block th:case="107106">
                                             <div class="form-check-list flex-row mo-flex-column">
@@ -75,8 +75,8 @@
                                                 </th:block>    
                                             </div>
                                             <div class="form-input mt10">
-                                                <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}"></textarea>
-                                                <div class="desc ar size fc-black9 mt5"><span>0</span> / 500자</div>
+                                                <textarea th:title="${item.cn}" th:name="${'etc' + item.qitemid}" maxlength="500" onkeyup="srvySbmsnInsert.onChangeText(this);"></textarea>
+                                                <div class="desc ar size fc-black9 mt5"><span class="textLen">0</span> / 500자</div>
                                             </div>    
                                         </th:block>
                                     </th:block>
@@ -89,7 +89,9 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-medium btn-gray" data-layer-close onclick="srvySbmsnInsert.offInsert();">닫기</button>
-                            <button type="button" class="btn-medium btn-green" onclick="srvySbmsnInsert.onInsert();">제출하기</button>
+                            <th:block sec:authorize-url="/front/srvy/insertSrvySbmsn.do">
+                                <button type="button" class="btn-medium btn-green" onclick="srvySbmsnInsert.onInsert();">제출하기</button>
+                            </th:block>
                         </div>
                     </div>
                 </div>
@@ -112,30 +114,36 @@
                     // TODO
                 }
                 
+                , onChangeText: function(el) {
+                    $(el).closest("div").find(".textLen").text($(el).val().length);
+                }
+                
                 , onInsert: function() {
                     var isValid = true;
                     var qitemid, typeCd;
                     var ansDscrp, ans, isChecked;
-                    var param = $("#srvySbmsnForm").serialize();
+                    var ansList = [];
+                    var ansData;
                     
                     $("[data-qitemid]").each(function(index, item) {
+                        ansData = {};
                         qitemid = $(item).attr("data-qitemid");
                         typeCd = $(item).attr("data-qitemType");
-                        param += "&ansList[" + index + "].qitemid=" + qitemid;
+                        ansData.qitemid = qitemid;
                         if(typeCd == "107104") { // 단답형
                             ansDscrp = $(item).find("input[name='ans" + qitemid + "']").val(); 
                             if(!ansDscrp) {
                                 isValid = false;
                                 return false;
                             }
-                            param += "&ansList[" + index + "].ansDscrp=" + ansDscrp;
+                            ansData.ansDscrp = ansDscrp;
                         } else if(typeCd == "107105") { // 서술형
                             ansDscrp = $(item).find("textarea[name='ans" + qitemid + "']").val();
                             if(!ansDscrp) {
                                 isValid = false;
                                 return false;
                             }
-                            param += "&ansList[" + index + "].ansDscrp=" + ansDscrp;
+                            ansData.ansDscrp = ansDscrp;
                         } else {
                             isChecked = $(item).find("input[name='ans" + qitemid + "']").is(":checked");
                             if(!isChecked) {
@@ -144,21 +152,27 @@
                             }
                             ans = $(item).find("input[name='ans" + qitemid + "']:checked");
                             if(typeCd == "107102") { // 복수선택형
-                                param += "&ansList[" + index + "].ans=" + ans.map(function() { return this.value; }).get().join(",");
+                                ansData.ans = ans.map(function() { return this.value; }).get().join(",");
                             } else if(typeCd == "107106") { // 혼합형
-                                param += "&ansList[" + index + "].ans=" + ans.val();
+                                ansData.ans = ans.val();
                                 if(ans.attr("data-etcYn") == "Y") {
-                                    param += "&ansList[" + index + "].ansDscrp=" + $(item).find("textarea[name='etc" + qitemid + "']").val();
+                                    ansData.ansDscrp = $(item).find("textarea[name='etc" + qitemid + "']").val();///////////////
                                 }
                             } else if(typeCd == "107103") { // 척도형
-                                param += "&ansList[" + index + "].ans=" + ans.val();
-                                param += "&ansList[" + index + "].scale=" + ans.val();
-                                param += "&ansList[" + index + "].scr=" + ans.attr("data-scr");
+                                ansData.ans = ans.val();
+                                ansData.scale = ans.val();
+                                ansData.scr = ans.attr("data-scr");
                             } else { // OX형, 선택형
-                                param += "&ansList[" + index + "].ans=" + ans.val(); 
+                                ansData.ans = ans.val(); 
                             }
                         }
+                        ansList.push(ansData);
                     });
+                    
+                    var params = {
+                        srvyid: $("input[name='srvyid']").val()
+                        , ansList: JSON.stringify(ansList)
+                    };
                     
                     if(!isValid) {
                         alert("평가를 모두 완료후에 제출해주세요. ");
@@ -172,11 +186,13 @@
                                 , type: "POST"
                                 , cache: false
                                 , dataType: "json"
-                                , data: param
+                                , data: params
                                 , success: function(response) {
                                     if(response.result == "success") {
                                         alert(response.msg);
-                                        opener.srvy.onLoadData();
+                                        if(opener.srvy) {
+                                            opener.srvy.onLoadData();                                            
+                                        }
                                         window.close();
                                     } else {
                                         alert(response.msg);

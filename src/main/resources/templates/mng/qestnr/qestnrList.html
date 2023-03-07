@@ -89,25 +89,29 @@
             </div>
         </div>
     </div>
+    
+    <div class="modal fade" id="qestnrPopup" aria-hidden="true" data-bs-backdrop="static"></div>
+    
     <script th:inline="javascript">
         var qestnr = {
-            listUrl: "/mng/qestnr/selectQestnrList.do",
+            listUrl: "/mng/qestnr/selectQestnrList.do"
+            , qestnrNm: ""
             
-            init: function() {
+            , init: function() {
                 qestnrGrid = new GridHelper("qestnrGrid", "contentPanel");
                 this.setGrid();
                 this.registEvent();                
-            },
+            }
             
-            registEvent: function() {
+            , registEvent: function() {
                 // TODO
-            },
+            }
             
-            initSearch: function() {
+            , initSearch: function() {
                  $("#searchType, #searchKeyword, #searchSiteid, #searchQestnrKndCd").val('');
-            },
+            }
             
-            onSearch: function() {
+            , onSearch: function() {
                 var searchType = $("#searchType").val();
                 var searchKeyword = $("#searchKeyword").val();
                 if(searchType != '' && searchKeyword == "") {
@@ -120,9 +124,9 @@
                 }
                 
                 qestnrGrid.resetListContent();
-            },
+            }
             
-            setGrid: function() {
+            , setGrid: function() {
                 $("#qestnrGrid").jsGrid({
                     height: "auto",
                     width: "100%",
@@ -181,27 +185,38 @@
                         {title: "미리보기", name: "", type: "text", align: "center" , width: "150", itemTemplate: function(value, item) {
                             if(item.qitemCnt == 0) return "-";
                             return $("<div class='col-sm-12 btn-group-sm'><button class='btn btn-xs btn-primary'>미리보기</div>").on("click", function() {
-                                alert("설문지 미리보기");
-                                return false; 
+                                qestnr.qestnrNm = item.qestnrNm;
+                                qestnr.onQestnrPopup(item.qestnrid);
                             });
                         }}
                     ],
                     rowClick: function(args) { 
                         if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                        var detailUrl = "/mng/qestnr/qestnrDetail.html?qestnrid=" + args.item.qestnrid; 
+                        var detailUrl = "/mng/qestnr/qestnrDetail.html?qestnrid=" + args.item.qestnrid;
                         qestnrGrid.loadContent(detailUrl);
                         qestnrGrid.rowClick(args);
                     }
                 });
-            },
+            }
             
-            resetGrid: function() {
+            , resetGrid: function() {
                 qestnrGrid.resetListContent();
-            },
+            }
             
-            onInsertForm: function() {
+            , onInsertForm: function() {
                 var insertUrl = "/mng/qestnr/qestnrRegist.html";
                 qestnrGrid.loadContent(insertUrl);
+            }
+            
+            , onQestnrPopup: function(qestnrid) {
+                var url = "/mng/qestnr/qestnrPopup.html?qestnrid=" + qestnrid;
+                $("#qestnrPopup").load(url, function(response, status, xhr) {
+                    if(status == "success") {
+                        qestnrModal = new bootstrap.Modal($("#qestnrPopup"));
+                        qestnrModal.show();
+                        $("#popupTitle").text(qestnr.qestnrNm);
+                    }
+                });
             }
         };
         

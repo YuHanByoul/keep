@@ -1,6 +1,5 @@
 package com.kbrainc.plum.front.srvy.controller;
 
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +14,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kbrainc.plum.front.srvy.model.SrvySbmsnAnsVo;
 import com.kbrainc.plum.front.srvy.model.SrvySbmsnVo;
 import com.kbrainc.plum.front.srvy.model.SrvyVo;
 import com.kbrainc.plum.front.srvy.service.SrvyServiceImpl;
@@ -57,7 +60,7 @@ public class SrvyController {
      * @return String 화면경로
      * @throws Exception 예외
      */
-    @RequestMapping(value = "/front/srvy/srvyListForm.html")
+    @RequestMapping(value = {"/front/srvy/srvyListForm.html", "/front/srvyHstry/srvyListForm.html"})
     public String srvyListForm() throws Exception {
         return "front/srvy/srvyList";
     }
@@ -65,8 +68,8 @@ public class SrvyController {
     /**
     * 설문 제출 팝업
     *
-    * @Title : userListPopup
-    * @Description : 회원 목록 팝업
+    * @Title : srvySbmsnInsertPopup
+    * @Description : 설문 제출 팝업
     * @return String 화면경로
     * @throws Exception 예외
     */
@@ -77,6 +80,23 @@ public class SrvyController {
         
         return "front/srvy/srvySbmsnInsertPopup";
     }
+    
+    /**
+     * 설문 확인 팝업
+     *
+     * @Title : userListPopup
+     * @Description : 설문 확인 팝업
+     * @return String 화면경로
+     * @throws Exception 예외
+     */
+     @RequestMapping(value = "/front/srvy/srvySbmsnInfoPopup.html")
+     public String srvySbmsnInfoPopup(SrvyVo srvyVo, @UserInfo UserVo user, Model model) throws Exception {
+         srvyVo.setUser(user);
+         model.addAttribute("srvyInfo", srvyService.selectSrvyInfo(srvyVo));
+         model.addAttribute("ansList", srvyService.selectAnsList(srvyVo));
+         
+         return "front/srvy/srvySbmsnInfoPopup";
+     }
     
     
     /**
@@ -92,7 +112,6 @@ public class SrvyController {
     @ResponseBody
     public Map<String, Object> selectSrvyList(SrvyVo srvyVo, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<>();
-        user.setLoginUserType("P"); // 임시(테스트 이후 삭제해야함)
         srvyVo.setUser(user);
         List<SrvyVo> result = srvyService.selectSrvyList(srvyVo);
                      
@@ -122,8 +141,12 @@ public class SrvyController {
     */
     @RequestMapping(value = "/front/srvy/insertSrvySbmsn.do")
     @ResponseBody
-    public Map<String, Object> insertSrvySbmsn(HttpServletRequest request, @Valid SrvySbmsnVo srvySbmsnVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> insertSrvySbmsn(HttpServletRequest request, @RequestParam("ansList") String ansList, @Valid SrvySbmsnVo srvySbmsnVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        List<SrvySbmsnAnsVo> srvySbmsnAnsList = mapper.readValue(ansList, new TypeReference<>(){});
+        
         if(bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
             if(fieldError != null) {
@@ -134,7 +157,7 @@ public class SrvyController {
         
         int retVal = 0;
         srvySbmsnVo.setUser(user);
-        retVal = srvyService.insertSrvySbmsn(request, srvySbmsnVo);
+        retVal = srvyService.insertSrvySbmsn(request, srvySbmsnVo, srvySbmsnAnsList);
         
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

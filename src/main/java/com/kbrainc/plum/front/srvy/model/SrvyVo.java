@@ -53,6 +53,9 @@ public class SrvyVo extends ParentRequestVo {
     /** 설문기간 코드 */
     private String srvyPrdCd;
     
+    /** 설문 제출일 */
+    private String sbmsnDt;
+    
     /** 시작 일자 */
     @NotEmpty(message = "설문 시작일을 입력해주세요.")
     private String bgngDe;
