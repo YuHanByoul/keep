@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : MyMdfcnHistoryDaoImpl.xml
+	Description : 마이페이지 > 정보변경이력 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.exprtPool.model.MyMdfcnHistoryDao">
+    <select id="selectMdfcnHistoryList" resultType="com.kbrainc.plum.front.mypage.exprtPool.model.MyMdfcnHistoryVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.MDFCN_DMND_ID
+                , A.REG_DT AS MDFCN_REG_DT
+                , A.STTS_CD
+                , B.REG_DT AS LOG_REG_DT
+            FROM TB_ASS_EXPRT_MDFCN_DMND A
+            LEFT OUTER JOIN TB_ASS_EXPRT_LOG B
+                ON A.MDFCN_DMND_ID = B.MDFCN_DMND_ID
+            WHERE
+                A.USERID = #{user.userid}
+                AND A.REG_DT NOT IN (
+                    /* 전문가 최초 승인시 변경 테이블에 레코드가 생성되므로 해당 레코드 제외 */
+                    SELECT MIN(REG_DT) FROM TB_ASS_EXPRT_MDFCN_DMND WHERE USERID = #{user.userid}
+                )
+            <if test="sttsCd != null and sttsCd !=''">
+                AND A.STTS_CD = #{sttsCd}
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <select id="selectMdfcnRsnByDmndId" resultType="java.lang.String">
+        SELECT INFO_MDFCN_RSN
+        FROM TB_ASS_EXPRT_MDFCN_DMND
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+    </select>
+
+    <select id="selectLogRsnByDmndId" resultType="java.lang.String">
+        SELECT RSN_CN
+        FROM TB_ASS_EXPRT_LOG
+        WHERE MDFCN_DMND_ID = #{mdfcnDmndId}
+    </select>
+</mapper>

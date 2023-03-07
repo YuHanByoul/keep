@@ -1,0 +1,274 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm">
+        <div class="form-input mo-flex-wrap">
+            <strong class="label">처리상태</strong>
+            <div class="form-input">
+                <span kattr:select_code="sttsCd" grpCd="152" firstOptTxt="- 전체 -"></span>
+            </div>
+            <div class="search-filter-submit">
+                <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+                <button type="reset" class="btn-medium btn-transparent btn-before-refresh">초기화</button>
+            </div>
+        </div>
+
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="orderField" name="orderField" value="MDFCN_REG_DT">
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="totalCount">0</b> 건</p>
+        </div>
+        <div class="right">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="pc-only">
+        <div class="table-col table-layout-auto">
+            <table>
+                <caption>정보변경이력 - 번호, 변경요청일시, 변경사유, 처리상태, 처리일시</caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">번호</th>
+                    <th scope="col">변경요청일시</th>
+                    <th scope="col">변경사유</th>
+                    <th scope="col">처리상태</th>
+                    <th scope="col">처리일시</th>
+                </tr>
+                </thead>
+                <tbody id="pcListArea">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mo-only">
+        <div class="table-list">
+            <ul id="moListArea">
+                <li class="block">
+                    <div class="tbody">
+                        <dl>
+                            <div class="list">
+                                <dt>번호</dt>
+                                <dd>9</dd>
+                            </div>
+                            <div class="list">
+                                <dt>변경요청일시</dt>
+                                <dd>2022-10-02 12:23:42</dd>
+                            </div>
+                            <div class="list">
+                                <dt>처리상태</dt>
+                                <dd>변경불가</dd>
+                            </div>
+                            <div class="list">
+                                <dt>처리일시</dt>
+                                <dd>2022-10-02 12:23:42</dd>
+                            </div>
+                        </dl>
+                    </div>
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <a href="#" class="btn-small btn-outline-blue">변경 사유보기</a>
+                            <a href="#" class="btn-small btn-outline-blue">변경불가 사유보기</a>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
+
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="layer-popup24">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap">
+            <div class="layer-header">
+                <strong class="tit">정보 변경 사유</strong>
+                <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+            </div>
+            <div class="layer-content">
+                <div class="d-flex j-center"><span class="icon icon-info-alarm" title=""></span></div>
+                <p class="fs-18 fc-black3 mt20 ac" id="mdfcnRsn"></p>
+            </div>
+        </div>
+    </div>
+    <!-- //layerpopup -->
+
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="layer-popup25">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap">
+            <div class="layer-header">
+                <strong class="tit">변경 불가 사유</strong>
+                <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+            </div>
+            <div class="layer-content">
+                <div class="d-flex j-center"><span class="icon icon-info-alarm" title=""></span></div>
+                <p class="fs-18 fc-black3 mt20 ac" id="logRsn"></p>
+            </div>
+        </div>
+    </div>
+    <!-- //layerpopup -->
+
+    <script th:inline="javascript">
+        let listUrl = '/front/mypage/exprtPool/selectMdfcnHistoryList.do';
+        let mdfcnRsnUrl = '/front/mypage/exprtPool/selectMdfcnRsnByDmndId.do';
+        let logRsnUrl = '/front/mypage/exprtPool/selectLogRsnByDmndId.do';
+
+        let selectMdfcnRsn = (mdfcnDmndId) => {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: mdfcnRsnUrl,
+                    data: {mdfcnDmndId: mdfcnDmndId},
+                    type: 'get',
+                    success: function (response) {
+                        closeWorkProgress();
+                        layerPopup.open({
+                            target: 'layer-popup24', callback: function () {
+                                $('#mdfcnRsn').html(response.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                            }
+                        });
+                    }
+                });
+            }
+        };
+
+        let selectLogRsn = (mdfcnDmndId) => {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: logRsnUrl,
+                    data: {mdfcnDmndId: mdfcnDmndId},
+                    type: 'get',
+                    success: function (response) {
+                        closeWorkProgress();
+                        layerPopup.open({
+                            target: 'layer-popup25', callback: function () {
+                                $('#logRsn').html(response.replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        let selectList = () => {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        $('#pcListArea').html(makeListHtmlForPc(data.list));
+                        $('#moListArea').html(makeListHtmlForMo(data.list));
+                        $('#pagination').html(data.pagination);
+                        $('#totalCount').html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        let makeListHtmlForPc = (list) => {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<tr>
+                            <td class="nodata" colspan="5">
+                              <p><span class="icon icon-notice bg-black9"></span>변경 이력이 없습니다.</p>
+                            </td>
+                         </tr>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `<tr>
+                                <td>${item.rowNumber}</td>
+                                <td>${item.mdfcnRegDt}</td>
+                                <td><button type="button" class="btn-small btn-outline-blue" onclick="selectMdfcnRsn(${item.mdfcnDmndId})">사유보기</button></td>
+                                <td>
+                                    ${item.sttsCdNm}
+                                    ${item.sttsCd == '152103' ? `<button type="button" class="btn-small btn-outline-blue ml10" onclick="selectLogRsn(${item.mdfcnDmndId})">사유보기</button>` : ``}
+                                </td>
+                                <td>${isNull(item.logRegDt) ? '' : item.logRegDt}</td>
+                             </tr> `;
+                });
+            }
+            return html;
+        };
+
+        let makeListHtmlForMo = (list) => {
+            var html = "";
+            if (list == null || list.length <= 0) {
+                html += `<li class="block">
+                            <div class="nodata">
+                                <p><span class="icon icon-notice bg-black9"></span>변경 이력이 없습니다.</p>
+                            </div>
+                        </li>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `<li class="block">
+                                <div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>변경요청일시</dt>
+                                            <dd>${item.mdfcnRegDt}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>처리상태</dt>
+                                            <dd>${item.sttsCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>처리일시</dt>
+                                            <dd>${isNull(item.logRegDt) ? '' : item.logRegDt}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                                <div class="btn-wrap">
+                                    <div class="center">
+                                        <a class="btn-small btn-outline-blue" onclick="selectMdfcnRsn(${item.mdfcnDmndId})">변경 사유보기</a>
+                                        ${item.sttsCd == '152103' ? `<a class="btn-small btn-outline-blue" onclick="selectLogRsn(${item.mdfcnDmndId})">변경불가 사유보기</a>` : ``}
+                                    </div>
+                                </div>
+                            </li>`;
+                });
+            }
+            return html;
+        };
+
+        $(function () {
+            selectList();
+
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                selectList();
+            });
+
+            $('#selectRowPerPage').on('change', function (e) {
+                $('#rowPerPage').val($(this).val());
+            });
+        })
+
+    </script>
+</div>
