@@ -17,7 +17,7 @@
                     <div class="mb-sm-0 form-group required">
                         <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="totScr"><strong>점수</strong></label>
                         <div class="col-sm-12">
-                            <input type="text" class="form-control form-control-sm" name="totScr" id="totScr" th:value="${#numbers.formatInteger(detail.totScr, 0, 'COMMA')}">
+                            <input type="text" class="form-control form-control-sm" name="totScr" id="totScr" th:value="${detail.totScr}">
                         </div>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
             <div class="form-group required mb-3">
                 <input type="hidden" class="js-single"/>
                 <input type="checkbox" class="js-single-small" name="useYnSwitch" id="useYnSwitch" th:checked="${detail.useYn == 'Y' ? true : false}"/>
-                <label for="useYn" class="v-middle">설문지 사용</label>
+                <label for="useYnSwitch" class="v-middle">설문지 사용</label>
             </div>
         </div>
 
@@ -48,6 +48,9 @@
     var insertUrl = "/mng/score/insertScoreCard.do";
     var updateUrl = "/mng/score/updateScoreCard.do";
     var formid = $("#formid").val();
+    /*<![CDATA[*/
+    var srngSize = /*[[${detail.cnt}]]*/null;
+    /*]]>*/
     
     $(document).ready(function(){
     	if (formid == 0) { toggleSwitch("#useYnSwitch", true); }
@@ -55,9 +58,9 @@
     
     var validator= $("#insertForm").validate({
         rules    : { 
-        	formNm : { required: true, maxlength: 500 } 
-        	, totScr : { required: true } 
-        	, formExpln : { required: true } 
+        	formNm : { required: true, isBlank: true, maxlength: 500 } 
+        	, totScr : { required: true, number: true } 
+        	, formExpln : { required: true, isBlank: true } 
         }
         , messages : { 
         	formNm : { required:"심사양식명을 입력해 주십시오." , maxlength: "심사양식명은 100자를 넘을 수 없습니다." } 
@@ -68,20 +71,21 @@
     
     // 저장
     function fn_save(){
+    	if (srngSize > 0) {
+            alert("이미 심사된 양식은 수정할 수 없습니다.");
+            return false;
+        }
         if(!($("#insertForm").valid())) return;
-        
         if(!confirm("저장하시겠습니까?")) return;
         
-        var data =  $("#insertForm").serialize();
         if ($("#useYnSwitch").is(":checked")) {
         	$("#useYn").val("Y");
         } else {
         	$("#useYn").val("N");
         }
-        console.log("checked = ", $("#useYnSwitch").is(":checked"));
-        console.log("useYn = ", $("#useYn").val());
-        var saveUrl = Number(formid) > 0 ? updateUrl : insertUrl;
         
+        var saveUrl = Number(formid) > 0 ? updateUrl : insertUrl;
+        var data =  $("#insertForm").serialize();
         if(displayWorkProgress()){
             $.ajax({
                 url : saveUrl,

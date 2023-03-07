@@ -7,6 +7,7 @@ import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
@@ -47,12 +48,15 @@ public class ScoreCardVo extends ParentRequestVo {
     private String formExpln;
     
     /** 총점수 */
-//    @NotEmpty(message = "점수를 입력해주십시오.")
+//    @Pattern(regexp="^[0-9]*$")
     private Integer totScr;
     
     /** 사용여부 */
     @Pattern(regexp="[YN]")
     private String useYn;
+    
+    /** 심사양식 제출수 */
+    private Integer cnt;
     
     /**  수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
@@ -70,4 +74,7 @@ public class ScoreCardVo extends ParentRequestVo {
     
     /** 심사양식명 검색 키워드 */
     private String searchKeyword;
+    
+    /** 검색 키워드 */
+    private String searchKeywordType;
 }

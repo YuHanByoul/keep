@@ -21,12 +21,15 @@
             , MDFRID
             , REG_DT
             , RGTRID
+            , (SELECT COUNT(*) FROM TB_SPB_SRNG_SBMSN WHERE FORMID = A.FORMID) AS CNT
         FROM
-            TB_SPB_SRNG_FORM
+            TB_SPB_SRNG_FORM A
         WHERE 1 = 1
-        <if test="searchKeyword != null and searchKeyword != ''">
-        AND FORM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
-        </if> 
+        <if test="searchKeywordType != null and searchKeywordType != ''">
+            <if test="searchKeywordType == 'name'">
+            AND FORM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+            </if> 
+        </if>
         <if test="formid != null and formid != ''">
         AND FORMID = #{formid}
         </if>
@@ -75,6 +78,21 @@
     <!-- 문항 목록 조회 -->
     <select id="selectQuestionList" parameterType="QuestionVo" resultType="QuestionVo">
         /** ScoreCardDaoImpl.selectQuestionList **/
+<!--         SELECT  -->
+<!--             B.QITEMID -->
+<!--             , B.QITEM_SE_CD -->
+<!--             , C.CD_NM AS QITEM_SE_NM -->
+<!--             , B.QITEM -->
+<!--             , B.ORDR -->
+<!--             , B.ALTM -->
+<!--             , SUM(B.ALTM) OVER (PARTITION BY A.FORMID) AS TOTAL_ALTM -->
+<!--             , A.TOT_SCR -->
+<!--             , (SELECT COUNT(*) FROM TB_SPB_SRNG_SBMSN WHERE FORMID = A.FORMID) AS CNT -->
+<!--         FROM  -->
+<!--             TB_SPB_SRNG_FORM A -->
+<!--             INNER JOIN TB_SPB_SRNG_FORM_QITEM B ON A.FORMID = B.FORMID -->
+<!--             LEFT OUTER JOIN TB_CMM_CD C ON B.QITEM_SE_CD = C.CD -->
+<!--         WHERE A.FORMID = #{formid} -->
         SELECT DISTINCT
             A.QITEMID
             , A.QITEM_SE_CD
@@ -91,12 +109,13 @@
             , A.RGTRID
             , A.FORMID 
             , C.TOT_SCR
+            , (SELECT COUNT(*) FROM TB_SPB_SRNG_SBMSN WHERE FORMID = A.FORMID) AS CNT
         FROM 
             TB_SPB_SRNG_FORM_QITEM A
             INNER JOIN TB_SPB_SRNG_FORM C ON A.FORMID = C.FORMID
             LEFT OUTER JOIN TB_CMM_CD B ON A.QITEM_SE_CD = B.CD
             LEFT OUTER JOIN TB_SPB_SRNG_SBMSN_QITEM TSSSQ ON A.QITEMID = TSSSQ.QITEMID
-        WHERE A.FORMID = #{formid}
+         WHERE A.FORMID = #{formid}
         <if test="sbmsnid != null and sbmsnid != ''">
         AND TSSSQ.SBMSNID = #{sbmsnid}
         </if>

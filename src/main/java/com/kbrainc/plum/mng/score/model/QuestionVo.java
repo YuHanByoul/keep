@@ -82,6 +82,8 @@ public class QuestionVo extends ParentRequestVo {
     /** 등록자아이디 */
     private Integer rgtrid;
     
+    /** 심사양식 제출수 */
+    private Integer cnt;
     
     /** 문항구분코드 */
     private String[] qitemSeCdArr;

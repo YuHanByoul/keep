@@ -5,8 +5,10 @@
         <div class="card-block-small p-t-0">
             <div class="row align-items-center mb-1">
                 <div class="col">
-                    <strong class="d-inline-block">문항수 : <span><th:block th:text="${#lists.size(list)}"></span>개,</strong> 
-                    <strong class="d-inline-block">배점 : <span class="text-c-pink"><th:block th:text="${totalAltm}"></span>/<span class="text-c-pink"><th:block th:text="${totScr}"></span></strong>
+                    <strong class="d-inline-block">문항수 : <span id="totalQcnt"><th:block th:text="${#lists.size(list)}"/></span>개,</strong> 
+                    <strong class="d-inline-block">배점 : <span id="totalScr" th:class="${totalAltm == totScr ? 'text-c-blue' : 'text-c-pink'}">
+                        <span id="sumAltm"><th:block th:text="${totalAltm}"/></span>/<span><th:block th:text="${totScr}"/></span></span>
+                    </strong>
                 </div>
                 <div class="col-auto">
                     <button type="button" class="btn btn-inverse btn-sm" onclick="addRow();">문항추가</button>
@@ -29,13 +31,13 @@
                         <td class="v-middle text-center"><button class="input-group-text btn btn-disabled btn-sm" aria-label="delete" onclick="removeRow(this); return false;">X</button></td>
                         <td class="v-middle text-center">
 <!--                             <input type="text" class="form-control form-control-sm" name="qitemSeCdArr" id="qitemSeCdArr" th:value="${list.qitemSeCd}"> 221 -->
-                            <span kattr:select_code="qitemSeCdArr" th:attr="selectedCd=${list.qitemSeCd}" grpCd="221" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true">
+                            <span kattr:select_code="qitemSeCdArr" th:attr="selectedCd=${list.qitemSeCd}" grpCd="221" addClass="input-sm" isAdmin="true">
                         </td>
                         <td class="v-middle text-center">
-                            <input type="text" class="form-control form-control-sm" name="qitemArr" id="qitemArr" th:value="${list.qitem}">
+                            <input type="text" class="form-control form-control-sm" title="문항" name="qitemArr" id="qitemArr" th:value="${list.qitem}">
                         </td>
                         <td class="v-middle text-center">
-                            <input type="text" class="form-control form-control-sm" name="altmArr" id="altmArr" th:value="${list.altm}">
+                            <input type="text" class="form-control form-control-sm" title="배점" name="altmArr" id="altmArr" th:value="${list.altm}" onkeyup="scrSum();">
                         </td>
                         <td class="v-middle text-center">
                             <input type="hidden" name="ordrArr" id="ordrArr" th:value="${list.ordr}">
@@ -46,13 +48,13 @@
                     <tr th:unless="${#lists.size(list) > 0}">
                         <td class="v-middle text-center"><button class="input-group-text btn btn-disabled btn-sm" aria-label="delete" onclick="removeRow(this); return false;">X</button></td>
                         <td class="v-middle text-center">
-                            <span kattr:select_code="qitemSeCdArr" grpCd="221" firstOptTxt="- 선택 -" addClass="input-sm" isAdmin="true">
+                            <span kattr:select_code="qitemSeCdArr" grpCd="221" addClass="input-sm" isAdmin="true">
                         </td>
                         <td class="v-middle text-center">
-                            <input type="text" class="form-control form-control-sm" name="qitemArr" id="qitemArr">
+                            <input type="text" class="form-control form-control-sm" title="문항" name="qitemArr" id="qitemArr">
                         </td>
                         <td class="v-middle text-center">
-                            <input type="text" class="form-control form-control-sm" name="altmArr" id="altmArr">
+                            <input type="text" class="form-control form-control-sm" title="배점" name="altmArr" id="altmArr" onkeyup="scrSum();">
                         </td>
                         <td class="v-middle text-center">
                             <input type="hidden" class="form-control form-control-sm" name="ordrArr" id="ordrArr" value="1">
@@ -76,10 +78,17 @@
 
 <script th:inline="javascript">
     var saveUrl = "/mng/score/saveQuestion.do";
-    
-    $(document).ready(function() {
+    /*<![CDATA[*/
+    var srngSize = /*[[${#lists.size(list) > 0 ? list[0].cnt : 0}]]*/null;
+    var totScr = /*[[${totScr}]]*/null;
+    /*]]>*/
+    var checkScr = 0;
+    $(document).ready(function(){
+        $("#qTable").find("tr").find("input[name='altmArr']").each(function(){
+        	checkScr += Number($(this).val());
+        });
+        $("#sumAltm").text(checkScr);
     });
-
     var moveRowUp = function(element) {
         if( element.prev().html() != null  && element.prev().attr("id") != "header"){
             element.insertBefore(element.prev());
@@ -109,30 +118,32 @@
     };
     
     function rowUp(obj) {
+    	if (srngSize > 0) {
+            alert("이미 심사된 양식은 수정할 수 없습니다.");
+            return false;
+        }
         var clickRow = $(obj).parent().parent();
         moveRowUp(clickRow);
     }
     
     function rowDown(obj) {
+    	if (srngSize > 0) {
+            alert("이미 심사된 양식은 수정할 수 없습니다.");
+            return false;
+        }
     	var clickRow = $(obj).parent().parent();
     	moveRowDown(clickRow);
     }
     
     var validator= $("#insertForm").validate({
-//         rules    : { 
-//         	formNm : { required: true, maxlength: 500 } 
-//         	, totScr : { required: true } 
-//         	, formExpln : { required: true } 
-//         }
-//         , messages : { 
-//         	formNm : { required:"심사양식명을 입력해 주십시오." , maxlength: "심사양식명은 100자를 넘을 수 없습니다." } 
-//         	, totScr : { required:"점수를 입력해 주십시오." } 
-//         	, formExpln : { required:"심사양식 설명을 입력해 주십시오." , maxlength: "심사양식 설명은 200자를 넘을 수 없습니다."	} 
-//         }
     });
     
     // 테이블 로우 추가
     function addRow(obj) {
+    	if (srngSize > 0) {
+            alert("이미 심사된 양식은 수정할 수 없습니다.");
+            return false;
+        }
         var trObj = $("#qTable").find("tr:last");
         var newrow = trObj.clone();
         newrow.find("td > input").val("");
@@ -140,10 +151,15 @@
         $('input[name=ordrArr]').each(function(i){
             $(this).val(i+1);
         });
+        $("#totalQcnt").text($("#qTable").find("tr").length-1);
     }
 
     // 테이블 로우 삭제
     function removeRow(obj) {
+    	if (srngSize > 0) {
+            alert("이미 심사된 양식은 수정할 수 없습니다.");
+            return false;
+        }
     	if ($(obj).parent().parent().index() == 0) {
     		alert("첫번째 행은 삭제할수 없습니다.");
     		return;
@@ -152,11 +168,22 @@
         $('input[name=ordrArr]').each(function(i){
             $(this).val(i+1);
         });
+        $("#totalQcnt").text($("#qTable").find("tr").length-1);
+        scrSum();
     }
     
     // 저장
     function fn_save(){
-        if(!($("#insertForm").valid())) return;
+    	if (srngSize > 0) {
+            alert("이미 심사된 양식은 수정할 수 없습니다.");
+            return false;
+        }
+    	
+        if(!isValid()) return;
+    	if (checkScr != totScr) {
+    		alert("배점을 확인해 주십시오.");
+            return;
+    	}
         
         if(!confirm("저장하시겠습니까?")) return;
         
@@ -186,18 +213,31 @@
         }
     }
 
-    //천단위 콤마
-    function addComma(value){
-        value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        return value; 
+    function scrSum() {
+        var sum = 0;
+        $("#qTable").find("tr").find("input[name='altmArr']").each(function(){
+        	sum += Number($(this).val());
+        });
+       	$("#sumAltm").text(sum);
+       	if (totScr == sum) {
+       		$("#totalScr").prop("class", "text-c-blue");
+       	} else {
+       		$("#totalScr").prop("class", "text-c-pink");
+       	}
+       	checkScr = sum;
     }
     
-    //콤마 제거
-    function removeComma(value){
-        if (value == "" || value == null) {
-            return 0;               
-        }
-        value = value.replace(/[^\d]+/g, "");
-        return value; 
+    function isValid() {
+    	var result = false;
+    	$("#qTable").find("tr").find("select,input").each(function(){
+    		if ($(this).val() == "" || $(this).val() == null) {
+    			alert($(this).attr("title") == "" ? "문항구분을 선택하십시오." : $(this).attr("title") + "을 입력하십시오.");
+    			result = false;
+    			return false;
+    		}
+    		result = true;
+    	});
+    	
+    	return result;
     }
 </script>
