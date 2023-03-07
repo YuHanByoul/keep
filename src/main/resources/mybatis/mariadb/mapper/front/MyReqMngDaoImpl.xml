@@ -93,20 +93,16 @@
             LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
             LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSA.SLCTN_STTS_CD = TCC2.CD
             LEFT OUTER JOIN TB_CMM_CD TCC3 ON TSA.APLY_STTS_CD = TCC3.CD
-            LEFT OUTER JOIN (SELECT 
-                                SPLMNTID
-                                , APLYID 
-                                , ANS_STTS_CD
-                                , B.CD_NM
-                            FROM TB_SPB_APLY_SPLMNT A
-                            LEFT OUTER JOIN TB_CMM_CD B ON A.ANS_STTS_CD = B.CD) TSAS ON TSAS.APLYID = TSA.APLYID 
-                AND SPLMNTID = (
-                    SELECT 
-                        MAX(SPLMNTID) AS SPLMNTID
-                    FROM TB_SPB_APLY_SPLMNT TSAS
-                    LEFT OUTER JOIN TB_CMM_CD TCC ON TSAS.ANS_STTS_CD = TCC.CD
-                    WHERE TSAS.APLYID = TSA.APLYID
-                )       
+            LEFT OUTER JOIN 
+                (SELECT 
+                    SPLMNTID
+                    , APLYID 
+                    , ANS_STTS_CD
+                    , B.CD_NM
+                FROM 
+                    TB_SPB_APLY_SPLMNT A
+                    LEFT OUTER JOIN TB_CMM_CD B ON A.ANS_STTS_CD = B.CD) TSAS ON TSAS.APLYID = TSA.APLYID 
+                    AND SPLMNTID = (SELECT MAX(SPLMNTID) FROM TB_SPB_APLY_SPLMNT TSAS WHERE TSAS.APLYID = TSA.APLYID)       
         WHERE 
             1 = 1
             AND TSA.USERID = #{user.userid}
