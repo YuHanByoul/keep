@@ -184,27 +184,4 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         return commonDao.selectCtprvnList();
     }
 
-    /**
-     * 내 주변 환경교육 시설 목록을 반환한다
-     *
-     * @Title       : nearbyEnveduFlct
-     * @Description : 내 주변 환경교육 시설 목록을 반환한다
-     * @return 내 주변 환경교육 시설 목록
-     * @throws Exception 예외
-     */
-    public List<Map<String, Object>> nearbyEnveduFlct(Map map) throws Exception {
-        return commonDao.nearbyEnveduFlct(map);
-    }
-    
-    /**
-     * 내 주변 환경교육 시설 리스트 갯수를 반환한다.
-     *
-     * @Title       : nearbyEnveduFlct
-     * @Description : 내 주변 환경교육 시설 리스트 갯수를 반환한다.
-     * @return int
-     * @throws Exception 예외
-     */
-    public int nearbyEnveduFlctCount(Map map) throws Exception{
-        return commonDao.nearbyEnveduFlctCount(map);
-    };
 }
