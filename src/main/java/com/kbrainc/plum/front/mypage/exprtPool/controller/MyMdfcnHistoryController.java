@@ -49,9 +49,12 @@ public class MyMdfcnHistoryController {
     @GetMapping("/selectMdfcnHistoryList.do")
     @ResponseBody
     public Map<String, Object> selectMdfcnHistoryList(MyMdfcnHistoryVo searchVo, @UserInfo UserVo user) throws Exception {
+        /*
+        	String reqUri = request.getRequestURI();
+	flashMap.put("redirectPath", reqUri + (request.getQueryString() != null ? "?" + request.getQueryString() : ""));
+        * */
         Map<String, Object> response = new HashMap<>();
         searchVo.setUser(user);
-        searchVo.getUser().setUserid("10000070");
 
         List<MyMdfcnHistoryVo> result = myMdfcnHistoryService.selectMdfcnHistoryList(searchVo);
 
