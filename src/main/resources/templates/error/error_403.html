@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="layout/errorLayout">
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" layout:decorator="|layout/${session.site.sysSeCd == 'U' ? 'front' : 'mng'}/errorLayout|">
 <body>
 <div layout:fragment="error-content">
 <script type="text/javascript">
@@ -10,12 +10,30 @@
     }
 
 </script>
-	<h1>Oops! Error 403.</h1>
-    <p>세션이 유효하지 않거나 접근권한이 없습니다.</p>
-    <p><button type="button" class="btn btn-primary btn-round mt-5" onclick="logout()">로그아웃</button></p>
 
 <form name="logout_form" th:action="@{/logout}" method="post" onsubmit="return false">
 </form>
+
+<th:block th:if="${session.site.sysSeCd == 'A'}">
+	<h1>Oops! Error 403.</h1>
+    <p>세션이 유효하지 않거나 접근권한이 없습니다.</p>
+    <p><button type="button" class="btn btn-primary btn-round mt-5" onclick="logout()">로그아웃</button></p>
+</th:block>
+<th:block th:if="${session.site.sysSeCd == 'U'}">
+    <div class="error-page">
+        <div class="thumb"><img src="/images/front/error/error-403.png" alt="ERROR 404"></div>
+        <dl>
+            <dt>세션이 유효하지 않거나 접근권한이 없습니다.</dt>
+            <dd>자세한 내용은 사이트 관리자에게  문의하시기 바랍니다.</dd>
+        </dl>
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-large btn-green" onclick="logout()">로그아웃</button>
+            </div>
+        </div>
+    </div>
+</th:block>
+
 </div>
 </body>
 </html>

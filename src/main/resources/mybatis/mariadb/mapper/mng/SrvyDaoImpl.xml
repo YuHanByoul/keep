@@ -684,13 +684,17 @@
         /* SrvyDao.selectQitemExAnsInfo */
         SELECT
             COUNT(*) AS TOTAL_COUNT
-            , COUNT(CASE WHEN ANS = #{exNo} THEN 1 END) AS ANS_CNT
-            , CAST(ROUND(COUNT(CASE WHEN ANS = #{exNo} THEN 1 END) / COUNT(*) * 100, 1) AS VARCHAR(20)) AS ANS_RATE
+            , CASE WHEN B.QITEM_TYPE_CD = '107102' THEN COUNT(CASE WHEN INSTR(A.ANS, #{exNo}) <![CDATA[>]]> 0 THEN 1 END)
+              ELSE COUNT(CASE WHEN A.ANS = #{exNo} THEN 1 END) END AS ANS_CNT
+            , CASE WHEN B.QITEM_TYPE_CD = '107102' THEN CAST(ROUND(COUNT(CASE WHEN INSTR(A.ANS, #{exNo}) <![CDATA[>]]> 0 THEN 1 END) / COUNT(*) * 100, 1) AS VARCHAR(20))
+              ELSE CAST(ROUND(COUNT(CASE WHEN A.ANS = #{exNo} THEN 1 END) / COUNT(*) * 100, 1) AS VARCHAR(20))END AS ANS_RATE
         FROM
-            TB_CMM_SRVY_SBMSN_ANS
+            TB_CMM_SRVY_SBMSN_ANS A
+        LEFT OUTER JOIN
+            TB_CMM_QESTNR_QITEM B ON (B.QITEMID = A.QITEMID)            
         WHERE
-            QITEMID = #{qitemid}
-        AND SBMSNID IN (
+            A.QITEMID = #{qitemid}
+        AND A.SBMSNID IN (
             SELECT
                 SBMSNID
             FROM

@@ -45,13 +45,13 @@ public class QestnrController {
     private QestnrServiceImpl qestnrService;
     
     /**
-     * 설문지 목록 화면
-     *
-     * @Title : qestnrForm
-     * @Description : 설문지 목록 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 목록 화면
+    *
+    * @Title : qestnrForm
+    * @Description : 설문지 목록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = {"/mng/qestnr/qestnrMng.html", "/mng/srvyInvstg/qestnrListForm.html"})
     public String qestnrMng(QestnrVo qestnrVo, Model model) throws Exception {
         model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
@@ -59,26 +59,26 @@ public class QestnrController {
     }
     
     /**
-     * 설문지 등록 탭 화면
-     *
-     * @Title : qestnrForm
-     * @Description : 설문지 등록 탭 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 등록 탭 화면
+    *
+    * @Title : qestnrForm
+    * @Description : 설문지 등록 탭 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qestnrRegist.html")
     public String qestnrRegistForm() throws Exception {
         return "mng/qestnr/qestnrRegist";
     }
      
-     /**
-      * 설문지 등록 화면
-      *
-      * @Title : qestnrForm
-      * @Description : 설문지 등록 화면
-      * @return String 화면경로
-      * @throws Exception 예외
-      */
+    /**
+    * 설문지 등록 화면
+    *
+    * @Title : qestnrForm
+    * @Description : 설문지 등록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qestnrInsertForm.html")
     public String qestnrInsertForm(QestnrVo qestnrVo, Model model) throws Exception {
         model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
@@ -86,29 +86,29 @@ public class QestnrController {
     }
      
     /**
-     * 설문지 상세 탭 화면
-     *
-     * @Title : qestnrDetailForm
-     * @Description : 설문지 상세 탭 화면
-     * @param qestnrVo QestnrVo 객체
-     * @return  String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 상세 탭 화면
+    *
+    * @Title : qestnrDetailForm
+    * @Description : 설문지 상세 탭 화면
+    * @param qestnrVo QestnrVo 객체
+    * @return  String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qestnrDetail.html")
     public String qestnrDetailForm(QestnrVo qestnrVo, Model model) throws Exception {
         return "mng/qestnr/qestnrDetail";
     }
      
     /**
-     * 설문지 수정 화면
-     *
-     * @Title : qestnrUpdateForm
-     * @Description : 설문지 수정 화면
-     * @param qestnrVo QestnrVo 객체
-     * @param model 모델객체
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 수정 화면
+    *
+    * @Title : qestnrUpdateForm
+    * @Description : 설문지 수정 화면
+    * @param qestnrVo QestnrVo 객체
+    * @param model 모델객체
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qestnrUpdateForm.html")
     public String qestnrUpdateForm(QestnrVo qestnrVo, Model model) throws Exception {
         model.addAttribute("siteList", qestnrService.selectSiteList(qestnrVo));
@@ -117,62 +117,79 @@ public class QestnrController {
     }
       
     /**
-     * 설문지 문항 목록 화면
-     *
-     * @Title : qitemForm
-     * @Description : 설문지 문항 목록 화면
-     * @param qestnrVo QestnrVo 객체
-     * @param model 모델객체
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 문항 목록 화면
+    *
+    * @Title : qitemForm
+    * @Description : 설문지 문항 목록 화면
+    * @param qestnrVo QestnrVo 객체
+    * @param model 모델객체
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qitem.html")
     public String qitemForm(QestnrVo qestnrVo, Model model) throws Exception {
         return "mng/qestnr/qitemList";
     }
        
     /**
-     * 설문지 문항 정보 등록 화면
-     *
-     * @Title : qestnrForm
-     * @Description : 설문지 문항 정보 등록 화면
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 문항 정보 등록 화면
+    *
+    * @Title : qestnrForm
+    * @Description : 설문지 문항 정보 등록 화면
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qitemInsertForm.html")
     public String qitemInsertForm() throws Exception {
         return "mng/qestnr/qitemInsert";
     }
     
     /**
-     * 설문지 문항 수정 화면
-     *
-     * @Title : qitemUpdateForm
-     * @Description : 설문지문항 수정 화면
-     * @param qitemVo QitemVo 객체
-     * @param qitemExVo QitemExVo 객체
-     * @param model 모델객체
-     * @return String 화면경로
-     * @throws Exception 예외
-     */
+    * 설문지 문항 수정 화면
+    *
+    * @Title : qitemUpdateForm
+    * @Description : 설문지문항 수정 화면
+    * @param qitemVo QitemVo 객체
+    * @param qitemExVo QitemExVo 객체
+    * @param model 모델객체
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/qitemUpdateForm.html")
     public String qitemUpdateForm(QitemVo qitemVo, QitemExVo qitemExVo, Model model) throws Exception {
         model.addAttribute("qitem", qestnrService.selectQitemInfo(qitemVo));
         model.addAttribute("qitemEx", qestnrService.selectQitemExList(qitemVo));
         return "mng/qestnr/qitemUpdate";
     }
+    
+    /**
+    * 설문지 미리보기 팝업
+    *
+    * @Title : qestnrPopup
+    * @Description : 설문지 미리보기 팝업
+    * @param qitemVo QitemVo 객체
+    * @param model 모델객체
+    * @return String 화면경로
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/mng/qestnr/qestnrPopup.html")
+    public String qestnrPopup(QitemVo qitemVo, Model model) throws Exception {
+        model.addAttribute("qitemList", qestnrService.selectQitemWithExList(qitemVo));
+        return "mng/qestnr/qestnrPopup";
+    }
+    
        
     /**
-     * 설문지 등록
-     *
-     * @Title : insertQestnr
-     * @Description : 설문지 등록
-     * @param qestnrVo QestnrVo 객체
-     * @param bindingResult qestnrVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 등록
+    *
+    * @Title : insertQestnr
+    * @Description : 설문지 등록
+    * @param qestnrVo QestnrVo 객체
+    * @param bindingResult qestnrVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/insertQestnr.do")
     @ResponseBody
     public Map<String, Object> insertQestnr(@Valid QestnrVo qestnrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -203,14 +220,14 @@ public class QestnrController {
     }
     
     /**
-     * 설문지 목록 조회
-     *
-     * @Title : selectQestnrList
-     * @Description : 설문지 목록 조회
-     * @param qestnrVo QestnrVo 객체
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 목록 조회
+    *
+    * @Title : selectQestnrList
+    * @Description : 설문지 목록 조회
+    * @param qestnrVo QestnrVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/selectQestnrList.do")
     @ResponseBody
     public Map<String, Object> selectQestnrList(QestnrVo qestnrVo) throws Exception {
@@ -228,16 +245,16 @@ public class QestnrController {
     }
         
     /**
-     * 설문지 정보 업데이트
-     *
-     * @Title : updateQestnr
-     * @Description : 설문지 정보 업데이트
-     * @param qestnrVo QestnrVo 객체
-     * @param bindingResult qestnrVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 정보 업데이트
+    *
+    * @Title : updateQestnr
+    * @Description : 설문지 정보 업데이트
+    * @param qestnrVo QestnrVo 객체
+    * @param bindingResult qestnrVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/updateQestnr.do")
     @ResponseBody
     public Map<String, Object> updateQestnr(@Valid QestnrVo qestnrVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -267,14 +284,14 @@ public class QestnrController {
     }
         
     /**
-     * 설문지 문항 목록 조회
-     *
-     * @Title : selectQitemList
-     * @Description : 설문지 목록 조회
-     * @param qitemVo QitemVo 객체
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 문항 목록 조회
+    *
+    * @Title : selectQitemList
+    * @Description : 설문지 목록 조회
+    * @param qitemVo QitemVo 객체
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/selectQitemList.do")
     @ResponseBody
     public Map<String, Object> selectQitemList(QitemVo qitemVo) throws Exception {
@@ -292,16 +309,16 @@ public class QestnrController {
     }
          
     /**
-     * 설문지 문항 정보 등록
-     *
-     * @Title : insertQitem
-     * @Description : 설문지 문항 정보 등록
-     * @param qitemVo QitemVo 객체
-     * @param bindingResult qitemVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 문항 정보 등록
+    *
+    * @Title : insertQitem
+    * @Description : 설문지 문항 정보 등록
+    * @param qitemVo QitemVo 객체
+    * @param bindingResult qitemVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/insertQitem.do")
     @ResponseBody
     public Map<String, Object> insertQitem(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -331,16 +348,16 @@ public class QestnrController {
     }
     
     /**
-     * 설문지 문항 정보 업데이트
-     *
-     * @Title : updateQitem
-     * @Description : 설문지 문항 정보 업데이트
-     * @param qitemVo QitemVo 객체
-     * @param bindingResult qitemVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 문항 정보 업데이트
+    *
+    * @Title : updateQitem
+    * @Description : 설문지 문항 정보 업데이트
+    * @param qitemVo QitemVo 객체
+    * @param bindingResult qitemVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/updateQitem.do")
     @ResponseBody
     public Map<String, Object> updateQitem(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -370,16 +387,16 @@ public class QestnrController {
     }
     
     /**
-     * 설문지 문항 순서 업데이트
-     *
-     * @Title : updateQestnr
-     * @Description : 설문지 문항 순서 업데이트
-     * @param qestnrVo QestnrVo 객체
-     * @param bindingResult qitemVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 문항 순서 업데이트
+    *
+    * @Title : updateQestnr
+    * @Description : 설문지 문항 순서 업데이트
+    * @param qestnrVo QestnrVo 객체
+    * @param bindingResult qitemVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/updateQitemOrdr.do")
     @ResponseBody
     public Map<String, Object> updateQitemOrdr(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -409,16 +426,16 @@ public class QestnrController {
     }
     
     /**
-     * 설문지 문항 삭제
-     *
-     * @Title : deleteQitem
-     * @Description : 설문지 문항 삭제
-     * @param qitemVo QitemVo 객체
-     * @param bindingResult qitemVo 유효성 검증결과
-     * @param user 사용자 세션 정보
-     * @return Map<String, Object> 응답결과객체
-     * @throws Exception 예외
-     */
+    * 설문지 문항 삭제
+    *
+    * @Title : deleteQitem
+    * @Description : 설문지 문항 삭제
+    * @param qitemVo QitemVo 객체
+    * @param bindingResult qitemVo 유효성 검증결과
+    * @param user 사용자 세션 정보
+    * @return Map<String, Object> 응답결과객체
+    * @throws Exception 예외
+    */
     @RequestMapping(value = "/mng/qestnr/deleteQitem.do")
     @ResponseBody
     public Map<String, Object> deleteQitem(@Valid QitemVo qitemVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {

@@ -8,10 +8,15 @@ import javax.validation.constraints.Size;
 
 import org.apache.ibatis.type.Alias;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
+import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
+import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.service.ResCodeService;
+import com.kbrainc.plum.rte.util.CommonUtil;
 
 import lombok.Data;
 
@@ -36,6 +41,8 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
 	/** 로그인사용자정보 */
     private UserVo user;
+
+    private CnsltngVo cnsltngVo;
 
     /** 프로그램 운영일정 목록*/
     private List<PrgrmSchdlVo> prgrmSchdlLst;
@@ -66,6 +73,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
 	/** 우수성 아이디*/
 	private Integer dstnctnid;
+
+	/** 이력 아이디*/
+	private Integer hstryid;
 
 	/** 프로그램 명 */
 	private String prgrmNm;
@@ -171,6 +181,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
 	/** 참가비 */
 	private double etrfee;
+
+	/** 참가비 Str*/
+	private String etrfeeStr;
 
 	/** 자부담 */
 	private String slfpy;
@@ -323,13 +336,16 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	private String cnsltngPrgrsYn;
 
 	/** 컨설팅 id */
-	private String cnsltngid;
+	private Integer cnsltngid;
 
 	/** 신청일시 */
 	private String aplyDt;
 
 	/** 평가아이디 */
     private String evlid;
+
+    /**평가_목적 */
+    private String evlPrps;
 
     /** 사전지도자평가항목 */
     private String bfrLdrEvlArtcl;
@@ -378,6 +394,18 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 기타내용 */
     private String etcCn;
+
+    /** 이름 */
+    private String nm;
+
+    /** 생년월일 */
+    private String brdt;
+
+    /** 구분 */
+    private String se;
+
+    /** 업무 내용 */
+    private String taskcn;
 
 	/** 첨부파일 */
     private String fileid;
@@ -451,7 +479,166 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     @Size(max = 100, message = "홈페이지는 100자를 넘을 수 없습니다.")
     private String hmpg;
 
+    /** 기관 담당자 이름*/
+    private String instManagerNm;
+
+    /** 기관 담당자  전화번호 */
+    private String instManagerPhon;
+
+    /**기관 담당자  이메일 */
+    private String instManagerEml;
+
+    /** 기관 전화번호*/
+    private String instTelno;
+
+    /** 기관 담당자  전화번호 */
+    private String picTelno;
+
+    /**기관 담당자  이메일 */
+    private String picEml;
+
+    /** 사용자 아이디 */
+    private Integer userid;
+
+    /** 사용자 이름 */
+    @Size(max = 60, message = "사용자 이름은 60자를 넘을 수 없습니다.")
+    private String userNm;
+
+    /** 컨성팅 종류 코드 */
+    @Size(max = 20, message = "컨성팅 종류 코드은 20자를 넘을 수 없습니다.")
+    private String cnsltngKndCd;
+
+    /** 컨성팅 종류 코드 명 */
+    private String cnsltngKndCdNm;
+
+    /** 희망일자1 */
+    @Size(max = 10, message = "희망일자1은 10자를 넘을 수 없습니다.")
+    private String hopeDe1;
+
+    /** 희망일자1 오전 오후 코드 */
+    @Size(max = 20, message = "희망일자1 오전 오후 코드는 20자를 넘을 수 없습니다.")
+    private String hopeDe1AmPmCd;
+
+    /** 희망일자1 오전 오후 코드 명*/
+    private String hopeDe1AmPmCdNm;
+
+    /** 희망일자2 */
+    @Size(max = 10, message = "희망일자1은 10자를 넘을 수 없습니다.")
+    private String hopeDe2;
+
+    /** 희망일자2 오전 오후 코드 */
+    @Size(max = 20, message = "희망일자2 오전 오후 코드는 20자를 넘을 수 없습니다.")
+    private String hopeDe2AmPmCd;
+
+    /** 희망일자2 오전 오후 코드 명*/
+    private String hopeDe2AmPmCdNm;
+
+    /** 프로그램 */
+    @Size(max = 2000, message = "프로그램은 2000자를 넘을 수 없습니다.")
+    private String prgrm;
+
+    /** 지도자 */
+    @Size(max = 2000, message = "지도자는 2000자를 넘을 수 없습니다.")
+    private String ldr;
+
+    /** 안전관리 */
+    @Size(max = 2000, message = "안전관리는 2000자를 넘을 수 없습니다.")
+    private String sftyMng;
+
+    /** 기타 */
+    @Size(max = 2000, message = "기타 2000자를 넘을 수 없습니다.")
+    private String etc;
+
+    /** 컨설턴트 아이디 */
+    private Integer cnstntid;
+
+    /** 컨설턴트 이름  */
+    private String cnstntNm;
 
 
+    /** 상태 코드명 */
+    private String sttsCdNm;
+
+    /** 설문아이디 */
+    private Integer srvyid;
+
+    /** 방문 일시 */
+    private String vstDe;
+
+    /** 방문 시작 시각 */
+    private String vstBgngDt;
+
+    /** 방문 종료 시각 */
+    private String vstEndDt;
+
+    /** 담당자 계정 */
+    private String cnstntAcnt;
+
+    /** 담당자 핸드폰 */
+    private String cnstntMoblphon;
+
+    /** 담당자 이메일 */
+    private String cnstntEml;
+
+    /** 컨설턴트 등록시 그룹 등록여부 확인용 */
+    private String grpYn;
+
+    /** 컨설턴트 등록시 그룹 확인용 */
+    private Integer grpId;
+
+    public void setSttsCd(String sttsCd) throws Exception{
+        this.sttsCd = sttsCd;
+
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.sttsCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.sttsCd);
+                this.sttsCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+             }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+             }
+        }
+    }
+
+    public void setCnsltngKndCd(String cnsltngKndCd) throws Exception{
+        this.cnsltngKndCd = cnsltngKndCd;
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.cnsltngKndCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.cnsltngKndCd);
+                this.cnsltngKndCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+
+    public void setInstTypeCd(String instTypeCd) throws Exception{
+        this.instTypeCd = instTypeCd;
+        //이미 코드이름이 있다면, 무시.
+        if(CommonUtil.isEmpty(this.instTypeCdNm)) {
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.instTypeCd);
+                this.instTypeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
 
 }

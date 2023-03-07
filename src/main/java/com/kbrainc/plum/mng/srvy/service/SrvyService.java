@@ -16,8 +16,8 @@ import com.kbrainc.plum.mng.srvy.model.SrvyVo;
  * 서비스 인터페이스
  *
  * <pre>
- * com.kbrainc.plum.mng.qestnr.service
- * - QestnrService.java
+ * com.kbrainc.plum.mng.srvy.service
+ * - SrvyService.java
  * </pre> 
  *
  * @ClassName : SrvyService

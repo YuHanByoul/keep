@@ -246,15 +246,17 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         // 비밀번호 암호화
         String hashPassword = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(password.getBytes("UTF-8")));
         tempPwdVo.setPswd(hashPassword);
+        //db저장
         int retVal = memberDao.updateMemberTempPwd(tempPwdVo);
         
-        if ("nonauto".equals(tempPwdVo.getMethod())) { // 수동인 경우 DB에 저장
-            if(retVal > 0) {
-                return true;
-            }
-        } else { // 자동인 경우 전송수단에 따라서 이메일 또는 SMS발송 처리       
+        //수동 처리
+        if("nonauto".equals(tempPwdVo.getMethod()) && retVal > 0) {  
+            return true;
+        }
+        // 자동인 경우 전송수단에 따라서 이메일 또는 SMS발송 처리
+        else {        
             String transType = tempPwdVo.getTransType();
-            
+            //email
             if ("email".equals(transType)) {
                 Context context = new Context();
                 context.setVariable("pssword", password);
@@ -273,10 +275,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                     throw new MailSendFailException("메일발송에 실패하였습니다.");
                 }
             } 
-            
-            //SMS 차후 처리 할것 
+            //SMS 
             else if("sms".equals(transType)) {
-                // sms 발송
                 String phone = mebmerInfo.getMoblphon();
                 if ("".equals(StringUtil.nvl(phone))) {
                     return false;
@@ -284,23 +284,15 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
                 String[] phonlist = new String[]{phone};
                 String msg = "[임시비밀번호 : " + password + "] KEEP 에서 보낸 임시비밀번호 입니다.";
                 Map<String, Object> resMap = smsNhnService.sendSms(msg,phonlist); // sms 발송
-                String result = (String)resMap.get("result");
+                String result = (String)((Map<String, Object>)(resMap.get("header"))).get("resultMessage");
                 
-                if ("OK".equals(result)) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return ("SUCCESS".equals(result))? true:false;
             }
-            
-            
             
             else {
                 return false;
             }
         }
-
-        return true;
     }
 
     /**

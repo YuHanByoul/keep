@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.cmm.file.service.FileService;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsRvwVo;
 import com.kbrainc.plum.front.jntpurchs.model.JntpurchsVo;

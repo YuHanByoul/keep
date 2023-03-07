@@ -27,9 +27,15 @@
                         </div>
                     </div>
                     <div class="form-row">
+                        <div class="form-header"><strong class="label">사업분야</strong></div>
+                        <div class="form-body">
+                            <span kattr:select_code="searchFldCd" grpCd="173" firstOptTxt="- 전체 -" addClass="input-sm">
+                        </div>
+                    </div>
+                    <div class="form-row">
                         <div class="form-header"><strong class="label">공모명</strong></div>
                         <div class="form-body">
-                            <input type="search" title="공모명" placeholder="프로그램명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm">
+                            <input type="search" title="공모명" placeholder="공모명을 입력해주세요." name="searchPcntstNm" id="searchPcntstNm">
                         </div>
                     </div>
                 </div>
@@ -52,33 +58,44 @@
                 </div>
             </div>
 
-            <div class="table-col table-layout-auto table-col-mo">
-                <table>
-                    <caption>공모신청 - 번호, 진행상태, 사업분야, 공모명, 신청기간, 사업기간, 등록일,</caption>
-                    <colgroup>
-                        <col style="width:6%;">
-                        <col>
-                        <col>
-                        <col style="width:25%;">
-                        <col style="width:15%;">
-                        <col style="width:15%;">
-                        <col style="width:11%;">
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <th scope="col">번호</th>
-                            <th scope="col">진행상태</th>
-                            <th scope="col">사업분야</th>
-                            <th scope="col">공모명</th>
-                            <th scope="col">신청기간</th>
-                            <th scope="col">사업기간</th>
-                            <th scope="col">등록일</th>
-                        </tr>
-                    </thead>
-                    <tbody id="list-area">
-                    </tbody>
-                </table>
+            <div class="pc-only">
+	            <div class="table-col table-layout-auto table-col-mo">
+	                <table>
+	                    <caption>공모신청 - 번호, 진행상태, 사업분야, 공모명, 신청기간, 사업기간, 등록일,</caption>
+	                    <colgroup>
+	                        <col style="width:6%;">
+	                        <col>
+	                        <col>
+	                        <col style="width:25%;">
+	                        <col style="width:15%;">
+	                        <col style="width:15%;">
+	                        <col style="width:11%;">
+	                    </colgroup>
+	                    <thead>
+	                        <tr>
+	                            <th scope="col">번호</th>
+	                            <th scope="col">진행상태</th>
+	                            <th scope="col">사업분야</th>
+	                            <th scope="col">공모명</th>
+	                            <th scope="col">신청기간</th>
+	                            <th scope="col">사업기간</th>
+	                            <th scope="col">등록일</th>
+	                        </tr>
+	                    </thead>
+	                    <tbody id="list-area">
+	                    </tbody>
+	                </table>
+	            </div>
             </div>
+            
+            <div class="mo-only">
+	            <div class="table-list">
+	                <ul>
+	                    <li class="block" id="list-mobile-area">
+	                    </li>
+	                </ul>
+	            </div>
+	        </div>
             
             <div id="pagination" aria-label="pagination"></div>
         </div>
@@ -109,6 +126,7 @@
 	        },
 	        searchInit() {
 	            $("#searchPcntstNm").val('');
+	            $("#searchFldCd").val('');
 	            $("#status").val('');
 	            this.selectList();
 	        },
@@ -137,6 +155,7 @@
 	        },
 	        makeListHtml(data) {
 	            var listHtml = "";
+	            var mobileHtml = "";
 	            if (data.list == null || data.list.length <= 0) {
 	                listHtml += `
 	                <tr>
@@ -145,6 +164,11 @@
 	                    </td>
 	                </tr>
 	                `;
+	                mobileHtml += `
+	                <div class="nodata">
+                        <p><span class="icon icon-notice bg-black9"></span>등록된 공모신청이 없습니다.</p>
+                    </div>
+                    `;
 	            } else {
 	                data.list.forEach(function(item) {
 	                    listHtml += `
@@ -158,9 +182,44 @@
 	                    <td>${item.regDt}</td>
 	                    <tr>
 	                    `;
+	                    mobileHtml += `
+	                    <div class="tbody">
+                            <dl>
+                                <div class="list">
+                                    <dt>번호</dt>
+                                    <dd>${item.rowNumber}</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>진행상태</dt>
+                                    <dd>${item.status}</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>사업분야</dt>
+                                    <dd>${item.fldNm}</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>공모명</dt>
+                                    <dd><a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.pcntstid})">${item.pcntstNm}</a></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>신청기간</dt>
+                                    <dd>${item.aplyDt}</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>사업기간</dt>
+                                    <dd>${item.bsnsDe}</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>등록일</dt>
+                                    <dd>${item.regDt}</dd>
+                                </div>
+                            </dl>
+                        </div>
+                        `;
 	                });
 	            }
 	            $('#list-area').html(listHtml);
+	            $('#list-mobile-area').html(mobileHtml);
 	            $("#pagination").html(data.pagination);
 	            $("#totalCount").html(data.totalCount);
 	        }

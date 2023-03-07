@@ -283,11 +283,12 @@
 	    var normalList = /*[[${normalList}]]*/null;
 	    var envListSize = /*[[${#lists.size(envList)}]]*/null;
 	    var envList = /*[[${envList}]]*/null;
+        var requestURI = /*[[${#strings.contains(#httpServletRequest.requestURI,'bizAply')}]]*/null;
 	    /*]]>*/
 	    /* 커스텀태그(공통코드) : 교육주제 */
 	    var getCodeListUrl = "/mng/customAttr/grpCodeList.do"
 	    var deviceMode = "";
-	    
+        var pathVar = requestURI ? 'bizAply' : 'expEnv';
 	    $(document).on("change", "select[name=eduSbjctCd1]", function(){
 	        var objId = $(this).attr("id");
 	        var num = objId.split("_");
@@ -301,6 +302,11 @@
 	    });
 	    
     	$(function(){
+    		if (requestURI) {
+                $(".steps").show();
+            } else {
+                $(".steps").hide();
+            }
     		deviceMode = $WINDOW_MODE;
     		changeId();
     		
@@ -572,7 +578,7 @@
 	                data : data,
 	                success : function (data){
 	                    if (data.result == "success") {
-	                    	location.href = "/front/bizAply/budgetForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
+	                    	location.href = "/front/"+pathVar+"/budgetForm.html?aplyid=" + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val();
 	                    } else {
 	                        alert(data.msg);
 	                    }
@@ -583,6 +589,7 @@
 	    }
 	    
 	    function goPage(url) {
+	    	url = url.replace('bizAply', pathVar);
             location.href = url + '?aplyid=' + $("#aplyid").val() + '&pcntstid=' + $("#pcntstid").val() + '&fldCd=' + $("#fldCd").val() + '&mode=U';
         }
 	    </script>

@@ -29,5 +29,34 @@ public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfo
     public MemberVo selectMemberInfo(MemberVo memberVo) throws Exception {
         return myInfoDao.selectMemberInfo(memberVo);
     }
+
+    @Override
+    public int updateMyInfo(MemberVo memberVo, String itrstfldCdEpty, String envfldCdEpty) throws Exception {
+        int retVal = 0;
+        
+        retVal += myInfoDao.updateMyInfo(memberVo);
+        
+        // 맞춤환경정보 입력
+        if (itrstfldCdEpty.equals("Empty")) {
+            retVal += myInfoDao.insertEnvfld(memberVo);
+        }else {
+            retVal += myInfoDao.deleteEnvfld(memberVo);
+            retVal += myInfoDao.insertEnvfld(memberVo);
+        }
+        
+        // 관심분야 입력
+        if (envfldCdEpty.equals("Empty")) {
+            retVal += myInfoDao.insertItrstfld(memberVo);
+        }else {
+            retVal += myInfoDao.deleteItrstfld(memberVo);
+            retVal += myInfoDao.insertItrstfld(memberVo);
+        }
+        return retVal;
+    }
+
+    @Override
+    public int updatePswd(MemberVo memberVo) throws Exception {
+        return myInfoDao.updatePswd(memberVo);
+    }
     
 }

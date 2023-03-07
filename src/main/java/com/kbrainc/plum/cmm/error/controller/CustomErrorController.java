@@ -2,15 +2,20 @@ package com.kbrainc.plum.cmm.error.controller;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.kbrainc.plum.rte.exception.PageNotFoundException;
 import com.kbrainc.plum.rte.exception.controller.ExceptionHandlingController;
+import com.kbrainc.plum.rte.model.SiteInfoVo;
+import com.kbrainc.plum.rte.service.ResSiteService;
 
 /**
  * 
@@ -32,6 +37,9 @@ import com.kbrainc.plum.rte.exception.controller.ExceptionHandlingController;
 public class CustomErrorController implements ErrorController {
     protected Logger logger = LoggerFactory.getLogger(CustomErrorController.class);
     
+    @Autowired
+    ResSiteService resSiteService;
+    
     /**
      * .
      *
@@ -41,7 +49,24 @@ public class CustomErrorController implements ErrorController {
      * @return String
      */
     @RequestMapping("/error")
-    public String handleError(HttpServletRequest request) {
+    public String handleError(HttpServletRequest request) throws Exception {
+        HttpSession session = request.getSession();
+
+        ////////////////////////////////////////////////////////////////////////////////////
+        // 접속사이트정보
+        ////////////////////////////////////////////////////////////////////////////////////
+        SiteInfoVo siteInfo = (SiteInfoVo) session.getAttribute("site");
+        String dmn = request.getServerName();
+        
+        if (siteInfo == null || !dmn.equals(siteInfo.getDmn())) {
+            siteInfo = resSiteService.getSiteInfo(dmn);
+
+            if (siteInfo == null) {
+                session.removeAttribute("site");
+            }
+            session.setAttribute("site", siteInfo);
+        }
+        
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         if (status != null) {
@@ -53,6 +78,7 @@ public class CustomErrorController implements ErrorController {
                 return "error/error_404";
             } else if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) { // 내부서버오류
                 if (request.getAttribute(RequestDispatcher.ERROR_EXCEPTION).toString().endsWith("rejectPublicInvocations property is set to 'true'")) {
+
                     return "error/error_404";
                 }
                 return "error/error_500";

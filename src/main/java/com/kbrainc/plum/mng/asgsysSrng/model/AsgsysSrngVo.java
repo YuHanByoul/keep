@@ -162,8 +162,17 @@ public class AsgsysSrngVo extends ParentRequestVo {
     /** 프로그램아이디 */
 	private Integer prgrmid;
 
+	/** 프로그램 평가 아이디 */
+	private Integer evlid;
+
+	/** 프로그램 이력 아이디 */
+	private Integer hstryid;
+
 	/** 운영관리 프로그램아이디 */
 	private Integer operMngPrgrmid;
+
+	/** 안전관리 아이디*/
+	private Integer sftyMngId;
 
 	/** 트리순서 */
 	private Integer treeOrd;
@@ -245,6 +254,21 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 지정_일자 */
 	private String dsgnDe;
+
+	/** 시작_일자 */
+	private String  bgngDe;
+
+	/** 종료_일자 */
+	private String  endDe;
+
+	/** 학교 명 */
+	private String  schlNm;
+
+	/** 전공  */
+	private String  mjr;
+
+	/** 학위  */
+	private String  dgr;
 
     /** 지정_시작_일자 */
 	private String dsgnBgngDe;
@@ -449,42 +473,56 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	private Integer  eduPhotoFilegrpid;
 
     /**평가_목적 */
+	@Size(max = 50, message = "평가 목적은 50자를 넘을 수 없습니다.")
     private String evlPrps;
 
+
     /**사전_지도자_평가_항목 */
+	@Size(max = 50, message = "사전 지도자 평가 항목은 50자를 넘을 수 없습니다." )
     private String bfrLdrEvlArtcl;
 
     /**사전_지도자_평가_도구 */
+	@Size(max = 50, message = "사전 지도자 평가 도구는 50자를 넘을 수 없습니다." )
     private String bfrLdrEvlTl;
 
     /**사후_지도자_평가_항목 */
+	@Size(max = 50, message = "사후 지도자 평가 항목은 50자를 넘을 수 없습니다." )
     private String aftrLdrEvlArtcl;
 
     /**사후_지도자_평가_도구 */
+	@Size(max = 50, message = "사후 지도자 평가 도구는 50자를 넘을 수 없습니다." )
     private String aftrLdrEvlTl;
 
     /**사전_참여자_평가_항목 */
+	@Size(max = 50, message = "사전 참여자 평가 항목은 50자를 넘을 수 없습니다." )
     private String bfrPrtpntEvlArtcl;
 
     /**사전_참여자_평가_도구 */
+	@Size(max = 50, message = "사전 참여자 평가 도구는 50자를 넘을 수 없습니다." )
     private String bfrPrtpntEvlTl;
 
     /**사후_참여자_평가_항목 */
+	@Size(max = 50, message = "사후 참여자 평가 항목은 50자를 넘을 수 없습니다." )
     private String aftrPrtpntEvlArtcl;
 
     /**사후_참여자_평가_도구 */
+	@Size(max = 50, message = "사후 참여자 평가 도구는 50자를 넘을 수 없습니다." )
     private String aftrPrtpntEvlTl;
 
     /**사전_인솔자_평가_항목 */
+	@Size(max = 50, message = "사전 인솔자 평가 항목은 50자를 넘을 수 없습니다." )
     private String bfrGdrEvlArtcl;
 
     /**사전_인솔자_평가_도구 */
+	@Size(max = 50, message = "사전 인솔자 평가 도구는 50자를 넘을 수 없습니다." )
     private String bfrGdrEvlTl;
 
     /**사후_인솔자_평가_항목 */
+	@Size(max = 50, message = "사후 인솔자 평가 항목은 50자를 넘을 수 없습니다." )
     private String aftrGdrEvlArtcl;
 
     /**사후_인솔자_평가_도구 */
+	@Size(max = 50, message = "사후 인솔자 평가 도구는 50자를 넘을 수 없습니다." )
     private String aftrGdrEvlTl;
 
     /**데이터베이스_작성_여부 */
@@ -494,6 +532,7 @@ public class AsgsysSrngVo extends ParentRequestVo {
     private String clsjrnlWrtYn;
 
     /**기타_여부 */
+    @Size(max = 50, message = "기타내용은 50자를 넘을 수 없습니다.")
     private String etcYn;
 
     /**기타_내용 */
@@ -514,6 +553,36 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 지도자_교육_시기 */
 	private String ldrEduSess;
+
+	/** 지도자아이디 */
+	private Integer ldrid;
+
+	/** 구분 */
+	private String se;
+
+	/** 업무 내용 */
+	private String taskCn;
+
+	/** 생년월일 */
+	private String brdt;
+
+	/** 책임개발자 여부 */
+	private String snrstfdvlprYn;
+
+	/** 활동명 */
+	private String actvtNm;
+
+	/** 자격명 */
+	private String qlfcNm;
+
+	/** 급수  */
+	private String grd;
+
+	/** 발령청  */
+	private String wrkplc;
+
+	/** 활동 유형 */
+	private String actvtType;
 
     /** 지도자_교육_담당자 */
     private String ldrEduPic;
@@ -702,6 +771,21 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 교구 및 시설 목록*/
     private List<TchaidFcltVo> tchaidFcltLst;
+
+    /** 학력 목록 */
+    private List<AcbgVo> acbgLst;
+
+    /** 자격 목록 */
+    private List<QlfcVo> qlfcLst;
+
+    /** 경력 목록 */
+    private List<CareerVo> careerLst;
+
+    /** 지도자 목록 */
+    private List<LdrVo> ldrLst;
+
+    /** 학력 ID */
+    private Integer acbgid;
 
     /** 로그인사용자정보 */
     public void setUser(UserVo user){
