@@ -1,0 +1,91 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+<body>
+	<div layout:fragment="content">
+		<form id="mymsgForm" name="mymsgForm" method="post">
+		    <input type="hidden" id="msgid" name="msgid" th:value="${mymsgInfoVo.msgid}">
+		    <input type="hidden" id="recvid" name="recvid" th:value="${mymsgInfoVo.recvid}">
+		    <input type="hidden" id="maskAcnt" name="maskAcnt" th:value="${mymsgInfoVo.maskAcnt}">
+		    <div class="alarm-detail">
+		        <div class="alarm-detail-header">
+		            <div class="message">
+		                <div class="sender">
+		                    <dl>
+		                        <dt>받는사람</dt>
+		                        <dd><th:block th:text="${mymsgInfoVo.maskAcnt}"></th:block></dd>
+		                        <dt>보낸날짜</dt>
+		                        <dd><th:block th:text="${mymsgInfoVo.regDt}"></th:block></dd>
+		                    </dl>
+		                </div>
+		            </div>
+		        </div>
+		        <div class="alarm-detail-content">
+		            <p style="word-wrap: break-word;"><th:block th:text="${mymsgInfoVo.cn}"></th:block></p>
+		        </div>
+		    </div>
+		    <div class="btn-wrap">
+		        <div class="center">
+		            <button type="button" class="btn-medium btn-gray" onclick="mymsgDetail.delSendMsg();">삭제</button>
+		            <button type="button" class="btn-medium btn-blue" onclick="mymsgDetail.moveToList();">목록</button>
+		        </div>
+		    </div>
+			<div class="layer-popup layer-medium" data-layer-id="msgSendPopup">
+			    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+			    <div class="layer-wrap" id="msgSendPopup">
+			    </div>
+			</div>
+		    
+	    </form>
+	    <form id="listForm" th:action="@{/}" method="get" onsubmit="return false;">
+	        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${mymsgVo.pageNumber}">
+	        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${mymsgVo.rowPerPage}">
+	        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${mymsgVo.searchKeyword}">
+	        <input type="hidden" id="orderField" name="orderField" th:value="${mymsgVo.orderField}">
+	        <input type="hidden" id="msgid" name="msgid" th:value="${mymsgInfoVo.msgid}">
+	    </form>
+	    
+	    <script th:inline="javascript">
+	        var mymsgDetail = {
+	            listUrl: '/front/mypage/mymsg/mymsgSendListForm.html',
+	            popUrl: '/front/mypage/mymsg/mymsgSendPopup.html',
+	            delUrl: '/front/mypage/mymsg/updateTrgtDelMsg.do',
+	            msgid: null,
+	            sendid: null,
+	            maskAcnt: null,
+	            init: function() {
+                },
+ 	            delSendMsg: function() {
+	               if (!confirm('쪽지를 삭제 하시겠습니까?')) return;
+	               if (displayWorkProgress(true)) {
+	                   $.ajax({
+	                       method: 'post',
+	                       url: mymsgDetail.delUrl,
+	                       dataType: 'json',
+	                       data: {msgid: $("#msgid").val()},
+	                       success: function (response) {
+	                           closeWorkProgress();
+	                           alert(response.msg);
+	                           if (response.success)
+	                        	   mymsgDetail.submit(mymsgDetail.listUrl);
+	                       }
+	                   })
+	               }
+	            },
+	            moveToList() {
+	                this.submit(this.listUrl);
+	            },
+	            submit(url) {
+	                let f = document.forms.listForm;
+	                f.action = url;
+	                f.submit();
+	            }
+	        }
+            $(function() {
+            	mymsgDetail.init();
+            });
+
+	    </script>
+	</div>
+</body>

@@ -160,4 +160,17 @@ public class InfntAplyServiceImpl extends PlumAbstractServiceImpl implements Inf
         return retVal;
     }    
     
+    /**
+     * 유아환경교육관 신청이력 조회
+     *
+     * @Title : selectInfntAplyHistList
+     * @Description : 유아환경교육관 신청이력 조회
+     * @param infntAplyVo
+     * @return
+     * @throws Exception
+     * @return List<InfntAplyVo>
+     */
+    public List<InfntAplyVo> selectInfntAplyHistList(InfntAplyVo infntAplyVo) throws Exception{
+        return InfntAplyDao.selectInfntAplyHistList(infntAplyVo);
+    }        
 }

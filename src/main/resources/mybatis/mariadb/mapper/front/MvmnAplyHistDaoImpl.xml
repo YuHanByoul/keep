@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : MvmnAplyHistDaoImpl.xml
+	Description : 푸름이 이동환경교실 교육신청
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.mvmnAplyHist.model.MvmnAplyHistDao">
+    <!-- 푸름이 이동환경교실 신청이력 조회 -->
+    <select id="selectMvmnAplyHistList" parameterType="front.MvmnAplyHistVo" resultType="front.MvmnAplyHistVo">
+        /* MvmnAplyHistDao.selectMvmnAplyHistList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                  A.APLYID 
+                , D.PRGRMID
+                , E.SAREAID
+                , E.SAREA_NM
+                , D.PRGRM_NM
+                , D.OPER_FOM_CD
+                , F.CD_NM OPER_FOM_NM
+                , REPLACE(B.DE, '.', '-') DE
+                , C.TMEID
+                , C.TME_NM
+                , A.STTS_CD
+                , G.CD_NM STTS_NM
+                , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
+                , A.RGTRID
+            FROM TB_EDU_MVMN_PRGRM_APLY A
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM D ON D.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN TB_EDU_SAREA E ON E.SAREAID = D.SAREAID
+            LEFT OUTER JOIN TB_CMM_CD F ON F.CD = D.OPER_FOM_CD
+            LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
+            WHERE 1=1
+            AND A.USERID = #{user.userid}
+            <!-- 푸름이 이동환경교실 교육신청 프로그램명 -->
+            <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+            AND D.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>    
+
+    <!-- 푸름이 이동환경교실 신청이력 정보 조회 -->
+    <select id="selectMvmnAplyHistInfo" parameterType="front.MvmnAplyHistVo" resultType="front.MvmnAplyHistVo">
+        /* MvmnAplyHistDao.selectMvmnAplyHistInfo */
+            SELECT
+                  A.APLYID 
+                , D.PRGRMID
+                , E.SAREAID
+                , E.SAREA_NM
+                , D.PRGRM_NM
+                , D.EDU_NOPE
+                , D.EDU_HR_MNT
+                , CONCAT((SELECT t1.CD_NM FROM TB_CMM_CD t1 WHERE t1.CD = F.UPPR_CD), ' ', F.CD_NM) AS SIGNGU_DESC
+                , (SELECT GROUP_CONCAT(TC.TRGT_CD SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TC WHERE TC.PRGRMID = D.PRGRMID) AS TRGT_CD
+                , (SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_TRGT_MAPNG TA, TB_CMM_CD TB WHERE TA.PRGRMID = D.PRGRMID and TA.TRGT_CD = TB.CD) AS TRGT_NM
+                , REPLACE(B.DE, '.', '-') DE
+                , C.TMEID
+                , C.TME_NM
+                , A.STTS_CD
+                , G.CD_NM STTS_NM
+                , DATE_FORMAT(A.REG_DT, '%Y-%m-%d') REG_DT
+                , A.RGTRID
+            FROM TB_EDU_MVMN_PRGRM_APLY A
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
+            LEFT OUTER JOIN TB_EDU_MVMN_PRGRM D ON D.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN TB_EDU_SAREA E ON E.SAREAID = D.SAREAID
+            LEFT OUTER JOIN TB_CMM_CD F ON F.CD = A.SIGNGU_CD            
+            LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
+            WHERE 1=1
+            AND A.APLYID = #{aplyid}      
+    </select>    
+
+    <!-- 푸름이 이동환경교실 신청이력 상세 조회 -->
+    <select id="selectMvmnAplyHistDetail" parameterType="front.MvmnAplyHistVo" resultType="front.MvmnAplyHistVo">
+        /* MvmnAplyHistDao.selectMvmnAplyHistDetail */
+        SELECT 
+              A.APLYID
+            , A.TME_SCHDLID  
+            , B.DE
+            , C.TMEID
+            , C.TME_NM
+            , A.REG_DT AS APLY_DT 
+            , A.INSTID
+            , NULLIF(E.INST_NM, '') INST_NM 
+            , NULLIF(A.USERID, '') APLY_USERID
+            , NULLIF(F.NM, '') APLY_USER_NM
+            , NULLIF(A.ADDR, '') ADDR
+            , NULLIF(A.ADDR_DTL, '') ADDR_DTL
+            , NULLIF(A.TELNO, '') TELNO
+            , NULLIF(F.MOBLPHON, '') MOBLPHON
+            , NULLIF(A.EML, '') EML
+            , NULLIF(A.FXNO, '') FXNO            
+            , A.EDU_NOPE
+            , NULLIF(A.RMRK, '') RMRK
+            , A.STTS_CD
+            , D.CD_NM AS STTS_NM
+            ,(SELECT GROUP_CONCAT(EDU_TRGT_CD SEPARATOR',') FROM TB_EDU_MVMN_PRGRM_APLY_EDU_TRGT  WHERE APLYID = #{aplyid} ) AS TRGT_CD
+            ,(SELECT GROUP_CONCAT(TB.CD_NM SEPARATOR', ') FROM TB_EDU_MVMN_PRGRM_APLY_EDU_TRGT TA, TB_CMM_CD TB WHERE TA.APLYID = #{aplyid} and TA.EDU_TRGT_CD = TB.CD) AS TRGT_NM
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID  
+        FROM TB_EDU_MVMN_PRGRM_APLY A 
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID 
+        LEFT OUTER JOIN TB_EDU_MVMN_PRGRM_TME C ON C.TMEID = B.TMEID
+        LEFT OUTER JOIN TB_CMM_CD D ON D.CD = A.STTS_CD
+        LEFT OUTER JOIN TB_CMM_INST E ON E.INSTID = A.INSTID 
+        LEFT OUTER JOIN TB_CMM_USER F ON F.USERID = A.USERID        
+        WHERE A.APLYID = #{aplyid}
+    </select>
+        
+    <!-- 푸름이 이동환경교실 신청취소 -->
+    <update id="updateCancelMvmnAply">
+        /* MvmnAplyHistDao.updateCancelMvmnAply */
+        UPDATE TB_EDU_MVMN_PRGRM_APLY SET
+            STTS_CD = '180104'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE APLYID = #{aplyid}
+    </update>    
+</mapper>

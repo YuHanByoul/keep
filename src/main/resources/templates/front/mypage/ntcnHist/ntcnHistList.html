@@ -1,0 +1,117 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+	<div class="alarm-wrap">
+	    <div class="table-caption flex-nowrap">
+	        <div class="right"><button type="button" class="btn-small btn-outline-black" onclick="ntcnHist.delNtcn()">알림 모두 삭제</button></div>
+	    </div>
+	    <dl id="ntcnAlarmDl">
+	    </dl>
+	</div>
+    <form id="ntcnHistForm" name="ntcnHistForm" th:action="@{/}" method="get" onsubmit="return false;">
+        <input type="hidden" id="ntcnid" name="ntcnid" value="">
+    </form>
+    <script th:inline="javascript">
+        let ntcnHist = {
+            listUrl: '/front/mypage/ntcnHist/selectNtcnHistList.do',
+            updateDelUrl: '/front/mypage/ntcnHist/updateDeleteNtcn.do',
+
+            init() {
+                $('#ntcnHistForm').on('submit', function (e) {
+                    e.preventDefault();
+                    ntcnHist.selectNtcnHistList();
+                    $("#ntcnid").val('');
+                });
+            },
+
+            delNtcn(ntcnid) {
+                if($("#ntcnAlarmDl .alarm-df dd").length > 0){            	
+	                if (!confirm('삭제 하시겠습니까?')) return;
+	                if(ntcnid != "" && ntcnid != undefined){
+	                    $("#ntcnid").val(ntcnid);
+	                }
+	                if (displayWorkProgress(true)) {
+	                    $.ajax({
+	                        method: 'post',
+	                        url: ntcnHist.updateDelUrl,
+	                        dataType: 'json',
+	                        data: $('#ntcnHistForm').serializeArray(),
+	                        success: function (response) {
+	                            closeWorkProgress();
+	                            alert(response.msg);
+	                            if (response.success)
+	                            	ntcnHist.selectNtcnHistList();
+	                        }
+	                    })
+	                }
+                }else{
+                	alert("삭제할 알림 내역이 없습니다.");
+                	return;
+                }
+            },
+            submit(url) {
+                let f = document.forms.ntcnHistForm;
+                f.action = url;
+                f.submit();
+            },
+            selectNtcnHistList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: ntcnHist.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: $('#ntcnHistForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#ntcnAlarmDl").html(ntcnHist.makeListHtml(data.list));
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                let html = "";
+                if (list == null || list.length <= 0) {
+                	html += `<div class="nodata">
+                        <p><span class="icon icon-notice bg-black9"></span>알림 내역이 없습니다.</p>
+                        </div>`;
+                } else {
+	                list.forEach(function (item, index) {
+	                	if(item.rnum == 1){
+	                		html += `<div class="alarm-df"><dt>${item.ym}</dt>`;	
+	                	}
+	                    html += `
+	                        <dd>
+	                            <strong>${item.ttl}</strong>
+	                            <p style="word-wrap: break-word;">${item.cn}</p>
+	                            <span>${item.ntcnDt}</span>
+	                            <button type="button" class="btn-alarm-remove" title="알림 삭제"><span class="icon icon-circle-close" onclick="ntcnHist.delNtcn(${item.ntcnid})"></span></button>
+	                        </dd>`;  
+	                    if(list.length == 1 && item.rnum == 1){
+	                        html += `</div>`;    
+	                    }else{
+	                    	if(list.length > (index+1)){
+	                    		if(list[index+1].rnum == 1){
+	                    			html += `</div>`;
+	                    		}
+	                    	}else{
+	                            html += `</div>`;                    		
+	                    	}
+	                    }
+	                });
+                }
+                return html;
+            }           
+        };
+
+        $(function () {
+            ntcnHist.init();
+            ntcnHist.selectNtcnHistList();
+        })
+    </script>
+</div>
+<body>

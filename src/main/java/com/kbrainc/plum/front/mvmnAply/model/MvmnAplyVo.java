@@ -148,6 +148,10 @@ public class MvmnAplyVo extends ParentRequestVo {
     private String sareaSignguDesc;
     /** 신청기관_팩스번호 */
     private String fxno;
+    /** 희망 교육 시작시간 */
+    private String hopeEduBgngTm;
+    /** 희망 교육 종료시간 */
+    private String hopeEduEndTm;
     
     
     /** 교육대상 */

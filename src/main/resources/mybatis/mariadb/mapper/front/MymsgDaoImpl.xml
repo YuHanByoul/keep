@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : MymsgDaoImpl.xml
+    Description : 쪽지함
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.mymsg.model.MymsgDao">
+    <!-- 받은쪽지함 조회 -->
+    <select id="selectRecvMsgList" parameterType="front.MymsgVo" resultType="front.MymsgVo">
+        /* MymsgDao.selectMymsgList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                  A.MSGID
+                , A.USERID SENDID
+                , B.NM SEND_NM
+                , A.TRGTID RECVID
+                , C.NM RECV_NM
+                , CASE WHEN CHAR_LENGTH(A.CN) > 30 THEN CONCAT(SUBSTRING(A.CN, 1, 30), '...') ELSE A.CN END CN
+                , A.INQ_YN
+                , DATE_FORMAT(A.REG_DT,'%Y-%m-%d %H:%i:%s') REG_DT
+            FROM TB_CMM_MSG A
+            LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.USERID
+            LEFT OUTER JOIN TB_CMM_USER C ON C.USERID = A.TRGTID
+            WHERE 1=1
+            AND A.TRGTID = #{user.userid}
+            AND A.USER_DEL_YN <![CDATA[<>]]> 'Y'
+            <!-- 쪽지함 내용검색 -->
+            <if test="searchKeyword != null and searchKeyword != ''">
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>    
+
+    <!-- 받은쪽지함 정보 조회 -->
+    <select id="selectRecvMsgInfo" parameterType="front.MymsgVo" resultType="front.MymsgVo">
+        /* MymsgDao.selectRecvMsgInfo */
+            SELECT
+                  A.MSGID
+                , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN 
+                    CONCAT(
+                        SUBSTRING(B.ACNT, 1, 1)
+                        ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                        ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                    )
+                    ELSE CONCAT(
+                        SUBSTRING(B.ACNT, 1, 1)
+                        ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                    )
+                  END AS MASK_ACNT  
+                , B.USERID SENDID              
+                , A.TRGTID RECVID
+                , A.CN
+                , A.INQ_YN
+                , DATE_FORMAT(A.REG_DT,'%Y-%m-%d %H:%i:%s') REG_DT
+            FROM TB_CMM_MSG A
+            LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.USERID
+            WHERE 1=1
+            AND A.MSGID = #{msgid}      
+    </select>    
+
+    <!-- 받은쪽지함 답장 보내기 -->
+    <insert id="insertSendMsg" parameterType="front.MvmnAplyVo" >
+        /* MymsgDao.insertSendMsg */
+        INSERT INTO TB_CMM_MSG(
+            USERID
+          , TRGTID
+          , CN
+          , INQ_YN
+          , USER_DEL_YN
+          , TRGT_DEL_YN
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        )VALUES(
+            #{user.userid}
+          , #{sendid}
+          , #{cn}
+          , 'Y'
+          , 'N'
+          , #{trgtDelYn}
+          , NOW()
+          , #{user.userid}
+          , NOW()
+          , #{user.userid}  
+        )
+    </insert>
+        
+    <!-- 받은쪽지함 삭제상태 수정 -->
+    <update id="updateUserDelMsg">
+        /* MymsgDao.updateUserDelMsg */
+        UPDATE TB_CMM_MSG SET
+            USER_DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE MSGID = #{msgid}
+    </update>    
+
+    <!-- 보낸쪽지함 조회 -->
+    <select id="selectSendMsgList" parameterType="front.MymsgVo" resultType="front.MymsgVo">
+        /* MymsgDao.selectSendMsgList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                  A.MSGID
+                , A.USERID SENDID
+                , B.NM SEND_NM
+                , A.TRGTID RECVID
+                , C.NM RECV_NM
+                , CASE WHEN CHAR_LENGTH(A.CN) > 30 THEN CONCAT(SUBSTRING(A.CN, 1, 30), '...') ELSE A.CN END CN
+                , A.INQ_YN
+                , DATE_FORMAT(A.REG_DT,'%Y-%m-%d %H:%i:%s') REG_DT
+            FROM TB_CMM_MSG A
+            LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.USERID
+            LEFT OUTER JOIN TB_CMM_USER C ON C.USERID = A.TRGTID
+            WHERE 1=1
+            AND A.USERID = #{user.userid}
+            AND A.TRGT_DEL_YN <![CDATA[<>]]> 'Y'
+            <!-- 쪽지함 내용검색 -->
+            <if test="searchKeyword != null and searchKeyword != ''">
+            AND A.CN LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>    
+
+    <!-- 보낸쪽지함 정보 조회 -->
+    <select id="selectSendMsgInfo" parameterType="front.MymsgVo" resultType="front.MymsgVo">
+        /* MymsgDao.selectSendMsgInfo */
+            SELECT
+                  A.MSGID
+                , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN 
+                    CONCAT(
+                        SUBSTRING(B.ACNT, 1, 1)
+                        ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
+                        ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+                    )
+                    ELSE CONCAT(
+                        SUBSTRING(B.ACNT, 1, 1)
+                        ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
+                    )
+                  END AS MASK_ACNT  
+                , B.USERID SENDID              
+                , A.TRGTID RECVID
+                , A.CN
+                , A.INQ_YN
+                , DATE_FORMAT(A.REG_DT,'%Y-%m-%d %H:%i:%s') REG_DT
+            FROM TB_CMM_MSG A
+            LEFT OUTER JOIN TB_CMM_USER B ON B.USERID = A.TRGTID
+            WHERE 1=1
+            AND A.MSGID = #{msgid}      
+    </select>    
+
+    <!-- 보낸쪽지함 삭제상태 수정 -->
+    <update id="updateTrgtDelMsg">
+        /* MymsgDao.updateTrgtDelMsg */
+        UPDATE TB_CMM_MSG SET
+            TRGT_DEL_YN = 'Y'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE MSGID = #{msgid}
+    </update>    
+</mapper>
