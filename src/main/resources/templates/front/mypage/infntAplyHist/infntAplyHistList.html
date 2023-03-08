@@ -1,0 +1,219 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+        <div class="form-input mo-flex-wrap">
+            <strong class="label">키워드</strong>
+            <div class="form-input">
+                <select name="searchType" id="searchType" title="키워드">
+                   <option value="searchPrgrmNm" selected>프로그램명</option>
+                   <option value="searchEduClssRmNm">교육관</option>
+                </select>
+                <input type="search"title="키워드" name="searchKeyword" id="searchKeyword" placeholder="키워드를 입력해 주세요.">            
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                <button type="reset" class="btn-medium btn-transparent btn-before-refresh">초기화</button>
+            </div>
+        </div>    
+        <input type="hidden" id="aplyid" name="aplyid">
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="total-count">0</b> 건</p>
+        </div>
+        <div class="right d-flex">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="infntAplyHist.changeRowPerPage()">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+        </div>
+    </div>
+    <div class="pc-only">
+	    <div class="table-col table-layout-auto">
+	        <table>
+	            <colgroup>
+	                <col>
+	                <col>
+	                <col style="width:25%;">
+	                <col>
+	                <col>
+	                <col>
+	                <col>
+	                <col>
+	            </colgroup>
+	            <thead>
+	                <tr>
+	                    <th scoep="col">번호</th>
+	                    <th scoep="col">교육관</th>
+	                    <th scoep="col">프로그램명</th>
+	                    <th scoep="col">지역</th>
+	                    <th scoep="col">교육일자</th>
+	                    <th scoep="col">회차</th>
+	                    <th scoep="col">신청상태</th>
+	                    <th scoep="col">신청일</th>
+	                </tr>
+	            </thead>
+	            <tbody id="list-area">
+	            </tbody>
+	        </table>
+	    </div>
+    </div>
+    <div class="mo-only">
+        <div class="table-list">
+            <ul id="mo-list-area">
+                <li class="block">
+                    
+                </li>
+            </ul>
+        </div>    
+
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
+
+    <script th:inline="javascript">
+        let infntAplyHist = {
+            listUrl: '/front/mypage/infntAplyHist/selectInfntAplyHistList.do',
+            detailUrl: '/front/mypage/infntAplyHist/infntAplyHistDetail.html',
+            searchVo: /*[[${searchVo}]]*/null,
+
+            init() {
+                $('#searchForm').on('submit', function (e) {
+                    e.preventDefault();
+                    $('#pageNumber').val(1);
+                    infntAplyHist.selectInfntAplyHistList();
+                });
+            },
+
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+            },
+
+            moveToDetail(aplyid) {
+                let f = document.forms.searchForm;
+                f.aplyid.value = aplyid;
+                f.action = this.detailUrl;
+                f.submit();
+            },
+
+            selectInfntAplyHistList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: infntAplyHist.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(infntAplyHist.makeListHtml(data.list));
+                            $("#mo-list-area").html(infntAplyHist.makeListMoHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                let html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<tr>
+                                <td class="nodata" colspan="8">
+                                    <p><span class="icon icon-notice bg-black9"></span>유아환경교육관 신청 이력이 없습니다.</p>
+                                </td>
+                            </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        html += `<tr>
+                                    <td>${item.rowNumber}</td>
+                                    <td>${item.clssrmNm}</td>
+                                    <td class="al article">
+                                        <a href="javascript:void(0)" class="link ellipsis" onclick="infntAplyHist.moveToDetail(${item.aplyid})">
+                                            ${item.prgrmNm}
+                                        </a>
+                                    </td>
+                                    <td>${item.ctprvnNm}</td>
+                                    <td>${item.de}</td>
+                                    <td>${item.tmeNm}</td>
+                                    <td>${item.sttsNm}</td>
+                                    <td>${item.regDt}</td>
+                                </tr>`;
+                    });
+                }
+                return html;
+            },
+            makeListMoHtml(list) {
+                let moHtml = "";
+                if (list == null || list.length <= 0) {
+                    moHtml += `<li class="block"><div class="nodata">
+                        <p><span class="icon icon-notice bg-black9"></span>유아환경교육관 신청 이력이 없습니다.</p>
+                        </li></div>`;
+                } else {
+                    list.forEach(function (item) {
+                        moHtml += `<li class="block"><div class="tbody"><dl>
+                            <div class="list">
+                                <dt>번호</dt>
+                                <dd>${item.rowNumber}</dd>
+                            </div>
+                            <div class="list">
+                                <dt>교육관</dt>
+                                <dd>${item.clssrmNm}</dd>
+                            </div>
+                            <div class="list">
+                                <dt>프로그램명</dt>
+                                <dd><a href="javascript:void(0)" class="link ellipsis" onclick="infntAplyHist.moveToDetail(${item.aplyid})">${item.prgrmNm}</a></dd>
+                            </div>
+                            <div class="list">
+                                <dt>지역</dt>
+                                <dd>${item.ctprvnNm}</dd>
+                            </div>
+                            <div class="list">
+                                <dt>교육일자</dt>
+                                <dd>${item.de}</dd>
+                            </div>
+                            <div class="list">
+                                <dt>회차</dt>
+                                <dd>${item.tmeNm}</dd>
+                            </div>
+                            <div class="list">
+                                <dt>신청상태</dt>
+                                <dd>${item.sttsNm}</dd>
+                            </div>
+                            <div class="list">
+                                <dt>신청일</dt>
+                                <dd>${item.regDt}</dd>
+                            </div>
+                        </dl></div></li>`;
+                    });
+                }
+                return moHtml;
+            }            
+        };
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            infntAplyHist.selectInfntAplyHistList();
+        }
+
+        $(function () {
+            infntAplyHist.init();
+
+            $("#pageNumber").val(infntAplyHist.searchVo.pageNumber);
+            $("#searchKeyword").val(infntAplyHist.searchVo.searchKeyword);
+            $('#rowPerPage').val(infntAplyHist.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(infntAplyHist.searchVo.rowPerPage);
+
+            infntAplyHist.selectInfntAplyHistList();
+        })
+    </script>
+</div>
+<body>

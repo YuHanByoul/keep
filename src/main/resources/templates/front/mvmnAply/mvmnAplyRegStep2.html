@@ -37,6 +37,8 @@
     <input type="hidden" id="eml" name="eml" th:value="${mvmnAplyRegVo.eml}" />
     <input type="hidden" id="fxno" name="fxno" th:value="${mvmnAplyRegVo.fxno}" />
     <input type="hidden" id="signguCd" name="signguCd" th:value="${mvmnAplyRegVo.signguCd}" />
+    <input type="hidden" id="hopeEduBgngTm" name="hopeEduBgngTm"/>
+    <input type="hidden" id="hopeEduEndTm" name="hopeEduEndTm"/>
     
 	    <div class="table-caption">
 	        <h3 class="sub-title">프로그램 정보</h3>
@@ -85,7 +87,7 @@
 	
 	    <div class="table-row table-row-mo">
 	        <table>
-	            <caption>신청 정보 - 신청기관, 전화번호, 신청자명, 휴대전화, 기관주소, 상세주소, 이메일, 교육대상, 총 교육인원, 인솔교사인원, 신청인 지역, 기타사항</caption>
+	            <caption>신청 정보 - 신청기관, 전화번호, 신청자명, 휴대전화, 기관주소, 상세주소, 이메일, 기관 FAX번호, 교육대상, 총 교육인원, 희망 교육 시작시간,희망 교육 종료시간, 기타사항</caption>
 	            <colgroup>
 	                <col style="width:140px;">
 	                <col>
@@ -161,10 +163,66 @@
 	                        </div>
 	                    </td>
 	                </tr>
+                    <tr>
+                        <th scope="row">희망 교육 시작시간<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input">
+								<select title="희망 교육 시작 시" id="hopeEduBgngHour">
+								  <th:block th:each=" i : ${#numbers.sequence(0, 23)}">
+								    <th:block th:if="${i < 10}">
+								      <option th:value="|0${i}|" th:text="|0${i}시|"></option>
+								    </th:block>
+								    <th:block th:unless="${i < 10}">
+								      <option th:value="${i}" th:text="|${i}시|"></option>
+								    </th:block>
+								  </th:block>
+								</select>                                
+                                <div class="bul">시</div>
+                                <select title="희망 교육 시작 분" id="hopeEduBgngMinute">
+                                  <th:block th:each=" i : ${#numbers.sequence(0, 59)}">
+                                    <th:block th:if="${i < 10}">
+                                      <option th:value="|0${i}|" th:text="|0${i}분|"></option>
+                                    </th:block>
+                                    <th:block th:unless="${i < 10}">
+                                      <option th:value="${i}" th:text="|${i}분|"></option>
+                                    </th:block>
+                                  </th:block>
+                                </select>                                
+                                <div class="bul">분</div>
+                            </div>
+                        </td>
+                        <th scope="row">희망 교육 종료시간<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input">
+                                <select title="희망 교육 종료 시" id="hopeEduEndHour">
+                                  <th:block th:each=" i : ${#numbers.sequence(0, 23)}">
+                                    <th:block th:if="${i < 10}">
+                                      <option th:value="|0${i}|" th:text="|0${i}시|"></option>
+                                    </th:block>
+                                    <th:block th:unless="${i < 10}">
+                                      <option th:value="${i}" th:text="|${i}시|"></option>
+                                    </th:block>
+                                  </th:block>
+                                </select>                                
+                                <div class="bul">시</div>
+                                <select title="희망 교육 종료 분" id="hopeEduEndMinute">
+                                  <th:block th:each=" i : ${#numbers.sequence(0, 59)}">
+                                    <th:block th:if="${i < 10}">
+                                      <option th:value="|0${i}|" th:text="|0${i}분|"></option>
+                                    </th:block>
+                                    <th:block th:unless="${i < 10}">
+                                      <option th:value="${i}" th:text="|${i}분|"></option>
+                                    </th:block>
+                                  </th:block>
+                                </select>                                
+                                <div class="bul">분</div>
+                            </div>
+                        </td>
+                    </tr>	                
 	                <tr>
 	                    <th scope="row">비고</th>
 	                    <td colspan="3">
-	                        <textarea name="rmrk" id="rmrk" title="기타사항" placeholder="요청사항 또는 특이사항이 있으시면, 여기에 남겨주세요." maxlength="300"></textarea>
+	                        <textarea name="rmrk" id="rmrk" title="비고" placeholder="요청사항 또는 특이사항이 있으시면, 여기에 남겨주세요." maxlength="300"></textarea>
 	                        <div class="desc ar size"><span id="etcTextSize">0</span> / 200자</div>
 	                    </td>
 	                </tr>
@@ -209,8 +267,12 @@
             
             var trgtCds = $('.trgtCds:checked').map(function(){ return $(this).val();}).get().join(",");
             
+            $("[name=hopeEduBgngTm]").val($("#hopeEduBgngHour").val() + ":" + $("#hopeEduBgngMinute").val() + ":00"); 
+            $("[name=hopeEduEndTm]").val($("#hopeEduEndHour").val() + ":" + $("#hopeEduEndMinute").val() + ":00");
+            
             var data =  $("#registForm").serialize();
             data = data+"&trgtCds="+trgtCds;
+            
             if(displayWorkProgress(true)){
                 $.ajax({
                     url : "/front/mvmnAply/insertMvmnAply.do",

@@ -135,7 +135,7 @@
 <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 <script th:inline="javascript">
-    var gridHelper2;
+    var gridHelper3;
     var selectedItems = [];
     /*<![CDATA[*/
     var fldCd = /*[[${reqMngVo.fldCd}]]*/null;
@@ -144,7 +144,7 @@
     /*]]>*/
     
     $(function(){
-        gridHelper2 = new GridHelper('jsGrid2','contentPanel2');
+        gridHelper3 = new GridHelper('jsGrid2','contentPanel2');
         
         $("#selectDate").daterangepicker({
             autoUpdateInput: false,
@@ -242,7 +242,11 @@
                 , { title: '프로그램명'   ,name: 'prgrmNm'   ,type: "text"  , width: "200" , align:"center"}
                 , { title: '접수일시'   ,name: 'regDe'   ,type: "text"  , width: "100" , align:"center"}
                 , { title: '심사상태'   ,name: 'srngSttsNm'    ,type: "text"  , width: "100" , align:"center"}
-                , { title: onlnSrngTypeCd == '177101' ? '점수' : '1차점수'  ,name: 'frstScr'    ,type: "text"  , width: "100" , align:"center"}
+                , { title: onlnSrngTypeCd == '177101' ? '점수' : '1차점수'  ,name: 'frstScr'    ,type: "text"  , width: "100" , align:"center", 
+//                 		itemTemplate: function(value, item) { 
+//                 			return "<div style='color:red'>" + value + "</div>" 
+//                 		}
+                }
                 , { title: onlnSrngTypeCd == '177101' ? '등급' : '1차등급'  ,name: 'firstGrd'    ,type: "text"  , width: "100" , align:"center"}
                 , { title: onlnSrngTypeCd == '177101' ? '순위' : '1차순위'  ,name: 'firstRkng'    ,type: "text"  , width: "100" , align:"center"}
                 , { title: '2차점수'   ,name: 'scndScr'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
@@ -250,12 +254,14 @@
                 , { title: '2차순위'   ,name: 'scndRkng'    ,type: "text"  , width: "100" , align:"center", css : onlnSrngTypeCd == '177101' ? 'hide' : '' }
                 , { title: '선정결과'   ,name: 'slctnSttsNm'    ,type: "text"  , width: "100" , align:"center"}
             ],
+            /*[# sec:authorize-url="/mng/bizAply/req/reqUserTabForm.html"]*/
             rowClick: function (args) {
-            	var detailUrl = "/mng/bizAply/req/reqUserTabForm.html";
+//             	var detailUrl = "/mng/bizAply/req/reqUserTabForm.html";
                 if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
-                gridHelper2.loadContent(detailUrl + '?aplyid=' + args.item.aplyid + '&pcntstid=' + args.item.pcntstid + '&fldCd=' + fldCd);
-                gridHelper2.rowClick(args);
+                gridHelper3.loadContent('/mng/bizAply/req/reqUserTabForm.html?aplyid=' + args.item.aplyid + '&pcntstid=' + args.item.pcntstid + '&fldCd=' + fldCd);
+                gridHelper3.rowClick(args);  // 선택한 로우 active 속성
             },
+            /*[/]*/
             onPageChanged: function(args) {
                 selectedItems = [];
             }
@@ -308,11 +314,11 @@
         $('#selectDate').val('');
         $('#searchRegStartDe').val('');
         $('#searchRegEndDe').val('');
-        gridHelper2.resetListContent();
+        gridHelper3.resetListContent();
     }
 
     function searchData2() {
-        gridHelper2.resetListContent();
+        gridHelper3.resetListContent();
     }
     
     function fn_excelDownload2() {
@@ -347,7 +353,7 @@
                 success : function (data){
                     if(data.result=="success"){
                         alert(data.msg);
-                        gridHelper2.resetListContent();
+                        gridHelper3.resetListContent();
                     }else{
                         alert(data.msg);
                     }

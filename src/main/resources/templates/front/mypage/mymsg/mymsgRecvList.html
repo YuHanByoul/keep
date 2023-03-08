@@ -1,0 +1,137 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+    <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+        <input type="hidden" id="msgid" name="msgid">
+        <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+        <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+    
+        <div class="form-input mo-flex-wrap">
+            <strong class="label">내용 검색</strong>
+            <div class="form-input">
+                <input type="search" id="searchKeyword" name="searchKeyword" title="메시지내용" placeholder="검색어를 입력해주세요.">            
+            </div>
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+                <button type="reset" class="btn-medium btn-transparent btn-before-refresh">초기화</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="table-caption flex-nowrap">
+        <div class="left">
+            <p>총 <b id="total-count">0</b> 건</p>
+        </div>
+        <div class="right d-flex">
+            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="mymsgRecv.changeRowPerPage()">
+                <option value="10">10개씩 보기</option>
+                <option value="50">50개씩 보기</option>
+                <option value="100">100개씩 보기</option>
+            </select>
+<!--             <div class="ml10"><button type="button" class="btn-medium btn-green">쪽지 보내기</button></div> -->
+        </div>
+    </div>
+    <div id="list-area"></div> 
+    <div class="pagination" aria-label="pagination" id="pagination">
+    </div>
+    <script th:inline="javascript">
+        let mymsgRecv = {
+            listUrl: '/front/mypage/mymsg/selectRecvMsgList.do',
+            detailUrl: '/front/mypage/mymsg/mymsgRecvDetail.html',
+            searchVo: /*[[${searchVo}]]*/null,
+
+            init() {
+                $('#searchForm').on('submit', function (e) {
+                    e.preventDefault();
+                    $('#pageNumber').val(1);
+                    mymsgRecv.selectRecvMsgList();
+                });
+            },
+
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+            },
+
+            moveToDetail(msgid) {
+                let f = document.forms.searchForm;
+                f.msgid.value = msgid;
+                f.action = this.detailUrl;
+                f.submit();
+            },
+
+            selectRecvMsgList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: mymsgRecv.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(mymsgRecv.makeListHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                let html = "";
+                if (list == null || list.length <= 0) {
+                    html += `
+	                        <div class="nodata bg3">
+		                        <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>받은 쪽지가 없습니다.</p>
+		                    </div>
+                            `;
+                } else {
+                	html += `<div class="alarm-list"><ul>`;
+                    list.forEach(function (item) {
+                        html += `
+	                            <li>
+		                            <a href="javascript:void(0);" onclick="mymsgRecv.moveToDetail(${item.msgid});">
+		                                <div class="num">${item.rowNumber}</div>
+		                                <div class="message">
+		                                    <strong>${item.cn}</strong>
+		                                </div>
+		                                <div class="sender">
+		                                    <dl>
+		                                        <dt>보낸사람</dt>
+		                                        <dd>${item.sendNm}</dd>
+		                                        <dt>수신일시</dt>
+		                                        <dd>${item.regDt}</dd>
+		                                    </dl>
+		                                </div>
+		                            </a>
+		                        </li>
+                                `;
+                    });
+                    html += `</ul></div>`;
+                }
+                return html;
+            }
+        };
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            mymsgRecv.selectRecvMsgList();
+        }
+
+        $(function () {
+            mymsgRecv.init();
+
+            $("#pageNumber").val(mymsgRecv.searchVo.pageNumber);
+            $("#searchKeyword").val(mymsgRecv.searchVo.searchKeyword);
+            $('#rowPerPage').val(mymsgRecv.searchVo.rowPerPage);
+            $('#selectRowPerPage').val(mymsgRecv.searchVo.rowPerPage);
+
+            mymsgRecv.selectRecvMsgList();
+        })
+    </script>
+</div>
+<body>

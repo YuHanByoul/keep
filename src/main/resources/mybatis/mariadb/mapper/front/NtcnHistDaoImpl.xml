@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : NtcnHistDaoImpl.xml
+    Description : 마이페이지 알림 내역
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.ntcnHist.model.NtcnHistDao">
+
+    <!-- 알림 내역 조회 -->
+    <select id="selectNtcnHistList"  parameterType="front.NtcnHistVo" resultType="front.NtcnHistVo" >
+          /* NtcnHistDao.selectNtcnHistList */
+        SELECT @ROW_NO := IF(@PREV_VAL = DATE_FORMAT(Z.REG_DT,'%Y년 %m월'), @ROW_NO + 1, 1) AS RNUM
+           ,@PREV_VAL := DATE_FORMAT(Z.REG_DT,'%Y년 %m월') AS YM 
+           ,Z.NTCNID
+           ,Z.USERID
+           ,Z.KND_CD
+           ,Z.TTL
+           ,Z.CN
+           ,Z.MVMNURL
+           ,Z.INQ_YN  
+           ,DATE_FORMAT(Z.REG_DT,'%Y-%m-%d %H:%i:%s') NTCN_DT
+        FROM TB_CMM_NTCN Z,
+          (SELECT @ROW_NO := 0) X,
+          (SELECT @PREV_VAL := '') Y
+        WHERE 1=1  
+        AND USERID = #{user.userid}
+        AND INQ_YN = 'N'  
+        ORDER BY Z.REG_DT DESC; 
+    </select>
+    
+    <!-- 알림 내역 삭제 -->
+    <update id="updateDeleteNtcn" parameterType="front.NtcnHistVo">
+        /* NtcnHistDao."updateDeleteNtcn" */
+        UPDATE TB_CMM_NTCN SET
+            INQ_YN = 'Y'
+        WHERE 1=1 
+        <if test="ntcnid != null and ntcnid != ''">        
+        AND NTCNID = #{ntcnid}
+        </if>
+        AND USERID = #{user.userid}
+    </update>    
+    
+  
+</mapper>

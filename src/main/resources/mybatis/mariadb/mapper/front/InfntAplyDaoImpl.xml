@@ -326,4 +326,43 @@
             )
           </foreach>
     </insert>    
+    
+    <!-- 유아환경교육관 신청이력 조회 -->
+    <select id="selectInfntAplyHistList" parameterType="front.InfntAplyVo" resultType="front.InfntAplyVo">
+        /* InfntAplyDao.selectInfntAplyHistList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                  A.APLYID 
+                , D.PRGRMID
+                , E.CLSSRMID
+                , E.CLSSRM_NM
+                , D.PRGRM_NM
+                , F.CD_NM CTPRVN_NM
+                , B.DE
+                , C.TMEID
+                , C.TME_NM
+                , A.STTS_CD
+                , G.CD_NM STTS_NM
+                , DATE_FORMAT(A.REG_DT, '%Y-%m,%d') REG_DT
+                , A.RGTRID
+                FROM TB_EDU_INFNT_PRGRM_APLY A
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL B ON B.TME_SCHDLID = A.TME_SCHDLID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM_TME C ON C.TMEID = B.TMEID
+                LEFT OUTER JOIN TB_EDU_INFNT_PRGRM D ON D.PRGRMID = C.PRGRMID
+                LEFT OUTER JOIN TB_EDU_CLSSRM E ON E.CLSSRMID = D.CLSSRMID
+                LEFT OUTER JOIN TB_CMM_CD F ON F.CD = E.CTPRVN_CD
+                LEFT OUTER JOIN TB_CMM_CD G ON G.CD = A.STTS_CD
+                WHERE 1=1
+                AND A.USERID = #{user.userid}
+                <!-- 유아환경교육관 교육신청 프로그램명 -->
+                <if test="searchType != null and searchType == 'searchPrgrmNm' ">
+                AND D.PRGRM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>         
+                <!-- 유아환경교육관 교육신청 프로그램명 -->
+                <if test="searchType != null and searchType == 'searchEduClssRmNm' ">
+                AND E.CLSSRM_NM LIKE CONCAT('%', #{searchKeyword}, '%')
+                </if>         
+        <include refid="PaginationMapper.footer"/>
+    </select>    
+    
 </mapper>

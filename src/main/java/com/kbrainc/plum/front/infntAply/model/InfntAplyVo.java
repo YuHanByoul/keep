@@ -191,6 +191,7 @@ public class InfntAplyVo extends ParentRequestVo {
     /** 필터 */
     private String searchPrgrmNm;
     private String searchEduClssRmNm;
+    private String searchKeyword;
     private String searchTrgtCd;
     private String searchCtprvnCd;
     private String searchClsfCd_1;
