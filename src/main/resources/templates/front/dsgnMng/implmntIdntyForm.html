@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+
+            <!-- content -->
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">지정관리 주의사항</h3>
+                </div>
+            </div>
+            <form id="searchForm">
+                <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+                <input type="hidden" id="aplcntid" name="aplcntid" value="">
+                <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+                <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
+                <input type="hidden" id="prgrmid" name="prgrmid" value="">
+            </form>
+
+            <div class="box-desc-list bg7">
+                <ul>
+                    <li>아이돌봄서비스를 이용하시기 위해서는 먼저 정회원전환신청을 해주세요. 담당 서비스제공기관의 검토 후에 정회원으로 전환됩니다.</li>
+                    <li>개명 등으로 가입 회원명의 변경이 필요하신 경우에는 담당 서비스 제공기관으로 문의해주세요.</li>
+                    <li>아이돌봄서비스에서 드리는 서비스연계, 결제안내 등을 위해서 유용한 알림을 받으시려면 최소 1개의 알림방식을 설정해주세요.</li>
+                </ul>
+            </div>
+
+            <div class="tab-content tab-sub dropDown">
+                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">이행확인</button>
+                <ul class="tab-list tab-list-pc target" role="tablist">
+                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
+                    <li class="tab active"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                </ul>
+            </div>
+
+            <div class="table-caption flex-nowrap">
+                <div class="right d-flex">
+                    <div class="ml10"><button type="button" class="btn-medium btn-green">등록</button></div>
+                </div>
+            </div>
+
+            <div class="pc-only">
+                <div class="table-col table-layout-auto table-col-mo">
+                    <table>
+                        <caption>이행확인 - 번호, 지정번호, 프로그램명, 심사일정(방문일정), 진행상태, 보완개선계획서</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">번호</th>
+                                <th scope="col">지정번호</th>
+                                <th scope="col">프로그램명</th>
+                                <th scope="col">심사일정(방문일정)</th>
+                                <th scope="col">진행상태</th>
+                                <th scope="col">보완개선계획서</th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-area"/>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mo-only">
+                <div class="table-list">
+                    <ul>
+                        <li class="block" id="list-mobile-area"/>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="pagination" class="pagination" aria-label="pagination"/>
+
+            <!-- //content -->
+
+        <script th:inline="javascript">
+
+            var implmntIdnty = {
+                listUrl:"/front/dsgnMng/selectImplmntIdntyList.do",
+
+                selectList() {
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: implmntIdnty.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                                implmntIdnty.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                makeListHtml(data) {
+                    var html = "";
+                    var list = data.list;
+                    var mobileHtml = "";
+                    if (list == null || list.length <= 0) {
+                        html += `<tr>
+                                     <td class="nodata" colspan="5">
+                                         <p><span class="icon icon-notice bg-black9"></span>이행확인 내용이 없습니다.</p>
+                                     </td>
+                                </tr>`;
+
+                        mobileHtml += `
+                            <div class="nodata">
+                        	    <p><span class="icon icon-notice bg-black9"></span>이행확인 내용이 없습니다.</p>
+                            </div>
+                            `;
+                    } else {
+                        list.forEach(function (item) {
+                            let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == aplyDsctnList.userid));
+                            html +=
+                                `
+                                <tr>
+                            	<td>${item.rowNumber}</td>
+                            	<td>${item.dsgnNo}</td>
+                            	<td>${item.prgrmNm}</td>
+                            	<td>${item.vstDe}</td>
+                                <td><button type="button" class="link">${item.sttsCdNm}</button></td>
+                                <td><button type="button" class="btn-small btn-outline-blue">등록</button></td>
+                                </tr>
+                                `;
+
+                            mobileHtml +=
+                            	`
+                            	<div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>지정번호</dt>
+                                            <dd>${item.dsgnNo}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>프로그램명</dt>
+                                            <dd>${item.prgrmNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>심사일정(방문일정)</dt>
+                                            <dd>${item.vstDe}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>진행상태</dt>
+                                            <dd><button type="button" class="link">${item.sttsCdNm}</button></dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                                <div class="btn-wrap">
+                                    <div class="center">
+                                        <button type="button" class="btn-small btn-outline-blue">보완개선계획서 등록</button>
+                                    </div>
+                                </div>
+                                `;
+                        });
+
+                    }
+                    $("#list-area").html(html);
+                    $('#list-mobile-area').html(mobileHtml);
+                    $("#pagination").html(data.pagination);
+
+                }
+            }
+
+            function goPage(page) {
+                $("#pageNumber").val(page);
+                implmntIdnty.selectList();
+            }
+
+            $(function () {
+                implmntIdnty.selectList();
+            });
+
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+    <form id="objcAplyPopFrom" >
+        <div class="layer-popup layer-large" data-layer-id="objcAplyPopup">
+            <input type="hidden" id="popSe" name="popSe" th:value="${popSe}">
+            <input type="hidden" id="aplyid" name="aplyid" th:value="${popInfo.aplyid}">
+            <input type="hidden" id="aplySttsCd" name="aplySttsCd" th:value="${popInfo.aplySttsCd}">
+            <input type="hidden" id="aplcntid" name="aplcntid" th:value="${popInfo.aplcntid}">
+
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">[[${popSe} != 'mng' ? '이의신청' : '이의신청 수락(거절) 사유']]</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+                    <div class="table-row table-row-mo">
+                        <table>
+                            <caption>[[${popSe == 'reg' ? '이의신청' : '이의신청 수락(거절) 사유 - 프로그램 선택, 제목, 이의신청, 답변'}]]</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">프로그램 선택</th>
+                                    <td>
+                                        <select id="prgrmid" name="prgrmid" value="" title="프로그램 선택" th:readonly="${popSe} != reg ? 'readonly' ">
+                                            <th:block th:each="item : ${dsgnPrgrmList}">
+                                                <option th:value="${item.prgrmid}">[[${item.prgrmNm}]]</option>
+                                            </th:block>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">제목</th>
+                                    <td>
+                                        <input type="text" title="제목" placeholder="제목을 입력해주세요." id="ttl" name="ttl" th:value="${popInfo.ttl==null?'':popInfo.ttl}" >
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">이의신청</th>
+                                    <td>
+                                        <textarea title="이의신청" id="cn" name="cn" >[[${popInfo.cn==null?'':popInfo.cn}]]</textarea>
+                                        <div class="desc ar size"><span>0</span> / 300자</div>
+                                    </td>
+                                </tr>
+
+                                <tr th:attr="hidden=${'reg' !=popSe? 'hidden': ''}">
+                                    <th scope="row">답변</th>
+                                    <td>
+                                        <textarea title="답변" id="ans" name="ans" >[[${popInfo.ans==null?'':popInfo.ans}]]</textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray"  id="delBtn" onclick="objcAplyPop.objcDel()">삭제</button>
+                            <button type="button" class="btn-medium btn-gray"  id="closeBtn" data-layer-close>닫기</button>
+                            <button type="button" class="btn-medium btn-green" id="regBtn" onclick="objcAplyPop.objcReg()">저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script th:inline="javascript">
+
+    function validate(){
+
+        $("#objcAplyPopFrom").validate({
+            ignore: [],
+            rules: {
+                prgrmid : { required : true }
+              , ttl     : { maxlength:100  }
+              , cn      : { maxlength:100  }
+              , ans     : { maxlength:100  }
+            } ,
+            messages: {
+                prgrmid : { required: "프로그램을 선택해 주십시오." }
+              , ttl     : { maxlength:"제목은 1000자를 넘을 수 없습니다."  }
+              , cn      : { maxlength:"이의신청은 300자를 넘을 수 없습니다."  }
+              , ans     : { maxlength:"답변은 1000자를 넘을 수 없습니다."  }
+             }
+        });
+    }
+
+
+    var objcAplyPop ={
+    	insertUrl : "/front/dsgnMng/insertObjcAplyForm.do",
+    	deleteUrl : "/front/dsgnMng/deleteObjcAplyForm.do",
+    	se : $("#popSe").val(),
+
+    	init(){
+
+    		if("reg"== objcAplyPop.se){
+                $("#regBtn").show();
+                $("#delBtn").hide();
+
+            }
+    		if("mod"== objcAplyPop.se){
+                $("#regBtn").show();
+                $("#delBtn").show();
+            }
+    	},
+    	objcReg(url){
+    		objcAplyPop.doAjax(objcAplyPop.insertUrl);
+    	},
+
+    	objcDel(){
+    		objcAplyPop.doAjax(objcAplyPop.deleteUrl);
+    	},
+
+    	doAjax(url){
+
+    		if (displayWorkProgress(true)) {
+
+    			if(objcAplyPop.se=="reg"){
+    				$("#aplySttsCd").val("129101");    //신청
+    			}
+
+                let formData = $('#objcAplyPopFrom').serializeArray();
+
+                $.ajax({
+                	url : url,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data: formData,
+                    success : function (data){
+                        if(data.result=="success"){
+                        	alert(data.msg);
+                        	layerPopup.close({target:'objcAplyPopup'});
+                        	$("#objcAplyTab").get(0).click()
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
+    	}
+
+    };
+
+    $(function () {
+    	objcAplyPop.init();
+    });
+
+    </script>
+</body>
+</html>

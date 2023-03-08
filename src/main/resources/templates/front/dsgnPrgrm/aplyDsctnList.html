@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <form class="search-filter" id="searchForm" name="searchForm">
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="aplcntid" name="aplcntid" value="">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+            <input type="hidden" id="orderField" name="orderField" value="APLY_DT">
+            <input type="hidden" id="prgrmid" name="prgrmid" value="">
+            <input type="hidden" id="opner" name="opner" value="myPage">
+
+            <div class="form-input-wrap">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">프로그램명</strong></div>
+                    <div class="form-body">
+                        <input type="search" title="프로그램명" placeholder="키워드를 입력해 주세요.">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">진행상태</strong></div>
+                    <div class="form-body">
+                        <select title="진행상태">
+                            <option value="전체">전체</option>
+                            <option value="제목+내용">제목+내용</option>
+                            <option value="제목+내용">제목+내용</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="search-filter-submit">
+                <button type="reset" class="btn-medium btn-gray btn-before-refresh">초기화</button>
+                <button type="button" class="btn-medium btn-green btn-before-search">검색</button>
+            </div>
+
+
+        </form>
+        <div class="pc-only">
+            <div class="table-col table-layout-auto">
+                <table>
+                    <caption>지정관리 - 번호, 프로그램명, 진행상태, 신청일, 현장 방문일정</caption>
+                    <colgroup>
+                        <col style="width:6%;">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">프로그램명</th>
+                            <th scope="col">진행상태</th>
+                            <th scope="col">신청일</th>
+                            <th scope="col">현장 방문일정</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-area">
+                        <tr>
+                            <td>9</td>
+                            <td><a href="#" class="link ellipsis">훌륭한 환경교육프로그램 5</a></td>
+                            <td>작성중</td>
+                            <td>2023-01-04</td>
+                            <td>2023-01-01 13:00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="mo-only">
+            <div class="table-list">
+                <ul>
+                    <li class="block">
+                        <div class="tbody">
+                            <dl>
+                                <div class="list">
+                                    <dt>번호</dt>
+                                    <dd>9</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>프로그램명</dt>
+                                    <dd><a href="#" class="link ellipsis">훌륭한 환경교육프로그램 5</a></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>진행상태</dt>
+                                    <dd>작성중</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>진행상태</dt>
+                                    <dd>신청완료</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>진행상태</dt>
+                                    <dd><a href="#" class="link">서류요청</a></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>진행상태</dt>
+                                    <dd><a href="#" class="link">보완완료</a></dd>
+                                </div>
+                                <div class="list">
+                                    <dt>신청일</dt>
+                                    <dd>2023-01-04</dd>
+                                </div>
+                                <div class="list">
+                                    <dt>현장 방문일정</dt>
+                                    <dd>2023-01-01 13:00</dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </li>
+                    <li class="block">
+                        <div class="nodata">
+                            <p><span class="icon icon-notice bg-black9"></span>지정관리 내역이 없습니다.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="pagination" aria-label="pagination" id="pagination"/>
+
+    <!-- //content -->
+
+    <script th:inline="javascript">
+
+    var aplyDsctnList = {
+    		aplcntid   : /*[[${aplcntid}]]*/ null,
+            list   : /*[[${list}]]*/ null,
+            listUrl  : '/front/dsgnPrgrm/selectAplyDsctnList.do',
+            detailUrl: '/front/dsgnPrgrm/prgrmDstnctnForm.html',
+            formUrl  : '/front/inqry/inqryForm.html',
+
+
+            moveToInsertForm() {
+                if (this.userid == null) {
+                    alert('로그인 후 이용하실 수 있습니다.');
+                    return;
+                }
+                var f = document.forms.searchForm;
+                f.action = this.formUrl;
+                f.submit();
+            },
+
+            search() {
+                $('#pageNumber').val(1);
+                this.selectDsctnList();
+            },
+
+            searchInit() {
+                $('#searchKeyword, #inqryClCd').val('');
+            },
+
+            changeRowPerPage() {
+                $('#rowPerPage').val($('#selectRowPerPage').val());
+            },
+
+            moveToDetail(prgrmid) {
+                var f = document.forms.searchForm;
+                f.prgrmid.value = prgrmid;
+                f.action = this.detailUrl;
+                f.submit();
+
+            },
+
+            selectDsctnList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: aplyDsctnList.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        data: formData = $('#searchForm').serializeArray(),
+                        type: 'GET',
+                        success: function (data) {
+                            $("#list-area").html(aplyDsctnList.makeListHtml(data.list));
+                            $("#pagination").html(data.pagination);
+                            $("#total-count").html(data.totalCount);
+                            msgAddBtn();
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(list) {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<tr>
+                                <td class="nodata" colspan="7">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 1:1문의가 없습니다.</p>
+                                </td>
+                            </tr>`;
+                } else {
+                    list.forEach(function (item) {
+                        let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == aplyDsctnList.userid));
+                        html +=
+                        	`
+                            <tr>
+                                <td>${item.rowNumber}</td>
+                                <td><a href="#" onclick="aplyDsctnList.moveToDetail(${item.prgrmid})" class="link ellipsis">${item.prgrmNm == null ? '': item.prgrmNm}</a></td>
+                                <td>${item.sttsCdNm == null ? '': item.sttsCdNm}</td>
+                                <td>${item.aplyDt == null ? '': item.aplyDt}</td>
+                                <td>${item.vstDt == null ? '': item.vstDt}</td>
+                            </tr>
+                            `;
+                    });
+//                                 <tr>
+//                                     <td>${item.rowNumber}</td>
+//                                     <td>${item.inqryClCdNm}</td>
+//                                     <td class="al article">
+//                                         <a href="javascript:void(0)" class="link ellipsis" onclick="aplyDsctnList.moveToDetail(${item.inqryid}, ${canGoToDetail})">
+//                                             ${item.sttsCd == '103104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.title}
+//                                         </a>
+//                                     </td>
+//                                     <td>${item.sttsCdNm}</td>
+//                                     <td class="list-msg-add-btn" data-trgt-id="${item.userid}">${item.acnt}</td>
+//                                     <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
+//                                     <td>${item.regDt}</td>
+//                                 </tr>
+                }
+                return html;
+            }
+        };
+
+        function goPage(num) {
+            $("#pageNumber").val(num);
+            aplyDsctnList.selectDsctnList();
+        }
+
+        $(function(){
+        	debugger;
+        	$('#aplcntid').val(aplyDsctnList.aplcntid);
+            aplyDsctnList.selectDsctnList();
+        });
+
+    </script>
+    </div>
+
+</body>
+</html>

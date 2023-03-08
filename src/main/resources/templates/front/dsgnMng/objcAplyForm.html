@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/nolnbSubLayout" >
+<body>
+    <div layout:fragment="content">
+
+        <!-- content -->
+        <div class="table-caption">
+            <div class="left">
+                <h3 class="sub-title">지정관리 주의사항</h3>
+            </div>
+        </div>
+        <form id="searchForm">
+            <div id="objcAplyPopup"></div>
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="aplcntid" name="aplcntid" value="">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+            <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
+            <input type="hidden" id="prgrmid" name="prgrmid" value="">
+        </form>
+
+        <div class="box-desc-list bg7">
+            <ul>
+                <li>아이돌봄서비스를 이용하시기 위해서는 먼저 정회원전환신청을 해주세요. 담당 서비스제공기관의 검토 후에 정회원으로 전환됩니다.</li>
+                <li>개명 등으로 가입 회원명의 변경이 필요하신 경우에는 담당 서비스 제공기관으로 문의해주세요.</li>
+                <li>아이돌봄서비스에서 드리는 서비스연계, 결제안내 등을 위해서 유용한 알림을 받으시려면 최소 1개의 알림방식을 설정해주세요.</li>
+            </ul>
+        </div>
+
+        <div class="tab-content tab-sub dropDown">
+            <button id="tabBtn" type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">이의신청</button>
+            <ul class="tab-list tab-list-pc target" role="tablist">
+                <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
+                <li class="tab"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
+                <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
+                <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
+                <li class="tab active"><a id="objcAplyTab" th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+            </ul>
+        </div>
+
+        <div class="table-caption flex-nowrap">
+            <div class="right d-flex">
+                <div class="ml10"><button type="button" class="btn-medium btn-green" id="btnAply" >등록</button></div>
+            </div>
+        </div>
+
+        <div class="pc-only">
+            <div class="table-col table-layout-auto">
+                <table>
+                    <caption>이의신청 - 번호, 지정번호, 프로그램명, 상태, 등록일, 답변일</caption>
+                    <colgroup>
+                        <col style="width:6%;">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">지정번호</th>
+                            <th scope="col">프로그램명</th>
+                            <th scope="col">상태</th>
+                            <th scope="col">등록일</th>
+                            <th scope="col">답변일</th>
+                        </tr>
+                    </thead>
+                    <tbody id="list-area"/>
+                </table>
+            </div>
+        </div>
+
+        <div class="mo-only">
+            <div class="table-list">
+                <ul>
+                    <li class="block" id="list-mobile-area"/>
+                </ul>
+            </div>
+        </div>
+
+
+        <div id="pagination" class="pagination" aria-label="pagination"/>
+        <!-- //content -->
+
+        <!-- layerpopup -->
+
+
+
+
+        <script th:inline="javascript">
+
+//             //지정내역
+            var objcAply= {
+                listUrl:"/front/dsgnMng/selectObjcAplyList.do",
+
+                selectList() {
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm').serializeArray();
+
+                        $.ajax({
+                            url: objcAply.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	objcAply.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                makeListHtml(data) {
+                    var html = "";
+                    var list = data.list;
+                    var mobileHtml = "";
+
+                    if (list == null || list.length <= 0) {
+                        html += `<td class="nodata" colspan="6">
+                                     <p><span class="icon icon-notice bg-black9"></span>이의신청 내용이 없습니다.</p>
+                                 </td>
+                                 `;
+                        mobileHtml += `<tr>
+                            <td class="nodata" colspan="7">
+                                <p><span class="icon icon-notice bg-black9"></span>운영결과 내용이 없습니다.</p>
+                            </td>
+                        </tr>
+                        `;
+
+                    } else {
+                        list.forEach(function (item, idx) {
+
+                            let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == aplyDsctnList.userid));
+                                html += `<tr>
+                                	     <td>${item.rowNumber}</td>
+                                	     <td>${item.dsgnNo}</td>
+                                	     <td>${item.prgrmNm}</td>
+                                         <td><button type="button" onclick="objcAply.openPop('mod',${item.aplyid})" class="link">신청</button></td>
+                                         <td>${item.regDt}</td>
+                                         <td>${item.ansDt == null ? "-" : item.ansDt}</td>
+                                         </tr>
+                                        `;
+
+                                mobileHtml += `
+                                	<div class="tbody">
+                                        <dl>
+                                            <div class="list">
+                                                <dt>번호</dt>
+                                                ${item.rowNumber/3}
+                                            </div>
+                                            <div class="list">
+                                                <dt>지정번호</dt>
+                                                <dd>2231-01</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>프로그램명</dt>
+                                                <dd>훌륭한 환경교육프로그램 5</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>상태</dt>
+                                                <dd><button type="button" class="link">신청</button></dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>상태</dt>
+                                                <dd><button type="button" class="link">답변완료</button></dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>등록일</dt>
+                                                <dd>2023-01-01</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>답변일</dt>
+                                                <dd>2023-01-01</dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                    `;
+                        });
+
+                    }
+                    $("#list-area").html(html);
+                    $("#pagination").html(data.pagination);
+                    $('#list-mobile-area').html(mobileHtml);
+
+                } ,
+
+                openPop(popSe,id){
+debugger;
+                	$("#objcAplyPopup").load("/front/dsgnMng/objcAplyPopup.html?popSe="+popSe+"&aplyid="+id, function(response, status, xhr) {
+                        if (status == "success") {
+                            layerPopup.open({target:'objcAplyPopup'});
+                        }
+                    });
+                 }
+            }
+
+            function goPage(page) {
+                $("#pageNumber").val(page);
+                objcAply.selectList();
+            }
+
+            $(function () {
+                objcAply.selectList();
+            });
+
+            jQuery("#btnAply").bind("click",function(){
+            	objcAply.openPop("reg",0);
+            });
+
+        </script>
+    </div>
+</body>
+</html>
