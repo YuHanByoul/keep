@@ -300,11 +300,11 @@
           , CONCAT(A.NM, '(',A.ACNT,')')    AS APLCNT_NM
           , A.MOBLPHON       AS APLCNT_MOBLPHON
           , A.EML            AS APLCNT_EML
+          , CD.CD_NM         AS INST_CD_NM
+          , TYPE_CD.CD_NM    AS INST_TYPE_CD_NM
+          , B.INST_TYPE_CD
           , B.INST_NM
           , B.INST_CD
-          , CD.CD_NM         AS INST_CD_NM
-          , B.INST_TYPE_CD
-          , TYPE_CD.CD_NM    AS INST_TYPE_CD_NM
           , B.RGN_CD
           , B.BRNO
           , B.RPRSV_NM
@@ -321,17 +321,10 @@
           , B.MDFRID
           , B.REG_DT
           , B.RGTRID
-          , C.PRGRMID
-          , C.APLCNTID
-          , C.APLCNT_EML
-          , C.FILEGRPID
-          , C.CNSLTNGID
         FROM
             TB_CMM_USER A
         INNER JOIN
             TB_CMM_INST B ON A.INSTID = B.INSTID
-        LEFT OUTER JOIN
-            TB_ASS_PRGRM C ON A.USERID = C.APLCNTID
         LEFT OUTER JOIN
             TB_CMM_CD TYPE_CD ON B.INST_TYPE_CD = TYPE_CD.CD
         LEFT OUTER JOIN
@@ -372,11 +365,6 @@
           , A.CNSLTNG_PRGRS_YN
           , A.CNSLTNGID
           , A.APLY_DT
-          , A.MDFCN_DT
-          , A.MDFRID
-          , A.REG_DT
-          , A.RGTRID
-          /*프로그램 우수성*/
           , B.PRGRMID    AS DSTNCTNID
           , B.AUG
           , B.STY_NIGHT
@@ -421,6 +409,20 @@
         WHERE 1=1
         AND A.PRGRMID = #{prgrmid}
         AND A.STTS_CD = '111101'    /* 작성중 */
+    </select>
+
+    <select id="getPrgrmid" parameterType="dsgnPrgrmVo" resultType="Integer">
+        SELECT
+            MAX(C.PRGRMID)    PRGRMID
+        FROM
+            TB_CMM_USER A
+        INNER JOIN
+            TB_CMM_INST B ON A.INSTID = B.INSTID
+        LEFT OUTER JOIN
+            TB_ASS_PRGRM C ON A.USERID = C.APLCNTID
+        WHERE 1=1
+            AND A.USERID = #{user.userid}
+            AND C.STTS_CD = '111101'    /* 작성중 */
     </select>
 
     <!-- ASS 프로그램 등록 -->
@@ -705,7 +707,7 @@
     </select>
 
     <!-- 컨설팅 등록 -->
-    <insert id="insertCsltng" parameterType="dsgnPrgrmVo" >
+    <insert id="insertCsltng" parameterType="front.dsgnPrgrmVo" >
         /* front.DsgnPrgrmDao.insertCsltng*/
         INSERT INTO TB_ASS_CNSLTNG
         (
@@ -757,7 +759,7 @@
     </insert>
 
     <!-- 컨설팅 수정 -->
-    <update id="updateCsltng" parameterType="dsgnPrgrmVo" >
+    <update id="updateCsltng" parameterType="front.dsgnPrgrmVo" >
         /* front.DsgnPrgrmDao.updateCsltng*/
         UPDATE TB_ASS_CNSLTNG SET
             INSTID            = #{instid}           /*기관아이디*/
@@ -784,7 +786,7 @@
     </update>
 
     <!-- 지정제 프로그램 컨설팅id 수정 -->
-    <update id="updateCnsltngid" parameterType="dsgnPrgrmVo" >
+    <update id="updateCnsltngid" parameterType="front.dsgnPrgrmVo" >
         /* front.DsgnPrgrmDao.updatePrgrm */
         UPDATE TB_ASS_PRGRM SET
             CNSLTNGID           = #{cnsltngid}    /* 컨설텅아이디 */
@@ -793,7 +795,7 @@
         WHERE PRGRMID = #{prgrmid}
     </update>
 
-    <select id="selectCnsltngid" parameterType="dsgnPrgrmVo" resultType="int">
+    <select id="selectCnsltngid" parameterType="front.dsgnPrgrmVo" resultType="int">
         SELECT
             max(CNSLTNGID) CNSLTNGID
         FROM TB_ASS_CNSLTNG
@@ -801,9 +803,37 @@
         AND   USERID = #{user.userid}
     </select>
 
-
-
-
+    <select id="selectAplyDsctnList" parameterType="front.dsgnPrgrmVo" resultType="front.dsgnPrgrmVo">
+        /* front.DsgnPrgrmDao.selectAplyDsctnList*/
+        <if test="opner!='aply'">
+            <include refid="PaginationMapper.header"/>
+        </if>
+        SELECT
+           A.PRGRMID  /*프로그램아이디*/
+         , A.INSTID    /*기관아이디*/
+         , A.APLCNTID   /*신청자아이디*/
+         , A.PRGRM_NM  /*프로그램_이름*/
+         , A.STTS_CD   /*상태_코드*/
+         , A.APLY_DT   /*신청_일시*/
+         , CONCAT(B.VST_DE , " " , B.VST_HR , ":" , B.VST_MNT) AS VST_DT
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_SPRTGRP_SRNG B ON A.PRGRMID  = B.PRGRMID
+        WHERE 1=1
+            AND APLCNTID = #{aplcntid}
+            <!-- 프로그램 명 -->
+        <if test="searchPrgrmNm!= null and searchPrgrmNm != '' ">
+            AND A.PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+            <!-- 상태 코드-->
+        <if test="searchSttsCd!= null and searchSttsCd != '' ">
+            AND A.STTS_CD = #{searchSttsCd}
+        </if>
+        <if test="opner!='aply'">
+            <include refid="PaginationMapper.footer"/>
+        </if>
+    </select>
 
 
 </mapper>

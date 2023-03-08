@@ -30,7 +30,6 @@ import com.kbrainc.plum.mng.asgsysSrng.model.TchaidFcltVo;
 import com.kbrainc.plum.mng.asgsysSrng.service.AsgsysSrngServiceImpl;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.mng.cnsltng.service.CnsltngServiceImpl;
-import com.kbrainc.plum.mng.member.model.ContractVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -173,8 +172,16 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/dsgnAplyForm.html")
-	public String dsgnAplyForm(Model model, @UserInfo UserVo user) throws Exception {
+	public String dsgnAplyForm(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+		List<DsgnPrgrmVo> prgrmLst = null;
+
+		dsgnPrgrmVo.setAplcntid(Integer.parseInt(user.getUserid()));
+		dsgnPrgrmVo.setSearchSttsCd("111101");    //작성중
+		dsgnPrgrmVo.setOpner("aply");
+		prgrmLst = dsgnPrgrmService.selectAplyDsctnList(dsgnPrgrmVo);
+
 		model.addAttribute("user", user);
+		model.addAttribute("prgrmLst", prgrmLst);
 		return "front/dsgnPrgrm/dsgnAplyForm";
 	}
 
@@ -189,7 +196,7 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/trmsAgreForm.html")
-	public String trmsAgreForm(Model model) throws Exception {
+	public String trmsAgreForm(Model model, @UserInfo UserVo user) throws Exception {
 		return "front/dsgnPrgrm/trmsAgreForm";
 	}
 
@@ -222,10 +229,10 @@ public class DsgnPrgrmController {
             ArrayList<FileVo> fileList= fileService.getFileList(fileVo);
             model.addAttribute("fileList", fileList);
             model.addAttribute("fileListCnt", fileList.size());
-        } else {
-        	model.addAttribute("fileMap", null);
-        	model.addAttribute("fileListCnt", 0);
         }
+
+		model.addAttribute("fileMap", null);
+		model.addAttribute("fileListCnt", 0);
 
 		return "front/dsgnPrgrm/evdncDataForm";
 	}
@@ -256,6 +263,7 @@ public class DsgnPrgrmController {
             return resultMap;
         }
 
+        dsgnPrgrmVo.setUser(user);
         dsgnPrgrmVo.setAplcntid(Integer.parseInt(user.getUserid()));
 
         int retVal = 0;
@@ -328,7 +336,9 @@ public class DsgnPrgrmController {
 	* @return String
 	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmDstnctnForm.html")
-	public String prgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+	public String prgrmDstnctnForm(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+
+		dsgnPrgrmVo.setUser(user);
 
 		//신청정보
 		model.addAttribute("aplyInfo", dsgnPrgrmService.selectAplyInfo(dsgnPrgrmVo));
@@ -341,6 +351,7 @@ public class DsgnPrgrmController {
 
 		model.addAttribute("schdlList", schdlList);
 		model.addAttribute("planList", planList );
+		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
 
 		return "front/dsgnPrgrm/prgrmDstnctnForm";
 	}
@@ -438,6 +449,7 @@ public class DsgnPrgrmController {
 	@RequestMapping(value = "/front/dsgnPrgrm/prgrmEvlForm.html")
 	public String prgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
 		model.addAttribute("aplyInfo", dsgnPrgrmService.selectPrgrmEvlForm(dsgnPrgrmVo));
+		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
 
 		return "front/dsgnPrgrm/prgrmEvlForm";
 	}
@@ -510,6 +522,8 @@ public class DsgnPrgrmController {
     	List<TchaidFcltVo> tchaidFcltList = asgsysSrngService.selectTchaidFcltList(tchaidFcltVo);
     	model.addAttribute("fcltList", tchaidFcltList);
 
+    	model.addAttribute("opner", asgsysSrngVo.getOpner());
+
 		return "front/dsgnPrgrm/prgrmOperMngForm";
 	}
 
@@ -573,6 +587,8 @@ public class DsgnPrgrmController {
 		model.addAttribute("careerList", asgsysSrngService.selectSnrstfdvlprCareerList(asgsysSrngVo));
 		//책임개발자 자격사항 목록 조회
 		model.addAttribute("qlfcList", asgsysSrngService.selectSnrstfdvlprQlfcList(asgsysSrngVo));
+
+		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
 
 		return "front/dsgnPrgrm/ldrQlfcForm";
 	}
@@ -648,6 +664,8 @@ public class DsgnPrgrmController {
 
     	} else {
     		model.addAttribute("bfrCertFileList", Collections.emptyList());
+
+    		model.addAttribute("opner", asgsysSrngVo.getOpner());
     	}
 
 		return "front/dsgnPrgrm/sftyMngForm";
@@ -815,9 +833,68 @@ public class DsgnPrgrmController {
         return resultMap;
     }
 
+	/**
+	*컨설팅 신청 완료
+	*
+	* @Title : cnsltngAplyComp
+	* @Description : 컨설팅 신청 완료
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return String
+	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/cnsltngAplyComp.html")
 	public String cnsltngAplyComp(Model model, @UserInfo UserVo user) throws Exception {
 		return "front/dsgnPrgrm/cnsltngAplyComp";
+	}
+
+	/**
+	* 신청내역 화면 이동
+	*
+	* @Title : aplyDsctnList
+	* @Description : 신청내역 화면 이동
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return String
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/aplyDsctnList.html")
+	public String aplyDsctnList(Model model, @UserInfo UserVo user) throws Exception {
+		model.addAttribute("aplcntid", user.getUserid());
+		return "front/dsgnPrgrm/aplyDsctnList";
+	}
+
+	/**
+	* 신청내역 조회
+	*
+	* @Title : selectAplyDsctnList
+	* @Description : 신청내역 조회
+	* @Description : TODO
+	* @param dsgnPrgrmVo
+	* @param model
+	* @param user
+	* @return
+	* @throws Exception
+	* @return Map<String,Object>
+	*/
+	@RequestMapping(value = "/front/dsgnPrgrm/selectAplyDsctnList.do")
+	@ResponseBody
+	public Map<String, Object> selectAplyDsctnList(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+		Map<String, Object> result = new HashMap<>();
+
+        List<DsgnPrgrmVo> list = dsgnPrgrmService.selectAplyDsctnList(dsgnPrgrmVo);
+        if (list.size() > 0) {
+            result.put("totalCount", list.get(0).getTotalCount());
+
+            result.put("pagination", PaginationUtil.getFrontPaginationHtml(list.get(0).getTotalPage(), list.get(0).getPageNumber(), 10));
+        } else {
+            result.put("totalCount", 0);
+        }
+
+        result.put("list", list);
+		return result;
 	}
 
 }

@@ -1,10 +1,8 @@
 package com.kbrainc.plum.front.dsgnPrgrm.service;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
@@ -13,11 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmDao;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngDao;
-import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
-import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
-import com.kbrainc.plum.rte.util.CommonUtil;
 
 /**
  *
@@ -160,8 +154,15 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	*/
 	@Override
 	public DsgnPrgrmVo selectAplyInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+
+		if(dsgnPrgrmVo.getPrgrmid() == null || dsgnPrgrmVo.getPrgrmid() == 0 ) {
+			Integer id= dsgnPrgrmDao.getPrgrmid(dsgnPrgrmVo);
+			dsgnPrgrmVo.setPrgrmid(id);
+		}
 		return dsgnPrgrmDao.selectAplyInfo(dsgnPrgrmVo);
 	}
+
+
 
 	/**
 	* 지정프로그램 등록
@@ -264,5 +265,19 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		return ret;
 	}
 
+	/**
+	* 신청내역 조회
+	*
+	* @Title : selectAplyDsctnList
+	* @Description : 신청내역 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectAplyDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectAplyDsctnList(dsgnPrgrmVo);
+	}
 
 }

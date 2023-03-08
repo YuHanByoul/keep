@@ -3,13 +3,8 @@ package com.kbrainc.plum.front.dsgnPrgrm.model;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
-import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
-import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 
 /**
  *
@@ -125,6 +120,18 @@ public interface DsgnPrgrmDao {
 	* @return DsgnPrgrmVo
 	*/
 	public DsgnPrgrmVo selectAplyInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	 * 신청정보 프로그램 아이디 조회
+	 *
+	 * @Title : getAplyInfo
+	 * @Description : 신청정보 프로그램 아이디 조회
+	 * @param dsgnPrgrmVo
+	 * @return
+	 * @throws Exception
+	 * @return int
+	 */
+	public int getPrgrmid(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	* 지정프로그램 등록
@@ -256,5 +263,17 @@ public interface DsgnPrgrmDao {
 	 * @return void
 	 */
 	public int selectCnsltngid(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 신청내역 조회
+	*
+	* @Title : selectAplyDsctnList
+	* @Description : 신청내역 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectAplyDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

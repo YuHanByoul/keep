@@ -41,6 +41,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 	/** 사용자 ip */
 	private String userIp;
 
+	/** 호출화면 */
+	private String opner;
+
     /** 검색 진행상태 */
     private String searchSttsCd;
 
