@@ -39,7 +39,6 @@
                 <div class="form-header"><strong class="label">분류</strong></div>
                 <div class="form-body">
                     <th:block kattr:check_code="searchClsfCd" grpCd="228"/>
-
                 </div>
             </div>
         </div>
@@ -101,6 +100,16 @@
         const searchVo = /*[[${searchVo}]]*/null;
 
         $(function () {
+            if(!isNull(searchVo.searchClsfCd)) {
+                searchVo.searchClsfCd.forEach(val => {
+                    $('input[name=searchClsfCd]').each(function (index, item) {
+                        if (val == $(item).val()) {
+                            $(item).prop('checked', true);
+                        }
+                    })
+                })
+            }
+
             $('#searchType').val(searchVo.searchType);
             $('#searchKeyword').val(searchVo.searchKeyword);
             $('#writr').val(searchVo.writr);
@@ -133,7 +142,7 @@
                     success: function (data) {
                         $('#listArea').html(makeListHtml(data.list));
                         $('#pagination').html(data.pagination);
-                        $('#totalCount').val(data.totalCount);
+                        $('#totalCount').html(data.totalCount);
                         closeWorkProgress();
                     }
                 });

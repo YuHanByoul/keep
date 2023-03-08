@@ -1,12 +1,10 @@
 package com.kbrainc.plum.front.intro.envEduPlcyDta.controller;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
-import com.kbrainc.plum.cmm.file.service.FileStorageServiceImpl;
 import com.kbrainc.plum.front.intro.envEduPlcyDta.model.BsnsOperDtaVo;
 import com.kbrainc.plum.front.intro.envEduPlcyDta.model.SpcltyDtaVo;
 import com.kbrainc.plum.front.intro.envEduPlcyDta.service.EnvEduPlcyDtaService;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -72,6 +70,7 @@ public class EnvEduPlcyDtaController {
         List<FileVo> pdfFileList = bsnsOperDta.getPdfFileList();
         List<String> pdfFilePaths = getPdfFilePaths(pdfFileList);
 
+        model.addAttribute("searchVo", searchVo);
         model.addAttribute("bsnsOperDta", bsnsOperDta);
         model.addAttribute("pdfFilePaths", pdfFilePaths);
         return VIEW_PATH + "/bsnsOperDtaDetail";
@@ -106,6 +105,7 @@ public class EnvEduPlcyDtaController {
         List<FileVo> pdfFileList = spcltyDta.getPdfFileList();
         List<String> pdfFilePaths = getPdfFilePaths(pdfFileList);
 
+        model.addAttribute("searchVo", searchVo);
         model.addAttribute("spcltyDta", spcltyDta);
         model.addAttribute("pdfFilePaths", pdfFilePaths);
         return VIEW_PATH + "/spcltyDtaDetail";
