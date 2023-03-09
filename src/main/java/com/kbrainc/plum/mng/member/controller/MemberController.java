@@ -36,6 +36,7 @@ import com.kbrainc.plum.mng.member.service.MemberServiceImpl;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.DateTimeUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
@@ -64,9 +65,6 @@ public class MemberController {
 
     @Autowired
     private MemberServiceImpl memberService;
-    
-    //@Value("${front.server.host}")
-    private String frontServerHost;
     
     @Resource(name="digestService")
     EgovDigestService digestService;
@@ -163,7 +161,7 @@ public class MemberController {
             years[j] = i;
         }
         model.addAttribute("years", years);
-        model.addAttribute("frontServerHost", frontServerHost);
+        model.addAttribute("portalUrl", CommonUtil.portalUrl);
 
         return "mng/member/memberUpdate2";
     }

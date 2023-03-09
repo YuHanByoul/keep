@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
@@ -32,6 +33,7 @@ import com.kbrainc.plum.mng.member.model.TempPwdVo;
 import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.exception.MailSendFailException;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CommonUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
 import com.kbrainc.plum.rte.util.mail.model.MailVo;
@@ -70,9 +72,6 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     
     @Autowired
     private SmsService smsService;
-    
-    //@Value("${front.server.host}")
-    private String frontServerHost;
     
     @Autowired
     private TemplateEngine templateEngine;
@@ -260,7 +259,7 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             if ("email".equals(transType)) {
                 Context context = new Context();
                 context.setVariable("pssword", password);
-                context.setVariable("frontServerHost", frontServerHost);
+                context.setVariable("portalUrl", CommonUtil.portalUrl);
                 String mailContents = templateEngine.process("mail/mail_tempPwd", context);
                 
                 String mailTitle = "임시비밀번호 발급";
@@ -335,16 +334,16 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Override
     public boolean sendMail(EmailVo emailVo) throws Exception {
         List<MailRcptnVo> to= emailVo.getEmails();
-        String text = emailVo.getEmailTitle();
+        String title = emailVo.getEmailTitle();
         String content = emailVo.getEmailContent();
         
         Context context = new Context();
-        context.setVariable("text", text);
-        context.setVariable("contents", content);
-        context.setVariable("frontServerHost", frontServerHost);
+        context.setVariable("title", title);
+        context.setVariable("content", content);
+        context.setVariable("portalUrl", CommonUtil.portalUrl);
         String contents = templateEngine.process("mail/mail_basic_template", context);
         
-        MailVo mailVo = new MailVo(null, null, text, content, Integer.valueOf(emailVo.getUser().getUserid()), "U", 0);
+        MailVo mailVo = new MailVo(null, null, title, contents, Integer.valueOf(emailVo.getUser().getUserid()), "U", 0);
         Map<String, Object> resMap = mailService.sendMultiMail(to, mailVo); // 이메일 발송
         String result = (String)resMap.get("result");
         
