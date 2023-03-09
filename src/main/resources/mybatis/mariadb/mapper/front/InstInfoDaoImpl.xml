@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : EvntDaoImpl.xml
+	Description : 참여신청 관리 > 이벤트 관리
+-->
+<mapper namespace="com.kbrainc.plum.front.instInfo.model.InstInfoDao">
+
+    <select id="selectInstInfo" resultType="front.InstInfoVo">
+        SELECT
+            B.INST_NM
+            , CONCAT(D.CD_NM, ' ', C.CD_NM) AS INST_TYPE_CD_NM
+            , B.BRNO
+            , CONCAT(SUBSTR(B.BRNO,1,3),'-',SUBSTR(B.BRNO,4,2),'-',SUBSTR(B.BRNO,6)) AS STR_BRNO
+            , B.RPRSV_NM
+            , B.TELNO
+            , B.FXNO
+            , B.HMPG
+            , B.LOGO_FILEID
+            , B.RGN_CD
+            , B.ZIP
+            , B.ADDR
+            , B.ADDR_DTL
+        FROM
+        	TB_CMM_USER A
+        	LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID
+            
+            <!-- 기관유형 -->
+        	LEFT OUTER JOIN TB_CMM_CD C ON B.INST_TYPE_CD = C.CD
+        	LEFT OUTER JOIN TB_CMM_CD D ON C.UPPR_CD = D.CD
+        WHERE
+        	USERID = #{user.userid} 
+    </select>
+    
+    <select id="selectInstPictList" resultType="front.InstPicVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+            	USERID
+              , NM
+              , ACNT
+              , INSTPIC_ROLE_CD
+              , CASE
+            	    WHEN ACNT_LOCK_YN = 'Y'
+            		    THEN CASE
+        				         WHEN ACNT_LOCK_CD = '101105'
+        					         THEN '휴면회원'
+        				         WHEN ACNT_LOCK_CD = '101106'
+        					         THEN '탈퇴회원'
+        				         ELSE ''
+        		             END
+            	    ELSE '정상회원'
+            	END STTS_CD
+            FROM
+            	TB_CMM_USER
+            WHERE
+            	INSTID = #{instid}
+            AND INSTPIC_ROLE_CD = 109102
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <select id="selectInstPicInfo" resultType="front.InstPicVo">
+        SELECT
+        	USERID
+          , NM
+          , ACNT
+          , INSTPIC_ROLE_CD
+          , CASE
+        	    WHEN INSTPIC_ROLE_CD = '109101'
+        		    THEN '기관회원'
+        	    ELSE '개인회원 (기관 담당자)'
+        		END INSTPIC_ROLE_CD_NM
+          , CONCAT(SUBSTR(MOBLPHON, 1, 3), '-', SUBSTR(MOBLPHON, 4, 4), '-', SUBSTR(MOBLPHON, 8, 4)) AS MOBLPHON
+          , EML
+          , ADDR
+          , ADDR_DTL
+          , CASE
+        	    WHEN ACNT_LOCK_YN = 'Y'
+        		    THEN CASE
+        			         WHEN ACNT_LOCK_CD = '101105'
+        				         THEN '휴면회원'
+        			         WHEN ACNT_LOCK_CD = '101106'
+        				         THEN '탈퇴회원'
+        			         ELSE ''
+        		    END
+        	    ELSE '정상회원'
+        		END STTS_CD
+           , INSTID
+           , INSTPIC_ROLE_CD
+        FROM
+        	TB_CMM_USER
+        WHERE
+        	USERID = #{userid}
+    </select>
+    
+    <select id="selectPicSearchList" resultType="front.InstPicVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                USERID
+              , NM
+              , ACNT
+              , MOBLPHON
+            FROM
+                TB_CMM_USER
+            WHERE
+                1=1
+            <!-- 키워드 -->
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'nm'">
+            AND NM LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>
+            <if test="searchKeyword != null and searchKeyword != '' and searchType == 'acnt'">
+            AND ACNT LIKE CONCAT('%',#{searchKeyword},'%')
+            </if>            
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <update id="updateRegInstPic" parameterType="front.InstPicVo" >
+         /* BookDao.updateBook */
+          UPDATE TB_CMM_USER SET
+            	INSTID          = #{instid}
+              , INSTPIC_ROLE_CD = 109102
+              ,MDFCN_DT         = NOW()
+              ,MDFRID           = #{user.userid}
+           WHERE USERID = #{userid}
+    </update>        
+
+    <update id="updateCancelInstPic" parameterType="front.InstPicVo" >
+         /* BookDao.updateBook */
+          UPDATE TB_CMM_USER SET
+                INSTID          = null
+              , INSTPIC_ROLE_CD = null
+              ,MDFCN_DT         = NOW()
+              ,MDFRID           = #{user.userid}
+           WHERE USERID = #{userid}
+    </update>    
+</mapper>

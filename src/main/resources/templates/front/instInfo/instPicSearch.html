@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+	<div layout:fragment="content">
+
+		<!-- layerpopup -->
+		<div class="layer-popup layer-large" data-layer-id="layer-popup14">
+			<div class="layer-dimmed" title="레이어팝업 닫기"></div>
+			<div class="layer-wrap">
+				<div class="layer-header">
+					<strong class="tit">기관 담당자 등록</strong>
+					<button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+				</div>
+				<div class="layer-content">
+					<form class="search-filter" id="searchForm2" name="searchForm">
+						<div class="form-input mo-flex-wrap">
+							<strong class="label">키워드</strong>
+							<div class="form-input">
+								<select title="키워드" name="searchType" id="searchType">
+									<option value="">- 전체 -</option>								
+									<option value="nm">이름</option>
+									<option value="acnt">아이디</option>
+								</select>
+								<input type="search" name="searchKeyword" id="searchKeyword" title="검색어" placeholder="검색어를 입력해 주세요.">
+							</div>
+							<div class="search-filter-submit">
+								<button type="button" class="btn-medium btn-green btn-before-search" onclick="seachPic.search()">검색</button>
+							</div>
+						</div>
+				        <input type="hidden" id="pageNumber2" name="pageNumber" value="1">
+				        <input type="hidden" id="rowPerPage2" name="rowPerPage" value="10">
+				        <input type="hidden" id="ORDER_DIRECTION" name="orderDirection" value="asc">
+				        <input type="hidden" id="orderField" name="orderField" value="NM">
+				        <input type="hidden" id="userid" name="userid">						
+					</form>
+	
+					<div class="table-caption flex-nowrap">
+						<div class="left">
+							<p>총 <b id="totalCount2">0</b> 건</p>
+						</div>
+					</div>
+			
+					<div class="table-col table-layout-auto">
+						<table>
+							<caption>회원초대 - 선택, 이름, 아이디, 휴대전화</caption>
+							<thead>
+								<tr>
+									<th scope="col">선택</th>
+									<th scope="col">성이름</th>
+									<th scope="col">아이디</th>
+									<th scope="col">휴대전화</th>
+								</tr>
+							</thead>
+							<tbody id="list-area">
+								<td class="nodata" colspan="4">
+									<p><span class="icon icon-notice bg-black9"></span>이름 또는 아이디 검색을 진행해 주세요.</p>
+								</td>
+							</tbody>
+						</table>
+					</div>
+					
+					<div class="pagination" id="pagination2" aria-label="pagination">
+					</div>
+	
+					
+					<div class="btn-wrap">
+						<div class="center">
+							<button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+							<button type="button" class="btn-medium btn-green" onclick="regInstPic();">등록</button>
+						</div>
+					</div>
+	
+				</div>
+			</div>
+		</div>
+		<!-- //layerpopup -->
+	
+		<script th:inline="javascript">
+		$(document).keypress(function(e) {
+            if (e.keyCode == 13){
+	            $('#pageNumber').val('1');
+	            seachPic.search();
+                e.preventDefault();
+            }
+		});
+		
+		var seachPic = {
+                listUrl: '/front/instInfo/selectPicSearchList.do',
+				
+                search() {
+    				var searchType = $("#searchType").val()
+    				var searchKeyword = $("#searchKeyword").val()
+
+    				if (searchType != null && searchType != "") {
+    					if (searchKeyword == null || searchKeyword == "") {
+    						alert("검색어를 입력해주십시오");
+    						return;
+    					}
+    				} else {
+    					if (searchKeyword != null || searchKeyword != "") {
+    						alert("검색조건을 선택해주십시오");
+    						return;
+    					}
+    				}
+                	
+                    $('#pageNumber').val('1');
+                    this.selectPicSearchList();
+                },                
+
+                selectPicSearchList() {
+                    if (displayWorkProgress(true)) {
+                        let formData = $('#searchForm2').serializeArray();
+
+                        $.ajax({
+                            url: seachPic.listUrl,
+                            cache: false,
+                            dataType: 'json',
+                            data: formData,
+                            type: 'GET',
+                            success: function (data) {
+                            	seachPic.makeListHtml(data);
+                                closeWorkProgress();
+                            }
+                        });
+                    }
+                },
+
+                makeListHtml(data) {
+                    var listHtml = "";
+                    if (data.list == null || data.list.length <= 0) {
+                    	listHtml += `
+	    					<tr>
+								<td class="nodata" colspan="4">
+									<p><span class="icon icon-notice bg-black9"></span>검색 결과가 없습니다.</p>
+								</td>
+							</tr>
+                        `;
+                    } else {
+                        data.list.forEach(function(item) {
+                        	listHtml += `
+                        		<tr class="tr-check">
+									<td><label class="inp"><input type="radio" name="userid" title="열 선택" value="${item.userid}"></label></td>
+									<td>${item.nm}</td>
+									<td><a href="/front/instInfo/instPicDetail.html?userid=${item.userid}" class="link">${item.acnt}</a></td>
+									<td>${item.moblphon}</td>
+								</tr>
+	    					`;
+                        });
+                    }
+                    $('#list-area').html(listHtml);
+                    $("#pagination2").html(data.pagination);
+                    $("#totalCount2").html(data.totalCount);
+                }
+            };
+		
+			function regInstPic(){
+				if(!confirm("선택하신 회원을 담당자로 등록 하시겠습니까?")) return;
+				
+				var data = $("input[name='userid']:checked").val();
+				
+ 				if(displayWorkProgress(true)){
+		             $.ajax({
+		                 url : "/front/instInfo/updateRegInstPic.do",
+		                 type: 'POST',
+		                 cache : false,
+		                 dataType: 'json',
+		                 data : { userid : data },
+		                 success : function (data){
+		                     if(data.result=="success"){
+		                    	 layerPopup.close({target:'layer-popup14'});
+		                    	 instInfo.init();
+		                     }else{
+		                         alert(data.msg);
+		                     }
+		                     closeWorkProgress();
+		                 }
+		             });
+			     }
+		    }
+			
+            
+			function goPage(page) {
+				$("#pageNumber2").val(page);
+				
+				seachPic.selectPicSearchList();
+			}		
+		</script>
+	</div>
+
+</body>
+</html>
