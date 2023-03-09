@@ -9,6 +9,8 @@ import com.kbrainc.plum.front.instInfo.model.InstPicVo;
 public interface InstInfoService {
 
     public InstInfoVo selectInstInfo(InstInfoVo instInfoVo) throws Exception;
+    
+    public int updateInstInfo(InstInfoVo instInfoVo) throws Exception;
 
     public List<InstPicVo> selectInstPictList(InstPicVo instPicVo) throws Exception;
 

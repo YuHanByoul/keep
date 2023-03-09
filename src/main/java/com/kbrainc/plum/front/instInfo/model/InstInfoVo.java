@@ -20,7 +20,7 @@ public class InstInfoVo extends ParentRequestVo {
     private UserVo user;
     
     /** 기관 아이디 */
-    private int instid;
+    private Integer instid;
     
     /** 기관 이름 */
     private String instNm;
@@ -36,15 +36,6 @@ public class InstInfoVo extends ParentRequestVo {
     
     /** 지역 코드 */
     private String rgnCd;
-    
-    /** 시도 */
-    private String sidoNm;
-    
-    /** 시군구*/
-    private String signguNm;
-    
-    /** 시군구_코드*/
-    private String signguCd;
     
     /** 사업자번호 */
     private String brno;
