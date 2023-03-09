@@ -10,6 +10,8 @@ import com.kbrainc.plum.front.envEdu.model.PrgrmVo;
 public interface InstInfoDao {
 
     public InstInfoVo selectInstInfo(InstInfoVo instInfoVo) throws Exception;
+    
+    public int updateInstInfo(InstInfoVo instInfoVo) throws Exception;
 
     public List<InstPicVo> selectInstPictList(InstPicVo instPicVo) throws Exception;
 

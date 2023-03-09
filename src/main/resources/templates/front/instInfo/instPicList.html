@@ -19,11 +19,11 @@
 				<p>총 <b id="totalCount">0</b> 건</p>
 			</div>
 			<div class="right d-flex">
-				<select title="글 보기 개수">
-					<option value="10">10개씩 보기</option>
-					<option value="50">50개씩 보기</option>
-					<option value="100">100개씩 보기</option>
-				</select>
+	            <select title="글 보기 개수" id="selectRowPerPage" name="selectRowPerPage" onchange="instPic.changeRowPerPage()">
+	                <option value="10">10개씩 보기</option>
+	                <option value="50">50개씩 보기</option>
+	                <option value="100">100개씩 보기</option>
+	            </select>
 				<th:block th:if="${userVo.instpicRoleCd} == '109101'">
 					<div class="ml10"><button type="button" id="insertManager" class="btn-medium btn-green">담당자 등록</button></div>
 				</th:block>
@@ -70,7 +70,7 @@
 		<!-- //layerpopup -->
 			
 		<script th:inline="javascript">
-    		var instInfo = {
+    		var instPic = {
                 listUrl: '/front/instInfo/selectInstPictList.do',
                 detailUrl : '/front/instInfo/instPicDetailForm.html',
 				
@@ -79,7 +79,7 @@
 	                    $("#rowPerPage").val(parseInt(rowPerPage));
 	                    $('#pageNumber').val('1');
                 	}
-                    this.selectCntstList();
+                    this.selectInstPicList();
                 },
 
                 moveToDetail() {
@@ -89,19 +89,24 @@
                     }
                     location.href = detailUrl;
                 },
+                
+                changeRowPerPage() {
+                    $('#rowPerPage').val($('#selectRowPerPage').val());
+                    this.selectInstPicList();
+                },
 
-                selectCntstList() {
+                selectInstPicList() {
                     if (displayWorkProgress(true)) {
                         let formData = $('#searchForm').serializeArray();
 
                         $.ajax({
-                            url: instInfo.listUrl,
+                            url: instPic.listUrl,
                             cache: false,
                             dataType: 'json',
                             data: formData,
                             type: 'GET',
                             success: function (data) {
-                            	instInfo.makeListHtml(data);
+                            	instPic.makeListHtml(data);
                                 closeWorkProgress();
                             }
                         });
@@ -171,13 +176,13 @@
             };
 
             $(function () {
-            	instInfo.init();
+            	instPic.init();
             })
             
 			function goPage(page) {
 				$("#pageNumber").val(page);
 				
-				instInfo.selectCntstList();
+				instPic.selectInstPicList();
 			}
 		
 	        jQuery("#insertManager").bind("click",function(){

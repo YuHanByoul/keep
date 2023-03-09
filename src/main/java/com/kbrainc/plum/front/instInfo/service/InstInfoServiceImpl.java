@@ -1,7 +1,7 @@
 package com.kbrainc.plum.front.instInfo.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
@@ -30,13 +30,18 @@ public class InstInfoServiceImpl extends PlumAbstractServiceImpl implements Inst
     public InstInfoVo selectInstInfo(InstInfoVo instInfoVo) throws Exception {
         InstInfoVo instInfo = instInfoDao.selectInstInfo(instInfoVo);
         
-        if(instInfo != null && !instInfo.getLogoFileid().equals("0")) {
+        if(instInfo != null && Objects.nonNull(instInfo.getLogoFileid())) {
             FileVo fileVo = new FileVo();
             fileVo.setFileid(Integer.parseInt(instInfo.getLogoFileid().toString()));
             FileVo fileInfo= fileDao.getFileInfo(fileVo);
             instInfo.setFileInfo(fileInfo);
         }
         return instInfo;
+    }
+    
+    @Override
+    public int updateInstInfo(InstInfoVo instInfoVo) throws Exception {
+        return instInfoDao.updateInstInfo(instInfoVo);
     }
 
     @Override
