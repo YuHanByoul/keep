@@ -33,7 +33,7 @@ public class ExController {
         context.setVariable("title", "신청하신 환경교육이 <b style=\"color:#237db1;\">2023-02-28</b> 시작합니다.");
         
         context.setVariable("content", "<tr><td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">신청하신 환경교육이 곧 시작됩니다. <br> 교육 일정을 확인해주세요. </td></tr><tr><td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td></tr>");
-        context.setVariable("portalUrl", CommonUtil.portalUrl);
+        context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
         String contents = templateEngine.process("mail/mail_basic_template", context);
     
         MailVo mailVo = new MailVo();
