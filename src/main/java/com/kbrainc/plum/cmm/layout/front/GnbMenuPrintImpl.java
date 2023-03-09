@@ -127,7 +127,7 @@ public class GnbMenuPrintImpl {
             menuItem1 = treeNode1.getData();
 
             if ("02".equals(menuItem1.getPtypeCd()) && "N".equals(menuItem1.getHideYn())) {
-                if ((isMenuAuth(menuItem1.getUrl())) && treeNode1.hasChildren() || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
+                if ((isMenuAuth(menuItem1.getUrl())) || ("N".equals(menuItem1.getNmExpsrTrgtCd()) && user == null)) {
                     isMenuView = true;
                 } else {
                     isMenuView = false;
