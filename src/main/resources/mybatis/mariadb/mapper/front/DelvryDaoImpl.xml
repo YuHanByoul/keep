@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : DelvryDaoImpl.xml
+	Description : 교부관리
+-->
+<mapper namespace="com.kbrainc.plum.front.delvry.model.DelvryDao">
+    
+    <!-- 교부신청 목록 조회 -->
+    <select id="selectDelvryAplyList" parameterType="front.DelvryAplyVo" resultType="front.DelvryAplyVo">
+        /* DelvryDao.selectDelvryAplyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            TSA.PCNTSTID 
+            , TSP.FLD_CD
+            , TCC.CD_NM AS FLD_NM
+            , APLYNO
+            , PRGRM_NM
+            , IF(TSDA.DELVRY_APLYID IS NULL, '202100', TSDA.DELVRY_STTS_CD) AS DELVRY_STTS_CD 
+            , IF(TSDA.DELVRY_APLYID IS NULL, '신청전', TCC2.CD_NM) AS DELVRY_STTS_NM
+            , TSD.CYCL 
+            , CONCAT(DATE_FORMAT(TSD.DELVRY_APLY_BGNG_DT, '%Y-%m-%d %H:%i'), '<![CDATA[</br>]]>~ ', DATE_FORMAT(TSD.DELVRY_APLY_END_DT, '%Y-%m-%d %H:%i')) AS DELVRY_APLY_DT   
+            , CONCAT(DATE_FORMAT(TSD.DELVRY_CFMTN_PRSNTN_BGNG_DT, '%Y-%m-%d %H:%i'), '<![CDATA[</br>]]>~ ', DATE_FORMAT(TSD.DELVRY_CFMTN_PRSNTN_END_DT, '%Y-%m-%d %H:%i')) AS DELVRY_CFMTN_PRSNTN_DT
+            , CONCAT(TSP.BSNS_BGNG_DE, ' ~ ', TSP.BSNS_END_DE) AS BSNS_DE
+            , TSDA.DELVRY_APLYID 
+            , CASE WHEN TSDA.DELVRY_APLYID IS NULL AND NOW() <![CDATA[>]]> TSD.DELVRY_APLY_BGNG_DT AND NOW() <![CDATA[<]]> TSD.DELVRY_APLY_END_DT THEN 'C'  -- 신청버튼
+                WHEN TSDA.DELVRY_APLYID IS NOT NULL AND NOW() <![CDATA[>]]> TSD.DELVRY_APLY_BGNG_DT AND NOW() <![CDATA[<]]> TSD.DELVRY_APLY_END_DT THEN 'U'
+                WHEN TSDA.DELVRY_APLYID IS NOT NULL THEN 'R'
+                ELSE '-' END AS CRUD_BTN
+            , TSDAS.SPLMNTID
+            , TSA.USERID
+            , TSA.APLCNT_NM
+            , IF(TSA.INST_NM IS NULL, NULL, TSA.INSTID) AS INSTID
+            , TSA.INST_NM 
+            , TSA.APLYID
+            , TSD.DELVRYID
+            , TSDA.TOT_AMT
+            , BANK_CD
+            , BACNTNO
+            , DPSTR_NM
+            , TSDA.ATCH_FILEGRPID
+            , TSA.REG_DT 
+            , TSA.MDFCN_DT 
+        FROM 
+            TB_SPB_PCNTST TSP 
+            INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+            INNER JOIN TB_SPB_DELVRY TSD ON TSA.PCNTSTID = TSD.PCNTSTID  
+            LEFT OUTER JOIN TB_SPB_DELVRY_APLY TSDA ON TSD.DELVRYID = TSDA.DELVRYID 
+            LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
+            LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSDA.DELVRY_STTS_CD = TCC2.CD
+            LEFT OUTER JOIN 
+                (SELECT 
+                    SPLMNTID
+                    , DELVRY_APLYID 
+                    , ANS_STTS_CD
+                    , B.CD_NM
+                FROM 
+                    TB_SPB_DELVRY_APLY_SPLMNT A
+                    LEFT OUTER JOIN TB_CMM_CD B ON A.ANS_STTS_CD = B.CD) TSDAS ON TSDAS.DELVRY_APLYID = TSDA.DELVRY_APLYID 
+                    AND SPLMNTID = (SELECT MAX(SPLMNTID) FROM TB_SPB_DELVRY_APLY_SPLMNT TSDAS WHERE TSDAS.DELVRY_APLYID = TSDA.DELVRY_APLYID)       
+        WHERE TSA.USERID = #{user.userid}
+        <if test="user.loginUserType == 'P'.toString()">
+        AND TSP.FLD_CD IN ('173105','173106')
+        </if>
+        <if test="user.loginUserType == 'I'.toString()">
+        AND TSP.FLD_CD NOT IN ('173105','173106')
+        </if>
+        <if test="delvryid != null and delvryid != ''">
+            AND TSD.DELVRYID = #{delvryid}
+        </if>
+        <if test="searchFldCd != null and searchFldCd != ''">
+            AND TSP.FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+            AND TSP.PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+            AND PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+        <if test="searchDelvrySttsCd != null and searchDelvrySttsCd != ''">
+            AND IF(TSDA.DELVRY_APLYID IS NULL, '202100', TSDA.DELVRY_STTS_CD) = #{searchDelvrySttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 공모 정보 조회 -->
+    <select id="selectPcntstInfo" parameterType="front.PcntstVo" resultType="front.PcntstVo">
+        /* DelvryDao.selectPcntstInfo */
+        SELECT
+            A.PCNTSTID
+            , A.WCT_DELVRY_CNT
+            , E.CD_NM AS FLD_CD_NM
+            , A.PCNTST_NM
+            , CASE WHEN NOW() <![CDATA[<]]> A.APLY_BGNG_DT THEN '신청전' WHEN NOW() <![CDATA[>]]> A.APLY_END_DT THEN '마감' ELSE '신청중' END PRGRS_STTS
+            , COUNT(B.PCNTSTID) AS SLCTN_CNT
+            <if test="cycl == 1">
+            , A.DELVRY_APLY_BGNG_DT_FIRST AS DELVRY_APLY_BGNG_DT
+            , A.DELVRY_APLY_END_DT_FIRST AS DELVRY_APLY_END_DT
+            , A.CPTAL_EXCUT_BGNG_DT_FIRST AS CPTAL_EXCUT_BGNG_DT
+            , A.CPTAL_EXCUT_END_DT_FIRST AS CPTAL_EXCUT_END_DT
+            , COUNT(CASE WHEN C.CYCL = 1 THEN 1 END) AS APLY_CNT
+            , COUNT(CASE WHEN C.CYCL = 1 AND D.DELVRY_STTS_CD = '202102' THEN 1 END) AS CFMTN_CNT
+            </if>
+            <if test="cycl == 2">
+            , A.DELVRY_APLY_BGNG_DT_SCND AS DELVRY_APLY_BGNG_DT
+            , A.DELVRY_APLY_END_DT_SCND AS DELVRY_APLY_END_DT
+            , A.CPTAL_EXCUT_BGNG_DT_SCND AS CPTAL_EXCUT_BGNG_DT
+            , A.CPTAL_EXCUT_END_DT_SCND AS CPTAL_EXCUT_END_DT
+            , COUNT(CASE WHEN C.CYCL = 2 THEN 1 END) AS APLY_CNT
+            , COUNT(CASE WHEN C.CYCL = 2 AND D.DELVRY_STTS_CD = '202102' THEN 1 END) AS CFMTN_CNT
+            </if>
+            , A.DELVRY_CFMTN_PRSNTN_BGNG_DT
+            , A.DELVRY_CFMTN_PRSNTN_END_DT
+        FROM
+            TB_SPB_PCNTST A
+        LEFT OUTER JOIN
+            TB_SPB_APLY B ON (B.PCNTSTID = A.PCNTSTID AND B.SLCTN_STTS_CD = '193102')
+        LEFT OUTER JOIN
+            TB_SPB_DELVRY C ON (C.PCNTSTID = A.PCNTSTID)
+        LEFT OUTER JOIN
+            TB_SPB_DELVRY_APLY D ON (D.DELVRYID = C.DELVRYID AND D.APLYID = B.APLYID)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '173'
+        ) E ON (E.CD = A.FLD_CD)
+        WHERE
+            A.PCNTSTID = #{pcntstid}
+        GROUP BY
+            A.PCNTSTID
+    </select>
+    
+    <update id="updateDelvryStts" parameterType="front.DelvryAplyVo">
+        /* DelvryDao.updateDelvryStts */
+        UPDATE TB_SPB_DELVRY_APLY SET
+            DELVRY_STTS_CD = #{delvrySttsCd}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            DELVRY_APLYID IN
+        <foreach item="item" collection="updateDelvryAplyids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+    
+    <!-- 신청 정보 조회 -->
+    <select id="selectDelvryAplyInfo" parameterType="front.DelvryAplyVo" resultType="front.DelvryAplyVo">
+        /* DelvryDao.selectDelvryAplyInfo */
+        SELECT
+            A.DELVRY_APLYID
+            , A.RCPTNO
+            , B.INST_NM
+            , C.PRGRM_NM
+            , D.CLUB_NM
+            , A.APLCNT_NM
+            , E.ACNT
+            , G.BSNS_BGNG_DE
+            , G.BSNS_END_DE
+            , A.REG_DT
+            , FORMAT(A.TOT_AMT, 0) AS TOT_AMT
+            , A.BANK_CD
+            , H.CD_NM AS BANK_CD_NM
+            , A.BACNTNO
+            , A.DPSTR_NM
+            , A.DELVRY_STTS_CD
+            , I.CD_NM AS DELVRY_STTS_CD_NM
+            , A.ATCH_FILEGRPID
+            , G.FLD_CD
+        FROM
+            TB_SPB_DELVRY_APLY A
+        LEFT OUTER JOIN
+            TB_CMM_INST B ON (B.INSTID = A.INSTID)
+        LEFT OUTER JOIN
+            TB_SPB_APLY C ON (C.APLYID = A.APLYID)
+        LEFT OUTER JOIN
+            TB_SPB_OPER_SUMRY D ON (D.APLYID = A.APLYID)
+        LEFT OUTER JOIN
+            TB_CMM_USER E ON (E.USERID = A.USERID)
+        LEFT OUTER JOIN
+            TB_SPB_DELVRY F ON (F.DELVRYID = A.DELVRYID)
+        LEFT OUTER JOIN
+            TB_SPB_PCNTST G ON (G.PCNTSTID = F.PCNTSTID)
+        LEFT OUTER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '154'
+        ) H ON (H.CD = A.BANK_CD)
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '202'
+        ) I ON (I.CD = A.DELVRY_STTS_CD)
+        WHERE
+            A.DELVRY_APLYID = #{delvryAplyid}
+    </select>
+    
+    <!-- 교부정보 등록 -->
+    <insert id="insertDelvryAply" parameterType="front.DelvryAplyVo" useGeneratedKeys="true" keyProperty="delvryAplyid">
+        /* DelvryDao.insertDelvryAply */
+        INSERT INTO TB_SPB_DELVRY_APLY (
+            APLYID
+            , DELVRYID
+            , RCPTNO
+            , INSTID
+            , USERID
+            , APLCNT_NM
+            , TOT_AMT
+            , BANK_CD
+            , BACNTNO
+            , DPSTR_NM
+            , ATCH_FILEGRPID
+            , DELVRY_STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{delvryid}
+            , #{rcptno}
+            , #{instid}
+            , #{userid}
+            , #{aplcntNm}
+            , #{totAmt}
+            , #{bankCd}
+            , #{bacntno}
+            , #{dpstrNm}
+            , #{atchFilegrpid}
+            , '202101'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 신청정보 업데이트 -->
+    <update id="updateDelvryAply" parameterType="front.DelvryAplyVo" >
+        /* DelvryDao.updateDelvryAply */
+        UPDATE TB_SPB_DELVRY_APLY SET
+            BANK_CD = #{bankCd}
+            , BACNTNO = #{bacntno}
+            , DPSTR_NM = #{dpstrNm}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            DELVRY_APLYID = #{delvryAplyid}
+    </update>
+    
+    <!-- 산출내역 목록 조회 -->
+    <select id="selectDelvryAplyComputList" parameterType="front.DelvryAplyVo" resultType="front.DelvryAplyComputVo">
+        /* DelvryDao.selectDelvryAplyComputList */
+        WITH T AS (
+            SELECT
+                COMPUTID
+                , EXPITM_CD
+                , AMT
+                , CN
+                , ORDR
+                , MDFCN_DT
+                , MDFRID
+                , REG_DT
+                , RGTRID
+                , DELVRY_APLYID
+            FROM
+                TB_SPB_DELVRY_APLY_COMPUT
+            WHERE DELVRY_APLYID = #{delvryAplyid}
+        )
+        SELECT 
+            T.*
+            , ROW_NUMBER() OVER (PARTITION BY TCC.CD_NM ORDER BY TCC.ORD, B.CD) AS GROUP_NUM
+            , COUNT(B.CD) OVER (PARTITION BY TCC.CD_NM)*2 AS ROWSPAN
+            , B.CD AS CODE
+            , TCC.CD_NM AS EXPITM_UPPR_NM
+            , B.CD_NM  AS EXPITM_NM
+        FROM TB_CMM_CD B
+            LEFT OUTER JOIN T ON T.EXPITM_CD = B.CD 
+            INNER JOIN TB_CMM_CD TCC ON TCC.CD = B.UPPR_CD 
+        WHERE 1 = 1 
+        AND B.CDGRPID = '218'
+        <choose>
+            <when test="fldCd == '173106'"><!-- 그린캠퍼스 -->
+        AND B.UPPR_CD = '218301'
+            </when>
+            <when test="fldCd == '173105'"><!-- 교사학습공동체 -->
+        AND B.UPPR_CD = '218401'
+            </when>
+            <when test="fldCd == '173104'"><!-- 환경동아리 -->
+        AND B.UPPR_CD = '218201'
+            </when>
+            <when test="fldCd == '173107'"><!-- 환경교육 우수학교 -->
+        AND B.UPPR_CD = '218501'
+            </when>
+            <otherwise><!-- 생애주기, 종교인, 학습공동체 -->
+        AND B.UPPR_CD IN ('218101','218121','218141')
+            </otherwise>
+        </choose>
+        ORDER BY 
+            TCC.ORD
+            , B.CD
+    </select>
+    
+    <!-- 산출내역 등록 -->
+    <insert id="insertDelvryAplyComput" parameterType="front.DelvryAplyComputVo" useGeneratedKeys="true" keyProperty="computid">
+        /* DelvryDao.insertDelvryAplyComput */
+        INSERT INTO TB_SPB_DELVRY_APLY_COMPUT (
+            EXPITM_CD
+            , AMT
+            , CN
+            , ORDR
+            , DELVRY_APLYID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{expitmCd}
+            , #{amt}
+            , #{cn}
+            , #{ordr}
+            , #{delvryAplyid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 산출내역 업데이트 -->
+    <update id="updateDelvryAplyComput" parameterType="front.DelvryAplyComputVo">
+        /* DelvryDao.updateDelvryAplyComput */
+        UPDATE TB_SPB_DELVRY_APLY_COMPUT SET
+            AMT = #{amt}
+            , CN = #{cn}
+            , ORDR = #{ordr}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            COMPUTID = #{computid}
+    </update>
+    
+    <!-- 산출내역 삭제 -->
+    <delete id="deleteDelvryAplyComput" parameterType="front.DelvryAplyComputVo">
+        /* DelvryDao.deleteDelvryAplyComput */
+        DELETE FROM  
+            TB_SPB_DELVRY_APLY_COMPUT
+        WHERE 
+            COMPUTID = #{computid}
+    </delete>
+    
+    <!-- 보완요청 목록 조회 -->
+    <select id="selectDelvryAplySplmntList" parameterType="front.DelvryAplySplmntVo" resultType="front.DelvryAplySplmntVo">
+        /* DelvryDao.selectDelvryAplySplmntList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.SPLMNTID
+            , A.ANS_STTS_CD
+            , B.CD_NM AS ANS_STTS_CD_NM
+            , A.DMND_CN
+            , DATE_FORMAT(A.REG_DT,'%Y-%m-%d') AS REG_DT_STR
+            , A.REG_DT
+            , DATE_FORMAT(A.ANS_DT,'%Y-%m-%d') AS ANS_DT_STR
+            , A.ANS_DT
+        FROM
+            TB_SPB_DELVRY_APLY_SPLMNT A
+        INNER JOIN (
+            SELECT
+                CD
+                , CD_NM
+            FROM
+                TB_CMM_CD
+            WHERE
+                CDGRPID = '201'
+        ) B ON (B.CD = A.ANS_STTS_CD)    
+        WHERE
+            A.DELVRY_APLYID = #{delvryAplyid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!--  보완요청 상세 조회-->
+    <select id="selectDelvryAplySplmntInfo" parameterType="front.DelvryAplySplmntVo" resultType="front.DelvryAplySplmntVo">
+        /* DelvryDao.selectDelvryAplySplmntInfo */
+        SELECT
+            SPLMNTID
+            , DMND_CN
+            , ANS_STTS_CD
+            , ANS_CN
+        FROM
+            TB_SPB_DELVRY_APLY_SPLMNT
+        WHERE
+            SPLMNTID = #{splmntid}
+    </select>
+    
+    <!-- 보완요청 등록 -->
+    <insert id="insertDelvryAplySplmnt" parameterType="front.DelvryAplySplmntVo" useGeneratedKeys="true" keyProperty="splmntid">
+        /* DelvryDao.insertDelvryAplySplmnt */
+        INSERT INTO TB_SPB_DELVRY_APLY_SPLMNT (
+            DELVRY_APLYID
+            , DMND_CN
+            , RQSTRID
+            , DMND_DT
+            , ANS_STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{delvryAplyid}
+            , #{dmndCn}
+            , #{user.userid}
+            , NOW()
+            , '201101'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 보완요청 업데이트 -->
+    <update id="updateDelvryAplySplmnt" parameterType="front.DelvryAplySplmntVo">
+        /* DelvryDao.updateDelvryAplySplmnt */
+        UPDATE TB_SPB_DELVRY_APLY_SPLMNT SET
+            DMND_CN = #{dmndCn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SPLMNTID = #{splmntid}
+    </update>
+    
+    <!-- 파일목록 조회 -->
+    <select id="selectDelvryAplyFileList"  parameterType="front.DelvryAplyVo"  resultType="FileVo">
+        /* DelvryDao.selectDelvryAplyFileList */
+        SELECT
+            FILEGRPID
+            , FILEID
+            , FILE_IDNTFC_KEY
+        FROM
+            TB_CMM_FILE
+        WHERE
+            FILEGRPID IN
+        <foreach item="item" collection="atchFilegrpids" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    
+</mapper>

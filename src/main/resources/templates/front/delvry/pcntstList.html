@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/mng/mainLayout" 
+>
+
+<body>
+<div layout:fragment="content">
+    <div class="page-body">
+        <div class="row">
+            <div class="col-12">
+                <!-- 필터 부분 -->
+                <div class="card">
+                    <div class="card-block-small">
+                        <!-- 키워드 filter -->
+                        <form name="searchFrm" id="searchFrm" action="" onsubmit="return false;">
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>사업분야</strong></div>
+                                        <div class="col-12">
+                                            <th:block kattr:select_code="searchFldCd" grpCd="173" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPcntstNm"><strong>공모명</strong></label>
+                                        <div class="col-12">
+                                            <input type="text" class="form-control form-control-sm" name="searchPcntstNm" id="searchPcntstNm"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script type="text/javascript" src="/files/bower_components/moment/min/moment.min.js"></script>
+                                <script type="text/javascript" src="/files/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+                                <link rel="stylesheet" type="text/css" href="/files/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchPeriod"><strong>교부신청발표기간</strong></label>
+                                        <div class="col-sm-12">
+                                            <input type="text" name="searchPeriod" class="form-control form-control-sm" value="" id="searchPeriod">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 mb-3">
+                                    <div class="mb-0 form-group row">
+                                        <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>진행상태</strong></div>
+                                        <div class="col-sm-12">
+                                            <select class="form-select form-select-sm form-control-sm   form-select form-select-sm form-control-sm" id="searchPrgrsStts" name="searchPrgrsStts">
+                                                <option value="">- 전체 -</option>
+                                                <option value="before">신청전</option>
+                                                <option value="pending">신청중</option>
+                                                <option value="end">마감</option>
+                                            </select> 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 키워드 filter-btn -->
+                            <div class="m-t-20 text-center">
+                                <button type="button" class="btn btn-disabled m-r-5" onclick="delvry.initSearch('delvry');">초기화</button>
+                                <button type="submit" class="btn btn-primary" onclick="delvry.onSearch('delvry');">검색</button>
+                            </div>
+                        </form>
+                        <!-- //키워드 filter -->
+                    </div>
+                </div>
+                <!-- //필터 부분 -->
+            </div>
+            <div class="col-12">
+                <!-- 그리드 부분(표시를 위해 임의로 넣어둠) -->
+                <div class="card">
+                    <div class="row p-20 p-b-0">
+                        <div class="col-12 col-md-6">
+                            <h5><strong>교부관리 검색 결과</strong></h5>
+                        </div>
+                        <div class="col-12 col-md-6 text-right">
+                            <th:block sec:authorize-url="/mng/delvry/downloadPcntstListExcel.do">
+                                <button type="button" class="btn btn-disabled waves-effect waves-light" onclick="delvry.onExcelDownload('pcntst');">엑셀다운로드</button>
+                            </th:block>
+                        </div>
+                    </div>
+                    <div class="card-block-small">
+                        <table id="delvryGrid" class="table-responsive"></table>
+                        <div id="delvryPager" class="text-center"></div>
+                    </div>
+                </div>
+                <!-- //그리드 부분 -->
+            </div>
+            
+            <div class="col-12 d-none" id="cyclTab">
+                <ul class="nav nav-tabs tabs gray-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#firstDelvry" id="firstDelvry" role="tab">1차 교부</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#scndDelvry" id="scndDelvry" role="tab">2차 교부</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="col-12 d-none" id="detailTitle">
+                <div class="box-desc-list mb-3 f-20">
+                    <strong id="fldCdNm"></strong>
+                    <span id="pcntstNm"></span>
+                </div>
+            </div>
+            
+            <div class="col-12">
+                <!-- insert 부분 -->
+                <div id="contentPanel" class="card" style="display: none;">
+                </div>
+                <!-- //insert 부분 -->
+            </div>
+            
+            <div class="tab-content tabs d-none" id="tabContent">
+                <div class="tab-pane active" id="tanPanel" role="tabpanel">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-block-small">
+                                <form name="searchAplyFrm" id="searchAplyFrm" action="" onsubmit="return false;">
+                                    <input type="hidden" name="pcntstid" />
+                                    <input type="hidden" name="cycl" />
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-6 mb-3">
+                                            <div class="mb-0 form-group row">
+                                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>교부상태</strong></div>
+                                                <div class="col-12">
+                                                    <th:block kattr:select_code="searchDelvrySttsCd" grpCd="202" upprCd="0" selectedCd="" onchange="" firstOptTxt="- 전체 -" addClass="form-select form-select-sm form-control-sm" isAdmin="true"></th:block>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6 mb-3">
+                                            <div class="mb-0 form-group row">
+                                                <div class="form-label col-sm-12 col-form-label p-t-0 pb-1"><strong>키워드</strong></div>
+                                                <div class="input-group input-group-sm input-group-dropdown mb-0">
+                                                    <select name="searchType" id="searchType" class="form-select form-control">
+                                                        <option value="">- 선택 -</option>
+                                                        <option value="aplcntNm">신청자</option>
+                                                        <option value="prgrmNm">프로그램명/동아리명</option>
+                                                        <option value="instNm">신청기관명</option>
+                                                    </select>
+                                                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="searchKeyword" id="searchKeyword"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-6 mb-3 d-none">
+                                            <div class="mb-0 form-group row">
+                                                <label class="form-label col-sm-12 col-form-label p-t-0 pb-1" for="searchRegDtPeriod"><strong>교부신청일</strong></label>
+                                                <div class="col-sm-12">
+                                                    <input type="text" name="searchRegDtPeriod" class="form-control form-control-sm" value="" id="searchRegDtPeriod">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-1 p-t-20 text-center border-top">
+                                        <button type="button" class="btn btn-disabled m-r-5" onclick="delvry.initSearch('aply');">초기화</button>
+                                        <button type="submit" class="btn btn-primary" onclick="delvry.onSearch('aply');">검색</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--임시그리드-->
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="row p-20 p-b-0">
+                                <div class="col-12 col-lg mb-2 mb-lg-0">
+                                    <h5><strong>교부신청 검색결과</strong></h5>
+                                </div>
+                                <div class="col-12 col-lg-auto text-right">
+                                    <button type="button" class="btn btn-disabled" onclick="delvry.onUpdateDelvryStts('202106');">교부취소</button>
+                                    <button type="button" class="btn btn-inverse" onclick="delvry.onUpdateDelvryStts('202105');">탈락</button>
+                                    <button type="button" class="btn btn-primary" onclick="delvry.onUpdateDelvryStts('202102');">확정</button>
+                                    <button type="button" class="btn btn-primary" onclick="delvry.onLoadFileList();">첨부파일 다운로드</button>
+                                    <button type="button" class="btn btn-primary" onclick="delvry.onExcelDownload('aply');">엑셀다운로드</button>
+                                </div>
+                            </div>
+                            <div class="card-block-small">
+                                <table id="aplyGrid" class="table-responsive"></table>
+                                <div id="aplyPager" class="text-center"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--//임시그리드-->
+
+                    <div class="col-12" id="aplyContentPanel" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        var delvry = {
+            listUrl: "/mng/delvry/selectPcntstList.do"
+            , aplyListUrl: "/mng/delvry/selectDelvryAplyList.do"
+            , pcntstid: null
+            , cycl: 1
+            , selectedItems: []
+            
+            , init: function() {
+                delvryGrid = new GridHelper("delvryGrid", "contentPanel");
+                aplyGrid = new GridHelper("aplyGrid", "aplyContentPanel");
+                $("input[name='cycl']").val(this.cycl);
+                $("#searchPeriod, #searchRegDtPeriod").daterangepicker({
+                    autoUpdateInput: false
+                    , locale: {
+                        format: "YYYY-MM-DD"
+                    }
+                });
+                this.setGrid();
+                this.registEvent();                
+            }
+            
+            , registEvent: function() {
+                // TODO
+                var _this = this;
+                $("#searchPeriod, #searchRegDtPeriod").on("apply.daterangepicker", function(e, picker) {
+                    $(this).val(picker.startDate.format("YYYY-MM-DD") + " ~ " + picker.endDate.format("YYYY-MM-DD")); 
+                });
+                
+                $(".nav-tabs a").on("show.bs.tab", function(event) {
+                    var tabId = event.currentTarget.attributes.id.value;
+                    _this.selectTab(tabId);
+                });
+            }
+            
+            , setTab: function() {
+                if(pcntstDetail.wctDelvryCnt == 2) {
+                    $("#cyclTab").removeClass("d-none");
+                } else {
+                    $("#cyclTab").addClass("d-none");
+                }
+                $("#tabContent").removeClass("d-none");
+            }
+            
+            , selectTab: function(tabId) {
+                this.cycl = tabId == "firstDelvry" ? 1 : 2;
+                var detailUrl = "/mng/delvry/pcntstDetailForm.html?pcntstid=" + this.pcntstid + "&cycl=" + this.cycl;
+                delvryGrid.loadContent(detailUrl);
+            }
+            
+            , initSearch: function(type) {
+                if(type == "delvry") {
+                    $("#searchFldCd, #searchPcntstNm, #searchPeriod, #searchPrgrsStts").val("");
+                } else {
+                    $("#searchDelvrySttsCd, #searchPcntstNm, #searchPeriod, #searchPrgrsStts").val("");
+                }
+            }
+            
+            , onSearch: function(type) {
+                if(type == "delvry") {
+                    delvryGrid.resetListContent();
+                } else {
+                    var searchType = $("#searchType").val();
+                    var searchKeyword = $("#searchKeyword").val();
+                    if(searchType != '' && searchKeyword == "") {
+                        alert("검색어를 입력해 주세요.");
+                        return false;
+                    }
+                    if(searchType == '' && searchKeyword != "") {
+                        alert("키워드를 선택해 주세요.");
+                        return false;
+                    }
+                    aplyGrid.resetListContent();
+                } 
+            }
+            
+            , setGrid: function() {
+                $("#delvryGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: true,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#delvryPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchFldCd": $('#searchFldCd').val(),
+                                "searchPcntstNm": $('#searchPcntstNm').val(),
+                                "searchPrgrsStts": $('#searchPrgrsStts').val(),
+                                "searchBgngDt": $.trim($('#searchPeriod').val().split("~")[0]),
+                                "searchEndDt": $.trim($('#searchPeriod').val().split("~")[1]),
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize
+                            };
+                            $.ajax({
+                              type: "GET",
+                              contentType: "application/json; charset=utf-8",
+                              url: delvry.listUrl,
+                              data: params,
+                              dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false}
+                        , {title: "사업분야", name: "fldCdNm", type: "text", width: "150", align: "center"}
+                        , {title: "공모명", name: "pcntstNm", type: "text" , width: "200", align: "left"}
+                        , {title: "진행상태", name: "prgrsStts", type: "text", align: "center", width: "100"}
+                        , {title: "교부신청발표기간", name: "delvryAplyPrsntnBgngDt", type: "text", align: "center" , width: "200", itemTemplate: function(value, item) {
+                            if(!value) return '-';
+                            return value + " ~ " + item.delvryAplyPrsntnEndDt;
+                        }}
+                        , {title: "사업 선정 수", name: "slctnCnt", type: "number", align: "center", width: "80"}
+                        , {title: "사업비 교부 횟수", name: "wctDelvryCnt", type: "text", align: "center", width: "80", itemTemplate: function(value, item) {
+                            return value + "회";
+                        }}
+                    ]
+                    , rowClick: function(args) { 
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var pcntstid = args.item.pcntstid;
+                        var detailUrl = "/mng/delvry/pcntstDetailForm.html?pcntstid=" + pcntstid + "&cycl=" + delvry.cycl;
+                        $("input[name='pcntstid']").val(pcntstid);
+                        delvry.pcntstid = pcntstid;
+                        delvryGrid.loadContent(detailUrl);
+                        delvryGrid.rowClick(args);
+                    }
+                });
+                
+                $("#aplyGrid").jsGrid({
+                    height: "auto",
+                    width: "100%",
+                    autoload: false,
+                    sorting: false,
+                    paging: true,
+                    pagerContainer: "#aplyPager",
+                    pagerFormat: "{first} {prev} {pages} {next} {last}",
+                    pagePrevText: "이전",
+                    pageNextText: "다음",
+                    pageFirstText: "< 처음 ㅣ",
+                    pageLastText: "ㅣ 마지막 >",
+                    noDataContent: "데이터가 없습니다.",
+                    pageSize: 10,
+                    pageButtonCount: 10,
+                    pageLoading: true,
+                    pageIndex: 1,
+                    controller: {
+                        loadData: function(filter) {
+                            var data = $.Deferred();
+                            var params = {
+                                "searchDelvrySttsCd": $('#searchDelvrySttsCd').val(),
+                                "searchType": $('#searchType').val(),
+                                "searchKeyword": $('#searchKeyword').val(),
+                                "searchRegBgngDt": $.trim($('#searchRegDtPeriod').val().split("~")[0]),
+                                "searchRegEndDt": $.trim($('#searchRegDtPeriod').val().split("~")[1]),
+                                "pcntstid": delvry.pcntstid,
+                                "cycl": delvry.cycl,
+                                "pageNumber": filter.pageIndex,
+                                "rowPerPage": filter.pageSize,
+                                "orderField": "RCPTNO",
+                                "orderDirection": "desc"
+                            };
+                            $.ajax({
+                              type: "GET",
+                              contentType: "application/json; charset=utf-8",
+                              url: delvry.aplyListUrl,
+                              data: params,
+                              dataType: "json"
+                            }).done(function(response) {
+                                var da = {
+                                    data : escapeGridData(response.list),
+                                    itemsCount : response.totalCount
+                                };
+                                data.resolve(da);
+                                $("#selectAllCheckbox").prop("checked", false);
+                            });
+                            
+                            return data.promise();
+                        }
+                    },
+                    fields: [
+                        {
+                            headerTemplate: function() {
+                                return $("<input>").attr("type", "checkbox").attr("id", "selectAllCheckbox").on("change", function() {
+                                   delvry.allSelectItem($(this).is(":checked"), $(this).parent().next().text()); 
+                                });
+                            },
+                            itemTemplate: function(value, item) {
+                                return $("<input>").attr("type", "checkbox").attr("class", "singleCheckbox").attr("delvryAplyid", item.delvryAplyid).prop("checked", $.inArray(item, delvry.selectedItems) > -1).on("change", function() {
+                                    $(this).is(":checked") ? delvry.selectItem($(this).attr("delvryAplyid")) : delvry.unselectItem($(this).attr("delvryAplyid"));
+                                });
+                            },
+                            align: "center", width: "30", sorting: false
+                        }
+                        , {title: "No.", name: "rowNumber", type: "number", width: "80", align: "center", sorting: false}
+                        , {title: "접수번호", name: "rcptno", type: "text", width: "80", align: "center"}
+                        , {title: "교부상태", name: "delvrySttsCdNm", type: "text", width: "80", align: "center"}
+                        , {title: "신청기관명", name: "instNm", type: "text" , width: "200", align: "left"}
+                        , {title: "신청자", name: "aplcntNm", type: "text", align: "center", width: "80", itemTemplate: function(value, item) {
+                            return value + "<br/>" + "(" + item.acnt + ")";
+                        }}
+                        , {title: "프로그램명/동아리명", name: "prgrmNm", type: "text", align: "center" , width: "200", itemTemplate: function(value, item) {
+                            if(!item.clubNm) return value;
+                            return value + "(" + item.clubNm + ")";
+                        }}
+                        , {title: "교부신청일", name: "regDt", type: "number", align: "center", width: "80"}
+                        , {title: "지원신청금액", name: "totAmt", type: "number", align: "center", width: "80"}
+                    ]
+                    , rowClick: function(args) { 
+                        if(args.event.originalEvent.target.cellIndex == 0 || isNaN(args.event.originalEvent.target.cellIndex)) return;
+                        var detailUrl = "/mng/delvry/delvryAplyUpdateForm.html?delvryAplyid=" + args.item.delvryAplyid;
+                        aplyGrid.loadContent(detailUrl);
+                        aplyGrid.rowClick(args);
+                    }
+                });
+            }
+            
+            , allSelectItem: function(isChecked) {
+                this.selectedItems = [];
+                if(isChecked) {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = true;
+                        delvry.selectItem($(this).attr("delvryAplyid"));           
+                    }); 
+                } else {
+                    $('.singleCheckbox').each(function() {
+                        this.checked = false; 
+                        delvry.unselectItem($(this).attr("delvryAplyid"));
+                    });  
+                    this.selectedItems = [];
+                }
+            }
+        
+            , selectItem: function(delvryid) {
+                this.selectedItems.push(parseInt(delvryid, 10));
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            }
+        
+            , unselectItem: function(delvryid) {
+                this.selectedItems = $.grep(this.selectedItems, function(i) {
+                    return i !== parseInt(delvryid, 10);
+                });
+                if(this.selectedItems.length == 0) {
+                    $('#selectAllCheckbox').attr("checked", false);
+                }
+                if($(".singleCheckbox").length == $(".singleCheckbox:checked").length) {
+                    $("#selectAllCheckbox").prop("checked", true);
+                } else {
+                    $("#selectAllCheckbox").prop("checked", false);
+                }
+            }
+            
+            , onUpdateDelvryStts: function(sttsCd) {
+                if(this.selectedItems.length == 0) {
+                    alert("선택한 신청이 없습니다.");
+                    return false;
+                }
+                if(!confirm("상태를 변경 하시겠습니까?")) {
+                    return false;
+                }
+                
+                var param = {updateDelvryAplyids: this.selectedItems.join(","), delvrySttsCd: sttsCd};
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url : "/mng/delvry/updateDelvryStts.do",
+                        type: "POST",
+                        cache: false,
+                        dataType: "json",
+                        data: param,
+                        success: function(response) {
+                            if(response.result == "success") {
+                                alert(response.msg);
+                                delvry.selectedItems = [];
+                                aplyGrid.resetPageContent();
+                            } else {
+                                alert(response.msg);
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+            
+            , onLoadFileList: function() {
+                if(this.selectedItems.length == 0) {
+                    alert("선택한 신청이 없습니다.");
+                    return false;
+                }
+                
+                var dataList = $("#aplyGrid").jsGrid("option", "data");
+                var len = dataList.length;
+                var atchFilegrpids = [];
+                for(var i = 0; i < len; i++) {
+                    var data = dataList[i];
+                    if(this.selectedItems.indexOf(data.delvryAplyid) > -1) {
+                        if(data.atchFilegrpid) atchFilegrpids.push(data.atchFilegrpid);
+                    }
+                }
+                if(atchFilegrpids.length == 0) {
+                    alert("첨부파일이 존재하지 않습니다.");
+                    return false;
+                }
+                
+                var param = {atchFilegrpids: atchFilegrpids.join(",")};
+                if(displayWorkProgress()) {
+                    $.ajax({
+                        url : "/mng/delvry/selectDelvryAplyFileList.do",
+                        type: "POST",
+                        cache: false,
+                        dataType: "json",
+                        data: param,
+                        success: function(response) {
+                            var fileList = response.list;
+                            if(fileList == null || fileList.length == 0) {
+                                alert("첨부파일이 존재하지 않습니다.");
+                            } else {
+                                delvry.onFileDownload(fileList);
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+            
+            , onFileDownload: function(fileList) {
+                for(var i = 0, len = fileList.length; i < len; i++) {
+                    var data = fileList[i];
+                    downloadFileByFileid(data.fileid, data.fileIdntfcKey);
+                    this.onDelay(500);
+                }                              
+            }
+            
+            , onDelay: function(time) {
+                var start = new Date().getTime();
+                while(start + time > new Date().getTime());
+            }
+            
+            , onExcelDownload: function(type) {
+                if(type == "pcntst") {
+                    excelDownload($("#searchFrm"), "/mng/delvry/downloadPcntstListExcel.do");
+                } else {
+                    excelDownload($("#searchAplyFrm"), "/mng/delvry/downloadDelvryAplyListExcel.do");
+                }
+            }
+            
+            , resetGrid: function() {
+                delvryGrid.resetListContent();
+            }
+        };
+        
+        $(function() {
+            delvry.init();
+        });
+    </script>
+</div>
+</body>
+</html>
