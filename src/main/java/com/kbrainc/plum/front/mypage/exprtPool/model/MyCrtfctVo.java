@@ -20,6 +20,8 @@ import lombok.Data;
  */
 @Data
 public class MyCrtfctVo {
+    /** 수정 요청 아이디 */
+    private Integer mdfcnDmndId;
     /** 자격증 아이디 */
     private Integer exprtCrtfctId;
     /** 자격증 이름 */

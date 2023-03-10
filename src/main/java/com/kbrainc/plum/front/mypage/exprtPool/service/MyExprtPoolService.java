@@ -51,4 +51,15 @@ public interface MyExprtPoolService {
      * @Description : 공개 범위 및 서비스 수신 여부 변경
      */
     public int updateRlsAndRcptn(MyExprtVo exprtVo) throws Exception;
+
+    /**
+     * 수정 요청 등록
+     *
+     * @param myExprtMdfcnVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnDmnd
+     * @Description : 수정 요청 등록
+     */
+    public int insertMdfcnDmnd(MyExprtMdfcnVo myExprtMdfcnVo) throws Exception;
 }

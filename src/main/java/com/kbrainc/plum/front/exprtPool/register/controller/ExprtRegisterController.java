@@ -163,6 +163,7 @@ public class ExprtRegisterController {
     public Map<String, Object> insertExprt(@Valid @RequestBody ExprtRegisterVo exprtRegisterVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         exprtRegisterVo.setUser(user);
         Map<String, Object> result = new HashMap<>();
+        result.put("success", false);
 
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -172,14 +173,18 @@ public class ExprtRegisterController {
             return result;
         }
 
-        boolean successInsert = exprtRegisterService.insertExprt(exprtRegisterVo) > 0;
-
-        if (successInsert) {
-            result.put("msg", "신청이 완료되었습니다.");
+        if (exprtRegisterService.insertExprt(exprtRegisterVo) > 0) {
+            if(exprtRegisterVo.getTempSaveYn().equals("Y")){
+                result.put("msg", "저장이 완료되었습니다.");
+                result.put("redirectUrl", "/front/exprtPool/registerStep1.html");
+            } else {
+                result.put("msg", "신청이 완료되었습니다.");
+                result.put("redirectUrl", "/front/exprtPool/registerStep4.html");
+            }
+            result.put("success", true);
         } else {
             result.put("msg", "신청이 실패하였습니다.");
         }
-        result.put("success", successInsert);
 
         return result;
     }

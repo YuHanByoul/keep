@@ -108,6 +108,10 @@ public class ExprtVo extends ParentRequestVo {
 
     private String exprtCrtfctNm;
 
+    private String exprtTypePath;
+
+    private String flds;
+
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;
 

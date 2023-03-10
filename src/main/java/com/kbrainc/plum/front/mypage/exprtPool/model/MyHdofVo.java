@@ -23,6 +23,8 @@ import lombok.Data;
  */
 @Data
 public class MyHdofVo {
+    /** 수정 요청 아이디 */
+    private Integer mdfcnDmndId;
     /** 재직 아이디 */
     private Integer exprtHdofId;
     /** 재직 구분 코드 */
