@@ -155,7 +155,7 @@
                                         <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="hdofFilegrpid" th:value="${(item.hdofcrtfFileid == '' or item.hdofcrtfFileid == null) ? 0 : item.hdofcrtfFileid}">
+                                    <input type="hidden" name="hdofcrtfFileid" th:value="${(item.hdofcrtfFileid == '' or item.hdofcrtfFileid == null) ? 0 : item.hdofcrtfFileid}">
                                     <ul>
                                         <th:block th:if="${item.hdofCrtfFile != null}">
                                             <th:block th:with="file=${item.hdofCrtfFile}">
@@ -252,7 +252,7 @@
                                         <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="crtfctFilegrpid" th:value="${(item.crtfctFileid == '' or item.crtfctFileid == null) ? 0 : item.crtfctFileid}">
+                                    <input type="hidden" name="crtfctFileid" th:value="${(item.crtfctFileid == '' or item.crtfctFileid == null) ? 0 : item.crtfctFileid}">
                                     <ul>
                                         <th:block th:if="${item.crtfctFile != null}">
                                             <th:block th:with="file=${item.crtfctFile}">
@@ -358,7 +358,7 @@
                             <th scope="row">활동시간</th>
                             <td>
                                 <div class="form-input">
-                                    <input type="text" title="활동시간" placeholder="활동시간 입력" name="actvtHr" th:value="${item.actvtHr}">
+                                    <input type="number" title="활동시간" placeholder="활동시간 입력" name="actvtHr" th:value="${item.actvtHr}">
                                     <div class="bul">시간</div>
                                 </div>
                             </td>
@@ -396,7 +396,7 @@
                                         <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
-                                    <input type="hidden" name="crtfFilegrpid" th:value="${(item.crtfFileid == '' or item.crtfFileid == null) ? 0 : item.crtfFileid}">
+                                    <input type="hidden" name="crtfFileid" th:value="${(item.crtfFileid == '' or item.crtfFileid == null) ? 0 : item.crtfFileid}">
                                     <ul>
                                         <th:block th:if="${item.crtfFile != null}">
                                             <th:block th:with="file=${item.crtfFile}">
@@ -422,7 +422,7 @@
                             <td>
                                 <div class="form-input-file form-input-button">
                                     <label class="form-input">
-                                        <input type="file" class="blind" th:accept="${uxploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
+                                        <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
                                         <span class="btn-medium btn-green">업로드</span>
                                     </label>
                                     <input type="hidden" name="artclassFileid" th:value="${(item.artclassFileid == '' or item.artclassFileid == null) ? 0 : item.artclassFileid}">
@@ -680,36 +680,12 @@
             insertExprt();
         }
 
-        /* 재직중 클릭 */
-        function hdofYnCheck(hdofYnCheckbox) {
-            $hdofYnCheckbox = $(hdofYnCheckbox);
-            let $hdofEndDe = $hdofYnCheckbox.closest('.form-input').find('input[name=hdofEndDe]');
-
-            if ($hdofYnCheckbox.is(":checked")) {
-                $hdofEndDe.val('');
-                $hdofEndDe.prop('readonly', true);
-            } else {
-                $hdofEndDe.prop('readonly', false);
-            }
-        }
-
-        /* 활동중 클릭*/
-        function actvtYnCheck(actvtYnCheckbox) {
-            $actvtYnCheckbox = $(actvtYnCheckbox);
-            let $actvtEndDe = $actvtYnCheckbox.closest('.form-input').find('input[name=actvtEndDe]');
-
-            if ($actvtYnCheckbox.is(":checked")) {
-                $actvtEndDe.val('');
-                $actvtEndDe.prop('readonly', true);
-            } else {
-                $actvtEndDe.prop('readonly', false);
-            }
-        }
-
         /* 신청하기 */
         function applyExprt() {
             let valid = validateForm();
             if (valid == false) return;
+
+            if(!confirm('가입 신청을 완료 하시겠습니까?')) return;
 
             insertExprt();
         }
@@ -717,13 +693,13 @@
         function validateForm() {
 
             if ($('input[name=exprtTypeCd]:checked').length == 0) {
-                alert("전문가 유형을 선택해주십시오.");
+                alert("전문가 유형을 선택해 주십시오.");
                 $('#exprtTypeCd1').focus()
                 return false;
             }
 
             if ($('#brdt').val() == null) {
-                alert('생년월일을 선택해주십시오.');
+                alert('생년월일을 선택해 주십시오.');
                 $('#brdt').focus();
                 return false;
             }
@@ -735,31 +711,31 @@
             }
 
             if ($('#fldEtcYn').is(':checked') && $('#fldEtcCn').val() == '') {
-                alert("기타 내용을 입력해주십시오.")
+                alert("기타 내용을 입력해 주십시오.")
                 $('#fldEtcYn').focus();
                 return false;
             }
 
             if ($("input[name=trgtCd]:checked").length == 0) {
-                alert('전문분야(대상)을 선택해주십시오.')
+                alert('전문분야(대상)을 선택해 주십시오.')
                 $('#trgtCd1').focus();
                 return false;
             }
 
             if ($("input[name=sbjctCd]:checked").length == 0) {
-                alert('전문분야(환경주제)를 선택해주십시오.')
+                alert('전문분야(환경주제)를 선택해 주십시오.')
                 $('#sbjctCd1').focus();
                 return false;
             }
 
             if ($("input[name=actvtRgnCd]:checked").length == 0) {
-                alert('주요 활동지역을 선택해주십시오.')
+                alert('주요 활동지역을 선택해 주십시오.')
                 $('#actvtRgnCd1').focus();
                 return false;
             }
 
             if ($("input[name=actvtScopeCd]:checked").length == 0) {
-                alert("가능 활동범위를 선택해주십시오.");
+                alert("가능 활동범위를 선택해 주십시오.");
                 $('#actvtScopeCd1').focus();
                 return false;
             }
@@ -768,19 +744,22 @@
         }
 
         function insertExprt() {
-            $.ajax({
-                url: '/front/exprtPool/insertExprt.do',
-                type: 'post',
-                data: JSON.stringify(makeJsonData()),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                success: function (response) {
-                    alert(response.msg)
-                    if (response.success) {
-                        location.replace('/front/exprtPool/registerStep4.html');
+            if(displayWorkProgress(true)) {
+                $.ajax({
+                    url: '/front/exprtPool/insertExprt.do',
+                    type: 'post',
+                    data: JSON.stringify(makeJsonData()),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success: function (response) {
+                        closeWorkProgress();
+                        alert(response.msg)
+                        if (response.success) {
+                            location.replace(response.redirectUrl);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
         function makeJsonData() {
@@ -798,7 +777,7 @@
                         hdofBgngDe: $(item).find('input[name=hdofBgngDe]').val(),
                         hdofEndDe: $(item).find('input[name=hdofEndDe]').val(),
                         hdofYn: $(item).find('input[name=hdofYn]').is(':checked') ? 'Y' : 'N',
-                        hdofcrtfFileid: $(item).find('input[name=hdofFilegrpid]').val()
+                        hdofcrtfFileid: $(item).find('input[name=hdofcrtfFileid]').val()
                     }
                 );
             });
@@ -811,7 +790,7 @@
                         acqsNo: $(item).find('input[name=acqsNo]').val(),
                         acqsGrd: $(item).find('input[name=acqsGrd]').val(),
                         acqsDe: $(item).find('input[name=acqsDe]').val(),
-                        crtfctFileid: $(item).find('input[name=crtfctFilegrpid]').val()
+                        crtfctFileid: $(item).find('input[name=crtfctFileid]').val()
                     }
                 );
             })
@@ -827,8 +806,8 @@
                         idntyInstNm: $(item).find('input[name=idntyInstNm]').val(),
                         actvtCn: $(item).find('textarea').val(),
                         idntyDe: $(item).find('input[name=idntyDe]').val(),
-                        crtfFileid: $(item).find('input[name=crtfFilegrpid]').val(),
-                        artclassFileid: $(item).find('input[name=artClassFilegrpid]').val()
+                        crtfFileid: $(item).find('input[name=crtfFileid]').val(),
+                        artclassFileid: $(item).find('input[name=artclassFileid]').val()
                     }
                 );
             });
@@ -998,6 +977,32 @@
             event.preventDefault();
         }
 
+        /* 재직중 클릭 */
+        function hdofYnCheck(hdofYnCheckbox) {
+            $hdofYnCheckbox = $(hdofYnCheckbox);
+            let $hdofEndDe = $hdofYnCheckbox.closest('.form-input').find('input[name=hdofEndDe]');
+
+            if ($hdofYnCheckbox.is(":checked")) {
+                $hdofEndDe.val('');
+                $hdofEndDe.prop('readonly', true);
+            } else {
+                $hdofEndDe.prop('readonly', false);
+            }
+        }
+
+        /* 활동중 클릭*/
+        function actvtYnCheck(actvtYnCheckbox) {
+            $actvtYnCheckbox = $(actvtYnCheckbox);
+            let $actvtEndDe = $actvtYnCheckbox.closest('.form-input').find('input[name=actvtEndDe]');
+
+            if ($actvtYnCheckbox.is(":checked")) {
+                $actvtEndDe.val('');
+                $actvtEndDe.prop('readonly', true);
+            } else {
+                $actvtEndDe.prop('readonly', false);
+            }
+        }
+
     </script>
 
     <div class="table-row table-row-mo" id="hdofTableTemplate" style="display:none">
@@ -1060,7 +1065,7 @@
                             <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="파일첨부" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
-                        <input type="hidden" name="hdofFilegrpid" value="0">
+                        <input type="hidden" name="hdofcrtfFileid" value="0">
                         <ul></ul>
                     </div>
                 </td>
@@ -1126,7 +1131,7 @@
                             <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="자격증명서" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
-                        <input type="hidden" name="crtfctFilegrpid" value="0">
+                        <input type="hidden" name="crtfctFileid" value="0">
                         <ul></ul>
                     </div>
                 </td>
@@ -1173,7 +1178,7 @@
                 <th scope="row">활동시간</th>
                 <td>
                     <div class="form-input">
-                        <input type="text" title="활동시간" placeholder="활동시간 입력" id="actvtHr" name="actvtHr">
+                        <input type="number" title="활동시간" placeholder="활동시간 입력" id="actvtHr" name="actvtHr">
                         <div class="bul">시간</div>
                     </div>
                 </td>
@@ -1210,7 +1215,7 @@
                             <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="확인서" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
-                        <input type="hidden" name="crtfFilegrpid" value="0"/>
+                        <input type="hidden" name="crtfFileid" value="0"/>
 
                         <ul></ul>
                     </div>
@@ -1219,10 +1224,10 @@
                 <td>
                     <div class="form-input-file form-input-button">
                         <label class="form-input">
-                            <input type="file" class="blind" th:accept="${uxploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
+                            <input type="file" class="blind" th:accept="${uploadFileExtsn}" title="정관" maxcount="1" onchange="uploadExprtFile(this,event)">
                             <span class="btn-medium btn-green">업로드</span>
                         </label>
-                        <input type="hidden" name="artClassFilegrpid" value="0"/>
+                        <input type="hidden" name="artclassFileid" value="0"/>
                         <ul></ul>
                     </div>
                 </td>
