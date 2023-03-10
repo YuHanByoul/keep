@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.apache.ibatis.type.Alias;
@@ -312,7 +313,7 @@ public class DsgnPrgrmController {
     	int retVal = 0;
 
     	//지정프로그램 수정
-    	retVal = dsgnPrgrmService.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+    	retVal = dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -349,8 +350,12 @@ public class DsgnPrgrmController {
 		//프로그램 대처 계획
     	List<DsgnPrgrmVo> planList  = dsgnPrgrmService.selectPlanList(dsgnPrgrmVo);
 
+    	//컨설팅목록
+    	List<DsgnPrgrmVo> csltngList  = dsgnPrgrmService.selectCsltngList(dsgnPrgrmVo);
+
 		model.addAttribute("schdlList", schdlList);
 		model.addAttribute("planList", planList );
+		model.addAttribute("csltngList", csltngList );
 		model.addAttribute("opner", dsgnPrgrmVo.getOpner());
 
 		return "front/dsgnPrgrm/prgrmDstnctnForm";
@@ -382,7 +387,8 @@ public class DsgnPrgrmController {
 		AsgsysSrngVo asgsysSrngVo = new AsgsysSrngVo();
 		BeanUtils.copyProperties(dsgnPrgrmVo, asgsysSrngVo);
 
-		asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
+		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
+		retVal+=asgsysSrngService.insertPrgrmDstnctn(asgsysSrngVo);
 
     	if (retVal > 0) {
     		resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
@@ -422,6 +428,7 @@ public class DsgnPrgrmController {
 		asgsysSrngVo.setPrgrmSchdlLst(dsgnPrgrmVo.getPrgrmSchdlLst());
 		asgsysSrngVo.setEmrgcyActnPlanLst(dsgnPrgrmVo.getEmrgcyActnPlanLst());
 
+		retVal+=dsgnPrgrmService.updateAssPrgrm(dsgnPrgrmVo);
 		retVal+=asgsysSrngService.updatePrgrmDstnctn(asgsysSrngVo);
 
 		if (retVal > 0) {
@@ -703,8 +710,25 @@ public class DsgnPrgrmController {
 		return resultMap;
 	}
 
+	/**
+	* 체크리스트 화면 이동
+	*
+	* @Title : chkListForm
+	* @Description : 체크리스트 화면 이동
+	* @param model
+	* @return
+	* @throws Exception
+	* @return String
+	*/
 	@RequestMapping(value = "/front/dsgnPrgrm/chkListForm.html")
-	public String chkListForm(Model model) throws Exception {
+	public String chkListForm(DsgnPrgrmVo dsgnPrgrmVo, Model model) throws Exception {
+
+		DsgnPrgrmVo chkListInfo = null;
+		chkListInfo = dsgnPrgrmService.selectChkListInfo(dsgnPrgrmVo);
+		dsgnPrgrmVo.setChklstid(chkListInfo.getChklstid());
+
+		model.addAttribute("chkListInfo", chkListInfo);
+		model.addAttribute("qitemList", dsgnPrgrmService.selectQitemList(dsgnPrgrmVo));
 		return "front/dsgnPrgrm/chkListForm";
 	}
 
@@ -745,6 +769,27 @@ public class DsgnPrgrmController {
 	public String cnsltngAplyTermsForm(Model model, @UserInfo UserVo user) throws Exception {
 		return "front/dsgnPrgrm/cnsltngAplyTermsForm";
 	}
+
+    /**
+    * 컨설팅 목록 조회
+    *
+    * @Title : selectCsltngList
+    * @Description : 컨설팅 목록 조회
+    * @param dsgnPrgrmVo
+    * @return
+    * @throws Exception
+    * @return Map<String,Object>
+    */
+    @RequestMapping(value = "/front/dsgnPrgrm/selectCsltngList.do")
+    @ResponseBody
+    public Map<String, Object> selectCsltngList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+    	Map<String, Object> response = new HashMap<>();
+
+    	List<DsgnPrgrmVo> list = dsgnPrgrmService.selectCsltngList(dsgnPrgrmVo);
+
+    	response.put("list", list);
+    	return response;
+    }
 
 	/**
 	* 컨설팅 신청 화면이동

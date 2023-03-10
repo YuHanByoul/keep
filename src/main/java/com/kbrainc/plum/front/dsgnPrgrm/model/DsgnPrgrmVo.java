@@ -102,6 +102,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 	/** 운영 형태 코드 */
 	private String operFrmCd;
 
+	/** 운영 형태 코드 */
+	private String operFrmCdNm;
+
 	/** 1월 */
 	private String jan;
 
@@ -589,6 +592,24 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 컨설턴트 등록시 그룹 확인용 */
     private Integer grpId;
+
+    /** 구분 코드 */
+    private String seCd;
+
+    /** 내용 */
+    private String cn;
+
+    /** 문항아이디 */
+    private Integer qitemid;
+
+    /** 배점 */
+    private Integer altm;
+
+    private String pseCd;
+    private String qitmOrdr;
+    private String treeOrd;
+    private String seOrdr;
+
 
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;
