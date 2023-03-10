@@ -1,6 +1,7 @@
 package com.kbrainc.plum.mng.expertPoolMng.service;
 
 import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileGrpVo;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
@@ -61,9 +62,9 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
 
         for (ExpertHdofVo item : expertHdofList) {
             if (item.getHdofcrtfFileid() != null && !item.getHdofcrtfFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getHdofcrtfFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                FileGrpVo fileGrpVo = new FileGrpVo();
+                fileGrpVo.setFilegrpid(item.getHdofcrtfFileid());
+                FileVo fileInfo = fileDao.selectFileInfo(fileGrpVo);
                 item.setHdofCrtfFile(fileInfo);
             }
         }
@@ -71,15 +72,15 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
         List<ExpertCareerVo> expertCareerList = expertMdfcnDao.selectExpertCareerList(expertMdfcnVo);
         for (ExpertCareerVo item : expertCareerList) {
             if (item.getCrtfFileid() != null && !item.getCrtfFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getCrtfFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                FileGrpVo fileGrpVo = new FileGrpVo();
+                fileGrpVo.setFilegrpid(item.getCrtfFileid());
+                FileVo fileInfo = fileDao.selectFileInfo(fileGrpVo);
                 item.setCrtfFile(fileInfo);
             }
             if (item.getArtclassFileid() != null && !item.getArtclassFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getArtclassFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                FileGrpVo fileGrpVo = new FileGrpVo();
+                fileGrpVo.setFilegrpid(item.getArtclassFileid());
+                FileVo fileInfo = fileDao.selectFileInfo(fileGrpVo);
                 item.setArtClassFile(fileInfo);
             }
         }
@@ -87,9 +88,9 @@ public class ExpertMdfcnServiceImpl extends PlumAbstractServiceImpl implements E
         List<ExpertCrtfctVo> expertCrtfctList = expertMdfcnDao.selectExpertCrtfctList(expertMdfcnVo);
         for (ExpertCrtfctVo item : expertCrtfctList) {
             if (item.getCrtfctFileid() != null && !item.getCrtfctFileid().equals(0)) {
-                FileVo fileVo = new FileVo();
-                fileVo.setFileid(Integer.parseInt(item.getCrtfctFileid().toString()));
-                FileVo fileInfo = fileDao.getFileInfo(fileVo);
+                FileGrpVo fileGrpVo = new FileGrpVo();
+                fileGrpVo.setFilegrpid(item.getCrtfctFileid());
+                FileVo fileInfo = fileDao.selectFileInfo(fileGrpVo);
                 item.setCrtfctFile(fileInfo);
             }
         }
