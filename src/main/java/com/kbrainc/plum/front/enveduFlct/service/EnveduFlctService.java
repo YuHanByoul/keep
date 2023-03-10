@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.kbrainc.plum.front.enveduFlct.model.EnveduFcltVo;
+
 /**
  * 내 주변 환경교육시설 Service
  *
@@ -42,5 +44,7 @@ public interface EnveduFlctService {
      * @throws Exception 예외
      */
     public int nearbyEnveduFlctCount(Map map) throws Exception;
+
+    public List<EnveduFcltVo> selectEnveduFcltList() throws Exception;
 
 }

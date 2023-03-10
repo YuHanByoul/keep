@@ -41,4 +41,6 @@ public interface EnveduFlctDao {
      * @throws Exception 예외
      */
     public int nearbyEnveduFlctCount(Map map) throws Exception;
+
+    public List<EnveduFcltVo> selectEnveduFcltList() throws Exception;
 }

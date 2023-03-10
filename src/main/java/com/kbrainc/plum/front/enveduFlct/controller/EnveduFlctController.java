@@ -1,6 +1,7 @@
 package com.kbrainc.plum.front.enveduFlct.controller;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.kbrainc.plum.front.envEdu.model.PrgrmVo;
+import com.kbrainc.plum.front.enveduCntr.model.EnveduCntrVO;
+import com.kbrainc.plum.front.enveduFlct.model.EnveduFcltVo;
 import com.kbrainc.plum.front.enveduFlct.service.EnveduFlctService;
+import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
 
 /**
@@ -123,6 +128,29 @@ public class EnveduFlctController {
           searchMap.put("totalCnt", totalCnt);
           
           resultMap.put("pagenationInfo", searchMap);
+          
+          return resultMap;
+      }
+      
+      @RequestMapping(value = "/front/enveduFlct/enveduFcltListForm.html")
+      public String enveduFcltListForm() throws Exception {
+          return "front/enveduFclt/enveduFcltList";
+      }
+      
+      @RequestMapping(value="/front/enveduFlct/selectEnveduFcltList.do")
+      @ResponseBody
+      public Map<String, Object> selectEnveduFcltList() throws Exception {
+          Map<String, Object> resultMap = new HashMap<>();
+          List<EnveduFcltVo> result = null;
+          
+          result =  enveduFlctService.selectEnveduFcltList();
+          
+          if (result.size() > 0) {
+              resultMap.put("totalCount", (result.get(0).getTotalCount()));
+          } else {
+              resultMap.put("totalCount", 0);
+          }
+          resultMap.put("list", result);
           
           return resultMap;
       }
