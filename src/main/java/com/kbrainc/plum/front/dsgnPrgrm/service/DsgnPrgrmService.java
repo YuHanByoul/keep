@@ -1,13 +1,8 @@
 package com.kbrainc.plum.front.dsgnPrgrm.service;
 
 import java.util.List;
-import java.util.Map;
-
-import javax.validation.Valid;
 
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
-import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
-import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
 
 /**
  *
@@ -183,5 +178,16 @@ public interface DsgnPrgrmService {
 	*/
 	public int insertCsltng(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
+	/**
+	* 신청내역 조회
+	*
+	* @Title : selectAplyDsctnList
+	* @Description : 신청내역 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectAplyDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

@@ -1367,7 +1367,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	//프로그램_일정 저장*/
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
-    	if( 0 < schdLst.size()) {
+    	if( schdLst != null && 0 < schdLst.size()) {
 
     		asgsysSrngDao.deletePrgrmSchdl(schdLst.get(0));
 
@@ -1381,7 +1381,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	//비상조치계획 저장*/
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
-    	if( 0 < planLst.size()) {
+    	if( planLst != null && 0 < planLst.size()) {
 
     		asgsysSrngDao.deleteEmrgcyActnPlan(planLst.get(0));
 
@@ -1439,7 +1439,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
     	List<PrgrmSchdlVo> schdLst = asgsysSrngVo.getPrgrmSchdlLst();
 
 
-    	if( 0 < schdLst.size()) {
+    	if( schdLst != null && 0 < schdLst.size()) {
 
     		asgsysSrngDao.deletePrgrmSchdl(schdLst.get(0));
 
@@ -1453,7 +1453,7 @@ public class AsgsysSrngServiceImpl extends PlumAbstractServiceImpl implements As
 
     	List<EmrgcyActnPlanVo> planLst = asgsysSrngVo.getEmrgcyActnPlanLst();
 
-    	if( 0 < planLst.size()) {
+    	if( planLst != null && 0 < planLst.size()) {
 
     		asgsysSrngDao.deleteEmrgcyActnPlan(planLst.get(0));
 

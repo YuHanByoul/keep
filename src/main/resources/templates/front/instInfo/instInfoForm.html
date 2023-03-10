@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+		<form name="instInfoForm" id="instInfoForm">
+			<input type="hidden" name="instid" id="instid" th:value="${userVo.instid}"/>		
+			<input type="hidden" name="rgnCd" id="rgnCd" th:value="${instInfo.rgnCd}"/>
+			<input type="hidden" name="zip" id="zip" th:value="${instInfo.zip}"/>
+			
+				
+			<!-- content -->
+			<div class="table-caption">
+				<div class="left">
+					<h3 class="sub-title">기관정보 입력</h3>
+				</div>
+				<th:block th:if="${userVo.instpicRoleCd} == '109101'">
+					<div class="right">
+						<p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+					</div>
+				</th:block>
+			</div>
+	
+			<div class="table-row table-row-mo">
+				<table>
+					<caption>기관 회원가입  - 기관명, 기관유형, 사업자등록번호, 사업자등록증, 대표자 이름, 대표 전화번호, 대표 팩스번호, 홈페이지 주소, 기관 로고, 주소, 상세주소</caption>
+					<colgroup>
+						<col style="width:140px;">
+						<col>
+						<col style="width:140px;">
+						<col>
+					</colgroup>
+					<tbody>
+					<th:block th:if="${userVo.instpicRoleCd} == '109101'">
+						<tr>
+							<th scope="row">기관명</th>
+							<td th:text="${instInfo.instNm}"></td>
+							<th scope="row">기관유형</th>
+							<td th:text="${instInfo.instTypeCdNm}"></td>
+						</tr>					
+						<tr>
+							<th scope="row">사업자등록번호</th>
+							<td th:text="${instInfo.strBrno}"></td>
+							<th scope="row">대표자 이름<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<input type="text" id="rprsvNm" name="rprsvNm" title="대표자 이름" placeholder="대표자 이름 입력" th:value="${instInfo.rprsvNm}">
+                                <p class="feedback"></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">대표전화번호<i class="ast" title="필수입력">*</i></th>
+							<td>
+								<input type="text" id="telno" name="telno" title="대표전화번호" placeholder="대표전화번호 입력" th:value="${instInfo.telno}">
+								<p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
+                                <p class="feedback"></p>								
+							</td>
+							<th scope="row">대표팩스번호</th>
+							<td>
+								<input type="number" id="fxno" name="fxno" title="대표팩스번호" placeholder="대표팩스번호 입력" th:value="${instInfo.fxno}">
+								<p class="desc">* 하이픈 &lsquo;-&rsquo; 없이 숫자만 입력해주세요.</p>
+                                <p class="feedback"></p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">홈페이지 주소</th>
+							<td colspan="3">
+								<div class="form-input">
+									<input type="text" id="hmpg" name="hmpg" title="홈페이지 주소" placeholder="홈페이지 주소 입력" th:value="${instInfo.hmpg}">
+								</div>
+								<p class="desc">* 예) https://keep.go.kr</p>
+                                <p class="feedback"></p>								
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">기관 로고</th>
+							<td colspan="3">
+								<div class="form-input-file form-input-thumb">
+									<div class="form-input">
+										<div class="logo-image">
+											<th:block th:if="${not #strings.isEmpty(instInfo.fileInfo)}">
+												<img id="imgPreview" th:src="@{/downloadFileByFileid.do?fileid=}+${instInfo.fileInfo.fileid}+@{&file_idntfc_key=}+${instInfo.fileInfo.fileIdntfcKey}" alt="">
+											</th:block>
+											<th:block th:unless="${not #strings.isEmpty(instInfo.fileInfo)}">
+												<img id="imgPreview" src="" alt="">
+											</th:block>
+											<span class="logo-text">LOGO IMAGE</span>
+										</div>
+										<label>
+											<input type="file" id="logoFile" name="logoFile" class="blind" accept=".jpeg,.jpg,.png" title="파일첨부" maxcount="1">
+										    <input type="hidden" id="logoFileid" name="logoFileid" th:value="${instInfo.logoFileid}"/>
+											<span class="btn-medium btn-gray">파일선택</span>
+										</label>
+									</div>
+								</div>
+								<p class="desc">* 로고사진 파일은 10MB 미만의 JPG, PNG파일만 업로드 가능</p>
+								<p class="desc">* 로고사진 크기는 240*120px이 권장사이즈입니다.</p>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">주소<i class="ast" title="필수입력">*</i></th>
+							<td colspan="3">
+								<div class="form-input a-center">
+									<div class="bul normal-wrap" name="addrText" id="addrText" th:text="${instInfo.addr}"></div>
+									<input type="hidden" name="addr" id="addr" th:value="${instInfo.addr}"/>
+									<button type="button" class="btn-medium btn-gray" onclick="daumPostcode()">주소변경</button>
+									<p class="feedback"></p>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">상세주소</th>
+							<td colspan="3">
+								<div class="form-input">
+									<input type="text" name="addrDtl" id="addrDtl" title="상세주소" placeholder="상세주소를 입력해주세요." data-width="585" th:value="${instInfo.addrDtl}">
+								</div>
+	                               <div class="col">
+	                                   <p class="feedback"></p>
+	                               </div>
+							</td>
+						</tr>
+					</th:block>
+					<th:block th:unless="${userVo.instpicRoleCd} == '109101'">
+						<tr>
+							<th scope="row">기관명</th>
+							<td th:text="${instInfo.instNm}"></td>
+							<th scope="row">기관유형</th>
+							<td th:text="${instInfo.instTypeCdNm}"></td>
+						</tr>					
+						<tr>
+							<th scope="row">사업자등록번호</th>
+							<td th:text="${instInfo.strBrno}"></td>
+							<th scope="row">대표자 이름</th>
+							<td th:text="${instInfo.rprsvNm}"></td>
+						</tr>
+						<tr>
+							<th scope="row">대표전화번호</th>
+							<td th:text="${instInfo.telno}"></td>
+							<th scope="row">대표팩스번호</th>
+							<td th:text="${instInfo.fxno}"></td>
+						</tr>
+						<tr>
+							<th scope="row">홈페이지 주소</th>
+							<td colspan="3">
+								<div class="form-input">
+									<div class="bul normal-wrap" name="addrText" id="addrText" th:text="${instInfo.hmpg}"></div>
+								</div>		
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">기관 로고</th>
+							<td colspan="3">
+								<div class="form-input-file form-input-thumb">
+									<div class="form-input">
+										<div class="logo-image">
+											<th:block th:if="${not #strings.isEmpty(instInfo.fileInfo)}">
+												<img id="imgPreview" th:src="@{/downloadFileByFileid.do?fileid=}+${instInfo.fileInfo.fileid}+@{&file_idntfc_key=}+${instInfo.fileInfo.fileIdntfcKey}" alt="">
+											</th:block>
+											<th:block th:unless="${not #strings.isEmpty(instInfo.fileInfo)}">
+												<img id="imgPreview" src="" alt="">
+											</th:block>
+											<span class="logo-text">LOGO IMAGE</span>
+										</div>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">주소</th>
+							<td colspan="3">
+								<div class="form-input a-center">
+									<div class="bul normal-wrap" name="addrText" id="addrText" th:text="${instInfo.addr}"></div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">상세주소</th>
+							<td colspan="3">
+								<div class="form-input">
+									<div class="bul normal-wrap" name="addrText" id="addrText" th:text="${instInfo.addrDtl}"></div>
+								</div>
+							</td>
+						</tr>
+					</th:block>						
+					</tbody>
+				</table>
+			</div>
+	
+			<th:block th:if="${userVo.instpicRoleCd} == '109101'">
+			<div class="btn-wrap">
+				<div class="center">
+					<button type="button" class="btn-medium btn-green" onclick="instInfoUpdate();">저장</button>
+				</div>
+			</div>
+			</th:block>
+			<!-- //content -->
+		</form>
+		
+		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>			
+		<script th:inline="javascript">
+	        function daumPostcode(){
+	            new daum.Postcode({
+	                oncomplete: function(data) {
+	                    let addr = '';
+	                    if (data.userSelectedType === 'R') {
+	                        addr = data.roadAddress;
+	                    } else {
+	                        addr = data.jibunAddress;
+	                    }
+	                    $('#signguCd').val(data.sigunguCode);
+	                    $('#zip').val(data.zonecode);
+	                    $('#addr').val(addr);
+	                    $('#addrText').text(addr);
+	                    $('#addrDtl').focus();
+	                }
+	            }).open();
+	        }
+	        
+	        var validator= $("#instInfoForm").validate({
+	            onsubmit: false,
+	            rules: {
+	            	 rprsvNm    :   { required: true, isBlank: true, maxlength: 20 }
+	        		,telno      :   { required: true, number: true, maxlength: 12}
+	        		,fxno       :   { number: true, maxlength: 12}
+                    ,hmpg       :   { url: true, maxlength: 100 }
+                    ,addr   	:   { required: true, maxlength: 200 }
+                    ,addrDtl	:   { maxlength: 400 }
+	            },
+	            messages: { 
+                     rprsvNm    :   { required: "대표자 이름을 입력 해주십시오.", isBlank: "대표자 이름에 공백이 있습니다.", maxlength: "대표자 이름은 20자를 초과할 수 없습니다." }
+                    ,telno      :   { required: "대표전화번호를 입력 해주십시오." ,number: "숫자만 입력가능합니다.", maxlength:"대표전화번호는 12자를 초과할 수 없습니다." }
+                    ,fxno       :   { number: "숫자만 입력가능합니다.", maxlength:"대표팩스번호는 12자를 초과할 수 없습니다." }
+                    ,hmpg       :   { url: "홈페이지 주소의 형식이 올바르지 않습니다.", maxlength: "홈페이지 주소는 100자를 초과할 수 없습니다." }
+                    ,addr   	:   { required: "주소를 입력 해주십시오.", maxlength: "주소는 200자를 초과할 수 없습니다." }
+                    ,addrDtl	:   { maxlength: "상세주소는 400자를 초과할 수 없습니다." }
+	            }
+	        });
+	        
+	        function instInfoUpdate(){
+	             if(!($("#instInfoForm").valid())) return;
+	            
+	            if(!confirm("입력하신 정보로 변경 하시겠습니까?")) return;
+	
+ 				if(displayWorkProgress(true)){
+	                $.ajax({
+	                    url : "/front/instInfo/updateInstInfo.do",
+	                    type: 'POST',
+	                    cache : false,
+	                    dataType: 'json',
+	                    data : $("#instInfoForm").serialize(),
+	                    success : function (data){
+	                        if(data.result=="success"){
+	                        	alert(data.msg);
+	                        	location.reload();
+	                        }else{
+	                            alert(data.msg);
+	                        }
+	                        closeWorkProgress();
+	                    }
+	                });
+	            }
+	        }		
+		
+		   // 로고 파일 첨부 
+		   $('#logoFile').on('change', function(event) {
+		        var formData = new FormData();
+		        var objFile = event.target;
+		        
+		        formData.append("file", objFile.files[0]);
+		        formData.append("filegrpNm", "biz_logo");
+		        
+		        if($('#logoFilegrpid').val() != '')
+		            formData.append("filegrpid", $('#logoFilegrpid').val());
+
+		        if(displayWorkProgress(true)){
+		            $.ajax({
+		                url : '/uploadFile.do',
+		                processData : false,
+		                contentType : false,
+		                data : formData,
+		                type : 'POST',
+		                success : function(response) {
+		                    
+		                    if(response.result == 'fail'){
+		                        alert(response.msg);
+		                    }else if(response.filegrpid != undefined && response.filegrpid != ''){
+		                        $("#logoFilegrpid").val(response.filegrpid);
+		                        $("#logoFileid").val(response.fileid);
+		                        $("#imgPreview").attr('src', "/downloadFileByFileid.do?fileid=" + response.fileid + "&file_idntfc_key=" + response.fileIdntfcKey);
+
+							    let imageStr = '<span id="logo_img_'+response.fileid+'" class="label label-inverse">'+response.orginlFileNm
+							                   +' &nbsp;&nbsp;&nbsp;<a href="javascript:deleteLogoFile('+response.fileid+','+response.fileIdntfcKey+')" class="text-white">X</a>'
+							                   +'</span>'
+		                    }
+		                    closeWorkProgress();
+		                }
+		            });
+		        }
+		        event.preventDefault();
+		    });
+		</script>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+	<div layout:fragment="content">
+
+		<!-- content -->
+		<div class="table-caption">
+			<div class="left">
+				<h3 class="sub-title">회원 정보</h3>
+			</div>
+		</div>
+
+		<div class="table-row">
+			<table>
+				<caption>회원 정보 - 이름, 아이디, 회원유형, 휴대전화, 이메일, 주소, 상세주소, 회원상태, 등록요청일, 등록상태</caption>
+				<colgroup>
+					<col style="width:140px;">
+					<col>
+					<col style="width:140px;">
+					<col>
+				</colgroup>
+				<tbody>
+					<tr>
+						<th scope="row">이름</th>
+						<td th:text="${instPicInfo.nm}"></td>
+						<th scope="row">아이디</th>
+						<td th:text="${instPicInfo.acnt}"></td>
+					</tr>
+					<tr>
+						<th scope="row">회원유형</th>
+						<td th:text="${instPicInfo.instpicRoleCdNm}"></td>
+						<th scope="row">휴대전화</th>
+						<td th:text="${instPicInfo.moblphon}"></td>
+					</tr>
+					<tr>
+						<th scope="row">이메일</th>
+						<td th:text="${instPicInfo.eml}"></td>
+						<th scope="row">주소</th>
+						<td th:text="${instPicInfo.addr}"></td>
+					</tr>
+					<tr>
+						<th scope="row">상세주소</th>
+						<td th:text="${instPicInfo.addrDtl}"></td>
+						<th scope="row">회원상태</th>
+						<td th:text="${instPicInfo.sttsCd}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<th:block th:if="${userVo.instpicRoleCd} == '109101'">
+			<div class="btn-wrap">
+				<div class="right">
+					<a href="javascript:void(0);" class="fc-black6 fs-14 fw-300 underline" th:onclick="cancelInstPic([[${instPicInfo.userid}]]);">담당자 해지</a>
+				</div>
+			</div>
+		</th:block>
+
+		<div class="btn-wrap">
+			<div class="center">
+				<button type="button" class="btn-medium btn-gray" onclick="goList();">목록</button>
+			</div>
+		</div>
+		<!-- //content -->
+	
+		<script th:inline="javascript">
+			var instid = /*[[${instPicInfo.instid}]]*/ null;
+			
+			function goList() {
+				location.href = '/front/instInfo/instPicList.html';
+			}
+			
+			function cancelInstPic(id){
+				if(!confirm("담당자 해지를 계속 하시겠습니까?")) return;
+				
+ 				if(displayWorkProgress(true)){
+		             $.ajax({
+		                 url : "/front/instInfo/updateCancelInstPic.do",
+		                 type: 'POST',
+		                 cache : false,
+		                 dataType: 'json',
+		                 data : { userid : id, instid : instid },
+		                 success : function (data){
+		                     if(data.result=="success"){
+		                    	 alert(data.msg);
+		                    	 location.href = '/front/instInfo/instPicList.html';
+		                     }else{
+		                         alert(data.msg);
+		                     }
+		                     closeWorkProgress();
+		                 }
+		             });
+			     }
+		    }
+		</script>
+	</div>
+
+</body>
+</html>

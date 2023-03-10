@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    SQL File Name : DsgnMngDaoImpl.xml
+    Description : 지정관리
+-->
+<mapper namespace="com.kbrainc.plum.front.dsgnMng.model.DsgnMngDao">
+
+
+    <!-- 지정내역 목록 조회 -->
+    <select id="selectDsgnHstryList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectDsgnHstryList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+           A.PRGRMID /*프로그램아이디*/
+         , B.DSGN_NO
+         , A.PRGRM_NM
+         , B.STTS_CD
+         , B.DSGN_OBTAIN_DE
+         , B.DSGN_END_DE
+         , B.MDFCN_DT
+         , CONCAT(B.DSGN_BGNG_DE,' ~ ', B.DSGN_END_DE)    AS DSGN_PRD
+         , A.APLCNTID
+        FROM
+            TB_ASS_PRGRM A
+        LEFT OUTER JOIN
+            TB_ASS_DSGN_HSTRY B ON A.PRGRMID = B.PRGRMID
+        GROUP BY
+            A.PRGRMID
+        <if test="user.userid != null and user.userid != ''">
+<!--             AND A.APLCNTID = #{user.userid} -->
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 변경내역 목록 조회 -->
+    <select id="selectChgDsctnList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectChgDsctnList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+               A.APLYID             /*신청아이디*/
+             , A.PRGRMID            /*프로그램아이디*/
+             , C.DSGN_NO
+             , B.PRGRM_NM
+             , A.APLY_STTS_CD    AS STTS_CD /*신청_상태_코드*/
+             , A.APLCNTID           /*신청자아이디*/
+             , A.SPLMNT_DMND_CN     /*보완_요청_내용*/
+             , A.STTS_MDFCN_DT      /*상태_수정_일시*/
+             , A.MDFCN_DT           /*수정_일시*/
+             , A.MDFRID             /*수정자아이디*/
+             , A.REG_DT             /*등록_일시*/
+             , A.RGTRID             /*등록자아이디*/
+            FROM TB_ASS_CHG_APLY A
+            INNER JOIN TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            INNER JOIN (
+                SELECT
+                    PRGRMID
+                  , MAX(DSGN_NO) AS DSGN_NO
+                  , MAX(HSTRYID) AS HSTRYID
+                FROM
+                    TB_ASS_DSGN_HSTRY
+                GROUP BY PRGRMID
+            ) C ON A.PRGRMID = C.PRGRMID
+            WHERE 1=1
+        <if test="user.userid != null and user.userid != ''">
+<!--             AND B.APLCNTID = #{user.userid} -->
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 운영결과 목록 조회 -->
+    <select id="selectOperRsltList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectOperRsltList */
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                A.PRGRMID
+              , A.CYCLID
+              , C.DSGN_NO
+              , B.PRGRM_NM
+              , CASE WHEN D.CYCLID IS NOT NULL
+                     THEN '운영결과'
+                     WHEN A.STTS_CD = '128101'
+                     THEN '-'
+                     WHEN D.CYCLID IS NULL
+                     THEN '대기중'
+                END    AS OPER_REG
+              , A.SBMSN_BGNG_DE
+              , A.SBMSN_END_DE
+              , CONCAT(A.SBMSN_BGNG_DE, ' ~ ', A.SBMSN_END_DE)    SBMSN_PRD
+              , A.STTS_CD
+              , D.REG_DT
+              , D.MDFCN_DT
+            FROM TB_ASS_OPER_RSLT_CYCL A
+            INNER JOIN TB_ASS_PRGRM B ON A.PRGRMID = B.PRGRMID
+            INNER JOIN (
+                SELECT
+                    PRGRMID
+                  , MAX(DSGN_NO) AS DSGN_NO
+                  , MAX(HSTRYID) AS HSTRYID
+                FROM
+                    TB_ASS_DSGN_HSTRY
+                GROUP BY PRGRMID
+            ) C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN TB_ASS_OPER_RSLT D ON A.CYCLID = D.CYCLID
+            WHERE 1=1
+        <if test="user.userid != null and user.userid != ''">
+<!--             AND B.APLCNTID = #{user.userid} -->
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 운영결과 목록 조회 -->
+    <select id="selectImplmntIdntyList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectImplmntIdntyList */
+        <include refid="PaginationMapper.header"/>
+        SELECT A.SRNGID
+          , B.CYCLID
+          , C.PRGRMID
+          , D.HSTRYID
+          , D.DSGN_NO
+          , E.PRGRM_NM
+          , A.VST_DE
+          , C.STTS_CD
+          , F.DMNDID
+          , G.PLANID
+          , A.MDFCN_DT
+        FROM TB_ASS_IMPLMNT_IDNTY_SRNG A
+        INNER JOIN TB_ASS_OPER_RSLT B ON A.CYCLID = B.CYCLID
+        INNER JOIN TB_ASS_OPER_RSLT_CYCL C ON B.CYCLID = C.CYCLID
+        INNER JOIN TB_ASS_DSGN_HSTRY D ON C.PRGRMID = D.PRGRMID
+        INNER JOIN TB_ASS_PRGRM E ON D.PRGRMID = E.PRGRMID
+        LEFT OUTER JOIN TB_ASS_SPLMNT_DMND F ON A.SRNGID = F.SRNGID
+        LEFT OUTER JOIN TB_ASS_SPLMNT_PLAN G ON F.DMNDID = G.DMNDID
+        WHERE 1=1
+        <if test="user.userid != null and user.userid != ''">
+<!--             AND B.APLCNTID = #{user.userid} -->
+        </if>
+        GROUP BY A.SRNGID
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 이의신청 목록 조회 -->
+    <select id="selectObjcAplyList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.selectObjcAplyList*/
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.APLYID
+          , A.PRGRMID
+          , B.DSGN_NO
+          , B.PRGRM_NM
+          , A.APLY_STTS_CD    AS STTS_CD
+          , A.REG_DT
+          , A.ANS_DT
+          , A.MDFCN_DT
+        FROM
+        TB_ASS_OBJC_APLY A
+        INNER JOIN
+        (
+            SELECT
+                AA.PRGRMID
+              , MAX(AA.DSGN_NO) AS DSGN_NO
+              , MAX(AA.HSTRYID) AS HSTRYID
+              , BB.PRGRM_NM
+            FROM
+                TB_ASS_DSGN_HSTRY AA
+            INNER JOIN TB_ASS_PRGRM BB ON AA.PRGRMID = BB.PRGRMID
+            GROUP BY PRGRMID
+        ) B ON A.PRGRMID = B.PRGRMID
+        WHERE 1=1
+        <if test="user.userid != null and user.userid != ''">
+<!--             AND B.APLCNTID = #{user.userid} -->
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+
+    <!-- 지정프로그램 목록 조회 -->
+    <select id="dsgnPrgrmList" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnMngDao.dsgnPrgrmList*/
+        SELECT
+            A.PRGRMID
+          , MAX(B.HSTRYID)    AS HSTRYID
+          , A.PRGRM_NM
+        FROM TB_ASS_PRGRM A
+        INNER JOIN TB_ASS_DSGN_HSTRY B ON A.PRGRMID = B.PRGRMID
+        GROUP BY A.PRGRMID
+    </select>
+
+    <insert id="insertObjcAplyForm" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.insertObjcAplyForm*/
+        INSERT INTO TB_ASS_OBJC_APLY
+        (
+            PRGRMID
+          , TTL
+          , CN
+          , APLCNTID
+          , ANS
+          , APLY_STTS_CD
+          , PICID
+          , ANS_DT
+          , MDFCN_DT
+          , MDFRID
+          , REG_DT
+          , RGTRID
+        ) VALUES
+        (
+            #{prgrmid}       /*프로그램아이디*/
+          , #{ttl}           /*제목*/
+          , #{cn}            /*내용*/
+          , #{user.userid}   /*신청자아이디*/
+          , #{ans}           /*답변*/
+          , #{aplySttsCd}    /*신청상태코드*/
+          , #{picid}         /*담당자아이디*/
+          , #{ansDt}         /*답변일시*/
+          , NOW()            /*수정일시*/
+          , #{user.userid}   /*수정자아이디*/
+          , NOW()            /*등록일시*/
+          , #{user.userid}   /*등록자아이디*/
+        )
+    </insert>
+
+    <delete id="deleteObjcAplyForm" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.deleteObjcAplyForm*/
+        DELETE FROM TB_ASS_OBJC_APLY
+        WHERE APLYID = #{aplyid}     /*신청아이디*/
+    </delete>
+
+    <select id="selectObjcAply" parameterType="front.dsgnMngVo" resultType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.selectObjcAply*/
+        SELECT
+           A.APLYID          /*신청아이디*/
+         , A.PRGRMID         /*프로그램아이디*/
+         , A.TTL             /*제목*/
+         , A.CN              /*내용*/
+         , A.APLCNTID        /*신청자아이디*/
+         , A.ANS             /*답변*/
+         , A.APLY_STTS_CD    /*신청_상태_코드*/
+         , A.PICID           /*담당자아이디*/
+         , A.ANS_DT          /*답변_일시*/
+         , A.MDFCN_DT        /*수정_일시*/
+         , A.MDFRID          /*수정자아이디*/
+         , A.REG_DT          /*등록_일시*/
+         , A.RGTRID          /*등록자아이디*/
+        FROM
+            TB_ASS_OBJC_APLY A
+        WHERE
+            A.APLYID = #{aplyid}
+    </select>
+
+    <update id="updateObjcAplyForm" parameterType="front.dsgnMngVo">
+        /* front.DsgnPrgrmDao.updateObjcAplyForm*/
+        UPDATE TB_ASS_OBJC_APLY SET
+            TTL          = #{ttl}            /*제목*/
+          , CN           = #{cn}             /*내용*/
+          , APLCNTID     = #{user.userid}    /*신청자아이디*/
+          , ANS          = #{ans}            /*답변*/
+          , APLY_STTS_CD = #{aplySttsCd}     /*신청상태코드*/
+          , PICID        = #{picid}          /*담당자아이디*/
+          , ANS_DT       = #{ansDt}          /*답변일시*/
+          , MDFCN_DT     = NOW()             /*수정일시*/
+          , MDFRID       = #{user.userid}    /*수정자아이디*/
+        WHERE 1=1
+        AND APLYID       = #{aplyid}   /*신청아이디*/
+    </update>
+
+</mapper>

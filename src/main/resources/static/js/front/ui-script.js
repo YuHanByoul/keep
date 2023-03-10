@@ -381,7 +381,7 @@ const formStyle = {
 		formStyle.onNumberClick();
 		formStyle.onNumberKeydown();
 		formStyle.readonly();
-		formStyle.searchFilterSuggest();
+		// formStyle.searchFilterSuggest();
 		suggestFlag = '';
 	},
 	// typing : function (){

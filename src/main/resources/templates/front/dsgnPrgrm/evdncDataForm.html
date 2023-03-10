@@ -7,6 +7,8 @@
     <div layout:fragment="content">
         <form id="evdnDataForm" name="evdnDataForm" th:action="@{/front/dsgnPrgrm/prgrmDstnctnForm.html}" method="post">
             <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${instInfo.prgrmid}" />
+            <input type="hidden"  id="prgrmid" name="prgrmid" th:value="${instInfo.sttsCd}" />
+            <input type="hidden"  id="opner" name="opner" value="aply" />
 
             <!-- content -->
             <div class="steps">
@@ -70,7 +72,7 @@
                             <th scope="row">담당자 연락처</th><td><th:block th:text="${instInfo.aplcntMoblphon}" /></td>
                             <th scope="row">기관 이메일</th>
                             <td>
-                                <input type="text" title="이메일 아이디" placeholder="이메일 주소" data-width="140" id="instEml" name="instEml" th:value="${instInfo.aplcntEml}">
+                                <input type="text" title="이메일 아이디" placeholder="이메일 주소" data-width="140" id="instEml" name="instEml" th:value="${instInfo.instEml}">
                             </td>
                         </tr>
                         <tr>
@@ -117,23 +119,24 @@
                                         <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;"></span>
                                     </label>
                                 <ul th:if="${fileList != null}">
-                                    <th:block th:each="file : ${fileList}">
-                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
-                                            <span class="name">
-                                                <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                   th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                                    [[${file.orginlFileNm}]]
-                                                </a>
-                                            </span>
-                                        </li>
-                                    </th:block>
                                 </ul>
 
                                     <div class="upload-response">
                                         <div id="multipleFileUploadError"></div>
-                                        <div id="multipleFileUploadSuccess"></div>
+                                        <div id="multipleFileUploadSuccess">
+                                            <th:block th:each="file : ${fileList}">
+                                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                </li>
+                                            </th:block>
+                                        </div>
                                     </div>
-                                    <input type="hidden"  id = "filegrpid" name = "filegrpid" th:value="${instInfo.filegrpid}" />
+                                    <input type="hidden"  id = "filegrpid" name = "filegrpid" th:value="${(instInfo.filegrpid == '' or instInfo.filegrpid == null) ? 0 : instInfo.filegrpid}"/>
                                 </div>
                             </td>
 
@@ -169,7 +172,10 @@
         function goNext(){
         	var url = ($("#prgrmid").val() == null || $("#prgrmid").val() == "" || $("#prgrmid").val() == 0) ? insertUrl : updateUrl;
 
-            if(!valid()) return false;
+        	if($("[id^=inputFiles]").length == 0) {
+        		alert("증빙자료를 등록해 주세요.");
+        		return;
+        	}
 
             $("#sttsCd").val("111101");    //작성중
             var data =  $("#evdnDataForm").serialize() ;
@@ -272,9 +278,12 @@
 
                                    for(i = 0 ;i < response.length; i++ ){
                                        content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginlFileNm ;
-                                       content +="&nbsp;&nbsp;<input type='button'  class = 'btn btn-xs btn-danger' onclick = fn_deleteFileList('"+response[i].fileid+"','"+response[i].fileIdntfcKey+"') value='X'/></div>";
+                                       content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                       content += '</ul>';
                                        $('#multipleFileUploadSuccess').append(content);
                                    }
+
+
                                }
                            }
                        })

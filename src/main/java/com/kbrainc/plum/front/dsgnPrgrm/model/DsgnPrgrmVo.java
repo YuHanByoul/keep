@@ -2,13 +2,11 @@ package com.kbrainc.plum.front.dsgnPrgrm.model;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.Size;
 
 import org.apache.ibatis.type.Alias;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.mng.asgsysSrng.model.EmrgcyActnPlanVo;
 import com.kbrainc.plum.mng.asgsysSrng.model.PrgrmSchdlVo;
 import com.kbrainc.plum.mng.cnsltng.model.CnsltngVo;
@@ -52,6 +50,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 검색.프로그램 명 */
     private String searchPrgrmNm;
+
+    /** 검색.상태코드*/
+    private String searchSttsCd;
 
     /** 검색.운영기관 명 */
     private String searchInstNm;
@@ -499,6 +500,9 @@ public class DsgnPrgrmVo extends ParentRequestVo {
 
     /** 사용자 아이디 */
     private Integer userid;
+
+    /** 호출화면 */
+    private String opner;
 
     /** 사용자 이름 */
     @Size(max = 60, message = "사용자 이름은 60자를 넘을 수 없습니다.")
