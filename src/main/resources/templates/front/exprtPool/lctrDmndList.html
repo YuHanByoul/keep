@@ -6,12 +6,19 @@
 <div layout:fragment="content">
     <form class="search-filter" id="searchForm" name="searchForm">
         <div class="form-input-wrap">
-            <div class="form-row">
-                <div class="form-header"><strong class="label">전문가 유형</strong></div>
-                <div class="form-body">
-                    <span kattr:select_code="exprtTypeCd" grpCd="133" firstOptTxt="- 전체 -"></span>
+            <th:block th:if="${exprtTypePath == '133'}">
+                <div class="form-row">
+                    <div class="form-header"><strong class="label">전문가 유형</strong></div>
+                    <div class="form-body">
+                        <span kattr:select_code="exprtTypeCd" grpCd="133" firstOptTxt="- 전체 -"></span>
+                    </div>
                 </div>
-            </div>
+            </th:block>
+
+            <th:block th:unless="${exprtTypePath == '133'}">
+                <input type="hidden" name="exprtTypeCd" id="exprtTypeCd">
+            </th:block>
+
             <div class="form-row">
                 <div class="form-header"><strong class="label">전문분야</strong></div>
                 <div class="form-body">
@@ -53,6 +60,7 @@
         <input type="hidden" id="pageNumber" name="pageNumber" value="1">
         <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
         <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
+        <input type="hidden" id="exprtTypePath" name="exprtTypePath" th:value="${searchVo.exprtTypePath}">
         <input type="hidden" id="userid" name="userid">
     </form>
 
@@ -127,7 +135,7 @@
                                             </div>
                                             <div class="resume-favorite">
                                                 <label class="inp inp-star">
-                                                <input type="checkbox" title="관심인력 등록" ${item.itrstYn =='Y' ? 'checked' : ''} data-exprtid=${item.userid} onclick='lctrDmndList.changeItrstExprt(event,this)'>
+                                                <input type="checkbox" title="관심인력 등록" ${item.itrstYn == 'Y' ? 'checked' : ''} data-exprtid=${item.userid} onclick='lctrDmndList.changeItrstExprt(event,this)'>
                                                 </label>
                                             </div>
                                         </div>
@@ -137,7 +145,7 @@
                                                     <dl>
                                                         <div class="list">
                                                             <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
-                                                            <dd>${exprtField.join(', ')}
+                                                            <dd class="ellipsis">${exprtField.join(', ')}
                                                                 ${isNull(item.exprtTrgtCdNm) ? '' : '/' + item.exprtTrgtCdNm}
                                                                 ${isNull(item.exprtSbjctCdNm) ? '' : '/' + item.exprtSbjctCdNm}
                                                             </dd>
@@ -159,9 +167,7 @@
                                                 <div class="resume-update">
                                                     <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
                                                     <div class="link">
-                                                        ${item.lctrDmndYn =='Y' ?
-                            `<a href="#" class="btn-medium btn-gray">요청 완료</a>` :
-                            `<a href="#" class="btn-medium btn-blue" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>`}
+                                                        <a class="btn-medium btn-blue" onclick="lctrDmndList.moveToInsertForm(${item.userid})">요청서 작성</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -177,6 +183,7 @@
             changeItrstExprt(event, checkbox) {
                 var $checkbox = $(checkbox);
                 event.preventDefault();
+
                 if (this.user == null) {
                     alert('로그인 후 관심인력 등록이 가능합니다. ');
                     return;
@@ -206,11 +213,11 @@
                         }
                         alert(response.msg);
                     }
-                })
+                });
             },
 
             moveToInsertForm(userid) {
-                if (this.user == null ) {
+                if (this.user == null) {
                     alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');
                     return;
                 }
@@ -237,12 +244,18 @@
         function goPage(num) {
             $("#pageNumber").val(num);
             lctrDmndList.selectExprtList();
-        }
+        };
 
         $(function () {
             $("#pageNumber").val(lctrDmndList.searchVo.pageNumber);
             $('#rowPerPage').val(lctrDmndList.searchVo.rowPerPage);
-            $('#exprtTypeCd').val(lctrDmndList.searchVo.exprtTypeCd);
+
+            if (lctrDmndList.searchVo.exprtTypePath == '133104') {
+                $('#exprtTypeCd').val(lctrDmndList.searchVo.exprtTypePath);
+            } else {
+                $('#exprtTypeCd').val(lctrDmndList.searchVo.exprtTypeCd);
+            }
+
             $('#exprtField').val(lctrDmndList.searchVo.exprtField);
             $('#exprtTrgtCd').val(lctrDmndList.searchVo.exprtTrgtCd);
             $('#exprtSbjctCd').val(lctrDmndList.searchVo.exprtSbjctCd);
