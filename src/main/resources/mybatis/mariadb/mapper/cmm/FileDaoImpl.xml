@@ -10,22 +10,26 @@
 	<!-- 파일리스트 가져옴 -->
 	<select id="getFileList" parameterType="FileVo" resultType="FileVo">
 	    /* FileDao.getFileList */
-		SELECT 
-			FILEID,
-			FILEGRPID,
-			FILE_IDNTFC_KEY,
-			FILE_PATH,
-			SAVE_FILE_NM,
-			ORGINL_FILE_NM,
-			FILE_EXTSN,
-			FILE_SIZE,
-			ORD,
-			REG_DT,
-			RGTRID
-		FROM TB_CMM_FILE
-		WHERE 1=1
+        SELECT 
+            A.FILEID,
+            A.FILEGRPID,
+            A.FILE_IDNTFC_KEY,
+            A.FILE_PATH,
+            A.SAVE_FILE_NM,
+            A.ORGINL_FILE_NM,
+            A.FILE_EXTSN,
+            A.FILE_SIZE,
+            A.ORD,
+            A.REG_DT,
+            A.RGTRID,
+            B.FILEGRP_NM
+        FROM 
+            TB_CMM_FILE A
+            INNER JOIN tb_cmm_filegrp B
+            ON A.FILEGRPID = B.FILEGRPID
+        WHERE 1=1
 		<if test="@com.kbrainc.plum.rte.util.CommonUtil@isNotEmpty(filegrpid)">
-			AND FILEGRPID = #{filegrpid}
+			AND A.FILEGRPID = #{filegrpid}
 		</if>
 		 ORDER BY ORD
 	</select>

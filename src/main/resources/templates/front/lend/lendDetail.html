@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <script type="text/javascript" src="../files/assets/pages/accordion/accordion.js"></script>
+    <div layout:fragment="content">
+    <div class="product-wrap sub-banner-swiper">
+        <div class="thumb-swiper">
+        
+            <div class="swiper gallery-thumb">
+            
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${rprsImgFileInfo.fileid}+@{&file_idntfc_key=}+${rprsImgFileInfo.fileIdntfcKey}" /></div>
+                    </div>
+                    <th:block th:each="item : ${dtlImgFileList}">
+                    <div class="swiper-slide">
+                        <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"/></div>
+                    </div>
+                    </th:block>
+                </div>
+                <button type="button" class="swiper-button-next"></button>
+                <button type="button" class="swiper-button-prev"></button>
+            </div>
+            
+            
+            <div thumbsSlider="" class="swiper gallery-list">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${rprsImgFileInfo.fileid}+@{&file_idntfc_key=}+${rprsImgFileInfo.fileIdntfcKey}" /></div>
+                    </div>
+                    <th:block th:each="item : ${dtlImgFileList}">
+                    <div class="swiper-slide">
+                        <div class="thumb"><img th:src="@{/downloadFileByFileid.do?fileid=}+${item.fileid}+@{&file_idntfc_key=}+${item.fileIdntfcKey}"/></div>
+                    </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+        <div class="product-section">
+            <div class="title">
+            
+                <div class="tag tag-blue" th:if ="${lendInfo.periodStts == 'W'}">모집대기</div>
+                <div class="tag tag-gray" th:if ="${lendInfo.periodStts == 'E'}">모집종료</div>
+                <div class="tag tag-green" th:if ="${lendInfo.periodStts == 'C'}">모집대기</div>
+                
+                <h3><th:block th:text="${lendInfo.rcritNm}"/></h3>
+                <dl>
+                    <div class="list">
+                        <dt>꾸러미명 :</dt>
+                        <dd><th:block th:text="${lendInfo.packageNm}"/></dd>
+                    </div>
+                    <div class="list">
+                        <dt>교육주제 :</dt>
+                        <dd><th:block th:text="${lendInfo.eduSbjctCdNm}"/></dd>
+                    </div>
+                    <div class="list">
+                        <dt>교육대상 :</dt>
+                        <dd><th:block th:text="${lendInfo.eduTrgtCdNm}"/></dd>
+                    </div>
+                    <div class="list">
+                        <dt>모둠구성 :</dt>
+                        <dd><th:block th:text="${lendInfo.teamCmpstnCdNm}"/></dd>
+                    </div>
+                    <div class="list">
+                        <dt>교육유형 :</dt>
+                        <dd><th:block th:text="${lendInfo.eduTypeCdNm}"/></dd>
+                    </div>
+                    <div class="list">
+                        <dt>대여 제한 :</dt>
+                        <dd>
+                            <th:block th:if="${lendInfo.lmtCd == '225101'}" th:text="'한개의 차수에서 1개까지 신청 가능합니다.'"/>
+                            <th:block th:if="${lendInfo.lmtCd == '225102'}" th:text="'한개의 차수에서 2개까지 신청 가능합니다.'"/>
+                            <th:block th:if="${lendInfo.lmtCd == '225103'}" th:text="'두개의 차수에서 차시당 1개까지 신청 가능합니다.'"/>
+                            <th:block th:if="${lendInfo.lmtCd == '225104'}" th:text="'두개의 차수에서 차시당 2개까지 신청 가능합니다.'"/>
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="btn-wrap">
+                <div class="left">
+                   <th:block th:if="${mapFileInfo != null and #lists.size(mapFileInfo) > 0}">
+                   <a href="javascript:viewPdf()" class="btn-medium btn-outline-blue btn-before-blank" >지도안 보기</a>
+                   <a href="javascript:onDownloadMapFiles()" class="btn-medium btn-outline-black btn-before-download">지도안 다운로드</a>
+                   </th:block>
+                   <th:block th:if="${eduPhotoFileList != null}">
+                   <a href="javascript:onDownloadEduPhoto();" class="btn-medium btn-outline-black btn-before-download" >교육사진 다운로드</a>
+                   </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="" >
+        <div class="table-col table-layout-auto">
+            <table>
+                <caption>환경교육 교구 대여 - 차수, 대여기간, 재고수량, 선택, 대여수량, 상태</caption>
+                <colgroup>
+                    <col style="width:10%;">
+                    <col>
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:14%;">
+                    <col style="width:12%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">차수</th>
+                        <th scope="col">대여기간</th>
+                        <th scope="col">재고</th>
+                        <th scope="col">선택</th>
+                        <th scope="col">대여수량</th>
+                        <th scope="col">상태</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each ="item:${rndList}"  th:id="'rnd'+${item.rndid}"  class="chasi-frm"  th:data-totalCnt="${item.totalCnt}" >
+                        <td><th:block th:text="${item.ordr}"/>차</td>
+                        <td><th:block th:text="${item.bgngDe +' ~ '+item.endDe}"/></td>
+                        <td><th:block th:text="${item.totalCnt}"/> </td>
+                        <td>
+                            <label class="inp vm">
+                               <input type="checkbox" th:id="chasi_chk+${item.rndid}" name="chasi_chk" th:disabled="${item.sttsCd =='L' or item.sttsCd =='S'}" >
+                            </label>
+                        </td>
+                        <td>
+                           <div class="form-input form-input-number j-center"  th:if="${item.sttsCd =='O'}">
+                                <input type="number" value="" min="0" title="꾸러미 대여 갯수" data-width="50" class="ac" th:id="qnty" readonly
+                                  th:max="${ (lendInfo.lmtCd =='225101' or lendInfo.lmtCd =='225103')? 1:2 }"  style="background-color:white;">
+                                <div class="btn-number">
+                                    <button type="button" disabled th:class="'num-up   chasi-btn-'+${item.rndid}"   title="숫자 증가" th:data-rndid="${item.rndid}" th:onclick="increaseQnty(this.getAttribute('data-rndid'))" />
+                                    <button type="button" disabled th:class="'num-down chasi-btn-'+${item.rndid}"   title="숫자 감소" th:data-rndid="${item.rndid}" th:onclick="decreaseQnty(this.getAttribute('data-rndid'))" />
+                               </div>
+                           </div>
+                        </td>
+                        <td>
+                           <span class="" th:if ="${item.sttsCd =='L'}" th:text="'모집 종료'"></span>  
+                           <span class="fc-red" th:if ="${item.sttsCd =='S'}" th:text="'재고 소진'"></span>
+                           <span class="fc-blue" th:if ="${item.sttsCd =='O'}" th:text="'신청 가능'"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-wrap">
+            <div class="right">
+                <th:block sec:authorize-url="/front/lend/lendAply.html">
+                <button type="button" class="btn-medium btn-green" onclick="requestAply()">신청</button>
+                </th:block>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-content tab-sub dropDown">
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">상세정보</button>
+        <ul class="tab-list target" role="tablist">
+            <li class="tab active"><button aria-controls="tab-subpanel01" id="tab-sub01" role="tab">상세정보</button></li>
+            <li class="tab"><button aria-controls="tab-subpanel02" id="tab-sub02" role="tab" >유의사항</button></li>
+            <li class="tab"><button aria-controls="tab-subpanel03" id="tab-sub03" role="tab" >후기</button></li>
+        </ul>
+        <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
+            <div class="youtube-frame" th:if ="${lendInfo.mvpUrl != null and lendInfo.mvpUrl != '' and lendInfo.mvpPstnCd =='226101' }" >
+                <iframe  th:src="'https://www.youtube.com/embed/'+${lendInfo.mvpUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <div class="table-col table-layout-auto">
+               <th:block th:utext="${lendInfo.dtlCn}"/>
+            </div>
+            <div class="youtube-frame" th:if ="${lendInfo.mvpUrl != null and lendInfo.mvpUrl != '' and lendInfo.mvpPstnCd =='226102' }" >
+                <iframe  th:src="'https://www.youtube.com/embed/'+${lendInfo.mvpUrl}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div id="tab-subpanel02" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub02">
+            <div class="box-desc-list bg7">
+                <th:block th:utext="${lendInfo.atentMttr}"/>
+            </div>
+        </div>
+        <div id="tab-subpanel03" class="tabpanel" role="tabpanel" aria-labelledby="tab-sub03">
+            <div class="accordion-content acc-list" id="replyListArea"></div>
+            <div id="reply_pagination"></div>
+        </div>
+    </div>
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" onclick="returnToList()">목록</button>
+        </div>
+    </div>
+    
+    <form id="replyFrom">
+	    <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+	    <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
+	    <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+	    <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+	    <input type="hidden" id="rcritid" name="rcritid" th:value="${lendInfo.rcritid}">
+    </form>
+    <form id="aplyForm">
+	    <input type="hidden" id="rcritid" name="rcritid" th:value="${lendInfo.rcritid}">
+	    <input type="hidden" id="lendAplyTrgts" name="lendAplyTrgts" value="">
+    </form>
+    
+    <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+    <script src="/js/common/handlebars/handlebars.helper.js"></script>
+    
+    <!--  masking 처리 계정으로 할 경우 {{rgtrNm}}  ==> {{rgtrAcnt}} 으로 변경 -->
+    <script id="replyListTemplate" type="text/x-handlebars-template">
+       {{#each replyList}}
+          <h3 class="acc-title active">
+              <span  class="acc-trigger mo-flex-wrap"  title="후기" >
+                  <span class="name"> {{rgtrNm}} </span>
+                  <span class="rate" title="별점">
+                    {{#each rvwScrArr}}
+                      <span class="icon icon-star" title="별점"></span>
+                    {{/each}}
+                  </span>
+              </span>
+          </h3>
+          <div id="accordion-panel0" role="region" aria-labelledby="accordion-0" class="acc-panel active">
+              <div class="acc-content bg-white p0 fc-black6 fw-300">
+                  {{{rvwCn}}}
+              </div>
+          </div>
+      {{/each}}
+    </script>
+    <script id="noReplyTemplate" type="text/x-handlebars-template">
+       <h3 class="acc-title active">
+          <span  class="acc-trigger mo-flex-wrap"  title="후기" >
+              <strong>등록된 후기가 없습니다.</strong>
+          </span>
+      </h3>
+    </script>
+    <script th:inline="javascript">
+        var swiper = new Swiper(".gallery-list", {
+            loop: false,
+            spaceBetween: 0,
+            slidesPerView: 5,
+            freeMode: true,
+            watchSlidesProgress: true,
+        });
+        var swiper2 = new Swiper(".gallery-thumb", {
+            loop: false,
+            spaceBetween: 10,
+            thumbs: {
+                swiper: swiper,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            a11y: {
+                prevSlideMessage: '이전 슬라이드',
+                nextSlideMessage: '다음 슬라이드',
+            },
+        });
+        
+        /*<![CDATA[*/ 
+        var lendInfo = /*[[${lendInfo}]]*/null; 
+        var rndList = /*[[${rndList}]]*/null; 
+        var eduPhotoFileList = /*[[${eduPhotoFileList}]]*/null; 
+        var mapFileInfo = /*[[${mapFileInfo}]]*/null; 
+        /*]]>*/
+        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+        var noDataMeg = '<li class="block"><div class="nodata"><p><span class="icon icon-notice bg-black9"></span>등록된 후기가 없습니다.</p></div></li>';
+        var replyListTemplet = Handlebars.compile($("#replyListTemplate").html());
+        var noReplyTemplate = Handlebars.compile($("#noReplyTemplate").html());
+        
+        $(function(){
+            selectReplyList();
+            $("input[name=chasi_chk]").change(function(){checkChasiValidation(this)});
+        })
+        function onDownloadEduPhoto() {
+            for(var i = 0, len = eduPhotoFileList.length; i < len; i++) {
+                var data = eduPhotoFileList[i];
+                downloadFileByFileid(data.fileid, data.fileIdntfcKey);
+                onDelay(1000);
+            }
+        }
+        function onDownloadMapFiles() {
+            for(var i = 0, len = mapFileInfo.length; i < len; i++) {
+                var data = mapFileInfo[i];
+                downloadFileByFileid(data.fileid, data.fileIdntfcKey);
+                onDelay(1000);
+            }
+        }
+        function onDelay(time) {
+            var start = new Date().getTime();
+            while(start + time > new Date().getTime());
+        }
+
+        function viewPdf(){
+        	for(var i = 0, len = mapFileInfo.length; i < len; i++) {
+                var data = mapFileInfo[i];
+                var pdfUrl =portalUrl+'js/pdfjs/web/viewer.html?file=/' + data.filegrpNm + '/' + data.saveFileNm;
+                window.open(pdfUrl,"","target=_parent");
+            }
+       }
+       function returnToList(){
+           location.href=portalUrl+"front/lend/LendList.html";
+       }
+       function selectReplyList() {
+           if (displayWorkProgress(true)){
+               $.ajax({
+                   url : "/front/lend/selectLendReplyList.do",
+                   cache : false,
+                   dataType : 'json',
+                   data : $("#replyFrom").serialize(),
+                   type : 'POST',
+                   success : function(data) {
+                       renderingReplyData(data.list);
+                       if(data.totalCount == 0) {
+                           $("#replyListArea").html(noReplyTemplate());
+                           $("#reply_pagination").html('');
+                       }else{
+                           $("#reply_pagination").html(data.pagination);
+                       }
+                       closeWorkProgress();
+                   }
+               });
+           }
+       }
+       function renderingReplyData(list){
+           list.forEach(function(item){
+               var arr= [] 
+               for(var i= 0 ; i < item.rvwScr;i++){
+            	   arr.push('1');
+               }
+	           item.rvwScrArr = arr;
+           })
+           $("#replyListArea").html(replyListTemplet({replyList:list}));
+       }
+       function goPage(page) {
+           $("#replyFrom #pageNumber").val(page);
+           selectLendList();
+       }
+       
+       function increaseQnty(rndid){
+           var qnty     = Number($("#rnd"+rndid+" #qnty").val());
+           var totalCnt = $("#rnd"+rndid).attr("data-totalCnt");
+           var plusedQnty =  (qnty == null || qnty == "")? 1:Number(qnty)+1;
+           let limitCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225103')? 1:2;
+           if(limitCnt < plusedQnty){alert("한개차시에 "+limitCnt+"까지 신청 할수 없습니다."); $("#rnd"+rndid+" #qnty").val(qnty-1); return;}
+           if(totalCnt < plusedQnty){alert("재고 이상으로 입력 할수 없습니다."); $("#rnd"+rndid+" #qnty").val(qnty-1); return;}
+       }
+       function decreaseQnty(rndid){
+       }
+       function checkChasiValidation($el){
+           let limitChasiCnt  = (lendInfo.lmtCd =='225101' || lendInfo.lmtCd =='225102')? 1:2;
+           let checkCnt = 0 ;
+           var rndid  = ($($el).attr("id")).replace("chasi_chk","");
+           var isChecked  = $($el).is(":checked");
+           
+           if(!isChecked){
+               $("#rnd"+rndid+" #qnty").val("");
+               $(".chasi-btn-"+rndid).prop("disabled",true);
+               return;
+           }else{
+        	   $(".chasi-btn-"+rndid).prop("disabled",false);
+           }
+           
+           $("input[name=chasi_chk]").each(function(){
+               if( $(this).is(":checked") )checkCnt++;
+           })
+           if( checkCnt > limitChasiCnt ){
+               alert(limitChasiCnt+"개 차시만 신청 할 수 있습니다.");
+               $($el).prop("checked",false);
+               $("#rnd"+rndid+" #qnty").val("");
+           }
+       }
+       function requestAply(){
+           var lendAplyTrgts=[]
+           $("input[name=chasi_chk]").each(function(){
+               if( $(this).is(":checked")){
+            	   var rndid = ($(this).attr("id")).replace("chasi_chk","");
+            	   var qnty  = Number($("#rnd"+rndid+" #qnty").val());
+            	   lendAplyTrgts.push(rndid+"/"+qnty)
+               }
+           })
+           $("#lendAplyTrgts").val(lendAplyTrgts.join(","));
+           let f = document.forms.aplyForm;
+           f.action = "/front/lend/lendAply.html";
+           f.submit();
+       }
+       
+    </script>
+   </div>
+</body>
+</html>

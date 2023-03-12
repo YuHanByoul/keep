@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <!-- content -->
+        <form class="search-filter" id="searchForm" name="searchForm" onsubmit="return false;">
+        
+            <div class="form-input-wrap">
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">교구명</strong></div>
+                        <div class="form-body">
+                            <input type="search" title="교구명" placeholder="교구명을 입력해 주세요." id="rcritNm" name="rcritNm" >
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">교육유형</strong></div>
+                        <div class="form-body">
+                            <span kattr:select_code="eduTypeCd" grpCd="187" title="교육유형" firstOptTxt="- 전체 -" >
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">교육대상</strong></div>
+                        <div class="form-body">
+                           <span kattr:select_code="eduTrgtCd" grpCd="185" title="교육유형" firstOptTxt="- 전체 -" >  
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">교구유형</strong></div>
+                        <div class="form-body">
+                           <span kattr:select_code="typeCd" grpCd="184" title="교육유형" firstOptTxt="- 전체 -" >
+                                                   
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-header"><strong class="label">교육주제</strong></div>
+                        <div class="form-body">
+                           <select title="교구유형" id="eduSbjctCd" name="eduSbjctCd">
+                                <option value="">- 전체 - </option>
+                                <option th:each="item:${sbjctList}" th:value="${item.CD}"><th:block th:text="${item.CD_NM}"/></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            
+            <div class="search-filter-submit">
+                <button type="button" class="btn-medium btn-gray btn-before-refresh" onclick="initSearch();">초기화</button>
+                <button type="submit" class="btn-medium btn-green btn-before-search" onclick="onSearch();">검색</button>
+            </div>
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="12">
+            <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+        </form>
+        <div class="rank-list" th:if="${#lists.size(rankList)}  > 0 ">
+             <ul>
+                 <li th:each="item:${rankList}"><th:block th:text="${item.NM}"></li>
+             </ul>
+        </div>
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+        </div>
+        <div class="card-list card-list-n3">
+            <ul id="lendList">
+            </ul>
+        </div>
+        <div id="pagination">
+        </div>
+
+    <!-- //content -->
+    <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+    <script src="/js/common/handlebars/handlebars.helper.js"></script>
+    <script id="lendListTemplate" type="text/x-handlebars-template">
+       {{#each lendList}}
+       <li>
+           <a href="javascript:goDetail('{{rcritid}}')">
+               <div class="thumb" style="height:163px;">
+                 <img src="/downloadFileByFileid.do?fileid={{rprsImgFileid}}&file_idntfc_key={{rprsImgFileKey}}" alt="{{rcritNm}} 대표 이미지" >
+               </div>
+               <dl class="card-program-dot-list">
+                   <dt>
+                       <div class="tag {{tagStr}}">{{sttsStr}}</div>
+                   </dt>
+                   <dd>
+                       <p class="ellipsis" data-ellipsis="2">{{rcritNm}}</p>
+                       <ul class="dot-list fc-black3">
+                           <li class="d-flex">
+                               <span class="tit">교육대상 :</span>
+                               <span class="dc">{{{eduTrgtCdNm}}}</span>
+                           </li>
+                           <li class="d-flex">
+                               <span class="tit">교육주제 :</span>
+                               <span class="dc">{{{eduSbjctCdNm}}}</span>
+                           </li>
+                           <li class="d-flex">
+                               <span class="tit">교육유형 :</span>
+                               <span class="dc">{{eduTypeCdNm}}</span>
+                           </li>
+                       </ul>
+                   </dd>
+               </dl>
+           </a>
+       </li>
+      {{/each}}
+    </script>
+    <script th:inline="javascript">
+    
+	    /*<![CDATA[*/ 
+	    var rankList = /*[[${rankList}]]*/null; 
+	    /*]]>*/
+	    var noDataMeg = '<li class="block"><div class="nodata"><p><span class="icon icon-notice bg-black9"></span>데이터가 없습니다.</p></div></li>';
+	    $(function(){
+		    selectLendList();
+		})
+		
+		var listTemplet = Handlebars.compile($("#lendListTemplate").html());
+		
+		function initSearch(){
+			$("#rcritNm").val("");
+			$("#eduTrgtCd").val("");
+			$("#typeCd").val("");
+			$("#eduSbjctCd").val("");
+			$("#eduTypeCd").val("");
+		}
+		function onSearch(){
+			$("#pageNumber").val('1');
+			selectLendList();
+		}
+		function selectLendList() {
+		    if (displayWorkProgress(true)){
+		        $.ajax({
+		            url : "/front/lend/selectLendList.do",
+		            cache : false,
+		            dataType : 'json',
+		            data : $("#searchForm").serialize(),
+		            type : 'POST',
+		            success : function(data) {
+		            	renderingListData(data.list);
+		            	$("#totalCount").text(data.totalCount);
+		                if(data.totalCount == 0) {
+		                	$("#lendList").html(noDataMeg);
+		                    $("#pagination").html('');
+		                }else{
+		                    $("#pagination").html(data.pagination);
+		                }
+		                closeWorkProgress();
+		            }
+		        });
+		    }
+		}
+		function renderingListData(list){
+			list.forEach(function(item){
+				if(item.periodStts == 'W'){
+                    item.tagStr = ' tag-blue ';
+                    item.sttsStr = '모집대기';
+				}else if(item.periodStts == 'E'){
+                    item.tagStr = ' tag-gray ';
+                    item.sttsStr = '모집종료';
+				}else{
+					item.tagStr = ' tag-green ';
+					item.sttsStr = '모집중';
+				}
+				item.eduTrgtCdNm = item.eduTrgtCdNm.replaceAll(",","</br>") ;
+				item.eduSbjctCdNm = item.eduSbjctCdNm.replaceAll("/,","</br>").replaceAll("/",""); 
+			})
+		    $("#lendList").html(listTemplet({lendList:list}));
+		}
+		function goPage(page) {
+		    $("#pageNumber").val(page);
+		    selectLendList();
+		}
+		function enterkey() {
+		    if (window.event.keyCode == 13) {
+		    	selectLendList();
+		    }
+		}
+		function goDetail(rcritid){
+	        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+	        location.href = portalUrl + "front/lend/lendDetail.html?rcritid="+rcritid;
+		}
+        </script>
+    </div>
+</body>
+</html>

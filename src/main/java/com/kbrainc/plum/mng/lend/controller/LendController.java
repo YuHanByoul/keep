@@ -136,7 +136,14 @@ public class LendController {
             }
             return resultMap;
         }
+        
         LendVo.setUser(user);
+        
+        if(lendService.checkPackageDuplicationYn(LendVo).equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "같은 기간에 꾸러미가 중복된 대여 모집이 있습니다.");
+            return resultMap;
+        }
         
         retVal = lendService.insertLend(LendVo);
         
@@ -247,6 +254,12 @@ public class LendController {
             return resultMap;
         }
         LendVo.setUser(user);
+        
+        if(lendService.checkPackageDuplicationYn(LendVo).equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "같은 기간에 꾸러미가 중복된 대여 모집이 있습니다.");
+            return resultMap;
+        }
         
         retVal = lendService.udateLend(LendVo);
         

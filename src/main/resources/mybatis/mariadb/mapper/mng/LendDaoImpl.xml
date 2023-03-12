@@ -113,7 +113,7 @@
             ,#{ordr       }    
             ,#{bgngDe     }    
             ,#{endDe      }
-            ,#{qnty      }
+            ,#{qnty       }
             ,NOW()
             ,#{user.userid}
             ,NOW()
@@ -415,5 +415,34 @@
              AND A.PACKAGEID = #{packageid}
             </if>
   </select>
+  <!-- 꾸러미 대여 중복 체크 --> 
+  <select id="checkPackageDuplicationYn" parameterType="LendVo" resultType="String">
+          /* PackageDao.selectPackageList */
+            SELECT
+               IFNULL(MAX( CASE WHEN (C.BGNG_DE <![CDATA[>=]]> A.BGNG_DE AND C.BGNG_DE <![CDATA[<=]]> A.END_DE)
+                                 OR (C.END_DE  <![CDATA[>=]]> A.BGNG_DE AND C.END_DE  <![CDATA[<=]]> A.END_DE)
+                                 THEN 'Y'
+                            ELSE 'N'
+                     END),'N')  AS ISDUPLICATE
+            FROM
+              TB_THA_PACKAGE_LEND_RND A
+              INNER JOIN TB_THA_PACKAGE_LEND_RCRIT B
+              ON A.RCRITID = B.RCRITID
+              INNER JOIN (
+              <foreach item="item" collection="lendRndList" separator="UNION ALL">
+                 SELECT
+                    #{packageid} PACKAGEID
+                    ,#{item.bgngDe} BGNG_DE
+                    ,#{item.endDe} END_DE
+              </foreach>
+              ) C
+              ON B.PACKAGEID = C.PACKAGEID 
+           WHERE 1=1
+             AND B.PACKAGEID = #{packageid}
+            <if test='rcritid != null and rcritid != ""'>
+             AND B.RCRITID <![CDATA[<>]]> #{rcritid}
+            </if>
+</select>
+  
   
 </mapper>
