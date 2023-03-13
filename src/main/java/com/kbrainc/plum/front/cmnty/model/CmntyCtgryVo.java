@@ -34,6 +34,10 @@ public class CmntyCtgryVo extends ParentRequestVo {
     private Integer cmntyBbsTmplatid;
     /** 순서 */
     private Integer ordr;
+    /** 게시글아이디 */
+    private Integer bbsid;
+    /** 게시글이름 */
+    private String nm;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

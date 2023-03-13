@@ -4,6 +4,240 @@
         layout:decorator="layout/front/subLayout">
 <body>
     <div layout:fragment="content">
+        <div class="tab-content tab-sub dropDown">
+            <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">전체 커뮤니티</button>
+            <ul class="tab-list tab-list-pc target" role="tablist">
+                <li class="tab" th:classappend="${esterid eq null} ? 'active'"><a href="/front/cmnty/cmntyList.html" role="tab" aria-selected="true">전체 커뮤니티</a></li>
+                <li class="tab" th:classappend="${esterid ne null} ? 'active'"><a th:href="${'/front/cmnty/cmntyList.html?esterid='+ paramVo.user.userid}" role="tab">나의 환경동아리</a></li>
+            </ul>
+        </div>
 
+        <form id="searchForm" name="searchForm">
+            <input type="hidden" id="pageNumber" name="pageNumber" th:value="${cmntyVo.pageNumber}"/>
+            <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${cmntyVo.rowPerPage}"/>
+            <input type="hidden" id="esterid" name="esterid" th:value="${esterid}"/>
+            <input type="hidden" id="cmntyid" name="cmntyid"/>
+            <div class="search-filter">
+                <div class="form-input mo-flex-wrap">
+                    <strong class="label">커뮤니티명</strong>
+                    <div class="form-input"><input type="search" id="searchKeyword" name="searchKeyword" title="커뮤니티명" placeholder="검색어를 입력해 주세요." th:value="${cmntyVo.searchKeyword}"></div>
+                    <div class="search-filter-submit">
+                        <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+                        <button type="button" class="btn-medium btn-transparent btn-before-refresh">초기화</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div>
+            커뮤니티 소개 및 안내 영역 (콘텐츠 확인 후 반영)
+        </div>
+
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b>[[${totalCount}]]</b> 건</p>
+            </div>
+            <div class="right d-flex">
+                <select title="글 보기 개수" id="rowPage">
+                    <option value="10" th:selected="${cmntyVo.rowPerPage== 10}">10개씩 보기</option>
+                    <option value="50" th:selected="${cmntyVo.rowPerPage== 50}">50개씩 보기</option>
+                    <option value="100" th:selected="${cmntyVo.rowPerPage== 100}">100개씩 보기</option>
+                </select>
+                <div class="ml10"><button type="button" class="btn-medium btn-green" id="insertCmnty">커뮤니티 개설</button></div>
+            </div>
+        </div>
+
+        <div class="pc-only">
+            <div class="table-col">
+                <table>
+                    <caption>전체 커뮤니티 - 번호, 커뮤니티명, 개설자, 회원수, 가입상태</caption>
+                    <colgroup>
+                        <col style="width:6%;">
+                        <col>
+                        <col style="width:10%;">
+                        <col style="width:10%;">
+                        <col style="width:13%;">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col">번호</th>
+                        <th scope="col">커뮤니티명</th>
+                        <th scope="col">개설자</th>
+                        <th scope="col">회원수</th>
+                        <th scope="col">가입상태</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${list.size() > 0}" th:each="item : ${list}">
+                        <td th:text="${itemStat.index+1}"></td>
+                        <td>
+                            <a th:href="${'/front/cmnty/cmntyPstList.html?cmntyid='+ item.cmntyid}"
+                               th:data-rls-yn="${item.rlsYn}"
+                               th:data-mbr-stts-cd="${item.mbrSttsCd}"
+                               class="community-desc">
+                                <div class="left">
+                                    <div class="thumb"><img th:src="'/downloadFileByFileid.do?fileid='+${item.cmntyLogoFileid}+'&file_idntfc_key='+${item.fileIdntfcKey}" th:alt="${item.cmntyNm}"></div>
+                                </div>
+                                <dl>
+                                    <dt>[[${item.cmntyNm}]] <span th:if="${item.rlsYn == 'N'}" class="icon icon-lockon vm" title="비공개 커뮤니티"></span></dt>
+                                    <dd class="ellipsis" data-ellipsis="2" th:text="${item.cmntyIntrcn}"></dd>
+                                </dl>
+                            </a>
+                        </td>
+                        <td th:text="${item.esterNm}"></td>
+                        <td th:text="${item.mbrCnt + ' 명'}"></td>
+                        <td th:with="
+                                isEster=${item.esterid == paramVo.user.userid},
+                                isAdmin=${item.authrtCd == '117100'},
+                                sttsAprv=${item.mbrSttsCd eq '118100'},
+                                sttsAply=${item.mbrSttsCd eq '118101'},
+                                sttsDeny=${item.mbrSttsCd eq '118102'},
+                                sttsExit=${item.mbrSttsCd eq '118103'},
+                                sttsInvite=${item.mbrSttsCd eq '118104'}"
+                        >
+                            <div th:if="${isEster}" >개설자</div>
+                            <div th:if="${not isEster and sttsAprv and isAdmin}">관리자</div>
+                            <div th:if="${not isEster and sttsAprv and not isAdmin}">회원</div>
+                            <button th:if="${not (sttsAprv or sttsAply)}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_joinCmnty(${item.cmntyid})|">가입</button>
+                            <button th:if="${sttsAply}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_cancelJoinCmnty(${item.cmntyid})|">신청취소</button>
+                        </td>
+                    </tr>
+                    <tr th:unless="${list.size() > 0}">
+                        <td class="nodata" colspan="5">
+                            <p><span class="icon icon-notice bg-black9"></span>등록된 커뮤니티가 없습니다.</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mo-only">
+            <div class="community-list">
+                <ul>
+                    <li th:if="${list.size() > 0}" th:each="item : ${list}">
+                        <div class="community-desc">
+                            <div class="left" th:with="
+                                isEster=${item.esterid == paramVo.user.userid},
+                                isAdmin=${item.authrtCd == '117100'},
+                                sttsAprv=${item.mbrSttsCd eq '118100'},
+                                sttsAply=${item.mbrSttsCd eq '118101'},
+                                sttsDeny=${item.mbrSttsCd eq '118102'},
+                                sttsExit=${item.mbrSttsCd eq '118103'},
+                                sttsInvite=${item.mbrSttsCd eq '118104'}">
+                                <div class="thumb"><img th:src="'/downloadFileByFileid.do?fileid='+${item.cmntyLogoFileid}+'&file_idntfc_key='+${item.fileIdntfcKey}" th:alt="${item.cmntyNm}"></div>
+                                <span th:if="${isEster}" >개설자</span>
+                                <span th:if="${not isEster and sttsAprv and isAdmin}">관리자</span>
+                                <span th:if="${not isEster and sttsAprv and not isAdmin}">회원</span>
+                                <button th:if="${not (sttsAprv or sttsAply)}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_joinCmnty(${item.cmntyid})|">가입</button>
+                                <button th:if="${sttsAply}" type="button" class="btn-small btn-outline-blue" th:onclick="|fn_cancelJoinCmnty(${item.cmntyid})|">신청취소</button>
+                            </div>
+                            <a th:href="${'/front/cmnty/cmntyPstList.html?cmntyid='+ item.cmntyid}"
+                               th:data-rls-yn="${item.rlsYn}"
+                               th:data-mbr-stts-cd="${item.mbrSttsCd}"
+                                <dl>
+                                    <dt>[[${item.cmntyNm}]] <span th:if="${item.rlsYn == 'N'}" class="icon icon-lockon vm" title="비공개 커뮤니티"></span></dt>
+                                    <dd class="ellipsis" data-ellipsis="2" th:text="${item.cmntyIntrcn}"></dd>
+                                    <dd class="member">
+                                        <span th:text="${item.esterNm}"></span>
+                                        <span th:text="${item.mbrCnt + ' 명'}"></span>
+                                    </dd>
+                                </dl>
+                            </a>
+                        </div>
+                    </li>
+                    <li th:unless="${list.size() > 0}">
+                        <p><span class="icon icon-notice bg-black9"></span>등록된 커뮤니티가 없습니다.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <th:block kattr:pagination="list" onclick="goPage"/>
+
+        <script th:inline="javascript">
+            const $searchForm = $('#searchForm');
+            $(function () {
+                $searchForm.on('submit', function() {
+                    $searchForm[0].pageNumber.value = 1;
+                })
+
+                $('.btn-before-refresh').on('click', function (){
+                    $searchForm[0].rowPerPage.value = 10;
+                    $('#searchKeyword').val('');
+                    $('#rowPage').val(10);
+                })
+
+                $('#rowPage').on('change', function (){
+                    $searchForm[0].rowPerPage.value = $(this).val();
+                    $searchForm[0].submit();
+                });
+
+                $('#insertCmnty').on('click',function (){
+                    $searchForm[0].action = '/front/cmnty/cmntyForm.html';
+                    $searchForm[0].submit();
+                });
+
+                $('.community-desc, .community-desc a').on('click',function (){
+                    let {rlsYn, mbrSttsCd} = $(this).data();
+                    if(rlsYn !== 'Y' && mbrSttsCd !== 118100){
+                        alert('비공개 커뮤니티는 가입전에는 입장하실 수 없습니다.');
+                        return false;
+                    }
+                });
+            });
+            function goPage(num){
+                $searchForm[0].pageNumber.value = num;
+                $searchForm[0].submit();
+            }
+            function fn_joinCmnty(cmntyid){
+                if(confirm('가입하시겠습니까?')){
+                    if(displayWorkProgress(true)) {
+                        $.ajax({
+                            method: 'POST',
+                            url: '/front/cmnty/insertCmntyMbr.do',
+                            data: {
+                                cmntyid : cmntyid
+                            },
+                            dataType: 'json',
+                            success: function (response) {
+                                closeWorkProgress();
+                                alert(response.msg);
+                                if (response.result) {
+                                    if(response.url){
+                                        $searchForm[0].action = '/front/cmnty/cmntyPstList.html';
+                                        $searchForm[0].cmntyid.value = cmntyid;
+                                        $searchForm[0].submit();
+                                    }else{
+                                        location.reload();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+            function fn_cancelJoinCmnty(cmntyid){
+                if(confirm('가입을 취소하시겠습니까?')){
+                    if(displayWorkProgress(true)) {
+                        $.ajax({
+                            method: 'POST',
+                            url: '/front/cmnty/deleteCmntyMbr.do',
+                            data: {
+                                cmntyid : cmntyid
+                            },
+                            dataType: 'json',
+                            success: function (response) {
+                                closeWorkProgress();
+                                alert(response.msg);
+                                if (response.result) {
+                                    location.reload();
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        </script>
     </div>
 </body>

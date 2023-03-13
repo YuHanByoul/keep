@@ -31,7 +31,7 @@ public class CmntyMbrVo extends ParentRequestVo {
     /** 커뮤니티아이디 */
     private Integer cmntyid;
     /** 사용자아이디 */
-    private Integer userid;
+    private String userid;
     /** 멤버_상태_코드 */
     private String mbrSttsCd;
     /** 권한_코드 */
@@ -44,6 +44,10 @@ public class CmntyMbrVo extends ParentRequestVo {
     private Date joinAprvDt;
     /** 승인자_아이디 */
     private Integer autzrId;
+    /** 이름  */
+    private String nm;
+    /** 회원 미승인 여부 */
+    private String notAprvYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
