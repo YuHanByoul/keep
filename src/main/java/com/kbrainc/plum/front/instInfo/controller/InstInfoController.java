@@ -20,6 +20,21 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
+/**
+* 기관정보 Controller 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.instInfo.controller
+* - InstInfoController.java
+* </pre>
+*
+* @ClassName : InstInfoController
+* @Description : TODO
+* @author : JD
+* @date : 2023. 3. 6.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Controller("front.instInfoController")
 @Alias("front.instInfoController")
 public class InstInfoController {
@@ -27,6 +42,17 @@ public class InstInfoController {
     @Resource(name = "front.instInfoServiceImpl")
     private InstInfoService instInfoService;
     
+    /**
+    * 기업정보 페이지 이동
+    *
+    * @Title : instInfoForm
+    * @Description : 기업정보 페이지 이동
+    * @param instInfoVo
+    * @param userVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/instInfo/instInfoForm.html")
     public String instInfoForm(InstInfoVo instInfoVo, @UserInfo UserVo userVo, Model model) throws Exception {
         model.addAttribute("userVo", userVo);
@@ -40,6 +66,16 @@ public class InstInfoController {
         return "front/instInfo/instInfoForm";
     }
     
+    /**
+    * 기업정보 수정
+    *
+    * @Title : updateInstInfo
+    * @Description : 기업정보 수정
+    * @param instInfoVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/instInfo/updateInstInfo.do")
     @ResponseBody
     public Map<String, Object> updateInstInfo(InstInfoVo instInfoVo, @UserInfo UserVo userVo) throws Exception {
@@ -66,12 +102,32 @@ public class InstInfoController {
         return resultMap;
     }
     
+    /**
+    * 기업 담당자 설정 페이지 이동
+    *
+    * @Title : instPicList
+    * @Description : 기업 담당자 설정 페이지 이동
+    * @param userVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/instInfo/instPicList.html")
     public String instPicList(@UserInfo UserVo userVo, Model model) throws Exception {
         model.addAttribute("userVo", userVo);
         return "front/instInfo/instPicList";
     }
     
+    /**
+    * 기관 담당자 목록 조회
+    *
+    * @Title : selectInstPictList
+    * @Description : 기관 담당자 목록 조회
+    * @param instPicVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value="/front/instInfo/selectInstPictList.do")
     @ResponseBody
     public Map<String, Object> selectInstPictList(InstPicVo instPicVo, @UserInfo UserVo userVo) throws Exception {
@@ -91,11 +147,29 @@ public class InstInfoController {
         return resultMap;
     }
     
+    /**
+    * 기관 담당자 등록 > 회원 검색 페이지 이동
+    *
+    * @Title : instPicSearch
+    * @Description : 기관 담당자 등록 > 회원 검색 페이지 이동
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/instInfo/instPicSearch.html")
     public String instPicSearch() throws Exception {
         return "front/instInfo/instPicSearch";
     }
     
+    /**
+    * 검색 회원 목록
+    *
+    * @Title : selectPicSearchList
+    * @Description : 검색 회원 목록
+    * @param instPicVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value="/front/instInfo/selectPicSearchList.do")
     @ResponseBody
     public Map<String, Object> selectPicSearchList(InstPicVo instPicVo, @UserInfo UserVo userVo) throws Exception {
@@ -115,6 +189,16 @@ public class InstInfoController {
         return resultMap;
     }
     
+    /**
+    * 기관 담당자 등록 기능
+    *
+    * @Title : updateRegInstPic
+    * @Description : 기관 담당자 등록 기능
+    * @param instPicVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/instInfo/updateRegInstPic.do")
     @ResponseBody
     public Map<String, Object> updateRegInstPic(InstPicVo instPicVo, @UserInfo UserVo userVo) throws Exception {
@@ -149,6 +233,17 @@ public class InstInfoController {
         return resultMap;
     }
     
+    /**
+    * 기관 담당자 상세정보 페이지
+    *
+    * @Title : instPicDetail
+    * @Description : 기관 담당자 상세정보 페이지
+    * @param instPicVo
+    * @param userVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/instInfo/instPicDetail.html")
     public String instPicDetail(InstPicVo instPicVo, @UserInfo UserVo userVo, Model model) throws Exception {
         model.addAttribute("userVo", userVo);
@@ -162,6 +257,16 @@ public class InstInfoController {
         return "front/instInfo/instPicDetail";
     }
     
+    /**
+    * 기관 담당자 해지 기능
+    *
+    * @Title : updateCancelInstPic
+    * @Description : 기관 담당자 해지 기능
+    * @param instPicVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/instInfo/updateCancelInstPic.do")
     @ResponseBody
     public Map<String, Object> updateCancelInstPic(InstPicVo instPicVo, @UserInfo UserVo userVo) throws Exception {

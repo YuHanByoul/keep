@@ -44,7 +44,15 @@ public interface EnveduFlctService {
      * @throws Exception 예외
      */
     public int nearbyEnveduFlctCount(Map map) throws Exception;
-
+    
+    /**
+    * 환경교육시설현황 목록 조회
+    *
+    * @Title : selectEnveduFcltList
+    * @Description : 환경교육시설현황 목록 조회
+    * @throws Exception
+    * @return List<EnveduFcltVo>
+    */
     public List<EnveduFcltVo> selectEnveduFcltList() throws Exception;
 
 }

@@ -10,6 +10,21 @@ import org.apache.ibatis.type.Alias;
 import java.sql.Date;
 import java.util.List;
 
+/**
+* 공모전 참여 이력 Vo 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.cntstAplyHist.model
+* - CntstAplyHistVo.java
+* </pre>
+*
+* @ClassName : CntstAplyHistVo
+* @Description : 공모전 참여 이력 Vo 클래스
+* @author : JD
+* @date : 2023. 2. 24.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 @Alias("front.CntstAplyHistVo")
 public class CntstAplyHistVo extends ParentRequestVo {

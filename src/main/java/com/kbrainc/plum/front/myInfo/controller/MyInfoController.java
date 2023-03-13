@@ -26,6 +26,21 @@ import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 
+/**
+* 내 정보 수정 Controller 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.myInfo.controller
+* - MyInfoController.java
+* </pre>
+*
+* @ClassName : MyInfoController
+* @Description : 내 정보 수정 Controller 클래스
+* @author : JD
+* @date : 2023. 2. 28.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Controller("front.myInfoController")
 @Alias("front.myInfoController")
 public class MyInfoController {
@@ -36,6 +51,17 @@ public class MyInfoController {
     @Value("${crypto.key}")
     private String encryptKey;
     
+    /**
+    * 내 정보 수정 페이지
+    *
+    * @Title : myInfoUpdate
+    * @Description : 내 정보 수정 페이지
+    * @param memberVo
+    * @param userVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/myInfo/myInfoUpdate.html")
     public String myInfoUpdate(MemberVo memberVo, @UserInfo UserVo userVo, Model model) throws Exception {
         model.addAttribute("userVo", userVo);
@@ -64,11 +90,32 @@ public class MyInfoController {
         return "front/myInfo/myInfoUpdate";
     }
     
+    /**
+    * 휴대폰번호 인증 페이지
+    *
+    * @Title : moblCertStep
+    * @Description : 휴대폰번호 인증 페이지
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/myInfo/moblCertStep.html")
     public String moblCertStep() throws Exception {
         return "front/myInfo/moblCertStep";
     }
     
+    /**
+    * 내 정보 수정
+    *
+    * @Title : updateMyInfo
+    * @Description : 내 정보 수정
+    * @param memberVo
+    * @param user
+    * @param itrstfldCdEpty
+    * @param envfldCdEpty
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/myInfo/updateMyInfo.do")
     @ResponseBody
     public Map<String, Object> updateMyInfo(MemberVo memberVo, @UserInfo UserVo user, String itrstfldCdEpty, String envfldCdEpty) throws Exception {
@@ -103,6 +150,17 @@ public class MyInfoController {
         return resultMap;
     }
     
+    /**
+    * 비밀번호 변경 페이지
+    *
+    * @Title : pswdUpdate
+    * @Description : 비밀번호 변경 페이지
+    * @param memberVo
+    * @param userVo
+    * @param model
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/myInfo/pswdUpdate.html")
     public String pswdUpdate(MemberVo memberVo, @UserInfo UserVo userVo, Model model) throws Exception {
         model.addAttribute("userVo", userVo);
@@ -111,6 +169,18 @@ public class MyInfoController {
         return "front/myInfo/pswdUpdate";
     }
     
+    /**
+    * 비밀번호 변경
+    *
+    * @Title : updatePswd
+    * @Description : 비밀번호 변경
+    * @param memberVo
+    * @param user
+    * @param chgPswd
+    * @param chgPswdIdnty
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/myInfo/updatePswd.do")
     @ResponseBody
     public Map<String, Object> updatePswd(MemberVo memberVo, @UserInfo UserVo user, String chgPswd, String chgPswdIdnty) throws Exception {

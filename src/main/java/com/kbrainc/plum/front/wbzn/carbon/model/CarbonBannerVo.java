@@ -14,17 +14,17 @@ import com.kbrainc.plum.rte.model.UserVo;
 import lombok.Data;
 
 /**
-* 환경교육NOW -> 배너관리 VO 클래스
+* 웹진 탄소중립 환경교육 배너 Vo 클래스
 *
 * <pre>
-* com.kbrainc.plum.mng.wbzn.now.banner.model
-* - EnvBannerVo.java
+* com.kbrainc.plum.front.wbzn.carbon.model
+* - CarbonBannerVo.java
 * </pre>
 *
-* @ClassName : EnvBannerVo
-* @Description : 환경교육NOW -> 배너관리 VO 클래스
+* @ClassName : CarbonBannerVo
+* @Description : 웹진 탄소중립 환경교육 배너 Vo 클래스
 * @author : JD
-* @date : 2022. 12. 29.
+* @date : 2023. 2. 22.
 * @Version :
 * @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
 */

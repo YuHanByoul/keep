@@ -132,11 +132,27 @@ public class EnveduFlctController {
           return resultMap;
       }
       
+      /**
+      * 환경교육시설현황 페이지 이동
+      *
+      * @Title : enveduFcltListForm
+      * @Description : 환경교육시설현황 페이지 이동
+      * @throws Exception
+      * @return String
+      */
       @RequestMapping(value = "/front/enveduFlct/enveduFcltListForm.html")
       public String enveduFcltListForm() throws Exception {
           return "front/enveduFclt/enveduFcltList";
       }
       
+      /**
+      * 환경교육시설현황 목록 조회
+      * 
+      * @Title : selectEnveduFcltList
+      * @Description : 환경교육시설현황 목록 조회
+      * @throws Exception
+      * @return Map<String,Object>
+      */
       @RequestMapping(value="/front/enveduFlct/selectEnveduFcltList.do")
       @ResponseBody
       public Map<String, Object> selectEnveduFcltList() throws Exception {
