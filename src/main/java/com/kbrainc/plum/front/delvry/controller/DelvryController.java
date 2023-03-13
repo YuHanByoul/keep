@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileService;
+import com.kbrainc.plum.front.bizAply.model.SupplementVo;
 import com.kbrainc.plum.front.delvry.model.DelvryAplyComputVo;
-import com.kbrainc.plum.front.delvry.model.DelvryAplySplmntVo;
 import com.kbrainc.plum.front.delvry.model.DelvryAplyVo;
 import com.kbrainc.plum.front.delvry.service.DelvryService;
 import com.kbrainc.plum.rte.constant.Constant;
@@ -166,10 +166,10 @@ public class DelvryController {
           
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "수정에 성공하였습니다");
+            resultMap.put("msg", "저장에 성공하였습니다");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "수정에 실패하였습니다");
+            resultMap.put("msg", "저장에 실패하였습니다");
         }
               
         return resultMap;
@@ -185,9 +185,19 @@ public class DelvryController {
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/delvry/delvryAplySplmntPopup.html")
-    public String delvryAplySplmntPopup(DelvryAplySplmntVo delvryAplySplmntVo, Model model) throws Exception {
-        model.addAttribute("splmntInfo", delvryService.selectDelvryAplySplmntInfo(delvryAplySplmntVo));
-        return "front/delvry/splmntUpdatePopup";
+    public String delvryAplySplmntPopup(SupplementVo supplementVo, Model model) throws Exception {
+        SupplementVo detail = null;
+        if (supplementVo != null) {
+            detail = this.delvryService.selectDelvryAplySplmntInfo(supplementVo);
+            
+            if (detail == null)
+                detail = new SupplementVo();            
+            
+        }
+        model.addAttribute("detail", detail);
+        model.addAttribute("delvryid", supplementVo.getDelvryid());
+        model.addAttribute("fldCd", supplementVo.getFldCd());
+        return "front/delvry/detailSplmnt";
     }
     
     /**
@@ -195,7 +205,7 @@ public class DelvryController {
      *
      * @Title : updateDelvryAplySplmnt
      * @Description : 교부 신청 보완요청 업데이트
-     * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+     * @param SupplementVo
      * @param bindingResult delvryAplySplmntVo 유효성 검증결과
      * @param user 사용자 세션 정보
      * @return Map<String, Object> 응답결과객체
@@ -203,7 +213,7 @@ public class DelvryController {
      */
     @RequestMapping(value = "/front/delvry/updateDelvryAplySplmnt.do")
     @ResponseBody
-    public Map<String, Object> updateDelvryAplySplmnt(@Valid DelvryAplySplmntVo delvryAplySplmntVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
+    public Map<String, Object> updateDelvryAplySplmnt(@Valid SupplementVo supplementVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
           
         if(bindingResult.hasErrors()) {
@@ -215,15 +225,15 @@ public class DelvryController {
         }
           
         int retVal = 0;
-        delvryAplySplmntVo.setUser(user);
-        retVal = delvryService.updateDelvryAplySplmnt(delvryAplySplmntVo);
+        supplementVo.setUser(user);
+        retVal = delvryService.updateDelvryAplySplmnt(supplementVo);
           
-        if(retVal > 0) {
+        if (retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "수정에 성공하였습니다");
+            resultMap.put("msg", "보완완료 되었습니다.");
         } else {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "수정에 실패하였습니다");
+            resultMap.put("msg", "보완완료에 실패했습니다.");
         }
               
         return resultMap;

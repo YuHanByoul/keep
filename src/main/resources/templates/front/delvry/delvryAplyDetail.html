@@ -49,7 +49,7 @@
 			                    <th scope="row">지원신청금액</th>
 			                    <td>
 			                        <div class="form-input">
-			                            <input type="text" class="ar" data-width="200" id="totAmt" name="totAmt" th:value="${detail.totAmt}"/>
+			                            <input type="text" class="ar" data-width="200" id="totAmt" name="totAmt" th:value="${#numbers.formatInteger(detail.totAmt, 0, 'COMMA')}"/>
 			                            <div class="bul">원</div>
 			                        </div>
 			                    </td>
@@ -181,7 +181,7 @@
 			                    </th>
 			                    <th scope="row">금액(원)<i class="ast" title="필수입력">*</i></th>
 			                    <td>
-			                        <input type="text" name="amt" th:value="${list.amt}" title="금액(원)" placeholder="금액을 입력해주세요.">
+			                        <input type="text" class="amt" name="amt" th:value="${#numbers.formatInteger(list.amt, 0, 'COMMA')}" title="금액(원)" placeholder="금액을 입력해주세요."/>
 			                    </td>
 			                </tr>
 			                <tr class="tr2">
@@ -208,7 +208,7 @@
 			    <div class="btn-wrap">
 			        <div class="center">
 			            <button type="button" class="btn-medium btn-gray" onclick="moveToList();">목록</button>
-			            <button type="button" class="btn-medium btn-green" onclick="save();">제출</button>
+			            <button type="button" class="btn-medium btn-green" onclick="save();" th:if="${detail.crudBtn != 'R'}">제출</button>
 			        </div>
 			    </div>
 			
@@ -221,6 +221,19 @@
 		<script th:inline="javascript">
 		var atchfileCnt = 5;
         var uploadFileCnt = 0;
+        /*<![CDATA[*/
+        var crudBtn = /*[[${detail.crudBtn}]]*/null;
+        /*]]>*/
+        
+        $(document).ready(function(){
+        	$("input,select").attr("readonly", crudBtn == "R" ? true : false);
+        	
+        	$("#totAmt, .amt").on("keyup", function(){
+        	    $(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+        	});
+        	
+        });
+        
 		// 목록
         function moveToList() {
             location.href = '/front/delvry/delvryAplyListForm.html';
@@ -228,22 +241,39 @@
         
         // 제출
         function save() {
+        	var valid = true;
         	var jsonString = {"data" : []};
+        	$("#computTable").find("tr").each(function(i){
+        		if ($(this).find("input[name='amt']").val() == "") {
+        			alert("내용을 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='amt']"));
+        			valid = false;
+        			return false;
+        		}
+        		if ($(this).find("input[name='cn']").val() == "") {
+        			alert("내용을 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='cn']"));
+        			valid = false;
+        			return false;
+        		}
+        	});
+        	
+        	if (!valid) return;
+            if(!confirm("제출하시겠습니까?")) return;
+            
+            $("#totAmt").val(removeComma($("#totAmt").val()));
             $("#computTable").find("tr.tr1").each(function(i){
                 jsonString.data.push({
                 	computid: $(this).find("input[name='computid']").val()
                 	, expitmCd: $(this).find("input[name='expitmCd']").val()
-                    , amt: $(this).find("input[name='amt']").val()
+                    , amt: removeComma($(this).find("input[name='amt']").val())
                     , cn: $("#computTable").find("tr.tr2:eq("+i+")").find("input[name='cn']").val()
                     , ordr: i+1
                 });
             });
             
             if (jsonString.data.length == 0) jsonString = "";
-            console.log("jsonString => ",jsonString);
             $("#jsonString").val(JSON.stringify(jsonString));
-            
-            if(!confirm("제출하시겠습니까?")) return;
             
             var data =  $("#delvryAplyForm").serialize();
             if(displayWorkProgress(true)){
@@ -338,7 +368,16 @@
                 error : function (error){
                 }
             });
-        };
+        }
+        
+        //콤마 제거
+        function removeComma(value){
+            if (value == "" || value == null) {
+                return 0;               
+            }
+            value = value.replace(/[^\d]+/g, "");
+            return value; 
+        }
 		</script>
     </div>
 </body>
