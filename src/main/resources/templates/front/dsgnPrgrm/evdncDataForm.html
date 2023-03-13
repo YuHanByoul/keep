@@ -100,6 +100,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="table-row table-row-mo">
@@ -118,6 +119,7 @@
                                         <span class="btn-medium btn-gray">파일선택
                                         <input id="multiFileInput" type="file" name="files" multiple accept="image/jpeg,image/gif,image/png,application/pdf" style="display: none;"></span>
                                     </label>
+
                                 <ul th:if="${fileList != null}">
                                 </ul>
 
@@ -137,7 +139,10 @@
                                         </div>
                                     </div>
                                     <input type="hidden"  id = "filegrpid" name = "filegrpid" th:value="${(instInfo.filegrpid == '' or instInfo.filegrpid == null) ? 0 : instInfo.filegrpid}"/>
+                                    <input type="text" id="chkFile" name="chkFile" value="" style="display: none;">
+                                    <p class="feedback"></p>
                                 </div>
+
                             </td>
 
                         </tr>
@@ -172,10 +177,8 @@
         function goNext(){
         	var url = ($("#prgrmid").val() == null || $("#prgrmid").val() == "" || $("#prgrmid").val() == 0) ? insertUrl : updateUrl;
 
-        	if($("[id^=inputFiles]").length == 0) {
-        		alert("증빙자료를 등록해 주세요.");
-        		return;
-        	}
+        	debugger;
+        	if(!$("#evdnDataForm").valid()) return false;
 
             $("#sttsCd").val("111101");    //작성중
             var data =  $("#evdnDataForm").serialize() ;
@@ -202,11 +205,17 @@
 
         }
 
-        function valid() {
-            if(!$('#evdncFile').val() == "") {
-                alert("증빙 자료는 필수입력사항입니다..");
-            }
-            return true;
+        function validate() {
+
+        	$("#evdnDataForm").validate({
+                ignore: [],
+                rules: {
+                	chkFile : { required: true },
+                },
+                messages: {
+                	chkFile : { required: "첨부파일을 입력해 주십시오."},
+                }
+            });
         }
 
         function fn_deleteFileList(fileid, fileIdntfcKey){
@@ -245,6 +254,7 @@
         var uploadFileCnt = 0 ;
 
         $(function() {
+        	validate();
 
         	   $('#multiFileInput').on("change", function(event) {
 
@@ -268,7 +278,7 @@
                            data : formData,
                            type : 'POST',
                            success : function(response) {
-                        	   debugger;
+
                                if(response.result == 'fail'){
                                    alert(response.msg);
                                }else{
@@ -277,13 +287,15 @@
                                    }
 
                                    for(i = 0 ;i < response.length; i++ ){
+
+
                                        content = "<div class ='' id='inputFiles"+response[i].fileid+"'>"+response[i].orginlFileNm ;
                                        content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
                                        content += '</ul>';
                                        $('#multipleFileUploadSuccess').append(content);
+
+                                       if(i==0)$("#chkFile").val(response[i].fileid);
                                    }
-
-
                                }
                            }
                        })

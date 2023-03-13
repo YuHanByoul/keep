@@ -25,6 +25,21 @@ import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.util.pagination.PaginationUtil;
 
+/**
+* 공모전 참여 이력
+*
+* <pre>
+* com.kbrainc.plum.front.cntstAplyHist.controller
+* - CntstAplyHistController.java
+* </pre>
+*
+* @ClassName : CntstAplyHistController
+* @Description : 공모전 참여 이력
+* @author : JD
+* @date : 2023. 2. 24.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Controller("front.cntstAplyHistController")
 @Alias("front.cntstAplyHistController")
 public class CntstAplyHistController {
@@ -35,11 +50,30 @@ public class CntstAplyHistController {
     @Autowired
     private FileServiceImpl fileService;
 
+    /**
+    * 공모전 참여 이력 목록 조회
+    *
+    * @Title : cntstHistListForm
+    * @Description : 공모전 참여 이력 목록 조회
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/cntstAplyHist/cntstAplyHistListForm.html")
     public String cntstHistListForm() throws Exception {
         return "front/cntstAplyHist/cntstAplyHistList";
     }
     
+    /**
+    * 공모전 참여 이력 상세 페이지
+    *
+    * @Title : cntstHistDetailForm
+    * @Description : 공모전 참여 이력 상세 페이지
+    * @param model
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/cntstAplyHist/cntstAplyHistDetailForm.html")
     public String cntstHistDetailForm(Model model, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         CntstAplyHistVo result = null;
@@ -50,6 +84,17 @@ public class CntstAplyHistController {
         return "front/cntstAplyHist/cntstAplyHistDetail";
     }
     
+    /**
+    * 공모전 참여 이력 수정 페이지
+    *
+    * @Title : cntstAplyHistUpdateForm
+    * @Description : 공모전 참여 이력 수정 페이지
+    * @param model
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/cntstAplyHist/cntstAplyHistUpdateForm.html")
     public String cntstAplyHistUpdateForm(Model model, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         CntstAplyHistVo result = null;
@@ -73,6 +118,16 @@ public class CntstAplyHistController {
         return "front/cntstAplyHist/cntstAplyHistUpdate";
     }
     
+    /**
+    * 공모전 참여 이력 수정
+    *
+    * @Title : updateCntstAplyHist
+    * @Description : 공모전 참여 이력 수정
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/cntstAplyHist/updateCntstAplyHist.do")
     @ResponseBody
     public Map<String, Object> updateCntstAplyHist(CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
@@ -95,6 +150,18 @@ public class CntstAplyHistController {
         return resultMap;
     }
     
+    /**
+    * 공모전 참여 이력(환경방학 일기장 프로젝트) 상세 페이지
+    *
+    * @Title : cntstAplySchlHistDetailForm
+    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 상세 페이지
+    * @param model
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/cntstAplyHist/cntstAplySchlHistDetailForm.html")
     public String cntstAplySchlHistDetailForm(Model model, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         CntstAplyHistVo cntstAplyHist = null;
@@ -114,6 +181,18 @@ public class CntstAplyHistController {
         return "front/cntstAplyHist/cntstAplySchlHistDetail";
     }
     
+    /**
+    * 공모전 참여 이력(환경방학 일지장 프로젝트) 수정 페이지
+    *
+    * @Title : cntstAplySchlHistUpdateForm
+    * @Description : 공모전 참여 이력(환경방학 일지장 프로젝트) 수정 페이지
+    * @param model
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/cntstAplyHist/cntstAplySchlHistUpdateForm.html")
     public String cntstAplySchlHistUpdateForm(Model model, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
         CntstAplyHistVo cntstAplyHist = null;
@@ -142,6 +221,17 @@ public class CntstAplyHistController {
         return "front/cntstAplyHist/cntstAplySchlHistUpdate";
     }
     
+    /**
+    * 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    *
+    * @Title : updateCntstAplySchlHist
+    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    * @param cntstAplyHistVoList
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/cntstAplyHist/updateCntstAplySchlHist.do")
     @ResponseBody
     public Map<String, Object> updateCntstAplySchlHist(@RequestBody List<CntstAplyHistVo> cntstAplyHistVoList, CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception {
@@ -166,6 +256,16 @@ public class CntstAplyHistController {
         return resultMap;
     }
     
+    /**
+    * 공모전 참여 이력 목록 조회
+    *
+    * @Title : selectCntstAplyHistList
+    * @Description : 공모전 참여 이력 목록 조회
+    * @param cntstAplyHistVo
+    * @param userVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/cntstAplyHist/selectCntstAplyHistList.do")
     @ResponseBody
     public Map<String, Object> selectCntstAplyHistList(CntstAplyHistVo cntstAplyHistVo, @UserInfo UserVo userVo) throws Exception{

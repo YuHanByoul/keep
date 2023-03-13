@@ -9,6 +9,21 @@ import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.front.myInfo.model.MyInfoDao;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
+/**
+* 내 정보 수정 Service 구현 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.myInfo.service
+* - MyInfoServiceImpl.java
+* </pre>
+*
+* @ClassName : MyInfoServiceImpl
+* @Description : 내 정보 수정 Service 구현 클래스
+* @author : JD
+* @date : 2023. 2. 28.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Service("front.myInfoServiceImpl")
 @Alias("front.myInfoServiceImpl")
 public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfoService {
@@ -29,7 +44,19 @@ public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfo
     public MemberVo selectMemberInfo(MemberVo memberVo) throws Exception {
         return myInfoDao.selectMemberInfo(memberVo);
     }
-
+    
+    
+    /**
+    * 내 정보 수정
+    *
+    * @Title : updateMyInfo
+    * @Description : 사용자 정보 수정
+    * @param memberVo
+    * @param itrstfldCdEpty 맞춤환경정보 선택 값
+    * @param envfldCdEpty 관심분야 선택 값
+    * @throws Exception
+    * @return int
+    */
     @Override
     public int updateMyInfo(MemberVo memberVo, String itrstfldCdEpty, String envfldCdEpty) throws Exception {
         int retVal = 0;
@@ -54,6 +81,16 @@ public class MyInfoServiceImpl extends PlumAbstractServiceImpl implements MyInfo
         return retVal;
     }
 
+    /**
+    * 비밀번호 변경
+    *
+    * @Title : updatePswd
+    * @Description : 비밀번호 변경
+    * @param memberVo
+    * @return
+    * @throws Exception
+    * @return int
+    */
     @Override
     public int updatePswd(MemberVo memberVo) throws Exception {
         return myInfoDao.updatePswd(memberVo);

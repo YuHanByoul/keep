@@ -13,6 +13,21 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
+/**
+* 웹진 > 탄소중립 환경교육 프로그램 Vo 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.wbzn.carbon.model
+* - CarbonPrgrmgdVo.java
+* </pre>
+*
+* @ClassName : CarbonPrgrmgdVo
+* @Description : 웹진 > 탄소중립 환경교육 프로그램 Vo 클래스
+* @author : JD
+* @date : 2023. 2. 22.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 @Alias("front.CarbonPrgrmgdVo")
 public class CarbonPrgrmgdVo extends ParentRequestVo {

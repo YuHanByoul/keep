@@ -183,7 +183,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	/**
 	 * 지정프로그램 수정
 	 *
-	 * @Title : updatePrgrmAssPrgrm
+	 * @Title : updateAssPrgrm
 	 * @Description : 지정프로그램 수정
 	 * @param dsgnPrgrmVo
 	 * @return
@@ -192,8 +192,8 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	 */
 	@Override
 	@Transactional
-	public int updatePrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
-		return dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+	public int updateAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.updateAssPrgrm(dsgnPrgrmVo);
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 
 		int ret = 0;
 		//지정프로그램
-		ret += dsgnPrgrmDao.updatePrgrmAssPrgrm(dsgnPrgrmVo);
+		ret += dsgnPrgrmDao.updateAssPrgrm(dsgnPrgrmVo);
 		if(dsgnPrgrmVo.getDstnctnid() != null && dsgnPrgrmVo.getDstnctnid() > 0) {
 			ret += dsgnPrgrmDao.updatePrgrmDstnctnForm(dsgnPrgrmVo);    //수정
 		}else {
@@ -235,6 +235,20 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		return dsgnPrgrmDao.selectPrgrmEvlForm(dsgnPrgrmVo);
+	}
+
+	/**
+	* 컨설팅 목록 조회
+	*
+	* @Title : selectCsltngList
+	* @Description : 컨설팅 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectCsltngList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
+		return dsgnPrgrmDao.selectCsltngList(dsgnPrgrmVo);
 	}
 
 	/**
@@ -278,6 +292,35 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 	@Override
 	public List<DsgnPrgrmVo> selectAplyDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception{
 		return dsgnPrgrmDao.selectAplyDsctnList(dsgnPrgrmVo);
+	}
+
+	/**
+	* 체크리스트 정보 조회
+	*
+	* @Title : selectChkListInfo
+	* @Description : 체크리스트 정보 조회
+	* @param dsgnPrgrmVo
+	* @throws Exception
+	* @return dsgnPrgrmVo
+	*/
+	@Override
+	public DsgnPrgrmVo selectChkListInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectChkListInfo(dsgnPrgrmVo);
+	}
+
+	/**
+	* 문항 목록 조회
+	*
+	* @Title : selectQitemList
+	* @Description : 문항 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	@Override
+	public List<DsgnPrgrmVo> selectQitemList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectQitemList(dsgnPrgrmVo);
 	}
 
 }

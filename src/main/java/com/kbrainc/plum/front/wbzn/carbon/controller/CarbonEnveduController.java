@@ -17,6 +17,21 @@ import com.kbrainc.plum.front.wbzn.carbon.model.CarbonEnveduVo;
 import com.kbrainc.plum.front.wbzn.carbon.model.CarbonPrgrmgdVo;
 import com.kbrainc.plum.front.wbzn.carbon.service.CarbonEnveduService;
 
+/**
+* 웹진 > 탄소중립 환경교육 Controller 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.wbzn.carbon.controller
+* - CarbonEnveduController.java
+* </pre>
+*
+* @ClassName : CarbonEnveduController
+* @Description : 웹진 > 탄소중립 환경교육 Controller 클래스
+* @author : JD
+* @date : 2023. 2. 22.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Controller("front.carbonEnveduService")
 @Alias("front.carbonEnveduService")
 public class CarbonEnveduController {
@@ -24,6 +39,18 @@ public class CarbonEnveduController {
     @Resource(name = "front.carbonEnveduServiceImpl")
     private CarbonEnveduService carbonEnveduService;
     
+    /**
+    * 탄소중립 환경교육 목록 페이지
+    *
+    * @Title : enveduListForm
+    * @Description : 탄소중립 환경교육 목록 페이지
+    * @param model
+    * @param carbonBannerVo
+    * @param carbonEnveduVo
+    * @param carbonPrgrmgdVo
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/wbzn/carbon/enveduListForm.html")
     public String enveduListForm(Model model, CarbonBannerVo carbonBannerVo, CarbonEnveduVo carbonEnveduVo, CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {
         List<CarbonBannerVo> banner = null;
@@ -47,6 +74,16 @@ public class CarbonEnveduController {
         return "front/wbzn/carbon/carbonEnveduList";
     }
     
+    /**
+    * 탄소중립 환경교육 상세 페이지
+    *
+    * @Title : enveduDetailForm
+    * @Description : 탄소중립 환경교육 상세 페이지
+    * @param model
+    * @param carbonEnveduVo
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/wbzn/carbon/enveduDetailForm.html")
     public String enveduDetailForm(Model model, CarbonEnveduVo carbonEnveduVo) throws Exception {
         CarbonEnveduVo result = null;
@@ -56,6 +93,15 @@ public class CarbonEnveduController {
         return "front/wbzn/carbon/carbonEnveduDetail";
     }
 
+    /**
+    * 탄소중립 환경교육 목록 조회
+    *
+    * @Title : selectEnveduList
+    * @Description : 탄소중립 환경교육 목록 조회
+    * @param carbonEnveduVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/wbzn/carbon/selectEnveduList.do")
     @ResponseBody
     public Map<String, Object> selectEnveduList(CarbonEnveduVo carbonEnveduVo) throws Exception {
@@ -74,6 +120,16 @@ public class CarbonEnveduController {
         return resultMap;
     }
     
+    /**
+    * 탄소중립 환경교육 프로그램 상세 페이지
+    *
+    * @Title : prgrmgdDetailForm
+    * @Description : 탄소중립 환경교육 프로그램 상세 페이지
+    * @param model
+    * @param carbonPrgrmgdVo
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/wbzn/carbon/prgrmgdDetailForm.html")
     public String prgrmgdDetailForm(Model model, CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {
         CarbonPrgrmgdVo result = null;
@@ -83,6 +139,15 @@ public class CarbonEnveduController {
         return "front/wbzn/carbon/carbonEnveduDetail";
     }
     
+    /**
+    * 탄소중립 환경교육 프로그램 목록
+    *
+    * @Title : selectPrgrmgdList
+    * @Description : 탄소중립 환경교육 프로그램 목록
+    * @param carbonPrgrmgdVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/wbzn/carbon/selectPrgrmgdList.do")
     @ResponseBody
     public Map<String, Object> selectPrgrmgdList(CarbonPrgrmgdVo carbonPrgrmgdVo) throws Exception {

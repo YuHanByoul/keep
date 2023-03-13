@@ -41,7 +41,10 @@ public class CmntyVo extends ParentRequestVo {
     private String cmntyIntrcn;
 
     /** 개설자아이디 */
-    private Integer esterid;
+    private String esterid;
+
+    /** 개설자이름 */
+    private String esterNm;
 
     /** 가입승인방식_코드 */
     private String joinaprvmthdCd;
@@ -64,6 +67,9 @@ public class CmntyVo extends ParentRequestVo {
     /** 가입상태_코드 */
     private String mbrSttsCd;
 
+    /** 가입자_권한코드 */
+    private String authrtCd;
+
     /** 가입상태_코드명 */
     private String mbrSttsCdNm;
 
@@ -83,6 +89,21 @@ public class CmntyVo extends ParentRequestVo {
 
     /** 등록자아이디 */
     private String rgtrid;
+
+    /** 카테고리 템플릿 아이디 배열 */
+    private Integer[] tmplatIds;
+
+    /** 카테고리 템플릿 사용 Y 아이디 배열 */
+    private Integer[] tmplatYIds;
+
+    /** 커뮤니티 개설 구분 */
+    private String esterYn;
+
+    /** 커뮤니티 초대 구분 */
+    private String inviteYn;
+
+    /** 초대할 사용자/삭제,반려할 아이디 */
+    private String inviteUserid;
 
     public void setMbrSttsCd(String mbrSttsCd) throws Exception{
         this.mbrSttsCd = mbrSttsCd;

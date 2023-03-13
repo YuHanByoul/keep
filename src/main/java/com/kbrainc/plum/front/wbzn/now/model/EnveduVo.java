@@ -12,6 +12,21 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
+/**
+* 웹진 > 환경교육NOW Vo 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.wbzn.now.model
+* - EnveduVo.java
+* </pre>
+*
+* @ClassName : EnveduVo
+* @Description : 웹진 > 환경교육NOW Vo 클래스
+* @author : JD
+* @date : 2023. 2. 20.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 @Alias("front.EnveduVo")
 public class EnveduVo extends ParentRequestVo {

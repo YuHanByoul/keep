@@ -1,8 +1,8 @@
 package com.kbrainc.plum.front.lend.model;
 
 import java.util.Date;
+import java.util.List;
 
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.apache.ibatis.type.Alias;
@@ -49,6 +49,9 @@ public class LendAplyVo extends ParentRequestVo {
     /** 기관아이디 */
     private Integer instid;
     
+    /** 꾸러미 아이디 */
+    private Integer packageid;
+    
     /** 상태_코드 */
     @Size(max = 20, message = "상태코드는 20자를 초과할 수 없습니다.")
     private String sttsCd;
@@ -76,6 +79,12 @@ public class LendAplyVo extends ParentRequestVo {
     @Size(max = 200, message = "이메일은 200자를 초과할 수 없습니다.")
     private String eml;
     
+    /** 이메일  */
+    private String emailLocal;
+    
+    /** 이메일 도메인*/
+    private String emailDomain;
+    
     /** 교육 횟수*/
     private Integer eduCnt;
     
@@ -84,7 +93,7 @@ public class LendAplyVo extends ParentRequestVo {
 
     /** 단체 이름  */
     @Size(max = 100, message = "단체이름은 100자를 초과할 수 없습니다.")
-    private String grp_nm;
+    private String grpNm;
     
     /** 시도_코드*/
     @Size(max = 20, message = "시도_코드는 20자를 초과할 수 없습니다.")
@@ -148,7 +157,22 @@ public class LendAplyVo extends ParentRequestVo {
     private Date regDt;
     
     /** 등록자아이디 */
-    private int rgtrid;
+    private Integer rgtrid;
+    
+    /** 대여 모집 아이디 */
+    private Integer rcritid;
+    
+    /** 등록자 이름  */
+    private String rgtrNm;
+    
+    /** 등록자 계정  */
+    private String rgtrAcnt;
+    
+    /** 대상 스트링(등록용)*/
+    private String[] lendAplyTrgts;
+    
+    /** 대여신청대상 리스트 (등록용)  */
+    private List<LendAplyTrgtVo> lendAplyTrgtList;
     
     public void setSttsCd(String sttsCd) throws Exception{
         this.sttsCd = sttsCd;

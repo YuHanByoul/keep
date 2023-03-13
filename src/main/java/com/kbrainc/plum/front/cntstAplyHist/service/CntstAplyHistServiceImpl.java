@@ -21,6 +21,21 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+/**
+* 공모전 참여 이력 Service 구현 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.cntstAplyHist.service
+* - CntstAplyHistServiceImpl.java
+* </pre>
+*
+* @ClassName : CntstAplyHistServiceImpl
+* @Description : 공모전 참여 이력 Service 구현 클래스
+* @author : JD
+* @date : 2023. 2. 24.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Service("front.cntstAplyHistServiceImpl")
 @Alias("front.cntstAplyHistServiceImpl")
 public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements CntstAplyHistService {
@@ -31,11 +46,30 @@ public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements
     @Autowired
     private FileDao fileDao;
     
+    /**
+    * 공모전 참여 이력 목록 조회
+    *
+    * @Title : selectCntstAplyHistList
+    * @Description : 공모전 참여 이력 목록 조회
+    * @param cntstAplyHistVo
+    * @throws Exception
+    * @return List<CntstAplyHistVo>
+    */
     @Override
     public List<CntstAplyHistVo> selectCntstAplyHistList(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         return cntstAplyHistDao.selectCntstAplyHistList(cntstAplyHistVo);
     }
     
+    /**
+    * 공모전 참여 이력 상세정보 조회
+    *
+    * @Title : selectCntstAplyHistInfo
+    * @Description : 공모전 참여 이력 상세정보 조회
+    * @param cntsRectVo
+    * @return
+    * @throws Exception
+    * @return CntstAplyHistVo
+    */
     @Override
     public CntstAplyHistVo selectCntstAplyHistInfo(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         CntstAplyHistVo cntstHist = cntstAplyHistDao.selectCntstAplyHistInfo(cntstAplyHistVo);
@@ -50,21 +84,58 @@ public class CntstAplyHistServiceImpl extends PlumAbstractServiceImpl implements
         return cntstHist;
     }
 
+    /**
+    * 공모전 참여분야 정보 조회
+    *
+    * @Title : selectCntstFldMapngInfo
+    * @Description : 공모전 참여분야 정보 조회
+    * @param cntstAplyHistVo
+    * @throws Exception
+    * @return List<CntstAplyHistVo>
+    */
     @Override
     public List<CntstAplyHistVo> selectCntstFldMapngInfo(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         return cntstAplyHistDao.selectCntstFldMapngInfo(cntstAplyHistVo);
     }
-
+    
+    /**
+    * 공모전 참여 이력 수정
+    *
+    * @Title : updateCntstAplyHist
+    * @Description : 공모전 참여 이력 수정
+    * @param cntstAplyHistVo
+    * @throws Exception
+    * @return int
+    */
     @Override
     public int updateCntstAplyHist(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         return cntstAplyHistDao.updateCntstAplyHist(cntstAplyHistVo);
     }
 
+
+    /**
+    * 공모전 참여 이력(환경방학 일기장 프로젝트) 상세정보 조회
+    *
+    * @Title : selectCntstAplySchlHistInfo
+    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 상세정보 조회
+    * @param cntstAplyHistVo
+    * @throws Exception
+    * @return List<CntstAplyHistVo>
+    */
     @Override
     public List<CntstAplyHistVo> selectCntstAplySchlHistInfo(CntstAplyHistVo cntstAplyHistVo) throws Exception {
         return cntstAplyHistDao.selectCntstAplySchlHistInfo(cntstAplyHistVo);
     }
 
+    /**
+    * 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    *
+    * @Title : updateCntstAplySchlHist
+    * @Description : 공모전 참여 이력(환경방학 일기장 프로젝트) 수정
+    * @param cntstAplyHistVoList
+    * @throws Exception
+    * @return int
+    */
     @Override
     public int updateCntstAplySchlHist(List<CntstAplyHistVo> cntstAplyHistVoList) throws Exception {
         return cntstAplyHistDao.updateCntstAplySchlHist(cntstAplyHistVoList);

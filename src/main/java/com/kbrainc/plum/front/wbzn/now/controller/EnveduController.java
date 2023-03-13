@@ -16,8 +16,22 @@ import com.kbrainc.plum.front.wbzn.now.model.BannerVo;
 import com.kbrainc.plum.front.wbzn.now.model.EnveduVo;
 import com.kbrainc.plum.front.wbzn.now.model.PrgrmgdVo;
 import com.kbrainc.plum.front.wbzn.now.service.EnveduService;
-import com.kbrainc.plum.rte.util.DateTimeUtil;
 
+/**
+* 웹진 > 환경교육NOW Controller 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.wbzn.now.controller
+* - EnveduController.java
+* </pre>
+*
+* @ClassName : EnveduController
+* @Description : 웹진 > 환경교육NOW Controller 클래스
+* @author : JD
+* @date : 2023. 2. 20.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Controller("front.enveduController")
 @Alias("front.enveduController")
 public class EnveduController {
@@ -25,6 +39,19 @@ public class EnveduController {
     @Resource(name = "front.enveduServiceImpl")
     private EnveduService enveduService;
     
+    /**
+    * 환경교육NOW 목록 페이지
+    *
+    * @Title : enveduListForm
+    * @Description : TODO
+    * @param model
+    * @param bannerVo
+    * @param enveduVo
+    * @param prgrmgdVo
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/wbzn/now/enveduListForm.html")
     public String enveduListForm(Model model, BannerVo bannerVo, EnveduVo enveduVo, PrgrmgdVo prgrmgdVo) throws Exception {
         List<BannerVo> banner = null;
@@ -48,6 +75,16 @@ public class EnveduController {
         return "front/wbzn/now/enveduList";
     }
     
+    /**
+    * 환경교육NOW 상세 페이지
+    *
+    * @Title : enveduDetailForm
+    * @Description : 환경교육NOW 상세 페이지
+    * @param model
+    * @param enveduVo
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/wbzn/now/enveduDetailForm.html")
     public String enveduDetailForm(Model model, EnveduVo enveduVo) throws Exception {
         EnveduVo result = null;
@@ -57,6 +94,15 @@ public class EnveduController {
         return "front/wbzn/now/enveduDetail";
     }
 
+    /**
+    * 환경교육NOW 목록 조회
+    *
+    * @Title : selectEnveduList
+    * @Description : 환경교육NOW 목록 조회
+    * @param enveduVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/wbzn/now/selectEnveduList.do")
     @ResponseBody
     public Map<String, Object> selectEnveduList(EnveduVo enveduVo) throws Exception {
@@ -75,6 +121,17 @@ public class EnveduController {
         return resultMap;
     }
     
+    /**
+    * 환경교육NOW 프로그램 상세 페이지
+    *
+    * @Title : prgrmgdDetailForm
+    * @Description : 환경교육NOW 프로그램 상세 페이지
+    * @param model
+    * @param prgrmgdVo
+    * @return
+    * @throws Exception
+    * @return String
+    */
     @RequestMapping(value = "/front/wbzn/now/prgrmgdDetailForm.html")
     public String prgrmgdDetailForm(Model model, PrgrmgdVo prgrmgdVo) throws Exception {
         PrgrmgdVo result = null;
@@ -84,6 +141,15 @@ public class EnveduController {
         return "front/wbzn/now/enveduDetail";
     }
     
+    /**
+    * 환경교육NOW 프로그램 목록 조회
+    *
+    * @Title : selectPrgrmgdList
+    * @Description : 환경교육NOW 프로그램 목록 조회
+    * @param prgrmgdVo
+    * @throws Exception
+    * @return Map<String,Object>
+    */
     @RequestMapping(value = "/front/wbzn/now/selectPrgrmgdList.do")
     @ResponseBody
     public Map<String, Object> selectPrgrmgdList(PrgrmgdVo prgrmgdVo) throws Exception {

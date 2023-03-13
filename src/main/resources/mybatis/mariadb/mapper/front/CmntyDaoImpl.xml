@@ -6,6 +6,7 @@
 	Description : 환경동아리
 -->
 <mapper namespace="com.kbrainc.plum.front.cmnty.model.CmntyDao">
+
     <!-- 환경동아리 목록 조회 -->
     <select id="selectCmntyList" resultType="front.CmntyVo" parameterType="front.CmntyVo">
         /* CmntyDao.selectCmntyList */
@@ -16,16 +17,18 @@
             , A.CMNTY_LOGO_FILEID
             , B.FILE_IDNTFC_KEY
             , A.CMNTY_INTRCN
-            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID) MBR_CNT
+            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID AND MBR_STTS_CD = '118100') MBR_CNT
             , A.ESTERID
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.ESTERID) ESTER_NM
             , A.RLS_YN
             , (SELECT MBR_STTS_CD FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID AND USERID = #{user.userid}) MBR_STTS_CD
+            , (SELECT AUTHRT_CD FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID AND USERID = #{user.userid}) AUTHRT_CD
             , A.MDFCN_DT
             , A.MDFRID
             , A.REG_DT
             , A.RGTRID
         FROM TB_CMT_CMNTY A
-        JOIN TB_CMM_FILE B ON B.FILEID = A.CMNTY_LOGO_FILEID
+        LEFT JOIN TB_CMM_FILE B ON B.FILEID = A.CMNTY_LOGO_FILEID
         WHERE
             1=1
             AND A.OPER_YN = 'Y'
@@ -34,8 +37,462 @@
             AND A.SRCH_EXPSR_YN = 'Y'
         </if>
         <if test="esterid != null and esterid != ''">
-            AND A.ESTERID = #{esterid}
+            AND A.CMNTYID IN (SELECT CMNTYID FROM TB_CMT_CMNTY_MBR WHERE USERID = #{esterid} AND MBR_STTS_CD = '118100')
         </if>
         <include refid="PaginationMapper.footer"/>
+    </select>
+    <!-- 환경동아리 커뮤니티 정보 -->
+    <select id="selectCmntyInfo" resultType="front.CmntyVo">
+        /* CmntyDao.selectCmntyInfo */
+        SELECT
+            A.CMNTYID
+            , A.CMNTY_NM
+            , A.CMNTY_INTRCN
+            , A.ESTERID
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.ESTERID) ESTER_NM
+            , A.JOINAPRVMTHD_CD
+            , A.RLS_YN
+            , A.SRCH_EXPSR_YN
+            , A.OPER_YN
+            , A.CMNTY_LOGO_FILEID
+            , B.FILE_IDNTFC_KEY
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID AND MBR_STTS_CD = '118100') MBR_CNT
+            , (SELECT MBR_STTS_CD FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID AND USERID = #{user.userid}) MBR_STTS_CD
+            , (SELECT AUTHRT_CD FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = A.CMNTYID AND USERID = #{user.userid}) AUTHRT_CD
+        FROM TB_CMT_CMNTY A
+        LEFT JOIN TB_CMM_FILE B ON B.FILEID = A.CMNTY_LOGO_FILEID
+        WHERE A.CMNTYID = #{cmntyid}
+    </select>
+    <!-- 환경동아리 가입/초대 -->
+    <insert id="insertCmntyMbr">
+        /* CmntyDao.insertCmntyMbr */
+        INSERT INTO TB_CMT_CMNTY_MBR(
+            CMNTYID
+            , USERID
+            , MBR_STTS_CD
+            , AUTHRT_CD
+            , JOIN_APLY_DT
+            , JOIN_APRV_DT
+            , AUTZR_ID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{cmntyid}  <!--CMNTYID-->
+            <if test="inviteYn == 'Y'.toString()">
+                , #{inviteUserid} <!--USERID-->
+            </if>
+            <if test="inviteYn != 'Y'.toString()">
+                , #{user.userid} <!--USERID-->
+            </if>
+            <if test="joinaprvmthdCd == '115100' and inviteYn != 'Y'.toString()">
+                , '118101' <!--MBR_STTS_CD-->
+            </if>
+            <if test="joinaprvmthdCd == '115101' and inviteYn != 'Y'.toString() or esterYn == 'Y'.toString()">
+                , '118100' <!--MBR_STTS_CD-->
+            </if>
+            <if test="inviteYn == 'Y'.toString()">
+                , '118104' <!--MBR_STTS_CD-->
+            </if>
+            <if test="esterYn == 'Y'.toString()">
+                , '117100' <!--AUTHRT_CD-->
+            </if>
+            <if test="esterYn != 'Y'.toString()">
+                , '117101' <!--AUTHRT_CD-->
+            </if>
+            , NOW()     <!--JOIN_APLY_DT-->
+            <if test="joinaprvmthdCd == '115100' or inviteYn == 'Y'.toString()">
+            , null      <!--JOIN_APRV_DT-->
+            , null      <!--AUTZR_ID-->
+            </if>
+            <if test="joinaprvmthdCd == '115101' and inviteYn != 'Y'.toString()">
+            , NOW()      <!--JOIN_APRV_DT-->
+            , #{esterid} <!--AUTZR_ID-->
+            </if>
+            <if test="esterYn == 'Y'.toString()">
+            , NOW()            <!--JOIN_APRV_DT-->
+            , #{user.userid}   <!--AUTZR_ID-->
+            </if>
+            , NOW()             <!--MDFCN_DT-->
+            , #{user.userid}    <!--MDFRID-->
+            , NOW()             <!--REG_DT-->
+            , #{user.userid}    <!--RGTRID-->
+        ) ON DUPLICATE KEY UPDATE
+        <if test="joinaprvmthdCd == '115100' and inviteYn != 'Y'.toString()">
+            MBR_STTS_CD = '118101'
+        </if>
+        <if test="joinaprvmthdCd == '115101' and inviteYn != 'Y'.toString()">
+            MBR_STTS_CD = '118100'
+        </if>
+        <if test="inviteYn == 'Y'.toString()">
+            MBR_STTS_CD = '118104'
+        </if>
+            , JOIN_APLY_DT = NOW()
+        <if test="joinaprvmthdCd == '115100'">
+            , JOIN_APRV_DT = null
+            , AUTZR_ID = null
+        </if>
+        <if test="joinaprvmthdCd == '115101'">
+            , JOIN_APRV_DT = NOW()
+            , AUTZR_ID = #{esterid}
+        </if>
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+    </insert>
+    <!-- 환경동아리 가입신청취소/삭제/반려 -->
+    <delete id="deleteCmntyMbr">
+        /* CmntyDao.deleteCmntyMbr */
+        DELETE
+        FROM TB_CMT_CMNTY_MBR
+        WHERE
+            CMNTYID = #{cmntyid}
+        <if test="inviteUserid != '' and inviteUserid != null">
+            AND USERID = #{inviteUserid}
+        </if>
+        <if test="inviteUserid == '' and inviteUserid == null">
+            AND USERID = #{user.userid}
+        </if>
+    </delete>
+    <!-- 환경동아리 탈퇴/권한부여/권한철회/다시초대/승인/복원 -->
+    <update id="updateCmntyMbr">
+        /* CmntyDao.updateCmntyMbr */
+        UPDATE TB_CMT_CMNTY_MBR SET
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        <if test="mbrSttsCd != null and mbrSttsCd != ''">
+            , MBR_STTS_CD = #{mbrSttsCd}
+        </if>
+        <if test="authrtCd != null and authrtCd != ''">
+            , AUTHRT_CD = #{authrtCd}
+        </if>
+        <if test="mbrSttsCd == '118100'">
+            , JOIN_APRV_DT = NOW()
+            , AUTZR_ID = #{user.userid}
+        </if>
+        WHERE CMNTYID = #{cmntyid}
+        AND USERID = #{rgtrid}
+    </update>
+    <!-- 환경동아리 템플릿 조회 -->
+    <select id="selectCmntyTmplatList" resultType="front.CmntyBbsTmplatVo">
+        /* CmntyDao.selectCmntyTmplatList */
+        SELECT
+            A.CMNTY_BBS_TMPLATID
+            , A.TMPLAT_NM
+            , A.EXPLN
+            , A.CLSF_CD
+            , A.FX_NTC_USE_YN
+            , A.FX_NTC_CNT
+            , A.ATCHFILE_USE_YN
+            , A.ATCHFILE_CNT
+            , A.ATCHFILE_SIZE
+            , A.RPLY_USE_YN
+            , A.CMNT_USE_YN
+            , A.NEW_USE_YN
+            , A.NEW_INDICT_DAYCNT
+            , A.HOT_USE_YN
+            , A.HOT_USE_CRTR_HITS
+            , A.CLSF_USE_YN
+            , A.PAGE_PST_CNT
+            , A.NLOGIN_DWNLD_PERM_YN
+            , A.ESSNTL_YN
+            , A.ORDR
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        <if test="cmntyid != '' and cmntyid != null">
+            , IFNULL(B.USE_YN,'N') USE_YN
+        </if>
+        FROM TB_CMT_CMNTY_BBS_TMPLAT A
+        <if test="cmntyid != '' and cmntyid != null">
+        LEFT JOIN TB_CMT_CMNTY_BBS B ON B.CMNTY_BBS_TMPLATID = A.CMNTY_BBS_TMPLATID AND B.CMNTYID = #{cmntyid}
+        </if>
+        WHERE A.USE_YN = 'Y'
+    </select>
+    <!-- 환경동아리 등록 -->
+    <insert id="insertCmnty" useGeneratedKeys="true">
+        /* CmntyDao.insertCmnty */
+        <selectKey resultType="int" keyProperty="cmntyid" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        INSERT INTO TB_CMT_CMNTY(
+            CMNTYID
+            , CMNTY_NM
+            , CMNTY_INTRCN
+            , ESTERID
+            , JOINAPRVMTHD_CD
+            , RLS_YN
+            , SRCH_EXPSR_YN
+            , OPER_YN
+            , CMNTY_LOGO_FILEID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES(
+            #{cmntyid}
+            , #{cmntyNm}
+            , #{cmntyIntrcn}
+            , #{user.userid}
+            , #{joinaprvmthdCd}
+            , #{rlsYn}
+            , #{srchExpsrYn}
+            , 'Y'
+            , #{cmntyLogoFileid}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    <!-- 환경동아리 카테고리 순서 등록 -->
+    <insert id="insertCmntyCtgry">
+        /* CmntyDao.insertCmntyCtgry */
+        INSERT INTO TB_CMT_CMNTY_CTGRY(
+            CMNTYID
+            , CMNTY_BBS_TMPLATID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{cmntyVo.cmntyid}
+            , #{tmplatId}
+            , #{index}
+            , NOW()
+            , #{cmntyVo.user.userid}
+            , NOW()
+            , #{cmntyVo.user.userid}
+         )
+    </insert>
+    <!-- 환경동아리 게시판 등록 -->
+    <insert id="insertCmntyBbs">
+        /* CmntyDao.insertCmntyBbs */
+        INSERT INTO TB_CMT_CMNTY_BBS(
+            CMNTYID
+            , CMNTY_BBS_TMPLATID
+            , NM
+            , EXPLN
+            , CLSF_CD
+            , FX_NTC_USE_YN
+            , FX_NTC_CNT
+            , ATCHFILE_USE_YN
+            , ATCHFILE_CNT
+            , ATCHFILE_SIZE
+            , RPLY_USE_YN
+            , CMNT_USE_YN
+            , NEW_USE_YN
+            , NEW_INDICT_DAYCNT
+            , HOT_USE_YN
+            , HOT_USE_CRTR_HITS
+            , CLSF_USE_YN
+            , PAGE_PST_CNT
+            , NLOGIN_DWNLD_PERM_YN
+            , USE_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) (SELECT
+            #{cmntyVo.cmntyid}
+            , CMNTY_BBS_TMPLATID
+            , TMPLAT_NM
+            , EXPLN
+            , CLSF_CD
+            , FX_NTC_USE_YN
+            , FX_NTC_CNT
+            , ATCHFILE_USE_YN
+            , ATCHFILE_CNT
+            , ATCHFILE_SIZE
+            , RPLY_USE_YN
+            , CMNT_USE_YN
+            , NEW_USE_YN
+            , NEW_INDICT_DAYCNT
+            , HOT_USE_YN
+            , HOT_USE_CRTR_HITS
+            , CLSF_USE_YN
+            , PAGE_PST_CNT
+            , NLOGIN_DWNLD_PERM_YN
+            , 'Y'
+            , NOW()
+            , #{cmntyVo.user.userid}
+            , NOW()
+            , #{cmntyVo.user.userid}
+          FROM TB_CMT_CMNTY_BBS_TMPLAT
+          WHERE
+              CMNTY_BBS_TMPLATID = #{tmplatId}
+        )
+    </insert>
+    <!-- 환경동아리 카테고리 순서 조회 -->
+    <select id="selectCmntyCtgryList" resultType="front.CmntyCtgryVo">
+        /* CmntyDao.selectCmntyCtgryList */
+        SELECT
+            A.CMNTYID
+            , A.CMNTY_BBS_TMPLATID
+            , A.ORDR
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+            , B.BBSID
+            , B.NM
+        FROM TB_CMT_CMNTY_CTGRY A
+        JOIN TB_CMT_CMNTY_BBS B ON B.CMNTY_BBS_TMPLATID = A.CMNTY_BBS_TMPLATID AND A.CMNTYID = B.CMNTYID
+        WHERE A.CMNTYID = #{cmntyid}
+            AND B.USE_YN = 'Y'
+        ORDER BY  A.ORDR
+    </select>
+    <!-- 환경동아리 게시글 목록 조회 -->
+    <select id="selectCmntyBbsList" resultType="front.CmntyPstVo">
+        /* CmntyDao.selectCmntyBbsList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            A.PSTID
+            , A.TTL
+            , A.DEL_YN
+            , A.GRP
+            , A.SORTORDR
+            , A.DPTH
+            , A.FX_NTC_YN
+            , IFNULL(A.HITS,0) AS HITS
+            , B.FX_NTC_USE_YN
+            , A.FILEGRPID
+            , A.REG_DT
+        <choose>
+            <when test='hotUseYn == "Y"'>
+                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN HITS ELSE 0 END) HOT_ORDER_NUM
+                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN 'Y' ELSE 'N' END) HOT_YN
+            </when>
+            <otherwise>
+                , 0 HOT_ORDER_NUM
+                , 'N' HOT_YN
+            </otherwise>
+        </choose>
+        <choose>
+            <when test='hotUseYn == "Y" and newUseYn == "Y"'>
+                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hotUseStdrHits} AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
+            </when>
+            <when test='hotUseYn != "Y" and newUseYn == "Y"'>
+                , (CASE WHEN  NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
+            </when>
+            <otherwise>
+                ,'N' NEW_YN
+            </otherwise>
+        </choose>
+        , (CASE WHEN FX_NTC_YN = 'Y' AND NOW() BETWEEN FX_NTC_BGNG_DT AND FX_NTC_END_DT THEN 1 ELSE 2 END) FIXORDER
+        , A.MDFCN_DT
+        FROM TB_CMT_CMNTY_PST A
+        INNER JOIN TB_CMT_CMNTY_BBS B ON A.BBSID = B.BBSID
+        WHERE
+            1=1
+            AND A.DEL_YN = 'N'
+            AND A.BBSID= #{bbsid}
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl' ">
+            AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'cn' ">
+            AND A.CN LIKE CONCAT('%', #{searchKeyword}, '%')
+        </if>
+        <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttlCn' ">
+            AND (A.TTL LIKE CONCAT('%', #{searchKeyword}, '%') OR A.CN LIKE CONCAT('%', #{searchKeyword}, '%'))
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    <!-- 환경동아리 커뮤니티 게시판 정보 -->
+    <select id="selectBbsInfo" resultType="front.CmntyBbsVo">
+        /* CmntyDao.selectBbsInfo */
+        SELECT
+            BBSID, CMNTYID, CMNTY_BBS_TMPLATID, NM, EXPLN, CLSF_CD, FX_NTC_USE_YN, FX_NTC_CNT, ATCHFILE_USE_YN, ATCHFILE_CNT, ATCHFILE_SIZE
+            , RPLY_USE_YN, CMNT_USE_YN, NEW_USE_YN, NEW_INDICT_DAYCNT, HOT_USE_YN, HOT_USE_CRTR_HITS, CLSF_USE_YN, PAGE_PST_CNT, NLOGIN_DWNLD_PERM_YN
+            , USE_YN, MDFCN_DT, MDFRID, REG_DT, RGTRID
+        FROM TB_CMT_CMNTY_BBS
+        WHERE 1=1
+          <choose>
+              <when test="bbsid != null and bbsid != ''">
+                  AND BBSID = #{bbsid}
+              </when>
+              <otherwise>
+                  AND CMNTYID = #{cmntyid}
+                  AND CMNTY_BBS_TMPLATID = #{cmntyBbsTmplatid}
+              </otherwise>
+          </choose>
+    </select>
+    <!-- 환경동아리 회원 목록 -->
+    <select id="selectCmntyMbrList" resultType="front.CmntyMbrVo">
+        /* CmntyDao.selectCmntyMbrList */
+        <include refid="PaginationMapper.header"/>
+        SELECT
+            CMNTYID
+            , USERID
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.USERID) NM
+            , MBR_STTS_CD
+            , AUTHRT_CD
+            , JOIN_APLY_DT
+            , JOIN_APRV_DT
+            , AUTZR_ID
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            , (CASE WHEN (SELECT ESTERID FROM TB_CMT_CMNTY WHERE CMNTYID = A.CMNTYID) = USERID THEN 0 ELSE 1 END) ORDR
+        FROM TB_CMT_CMNTY_MBR A
+        WHERE CMNTYID = #{cmntyid}
+        <if test="authrtCd != null and authrtCd != ''">
+            AND AUTHRT_CD = #{authrtCd}
+        </if>
+        <if test="notAprvYn != 'Y'.toString()">
+            AND MBR_STTS_CD = '118100'
+        </if>
+        <if test="notAprvYn == 'Y'.toString()">
+            AND MBR_STTS_CD != '118100'
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    <!-- 환경동아리 수정 -->
+    <update id="updateCmnty">
+        /* CmntyDao.updateCmnty */
+        UPDATE TB_CMT_CMNTY SET
+            OPER_YN = #{operYn}
+        <if test='operYn == "Y"'>
+            , CMNTY_NM = #{cmntyNm}
+            , CMNTY_INTRCN = #{cmntyIntrcn}
+            , JOINAPRVMTHD_CD = #{joinaprvmthdCd}
+            , RLS_YN = #{rlsYn}
+            , SRCH_EXPSR_YN = #{srchExpsrYn}
+            , CMNTY_LOGO_FILEID = #{cmntyLogoFileid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        </if>
+        <if test='operYn == "N"'>
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        </if>
+        WHERE CMNTYID = #{cmntyid}
+    </update>
+    <!-- 환경동아리 게시판 수정 -->
+    <update id="updateCmntyBbs">
+        /* CmntyDao.updateCmntyBbs */
+        UPDATE TB_CMT_CMNTY_BBS SET
+            USE_YN = #{useYn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{cmntyVo.user.userid}
+        WHERE CMNTYID = #{cmntyVo.cmntyid}
+            AND CMNTY_BBS_TMPLATID = #{tmplatId}
+    </update>
+    <!-- -->
+    <select id="selectMbr" resultType="UserVo">
+        SELECT
+            USERID
+             , NM
+             , ACNT
+        FROM TB_CMM_USER
+        WHERE USERID NOT IN((SELECT USERID FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = #{cmntyid}))
+            AND NM = #{userNm}
     </select>
 </mapper>

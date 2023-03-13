@@ -13,6 +13,21 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
+/**
+* 웹진 > 환경교육NOW 프로그램 Vo 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.wbzn.now.model
+* - PrgrmgdVo.java
+* </pre>
+*
+* @ClassName : PrgrmgdVo
+* @Description : 웹진 > 환경교육NOW 프로그램 Vo 클래스
+* @author : JD
+* @date : 2023. 2. 20.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 @Alias("front.PrgrmgdVo")
 public class PrgrmgdVo extends ParentRequestVo {
