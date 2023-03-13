@@ -273,6 +273,12 @@ public class PublicContestVo extends ParentRequestVo {
     /** 차수 */
     private int cycl;
     
+    /** 1차 교부 아이디 */
+    private int frstCyclDelvryid;
+    
+    /** 2차 교부 아이디 */
+    private int scndCyclDelvryid;
+    
     /**  수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private Date mdfcnDt;

@@ -144,7 +144,7 @@
                                  <span id="dtlImgFileArea">
                                  
                                   <th:block th:if = "${dtlImgFileList} != null ">
-                                    <span th:each="item:${dtlImgFileList}" class ='label label-inverse ' th:id="'instFile_'+${item.fileid}">
+                                    <span th:each="item:${dtlImgFileList}" class ='label label-inverse ' th:id="'lendFile_'+${item.fileid}">
                                         <th:block th:text="${item.orginlFileNm}"></th:block>
                                         &nbsp;&nbsp;
                                         <a  class = 'text-white' href = "javascript:void(0)"
@@ -175,7 +175,7 @@
                                  <span id="mapFileArea">
                                  
                                    <th:block th:if = "${mapFileList} != null ">
-                                    <span th:each="item:${mapFileList}" class ='label label-inverse ' th:id="'instFile_'+${item.fileid}">
+                                    <span th:each="item:${mapFileList}" class ='label label-inverse ' th:id="'lendFile_'+${item.fileid}">
                                         <th:block th:text="${item.orginlFileNm}"></th:block>
                                         &nbsp;&nbsp;
                                         <a  class = 'text-white' href = "javascript:void(0)"
@@ -204,7 +204,7 @@
                                  <!-- 파일 명 및 삭제 버튼 영역-->
                                  <span id="eduPhotoFileArea">
                                     <th:block th:if = "${eduPhotoFileList} != null ">
-                                    <span th:each="item:${eduPhotoFileList}" class ='label label-inverse ' th:id="'instFile_'+${item.fileid}">
+                                    <span th:each="item:${eduPhotoFileList}" class ='label label-inverse ' th:id="'lendFile_'+${item.fileid}">
                                         <th:block th:text="${item.orginlFileNm}"></th:block>
                                         &nbsp;&nbsp;
                                         <a  class = 'text-white' href = "javascript:void(0)"
@@ -348,9 +348,9 @@
     	editor2 = CKEDITOR.replace('atentMttr');
     	$('[data-bs-toggle="tooltip"]').tooltip();
     	setPackageArea(lendRndList);
-    	bindMultipleLendFile("dtlImgFile","dtlImgFilegrpid","dtlImgFileArea");
-    	bindMultipleLendFile("mapFile","mapFilegrpid","mapFileArea");
-    	bindMultipleLendFile("eduPhotoFile","eduPhotoFilegrpid","eduPhotoFileArea");
+    	bindMultipleLendFile("dtlImgFile","dtlImgFilegrpid","dtlImgFileArea","lend_file");
+    	bindMultipleLendFile("mapFile","mapFilegrpid","mapFileArea","pdf_view_file");
+    	bindMultipleLendFile("eduPhotoFile","eduPhotoFilegrpid","eduPhotoFileArea","lend_file");
     	setPackageSelectBox();
     })
     
@@ -491,7 +491,7 @@
          event.preventDefault();
     });
     
-    bindMultipleLendFile=(fileInputId, fileGrpId, fileInfoAppendAreaId)=>{
+    bindMultipleLendFile=(fileInputId, fileGrpId, fileInfoAppendAreaId,filegrpNm)=>{
         
         $('#'+fileInputId).on("change", function(event) {
            var objFile = document.querySelector('#'+fileInputId);
@@ -505,7 +505,7 @@
            }
            
            formData.append("filegrpid", $("#"+fileGrpId).val());
-           formData.append("filegrpNm", "lend_file");
+           formData.append("filegrpNm", filegrpNm);
            
                $.ajax({
                    url : '/uploadMultipleFiles.do',
@@ -698,6 +698,7 @@
 
   	 	let params={
   	 		rcritid : resVo.rcritid,
+            packageid : $("#packageid").val(),
   	 		rcritNm : $("#rcritNm").val(),
   	 		lmtCd : $("#lmtCd").val(),
             dtlCn : editor1.getData(),

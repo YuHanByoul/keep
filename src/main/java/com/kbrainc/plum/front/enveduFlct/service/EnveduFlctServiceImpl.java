@@ -60,10 +60,19 @@ public class EnveduFlctServiceImpl extends PlumAbstractServiceImpl implements En
     public int nearbyEnveduFlctCount(Map map) throws Exception{
         return enveduFlctDao.nearbyEnveduFlctCount(map);
     }
-
+    
+    /**
+    * 환경교육시설현황 목록 조회
+    *
+    * @Title : selectEnveduFcltList
+    * @Description : 환경교육시설현황 목록 조회
+    * @throws Exception
+    * @return List<EnveduFcltVo>
+    */
     @Override
     public List<EnveduFcltVo> selectEnveduFcltList() throws Exception {
         List<EnveduFcltVo> enveduFclt = enveduFlctDao.selectEnveduFcltList();
+        
         for(int i = 0; i < enveduFclt.size(); i++) {
             if(enveduFclt != null && Objects.nonNull(enveduFclt.get(i).getRprsImgFileid())) {
                 FileVo fileVo = new FileVo();
@@ -72,6 +81,7 @@ public class EnveduFlctServiceImpl extends PlumAbstractServiceImpl implements En
                 enveduFclt.get(i).setFileInfo(fileInfo);
             }            
         }
+        
         return enveduFclt;
     };
 

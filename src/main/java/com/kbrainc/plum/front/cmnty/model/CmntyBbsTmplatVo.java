@@ -30,4 +30,6 @@ public class CmntyBbsTmplatVo extends ParentRequestVo {
     private String essntlYn;
     /** 순서 */
     private Integer ordr;
+    /** 사용 여부 */
+    private String useYn;
 }

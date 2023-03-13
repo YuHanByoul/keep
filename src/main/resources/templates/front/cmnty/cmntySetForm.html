@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout">
+<body>
+<div layout:fragment="content" th:if="${cmntyInfo.authrtCd eq '117100'}">
+    <div class="community-wrap">
+        <div class="community-tit">
+            <strong th:text="${cmntyInfo.cmntyNm}"></strong>
+            <div class="members"><span class="icon icon-men bg-blue" title=""></span>회원수 : <b th:text="${cmntyInfo.mbrCnt}"></b>명</div>
+        </div>
+        <div class="community-content">
+            <div class="thumb">
+                <img th:src="'/downloadFileByFileid.do?fileid='+${cmntyInfo.cmntyLogoFileid}+'&file_idntfc_key='+${cmntyInfo.fileIdntfcKey}" th:alt="${cmntyInfo.cmntyNm}">
+            </div>
+            <div class="desc">
+                <p th:text="${cmntyInfo.cmntyIntrcn}"></p>
+                <dl>
+                    <div class="list">
+                        <dt>개설자 :</dt>
+                        <dd th:text="${cmntyInfo.esterNm}"></dd>
+                    </div>
+                    <div class="list">
+                        <dt>개설일 :</dt>
+                        <dd th:text="${#dates.format(cmntyInfo.regDt, 'yyyy-MM-dd')}"></dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-wrap mt10">
+        <div class="right">
+            <a class="btn-small btn-outline-black" onclick="fn_list()">이전</a>
+        </div>
+    </div>
+
+    <div class="tab-content tab-sub dropDown">
+        <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">커뮤니티 설정</button>
+        <ul class="tab-list target" role="tablist">
+            <li class="tab active"><button onclick="fn_tabMove('/front/cmnty/cmntySetForm.html')">커뮤니티 설정</button></li>
+            <li class="tab"><button onclick="fn_tabMove('/front/cmnty/cmntyMbrList.html')">회원관리</button></li>
+            <li class="tab"><button onclick="fn_tabMove('/front/cmnty/cmntyMbrWaitList.html')">가입대기회원</button></li>
+        </ul>
+
+        <form name="cmntyForm" id="cmntyForm">
+            <div class="table-caption flex-nowrap">
+                <div class="left">
+                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                </div>
+            </div>
+
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>커뮤니티 개설 - 커뮤니티명, 커뮤니티 사진, 커뮤니티 소개, 개설자, 가입승인 방식, 공개여부 설정, 검색 노출 동의 여부, 카테고리 설정</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th scope="row">커뮤니티명<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <input type="text" title="커뮤니티명" id="cmntyNm" name="cmntyNm" th:value="${cmntyInfo.cmntyNm}">
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">커뮤니티 사진<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <div class="form-input-file form-input-thumb">
+                                <div class="form-input">
+                                    <div class="logo-image">
+                                        <img id="cmntyLogoImage" th:src="'/downloadFileByFileid.do?fileid='+${cmntyInfo.cmntyLogoFileid}+'&file_idntfc_key='+${cmntyInfo.fileIdntfcKey}" th:alt="${cmntyInfo.cmntyNm}">
+                                        <span class="logo-text">LOGO IMAGE</span>
+                                        <input type="hidden" id="cmntyLogoFileid" name="cmntyLogoFileid" th:value="${cmntyInfo.cmntyLogoFileid}">
+                                    </div>
+                                    <label>
+                                        <input type="file" id="cmntyLogo" name="cmntyLogo" class="blind" accept=".jpeg,.jpg,.png" title="파일첨부" maxcount="1">
+                                        <span class="btn-medium btn-gray">파일선택</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                            <p class="desc fc-red">* 커뮤니티 사진 권장 크기는 가로 240 X 세로 120 픽셀 입니다.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">커뮤니티 소개<i class="ast" title="필수입력">*</i></th>
+                        <td>
+                            <textarea title="커뮤니티 소개" placeholder="커뮤니티 소개를 입력해주세요." id="cmntyIntrcn" name="cmntyIntrcn" th:text="${cmntyInfo.cmntyIntrcn}"></textarea>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">개설자</th>
+                        <td th:text="${cmntyInfo.esterNm}"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">가입승인 방식</th>
+                        <td>
+                            <div class="form-check-list">
+                                <label th:each="item : ${joinaprvmthdCdList}" class="inp">
+                                    <input type="radio" name="joinaprvmthdCd" th:value="${item.cd}" th:checked="${item.cd == cmntyInfo.joinaprvmthdCd}"><b th:text="${item.cdNm}"></b>
+                                </label>
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">공개여부 설정</th>
+                        <td>
+                            <div class="form-check-list">
+                                <label class="inp"><input type="radio" name="rlsYn" value="Y" th:checked="${cmntyInfo.rlsYn == 'Y'}"><b>공개</b></label>
+                                <label class="inp"><input type="radio" name="rlsYn" value="N" th:checked="${cmntyInfo.rlsYn == 'N'}"><b>비공개</b></label>
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">검색노출 동의 여부</th>
+                        <td>
+                            <div class="form-check-list">
+                                <label class="inp"><input type="radio" name="srchExpsrYn" value="Y" th:checked="${cmntyInfo.srchExpsrYn == 'Y'}"><b>동의함</b></label>
+                                <label class="inp"><input type="radio" name="srchExpsrYn" value="N" th:checked="${cmntyInfo.srchExpsrYn == 'N'}"><b>동의하지 않음</b></label>
+                            </div>
+                            <div class="col">
+                                <p class="feedback"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">카테고리 설정</th>
+                        <td>
+                            <button type="button" class="btn-medium btn-green" data-layer-href="layer-popup10">카테고리 설정</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${cmntyInfo.esterid eq paramVo.user.userid}" class="btn-wrap">
+                <div class="right">
+                    <a class="fc-black6 fs-14 fw-300 underline" onclick="fn_delete()">커뮤니티 폐쇄</a>
+                </div>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-gray" onclick="fn_list()">목록</button>
+                    <button type="button" class="btn-medium btn-blue" onclick="fn_update()">저장</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="layer-popup layer-large" data-layer-id="layer-popup10">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">카테고리 설정 </strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close=""></button>
+                </div>
+                <div class="layer-content">
+                    <div class="table-col">
+                        <table>
+                            <caption>카테고리 설정 - 카테고리명, 사용여부</caption>
+                            <thead>
+                            <tr>
+                                <th scope="col">카테고리명</th>
+                                <th scope="col">사용여부</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="item : ${tmplatList}">
+                                <td th:text="${item.tmplatNm}"></td>
+                                <td>
+                                    <div class="form-check-list j-center">
+                                        <input type="hidden" name="tmplatIds" th:value="${item.cmntyBbsTmplatid}" />
+                                        <label class="inp"><input type="radio" th:name="|useYn${item.cmntyBbsTmplatid}|" th:checked="${item.useYn == 'Y'}" value="Y"><b>Y</b></label>
+                                        <label class="inp"><input type="radio" th:name="|useYn${item.cmntyBbsTmplatid}|" th:checked="${item.useYn == 'N'}" value="N"><b>N</b></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" data-layer-close="">닫기</button>
+                            <button type="button" class="btn-medium btn-green" data-layer-close="">저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form name="searchForm" action="/front/cmnty/cmntyPstList.html">
+        <input type="hidden" name="cmntyid" th:value="${paramVo.cmntyid}" />
+    </form>
+
+    <script th:inline="javascript">
+        const $searchForm = $('[name=searchForm]');
+        var validator= $("#cmntyForm").validate({
+            rules:{
+                cmntyNm:{ required: true, maxlength: 20 },
+                cmntyLogoFileid:{ required: true },
+                cmntyIntrcn:{ required: true }
+            },
+            messages:{
+                cmntyNm:{ required: "커뮤니티명을 입력 해주십시오.", maxlength: "커뮤니티명은 20자를 초과할 수 없습니다." },
+                cmntyLogoFileid:{ required: "커뮤니티 사진을 등록해주세요." },
+                cmntyIntrcn:{ required: "커뮤니티 소개를 입력 해주십시오." }
+            }
+        });
+        function fn_list(){
+            $searchForm[0].submit()
+        }
+        function fn_tabMove(url){
+            $searchForm[0].action = url;
+            $searchForm[0].submit();
+        }
+        function fn_delete(){
+            if(confirm("폐쇄 시 등록된 게시물 및 컨텐츠도 삭제됩니다.\n커뮤니티를 폐쇄하시겠습니까?")){
+                if(displayWorkProgress(true)){
+                    $.ajax({
+                        url : "/front/cmnty/deleteCmnty.do",
+                        type: 'POST',
+                        cache : false,
+                        dataType: 'json',
+                        data : {
+                            cmntyid : $searchForm[0].cmntyid.value
+                        },
+                        success : function (data){
+                            alert(data.msg);
+                            if(data.result=="success"){
+                                location.href = '/front/cmnty/cmntyList.html';
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+        }
+        function fn_update(){
+            if($('#cmntyForm').valid()){
+                let data = $('#cmntyForm').serialize();
+                data+='&cmntyid='+$searchForm[0].cmntyid.value;
+                $('input[name=tmplatIds]').each(function (){
+                    data += '&tmplatIds='+$(this).val();
+                    if($(this).siblings().find('input[name=useYn'+$(this).val()+']:checked').val() === 'Y'){
+                        data += '&tmplatYIds='+$(this).val();
+                    }
+                });
+                if(displayWorkProgress(true)){
+                    $.ajax({
+                        url : "/front/cmnty/updateCmnty.do",
+                        type: 'POST',
+                        cache : false,
+                        dataType: 'json',
+                        data : data,
+                        success : function (data){
+                            alert(data.msg);
+                            if(data.result=="success"){
+                                location.reload();
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+        }
+
+        $('#cmntyLogo').on("change", function (event) {
+            var objFile = event.target;
+            var formData = new FormData();
+
+            formData.append("file", objFile.files[0]);
+            formData.append("filegrpNm", "cmnty_logo");
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: '/registFile.do',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.result == 'fail') {
+                            alert(response.msg);
+                        }else if(response.filegrpid != undefined && response.filegrpid != ''){
+                            $("#cmntyLogoFileid").val(response.fileid);
+                            $("#cmntyLogoImage").attr("src",`/downloadFileByFileid.do?fileid=${response.fileid}&file_idntfc_key=${response.fileIdntfcKey}`);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+                $("#cmntyLogo").val("");
+            }
+        });
+    </script>
+</div>
+</body>

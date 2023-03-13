@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html
+        xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+        layout:decorator="layout/front/subLayout">
+<body>
+<div layout:fragment="content" th:if="${cmntyInfo.rlsYn eq 'Y' or cmntyInfo.mbrSttsCd eq '118100'}">
+    <div class="community-wrap">
+        <div class="community-tit">
+            <strong th:text="${cmntyInfo.cmntyNm}"></strong>
+            <div class="members"><span class="icon icon-men bg-blue" title=""></span>회원수 : <b th:text="${cmntyInfo.mbrCnt}"></b>명</div>
+        </div>
+        <div class="community-content">
+            <div class="thumb">
+                <img th:src="'/downloadFileByFileid.do?fileid='+${cmntyInfo.cmntyLogoFileid}+'&file_idntfc_key='+${cmntyInfo.fileIdntfcKey}" th:alt="${cmntyInfo.cmntyNm}">
+            </div>
+            <div class="desc">
+                <p th:text="${cmntyInfo.cmntyIntrcn}"></p>
+                <dl>
+                    <div class="list">
+                        <dt>개설자 :</dt>
+                        <dd th:text="${cmntyInfo.esterNm}"></dd>
+                    </div>
+                    <div class="list">
+                        <dt>개설일 :</dt>
+                        <dd th:text="${#dates.format(cmntyInfo.regDt, 'yyyy-MM-dd')}"></dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div th:with="
+        isAdminOwn=${cmntyInfo.authrtCd eq '117100' or cmntyInfo.esterid eq paramVo.user.userid},
+        sttsAprv=${cmntyInfo.mbrSttsCd eq '118100'},
+        sttsAply=${cmntyInfo.mbrSttsCd eq '118101'},
+        sttsDeny=${cmntyInfo.mbrSttsCd eq '118102'},
+        sttsExit=${cmntyInfo.mbrSttsCd eq '118103'},
+        sttsInvite=${cmntyInfo.mbrSttsCd eq '118104'}
+    "  class="btn-wrap mt10">
+        <div class="right">
+            <a th:if="${isAdminOwn}" class="btn-small btn-outline-blue" id="cmntySet">커뮤니티 설정</a>
+            <a th:if="${isAdminOwn}" class="btn-small btn-outline-blue" id="cmntyMbr">회원관리</a>
+            <a th:if="${not sttsAply and not sttsAprv}" class="btn-small btn-outline-blue" th:onclick="fn_joinCmnty([[${cmntyInfo.cmntyid}]])">가입</a>
+            <a th:if="${sttsAply}" class="btn-small btn-outline-blue" th:onclick="fn_cancelJoinCmnty([[${cmntyInfo.cmntyid}]])">신청취소</a>
+            <a th:if="${not isAdminOwn and sttsAprv}" class="btn-small btn-outline-blue" th:onclick="fn_quitCmnty([[${cmntyInfo.cmntyid}]],[[${paramVo.user.userid}]])">탈퇴</a>
+            <a onclick="fn_list()" class="btn-small btn-outline-black">목록</a>
+        </div>
+    </div>
+
+    <div class="tab-content tab-sub dropDown">
+        <th:block th:each="item : ${cmntyCtgryList}">
+            <th:block th:if="${item.bbsid == paramVo.bbsid}">
+                <button type="button" class="tab-mobile-trigger trigger" aria-expanded="true" th:text="${item.nm}"></button>
+            </th:block>
+        </th:block>
+        <ul class="tab-list target" role="tablist">
+            <li th:each="item : ${cmntyCtgryList}"
+                class="tab" th:classappend="${item.bbsid == paramVo.bbsid} ? 'active'">
+                <button role="tab" th:text="${item.nm}" th:onclick="fn_tabCmnty([[${item.bbsid}]])"></button>
+            </li>
+        </ul>
+
+        <div id="tab-subpanel01" class="tabpanel active" role="tabpanel" aria-labelledby="tab-sub01">
+            <form id="searchForm" name="searchForm">
+                <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}"/>
+                <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}"/>
+                <input type="hidden" id="cmntyid" name="cmntyid" th:value="${paramVo.cmntyid}" />
+                <input type="hidden" id="bbsid" name="bbsid" th:value="${paramVo.bbsid}" />
+                <input type="hidden" id="pstid" name="pstid" />
+                <input type="hidden" id="searchYn" name="searchYn" value="Y" />
+                <div class="search-filter">
+                    <div class="form-input mo-flex-wrap">
+                        <strong class="label">커뮤니티명</strong>
+                        <div class="form-input">
+                            <select name="searchType" id="searchType" title="검색어">
+                                <option value="ttl" th:selected="'ttl' == ${paramVo.searchType}">제목</option>
+                                <option value="cn" th:selected="'cn' == ${paramVo.searchType}">내용</option>
+                                <option value="ttlCn" th:selected="'ttlCn' == ${paramVo.searchType}">제목+내용</option>
+                            </select>
+                            <input type="search" title="검색어" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해 주세요." th:value="${paramVo.searchKeyword}">
+                        </div>
+                        <div class="search-filter-submit">
+                            <button type="submit" class="btn-medium btn-green btn-before-search">검색</button>
+                            <button type="button" class="btn-medium btn-transparent btn-before-refresh">초기화</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="table-caption flex-nowrap">
+                <div class="left">
+                    <p>총 <b>[[${totalCount}]]</b> 건</p>
+                </div>
+                <div class="right d-flex">
+                    <select title="글 보기 개수" id="rowPage">
+                        <option value="10" th:selected="${paramVo.rowPerPage== 10}">10개씩 보기</option>
+                        <option value="50" th:selected="${paramVo.rowPerPage== 50}">50개씩 보기</option>
+                        <option value="100" th:selected="${paramVo.rowPerPage== 100}">100개씩 보기</option>
+                    </select>
+                    <th:block th:if="${paramVo.cmntyBbsTmplatid == 1}">
+                        <div th:if="${cmntyInfo.authrtCd == '117100'}" class="ml10"><button type="button" class="btn-medium btn-green" id="insertPst">글쓰기</button></div>
+                    </th:block>
+                    <th:block th:unless="${paramVo.cmntyBbsTmplatid == 1}">
+                        <div th:if="${cmntyInfo.mbrSttsCd == '118100'}" class="ml10"><button type="button" class="btn-medium btn-green" id="insertAllPst">글쓰기</button></div>
+                    </th:block>
+                </div>
+            </div>
+
+            <div class="pc-only">
+                <div class="table-col">
+                    <table>
+                        <caption>공지사항 - 번호, 제목, 첨부파일, 등록일, 조회수</caption>
+                        <colgroup>
+                            <col style="width:10%;">
+                            <col>
+                            <col style="width:8%;">
+                            <col style="width:12%;">
+                            <col style="width:12%;">
+                        </colgroup>
+                        <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">제목</th>
+                            <th scope="col">첨부파일</th>
+                            <th scope="col">등록일</th>
+                            <th scope="col">조회수</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${list.size() > 0}" th:each="item : ${list}">
+                            <td>
+                                <div th:if="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                <th:block th:unless="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}">
+                                    [[${item.rowNumber}]]
+                                </th:block>
+                            </td>
+                            <td class="al article"><a class="link ellipsis pst-view" th:classappend="${item.newYn == 'Y'} ? 'new'" th:title="${item.ttl}" th:text="${item.ttl}" th:data-pstid="${item.pstid}"></a></td>
+                            <td><i th:if="${item.filegrpid}" class="icon icon-attachment bg-blue" title="첨부파일"></i></td>
+                            <td th:text="${#dates.format(cmntyInfo.regDt, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${item.hits}"></td>
+                        </tr>
+                        <tr th:unless="${list.size() > 0}">
+                            <td class="nodata" colspan="5">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 게시글이 없습니다.</p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="mo-only">
+                <div class="table-list">
+                    <ul>
+                        <li th:if="${list.size() > 0}" th:each="item : ${list}" class="block">
+                            <div class="tbody">
+                                <dl>
+                                    <div class="list">
+                                        <dt>번호</dt>
+                                        <dd>
+                                            <div th:if="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                            <th:block th:unless="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}">
+                                                [[${item.rowNumber}]]
+                                            </th:block>
+                                        </dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>제목</dt>
+                                        <dd><a class="link ellipsis pst-view" th:classappend="${item.newYn == 'Y'} ? 'new'" th:title="${item.ttl}" th:text="${item.ttl}" th:data-pstid="${item.pstid}"></a></dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>첨부파일</dt>
+                                        <dd><i th:if="${item.filegrpid}" class="icon icon-attachment bg-blue" title="첨부파일"></i></dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>등록일</dt>
+                                        <dd th:text="${#dates.format(cmntyInfo.regDt, 'yyyy-MM-dd')}"></dd>
+                                    </div>
+                                    <div class="list">
+                                        <dt>조회수</dt>
+                                        <dd th:text="${item.hits}"></dd>
+                                    </div>
+                                </dl>
+                            </div>
+                        </li>
+                        <li th:unless="${list.size() > 0} "class="block">
+                            <div class="nodata">
+                                <p><span class="icon icon-notice bg-black9"></span>등록된 게시글이 없습니다.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <th:block kattr:pagination="list" onclick="goPage"/>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const $searchForm = $('#searchForm');
+        $(function () {
+            $searchForm.on('submit', function() {
+                $searchForm[0].pageNumber.value = 1;
+            })
+
+            $('.btn-before-refresh').on('click', function (){
+                $searchForm[0].rowPerPage.value = 10;
+                $('#searchKeyword').val('');
+                $('#searchType').val('ttl');
+                $('#rowPage').val(10);
+            })
+
+            $('#rowPage').on('change', function (){
+                $searchForm[0].rowPerPage.value = $(this).val();
+                $searchForm[0].submit();
+            });
+
+            $('#insertPst, #insertAllPst').on('click',function (){
+                $searchForm[0].action = '/front/cmnty/cmntyPstForm.html';
+                $searchForm[0].submit();
+            });
+
+            $('.pst-view').on('click',function (){
+                $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
+                $searchForm[0].pstid.value = $(this).attr('data-pstid');
+                $searchForm[0].submit();
+            });
+
+            $('#cmntySet').on('click', function (){
+                $searchForm[0].action = '/front/cmnty/cmntySetForm.html';
+                $searchForm[0].rowPerPage.value = 10;
+                $searchForm[0].pageNumber.value = 1;
+                $searchForm[0].submit();
+            });
+
+            $('#cmntyMbr').on('click', function (){
+                $searchForm[0].action = '/front/cmnty/cmntyMbrList.html';
+                $searchForm[0].rowPerPage.value = 10;
+                $searchForm[0].pageNumber.value = 1;
+                $searchForm[0].submit();
+            });
+
+        });
+        function goPage(num){
+            $searchForm[0].pageNumber.value = num;
+            $searchForm[0].submit();
+        }
+        function fn_list(){
+            const $searchForm = $('[name=searchForm]');
+            $searchForm[0].action = '/front/cmnty/cmntyList.html';
+            $searchForm[0].submit();
+        }
+        function fn_joinCmnty(cmntyid){
+            if(confirm('가입하시겠습니까?')){
+                if(displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '/front/cmnty/insertCmntyMbr.do',
+                        data: {
+                            cmntyid : cmntyid
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.result) {
+                                location.reload();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        function fn_cancelJoinCmnty(cmntyid){
+            if(confirm('가입을 취소하시겠습니까?')){
+                if(displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '/front/cmnty/deleteCmntyMbr.do',
+                        data: {
+                            cmntyid : cmntyid
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            closeWorkProgress();
+                            alert(response.msg);
+                            if (response.result) {
+                                location.href = '/front/cmnty/cmntyList.html';
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        function fn_quitCmnty(cmntyid,userid){
+            if(confirm('커뮤니티를 탈퇴하시겠습니까?')){
+                if(displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'POST',
+                        url: '/front/cmnty/updateCmntyMbr.do',
+                        data: {
+                            cmntyid : cmntyid,
+                            mbrSttsCd : '118103',
+                            rgtrid : userid
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            closeWorkProgress();
+                            if (response.result) {
+                                alert('탈퇴되었습니다.');
+                                location.href = '/front/cmnty/cmntyList.html';
+                            }else{
+                                alert('탈퇴처리가 실패하였습니다.');
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        function fn_tabCmnty(bbsid){
+            $searchForm[0].bbsid.value = bbsid;
+            $searchForm[0].searchYn.value = 'N';
+            $searchForm[0].submit();
+        }
+    </script>
+</div>
+</body>

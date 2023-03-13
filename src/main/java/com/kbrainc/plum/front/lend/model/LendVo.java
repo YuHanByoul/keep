@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.lend.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -42,6 +43,10 @@ public class LendVo extends ParentRequestVo {
     
     /** 대여  아이이디 */
     private int rcritid;
+    
+    /** 꾸러미  아이이디 */
+    @NotEmpty
+    private Integer packageid;
     
     /** 대여 모집명   */
     @Size(max = 100, message = "대여명은 100자를 넘을 수 없습니다.") 
@@ -90,6 +95,9 @@ public class LendVo extends ParentRequestVo {
     /** 대표 이미지 파일 아이디 */
     private Integer rprsImgFileid;
     
+    /** 대표 이미지 파일 키*/
+    private String rprsImgFileKey;
+    
     /**상세 이미지 파일그룹 아이디 */
     private Integer dtlImgFilegrpid;
     
@@ -119,30 +127,46 @@ public class LendVo extends ParentRequestVo {
     
     /** 수정자아이디 */
     private int mdfrid;
-     
+    
+    /** 모집 시기 상태 코드  */
+    private String periodStts;
+    
+    /** 꾸러미 */
+    /** 꾸러미명  */
+    private String packageNm;
+    /** 꾸러미 유형 코드  */
+    private String typeCd;
+    
+    /** 꾸러미 유형 코드명  */
+    private String typeCdNm;
+    
+    /** 교육 유형 코드  */
+    private String eduTypeCd;
+    
+    /** 교육 유형 코드명  */
+    private String eduTypeCdNm;
+    
+    /** 주제 코드명(S)  */
+    private String eduSbjctCdNm;
+    
+    /** 교육 대상 코드명(S)  */
+    private String eduTrgtCdNm;
+    
+    /** 모둠구성 코드 */
+    private String teamCmpstnCd;
+    
+    /** 모둠구성 코드 명  */
+    private String teamCmpstnCdNm;
+    
     /****** 추가 검색용****/
-    /** 대여 상태  코드 */
-    private String searchRcritSttsCd;
+    /** 주제 코드명(S)  */
+    private String eduSbjctCd;
     
-    /** 검색 시작일 */
-    private String searchStartDt;
-    
-    /** 검색 종료일 */
-    private String searchEndDt;
-    
-    /** 등록용 대여 차시   */
-    private List<LendRndVo> lendRndList ;
-    
-    /** 삭제용   */
-    private List<Integer> deleteIds ;
-    
-    /** 등록용 대여 차시 꾸러미개체  */
-    //private List<LendRndPackageindvdVo> lendRndPackageindvdList ;
-    
+    /** 교육 대상 코드명(S)  */
+    private String eduTrgtCd;
+
     public void setLmtCd(String lmtCd) throws Exception{
         this.lmtCd = lmtCd;
-        
-        //이미 코드이름이 있다면, 무시.
         if(CommonUtil.isEmpty(this.lmtCdNm)) { 
             try {
                 ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
@@ -155,6 +179,56 @@ public class LendVo extends ParentRequestVo {
                 //e.printStackTrace();
                 return ;
              }
+        }
+    }
+    
+    public void setTypeCd(String typeCd) throws Exception{
+        this.typeCd = typeCd;
+        if(CommonUtil.isEmpty(this.typeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.typeCd);
+                this.typeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+    
+    public void setEduTypeCd(String eduTypeCd) throws Exception{
+        this.eduTypeCd = eduTypeCd;
+        if(CommonUtil.isEmpty(this.eduTypeCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.eduTypeCd);
+                this.eduTypeCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
+        }
+    }
+    public void setTeamCmpstnCd(String teamCmpstnCd) throws Exception{
+        this.teamCmpstnCd = teamCmpstnCd;
+        if(CommonUtil.isEmpty(this.teamCmpstnCdNm)) { 
+            try {
+                ResCodeService resCodeService = (ResCodeService) CommonUtil.getBean("resCodeServiceImpl", CommonUtil.getCurrentRequest());
+                CodeInfoVo code = resCodeService.getCodeInfo(this.teamCmpstnCd);
+                this.teamCmpstnCdNm = code.getCdNm();
+            }catch(NoClassDefFoundError e) {
+                //e.printStackTrace();
+                return ;
+            }catch(Exception e) {
+                //e.printStackTrace();
+                return ;
+            }
         }
     }
     

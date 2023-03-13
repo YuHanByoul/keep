@@ -8,6 +8,21 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
+/**
+* 환경교육시설현황 Vo클래스
+*
+* <pre>
+* com.kbrainc.plum.front.enveduFlct.model
+* - EnveduFcltVo.java
+* </pre>
+*
+* @ClassName : EnveduFcltVo
+* @Description : TODO
+* @author : JD
+* @date : 2023. 3. 09.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 @Alias("front.EnveduFcltVo")
 public class EnveduFcltVo extends ParentRequestVo {
@@ -28,8 +43,9 @@ public class EnveduFcltVo extends ParentRequestVo {
     /** 상세주소 */
     private String addrDtl;
     /** 예약일자아이디 */
-    private String rsvtdeid;
+    private String rsvtdeid;    
     
+    /** 파일정보 */
     private FileVo fileInfo;
 
 }

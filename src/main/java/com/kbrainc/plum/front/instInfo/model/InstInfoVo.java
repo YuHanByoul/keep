@@ -12,6 +12,36 @@ import com.kbrainc.plum.rte.model.UserVo;
 
 import lombok.Data;
 
+/**
+* 기관정보 Vo 클래스
+*
+* <pre>
+* com.kbrainc.plum.front.instInfo.model
+* - InstInfoVo.java
+* </pre>
+*
+* @ClassName : InstInfoVo
+* @Description : 기관정보 Vo 클래스
+* @author : JD
+* @date : 2023. 3. 06.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
+/**
+* [클래스 요약].
+*
+* <pre>
+* com.kbrainc.plum.front.instInfo.model
+* - InstInfoVo.java
+* </pre>
+*
+* @ClassName : InstInfoVo
+* @Description : TODO
+* @author : JD
+* @date : 2023. 3. 6.
+* @Version :
+* @Company : CopyrightⒸ KBRAIN Company. All Rights Reserved
+*/
 @Data
 @Alias("front.InstInfoVo")
 public class InstInfoVo extends ParentRequestVo {
@@ -90,6 +120,7 @@ public class InstInfoVo extends ParentRequestVo {
     /** 등록자아이디 */
     private int rgtrid;
     
+    /** 파일정보 */
     private FileVo fileInfo;
     
 }

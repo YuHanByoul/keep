@@ -13,13 +13,10 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.front.bizAply.model.SupplementVo;
 import com.kbrainc.plum.front.delvry.model.DelvryAplyComputVo;
-import com.kbrainc.plum.front.delvry.model.DelvryAplySplmntVo;
 import com.kbrainc.plum.front.delvry.model.DelvryAplyVo;
 import com.kbrainc.plum.front.delvry.model.DelvryDao;
-import com.kbrainc.plum.front.delvry.model.PcntstVo;
-import com.kbrainc.plum.mng.score.model.QuestionVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
 /**
@@ -46,34 +43,6 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     private DelvryDao delvryDao;
     
     /**
-    * 공모 목록 조회
-    *
-    * @Title : selectPcntstList
-    * @Description : 공모 목록 조회
-    * @param pcntstVo PcntstVo 객체
-    * @return List<PcntstVo> 공모 목록
-    * @throws Exception 예외
-    */
-    @Override
-    public List<PcntstVo> selectPcntstList(PcntstVo pcntstVo) throws Exception {
-        return delvryDao.selectPcntstList(pcntstVo);
-    }
-    
-    /**
-    * 공모 정보 조회
-    *
-    * @Title : selectPcntstInfo
-    * @Description : 공모 정보 조회
-    * @param pcntstVo PcntstVo 객체
-    * @return PcntstVo 공모 정보
-    * @throws Exception 예외
-    */
-    @Override
-    public PcntstVo selectPcntstInfo(PcntstVo pcntstVo) throws Exception {
-        return delvryDao.selectPcntstInfo(pcntstVo);
-    }
-    
-    /**
     * 교부 신청 목록 조회
     *
     * @Title : selectDelvryAplyList
@@ -85,34 +54,6 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     @Override
     public List<DelvryAplyVo> selectDelvryAplyList(DelvryAplyVo delvryAplyVo) throws Exception {
         return delvryDao.selectDelvryAplyList(delvryAplyVo);
-    }
-    
-    /**
-    * 교부 상태 업데이트
-    *
-    * @Title : updateDelvryStts
-    * @Description : 교부 상태 업데이트
-    * @param delvryAplyVo DelvryAplyVo 객체
-    * @return int update 로우수
-    * @throws Exception 예외
-    */
-    @Override
-    public int updateDelvryStts(DelvryAplyVo delvryAplyVo) throws Exception {
-        return delvryDao.updateDelvryStts(delvryAplyVo);
-    }
-    
-    /**
-    * 교부 신청 정보 조회
-    *
-    * @Title : selectDelvryAplyInfo
-    * @Description : 교부 신청 정보 조회
-    * @param delvryAplyVo DelvryAplyVo 객체
-    * @return DelvryAplyVo 교부 신청 정보
-    * @throws Exception 예외
-    */
-    @Override
-    public DelvryAplyVo selectDelvryAplyInfo(DelvryAplyVo delvryAplyVo) throws Exception {
-        return delvryDao.selectDelvryAplyInfo(delvryAplyVo);
     }
     
     /**
@@ -130,7 +71,7 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     }
     
     /**
-    * 교부 신청 업데이트
+    * 교부 신청 정보 저장
     *
     * @Title : saveDelvryAply
     * @Description : 교부 신청 업데이트
@@ -188,48 +129,17 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     }
     
     /**
-    * 교부 신청 보완요청 목록 조회
-    *
-    * @Title : selectDelvryAplySplmntList
-    * @Description : 교부 신청 보완요청 목록 조회
-    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
-    * @return List<DelvryAplySplmntVo> 교부 신청 보완요청 목록
-    * @throws Exception 예외
-    */
-    @Override
-    public List<DelvryAplySplmntVo> selectDelvryAplySplmntList(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
-        return delvryDao.selectDelvryAplySplmntList(delvryAplySplmntVo);
-    }
-    
-    /**
     * 교부 신청 보완요청 정보 조회
     *
     * @Title : selectDelvryAplySplmntInfo
     * @Description : 교부 신청 보완요청 정보 조회
     * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
-    * @return DelvryAplySplmntVo 교부 신청 보완요청 정보
+    * @return supplementVo
     * @throws Exception 예외
     */
     @Override
-    public DelvryAplySplmntVo selectDelvryAplySplmntInfo(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
-        return delvryDao.selectDelvryAplySplmntInfo(delvryAplySplmntVo);
-    }
-    
-    /**
-    * 교부 신청 보완요청 등록
-    *
-    * @Title : insertDelvrySplmntAply
-    * @Description : 교부 신청 보완요청 등록
-    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
-    * @return int update 로우수
-    * @throws Exception 예외
-    */
-    @Override
-    public int insertDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
-        int retVal = 0;
-        retVal = delvryDao.insertDelvryAplySplmnt(delvryAplySplmntVo);
-        
-        return retVal;
+    public SupplementVo selectDelvryAplySplmntInfo(SupplementVo supplementVo) throws Exception {
+        return delvryDao.selectDelvryAplySplmntInfo(supplementVo);
     }
     
     /**
@@ -237,30 +147,17 @@ public class DelvryServiceImpl extends PlumAbstractServiceImpl implements Delvry
     *
     * @Title : updateDelvrySplmntAply
     * @Description : 교부 신청 보완요청 업데이트
-    * @param delvryAplySplmntVo DelvryAplySplmntVo 객체
+    * @param supplementVo
     * @return int update 로우수
     * @throws Exception 예외
     */
     @Override
-    public int updateDelvryAplySplmnt(DelvryAplySplmntVo delvryAplySplmntVo) throws Exception {
+    @Transactional
+    public int updateDelvryAplySplmnt(SupplementVo supplementVo) throws Exception {
         int retVal = 0;
-        retVal = delvryDao.updateDelvryAplySplmnt(delvryAplySplmntVo);
+        retVal += delvryDao.updateDelvryAplySplmnt(supplementVo);
+        retVal += delvryDao.updateDelvryAplyStts(supplementVo);
         
         return retVal;
     }
-    
-    /**
-    * 교부 신청 파일 목록 조회
-    *
-    * @Title : selectDelvryAplyFileList
-    * @Description : 교부 신청 보완요청 목록 조회
-    * @param delvryAplyVo DelvryAplyVo 객체
-    * @return List<DelvryAplyVo> 교부 신청 보완요청 목록
-    * @throws Exception 예외
-    */
-    @Override
-    public List<FileVo> selectDelvryAplyFileList(DelvryAplyVo delvryAplyVo) throws Exception {
-        return delvryDao.selectDelvryAplyFileList(delvryAplyVo);
-    }
-    
 }
