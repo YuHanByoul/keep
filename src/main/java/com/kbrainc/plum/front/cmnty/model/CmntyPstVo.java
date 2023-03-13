@@ -60,6 +60,9 @@ public class CmntyPstVo extends ParentRequestVo {
     private Integer filegrpid;
     /** 삭제_여부 */
     private String delYn;
+    private String hotYn;
+    private String newYn;
+    private String fxNtcUseYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
