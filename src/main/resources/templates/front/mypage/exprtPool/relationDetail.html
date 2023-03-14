@@ -24,12 +24,12 @@
                             <button type="button" class="btn-small btn-outline-blue open-msg-btn" data-target="msgFormPopup" th:data-trgt-id="${myRelation.exprtid}">쪽지 보내기</button>
 
                             <th:block th:if="${myRelation.reviewYn == 'Y'}">
-                                <button type="button" class="btn-small btn-outline-blue" th:onclick="|openLayerPopup(${myRelation.dmndid})|">작성완료</button>
+                                <button type="button" class="btn-small btn-outline-blue" th:onclick="openLayerPopup([[${myRelation.dmndid}]], [[${myRelation.reviewYn}]])">작성완료</button>
                             </th:block>
 
                             <th:block th:unless="${myRelation.reviewYn == 'Y'}">
                                 <th:block th:if="${myRelation.dmndSttsCd == '139105'} or (${myRelation.dmndSttsCd == '139104' && myRelation.lctrEndYn == 'Y'})">
-                                    <button type="button" class="btn-small btn-outline-blue" th:onclick="|openLayerPopup(${myRelation.dmndid})|">후기작성</button>
+                                    <button type="button" class="btn-small btn-outline-blue" th:onclick="openLayerPopup([[${myRelation.dmndid}]], [[${myRelation.reviewYn}]])">후기작성</button>
                                 </th:block>
                             </th:block>
 
@@ -389,8 +389,6 @@
     </div>
 
     <form name="listForm" id="listForm">
-        <input type="hidden" name="searchType" id="searchType" th:value="${searchVo.searchType}">
-        <input type="hidden" name="searchKeyword" id="searchKeyword" th:value="${searchVo.searchKeyword}">
         <input type="hidden" name="exprtTypeCd" id="exprtTypeCd" th:value="${searchVo.exprtTypeCd}">
         <input type="hidden" name="dmndSttsCd" id="dmndSttsCd" th:value="${searchVo.dmndSttsCd}">
         <input type="hidden" name="orderField" id="orderField" th:value="${searchVo.orderField}">
@@ -398,47 +396,10 @@
         <input type="hidden" id="dmndid" name="dmndid" th:value="${searchVo.dmndid}">
     </form>
 
-    <!-- layerpopup -->
-    <div class="layer-popup layer-medium" data-layer-id="layer-popup08">
-        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
-        <div class="layer-wrap">
-            <div class="layer-header">
-                <strong class="tit">쪽지 보내기</strong>
-                <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
-            </div>
-            <div class="layer-content">
-                <div class="form-group">
-                    <dl>
-                        <dt>받는 사람</dt>
-                        <dd><input type="text" value="홍*동(pro001)" readonly=""></dd>
-                    </dl>
-                    <dl>
-                        <dt>쪽지 내용</dt>
-                        <dd>
-                            <textarea placeholder="내용을 입력해주세요."></textarea>
-                            <div class="check-wrap">
-                                <label class="inp"><input type="checkbox"><b>보낸 쪽지함에 저장</b></label>
-                                <div class="size"><span>0</span> / 1,000자</div>
-                            </div>
-                        </dd>
-                    </dl>
-                </div>
-            </div>
-            <div class="layer-footer">
-                <div class="btn-wrap">
-                    <div class="center">
-                        <button type="button" class="btn-medium btn-gray" data-layer-close>취소</button>
-                        <button type="button" class="btn-medium btn-green">보내기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- //layerpopup -->
-
-    <!-- layerpopup -->
+    <!-- 후기 작성 layer-popup -->
     <div class="layer-popup layer-medium" data-layer-id="layer-popup22" id="layer-popup22">
         <form name="popupForm" id="popupForm">
+            <input type="hidden" id="reviewInsertDmndid" name="dmndid">
             <div class="layer-dimmed" title="레이어팝업 닫기"></div>
             <div class="layer-wrap">
                 <div class="layer-header">
@@ -456,11 +417,11 @@
                                 <div class="rating-star-wrap">
                                     <div class="rating-star-inner">
                                         <div class="rating-star" id="ratingStar">
-                                            <input type="radio" name="rating" value="5" id="rating5" class="blind"><label for="rating5"><span class="blind">매우 만족</span></label>
-                                            <input type="radio" name="rating" value="4" id="rating4" class="blind"><label for="rating4"><span class="blind">만족</span></label>
-                                            <input type="radio" name="rating" value="3" id="rating3" class="blind"><label for="rating3"><span class="blind">보통</span></label>
-                                            <input type="radio" name="rating" value="2" id="rating2" class="blind"><label for="rating2"><span class="blind">불만족</span></label>
-                                            <input type="radio" name="rating" value="1" id="rating1" class="blind"><label for="rating1"><span class="blind">매우 불만족</span></label>
+                                            <input type="radio" name="scr" value="5" id="rating5" class="blind"><label for="rating5"><span class="blind">매우 만족</span></label>
+                                            <input type="radio" name="scr" value="4" id="rating4" class="blind"><label for="rating4"><span class="blind">만족</span></label>
+                                            <input type="radio" name="scr" value="3" id="rating3" class="blind"><label for="rating3"><span class="blind">보통</span></label>
+                                            <input type="radio" name="scr" value="2" id="rating2" class="blind"><label for="rating2"><span class="blind">불만족</span></label>
+                                            <input type="radio" name="scr" value="1" id="rating1" class="blind"><label for="rating1"><span class="blind">매우 불만족</span></label>
                                         </div>
                                     </div>
                                     <div id="ratingDescription">
@@ -472,16 +433,15 @@
                             <dt class="fc-black3"><b>교육장소</b>(필수)</dt>
                             <dd>
                                 <div class="form-input">
-                                    <input type="text" readonly title="교육장소 우편번호" id="popupZip">
+                                    <input type="text" readonly title="교육장소 주소" id="popupAddr1">
                                     <button type="button" class="btn-medium btn-gray" onclick="daumPostcode()">수정</button>
                                 </div>
                                 <input type="hidden" name="signguCd" id="signguCd">
                                 <input type="hidden" name="zip" id="zip">
                                 <input type="hidden" name="addr" id="addr">
-                                <input type="hidden" name="addrDtl" id="addrDtl">
 
                                 <div class="form-input mt10">
-                                    <textarea title="교육장소 상세" readonly id="popupAddr"></textarea>
+                                    <input type="text" readonly title="교육장소 상세주소" id="popupAddrDtl1" name="addrDtl">
                                 </div>
                             </dd>
                         </dl>
@@ -490,7 +450,7 @@
                             <dd>
                                 <div class="form-input">
                                     <div class="form-input form-input-number">
-                                        <input type="number" value="" min="0" max="10" title="교육인원" style="width:90px;flex:0 0 90px;" id="eduNope" name="eduNope">
+                                        <input type="number" value="" title="교육인원" style="width:90px;flex:0 0 90px;" id="eduNope1" name="eduNope">
                                         <div class="btn-number">
                                             <button type="button" class="num-up" title="숫자 증가"></button>
                                             <button type="button" class="num-down" title="숫자 감소"></button>
@@ -503,18 +463,18 @@
                         <dl>
                             <dt class="fc-black3"><b>교육내용</b>(필수)</dt>
                             <dd>
-                                <textarea placeholder="내용을 입력해주세요." id="eduCn" name="eduCn"></textarea>
+                                <textarea placeholder="내용을 입력해주세요." id="eduCn1" name="eduCn"></textarea>
                                 <div class="check-wrap j-end">
-                                    <div class="size"><span>0</span> / 1,000자</div>
+                                    <div class="size"><span id="eduCnTextLength">0</span> / 1,000자</div>
                                 </div>
                             </dd>
                         </dl>
                         <dl>
                             <dt class="fc-black3"><b>기타의견</b></dt>
                             <dd>
-                                <textarea placeholder="내용을 입력해주세요." id="etcOpnn" name="etcOpnn"></textarea>
+                                <textarea placeholder="내용을 입력해주세요." id="etcOpnn1" name="etcOpnn"></textarea>
                                 <div class="check-wrap j-end">
-                                    <div class="size"><span>0</span> / 1,000자</div>
+                                    <div class="size"><span id="etcOpnnTextLength">0</span> / 1,000자</div>
                                 </div>
                             </dd>
                         </dl>
@@ -529,48 +489,169 @@
                     <div class="btn-wrap">
                         <div class="center">
                             <button type="button" class="btn-medium btn-gray" data-layer-close>취소</button>
-                            <button type="button" class="btn-medium btn-green" id="reviewInsertBtn" onclick="insertReview()">등록</button>
+                            <button type="button" class="btn-medium btn-green" onclick="insertReview()">등록</button>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
+
     </div>
     <!-- //layerpopup -->
 
-    <script th:inline="javascript">
+    <!-- layerpopup -->
+    <div class="layer-popup layer-medium" data-layer-id="layer-popup23">
+        <input type="hidden" id="deleteReviewDmndid" name="deleteReviewDmndid">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap">
+            <div class="layer-header">
+                <strong class="tit">후기 작성</strong>
+                <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+            </div>
+            <div class="layer-content">
 
-        let openLayerPopup = (dmndid) => {
-            layerPopup.open({target: 'layer-popup22', callback: popupInit(dmndid)});
+                <p class="fs-16 fc-black6">전문가님에 대한 <b class="fc-green">만족도를 평가</b>해 주세요.</p>
+
+                <div class="form-group mt15">
+                    <dl>
+                        <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+                        <dd>
+                            <div class="rating-star-wrap">
+                                <div class="rating-star-inner">
+                                    <div class="rating-star">
+                                        <input type="radio" name="rating-1" value="5" id="rating5-1" disabled class="blind"><label for="rating5-1"><span class="blind">매우 만족</span></label>
+                                        <input type="radio" name="rating-1" value="4" id="rating4-1" disabled class="blind" checked><label for="rating4-1"><span class="blind">만족</span></label>
+                                        <input type="radio" name="rating-1" value="3" id="rating3-1" disabled class="blind"><label for="rating3-1"><span class="blind">보통</span></label>
+                                        <input type="radio" name="rating-1" value="2" id="rating2-1" disabled class="blind"><label for="rating2-1"><span class="blind">불만족</span></label>
+                                        <input type="radio" name="rating-1" value="1" id="rating1-1" disabled class="blind"><label for="rating1-1"><span class="blind">매우 불만족</span></label>
+                                    </div>
+                                </div>
+                                <div class="rating-feedback">4점(만족)</div>
+                            </div>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt class="fc-black3"><b>교육장소</b>(필수)</dt>
+                        <dd>
+                            <div class="form-input">
+                                <input type="text" readonly title="교육장소 주소" id="popupAddr2" name="popupAddr2">
+                                <button type="button" class="btn-medium btn-gray">수정</button>
+                            </div>
+                            <div class="form-input mt10">
+                                <input type="text" readonly title="교육장소 주소" id="popupAddrDtl2" name="popupAddrDtl2">
+                            </div>
+
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt class="fc-black3"><b>교육인원</b>(필수)</dt>
+                        <dd>
+                            <div class="form-input">
+                                <div class="form-input form-input-number">
+                                    <input type="number" value="" title="교육인원" style="width:90px;flex:0 0 90px;" readonly id="eduNope2" name="eduNope2">
+                                    <div class="btn-number">
+                                        <button type="button" class="num-up" title="숫자 증가"></button>
+                                        <button type="button" class="num-down" title="숫자 감소"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt class="fc-black3"><b>교육내용</b>(필수)</dt>
+                        <dd>
+                            <textarea placeholder="내용을 입력해주세요." readonly id="eduCn2" name="eduCn2"></textarea>
+                            <div class="check-wrap j-end">
+                                <div class="size"><span id="eduCn2TextLength">0</span> / 1,000자</div>
+                            </div>
+                        </dd>
+                        <p class="feedback"></p>
+                    </dl>
+                    <dl>
+                        <dt class="fc-black3"><b>기타의견</b></dt>
+                        <dd>
+                            <textarea placeholder="내용을 입력해주세요." readonly id="etcOpnn2" name="etcOpnn2">친절해서 좋았습니다.</textarea>
+                            <div class="check-wrap j-end">
+                                <div class="size"><span id="etcOpnn2TextLength">125</span> / 1,000자</div>
+                            </div>
+                        </dd>
+                        <p class="feedback"></p>
+                    </dl>
+                </div>
+
+                <div class="box-desc-list bg7 mt20 p20">
+                    <p class="fs-14">작성하신 후기는 전문가님에게 제공되지 않으며, 플랫폼 관리자만 확인할 수 있습니다.</p>
+                </div>
+            </div>
+
+            <div class="layer-footer">
+                <div class="btn-wrap">
+                    <div class="center">
+                        <button type="button" class="btn-medium btn-gray" onclick="deleteReview()">삭제</button>
+                        <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- //layerpopup -->
+
+
+    <script th:inline="javascript">
+        $(function() {
+            popupInit();
+        });
+
+        let openLayerPopup = (dmndid, reviewYn) => {
+            if (reviewYn == 'Y') {
+                layerPopup.open({target: 'layer-popup23', callback: popupCallback(dmndid, reviewYn)});
+            } else {
+                layerPopup.open({target: 'layer-popup22', callback: popupCallback(dmndid, reviewYn)});
+            }
         };
 
-        let popupInit = (dmndid) => {
-            $('#ratingDescription').text('');
-            $('#eduNope').val('');
-            $('#eduCn').val('');
-            $('#etcOpnn').val('');
-            $('.feedback').text('').removeClass('invalid');
-            $('input[name=rating]').prop('checked', false);
+        let popupCallback = (dmndid, reviewYn) => {
+            if (reviewYn == 'Y') {
+                $.ajax({
+                    method: 'get',
+                    url: '/front/mypage/exprtPool/selectReviewByDmndid.do',
+                    data: {dmndid: dmndid},
+                    success: function (response) {
+                        $('#eduNope2').val(response.eduNope);
+                        $('#eduCn2').val(response.eduCn);
+                        $('#etcOpnn2').val(response.etcOpnn);
+                        $('#popupAddr2').val(response.addr);
+                        $('#popupAddrDtl2').val(response.addrDtl);
+                        $('#deleteReviewDmndid').val(response.dmndid);
+                        $('#etcOpnn2TextLength').html(response.etcOpnn.length);
+                        $('#eduCn2TextLength').html(response.eduCn.length);
+                    }
+                });
+            } else {
+                $('#ratingDescription').text('');
+                $('#eduNope').val('');
+                $('#eduCn').val('');
+                $('#etcOpnn').val('');
+                $('.feedback').text('').removeClass('invalid');
+                $('input[name=rating]').prop('checked', false);
 
-            $.ajax({
-                method: 'get',
-                url: '/front/mypage/exprtPool/selectAddrByDmndid.do',
-                dataType: 'json',
-                data: {dmndid: dmndid},
-                success: function (response) {
-                    $('#popupAddr').val(response.addr);
-                }
-            });
+                $.ajax({
+                    method: 'get',
+                    url: '/front/mypage/exprtPool/selectAddrByDmndid.do',
+                    data: {dmndid: dmndid},
+                    success: function (response) {
+                        $('#addr').val(response.addr);
+                        $('#popupAddr1').val(response.addr);
+                        $('#popupAddrDtl1').val(response.addrDtl)
+                        $('#reviewInsertDmndid').val(response.dmndid);
+                    }
+                });
+            }
         }
 
-        let goToList = () => {
-            let f = document.forms.listForm;
-            f.action = '/front/mypage/exprtPool/relationList.html';
-            f.submit();
-        }
-
-        let insertReview = (dmndid) => {
-            if (!$('input[name=rating]').is(':checked')) {
+        let insertReview = () => {
+            if (!$('input[name=scr]').is(':checked')) {
                 alert('필수 항목을 입력해 주십시오.');
                 $("#ratingStar").attr("tabindex", -1).focus();
                 return;
@@ -581,23 +662,91 @@
                 return;
             }
 
-            if(displayWorkProgress(true)) {
+
+            if (displayWorkProgress(true)) {
                 $.ajax({
                     method: 'post',
-                    data: {dmndid: dmndid},
+                    data: $('#popupForm').serializeArray(),
                     dataType: 'json',
                     url: '/front/mypage/exprtPool/insertReview.do',
                     success: function (response) {
+                        closeWorkProgress();
                         alert(response.msg);
                         if (response.success) {
-                            layerPopup.close({target: 'layer-popup22'});
-                            closeWorkProgress();
-                            // $('#reviewInsBtn').prop('disabled', true);
                             location.reload();
                         }
                     }
-                })
+                });
             }
+        }
+
+        let deleteReview = () => {
+            if (!confirm('작성한 후기를 삭제하시겠습니까?')) return;
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    method: 'post',
+                    data: {dmndid: $('#deleteReviewDmndid').val()},
+                    dataType: 'json',
+                    url: '/front/mypage/exprtPool/deleteReview.do',
+                    success: function (response) {
+                        closeWorkProgress();
+                        alert(response.msg);
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
+
+        let popupInit = () => {
+            validatePopupForm();
+
+            $('input[name=rating]').on('change', function (e) {
+                let ratingNum = e.target.value;
+                $ratingDescription = $('#ratingDescription');
+                if (ratingNum == 1) {
+                    $ratingDescription.html('<div class="rating-feedback">1점(매우 불만족)</div>');
+                } else if (ratingNum == 2) {
+                    $ratingDescription.html('<div class="rating-feedback">2점(불만족)</div>');
+                } else if (ratingNum == 3) {
+                    $ratingDescription.html('<div class="rating-feedback">3점(보통)</div>');
+                } else if (ratingNum == 4) {
+                    $ratingDescription.html('<div class="rating-feedback">4점(만족)</div>');
+                } else if (ratingNum == 5) {
+                    $ratingDescription.html('<div class="rating-feedback">5점(매우 만족)</div>');
+                }
+            });
+
+            $('#popupForm textarea[id=etcOpnn1]').on('keyup input', function() {
+                $('#etcOpnnTextLength').text($(this).val().length);
+            });
+
+            $('#popupForm textarea[id=eduCn1]').on('keyup input', function() {
+                $('#eduCnTextLength').text($(this).val().length);
+            });
+        }
+
+        let validatePopupForm = () => {
+            $('#popupForm').validate({
+                rules: {
+                    popupAddr: {required: true},
+                    eduNope: {required: true},
+                    eduCn: {required: true},
+                },
+                messages: {
+                    popupAddr: {required: '교육장소를 입력해 주십시오.'},
+                    eduNope: {required: '교육인원을 입력해 주십시오.'},
+                    eduCn: {required: '교육내용을 입력해 주십시오.'},
+                }
+            });
+        }
+
+        let goToList = () => {
+            let f = document.forms.listForm;
+            f.action = '/front/mypage/exprtPool/relationList.html';
+            f.submit();
         }
 
         let cancelRelation = (dmndid) => {

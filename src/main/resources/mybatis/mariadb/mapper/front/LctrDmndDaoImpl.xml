@@ -87,7 +87,6 @@
                         , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
                         , IFNULL((SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID), '') AS EXPRT_ACTVT_SCOPE_CD_NM
                         , IFNULL((SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID),'') AS EXPRT_CRTFCT_NM
-                        , A.MDFCN_DT
                         , B.NM
                         , B.BRDT
                         , B.GNDR
@@ -106,13 +105,17 @@
                             END
                             ) AS ITRST_YN
                         , YEAR(NOW()) - LEFT(B.BRDT,4) + 1 AS AGE
-                        , (SELECT STTS_CD
-                            FROM TB_ASS_EXPRT_MDFCN_DMND
-                            WHERE USERID = A.USERID
-                            ORDER BY REG_DT DESC LIMIT 1) AS MDFCN_STTS_CD
+                        , D.REG_DT AS MDFCN_DT
                     FROM TB_ASS_EXPRT A
                     INNER JOIN TB_CMM_USER B
                         ON A.USERID = B.USERID
+                    INNER JOIN (
+                        SELECT USERID, STTS_CD, REG_DT
+                        FROM
+                            TB_ASS_EXPRT_MDFCN_DMND
+                        WHERE (USERID, REG_DT) IN (SELECT USERID, MAX(REG_DT) FROM TB_ASS_EXPRT_MDFCN_DMND GROUP BY USERID)
+                    ) D
+                        ON A.USERID = D.USERID AND D.STTS_CD != '152101'
                     WHERE 1 = 1
                         <if test="exprtTypeCd != null and exprtTypeCd != ''">
                             AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
@@ -137,7 +140,6 @@
                         AND A.STTS_CD = '134103' /* 승인 상태의 전문가만 조회 */
                 ) AA
             WHERE 1 = 1
-                AND (AA.MDFCN_STTS_CD IS NULL OR AA.MDFCN_STTS_CD != '152101')
             <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
                 AND AA.EXPRT_TRGT_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm}, '%')
             </if>
