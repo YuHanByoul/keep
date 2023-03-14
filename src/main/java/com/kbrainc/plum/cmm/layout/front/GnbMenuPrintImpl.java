@@ -317,7 +317,7 @@ public class GnbMenuPrintImpl {
                         
                         switch (i) {
                             case 2: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"/front/dsgnPrgrm/dsgnSttusList.html\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb01.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>우수환경교육 프로그램</strong>\n");
@@ -326,7 +326,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"/front/fclt/childEnvFclt.html\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb02.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>푸름이 이동환경교실</strong>\n");
@@ -344,7 +344,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                            </a>\n");
                                     menuTag.append("                        </li>\n");
                                     menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"/front/jntpurchs/jntpurchsListForm.html\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb04.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육 교구 공동구매</strong>\n");
@@ -373,7 +373,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     break;
                             case 5: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"https://환경교육주간.kr\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb07.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육주간</strong>\n");
