@@ -3,6 +3,8 @@ package com.kbrainc.plum.front.member.service;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,12 +38,14 @@ public interface MemberService {
     *
     * @Title : withdrawalMember 
     * @Description : 회원 탈퇴 처리
+    * @param request 요청객체
+    * @param resonse 응답객체
     * @param user 사용자세션정보
     * @param session 세션객체
     * @return int DB변경로우수
     * @throws Exception 예외
     */
-    public int withdrawalMember(UserVo user, HttpSession session) throws Exception;
+    public int withdrawalMember(HttpServletRequest request, HttpServletResponse response, UserVo user, HttpSession session) throws Exception;
     
     /**
     *

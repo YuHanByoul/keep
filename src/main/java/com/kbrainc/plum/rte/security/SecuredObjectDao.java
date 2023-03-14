@@ -45,6 +45,8 @@ public class SecuredObjectDao {
     private final String sqlUserLoginInfo;
     
     private final String sqlUserLoginInfoForOnepass;
+    
+    private final String sqlUserLoginInfoForSSO;
 
     private final String sqlGrantedAuthority;
 
@@ -56,6 +58,7 @@ public class SecuredObjectDao {
     public SecuredObjectDao(SecurityProperties securityProperties) {
         this.sqlUserLoginInfo = securityProperties.getDEF_USER_LOGIN_INFO_QUERY();
         this.sqlUserLoginInfoForOnepass = securityProperties.getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY();
+        this.sqlUserLoginInfoForSSO = securityProperties.getDEF_USER_LOGIN_INFO_FOR_SSO_QUERY();
         this.sqlGrantedAuthority = securityProperties.getDEF_GRANTED_AUTHORITY_QUERY();
         this.sqlRolesAndUrl = securityProperties.getDEF_ROLES_AND_URL_QUERY();
         this.sqlHttpsAndUrl = securityProperties.getDEF_HTTPS_AND_URL_QUERY();
@@ -114,6 +117,12 @@ public class SecuredObjectDao {
         MapSqlParameterSource paramSource = new MapSqlParameterSource();
         paramSource.addValue("userKey", userKey);
         return this.namedParameterJdbcTemplate.queryForMap(sqlUserLoginInfoForOnepass, paramSource);
+    }
+    
+    public Map selectUserLoginInfoForSSO(String userid) throws Exception {
+        MapSqlParameterSource paramSource = new MapSqlParameterSource();
+        paramSource.addValue("userid", userid);
+        return this.namedParameterJdbcTemplate.queryForMap(sqlUserLoginInfoForSSO, paramSource);
     }
 
     public List<Map<String, Object>> selectGrantedAuthority(String loginid) throws Exception {

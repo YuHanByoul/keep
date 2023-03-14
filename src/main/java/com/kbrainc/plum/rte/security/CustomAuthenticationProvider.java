@@ -76,10 +76,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String loginid = authentication.getName();
-        String loginType= "G"; // 일반(G), 디지털원패스(D)
+        String loginid = "";
+        String loginType= "G"; // 일반(G), 디지털원패스(D), SSO(S)
         String password = "";
         String userKey = "";
+        String userid = null;
         String returnUrl = null;
         String loginUserType = null; // 개인회원(P), 기관회원(I)
         
@@ -87,14 +88,23 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         HttpServletRequest request = attr.getRequest();
         
         if (authentication instanceof UsernamePasswordAuthenticationToken) {
+            loginid = authentication.getName();
             password = (String) authentication.getCredentials();
             returnUrl = request.getParameter("returnUrl");
             loginUserType = request.getParameter("loginUserType");
+            if (loginUserType == null) {
+                loginUserType = "P";
+            }
         } else if (authentication instanceof OnepassUsernameUserkeyAuthenticationToken) {
             loginType = "D";
+            loginid = authentication.getName();
             userKey = (String) authentication.getCredentials();
             returnUrl = request.getParameter("returnUrl").split("::")[0];
             loginUserType = request.getParameter("returnUrl").split("::")[1];
+        } else if (authentication instanceof SSOUseridLoginUserTypeAuthenticationToken) {
+            loginType = "S";
+            userid = authentication.getName();
+            loginUserType = (String) authentication.getCredentials();
         }
         
         if ("G".equals(loginType)) {
@@ -125,12 +135,18 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         
         if ("A".equals(sysSeCd)) { // 관리자 사이트
             try {
-                resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                if ("G".equals(loginType)) { // 아이디 비밀번호 방식
+                    resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
+                } else if ("S".equals(loginType)) { // SSO
+                    resultMap = securedObjectService.selectUserLoginInfoForSSO(userid); // SSO 사용자 로그인 정보 조회
+                    loginid = (String) resultMap.get("ACNT");
+                } 
+                
                 if ("Y".equals((String) resultMap.get("ACNT_LOCK_YN"))) { // 계정이 잠겨있으면
                     request.setAttribute("message", "서비스 이용이 차단되었습니다. 고객센터에 문의 해주십시오.");
                     throw new LockedException("Login Error !!");
                 }
-                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && !password.equals((String) resultMap.get("PSWD"))) {
+                if ("N".equals((String) resultMap.get("ACNT_LOCK_YN")) && "G".equals(loginType) && !password.equals((String) resultMap.get("PSWD"))) {
                     commonService.insertLoginFail(request, String.valueOf(resultMap.get("USERID")));
                     Integer loginFailCnt = (Integer)resultMap.get("LGN_FAIL_CNT");                    
                     Map<String, Object> data = getLoginFailMessage(loginFailCnt);
@@ -171,7 +187,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                     resultMap = securedObjectService.selectUserLoginInfo(loginid); // 사용자 로그인 정보 조회
                 } else if ("D".equals(loginType)) { // 디지털 원패스
                     resultMap = securedObjectService.selectUserLoginInfoForOnepass(userKey); // 디지털원패스 사용자 로그인 정보 조회
-                }
+                } else if ("S".equals(loginType)) { // SSO
+                    resultMap = securedObjectService.selectUserLoginInfoForSSO(userid); // SSO 사용자 로그인 정보 조회
+                } 
                 
                 if ("101105".equals((String) resultMap.get("ACNT_LOCK_CD"))) { // 휴면계정 회원
                     if ("G".equals(loginType) && !password.equals((String) resultMap.get("PSWD"))) {
@@ -382,7 +400,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class authentication) {
-        return authentication.equals(UsernamePasswordAuthenticationToken.class) || authentication.equals(OnepassUsernameUserkeyAuthenticationToken.class);
+        return authentication.equals(UsernamePasswordAuthenticationToken.class) || authentication.equals(OnepassUsernameUserkeyAuthenticationToken.class) || authentication.equals(SSOUseridLoginUserTypeAuthenticationToken.class);
     }
     
     private Map<String, Object> getLoginFailMessage(Integer loginFailCnt) {

@@ -17,8 +17,9 @@ jQuery(function(){
 	  if(xhr.status==404){
 	      alert('해당 요청URL을 찾을 수 없습니다.');
 	  }else if(xhr.status==401){
-		  alert('인증에 실패하였습니다.\n로그인 페이지로 이동합니다.');
-		  location.href='/';
+          alert('세션이 유효하지 않습니다.\n페이지 새로고침을 해주십시오.');
+		  //alert('인증에 실패하였습니다.\n로그인 페이지로 이동합니다.');
+		  //location.href='/';
 	  }else if(xhr.status==403){
 		  alert('접근권한이 없습니다.');
           //location.href='/';
