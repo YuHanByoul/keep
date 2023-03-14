@@ -323,4 +323,18 @@ public class DsgnPrgrmServiceImpl extends PlumAbstractServiceImpl implements Dsg
 		return dsgnPrgrmDao.selectQitemList(dsgnPrgrmVo);
 	}
 
+	/**
+	* 보안요청 조회
+	*
+	* @Title : selectSplmntDmnd
+	* @Description : 보안요청 조회
+	* @param dsgnPrgrmVo
+	* @throws Exception
+	* @return void
+	*/
+	@Override
+	public DsgnPrgrmVo selectSplmntDmnd(DsgnPrgrmVo dsgnPrgrmVo) throws Exception {
+		return dsgnPrgrmDao.selectSplmntDmnd(dsgnPrgrmVo);
+	}
+
 }

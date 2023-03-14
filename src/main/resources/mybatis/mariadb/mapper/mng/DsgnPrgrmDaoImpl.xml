@@ -156,7 +156,7 @@
         </if>
         <!-- 지정일 검색시작일  -->
         <if test="searchStartDsgnDe != null and searchStartDsgnDe != ''">
-            AND A.A.DSGN_BGNG_DE >= #{searchStartDsgnDe}
+            AND A.DSGN_BGNG_DE >= #{searchStartDsgnDe}
         </if>
         <!-- 지정일 검색종료일  -->
         <if test="searchEndDsgnDe  != null and searchEndDsgnDe != ''">
@@ -244,8 +244,9 @@
         SELECT
             A.PRGRMID
           , A.PRGRM_NM         /*프로그램명 */
---          , '' AS AA           /*서류심사점수 */
---          , '' AS BB           /*현장점검점수 */
+          , (F.SCR +  D.SCR) FINAL_SCR        /*지원단 점수*/
+          , (F.SCR +  E.SCR) DCMNT_SRNG_SRC   /*신청자 자가진단 점수(서류심사) */
+          , (F.SCR +  D.SCR)-(F.SCR +  E.SCR)   VST_CHK_SRC /*방문점검 점수(현장점검) */
           , B.EDU_NOPE         /*교육인원 */
           , B.EDU_CNT          /*교육시간_회*/
           , B.EDU_HR           /*교육시간_시간 */
@@ -272,6 +273,7 @@
           , B.APPRO                           /*적절성 */
           , B.DSTNCTN                         /*우수성 */
           , B.EDU_CN                          /*교육내용 */
+          , D.CHKLST_RSLT_CN                  /*현장점검 총평*/
         FROM
             TB_ASS_PRGRM A
             LEFT OUTER JOIN TB_ASS_PRGRM_DSTNCTN B ON A.PRGRMID = B.PRGRMID
@@ -281,7 +283,7 @@
             LEFT OUTER JOIN  TB_ASS_PRGRM_EDU_SBJCT EDU ON A.PRGRMID = EDU.PRGRMID
             LEFT OUTER JOIN TB_CMM_CD EDUCD ON EDU.EDU_SBJCT_CD = EDUCD.CD
             LEFT OUTER JOIN
-             (
+            (
                 SELECT PRGRMID
                       , GROUP_CONCAT(DSGN_NO separator ',')    GRP_DSGN_NO
                       , DSGN_CYCL
@@ -290,7 +292,26 @@
                  WHERE 1=1
                    AND STTS_CD = 132101
                  ORDER BY DSGN_CYCL DESC
-             ) C ON A.PRGRMID = C.PRGRMID
+            ) C ON A.PRGRMID = C.PRGRMID
+            LEFT OUTER JOIN
+            (
+                SELECT * FROM TB_ASS_CHKLST_SBMSN
+                WHERE PRGRMID = #{prgrmid}
+                AND SBMSN_SE_CD ='Y'
+            ) D ON A.PRGRMID = D.PRGRMID    /*지원단 심사*/
+            LEFT OUTER JOIN
+            (
+                SELECT * FROM TB_ASS_CHKLST_SBMSN
+                WHERE PRGRMID = #{prgrmid}
+                AND SBMSN_SE_CD ='N'
+            ) E ON A.PRGRMID = E.PRGRMID    /*신청자 자가진단*/
+            LEFT OUTER JOIN
+            (
+                SELECT ROUND(SUM(SCR)/COUNT(USERID),2) SCR
+                , PRGRMID
+                FROM TB_ASS_SRNG_SBMSN
+                WHERE PRGRMID = #{prgrmid}
+            ) F ON A.PRGRMID = F.PRGRMID    /*심사위원심사*/
         WHERE 1=1
         AND   A.STTS_CD = 111111
         AND   A.PRGRMID = #{prgrmid}

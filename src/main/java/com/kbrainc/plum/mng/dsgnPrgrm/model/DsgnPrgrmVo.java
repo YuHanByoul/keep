@@ -95,6 +95,17 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     /** 등록자 이름*/
     private String rgtrNm;
 
+    /**지원단 점수*/
+    private String finalScr;
+
+    /**신청자 자가진단 점수(서류심사) */
+    private String dcmntSrngSrc;
+
+    /**방문점검 점수(현장점검) */
+    private String vstChkSrc;
+
+    /**현장점검총평(체크리스트결과내용) */
+    private String chklstRsltCn;
 
     @Size(max = 10, message = "지정시작일은 10자를 넘을 수 없습니다.")
     /** 지정획득일자*/

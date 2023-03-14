@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.cmm.service.CommonService;
+import com.kbrainc.plum.front.dsgnMng.model.DsgnMngVo;
 import com.kbrainc.plum.front.dsgnPrgrm.model.DsgnPrgrmVo;
 import com.kbrainc.plum.front.dsgnPrgrm.service.DsgnPrgrmService;
 import com.kbrainc.plum.mng.asgsysSrng.model.AsgsysSrngVo;
@@ -941,5 +942,43 @@ public class DsgnPrgrmController {
         result.put("list", list);
 		return result;
 	}
+
+    /**
+    * 보완개선요청 팝업
+    *
+    * @Title : splmntDmndPopup
+    * @Description : 보완개선요청 팝업
+    * @param dsgnMngVo
+    * @param model
+    * @param user
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/front/dsgnPrgrm/splmntDmndPopup.html")
+     public String splmntDmndPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+    	 model.addAttribute("aplcntid", user.getUserid());
+    	 model.addAttribute("splmntDmnd" , dsgnPrgrmService.selectSplmntDmnd(dsgnPrgrmVo));
+    	 return "front/dsgnPrgrm/splmntDmndPopup";
+     }
+
+    /**
+    * 보완개선계획 팝업
+    *
+    * @Title : imprvPlanPopup
+    * @Description : 보완개선계획 팝업
+    * @param dsgnPrgrmVo
+    * @param model
+    * @param user
+    * @return
+    * @throws Exception
+    * @return String
+    */
+    @RequestMapping(value = "/front/dsgnPrgrm/imprvPlanPopup.html")
+    public String imprvPlanPopup(DsgnPrgrmVo dsgnPrgrmVo, Model model, @UserInfo UserVo user) throws Exception {
+    	model.addAttribute("aplcntid", user.getUserid());
+    	//model.addAttribute("imprvPlan" , dsgnPrgrmService.selectImprvPlan(dsgnPrgrmVo));
+    	return "front/dsgnPrgrm/imprvPlanPopup";
+    }
 
 }
