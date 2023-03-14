@@ -1,0 +1,148 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+
+    <div id="nodata">
+    </div>
+
+    <div id="listArea">
+    </div>
+
+    <div id="pagination" aria-label="pagination">
+    </div>
+
+    <form name="listForm" id="listForm">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+    </form>
+
+    <script th:inline="javascript">
+        let deleteItrstExprtUrl = '/front/exprtPool/deleteItrstExprt.do';
+        let listUrl = '/front/mypage/exprtPool/selectItrstExprtList.do';
+
+        $(function () {
+            selectList();
+        });
+
+        function selectList() {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: {pageNumber: $('#pageNumber').val()},
+                    type: 'GET',
+                    success: function (data) {
+                        makeListHtml(data.list);
+                        $("#pagination").html(data.pagination);
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+
+        let makeListHtml = (list) => {
+            let html = "";
+            if (list == null || list.length <= 0) {
+                html += `<div class="nodata">
+                            <p><span class="icon icon-notice bg-black9"></span>등록된 관심 전문가가 없습니다.</p>
+                        </div>`;
+                $('#nodata').html(html);
+            } else {
+                html += `<div class=card-list card-list-n2><ul>`;
+
+                list.forEach(function (item) {
+                    html += `<li>
+                                <div class="resume-wrap">
+                                    <div class="resume-top">
+                                        <div class="resume-name">
+                                            <span class="tag tag-green">${item.exprtTypeCdNm}</span>
+                                            <strong>${item.nm} (${item.age}, ${item.gndr == 'M' ? '남성' : '여성'})</strong>
+                                        </div>
+                                        <div class="resume-favorite">
+                                            <label class="inp inp-star">
+                                            <input type="checkbox" title="관심인력 등록" checked data-exprtid=${item.userid} onclick='deleteItrstExprt(event,this)'>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <a onclick="moveToDetail(${item.userid})">
+                                        <div class="resume-center">
+                                            <div class="resume-detail">
+                                                <dl>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-doc bg-blue"></span>전문분야</dt>
+                                                        <dd class="ellipsis">
+                                                            ${item.flds}
+                                                            ${isNull(item.exprtTrgtCdNm) ? '' : '/' + item.exprtTrgtCdNm}
+                                                            ${isNull(item.exprtSbjctCdNm) ? '' : '/' + item.exprtSbjctCdNm}
+                                                        </dd>
+                                                    </div>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-career bg-blue"></span>경력</dt>
+                                                        <dd>${item.careerRlsYn == 'Y' ?
+                        `총 ${item.envEduCareerYy == null ? '0' : item.envEduCareerYy}년 ${item.envEduCareerMm == null ? '0' : item.envEduCareerMm}개월`
+                        : `비공개`
+                    }
+                                                        </dd>
+                                                    </div>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-cert bg-blue"></span>자격</dt>
+                                                        <dd class="ellipsis">${item.qlfcRlsYn == 'Y' ? item.exprtCrtfctNm : '비공개'}</dd>
+                                                    </div>
+                                                    <div class="list">
+                                                        <dt><span class="icon icon-location bg-blue"></span>가능 활동범위</dt>
+                                                        <dd class="ellipsis">${item.exprtActvtScopeCdNm}</dd>
+                                                    </div>
+                                                </dl>
+                                            </div>
+                                            <div class="resume-update">
+                                                <div class="resume-update-date">${item.mdfcnDt} 업데이트</div>
+                                                <div class="link">
+                                                     <a class="btn-medium btn-blue" onclick="moveToInsertForm(${item.userid})">요청서 작성</a>
+                                                 </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>`;
+                });
+                html += `</ul></div>`
+                $("#listArea").html(html);
+            }
+        }
+
+        let moveToDetail = (userid) => {
+            location.href = '/front/exprtPool/lctrDmndDetail.html?userid=' + userid;
+        }
+
+        let moveToInsertForm = (userid) => {
+            location.href = '/front/exprtPool/lctrDmndForm.html?userid='+ userid;
+        }
+
+        let deleteItrstExprt = (event, checkbox) => {
+            let $checkbox = $(checkbox);
+            event.preventDefault();
+
+            if (!confirm('관심 전문가에서 해제 하시겠습니까?')) return;
+
+            let data = [
+                {name: "userid", value: $checkbox.data('exprtid')}
+            ];
+
+            $.ajax({
+                method: 'post',
+                dataType: 'json',
+                url: deleteItrstExprtUrl,
+                data: data,
+                success: function (response) {
+                    alert(response.msg);
+                    if (response.success) {
+                        $checkbox.parents('li').remove()
+                    }
+                }
+            });
+        }
+    </script>
+</div>
+</html>

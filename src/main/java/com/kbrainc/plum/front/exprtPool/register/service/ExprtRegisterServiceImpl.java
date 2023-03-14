@@ -58,10 +58,10 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
 
         /* 임시 저장된 글이 있는 경우 */
         if (exprtRegisterVo.getNewYn().equals("N")) {
-            retVal += exprtRegisterDao.deleteTrgtCds(exprtRegisterVo.getUser());
-            retVal += exprtRegisterDao.deleteSbjctCds(exprtRegisterVo.getUser());
-            retVal += exprtRegisterDao.deleteActvtRgnCds(exprtRegisterVo.getUser());
-            retVal += exprtRegisterDao.deleteActvtScopeCds(exprtRegisterVo.getUser());
+            retVal += exprtRegisterDao.deleteTrgtCds(exprtRegisterVo);
+            retVal += exprtRegisterDao.deleteSbjctCds(exprtRegisterVo);
+            retVal += exprtRegisterDao.deleteActvtRgnCds(exprtRegisterVo);
+            retVal += exprtRegisterDao.deleteActvtScopeCds(exprtRegisterVo);
             retVal += exprtRegisterDao.deleteHdof(exprtRegisterVo);
             retVal += exprtRegisterDao.deleteCrtfct(exprtRegisterVo);
             retVal += exprtRegisterDao.deleteCareer(exprtRegisterVo);
@@ -84,6 +84,19 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
         retVal += exprtRegisterDao.insertActvtScopeCds(actvtScopeCds, exprtRegisterVo.getUser());
 
         retVal += exprtRegisterDao.insertDefaultInfo(exprtRegisterVo);
+
+        /* 최초 신청시 정보 변경 테이블에 레코드 생성 */
+        if (exprtRegisterVo.getNewYn().equals("Y")) {
+            retVal += exprtRegisterDao.insertMdfcnExprt(exprtRegisterVo);
+            retVal += exprtRegisterVo.getCareers().size() > 0 ? exprtRegisterDao.insertMdfcnCareer(exprtRegisterVo) : 0;
+            retVal += exprtRegisterVo.getCrtfcts().size() > 0 ? exprtRegisterDao.insertMdfcnCrtfct(exprtRegisterVo) : 0;
+            retVal += exprtRegisterVo.getHdofs().size() > 0 ? exprtRegisterDao.insertHdof(exprtRegisterVo) : 0;
+            retVal += exprtRegisterDao.insertMdfcnTrgtCds(exprtRegisterVo.getMdfcnDmndId(), trgtCds, exprtRegisterVo.getUser());
+            retVal += exprtRegisterDao.insertMdfcnSbjctCds(exprtRegisterVo.getMdfcnDmndId(), sbjctCds, exprtRegisterVo.getUser());
+            retVal += exprtRegisterDao.insertMdfcnActvtRgnCds(exprtRegisterVo.getMdfcnDmndId(), actvtRgnCds, exprtRegisterVo.getUser());
+            retVal += exprtRegisterDao.insertMdfcnActvtScopeCds(exprtRegisterVo.getMdfcnDmndId(), actvtScopeCds, exprtRegisterVo.getUser());
+        }
+
         return retVal;
     }
 
@@ -91,7 +104,7 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
     public ExprtRegisterVo selectExprtRegister(ExprtRegisterVo exprtRegisterVo) throws Exception {
         ExprtRegisterVo exprtRegister = exprtRegisterDao.selectExpertRegister(exprtRegisterVo);
 
-        if(exprtRegister != null) {
+        if (exprtRegister != null) {
             List<HdofVo> expertHdofList = exprtRegisterDao.selectExpertHdofList(exprtRegisterVo);
 
             for (HdofVo item : expertHdofList) {

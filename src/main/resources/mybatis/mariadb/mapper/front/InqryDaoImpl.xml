@@ -15,6 +15,7 @@
             , INQRY_CL_CD
             , STTS_CD
             , USERID
+            , INSTID
             , RLS_YN
             , DEL_YN
             , MDFCN_DT
@@ -29,6 +30,7 @@
             , #{inqryClCd}
             , '103101'
             , #{user.userid}
+            , #{user.instid}
             , #{rlsYn}
             , 'N'
             , NOW()
@@ -74,17 +76,12 @@
             , A.USERID
             , A.TITLE
             , A.CNTNTS
-            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
-                CONCAT(
-                SUBSTRING(B.ACNT, 1, 1)
-                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
-                ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
+            , CASE WHEN CHAR_LENGTH(B.ACNT) >= 4
+                THEN CONCAT (
+                SUBSTRING(B.ACNT, 1, CHAR_LENGTH(B.ACNT)- 3) ,
+                RPAD('*', 3,'*')
                 )
-                ELSE CONCAT(
-                SUBSTRING(B.ACNT, 1, 1)
-                ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
-                )
-                END AS ACNT
+              ELSE B.ACNT END AS ACNT
             , A.FILEGRPID
             , A.INQRY_CL_CD
             , A.STTS_CD
