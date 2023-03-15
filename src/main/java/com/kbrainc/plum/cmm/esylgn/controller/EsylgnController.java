@@ -315,7 +315,11 @@ public class EsylgnController {
                             esylgnVo.setEsylgnCd("106101");
                             esylgnVo.setUserkey(userKey);
                             esylgnService.mergeEsylgnUserkey(esylgnVo);
-                            request.setAttribute("alertMessage", "아이디 " + userInfo.getAcnt() + " 계정과 디지털원패스의 계정이 연동되었습니다.");
+                            if (userInfo.getAcnt() != null) {
+                                request.setAttribute("alertMessage", "아이디 " + userInfo.getAcnt() + " 계정과 디지털원패스의 계정이 연동되었습니다.");
+                            } else {
+                                request.setAttribute("alertMessage", "디지털원패스의 계정이 연동되었습니다.");
+                            }
                             onepassLogin(request, response, onepassUser.getId(), userKey);
                             return null;
                         }
