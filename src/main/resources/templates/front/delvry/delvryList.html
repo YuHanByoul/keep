@@ -151,6 +151,13 @@
 	    <div id="pagination" aria-label="pagination"></div>
 	</section>
 	
+    <!-- layerpopup -->
+    <div class="layer-popup layer-large" data-layer-id="suppModalPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="suppModalPopup">
+        </div>
+    </div>
+	
     <script th:inline="javascript">
         var listPage = {
             listUrl: '/front/delvry/selectDelvryAplyList.do',
@@ -194,6 +201,13 @@
             moveToDetail(delvryid,delvryAplyid,fldCd) {
                 location.href = this.detailUrl + '?delvryid=' + delvryid + '&delvryAplyid=' + delvryAplyid + '&fldCd=' + fldCd;
             },
+            suppPopup: function(splmntid,delvryid,fldCd) {
+                $("#suppModalPopup").load("/front/delvry/delvryAplySplmntPopup.html?splmntid=" + splmntid + '&delvryid=' + delvryid + '&fldCd=' + fldCd, function(response, status, xhr) {
+                    if (status == "success") {
+                        layerPopup.open({target:'suppModalPopup'});
+                    }
+                });
+            },
             makeListHtml(data) {
                 var listHtml = "";
                 var mobileHtml = "";
@@ -217,11 +231,11 @@
                         <td>${item.rowNumber}</td>
                         <td>${item.fldNm}</td>
                         <td>${item.prgrmNm}</td>
-                        <td>${item.cycl}차수</td>`;
+                        <td>${item.cycl}차</td>`;
                         if(`${item.splmntid}` == 'null'){
                             listHtml += `<td>${item.delvrySttsNm}</td>`;
                         } else {
-                            listHtml += `<td><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid})">${item.delvrySttsNm}</button></td>`;
+                            listHtml += `<td><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.delvryid},${item.fldCd})">${item.delvrySttsNm}</button></td>`;
                         }
                         listHtml += `
                         <td>${item.delvryAplyDt}</td>
@@ -252,7 +266,7 @@
                                 </div>
                                 <div class="list">
                                     <dt>구분</dt>
-                                    <dd>${item.cycl}차수</dd>
+                                    <dd>${item.cycl}차</dd>
                                 </div>`;
 			                    if(`${item.splmntid}` == 'null'){
 			                        mobileHtml += `
@@ -264,7 +278,7 @@
 			                        mobileHtml += `
 		                                <div class="list">
 		                                    <dt>교부상태</dt>
-			                                <dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid})">${item.delvrySttsNm}</button></dd>
+			                                <dd><button type="button" class="link" onclick="listPage.suppPopup(${item.splmntid},${item.delvryid},${item.fldCd})">${item.delvrySttsNm}</button></dd>
 			                            </div>`;
 			                    }
 			                    mobileHtml += `
@@ -283,9 +297,9 @@
                         if (`${item.crudBtn}` == 'C') {
                         	mobileHtml += `<a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.delvryid},${item.delvryAplyid},${item.fldCd})" class="btn-small btn-outline-blue">교부 신청</a>`;
 	                    } else if (`${item.crudBtn}` == 'R') {
-	                    	mobileHtml += `<a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.delvryid}),${item.delvryAplyid},${item.fldCd}" class="btn-small btn-outline-black">교부 신청 조회</a>`;
+	                    	mobileHtml += `<a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.delvryid},${item.delvryAplyid},${item.fldCd})" class="btn-small btn-outline-black">교부 신청 조회</a>`;
 	                    } else if (`${item.crudBtn}` == 'U') {
-	                    	mobileHtml += `<a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.delvryid}),${item.delvryAplyid},${item.fldCd}" class="btn-small btn-outline-blue">교부 신청내역 수정</a>`;
+	                    	mobileHtml += `<a href="javascript:void(0)" onclick="listPage.moveToDetail(${item.delvryid},${item.delvryAplyid},${item.fldCd})" class="btn-small btn-outline-blue">교부 신청내역 수정</a>`;
 	                    } else {
 	                    	mobileHtml += `-`;
 	                    }

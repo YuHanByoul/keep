@@ -1,0 +1,100 @@
+<form id="updateForm">
+    <input type="hidden" name="splmntid" id="splmntid" th:value="${detail.splmntid}"/>
+    <input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}"/>
+	<!-- layerpopup -->
+    <div class="layer-wrap">
+        <div class="layer-header">
+            <strong class="tit">보완요청</strong>
+            <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+        </div>
+        <div class="layer-content">
+
+            <div class="table-caption mt0">
+                <div class="right">
+                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+                </div>
+            </div>
+
+            <div class="table-row table-row-mo">
+                <table>
+                    <caption>보완요청 - 내용, 답변</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">내용</th>
+                            <td>
+                                <textarea title="내용" readonly><th:block th:text="${detail.dmndCn}"/></textarea>
+                                <div class="desc ar size"><span>0</span> / 200자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">답변<i class="ast" title="필수입력">*</i></th>
+                            <td>
+                                <textarea title="답변" id="ansCn" name="ansCn" placeholder="답변을 입력해주세요." th:readonly="${detail.ansSttsCd == '201102' ? true : false}"><th:block th:text="${detail.ansCn}"/></textarea>
+                                <p class="form-msg"></p>
+                                <div class="desc ar size"><span>0</span> / 200자</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layer-footer">
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-gray" th:if="${detail.ansSttsCd == '201101'}" th:onclick="goBaseInfoPage([[${delvryid}]], [[${detail.aplyid}]], [[${fldCd}]])">보완하기</button>
+                    <button type="button" class="btn-medium btn-green" th:if="${detail.ansSttsCd == '201101'}" onclick="saveSupp();">보완완료</button>
+                    <button type="button" class="btn-medium btn-gray" th:if="${detail.ansSttsCd == '201102'}" data-layer-close>확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- //layerpopup -->
+</form>
+<style>
+    .form-msg { color : red; }
+</style>   
+<script th:inline="javascript">
+/*<![CDATA[*/
+var delvryid = /*[[${delvryid}]]*/null;
+var fldCd = /*[[${fldCd}]]*/null;
+/*]]>*/
+$(function () {
+	var validator= $("#updateForm").validate({
+	    rules    : { ansCn : { required: true, maxlength: 500 } }
+	  , messages : { ansCn : { required:"보완요청에 대한 답변을 입력해 주십시오." , maxlength: '내용은 500자를 넘을 수 없습니다.' } }
+	});
+});
+
+function goBaseInfoPage(delvryid, aplyid, fldCd) {
+	listPage.moveToDetail(delvryid, aplyid, fldCd);
+}
+
+function saveSupp() {
+    if(!($("#updateForm").valid())) return;
+    if(!confirm("보완완료 하시겠습니까?\n보완완료 처리 후 수정이 불가합니다")){return;}
+
+    var data =  $("#updateForm").serialize();
+    $.ajax({
+        url : "/front/delvry/updateDelvryAplySplmnt.do",
+        type: 'POST',
+        cache : false,
+        dataType: 'json',
+        data : data,
+        success : function (data){
+            if(data.result=="success"){
+                alert(data.msg);
+                $('.btn-layer-close').trigger('click');
+                listPage.selectList();
+            }else{
+                alert(data.msg);
+            }
+        },
+        error : function (error){
+        }
+    });
+};
+</script>

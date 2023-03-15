@@ -76,4 +76,6 @@ public class ExprtRegisterVo {
     private String tempSaveYn;
     private String newYn;
 
+    /*최초 신청 시 정보변경 테이블에 값을 생성하기 위한 용도 */
+    private Integer mdfcnDmndId;
 }

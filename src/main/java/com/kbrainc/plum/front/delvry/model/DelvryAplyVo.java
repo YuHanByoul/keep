@@ -3,7 +3,6 @@ package com.kbrainc.plum.front.delvry.model;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.SerializationUtils;
 import org.apache.ibatis.type.Alias;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
