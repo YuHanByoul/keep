@@ -852,13 +852,15 @@ public class MemberController {
     *
     * @Title : leaveMeber
     * @Description : 회원 탈퇴 처리
+    * @param request 요청객체
+    * @param resonse 응답객체
     * @param MemberVo memberVo객체
     * @return Map<String,Object> 응답결과객체
     * @throws Exception 예외
     */
     @RequestMapping(value = "/front/membership/leaveMeber.do")
     @ResponseBody
-    public Map<String, Object> leaveMeber(MemberVo memberVo, @UserInfo UserVo user,HttpSession session) throws Exception {
+    public Map<String, Object> leaveMeber(HttpServletRequest request, HttpServletResponse response, MemberVo memberVo, @UserInfo UserVo user,HttpSession session) throws Exception {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         
         int retVal = 0 ;
@@ -876,7 +878,7 @@ public class MemberController {
         
         UserVo paramUser = memberVo.getUser(); 
         paramUser.setSecsnRsn(memberVo.getSecsnRsn());
-        retVal = memberService.withdrawalMember(paramUser, session);
+        retVal = memberService.withdrawalMember(request, response, paramUser, session);
         
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);

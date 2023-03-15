@@ -47,6 +47,22 @@ public class SecurityPropertiesImpl implements SecurityProperties {
             + "AND A.DEL_YN = 'N' ";
 
     /**
+    * 사용자 로그인 정보를 확인하기 위한 쿼리
+    */
+    private final String DEF_USER_LOGIN_INFO_FOR_SSO_QUERY = 
+            "  SELECT  A.USERID, A.ACNT, A.NM, NVL(A.PSWD, D.PSWD) AS PSWD, A.INSTID, A.INSTPIC_ROLE_CD, A.ACNT_LOCK_YN, A.ACNT_LOCK_CD, A.PRVC_VLDTY, DATE_FORMAT(D.REG_DT, '%Y-%m-%d') AS DRMNCY_REG_DT, A.PSWD_MDFCN_DT, A.LGN_FAIL_CNT, B.APRV_STTS_CD AS INST_APRV_STTS_CD, B.USE_YN AS INST_USE_YN, "
+            + "NVL((SELECT USE_YN AS SITE_USE_YN FROM TB_CMM_SITE WHERE INSTID = A.INSTID AND SYS_KND_CD = 'T' AND USE_YN = 'Y' LIMIT 1), 'N') AS SITEAPLY_USE_YN, "
+            + "NVL((SELECT 'Y' FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID AND ESYLGN_CD = '106101' LIMIT 1), 'N') AS ONEPASS_LINK_YN, "
+            + "(SELECT COUNT(USERID) FROM TB_CMM_USER_ESYLGN WHERE USERID = A.USERID) AS ESYLGN_LINK_CNT, "
+            + "A.CI_PARNTS, "
+            + "E.USERID AS EXPRT_USERID "
+            + "FROM  TB_CMM_USER A LEFT OUTER JOIN TB_CMM_INST B ON A.INSTID = B.INSTID "
+            + "      LEFT OUTER JOIN TB_CMM_USER_DRMNCY D ON A.USERID = D.USERID "
+            + "      LEFT OUTER JOIN TB_ASS_EXPRT E ON A.USERID = E.USERID AND E.STTS_CD = '134103' "
+            + "WHERE A.USERID = :userid "
+            + "AND A.DEL_YN = 'N' ";
+    
+    /**
     * 사용자에게 부여된 역할을 확인하기 위한 쿼리
     */
 	private final String DEF_GRANTED_AUTHORITY_QUERY = 
@@ -228,6 +244,18 @@ public class SecurityPropertiesImpl implements SecurityProperties {
     @Override
     public String getDEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY() {
         return DEF_USER_LOGIN_INFO_FOR_ONEPASS_QUERY;
+    }
+    
+    /**
+    * SSO 사용자 로그인 정보를 확인하기 위한 SQL 반환.
+    *
+    * @Title       : getDEF_USER_LOGIN_INFO_FOR_SSO_QUERY 
+    * @Description : SSO 사용자 로그인 정보를 확인하기 위한 SQL 반환.
+    * @return String SSO 사용자 로그인 정보를 확인하기 위한 SQL 문자열 
+    */
+    @Override
+    public String getDEF_USER_LOGIN_INFO_FOR_SSO_QUERY() {
+        return DEF_USER_LOGIN_INFO_FOR_SSO_QUERY;
     }
 
     /**

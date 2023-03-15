@@ -1,10 +1,12 @@
 package com.kbrainc.plum.rte.mvc.interceptor;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,8 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.access.WebInvocationPrivilegeEvaluator;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -23,10 +33,16 @@ import com.kbrainc.plum.rte.exception.PageNotFoundException;
 import com.kbrainc.plum.rte.menu.MenuItem;
 import com.kbrainc.plum.rte.menu.MenuTree;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
+import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.security.SSOUseridLoginUserTypeAuthenticationToken;
 import com.kbrainc.plum.rte.service.ResMenuService;
 import com.kbrainc.plum.rte.service.ResMenuServiceImpl;
 import com.kbrainc.plum.rte.service.ResSiteService;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.CookieUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
+
+import WiseAccess.SSO;
 
 
 @Component
@@ -34,14 +50,29 @@ import com.kbrainc.plum.rte.util.StringUtil;
 public class HttpInterceptor extends HandlerInterceptorAdapter {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
-
     @Autowired
     ResSiteService resSiteService;
+    
     @Autowired
     ResMenuService resMenuService;
     
     @Autowired
     LocaleResolver localeResolver;
+        
+    @Value("${server.servlet.session.cookie.domain}")
+    private String serverCookieDomain;
+    
+    @Value("${app.sso.isuse}")
+    private boolean ssoIsUse;
+    
+    @Value("${sso.apikey}")
+    private String ssoApikey;
+    
+    @Value("${sso.host}")
+    private String ssoHost;
+    
+    @Value("${sso.port}")
+    private int ssoPort;
     
     /** 다국어를 적용할 포털의 URL */
     String[] localeAllowedPageUrls = {"/main.html"};
@@ -62,9 +93,8 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             throws Exception {
 
         String targetURI = request.getRequestURI();
-
         HttpSession session = request.getSession();
-
+        
         ////////////////////////////////////////////////////////////////////////////////////
         // 접속사이트정보
         ////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +103,7 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
         
         if (siteInfo == null || !dmn.equals(siteInfo.getDmn())) {
             siteInfo = resSiteService.getSiteInfo(dmn);
-
+            
             if (siteInfo == null) {
                 session.removeAttribute("site");
                 logger.debug("########## 존재하지않는 사이트입니다. ##########");
@@ -81,6 +111,78 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
                 throw new PageNotFoundException("존재하지않는 사이트입니다.");
             }
             session.setAttribute("site", siteInfo);
+        }
+        String sysSeCd = siteInfo.getSysSeCd();
+        
+        ////////////////////////////////////////////////////////////////////////////////////
+        // SSO토큰 검사
+        ////////////////////////////////////////////////////////////////////////////////////
+        if (ssoIsUse) {
+            String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
+            
+            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 있으면
+                SSO sso = new SSO(ssoApikey);
+                sso.setHostName(ssoHost); // engine이 설치된 아이피
+                sso.setPortNumber(ssoPort); // engine이 사용하고 있는 포트넘버
+                int nResult = sso.verifyToken(sToken); //토큰검증 (검증 오류시 음수값 반환)
+                
+                if (nResult >= 0) { // 올바른 토큰이라면
+                    String userid = sso.getValueUserID(); // 사용자 아이디값을 얻는다.
+                    String loginUserType = sso.getValue("loginUserType"); // 토큰에 putValue로 추가한 정보를 얻으려면 삽입할때 Key값을 파라미터로 getValue() 사용
+                    UserVo user = (UserVo) session.getAttribute("user");
+                    
+                    if (user == null) {
+                        try {
+                            SecurityContextHolder.clearContext();
+                            ssoLogin(request, response, userid, loginUserType);
+                            return false;
+                        } catch (AuthenticationException e) {
+                            session.setAttribute("user", null);
+                            SecurityContextHolder.clearContext();
+                            CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
+                            response.setContentType("text/html;charset=UTF-8");
+                            PrintWriter writer = response.getWriter();
+                            writer.print(String.format("<script>alert('사용자 인증 오류입니다.\\n%s 화면으로 이동합니다.');location.href='/main.html';</script>", sysSeCd.equals("U") ? "메인" : "로그인"));
+                            return false;
+                        }
+                    } else {
+                       if (!userid.equals(user.getUserid())) { // 토큰과 세션사용자가 다를때
+                           session.setAttribute("user", null);
+                           SecurityContextHolder.clearContext();
+                           CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
+                           response.setContentType("text/html;charset=UTF-8");
+                           PrintWriter writer = response.getWriter();
+                           writer.print(String.format("<script>alert('사용자 인증 오류입니다.\\n%s 화면으로 이동합니다.');location.href='/main.html';</script>", sysSeCd.equals("U") ? "메인" : "로그인"));
+                           return false;
+                       }
+                    }
+                } else {
+                    // 토큰검증 실패 시 처리
+                    session.setAttribute("user", null);
+                    SecurityContextHolder.clearContext();
+                    CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
+                    response.setContentType("text/html;charset=UTF-8");
+                    PrintWriter writer = response.getWriter();
+                    
+                    if (nResult == -9404) {
+                        writer.print(String.format("<script>alert('중복로그인 되었습니다.\\n%s 화면으로 이동합니다.');location.href='/main.html';</script>", sysSeCd.equals("U") ? "메인" : "로그인"));
+                    } else {
+                        writer.print(String.format("<script>alert('사용자 인증 오류입니다[오류코드 %s].\\n%s 화면으로 이동합니다.');location.href='/main.html';</script>", nResult, sysSeCd.equals("U") ? "메인" : "로그인"));
+                    }
+                    return false;
+                }
+            } else {
+                // 토큰이 없을때 처리
+                UserVo user = (UserVo) session.getAttribute("user");
+                if (user != null) {
+                    session.setAttribute("user", null);
+                    SecurityContextHolder.clearContext();
+                    response.setContentType("text/html;charset=UTF-8");
+                    PrintWriter writer = response.getWriter();
+                    writer.print(String.format("<script>alert('사용자 인증 오류입니다.\\n%s 화면으로 이동합니다.');location.href='/main.html';</script>", sysSeCd.equals("U") ? "메인" : "로그인"));
+                    return false;
+                }
+            }
         }
 
         ////////////////////////////////////////////////////////////////////////////////////
@@ -254,5 +356,27 @@ public class HttpInterceptor extends HandlerInterceptorAdapter {
             }
         }
         return menuItem;
+    }
+    
+    /**
+    * SSO 로그인 처리(세션생성).
+    *
+    * @Title : ssoLogin
+    * @Description : SSO 로그인 처리(세션생성)
+    * @param request 요청객체
+    * @param response 응답객체
+    * @param userid 사용자아이디
+    * @param loginUserType 포털로그인사용자타입(개인회원:P, 기관회원:I)
+    * @return void 리턴값 없음
+    * @throws Exception 예외
+    */
+    public void ssoLogin(HttpServletRequest request, HttpServletResponse response, String userid, String loginUserType) throws Exception {
+        SSOUseridLoginUserTypeAuthenticationToken authReq = new SSOUseridLoginUserTypeAuthenticationToken(userid, loginUserType);
+        AuthenticationManager authenticaltionManager = ((AuthenticationManager)CommonUtil.getBean("authenticationManagerBean"));
+        Authentication auth = authenticaltionManager.authenticate(authReq);
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(auth);
+        SavedRequestAwareAuthenticationSuccessHandler successHandler = ((SavedRequestAwareAuthenticationSuccessHandler)CommonUtil.getBean("httpsLoginSuccessHandler"));
+        successHandler.onAuthenticationSuccess(request, response, auth);
     }
 }

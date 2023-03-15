@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+    
+<!--     <div class="steps-list">
+            <dl class="steps-list-tit">
+                <dt>환경교육 교구 <b class="fc-green">반납 방법</b></dt>
+                <dd>택배사 접수 후 반납신청을 꼭 진행해 주세요.</dd>
+            </dl>
+            <ul>
+                <li>
+                    <div class="step-cont">
+                        <span class="icon icon-delivery-step01"></span>
+                        <strong>반납 기간 내 <br>택배사 접수(착불)</strong>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-cont">
+                        <span class="icon icon-delivery-step02"></span>
+                        <strong>반납신청 버튼 클릭</strong>
+                    </div>
+                </li>
+                <li>
+                    <div class="step-cont">
+                        <span class="icon icon-delivery-step03"></span>
+                        <strong>반납하시는 <br>택배사/송장번호 입력</strong>
+                    </div>
+                </li>
+            </ul>
+        </div> -->
+        
+        <form class="search-filter mt20" id="searchForm">
+            <div class="form-input mo-flex-wrap">
+                <strong class="label">대여모집명</strong>
+                <div class="form-input"><input type="search" title="대여모집명" id="rcritNm" name="rcritNm" placeholder="대여모집명을 입력해 주세요." ></div>
+                <div class="search-filter-submit">
+                    <button type="button" class="btn-medium btn-green btn-before-search"        onclick="onSearch();"   >검색</button>
+                    <button type="button" class="btn-medium btn-transparent btn-before-refresh" onclick="initSearch();" >초기화</button>
+                </div>
+            </div>
+            <input type="hidden" id="pageNumber" name="pageNumber" value="1">
+            <input type="hidden" id="rowPerPage" name="rowPerPage" value="8">
+            <input type="hidden" id="orderDirection" name="orderDirection" value="desc">
+            <input type="hidden" id="orderField" name="orderField" value="REG_DT">
+        </form>
+        
+        <div class="table-caption flex-nowrap">
+            <div class="left">
+                <p>총 <b id="totalCount">0</b> 건</p>
+            </div>
+        </div>
+        <div class="card-list card-list-n2">
+           <ul id="lendList">
+           </ul>
+        </div>
+        <div id="pagination">
+        </div>
+        
+        
+        <div class="layer-popup layer-medium" data-layer-id="lendHistPopup">
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap" id="lendHistPopup">
+            </div>
+        </div>
+    <!-- //content -->
+    <script src="/js/common/handlebars/handlebars-v4.7.7.js"></script>   
+    <script src="/js/common/handlebars/handlebars.helper.js"></script>
+    
+    <script id="lendListTemplate" type="text/x-handlebars-template">
+       {{#each lendList}}
+           <li>
+              <div class="vertical-cont">
+                   <div class="flag {{tag_col}}">{{tag_text}}</div>
+                   <div class="thumb"><img src="{{src}}" alt="대표 이미지" title="대표 이미지"></div>
+                   <div class="right">
+                       <dl>
+                           <dt><a href="javascript:goDetail('{{aplyid}}','{{rcritid}}');" class="after-link">{{rcritNm}}</a></dt>
+                           <dd>
+                               <b class="block fs-16 fc-blue">신청차수/수량</b>
+                               <ul>
+                                   <li>{{ordr}}차 ({{lendBgngDe}} ~ {{lendEndDe}}) / {{qnty}}개</li>
+                               </ul>
+                           </dd>
+                       </dl>
+                       <div class="btn-wrap mt10">
+                           <div class="left">
+                               {{#dlvy}}
+                               <button type="button" class="btn-small btn-outline-blue" onclick="openDlvyInfo('{{aplyid}}')">배송조회</button>
+                               {{/dlvy}}
+                               {{#replyInsert}}
+                               <button type="button" class="btn-small btn-outline-blue" onclick="openReplyForm('{{aplyid}}')">후기작성</button>
+                               {{/replyInsert}}
+                               {{#replyModify }}
+                               <button type="button" class="btn-small btn-outline-blue" onclick="openReplyModifyForm('{{aplyid}}')">작성완료</button>
+                               {{/replyModify}}
+                               {{#reject}}
+                               <button type="button" class="btn-small btn-outline-blue" onclick="openRejectInfo('{{aplyid}}')">사유확인</button>
+                               {{/reject}}
+                           </div>
+                       </div>
+                   </div>
+               </div>
+           </li>
+      {{/each}}
+    </script>
+    <script th:inline="javascript">
+        var rejectReasonPopUrl ="/front/mypage/lendHist/lendRejectReasonPopup.html";
+        var lendReplyPopUrl ="/front/mypage/lendHist/lendReplyPopup.html";
+        var deleteLendReplyPopUrl ="/front/mypage/lendHist/deleteLendReplyPopup.html";
+        var lendDlvyInfoPopUrl ="/front/lendHist/lendDlvyInfoPopupt.html";
+	    /*<![CDATA[*/ 
+	    var rankList = /*[[${rankList}]]*/null; 
+	    /*]]>*/
+	    var noDataMeg = '<li class="block"><div class="nodata"><p><span class="icon icon-notice bg-black9"></span>데이터가 없습니다.</p></div></li>';
+	    $(function(){
+	    	selectLendHistList();
+		})
+		var listTemplet = Handlebars.compile($("#lendListTemplate").html());
+		function initSearch(){
+			$("#rcritNm").val("");
+		}
+		function onSearch(){
+			$("#pageNumber").val('1');
+			selectLendHistList();
+		}
+		function selectLendHistList() {
+		    if (displayWorkProgress(true)){
+		        $.ajax({
+		            url : "/front/mypage/lendHist/selectLendHistList.do",
+		            cache : false,
+		            dataType : 'json',
+		            data : $("#searchForm").serialize(),
+		            type : 'POST',
+		            success : function(data) {
+		            	renderingListData(data.list);
+		            	$("#totalCount").text(data.totalCount);
+		                if(data.totalCount == 0) {
+		                	$("#lendList").html(noDataMeg);
+		                    $("#pagination").html('');
+		                }else{
+		                    $("#pagination").html(data.pagination);
+		                }
+		                closeWorkProgress();
+		            }
+		        });
+		    }
+		}
+		function renderingListData(list){
+			//<!--bg-blue  bg-red:대여불가  bg-green:대여접수  bg-black6 :반납완료,대여취소--> 
+			list.forEach(function(item){
+
+				if(item.isCompleteYn == 'Y'){
+					item.tag_col = 'bg-black6'; item.tag_text ='반납완료';
+                    item.replyInsert = (item.rvwCn == null || item.rvwCn == "")?true:false;
+                    item.replyModify = (item.rvwCn != null && item.rvwCn != "")?true:false;
+				}else if(item.isLateYn == 'Y'){
+					item.tag_col = 'bg-red'; item.tag_text ='연체';
+				}else if(item.dlvySttsCd != null && item.dlvySttsCd !='' ){
+                    item.tag_col = 'bg-blue'; 
+                    item.tag_text = item.dlvySttsCdNm;
+                    item.dlvy = (item.dlvySttsCd=='230102')?true:false;
+                    
+                    item.replyInsert = (item.dlvySttsCd=='230102' && (item.rvwCn == null || item.rvwCn == ""))?true:false;
+                    item.replyModify = (item.dlvySttsCd=='230102' && (item.rvwCn != null && item.rvwCn != "" && item.rvwRegDt !=null))?true:false;
+                    
+                }else if(item.sttsCd == '231101'){
+                    item.tag_col = 'bg-green'; item.tag_text ='대여 신청';
+                }else if(item.sttsCd == '231103' || item.sttsCd == '231104'){
+                    item.tag_col = 'bg-red'; item.tag_text = item.sttsCdNm;
+                    item.reject = (item.sttsCd=='231103')?true:false;
+                }else{
+                    item.tag_col = 'bg-blue'; item.tag_text = item.sttsCdNm;
+                }
+
+                if(item.rprsImgFileid != null && item.fileIdntfcKey != null){
+				    item.src = '/downloadFileByFileid.do?fileid=' + item.rprsImgFileid + '&file_idntfc_key=' + item.fileIdntfcKey; 
+                }else{
+				    item.src = '/images/mng/admin_logo.png'; 
+                }
+			})
+		    $("#lendList").html(listTemplet({lendList:list}));
+		}
+		function goPage(page) {
+		    $("#pageNumber").val(page);
+		    selectLendHistList();
+		}
+		function enterkey() {
+		    if (window.event.keyCode == 13) {
+		    	selectLendHistList();
+		    }
+		}
+		function goDetail(aplyid,rcritid){
+	        var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+	        location.href = portalUrl + "front/mypage/lendHist/lendHistDetail.html?aplyid="+aplyid+"&rcritid="+rcritid;
+		}
+        function openPopup(url) {
+            $("#lendHistPopup").empty();
+            $("#lendHistPopup").load(url, function(response, status, xhr) {
+                if(status == "success") {
+                    layerPopup.open({target:"lendHistPopup"});
+                }
+            });
+        }
+        function openDlvyInfo(aplyid){
+        	openPopup(lendDlvyInfoPopUrl+"?aplyid="+aplyid);
+        }
+        function openReplyForm(aplyid){
+            openPopup(lendReplyPopUrl+"?aplyid="+aplyid);
+        }
+        function openReplyModifyForm(aplyid){
+            openPopup(deleteLendReplyPopUrl+"?aplyid="+aplyid);
+        }
+        function openRejectInfo(aplyid){
+            openPopup(rejectReasonPopUrl+"?aplyid="+aplyid);
+        }
+      </script>
+   </div>
+</body>
+</html>

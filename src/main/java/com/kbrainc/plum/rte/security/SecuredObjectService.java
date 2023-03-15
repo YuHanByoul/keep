@@ -44,6 +44,15 @@ public interface SecuredObjectService {
     public Map selectUserLoginInfoForOnepass(String userKey) throws Exception;
 
     /**
+    * @Title : selectUserLoginInfoForSSO
+    * @Description : userid와 일치하는 사용자 정보를 가지고 온다.(SSO 로그인용)
+    * @param userid  사용자아이디
+    * @throws Exception
+    * @return Map 사용자 정보
+    */
+    public Map selectUserLoginInfoForSSO(String userid) throws Exception;
+    
+    /**
     * @Title : selectGrantedAuthority
     * @Description : 로그인아이디에 부여된 사용자역할 목록을 가지고 온다.
     * @param loginid 로그인아이디
