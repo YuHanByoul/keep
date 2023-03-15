@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 
 /**
  * 
@@ -90,15 +91,25 @@ public interface CommonService {
     * @throws Exception 예외
     */
     public List<Map<String, Object>> selectAllRgnList() throws Exception;
+    
     /**
-     * 시도 지역목록을 반환한다.
-     *
-     * @Title : selectCtprvnList
-     * @Description : 시도 지역목록을 반환한다.
-     * @return List<Map<String,Object>> 지역목록
-     * @throws Exception 예외
-     */
+    * 시도 지역목록을 반환한다.
+    *
+    * @Title : selectCtprvnList
+    * @Description : 시도 지역목록을 반환한다.
+    * @return List<Map<String,Object>> 지역목록
+    * @throws Exception 예외
+    */
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
     
-
+    /**
+    * 휴면 회원 해제.
+    *
+    * @Title : clearDormancy
+    * @Description : 휴면 회원 해제
+    * @param drmncyInfoVo DrmncyInfoVo객체
+    * @return int update/delete 로우수
+    * @throws Exception 예외
+    */
+    public int clearDormancy(DrmncyInfoVo drmncyInfoVo) throws Exception;
 }

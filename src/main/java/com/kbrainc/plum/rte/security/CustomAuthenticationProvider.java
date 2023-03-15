@@ -194,9 +194,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
                 if ("101105".equals((String) resultMap.get("ACNT_LOCK_CD"))) { // 휴면계정 회원
                     if ("G".equals(loginType) && !password.equals((String) resultMap.get("PSWD"))) {
                         throw new BadCredentialsException("Login Error !!");
-                    } else {
+                    } else if (!"S".equals(loginType)) {
                         DrmncyInfoVo drmncyInfo = new DrmncyInfoVo();
                         drmncyInfo.setUserid(String.valueOf(resultMap.get("USERID")));
+                        drmncyInfo.setMdfrid(String.valueOf(resultMap.get("USERID")));
                         drmncyInfo.setPrvcVldty((Integer) resultMap.get("PRVC_VLDTY"));
                         drmncyInfo.setRegDt((String) resultMap.get("DRMNCY_REG_DT"));
                         drmncyInfo.setUsed(false);
