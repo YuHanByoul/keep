@@ -366,8 +366,8 @@
             , A.REG_DT
         <choose>
             <when test='hotUseYn == "Y"'>
-                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN HITS ELSE 0 END) HOT_ORDER_NUM
-                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseStdrHits} THEN 'Y' ELSE 'N' END) HOT_YN
+                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseCrtrHits} THEN HITS ELSE 0 END) HOT_ORDER_NUM
+                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseCrtrHits} THEN 'Y' ELSE 'N' END) HOT_YN
             </when>
             <otherwise>
                 , 0 HOT_ORDER_NUM
@@ -376,7 +376,7 @@
         </choose>
         <choose>
             <when test='hotUseYn == "Y" and newUseYn == "Y"'>
-                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hotUseStdrHits} AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
+                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hotUseCrtrHits} AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
             </when>
             <when test='hotUseYn != "Y" and newUseYn == "Y"'>
                 , (CASE WHEN  NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
@@ -411,6 +411,9 @@
             BBSID, CMNTYID, CMNTY_BBS_TMPLATID, NM, EXPLN, CLSF_CD, FX_NTC_USE_YN, FX_NTC_CNT, ATCHFILE_USE_YN, ATCHFILE_CNT, ATCHFILE_SIZE
             , RPLY_USE_YN, CMNT_USE_YN, NEW_USE_YN, NEW_INDICT_DAYCNT, HOT_USE_YN, HOT_USE_CRTR_HITS, CLSF_USE_YN, PAGE_PST_CNT, NLOGIN_DWNLD_PERM_YN
             , USE_YN, MDFCN_DT, MDFRID, REG_DT, RGTRID
+        <if test="bbsid != null and bbsid != ''">
+            , (SELECT SUM( CASE WHEN FX_NTC_YN = 'Y' THEN 1 ELSE 0 END ) FROM TB_CMT_CMNTY_PST  WHERE BBSID = #{bbsid}) CUR_FX_NTC_CNT
+        </if>
         FROM TB_CMT_CMNTY_BBS
         WHERE 1=1
           <choose>
@@ -485,8 +488,9 @@
         WHERE CMNTYID = #{cmntyVo.cmntyid}
             AND CMNTY_BBS_TMPLATID = #{tmplatId}
     </update>
-    <!-- -->
+    <!-- 환경동아리 회원검색 -->
     <select id="selectMbr" resultType="UserVo">
+        /* CmntyDao.selectMbr */
         SELECT
             USERID
              , NM
@@ -495,4 +499,121 @@
         WHERE USERID NOT IN((SELECT USERID FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = #{cmntyid}))
             AND NM = #{userNm}
     </select>
+    <!-- 조회수 증가  -->
+    <update id="updatePstHitsCount">
+        /* CmntyDao.updatePstHitsCount */
+        UPDATE TB_CMT_CMNTY_PST SET
+        HITS         = IFNULL(HITS,0)+1
+        , MDFCN_DT   = NOW()
+        <if test="user != null and user.userid != null ">
+        , MDFRID     = #{user.userid }
+        </if>
+        WHERE PSTID = #{pstid}
+    </update>
+    <!-- 환경동아리 게시글 정보 조회 -->
+    <select id="selectPstInfo" parameterType="front.CmntyPstVo" resultType ="front.CmntyPstVo">
+        /* CmntyDao.selectPst */
+        WITH
+            ROW_NUM_PST_LIST
+        AS
+        (
+            SELECT
+                (ROW_NUMBER()OVER(ORDER BY ${orderField})) AS ROWNUMBER
+                , A.PSTID
+                , A.BBSID
+                , A.BBS_CLSFID
+                , A.TTL
+                , A.CN
+                , A.PARNTS_PSTID
+                , A.GRP
+                , A.DPTH
+                , A.SORTORDR
+                , A.HITS
+                , A.FX_NTC_YN
+                , A.FX_NTC_BGNG_DT
+                , A.FX_NTC_END_DT
+                , A.LGN_YN
+                , A.FILEGRPID
+                , A.DEL_YN
+                , A.MDFCN_DT
+                , A.MDFRID
+                , A.REG_DT
+                , A.RGTRID
+                , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
+                , (CASE WHEN FX_NTC_YN = 'Y' AND NOW() BETWEEN FX_NTC_BGNG_DT AND FX_NTC_END_DT THEN 1 ELSE 2 END) FIXORDER
+                , B.FX_NTC_USE_YN
+            FROM TB_CMT_CMNTY_PST A
+            INNER JOIN TB_CMT_CMNTY_BBS B ON A.BBSID = B.BBSID
+            WHERE 1=1
+                AND A.DEL_YN = 'N'
+                AND A.BBSID= #{bbsid}
+        )
+        SELECT
+            *
+            , (SELECT PSTID FROM ROW_NUM_PST_LIST WHERE ROWNUMBER <![CDATA[ > ]]> A.ROWNUMBER ORDER BY ROWNUMBER ASC LIMIT 1) NEXT_PSTID
+            , (SELECT TTL FROM ROW_NUM_PST_LIST WHERE ROWNUMBER <![CDATA[ > ]]> A.ROWNUMBER ORDER BY ROWNUMBER ASC LIMIT 1) NEXT_TITLE
+            , (SELECT PSTID FROM ROW_NUM_PST_LIST WHERE ROWNUMBER <![CDATA[ < ]]> A.ROWNUMBER ORDER BY ROWNUMBER DESC LIMIT 1) PREV_PSTID
+            , (SELECT TTL FROM ROW_NUM_PST_LIST WHERE ROWNUMBER <![CDATA[ < ]]> A.ROWNUMBER ORDER BY ROWNUMBER DESC LIMIT 1) PREV_TITLE
+        FROM ROW_NUM_PST_LIST A
+        WHERE PSTID = #{pstid}
+    </select>
+    <!-- 환경동아리 게시글 등록 처리 -->
+    <insert id="insertCmntyPst">
+        /* CmntyDao.insertCmntyPst */
+        INSERT INTO TB_CMT_CMNTY_PST (
+            PSTID
+            , BBSID
+            , BBS_CLSFID
+            , TTL
+            , CN
+            , PARNTS_PSTID
+            , GRP
+            , DPTH
+            , SORTORDR
+            , HITS
+            , FX_NTC_YN
+            , FX_NTC_BGNG_DT
+            , FX_NTC_END_DT
+            , LGN_YN
+            , FILEGRPID
+            , DEL_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )VALUES(
+            #{pstid}
+            , #{bbsid}
+            , #{bbsClsfid}
+            , #{ttl}
+            , #{cn}
+            , #{parntsPstid}
+            , IFNULL(#{grp }, (SELECT  IFNULL(MAX(A.GRP),0) +1 FROM TB_CMT_CMNTY_PST A))
+            , IFNULL(#{dpth}, 0)
+            , IFNULL(#{sortordr}, 1)
+            , IFNULL(#{hits}, 0)
+            , #{fxNtcYn}
+            , #{fxNtcBgngDt}
+            , #{fxNtcEndDt}
+            , #{lgnYn}
+            , #{filegrpid}
+            , 'N'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    <!-- 환경동아리 게시글 순서 수정 -->
+    <update id="updatePstOrdElse">
+        /* CmntyDao.updatePstOrdElse */
+        UPDATE TB_CMT_CMNTY_PST SET
+            SORTORDR  = SORTORDR + 1
+            , MDFCN_DT = NOW()
+            , MDFRID   = #{user.userid}
+        WHERE 1=1
+        AND GRP = #{grp}
+        AND SORTORDR >= #{sortordr}
+    </update>
+
 </mapper>

@@ -192,4 +192,43 @@ public interface CmntyDao {
      * @return list
      */
     List<UserVo> selectMbr(@Param("userNm") String userNm, @Param("cmntyid") String cmntyid);
+
+    /**
+     * 조회수 증가
+     * Title : updatePstHitsCount
+     * Description : 조회수 증가
+     *
+     * @param paramVo
+     */
+    void updatePstHitsCount(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 정보 조회
+     * Title : selectPstInfo
+     * Description : 환경동아리 게시글 정보 조회
+     *
+     * @param paramVo
+     * @return cmnty pst vo
+     */
+    CmntyPstVo selectPstInfo(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 등록 처리
+     * Title : insertCmntyPst
+     * Description : 환경동아리 게시글 등록 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean insertCmntyPst(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 순서 수정
+     * Title : updatePstOrdElse
+     * Description : 환경동아리 게시글 순서 수정
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean updatePstOrdElse(CmntyPstVo paramVo);
 }

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html
+        xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+        layout:decorator="layout/front/subLayout">
+<body>
+<div layout:fragment="content">
+    <div class="table-view">
+        <div class="table-view-header">
+            <h3><span>[[${cmntyPstInfo.ttl}]]</span></h3>
+            <dl>
+                <div class="list">
+                    <dt>등록자</dt>
+                    <dd>[[${cmntyPstInfo.rgtrNm}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>등록일</dt>
+                    <dd>[[${#dates.format(cmntyPstInfo.regDt, 'yyyy-MM-dd')}]]</dd>
+                </div>
+                <div class="list">
+                    <dt>조회수</dt>
+                    <dd>[[${cmntyPstInfo.hits}]]</dd>
+                </div>
+            </dl>
+            <dl>
+                <div class="list">
+                    <dt>첨부파일</dt>
+                    <dd>
+                        <div class="form-input-file">
+                            <ul th:each="file : ${fileMap}">
+                                <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}">
+                                    <span class="name">
+                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                        [[${file.orginlFileNm}]]
+                                        </a>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        <div class="table-view-body">
+            <div class="table-view-content">
+                <th:block th:utext="${cmntyPstInfo.cn}"></th:block>
+            </div>
+        </div>
+
+        <div class="btn-wrap">
+            <div class="center">
+                <button type="button" class="btn-medium btn-gray" onclick="goListPage()">목록</button>
+                <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray" th:onclick="openReplyForm([[${cmntyPstInfo.pstid}]])">답글</button>
+                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray" th:onclick="openUpdateForm([[${cmntyPstInfo.pstid}]])">수정</button>
+            </div>
+        </div>
+
+        <div class="page-navigation">
+            <a th:if="${cmntyPstInfo.prevPstid ne null}" th:onclick="goToOtherPst([[${cmntyPstInfo.prevPstid}]])">
+                <dl>
+                    <dt>다음글</dt>
+                    <dd><span class="ellipsis">[[${cmntyPstInfo.prevTitle}]]</span></dd>
+                </dl>
+            </a>
+
+            <a th:if="${cmntyPstInfo.nextPstid ne null}" th:onclick="goToOtherPst([[${cmntyPstInfo.nextPstid}]])">
+                <dl>
+                    <dt>이전글</dt>
+                    <dd><span class="ellipsis">[[${cmntyPstInfo.nextTitle}]]</span>
+                    </dd>
+                </dl>
+            </a>
+        </div>
+    </div>
+
+    <form name="searchForm" id="searchForm">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${paramVo.pageNumber}">
+        <input type="hidden" id="rowPerPage" name="rowPerPage" th:value="${paramVo.rowPerPage}">
+        <input type="hidden" id="searchType" name="searchType" th:value="${paramVo.searchType}">
+        <input type="hidden" id="searchKeyword" name="searchKeyword" th:value="${paramVo.searchKeyword}">
+        <input type="hidden" id="bbsid" name="bbsid" th:value="${paramVo.bbsid}">
+        <input type="hidden" id="cmntyid" name="cmntyid" th:value="${cmntyid}">
+        <input type="hidden" id="pstid" name="pstid">
+    </form>
+
+    <script th:inline="javascript">
+        const $searchForm = $('#searchForm');
+        function goToOtherPst(pstid) {
+            if(pstid == null) return;
+            $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
+            $searchForm[0].pstid.value = pstid;
+            $searchForm[0].submit();
+        }
+        function goListPage() {
+            $searchForm[0].action = '/front/cmnty/cmntyPstList.html';
+            $searchForm[0].submit();
+        }
+        function openReplyForm(pstid){
+            $searchForm[0].action = '/front/cmnty/cmntyPstReplyForm.html';
+            $searchForm[0].pstid.value = pstid;
+            $searchForm[0].submit();
+        }
+        function openUpdateForm(pstid){
+            $searchForm[0].action = '/front/cmnty/cmntyPstUpdateForm.html';
+            $searchForm[0].pstid.value = pstid;
+            $searchForm[0].submit();
+        }
+    </script>
+</div>
+</body>
