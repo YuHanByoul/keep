@@ -54,7 +54,7 @@ public class QuartzExecConfig extends QuartzJobBean {
     	// 휴면계정처리
     	if (triggerid == 6 && "userDrmncyJob".equals(jobName)) {
     		try {
-				batchJobService.callSpUserDrmncy(triggerid);
+    		    batchJobService.userDrmncyProcess(triggerid);
 			} catch (SQLException e) {
 			    log.error("executeInternal.SQLException.51L");
 				throw new JobExecutionException(jobName);
@@ -63,6 +63,59 @@ public class QuartzExecConfig extends QuartzJobBean {
                 throw new JobExecutionException(jobName);
             }
     	}
+    	
+    	// 유아환경교육 안내 메시지 발송
+        if (triggerid == 7 && "infntEduMsgJob".equals(jobName)) {
+            try {
+                batchJobService.infntEnveduMsgNoticeMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 푸름이 이동 환경교육 안내 메시지 발송
+        if (triggerid == 8 && "mvnEduMsgJob".equals(jobName)) {
+            try {
+                batchJobService.mvnEnveduMsgNoticeMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 휴면계정 전환 안내 메일 발송
+        if (triggerid == 9 && "drmncyNtcMailJob".equals(jobName)) {
+            try {
+                batchJobService.userDrmncyNtcMailSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+     // 3개월 이상된 알림메시지 삭제
+        if (triggerid == 10 && "oldNtcMsgJob".equals(jobName)) {
+            try {
+                batchJobService.deleteOldNtcMsg(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                e.printStackTrace();
+                //throw new JobExecutionException(jobName);
+            }
+        }
     	
     	log.info("================= batch job end ({}) ================", jobName);
     }

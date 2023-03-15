@@ -14,5 +14,153 @@
 	        call sp_userDrmncy()
 	    }
 	</update>
+    
+    <!-- 유아환경교육 안내 알림톡 발송 대상자 리스트를 반환한다 -->
+    <select id="selectInfntEnveduSmsSendList" parameterType="java.util.Map" resultType="java.util.Map">
+        /* BatchJobDao.selectInfntEnveduSmsSendList */
+        SELECT 
+            A.* 
+            , DATE_FORMAT(DATE_ADD(STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S'), INTERVAL -30 MINUTE), '%Y%m%d%H%i%S') AS SENDRSVTIME
+        FROM (
+            SELECT 
+                IPA.APLYID
+                , IP.PRGRM_NM 
+                , IPA.INSTID 
+                , IPA.USERID 
+                , CU.NM AS USER_NM
+                , IPA.MOBLPHON 
+                , IPA.EDU_NOPE
+                , IPA.TCHER_NOPE 
+                , CONCAT(IPTS.DE, ' ', IPT.BGNG_TM) AS START_TIME
+            FROM TB_EDU_INFNT_PRGRM_APLY IPA
+                LEFT JOIN TB_CMM_USER CU ON IPA.USERID = CU.USERID 
+                LEFT JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL IPTS ON IPA.TME_SCHDLID = IPTS.TME_SCHDLID 
+                LEFT JOIN TB_EDU_INFNT_PRGRM_TME IPT ON IPTS.TMEID = IPT.TMEID 
+                LEFT JOIN TB_EDU_INFNT_PRGRM IP ON IPT.PRGRMID = IP.PRGRMID
+        WHERE IPA.STTS_CD = '180103'
+                AND CU.MARKT_SMS_AGRE_YN = 'Y'
+                AND IPA.MOBLPHON IS NOT NULL
+                AND LENGTH(IPA.MOBLPHON) > 9
+        ) A
+        WHERE STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
+                BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
+                AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+    </select>
+    
+    <!-- 푸름이 이동 환경교육 안내 알림톡 발송 대상자 리스트를 반환한다 -->
+    <select id="selectMvnEnveduSmsSendList" parameterType="java.util.Map" resultType="java.util.Map">
+        /* BatchJobDao.selectMvnEnveduSmsSendList */
+        SELECT 
+            A.* 
+            , DATE_FORMAT(DATE_ADD(STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S'), INTERVAL -30 MINUTE), '%Y%m%d%H%i%S') AS SENDRSVTIME
+        FROM (
+            SELECT 
+                MPA.APLYID
+                , MP.PRGRM_NM 
+                , MPA.INSTID 
+                , MPA.USERID 
+                , CU.NM AS USER_NM
+                , CU.MOBLPHON 
+                , MPA.EDU_NOPE 
+                , CONCAT(MPTS.DE, ' ', MPT.BGNG_TM) AS START_TIME
+            FROM TB_EDU_MVMN_PRGRM_APLY MPA
+                LEFT JOIN TB_CMM_USER CU ON MPA.USERID = CU.USERID 
+                LEFT JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL MPTS ON MPA.TME_SCHDLID = MPTS.TME_SCHDLID 
+                LEFT JOIN TB_EDU_MVMN_PRGRM_TME MPT ON MPTS.TMEID = MPT.TMEID 
+                LEFT JOIN TB_EDU_MVMN_PRGRM MP ON MPT.PRGRMID = MP.PRGRMID
+            WHERE MPA.STTS_CD = '180103'
+                AND CU.MARKT_SMS_AGRE_YN = 'Y'
+                AND CU.MOBLPHON IS NOT NULL
+                AND LENGTH(CU.MOBLPHON) > 9
+        ) A
+        WHERE STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
+                BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
+                AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+    </select>
+    
+    <!-- 휴면계정 전환 안내 메일 발송 대상자 리스트를 반환한다 -->
+    <select id="selectDrmncyNtcMailSendUserList" parameterType="java.util.Map" resultType="java.util.Map">
+        /* BatchJobDao.selectDrmncyNtcMailSendUserList */
+        SELECT 
+            USERID 
+            , ACNT 
+            , NM 
+            , EML 
+            , NVL(PRVC_VLDTY, 0) AS PRVC_VLDTY
+            , ACNT_LOCK_CD 
+            , LGN_DT 
+            , REG_DT 
+            , DEL_YN 
+        FROM TB_CMM_USER
+        WHERE DEL_YN = 'N'
+            AND STTS_CD != '9'
+            AND (ACNT_LOCK_CD NOT IN (101105, 101106) OR ACNT_LOCK_CD IS NULL)
+            AND NVL(PRVC_VLDTY, 0) > 0
+            AND REG_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(PRVC_VLDTY * 12 - 1) MONTH)
+            AND LGN_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(PRVC_VLDTY * 12 - 1) MONTH)
+    </select>
+    
+    <!-- 휴면계정 전환 대상자 리스트를 반환한다 -->
+    <select id="selectDrmncyUserList" parameterType="java.util.Map" resultType="java.util.Map">
+        /* BatchJobDao.selectDrmncyMailSendUserList */
+        SELECT 
+            USERID 
+            , ACNT 
+            , NM 
+            , EML 
+            , NVL(PRVC_VLDTY, 0) AS PRVC_VLDTY
+            , ACNT_LOCK_CD 
+            , LGN_DT 
+            , REG_DT 
+            , DEL_YN 
+        FROM TB_CMM_USER
+        WHERE DEL_YN = 'N'
+            AND STTS_CD != '9'
+            AND (ACNT_LOCK_CD NOT IN (101105, 101106) OR ACNT_LOCK_CD IS NULL)
+            AND NVL(PRVC_VLDTY, 0) > 0
+            AND REG_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(PRVC_VLDTY * 12) MONTH)
+            AND LGN_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -(PRVC_VLDTY * 12) MONTH)
+    </select>
+    
+    <insert id="insertUserdrmncyInfo">
+        INSERT INTO TB_CMM_USER_DRMNCY(
+            USERID, ACNT, PSWD, NM, NCNM, MOBLPHON, TELNO, EML, BRDT, GNDR, ZIP, ADDR, ADDR_DTL
+            , SIGNGU_CD, INSTID, INSTPIC_ROLE_CD, TOS_AGRE_YN, PRIVCY_AGRE_YN, PRVC_THPTY_PVSN_AGRE_YN
+            , CHILD_JOIN_AGRE_YN, MARKT_EML_AGRE_YN, MARKT_SMS_AGRE_YN, WBZN_APLY_AGRE_YN, PRVC_VLDTY
+            , ACNT_LOCK_YN, ACNT_LOCK_CD, SECSN_RSN, TMPR_PSWD_YN, PSWD_MDFCN_DT, STTS_CD, DEL_YN
+            , BLCKLST_YN, LGN_DT, LGN_FAIL_CNT, CI, CI_PARNTS, MDFCN_DT, MDFRID, REG_DT, RGTRID
+        )
+        SELECT 
+            USERID, ACNT, PSWD, NM, NCNM, MOBLPHON, TELNO, EML, BRDT, GNDR, ZIP, ADDR, ADDR_DTL
+            , SIGNGU_CD, INSTID, INSTPIC_ROLE_CD, TOS_AGRE_YN, PRIVCY_AGRE_YN, PRVC_THPTY_PVSN_AGRE_YN
+            , CHILD_JOIN_AGRE_YN, MARKT_EML_AGRE_YN, MARKT_SMS_AGRE_YN, WBZN_APLY_AGRE_YN
+            , NVL(PRVC_VLDTY, 0) AS PRVC_VLDTY, ACNT_LOCK_YN, ACNT_LOCK_CD, SECSN_RSN, TMPR_PSWD_YN
+            , PSWD_MDFCN_DT, STTS_CD, DEL_YN, BLCKLST_YN, LGN_DT, LGN_FAIL_CNT, CI, CI_PARNTS
+            , MDFCN_DT, MDFRID, REG_DT, RGTRID
+        FROM TB_CMM_USER
+        WHERE USERID = #{userid}
+    </insert>
+    
+    <update id="updateUserInfo">
+        UPDATE TB_CMM_USER
+        SET
+            NM = NULL
+            , MOBLPHON = NULL
+            , TELNO = NULL
+            , BRDT = NULL
+            , GNDR = NULL
+            , ZIP = NULL
+            , ADDR = NULL
+            , ADDR_DTL = NULL
+            , SIGNGU_CD = NULL
+            , ACNT_LOCK_YN = 'Y'
+            , ACNT_LOCK_CD = '101105'
+        WHERE USERID = #{userid}
+    </update>
+    
+    <delete id="deleteOldNtcMsg">
+        DELETE FROM TB_CMM_NTCN
+        WHERE REG_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -3 MONTH)
+    </delete>
 	
 </mapper>

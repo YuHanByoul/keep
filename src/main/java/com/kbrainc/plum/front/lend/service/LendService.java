@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.lend.service;
 import java.util.List;
 import java.util.Map;
 
+import com.kbrainc.plum.front.lend.model.LendAplyTrgtVo;
 import com.kbrainc.plum.front.lend.model.LendAplyVo;
 import com.kbrainc.plum.front.lend.model.LendRndVo;
 import com.kbrainc.plum.front.lend.model.LendVo;
@@ -95,7 +96,7 @@ public interface LendService {
      * @throws Exception
      * @return List<LendAplyVo> 객체
      */
-    public List<LendRndVo> selectRequestLendRndList(LendAplyVo lendAplyVo) throws Exception;
+    public LendRndVo selectRequestLendRndList(LendAplyVo lendAplyVo) throws Exception;
     /**
      * @Title : selectEduSbjctCdList
      * @Description : 신청 기관 정보 호출
@@ -112,4 +113,56 @@ public interface LendService {
      * @return String 객체
      */
     public String checkOverStockYn(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * @Title : checkLimitOverYn
+     * @Description : 신청 차시 및 수량 제한 여부 확인
+     * @param LendAplyVo
+     * @throws Exception
+     * @return String 객체
+     */
+    public Map<String,Object> checkLimitOverYn(LendAplyVo lendAplyVo) throws Exception;
+    
+    /******************* 대여 이력 ************************/
+    /**
+     * @Title : selectLendHistList
+     * @Description : 대여 이력 리스트 호출 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return String 객체
+     */
+    public List<LendAplyVo> selectLendHistList(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * @Title : selectLendAplyInfo
+     * @Description : 대여 이력 상세 정보 호출 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return LendAplyVo
+     */
+    public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * @Title : selectLendAplyTrgtHistList
+     * @Description : 대여 이력 출고 리스트 호출 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return List<LendAplyTrgtVo>
+     */
+    public List<LendAplyTrgtVo> selectLendAplyTrgtHistList(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * @Title : updateLendAply
+     * @Description : 대여 신청 수정 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return int 객체
+     */
+    public int updateLendAply(LendAplyVo lendAplyVo) throws Exception;
+    /**
+     * @Title : deleteLendAplyRvw
+     * @Description : 대여 신청 후기 삭제  
+     * @param LendAplyVo
+     * @throws Exception
+     * @return int 객체
+     */
+    public int deleteLendAplyRvw(LendAplyVo lendAplyVo) throws Exception;
+    
+    
 }

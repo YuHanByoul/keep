@@ -1,0 +1,137 @@
+<div class="layer-header">
+    <strong class="tit">후기</strong>
+    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+</div>
+<div class="layer-content" >
+    <p class="fs-16 fc-black6">대여하신 교구의 <b class="fc-green">후기</b>와 <b class="fc-green">만족도 평가</b>를 남겨주세요.</p>
+    <form id="jntpurchsOrderRvwForm">
+    <div class="form-group mt15">
+        <dl>
+            <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+            <dd>
+                <div class="rating-star-wrap">
+                    <div class="rating-star-inner">
+                        <div class="rating-star">
+                            <input type="radio" name="rating" value="5" id="rating5" class="blind"><label for=""><span class="blind">매우 만족</span></label>
+                            <input type="radio" name="rating" value="4" id="rating4" class="blind"><label for=""><span class="blind">만족</span></label>
+                            <input type="radio" name="rating" value="3" id="rating3" class="blind"><label for=""><span class="blind">보통</span></label>
+                            <input type="radio" name="rating" value="2" id="rating2" class="blind"><label for=""><span class="blind">불만족</span></label>
+                            <input type="radio" name="rating" value="1" id="rating1" class="blind"><label for=""><span class="blind">매우 불만족</span></label>
+                        </div>
+                    </div>
+                    <div class="rating-feedback d-none" id="ratingFeedback1">1점(매우 불만족)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback2">2점(불만족)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback3">3점(보통)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback4">4점(만족)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback5">5점(매우 만족)</div>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt class="fc-black3"><b>기타의견</b>(필수)</dt>
+            <dd>
+                <textarea name="rvwCn" placeholder="내용을 입력해주세요." readonly th:text="${lendAplyInfo.rvwCn}"></textarea>
+                <div class="check-wrap j-end">
+                    <div class="size"><span id="rvwCnLen">0</span> / 1,000자</div>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt class="fc-black3"><b>첨부파일</b></dt>
+            <dd>
+                <div class="form-input mr0 flex-auto">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input id="multiFileInput" name="files" type="file" class="blind" multiple="multiple" th:attr="accept=${acceptUploadFileExt}" title="파일첨부" maxcount="5" disabled>
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul id="updateMultipleFileUploadSuccess">
+                            <th:block th:if="${rvwFileList != null}">
+                                <th:block th:each="file : ${rvwFileList}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn, 1)}" th:id="${file.fileid}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}" th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                    </li>
+                                </th:block>
+                            </th:block>
+                        </ul>
+                        <input type="hidden" id="filegrpid" name="filegrpid" value="0"/>
+                    </div>
+                </div>
+            </dd>
+        </dl>
+    </div>
+    </form>
+
+    <div class="box-desc-list bg7 mt20 p20">
+        <p class="fs-14">작성하신 후기는 대여하신 교구의 상세페이지 후기 탭에서 확인하실 수 있으며, 첨부파일은  관리자만 확인할 수 있습니다.</p>
+    </div>
+    <!-- <label class="inp mt10"><input type="checkbox"><b class="fs-14 fw-300">비밀글 등록</b></label> -->
+</div>
+<div class="layer-footer">
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" onclick="rvwUpdatePopup.onDeleteRvw();">삭제</button>
+            <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+        </div>
+    </div>
+</div>
+
+<div class="box-desc-list bg7 mt20 p20">
+    <p class="fs-14">작성하신 후기는 대여하신 교구의 상세페이지 후기 탭에서 확인하실 수 있으며, 첨부파일은  관리자만 확인할 수 있습니다.</p>
+</div>
+<script th:inline="javascript">
+    var rvwUpdatePopup = {
+    	    
+        rvwScr: /*[[${lendAplyInfo.rvwScr}]]*/null
+        ,rvwCn: /*[[${lendAplyInfo.rvwCn}]]*/null 
+        , init: function() {
+            $("#rating" + this.rvwScr).prop("checked", true);
+            addFileUploadEvent("multiFileInput", "lendRvwfile", "updateMultipleFileUploadSuccess");
+            this.registEvent();  
+            $("#rvwCnLen").text(this.rvwCn.length);
+        }
+        , registEvent: function() {
+            $("input[name='rating']").on("change", function() {
+                var score = $("input[name='rating']:checked").val();
+                console.log(score)
+                $(".rating-feedback").addClass("d-none");
+                $("#ratingFeedback" + score).removeClass("d-none");
+            });
+        }
+        
+        , onDeleteRvw: function() {
+            if(confirm("후기를 삭제 하시겠습니까?")) {
+
+            	var param = {aplyid : /*[[${lendAplyInfo.aplyid}]]*/null};
+                
+                if(displayWorkProgress(true)) {
+                    $.ajax({
+                        url : "/front/mypage/lendHist/deleteLendReply.do"
+                        , type: "POST"
+                        , cache: false
+                        , dataType: "json"
+                        , data: param
+                        , success: function(response) {
+                            if(response.result == "success") {
+                                alert(response.msg);
+                                selectLendHistList();
+                                layerPopup.close({target:"lendHistPopup"});
+                            } else {
+                                alert(response.msg);
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            }
+        }
+    };
+    
+    $(function() {
+        rvwUpdatePopup.init();
+    });
+</script>

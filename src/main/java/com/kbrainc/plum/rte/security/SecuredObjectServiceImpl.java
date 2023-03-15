@@ -45,6 +45,11 @@ public class SecuredObjectServiceImpl extends PlumAbstractServiceImpl implements
     public Map selectUserLoginInfoForOnepass(String userKey) throws Exception {
         return securedObjectDao.selectUserLoginInfoForOnepass(userKey);
     }
+    
+    @Override
+    public Map selectUserLoginInfoForSSO(String userid) throws Exception {
+        return securedObjectDao.selectUserLoginInfoForSSO(userid);
+    }
 
     @Override
     public List<Map<String, Object>> selectGrantedAuthority(String loginid) throws Exception {
