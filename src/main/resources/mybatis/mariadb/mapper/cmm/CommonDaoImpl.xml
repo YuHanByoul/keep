@@ -168,6 +168,7 @@
             ORDER BY B.ORDR ASC, A.ORDR ASC
         ]]>
     </select>
+    
     <!-- 시도 지역 리스트 호출 -->
     <select id="selectCtprvnList"  resultType="map">
         /* CommonDao.selectCtprvnList */
@@ -179,4 +180,34 @@
          ORDER BY ORDR ASC
     </select>
     
+    <!-- 사용자 휴면 데이터로 부터 사용자 정보를 수정 -->
+    <update id="updateUserFromDrmncy" parameterType="DrmncyInfoVo">
+        /* CommonDao.updateUserFromDrmncy */
+        UPDATE 
+            TB_CMM_USER U JOIN TB_CMM_USER_DRMNCY D ON U.USERID = D.USERID 
+        SET 
+            U.NM = D.NM,
+            U.MOBLPHON = D.MOBLPHON,
+            U.TELNO = D.TELNO,
+            U.BRDT = D.BRDT,
+            U.GNDR = D.GNDR,
+            U.ZIP = D.ZIP,
+            U.ADDR = D.ADDR,
+            U.ADDR_DTL = D.ADDR_DTL,
+            U.SIGNGU_CD = D.SIGNGU_CD,
+            U.PRVC_VLDTY = #{prvcVldty},
+            U.ACNT_LOCK_YN = 'N',
+            U.ACNT_LOCK_CD = NULL,
+            U.LGN_DT = NOW(),
+            U.LGN_FAIL_CNT = 0,
+            U.MDFCN_DT = NOW(),
+            U.MDFRID = #{mdfrid}
+        WHERE U.USERID = #{userid}
+    </update>
+    
+    <!-- 사용자 휴면 데이터 삭제 -->
+    <delete id="deleteUserDrmncy" parameterType="String">
+        /* CommonDao.deleteUserDrmncy.deleteEsylgnByUserid */
+        DELETE FROM TB_CMM_USER_DRMNCY WHERE USERID = #{userid}
+    </delete>
 </mapper>

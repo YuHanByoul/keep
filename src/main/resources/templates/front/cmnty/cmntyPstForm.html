@@ -7,12 +7,13 @@
     <form id="pstForm" name="pstForm">
         <input type="hidden" id="atchfileCnt" th:value="${bbsInfo.atchfileCnt}">
         <input type="hidden" id="atchfileSize" th:value="${bbsInfo.atchfileSize}">
+        <input type="hidden" id="currentFileCnt" th:value="${currentFileCnt eq null ? 0 : currentFileCnt}">
         <input type="hidden" name="pstid" th:value="${paramVo.pstid}">
         <input type="hidden" name="bbsid" th:value="${paramVo.bbsid}">
         <input type="hidden" id="formType" th:value="${formType}">
         <div class="table-caption">
             <div class="left">
-                <h3 class="sub-title"><th:block th:text="${bbsInfo.nm}"></th:block> 글쓰기 </h3>
+                <h3 class="sub-title"><th:block th:text="${bbsInfo.nm + (formType eq 'INSERT' ? ' 등록' : ' 수정')}"></th:block></h3>
             </div>
             <div class="right">
                 <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
@@ -90,8 +91,22 @@
                                 <span class="btn-medium btn-gray">파일선택</span>
                             </label>
                             <ul id="multipleFileUploadSuccess">
+                                <th:block th:if="${fileMap ne null}" th:each="file : ${fileMap}">
+                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                        <span class="name">
+                                            <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                               th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                [[${file.orginlFileNm}]]
+                                            </a>
+                                        </span>
+                                        <button type="button" class="file-delete" title="삭제" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                th:onclick="|javascript:deleteFile(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                            <span class="icon icon-circle-close"></span>
+                                        </button>
+                                    </li>
+                                </th:block>
                             </ul>
-                            <input type="hidden" id="filegrpid" name="filegrpid" value="0"/>
+                            <input type="hidden" id="filegrpid" name="filegrpid" th:value="${cmntyPstInfo.filegrpid eq null ? 0 : cmntyPstInfo.filegrpid}"/>
                         </div>
                     </td>
                 </tr>
@@ -127,7 +142,7 @@
                 <button th:if="${paramVo.pstid ne null}" type="button" class="btn-medium btn-gray list-btn" data-action="/front/cmnty/cmntyPstView.html">이전</button>
                 <button th:if="${formType eq 'INSERT'}" type="button" class="btn-medium btn-blue save-btn">등록</button>
                 <button th:if="${formType eq 'MODIFY'}" type="button" class="btn-medium btn-blue save-btn">수정</button>
-                <button th:if="${formType eq 'MODIFY'}" type="button" class="btn-medium btn-blue delete-btn">삭제</button>
+                <button th:if="${formType eq 'MODIFY'}" type="button" class="btn-medium btn-blue save-btn" data-del-yn="Y">삭제</button>
             </div>
         </div>
     </form>
@@ -144,93 +159,94 @@
 
     <script src="/js/ckeditor/ckeditor.js"></script>
     <script th:inline="javascript">
-        window.addEventListener('DOMContentLoaded', function (){
-            const $searchForm = $('#searchForm');
-            const formType = $('#formType').val();
-            const $fxNtcYn = $('input[name=fxNtcYn]');
-            const $fxNtcBgngDt = $('input[name=fxNtcBgngDt]');
-            const $fxNtcEndDt = $('input[name=fxNtcEndDt]');
-            //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
-            const editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
-            const atchfileCnt = $('#atchfileCnt').val();
-            const atchfileSize = $('#atchfileSize').val();
+    window.addEventListener('DOMContentLoaded', function (){
+        const $searchForm = $('#searchForm');
+        const formType = $('#formType').val();
+        const $fxNtcYn = $('input[name=fxNtcYn]');
+        const $fxNtcBgngDt = $('input[name=fxNtcBgngDt]');
+        const $fxNtcEndDt = $('input[name=fxNtcEndDt]');
+        //에디터 엔터키 두줄 바꿈 제거 (shift + enter 처럼 바로 한줄 밑으로 떨어지게 함 )
+        const editor = CKEDITOR.replace('cn', {enterMode: CKEDITOR.ENTER_BR});
+        const atchfileCnt = $('#atchfileCnt').val();
+        const atchfileSize = $('#atchfileSize').val();
+        const $currentFileCnt = $('#currentFileCnt');
 
-            fxNtcChProc();
-            addFileUploadEvent('multiFileInput', 'cmntyPst_file', 'multipleFileUploadSuccess', atchfileCnt, atchfileSize);
+        fxNtcChProc();
+        addFileUploadEvent('multiFileInput', 'cmntyPst_file', 'multipleFileUploadSuccess', atchfileCnt, atchfileSize, $currentFileCnt);
 
-            $('input[name=fxNtcYn]').on('change', function(){
-               fxNtcChProc();
-            });
+        $('input[name=fxNtcYn]').on('change', function(){
+           fxNtcChProc();
+        });
 
-            $('.save-btn').on('click',function (){
-                //값 체크 -> 등록 수정 formType 구분 ,답글은 insertCmntyPst.do 에서 pstid null 체크 구분
-                var editorData = editor.getData();
-                $("#cn").val(editorData);
-                validate();
-                if (!$("#pstForm").valid()) return;
-                if(confirm('등록하시겠습니까?')){
-                    var data =  $("#pstForm").serialize();
-                    if (displayWorkProgress(true)) {
-                        $.ajax({
-                            method: 'post',
-                            cache: false,
-                            url: formType === 'INSERT' ? '/front/cmnty/insertCmntyPst.do' : '/front/cmnty/updateCmntyPst.do',
-                            data: data,
-                            dataType: 'json',
-                            success: function (response) {
-                                alert(response.msg);
-                                if (response.result) {
-                                    if(formType === 'INSERT'){
-                                        $searchForm[0].action = '/front/cmnty/cmntyPstList.html';
-                                        $searchForm[0].submit();
-                                    }else{
-                                        $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
-                                        $searchForm[0].submit();
-                                    }
+        $('.save-btn').on('click',function (){
+            let editorData = editor.getData();
+            let isDelYn = $(this).data('delYn') === 'Y';
+            $("#cn").val(editorData);
+            validate();
+            if (!$("#pstForm").valid()) return;
+            if(confirm( isDelYn ? '삭제하시겠습니까?' : (formType === 'MODIFY' ? '수정하시겠습니까?' : '등록하시겠습니까?') )){
+                var data =  $("#pstForm").serialize();
+                if(isDelYn) data+= '&delYn='+$(this).data('delYn');
+                if(displayWorkProgress(true)) {
+                    $.ajax({
+                        method: 'post',
+                        cache: false,
+                        url: formType === 'MODIFY' ? '/front/cmnty/updateCmntyPst.do' : '/front/cmnty/insertCmntyPst.do',
+                        data: data,
+                        dataType: 'json',
+                        success: function (response) {
+                            alert(response.msg);
+                            if (response.result) {
+                                if(formType === 'MODIFY' && !isDelYn){
+                                    $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
+                                    $searchForm[0].submit();
+                                }else{
+                                    $searchForm[0].action = '/front/cmnty/cmntyPstList.html';
+                                    $searchForm[0].submit();
                                 }
-                                closeWorkProgress();
                             }
-                        })
-                    }
+                            closeWorkProgress();
+                        }
+                    })
                 }
-            });
-
-            $('.list-btn').on('click',function(){
-                $searchForm[0].action = $(this).data('action');
-                $searchForm[0].submit();
-            });
-
-            function fxNtcChProc(){
-                if($fxNtcYn.filter(":checked").val() === 'N'){
-                    $fxNtcBgngDt.val('').prop({disabled:true});
-                    $fxNtcEndDt.val('').prop({disabled:true});
-                }else{
-                    $fxNtcBgngDt.val('').prop({disabled:false});
-                    $fxNtcEndDt.val('').prop({disabled:false});
-                }
-            }
-            function validate(){
-                const fxNtcFg = $fxNtcYn.filter(":checked").val() === "Y";
-                const rules =  {
-                    ttl      : { required: true , maxlength:100}
-                }
-
-                if (fxNtcFg) {
-                    rules.fxNtcBgngDt = {required: true, max: $fxNtcEndDt.val()};
-                    rules.fxNtcEndDt =  {required: true};
-                }
-
-                $("#pstForm").data('validator', null).validate({
-                    rules,
-                    messages: {
-                        ttl      : { required: "제목을 입력해 주십시오."  , maxlength : "제목은 100자를 넘을 수 없습니다."  },
-                        fxNtcBgngDt : { required: "공지시작일시를 입력해 주십시오.",max: "공지시작/종료일시를 올바르게 입력해 주십시오."},
-                        fxNtcEndDt : { required: "공지종료일시를 입력해 주십시오."}
-                    }
-                });
             }
         });
 
+        $('.list-btn').on('click',function(){
+            $searchForm[0].action = $(this).data('action');
+            $searchForm[0].submit();
+        });
+
+        function fxNtcChProc(){
+            if($fxNtcYn.filter(":checked").val() === 'N'){
+                $fxNtcBgngDt.prop({disabled:true});
+                $fxNtcEndDt.prop({disabled:true});
+            }else{
+                $fxNtcBgngDt.prop({disabled:false});
+                $fxNtcEndDt.prop({disabled:false});
+            }
+        }
+        function validate(){
+            const fxNtcFg = $fxNtcYn.filter(":checked").val() === "Y";
+            const rules =  {
+                ttl      : { required: true , maxlength:100}
+            }
+
+            if (fxNtcFg) {
+                rules.fxNtcBgngDt = {required: true, max: $fxNtcEndDt.val()};
+                rules.fxNtcEndDt =  {required: true};
+            }
+
+            $("#pstForm").data('validator', null).validate({
+                rules,
+                messages: {
+                    ttl      : { required: "제목을 입력해 주십시오."  , maxlength : "제목은 100자를 넘을 수 없습니다."  },
+                    fxNtcBgngDt : { required: "공지시작일시를 입력해 주십시오.",max: "공지시작/종료일시를 올바르게 입력해 주십시오."},
+                    fxNtcEndDt : { required: "공지종료일시를 입력해 주십시오."}
+                }
+            });
+        }
+    });
     </script>
 </div>
 </body>

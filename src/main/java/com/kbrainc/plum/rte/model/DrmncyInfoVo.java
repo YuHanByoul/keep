@@ -39,4 +39,7 @@ public class DrmncyInfoVo extends ParentVo implements Serializable {
     
     /** 사용여부 */
     private boolean isUsed;
+    
+    /** 수정자 아이디 */
+    private String mdfrid;
 }

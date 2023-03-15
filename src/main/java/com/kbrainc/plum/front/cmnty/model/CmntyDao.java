@@ -231,4 +231,14 @@ public interface CmntyDao {
      * @return boolean
      */
     boolean updatePstOrdElse(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 수정 처리
+     * Title : updateCmntyPst
+     * Description : 환경동아리 게시글 수정 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean updateCmntyPst(CmntyPstVo paramVo);
 }

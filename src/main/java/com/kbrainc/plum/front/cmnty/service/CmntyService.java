@@ -175,15 +175,15 @@ public interface CmntyService {
     void updatePstHitsCount(CmntyPstVo paramVo);
 
     /**
-     * 환경동아리 게시글 정보 조회
+     * 환경동아리 게시글 조회
      * Title : selectPst
-     * Description : 환경동아리 게시글 정보 조회
+     * Description : 환경동아리 게시글 조회
      *
      * @param paramVo
      * @return map
      * @throws Exception
      */
-    Map<String, Object> selectPstInfo(CmntyPstVo paramVo) throws Exception;
+    Map<String, Object> selectPst(CmntyPstVo paramVo) throws Exception;
 
     /**
      * 환경동아리 게시글 등록 처리
@@ -194,4 +194,24 @@ public interface CmntyService {
      * @return boolean
      */
     boolean insertCmntyPst(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 수정 처리
+     * Title : updateCmntyPst
+     * Description : 환경동아리 게시글 수정 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean updateCmntyPst(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 정보 조회
+     * Title : selectPstInfo
+     * Description : 환경동아리 게시글 정보 조회
+     *
+     * @param paramVo
+     * @return cmnty pst vo
+     */
+    CmntyPstVo selectPstInfo(CmntyPstVo paramVo);
 }
