@@ -238,5 +238,16 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
     public List<PackageVo> selectPackageList(PackageVo packageVo) throws Exception{
         return lendDao.selectPackageList(packageVo);
     }
-    
+    /**
+     * 꾸러미 대여 중복 체크 
+     *
+     * @Title       : checkPackageDuplicationYn 
+     * @Description : 꾸러미 대여 중복 체크 
+     * @param LendVo 객체
+     * @return String  목록
+     * @throws Exception 예외
+     */
+    public String checkPackageDuplicationYn(LendVo lendVo) throws Exception{
+        return lendDao.checkPackageDuplicationYn(lendVo);
+    }
 }

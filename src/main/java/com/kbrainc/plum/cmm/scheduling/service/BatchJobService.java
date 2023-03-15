@@ -18,13 +18,57 @@ package com.kbrainc.plum.cmm.scheduling.service;
 public interface BatchJobService {
 
 	/**
-	* 휴면계정처리를 위해 sp_userDrmncy프로시져를 호출한다.
+	* 휴면계정처리
 	*
-	* @Title       : callSpUserDrmncy 
-	* @Description : 휴면계정처리를 위해 sp_userDrmncy프로시져를 호출한다.
+	* @Title       : userDrmncyProcess 
+	* @Description : 휴면계정처리
 	* @param triggerid
 	* @return void 리턴값없음
 	* @throws Exception 예외
 	*/
-	public void callSpUserDrmncy(int triggerid) throws Exception;
+    public void userDrmncyProcess(int triggerid) throws Exception;
+	
+	/**
+    * 유아환경교육 안내 알림톡 발송
+    *
+    * @Title       : infntEnveduMsgNoticeMsgSend 
+    * @Description : 유아환경교육 안내 알림톡 발송
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+	public void infntEnveduMsgNoticeMsgSend(int triggerid) throws Exception;
+	
+	/**
+    * 푸름이 이동 환경교육 안내 알림톡 발송
+    *
+    * @Title       : mvnEnveduMsgNoticeMsgSend 
+    * @Description : 푸름이 이동 환경교육 안내 알림톡 발송
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+	public void mvnEnveduMsgNoticeMsgSend(int triggerid) throws Exception;
+	
+	/**
+    * 휴면계정 전환 안내 메일 발송
+    *
+    * @Title       : userDrmncyNtcMailSend 
+    * @Description : 휴면계정 전환 안내 메일 발송
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    public void userDrmncyNtcMailSend(int triggerid) throws Exception;
+    
+    /**
+     * 3개월 이상된 알림메시지 삭제
+     *
+     * @Title       : deleteOldNtcMsg 
+     * @Description : 3개월 이상된 알림메시지 삭제
+     * @param triggerid
+     * @return void 리턴값없음
+     * @throws Exception 예외
+     */
+     public void deleteOldNtcMsg(int triggerid) throws Exception;
 }

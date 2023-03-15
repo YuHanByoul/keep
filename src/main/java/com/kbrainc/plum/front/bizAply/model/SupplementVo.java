@@ -89,4 +89,7 @@ public class SupplementVo extends ParentRequestVo {
     
     /** 공모아이디 */
     private Integer pcntstid;
+    
+    /** 교부아이디 */
+    private Integer delvryid;
 }

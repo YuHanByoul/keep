@@ -70,6 +70,8 @@ public class CmntyBbsVo extends ParentRequestVo {
     private String nloginDwnldPermYn;
     /** 사용_여부 */
     private String useYn;
+    /** 검색 여부 */
+    private String searchYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
@@ -80,4 +82,6 @@ public class CmntyBbsVo extends ParentRequestVo {
     private Date regDt;
     /** 등록자아이디 */
     private Integer rgtrid;
+    /** 고정공지갯수 */
+    private Integer curFxNtcCnt;
 }

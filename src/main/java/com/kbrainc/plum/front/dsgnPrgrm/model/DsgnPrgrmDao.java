@@ -148,14 +148,14 @@ public interface DsgnPrgrmDao {
 	/**
 	 * 지정프로그램 수정
 	 *
-	 * @Title : updatePrgrmAssPrgrm
+	 * @Title : updateAssPrgrm
 	 * @Description : 지정프로그램 수정
 	 * @param dsgnPrgrmVo
 	 * @return
 	 * @throws Exception
 	 * @return int
 	 */
-	public int updatePrgrmAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+	public int updateAssPrgrm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	 * 프로그램 우수성 등록
@@ -219,6 +219,18 @@ public interface DsgnPrgrmDao {
 	public DsgnPrgrmVo selectPrgrmEvlForm(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 컨설팅 목록 조회
+	*
+	* @Title : selectCsltngList
+	* @Description : 컨설팅 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectCsltngList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 컨설팅 등록
 	*
 	* @Title : insertCsltng
@@ -275,5 +287,28 @@ public interface DsgnPrgrmDao {
 	* @return List<DsgnPrgrmVo>
 	*/
 	public List<DsgnPrgrmVo> selectAplyDsctnList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 체크리스트 정보 조회
+	*
+	* @Title : selectChkListInfo
+	* @Description : 체크리스트 정보 조회
+	* @param dsgnPrgrmVo
+	* @throws Exception
+	* @return dsgnPrgrmVo
+	*/
+	public DsgnPrgrmVo selectChkListInfo(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 문항 목록 조회
+	*
+	* @Title : selectQitemList
+	* @Description : 문항 목록 조회
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return List<DsgnPrgrmVo>
+	*/
+	public List<DsgnPrgrmVo> selectQitemList(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 }

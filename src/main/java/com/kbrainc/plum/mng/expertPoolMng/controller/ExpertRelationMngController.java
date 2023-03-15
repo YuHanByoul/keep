@@ -119,22 +119,24 @@ public class ExpertRelationMngController {
     public String expertMatchForm(ExpertRelationVo expertRelationVo, Model model) throws Exception {
         ExpertRelationVo expertRelationInfo = expertRelationMngService.selectExpertRelationInfo(expertRelationVo);
 
-        model.addAttribute("expertLctrDmndInfo", expertRelationInfo);
         ExpertVo expertVo = new ExpertVo();
         expertVo.setUserid(expertRelationInfo.getExprtid());
         ExpertVo expertInfo = expertPoolMngService.selectExpertApplyInfo(expertVo);
+
         StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
         encryptor.setSaltGenerator(new RandomSaltGenerator());
         encryptor.setPassword(encryptKey);
         encryptor.setAlgorithm("PBEWithMD5AndDES");
         String decStr = encryptor.decrypt(expertInfo.getGndr());
         expertInfo.setGndr(decStr);
-        model.addAttribute("expertInfo", expertInfo);
+
 
         MemberVo memberVo = new MemberVo();
         memberVo.setUserid(expertRelationInfo.getUserid());
         MemberVo memberInfo = memberService.selectMemberInfo(memberVo);
 
+        model.addAttribute("expertLctrDmndInfo", expertRelationInfo);
+        model.addAttribute("expertInfo", expertInfo);
         model.addAttribute("memberInfo", memberInfo);
 
         return "mng/expertPoolMng/expertMatchForm.html";

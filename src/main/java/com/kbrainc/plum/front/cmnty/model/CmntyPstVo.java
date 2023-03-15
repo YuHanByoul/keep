@@ -45,7 +45,7 @@ public class CmntyPstVo extends ParentRequestVo {
     /** 깊이 */
     private Integer dpth;
     /** 정렬순서 */
-    private String sortordr;
+    private Integer sortordr;
     /** 조회수 */
     private Integer hits;
     /** 고정_공지_여부 */
@@ -60,6 +60,9 @@ public class CmntyPstVo extends ParentRequestVo {
     private Integer filegrpid;
     /** 삭제_여부 */
     private String delYn;
+    private String hotYn;
+    private String newYn;
+    private String fxNtcUseYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;
@@ -69,5 +72,14 @@ public class CmntyPstVo extends ParentRequestVo {
     @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date regDt;
     /** 등록자아이디 */
-    private Integer rgtrid;
+    private String rgtrid;
+    /** 등록자이름 */
+    private String rgtrNm;
+    private String nextPstid;
+    private String nextTitle;
+    private String prevPstid;
+    private String prevTitle;
+    /** 고정공지순서 */
+    private Integer fixorder;
+
 }

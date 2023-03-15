@@ -2,10 +2,14 @@ package com.kbrainc.plum.front.enveduFlct.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileVo;
+import com.kbrainc.plum.front.enveduFlct.model.EnveduFcltVo;
 import com.kbrainc.plum.front.enveduFlct.model.EnveduFlctDao;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 
@@ -30,6 +34,9 @@ public class EnveduFlctServiceImpl extends PlumAbstractServiceImpl implements En
     
     @Autowired
     private EnveduFlctDao enveduFlctDao;
+    
+    @Autowired
+    private FileDao fileDao;
     /**
      * 내 주변 환경교육 시설 목록을 반환한다
      *
@@ -52,6 +59,30 @@ public class EnveduFlctServiceImpl extends PlumAbstractServiceImpl implements En
      */
     public int nearbyEnveduFlctCount(Map map) throws Exception{
         return enveduFlctDao.nearbyEnveduFlctCount(map);
+    }
+    
+    /**
+    * 환경교육시설현황 목록 조회
+    *
+    * @Title : selectEnveduFcltList
+    * @Description : 환경교육시설현황 목록 조회
+    * @throws Exception
+    * @return List<EnveduFcltVo>
+    */
+    @Override
+    public List<EnveduFcltVo> selectEnveduFcltList() throws Exception {
+        List<EnveduFcltVo> enveduFclt = enveduFlctDao.selectEnveduFcltList();
+        
+        for(int i = 0; i < enveduFclt.size(); i++) {
+            if(enveduFclt != null && Objects.nonNull(enveduFclt.get(i).getRprsImgFileid())) {
+                FileVo fileVo = new FileVo();
+                fileVo.setFileid(Integer.parseInt(enveduFclt.get(i).getRprsImgFileid().toString()));
+                FileVo fileInfo= fileDao.getFileInfo(fileVo);
+                enveduFclt.get(i).setFileInfo(fileInfo);
+            }            
+        }
+        
+        return enveduFclt;
     };
 
 }

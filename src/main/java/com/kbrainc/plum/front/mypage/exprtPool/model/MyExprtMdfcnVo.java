@@ -22,6 +22,8 @@ import java.util.List;
  */
 @Data
 public class MyExprtMdfcnVo extends CommonExprtVo {
+    private String infoMdfcnRsn;
+    private Integer mdfcnDmndId;
     private String sbjctCds;
     private String actvtScopeCds;
     private String trgtCds;

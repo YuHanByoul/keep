@@ -59,9 +59,14 @@ public class LctrDmndController {
      * @Title : lctrDmndList
      * @Description : 섭외요청 목록 화면
      */
-    @GetMapping("/lctrDmndList.html")
-    public String lctrDmndList(@ModelAttribute("searchVo") ExprtVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
+    @GetMapping("/{exprtTypePath}/lctrDmndList.html")
+    public String lctrDmndList(
+            @PathVariable String exprtTypePath
+            , @ModelAttribute("searchVo") ExprtVo searchVo
+            , Model model
+            , @UserInfo UserVo user) throws Exception {
         model.addAttribute("user",user);
+        searchVo.setExprtTypePath(exprtTypePath);
         return VIEW_PATH + "/lctrDmndList";
     }
 

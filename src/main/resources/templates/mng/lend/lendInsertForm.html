@@ -341,21 +341,19 @@
         editor1 = CKEDITOR.replace('dtlCn');
         editor2 = CKEDITOR.replace('atentMttr');
     	$('[data-bs-toggle="tooltip"]').tooltip();
-    	bindMultipleLendFile("dtlImgFile","dtlImgFilegrpid","dtlImgFileArea");
-    	bindMultipleLendFile("mapFile","mapFilegrpid","mapFileArea");
-    	bindMultipleLendFile("eduPhotoFile","eduPhotoFilegrpid","eduPhotoFileArea");
+    	bindMultipleLendFile("dtlImgFile","dtlImgFilegrpid","dtlImgFileArea","lend_file");
+    	bindMultipleLendFile("mapFile","mapFilegrpid","mapFileArea","pdf_view_file");
+    	bindMultipleLendFile("eduPhotoFile","eduPhotoFilegrpid","eduPhotoFileArea","lend_file");
     	setPackageSelectBox();
     })
     
     setPackageSelectBox=()=>{
-        
         var selectList = [ {id:' ', text:'- 선택 -', value:'',option:"selected"} ];
         packageLsit.forEach(function(item){
             selectList.push({
                  'id':item.packageid, 'text': item.packageNm, 'value' : item.packageid,'packageindvdCnt':item.packageindvdCnt
             })
         })
-        
         $('#selectPackageid').select2({
             language: {
                 noResults: function () {
@@ -460,7 +458,7 @@
          event.preventDefault();
     });
     
-    bindMultipleLendFile=(fileInputId, fileGrpId, fileInfoAppendAreaId)=>{
+    bindMultipleLendFile=(fileInputId, fileGrpId, fileInfoAppendAreaId,filegrpNm)=>{
         
         $('#'+fileInputId).on("change", function(event) {
            var objFile = document.querySelector('#'+fileInputId);
@@ -474,7 +472,7 @@
            }
            
            formData.append("filegrpid", $("#"+fileGrpId).val());
-           formData.append("filegrpNm", "lend_file");
+           formData.append("filegrpNm", filegrpNm);
            
                $.ajax({
                    url : '/uploadMultipleFiles.do',
@@ -661,8 +659,9 @@
         if(!confirm("저장하시겠습니까?"))return;
 
   	 	let params={
-  	 	  	 	
   	 		rcritNm : $("#rcritNm").val(),
+  	 		packageid : $("#packageid").val(),
+            rcritNm : $("#rcritNm").val(),
   	 		lmtCd : $("#lmtCd").val(),
   	 		dtlCn : editor1.getData(),
   	 		atentMttr : editor2.getData(),

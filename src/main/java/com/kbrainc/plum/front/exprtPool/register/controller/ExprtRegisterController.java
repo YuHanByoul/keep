@@ -69,6 +69,20 @@ public class ExprtRegisterController {
 
     @GetMapping("/registerStep2.html")
     public String registerStep2(HttpServletResponse response, ExprtRegisterVo exprtRegisterVo, @UserInfo UserVo user, Model model) throws Exception {
+        if (user == null) {
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter writer = response.getWriter();
+            writer.print("<script>alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');history.back();</script>");
+            return null;
+        }
+
+        if (user.getUserType() != null && user.getUserType().equals("C")) {
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter writer = response.getWriter();
+            writer.print("<script>alert('14세 미만 어린이 회원은 가입 신청을 할 수 없습니다.');history.back();</script>");
+            return null;
+        }
+
         if (user != null) {
             String exprtStts = exprtRegisterService.selectExprtStts(user);
             if (exprtStts != null) {
@@ -163,6 +177,7 @@ public class ExprtRegisterController {
     public Map<String, Object> insertExprt(@Valid @RequestBody ExprtRegisterVo exprtRegisterVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
         exprtRegisterVo.setUser(user);
         Map<String, Object> result = new HashMap<>();
+        result.put("success", false);
 
         if (bindingResult.hasErrors()) {
             FieldError fieldError = bindingResult.getFieldError();
@@ -172,14 +187,18 @@ public class ExprtRegisterController {
             return result;
         }
 
-        boolean successInsert = exprtRegisterService.insertExprt(exprtRegisterVo) > 0;
-
-        if (successInsert) {
-            result.put("msg", "신청이 완료되었습니다.");
+        if (exprtRegisterService.insertExprt(exprtRegisterVo) > 0) {
+            if (exprtRegisterVo.getTempSaveYn().equals("Y")) {
+                result.put("msg", "저장이 완료되었습니다.");
+                result.put("redirectUrl", "/front/exprtPool/registerStep1.html");
+            } else {
+                result.put("msg", "신청이 완료되었습니다.");
+                result.put("redirectUrl", "/front/exprtPool/registerStep4.html");
+            }
+            result.put("success", true);
         } else {
             result.put("msg", "신청이 실패하였습니다.");
         }
-        result.put("success", successInsert);
 
         return result;
     }

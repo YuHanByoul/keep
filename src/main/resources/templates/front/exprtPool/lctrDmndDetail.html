@@ -33,7 +33,8 @@
             </tr>
             <tr>
                 <th scope="row">전문분야</th>
-                <td th:text="${exprt.exprtField}"></td>
+                <td th:text="${exprt.flds}">
+                </td>
                 <th scope="row">전문분야(대상)</th>
                 <td th:text="${exprt.exprtTrgtCdNm}"></td>
             </tr>
@@ -269,12 +270,7 @@
     <div class="btn-wrap">
         <div class="center">
             <button type="button" class="btn-medium btn-gray" onclick="lctrDmndDetail.moveToList()">목록</button>
-            <th:block th:if="${exprt.lctrDmndYn == 'Y'}">
-                <button type="button" class="btn-medium btn-gray">요청 완료</button>
-            </th:block>
-            <th:block th:unless="${exprt.lctrDmndYn == 'Y'}">
-                <button type="button" class="btn-medium btn-blue" onclick="lctrDmndDetail.moveToInsertForm()">요청서 작성</button>
-            </th:block>
+            <button type="button" class="btn-medium btn-blue" onclick="lctrDmndDetail.moveToInsertForm()">요청서 작성</button>
         </div>
     </div>
 
@@ -288,13 +284,14 @@
         <input type="hidden" id="exprtTrgtCd" name="exprtTrgtCd" th:value="${searchVo.exprtTrgtCd}">
         <input type="hidden" id="exprtSbjctCd" name="exprtSbjctCd" th:value="${searchVo.exprtSbjctCd}">
         <input type="hidden" id="exprtActvtScopeCd" name="exprtActvtScopeCd" th:value="${searchVo.exprtActvtScopeCd}">
+        <input type="hidden" id="exprtTypePath" name="exprtTypePath" th:value="${searchVo.exprtTypePath}">
     </form>
 
     <script th:inline="javascript">
         let lctrDmndDetail = {
-            listUrl: '/front/exprtPool/lctrDmndList.html',
-            formUrl: '/front/exprtPool/lctrDmndForm.html',
-            insertItrstExprtUrl : '/front/exprtPool/insertItrstExprt.do',
+            listUrl: '/front/exprtPool/' + $('#exprtTypePath').val() + '/lctrDmndList.html',
+            formUrl: '/front/exprtPool/lctrDmndForm.html?exprtTypePath='+ $('#exprtTypePath').val(),
+            insertItrstExprtUrl: '/front/exprtPool/insertItrstExprt.do',
             user:/*[[${user}]]*/null,
 
             moveToList() {
@@ -325,17 +322,17 @@
                     return;
                 }
 
-                if(!confirm('관심인력으로 등록하시겠습니까?')) return;
+                if (!confirm('관심인력으로 등록하시겠습니까?')) return;
 
                 var data = [
-                    {name : "userid" , value : $('#userid').val()}
+                    {name: "userid", value: $('#userid').val()}
                 ];
                 $.ajax({
-                    method:'post',
-                    dataType:'json',
+                    method: 'post',
+                    dataType: 'json',
                     url: lctrDmndDetail.insertItrstExprtUrl,
                     data: data,
-                    success : function(response) {
+                    success: function (response) {
                         alert(response.msg);
                     }
                 })

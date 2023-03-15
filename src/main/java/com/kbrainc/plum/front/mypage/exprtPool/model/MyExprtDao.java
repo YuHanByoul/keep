@@ -1,8 +1,7 @@
 package com.kbrainc.plum.front.mypage.exprtPool.model;
 
-import com.kbrainc.plum.front.exprtPool.register.model.CareerVo;
-import com.kbrainc.plum.front.exprtPool.register.model.CrtfctVo;
-import com.kbrainc.plum.front.exprtPool.register.model.HdofVo;
+import com.kbrainc.plum.rte.model.UserVo;
+import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import java.util.List;
@@ -85,4 +84,20 @@ public interface MyExprtDao {
      * @Description : 공개 범위 및 서비스 수신 여부 변경
      */
     public int updateRlsAndRcptn(MyExprtVo exprtVo) throws Exception;
+
+    public int insertMdfcnDmnd(MyExprtMdfcnVo myExprtMdfcnVo) throws Exception;
+
+    public int insertTrgtCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("trgtCds") String[] trgtCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertSbjctCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("sbjctCds") String[] sbjctCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertActvtRgnCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("actvtRgnCds") String[] actvtRgnCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertActvtScopeCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("actvtScopeCds") String[] actvtScopeCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertHdof(MyExprtMdfcnVo myExprtMdfcnVo) throws Exception;
+
+    public int insertCrtfct(MyExprtMdfcnVo myExprtMdfcnVo) throws Exception;
+
+    public int insertCareer(MyExprtMdfcnVo myExprtMdfcnVo) throws Exception;
 }

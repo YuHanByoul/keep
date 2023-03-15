@@ -97,18 +97,6 @@
                         , A.HDOF_RLS_YN /* 재직 공개 여부 */
                         , A.CAREER_RLS_YN /* 경력 공개 여부 */
                         , (
-                            CASE WHEN (
-                                SELECT COUNT(1)
-                                FROM TB_ASS_LCTR_DMND
-                                WHERE EXPRTID = A.USERID
-                                AND USERID = #{user.userid}
-                                AND (DMND_STTS_CD = '139101')
-                                ORDER BY REG_DT DESC LIMIT 1
-                                ) <![CDATA[>]]> 0 THEN 'Y'
-                            ELSE 'N'
-                            END
-                            ) AS LCTR_DMND_YN /* 이미 섭외 요청 했는지 */
-                        , (
                             CASE WHEN
                                 (SELECT COUNT(1)
                                  FROM TB_ASS_EXPRT_ITRST
@@ -118,9 +106,13 @@
                             END
                             ) AS ITRST_YN
                         , YEAR(NOW()) - LEFT(B.BRDT,4) + 1 AS AGE
+                        , (SELECT STTS_CD
+                            FROM TB_ASS_EXPRT_MDFCN_DMND
+                            WHERE USERID = A.USERID
+                            ORDER BY REG_DT DESC LIMIT 1) AS MDFCN_STTS_CD
                     FROM TB_ASS_EXPRT A
                     INNER JOIN TB_CMM_USER B
-                    ON A.USERID = B.USERID
+                        ON A.USERID = B.USERID
                     WHERE 1 = 1
                         <if test="exprtTypeCd != null and exprtTypeCd != ''">
                             AND A.EXPRT_TYPE_CD = #{exprtTypeCd}
@@ -145,7 +137,7 @@
                         AND A.STTS_CD = '134103' /* 승인 상태의 전문가만 조회 */
                 ) AA
             WHERE 1 = 1
-
+                AND (AA.MDFCN_STTS_CD IS NULL OR AA.MDFCN_STTS_CD != '152101')
             <if test="exprtTrgtCdNm != null and exprtTrgtCdNm != ''">
                 AND AA.EXPRT_TRGT_CD_NM LIKE CONCAT('%', #{exprtTrgtCdNm}, '%')
             </if>
@@ -164,7 +156,12 @@
         SELECT
             A.EXPRT_TYPE_CD
              , A.USERID
-             , A.FLD_LCTR_YN
+             , (SELECT CONCAT_WS(',',
+                   CASE WHEN A.FLD_LCTR_YN = 'Y' THEN '강의' END
+                   , CASE WHEN A.FLD_PLANNG_YN = 'Y' THEN '기획' END
+                   , CASE WHEN A.FLD_CNSLTNG_YN = 'Y' THEN '사업자문 및 컨설팅' END
+                   , CASE WHEN A.FLD_ETC_YN = 'Y' THEN CONCAT('기타(',A.FLD_ETC_CN,')') END
+               )) AS FLDS
              , A.FLD_PLANNG_YN
              , A.FLD_CNSLTNG_YN
              , A.FLD_ETC_YN
@@ -186,18 +183,6 @@
              , B.MOBLPHON
              , B.TELNO
              , B.EML
-             , (
-                CASE WHEN (
-                              SELECT COUNT(1)
-                              FROM TB_ASS_LCTR_DMND
-                              WHERE EXPRTID = A.USERID
-                                AND USERID = #{user.userid}
-                                AND (DMND_STTS_CD = '139101')
-                              ORDER BY REG_DT DESC LIMIT 1
-                          ) <![CDATA[>]]> 0 THEN 'Y'
-                ELSE 'N'
-                END
-                ) AS LCTR_DMND_YN /* 이미 섭외 요청 했는지 */
              , (
                 CASE WHEN
                          (SELECT COUNT(1)

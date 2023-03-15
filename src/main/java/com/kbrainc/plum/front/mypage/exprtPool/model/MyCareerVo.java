@@ -20,6 +20,8 @@ import lombok.Data;
  */
 @Data
 public class MyCareerVo {
+    /** 수정 요청 아이디 */
+    private Integer mdfcnDmndId;
     /** 경력 아이디 */
     private Integer exprtCareerId;
     /** 분야 이름 */

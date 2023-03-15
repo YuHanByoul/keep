@@ -1,0 +1,116 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/front/subLayout">
+
+<div layout:fragment="content">
+
+	<!-- content -->
+	<div class="card-list card-list-n3">
+		<ul id="card-list-area">
+			<li>
+				<a href="#">
+					<div class="thumb" style="height:163px;"><img src="https://picsum.photos/230/127" alt=""></div>
+					<div class="card-program-dot-list">
+						<p class="ellipsis" data-ellipsis="2">환경교육시설A</p>
+						<ul class="dot-list fc-black3">
+							<li class="d-flex">
+								<span class="tit">운영기관 :</span>
+								<span class="dc"> ○○ 운영기관</span>
+							</li>
+							<li class="d-flex">
+								<span class="tit">주소 :</span>
+								<span class="dc">대전광역시 서구 청사로 189 정부대전청사 1동 11~14층</span>
+							</li>
+						</ul>
+					</div>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<!-- <div class="pagination" aria-label="pagination">
+		<button type="button" class="first" title="처음"></button>
+		<button type="button" class="prev" title="이전"></button>
+		<button type="button" class="active" title="현재 페이지">1</button>
+		<button type="button">2</button>
+		<button type="button">3</button>
+		<button type="button">4</button>
+		<button type="button">5</button>
+		<button type="button">6</button>
+		<button type="button">7</button>
+		<button type="button">8</button>
+		<button type="button">9</button>
+		<button type="button">10</button>
+		<button type="button" class="next" title="다음"></button>
+		<button type="button" class="last" title="마지막"></button>
+	</div> -->
+	<!-- //content -->
+
+    <script th:inline="javascript">
+    	var enveduFclt = {
+            listUrl: '/front/enveduFlct/selectEnveduFcltList.do',
+
+            init(rowPerPage) {
+                this.selectEnveduFcltList();
+            },
+
+            selectEnveduFcltList() {
+                if (displayWorkProgress(true)) {
+                    $.ajax({
+                        url: enveduFclt.listUrl,
+                        cache: false,
+                        dataType: 'json',
+                        type: 'GET',
+                        success: function (data) {
+                        	enveduFclt.makeListHtml(data);
+                            closeWorkProgress();
+                        }
+                    });
+                }
+            },
+
+            makeListHtml(data) {
+                var cardListHtml = "";
+                if (data.list == null || data.list.length <= 0) {
+                	$('#list-table').removeClass();
+                    $('#list-table').addClass('nodata');
+                	listHtml += `
+                		<p><span class="icon icon-notice bg-black9"></span>등록된 내용이 없습니다</p>
+                    `;
+                } else {
+                    data.list.forEach(function(item) {
+                    	cardListHtml += `
+                		<li>
+            				<a style="cursor:default">
+	        					<div class="thumb" style="height:163px;">
+		    						<img src="/downloadFileByFileid.do?fileid=${item.rprsImgFileid}+&file_idntfc_key=${item.fileIdntfcKey}" alt="">
+		    					</div>
+            					<div class="card-program-dot-list">
+            						<p class="ellipsis" data-ellipsis="2">${item.fcltNm}</p>
+            						<ul class="dot-list fc-black3">
+            							<li class="d-flex">
+            								<span class="tit">운영기관 :</span>
+            								<span class="dc">${item.instNm}</span>
+            							</li>
+            							<li class="d-flex">
+            								<span class="tit">주소 :</span>
+            								<span class="dc">${item.addr}${item.addrDtl}</span>
+            							</li>
+            						</ul>
+            					</div>
+            				</a>
+            			</li>
+						`;
+                    });
+                }	
+                $('#card-list-area').html(cardListHtml);
+            }
+        };
+
+        $(function () {
+        	enveduFclt.init();
+        })    
+    </script>
+    
+</div>
+</html>

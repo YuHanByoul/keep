@@ -12,7 +12,7 @@ $.validator.setDefaults({
                 highlight :true,
                 showErrors:function(errorMap, errorList){ //alert
                     $('.form-msg').text('');
-                    if(this.currentElements.length > 1) {
+                    if(this.currentElements.length > 0) {
                         $('.feedback.invalid', this.currentForm).text('').removeClass("invalid");
                     }
                     if(this.numberOfInvalids() && errorList.length != 0) {
