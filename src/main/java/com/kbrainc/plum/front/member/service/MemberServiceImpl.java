@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Hex;
@@ -21,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
@@ -34,6 +38,10 @@ import com.kbrainc.plum.front.member.model.MemberInstVo;
 import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
+import com.kbrainc.plum.rte.util.CookieUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
+
+import WiseAccess.SSO;
 
 /**
 * 회원정보 서비스 구현 클래스.
@@ -66,25 +74,58 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Value("${kakao.search.address.api.url}")
     private String kakaoSearchAddressApiUrl;
     
+    @Value("${app.sso.isuse}")
+    private boolean ssoIsUse;
+    
+    @Value("${sso.apikey}")
+    private String ssoApikey;
+    
+    @Value("${sso.host}")
+    private String ssoHost;
+    
+    @Value("${sso.port}")
+    private int ssoPort;
+    
+    @Value("${server.servlet.session.cookie.domain}")
+    private String serverCookieDomain;
+    
     /**
     * 회원 탈퇴 처리.
     *
     * @Title : withdrawalMember 
     * @Description : 회원 탈퇴 처리
+    * @param request 요청객체
+    * @param response 응답객체
     * @param user 사용자세션정보
     * @param session 세션객체
     * @return int DB변경로우수
     * @throws Exception 예외
     */
     @Transactional
-    public int withdrawalMember(UserVo user, HttpSession session) throws Exception {
+    public int withdrawalMember(HttpServletRequest request, HttpServletResponse response, UserVo user, HttpSession session) throws Exception {
         int retVal = 0;
         retVal += memberDao.updateMemberDel(user);
         retVal += memberDao.deleteEsylgnByUserid(user);
         
         if (session != null) {
-            session.invalidate();
+            session.invalidate();            
         }
+        
+        SecurityContextHolder.clearContext();
+        
+        if (ssoIsUse) {
+            CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
+            String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
+            
+            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 없으면
+                SSO sso = new SSO(ssoApikey);
+                sso.setHostName(ssoHost); // engine이 설치된 아이피
+                sso.setPortNumber(ssoPort); // engine이 사용하고 있는 포트넘버
+                // SSO 토큰 파괴
+                sso.unregUserSession(sToken);
+            }
+        }
+        
         return retVal;
     }
     

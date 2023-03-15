@@ -120,36 +120,53 @@ function o(e) {
 * inputTagId : file 타입의 input 태그 id 입력
 * filegrpNm : application.yml에서 설정한 uploadPath 입력
 * uploadSuccessTagId : 파일 등록 후 추가 되는 li 태그의 부모 ul 태그 id 입력
+* atchfileCnt : 첨부파일 개수 (환경동아리에 사용)
+* atchfileSize : 첨부파일 크기 (환경동아리에 사용)
+* $currentFileCnt : 기존 첨부파일 개수 element (환경동아리에 사용)
 * */
-function addFileUploadEvent(inputTagId, filegrpNm, uploadSuccessTagId) {
+function addFileUploadEvent(inputTagId, filegrpNm, uploadSuccessTagId, atchfileCnt, atchfileSize, $currentFileCnt) {
     $('#' + inputTagId).on("change", function (event) {
-        var objFile = document.querySelector('#' + inputTagId);
-        var formData = new FormData();
+        let isCurrentFileCnt = $currentFileCnt ? $currentFileCnt.val() : 0
+        let uploadFileCnt = atchfileCnt && atchfileSize ? isCurrentFileCnt : 1;
+        let objFile = document.querySelector('#' + inputTagId);
+        let formData = new FormData();
 
         for (i = 0; i < objFile.files.length; i++) {
+            if(atchfileCnt && atchfileSize){
+                if(objFile.files[i].size > (atchfileSize*1024*1024)){
+                    alert(atchfileSize + "MG 초과하는 파일은 업로드 하실수 없습니다. : "+objFile.files[i].name); break;
+                }else if(uploadFileCnt +objFile.files.length > atchfileCnt){
+                    alert("첨부파일은 "+atchfileCnt+ "개까지 가능합니다." ); break;
+                }else{
+                    uploadFileCnt++;
+                }
+            }
             formData.append("files", objFile.files[i]);
         }
 
         formData.append("filegrpid", $("#filegrpid").val());
         formData.append("filegrpNm", filegrpNm);
 
-        if (displayWorkProgress(true)) {
-            $.ajax({
-                url: '/uploadMultipleFiles.do',
-                processData: false,
-                contentType: false,
-                data: formData,
-                type: 'POST',
-                success: function (response) {
-                    if (response.result == 'fail') {
-                        alert(response.msg);
-                    } else {
-                        if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
-                            $("#filegrpid").val(response[0].filegrpid);
-                        }
-
-                        for (i = 0; i < response.length; i++) {
-                            var result = `
+        if(uploadFileCnt > isCurrentFileCnt){
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: '/uploadMultipleFiles.do',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    type: 'POST',
+                    success: function (response) {
+                        if (response.result == 'fail') {
+                            alert(response.msg);
+                        } else {
+                            if ($("#filegrpid").val() == '0' || $("#filegrpid").val() == '' || $("#filegrpid").val() == null) {
+                                $("#filegrpid").val(response[0].filegrpid);
+                            }
+                            if(atchfileCnt && atchfileSize){
+                                $currentFileCnt.val(Number(isCurrentFileCnt)+1);
+                            }
+                            for (i = 0; i < response.length; i++) {
+                                var result = `
                                     <li class='file-block' data_ext='${response[i].fileExtsn.substr(1)}' id="${response[i].fileid}">
                                         <span class="name">
                                             <a href="javascript:void(0)" data-fileid="${response[i].fileid}" data-file-idntfc-key="${response[i].fileIdntfcKey}"
@@ -163,13 +180,14 @@ function addFileUploadEvent(inputTagId, filegrpNm, uploadSuccessTagId) {
                                         </button>
                                     </li>
                                 `;
-                            $('#' + uploadSuccessTagId).append(result);
+                                $('#' + uploadSuccessTagId).append(result);
+                            }
                         }
+                        closeWorkProgress();
                     }
-                    closeWorkProgress();
-                }
-            });
-            $("#" + inputTagId).val("");
+                });
+                $("#" + inputTagId).val("");
+            }
         }
     });
 };
@@ -179,7 +197,7 @@ function deleteFile(fileid, fileIdntfcKey) {
     if (!confirm("파일을 삭제하시겠습니까?")) {
         return;
     }
-
+    let $currentFileCnt = $('#currentFileCnt');
     let deleteFileUrl = "/deleteFile.do?fileid=" + fileid + "&file_idntfc_key=" + fileIdntfcKey;
     $.ajax({
         url: deleteFileUrl,
@@ -190,6 +208,7 @@ function deleteFile(fileid, fileIdntfcKey) {
             if (data.result == "success") {
                 $("#" + fileid).remove();
                 alert("파일삭제가 완료 되었습니다.");
+                $currentFileCnt.val($currentFileCnt.val() - 1);
             } else {
                 alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
             }
@@ -207,15 +226,15 @@ jQuery(function (){
     $('#msgForm textarea[name=cn]').on('keyup input', function() {
         $(this).parent().find('#txtSize').text($(this).val().length);
     });
-    $('#msgForm').validate({
-        rules: {
-            cn: {required: true}
-        },
-        messages: {
-            cn: {required: "쪽지 내용을 입력해 주십시오."},
-        }
-    })
     $('#msgSendBtn').on('click',function (){
+        $('#msgForm').validate({
+            rules: {
+                cn: {required: true}
+            },
+            messages: {
+                cn: {required: "쪽지 내용을 입력해 주십시오."},
+            }
+        });
         if(!$('#msgForm').valid()) return;
         let data = $('#msgForm').serialize();
         if (displayWorkProgress(true)) {

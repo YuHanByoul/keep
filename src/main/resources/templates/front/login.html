@@ -79,7 +79,7 @@
 
 <!-- layerpopup -->
 <div class="layer-popup layer-large" data-layer-id="layer-popup02">
-    <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+    <div class="layer-dimmed prevent-close"></div>
     <div class="layer-wrap">
         <div class="layer-header">
             <strong class="tit">휴면 전환 안내</strong>
@@ -241,11 +241,25 @@
     }
     
     function drmncyClear() {
-        //alert("휴면해제");
-        // ajax 휴면해제/개인정보 유효기간 update, 세션에 휴면회원 상태 정보 삭제 처리 필요
-        layerPopup.close({target:'layer-popup02'});
-        alert("휴면 해제가 완료되었습니다 다시 로그인을 진행해 주십시오.");
-
+        if (displayWorkProgress(true)) {
+            $.ajax({
+                url: '/cmm/clearDormancy.do',
+                cache : false,
+                dataType: 'json',
+                data : "prvcVldty=" + $('input[name=prvcVldty]:checked').val(),
+                success : function (data){
+                    if(data.result == "success"){
+                        layerPopup.close({target:'layer-popup02'});
+                        alert("휴면 해제가 완료되었습니다 다시 로그인을 진행해 주십시오.");
+                    }else{
+                        layerPopup.close({target:'layer-popup02'});
+                        alert(data.msg);
+                    }
+                    
+                    closeWorkProgress();
+                }
+            });
+        }    
     }
     
     function onClickSubmit() {    

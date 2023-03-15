@@ -1,5 +1,6 @@
 package com.kbrainc.plum.cmm.controller;
 
+import java.security.MessageDigest;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +34,9 @@ import com.kbrainc.plum.cmm.service.CommonService;
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.front.bbs.model.PstVo;
 import com.kbrainc.plum.front.bbs.service.BbsServiceImpl;
+import com.kbrainc.plum.front.member.model.MemberVo;
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.constant.Constant;
 import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.RoleInfoVo;
 import com.kbrainc.plum.rte.model.SiteInfoVo;
@@ -308,8 +313,38 @@ public class CommonController {
         return commonService.selectSiteList(site);
     }
     
-    
-     
+    /**
+    * 휴면 회원 해제.
+    *
+    * @Title : clearDormancy
+    * @Description : 휴면 회원 해제
+    * @Param prvcVldty 개인정보 유효기간
+    * @param session 세션객체
+    * @return Map<String,Object> 응답결과객체
+    * @throws Exception 예외
+    */
+    @RequestMapping(value = "/cmm/clearDormancy.do")
+    @ResponseBody
+    public Map<String, Object> clearDormancy(@RequestParam(name="prvcVldty", required=true) int prvcVldty, HttpSession session) throws Exception {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        resultMap.put("msg", "휴면 해제에 실패하였습니다.");
+        resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+        int retVal = 0 ;
+        
+        DrmncyInfoVo drmncyInfo = (DrmncyInfoVo) session.getAttribute("drmncy");
+        if (drmncyInfo != null) {
+            session.removeAttribute("drmncy");
+        
+            drmncyInfo.setPrvcVldty(prvcVldty);
+            retVal = commonService.clearDormancy(drmncyInfo);
+            
+            if(retVal > 0) {
+                resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            }
+        }
+        
+        return resultMap;
+    } 
      
 
     

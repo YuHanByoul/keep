@@ -41,6 +41,7 @@ import com.kbrainc.plum.rte.filter.SiteChangeFilter;
 import com.kbrainc.plum.rte.security.AjaxSessionTimeoutFilter;
 import com.kbrainc.plum.rte.security.CustomAuthFailureHandler;
 import com.kbrainc.plum.rte.security.CustomAuthenticationProvider;
+import com.kbrainc.plum.rte.security.CustomLogoutSuccessHandler;
 import com.kbrainc.plum.rte.security.CustomWebInvocationPrivilegeEvaluator;
 import com.kbrainc.plum.rte.security.HttpsLoginSuccessHandler;
 import com.kbrainc.plum.rte.security.ReloadableChannelProcessingFilterMetadataSource;
@@ -165,7 +166,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin().usernameParameter("p_userid").passwordParameter("p_pswd") 
                 .successHandler(httpsLoginSuccessHandler()).failureHandler(customAuthFailureHandler());
 
-        http.logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("JSESSIONID", "ssotoken").invalidateHttpSession(true);
+        http.logout().logoutUrl("/logout").logoutSuccessHandler(customLogoutSuccessHandler());
 
         http.addFilterBefore(channelProcessingFilter, ChannelProcessingFilter.class); // http/https 필터적용
         http.addFilterBefore(filterSecurityInterceptor, FilterSecurityInterceptor.class); // 인가 필터 적용
@@ -267,6 +268,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public HttpsLoginSuccessHandler httpsLoginSuccessHandler() throws Exception {
         HttpsLoginSuccessHandler httpsLoginSuccessHandler = new HttpsLoginSuccessHandler();
         return httpsLoginSuccessHandler;
+    }
+    
+    @Bean
+    public CustomLogoutSuccessHandler customLogoutSuccessHandler() throws Exception {
+        CustomLogoutSuccessHandler customLogoutSuccessHandler = new CustomLogoutSuccessHandler();
+        return customLogoutSuccessHandler;
     }
     
     @Bean

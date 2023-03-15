@@ -202,7 +202,7 @@ public class EsylgnController {
                     
                     if ("Y".equals(onepassLinkYn) && esylgnLinkCnt == 1) {
                         // 회원탈퇴처리(모든 간편로그인 정보도 함께 삭제, 세션무효화)
-                        memberService.withdrawalMember(user, session);
+                        memberService.withdrawalMember(request, response, user, session);
                         ApiSendHandler apiSendHandler = new ApiSendHandler();
                         OnepassUserResponse onepassUser = apiSendHandler.InterLockRelease(userKey, intfToken);
                         if (onepassUser == null) {
@@ -315,7 +315,11 @@ public class EsylgnController {
                             esylgnVo.setEsylgnCd("106101");
                             esylgnVo.setUserkey(userKey);
                             esylgnService.mergeEsylgnUserkey(esylgnVo);
-                            request.setAttribute("alertMessage", "아이디 " + userInfo.getAcnt() + " 계정과 디지털원패스의 계정이 연동되었습니다.");
+                            if (userInfo.getAcnt() != null) {
+                                request.setAttribute("alertMessage", "아이디 " + userInfo.getAcnt() + " 계정과 디지털원패스의 계정이 연동되었습니다.");
+                            } else {
+                                request.setAttribute("alertMessage", "디지털원패스의 계정이 연동되었습니다.");
+                            }
                             onepassLogin(request, response, onepassUser.getId(), userKey);
                             return null;
                         }
@@ -445,11 +449,12 @@ public class EsylgnController {
     * @Title : onepassAcs
     * @Description : 디지털원패스 사이트에서 서비스해지시 callbackURL/후처리.
     * @param request 요청객체
+    * @param response 응답객체
     * @return ModelAndView 모델뷰객체
     * @throws Exception 예외
     */
     @RequestMapping("/onepass/rcv.do")
-    public ModelAndView onepassRcv(HttpServletRequest request) throws Exception {
+    public ModelAndView onepassRcv(HttpServletRequest request, HttpServletResponse response) throws Exception {
         // 원패스로 부터 전달받은 USER_KEY
         String userKey = AESHandler.decrypt(request.getParameter("userKey"));
         EsylgnVo esylgnVo = null;
@@ -477,7 +482,7 @@ public class EsylgnController {
                     // 회원탈퇴처리(모든 간편로그인 정보도 함께 삭제)
                     UserVo user = new UserVo();
                     user.setUserid(esylgnAddInfo.getUserid());
-                    memberService.withdrawalMember(user, null);
+                    memberService.withdrawalMember(request, response, user, null);
                     return null;
                 }
             }

@@ -18,6 +18,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.kbrainc.plum.cmm.model.CommonDao;
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import com.kbrainc.plum.rte.util.CommonUtil;
@@ -184,4 +185,24 @@ public class CommonServiceImpl extends PlumAbstractServiceImpl implements Common
         return commonDao.selectCtprvnList();
     }
 
+    /**
+    * 휴면 회원 해제.
+    *
+    * @Title : clearDormancy
+    * @Description : 휴면 회원 해제
+    * @param drmncyInfoVo DrmncyInfoVo객체
+    * @return int update/delete 로우수
+    * @throws Exception 예외
+    */
+    @Transactional
+    public int clearDormancy(DrmncyInfoVo drmncyInfoVo) throws Exception {
+        int retVal = 0;
+        retVal += commonDao.updateUserFromDrmncy(drmncyInfoVo);
+        
+        if (retVal > 0) { 
+            retVal += commonDao.deleteUserDrmncy(drmncyInfoVo.getUserid());
+        }
+                
+        return retVal;
+    }
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.kbrainc.plum.mng.site.model.SiteVo;
+import com.kbrainc.plum.rte.model.DrmncyInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 
 /**
@@ -133,5 +134,27 @@ public interface CommonDao {
     * @throws Exception 예외
     */
     public List<Map<String, Object>> selectCtprvnList() throws Exception;
+    
+    /**
+    * 사용자 휴면 데이터로 부터 사용자 정보를 수정한다.
+    *
+    * @Title : updateUserFromDrmncy
+    * @Description : 사용자 휴면 데이터로 부터 사용자 정보를 수정한다
+    * @param drmncyInfoVo DrmncyInfoVo객체
+    * @return int update로우수
+    * @throws Exception 예외
+    */
+    public int updateUserFromDrmncy(DrmncyInfoVo drmncyInfoVo) throws Exception;
+    
+    /**
+    * 사용자 휴면 데이터를 삭제 한다.
+    *
+    * @Title : deleteUserDrmncy
+    * @Description : 사용자 휴면 데이터를 삭제 한다
+    * @param userid 사용자아이디
+    * @return int delete로우수
+    * @throws Exception 예외
+    */
+    public int deleteUserDrmncy(String userid) throws Exception;
     
 }
