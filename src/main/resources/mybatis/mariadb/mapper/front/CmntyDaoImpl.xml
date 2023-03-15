@@ -375,11 +375,8 @@
             </otherwise>
         </choose>
         <choose>
-            <when test='hotUseYn == "Y" and newUseYn == "Y"'>
-                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND IFNULL(HITS,0) <![CDATA[<]]> #{hotUseCrtrHits} AND NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
-            </when>
-            <when test='hotUseYn != "Y" and newUseYn == "Y"'>
-                , (CASE WHEN  NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
+            <when test='newUseYn == "Y"'>
+            , (CASE WHEN  NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
             </when>
             <otherwise>
                 ,'N' NEW_YN
@@ -530,8 +527,8 @@
                 , A.SORTORDR
                 , A.HITS
                 , A.FX_NTC_YN
-                , A.FX_NTC_BGNG_DT
-                , A.FX_NTC_END_DT
+                , DATE_FORMAT(A.FX_NTC_BGNG_DT, '%Y-%m-%d %H:%i') FX_NTC_BGNG_DT
+                , DATE_FORMAT(A.FX_NTC_END_DT, '%Y-%m-%d %H:%i') FX_NTC_END_DT
                 , A.LGN_YN
                 , A.FILEGRPID
                 , A.DEL_YN
@@ -561,8 +558,7 @@
     <insert id="insertCmntyPst">
         /* CmntyDao.insertCmntyPst */
         INSERT INTO TB_CMT_CMNTY_PST (
-            PSTID
-            , BBSID
+            BBSID
             , BBS_CLSFID
             , TTL
             , CN
@@ -582,8 +578,7 @@
             , REG_DT
             , RGTRID
         )VALUES(
-            #{pstid}
-            , #{bbsid}
+            #{bbsid}
             , #{bbsClsfid}
             , #{ttl}
             , #{cn}
@@ -614,6 +609,32 @@
         WHERE 1=1
         AND GRP = #{grp}
         AND SORTORDR >= #{sortordr}
+    </update>
+    <!-- 환경동아리 게시글 수정 처리 -->
+    <update id="updateCmntyPst">
+        /* CmntyDao.updateCmntyPst */
+        UPDATE TB_CMT_CMNTY_PST SET
+    <choose>
+        <when test="delYn == 'Y'.toString()">
+            DEL_YN = #{delYn}
+            , FILEGRPID = #{filegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        </when>
+        <otherwise>
+            BBS_CLSFID = #{bbsClsfid}
+            , TTL = #{ttl}
+            , CN = #{cn}
+            , FX_NTC_YN = #{fxNtcYn}
+            , FX_NTC_BGNG_DT = #{fxNtcBgngDt}
+            , FX_NTC_END_DT = #{fxNtcEndDt}
+            , LGN_YN = #{lgnYn}
+            , FILEGRPID = #{filegrpid}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        </otherwise>
+    </choose>
+        WHERE PSTID = #{pstid}
     </update>
 
 </mapper>

@@ -42,11 +42,12 @@
             INNER JOIN TB_CMM_USER C
                 ON B.USERID = C.USERID
             INNER JOIN (
-                SELECT USERID, STTS_CD, MAX(REG_DT) AS REG_DT
+                SELECT USERID, STTS_CD, REG_DT
                 FROM
-                TB_ASS_EXPRT_MDFCN_DMND GROUP BY USERID
+                    TB_ASS_EXPRT_MDFCN_DMND
+                WHERE (USERID, REG_DT) IN (SELECT USERID, MAX(REG_DT) FROM TB_ASS_EXPRT_MDFCN_DMND GROUP BY USERID)
             ) D
-                ON B.USERID = D.USERID AND D.STTS_CD = '152102'
+                ON B.USERID = D.USERID AND D.STTS_CD != '152101'
             WHERE
                 A.USERID = #{user.userid}
         <include refid="PaginationMapper.footer"/>
