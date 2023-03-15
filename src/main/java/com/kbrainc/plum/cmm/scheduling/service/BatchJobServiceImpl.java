@@ -1,12 +1,26 @@
 package com.kbrainc.plum.cmm.scheduling.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kbrainc.plum.cmm.scheduling.model.BatchJobDao;
+import com.kbrainc.plum.cmm.service.AlimtalkNhnService;
 import com.kbrainc.plum.rte.scheduling.annotation.SchedulingHistory;
 import com.kbrainc.plum.rte.scheduling.annotation.Triggerid;
+import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.mail.model.MailRcptnVo;
+import com.kbrainc.plum.rte.util.mail.model.MailVo;
+import com.kbrainc.plum.rte.util.mail.service.MailService;
 
 /**
 * 스케줄링 배치잡서비스 구현 클래스.
@@ -29,17 +43,206 @@ public class BatchJobServiceImpl implements BatchJobService {
 	@Autowired
     private BatchJobDao batchJobDao;
 	
+	@Autowired
+	private AlimtalkNhnService alimtalkNhnService;
+	
+	@Autowired
+    private TemplateEngine templateEngine;
+	
+	@Autowired @Qualifier("MailNhnService")
+    private MailService mailService;
+	
 	/**
-	* 휴면계정처리를 위해 sp_userDrmncy프로시져를 호출한다.
+	* 휴면계정처리
 	*
-	* @Title       : callSpUserDrmncy 
-	* @Description : 휴면계정처리를 위해 sp_userDrmncy프로시져를 호출한다.
+	* @Title       : userDrmncyProcess 
+	* @Description : 휴면계정처리
 	* @param triggerid
 	* @return void 리턴값없음
 	* @throws Exception 예외
 	*/
 	@SchedulingHistory
-	public void callSpUserDrmncy(@Triggerid int triggerid) throws Exception {
-		batchJobDao.callSpUserDrmncy();
+	public void userDrmncyProcess(@Triggerid int triggerid) throws Exception {
+	    //휴면처리 대상자 리스트
+	    List<Map<String, Object>> emailSendUserList = batchJobDao.selectDrmncyUserList();
+	    
+	    for(Map<String, Object> emailSendUser : emailSendUserList) {
+	      //휴면계정 테이블로 이관
+	        batchJobDao.insertUserdrmncyInfo((int) emailSendUser.get("USERID"));
+	        //회원정보 테이블에서 개인정보 삭제 및 휴면상태 전환
+	        batchJobDao.updateUserInfo((int) emailSendUser.get("USERID"));
+	        
+	        
+	        if(emailSendUser.get("EML") != null ) {
+	            
+	            Context context = new Context();
+	            context.setVariable("title", "휴면계정 전환 안내입니다.");
+	            context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+	            String content = "<tr>"
+	                + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+	                + "        휴면계정 전환 안내 문구 전달받지 못횄습니다.<br>"
+	                + "        ID : " + emailSendUser.get("ACNT") + "<br>"
+	                + "        이름 : " + emailSendUser.get("NM")
+	                + "    </td>"
+	                + "</tr>"
+	                + "<tr>"
+	                + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+	                + "</tr>";
+	            context.setVariable("content", content);
+	            String contents = templateEngine.process("mail/mail_basic_template", context);
+	            
+	            MailVo mailVo = new MailVo();
+	            mailVo.setRcptnEmail((String) emailSendUser.get(emailSendUserList));
+	            mailVo.setTitle("휴면계정 전환 안내입니다.");
+	            mailVo.setCntnts(contents);
+	            
+	            Map<String, Object> resMap = mailService.sendMail(mailVo); // 이메일 발송
+	        }
+
+	    }
+	   
 	}
+	
+	
+	/**
+    * 유아환경교육 안내 알림톡 발송
+    *
+    * @Title       : infntEnveduMsgNoticeMsgSend 
+    * @Description : 유아환경교육 안내 알림톡 발송
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+	@SchedulingHistory
+    public void infntEnveduMsgNoticeMsgSend(@Triggerid int triggerid) throws Exception {
+        
+	    //발송대상자 확인
+	    List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectInfntEnveduSmsSendList();
+	    
+	    ObjectMapper mapper = new ObjectMapper();
+        
+	    List<Object> recipientList = new ArrayList<>(); 
+	    for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+	        Map<String, Object> map = new HashMap<String, Object>();
+	        map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
+	        map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
+  
+	        Map<String, Object> templateParameter = new HashMap<String, Object>();
+	        templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
+	        templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+	        templateParameter.put("tcherNope", alimTalkSendUser.get("TCHER_NOPE"));
+	        templateParameter.put("prgrmNm", alimTalkSendUser.get("PRGRM_NM"));
+	        templateParameter.put("startTime", alimTalkSendUser.get("START_TIME"));
+  
+	        map.put("templateParameter", templateParameter);
+  
+	        recipientList.add(map); 
+        }
+          
+        String recipientListStr = mapper.writeValueAsString(recipientList);
+	    
+        //발송 - 아직 탬플릿 없음
+        //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+    }
+
+
+	/**
+    * 푸름이 이동 환경교육 안내 알림톡 발송
+    *
+    * @Title       : infntEnveduMsgNoticeMsgSend 
+    * @Description : 푸름이 이동 환경교육 안내 알림톡 발송
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+    @SchedulingHistory
+    public void mvnEnveduMsgNoticeMsgSend(@Triggerid int triggerid) throws Exception {
+      //발송대상자 확인
+        List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectMvnEnveduSmsSendList();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        
+        List<Object> recipientList = new ArrayList<>(); 
+        for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
+            map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
+  
+            Map<String, Object> templateParameter = new HashMap<String, Object>();
+            templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
+            templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+            templateParameter.put("prgrmNm", alimTalkSendUser.get("PRGRM_NM"));
+            templateParameter.put("startTime", alimTalkSendUser.get("START_TIME"));
+  
+            map.put("templateParameter", templateParameter);
+  
+            recipientList.add(map); 
+        }
+          
+        String recipientListStr = mapper.writeValueAsString(recipientList);
+        
+        //발송 - 아직 탬플릿 없음
+        //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+    }
+    
+    /**
+     * 휴면계정 전환 사전 안내 메일 발송
+     *
+     * @Title       : userDrmncyNtcMailSend 
+     * @Description : 휴면계정 전환 사전 안내 메일 발송
+     * @param triggerid
+     * @return void 리턴값없음
+     * @throws Exception 예외
+     */
+     @SchedulingHistory
+     public void userDrmncyNtcMailSend(@Triggerid int triggerid) throws Exception {
+         //발송대상자 확인
+         List<Map<String, Object>> emailSendUserList = batchJobDao.selectDrmncyNtcMailSendUserList();
+         
+         List<MailRcptnVo> mailToArray = new ArrayList<>();
+         for(Map<String, Object> emailSendUser : emailSendUserList) {
+             MailRcptnVo mailRcptnVo = new MailRcptnVo();
+             mailRcptnVo.setRcptnEmail((String) emailSendUser.get("EML"));
+             mailRcptnVo.setRcptnUserid((Integer) emailSendUser.get("USERID"));
+             
+             mailToArray.add(mailRcptnVo);
+         }
+         
+         Context context = new Context();
+         context.setVariable("title", "휴면계정 전환 사전 안내입니다.");
+         context.setVariable("portalUrl", CommonUtil.portalUrl); // 필수값
+         String content = "<tr>"
+                 + "    <td align=\"center\" style=\"font-family:'맑은 고딕','Malgun Gothic','돋움',dotum,sans-serif;font-size:16px;font-weight:400;font-stretch:normal;font-style:normal;line-height:1.5;letter-spacing:-1px;color:#333333;padding:0 10px;\">"
+                 + "        휴면계정 전환 사전 안내 문구 전달받지 못횄습니다."
+                 + "    </td>"
+                 + "</tr>"
+                 + "<tr>"
+                 + "    <td style=\"height:30px;font-size:0px;mso-line-height-rule:exactly;line-height:0px;\">&nbsp;</td>"
+                 + "</tr>";
+         context.setVariable("content", content);
+         String contents = templateEngine.process("mail/mail_basic_template", context);
+         MailVo mailVo = new MailVo();
+         mailVo.setTitle("휴면계정 전환 사전 안내입니다.");
+         mailVo.setCntnts(contents);
+         mailVo.setSndngUserid(0);
+         mailVo.setSndngSeCd("J");
+         mailVo.setRcptnUserid(0);
+         
+         mailService.sendMultiMail(mailToArray, mailVo);
+     }
+
+
+    /**
+    * 3개월 이상된 알림메시지 삭제
+    *
+    * @Title       : deleteOldNtcMsg 
+    * @Description : 3개월 이상된 알림메시지 삭제
+    * @param triggerid
+    * @return void 리턴값없음
+    * @throws Exception 예외
+    */
+     @SchedulingHistory
+     public void deleteOldNtcMsg(@Triggerid int triggerid) throws Exception {
+         batchJobDao.deleteOldNtcMsg();
+     }
 }
