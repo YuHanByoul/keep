@@ -9,6 +9,7 @@ import org.apache.ibatis.type.Alias;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kbrainc.plum.front.lend.model.LendAplyTrgtVo;
 import com.kbrainc.plum.front.lend.model.LendAplyVo;
 import com.kbrainc.plum.front.lend.model.LendDao;
 import com.kbrainc.plum.front.lend.model.LendRndVo;
@@ -50,7 +51,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
     public int insertLendAply(LendAplyVo lendAplyVo) throws Exception{
 	    int resInt = 0;
 	    resInt += lendDao.insertLendAply(lendAplyVo);
-	    resInt += lendDao.insertLendAplyTrgt(lendAplyVo);
+	    //resInt += lendDao.insertLendAplyTrgt(lendAplyVo);
         return resInt;
     }
     /**
@@ -134,7 +135,7 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      * @throws Exception
      * @return List<LendAplyVo> 객체
      */
-    public List<LendRndVo> selectRequestLendRndList(LendAplyVo lendAplyVo) throws Exception{
+    public LendRndVo selectRequestLendRndList(LendAplyVo lendAplyVo) throws Exception{
         return lendDao.selectRequestLendRndList(lendAplyVo);
     }
     /**
@@ -156,5 +157,67 @@ public class LendServiceImpl extends PlumAbstractServiceImpl implements LendServ
      */
     public String checkOverStockYn(LendAplyVo lendAplyVo) throws Exception{
         return lendDao.checkOverStockYn(lendAplyVo);
+    }
+    /**
+     * @Title : checkLimitOverYn
+     * @Description : 신청 차시 및 수량 제한 여부 확인
+     * @param LendAplyVo
+     * @throws Exception
+     * @return String 객체
+     */
+    public Map<String,Object> checkLimitOverYn(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.checkLimitOverYn(lendAplyVo);
+    }
+    
+    /******************* 대여 이력 ************************/
+    /**
+     * @Title : selectLendHistList
+     * @Description : 대여 이력 리스트 호출 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return String 객체
+     */
+    public List<LendAplyVo> selectLendHistList(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendHistList(lendAplyVo);
+    }
+    /**
+     * @Title : selectLendAplyInfo
+     * @Description : 대여 이력 상세 정보 호출 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return LendAplyVo
+     */
+    public LendAplyVo selectLendAplyInfo(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyInfo(lendAplyVo);
+    }
+    /**
+     * @Title : selectLendAplyTrgtHistList
+     * @Description : 대여 이력 출고 리스트 호출 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return List<LendAplyTrgtVo>
+     */
+    public List<LendAplyTrgtVo> selectLendAplyTrgtHistList(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.selectLendAplyTrgtHistList(lendAplyVo);
+    }
+    /**
+     * @Title : updateLendAply
+     * @Description : 대여 신청 수정 
+     * @param LendAplyVo
+     * @throws Exception
+     * @return int 객체
+     */
+    public int updateLendAply(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.updateLendAply(lendAplyVo);
+    }
+    /**
+     * @Title : deleteLendAplyRvw
+     * @Description : 대여 신청 후기 삭제  
+     * @param LendAplyVo
+     * @throws Exception
+     * @return int 객체
+     */
+    public int deleteLendAplyRvw(LendAplyVo lendAplyVo) throws Exception{
+        return lendDao.deleteLendAplyRvw(lendAplyVo);
     }
 }

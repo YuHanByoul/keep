@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <script type="text/javascript" src="../files/assets/pages/accordion/accordion.js"></script>
+    <div layout:fragment="content">
+    
+      <div class="table-caption">
+          <div class="left">
+              <h3 class="sub-title">대여정보</h3>
+          </div>
+      </div>
+
+      <div class="table-row">
+          <table>
+              <caption>대여정보  - 꾸러미명, 꾸러미유형, 교육주제, 교육대상, 모둠구성, 교육유형, 대여기간, 대여수량, 신청일, 대여상태</caption>
+              <colgroup>
+                  <col style="width:140px;">
+                  <col>
+                  <col style="width:140px;">
+                  <col>
+              </colgroup>
+              <tbody>
+                  <tr>
+                      <th scope="row">꾸러미명</th>
+                      <td>[[${lendInfo.packageNm}]]</td>
+                      <th scope="row">꾸러미유형</th>
+                      <td>[[${lendInfo.typeCdNm}]]</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">교육주제</th>
+                      <td>[[${lendInfo.eduSbjctCdNm}]]</td>
+                      <th scope="row">교육대상</th>
+                      <td>[[${lendInfo.eduTrgtCdNm}]]</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">모둠구성</th>
+                      <td>[[${lendInfo.teamCmpstnCdNm}]]</td>
+                      <th scope="row">교육유형</th>
+                      <td>[[${lendInfo.eduTypeCdNm}]] </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">대여기간</th>
+                      <td>[[${lendAplyInfo.ordr}]] 차 : [[${#temporals.createDate(lendAplyInfo.lendBgngDe, 'yyyy-MM-dd')}]] ~ [[${lendAplyInfo.lendEndDe}]]</td>
+                      <th scope="row">대여수량</th>
+                      <td>[[${lendAplyInfo.qnty}]] 개 </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">신청일</th>
+                      <td>[[${#dates.format(lendAplyInfo.regDt, 'yyyy년 MM월 dd일')}]]</td>
+                      <th scope="row">대여상태</th>
+                      <td>[[${lendAplyInfo.sttsCdNm}]] </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+      <div class="table-caption">
+          <div class="left">
+              <h3 class="sub-title">신청정보</h3>
+          </div>
+      </div>
+
+      <div class="table-row">
+          <table>
+              <caption>신청정보  - 신청기관, 기관유형, 예상 교육횟수, 예상 교육인원, 단체명, 신청지역</caption>
+              <colgroup>
+                  <col style="width:140px;">
+                  <col>
+                  <col style="width:140px;">
+                  <col>
+              </colgroup>
+              <tbody>
+                  <tr>
+                      <th scope="row">신청기관</th>
+                      <td>[[${lendAplyInfo.instNm}]]</td>
+                      <th scope="row">기관유형</th>
+                      <td>[[${lendAplyInfo.instTypeCdNm}]]</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">예상 교육횟수</th>
+                      <td>총 [[${lendAplyInfo.eduCnt}]] 회</td>
+                      <th scope="row">예상 교육인원</th>
+                      <td>총 [[${lendAplyInfo.eduNope}]] 명 </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">단체명</th>
+                      <td>[[${lendAplyInfo.grpNm}]]</td>
+                      <th scope="row">신청지역</th>
+                      <td>[[${lendAplyInfo.ctprvnCdNm}]]</td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+      
+      <div class="table-caption">
+          <div class="left">
+              <h3 class="sub-title">배송지 정보 확인</h3>
+          </div>
+      </div>
+
+      <div class="table-row">
+          <table>
+              <caption>배송지 정보 확인  - 이름, 휴대전화, 이메일, 주소, 상세주소, 배송상태</caption>
+              <colgroup>
+                  <col style="width:140px;">
+                  <col>
+                  <col style="width:140px;">
+                  <col>
+              </colgroup>
+              <tbody>
+                  <tr>
+                      <th scope="row">이름</th>
+                      <td>[[${lendAplyInfo.recptr}]]</td>
+                      <th scope="row">휴대전화</th>
+                      <td>[[${lendAplyInfo.recptrTelno}]]</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">이메일</th>
+                      <td>[[${lendAplyInfo.recptrEml}]]</td>
+                      <th scope="row">주소</th>
+                      <td>[[${lendAplyInfo.dlvyZip + lendAplyInfo.dlvyAddr}]] </td>
+                  </tr>
+                  <tr>
+                      <th scope="row">상세주소</th>
+                      <td>[[${lendAplyInfo.dlvyAddrDtl}]]</td>
+                      <th scope="row">배송상태</th>
+                      <td>[[${lendAplyInfo.dlvySttsCdNm}]] &nbsp;&nbsp;&nbsp;
+                          <th:block th:if="${lendAplyInfo.dlvySttsCd == '230102'}"> 
+                            <button type="button" class="btn-medium btn-green" th:aplyid ="${lendAplyInfo.aplyid}" onclick="openDlvyInfo(this.getAttribute('aplyid'));"  >배송조회</button>
+                          </th:block>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+
+
+      <th:block th:if = "${!#lists.isEmpty(lendAplyTrgtList)}">
+      <div class="table-caption">
+          <div class="left">
+              <h3 class="sub-title">반납정보</h3>
+          </div>
+      </div>
+
+      <div class="table-row">
+          <table>
+              <caption>반납정보 - 반납신청, 반납신청일, 반납완료일</caption>
+              <colgroup>
+                  <col style="width:140px;">
+                  <col>
+                  <col style="width:140px;">
+                  <col>
+              </colgroup>
+              <tbody>
+                <th:block th:each ="item:${lendAplyTrgtList}" >
+	                  <tr>
+	                      <th scope="row">꾸러미개체</th>
+	                      <td colspan="3">[[${item.packageindvdNm}]] ( [[${item.indvdno}]] )</td>
+	                  </tr>
+	                  <tr>
+	                      <th scope="row">출고 처리일</th>
+	                      <td>[[${#dates.format(item.dlivyPrcsDt, 'yyyy년 MM월 dd일 HH:mm')}]] </td>
+	                      <th scope="row">입고 완료일</th>
+	                      <td>[[${#dates.format(item.wrhousngPrcsDt, 'yyyy년 MM월 dd일 HH:mm')}]]
+	                          <th:block th:if="${item.isLateYn == 'Y'}"><span style="color:red;margin-left:10px;">(연체)</span></th:block> 
+	                      </td>
+	                  </tr>
+                </th:block>
+              </tbody>
+          </table>
+      </div>
+      </th:block>
+      
+      <div class="btn-wrap">
+          <div class="center">
+              <button type="button" class="btn-medium btn-gray" onclick="returnToList()">목록</button>
+          </div>
+      </div>
+
+    <div class="layer-popup layer-medium" data-layer-id="lendHistPopup">
+        <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+        <div class="layer-wrap" id="lendHistPopup">
+        </div>
+    </div>
+    <script th:inline="javascript">
+       var lendDlvyInfoPopUrl ="/front/lendHist/lendDlvyInfoPopupt.html";
+       var portalUrl = /*[[${T(com.kbrainc.plum.rte.util.CommonUtil).portalUrl}]]*/ "";
+       
+       function returnToList(){
+           location.href=portalUrl+"front/mypage/lendHist/LendHistList.html";
+       }
+
+       function openPopup(url) {
+           $("#lendHistPopup").empty();
+           $("#lendHistPopup").load(url, function(response, status, xhr) {
+               if(status == "success") {
+                   layerPopup.open({target:"lendHistPopup"});
+               }
+           });
+       }
+       function openDlvyInfo(aplyid){
+           openPopup(lendDlvyInfoPopUrl+"?aplyid="+aplyid);
+       }
+
+       
+    </script>
+   </div>
+</body>
+</html>
