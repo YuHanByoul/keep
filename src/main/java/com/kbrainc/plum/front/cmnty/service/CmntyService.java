@@ -5,6 +5,7 @@ import com.kbrainc.plum.rte.model.UserVo;
 import org.apache.ibatis.type.Alias;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 환경동아리 Service
@@ -163,4 +164,34 @@ public interface CmntyService {
      * @return list
      */
     List<UserVo> selectMbr(String userNm, String cmntyid);
+
+    /**
+     * 조회수 증가
+     * Title : updatePstHitsCount
+     * Description : 조회수 증가
+     *
+     * @param paramVo
+     */
+    void updatePstHitsCount(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 게시글 정보 조회
+     * Title : selectPst
+     * Description : 환경동아리 게시글 정보 조회
+     *
+     * @param paramVo
+     * @return map
+     * @throws Exception
+     */
+    Map<String, Object> selectPstInfo(CmntyPstVo paramVo) throws Exception;
+
+    /**
+     * 환경동아리 게시글 등록 처리
+     * Title : insertCmntyPst
+     * Description : 환경동아리 게시글 등록 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean insertCmntyPst(CmntyPstVo paramVo);
 }

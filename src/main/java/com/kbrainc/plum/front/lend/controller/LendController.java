@@ -117,6 +117,10 @@ public class LendController {
     @RequestMapping(value = "/front/lend/lendDetail.html")
     public String lendDetail(LendVo lendVo,Model model, @UserInfo UserVo user) throws Exception {
         
+        if(lendVo.getRcritid()==0) {
+            return "redirect:/front/lend/LendList.html";
+        }
+        
         lendVo.setUser(user);
         LendVo resVo = lendService.selectLend(lendVo);
         model.addAttribute("lendInfo",resVo);
@@ -132,22 +136,30 @@ public class LendController {
             fileVo.setFileid(resVo.getRprsImgFileid());
             FileVo rprsImgFileInfo = fileService.getFileInfo(fileVo);
             model.addAttribute("rprsImgFileInfo", rprsImgFileInfo);
+        }else {
+            model.addAttribute("rprsImgFileInfo", null);
         }
         if(resVo.getDtlImgFilegrpid() != null && resVo.getDtlImgFilegrpid() != 0) {
             fileVo.setFilegrpid(resVo.getDtlImgFilegrpid());
             ArrayList<FileVo> dtlImgFileList = fileService.getFileList(fileVo);
             model.addAttribute("dtlImgFileList", dtlImgFileList);
+        }else {
+            model.addAttribute("dtlImgFileList", null);
         }
         if(resVo.getMapFilegrpid() != null && resVo.getMapFilegrpid() != 0) {
             fileVo.setFilegrpid(resVo.getMapFilegrpid());
             //FileVo mapFileInfo = fileService.getFileInfo(fileVo);
             ArrayList<FileVo> mapFileInfo = fileService.getFileList(fileVo);
             model.addAttribute("mapFileInfo", mapFileInfo);
+        }else {
+            model.addAttribute("mapFileInfo", null);
         }
         if(resVo.getEduPhotoFilegrpid() != null && resVo.getEduPhotoFilegrpid() != 0) {
             fileVo.setFilegrpid(resVo.getEduPhotoFilegrpid());
             ArrayList<FileVo> eduPhotoFileList = fileService.getFileList(fileVo);
             model.addAttribute("eduPhotoFileList", eduPhotoFileList);
+        }else {
+            model.addAttribute("eduPhotoFileList", null);
         }
         return "front/lend/lendDetail";
     }
@@ -185,7 +197,7 @@ public class LendController {
     }
     
     /**
-     * 교구 신청 화면 
+     * 교구 대여 신청 화면 
      *
      * @Title       : lendAply 
      * @Description : 교구 신청 화면
@@ -195,18 +207,12 @@ public class LendController {
     @RequestMapping(value = "/front/lend/lendAply.html")
     public String lendAply(LendAplyVo lendAplyVo,Model model, @UserInfo UserVo user) throws Exception {
         
+        if(lendAplyVo.getRcritid()==null || lendAplyVo.getRcritid()==0) {
+            return "redirect:/front/lend/LendList.html";
+        }
+        
         model.addAttribute("paramVo",lendAplyVo);
-        
         lendAplyVo.setUser(user);
-        
-        String[] arr = lendAplyVo.getLendAplyTrgts();
-        List<LendAplyTrgtVo> paramList = new ArrayList();
-        for( String rndid : arr ) {
-            LendAplyTrgtVo vo = new LendAplyTrgtVo();
-            vo.setRndid(Integer.parseInt(rndid.split("/")[0]));
-            paramList.add(vo);
-        } 
-        lendAplyVo.setLendAplyTrgtList(paramList);
         
         LendVo lendVo = new LendVo();
         lendVo.setUser(user);
@@ -215,16 +221,7 @@ public class LendController {
         //대여 모집 정보 
         model.addAttribute("lednInfo",resVo);
         //신청 차시 정보
-        List<LendRndVo> resList = new ArrayList();
-        resList = lendService.selectRequestLendRndList(lendAplyVo);
-        for( String rndid : arr ) {
-            for( LendRndVo vo : resList ) {
-                if(vo.getRndid() ==Integer.parseInt(rndid.split("/")[0])) {
-                    vo.setQnty(Integer.parseInt(rndid.split("/")[1]));
-                }
-            }
-        }
-        model.addAttribute("rndInfo",resList);
+        model.addAttribute("rndInfo",lendService.selectRequestLendRndList(lendAplyVo));
         //신청자 (기관) 정보
         Map<String,Object> instMap = lendService.selectRequestInstInfo(lendAplyVo);
         try {
@@ -264,16 +261,6 @@ public class LendController {
         int retVal = 0;
         lendAplyVo.setUser(user);
         
-        String[] arr = lendAplyVo.getLendAplyTrgts();
-        List<LendAplyTrgtVo> paramList = new ArrayList();
-        for( String rndid : arr ) {
-            LendAplyTrgtVo vo = new LendAplyTrgtVo();
-            vo.setRndid(Integer.parseInt(rndid.split("/")[0]));
-            vo.setQnty(Integer.parseInt(rndid.split("/")[1]));
-            paramList.add(vo);
-        } 
-        lendAplyVo.setLendAplyTrgtList(paramList);
-        
         //재고확인 처리 할 것 
         if(lendService.checkOverStockYn(lendAplyVo).equals("Y")) {
             resultMap.put("result", Constant.REST_API_RESULT_FAIL);
@@ -281,18 +268,27 @@ public class LendController {
             return resultMap;
         }
         
-        List<LendRndVo> resList = lendService.selectRequestLendRndList(lendAplyVo);
-        for( LendAplyTrgtVo parmaVo : paramList ) {
-            for( LendRndVo vo : resList ) {
-                if(parmaVo.getRndid() == vo.getRndid()) {
-                    parmaVo.setBgngDe(vo.getBgngDe());
-                    parmaVo.setEndDe(vo.getEndDe());
-                }
-            }
+        Map<String, Object> compareMap = lendService.checkLimitOverYn(lendAplyVo);
+        
+        //재고확인 처리 할 것 
+        if(compareMap.get("isOverRndCntYn").toString().equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", compareMap.get("rnd_limit")+"개 차시만 신청 할 수 있습니다.\n 이미 신청한 차시를 확인 해주십시오");
+            return resultMap;
         }
-        lendAplyVo.setLendAplyTrgtList(paramList);
+        //재고확인 처리 할 것
+        if(compareMap.get("isOverPakcageCntYn").toString().equals("Y")) {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "한 차시에"+compareMap.get("packageindvd_limit")+" 개까지만 신청 할 수 있습니다.\n 이미 신청한 차시의 수량을 확인 해주십시오");
+            return resultMap;
+        }
+        
+        LendRndVo RndVo = lendService.selectRequestLendRndList(lendAplyVo);
+        
+        lendAplyVo.setLendBgngDe(RndVo.getBgngDe());
+        lendAplyVo.setLendEndDe(RndVo.getEndDe());
         retVal = lendService.insertLendAply(lendAplyVo);
-          
+        
         if(retVal > 0) {
             resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
             resultMap.put("msg", "신청이 완료되었습니다");
