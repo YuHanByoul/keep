@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.ibatis.type.Alias;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -88,6 +90,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     
     @Value("${server.servlet.session.cookie.domain}")
     private String serverCookieDomain;
+    
+    @Value("${crypto.key}")
+    private String encryptKey;
     
     /**
     * 회원 탈퇴 처리.
@@ -277,6 +282,16 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             if (memberVo.getPswd() != null) {
                 password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
                 memberVo.setPswd(password);
+            }
+            
+            if (memberVo.getGndr() != null) {
+                StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+                encryptor.setSaltGenerator(new RandomSaltGenerator());
+                encryptor.setPassword(encryptKey);
+                encryptor.setAlgorithm("PBEWithMD5AndDES");
+                String encStr = encryptor.encrypt(memberVo.getGndr());
+                
+                memberVo.setGndr(encStr);
             }
     
             // 회원정보 입력

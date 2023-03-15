@@ -79,7 +79,6 @@ public class MemberVo extends ParentRequestVo {
     private String eml2;
     
     /** 생년월일 */
-    @Size(max = 10, message = "생년월일은 40자를 넘을 수 없습니다.")
     private String brdt;
     
     /** 성별 */
