@@ -466,6 +466,7 @@ public class CmntyController {
      * @param model
      * @param user
      * @return string
+     * @throws Exception
      */
     @RequestMapping(value = "/front/cmnty/cmntyPstView.html")
     public String cmntyPstView(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
@@ -478,6 +479,10 @@ public class CmntyController {
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
         cmntyBbsVo.setBbsid(paramVo.getBbsid());
         CmntyBbsVo bbsInfo = cmntyService.selectBbsInfo(cmntyBbsVo);
+        //게시글 댓글 조회
+        CmntyCmntVo cmntyCmntVo = new CmntyCmntVo();
+        cmntyCmntVo.setPstid(paramVo.getPstid());
+        List<CmntyCmntVo> cmntyCmntList = cmntyService.selectCmntList(cmntyCmntVo);
         //게시글 정보 조회
         if ("1".equals(bbsInfo.getClsfCd() != null ? bbsInfo.getClsfCd() : "0")) {
             paramVo.setOrderField("GRP DESC,SORTORDR");
@@ -488,6 +493,7 @@ public class CmntyController {
 
         model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("cmntyPstInfo", resultMap.get("paramMap"));
+        model.addAttribute("cmntyCmntList", cmntyCmntList);
         model.addAttribute("fileMap", resultMap.get("fileMap"));
         model.addAttribute("cmntyid",cmntyid);
         model.addAttribute("paramVo",paramVo);
@@ -505,7 +511,7 @@ public class CmntyController {
      * @return string
      */
     @RequestMapping(value = "/front/cmnty/cmntyPstInsertForm.html")
-    public String cmntyPstInsertForm(Integer cmntyid, CmntyPstVo paramVo, Model model) throws Exception {
+    public String cmntyPstInsertForm(Integer cmntyid, CmntyPstVo paramVo, Model model) {
         //게시판 정보 조회
         CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
         cmntyBbsVo.setBbsid(paramVo.getBbsid());
@@ -609,6 +615,15 @@ public class CmntyController {
         return "front/cmnty/cmntyPstForm";
     }
 
+    /**
+     * 환경동아리 게시글 수정 처리
+     * Title : updateCmntyPst
+     * Description : 환경동아리 게시글 수정 처리
+     *
+     * @param paramVo
+     * @param user
+     * @return map
+     */
     @RequestMapping(value = "/front/cmnty/updateCmntyPst.do")
     @ResponseBody
     public Map<String, Object> updateCmntyPst(@Valid CmntyPstVo paramVo, @UserInfo UserVo user){
@@ -628,4 +643,83 @@ public class CmntyController {
         return resultMap;
     }
 
+    /**
+     * 환경동아리 댓글 등록
+     * Title : insertCmnt
+     * Description : 환경동아리 댓글 등록
+     *
+     * @param paramVo
+     * @param user
+     * @return map
+     */
+    @RequestMapping(value = "/front/cmnty/insertCmnt.do")
+    @ResponseBody
+    public Map<String, Object> insertCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
+        Map<String, Object> resultMap = new HashMap<>();
+        boolean result = false;
+        paramVo.setUser(user);
+
+        result = cmntyService.insertCmnt(paramVo);
+
+        if(result){
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록이 완료되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다.");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 환경동아리 댓글 수정
+     * Title : insertCmnt
+     * Description : 환경동아리 댓글 수정
+     *
+     * @param paramVo
+     * @param user
+     * @return map
+     */
+    @RequestMapping(value = "/front/cmnty/updateCmnt.do")
+    @ResponseBody
+    public Map<String, Object> updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
+        Map<String, Object> resultMap = new HashMap<>();
+        boolean result = false;
+        paramVo.setUser(user);
+
+        result = cmntyService.updateCmnt(paramVo);
+
+        if(result){
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "수정이 완료되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "수정에 실패하였습니다.");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 환경동아리 댓글 목록
+     * Title : selectCmntList
+     * Description : 환경동아리 댓글 목록
+     *
+     * @param pstid
+     * @return map
+     */
+    @RequestMapping(value="/front/cmnty/selectCmntList.do")
+    @ResponseBody
+    public Map<String, Object> selectCmntList(Integer pstid){
+        Map<String, Object> resultMap = new HashMap<>();
+        CmntyCmntVo cmntyCmntVo = new CmntyCmntVo();
+        cmntyCmntVo.setPstid(pstid);
+        List<CmntyCmntVo> cmntyCmntList = cmntyService.selectCmntList(cmntyCmntVo);
+
+        if(cmntyCmntList != null){
+            resultMap.put("data",cmntyCmntList);
+        }else{
+            resultMap.put("data",null);
+        }
+        return resultMap;
+    }
 }

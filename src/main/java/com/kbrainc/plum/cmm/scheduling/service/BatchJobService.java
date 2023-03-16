@@ -71,4 +71,26 @@ public interface BatchJobService {
      * @throws Exception 예외
      */
      public void deleteOldNtcMsg(int triggerid) throws Exception;
+     
+     /**
+      * 푸름이 이동환경교실 만족도 조사 안내 메시지 발송
+      *
+      * @Title       : mvnEnveduDgstfnMsgSend 
+      * @Description : 푸름이 이동환경교실 만족도 조사 안내 메시지 발송
+      * @param triggerid
+      * @return void 리턴값없음
+      * @throws Exception 예외
+      */
+      public void mvnEnveduDgstfnMsgSend(int triggerid) throws Exception;
+      
+      /**
+       * 유아환경교육 만족도 조사 안내 메시지 발송
+       *
+       * @Title       : infntEnveduDgstfnMsgSend 
+       * @Description : 유아환경교육 만족도 조사 안내 메시지 발송
+       * @param triggerid
+       * @return void 리턴값없음
+       * @throws Exception 예외
+       */
+       public void infntEnveduDgstfnMsgSend(int triggerid) throws Exception;
 }
