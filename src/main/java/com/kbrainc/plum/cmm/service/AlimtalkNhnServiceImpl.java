@@ -57,18 +57,22 @@ public class AlimtalkNhnServiceImpl extends PlumAbstractServiceImpl implements A
     * @Title : sendAlimtalk 
     * @Description : 알림톡 발송
     * @param templateCode 템플릿코드
+    * @param requestDate 발송요청일
     * @param recipientList 수신자 목록
     * @return Map<String,Object> 발송결과
     * @throws Exception 예외
     */
     @Override
-    public Map<String, Object> sendAlimtalk(String templateCode, String recipientList) throws Exception {
+    public Map<String, Object> sendAlimtalk(String templateCode, String requestDate, String recipientList) throws Exception {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(recipientList);
         
         Map<String, Object> params = new HashMap<>();
         params.put("senderKey", senderKey);
         params.put("templateCode", templateCode);
+        if(requestDate != null && !requestDate.equals("")) {
+            params.put("requestDate", requestDate);
+        }
         params.put("recipientList", obj);
         
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

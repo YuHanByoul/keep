@@ -149,7 +149,7 @@ public class BatchJobServiceImpl implements BatchJobService {
 	/**
     * 푸름이 이동 환경교육 안내 알림톡 발송
     *
-    * @Title       : infntEnveduMsgNoticeMsgSend 
+    * @Title       : mvnEnveduMsgNoticeMsgSend 
     * @Description : 푸름이 이동 환경교육 안내 알림톡 발송
     * @param triggerid
     * @return void 리턴값없음
@@ -245,4 +245,86 @@ public class BatchJobServiceImpl implements BatchJobService {
      public void deleteOldNtcMsg(@Triggerid int triggerid) throws Exception {
          batchJobDao.deleteOldNtcMsg();
      }
+     
+     /**
+      * 푸름이 이동환경교실 만족도 조사 안내 메시지 발송
+      *
+      * @Title       : mvnEnveduDgstfnMsgSend 
+      * @Description : 푸름이 이동환경교실 만족도 조사 안내 메시지 발송
+      * @param triggerid
+      * @return void 리턴값없음
+      * @throws Exception 예외
+      */
+      @SchedulingHistory
+      public void mvnEnveduDgstfnMsgSend(@Triggerid int triggerid) throws Exception {
+        //발송대상자 확인
+          List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectMvnEnveduSmsSendList();
+          
+          ObjectMapper mapper = new ObjectMapper();
+          
+          List<Object> recipientList = new ArrayList<>(); 
+          for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+              Map<String, Object> map = new HashMap<String, Object>();
+              map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
+              map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
+    
+              Map<String, Object> templateParameter = new HashMap<String, Object>();
+              templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
+              templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+              templateParameter.put("prgrmNm", alimTalkSendUser.get("PRGRM_NM"));
+              templateParameter.put("startTime", alimTalkSendUser.get("START_TIME"));
+              templateParameter.put("dgstfnUrl", "만족도 조사 URL");
+    
+              map.put("templateParameter", templateParameter);
+    
+              recipientList.add(map); 
+          }
+            
+          String recipientListStr = mapper.writeValueAsString(recipientList);
+          
+          //발송 - 아직 탬플릿 없음
+          //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+      }
+      
+      /**
+       * 유아환경교육 만족도 조사 안내 메시지 발송
+       *
+       * @Title       : infntEnveduDgstfnMsgSend 
+       * @Description : 유아환경교육 만족도 조사 안내 메시지 발송
+       * @param triggerid
+       * @return void 리턴값없음
+       * @throws Exception 예외
+       */
+       @SchedulingHistory
+       public void infntEnveduDgstfnMsgSend(@Triggerid int triggerid) throws Exception {
+           
+           //발송대상자 확인
+           List<Map<String, Object>> alimTalkSendUserList = batchJobDao.selectInfntEnveduSmsSendList();
+           
+           ObjectMapper mapper = new ObjectMapper();
+           
+           List<Object> recipientList = new ArrayList<>(); 
+           for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+               Map<String, Object> map = new HashMap<String, Object>();
+               map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
+               map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
+     
+               Map<String, Object> templateParameter = new HashMap<String, Object>();
+               templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
+               templateParameter.put("eduNope", alimTalkSendUser.get("EDU_NOPE"));
+               templateParameter.put("tcherNope", alimTalkSendUser.get("TCHER_NOPE"));
+               templateParameter.put("prgrmNm", alimTalkSendUser.get("PRGRM_NM"));
+               templateParameter.put("startTime", alimTalkSendUser.get("START_TIME"));
+               templateParameter.put("dgstfnUrl", "만족도 조사 URL");
+     
+               map.put("templateParameter", templateParameter);
+     
+               recipientList.add(map); 
+           }
+             
+           String recipientListStr = mapper.writeValueAsString(recipientList);
+           
+           //발송 - 아직 탬플릿 없음
+           //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+       }
 }
