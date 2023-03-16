@@ -37,6 +37,8 @@ public interface ExprtRegisterDao {
 
     public int insertExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
+    public int updateExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
     public int insertHdof(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
     public int insertCrtfct(ExprtRegisterVo exprtRegisterVo) throws Exception;

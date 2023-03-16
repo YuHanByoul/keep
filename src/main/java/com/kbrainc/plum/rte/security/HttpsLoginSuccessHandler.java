@@ -1,6 +1,7 @@
 package com.kbrainc.plum.rte.security;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -13,12 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.util.Base64Utils;
 
 import com.kbrainc.plum.config.security.properties.SecurityProperties;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.CookieUtil;
 import com.kbrainc.plum.rte.util.StringUtil;
 
 import WiseAccess.SSO;
@@ -44,6 +45,9 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     @Value("${server.port}")
     private String serverHttpsPort;
     
+    @Value("${app.sso.isuse}")
+    private boolean ssoIsUse;
+    
     @Value("${sso.apikey}")
     private String ssoApikey;
     
@@ -52,6 +56,9 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
     
     @Value("${sso.port}")
     private int ssoPort;
+    
+    @Value("${sso.serverid}")
+    private String ssoServerid;
     
     @Value("${server.servlet.session.cookie.domain}")
     private String serverCookieDomain;
@@ -106,36 +113,41 @@ public class HttpsLoginSuccessHandler extends SavedRequestAwareAuthenticationSuc
             }
         }
 
-        // 인증 세션을 가져와 새로운 쿠키 생성
-        setCookie(request, response, "JSESSIONID", request.getSession().getId());
-        
-        SSO sso = new SSO(ssoApikey);
-        sso.setHostName(ssoHost); // engine이 설치된 아이피
-        sso.setPortNumber(ssoPort); // engine 이 사용하고 있는 포트넘버
-        sso.setCharacterSet("euc-kr");
-        
-        // SSO 세션 생성
-        int nResult = sso.regUserSession(((UserVo)session.getAttribute("user")).getUserid(), CommonUtil.getClientIp(request), true);
-        
-        // 세션 생성 성공
-        if (nResult >= 0) {
-            setCookie(request, response, "ssotoken", sso.getToken());
-        } else {         // 세션 생성 실패         
-            setCookie(request, response, "ssotoken", "");
+        if (ssoIsUse) {
+            String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
+            
+            if ("".equals(StringUtil.nvl(sToken))) { // 토큰이 없으면
+                SSO sso = new SSO(ssoApikey);
+                sso.setHostName(ssoHost); // engine이 설치된 아이피
+                sso.setPortNumber(ssoPort); // engine이 사용하고 있는 포트넘버
+    
+                // SSO 세션 생성
+                String clientIp = CommonUtil.getClientIp(request);
+                int nResult = sso.regUserSession(((UserVo) session.getAttribute("user")).getUserid(), clientIp, true);
+                sso.putValue("loginUserType" , (String) request.getAttribute("loginUserType")); // 토큰에 삽입할 값을 넣어줌
+                String ssoToken = sso.makeToken(3, sso.getToken(), ssoServerid, clientIp); // 세션토큰과 합께 추가된(putValue)값을 토큰으로 생성 후 리턴
+                nResult = sso.getLastError(); // 가장 마지막에 발생한 에러값을 저장
+                
+                // SSO 세션 생성 성공
+                if (nResult >= 0) {
+                    // 인증 세션을 가져와 새로운 쿠키 생성
+                    CookieUtil.setCookie(request, response, "JSESSIONID", request.getSession().getId(), serverCookieDomain, "/");
+                    CookieUtil.setCookie(request, response, "ssotoken", ssoToken, serverCookieDomain, "/");
+                } else {         // 세션 생성 실패
+                    session.setAttribute("user", null);
+                    CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
+                    response.setContentType("text/html;charset=UTF-8");
+                    PrintWriter writer = response.getWriter();
+                    writer.print(String.format("<script>alert('사용자 인증 오류입니다[오류코드 %s].\\n로그인 화면으로 이동합니다.');history.back();</script>", nResult));
+                    return;
+                }
+            } else { // 토큰이 있으면
+                CookieUtil.setCookie(request, response, "JSESSIONID", request.getSession().getId(), serverCookieDomain, "/");
+            }
+        } else {
+            CookieUtil.setCookie(request, response, "JSESSIONID", request.getSession().getId(), serverCookieDomain, "/");
         }
         
         super.onAuthenticationSuccess(request, response, authentication);
     }
-    
-    public void setCookie(HttpServletRequest request, HttpServletResponse response, String sName, String sValue)
-    {
-        Cookie c = new Cookie(sName, sValue);
-        c.setDomain(serverCookieDomain);
-        c.setPath( "/" );
-        c.setHttpOnly(true);
-        if (request.isSecure()) {
-            c.setSecure(true);
-        }
-        response.addCookie(c);
-    }   
 }

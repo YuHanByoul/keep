@@ -268,16 +268,16 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
     }
 
     /**
-     * 환경동아리 게시글 정보 조회
+     * 환경동아리 게시글 조회
      * Title : selectPst
-     * Description : 환경동아리 게시글 정보 조회
+     * Description : 환경동아리 게시글 조회
      *
      * @param paramVo
      * @return map
      * @throws Exception
      */
     @Override
-    public Map<String, Object> selectPstInfo(CmntyPstVo paramVo) throws Exception {
+    public Map<String, Object> selectPst(CmntyPstVo paramVo) throws Exception {
         Map<String, Object> resultMap = new HashMap();
 
         CmntyPstVo cmntyPstVo = cmntyDao.selectPstInfo(paramVo);
@@ -309,8 +309,9 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
     @Transactional
     public boolean insertCmntyPst(CmntyPstVo paramVo) {
         boolean result = false;
-        if("".equals(paramVo.getPstid())){
+        if(paramVo.getPstid() != null){
             CmntyPstVo parentPstInfo = cmntyDao.selectPstInfo(paramVo);
+            paramVo.setParntsPstid(parentPstInfo.getPstid());
             paramVo.setGrp(parentPstInfo.getGrp());
             paramVo.setDpth(parentPstInfo.getDpth() + 1);
             paramVo.setSortordr(parentPstInfo.getSortordr() + 1);
@@ -318,5 +319,31 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
         }
         result = cmntyDao.insertCmntyPst(paramVo);
         return result;
+    }
+
+    /**
+     * 환경동아리 게시글 수정 처리
+     * Title : updateCmntyPst
+     * Description : 환경동아리 게시글 수정 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    @Override
+    public boolean updateCmntyPst(CmntyPstVo paramVo) {
+        return cmntyDao.updateCmntyPst(paramVo);
+    }
+
+    /**
+     * 환경동아리 게시글 정보 조회
+     * Title : selectPstInfo
+     * Description : 환경동아리 게시글 정보 조회
+     *
+     * @param paramVo
+     * @return cmnty pst vo
+     */
+    @Override
+    public CmntyPstVo selectPstInfo(CmntyPstVo paramVo) {
+        return cmntyDao.selectPstInfo(paramVo);
     }
 }

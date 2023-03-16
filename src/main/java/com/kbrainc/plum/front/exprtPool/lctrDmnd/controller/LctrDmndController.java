@@ -15,9 +15,14 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +70,7 @@ public class LctrDmndController {
             , @ModelAttribute("searchVo") ExprtVo searchVo
             , Model model
             , @UserInfo UserVo user) throws Exception {
-        model.addAttribute("user",user);
+        model.addAttribute("user", user);
         searchVo.setExprtTypePath(exprtTypePath);
         return VIEW_PATH + "/lctrDmndList";
     }
@@ -81,9 +86,13 @@ public class LctrDmndController {
      */
     @GetMapping("/lctrDmndDetail.html")
     public String lctrDmndDetail(@ModelAttribute("searchVo") ExprtVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String referer = request.getHeader("referer");
+
         searchVo.setUser(user);
         ExprtVo exprt = lctrDmndService.selectExprt(searchVo);
 
+        model.addAttribute("referer", referer == null ? "/front/exprtPool/133/lctrDmndList.html" : referer);
         model.addAttribute("exprt", exprt);
         model.addAttribute("user", user);
         return VIEW_PATH + "/lctrDmndDetail";
@@ -99,7 +108,20 @@ public class LctrDmndController {
      * @Description : 섭외 요청 등록 화면
      */
     @GetMapping("/lctrDmndForm.html")
-    public String lctrDmndForm(@ModelAttribute("searchVo") ExprtVo searchVo, Model model) throws Exception {
+    public String lctrDmndForm(@ModelAttribute("searchVo") ExprtVo searchVo, @UserInfo UserVo user, Model model, HttpServletResponse response) throws Exception {
+        if (user == null) {
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter writer = response.getWriter();
+            writer.print("<script>alert('14세 이상 개인회원 또는 기관회원 가입 후 전문가 요청이 가능합니다.');history.back();</script>");
+            return null;
+        }
+
+        if (user.getUserType() != null && user.getUserType().equals("C")) {
+            response.setContentType("text/html;charset=UTF-8");
+            PrintWriter writer = response.getWriter();
+            writer.print("<script>alert('14세 미만 어린이 회원은 전문가 요청을 할 수 없습니다.');history.back();</script>");
+            return null;
+        }
 
         Map<String, Object> fileConfiguration = fileService.getConfigurationByFilegrpName("lctrDmnd_file");
         String uploadFileExtsn = ((HashMap<String, String>) fileConfiguration.get("uploadFileExtsn"))
@@ -238,10 +260,10 @@ public class LctrDmndController {
         exprtVo.setUser(user);
 
         if (lctrDmndService.deleteItrstExprt(exprtVo) > 0) {
-            response.put("msg", "관심인력을 삭제하였습니다.");
+            response.put("msg", "관심인력을 해제하였습니다.");
             response.put("success", true);
         } else
-            response.put("msg", "관심인력 삭제가 실패하였습니다.");
+            response.put("msg", "관심인력 해제가 실패하였습니다.");
 
         return response;
     }

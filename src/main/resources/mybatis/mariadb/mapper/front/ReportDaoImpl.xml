@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	SQL File Name : ReportDaoImpl.xml
+	Description : 마이페이지 > 체험환경 > 사업보고관리
+-->
+<mapper namespace="com.kbrainc.plum.front.report.model.ReportDao">
+    
+    <!-- 사업보고관리 목록 조회 -->
+    <select id="selectReportList" parameterType="ReportVo" resultType="ReportVo">
+        /* ReportDao.selectReportList */
+        <include refid="PaginationMapper.header"/>
+        SELECT 
+            *
+        FROM (
+            SELECT 
+                TSA.PCNTSTID 
+                , TSA.APLYID
+                , TSP.FLD_CD
+                , TCC.CD_NM AS FLD_NM
+                , TSP.PCNTST_NM 
+                , APLYNO
+                , PRGRM_NM
+                , IF(TSR.REPORTID IS NULL, '203101', TSR.REPORT_STTS_CD) AS REPORT_STTS_CD 
+                , IF(TSR.REPORTID IS NULL, '제출전', TCC2.CD_NM) AS REPORT_STTS_NM
+                , TCC3.CD AS REPORT_SE_CD 
+                , TCC3.CD_NM AS REPORT_SE_NM
+                , DATE_FORMAT(IFNULL(TSR.REPORT_BGNG_DT, TSP.MDL_REPORT_BGNG_DT), '%Y-%m-%d %H:%i') AS REPORT_BGNG_DT
+                , DATE_FORMAT(IFNULL(TSR.REPORT_END_DT, TSP.MDL_REPORT_END_DT), '%Y-%m-%d %H:%i') AS REPORT_END_DT
+                , CONCAT(TSP.BSNS_BGNG_DE, ' ~ ', TSP.BSNS_END_DE) AS BSNS_DE
+                , CASE WHEN TSR.REPORTID IS NULL AND NOW() <![CDATA[>]]> TSP.MDL_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.MDL_REPORT_END_DT THEN 'C'  -- 신청버튼
+                    WHEN TSR.REPORTID IS NOT NULL AND NOW() <![CDATA[>]]> TSP.MDL_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.MDL_REPORT_END_DT THEN 'U'
+                    WHEN TSR.REPORTID IS NOT NULL THEN 'R'
+                    ELSE '-' END AS CRUD_BTN
+                , (SELECT MAX(SPLMNTID) FROM TB_SPB_REPORT_SPLMNT TSRS WHERE TSRS.REPORTID = TSR.REPORTID) AS SPLMNTID
+                , TSA.USERID
+                , TSA.APLCNT_NM
+                , IF(TSA.INST_NM IS NULL, NULL, TSA.INSTID) AS INSTID
+                , TSA.INST_NM 
+                , TSA.CNSLTNG_TRGT_CN
+                , TSAC.CN_BFR 
+                , TSAC.CN_AFTR 
+                , TSAC.RSLT 
+                , IFNULL(DATE_FORMAT(TSAC.VST_DT, '%Y-%m-%d'), '-') AS VST_DT
+                , TSR.REPORTID
+                , TSR.ATCH_FILEGRPID 
+                , TSR.ETC_CN 
+                , TSR.TRGT
+                , TSR.SBJCT
+                , TSAC.CNSLTNGID 
+                , TSA.REG_DT 
+                , TSA.MDFCN_DT 
+            FROM 
+                TB_SPB_PCNTST TSP 
+                INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+                LEFT OUTER JOIN TB_SPB_REPORT TSR ON TSR.APLYID = TSA.APLYID AND TSR.REPORT_SE_CD = '204101'
+                LEFT OUTER JOIN TB_SPB_APLY_CNSLTNG TSAC ON TSAC.APLYID = TSA.APLYID 
+                LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
+                LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSR.REPORT_STTS_CD = TCC2.CD
+                LEFT OUTER JOIN TB_CMM_CD TCC3 ON IFNULL(TSR.REPORT_SE_CD, '204101') = TCC3.CD
+            WHERE TSP.MDL_REPORT_YN = 'Y'
+            UNION ALL
+            SELECT 
+                TSA.PCNTSTID 
+                , TSA.APLYID
+                , TSP.FLD_CD
+                , TCC.CD_NM AS FLD_NM
+                , TSP.PCNTST_NM 
+                , APLYNO
+                , PRGRM_NM
+                , IF(TSR.REPORTID IS NULL, '203101', TSR.REPORT_STTS_CD) AS REPORT_STTS_CD 
+                , IF(TSR.REPORTID IS NULL, '제출전', TCC2.CD_NM) AS REPORT_STTS_NM
+                , TCC3.CD AS REPORT_SE_CD
+                , TCC3.CD_NM AS REPORT_SE_NM
+                , DATE_FORMAT(IFNULL(TSR.REPORT_BGNG_DT, TSP.RSLT_REPORT_BGNG_DT), '%Y-%m-%d %H:%i') AS REPORT_BGNG_DT
+                , DATE_FORMAT(IFNULL(TSR.REPORT_END_DT, TSP.RSLT_REPORT_END_DT), '%Y-%m-%d %H:%i') AS REPORT_END_DT
+                , CONCAT(TSP.BSNS_BGNG_DE, ' ~ ', TSP.BSNS_END_DE) AS BSNS_DE
+                , CASE WHEN TSR.REPORTID IS NULL AND NOW() <![CDATA[>]]> TSP.RSLT_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.RSLT_REPORT_END_DT THEN 'C'  -- 신청버튼
+                    WHEN TSR.REPORTID IS NOT NULL AND NOW() <![CDATA[>]]> TSP.RSLT_REPORT_BGNG_DT AND NOW() <![CDATA[<]]> TSP.RSLT_REPORT_END_DT THEN 'U'
+                    WHEN TSR.REPORTID IS NOT NULL THEN 'R'
+                    ELSE '-' END AS CRUD_BTN
+                , (SELECT MAX(SPLMNTID) FROM TB_SPB_REPORT_SPLMNT TSRS WHERE TSRS.REPORTID = TSR.REPORTID) AS SPLMNTID
+                , TSA.USERID
+                , TSA.APLCNT_NM
+                , IF(TSA.INST_NM IS NULL, NULL, TSA.INSTID) AS INSTID
+                , TSA.INST_NM 
+                , TSA.CNSLTNG_TRGT_CN
+                , TSAC.CN_BFR 
+                , TSAC.CN_AFTR
+                , TSAC.RSLT 
+                , IFNULL(DATE_FORMAT(TSAC.VST_DT, '%Y-%m-%d'), '-') AS VST_DT
+                , TSR.REPORTID
+                , TSR.ATCH_FILEGRPID 
+                , TSR.ETC_CN 
+                , TSR.TRGT
+                , TSR.SBJCT
+                , TSAC.CNSLTNGID 
+                , TSA.REG_DT 
+                , TSA.MDFCN_DT 
+            FROM 
+                TB_SPB_PCNTST TSP 
+                INNER JOIN TB_SPB_APLY TSA ON TSP.PCNTSTID = TSA.PCNTSTID
+                LEFT OUTER JOIN TB_SPB_REPORT TSR ON TSR.APLYID = TSA.APLYID AND TSR.REPORT_SE_CD = '204102' 
+                LEFT OUTER JOIN TB_SPB_APLY_CNSLTNG TSAC ON TSAC.APLYID = TSA.APLYID 
+                LEFT OUTER JOIN TB_CMM_CD TCC ON TSP.FLD_CD = TCC.CD
+                LEFT OUTER JOIN TB_CMM_CD TCC2 ON TSR.REPORT_STTS_CD = TCC2.CD
+                LEFT OUTER JOIN TB_CMM_CD TCC3 ON IFNULL(TSR.REPORT_SE_CD, '204102') = TCC3.CD
+        ) T
+        WHERE USERID = #{user.userid}
+        <if test="user.loginUserType == 'P'.toString()">
+        AND FLD_CD IN ('173105','173106')
+        </if>
+        <if test="user.loginUserType == 'I'.toString()">
+        AND FLD_CD NOT IN ('173105','173106')
+        </if>
+        <if test="reportid != null and reportid != ''">
+        AND REPORTID = #{reportid}
+        </if>
+        <if test="aplyid != null and aplyid != ''">
+        AND APLYID = #{aplyid}
+        </if>
+        <if test="reportSeCd != null and reportSeCd != ''">
+        AND REPORT_SE_CD = #{reportSeCd}
+        </if>
+        <if test="searchFldCd != null and searchFldCd != ''">
+        AND FLD_CD = #{searchFldCd}
+        </if>
+        <if test="searchPcntstNm != null and searchPcntstNm != ''">
+        AND PCNTST_NM LIKE CONCAT('%',#{searchPcntstNm},'%')
+        </if>
+        <if test="searchPrgrmNm != null and searchPrgrmNm != ''">
+        AND PRGRM_NM LIKE CONCAT('%',#{searchPrgrmNm},'%')
+        </if>
+        <if test="searchReportSttsCd != null and searchReportSttsCd != ''">
+        AND REPORT_STTS_CD = #{searchReportSttsCd}
+        </if>
+        <include refid="PaginationMapper.footer"/>
+    </select>
+    
+    <!-- 사업보고관리 등록 -->
+    <insert id="insertReport" parameterType="ReportVo" useGeneratedKeys="true" keyProperty="reportid">
+        /* ReportDao.insertReport */
+        INSERT INTO TB_SPB_REPORT (
+            APLYID
+            , REPORT_SE_CD
+            , ATCH_FILEGRPID
+            , ETC_CN
+            , TRGT
+            , SBJCT
+            , REPORT_BGNG_DT
+            , REPORT_END_DT
+            , REPORT_STTS_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{aplyid}
+            , #{reportSeCd}
+            , #{atchFilegrpid}
+            , #{etcCn}
+            , #{trgt}
+            , #{sbjct}
+            , #{reportBgngDt}
+            , #{reportEndDt}
+            , '203102'
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+                    
+    <!-- 사업보고관리 수정 -->
+    <update id="updateReport" parameterType="ReportVo">
+        /* ReportDao.updateReport */
+        UPDATE TB_SPB_REPORT SET
+            TRGT = #{trgt}
+            , SBJCT = #{sbjct}
+            , ATCH_FILEGRPID = #{atchFilegrpid}
+            , ETC_CN = #{etcCn}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            REPORTID = #{reportid}
+    </update>
+    
+    <!-- 사업보고관리 교육운영정보 조회 -->
+    <select id="selectReportOperList" parameterType="ReportOperVo" resultType="ReportOperVo">
+        /* ReportDao.selectReportOperList */
+        SELECT
+            OPERID
+            , REPORTID
+            , SE_CD
+            , BGNG_DE
+            , END_DE
+            , RND
+            , NOPE
+            , MNT
+            , RMRK
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        FROM
+            TB_SPB_REPORT_OPER
+        WHERE REPORTID = #{reportid}
+        AND SE_CD = #{seCd}
+        ORDER BY OPERID
+    </select>
+    
+    <!-- 사업보고관리 교육운영정보 등록 -->
+    <insert id="insertReportOper" parameterType="ReportOperVo" useGeneratedKeys="true" keyProperty="operid">
+        /* ReportDao.insertReportOper */
+        INSERT INTO TB_SPB_REPORT_OPER (
+            REPORTID
+            , SE_CD
+            , BGNG_DE
+            , END_DE
+            , RND
+            , NOPE
+            , MNT
+            , RMRK
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{reportid}
+            , #{seCd}
+            , #{bgngDe}
+            , #{endDe}
+            , #{rnd}
+            , #{nope}
+            , #{mnt}
+            , #{rmrk}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    
+    <!-- 사업보고관리 교육운영정보 수정 -->
+    <update id="updateReportOper" parameterType="ReportOperVo">
+        /* ReportDao.updateReportOper */
+        UPDATE TB_SPB_REPORT_OPER SET
+            SE_CD = #{seCd}
+            , BGNG_DE = #{bgngDe}
+            , END_DE = #{endDe}
+            , RND = #{rnd}
+            , NOPE = #{nope}
+            , MNT = #{mnt}
+            , RMRK = #{rmrk}
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            OPERID = #{operid}
+    </update>
+    
+    <!--  보완요청 상세 조회-->
+    <select id="selectSplmntInfo" parameterType="front.SupplementVo" resultType="front.SupplementVo">
+        /* ReportDao.selectSplmntInfo */
+        SELECT
+            SPLMNTID
+            , REPORTID 
+            , DMND_CN
+            , ANS_STTS_CD
+            , ANS_CN
+        FROM
+            TB_SPB_REPORT_SPLMNT
+        WHERE
+            SPLMNTID = #{splmntid}
+    </select>
+    
+    <!-- 보완요청 업데이트 -->
+    <update id="updateSplmnt" parameterType="front.SupplementVo">
+        /* ReportDao.updateSplmnt */
+        UPDATE TB_SPB_REPORT_SPLMNT SET
+            ANS_CN = #{ansCn}
+            , ANS_STTS_CD = '201102'
+            , ANSWRRID = #{user.userid}
+            , ANS_DT = NOW()
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            SPLMNTID = #{splmntid}
+    </update>
+    
+    <!-- 보완완료 상태 업데이트 -->
+    <update id="updateReportStts" parameterType="front.SupplementVo">
+        /* ReportDao.updateReportStts */
+        UPDATE TB_SPB_REPORT SET
+            REPORT_STTS_CD = '203105'
+            , MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+        WHERE 
+            REPORTID = #{reportid}
+    </update>
+    
+    <!-- 컨설팅 사유 조회 -->
+    <select id="selectConsulting" parameterType="ReportVo" resultType="ReportVo">
+        /* ReportDao.selectConsulting */
+        SELECT 
+            B.CNSLTNG_TRGT_CN
+            , DATE_FORMAT(VST_DT, '%Y-%m-%d') AS VST_DT
+            , A.RSLT
+            , A.CN_BFR
+            , A.CN_AFTR
+        FROM 
+            TB_SPB_APLY_CNSLTNG A
+            INNER JOIN TB_SPB_APLY B ON A.APLYID = B.APLYID
+        WHERE A.CNSLTNGID = #{cnsltngid}
+    </select>
+</mapper>

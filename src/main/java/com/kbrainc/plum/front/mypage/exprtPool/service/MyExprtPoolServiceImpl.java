@@ -65,9 +65,11 @@ public class MyExprtPoolServiceImpl extends PlumAbstractServiceImpl implements M
         List<MyCrtfctVo> expertCrtfctList = myExprtDao.selectExpertCrtfctList(exprtVo);
         getCrtfctFiles(expertCrtfctList, exprtVo.getUser(), false);
 
-        exprt.setHdofs(expertHdofList);
-        exprt.setCareers(expertCareerList);
-        exprt.setCrtfcts(expertCrtfctList);
+        if (exprt != null) {
+            exprt.setHdofs(expertHdofList);
+            exprt.setCareers(expertCareerList);
+            exprt.setCrtfcts(expertCrtfctList);
+        }
 
         return exprt;
     }
@@ -86,9 +88,11 @@ public class MyExprtPoolServiceImpl extends PlumAbstractServiceImpl implements M
         List<MyCrtfctVo> expertCrtfctList = myExprtDao.selectExpertCrtfctList(myExprtMdfcnVo);
         getCrtfctFiles(expertCrtfctList, myExprtMdfcnVo.getUser(), true);
 
-        exprtMdfcn.setHdofs(expertHdofList);
-        exprtMdfcn.setCareers(expertCareerList);
-        exprtMdfcn.setCrtfcts(expertCrtfctList);
+        if (exprtMdfcn != null) {
+            exprtMdfcn.setHdofs(expertHdofList);
+            exprtMdfcn.setCareers(expertCareerList);
+            exprtMdfcn.setCrtfcts(expertCrtfctList);
+        }
         return exprtMdfcn;
     }
 
@@ -136,9 +140,9 @@ public class MyExprtPoolServiceImpl extends PlumAbstractServiceImpl implements M
         retVal += myExprtDao.insertActvtRgnCds(myExprtMdfcnVo.getMdfcnDmndId(), actvtRgnCds, myExprtMdfcnVo.getUser());
         retVal += myExprtDao.insertActvtScopeCds(myExprtMdfcnVo.getMdfcnDmndId(), actvtScopeCds, myExprtMdfcnVo.getUser());
 
-        retVal += myExprtDao.insertCareer(myExprtMdfcnVo);
-        retVal += myExprtDao.insertHdof(myExprtMdfcnVo);
-        retVal += myExprtDao.insertCrtfct(myExprtMdfcnVo);
+        retVal += myExprtMdfcnVo.getCareers() != null ? myExprtDao.insertCareer(myExprtMdfcnVo) : 0;
+        retVal += myExprtMdfcnVo.getHdofs() != null ? myExprtDao.insertHdof(myExprtMdfcnVo) : 0;
+        retVal += myExprtMdfcnVo.getCrtfcts() != null ? myExprtDao.insertCrtfct(myExprtMdfcnVo) : 0;
 
         return retVal;
     }

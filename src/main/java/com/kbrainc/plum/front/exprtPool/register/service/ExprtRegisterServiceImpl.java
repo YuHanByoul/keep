@@ -65,10 +65,10 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
             retVal += exprtRegisterDao.deleteHdof(exprtRegisterVo);
             retVal += exprtRegisterDao.deleteCrtfct(exprtRegisterVo);
             retVal += exprtRegisterDao.deleteCareer(exprtRegisterVo);
-            retVal += exprtRegisterDao.deleteExprt(exprtRegisterVo);
+            retVal += exprtRegisterDao.updateExprt(exprtRegisterVo);
+        } else {
+            retVal += exprtRegisterDao.insertExprt(exprtRegisterVo);
         }
-
-        retVal += exprtRegisterDao.insertExprt(exprtRegisterVo);
 
         retVal += exprtRegisterVo.getCareers().size() > 0 ? exprtRegisterDao.insertCareer(exprtRegisterVo) : 0;
         retVal += exprtRegisterVo.getCrtfcts().size() > 0 ? exprtRegisterDao.insertCrtfct(exprtRegisterVo) : 0;
@@ -85,12 +85,12 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
 
         retVal += exprtRegisterDao.insertDefaultInfo(exprtRegisterVo);
 
-        /* 최초 신청시 정보 변경 테이블에 레코드 생성 */
-        if (exprtRegisterVo.getNewYn().equals("Y")) {
+        /* 최초 신청시 정보 변경 테이블에 레코드 생성*/
+        if (exprtRegisterVo.getTempSaveYn().equals("N")) {
             retVal += exprtRegisterDao.insertMdfcnExprt(exprtRegisterVo);
             retVal += exprtRegisterVo.getCareers().size() > 0 ? exprtRegisterDao.insertMdfcnCareer(exprtRegisterVo) : 0;
             retVal += exprtRegisterVo.getCrtfcts().size() > 0 ? exprtRegisterDao.insertMdfcnCrtfct(exprtRegisterVo) : 0;
-            retVal += exprtRegisterVo.getHdofs().size() > 0 ? exprtRegisterDao.insertHdof(exprtRegisterVo) : 0;
+            retVal += exprtRegisterVo.getHdofs().size() > 0 ? exprtRegisterDao.insertMdfcnHdof(exprtRegisterVo) : 0;
             retVal += exprtRegisterDao.insertMdfcnTrgtCds(exprtRegisterVo.getMdfcnDmndId(), trgtCds, exprtRegisterVo.getUser());
             retVal += exprtRegisterDao.insertMdfcnSbjctCds(exprtRegisterVo.getMdfcnDmndId(), sbjctCds, exprtRegisterVo.getUser());
             retVal += exprtRegisterDao.insertMdfcnActvtRgnCds(exprtRegisterVo.getMdfcnDmndId(), actvtRgnCds, exprtRegisterVo.getUser());
