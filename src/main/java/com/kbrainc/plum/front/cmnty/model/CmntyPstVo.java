@@ -63,6 +63,7 @@ public class CmntyPstVo extends ParentRequestVo {
     private String hotYn;
     private String newYn;
     private String fxNtcUseYn;
+    private String cmntUseYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
     private Date mdfcnDt;

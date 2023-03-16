@@ -49,21 +49,25 @@
 
         <div class="btn-wrap">
             <div class="center">
-                <button type="button" class="btn-medium btn-gray" onclick="goListPage()">목록</button>
-                <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray" th:onclick="openReplyForm([[${cmntyPstInfo.pstid}]])">답글</button>
-                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray" th:onclick="openUpdateForm([[${cmntyPstInfo.pstid}]])">수정</button>
+                <button type="button" class="btn-medium btn-gray list-btn">목록</button>
+                <button th:if="${bbsInfo.cmntUseYn eq 'Y'}" type="button" class="btn-medium btn-gray reply-btn" th:data-pstid="${cmntyPstInfo.pstid}">답글</button>
+                <button th:if="${cmntyPstInfo.rgtrid eq paramVo.user.userid}" type="button" class="btn-medium btn-gray update-btn" th:data-pstid="${cmntyPstInfo.pstid}">수정</button>
             </div>
         </div>
 
+        <div th:if="${cmntyPstInfo.cmntUseYn eq 'Y'}">
+            댓글 보여지는 곳
+        </div>
+
         <div class="page-navigation">
-            <a th:if="${cmntyPstInfo.prevPstid ne null}" th:onclick="goToOtherPst([[${cmntyPstInfo.prevPstid}]])">
+            <a class="move-pst-btn" th:if="${cmntyPstInfo.prevPstid ne null}" th:data-pstid="${cmntyPstInfo.prevPstid}">
                 <dl>
                     <dt>다음글</dt>
                     <dd><span class="ellipsis">[[${cmntyPstInfo.prevTitle}]]</span></dd>
                 </dl>
             </a>
 
-            <a th:if="${cmntyPstInfo.nextPstid ne null}" th:onclick="goToOtherPst([[${cmntyPstInfo.nextPstid}]])">
+            <a class="move-pst-btn" th:if="${cmntyPstInfo.nextPstid ne null}" th:data-pstid="${cmntyPstInfo.nextPstid}">
                 <dl>
                     <dt>이전글</dt>
                     <dd><span class="ellipsis">[[${cmntyPstInfo.nextTitle}]]</span>
@@ -84,27 +88,42 @@
     </form>
 
     <script th:inline="javascript">
-        const $searchForm = $('#searchForm');
-        function goToOtherPst(pstid) {
-            if(pstid == null) return;
-            $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
-            $searchForm[0].pstid.value = pstid;
-            $searchForm[0].submit();
-        }
-        function goListPage() {
-            $searchForm[0].action = '/front/cmnty/cmntyPstList.html';
-            $searchForm[0].submit();
-        }
-        function openReplyForm(pstid){
-            $searchForm[0].action = '/front/cmnty/cmntyPstInsertForm.html';
-            $searchForm[0].pstid.value = pstid;
-            $searchForm[0].submit();
-        }
-        function openUpdateForm(pstid){
-            $searchForm[0].action = '/front/cmnty/cmntyPstUpdateForm.html';
-            $searchForm[0].pstid.value = pstid;
-            $searchForm[0].submit();
-        }
+        window.addEventListener('DOMContentLoaded',function (){
+            const $searchForm = $('#searchForm');
+            let pstid = undefined;
+
+            $('.move-pst-btn').on('click', function(){
+                pstid = $(this).data('pstid');
+                if(pstid == null) return;
+                $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
+                $searchForm[0].pstid.value = pstid;
+                $searchForm[0].submit();
+            });
+
+            $('.list-btn').on('click',function(){
+                $searchForm[0].action = '/front/cmnty/cmntyPstList.html';
+                $searchForm[0].submit();
+            });
+
+            $('.reply-btn').on('click',function(){
+                pstid = $(this).data('pstid');
+                $searchForm[0].action = '/front/cmnty/cmntyPstInsertForm.html';
+                $searchForm[0].pstid.value = pstid;
+                $searchForm[0].submit();
+            });
+
+            $('.update-btn').on('click',function(){
+                pstid = $(this).data('pstid');
+                $searchForm[0].action = '/front/cmnty/cmntyPstUpdateForm.html';
+                $searchForm[0].pstid.value = pstid;
+                $searchForm[0].submit();
+            });
+
+            //댓글 등록 ajax
+            //댓글 수정 ajax
+            //댓글 목록 ajax
+            //댓글 밑에 댓글 등록 위해 클릭 시 부모댓금 아이디 추가하고 등록폼 생성 js
+        });
     </script>
 </div>
 </body>

@@ -63,4 +63,13 @@ public class MsgVo extends ParentRequestVo {
     /** 대상자 이름 */
     private String trgtNm;
 
+    /** 대상자 탈퇴 여부 */
+    private String delYn;
+
+    /** 대상자 상태코드 */
+    private String sttsCd;
+
+    /** 대상자 블랙리스트 여부 */
+    private String blcklstYn;
+
 }
