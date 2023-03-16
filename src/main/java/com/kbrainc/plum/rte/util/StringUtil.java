@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.springframework.util.Base64Utils;
@@ -770,5 +771,86 @@ public class StringUtil {
         }
         
         return String.format("%s?%s", url, queryString.replaceFirst("&pwd&", "&"));
+    }
+    
+    /**
+    * 이름을 마스킹 처리한후 돌려준다.
+    *
+    * @Title : maskingName
+    * @Description : 이름을 마스킹 처리한후 돌려준다.
+    * @param name 이름
+    * @return String 마스킹 이름
+    */
+    public static String maskingName(String name) {
+        if (name == null) {
+            return null;
+        }
+        
+        if ("휴면회원".equals(name)) {
+            return name;
+        }
+        
+        String retName = name;
+        switch (name.length()) {
+            case 2:
+                retName = String.format("%s*", name.substring(0, 1));
+                break;
+            case 3:
+                retName = String.format("%s*%s", name.substring(0, 1), name.substring(2, 3));
+                break;
+            case 4:
+                retName = String.format("%s**%s", name.substring(0, 1), name.substring(3, 4));
+                break;
+        }   
+        
+        if (name.length() > 4) {
+            retName = String.format("%s**%s", name.substring(0, 1), name.substring(3, name.length()));
+        }
+        
+        return retName;
+    }
+    
+    /**
+    * 계정을 마스킹 처리한후 돌려준다.
+    *
+    * @Title : maskingAccount
+    * @Description : 계정을 마스킹 처리한후 돌려준다.
+    * @param account 계정
+    * @return String 마스킹 계정
+    */
+    public static String maskingAccount(String account) {
+        
+        String retAccount = account;
+        if (account == null) {
+            retAccount = UUID.randomUUID().toString().substring(0, 10);
+        }
+        
+        if (retAccount.length() > 3) {
+            return String.format("%s***", retAccount.substring(0, retAccount.length() - 3));
+        }
+        
+        return retAccount;
+    }
+    
+    /**
+    * 휴대폰번호를 마스킹 처리한후 돌려준다.
+    *
+    * @Title : maskingMobilePhone
+    * @Description : 휴대폰번호를 마스킹 처리한후 돌려준다.
+    * @param account 휴대폰번호
+    * @return String 마스킹 휴대폰번호
+    */
+    public static String maskingMobilePhone(String mobilePhone) {
+        if (mobilePhone == null) {
+            return null;
+        }
+        
+        if (mobilePhone.length() == 11) {
+            return String.format("%s****%s", mobilePhone.substring(0, 3), mobilePhone.substring(7, 11));
+        } else if(mobilePhone.length() == 13 && mobilePhone.substring(3, 4).equals("-") && mobilePhone.substring(8, 9).equals("-")) {
+            return String.format("%s-****-%s", mobilePhone.substring(0, 3), mobilePhone.substring(9, 13));
+        }
+        
+        return mobilePhone;
     }
 }
