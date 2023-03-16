@@ -292,6 +292,7 @@ public class EsylgnController {
                         String email = onepassUser.getEmail();
                         String name = onepassUser.getName();
                         String birth = onepassUser.getBirth();
+                        String sex = onepassUser.getSex();
                         
                         EsylgnVo esylgnVo = null;
 
@@ -352,6 +353,8 @@ public class EsylgnController {
                         resultMap.put("email", email);
                         resultMap.put("name", name);
                         resultMap.put("userKey", userKey);
+                        resultMap.put("birth", birth);
+                        resultMap.put("sex", sex);
                         
                         if (manAge < 14) {
                             resultMap.put("type", "C"); // 어린이

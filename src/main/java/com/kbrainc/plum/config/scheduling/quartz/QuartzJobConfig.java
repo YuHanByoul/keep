@@ -228,3 +228,91 @@ class OldNoticeMessageQuartzConfig {
                 .build();
     }
 }
+
+/**
+* 스케줄링 배치잡(푸름이 이동환경교실 만족도 조사 안내 메시지 발송) 설정 클래스.
+*
+* <pre>
+* com.kbrainc.plum.config.scheduling.quartz
+* - MvnDgstfnMsgQuartzConfig.java
+* </pre>
+*
+* @ClassName   : MvnDgstfnMsgQuartzConfig 
+* @Description : 스케줄링 배치잡(푸름이 이동환경교실 만족도 조사 안내 메시지 발송) 설정 클래스.
+* @author      : KBRAINC
+* @date        : 2023. 3. 13.
+* @Version     : 1.0 
+* @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
+*/
+@Configuration
+class MvnDgstfnMsgQuartzConfig {  
+    @Bean
+    public JobDetail mvnDgstfnJobDetail() {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("triggerid", 11);
+        jobDataMap.put("jobName", "mvnDgstfnJob");
+         
+        return JobBuilder.newJob(QuartzExecConfig.class)
+                .withIdentity("mvnDgstfnJob",null)
+                .setJobData(jobDataMap)
+                .storeDurably()
+                .build();
+    }
+     
+    @Bean
+    public Trigger mvnDgstfnTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder
+                .cronSchedule("59 59 23 31 12 ? 2119"); // 초기설정이며 서버 구동시 DB에서 불러온 값으로 재설정 된다.
+ 
+        return TriggerBuilder
+                .newTrigger()
+                .forJob(mvnDgstfnJobDetail())
+                .withIdentity("mvnDgstfnTrigger",null)
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+}
+
+/**
+* 스케줄링 배치잡(유아환경교육 만족도 조사 안내 메시지 발송) 설정 클래스.
+*
+* <pre>
+* com.kbrainc.plum.config.scheduling.quartz
+* - InfntDgstfnMsgQuartzConfig.java
+* </pre>
+*
+* @ClassName   : InfntDgstfnMsgQuartzConfig 
+* @Description : 스케줄링 배치잡(유아환경교육 만족도 조사 안내 메시지 발송) 설정 클래스.
+* @author      : KBRAINC
+* @date        : 2023. 3. 13.
+* @Version     : 1.0 
+* @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
+*/
+@Configuration
+class InfntDgstfnMsgQuartzConfig {  
+    @Bean
+    public JobDetail infntDgstfnJobDetail() {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("triggerid", 12);
+        jobDataMap.put("jobName", "infntDgstfnJob");
+         
+        return JobBuilder.newJob(QuartzExecConfig.class)
+                .withIdentity("infntDgstfnJob",null)
+                .setJobData(jobDataMap)
+                .storeDurably()
+                .build();
+    }
+     
+    @Bean
+    public Trigger infntDgstfnTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder
+                .cronSchedule("59 59 23 31 12 ? 2119"); // 초기설정이며 서버 구동시 DB에서 불러온 값으로 재설정 된다.
+ 
+        return TriggerBuilder
+                .newTrigger()
+                .forJob(infntDgstfnJobDetail())
+                .withIdentity("infntDgstfnTrigger",null)
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+}

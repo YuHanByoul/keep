@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.ibatis.type.Alias;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -31,6 +33,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.kbrainc.plum.cmm.esylgn.model.EsylgnDao;
+import com.kbrainc.plum.cmm.model.CommonDao;
 import com.kbrainc.plum.front.member.model.MemberAcntPswdFindVo;
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
@@ -66,6 +69,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     private MemberDao memberDao;
     
     @Autowired
+    private CommonDao commonDao;
+     
+    @Autowired
     private EsylgnDao esylgnDao;
     
     @Value("${kakao.restapi.key}")
@@ -89,6 +95,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Value("${server.servlet.session.cookie.domain}")
     private String serverCookieDomain;
     
+    @Value("${crypto.key}")
+    private String encryptKey;
+    
     /**
     * 회원 탈퇴 처리.
     *
@@ -106,6 +115,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         int retVal = 0;
         retVal += memberDao.updateMemberDel(user);
         retVal += memberDao.deleteEsylgnByUserid(user);
+        retVal += commonDao.deleteUserDrmncy(user.getUserid()); // 회원 휴면중 탈퇴처리일 수 있으므로 삭제
+        retVal += commonDao.deleteRoleUser(user.getUserid()); // 부여된 역할 삭제
         
         if (session != null) {
             session.invalidate();            
@@ -114,10 +125,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         SecurityContextHolder.clearContext();
         
         if (ssoIsUse) {
-            CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
             String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
             
-            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 없으면
+            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 있으면
+                CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
                 SSO sso = new SSO(ssoApikey);
                 sso.setHostName(ssoHost); // engine이 설치된 아이피
                 sso.setPortNumber(ssoPort); // engine이 사용하고 있는 포트넘버
@@ -277,6 +288,16 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
             if (memberVo.getPswd() != null) {
                 password = Hex.encodeHexString(MessageDigest.getInstance("SHA3-512").digest(memberVo.getPswd().getBytes("UTF-8")));
                 memberVo.setPswd(password);
+            }
+            
+            if (memberVo.getGndr() != null) {
+                StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+                encryptor.setSaltGenerator(new RandomSaltGenerator());
+                encryptor.setPassword(encryptKey);
+                encryptor.setAlgorithm("PBEWithMD5AndDES");
+                String encStr = encryptor.encrypt(memberVo.getGndr());
+                
+                memberVo.setGndr(encStr);
             }
     
             // 회원정보 입력

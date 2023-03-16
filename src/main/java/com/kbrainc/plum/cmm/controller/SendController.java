@@ -69,8 +69,8 @@ public class SendController {
     */
     @RequestMapping(value = "/mng/alimtalk/sendAlimtalk.do")
     @ResponseBody
-    public Map<String, Object> sendAlimtalk(@RequestParam(value="templateCode") String templateCode, @RequestParam("recipientList") String recipientList) throws Exception {
-        return alimtalkService.sendAlimtalk(templateCode, recipientList);
+    public Map<String, Object> sendAlimtalk(@RequestParam(value="templateCode") String templateCode, @RequestParam(value="requestDate", required=false) String requestDate, @RequestParam("recipientList") String recipientList) throws Exception {
+        return alimtalkService.sendAlimtalk(templateCode, requestDate, recipientList);
     }
     
 }

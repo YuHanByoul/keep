@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security" 
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" 
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+		<form id ="saveForm">
+		    <input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}"/>  
+		    <input type="hidden" name="reportid" id="reportid" th:value="${detail.reportid}"/>
+		    <input type="hidden" name="jsonString" id="jsonString" />
+		    <section>
+			    <div class="table-caption">
+	                <div class="left">
+	                    <h3 class="sub-title">기본정보</h3>
+	                </div>
+	                <div class="right">
+	                    <p class="desc"><span class="ast">*</span>표시는 필수 입력 정보입니다.</p>
+	                </div>
+	            </div>
+	
+	            <div class="table-row table-row-mo">
+	                <table>
+	                    <caption>기본정보  - 공모명, 프로그램명, 신청기관 / 신청자, 사업기간, 대상, 프로그램 주제</caption>
+	                    <colgroup>
+	                        <col style="width:140px;">
+	                        <col>
+	                        <col style="width:140px;">
+	                        <col>
+	                    </colgroup>
+	                    <tbody>
+	                        <tr>
+	                            <th scope="row">공모명</th>
+	                            <td><th:block th:text="${detail.pcntstNm}"/></td>
+	                            <th scope="row">프로그램명</th>
+	                            <td><th:block th:text="${detail.prgrmNm}"/></td>
+	                        </tr>
+	                        <tr>
+	                            <th scope="row">신청기관 / 신청자</th>
+	                            <td><th:block th:text="${detail.instNm == null ? '-' : detail.instNm}"/> / <th:block th:text="${detail.aplcntNm}"/></td>
+	                            <th scope="row">사업기간</th>
+	                            <td><th:block th:text="${detail.bsnsDe}"/></td>
+	                        </tr>
+	                        <tr>
+	                            <th scope="row">대상<i class="ast" title="필수입력">*</i></th>
+	                            <td colspan="3"><input type="text" id="trgt" name="trgt" th:value="${detail.trgt}" title="대상" placeholder="대상을 입력해주세요."><p class="form-msg"></p></td>
+	                        </tr>
+	                        <tr>
+	                            <th scope="row">프로그램 주제<i class="ast" title="필수입력">*</i></th>
+	                            <td colspan="3"><input type="text" id="sbjct" name="sbjct" th:value="${detail.sbjct}" title="프로그램 주제" placeholder="프로그램 주제를 입력해주세요."><p class="form-msg"></p></td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+	
+	            <div class="table-caption">
+	                <div class="left">
+	                    <h3 class="sub-title">교육운영 정보</h3>
+	                </div>
+	            </div>
+	
+	            <div class="table-col table-layout-auto table-col-scroll">
+	                <table id="dataList">
+	                    <caption>교육운영 정보 - 구분, 일시, 차시, 인원, 시간(분), 비고, 행 추가</caption>
+	                    <colgroup>
+	                        <col>
+	                        <col>
+	                        <col>
+	                        <col>
+	                        <col>
+	                        <col style="width:20%;">
+	                        <col style="width:55px;">
+	                    </colgroup>
+	                    <thead>
+	                        <tr>
+	                            <th scope="col">구분</th>
+	                            <th scope="col">일시</th>
+	                            <th scope="col">차시</th>
+	                            <th scope="col">인원</th>
+	                            <th scope="col">시간(분)</th>
+	                            <th scope="col">비고</th>
+	                            <th scope="col"><span class="blind">열 삭제</span></th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                        <tr th:if="${#lists.size(planList) > 0}" th:each="list, i: ${planList}">
+	                            <td>계획</td>
+	                            <td>
+	                                <div class="form-input">
+	                                    <input type="hidden" name="operid" th:value="${list.operid}"/>
+	                                    <input type="hidden" name="seCd" th:value="${list.seCd}"/>
+	                                    <input type="date" name="bgngDe" th:value="${list.bgngDe}" title="시작일">
+	                                    <div class="bul">~</div>
+	                                    <input type="date" name="endDe" th:value="${list.endDe}" title="종료일">
+	                                </div>
+	                            </td>
+	                            <td><input type="text" name="rnd" th:value="${list.rnd}" title="차시"></td>
+	                            <td><input type="text" name="nope" th:value="${list.nope}" title="인원"></td>
+	                            <td><input type="text" name="mnt" th:value="${list.mnt}" title="시간(분)"></td>
+	                            <td><input type="text" name="rmrk" th:value="${list.rmrk}" title="비고"></td>
+	                            <td></td>
+	                        </tr>
+	                        <tr th:unless="${#lists.size(planList) > 0}">
+	                            <td>계획</td>
+	                            <td>
+	                                <div class="form-input">
+	                                    <input type="hidden" name="seCd" value="209101"/>
+	                                    <input type="date" name="bgngDe" value="" title="시작일">
+	                                    <div class="bul">~</div>
+	                                    <input type="date" name="endDe" value="" title="종료일">
+	                                </div>
+	                            </td>
+	                            <td><input type="text" name="rnd" value="" title="차시"></td>
+	                            <td><input type="text" name="nope" value="" title="인원"></td>
+	                            <td><input type="text" name="mnt" value="" title="시간(분)"></td>
+	                            <td><input type="text" name="rmrk" value="" title="비고"></td>
+	                            <td></td>
+	                        </tr>
+	                   </tbody>
+	                   <tbody id="nowList">
+	                        <tr th:if="${#lists.size(list) > 0}" th:each="list, i: ${list}">
+	                            <td rowspan="" th:if="${i.index == 0}">현재</td>
+	                            <td>
+                                    <div class="form-input">
+                                        <input type="hidden" name="operid" th:value="${list.operid}"/>
+                                        <input type="hidden" name="seCd" th:value="${list.seCd}"/>
+                                        <input type="date" name="bgngDe" th:value="${list.bgngDe}" title="시작일">
+                                        <div class="bul">~</div>
+                                        <input type="date" name="endDe" th:value="${list.endDe}" title="종료일">
+                                    </div>
+                                </td>
+                                <td><input type="text" name="rnd" th:value="${list.rnd}" title="차시"></td>
+                                <td><input type="text" name="nope" th:value="${list.nope}" title="인원"></td>
+                                <td><input type="text" name="mnt" th:value="${list.mnt}" title="시간(분)"></td>
+                                <td><input type="text" name="rmrk" th:value="${list.rmrk}" title="비고"></td>
+	                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'nowList');"><span class="icon icon-remove"></span></button></td>
+	                        </tr>
+	                        <tr th:unless="${#lists.size(list) > 0}">
+	                            <td>현재</td>
+	                            <td>
+                                    <div class="form-input">
+                                        <input type="hidden" name="seCd" value="209102"/>
+                                        <input type="date" name="bgngDe" value="" title="시작일">
+                                        <div class="bul">~</div>
+                                        <input type="date" name="endDe" value="" title="종료일">
+                                    </div>
+                                </td>
+                                <td><input type="text" name="rnd" value="" title="차시"></td>
+                                <td><input type="text" name="nope" value="" title="인원"></td>
+                                <td><input type="text" name="mnt" value="" title="시간(분)"></td>
+                                <td><input type="text" name="rmrk" value="" title="비고"></td>
+                                <td></td>
+	                        </tr>
+	                    </tbody>
+	                    <tfoot>
+	                        <tr>
+	                            <th scope="row" colspan="2">합계</th>
+	                            <td class="bg5" id="rndSum">0</td>
+	                            <td class="bg5" id="nopeSum">0</td>
+	                            <td class="bg5" id="mntSum">0</td>
+	                            <td class="bg5"></td>
+	                            <td class="bg5"></td>
+	                        </tr>
+	                    </tfoot>
+	                </table>
+	            </div>
+	
+	            <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'nowList');">
+	                <span class="icon icon-row-add"></span>
+	            </button>
+	
+	            <div class="table-caption">
+	                <div class="left">
+	                    <h3 class="sub-title">보고서 제출(<th:block th:text="${detail.reportSeNm}"/>)</h3>
+	                </div>
+	            </div>
+	
+	            <div class="table-row table-row-mo">
+	                <table>
+	                    <caption>보고서 제출(중간보고) - 기타, 증빙서류</caption>
+	                    <colgroup>
+	                        <col style="width:140px;">
+	                        <col>
+	                    </colgroup>
+	                    <tbody>
+	                        <tr>
+	                            <th scope="row">기타</th>
+	                            <td>
+	                                <textarea title="기타" id="etcCn" name="etcCn" placeholder="내용을 입력해주세요."><th:block th:text="${detail.etcCn}"></textarea>
+	                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+	                            </td>
+	                        </tr>
+	                        <tr>
+	                            <th scope="row">증빙서류</th>
+	                            <td>
+                                    <div class="form-input-file">
+                                        <label class="form-input" th:if="${detail.crudBtn != 'R'}">
+                                            <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="5">
+                                            <span class="btn-medium btn-gray">파일선택</span>
+                                        </label>
+                                        <div class="upload-response">
+                                            <div id="multipleFileUploadError"></div>
+                                            <div id="multipleFileUploadSuccess">
+                                            <th:block th:if="${fileList != null}">
+                                                <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                    <ul th:if="${item.orginlFileNm != null}">
+                                                        <li th:fileid='${item.fileid}'
+                                                            th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                            th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                            class='label label-inverse'
+                                                            th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
+                                                            <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp; 
+                                                            <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
+                                                            <th:block th:text="X"></th:block></a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </th:block>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="atchFilegrpid" name="atchFilegrpid" th:value="${(detail.atchFilegrpid == '' or detail.atchFilegrpid == null) ? 0 : detail.atchFilegrpid}"/>
+                                    </div>
+                                </td>
+	                        </tr>
+	                    </tbody>
+	                </table>
+	            </div>
+	
+	            <div class="btn-wrap">
+	                <div class="center">
+	                    <button type="button" class="btn-medium btn-gray" onclick="moveToList();">목록</button>
+	                    <button type="button" class="btn-medium btn-green" onclick="save();" th:if="${detail.crudBtn != 'R'}">제출</button>
+	                </div>
+	            </div>
+			</section>
+		</form>
+		
+		<style>
+            .form-msg { color : red; }
+        </style>
+		<script th:inline="javascript">
+		var atchfileCnt = 5;
+        var uploadFileCnt = 0;
+        /*<![CDATA[*/
+        var crudBtn = /*[[${detail.crudBtn}]]*/null;
+        var listSize = /*[[${#lists.size(list)}]]*/1;
+        /*]]>*/
+        
+        $(function () {
+        	$("input,select").attr("readonly", crudBtn == "R" ? true : false);
+        	
+        	$("input[name='rnd'],input[name='nope'],input[name='mnt']").on("keyup", function(){
+        	    $(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+        	    rndSum();
+        	    nopeSum();
+        	    mntSum();
+        	});
+        	
+        	var validator = $("#saveForm").validate({
+                rules: {
+                	trgt : { required: true } 
+                    , sbjct : { required: true } 
+                },
+                messages: {
+                	trgt    :   { required: "대상을 입력해주십시오." }  
+                    , sbjct    :   { required: "프로그램 주제를 입력해주십시오." }  
+                }
+            });
+        	rndSum();
+        	nopeSum();
+        	mntSum();
+        	
+        	$("#nowList").find("tr:first").find("td:first").attr("rowspan", listSize);
+        });
+        
+        function rndSum() {
+    	    var retVal = 0;
+        	$("input[name='rnd']").each(function(i){
+        		retVal += Number($(this).val());
+            });
+            $("#rndSum").text(retVal);
+        }
+        function nopeSum() {
+    	    var retVal = 0;
+        	$("input[name='nope']").each(function(i){
+        		retVal += Number($(this).val());
+            });
+            $("#nopeSum").text(retVal);
+        }
+        function mntSum() {
+    	    var retVal = 0;
+        	$("input[name='mnt']").each(function(i){
+        		retVal += Number($(this).val());
+            });
+            $("#mntSum").text(retVal);
+        }
+        
+		// 목록
+        function moveToList() {
+            location.href = '/front/report/reportListForm.html';
+        }
+        
+        // 제출
+        function save() {
+        	if(!($("#saveForm").valid())) return;
+        	var valid = true;
+        	var jsonString = {"data" : []};
+        	$("#dataList").find("tr").each(function(i){
+        		if ($(this).find("input[name='bgngDe']").val() == "") {
+        			alert("시작일시를 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='bgngDe']"));
+        			valid = false;
+        			return false;
+        		}
+        		if ($(this).find("input[name='endDe']").val() == "") {
+        			alert("종료일시를 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='endDe']"));
+        			valid = false;
+        			return false;
+        		}
+        		if ($(this).find("input[name='bgngDe']").val() > $(this).find("input[name='endDe']").val()) {
+                    alert("종료일은 시작일 이후여야 합니다.");
+                    showErrorMark($(this).find("input[name='endDe']"));
+                    valid = false;
+                    return false;
+                }
+        		if ($(this).find("input[name='rnd']").val() == "") {
+        			alert("차시를 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='rnd']"));
+        			valid = false;
+        			return false;
+        		}
+        		if ($(this).find("input[name='nope']").val() == "") {
+        			alert("인원을 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='nope']"));
+        			valid = false;
+        			return false;
+        		}
+        		if ($(this).find("input[name='mnt']").val() == "") {
+        			alert("시간(분)을 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='mnt']"));
+        			valid = false;
+        			return false;
+        		}
+        		if ($(this).find("input[name='rmrk']").val() == "") {
+        			alert("비고를 입력해 주십시오.");
+        			showErrorMark($(this).find("input[name='rmrk']"));
+        			valid = false;
+        			return false;
+        		}
+        	});
+        	
+        	if ($.trim($("#multipleFileUploadSuccess").text()) == "") {
+                alert("증빙서류를 첨부해주십시오");
+                return;
+            }
+        	
+        	if (!valid) return;
+            if(!confirm("제출하시겠습니까?")) return;
+            
+            $("#dataList").find("tr").each(function(i){
+            	if ($(this).find("input[name='seCd']").val() == undefined) return true;
+                jsonString.data.push({
+                	operid: $(this).find("input[name='operid']").val() == undefined ? "0" : $(this).find("input[name='operid']").val()
+                    , seCd: $(this).find("input[name='seCd']").val()
+                    , bgngDe: $(this).find("input[name='bgngDe']").val()
+                    , endDe: $(this).find("input[name='endDe']").val()
+                    , rnd: $(this).find("input[name='rnd']").val()
+                    , nope: $(this).find("input[name='nope']").val()
+                    , mnt: $(this).find("input[name='mnt']").val()
+                    , rmrk: $(this).find("input[name='rmrk']").val()
+                });
+            });
+            
+            if (jsonString.data.length == 0) jsonString = "";
+            $("#jsonString").val(JSON.stringify(jsonString));
+            
+            var data =  $("#saveForm").serialize();
+            if(displayWorkProgress(true)){
+                $.ajax({
+                    url : "/front/report/saveReport.do",
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data : data,
+                    success : function (data){
+                    	if(data.result=="success"){
+                            alert(data.msg);
+                            moveToList();
+                        }else{
+                            alert(data.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        
+        // 테이블 로우 추가
+        function addRow(obj, tableId) {
+            var html = '<button type="button" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, \''+tableId+'\');"><span class="icon icon-remove"></span></button>';
+            var newrow = "";
+            $("#" + tableId).find("tr").each(function(){
+                $(this).find("td:last").html("");
+                $(this).find("input[name='seCd']").val("209102");
+                newrow = $(this).clone();
+            });
+            
+            newrow.find("input").val("");
+            newrow.find("input[name='seCd']").val("209102");
+            if (listSize == 1) {
+	            newrow.find("td:first").remove();            	
+            }
+            newrow.find("td:last").html(html);
+            newrow.insertAfter($("#"+tableId).find("tr:last"));
+            
+            listSize++;
+            $("#nowList").find("tr:first").find("td:first").attr("rowspan", listSize);
+        }
+
+        // 테이블 로우 삭제
+        function removeRow(obj, tableId) {
+            var html = '<button type="button" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, \''+tableId+'\');"><span class="icon icon-remove"></span></button>';
+            $(obj).parent().parent().remove();
+            if ($("#" + tableId).find("tr").length > 1) {
+                $("#" + tableId).find("tr:last").find("td:last").html(html);
+            }
+            listSize--;
+            $("#nowList").find("tr:first").find("td:first").attr("rowspan", listSize);
+        }
+        
+        // 파일업로드
+        $('#multiFileInput').on("change", function(event) {
+            var objFile = document.querySelector('#multiFileInput');
+            var formData = new FormData();
+            var content = "";
+
+            for( i = 0 ; i < objFile.files.length ; i++) {
+                if(uploadFileCnt >= atchfileCnt){
+                    alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+                } else {
+                    formData.append("files", objFile.files[i]);
+                    uploadFileCnt++;
+                }
+            }
+
+            formData.append("filegrpid", $("#atchFilegrpid").val());
+            formData.append("filegrpNm", "bizRptMng_file");
+
+            if(uploadFileCnt > 0){
+                $.ajax({
+                    url : '/uploadMultipleFiles.do',
+                    processData : false,
+                    contentType : false,
+                    data : formData,
+                    type : 'POST',
+                    success : function(response) {
+                        if(response.result == 'fail'){
+                            alert(response.msg);
+                        }else{
+                            if($("#atchFilegrpid").val()=='0' || $("#atchFilegrpid").val()==''  || $("#atchFilegrpid").val()==null){
+                                $("#atchFilegrpid").val( response[0].filegrpid );
+                            }
+
+                            for(i = 0 ;i < response.length; i++ ){
+                            	content = '<ul>';
+                                content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                content += '</ul>';
+                                $('#multipleFileUploadSuccess').append(content);
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
+        // 파일삭제
+        function fn_deleteFileList(fileid, fileIdntfcKey){
+            if(!confirm("파일을 삭제하시겠습니까?")){return;}
+            fn_deleteFile(fileid, fileIdntfcKey);
+            $("#"+fileid).remove();
+        }
+
+        // 파일삭제
+        function fn_deleteFile(fileid, fileIdntfcKey){
+            var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+            $.ajax({
+                url : deleteFileUrl,
+                type: 'GET',
+                cache : false,
+                dataType: 'json',
+                success : function (data){
+                    if(data.result=="success"){
+                        $("#"+fileid).remove();
+                        alert("파일삭제가 완료 되었습니다.");
+                    }else{
+                        alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                    }
+                },
+                error : function (error){
+                }
+            });
+        }
+		</script>
+    </div>
+</body>
+</html>

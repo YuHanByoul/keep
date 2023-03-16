@@ -410,7 +410,7 @@ public class GnbMenuPrintImpl {
                                     menuTag.append("                        </li>\n");
                                     break;
                             case 6: menuTag.append("                        <li>\n");
-                                    menuTag.append("                            <a href=\"#\">\n");
+                                    menuTag.append("                            <a href=\"/front/envPrpsl/envPrpslList.html\">\n");
                                     menuTag.append("                                <div class=\"thumb\"><img src=\"/images/front/banner/banner-gnb11.png\" alt=\"\"></div>\n");
                                     menuTag.append("                                <div class=\"desc\">\n");
                                     menuTag.append("                                    <strong>환경교육 제안</strong>\n");
