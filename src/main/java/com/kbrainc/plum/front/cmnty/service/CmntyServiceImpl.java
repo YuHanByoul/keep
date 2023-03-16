@@ -1,16 +1,17 @@
 package com.kbrainc.plum.front.cmnty.service;
 
+import com.kbrainc.plum.cmm.file.model.FileDao;
+import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.front.cmnty.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.apache.ibatis.type.Alias;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 환경동아리 ServiceImpl
@@ -32,6 +33,8 @@ import java.util.List;
 public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntyService {
     @Resource(name = "front.CmntyDao")
     private CmntyDao cmntyDao;
+    @Autowired
+    private FileDao fileDao;
 
     /**
      * 환경동아리 목록
@@ -250,5 +253,97 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
     @Override
     public List<UserVo> selectMbr(String userNm, String cmntyid) {
         return cmntyDao.selectMbr(userNm, cmntyid);
+    }
+
+    /**
+     * 조회수 증가
+     * Title : updatePstHitsCount
+     * Description : 조회수 증가
+     *
+     * @param paramVo
+     */
+    @Override
+    public void updatePstHitsCount(CmntyPstVo paramVo) {
+        cmntyDao.updatePstHitsCount(paramVo);
+    }
+
+    /**
+     * 환경동아리 게시글 조회
+     * Title : selectPst
+     * Description : 환경동아리 게시글 조회
+     *
+     * @param paramVo
+     * @return map
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Object> selectPst(CmntyPstVo paramVo) throws Exception {
+        Map<String, Object> resultMap = new HashMap();
+
+        CmntyPstVo cmntyPstVo = cmntyDao.selectPstInfo(paramVo);
+
+        if (cmntyPstVo.getFilegrpid() != null && !cmntyPstVo.getFilegrpid().equals(0)) {
+            FileVo fileVo = new FileVo();
+            fileVo.setFilegrpid(Integer.parseInt(cmntyPstVo.getFilegrpid().toString()));
+            ArrayList<FileVo> fileList= fileDao.getFileList(fileVo);
+            resultMap.put("fileMap",fileList );
+            resultMap.put("currentFileCnt", fileList.size());
+        } else {
+            resultMap.put("fileMap", null);
+            resultMap.put("currentFileCnt", 0);
+        }
+
+        resultMap.put("paramMap", cmntyPstVo);
+        return resultMap;
+    }
+
+    /**
+     * 환경동아리 게시글 등록 처리
+     * Title : insertCmntyPst
+     * Description : 환경동아리 게시글 등록 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    @Override
+    @Transactional
+    public boolean insertCmntyPst(CmntyPstVo paramVo) {
+        boolean result = false;
+        if(paramVo.getPstid() != null){
+            CmntyPstVo parentPstInfo = cmntyDao.selectPstInfo(paramVo);
+            paramVo.setParntsPstid(parentPstInfo.getPstid());
+            paramVo.setGrp(parentPstInfo.getGrp());
+            paramVo.setDpth(parentPstInfo.getDpth() + 1);
+            paramVo.setSortordr(parentPstInfo.getSortordr() + 1);
+            cmntyDao.updatePstOrdElse(paramVo);
+        }
+        result = cmntyDao.insertCmntyPst(paramVo);
+        return result;
+    }
+
+    /**
+     * 환경동아리 게시글 수정 처리
+     * Title : updateCmntyPst
+     * Description : 환경동아리 게시글 수정 처리
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    @Override
+    public boolean updateCmntyPst(CmntyPstVo paramVo) {
+        return cmntyDao.updateCmntyPst(paramVo);
+    }
+
+    /**
+     * 환경동아리 게시글 정보 조회
+     * Title : selectPstInfo
+     * Description : 환경동아리 게시글 정보 조회
+     *
+     * @param paramVo
+     * @return cmnty pst vo
+     */
+    @Override
+    public CmntyPstVo selectPstInfo(CmntyPstVo paramVo) {
+        return cmntyDao.selectPstInfo(paramVo);
     }
 }

@@ -1,5 +1,8 @@
 package com.kbrainc.plum.front.member.model;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
 import lombok.Data;
 
 /**
@@ -25,4 +28,7 @@ public class MemberParamVo {
     
     /** 회원가입완료화면에서 로그인 버튼 클릭후 로그인 성공시 되돌아갈 URL */
     private String returnUrl;
+    
+    /** 회원연동 유형(디지털원패스 어린이 연동 때문에 추가) */
+    private String type;
 }

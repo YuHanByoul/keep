@@ -1,0 +1,150 @@
+<div class="layer-header">
+    <strong class="tit">후기 작성</strong>
+    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+</div>
+<div class="layer-content" >
+    <p class="fs-16 fc-black6">대여하신 교구의 <b class="fc-green">후기</b>와 <b class="fc-green">만족도 평가</b>를 남겨주세요.</p>
+    <form id="lendRvwForm">
+    <div class="form-group mt15">
+        <dl>
+            <dt class="fc-black3"><b>별점등록</b>(필수)</dt>
+            <dd>
+                <div class="rating-star-wrap">
+                    <div class="rating-star-inner">
+                        <div class="rating-star">
+                            <input type="radio" name="rating" value="5" id="rating5" class="blind"><label for="rating5"><span class="blind">매우 만족</span></label>
+                            <input type="radio" name="rating" value="4" id="rating4" class="blind"><label for="rating4"><span class="blind">만족</span></label>
+                            <input type="radio" name="rating" value="3" id="rating3" class="blind"><label for="rating3"><span class="blind">보통</span></label>
+                            <input type="radio" name="rating" value="2" id="rating2" class="blind"><label for="rating2"><span class="blind">불만족</span></label>
+                            <input type="radio" name="rating" value="1" id="rating1" class="blind"><label for="rating1"><span class="blind">매우 불만족</span></label>
+                        </div>
+                    </div>
+                    <div class="rating-feedback d-none" id="ratingFeedback1">1점(매우 불만족)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback2">2점(불만족)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback3">3점(보통)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback4">4점(만족)</div>
+                    <div class="rating-feedback d-none" id="ratingFeedback5">5점(매우 만족)</div>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt class="fc-black3"><b>기타의견</b>(필수)</dt>
+            <dd>
+                <textarea name="rvwCn" placeholder="내용을 입력해주세요." onkeyup="rvwInsertPopup.onCheckLen();"></textarea>
+                <div class="check-wrap j-end">
+                    <div class="size"><span id="rvwCnLen">0</span> / 1,000자</div>
+                </div>
+            </dd>
+        </dl>
+        <dl>
+            <dt class="fc-black3"><b>첨부파일</b></dt>
+            <dd>
+                <div class="form-input mr0 flex-auto">
+                    <div class="form-input-file">
+                        <label class="form-input">
+                            <input id="multiFileInput" name="files" type="file" class="blind" multiple="multiple" th:attr="accept=${acceptUploadFileExt}" title="파일첨부" maxcount="5">
+                            <span class="btn-medium btn-gray">파일선택</span>
+                        </label>
+                        <ul id="multipleFileUploadSuccess">
+                        </ul>
+                        <input type="hidden" id="filegrpid" name="filegrpid" value="0"/>
+                    </div>
+                </div>
+            </dd>
+        </dl>
+    </div>
+    <input type="hidden" id="aplyid" name="aplyid" th:value="${paramAplyid}"> 
+    </form>
+
+    <div class="box-desc-list bg7 mt20 p20">
+        <p class="fs-14">작성하신 후기는 대여하신 교구의 상세페이지 후기 탭에서 확인하실 수 있으며, 첨부파일은  관리자만 확인할 수 있습니다.</p>
+    </div>
+    <!-- <label class="inp mt10"><input type="checkbox"><b class="fs-14 fw-300">비밀글 등록</b></label> -->
+</div>
+<div class="layer-footer">
+    <div class="btn-wrap">
+        <div class="center">
+            <button type="button" class="btn-medium btn-gray" data-layer-close>취소</button>
+            <button type="button" class="btn-medium btn-green" onclick="rvwInsertPopup.onRegistRvw();">저장</button>
+        </div>
+    </div>
+</div>
+
+<div class="box-desc-list bg7 mt20 p20">
+    <p class="fs-14">작성하신 후기는 대여하신 교구의 상세페이지 후기 탭에서 확인하실 수 있으며, 첨부파일은  관리자만 확인할 수 있습니다.</p>
+</div>
+<script th:inline="javascript">
+    var rvwInsertPopup = {
+        init: function() {
+            addFileUploadEvent("multiFileInput", "lendRvwfile", "multipleFileUploadSuccess");
+            this.registEvent();  
+        }
+        
+        , registEvent: function() {
+            $("input[name='rating']").on("change", function() {
+                var score = $("input[name='rating']:checked").val();
+                $(".rating-feedback").addClass("d-none");
+                $("#ratingFeedback" + score).removeClass("d-none");
+            });
+        }
+        
+        , onRegistRvw: function() {
+            if(!$("input[name='rating']:checked").val()) {
+                alert("별점을 등록해주세요.");
+                return false;
+            }
+            if(!$("textarea[name='rvwCn']").val()) {
+                alert("후기를 입력해주세요.");
+                $("textarea[name='rvwCn']").focus();
+                return false;
+            }
+            if(!$("textarea[name='rvwCn']").val().length > 1000) {
+                alert("후기는 1,000자 이하여야 합니다.");
+                $("textarea[name='rvwCn']").focus();
+                return false;
+            }
+            
+            if(!confirm("후기를 등록 하시겠습니까?")){return;}
+                
+            var filegrpid = $("#filegrpid").val();
+            var param = {
+                    aplyid : $("#aplyid").val()
+                    ,rvwCn : $("textarea[name='rvwCn']").val()
+                    ,rvwScr : $("input[name='rating']:checked").val()
+                    ,rvwFilegrpid : (filegrpid > 0)? filegrpid:null
+            }
+            if(displayWorkProgress(true)) {
+                $.ajax({
+                    url : "/front/mypage/lendHist/updateLendReply.do"
+                    , type: "POST"
+                    , cache: false
+                    , dataType: "json"
+                    , data: param
+                    , success: function(response) {
+                        if(response.result == "success") {
+                            alert(response.msg);
+                            selectLendHistList();
+                            layerPopup.close({target:"lendHistPopup"});
+                        } else {
+                            alert(response.msg);
+                        }
+                        closeWorkProgress();
+                    }
+                });
+            }
+        }
+        , onCheckLen: function() {
+            var len = $("textarea[name='rvwCn']").val().length;
+            if(len > 1000){
+            	var text = $("textarea[name='rvwCn']").val().substring(0,1000);
+            	$("textarea[name='rvwCn']").val(text);
+            	len = $("textarea[name='rvwCn']").val().length;
+            }
+	        $("#rvwCnLen").text(addComma3(len));
+        }
+    };
+    
+    $(function() {
+        rvwInsertPopup.init();
+    });
+</script>

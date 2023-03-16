@@ -37,6 +37,8 @@ public interface ExprtRegisterDao {
 
     public int insertExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
+    public int updateExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
     public int insertHdof(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
     public int insertCrtfct(ExprtRegisterVo exprtRegisterVo) throws Exception;
@@ -53,14 +55,20 @@ public interface ExprtRegisterDao {
 
     public int insertActvtScopeCds(@Param("actvtScopeCds") String[] actvtScopeCds, @Param("user") UserVo user) throws Exception;
 
-    public int deleteTrgtCds(@Param("user") UserVo user) throws Exception;
-    public int deleteSbjctCds(@Param("user") UserVo user) throws Exception;
-    public int deleteActvtRgnCds(@Param("user") UserVo user) throws Exception;
-    public int deleteActvtScopeCds(@Param("user") UserVo user) throws Exception;
+    public int deleteTrgtCds(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteSbjctCds(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteActvtRgnCds(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int deleteActvtScopeCds(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
     public ExprtRegisterVo selectExpertRegister(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
     public List<CareerVo> selectExpertCareerList(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
     public List<CrtfctVo> selectExpertCrtfctList(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
     public List<HdofVo> selectExpertHdofList(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
     public int deleteExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
@@ -70,4 +78,20 @@ public interface ExprtRegisterDao {
     public int deleteCrtfct(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
     public int deleteCareer(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertMdfcnExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertMdfcnHdof(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertMdfcnCrtfct(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertMdfcnCareer(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public int insertMdfcnTrgtCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("trgtCds") String[] trgtCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertMdfcnSbjctCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("sbjctCds") String[] sbjctCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertMdfcnActvtRgnCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("actvtRgnCds") String[] actvtRgnCds, @Param("user") UserVo user) throws Exception;
+
+    public int insertMdfcnActvtScopeCds(@Param("mdfcnDmndId") Integer mdfcnDmndId, @Param("actvtScopeCds") String[] actvtScopeCds, @Param("user") UserVo user) throws Exception;
 }

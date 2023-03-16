@@ -63,4 +63,21 @@ public class LendAplyTrgtVo extends ParentRequestVo {
     /** 등록자아이디 */
     private Integer rgtrid;
     
+    /** 꾸러미 개체 명 */
+    private String packageindvdNm;
+    
+    /** 꾸러미 개체 번호  */
+    private String indvdno;
+    
+    /** 연체 여부 */
+    private String isLateYn;
+    
+    /** 출고 처리 일시  */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private Date dlivyPrcsDt;
+    
+    /** 입고 처리 일시  */
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+    private Date wrhousngPrcsDt;
+    
 }

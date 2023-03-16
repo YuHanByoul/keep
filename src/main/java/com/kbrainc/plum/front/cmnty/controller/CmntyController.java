@@ -1,8 +1,10 @@
 package com.kbrainc.plum.front.cmnty.controller;
 
+import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.cmnty.model.*;
 import com.kbrainc.plum.front.cmnty.service.CmntyService;
 import com.kbrainc.plum.rte.constant.Constant;
+import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
 import com.kbrainc.plum.rte.service.ResCodeService;
@@ -14,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 환경동아리 Controller
@@ -40,6 +44,8 @@ public class CmntyController {
     private CmntyService cmntyService;
     @Autowired
     private ResCodeService resCodeService;
+    @Autowired
+    private FileServiceImpl fileService;
 
     /**
      * 환경동아리 목록
@@ -236,6 +242,9 @@ public class CmntyController {
         paramVo.setHotUseCrtrHits(bbsInfo.getHotUseCrtrHits());
         paramVo.setNewIndictDaycnt(bbsInfo.getNewIndictDaycnt());
         paramVo.setCmntyBbsTmplatid(bbsInfo.getCmntyBbsTmplatid());
+        paramVo.setHotUseYn(bbsInfo.getHotUseYn());
+        paramVo.setNewUseYn(bbsInfo.getNewUseYn());
+        paramVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
         if ("1".equals(bbsInfo.getClsfCd() != null ? bbsInfo.getClsfCd() : "0")) {
             paramVo.setOrderField("GRP DESC,SORTORDR");
         } else {
@@ -445,6 +454,178 @@ public class CmntyController {
         model.addAttribute("paramVo",paramVo);
         model.addAttribute("userid",user.getUserid());
         return "front/cmnty/cmntyMbrWaitList";
+    }
+
+    /**
+     * 환경동아리 게시글 보기
+     * Title : cmntyPstView
+     * Description : 환경동아리 게시글 보기
+     *
+     * @param cmntyid
+     * @param paramVo
+     * @param model
+     * @param user
+     * @return string
+     */
+    @RequestMapping(value = "/front/cmnty/cmntyPstView.html")
+    public String cmntyPstView(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        paramVo.setUser(user);
+
+        //조회수 증가
+        cmntyService.updatePstHitsCount(paramVo);
+        //게시판 정보 조회
+        CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
+        cmntyBbsVo.setBbsid(paramVo.getBbsid());
+        CmntyBbsVo bbsInfo = cmntyService.selectBbsInfo(cmntyBbsVo);
+        //게시글 정보 조회
+        if ("1".equals(bbsInfo.getClsfCd() != null ? bbsInfo.getClsfCd() : "0")) {
+            paramVo.setOrderField("GRP DESC,SORTORDR");
+        } else {
+            paramVo.setOrderField("FIXORDER ASC,GRP DESC,SORTORDR");
+        }
+        resultMap = cmntyService.selectPst(paramVo);
+
+        model.addAttribute("bbsInfo", bbsInfo);
+        model.addAttribute("cmntyPstInfo", resultMap.get("paramMap"));
+        model.addAttribute("fileMap", resultMap.get("fileMap"));
+        model.addAttribute("cmntyid",cmntyid);
+        model.addAttribute("paramVo",paramVo);
+        return "front/cmnty/cmntyPstView";
+    }
+
+    /**
+     * 환경동아리 게시글 등록 화면
+     * Title : cmntyPstInsertForm
+     * Description : 환경동아리 게시글 등록 화면
+     *
+     * @param cmntyid
+     * @param paramVo
+     * @param model
+     * @return string
+     */
+    @RequestMapping(value = "/front/cmnty/cmntyPstInsertForm.html")
+    public String cmntyPstInsertForm(Integer cmntyid, CmntyPstVo paramVo, Model model) throws Exception {
+        //게시판 정보 조회
+        CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
+        cmntyBbsVo.setBbsid(paramVo.getBbsid());
+        CmntyBbsVo bbsInfo = cmntyService.selectBbsInfo(cmntyBbsVo);
+        CmntyPstVo cmntyPstInfo = new CmntyPstVo();
+        Map<String, Object> fileConfiguration = fileService.getConfigurationByFilegrpName("cmntyPst_file");
+        String uploadFileExtsn = ((HashMap<String, String>) fileConfiguration.get("uploadFileExtsn"))
+                .entrySet()
+                .stream()
+                .map(fileExtsnKey -> "." + fileExtsnKey.getValue())
+                .collect(Collectors.joining(", "));
+
+        //답글인 경우
+        if(paramVo.getPstid() != null){
+            CmntyPstVo parentCmntyPstInfo = cmntyService.selectPstInfo(paramVo);
+            cmntyPstInfo.setTtl("RE:" + parentCmntyPstInfo.getTtl());
+        }
+
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
+        model.addAttribute("bbsInfo",bbsInfo);
+        model.addAttribute("paramVo",paramVo);
+        model.addAttribute("cmntyid",cmntyid);
+        model.addAttribute("formType","INSERT");
+        model.addAttribute("cmntyPstInfo", cmntyPstInfo);
+        return "front/cmnty/cmntyPstForm";
+    }
+
+    /**
+     * 환경동아리 게시글 등록 처리
+     * Title : insertCmntyPst
+     * Description : 환경동아리 게시글 등록 처리
+     *
+     * @param paramVo
+     * @param user
+     * @return map
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/cmnty/insertCmntyPst.do")
+    @ResponseBody
+    public Map<String, Object> insertCmntyPst(@Valid CmntyPstVo paramVo, @UserInfo UserVo user){
+        Map<String, Object> resultMap = new HashMap<>();
+        boolean result = false;
+
+        paramVo.setUser(user);
+        result = cmntyService.insertCmntyPst(paramVo);
+
+        if(result){
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "등록이 완료되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "등록에 실패하였습니다.");
+        }
+        return resultMap;
+    }
+
+    /**
+     * 환경동아리 게시글 수정 화면
+     * Title : cmntyPstUpdateForm
+     * Description : 환경동아리 게시글 수정 화면
+     *
+     * @param cmntyid
+     * @param paramVo
+     * @param model
+     * @param user
+     * @return string
+     * @throws Exception
+     */
+    @RequestMapping(value = "/front/cmnty/cmntyPstUpdateForm.html")
+    public String cmntyPstUpdateForm(Integer cmntyid, CmntyPstVo paramVo, Model model, @UserInfo UserVo user) throws Exception {
+        Map<String, Object> resultMap = new HashMap<>();
+        paramVo.setUser(user);
+        //게시판 정보 조회
+        CmntyBbsVo cmntyBbsVo = new CmntyBbsVo();
+        cmntyBbsVo.setBbsid(paramVo.getBbsid());
+        CmntyBbsVo bbsInfo = cmntyService.selectBbsInfo(cmntyBbsVo);
+
+        Map<String, Object> fileConfiguration = fileService.getConfigurationByFilegrpName("cmntyPst_file");
+        String uploadFileExtsn = ((HashMap<String, String>) fileConfiguration.get("uploadFileExtsn"))
+                .entrySet()
+                .stream()
+                .map(fileExtsnKey -> "." + fileExtsnKey.getValue())
+                .collect(Collectors.joining(", "));
+
+        //게시글 정보 조회
+        if ("1".equals(bbsInfo.getClsfCd() != null ? bbsInfo.getClsfCd() : "0")) {
+            paramVo.setOrderField("GRP DESC,SORTORDR");
+        } else {
+            paramVo.setOrderField("FIXORDER ASC,GRP DESC,SORTORDR");
+        }
+        resultMap = cmntyService.selectPst(paramVo);
+
+        model.addAttribute("bbsInfo", bbsInfo);
+        model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
+        model.addAttribute("cmntyPstInfo", resultMap.get("paramMap"));
+        model.addAttribute("fileMap", resultMap.get("fileMap"));
+        model.addAttribute("currentFileCnt", resultMap.get("currentFileCnt"));
+        model.addAttribute("paramVo",paramVo);
+        model.addAttribute("cmntyid",cmntyid);
+        model.addAttribute("formType","MODIFY");
+        return "front/cmnty/cmntyPstForm";
+    }
+
+    @RequestMapping(value = "/front/cmnty/updateCmntyPst.do")
+    @ResponseBody
+    public Map<String, Object> updateCmntyPst(@Valid CmntyPstVo paramVo, @UserInfo UserVo user){
+        Map<String, Object> resultMap = new HashMap<>();
+        boolean result = false;
+
+        paramVo.setUser(user);
+        result = cmntyService.updateCmntyPst(paramVo);
+
+        if(result){
+            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
+            resultMap.put("msg", "Y".equals(paramVo.getDelYn()) ? "삭제가 완료되었습니다." : "수정이 완료되었습니다.");
+        } else {
+            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
+            resultMap.put("msg", "Y".equals(paramVo.getDelYn()) ? "삭제에 실패하였습니다." : "수정에 실패하였습니다.");
+        }
+        return resultMap;
     }
 
 }

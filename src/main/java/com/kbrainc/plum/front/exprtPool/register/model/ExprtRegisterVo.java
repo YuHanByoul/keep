@@ -43,8 +43,8 @@ public class ExprtRegisterVo {
     @Pattern(regexp = "[Y]", message = "필수항목을 동의해야 회원가입이 가능합니다.")
     private String prvcThptyPvsnAgreYn;
 
-    private String envEduCareerYy;
-    private String envEduCareerMm;
+    private Integer envEduCareerYy;
+    private Integer envEduCareerMm;
 
     private String exprtTypeCd;
     private String fldLctrYn;
@@ -76,4 +76,6 @@ public class ExprtRegisterVo {
     private String tempSaveYn;
     private String newYn;
 
+    /*최초 신청 시 정보변경 테이블에 값을 생성하기 위한 용도 */
+    private Integer mdfcnDmndId;
 }

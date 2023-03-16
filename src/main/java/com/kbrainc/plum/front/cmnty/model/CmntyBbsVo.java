@@ -82,4 +82,6 @@ public class CmntyBbsVo extends ParentRequestVo {
     private Date regDt;
     /** 등록자아이디 */
     private Integer rgtrid;
+    /** 고정공지갯수 */
+    private Integer curFxNtcCnt;
 }

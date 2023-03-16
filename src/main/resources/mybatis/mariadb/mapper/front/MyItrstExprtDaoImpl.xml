@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+	SQL File Name : MyItrstExprtDaoImpl.xml
+	Description : 마이페이지 > 환경교육 전문가 풀 > 관심 전문가
+-->
+<mapper namespace="com.kbrainc.plum.front.mypage.exprtPool.service.MyItrstExprtDao">
+    <select id="selectItrstExprtList" parameterType="front.ExprtVo" resultType="front.ExprtVo">
+        <include refid="PaginationMapper.header"/>
+            SELECT
+                B.USERID
+                , B.EXPRT_TYPE_CD
+                , (SELECT CONCAT_WS(',',
+                    CASE WHEN B.FLD_LCTR_YN = 'Y' THEN '강의' END
+                    , CASE WHEN B.FLD_PLANNG_YN = 'Y' THEN '기획' END
+                    , CASE WHEN B.FLD_CNSLTNG_YN = 'Y' THEN '사업자문 및 컨설팅' END
+                    , CASE WHEN B.FLD_ETC_YN = 'Y' THEN CONCAT('기타(',B.FLD_ETC_CN,')') END
+                  )) AS FLDS
+                , B.ENV_EDU_CAREER_YY
+                , B.ENV_EDU_CAREER_MM
+                , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_SBJCT C INNER JOIN TB_CMM_CD D ON C.SBJCT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_SBJCT_CD_NM
+                , (SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_TRGT C INNER JOIN TB_CMM_CD D ON C.TRGT_CD = D.CD WHERE C.USERID = A.USERID) AS EXPRT_TRGT_CD_NM
+                , IFNULL((SELECT GROUP_CONCAT(D.CD_NM) FROM TB_ASS_EXPRT_ACTVT_SCOPE C INNER JOIN TB_CMM_CD D ON C.RGN_CD = D.CD WHERE C.USERID= A.USERID), '') AS EXPRT_ACTVT_SCOPE_CD_NM
+                , IFNULL((SELECT GROUP_CONCAT(CRTFCT_NM) FROM TB_ASS_EXPRT_CRTFCT WHERE USERID= A.USERID),'') AS EXPRT_CRTFCT_NM
+                , B.QLFC_RLS_YN /* 자격 공개 여부 */
+                , B.HDOF_RLS_YN /* 재직 공개 여부 */
+                , B.CAREER_RLS_YN /* 경력 공개 여부 */
+                , C.NM
+                , C.BRDT
+                , C.GNDR
+                , YEAR(NOW()) - LEFT(C.BRDT,4) + 1 AS AGE
+                , D.REG_DT AS MDFCN_DT
+            FROM TB_ASS_EXPRT_ITRST A
+            INNER JOIN (
+                SELECT *
+                FROM TB_ASS_EXPRT
+                WHERE STTS_CD = '134103'
+            ) B
+                ON B.USERID = A.EXPRTID
+            INNER JOIN TB_CMM_USER C
+                ON B.USERID = C.USERID
+            INNER JOIN (
+                SELECT USERID, STTS_CD, REG_DT
+                FROM
+                    TB_ASS_EXPRT_MDFCN_DMND
+                WHERE (USERID, REG_DT) IN (SELECT USERID, MAX(REG_DT) FROM TB_ASS_EXPRT_MDFCN_DMND GROUP BY USERID)
+            ) D
+                ON B.USERID = D.USERID AND D.STTS_CD != '152101'
+            WHERE
+                A.USERID = #{user.userid}
+        <include refid="PaginationMapper.footer"/>
+    </select>
+</mapper>

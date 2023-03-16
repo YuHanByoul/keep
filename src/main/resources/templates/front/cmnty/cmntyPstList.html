@@ -98,10 +98,10 @@
                         <option value="100" th:selected="${paramVo.rowPerPage== 100}">100개씩 보기</option>
                     </select>
                     <th:block th:if="${paramVo.cmntyBbsTmplatid == 1}">
-                        <div th:if="${cmntyInfo.authrtCd == '117100'}" class="ml10"><button type="button" class="btn-medium btn-green" id="insertPst">글쓰기</button></div>
+                        <div th:if="${cmntyInfo.authrtCd == '117100'}" class="ml10"><button type="button" class="btn-medium btn-green insert-pst">게시글 등록</button></div>
                     </th:block>
                     <th:block th:unless="${paramVo.cmntyBbsTmplatid == 1}">
-                        <div th:if="${cmntyInfo.mbrSttsCd == '118100'}" class="ml10"><button type="button" class="btn-medium btn-green" id="insertAllPst">글쓰기</button></div>
+                        <div th:if="${cmntyInfo.mbrSttsCd == '118100'}" class="ml10"><button type="button" class="btn-medium btn-green insert-pst">게시글 등록</button></div>
                     </th:block>
                 </div>
             </div>
@@ -129,12 +129,16 @@
                         <tbody>
                         <tr th:if="${list.size() > 0}" th:each="item : ${list}">
                             <td>
-                                <div th:if="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
-                                <th:block th:unless="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}">
+                                <div th:if="${item.fixorder eq 1}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                <th:block th:unless="${item.fixorder eq 1}">
                                     [[${item.rowNumber}]]
                                 </th:block>
                             </td>
-                            <td class="al article"><a class="link ellipsis pst-view" th:classappend="${item.newYn == 'Y'} ? 'new'" th:title="${item.ttl}" th:text="${item.ttl}" th:data-pstid="${item.pstid}"></a></td>
+                            <td class="al article">
+                                <a class="link ellipsis pst-view" th:classappend="${(item.newYn == 'Y' ? 'new ':'') + (item.hotYn == 'Y' ? ' hot':'')}" th:title="${item.ttl}" th:data-pstid="${item.pstid}">
+                                    <th:block th:if="${item.dpth > 0}" th:each="num : ${#numbers.sequence(1,item.dpth)}">&nbsp;&nbsp;</th:block><th:block th:if="${item.dpth > 0}">ㄴ</th:block>[[${item.ttl}]]
+                                </a>
+                            </td>
                             <td><i th:if="${item.filegrpid}" class="icon icon-attachment bg-blue" title="첨부파일"></i></td>
                             <td th:text="${#dates.format(cmntyInfo.regDt, 'yyyy-MM-dd')}"></td>
                             <td th:text="${item.hits}"></td>
@@ -158,15 +162,19 @@
                                     <div class="list">
                                         <dt>번호</dt>
                                         <dd>
-                                            <div th:if="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
-                                            <th:block th:unless="${item.fxNtcUseYn == 'Y' and item.fxNtcYn == 'Y'}">
+                                            <div th:if="${item.fixorder eq 1}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                            <th:block th:unless="${item.fixorder eq 1}">
                                                 [[${item.rowNumber}]]
                                             </th:block>
                                         </dd>
                                     </div>
                                     <div class="list">
                                         <dt>제목</dt>
-                                        <dd><a class="link ellipsis pst-view" th:classappend="${item.newYn == 'Y'} ? 'new'" th:title="${item.ttl}" th:text="${item.ttl}" th:data-pstid="${item.pstid}"></a></dd>
+                                        <dd>
+                                            <a class="link ellipsis pst-view" th:classappend="${(item.newYn == 'Y' ? 'new':'') + (item.hotYn == 'Y' ? 'hot':'')}" th:title="${item.ttl}" th:data-pstid="${item.pstid}">
+                                                <th:block th:if="${item.dpth > 0}" th:each="num : ${#numbers.sequence(1,item.dpth)}">&nbsp;&nbsp;</th:block><th:block th:if="${item.dpth > 0}">ㄴ</th:block>[[${item.ttl}]]
+                                            </a>
+                                        </dd>
                                     </div>
                                     <div class="list">
                                         <dt>첨부파일</dt>
@@ -215,14 +223,14 @@
                 $searchForm[0].submit();
             });
 
-            $('#insertPst, #insertAllPst').on('click',function (){
-                $searchForm[0].action = '/front/cmnty/cmntyPstForm.html';
+            $('.insert-pst').on('click',function (){
+                $searchForm[0].action = '/front/cmnty/cmntyPstInsertForm.html';
                 $searchForm[0].submit();
             });
 
             $('.pst-view').on('click',function (){
                 $searchForm[0].action = '/front/cmnty/cmntyPstView.html';
-                $searchForm[0].pstid.value = $(this).attr('data-pstid');
+                $searchForm[0].pstid.value = $(this).data('pstid');
                 $searchForm[0].submit();
             });
 
