@@ -46,12 +46,32 @@ public class MyInqryController {
     @Autowired
     private FileServiceImpl fileService;
 
+    /**
+     * 1:1문의 목록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : inqryList
+     * @Description : 1:1문의 목록 화면
+     */
     @GetMapping("/inqryList.html")
     public String inqryList(InqryVo searchVo, Model model) throws Exception {
         model.addAttribute("searchVo", searchVo);
         return VIEW_PATH + "/inqryList";
     }
 
+    /**
+     * 1:1문의 등록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : inqryForm
+     * @Description : 1:1문의 등록 화면
+     */
     @GetMapping("/inqryForm.html")
     public String inqryForm(InqryVo searchVo, Model model) throws Exception {
         InqryVo inqry = inqryService.selectInqry(searchVo);
@@ -73,6 +93,17 @@ public class MyInqryController {
         return VIEW_PATH + "/inqryForm";
     }
 
+    /**
+     * 1:1문의 상세 화면
+     *
+     * @param searchVo
+     * @param model
+     * @param user
+     * @return string
+     * @throws Exception
+     * @Title : inqryDetail
+     * @Description : 1:1문의 상세 화면
+     */
     @GetMapping("/inqryDetail.html")
     public String inqryDetail(InqryVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
         InqryVo inqry = inqryService.selectInqry(searchVo);
@@ -84,6 +115,16 @@ public class MyInqryController {
         return VIEW_PATH + "/inqryDetail";
     }
 
+    /**
+     * 1:1문의 목록 조회
+     *
+     * @param inqryVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : selectInqryList
+     * @Description : 1:1문의 목록 조회
+     */
     @GetMapping(value = "/selectInqryList.do")
     @ResponseBody
     public Map<String, Object> selectInqryList(InqryVo inqryVo, @UserInfo UserVo user) throws Exception {

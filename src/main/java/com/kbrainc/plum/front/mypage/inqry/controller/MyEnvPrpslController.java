@@ -46,12 +46,32 @@ public class MyEnvPrpslController {
     @Autowired
     private FileServiceImpl fileService;
 
+    /**
+     * 환경교육 제안 목록 화면
+     *
+     * @param searchVO
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : envPrpslList
+     * @Description : 환경교육 제안 목록 화면
+     */
     @GetMapping("/envPrpslList.html")
     public String envPrpslList(EnvPrpslVo searchVO, Model model) throws Exception {
         model.addAttribute("searchVo", searchVO);
         return VIEW_PATH + "/envPrpslList.html";
     }
 
+    /**
+     * 환경교육 제안 등록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : envPrpslForm
+     * @Description : 환경교육 제안 등록 화면
+     */
     @GetMapping("/envPrpslForm.html")
     public String envPrpslForm(EnvPrpslVo searchVo, Model model) throws Exception {
         EnvPrpslVo envPrpsl = envPrpslSerivce.selectEnvPrpsl(searchVo);
@@ -73,6 +93,16 @@ public class MyEnvPrpslController {
         return VIEW_PATH + "/envPrpslForm";
     }
 
+    /**
+     * 환경교육 제안 상세 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : envPrpslDetail
+     * @Description : 환경교육 제안 상세 화면
+     */
     @GetMapping("/envPrpslDetail.html")
     public String envPrpslDetail(EnvPrpslVo searchVo, Model model) throws Exception {
         EnvPrpslVo envPrpsl = envPrpslSerivce.selectEnvPrpsl(searchVo);
@@ -84,6 +114,16 @@ public class MyEnvPrpslController {
         return VIEW_PATH + "/envPrpslDetail";
     }
 
+    /**
+     * 환경교육 제안 목록 조회
+     *
+     * @param envPrpslVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : selectEnvPrpslList
+     * @Description : 환경교육 제안 목록 조회
+     */
     @GetMapping("/selectEnvPrpslList.do")
     @ResponseBody
     public Map<String, Object> selectEnvPrpslList(EnvPrpslVo envPrpslVo, @UserInfo UserVo user) throws Exception {

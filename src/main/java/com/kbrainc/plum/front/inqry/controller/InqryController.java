@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,17 @@ public class InqryController {
 
     private final static String VIEW_PATH = "/front/inqry";
 
+    /**
+     * 1:1문의 목록 화면
+     *
+     * @param searchVo
+     * @param user
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : inqryList
+     * @Description : 1:1문의 목록 화면
+     */
     @GetMapping("/inqryList.html")
     public String inqryList(InqryVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
 
@@ -64,6 +77,16 @@ public class InqryController {
         return VIEW_PATH + "/inqryList";
     }
 
+    /**
+     * 1:1문의 등록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : inqryForm
+     * @Description : 1:1문의 등록 화면
+     */
     @GetMapping("/inqryForm.html")
     public String inqryForm(InqryVo searchVo, Model model) throws Exception {
         InqryVo inqry = inqryService.selectInqry(searchVo);
@@ -85,9 +108,31 @@ public class InqryController {
         return VIEW_PATH + "/inqryForm";
     }
 
+    /**
+     * 1:1문의 상세 화면
+     *
+     * @param searchVo
+     * @param model
+     * @param user
+     * @param response
+     * @return string
+     * @throws Exception
+     * @Title : inqryDetail
+     * @Description : 1:1문의 상세 화면
+     */
     @GetMapping("/inqryDetail.html")
-    public String inqryDetail(InqryVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
+    public String inqryDetail(InqryVo searchVo, Model model, @UserInfo UserVo user, HttpServletResponse response) throws Exception {
+
         InqryVo inqry = inqryService.selectInqry(searchVo);
+        if(inqry.getRlsYn().equals("N")) {
+            if(!inqry.getUserid().equals(Integer.valueOf(user.getUserid()))) {
+                response.setContentType("text/html;charset=UTF-8");
+                PrintWriter writer = response.getWriter();
+                writer.print("<script>alert('비공개 글의 경우 작성자만 볼 수 있습니다.');history.back();</script>");
+                return null;
+            }
+        }
+
         InqryAnsVo inqryAns = inqryService.selectInqryAns(searchVo);
 
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
@@ -97,6 +142,16 @@ public class InqryController {
         return VIEW_PATH + "/inqryDetail";
     }
 
+    /**
+     * 1:1문의 목록 조회
+     *
+     * @param inqryVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : selectInqryList
+     * @Description : 1:1문의 목록 조회
+     */
     @GetMapping(value = "/selectInqryList.do")
     @ResponseBody
     public Map<String, Object> selectInqryList(InqryVo inqryVo, @UserInfo UserVo user) throws Exception {
@@ -116,6 +171,18 @@ public class InqryController {
         return result;
     }
 
+    /**
+     * 1:1문의 생성
+     *
+     * @param inqryVo
+     * @param bindingResult
+     * @param userVo
+     * @param site
+     * @return map
+     * @throws Exception
+     * @Title : insertInqry
+     * @Description : 1:1문의 생성
+     */
     @PostMapping("/insertInqry.do")
     @ResponseBody
     public Map<String, Object> insertInqry(@Valid InqryVo inqryVo, BindingResult bindingResult, @UserInfo UserVo userVo, @SiteInfo SiteInfoVo site) throws Exception {
@@ -144,6 +211,17 @@ public class InqryController {
         return response;
     }
 
+    /**
+     * 1:1문의 수정
+     *
+     * @param inqryVo
+     * @param bindingResult
+     * @param userVo
+     * @return map
+     * @throws Exception
+     * @Title : updateInqry
+     * @Description : 1:1문의 수정
+     */
     @PostMapping("/updateInqry.do")
     @ResponseBody
     public Map<String, Object> updateInqry(@Valid InqryVo inqryVo, BindingResult bindingResult, @UserInfo UserVo userVo) throws Exception {
@@ -171,6 +249,16 @@ public class InqryController {
         return response;
     }
 
+    /**
+     * 1:1문의 삭제
+     *
+     * @param inqryVo
+     * @param userVo
+     * @return map
+     * @throws Exception
+     * @Title : deleteInqry
+     * @Description : 1:1문의 삭제
+     */
     @PostMapping("/deleteInqry.do")
     @ResponseBody
     public Map<String, Object> deleteInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {
@@ -188,6 +276,16 @@ public class InqryController {
         return response;
     }
 
+    /**
+     * 1:1문의 취소
+     *
+     * @param inqryVo
+     * @param userVo
+     * @return map
+     * @throws Exception
+     * @Title : cancelInqry
+     * @Description : 1:1문의 취소
+     */
     @PostMapping("/cancelInqry.do")
     @ResponseBody
     public Map<String, Object> cancelInqry(InqryVo inqryVo, @UserInfo UserVo userVo) throws Exception {

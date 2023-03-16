@@ -46,12 +46,32 @@ public class MyPltfomImprvmPropslController {
     @Autowired
     private FileServiceImpl fileService;
 
+    /**
+     * 플랫폼 개선 제안 목록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : pltfomImprvPropslList
+     * @Description : 플랫폼 개선 제안 목록 화면
+     */
     @GetMapping("/pltfomImprvmPropslList.html")
     public String pltfomImprvPropslList(PltfomImprvmPropslVo searchVo, Model model) throws Exception {
         model.addAttribute("searchVo", searchVo);
         return VIEW_PATH + "/pltfomImprvmPropslList";
     }
 
+    /**
+     * 플랫폼 개선 제안 등록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : pltfomImprvPropslForm
+     * @Description : 플랫폼 개선 제안 등록 화면
+     */
     @GetMapping("/pltfomImprvmPropslForm.html")
     public String pltfomImprvPropslForm(PltfomImprvmPropslVo searchVo, Model model) throws Exception {
         PltfomImprvmPropslVo propslVo = pltfomImprvmPropslService.selectPropsl(searchVo);
@@ -73,6 +93,17 @@ public class MyPltfomImprvmPropslController {
         return VIEW_PATH + "/pltfomImprvmPropslForm";
     }
 
+    /**
+     * 플랫폼 개선 제안 상세 화면
+     *
+     * @param searchVo
+     * @param model
+     * @param user
+     * @return string
+     * @throws Exception
+     * @Title : pltfomImprvPropslDetail
+     * @Description : 플랫폼 개선 제안 상세 화면
+     */
     @GetMapping("/pltfomImprvmPropslDetail.html")
     public String pltfomImprvPropslDetail(PltfomImprvmPropslVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
         PltfomImprvmPropslVo propsl = pltfomImprvmPropslService.selectPropsl(searchVo);
@@ -85,6 +116,16 @@ public class MyPltfomImprvmPropslController {
         return VIEW_PATH + "/pltfomImprvmPropslDetail";
     }
 
+    /**
+     * 플랫폼 개선 제안 목록 조회
+     *
+     * @param searchVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : selectPltfomImprvmPropslList
+     * @Description : 플랫폼 개선 제안 목록 조회
+     */
     @GetMapping("/selectPltfomImprvmPropslList.do")
     @ResponseBody
     public Map<String, Object> selectPltfomImprvmPropslList(PltfomImprvmPropslVo searchVo, @UserInfo UserVo user) throws Exception {
