@@ -148,18 +148,18 @@
                         <dl>
                             <dt class="fc-black3"><b>교육내용</b>(필수)</dt>
                             <dd>
-                                <textarea placeholder="내용을 입력해주세요." id="eduCn1" name="eduCn"></textarea>
+                                <textarea placeholder="내용을 입력해주세요." id="eduCn1" name="eduCn" maxlength="1000"></textarea>
                                 <div class="check-wrap j-end">
-                                    <div class="size"><span>0</span> / 1,000자</div>
+                                    <div class="size"><span id="eduCn1TextLength">0</span> / 1,000자</div>
                                 </div>
                             </dd>
                         </dl>
                         <dl>
                             <dt class="fc-black3"><b>기타의견</b></dt>
                             <dd>
-                                <textarea placeholder="내용을 입력해주세요." id="etcOpnn1" name="etcOpnn"></textarea>
+                                <textarea placeholder="내용을 입력해주세요." id="etcOpnn1" name="etcOpnn" maxlength="1000"></textarea>
                                 <div class="check-wrap j-end">
-                                    <div class="size"><span>0</span> / 1,000자</div>
+                                    <div class="size"><span id="etcOpnn1TextLength">0</span> / 1,000자</div>
                                 </div>
                             </dd>
                         </dl>
@@ -248,7 +248,7 @@
                         <dd>
                             <textarea placeholder="내용을 입력해주세요." readonly id="eduCn2" name="eduCn2"></textarea>
                             <div class="check-wrap j-end">
-                                <div class="size"><span>0</span> / 1,000자</div>
+                                <div class="size"><span id="eduCn2TextLength">0</span> / 1,000자</div>
                             </div>
                         </dd>
                         <p class="feedback"></p>
@@ -258,7 +258,7 @@
                         <dd>
                             <textarea placeholder="내용을 입력해주세요." readonly id="etcOpnn2" name="etcOpnn2">친절해서 좋았습니다.</textarea>
                             <div class="check-wrap j-end">
-                                <div class="size"><span>125</span> / 1,000자</div>
+                                <div class="size"><span id="etcOpnn2TextLength">125</span> / 1,000자</div>
                             </div>
                         </dd>
                         <p class="feedback"></p>
@@ -288,59 +288,69 @@
         let listUrl = '/front/mypage/exprtPool/selectRelationList.do';
         let searchVo = /*[[${searchVo}]]*/null;
 
-        let insertReview = () => {
-            if (!$('input[name=scr]').is(':checked')) {
-                alert('필수 항목을 입력해 주십시오.');
-                $("#ratingStar").attr("tabindex", -1).focus();
-                return;
-            }
+        $(function () {
+            $('#exprtTypeCd').val(searchVo.exprtTypeCd);
+            $('#dmndSttsCd').val(searchVo.dmndSttsCd);
 
-            if (!$('#popupForm').valid()) {
-                alert('필수 항목을 입력해 주십시오.');
-                return;
-            }
+            selectList();
 
-            if (displayWorkProgress(true)) {
-                $.ajax({
-                    method: 'post',
-                    data: $('#popupForm').serializeArray(),
-                    dataType: 'json',
-                    url: '/front/mypage/exprtPool/insertReview.do',
-                    success: function (response) {
-                        closeWorkProgress();
-                        alert(response.msg);
-                        if (response.success) {
-                            location.reload();
-                        }
-                    }
-                });
-            }
-        }
+            $('#searchForm').on('submit', function (e) {
+                e.preventDefault();
+                selectList();
+            });
 
-        let deleteReview = () => {
-            if (!confirm('작성한 후기를 삭제하시겠습니까?')) return;
+            $('#selectRowPerPage').on('change', function (e) {
+                $('#rowPerPage').val($(this).val());
+            });
 
-            if (displayWorkProgress(true)) {
-                $.ajax({
-                    method: 'post',
-                    data: {dmndid: $('#deleteReviewDmndid').val()},
-                    dataType: 'json',
-                    url: '/front/mypage/exprtPool/deleteReview.do',
-                    success: function (response) {
-                        closeWorkProgress();
-                        alert(response.msg);
-                        if (response.success) {
-                            location.reload();
-                        }
-                    }
-                });
-            }
-        }
+            popupInit();
+
+        });
+
         let goToDetail = (dmndid) => {
             let f = document.forms.searchForm;
             f.dmndid.value = dmndid;
             f.action = detailUrl;
             f.submit();
+        }
+
+        let daumPostcode = () => {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    let addr = '';
+                    if (data.userSelectedType === 'R') {
+                        addr = data.roadAddress;
+                    } else {
+                        addr = data.jibunAddress;
+                    }
+                    $('#signguCd').val(data.sigunguCode);
+                    $('#zip').val(data.zonecode);
+                    $('#addr').val(addr);
+                    $('#popupAddrDtl1').prop('readonly', false);
+                    $('#popupAddrDtl1').val('');
+                    $('#popupAddrDtl1').focus();
+                    $('#popupAddr1').val(addr);
+                }
+            }).open();
+        }
+
+        let selectList = () => {
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    url: listUrl,
+                    cache: false,
+                    dataType: 'json',
+                    data: $('#searchForm').serializeArray(),
+                    type: 'GET',
+                    success: function (data) {
+                        $('#pcListArea').html(makeListHtmlForPc(data.list));
+                        $('#moListArea').html(makeListHtmlForMo(data.list));
+                        $('#pagination').html(data.pagination);
+                        $('#totalCount').html(data.totalCount);
+                        closeWorkProgress();
+                    }
+                });
+            }
         }
 
         let makeListHtmlForPc = (list) => {
@@ -394,13 +404,14 @@
                         </li>`;
             } else {
                 list.forEach(function (item) {
-                    let reviewTag = '';
+                    let reviewInsertTag = '';
+                    let reviewCompleteTag = '';
                     if (item.reviewYn == 'Y') {
-                        reviewTag = `<button type="button" class="link" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">작성완료</button>`;
+                        reviewCompleteTag = `<button type="button" class="link" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">작성완료</button>`;
                     } else {
                         // 강의완료 상태의 요청 또는 수락 상태인 요청의 강의 종료일이 지난 경우
                         if (item.dmndSttsCd == '139105' || (item.dmndSttsCd == '139104' && item.lctrEndYn == 'Y')) {
-                            reviewTag = `<button type="button" class="btn-small btn-outline-blue" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">후기작성</button>`;
+                            reviewInsertTag = `<button type="button" class="btn-small btn-outline-blue" onclick="openLayerPopup(${item.dmndid}, '${item.reviewYn}')">후기작성</button>`;
                         }
                     }
 
@@ -433,7 +444,7 @@
                                         </div>
                                         <div class="list">
                                             <dt>후기작성</dt>
-                                            <dd><button type="button" class="link">작성완료</button></dd>
+                                            <dd>${reviewCompleteTag}</dd>
                                         </div>
                                         <div class="list">
                                             <dt>요청일</dt>
@@ -443,7 +454,7 @@
                                 </div>
                                 <div class="btn-wrap">
                                     <div class="center">
-                                        <button type="button" class="btn-small btn-outline-blue">후기작성</button>
+                                        ${reviewInsertTag}
                                     </div>
                                 </div>
                             </li> `;
@@ -452,27 +463,33 @@
             return html;
         };
 
+
+        /* -----리뷰 관련 -----*/
         let openLayerPopup = (dmndid, reviewYn) => {
             if (reviewYn == 'Y') {
-                layerPopup.open({target: 'layer-popup23', callback: popupInit(dmndid, reviewYn)});
+                layerPopup.open({target: 'layer-popup23', callback: popupCallback(dmndid, reviewYn)});
             } else {
-                layerPopup.open({target: 'layer-popup22', callback: popupInit(dmndid, reviewYn)});
+                layerPopup.open({target: 'layer-popup22', callback: popupCallback(dmndid, reviewYn)});
             }
         };
 
-        let popupInit = (dmndid, reviewYn) => {
+        let popupCallback = (dmndid, reviewYn) => {
+
             if (reviewYn == 'Y') {
                 $.ajax({
                     method: 'get',
                     url: '/front/mypage/exprtPool/selectReviewByDmndid.do',
                     data: {dmndid: dmndid},
                     success: function (response) {
+                        console.log(response.etcOpnn.length);
                         $('#eduNope2').val(response.eduNope);
                         $('#eduCn2').val(response.eduCn);
                         $('#etcOpnn2').val(response.etcOpnn);
                         $('#popupAddr2').val(response.addr);
                         $('#popupAddrDtl2').val(response.addrDtl);
                         $('#deleteReviewDmndid').val(response.dmndid);
+                        $('#etcOpnn2TextLength').html(response.etcOpnn.length);
+                        $('#eduCn2TextLength').html(response.eduCn.length);
                     }
                 });
             } else {
@@ -488,6 +505,7 @@
                     url: '/front/mypage/exprtPool/selectAddrByDmndid.do',
                     data: {dmndid: dmndid},
                     success: function (response) {
+                        $('#addr').val(response.addr);
                         $('#popupAddr1').val(response.addr);
                         $('#popupAddrDtl1').val(response.addrDtl)
                         $('#reviewInsertDmndid').val(response.dmndid);
@@ -499,54 +517,68 @@
         let validatePopupForm = () => {
             $('#popupForm').validate({
                 rules: {
-                    popupAddr1: {required: true},
-                    eduNope1: {required: true},
-                    eduCn1: {required: true},
+                    popupAddr: {required: true},
+                    eduNope: {required: true},
+                    eduCn: {required: true},
                 },
                 messages: {
-                    popupAddr1: {required: '교육장소를 입력해 주십시오.'},
-                    eduNope1: {required: '교육인원을 입력해 주십시오.'},
-                    eduCn1: {required: '교육내용을 입력해 주십시오.'},
+                    popupAddr: {required: '교육장소를 입력해 주십시오.'},
+                    eduNope: {required: '교육인원을 입력해 주십시오.'},
+                    eduCn: {required: '교육내용을 입력해 주십시오.'},
                 }
             });
         }
-        let daumPostcode = () => {
-            new daum.Postcode({
-                oncomplete: function (data) {
-                    let addr = '';
-                    if (data.userSelectedType === 'R') {
-                        addr = data.roadAddress;
-                    } else {
-                        addr = data.jibunAddress;
+
+        let insertReview = () => {
+            if (!$('input[name=scr]').is(':checked')) {
+                alert('필수 항목을 입력해 주십시오.');
+                $("#ratingStar").attr("tabindex", -1).focus();
+                return;
+            }
+
+            if (!$('#popupForm').valid()) {
+                alert('필수 항목을 입력해 주십시오.');
+                return;
+            }
+
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    method: 'post',
+                    data: $('#popupForm').serializeArray(),
+                    dataType: 'json',
+                    url: '/front/mypage/exprtPool/insertReview.do',
+                    success: function (response) {
+                        closeWorkProgress();
+                        alert(response.msg);
+                        if (response.success) {
+                            location.reload();
+                        }
                     }
-                    $('#signguCd').val(data.sigunguCode);
-                    $('#zip').val(data.zonecode);
-                    $('#addr').val(addr);
-                    $('#popupAddrDtl1').prop('readonly', false);
-                    $('#popupAddrDtl1').val('');
-                    $('#popupAddrDtl1').focus();
-                    $('#popupAddr1').val(addr);
-                }
-            }).open();
+                });
+            }
         }
 
-        $(function () {
-            $('#searchType').val(searchVo.searchType);
-            $('#searchKeyword').val(searchVo.searchKeyword);
-            $('#searchTypeCd').val(searchVo.searchTypeCd);
-            $('#rowPerPage').val(searchVo.rowPerPage);
+        let deleteReview = () => {
+            if (!confirm('작성한 후기를 삭제하시겠습니까?')) return;
 
-            selectList();
+            if (displayWorkProgress(true)) {
+                $.ajax({
+                    method: 'post',
+                    data: {dmndid: $('#deleteReviewDmndid').val()},
+                    dataType: 'json',
+                    url: '/front/mypage/exprtPool/deleteReview.do',
+                    success: function (response) {
+                        closeWorkProgress();
+                        alert(response.msg);
+                        if (response.success) {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
 
-            $('#searchForm').on('submit', function (e) {
-                e.preventDefault();
-                selectList();
-            });
-
-            $('#selectRowPerPage').on('change', function (e) {
-                $('#rowPerPage').val($(this).val());
-            });
-
+        let popupInit = () => {
             validatePopupForm();
 
             $('input[name=rating]').on('change', function (e) {
@@ -564,25 +596,14 @@
                     $ratingDescription.html('<div class="rating-feedback">5점(매우 만족)</div>');
                 }
             });
-        });
 
-        let selectList = () => {
-            if (displayWorkProgress(true)) {
-                $.ajax({
-                    url: listUrl,
-                    cache: false,
-                    dataType: 'json',
-                    data: $('#searchForm').serializeArray(),
-                    type: 'GET',
-                    success: function (data) {
-                        $('#pcListArea').html(makeListHtmlForPc(data.list));
-                        $('#moListArea').html(makeListHtmlForMo(data.list));
-                        $('#pagination').html(data.pagination);
-                        $('#totalCount').html(data.totalCount);
-                        closeWorkProgress();
-                    }
-                });
-            }
+            $('#popupForm textarea[id=etcOpnn1]').on('keyup input', function() {
+                $('#etcOpnn1TextLength').text($(this).val().length);
+            });
+
+            $('#popupForm textarea[id=eduCn1]').on('keyup input', function() {
+                $('#eduCn1TextLength').text($(this).val().length);
+            });
         }
     </script>
 </div>

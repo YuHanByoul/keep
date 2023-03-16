@@ -108,6 +108,21 @@ public class MemberController {
     */
     @RequestMapping(value = "/front/membership/step1.html")
     public String membershipStep1(HttpServletRequest request, MemberParamVo memberParamVo, Model model) throws Exception {
+        // 디지털원패스 회원연동으로 진입시
+        if (!"".equals(StringUtil.nvl(memberParamVo.getOnepassEncodeData()))) {
+            // 디지털원패스 암호화 데이터 복호화
+            byte[] decode = Base64.getDecoder().decode(memberParamVo.getOnepassEncodeData());
+            byte[] decrypted = cryptoService.decrypt(decode, cryptoKey);
+            String jsonRes = new String(decrypted, "UTF-8");
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonObject convertedObject = new Gson().fromJson(jsonRes, JsonObject.class);
+            
+            if (convertedObject.has("type") && "C".equals(convertedObject.get("type").getAsString())) { // 디지털원패스 연동(어린이회원)
+                memberParamVo.setType("C");
+            } else {
+                memberParamVo.setType("");
+            }
+        }
         model.addAttribute("data", memberParamVo);
         return "front/member/step1.html";
     }
@@ -255,7 +270,8 @@ public class MemberController {
             JsonObject convertedObject = new Gson().fromJson(jsonRes, JsonObject.class);
             ci = convertedObject.get("ci").getAsString();
             String name = convertedObject.get("name").getAsString();
-            String email =convertedObject.get("email").getAsString();
+            String email = convertedObject.get("email").getAsString();
+            
             defaultMemberInfo.setNm(name);
             defaultMemberInfo.setEml(email);
         }
@@ -510,6 +526,19 @@ public class MemberController {
                 ci = result.getSConnInfo();
                 nm = result.getSName();
                 moblphon = result.getSMobileNo();
+                
+                // 생년월일 성별 수집
+                String sBirthDate = result.getSBirthDate();
+                if (sBirthDate != null) {
+                    memberVo.setBrdt(String.format("%s-%s-%s", sBirthDate.substring(0, 4), sBirthDate.substring(4, 6), sBirthDate.substring(6, 8)));    
+                }
+                
+                if ("0".equals(result.getSGender())) { // 여성                    
+                    memberVo.setGndr("F");
+                } else if ("1".equals(result.getSGender())) { // 남성                    
+                    memberVo.setGndr("M");
+                } 
+                
                 memberVo.setCi(ci);
 
                 // 본인인증 암호화 데이터와 파라미터로 넘어온 이름과 모바일 번호 일치 하는지 확인
@@ -531,6 +560,7 @@ public class MemberController {
             userKey = convertedObject.get("userKey").getAsString();
             ci = convertedObject.get("ci").getAsString();
             nm = convertedObject.get("name").getAsString();
+            
             if (convertedObject.has("type")) {
                 type = convertedObject.get("type").getAsString();
             }
@@ -539,6 +569,21 @@ public class MemberController {
                 if ((nm != null && !nm.equals(memberVo.getNm()))) {
                     resultMap.put("msg", "입력데이터가 본인인증 정보와 다릅니다.");
                     return resultMap;
+                }
+                
+                // 생년월일 성별 수집
+                if (memberVo.getBrdt() == null) {
+                    String birth = convertedObject.get("birth").getAsString();
+                    if (birth != null) {
+                        memberVo.setBrdt(String.format("%s-%s-%s", birth.substring(0, 4), birth.substring(4, 6), birth.substring(6, 8)));    
+                    }
+                }
+                
+                if (memberVo.getGndr() == null) {
+                    String sex = convertedObject.get("sex").getAsString();
+                    if ("M".equals(sex) || "F".equals(sex)) {
+                        memberVo.setGndr(sex);
+                    }
                 }
             }
         }

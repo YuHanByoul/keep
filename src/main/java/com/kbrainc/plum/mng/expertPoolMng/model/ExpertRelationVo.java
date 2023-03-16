@@ -58,6 +58,7 @@ public class ExpertRelationVo extends ParentRequestVo {
     private List<FileVo> fileVo;
     private Integer instid;
     private String instNm;
+    private String moblphon;
 
     public void setExprtTypeCd(String exprtTypeCd) {
         this.exprtTypeCd = exprtTypeCd;

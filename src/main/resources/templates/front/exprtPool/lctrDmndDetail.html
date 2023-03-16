@@ -287,7 +287,13 @@
         <input type="hidden" id="exprtTypePath" name="exprtTypePath" th:value="${searchVo.exprtTypePath}">
     </form>
 
+    <form name="mypageListForm" id="mypageListForm">
+        <input type="hidden" id="pageNumber" name="pageNumber" th:value="${searchVo.pageNumber}">
+    </form>
+
     <script th:inline="javascript">
+        const referer = /*[[${referer}]]*/null;
+
         let lctrDmndDetail = {
             listUrl: '/front/exprtPool/' + $('#exprtTypePath').val() + '/lctrDmndList.html',
             formUrl: '/front/exprtPool/lctrDmndForm.html?exprtTypePath='+ $('#exprtTypePath').val(),
@@ -295,9 +301,15 @@
             user:/*[[${user}]]*/null,
 
             moveToList() {
-                let f = document.forms.listForm;
-                f.action = this.listUrl;
-                f.submit();
+                if(referer.includes('/front/mypage')) {
+                    let f = document.forms.mypageListForm;
+                    f.action = referer;
+                    f.submit();
+                } else {
+                    let f = document.forms.listForm;
+                    f.action = referer;
+                    f.submit();
+                }
             },
 
             moveToInsertForm() {
