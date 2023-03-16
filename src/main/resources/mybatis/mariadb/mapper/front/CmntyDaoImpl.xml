@@ -495,6 +495,7 @@
         FROM TB_CMM_USER
         WHERE USERID NOT IN((SELECT USERID FROM TB_CMT_CMNTY_MBR WHERE CMNTYID = #{cmntyid}))
             AND NM = #{userNm}
+            AND DEL_YN = 'N'
     </select>
     <!-- 조회수 증가  -->
     <update id="updatePstHitsCount">
@@ -539,6 +540,7 @@
                 , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
                 , (CASE WHEN FX_NTC_YN = 'Y' AND NOW() BETWEEN FX_NTC_BGNG_DT AND FX_NTC_END_DT THEN 1 ELSE 2 END) FIXORDER
                 , B.FX_NTC_USE_YN
+                , B.CMNT_USE_YN
             FROM TB_CMT_CMNTY_PST A
             INNER JOIN TB_CMT_CMNTY_BBS B ON A.BBSID = B.BBSID
             WHERE 1=1
@@ -614,15 +616,15 @@
     <update id="updateCmntyPst">
         /* CmntyDao.updateCmntyPst */
         UPDATE TB_CMT_CMNTY_PST SET
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
     <choose>
         <when test="delYn == 'Y'.toString()">
-            DEL_YN = #{delYn}
+            , DEL_YN = #{delYn}
             , FILEGRPID = #{filegrpid}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
         </when>
         <otherwise>
-            BBS_CLSFID = #{bbsClsfid}
+            , BBS_CLSFID = #{bbsClsfid}
             , TTL = #{ttl}
             , CN = #{cn}
             , FX_NTC_YN = #{fxNtcYn}
@@ -630,11 +632,91 @@
             , FX_NTC_END_DT = #{fxNtcEndDt}
             , LGN_YN = #{lgnYn}
             , FILEGRPID = #{filegrpid}
-            , MDFCN_DT = NOW()
-            , MDFRID = #{user.userid}
         </otherwise>
     </choose>
         WHERE PSTID = #{pstid}
     </update>
-
+    <!-- 환경동아리 댓글 목록 -->
+    <select id="selectCmntList" resultType="front.CmntyCmntVo">
+        /* CmntyDao.selectCmntList */
+        SELECT
+            A.CMNTID
+            , A.PSTID
+            , A.CN
+            , A.PARNTS_CMNTID
+            , A.CMNT_GRP
+            , A.DPTH
+            , A.SORTORDR
+            , A.RLS_YN
+            , A.DEL_YN
+            , A.MDFCN_DT
+            , A.MDFRID
+            , A.REG_DT
+            , A.RGTRID
+        FROM TB_CMT_CMNTY_CMNT A
+        WHERE A.PSTID = #{pstid}
+        <if test="cmntid != null and cmntid != ''">
+            AND A.CMNTID = #{cmntid}
+        </if>
+        ORDER BY A.CMNT_GRP DESC, A.SORTORDR ASC
+    </select>
+    <!-- 환경동아리 댓글 순서 수정 -->
+    <update id="updateCmntOrdElse">
+        /* CmntyDao.updateCmntOrdElse */
+        UPDATE TB_CMT_CMNTY_CMNT SET
+            SORTORDR  = SORTORDR + 1
+            , MDFCN_DT = NOW()
+            , MDFRID   = #{user.userid}
+        WHERE 1=1
+          AND CMNT_GRP = #{cmntGrp}
+          AND SORTORDR >= #{sortordr}
+    </update>
+    <!-- 환경동아리 댓글 등록 -->
+    <insert id="insertCmnt">
+        /* CmntyDao.insertCmnt */
+        INSERT INTO TB_CMT_CMNTY_CMNT (
+            PSTID
+            , CN
+            , PARNTS_CMNTID
+            , CMNT_GRP
+            , DPTH
+            , SORTORDR
+            , RLS_YN
+            , DEL_YN
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES (
+            #{pstid}
+            , #{cn}
+            , #{parntsCmntid}
+            , IFNULL(#{cmntGrp}, (SELECT  IFNULL(MAX(A.CMNT_GRP),0) +1 FROM TB_CMT_CMNTY_CMNT A))
+            , IFNULL(#{dpth}, 0)
+            , IFNULL(#{sortordr}, 1)
+            , #{rlsYn}
+            , #{delYn}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
+    <!-- 환경동아리 댓글 수정 -->
+    <update id="updateCmnt">
+        /* CmntyDao.updateCmnt */
+        UPDATE TB_CMT_CMNTY_CMNT SET
+            MDFCN_DT = NOW()
+            , MDFRID = #{user.userid}
+    <choose>
+        <when test="delYn == 'Y'.toString()">
+            , DEL_YN = #{delYn}
+        </when>
+        <otherwise>
+            , CN = #{cn}
+            , RLS_YN = #{rlsYn}
+        </otherwise>
+    </choose>
+        WHERE CMNTID = #{cmntid}
+    </update>
 </mapper>
