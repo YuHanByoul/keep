@@ -267,8 +267,13 @@ function msgSendFormInit(target, trgtId) {
         dataType: 'json',
         data : {trgtId: trgtId},
         success : function (result){
-            targetWrap.find('input[name=trgtid]').val(trgtId).end()
-                .find('#trgtName').val(result.data.trgtNm).end()
+            if(result.data.delYn === 'Y'){
+                alert('탈퇴한 회원님께는 쪽지 발송이 불가합니다.');
+                layerPopup.close({target:'msgFormPopup'});
+            }else{
+                targetWrap.find('input[name=trgtid]').val(trgtId).end()
+                    .find('#trgtName').val(result.data.trgtNm).end()
+            }
         }
     });
 }
