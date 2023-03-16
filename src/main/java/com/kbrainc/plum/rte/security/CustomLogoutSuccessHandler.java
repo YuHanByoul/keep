@@ -70,7 +70,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
             String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
             
-            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 없으면
+            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 있으면
                 SSO sso = new SSO(ssoApikey);
                 sso.setHostName(ssoHost); // engine이 설치된 아이피
                 sso.setPortNumber(ssoPort); // engine이 사용하고 있는 포트넘버

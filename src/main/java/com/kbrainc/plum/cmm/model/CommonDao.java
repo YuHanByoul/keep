@@ -157,4 +157,15 @@ public interface CommonDao {
     */
     public int deleteUserDrmncy(String userid) throws Exception;
     
+    /**
+    * 사용자에게 부여된 역할을 삭제 한다.
+    *
+    * @Title : deleteRoleUser
+    * @Description : 사용자에게 부여된 역할을 삭제 한다
+    * @param userid 사용자아이디
+    * @return int delete로우수
+    * @throws Exception 예외
+    */
+    public int deleteRoleUser(String userid) throws Exception;
+    
 }
