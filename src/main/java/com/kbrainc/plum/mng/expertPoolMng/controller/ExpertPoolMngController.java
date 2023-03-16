@@ -210,7 +210,8 @@ public class ExpertPoolMngController {
     @ResponseBody
     public boolean updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo, @UserInfo UserVo user) throws Exception {
         expertLogVo.setUser(user);
-        return expertPoolMngService.updateExpertStatus(expertVo, expertLogVo);
+
+        return expertPoolMngService.updateExpertStatus(expertVo, expertLogVo) > 0;
     }
 
     /**
