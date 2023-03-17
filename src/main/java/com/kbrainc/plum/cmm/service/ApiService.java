@@ -114,4 +114,41 @@ public interface ApiService {
     */
     Map<String, Object> getObsrSpotList(String doSeCode) throws Exception;
     
+    /**
+    * 농업기상 관측 정보 조회(시간)
+    *
+    * @Title : getWeatherTimeList 
+    * @Description : 농업기상 관측 정보 조회(시간)
+    * @param dateTime 관측년월일
+    * @param obsrSpotCode 관측지점코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    public Map<String, Object> getWeatherTimeList(String dateTime, String obsrSpotCode) throws Exception;
+    
+    /**
+    * 농업기상 관측 정보 조회(일)
+    *
+    * @Title : getWeatherMonDayList 
+    * @Description : 농업기상 관측 정보 조회(일)
+    * @param searchYear 관측년도
+    * @param searchMonth 관측월
+    * @param obsrSpotCode 관측지점코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    public Map<String, Object> getWeatherMonDayList(String searchYear, String searchMonth, String obsrSpotCode) throws Exception;
+    
+    /**
+    * 전기자동차 충전소 정보 목록 조회
+    *
+    * @Title : getChargerInfo 
+    * @Description : 전기자동차 충전소 정보 목록 조회
+    * @param zcode 지역구분 코드
+    * @param zscode 지역구분 상세 코드
+    * @return Map<String,Object> 조회결과
+    * @throws Exception 예외
+    */
+    public Map<String, Object> getChargerInfo(String zcode, String zscode) throws Exception;
+    
 }
