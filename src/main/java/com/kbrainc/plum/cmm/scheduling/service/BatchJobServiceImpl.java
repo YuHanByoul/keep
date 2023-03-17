@@ -124,11 +124,12 @@ public class BatchJobServiceImpl implements BatchJobService {
 	    if(alimTalkSendUserList.size() > 0) {
 	        ObjectMapper mapper = new ObjectMapper();
 	        
-	        List<Object> recipientList = new ArrayList<>(); 
 	        for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+	            List<Object> recipientList = new ArrayList<>(); 
+	            
 	            Map<String, Object> map = new HashMap<String, Object>();
 	            map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-	            map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
+	            //map.put("recipientNo", "01088475901"); 
 	  
 	            Map<String, Object> templateParameter = new HashMap<String, Object>();
 	            templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
@@ -138,14 +139,16 @@ public class BatchJobServiceImpl implements BatchJobService {
 	            templateParameter.put("startTime", alimTalkSendUser.get("START_TIME"));
 	  
 	            map.put("templateParameter", templateParameter);
-	  
+	            
 	            recipientList.add(map); 
+	            
+	            String recipientListStr = mapper.writeValueAsString(recipientList);
+	            
+	            //탬플릿 없음
+	            alimtalkNhnService.sendAlimtalk("infntEnveduMsg", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
+	            //alimtalkNhnService.sendAlimtalk("infntEnveduMsg", "2023-03-17 03:15", recipientListStr);
 	        }
-	          
-	        String recipientListStr = mapper.writeValueAsString(recipientList);
-	        
-	        //발송 - 아직 탬플릿 없음
-	        //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+
 	    }
 	    
     }
@@ -168,11 +171,12 @@ public class BatchJobServiceImpl implements BatchJobService {
         if(alimTalkSendUserList.size() > 0) {
             ObjectMapper mapper = new ObjectMapper();
             
-            List<Object> recipientList = new ArrayList<>(); 
             for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                List<Object> recipientList = new ArrayList<>(); 
+                
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-                map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
+                //map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
       
                 Map<String, Object> templateParameter = new HashMap<String, Object>();
                 templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
@@ -183,12 +187,13 @@ public class BatchJobServiceImpl implements BatchJobService {
                 map.put("templateParameter", templateParameter);
       
                 recipientList.add(map); 
+                
+                String recipientListStr = mapper.writeValueAsString(recipientList);
+                
+                //발송 - 아직 탬플릿 없음
+                //alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
             }
-              
-            String recipientListStr = mapper.writeValueAsString(recipientList);
             
-            //발송 - 아직 탬플릿 없음
-            //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
         }
         
     }
@@ -274,11 +279,11 @@ public class BatchJobServiceImpl implements BatchJobService {
          if(alimTalkSendUserList.size() > 0) {
              ObjectMapper mapper = new ObjectMapper();
            
-             List<Object> recipientList = new ArrayList<>(); 
              for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                 List<Object> recipientList = new ArrayList<>(); 
+
                  Map<String, Object> map = new HashMap<String, Object>();
                  map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-                 map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
      
                  Map<String, Object> templateParameter = new HashMap<String, Object>();
                  templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
@@ -290,12 +295,16 @@ public class BatchJobServiceImpl implements BatchJobService {
                  map.put("templateParameter", templateParameter);
      
                  recipientList.add(map); 
+                 
+                 String recipientListStr = mapper.writeValueAsString(recipientList);
+                 
+                 //발송 - 아직 탬플릿 없음
+                 alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
              }
              
-             String recipientListStr = mapper.writeValueAsString(recipientList);
+             
            
-             //발송 - 아직 탬플릿 없음
-             //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+             
          }
           
      }
@@ -317,11 +326,12 @@ public class BatchJobServiceImpl implements BatchJobService {
            
          if(alimTalkSendUserList.size() > 0) {
              ObjectMapper mapper = new ObjectMapper();
-             List<Object> recipientList = new ArrayList<>(); 
+            
              for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                 List<Object> recipientList = new ArrayList<>(); 
+                 
                  Map<String, Object> map = new HashMap<String, Object>();
                  map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-                 map.put("recipientTime", alimTalkSendUser.get("SENDRSVTIME"));
          
                  Map<String, Object> templateParameter = new HashMap<String, Object>();
                  templateParameter.put("nm", alimTalkSendUser.get("USER_NM"));
@@ -334,12 +344,13 @@ public class BatchJobServiceImpl implements BatchJobService {
                  map.put("templateParameter", templateParameter);
          
                  recipientList.add(map); 
+                 
+                 String recipientListStr = mapper.writeValueAsString(recipientList);
+                 
+                 //발송 - 아직 탬플릿 없음
+                 //alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
             }
                  
-            String recipientListStr = mapper.writeValueAsString(recipientList);
-               
-            //발송 - 아직 탬플릿 없음
-            //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
         }
            
      }
@@ -363,11 +374,11 @@ public class BatchJobServiceImpl implements BatchJobService {
              ObjectMapper mapper = new ObjectMapper();
                 
             // 전문가 대상 메세지 발송
-            List<Object> recipientList1 = new ArrayList<>(); 
             for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                List<Object> recipientList1 = new ArrayList<>(); 
+                
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("recipientNo", alimTalkSendUser.get("ASS_MOBLPHON")); 
-                map.put("recipientTime", alimTalkSendUser.get("BFR_SEND_DT"));
       
                 Map<String, Object> templateParameter = new HashMap<String, Object>();
                 templateParameter.put("nm", alimTalkSendUser.get("ASS_NM"));
@@ -377,18 +388,20 @@ public class BatchJobServiceImpl implements BatchJobService {
                 map.put("templateParameter", templateParameter);
           
                 recipientList1.add(map); 
+                
+                String recipientListStr1 = mapper.writeValueAsString(recipientList1);
+                //발송 - 아직 탬플릿 없음
+                alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("BFR_SEND_DT"), recipientListStr1);
             }
                   
-            String recipientListStr1 = mapper.writeValueAsString(recipientList1);
-            //발송 - 아직 탬플릿 없음
-            //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr1);
+            
                 
             // 전문가 섭외자 대상 메세지 발송
-            List<Object> recipientList2 = new ArrayList<>(); 
             for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                List<Object> recipientList2 = new ArrayList<>(); 
+                
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-                map.put("recipientTime", alimTalkSendUser.get("BFR_SEND_DT"));
       
                 Map<String, Object> templateParameter = new HashMap<String, Object>();
                 templateParameter.put("nm", alimTalkSendUser.get("NM"));
@@ -398,11 +411,12 @@ public class BatchJobServiceImpl implements BatchJobService {
                 map.put("templateParameter", templateParameter);
           
                 recipientList2.add(map); 
+                
+                String recipientListStr2 = mapper.writeValueAsString(recipientList2);
+                //발송 - 아직 탬플릿 없음
+                alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("BFR_SEND_DT"), recipientListStr2);
             }
                   
-            String recipientListStr2 = mapper.writeValueAsString(recipientList2);
-            //발송 - 아직 탬플릿 없음
-            //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr2);
         }
             
     }
@@ -426,11 +440,11 @@ public class BatchJobServiceImpl implements BatchJobService {
              ObjectMapper mapper = new ObjectMapper();
              
              // 전문가 섭외자 대상 메세지 발송
-             List<Object> recipientList = new ArrayList<>(); 
              for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                 List<Object> recipientList = new ArrayList<>(); 
+                 
                  Map<String, Object> map = new HashMap<String, Object>();
                  map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-                 map.put("recipientTime", alimTalkSendUser.get("AFTR_SEND_DT"));
        
                  Map<String, Object> templateParameter = new HashMap<String, Object>();
                  templateParameter.put("nm", alimTalkSendUser.get("NM"));
@@ -440,11 +454,12 @@ public class BatchJobServiceImpl implements BatchJobService {
                  map.put("templateParameter", templateParameter);
            
                  recipientList.add(map); 
+                 
+                 String recipientListStr = mapper.writeValueAsString(recipientList);
+                 //발송 - 아직 탬플릿 없음
+                 alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("AFTR_SEND_DT"), recipientListStr);
              }
-                   
-             String recipientListStr = mapper.writeValueAsString(recipientList);
-             //발송 - 아직 탬플릿 없음
-             //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr);
+             
          }
              
      }
@@ -517,12 +532,12 @@ public class BatchJobServiceImpl implements BatchJobService {
            if(alimTalkSendUserList.size() > 0) {
                ObjectMapper mapper = new ObjectMapper();
                
-               // 전문가 섭외자 대상 메세지 발송
-              List<Object> recipientList = new ArrayList<>(); 
+               // 시설 이용자 대상 만족도 평가 안내 메시지 발송
               for(Map<String, Object> alimTalkSendUser : alimTalkSendUserList) {
+                  List<Object> recipientList = new ArrayList<>(); 
+                  
                   Map<String, Object> map = new HashMap<String, Object>();
                   map.put("recipientNo", alimTalkSendUser.get("MOBLPHON")); 
-                  map.put("recipientTime", alimTalkSendUser.get("END_DT_STR"));
         
                   Map<String, Object> templateParameter = new HashMap<String, Object>();
                   templateParameter.put("nm", alimTalkSendUser.get("NM"));
@@ -531,11 +546,12 @@ public class BatchJobServiceImpl implements BatchJobService {
                   map.put("templateParameter", templateParameter);
             
                   recipientList.add(map); 
+                  
+                  String recipientListStr = mapper.writeValueAsString(recipientList);
+                  //발송 - 아직 탬플릿 없음
+                  alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("END_DT_STR"), recipientListStr);
               }
-                     
-              String recipientListStr = mapper.writeValueAsString(recipientList);
-              //발송 - 아직 탬플릿 없음
-              //alimtalkNhnService.sendAlimtalk("TEST002", recipientListStr2);
-       }
+
+           }
     }
 }
