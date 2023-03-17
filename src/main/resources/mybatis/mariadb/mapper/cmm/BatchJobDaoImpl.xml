@@ -20,7 +20,12 @@
         /* BatchJobDao.selectInfntEnveduSmsSendList */
         SELECT 
             A.* 
+            <if test="type == 1">
             , DATE_FORMAT(DATE_ADD(STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S'), INTERVAL -30 MINUTE), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+            </if>
+            <if test="type == 2">
+            , DATE_FORMAT(DATE_ADD(STR_TO_DATE(A.END_TIME, '%Y.%m.%d %H:%i:%S'), INTERVAL -30 MINUTE), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+            </if>
         FROM (
             SELECT 
                 IPA.APLYID
@@ -32,20 +37,29 @@
                 , IPA.EDU_NOPE
                 , IPA.TCHER_NOPE 
                 , CONCAT(IPTS.DE, ' ', IPT.BGNG_TM) AS START_TIME
+                , CONCAT(IPTS.DE, ' ', IPT.END_TM) AS END_TIME
             FROM TB_EDU_INFNT_PRGRM_APLY IPA
                 LEFT JOIN TB_CMM_USER CU ON IPA.USERID = CU.USERID 
                 LEFT JOIN TB_EDU_INFNT_PRGRM_TME_SCHDL IPTS ON IPA.TME_SCHDLID = IPTS.TME_SCHDLID 
                 LEFT JOIN TB_EDU_INFNT_PRGRM_TME IPT ON IPTS.TMEID = IPT.TMEID 
                 LEFT JOIN TB_EDU_INFNT_PRGRM IP ON IPT.PRGRMID = IP.PRGRMID
         WHERE 1=1
-                AND IPA.STTS_CD = '180103'
-                AND CU.MARKT_SMS_AGRE_YN = 'Y'
+                <!-- AND IPA.STTS_CD = '180103'
+                AND CU.MARKT_SMS_AGRE_YN = 'Y' -->
                 AND IPA.MOBLPHON IS NOT NULL
                 AND LENGTH(IPA.MOBLPHON) > 9
         ) A
-        WHERE STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
+        <!-- WHERE 1=1
+            <if test="type == 1">
+            AND STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
                 BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
                 AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            </if>
+            <if test="type == 2">
+            AND STR_TO_DATE(A.END_TIME, '%Y.%m.%d %H:%i:%S') 
+                BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
+                AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            </if> -->
     </select>
     
     <!-- 푸름이 이동 환경교육 안내 알림톡 발송 대상자 리스트를 반환한다 -->
@@ -53,7 +67,12 @@
         /* BatchJobDao.selectMvnEnveduSmsSendList */
         SELECT 
             A.* 
+            <if test="type == 1">
             , DATE_FORMAT(DATE_ADD(STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S'), INTERVAL -30 MINUTE), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+            </if>
+            <if test="type == 2">
+            , DATE_FORMAT(DATE_ADD(STR_TO_DATE(A.END_TIME, '%Y.%m.%d %H:%i:%S'), INTERVAL -30 MINUTE), '%Y-%m-%d %H:%i') AS SENDRSVTIME
+            </if>
         FROM (
             SELECT 
                 MPA.APLYID
@@ -64,6 +83,7 @@
                 , CU.MOBLPHON 
                 , MPA.EDU_NOPE 
                 , CONCAT(MPTS.DE, ' ', MPT.BGNG_TM) AS START_TIME
+                , CONCAT(MPTS.DE, ' ', MPT.END_TM) AS END_TIME
             FROM TB_EDU_MVMN_PRGRM_APLY MPA
                 LEFT JOIN TB_CMM_USER CU ON MPA.USERID = CU.USERID 
                 LEFT JOIN TB_EDU_MVMN_PRGRM_TME_SCHDL MPTS ON MPA.TME_SCHDLID = MPTS.TME_SCHDLID 
@@ -75,9 +95,17 @@
                 AND CU.MOBLPHON IS NOT NULL
                 AND LENGTH(CU.MOBLPHON) > 9
         ) A
-        WHERE STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
+        WHERE 1=1 
+            <if test="type == 1">
+            AND STR_TO_DATE(A.START_TIME, '%Y.%m.%d %H:%i:%S') 
                 BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
                 AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            </if>
+            <if test="type == 2">
+            AND STR_TO_DATE(A.END_TIME, '%Y.%m.%d %H:%i:%S') 
+                BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) 
+                AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            </if>
     </select>
     
     <!-- 휴면계정 전환 안내 메일 발송 대상자 리스트를 반환한다 -->

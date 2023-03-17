@@ -41,17 +41,17 @@ public interface BatchJobDao {
     * @return List<Map<String, Object>>
     * @throws Exception 예외
     */
-	public List<Map<String, Object>> selectInfntEnveduSmsSendList() throws Exception;
+	public List<Map<String, Object>> selectInfntEnveduSmsSendList(int type) throws Exception;
 	
 	/**
-    * 유아환경교육 안내 알림톡 발송 대상자 리스트
+    * 푸름이 이동환경교육 안내 알림톡 발송 대상자 리스트
     *
-    * @Title       : selectInfntEnveduSmsSendList 
-    * @Description : 유아환경교육 안내 알림톡 발송 대상자 리스트
+    * @Title       : selectMvnEnveduSmsSendList 
+    * @Description : 푸름이 이동환경교육 안내 알림톡 발송 대상자 리스트
     * @return List<Map<String, Object>>
     * @throws Exception 예외
     */
-    public List<Map<String, Object>> selectMvnEnveduSmsSendList() throws Exception;
+    public List<Map<String, Object>> selectMvnEnveduSmsSendList(int type) throws Exception;
     
     /**
      * 휴면계정 전환 안내 메일 발송 대상자 리스트
