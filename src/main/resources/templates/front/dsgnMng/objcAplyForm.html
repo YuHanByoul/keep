@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-    layout:decorator="layout/front/nolnbSubLayout" >
+    layout:decorator="layout/front/subLayout" >
 <body>
     <div layout:fragment="content">
 
@@ -139,7 +139,7 @@
                                 	     <td>${item.rowNumber}</td>
                                 	     <td>${item.dsgnNo}</td>
                                 	     <td>${item.prgrmNm}</td>
-                                         <td><button type="button" onclick="objcAply.openPop('mod',${item.aplyid})" class="link">신청</button></td>
+                                         <td><button type="button" onclick="objcAply.openPop(${item.sttsCd},${item.aplyid})" class="link">${item.sttsCdNm}</button></td>
                                          <td>${item.regDt}</td>
                                          <td>${item.ansDt == null ? "-" : item.ansDt}</td>
                                          </tr>
@@ -188,8 +188,13 @@
 
                 } ,
 
-                openPop(popSe,id){
-debugger;
+                openPop(sttsCd,id){
+
+                	var popSe = "";
+                	if(sttsCd == "129101") popSe= "mod"
+                	else if(sttsCd == "129102") popSe= "read"
+                	else popSe= sttsCd
+
                 	$("#objcAplyPopup").load("/front/dsgnMng/objcAplyPopup.html?popSe="+popSe+"&aplyid="+id, function(response, status, xhr) {
                         if (status == "success") {
                             layerPopup.open({target:'objcAplyPopup'});

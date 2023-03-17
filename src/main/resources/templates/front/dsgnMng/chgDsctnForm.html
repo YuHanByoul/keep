@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-    layout:decorator="layout/front/nolnbSubLayout" >
+    layout:decorator="layout/front/subLayout" >
 <body>
     <div layout:fragment="content">
 
@@ -13,26 +13,20 @@
                 </div>
             </div>
             <form id="searchForm">
+                <div id="chgAprvPopup"></div><!-- 변경승인팝업 -->
                 <input type="hidden" id="pageNumber" name="pageNumber" value="1">
                 <input type="hidden" id="aplcntid" name="aplcntid" value="">
                 <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
-                <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
+                <input type="hidden" id="orderField" name="orderField" value="REG_DT">
                 <input type="hidden" id="prgrmid" name="prgrmid" value="">
+                <input type="hidden" id="aplyid" name="aplyid" value="">
             </form>
-
-            <div class="box-desc-list bg7">
-                <ul>
-                    <li>아이돌봄서비스를 이용하시기 위해서는 먼저 정회원전환신청을 해주세요. 담당 서비스제공기관의 검토 후에 정회원으로 전환됩니다.</li>
-                    <li>개명 등으로 가입 회원명의 변경이 필요하신 경우에는 담당 서비스 제공기관으로 문의해주세요.</li>
-                    <li>아이돌봄서비스에서 드리는 서비스연계, 결제안내 등을 위해서 유용한 알림을 받으시려면 최소 1개의 알림방식을 설정해주세요.</li>
-                </ul>
-            </div>
 
             <div class="tab-content tab-sub dropDown">
                 <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">변경내역</button>
                 <ul class="tab-list tab-list-pc target" role="tablist">
                     <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
-                    <li class="tab active"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
+                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
                     <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
                     <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
                     <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
@@ -41,7 +35,7 @@
 
             <div class="table-caption flex-nowrap">
                 <div class="right d-flex">
-                    <div class="ml10"><button type="button" class="btn-medium btn-green">등록</button></div>
+                    <div class="ml10"><button type="button" class="btn-medium btn-green" onclick="chgDsctn.goReg()">등록</button></div>
                 </div>
             </div>
 
@@ -90,11 +84,12 @@
             <div id="pagination" class="pagination" aria-label="pagination"/>
 
             <!-- //content -->
-
         <script th:inline="javascript">
 
             var chgDsctn = {
-                listUrl:"/front/dsgnMng/selectChgDsctnList.do",
+                listUrl   :"/front/dsgnMng/selectChgDsctnList.do",
+                dtlUrl :"/front/dsgnMng/chgAplyDetailForm.html",
+                regUrl :"/front/dsgnMng/chgAplyInsertForm.html",
 
                 selectList() {
                     if (displayWorkProgress(true)) {
@@ -138,8 +133,13 @@
                                 <tr>
                                 <td>${item.rowNumber}</td>
                                 <td>${item.dsgnNo}</td>
-                                <td class="al"><a href="#" class="link ellipsis">${item.prgrmNm}</a></td>
-                                <td>${item.sttsCd}</td>
+                                <td><button type="button" class="link" onclick="chgDsctn.goDtl('${item.aplyid}')">${item.prgrmNm}</button></td>
+                                `
+                                if(item.sttsCd != '119101') html += `<td><button type="button" class="link" onclick="chgDsctn.goPop('${item.sttsCdNm}','${item.splmntDmndCn}')">${item.sttsCdNm==null?'':item.sttsCdNm}</button></td>`
+                                else                        html +=`<td>${item.sttsCdNm==null?'':item.sttsCdNm}</td>`
+
+                            html +=
+                            	`
                                 <td>${item.regDt}</td>
                                 </tr>
                                 `;
@@ -161,7 +161,7 @@
                                     </div>
                                     <div class="list">
                                         <dt>진행상태</dt>
-                                        <dd>${item.sttsCd}</dd>
+                                        <dd>${item.sttsCd==null?'':item.sttsCdNm}</dd>
                                     </div>
                                     <div class="list">
                                         <dt>등록일</dt>
@@ -177,6 +177,27 @@
                     $('#list-mobile-area').html(mobileHtml);
                     $("#pagination").html(data.pagination);
 
+                },
+
+                goDtl(id) {
+                    var f = document.forms.searchForm;
+                    f.action = chgDsctn.dtlUrl
+                    f.aplyid.value = id;
+                    f.submit();
+                },
+                goReg() {
+                    var f = document.forms.searchForm;
+                    f.action = chgDsctn.regUrl
+                    f.submit();
+                },
+                goPop(cd,cn){
+
+                	$("#chgAprvPopup").load("/front/dsgnMng/chgAprvPopup.html?sttsCdNm="+cd+"&splmntDmndCn="+cn, function(response, status, xhr) {
+                        if (status == "success") {
+                            layerPopup.open({target:'chgAprvPopup'});
+                        }
+                    });
+
                 }
             }
 
@@ -186,6 +207,7 @@
             }
 
             $(function () {
+
             	chgDsctn.selectList();
             });
 

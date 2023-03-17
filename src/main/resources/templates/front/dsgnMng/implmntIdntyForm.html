@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org"
     xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
-    layout:decorator="layout/front/nolnbSubLayout" >
+    layout:decorator="layout/front/subLayout" >
 <body>
     <div layout:fragment="content">
 
@@ -13,20 +13,14 @@
                 </div>
             </div>
             <form id="searchForm">
+                <div id="scrtyImprvPopup"></div><!-- 개선요청팝업 -->
+                <div id="imprvPlanPopup"></div> <!-- 개선계획팝업 -->
                 <input type="hidden" id="pageNumber" name="pageNumber" value="1">
                 <input type="hidden" id="aplcntid" name="aplcntid" value="">
                 <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
-                <input type="hidden" id="orderField" name="orderField" value="MDFCN_DT">
+                <input type="hidden" id="orderField" name="orderField" value="DSGN_NO">
                 <input type="hidden" id="prgrmid" name="prgrmid" value="">
             </form>
-
-            <div class="box-desc-list bg7">
-                <ul>
-                    <li>아이돌봄서비스를 이용하시기 위해서는 먼저 정회원전환신청을 해주세요. 담당 서비스제공기관의 검토 후에 정회원으로 전환됩니다.</li>
-                    <li>개명 등으로 가입 회원명의 변경이 필요하신 경우에는 담당 서비스 제공기관으로 문의해주세요.</li>
-                    <li>아이돌봄서비스에서 드리는 서비스연계, 결제안내 등을 위해서 유용한 알림을 받으시려면 최소 1개의 알림방식을 설정해주세요.</li>
-                </ul>
-            </div>
 
             <div class="tab-content tab-sub dropDown">
                 <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">이행확인</button>
@@ -34,15 +28,9 @@
                     <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
                     <li class="tab"><a th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
                     <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
-                    <li class="tab active"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
+                    <li class="tab active"><a id="implmntIdntyTab" th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
                     <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
                 </ul>
-            </div>
-
-            <div class="table-caption flex-nowrap">
-                <div class="right d-flex">
-                    <div class="ml10"><button type="button" class="btn-medium btn-green">등록</button></div>
-                </div>
             </div>
 
             <div class="pc-only">
@@ -123,12 +111,24 @@
                                 <tr>
                             	<td>${item.rowNumber}</td>
                             	<td>${item.dsgnNo}</td>
-                            	<td>${item.prgrmNm}</td>
-                            	<td>${item.vstDe}</td>
-                                <td><button type="button" class="link">${item.sttsCdNm}</button></td>
-                                <td><button type="button" class="btn-small btn-outline-blue">등록</button></td>
-                                </tr>
-                                `;
+                            	<td>${item.prgrmNm != null ? item.prgrmNm : ''}</td>
+                            	<td>${item.vstDe != null ? item.vstDe : '' }</td>
+                            	`
+                            if(item.sttsCdNm=="보완개선요청"){
+                                html += `<td><button type="button" class="link" onclick="implmntIdnty.openPop('${item.sttsCdNm}',${item.dmndid})">${item.sttsCdNm}</button></td>`
+                            }else{
+                                html += `<td>${item.sttsCdNm}</td>`
+                            }
+
+                            if(item.btnSe != "-"){
+                                html += `<td><button type="button" onclick="implmntIdnty.openPop2('${item.btnSe}',${item.dmndid})" class="btn-small btn-outline-blue">${item.btnSe}</button></td>
+                                    </tr>
+                                    `
+                            }else{
+                            	html += `<td>${item.btnSe}</td>
+                                    </tr>
+                                    `
+                            }
 
                             mobileHtml +=
                             	`
@@ -165,11 +165,43 @@
                         });
 
                     }
+
+/*
+ - 이행심사 : 이행심사 결과보고서 등록 전 상태
+- 보완개선요청 : 지원단이 보완개선요청을 등록한 상태, 클릭 시 보완개선요청 팝업 출력
+
+- 심사완료 :
+ 1)이행심사 결과보고서 등록 시 보완개선 요청을 하지 않은 경우 : 심사완료 상태 전환
+ 2)이행심사 결과보고서 등록 시 보완개선요청 한 경우 : 보완개선요청 사항 등록 및 검수 완료 시 심상완료 상태 전환
+클릭 시 보완개선요청 팝업 출력
+*
+
+*/
                     $("#list-area").html(html);
                     $('#list-mobile-area').html(mobileHtml);
                     $("#pagination").html(data.pagination);
 
-                }
+                },
+
+                openPop(popSe, id){
+
+                    $("#scrtyImprvPopup").load("/front/dsgnMng/scrtyImprvPopup.html?popSe="+popSe+"&dmndid="+id, function(response, status, xhr) {
+                        if (status == "success") {
+                            layerPopup.open({target:'scrtyImprvPopup'});
+                        }
+                    });
+                },
+
+                openPop2(popSe, id){
+                    var popSe = popSe != "조회" ? "reg" : "read";
+
+                    var id = id ==null ? "":id;
+                    $("#imprvPlanPopup").load("/front/dsgnMng/imprvPlanPopup.html?popSe="+popSe+"&dmndid="+id, function(response, status, xhr) {
+                        if (status == "success") {
+                            layerPopup.open({target:'imprvPlanPopup'});
+                        }
+                    });
+                 }
             }
 
             function goPage(page) {
@@ -179,6 +211,10 @@
 
             $(function () {
                 implmntIdnty.selectList();
+            });
+
+            jQuery("#btnAply").bind("click",function(){
+            	implmntIdnty.openPop("reg",0);
             });
 
         </script>

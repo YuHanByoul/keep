@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="layout/front/subLayout" >
+<body>
+    <div layout:fragment="content">
+        <form id="chgAplyDtlForm" name="chgAplyDtlForm" method="post">
+            <input type="hidden" id="aplyid" name="aplyid" th:value="${chgAplyInfo.aplyid}">
+            <input type="hidden" id="chgRsn" name="chgRsn" th:value="${chgAplyInfo.chgRsn}">
+
+            <input type="hidden" id="aplcntid" name="aplcntid" th:value="${chgAplyInfo.aplcntid}">
+            <input type="hidden" id="aplySttsCd" name="aplySttsCd" th:value="${chgAplyInfo.aplySttsCd}">
+            <input type="hidden" id="splmntDmndCn" name="splmntDmndCn" th:value="${chgAplyInfo.splmntDmndCn}">
+<!--             <input type="hidden" id="sttsMdfcnDt" name="sttsMdfcnDt" th:value="${chgAplyInfo.sttsMdfcnDt}"> -->
+
+            <!-- content -->
+
+            <div class="tab-content tab-sub dropDown">
+                <button type="button" class="tab-mobile-trigger trigger" aria-haspopup="listbox" aria-expanded="true">변경내역</button>
+                <ul class="tab-list tab-list-pc target" role="tablist">
+                    <li class="tab"><a th:href="@{/front/dsgnMng/dsgnMngDetailForm.html?aplcntid=}+${aplcntid}" role="tab">지정내역</a></li>
+                    <li class="tab active"><a id="chgDsctnTab" th:href="@{/front/dsgnMng/chgDsctnForm.html?aplcntid=}+${aplcntid}" role="tab" >변경내역</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/operRsltForm.html?aplcntid=}+${aplcntid}" role="tab" >운영결과</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/implmntIdntyForm.html?aplcntid=}+${aplcntid}" role="tab" >이행확인</a></li>
+                    <li class="tab"><a th:href="@{/front/dsgnMng/objcAplyForm.html?aplcntid=}+${aplcntid}" role="tab" >이의신청</a></li>
+                </ul>
+            </div>
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">기본정보</h3>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>기본정보  - 지정프로그램명, 지정번호, 기관명, 지정기간</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">지정프로그램명</th>
+                            <td><th:block th:text="${chgAplyInfo.prgrmNm}" /></td>
+                            <th scope="row">지정번호</th>
+                            <td><th:block th:text="${chgAplyInfo.dsgnNo}" /></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">기관명</th>
+                            <td><th:block th:text="${chgAplyInfo.instNm}" /></td>
+                            <th scope="row">지정기간</th>
+                            <td><th:block th:text="${chgAplyInfo.dsgnPrd}" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">변경내용</h3>
+                </div>
+            </div>
+
+            <div class="table-combi table-layout-auto table-combi-scroll">
+                <table>
+                    <caption>변경내용 - 변경사항(변경시, 1.프로그램영역 (활동프로그램 세부 내용의 일부 변경,20% 이내의 예산 변경),2. 지도자 영역: 동일 경력 및 유사 자격자로 변경, 3. 교육활동환경영역: 동일조건의 장소와 인력으로 변경, 변경사유), 여부, 추가제출서류, 변경내용</caption>
+                    <colgroup>
+                        <col style="width:10%;">
+                        <col style="width:15%;">
+                        <col>
+                        <col>
+                        <col>
+                        <col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="colgroup" colspan="2">변경사항</th>
+                            <th scope="col">여부</th>
+                            <th scope="col">추가제출서류</th>
+                            <th scope="col">변경내용</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" colspan="2">변경 시</th>
+                            <td>
+                                <div class="form-check-list j-center">
+                                    <span kattr:radio_yn="samenssYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.samenssYn}"></span>
+                                </div>
+                            </td>
+                            <td>O</td>
+                            <td>
+                                <textarea title="변경 내용" id="samenssCn" name="samenssCn"><th:block th:text="${chgAplyInfo.samenssCn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="rowgroup" rowspan="2">1. 프로그램 영역</th>
+                            <th scope="row">황동프로그램 세부 내용의 일부 변경</th>
+                            <td>
+                                <div class="form-check-list j-center">
+                                    <span kattr:radio_yn="prgrmChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.prgrmChgYn}"></span>
+                                </div>
+                            </td>
+                            <td>지정 기준 1</td>
+                            <td>
+                                <textarea title="변경 내용" id="prgrmChgCn" name="prgrmChgCn"><th:block th:text="${chgAplyInfo.prgrmChgCn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">20%  이내의 예산 변경</th>
+                            <td>
+                                <div class="form-check-list j-center">
+                                    <span kattr:radio_yn="bgtChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.bgtChgYn}"></span>
+                                </div>
+                            </td>
+                            <td>지정 기준 2</td>
+                            <td>
+                                <textarea title="변경 내용" id="bgtChgCn" name="bgtChgCn"><th:block th:text="${chgAplyInfo.bgtChgCn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2"> 2.지도자 영역 : 동일 경력 및 유사 자격자로 변경</th>
+                            <td>
+                                <div class="form-check-list j-center">
+                                    <span kattr:radio_yn="ldrChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.ldrChgYn}"></span>
+                                </div>
+                            </td>
+                            <td>지정 기준 1,4</td>
+                            <td>
+                                <textarea title="변경 내용" id="ldrChgCn" name="ldrChgCn"><th:block th:text="${chgAplyInfo.ldrChgCn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2"> 3.교육활동환경영역 : 동일조건의 장소와 인력으로 변경</th>
+                            <td>
+                                <div class="form-check-list j-center">
+                                    <span kattr:radio_yn="eduEnvChgYn" label1="O" label2="X" th:attr="defaultVal=${chgAplyInfo.eduEnvChgYn}"></span>
+                                </div>
+                            </td>
+                            <td>지정 기준 5</td>
+                            <td>
+                                <textarea title="변경 내용" id="eduEnvChgCn" name="eduEnvChgCn"><th:block th:text="${chgAplyInfo.eduEnvChgCn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="2">변경사유</th>
+                            <td colspan="3">
+                                <textarea title="변경 내용" id="samenssCn" name="samenssCn"><th:block th:text="${chgAplyInfo.chgRsn}" /></textarea>
+                                <div class="desc ar size"><span>0</span> / 1,000자</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-caption">
+                <div class="left">
+                    <h3 class="sub-title">증빙자료</h3>
+                </div>
+            </div>
+
+            <div class="table-row">
+                <table>
+                    <caption>증빙자료  - 첨부파일</caption>
+                    <colgroup>
+                        <col style="width:140px;">
+                        <col>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th scope="row">첨부파일</th>
+                            <td>
+                                <div class="form-input-file">
+                                    <label class="form-input">
+                                        <input type="file" id="multiFileInput" name="files" class="blind" multiple="multiple" accept=".jpeg,.jpg,.png,.gif,.tif,.tiff,.hwp,.hwpx,.pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.zip" title="파일첨부" maxcount="5">
+                                        <span class="btn-medium btn-gray">파일선택</span>
+                                    </label>
+                                    <div class="upload-response">
+                                        <div id="multipleFileUploadError"></div>
+                                        <div id="multipleFileUploadSuccess">
+                                        <th:block th:if="${fileList != null}">
+                                            <div th:each="item : ${fileList}" th:id="${item.fileid}" class="col-auto">
+                                                <ul th:if="${item.orginlFileNm != null}">
+                                                    <li th:fileid='${item.fileid}'
+                                                        th:fileIdntfcKey="${item.fileIdntfcKey}"
+                                                        th:onclick="downloadFileByFileid(this.getAttribute('fileid'),this.getAttribute('fileIdntfcKey'))"
+                                                        class='label label-inverse'
+                                                        th:data_ext="${#strings.replace(item.ext, '.', '')}">
+                                                        <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp;
+                                                        <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'>
+                                                        <th:block th:text="X"></th:block></a>
+                                                    </li>
+                                                </ul>
+                                                <p>등록 가능 확장자 : jpg, jpeg, png, gif, hwp, doc, docx, xls, xlsx, pdf, txt, zip</p>
+
+                                            </div>
+                                        </th:block>
+                                        <input type="hidden" id="filegrpid" name="filegrpid" th:value="${(chgAplyInfo.filegrpid == '' or chgAplyInfo.filegrpid == null) ? 0 : chgAplyInfo.filegrpid}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-wrap">
+                <div class="center">
+                    <button type="button" class="btn-medium btn-gray" onclick="aplyUpdate.cancle()">취소</button>
+                    <button type="button" class="btn-medium btn-green" onclick="aplyUpdate.save()">저장</button>
+                </div>
+            </div>
+            <!-- //content -->
+        </form>
+        <script th:inline="javascript">
+
+            var atchfileCnt = 5;
+            var uploadFileCnt = 0;
+
+            var aplyUpdate = {
+        		updateUrl:"/front/dsgnMng/updateChgAply.do",
+
+            	cancle(){
+            		if(!confirm("취소 하시겠습니까?")){return;}
+            		$("#chgDsctnTab").get(0).click();
+            	},
+
+            	save(){
+            		if(!$("#chgAplyDtlForm").valid()) return false;
+
+            		if(!confirm("저장 하시겠습니까?")){return;}
+
+            		let data = $('#chgAplyDtlForm').serialize();
+//                     $('input[name=tmplatIds]').each(function (){
+//                         if($(this).siblings().find('input[name=useYn'+$(this).val()+']:checked').val() === 'Y'){
+//                             data += '&tmplatIds='+$(this).val();
+//                         }
+                    $.ajax({
+                    	 url: aplyUpdate.updateUrl,
+                        type: 'POST',
+                        cache : false,
+                        dataType: 'json',
+                        data : data,
+                        success : function (data){
+                            if(data.result=="success"){
+                            	alert(data.msg);
+                                $("#chgDsctnTab").get(0).click();
+                            }
+                            closeWorkProgress();
+                        }
+                    });
+            	}
+            }
+
+            $(function () {
+
+                $("textArea").keyup(function (e) {
+                    var inTxt = $(this).val();
+                    if($("#"+this.id).next().prop("class")=="desc ar size"){
+                        $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+                    }
+                });
+
+                $("textArea").trigger("keyup");
+
+                validator = $("#chgAplyDtlForm").validate({
+                    ignore: [],
+                    rules: {
+                        splmntDmndCn: { maxlength:1000 }
+                      , prgrmChgCn  : { maxlength:1000 }
+                      , bgtChgCn    : { maxlength:1000 }
+                      , ldrChgCn    : { maxlength:1000 }
+                      , eduEnvChgCn : { maxlength:1000 }
+                      , aplcntid    : { maxlength:1000 }
+                    } ,
+                    messages: {
+                    	splmntDmndCn: { maxlength:"변경시 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                      , bgtChgCn    : { maxlength:"활동프로그램 세부내용 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                      , ldrChgCn    : { maxlength:"예산변경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                      , eduEnvChgCn : { maxlength:"지도자영역 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                      , aplcntid    : { maxlength:"교육활동환경 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                      , prgrmChgCn  : { maxlength:"변경사유 : 변경내용 은 1000자를 넘을 수 없습니다."  }
+                    }
+
+                });
+
+                // 파일업로드
+                $('#multiFileInput').on("change", function(event) {
+                    debugger;
+                    var objFile = document.querySelector('#multiFileInput');
+                    var formData = new FormData();
+                    var content = "";
+
+                    for( i = 0 ; i < objFile.files.length ; i++) {
+                        if(uploadFileCnt >= atchfileCnt){
+                            alert("첨부파일은  "+atchfileCnt+ " 개 까지 가능합니다." ); break;
+                        } else {
+                            formData.append("files", objFile.files[i]);
+                            uploadFileCnt++;
+                        }
+                    }
+
+                    formData.append("filegrpid", $("#filegrpid").val());
+                    formData.append("filegrpNm", "asgsysSrng_file");
+
+                    if(uploadFileCnt > 0){
+                        $.ajax({
+                            url : '/uploadMultipleFiles.do',
+                            processData : false,
+                            contentType : false,
+                            data : formData,
+                            type : 'POST',
+                            success : function(response) {
+                                if(response.result == 'fail'){
+                                    alert(response.msg);
+                                }else{
+                                    if($("#filegrpid").val()=='0' || $("#filegrpid").val()==''  || $("#filegrpid").val()==null){
+                                        $("#filegrpid").val( response[0].filegrpid );
+                                    }
+
+                                    for(i = 0 ;i < response.length; i++ ){
+                                        content = '<ul>';
+                                        content +=  '<li class="file-block" data_ext="'+response[i].fileExtsn.replace(".", '')+'" id="'+response[i].fileid+'"><span class="name">'+response[i].orginlFileNm
+                                        content += '&nbsp;&nbsp;<a href="javascript:void(0)" onclick=uploadFileCnt--;fn_deleteFileList("'+response[i].fileid+'","'+response[i].fileIdntfcKey+'")>X</a></span></li>'
+                                        content += '</ul>';
+                                        $('#multipleFileUploadSuccess').append(content);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 파일삭제
+            function fn_deleteFileList(fileid, fileIdntfcKey){
+                if(!confirm("파일을 삭제하시겠습니까?")){return;}
+                fn_deleteFile(fileid, fileIdntfcKey);
+                $("#"+fileid).remove();
+            }
+
+            // 파일삭제
+            function fn_deleteFile(fileid, fileIdntfcKey){
+                var deleteFileUrl="/deleteFile.do?fileid="+fileid+"&file_idntfc_key=" + fileIdntfcKey;
+                $.ajax({
+                    url : deleteFileUrl,
+                    type: 'GET',
+                    cache : false,
+                    dataType: 'json',
+                    success : function (data){
+                        if(data.result=="success"){
+                            $("#"+fileid).remove();
+                            alert("파일삭제가 완료 되었습니다.");
+                        }else{
+                            alert("파일삭제중 에러가 발생하였습니다. 관리자에게 문의 부탁드립니다.");
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
+
+        </script>
+    </div>
+</body>
+</html>

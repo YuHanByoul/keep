@@ -247,6 +247,18 @@ public interface DsgnPrgrmDao {
 	public DsgnPrgrmVo selectOperRsltDetail(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
+	* 운영결과 등록
+	*
+	* @Title : insertOperRslt
+	* @Description : 운영결과 등록
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
 	* 운영결과 수정
 	*
 	* @Title : updateOperRslt
@@ -267,6 +279,30 @@ public interface DsgnPrgrmDao {
 	* @throws Exception
 	*/
 	public int deleteOperRslt(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
+
+	/**
+	* 운영실적 등록
+	*
+	* @Title : insertOperPrfmnc
+	* @Description : 운영실적 등록
+	* @param vo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int insertOperPrfmnc(OperPrfmncVo operPrfmncVo) throws Exception;
+
+	/**
+	* 운영실적 삭제
+	*
+	* @Title : deleteOperPrfmnc
+	* @Description : 운영실적 삭제
+	* @param dsgnPrgrmVo
+	* @return
+	* @throws Exception
+	* @return int
+	*/
+	public int deleteOperPrfmnc(DsgnPrgrmVo dsgnPrgrmVo) throws Exception;
 
 	/**
 	* 이행확인심사 조회

@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.SerializationUtils;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.kbrainc.plum.mng.dsgnPrgrm.model.OperPrfmncVo;
 import com.kbrainc.plum.rte.model.CodeInfoVo;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
@@ -786,6 +787,9 @@ public class AsgsysSrngVo extends ParentRequestVo {
 
     /** 지도자 목록 */
     private List<LdrVo> ldrLst;
+
+    /** 운영실적 목록 */
+    private List<OperPrfmncVo> operPrfmncLst;
 
     /** 학력 ID */
     private Integer acbgid;

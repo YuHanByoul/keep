@@ -1,7 +1,7 @@
 package com.kbrainc.plum.mng.dsgnPrgrm.model;
 
-import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Size;
 
@@ -508,7 +508,10 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private String dmndDcmnt;
 
     /** 차수아이디 */
-    private String cyclid;
+    private Integer cyclid;
+
+    /** 결과차수아이디 */
+    private Integer rsltCyclid;
 
     /** 책임개발자_이름 */
     private String snrstfdvlprNm;
@@ -692,8 +695,12 @@ public class DsgnPrgrmVo extends ParentRequestVo {
     private Date lastSbmsnDt;
 
 
+
     /** 체크 값 */
     private String chkVal;
+
+    /** 운영실적 목록*/
+    private List<OperPrfmncVo> operPrfmncLst;
 
     /*------------------------------------------------------------------------------------------*/
 

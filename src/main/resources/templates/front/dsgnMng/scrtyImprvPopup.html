@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+    <form id="scrtyImprvPopFrom" >
+        <div class="layer-popup layer-large" data-layer-id="scrtyImprvPopup">
+            <input type="hidden" id="popSe" name="popSe" th:value="${popSe}">
+<!--             <input type="hidden" id="aplyid" name="aplyid" th:value="${popInfo.aplyid}"> -->
+<!--             <input type="hidden" id="aplySttsCd" name="aplySttsCd" th:value="${popInfo.aplySttsCd}"> -->
+<!--             <input type="hidden" id="aplcntid" name="aplcntid" th:value="${popInfo.aplcntid}"> -->
+
+
+            <div class="layer-dimmed" title="레이어팝업 닫기"></div>
+            <div class="layer-wrap">
+                <div class="layer-header">
+                    <strong class="tit">보완개선요청서</strong>
+                    <button type="button" class="btn-layer-close" title="레이어팝업 닫기" data-layer-close></button>
+                </div>
+                <div class="layer-content">
+
+                    <div class="table-row table-row-mo mt10">
+                        <table>
+                            <caption>보완개선요청서 - 보완개선요청, 요청서류, 보완요청 완료일</caption>
+                            <colgroup>
+                                <col style="width:140px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">보완개선요청</th>
+                                    <td>
+                                        <textarea id="dmndCn" name="dmndCn" readonly><th:block th:text="${splmntDmnd.dmndCn}"/></textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">요청서류</th>
+                                    <td>
+                                        <textarea id="dmndDcmnt" name="dmndDcmnt" readonly><th:block th:text="${splmntDmnd.dmndDcmnt}"/></textarea>
+                                        <div class="desc ar size"><span>0</span> / 1,000자</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                <th scope="row">보완요청 완료일</th>
+                                    <td>
+                                        <input type="text" id="dmndCmptnDe" name="dmndCmptnDe" th:value="${splmntDmnd.dmndCmptnDe}" readonly>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div class="layer-footer">
+                    <div class="btn-wrap">
+                        <div class="center">
+                            <button type="button" class="btn-medium btn-gray" data-layer-close>닫기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <script th:inline="javascript">
+
+    function validate(){
+
+        $("#scrtyImprvPopFrom").validate({
+            ignore: [],
+            rules: {
+                prgrmid : { required : true }
+              , ttl     : { maxlength:100  }
+              , cn      : { maxlength:100  }
+              , ans     : { maxlength:100  }
+            } ,
+            messages: {
+                prgrmid : { required: "프로그램을 선택해 주십시오." }
+              , ttl     : { maxlength:"제목은 1000자를 넘을 수 없습니다."  }
+              , cn      : { maxlength:"이의신청은 300자를 넘을 수 없습니다."  }
+              , ans     : { maxlength:"답변은 1000자를 넘을 수 없습니다."  }
+             }
+        });
+    }
+
+
+    var scrtyImprvPop ={
+    	insertUrl : "/front/dsgnMng/insertscrtyImprvForm.do",
+    	deleteUrl : "/front/dsgnMng/deletescrtyImprvForm.do",
+    	se : $("#popSe").val(),
+
+    	init(){
+
+    	},
+    	objcReg(url){
+    		scrtyImprvPop.doAjax(scrtyImprvPop.insertUrl);
+    	},
+
+    	objcDel(){
+    		scrtyImprvPop.doAjax(scrtyImprvPop.deleteUrl);
+    	},
+
+    	doAjax(url){
+
+    		if (displayWorkProgress(true)) {
+
+    			if(scrtyImprvPop.se=="reg"){
+    				$("#aplySttsCd").val("129101");    //신청
+    			}
+
+                let formData = $('#scrtyImprvPopFrom').serializeArray();
+
+                $.ajax({
+                	url : url,
+                    type: 'POST',
+                    cache : false,
+                    dataType: 'json',
+                    data: formData,
+                    success : function (data){
+                        if(data.result=="success"){
+                        	alert(data.msg);
+                        	layerPopup.close({target:'scrtyImprvPopup'});
+                        	$("#scrtyImprvTab").get(0).click()
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error : function (error){
+                    }
+                });
+            }
+    	}
+
+    };
+
+    $(function () {
+    	scrtyImprvPop.init();
+
+        $("textArea").keyup(function (e) {
+            var inTxt = $(this).val();
+            if($("#"+this.id).next().prop("class")=="desc ar size"){
+                $("#"+this.id).next().children().prop("innerHTML",inTxt.length);
+            }
+        });
+        $("textArea").trigger("keyup");
+    });
+
+    </script>
+</body>
+</html>

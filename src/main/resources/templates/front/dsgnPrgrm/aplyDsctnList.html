@@ -7,6 +7,7 @@
     <div layout:fragment="content">
         <!-- content -->
         <form class="search-filter" id="searchForm" name="searchForm">
+            <div id="splmntDmndPopup"></div>
             <input type="hidden" id="pageNumber" name="pageNumber" value="1">
             <input type="hidden" id="aplcntid" name="aplcntid" value="">
             <input type="hidden" id="rowPerPage" name="rowPerPage" value="10">
@@ -202,28 +203,37 @@
                             <tr>
                                 <td>${item.rowNumber}</td>
                                 <td><a href="#" onclick="aplyDsctnList.moveToDetail(${item.prgrmid})" class="link ellipsis">${item.prgrmNm == null ? '': item.prgrmNm}</a></td>
-                                <td>${item.sttsCdNm == null ? '': item.sttsCdNm}</td>
+                            `
+                            if(item.sttsCd=="111101" || item.sttsCd=="111102"){
+                            	html += `<td><button type="button" onclick="aplyDsctnList.openPop(${item.sttsCd},${item.prgrmid})" class="link">${item.sttsCdNm == null ? '': item.sttsCdNm}</button></td>`
+                            }else{
+                            	html += `<td>${item.sttsCdNm == null ? '': item.sttsCdNm}</button></td>`
+                            }
+
+                        html +=
+                            `
                                 <td>${item.aplyDt == null ? '': item.aplyDt}</td>
                                 <td>${item.vstDt == null ? '': item.vstDt}</td>
                             </tr>
                             `;
                     });
-//                                 <tr>
-//                                     <td>${item.rowNumber}</td>
-//                                     <td>${item.inqryClCdNm}</td>
-//                                     <td class="al article">
-//                                         <a href="javascript:void(0)" class="link ellipsis" onclick="aplyDsctnList.moveToDetail(${item.inqryid}, ${canGoToDetail})">
-//                                             ${item.sttsCd == '103104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.title}
-//                                         </a>
-//                                     </td>
-//                                     <td>${item.sttsCdNm}</td>
-//                                     <td class="list-msg-add-btn" data-trgt-id="${item.userid}">${item.acnt}</td>
-//                                     <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
-//                                     <td>${item.regDt}</td>
-//                                 </tr>
                 }
                 return html;
-            }
+            },
+
+            openPop(sttsCd,id){
+
+                var popSe = "";
+                if(sttsCd == "129101") popSe= "mod"
+                else if(sttsCd == "129102") popSe= "read"
+                else popSe= sttsCd
+
+                $("#splmntDmndPopup").load("/front/dsgnPrgrm/splmntDmndPopup.html?popSe="+popSe+"&prgrmid="+id, function(response, status, xhr) {
+                    if (status == "success") {
+                        layerPopup.open({target:'splmntDmndPopup'});
+                    }
+                });
+             }
         };
 
         function goPage(num) {

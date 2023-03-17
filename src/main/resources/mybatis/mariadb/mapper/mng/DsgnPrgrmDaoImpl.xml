@@ -904,6 +904,132 @@
         WHERE A.CYCLID = #{cyclid}
     </select>
 
+    <!-- 운영결과 등록 -->
+    <insert id="insertOperRslt" parameterType="DsgnPrgrmVo">
+        /* DsgnPrgrmDao.insertOperRslt*/
+        INSERT INTO TB_ASS_OPER_RSLT
+        (
+              CYCLID
+            , SNRSTFDVLPR_NM
+            , SNRSTFDVLPR_EML
+            , SNRSTFDVLPR_TELNO
+            , SNRSTFDVLPR_MOBLPHON
+            , PIC_NM
+            , PIC_EML
+            , PIC_TELNO
+            , PIC_MOBLPHON
+            , PRGRM_TYPE_CD
+            , STY_YN
+            , D.STY_NIGHT
+            , D.STY_DAYTM
+            , INSRNC_JOIN_YN
+            , INSRNC_RSN
+            , CHG_YN
+            , INFNT
+            , SCHBOY
+            , MSKLSD
+            , HGSCHST
+            , ADULT
+            , WHOL_AGE
+            , EDU_NOPE
+            , ACTVT_PLC
+            , ETRFEE
+            , EDU_CNT
+            , EDU_HR
+            , EDU_MNT
+            , SFTYACDNT_ENNC
+            , JAN
+            , FEB
+            , MAR
+            , APR
+            , MAY
+            , JUNE
+            , JULY
+            , AUG
+            , SEPT
+            , OCT
+            , NOV
+            , DCM
+            , WHOL_MM
+            , ISSU_YN
+            , ISSU_NOCS
+            , ISSU_SUM
+            , PRGRM_DSTNCTN
+            , OPER_MNG
+            , EVL
+            , QLFC_POSTNG
+            , SFTY_MNG
+            , FILEGRPID
+            , NEXT_YR_PRGRM
+            , NEXT_YR_LDR
+            , NEXT_YR_EDU_ENV
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        (
+              #{cyclid}                    /*차수아이디*/
+            , #{snrstfdvlprNm}             /*책임개발자_이름*/
+            , #{snrstfdvlprEml}            /*책임개발자_이메일*/
+            , #{snrstfdvlprTelno}          /*책임개발자_전화번호*/
+            , #{snrstfdvlprMoblphon}       /*책임개발자_휴대폰번호*/
+            , #{picNm}                     /*담당자_이름*/
+            , #{picEml}                    /*담당자_이메일*/
+            , #{picTelno}                  /*담당자_전화번호*/
+            , #{picMoblphon}               /*담당자_휴대폰번호*/
+            , #{prgrmTypeCd}               /*프로그램_유형_코드*/
+            , #{styYn}                     /*숙박_여부*/
+            , #{styNight}
+            , #{styDaytm}
+            , #{insrncJoinYn}              /*보험_가입_여부*/
+            , #{insrncRsn}                 /*보험_사유*/
+            , #{chgYn}                     /*변경_여부*/
+            , #{infnt}                     /*유아*/
+            , #{schboy}                    /*초등학생*/
+            , #{msklsd}                    /*중학생*/
+            , #{hgschst}                   /*고등학생*/
+            , #{adult}                     /*성인*/
+            , #{wholAge}                   /*전체_연령*/
+            , #{eduNope}                   /*교육_인원수*/
+            , #{actvtPlc}                  /*활동_장소*/
+            , #{etrfee}                    /*참가비*/
+            , #{eduCnt}                    /*교육_횟수*/
+            , #{eduHr}                     /*교육_시간*/
+            , #{eduMnt}                    /*교육_분*/
+            , #{sftyacdntEnnc}             /*안전사고_유무*/
+            , #{jan}                       /*1월*/
+            , #{feb}                       /*2월*/
+            , #{mar}                       /*3월*/
+            , #{apr}                       /*4월*/
+            , #{may}                       /*5월*/
+            , #{june}                      /*6월*/
+            , #{july}                      /*7월*/
+            , #{aug}                       /*8월*/
+            , #{sept}                      /*9월*/
+            , #{oct}                       /*10월*/
+            , #{nov}                       /*11월*/
+            , #{dcm}                       /*12월*/
+            , #{wholMm}                    /*전체_월*/
+            , #{issuYn}                    /*발급_여부*/
+            , #{issuNocs}                  /*발급_건수*/
+            , #{issuSum}                   /*발급_합계*/
+            , #{prgrmDstnctn}              /*프로그램_우수성*/
+            , #{operMng}                   /*운영_관리*/
+            , #{evl}                       /*평가*/
+            , #{qlfcPostng}                /*자격_배치*/
+            , #{sftyMng}                   /*안전_관리*/
+            , #{filegrpid}                 /*파일그룹아이디*/
+            , #{nextYrPrgrm}               /*다음_연도_프로그램*/
+            , #{nextYrLdr}                 /*다음_연도_지도자*/
+            , #{nextYrEduEnv}              /*다음_연도_교육_환경*/
+            , NOW()                        /*수정_일시*/
+            , #{user.userid}               /*수정자아이디*/
+            , NOW()                        /*등록_일시*/
+            , #{user.userid}              /*등록자아이디*/
+        )
+    </insert>
+
     <!-- 운영결과 수정-->
     <update id="updateOperRslt" parameterType="DsgnPrgrmVo" >
     /* DsgnPrgrmDao.updateOperRslt*/
@@ -998,19 +1124,50 @@
             TB_ASS_OPER_RSLT A
         LEFT OUTER JOIN
             TB_ASS_OPER_RSLT_PRFMNC B ON A.CYCLID = B.CYCLID
-        WHERE 1=1
         WHERE A.CYCLID = #{cyclid}
         ORDER BY B.PRFMNCID
     </select>
-
-
-
     <!-- 운영결과 운영성과 조회 -->
 
+    <!-- 운영실적 등록-->
+    <insert id="insertOperPrfmnc" parameterType="OperPrfmncVo" >
+        /* DsgnPrgrmDao.insertOperPrfmnc*/
+        INSERT INTO TB_ASS_OPER_RSLT_PRFMNC
+        (
+              CYCLID
+            , OPRTN_DE
+            , TRGT
+            , HR
+            , NOPE
+            , CNT
+            , WHOL_HR
+            , WHOL_NOPE
+            , LDR_POSTNG_RT
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+            ) VALUES (
+              #{cyclid     }
+            , #{oprtnDe    }
+            , #{trgt       }
+            , #{hr         }
+            , #{nope       }
+            , #{cnt        }
+            , #{wholHr     }
+            , #{wholNope   }
+            , #{ldrPostngRt}
+            , NOW()
+            , #{user.userid}
+            , NOW()
+            , #{user.userid}
+        )
+    </insert>
 
-
-
-
-
+    <delete id="deleteOperPrfmnc" parameterType="DsgnPrgrmVo" >
+        /* DsgnPrgrmDao.insertOperPrfmnc*/
+        DELETE FROM TB_ASS_OPER_RSLT_PRFMNC
+        WHERE CYCLID = #{cyclid}
+    </delete>
 
 </mapper>
