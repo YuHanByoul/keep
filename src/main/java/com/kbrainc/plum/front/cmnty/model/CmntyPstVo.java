@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.cmnty.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -60,9 +61,13 @@ public class CmntyPstVo extends ParentRequestVo {
     private Integer filegrpid;
     /** 삭제_여부 */
     private String delYn;
+    /** 인기_여부 */
     private String hotYn;
+    /** 신규_여부 */
     private String newYn;
+    /** 공지_여부 */
     private String fxNtcUseYn;
+    /** 댓글사용_여부 */
     private String cmntUseYn;
     /** 수정_일시 */
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm")
@@ -76,11 +81,16 @@ public class CmntyPstVo extends ParentRequestVo {
     private String rgtrid;
     /** 등록자이름 */
     private String rgtrNm;
+    /** 고정공지순서 */
+    private Integer fixorder;
+    /** 댓글 개수 */
+    private Integer cmntCnt;
     private String nextPstid;
     private String nextTitle;
     private String prevPstid;
     private String prevTitle;
-    /** 고정공지순서 */
-    private Integer fixorder;
-
+    /** 작성자 마스킹 처리 */
+    public void setRgtrNm(String rgtrNm) {
+        this.rgtrNm = StringUtil.maskingName(rgtrNm);
+    }
 }

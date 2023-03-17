@@ -364,31 +364,32 @@
             , B.FX_NTC_USE_YN
             , A.FILEGRPID
             , A.REG_DT
-        <choose>
-            <when test='hotUseYn == "Y"'>
-                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseCrtrHits} THEN HITS ELSE 0 END) HOT_ORDER_NUM
-                , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseCrtrHits} THEN 'Y' ELSE 'N' END) HOT_YN
-            </when>
-            <otherwise>
-                , 0 HOT_ORDER_NUM
-                , 'N' HOT_YN
-            </otherwise>
-        </choose>
-        <choose>
-            <when test='newUseYn == "Y"'>
+    <choose>
+        <when test='hotUseYn == "Y"'>
+            , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseCrtrHits} THEN HITS ELSE 0 END) HOT_ORDER_NUM
+            , (CASE WHEN (FX_NTC_YN = 'N' OR FX_NTC_YN IS NULL) AND HITS <![CDATA[>=]]> #{hotUseCrtrHits} THEN 'Y' ELSE 'N' END) HOT_YN
+        </when>
+        <otherwise>
+            , 0 HOT_ORDER_NUM
+            , 'N' HOT_YN
+        </otherwise>
+    </choose>
+    <choose>
+        <when test='newUseYn == "Y"'>
             , (CASE WHEN  NOW() <![CDATA[<=]]> DATE_ADD(A.REG_DT, INTERVAL  #{newIndictDaycnt}  DAY) THEN 'Y' ELSE 'N' END) NEW_YN
-            </when>
-            <otherwise>
-                ,'N' NEW_YN
-            </otherwise>
-        </choose>
-        , (CASE WHEN FX_NTC_YN = 'Y' AND NOW() BETWEEN FX_NTC_BGNG_DT AND FX_NTC_END_DT THEN 1 ELSE 2 END) FIXORDER
-        , A.MDFCN_DT
+        </when>
+        <otherwise>
+            ,'N' NEW_YN
+        </otherwise>
+    </choose>
+            , (CASE WHEN FX_NTC_YN = 'Y' AND NOW() BETWEEN FX_NTC_BGNG_DT AND FX_NTC_END_DT THEN 1 ELSE 2 END) FIXORDER
+            , A.MDFCN_DT
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
+            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = A.PSTID AND PARNTS_CMNTID IS NULL) CMNT_CNT
         FROM TB_CMT_CMNTY_PST A
         INNER JOIN TB_CMT_CMNTY_BBS B ON A.BBSID = B.BBSID
         WHERE
             1=1
-            AND A.DEL_YN = 'N'
             AND A.BBSID= #{bbsid}
         <if test="searchKeyword != null and searchKeyword != '' and searchType == 'ttl' ">
             AND A.TTL LIKE CONCAT('%', #{searchKeyword}, '%')
@@ -539,6 +540,7 @@
                 , A.RGTRID
                 , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
                 , (CASE WHEN FX_NTC_YN = 'Y' AND NOW() BETWEEN FX_NTC_BGNG_DT AND FX_NTC_END_DT THEN 1 ELSE 2 END) FIXORDER
+                , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = A.PSTID AND PARNTS_CMNTID IS NULL) CMNT_CNT
                 , B.FX_NTC_USE_YN
                 , B.CMNT_USE_YN
             FROM TB_CMT_CMNTY_PST A
@@ -639,6 +641,7 @@
     <!-- 환경동아리 댓글 목록 -->
     <select id="selectCmntList" resultType="front.CmntyCmntVo">
         /* CmntyDao.selectCmntList */
+        <include refid="PaginationMapper.header"/>
         SELECT
             A.CMNTID
             , A.PSTID
@@ -653,24 +656,32 @@
             , A.MDFRID
             , A.REG_DT
             , A.RGTRID
+            , (SELECT NM FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_NM
+            , (SELECT ACNT FROM TB_CMM_USER WHERE USERID = A.RGTRID) RGTR_ACNT
+            , (SELECT COUNT(0) FROM TB_CMT_CMNTY_CMNT WHERE PSTID = #{pstid} AND PARNTS_CMNTID = A.CMNTID) CMNT_REPLY_CNT
         FROM TB_CMT_CMNTY_CMNT A
         WHERE A.PSTID = #{pstid}
-        <if test="cmntid != null and cmntid != ''">
-            AND A.CMNTID = #{cmntid}
-        </if>
-        ORDER BY A.CMNT_GRP DESC, A.SORTORDR ASC
+        <choose>
+            <when test="parntsCmntid != null and parntsCmntid != ''">
+                AND A.PARNTS_CMNTID = #{parntsCmntid}
+            </when>
+            <otherwise>
+                AND A.PARNTS_CMNTID IS NULL
+            </otherwise>
+        </choose>
+        <include refid="PaginationMapper.footer"/>
     </select>
     <!-- 환경동아리 댓글 순서 수정 -->
-    <update id="updateCmntOrdElse">
-        /* CmntyDao.updateCmntOrdElse */
-        UPDATE TB_CMT_CMNTY_CMNT SET
-            SORTORDR  = SORTORDR + 1
-            , MDFCN_DT = NOW()
-            , MDFRID   = #{user.userid}
-        WHERE 1=1
-          AND CMNT_GRP = #{cmntGrp}
-          AND SORTORDR >= #{sortordr}
-    </update>
+<!--    <update id="updateCmntOrdElse">-->
+<!--        /* CmntyDao.updateCmntOrdElse */-->
+<!--        UPDATE TB_CMT_CMNTY_CMNT SET-->
+<!--            SORTORDR  = SORTORDR + 1-->
+<!--            , MDFCN_DT = NOW()-->
+<!--            , MDFRID   = #{user.userid}-->
+<!--        WHERE 1=1-->
+<!--          AND CMNT_GRP = #{cmntGrp}-->
+<!--          AND SORTORDR >= #{sortordr}-->
+<!--    </update>-->
     <!-- 환경동아리 댓글 등록 -->
     <insert id="insertCmnt">
         /* CmntyDao.insertCmnt */
@@ -692,10 +703,10 @@
             , #{cn}
             , #{parntsCmntid}
             , IFNULL(#{cmntGrp}, (SELECT  IFNULL(MAX(A.CMNT_GRP),0) +1 FROM TB_CMT_CMNTY_CMNT A))
-            , IFNULL(#{dpth}, 0)
+            , IF(#{parntsCmntid} IS NULL, 0, 1)
             , IFNULL(#{sortordr}, 1)
             , #{rlsYn}
-            , #{delYn}
+            , 'N'
             , NOW()
             , #{user.userid}
             , NOW()
