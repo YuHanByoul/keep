@@ -316,3 +316,179 @@ class InfntDgstfnMsgQuartzConfig {
                 .build();
     }
 }
+
+/**
+* 스케줄링 배치잡(전문가 섭외자와 대상 전문가 대상 교육 알림 메시지 발송) 설정 클래스.
+*
+* <pre>
+* com.kbrainc.plum.config.scheduling.quartz
+* - ExprtEduBfrSendMsgQuartzConfig.java
+* </pre>
+*
+* @ClassName   : ExprtEduBfrSendMsgQuartzConfig 
+* @Description : 스케줄링 배치잡(전문가 섭외자와 대상 전문가 대상 교육 알림 메시지 발송) 설정 클래스.
+* @author      : KBRAINC
+* @date        : 2023. 3. 13.
+* @Version     : 1.0 
+* @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
+*/
+@Configuration
+class ExprtEduBfrSendMsgQuartzConfig {  
+    @Bean
+    public JobDetail exprtBfrMsgJobDetail() {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("triggerid", 13);
+        jobDataMap.put("jobName", "exprtBfrMsgJob");
+         
+        return JobBuilder.newJob(QuartzExecConfig.class)
+                .withIdentity("exprtBfrMsgJob",null)
+                .setJobData(jobDataMap)
+                .storeDurably()
+                .build();
+    }
+     
+    @Bean
+    public Trigger exprtBfrMsgTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder
+                .cronSchedule("59 59 23 31 12 ? 2119"); // 초기설정이며 서버 구동시 DB에서 불러온 값으로 재설정 된다.
+ 
+        return TriggerBuilder
+                .newTrigger()
+                .forJob(exprtBfrMsgJobDetail())
+                .withIdentity("exprtBfrMsgTrigger",null)
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+}
+
+/**
+* 스케줄링 배치잡(전문가 섭외자 대상 만족도 평가 안내 메시지 발송) 설정 클래스.
+*
+* <pre>
+* com.kbrainc.plum.config.scheduling.quartz
+* - ExprtEduAftrSendMsgQuartzConfig.java
+* </pre>
+*
+* @ClassName   : ExprtEduAftrSendMsgQuartzConfig 
+* @Description : 스케줄링 배치잡(전문가 섭외자 대상 만족도 평가 안내 메시지 발송) 설정 클래스.
+* @author      : KBRAINC
+* @date        : 2023. 3. 13.
+* @Version     : 1.0 
+* @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
+*/
+@Configuration
+class ExprtEduAftrSendMsgQuartzConfig {  
+    @Bean
+    public JobDetail exprtAftrMsgJobDetail() {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("triggerid", 14);
+        jobDataMap.put("jobName", "exprtAftrMsgJob");
+         
+        return JobBuilder.newJob(QuartzExecConfig.class)
+                .withIdentity("exprtAftrMsgJob",null)
+                .setJobData(jobDataMap)
+                .storeDurably()
+                .build();
+    }
+     
+    @Bean
+    public Trigger exprtAftrMsgTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder
+                .cronSchedule("59 59 23 31 12 ? 2119"); // 초기설정이며 서버 구동시 DB에서 불러온 값으로 재설정 된다.
+ 
+        return TriggerBuilder
+                .newTrigger()
+                .forJob(exprtAftrMsgJobDetail())
+                .withIdentity("exprtAftrMsgTrigger",null)
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+}
+
+/**
+* 스케줄링 배치잡(미입금 시설예약 취소처리) 설정 클래스.
+*
+* <pre>
+* com.kbrainc.plum.config.scheduling.quartz
+* - FlctReservCancleQuartzConfig.java
+* </pre>
+*
+* @ClassName   : FlctReservCancleQuartzConfig 
+* @Description : 스케줄링 배치잡(미입금 시설예약 취소처리) 설정 클래스.
+* @author      : KBRAINC
+* @date        : 2023. 3. 13.
+* @Version     : 1.0 
+* @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
+*/
+@Configuration
+class FlctReservCancleQuartzConfig {  
+    @Bean
+    public JobDetail flctRsvCnclJobDetail() {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("triggerid", 15);
+        jobDataMap.put("jobName", "flctRsvCnclJob");
+         
+        return JobBuilder.newJob(QuartzExecConfig.class)
+                .withIdentity("flctRsvCnclJob",null)
+                .setJobData(jobDataMap)
+                .storeDurably()
+                .build();
+    }
+     
+    @Bean
+    public Trigger flctRsvCnclTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder
+                .cronSchedule("59 59 23 31 12 ? 2119"); // 초기설정이며 서버 구동시 DB에서 불러온 값으로 재설정 된다.
+ 
+        return TriggerBuilder
+                .newTrigger()
+                .forJob(flctRsvCnclJobDetail())
+                .withIdentity("flctRsvCnclTrigger",null)
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+}
+
+/**
+* 스케줄링 배치잡(시설 이용자 대상 만족도 평가 안내 메시지 발송) 설정 클래스.
+*
+* <pre>
+* com.kbrainc.plum.config.scheduling.quartz
+* - FlctReservDgstfnNtcMsgSendQuartzConfig.java
+* </pre>
+*
+* @ClassName   : FlctReservDgstfnNtcMsgSendQuartzConfig 
+* @Description : 스케줄링 배치잡(시설 이용자 대상 만족도 평가 안내 메시지 발송) 설정 클래스.
+* @author      : KBRAINC
+* @date        : 2023. 3. 13.
+* @Version     : 1.0 
+* @Company     : CopyrightⒸ KBRAINC. All Rights Reserved
+*/
+@Configuration
+class FlctReservDgstfnNtcMsgSendQuartzConfig {  
+    @Bean
+    public JobDetail flctRsvDgstfnJobDetail() {
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("triggerid", 16);
+        jobDataMap.put("jobName", "flctRsvDgstfnJob");
+         
+        return JobBuilder.newJob(QuartzExecConfig.class)
+                .withIdentity("flctRsvDgstfnJob",null)
+                .setJobData(jobDataMap)
+                .storeDurably()
+                .build();
+    }
+     
+    @Bean
+    public Trigger flctRsvDgstfnTrigger() {
+        CronScheduleBuilder scheduleBuilder = CronScheduleBuilder
+                .cronSchedule("59 59 23 31 12 ? 2119"); // 초기설정이며 서버 구동시 DB에서 불러온 값으로 재설정 된다.
+ 
+        return TriggerBuilder
+                .newTrigger()
+                .forJob(flctRsvDgstfnJobDetail())
+                .withIdentity("flctRsvDgstfnTrigger",null)
+                .withSchedule(scheduleBuilder)
+                .build();
+    }
+}
