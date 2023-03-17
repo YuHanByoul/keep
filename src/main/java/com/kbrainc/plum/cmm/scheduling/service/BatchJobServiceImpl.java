@@ -191,7 +191,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                 String recipientListStr = mapper.writeValueAsString(recipientList);
                 
                 //발송 - 아직 탬플릿 없음
-                //alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
+                alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
             }
             
         }
@@ -348,7 +348,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                  String recipientListStr = mapper.writeValueAsString(recipientList);
                  
                  //발송 - 아직 탬플릿 없음
-                 //alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
+                 alimtalkNhnService.sendAlimtalk("TEST002", (String) alimTalkSendUser.get("SENDRSVTIME"), recipientListStr);
             }
                  
         }
