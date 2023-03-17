@@ -7,6 +7,9 @@ import com.kbrainc.plum.front.exprtPool.register.model.*;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.salt.RandomSaltGenerator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,9 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
 
     private final ExprtRegisterDao exprtRegisterDao;
     private final FileDao fileDao;
+
+    @Value("${crypto.key}")
+    private String encryptKey;
 
     /**
      * 사용자 기본정보 조회
@@ -83,19 +89,14 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
         retVal += exprtRegisterDao.insertActvtRgnCds(actvtRgnCds, exprtRegisterVo.getUser());
         retVal += exprtRegisterDao.insertActvtScopeCds(actvtScopeCds, exprtRegisterVo.getUser());
 
-        retVal += exprtRegisterDao.insertDefaultInfo(exprtRegisterVo);
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setSaltGenerator(new RandomSaltGenerator());
+        encryptor.setPassword(encryptKey);
+        encryptor.setAlgorithm("PBEWithMD5AndDES");
+        String encStr = encryptor.encrypt(exprtRegisterVo.getGndr());
+        exprtRegisterVo.setGndr(encStr);
 
-        /* 최초 신청시 정보 변경 테이블에 레코드 생성*/
-        if (exprtRegisterVo.getTempSaveYn().equals("N")) {
-            retVal += exprtRegisterDao.insertMdfcnExprt(exprtRegisterVo);
-            retVal += exprtRegisterVo.getCareers().size() > 0 ? exprtRegisterDao.insertMdfcnCareer(exprtRegisterVo) : 0;
-            retVal += exprtRegisterVo.getCrtfcts().size() > 0 ? exprtRegisterDao.insertMdfcnCrtfct(exprtRegisterVo) : 0;
-            retVal += exprtRegisterVo.getHdofs().size() > 0 ? exprtRegisterDao.insertMdfcnHdof(exprtRegisterVo) : 0;
-            retVal += exprtRegisterDao.insertMdfcnTrgtCds(exprtRegisterVo.getMdfcnDmndId(), trgtCds, exprtRegisterVo.getUser());
-            retVal += exprtRegisterDao.insertMdfcnSbjctCds(exprtRegisterVo.getMdfcnDmndId(), sbjctCds, exprtRegisterVo.getUser());
-            retVal += exprtRegisterDao.insertMdfcnActvtRgnCds(exprtRegisterVo.getMdfcnDmndId(), actvtRgnCds, exprtRegisterVo.getUser());
-            retVal += exprtRegisterDao.insertMdfcnActvtScopeCds(exprtRegisterVo.getMdfcnDmndId(), actvtScopeCds, exprtRegisterVo.getUser());
-        }
+        retVal += exprtRegisterDao.insertDefaultInfo(exprtRegisterVo);
 
         return retVal;
     }
@@ -148,5 +149,10 @@ public class ExprtRegisterServiceImpl extends PlumAbstractServiceImpl implements
         }
 
         return exprtRegister;
+    }
+
+    @Override
+    public List<MmbrQlfcVo> selectMmbrQlfcList(ExprtRegisterVo exprtRegisterVo) throws Exception {
+        return exprtRegisterDao.selectMmbrQlfcList(exprtRegisterVo);
     }
 }

@@ -6,6 +6,7 @@
     Description : 1:1문의 관리
 -->
 <mapper namespace="com.kbrainc.plum.front.inqry.model.InqryDao">
+    <!-- 1:1문의 생성 -->
     <insert id="insertInqry">
         INSERT INTO TB_CMM_INQRY(
             SITEID
@@ -40,6 +41,7 @@
              )
     </insert>
 
+    <!-- 1:1문의 수정 -->
     <update id="updateInqry">
         UPDATE TB_CMM_INQRY SET
             TITLE = #{title}
@@ -52,6 +54,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
+    <!-- 1:1문의 삭제 -->
     <update id="deleteInqry">
         UPDATE TB_CMM_INQRY SET
             DEL_YN = 'Y'
@@ -60,6 +63,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
+    <!-- 1:1문의 취소 -->
     <update id="cancelInqry">
         UPDATE TB_CMM_INQRY SET
             STTS_CD = '103102'
@@ -68,6 +72,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
+    <!-- 1:1문의 목록 조회 -->
     <select id="selectInqryList" resultType="front.InqryVo">
         <include refid="PaginationMapper.header"/>
         SELECT
@@ -76,12 +81,7 @@
             , A.USERID
             , A.TITLE
             , A.CNTNTS
-            , CASE WHEN CHAR_LENGTH(B.ACNT) >= 4
-                THEN CONCAT (
-                SUBSTRING(B.ACNT, 1, CHAR_LENGTH(B.ACNT)- 3) ,
-                RPAD('*', 3,'*')
-                )
-              ELSE B.ACNT END AS ACNT
+            , B.NM
             , A.FILEGRPID
             , A.INQRY_CL_CD
             , A.STTS_CD
@@ -101,6 +101,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!-- 1:1문의 상세 조회 -->
     <select id="selectInqry" resultType="front.InqryVo">
         SELECT
             A.INQRYID
@@ -108,17 +109,7 @@
              , A.USERID
              , A.TITLE
              , A.CNTNTS
-             , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
-                         CONCAT(
-                              SUBSTRING(B.ACNT, 1, 1)
-                             ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
-                             ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
-                             )
-                     ELSE CONCAT(
-                         SUBSTRING(B.ACNT, 1, 1)
-                         ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
-                         )
-                END AS ACNT
+             , B.NM
              , A.FILEGRPID
              , A.INQRY_CL_CD
              , A.STTS_CD
@@ -130,6 +121,7 @@
         WHERE INQRYID = #{inqryid}
     </select>
 
+    <!-- 1:1문의 답변 조회 -->
     <select id="selectInqryAns" resultType="com.kbrainc.plum.front.inqry.model.InqryAnsVo">
         SELECT
             A.ANSWRID
@@ -139,7 +131,7 @@
             , A.OPETRID
             , A.FILEGRPID
             , A.ANS_DE
-            , C.ACNT AS OPETR_ACNT
+            , C.NM
             FROM TB_CMM_INQRY_ANSWR A
             INNER JOIN TB_CMM_INQRY B
                 ON A.INQRYID = B.INQRYID
@@ -148,6 +140,7 @@
             WHERE A.INQRYID = #{inqryid}
     </select>
 
+    <!-- 마이페이지 > 1:1문의 목록 조회 -->
     <select id="selectMypageInqryList" resultType="front.InqryVo">
         <include refid="PaginationMapper.header"/>
         SELECT
@@ -156,17 +149,7 @@
             , A.USERID
             , A.TITLE
             , A.CNTNTS
-            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
-            CONCAT(
-            SUBSTRING(B.ACNT, 1, 1)
-            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
-            ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
-            )
-            ELSE CONCAT(
-            SUBSTRING(B.ACNT, 1, 1)
-            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
-            )
-            END AS ACNT
+            , B.NM
             , A.FILEGRPID
             , A.INQRY_CL_CD
             , A.STTS_CD

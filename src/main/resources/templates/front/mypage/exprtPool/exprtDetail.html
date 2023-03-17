@@ -28,71 +28,78 @@
                     </div>
                 </div>
 
-                <div class="table-row">
-                    <th:block th:each="hdof : ${exprt.hdofs}">
-                        <table>
-                            <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 취득등급, 취득일, 재직증명서</caption>
-                            <colgroup>
-                                <col style="width:140px;">
-                                <col>
-                                <col style="width:140px;">
-                                <col>
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th scope="row">재직구분</th>
-                                <td th:text="${hdof.hdofSeCdNm}">
-                                </td>
+                <th:block th:if="${exprt.hdofs.size() == 0}">
+                    <div class="nodata">
+                        <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>등록된 자격취득사항이 없습니다.</p>
+                    </div>
+                </th:block>
 
-                                <th scope="row">재직기관명</th>
-                                <td th:text="${hdof.instNm}">기관명</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">부서(소속)</th>
-                                <td th:text="${hdof.deptNm}">부서명</td>
+                <th:block th:unless="${exprt.hdofs.size() == 0}">
+                    <div class="table-row">
+                        <th:block th:each="hdof : ${exprt.hdofs}">
+                            <table>
+                                <caption>재직사항 입력 - 재직구분, 재직기관명, 부서(소속), 취득등급, 취득일, 재직증명서</caption>
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col>
+                                    <col style="width:140px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">재직구분</th>
+                                    <td th:text="${hdof.hdofSeCdNm}">
+                                    </td>
 
-                                <th scope="row">지위(직급)</th>
-                                <td th:text="${hdof.jbgdNm}">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">재직기간</th>
-                                <td colspan="3">
-                                    <th:block th:if="${hdof.hdofYn == 'Y'}">
-                                        <th:block th:text="|${hdof.hdofBgngDe} ~ 재직중|"></th:block>
-                                    </th:block>
+                                    <th scope="row">재직기관명</th>
+                                    <td th:text="${hdof.instNm}">기관명</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">부서(소속)</th>
+                                    <td th:text="${hdof.deptNm}">부서명</td>
 
-                                    <th:block th:unless="${hdof.hdofYn == 'Y'}">
-                                        <th:block th:text="|${hdof.hdofBgngDe} ~ ${hdof.hdofEndDe}|"></th:block>
-                                    </th:block>
-                                </td>
+                                    <th scope="row">지위(직급)</th>
+                                    <td th:text="${hdof.jbgdNm}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">재직기간</th>
+                                    <td colspan="3">
+                                        <th:block th:if="${hdof.hdofYn == 'Y'}">
+                                            <th:block th:text="|${hdof.hdofBgngDe} ~ 재직중|"></th:block>
+                                        </th:block>
 
-                            <tr>
-                                <th scope="row">재직증명서</th>
-                                <td colspan="3">
-                                    <div class="form-input-file">
-                                        <ul>
-                                            <th:block th:if="${hdof.hdofCrtfFile != null}">
-                                                <th:block th:with="file=${hdof.hdofCrtfFile}">
-                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                        <th:block th:unless="${hdof.hdofYn == 'Y'}">
+                                            <th:block th:text="|${hdof.hdofBgngDe} ~ ${hdof.hdofEndDe}|"></th:block>
+                                        </th:block>
+                                    </td>
+
+                                <tr>
+                                    <th scope="row">재직증명서</th>
+                                    <td colspan="3">
+                                        <div class="form-input-file">
+                                            <ul>
+                                                <th:block th:if="${hdof.hdofCrtfFile != null}">
+                                                    <th:block th:with="file=${hdof.hdofCrtfFile}">
+                                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                                     <span class="name">
                                                         <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
                                                            th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
                                                             [[${file.orginlFileNm}]]
                                                         </a>
                                                     </span>
-                                                    </li>
+                                                        </li>
+                                                    </th:block>
                                                 </th:block>
-                                            </th:block>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </th:block>
-                </div>
-
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </th:block>
+                    </div>
+                </th:block>
 
                 <div class="table-caption">
                     <div class="left">
@@ -100,58 +107,66 @@
                     </div>
                 </div>
 
-                <div class="table-row">
-                    <th:block th:each="crtfct : ${exprt.crtfcts}">
-                        <table>
-                            <caption>자격취득사항 - 자격증명, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
-                            <colgroup>
-                                <col style="width:140px;">
-                                <col>
-                                <col style="width:140px;">
-                                <col>
-                            </colgroup>
-                            <tbody>
-                            <tr>
-                                <th scope="row">자격증명</th>
-                                <td th:text="${crtfct.crtfctNm}">환경교육사</td>
-                                <th scope="row">취득기관</th>
-                                <td th:text="${crtfct.acqsInst}">환경부</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">취득번호</th>
-                                <td th:text="${crtfct.acqsNo}">200-220310</td>
-                                <th scope="row">취득등급</th>
-                                <td th:text="${crtfct.acqsGrd}">2급</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">취득일</th>
-                                <td colspan="3" th:text="${crtfct.acqsDe}">2022-08-23</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">자격증명서</th>
-                                <td colspan="3">
-                                    <div class="form-input-file">
-                                        <ul>
-                                            <th:block th:if="${crtfct.crtfctFile != null}">
-                                                <th:block th:with="file=${crtfct.crtfctFile}">
-                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                <th:block th:if="${exprt.crtfcts.size() == 0}">
+                    <div class="nodata">
+                        <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>등록된 자격취득사항이 없습니다.</p>
+                    </div>
+                </th:block>
+
+                <th:block th:unless="${exprt.crtfcts.size() == 0}">
+                    <div class="table-row">
+                        <th:block th:each="crtfct : ${exprt.crtfcts}">
+                            <table>
+                                <caption>자격취득사항 - 자격증명, 취득기관, 취득번호, 취득등급, 취득일, 자격증명서</caption>
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col>
+                                    <col style="width:140px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">자격증명</th>
+                                    <td th:text="${crtfct.crtfctNm}">환경교육사</td>
+                                    <th scope="row">취득기관</th>
+                                    <td th:text="${crtfct.acqsInst}">환경부</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">취득번호</th>
+                                    <td th:text="${crtfct.acqsNo}">200-220310</td>
+                                    <th scope="row">취득등급</th>
+                                    <td th:text="${crtfct.acqsGrd}">2급</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">취득일</th>
+                                    <td colspan="3" th:text="${crtfct.acqsDe}">2022-08-23</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">자격증명서</th>
+                                    <td colspan="3">
+                                        <div class="form-input-file">
+                                            <ul>
+                                                <th:block th:if="${crtfct.crtfctFile != null}">
+                                                    <th:block th:with="file=${crtfct.crtfctFile}">
+                                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
                                                     <span class="name">
                                                         <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
                                                            th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
                                                             [[${file.orginlFileNm}]]
                                                         </a>
                                                     </span>
-                                                    </li>
+                                                        </li>
+                                                    </th:block>
                                                 </th:block>
-                                            </th:block>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </th:block>
-                </div>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </th:block>
+                    </div>
+                </th:block>
 
 
                 <div class="table-caption">
@@ -159,107 +174,116 @@
                         <h3 class="sub-title">환경교육 경력(실적) 사항</h3>
                     </div>
                 </div>
-                <div class="table-row">
-                    <table>
-                        <caption>환경교육 경력(실적) 사항 - 총 환경교육 경력</caption>
-                        <colgroup>
-                            <col style="width:140px;">
-                            <col>
-                        </colgroup>
-                        <tbody>
-                        <tr>
-                            <th scope="row">총 환경교육 경력</th>
-                            <td>[[${exprt.envEduCareerYy}]]년 [[${exprt.envEduCareerMm}]]개월</td>
-                        </tr>
-                        </tbody>
-                    </table>
 
-                    <th:block th:each="career : ${exprt.careers}">
+                <th:block th:if="${exprt.careers.size() == 0}">
+                    <div class="nodata">
+                        <p class="fc-black6"><span class="icon icon-notice bg-black6"></span>등록된 경력(실적) 사항이 없습니다.</p>
+                    </div>
+                </th:block>
+
+                <th:block th:unless="${exprt.careers.size() == 0}">
+                    <div class="table-row">
                         <table>
-                            <caption>환경교육 경력(실적) 사항 - 활동분야, 재직(활동)기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서, 정관</caption>
+                            <caption>환경교육 경력(실적) 사항 - 총 환경교육 경력</caption>
                             <colgroup>
-                                <col style="width:140px;">
-                                <col>
                                 <col style="width:140px;">
                                 <col>
                             </colgroup>
                             <tbody>
                             <tr>
-                                <th scope="row">활동분야</th>
-                                <td th:text="${career.fldNm}">환경</td>
-                                <th scope="row">재직(활동)기간</th>
-                                <td>
-                                    <th:block th:if="${career.actvtYn == 'Y'}">
-                                        <th:block th:text="|${career.actvtBgngDe} ~ 재직중|"></th:block>
-                                    </th:block>
-
-                                    <th:block th:unless="${career.actvtYn == 'Y'}">
-                                        <th:block th:text="|${career.actvtBgngDe} ~ ${career.actvtEndDe}|"></th:block>
-                                    </th:block>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">활동시간</th>
-                                <td th:text="${career.actvtHr}">hh시간</td>
-                                <th scope="row">확인기관</th>
-                                <td th:text="${career.idntyInstNm}">환경부</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">활동내용</th>
-                                <td colspan="3">
-                                    <textarea title="활동내용" readonly th:text="${career.actvtCn}">환경 활동을 했습니다.</textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">확인일</th>
-                                <td colspan="3" th:text="${career.idntyDe}">YYYY-MM-DD</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">확인서</th>
-                                <td colspan="3">
-                                    <div class="form-input-file">
-                                        <ul>
-                                            <th:block th:if="${career.crtfFile != null}">
-                                                <th:block th:with="file=${career.crtfFile}">
-                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
-                                                    <span class="name">
-                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                                            [[${file.orginlFileNm}]]
-                                                        </a>
-                                                    </span>
-                                                    </li>
-                                                </th:block>
-                                            </th:block>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">정관</th>
-                                <td colspan="3">
-                                    <div class="form-input-file">
-                                        <ul>
-                                            <th:block th:if="${career.artClassFile != null}">
-                                                <th:block th:with="file=${career.artClassFile}">
-                                                    <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
-                                                    <span class="name">
-                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
-                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
-                                                            [[${file.orginlFileNm}]]
-                                                        </a>
-                                                    </span>
-                                                    </li>
-                                                </th:block>
-                                            </th:block>
-                                        </ul>
-                                    </div>
-                                </td>
+                                <th scope="row">총 환경교육 경력</th>
+                                <td>[[${exprt.envEduCareerYy}]]년 [[${exprt.envEduCareerMm}]]개월</td>
                             </tr>
                             </tbody>
                         </table>
-                    </th:block>
-                </div>
+
+                        <th:block th:each="career : ${exprt.careers}">
+                            <table>
+                                <caption>환경교육 경력(실적) 사항 - 활동분야, 재직(활동)기간, 활동시간, 확인기관, 활동내용, 확인일, 확인서, 정관</caption>
+                                <colgroup>
+                                    <col style="width:140px;">
+                                    <col>
+                                    <col style="width:140px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">활동분야</th>
+                                    <td th:text="${career.fldNm}">환경</td>
+                                    <th scope="row">재직(활동)기간</th>
+                                    <td>
+                                        <th:block th:if="${career.actvtYn == 'Y'}">
+                                            <th:block th:text="|${career.actvtBgngDe} ~ 재직중|"></th:block>
+                                        </th:block>
+
+                                        <th:block th:unless="${career.actvtYn == 'Y'}">
+                                            <th:block th:text="|${career.actvtBgngDe} ~ ${career.actvtEndDe}|"></th:block>
+                                        </th:block>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">활동시간</th>
+                                    <td th:text="${career.actvtHr}">hh시간</td>
+                                    <th scope="row">확인기관</th>
+                                    <td th:text="${career.idntyInstNm}">환경부</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">활동내용</th>
+                                    <td colspan="3">
+                                        <textarea title="활동내용" readonly th:text="${career.actvtCn}">환경 활동을 했습니다.</textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">확인일</th>
+                                    <td colspan="3" th:text="${career.idntyDe}">YYYY-MM-DD</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">확인서</th>
+                                    <td colspan="3">
+                                        <div class="form-input-file">
+                                            <ul>
+                                                <th:block th:if="${career.crtfFile != null}">
+                                                    <th:block th:with="file=${career.crtfFile}">
+                                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                        </li>
+                                                    </th:block>
+                                                </th:block>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">정관</th>
+                                    <td colspan="3">
+                                        <div class="form-input-file">
+                                            <ul>
+                                                <th:block th:if="${career.artClassFile != null}">
+                                                    <th:block th:with="file=${career.artClassFile}">
+                                                        <li class="file-block" th:data_ext="${#strings.substring(file.fileExtsn,1)}" th:id="${file.fileid}">
+                                                    <span class="name">
+                                                        <a href="javascript:void(0)" th:fileid="${file.fileid}" th:fileIdntfcKey="${file.fileIdntfcKey}"
+                                                           th:onclick="|javascript:downloadFileByFileid(this.getAttribute('fileid'), this.getAttribute('fileIdntfcKey'))|">
+                                                            [[${file.orginlFileNm}]]
+                                                        </a>
+                                                    </span>
+                                                        </li>
+                                                    </th:block>
+                                                </th:block>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </th:block>
+                    </div>
+                </th:block>
 
                 <div class="table-caption">
                     <div class="left">

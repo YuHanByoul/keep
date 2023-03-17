@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.cmnty.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -32,6 +33,8 @@ public class CmntyCmntVo extends ParentRequestVo {
     private Integer cmntid;
     /** 게시글아이디 */
     private Integer pstid;
+    /** 게시판아이디 */
+    private Integer bbsid;
     /** 내용 */
     private String cn;
     /** 부모_댓글아이디 */
@@ -56,4 +59,18 @@ public class CmntyCmntVo extends ParentRequestVo {
     private Date regDt;
     /** 등록자아이디 */
     private Integer rgtrid;
+    /** 등록자이름 */
+    private String rgtrNm;
+    /** 등록자계정명 */
+    private String rgtrAcnt;
+    /** 댓글의 답글 개수 */
+    private Integer cmntReplyCnt;
+
+    public void setRgtrNm(String rgtrNm) {
+        this.rgtrNm = StringUtil.maskingName(rgtrNm);
+    }
+
+    public void setRgtrAcnt(String rgtrAcnt) {
+        this.rgtrAcnt = StringUtil.maskingAccount(rgtrAcnt);
+    }
 }

@@ -49,13 +49,13 @@
 
     <div class="tab-content tab-sub dropDown">
         <th:block th:each="item : ${cmntyCtgryList}">
-            <th:block th:if="${item.bbsid == paramVo.bbsid}">
+            <th:block th:if="${item.bbsid eq paramVo.bbsid}">
                 <button type="button" class="tab-mobile-trigger trigger" aria-expanded="true" th:text="${item.nm}"></button>
             </th:block>
         </th:block>
         <ul class="tab-list target" role="tablist">
             <li th:each="item : ${cmntyCtgryList}"
-                class="tab" th:classappend="${item.bbsid == paramVo.bbsid} ? 'active'">
+                class="tab" th:classappend="${item.bbsid eq paramVo.bbsid} ? 'active'">
                 <button role="tab" th:text="${item.nm}" th:onclick="fn_tabCmnty([[${item.bbsid}]])"></button>
             </li>
         </ul>
@@ -73,9 +73,9 @@
                         <strong class="label">커뮤니티명</strong>
                         <div class="form-input">
                             <select name="searchType" id="searchType" title="검색어">
-                                <option value="ttl" th:selected="'ttl' == ${paramVo.searchType}">제목</option>
-                                <option value="cn" th:selected="'cn' == ${paramVo.searchType}">내용</option>
-                                <option value="ttlCn" th:selected="'ttlCn' == ${paramVo.searchType}">제목+내용</option>
+                                <option value="ttl" th:selected="'ttl' eq ${paramVo.searchType}">제목</option>
+                                <option value="cn" th:selected="'cn' eq ${paramVo.searchType}">내용</option>
+                                <option value="ttlCn" th:selected="'ttlCn' eq ${paramVo.searchType}">제목+내용</option>
                             </select>
                             <input type="search" title="검색어" id="searchKeyword" name="searchKeyword" placeholder="검색어를 입력해 주세요." th:value="${paramVo.searchKeyword}">
                         </div>
@@ -93,15 +93,15 @@
                 </div>
                 <div class="right d-flex">
                     <select title="글 보기 개수" id="rowPage">
-                        <option value="10" th:selected="${paramVo.rowPerPage== 10}">10개씩 보기</option>
-                        <option value="50" th:selected="${paramVo.rowPerPage== 50}">50개씩 보기</option>
-                        <option value="100" th:selected="${paramVo.rowPerPage== 100}">100개씩 보기</option>
+                        <option value="10" th:selected="${paramVo.rowPerPage == 10}">10개씩 보기</option>
+                        <option value="50" th:selected="${paramVo.rowPerPage == 50}">50개씩 보기</option>
+                        <option value="100" th:selected="${paramVo.rowPerPage == 100}">100개씩 보기</option>
                     </select>
                     <th:block th:if="${paramVo.cmntyBbsTmplatid == 1}">
-                        <div th:if="${cmntyInfo.authrtCd == '117100'}" class="ml10"><button type="button" class="btn-medium btn-green insert-pst">게시글 등록</button></div>
+                        <div th:if="${cmntyInfo.authrtCd eq '117100'}" class="ml10"><button type="button" class="btn-medium btn-green insert-pst">게시글 등록</button></div>
                     </th:block>
                     <th:block th:unless="${paramVo.cmntyBbsTmplatid == 1}">
-                        <div th:if="${cmntyInfo.mbrSttsCd == '118100'}" class="ml10"><button type="button" class="btn-medium btn-green insert-pst">게시글 등록</button></div>
+                        <div th:if="${cmntyInfo.mbrSttsCd eq '118100'}" class="ml10"><button type="button" class="btn-medium btn-green insert-pst">게시글 등록</button></div>
                     </th:block>
                 </div>
             </div>
@@ -113,7 +113,9 @@
                         <colgroup>
                             <col style="width:10%;">
                             <col>
+                            <col th:if="${paramVo.cmntyBbsTmplatid != 1}" style="width:8%;">
                             <col style="width:8%;">
+                            <col th:if="${paramVo.cmntyBbsTmplatid != 1}" style="width:8%;">
                             <col style="width:12%;">
                             <col style="width:12%;">
                         </colgroup>
@@ -121,30 +123,39 @@
                         <tr>
                             <th scope="col">번호</th>
                             <th scope="col">제목</th>
+                            <th th:if="${paramVo.cmntyBbsTmplatid != 1}" scope="col">작성자</th>
                             <th scope="col">첨부파일</th>
+                            <th th:if="${paramVo.cmntyBbsTmplatid != 1}" scope="col">댓글</th>
                             <th scope="col">등록일</th>
                             <th scope="col">조회수</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:if="${list.size() > 0}" th:each="item : ${list}">
-                            <td>
-                                <div th:if="${item.fixorder eq 1}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
-                                <th:block th:unless="${item.fixorder eq 1}">
-                                    [[${item.rowNumber}]]
-                                </th:block>
-                            </td>
-                            <td class="al article">
-                                <a class="link ellipsis pst-view" th:classappend="${(item.newYn == 'Y' ? 'new ':'') + (item.hotYn == 'Y' ? 'hot':'')}" th:title="${item.ttl}" th:data-pstid="${item.pstid}">
-                                    <th:block th:if="${item.dpth > 0}" th:each="num : ${#numbers.sequence(1,item.dpth)}">&nbsp;&nbsp;</th:block><th:block th:if="${item.dpth > 0}">ㄴ</th:block>[[${item.ttl}]]
-                                </a>
-                            </td>
-                            <td><i th:if="${item.filegrpid}" class="icon icon-attachment bg-blue" title="첨부파일"></i></td>
-                            <td th:text="${#dates.format(item.regDt, 'yyyy-MM-dd')}"></td>
-                            <td th:text="${item.hits}"></td>
+                            <th:block th:if="${item.delYn ne 'Y'}">
+                                <td>
+                                    <div th:if="${item.fixorder == 1}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                    <th:block th:unless="${item.fixorder == 1}">
+                                        [[${item.rowNumber}]]
+                                    </th:block>
+                                </td>
+                                <td class="al article">
+                                    <a class="link ellipsis pst-view" th:classappend="${(item.newYn eq 'Y' ? 'new ':'') + (item.hotYn eq 'Y' ? 'hot':'')}" th:title="${item.ttl}" th:data-pstid="${item.pstid}">
+                                        <th:block th:if="${item.dpth > 0}" th:each="num : ${#numbers.sequence(1,item.dpth)}">&nbsp;&nbsp;</th:block><th:block th:if="${item.dpth > 0}">ㄴ</th:block>[[${item.ttl}]]
+                                    </a>
+                                </td>
+                                <td th:if="${paramVo.cmntyBbsTmplatid != 1}" th:text="${item.rgtrNm}"></td>
+                                <td><i th:if="${item.filegrpid}" class="icon icon-attachment bg-blue" title="첨부파일"></i></td>
+                                <td th:if="${paramVo.cmntyBbsTmplatid != 1}" th:text="${item.cmntCnt eq null ? 0 : item.cmntCnt}"></td>
+                                <td th:text="${#dates.format(item.regDt, 'yyyy-MM-dd')}"></td>
+                                <td th:text="${item.hits}"></td>
+                            </th:block>
+                            <th:block th:if="${item.delYn eq 'Y'}">
+                                <td th:colspan="${paramVo.cmntyBbsTmplatid != 1 ? 7 : 5}">삭제된 게시글입니다.</td>
+                            </th:block>
                         </tr>
                         <tr th:unless="${list.size() > 0}">
-                            <td class="nodata" colspan="5">
+                            <td class="nodata" th:colspan="${paramVo.cmntyBbsTmplatid != 1 ? 7 : 5}">
                                 <p><span class="icon icon-notice bg-black9"></span>등록된 게시글이 없습니다.</p>
                             </td>
                         </tr>
@@ -157,13 +168,13 @@
                 <div class="table-list">
                     <ul>
                         <li th:if="${list.size() > 0}" th:each="item : ${list}" class="block">
-                            <div class="tbody">
+                            <div class="tbody" th:if="${item.delYn ne 'Y'}">
                                 <dl>
                                     <div class="list">
                                         <dt>번호</dt>
                                         <dd>
-                                            <div th:if="${item.fixorder eq 1}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
-                                            <th:block th:unless="${item.fixorder eq 1}">
+                                            <div th:if="${item.fixorder == 1}" class="icon icon-speaker-large bg-sred" title="중요 공지"></div>
+                                            <th:block th:unless="${item.fixorder == 1}">
                                                 [[${item.rowNumber}]]
                                             </th:block>
                                         </dd>
@@ -171,14 +182,22 @@
                                     <div class="list">
                                         <dt>제목</dt>
                                         <dd>
-                                            <a class="link ellipsis pst-view" th:classappend="${(item.newYn == 'Y' ? 'new ':'') + (item.hotYn == 'Y' ? 'hot':'')}" th:title="${item.ttl}" th:data-pstid="${item.pstid}">
+                                            <a class="link ellipsis pst-view" th:classappend="${(item.newYn eq 'Y' ? 'new ':'') + (item.hotYn eq 'Y' ? 'hot':'')}" th:title="${item.ttl}" th:data-pstid="${item.pstid}">
                                                 <th:block th:if="${item.dpth > 0}" th:each="num : ${#numbers.sequence(1,item.dpth)}">&nbsp;&nbsp;</th:block><th:block th:if="${item.dpth > 0}">ㄴ</th:block>[[${item.ttl}]]
                                             </a>
                                         </dd>
                                     </div>
+                                    <div class="list" th:if="${paramVo.cmntyBbsTmplatid != 1}">
+                                        <dt>작성자</dt>
+                                        <dd th:text="${item.rgtrNm}"></dd>
+                                    </div>
                                     <div class="list">
                                         <dt>첨부파일</dt>
                                         <dd><i th:if="${item.filegrpid}" class="icon icon-attachment bg-blue" title="첨부파일"></i></dd>
+                                    </div>
+                                    <div class="list" th:if="${paramVo.cmntyBbsTmplatid != 1}">
+                                        <dt>댓글</dt>
+                                        <dd th:text="${item.cmntCnt eq null ? 0 : item.cmntCnt}"></dd>
                                     </div>
                                     <div class="list">
                                         <dt>등록일</dt>
@@ -189,6 +208,9 @@
                                         <dd th:text="${item.hits}"></dd>
                                     </div>
                                 </dl>
+                            </div>
+                            <div class="tbody" th:if="${item.delYn eq 'Y'}">
+                                삭제된 게시글입니다.
                             </div>
                         </li>
                         <li th:unless="${list.size() > 0} "class="block">

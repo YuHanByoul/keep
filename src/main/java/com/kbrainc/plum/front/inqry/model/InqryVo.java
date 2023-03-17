@@ -8,6 +8,7 @@ import com.kbrainc.plum.rte.model.SiteInfoVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
@@ -38,41 +39,61 @@ import java.util.List;
 @Alias("front.InqryVo")
 @NoArgsConstructor
 public class InqryVo extends ParentRequestVo {
+    /** 사이트 정보 */
     private SiteInfoVo site;
 
+    /** 로그인 사용자 정보 */
     private UserVo user;
 
+    /** 문의 아이디 */
     private Integer inqryid;
 
+    /** 사이트 아이디 */
     private int siteid;
 
+    /** 제목 */
     @NotEmpty(message = "제목을 입력해 주십시오.")
     @Size(max = 500, message = "제목은 500자를 넘을 수 없습니다.")
     private String title;
 
+    /** 내용 */
     @NotEmpty(message="내용을 입력해 주십시오.")
     private String cntnts;
 
-    private String acnt;
+    /** 사용자 이름 */
+    private String nm;
 
+    /** 파일 그룹 아이디 */
     private Integer filegrpid;
 
+    /** 사용자 아이디 */
     private Integer userid;
 
+    /** 문의 코드 */
     private String inqryClCd;
 
+    /** 문의 코드 이름 */
     private String inqryClCdNm;
 
+    /** 상태 코드 */
     private String sttsCd;
 
+    /** 상태 코드 이름 */
     private String sttsCdNm;
 
+    /** 공개 여부 */
     private String rlsYn;
 
+    /** 등록일 */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date regDt;
 
+    /** 파일 목록 */
     private List<FileVo> fileList;
+
+    public void setNm(String nm) {
+        this.nm = StringUtil.maskingName(nm);
+    }
 
     public void setInqryClCd(String inqryClCd) {
         this.inqryClCd = inqryClCd;

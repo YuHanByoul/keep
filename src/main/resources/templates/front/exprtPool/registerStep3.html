@@ -51,8 +51,8 @@
                     <th scope="row">성별<i class="ast" title="필수입력">*</i></th>
                     <td>
                         <div class="form-check-list">
-                            <label class="inp"><input type="radio" th:checked="${defaultMemberInfo.gndr == 'M'}" onclick="return false;"><b>남성</b></label>
-                            <label class="inp"><input type="radio" th:checked="${defaultMemberInfo.gndr != 'M'}" onclick="return false;"><b>여성</b></label>
+                            <label class="inp"><input type="radio" id="gndr1" name="gndr" value="M" th:checked="${defaultMemberInfo.gndr != null and defaultMemberInfo.gndr == 'M'}"><b>남성</b></label>
+                            <label class="inp"><input type="radio" id="gndr2" name="gndr" value="F" th:checked="${defaultMemberInfo.gndr != null and defaultMemberInfo.gndr != 'M'}"><b>여성</b></label>
                         </div>
                     </td>
                 </tr>
@@ -656,7 +656,7 @@
         <input type="hidden" name="prvcClctAgreYn" id="prvcClctAgreYn" th:value="${exprtRegisterVo.prvcClctAgreYn}"/>
         <input type="hidden" name="prvcThptyPvsnAgreYn" id="prvcThptyPvsnAgreYn" th:value="${exprtRegisterVo.prvcThptyPvsnAgreYn}"/>
         <input type="hidden" name="tempSaveYn" id="tempSaveYn" th:value="N"/>
-        <input type="hidden" name="newYn" id="newYn" th:value="${tempExprtRegister == null ? 'Y': 'N'}"/>
+        <input type="hidden" name="newYn" id="newYn" th:value="${tempExprtRegister.userid == null ? 'Y': 'N'}"/>
     </form>
 
     <script th:inline="javascript">
@@ -664,6 +664,7 @@
         let hdofCnt = /*[[${tempExprtRegister.hdofs == null ? 0 : tempExprtRegister.hdofs.size()}]]*/0;
         let crtfctCnt = /*[[${tempExprtRegister.crtfcts == null? 0 : tempExprtRegister.crtfcts.size()}]]*/0;
         let careerCnt = /*[[${tempExprtRegister.careers == null? 0 : tempExprtRegister.careers.size()}]]*/0;
+        let mmbrQlfcs = /*[[${mmbrQlfcs}]]*/null;
 
         function previous() {
             history.back();
@@ -685,12 +686,18 @@
             let valid = validateForm();
             if (valid == false) return;
 
-            if(!confirm('가입 신청을 완료 하시겠습니까?')) return;
+            if (!confirm('가입 신청을 완료 하시겠습니까?')) return;
 
             insertExprt();
         }
 
         function validateForm() {
+
+            if (!$('input[name=gndr]').is(':checked')) {
+                alert('성별을 선택해 주십시오.');
+                $('#gndr1').focus();
+                return false;
+            }
 
             if ($('input[name=exprtTypeCd]:checked').length == 0) {
                 alert("전문가 유형을 선택해 주십시오.");
@@ -744,7 +751,7 @@
         }
 
         function insertExprt() {
-            if(displayWorkProgress(true)) {
+            if (displayWorkProgress(true)) {
                 $.ajax({
                     url: '/front/exprtPool/insertExprt.do',
                     type: 'post',
@@ -833,6 +840,7 @@
                 sbjctCds: sbjctCds,
                 actvtRgnCds: actvtRgnCds,
                 actvtScopeCds: actvtScopeCds,
+                gndr: $('input[name=gndr]:checked').val(),
                 telno: $('#telno').val(),
                 envEduCareerYy: $('#envEduCareerYy').val(),
                 envEduCareerMm: $('#envEduCareerMm').val(),
@@ -908,7 +916,24 @@
                 if (!$el.next().hasClass('btn-row-add'))
                     $el.next().after($el);
             }
-        }
+        };
+
+        function renderMmbrQlfcs() {
+            // crtfctTableTemplate
+            if (mmbrQlfcs != null) {
+                for (mmbrQlfc in mmbrQlfcs) {
+                    ++crtfctCnt;
+                    $cloneTable = $('#crtfctTableTemplate').clone(true).attr('id', 'crtfctTable' + crtfctCnt).attr('name', 'crtfctTable');
+                    $cloneTable.find("crtfctNm").val("환경교육사 " + mmbrQlfc.crsGrd);
+                    $cloneTable.find("acqsInst").val("환경사");
+                    $cloneTable.find("acqsNo").val(mmbrQlfc.qlfcRsltCode);
+                    $cloneTable.find("acqsGrd").val("");
+                    $cloneTable.find("acqsDe").val("");
+
+                }
+            }
+
+        };
 
         $(function () {
 
@@ -967,7 +992,7 @@
                                         </button>
                                     </li>
                                 `;
-                            $fileinputDiv.find('ul').append(result);
+                            $fileinputDiv.find('ul').html(result);
                         }
                         closeWorkProgress();
                     }
