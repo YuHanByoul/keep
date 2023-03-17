@@ -3,7 +3,6 @@ package com.kbrainc.plum.mng.expertPoolMng.service;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertLogVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertReviewHistoryVo;
 import com.kbrainc.plum.mng.expertPoolMng.model.ExpertVo;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -66,7 +65,7 @@ public interface ExpertPoolMngService {
      * @Title : updateExpertStatus
      * @Description : 전문가 상태 변경
      */
-    public boolean updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo) throws Exception;
+    public int updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo) throws Exception;
 
     /**
      * 전문가 로그 생성

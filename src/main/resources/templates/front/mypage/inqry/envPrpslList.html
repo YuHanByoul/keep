@@ -34,32 +34,39 @@
         </div>
     </div>
 
-    <div class="table-col table-layout-auto table-col-mo">
-        <table>
-            <caption>환경교육 제안 - 번호, 분류, 제목, 상태, 작성자, 공개여부, 등록일</caption>
-            <colgroup>
-                <col>
-                <col>
-                <col style="width:30%;">
-                <col>
-                <col>
-                <col>
-                <col>
-            </colgroup>
-            <thead>
-            <tr>
-                <th scope="col">번호</th>
-                <th scope="col">분류</th>
-                <th scope="col">제목</th>
-                <th scope="col">상태</th>
-                <th scope="col">작성자</th>
-                <th scope="col">공개여부</th>
-                <th scope="col">등록일</th>
-            </tr>
-            </thead>
-            <tbody id="list-area">
-            </tbody>
-        </table>
+    <div class="pc-only">
+        <div class="table-col table-layout-auto">
+            <table>
+                <caption>환경교육 제안 내역 - 번호, 분류, 제목, 상태, 공개여부, 등록일</caption>
+                <colgroup>
+                    <col style="width:10%;">
+                    <col style="width:12%;">
+                    <col>
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                    <col style="width:12%;">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">번호</th>
+                    <th scope="col">분류</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">공개여부</th>
+                    <th scope="col">등록일</th>
+                </tr>
+                </thead>
+                <tbody id="pcListArea">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mo-only">
+        <div class="table-list">
+            <ul id="moListArea">
+            </ul>
+        </div>
     </div>
 
     <div class="pagination" aria-label="pagination" id="pagination">
@@ -103,7 +110,8 @@
                     data: $('#searchForm').serializeArray(),
                     type: 'GET',
                     success: function (data) {
-                        $("#list-area").html(makeListHtml(data.list));
+                        $("#pcListArea").html(makeListHtmlForPc(data.list));
+                        $("#moListArea").html(makeListHtmlForMo(data.list));
                         $("#pagination").html(data.pagination);
                         $("#total-count").html(data.totalCount);
                         closeWorkProgress();
@@ -113,11 +121,11 @@
             }
         }
 
-        function makeListHtml(list) {
+        function makeListHtmlForPc(list) {
             let html = "";
             if (list == null || list.length <= 0) {
                 html += `<tr>
-                            <td class="nodata" colspan="7">
+                            <td class="nodata" colspan="6">
                                 <p><span class="icon icon-notice bg-black9"></span>등록된 환경교육 제안이 없습니다.</p>
                             </td>
                         </tr>`;
@@ -129,11 +137,60 @@
                                 <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="moveToDetail(${item.prpslid})">
                                     ${item.prcsSttsCd == '113104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.ttl}</a></td>
                                 <td>${item.clsfCdNm}</td>
-                                <td>${item.acnt}</td>
                                 <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
                                 <td>${item.regDt}</td>
                             </tr>`;
                 })
+            }
+            return html;
+        }
+
+        function makeListHtmlForMo(list) {
+            let html = "";
+            if (list == null || list.length <= 0) {
+                html += `<li class="block">
+                            <div class="nodata">
+                                <p><span class="icon icon-notice bg-black9"></span>환경교육 제안 내용이 없습니다.</p>
+                            </div>
+                        </li>`;
+            } else {
+                list.forEach(function (item) {
+                    html += `
+                            <li class="block">
+                                <div class="tbody">
+                                    <dl>
+                                        <div class="list">
+                                            <dt>번호</dt>
+                                            <dd>${item.rowNumber}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>분류</dt>
+                                            <dd>${item.prcsSttsCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>제목</dt>
+                                            <dd>
+                                                <a href="javascript:void(0)" class="link ellipsis" onclick="moveToDetail(${item.prpslid})">
+                                                    ${item.prcsSttsCd == '113104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.ttl}
+                                                </a>
+                                            </dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>상태</dt>
+                                            <dd>${item.clsfCdNm}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>공개여부</dt>
+                                            <dd>${item.rlsYn == 'Y' ? '공개' : '비공개'}</dd>
+                                        </div>
+                                        <div class="list">
+                                            <dt>등록일</dt>
+                                            <dd>${item.regDt}</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </li>`;
+                });
             }
             return html;
         }

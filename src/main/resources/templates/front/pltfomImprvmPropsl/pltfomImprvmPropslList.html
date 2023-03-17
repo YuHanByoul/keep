@@ -45,34 +45,42 @@
         </div>
     </div>
 
-    <div class="table-col table-layout-auto table-col-mo">
-        <table>
-            <caption>플랫폼 개선 제안 - 번호, 제목, 상태, 작성자, 공개여부, 등록일</caption>
-            <colgroup>
-                <col>
-                <col>
-                <col style="width:40%;">
-                <col>
-                <col>
-                <col>
-                <col>
-            </colgroup>
-            <thead>
-            <tr>
-                <th scope="col">번호</th>
-                <th scope="col">분류</th>
-                <th scope="col">제목</th>
-                <th scope="col">상태</th>
-                <th scope="col">작성자</th>
-                <th scope="col">공개여부</th>
-                <th scope="col">등록일</th>
-            </tr>
-            </thead>
-            <tbody id="list-area">
-            </tbody>
-        </table>
+    <div class="pc-only">
+        <div class="table-col table-layout-auto table-col-mo">
+            <table>
+                <caption>플랫폼 개선 제안 - 번호, 제목, 상태, 작성자, 공개여부, 등록일</caption>
+                <colgroup>
+                    <col>
+                    <col>
+                    <col style="width:40%;">
+                    <col>
+                    <col>
+                    <col>
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th scope="col">번호</th>
+                    <th scope="col">분류</th>
+                    <th scope="col">제목</th>
+                    <th scope="col">상태</th>
+                    <th scope="col">작성자</th>
+                    <th scope="col">공개여부</th>
+                    <th scope="col">등록일</th>
+                </tr>
+                </thead>
+                <tbody id="pcListArea">
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <div class="mo-only">
+        <div class="table-list">
+            <ul id="moListArea">
+            </ul>
+        </div>
+    </div>
     <div class="pagination" aria-label="pagination" id="pagination"/>
 
     <script th:inline="javascript">
@@ -127,7 +135,8 @@
                         data: $('#searchForm').serializeArray(),
                         type: 'GET',
                         success: function (data) {
-                            $("#list-area").html(pltfomPropslList.makeListHtml(data.list));
+                            $("#pcListArea").html(pltfomPropslList.makeListHtmlForPc(data.list));
+                            $("#moListArea").html(pltfomPropslList.makeListHtmlForMo(data.list));
                             $("#pagination").html(data.pagination);
                             $("#total-count").html(data.totalCount);
                             msgAddBtn();
@@ -137,7 +146,7 @@
                 }
             },
 
-            makeListHtml(list) {
+            makeListHtmlForPc(list) {
                 var html = "";
                 if (list == null || list.length <= 0) {
                     html += `<tr>
@@ -151,14 +160,64 @@
                         html += `<tr>
                                     <td>${item.rowNumber}</td>
                                     <td>${item.clsfCdNm}</td>
-
                                     <td class="al article"><a href="javascript:void(0)" class="link ellipsis" onclick="pltfomPropslList.moveToDetail(${item.prpslid}, ${canGoToDetail})">
                                           ${item.prcsSttsCd == '188104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.ttl}</a></td>
                                     <td>${item.prcsSttsCdNm}</td>
-                                    <td class="list-msg-add-btn" data-trgt-id="${item.userid}">${item.acnt}</td>
+                                    <td class="list-msg-add-btn" data-trgt-id="${item.userid}">${item.nm}</td>
                                     <td>${item.rlsYn == 'Y' ? '공개' : '비공개'}</td>
                                     <td>${item.regDt}</td>
                                 </tr>`;
+                    });
+                }
+                return html;
+            },
+
+            makeListHtmlForMo(list) {
+                var html = "";
+                if (list == null || list.length <= 0) {
+                    html += `<li class="block">
+                                <div class="nodata">
+                                    <p><span class="icon icon-notice bg-black9"></span>등록된 플랫폼 개선 제안이 없습니다.</p>
+                                </div>
+                            </li>`;
+                } else {
+                    list.forEach(function (item) {
+                        let canGoToDetail = item.rlsYn == 'Y' || (item.rlsYn == 'N' && (item.userid == pltfomPropslList.userid));
+                        html += `
+                                <li class="block">
+                                    <div class="tbody">
+                                        <dl>
+                                            <div class="list">
+                                                <dt>번호</dt>
+                                                <dd>${item.rowNumber}</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>제목</dt>
+                                                <dd>
+                                                    <a href="javascript:void(0)" class="link ellipsis" onclick="pltfomPropslList.moveToDetail(${item.prpslid}, ${canGoToDetail})">
+                                                        ${item.prcsSttsCd == '188104' ? `<span class="box-tag tag-green">답변완료</span>` : ``}${item.ttl}
+                                                    </a>
+                                              </dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>상태</dt>
+                                                <dd>${item.prcsSttsCdNm}</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>작성자</dt>
+                                                <dd class="list-msg-add-btn" data-trgt-id="${item.userid}">${item.nm}</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>공개여부</dt>
+                                                <dd>${item.rlsYn == 'Y' ? '공개' : '비공개'}</dd>
+                                            </div>
+                                            <div class="list">
+                                                <dt>등록일</dt>
+                                                <dd>${item.regDt}</dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </li>`;
                     });
                 }
                 return html;

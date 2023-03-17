@@ -108,7 +108,4 @@ public interface HelpdeskDao {
      * @Description : 헬프데스크 취소
      */
     public int cancelHelpdesk(HelpdeskVo helpdeskVo) throws Exception;
-
-
-
 }
