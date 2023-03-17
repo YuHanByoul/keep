@@ -167,7 +167,7 @@ public class CommonController {
                     } else {
                         String userType = user.getUserType();
                         String loginUserType = user.getLoginUserType();
-                        if(userType.equals("C")) {
+                        if(userType != null && userType.equals("C")) {
                             mav.addObject("userType", userType);
                         } else {
                             mav.addObject("userType", loginUserType);
@@ -242,7 +242,7 @@ public class CommonController {
                 } else {
                     String userType = user.getUserType();
                     String loginUserType = user.getLoginUserType();
-                    if(userType.equals("C")) {
+                    if(userType != null && userType.equals("C")) {
                         model.addAttribute("userType", userType);
                     } else {
                         model.addAttribute("userType", loginUserType);
