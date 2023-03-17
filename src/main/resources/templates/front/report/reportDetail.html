@@ -7,7 +7,10 @@
     <div layout:fragment="content">
 		<form id ="saveForm">
 		    <input type="hidden" name="aplyid" id="aplyid" th:value="${detail.aplyid}"/>  
-		    <input type="hidden" name="reportid" id="reportid" th:value="${detail.reportid}"/>
+		    <input type="hidden" name="reportid" id="reportid" th:value="${detail.reportid == null ? '0' : detail.reportid}"/>
+		    <input type="hidden" name="reportSeCd" id="reportSeCd" th:value="${detail.reportSeCd}"/>  
+		    <input type="hidden" name="reportBgngDt" id="reportBgngDt" th:value="${detail.reportBgngDt}"/>  
+		    <input type="hidden" name="reportEndDt" id="reportEndDt" th:value="${detail.reportEndDt}"/>  
 		    <input type="hidden" name="jsonString" id="jsonString" />
 		    <section>
 			    <div class="table-caption">
@@ -133,7 +136,7 @@
                                 <td><input type="text" name="nope" th:value="${list.nope}" title="인원"></td>
                                 <td><input type="text" name="mnt" th:value="${list.mnt}" title="시간(분)"></td>
                                 <td><input type="text" name="rmrk" th:value="${list.rmrk}" title="비고"></td>
-	                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'nowList');"><span class="icon icon-remove"></span></button></td>
+	                            <td class="ac"><button type="button" th:if="${i.last and i.index > 0 and detail.crudBtn != 'R'}" class="btn-remove-table" title="열 삭제" onclick="removeRow(this, 'nowList');"><span class="icon icon-remove"></span></button></td>
 	                        </tr>
 	                        <tr th:unless="${#lists.size(list) > 0}">
 	                            <td>현재</td>
@@ -165,7 +168,7 @@
 	                </table>
 	            </div>
 	
-	            <button type="button" class="btn-row-add" title="열 추가" onclick="addRow(this, 'nowList');">
+	            <button type="button" th:if="${detail.crudBtn != 'R'}" class="btn-row-add" title="열 추가" onclick="addRow(this, 'nowList');">
 	                <span class="icon icon-row-add"></span>
 	            </button>
 	
@@ -210,7 +213,7 @@
                                                             class='label label-inverse'
                                                             th:data_ext="${#strings.replace(item.fileExtsn, '.', '')}">
                                                             <th:block th:text="${item.orginlFileNm}" />&nbsp;&nbsp; 
-                                                            <a th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
+                                                            <a th:if="${detail.crudBtn != 'R'}" th:name="${item.fileid}" th:attr="data-idntfc-key=${item.fileIdntfcKey}" th:onclick="fn_deleteFileList(this.name, this.dataset.idntfcKey)" class='text-white'> 
                                                             <th:block th:text="X"></th:block></a>
                                                         </li>
                                                     </ul>
@@ -246,15 +249,15 @@
         var listSize = /*[[${#lists.size(list)}]]*/1;
         /*]]>*/
         
+        $(document).on("keyup", "input[name='rnd'],input[name='nope'],input[name='mnt']", function(){
+        	$(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
+            rndSum();
+            nopeSum();
+            mntSum();
+        });
+        
         $(function () {
-        	$("input,select").attr("readonly", crudBtn == "R" ? true : false);
-        	
-        	$("input[name='rnd'],input[name='nope'],input[name='mnt']").on("keyup", function(){
-        	    $(this).val($(this).val().replace(/[^0-9]/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,'));
-        	    rndSum();
-        	    nopeSum();
-        	    mntSum();
-        	});
+        	$("input,select,textarea").attr("readonly", crudBtn == "R" ? true : false);
         	
         	var validator = $("#saveForm").validate({
                 rules: {

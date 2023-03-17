@@ -4,6 +4,7 @@ import com.kbrainc.plum.front.msg.model.MsgVo;
 import com.kbrainc.plum.front.msg.service.MsgService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.kbrainc.plum.rte.util.CommonUtil.maskingText;
 
 /**
  * 쪽지 Controller
@@ -87,8 +86,8 @@ public class MsgController {
         MsgVo msgInfo = msgService.selectTrgtInfo(trgtId);
 
         if (msgInfo != null) {
-            msgInfo.setTrgtAcnt(maskingText(msgInfo.getTrgtAcnt()));
-            msgInfo.setTrgtNm(maskingText(msgInfo.getTrgtNm()));
+            msgInfo.setTrgtAcnt(StringUtil.maskingAccount(msgInfo.getTrgtAcnt()));
+            msgInfo.setTrgtNm(StringUtil.maskingName(msgInfo.getTrgtNm()));
             result.put("data", msgInfo);
         }else {
             result.put("data",null);

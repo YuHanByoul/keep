@@ -209,4 +209,7 @@ public class ReqUserVo extends ParentRequestVo {
     
     /** 보완요청아이디 */
     private Integer splmntid;
+    
+    /** 기관 이메일 */
+    private String instEml;
 }

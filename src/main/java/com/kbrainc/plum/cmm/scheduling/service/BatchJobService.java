@@ -93,4 +93,48 @@ public interface BatchJobService {
        * @throws Exception 예외
        */
        public void infntEnveduDgstfnMsgSend(int triggerid) throws Exception;
+       
+       /**
+        * 전문가 섭외자와 대상 전문가 대상 교육 알림 메시지 발송
+        *
+        * @Title       : exprtEduBfrMsgSend 
+        * @Description : 전문가 섭외자와 대상 전문가 대상 교육 알림 메시지 발송
+        * @param triggerid
+        * @return void 리턴값없음
+        * @throws Exception 예외
+        */
+        public void exprtEduBfrMsgSend(int triggerid) throws Exception;
+        
+        /**
+         * 전문가 섭외자 대상 만족도 평가 안내 메시지 발송
+         *
+         * @Title       : exprtEduAftrMsgSend 
+         * @Description : 전문가 섭외자 대상 만족도 평가 안내 메시지 발송
+         * @param triggerid
+         * @return void 리턴값없음
+         * @throws Exception 예외
+         */
+         public void exprtEduAftrMsgSend(int triggerid) throws Exception;
+         
+         /**
+          * 미입금 시설예약 취소처리
+          *
+          * @Title       : flctRsvCancle 
+          * @Description : 미입금 시설예약 취소처리
+          * @param triggerid
+          * @return void 리턴값없음
+          * @throws Exception 예외
+          */
+          public void flctRsvCancle(int triggerid) throws Exception;
+          
+          /**
+           * 시설 이용자 대상 만족도 평가 안내 메시지 발송
+           *
+           * @Title       : flctRsvDgstfnNtcMsgSend 
+           * @Description : 시설 이용자 대상 만족도 평가 안내 메시지 발송
+           * @param triggerid
+           * @return void 리턴값없음
+           * @throws Exception 예외
+           */
+           public void flctRsvDgstfnNtcMsgSend(int triggerid) throws Exception;
 }

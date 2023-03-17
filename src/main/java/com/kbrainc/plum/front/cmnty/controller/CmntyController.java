@@ -482,6 +482,8 @@ public class CmntyController {
         //게시글 댓글 조회
         CmntyCmntVo cmntyCmntVo = new CmntyCmntVo();
         cmntyCmntVo.setPstid(paramVo.getPstid());
+        cmntyCmntVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
+        cmntyCmntVo.setOrderField("CMNT_GRP DESC, SORTORDR");
         List<CmntyCmntVo> cmntyCmntList = cmntyService.selectCmntList(cmntyCmntVo);
         //게시글 정보 조회
         if ("1".equals(bbsInfo.getClsfCd() != null ? bbsInfo.getClsfCd() : "0")) {
@@ -493,7 +495,7 @@ public class CmntyController {
 
         model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("cmntyPstInfo", resultMap.get("paramMap"));
-        model.addAttribute("cmntyCmntList", cmntyCmntList);
+        model.addAttribute("list", cmntyCmntList);
         model.addAttribute("fileMap", resultMap.get("fileMap"));
         model.addAttribute("cmntyid",cmntyid);
         model.addAttribute("paramVo",paramVo);
@@ -531,6 +533,7 @@ public class CmntyController {
         }
 
         model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
+        model.addAttribute("fileConfiguration", fileConfiguration);
         model.addAttribute("bbsInfo",bbsInfo);
         model.addAttribute("paramVo",paramVo);
         model.addAttribute("cmntyid",cmntyid);
@@ -606,6 +609,7 @@ public class CmntyController {
 
         model.addAttribute("bbsInfo", bbsInfo);
         model.addAttribute("acceptUploadFileExt", uploadFileExtsn);
+        model.addAttribute("fileConfiguration", fileConfiguration);
         model.addAttribute("cmntyPstInfo", resultMap.get("paramMap"));
         model.addAttribute("fileMap", resultMap.get("fileMap"));
         model.addAttribute("currentFileCnt", resultMap.get("currentFileCnt"));
@@ -650,76 +654,70 @@ public class CmntyController {
      *
      * @param paramVo
      * @param user
-     * @return map
+     * @param model
+     * @return string
      */
     @RequestMapping(value = "/front/cmnty/insertCmnt.do")
-    @ResponseBody
-    public Map<String, Object> insertCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
-        Map<String, Object> resultMap = new HashMap<>();
-        boolean result = false;
-        paramVo.setUser(user);
-
-        result = cmntyService.insertCmnt(paramVo);
-
-        if(result){
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "등록이 완료되었습니다.");
-        } else {
-            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "등록에 실패하였습니다.");
+    public String insertCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user, Model model){
+        String url = "front/cmnty/cmntyWrap";
+        if(paramVo.getParntsCmntid() != null){
+            url = "front/cmnty/cmntReplyWrap";
         }
-        return resultMap;
+        paramVo.setUser(user);
+        cmntyService.insertCmnt(paramVo);
+
+        //게시글 정보 조회
+        CmntyPstVo cmntyPstVo = new CmntyPstVo();
+        cmntyPstVo.setPstid(paramVo.getPstid());
+        cmntyPstVo.setBbsid(paramVo.getBbsid());
+        CmntyPstVo cmntyPstInfo = cmntyService.selectPstInfo(cmntyPstVo);
+
+        paramVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
+        paramVo.setOrderField("CMNT_GRP DESC, SORTORDR");
+        model.addAttribute("cmntyPstInfo", cmntyPstInfo);
+        model.addAttribute("list", cmntyService.selectCmntList(paramVo));
+        return url;
     }
 
     /**
      * 환경동아리 댓글 수정
-     * Title : insertCmnt
+     * Title : updateCmnt
      * Description : 환경동아리 댓글 수정
      *
      * @param paramVo
      * @param user
-     * @return map
+     * @param model
+     * @return string
      */
     @RequestMapping(value = "/front/cmnty/updateCmnt.do")
-    @ResponseBody
-    public Map<String, Object> updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user){
-        Map<String, Object> resultMap = new HashMap<>();
-        boolean result = false;
+    public String updateCmnt(@Valid CmntyCmntVo paramVo, @UserInfo UserVo user, Model model){
         paramVo.setUser(user);
+        cmntyService.updateCmnt(paramVo);
 
-        result = cmntyService.updateCmnt(paramVo);
-
-        if(result){
-            resultMap.put("result", Constant.REST_API_RESULT_SUCCESS);
-            resultMap.put("msg", "수정이 완료되었습니다.");
-        } else {
-            resultMap.put("result", Constant.REST_API_RESULT_FAIL);
-            resultMap.put("msg", "수정에 실패하였습니다.");
-        }
-        return resultMap;
+        paramVo.setOrderDirection(ParentRequestVo.ORDER_DIRECTION.asc);
+        paramVo.setOrderField("CMNT_GRP DESC, SORTORDR");
+        model.addAttribute("list", cmntyService.selectCmntList(paramVo));
+        return "front/cmnty/cmntyWrap";
     }
 
     /**
-     * 환경동아리 댓글 목록
-     * Title : selectCmntList
-     * Description : 환경동아리 댓글 목록
+     * 환경동아리 댓글의 답글 목록
+     * Title : selectCmntReplyList
+     * Description : 환경동아리 댓글의 답글 목록
      *
      * @param pstid
-     * @return map
+     * @param parntsCmntid
+     * @param model
+     * @return string
      */
-    @RequestMapping(value="/front/cmnty/selectCmntList.do")
-    @ResponseBody
-    public Map<String, Object> selectCmntList(Integer pstid){
-        Map<String, Object> resultMap = new HashMap<>();
+    @RequestMapping(value="/front/cmnty/selectCmntReplyList.do")
+    public String selectCmntReplyList(Integer pstid, Integer parntsCmntid, Model model){
         CmntyCmntVo cmntyCmntVo = new CmntyCmntVo();
         cmntyCmntVo.setPstid(pstid);
-        List<CmntyCmntVo> cmntyCmntList = cmntyService.selectCmntList(cmntyCmntVo);
+        cmntyCmntVo.setParntsCmntid(parntsCmntid);
+        List<CmntyCmntVo> cmntyCmntReplyList = cmntyService.selectCmntList(cmntyCmntVo);
 
-        if(cmntyCmntList != null){
-            resultMap.put("data",cmntyCmntList);
-        }else{
-            resultMap.put("data",null);
-        }
-        return resultMap;
+        model.addAttribute("list", cmntyCmntReplyList);
+        return "front/cmnty/cmntReplyWrap";
     }
 }
