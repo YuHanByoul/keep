@@ -7,6 +7,7 @@ import com.kbrainc.plum.rte.model.ParentRequestVo;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.service.ResCodeService;
 import com.kbrainc.plum.rte.util.CommonUtil;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
@@ -65,13 +66,7 @@ public class EnvPrpslVo extends ParentRequestVo {
     private String acnt;
 
     /** 사용자이름 */
-    private String userNm;
-
-    /** 답변자계정 */
-    private String ansAcnt;
-
-    /** 답변자이름 */
-    private String ansNm;
+    private String nm;
 
     /** 기관아이디 */
     private Integer instid;
@@ -108,11 +103,12 @@ public class EnvPrpslVo extends ParentRequestVo {
     /** 등록자아이디 */
     private Integer rgtrid;
 
-    private String searchClsfCd;
-
-    private String searchPrcsSttsCd;
-
+    /** 파일 목록 */
     private List<FileVo> fileList;
+
+    public void setNm(String nm) {
+        this.nm = StringUtil.maskingName(nm);
+    }
 
     public void setClsfCd(String clsfCd) {
         this.clsfCd = clsfCd;

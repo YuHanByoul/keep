@@ -53,6 +53,17 @@ public class PltfomImprvmPropslController {
     @Autowired
     private FileServiceImpl fileService;
 
+    /**
+     * 플랫폼 개선 제안 목록 화면
+     *
+     * @param searchVo
+     * @param user
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : pltfomImprvPropslList
+     * @Description : 플랫폼 개선 제안 목록 화면
+     */
     @GetMapping("/pltfomImprvmPropslList.html")
     public String pltfomImprvPropslList(PltfomImprvmPropslVo searchVo, @UserInfo UserVo user, Model model) throws Exception {
         model.addAttribute("loginUserid", user != null ? Integer.valueOf(user.getUserid()) : null);
@@ -61,6 +72,16 @@ public class PltfomImprvmPropslController {
         return VIEW_PREFIX + "/pltfomImprvmPropslList";
     }
 
+    /**
+     * 플랫폼 개선 제안 등록 화면
+     *
+     * @param searchVo
+     * @param model
+     * @return string
+     * @throws Exception
+     * @Title : pltfomImprvPropslForm
+     * @Description : 플랫폼 개선 제안 등록 화면
+     */
     @GetMapping("/pltfomImprvmPropslForm.html")
     public String pltfomImprvPropslForm(PltfomImprvmPropslVo searchVo, Model model) throws Exception {
         PltfomImprvmPropslVo propslVo = pltfomImprvmPropslService.selectPropsl(searchVo);
@@ -82,6 +103,17 @@ public class PltfomImprvmPropslController {
         return VIEW_PREFIX + "/pltfomImprvmPropslForm";
     }
 
+    /**
+     * 플랫폼 개선 제안 상세 화면
+     *
+     * @param searchVo
+     * @param model
+     * @param user
+     * @return string
+     * @throws Exception
+     * @Title : pltfomImprvPropslDetail
+     * @Description : 플랫폼 개선 제안 상세 화면
+     */
     @GetMapping("/pltfomImprvmPropslDetail.html")
     public String pltfomImprvPropslDetail(PltfomImprvmPropslVo searchVo, Model model, @UserInfo UserVo user) throws Exception {
 
@@ -96,6 +128,16 @@ public class PltfomImprvmPropslController {
         return VIEW_PREFIX + "/pltfomImprvmPropslDetail";
     }
 
+    /**
+     * 플랫폼 개선 제안 목록 조회
+     *
+     * @param searchVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : selectPltfomImprvmPropslList
+     * @Description : 플랫폼 개선 제안 목록 조회
+     */
     @GetMapping("/selectPltfomImprvmPropslList.do")
     @ResponseBody
     public Map<String, Object> selectPltfomImprvmPropslList(PltfomImprvmPropslVo searchVo, @UserInfo UserVo user) throws Exception {
@@ -114,6 +156,18 @@ public class PltfomImprvmPropslController {
 
         return result;
     }
+
+    /**
+     * 플랫폼 개선 제안 생성
+     *
+     * @param pltfomImprvmPropslVo
+     * @param bindingResult
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : insertPltfomImprvPropsl
+     * @Description : 플랫폼 개선 제안 생성
+     */
     @PostMapping("/insertPltfomImprvmPropsl.do")
     @ResponseBody
     public Map<String, Object> insertPltfomImprvPropsl(@Valid PltfomImprvmPropslVo pltfomImprvmPropslVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -141,6 +195,17 @@ public class PltfomImprvmPropslController {
         return response;
     }
 
+    /**
+     * 플랫폼 개선 제안 수정
+     *
+     * @param pltfomImprvmPropslVo
+     * @param bindingResult
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : updatePltfomImprvPropsl
+     * @Description : 플랫폼 개선 제안 수정
+     */
     @PostMapping("/updatePltfomImprvmPropsl.do")
     @ResponseBody
     public Map<String, Object> updatePltfomImprvPropsl(@Valid PltfomImprvmPropslVo pltfomImprvmPropslVo, BindingResult bindingResult, @UserInfo UserVo user) throws Exception {
@@ -168,6 +233,16 @@ public class PltfomImprvmPropslController {
         return response;
     }
 
+    /**
+     * 플랫폼 개선 제안 삭제
+     *
+     * @param pltfomImprvmPropslVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : deletePltfomImprvPropsl
+     * @Description : 플랫폼 개선 제안 삭제
+     */
     @PostMapping("/deletePltfomImprvmPropsl.do")
     @ResponseBody
     public Map<String, Object> deletePltfomImprvPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo, @UserInfo UserVo user) throws Exception {
@@ -185,6 +260,16 @@ public class PltfomImprvmPropslController {
         return response;
     }
 
+    /**
+     * 플랫폼 개선 제안 취소
+     *
+     * @param pltfomImprvmPropslVo
+     * @param user
+     * @return map
+     * @throws Exception
+     * @Title : cancelPltfomImprvPropsl
+     * @Description : 플랫폼 개선 제안 취소
+     */
     @PostMapping("/cancelPltfomImprvmPropsl.do")
     @ResponseBody
     public Map<String, Object> cancelPltfomImprvPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo, @UserInfo UserVo user) throws Exception {

@@ -40,9 +40,9 @@ public class EnvPrpslServiceImpl extends PlumAbstractServiceImpl implements EnvP
     private FileDao fileDao;
 
     /**
-     * 환경교육제안 관리 목록 조회
+     * 환경교육제안 목록 조회
      * Title : selectEnvPrpslList
-     * Description : 환경교육제안 관리 목록 조회
+     * Description : 환경교육제안 목록 조회
      *
      * @param envPrpslVo
      * @return list
@@ -53,13 +53,13 @@ public class EnvPrpslServiceImpl extends PlumAbstractServiceImpl implements EnvP
     }
 
     /**
-     * 마이페이지 > 환경교육제안 관리 목록 조회
+     * 마이페이지 > 환경교육제안 목록 조회
      *
      * @param envPrpslVo
      * @return list
      * @throws Exception
      * @Title : selectMyEnvPrpslList
-     * @Description : 마이페이지 > 환경교육제안 관리 목록 조회
+     * @Description : 마이페이지 > 환경교육제안 목록 조회
      */
     @Override
     public List<EnvPrpslVo> selectMyEnvPrpslList(EnvPrpslVo envPrpslVo) throws Exception {
@@ -67,9 +67,9 @@ public class EnvPrpslServiceImpl extends PlumAbstractServiceImpl implements EnvP
     }
 
     /**
-     * 환경교육제안 정보 조회
+     * 환경교육제안 조회
      * Title : selectEnvPrpsl
-     * Description : 환경교육제안 정보 조회
+     * Description : 환경교육제안 조회
      *
      * @param envPrpslVo
      * @return env prpsl vo
@@ -88,9 +88,9 @@ public class EnvPrpslServiceImpl extends PlumAbstractServiceImpl implements EnvP
     }
 
     /**
-     * 환경교육제안 답변 정보 조회
+     * 환경교육제안 답변 조회
      * Title : selectEnvPrpslAnsInfo
-     * Description : 환경교육제안 답변 정보 조회
+     * Description : 환경교육제안 답변 조회
      *
      * @param envPrpslVo
      * @return env prpsl ans vo

@@ -63,7 +63,7 @@ public interface ExpertPoolMngDao {
      * @Title : updateExpertStatus
      * @Description : 전문가 상태 변경
      */
-    public boolean updateExpertStatus(ExpertVo expertVo) throws Exception;
+    public int updateExpertStatus(ExpertVo expertVo) throws Exception;
 
     /**
      * 전문가 로그 생성
@@ -74,7 +74,7 @@ public interface ExpertPoolMngDao {
      * @Title : insertExpertLog
      * @Description : 전문가 로그 생성
      */
-    public boolean insertExpertLog(ExpertLogVo expertLogVo) throws Exception;
+    public int insertExpertLog(ExpertLogVo expertLogVo) throws Exception;
 
 
     /**
@@ -110,7 +110,135 @@ public interface ExpertPoolMngDao {
      */
     public Double getExpertReviewScrAvg(ExpertReviewHistoryVo expertReviewHistoryVo) throws Exception;
 
+    /**
+     * 전문가 경력사항 조회
+     *
+     * @param expertVo
+     * @return list
+     * @throws Exception
+     * @Title : selectExpertCareerList
+     * @Description : 전문가 경력사항 조회
+     */
     public List<ExpertCareerVo> selectExpertCareerList(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 자격증 조회
+     *
+     * @param expertVo
+     * @return list
+     * @throws Exception
+     * @Title : selectExpertCrtfctList
+     * @Description : 전문가 자격증 조회
+     */
     public List<ExpertCrtfctVo> selectExpertCrtfctList(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 재직사항 조회
+     *
+     * @param expertVo
+     * @return list
+     * @throws Exception
+     * @Title : selectExpertHdofList
+     * @Description : 전문가 재직사항 조회
+     */
     public List<ExpertHdofVo> selectExpertHdofList(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 정보변경 테이블 존재 여부 조회
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : getMdfcnDmndCount
+     * @Description : 정보변경 테이블 존재 여부 조회
+     */
+    public int getMdfcnDmndCount(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 요청 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnExprt
+     * @Description : 전문가 수정 요청 테이블 생성
+     */
+    public int insertMdfcnExprt(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 경력 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnCareer
+     * @Description : 전문가 수정 경력 생성
+     */
+    public int insertMdfcnCareer(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 자격증 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnCrtfct
+     * @Description : 전문가 수정 자격증 생성
+     */
+    public int insertMdfcnCrtfct(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 재직 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnHdof
+     * @Description : 전문가 수정 재직 생성
+     */
+    public int insertMdfcnHdof(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 대상 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnTrgtCds
+     * @Description : 전문가 수정 대상 생성
+     */
+    public int insertMdfcnTrgtCds(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 주제 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnSbjctCds
+     * @Description : 전문가 수정 주제 생성
+     */
+    public int insertMdfcnSbjctCds(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 지역 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnActvtRgnCds
+     * @Description : 전문가 수정 지역 생성
+     */
+    public int insertMdfcnActvtRgnCds(ExpertVo expertVo) throws Exception;
+
+    /**
+     * 전문가 수정 범위 생성
+     *
+     * @param expertVo
+     * @return int
+     * @throws Exception
+     * @Title : insertMdfcnActvtScopeCds
+     * @Description : 전문가 수정 범위 생성
+     */
+    public int insertMdfcnActvtScopeCds(ExpertVo expertVo) throws Exception;
 }
