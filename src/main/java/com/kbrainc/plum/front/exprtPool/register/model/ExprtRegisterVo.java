@@ -28,6 +28,11 @@ import java.util.List;
 public class ExprtRegisterVo {
     private UserVo user;
 
+    private Integer userid;
+
+    @Pattern(regexp="[MF]")
+    private String gndr;
+
     /*이용약관_동의_여부*/
     @NotEmpty(message = "필수항목을 동의해야 회원가입이 가능합니다.")
     @Pattern(regexp = "[Y]", message = "필수항목을 동의해야 회원가입이 가능합니다.")

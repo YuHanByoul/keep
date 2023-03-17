@@ -2,7 +2,10 @@ package com.kbrainc.plum.front.exprtPool.register.service;
 
 import com.kbrainc.plum.front.exprtPool.register.model.DefaultMemberInfoVo;
 import com.kbrainc.plum.front.exprtPool.register.model.ExprtRegisterVo;
+import com.kbrainc.plum.front.exprtPool.register.model.MmbrQlfcVo;
 import com.kbrainc.plum.rte.model.UserVo;
+
+import java.util.List;
 
 /**
  * 전문가 등재신청 서비스 인터페이스
@@ -36,4 +39,6 @@ public interface ExprtRegisterService {
     public int insertExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
 
     public ExprtRegisterVo selectExprtRegister(ExprtRegisterVo exprtRegisterVo) throws Exception;
+
+    public List<MmbrQlfcVo> selectMmbrQlfcList(ExprtRegisterVo exprtRegisterVo) throws Exception;
 }

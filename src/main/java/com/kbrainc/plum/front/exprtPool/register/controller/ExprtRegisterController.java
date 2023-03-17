@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.exprtPool.register.controller;
 import com.kbrainc.plum.cmm.file.service.FileServiceImpl;
 import com.kbrainc.plum.front.exprtPool.register.model.DefaultMemberInfoVo;
 import com.kbrainc.plum.front.exprtPool.register.model.ExprtRegisterVo;
+import com.kbrainc.plum.front.exprtPool.register.model.MmbrQlfcVo;
 import com.kbrainc.plum.front.exprtPool.register.service.ExprtRegisterService;
 import com.kbrainc.plum.rte.model.UserVo;
 import com.kbrainc.plum.rte.mvc.bind.annotation.UserInfo;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -90,7 +92,7 @@ public class ExprtRegisterController {
                 PrintWriter writer = response.getWriter();
                 if (exprtStts.equals("134102")) {
                     writer.print("<script>alert('전문가 심사가 진행중입니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
-                } else if (exprtStts.equals("134101")) {
+                } else if (exprtStts.equals("134101") || exprtStts.equals("134104")) {
                     writer.print("<script>alert('작성중인 데이터가 존재합니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
                 } else {
                     writer.print("<script>alert('이미 전문가로 등록되어 있습니다.');location.href='/front/exprtPool/registerStep1.html';</script>");
@@ -110,7 +112,7 @@ public class ExprtRegisterController {
         if (user != null) {
             String exprtStts = exprtRegisterService.selectExprtStts(user);
             if (exprtStts != null) {
-                if (exprtStts.equals("134101")) {
+                if (exprtStts.equals("134101") || exprtStts.equals("134104")) {
                     exprtRegisterVo.setTosAgreYn("Y");
                     exprtRegisterVo.setPrvcClctAgreYn("Y");
                     exprtRegisterVo.setPrvcThptyPvsnAgreYn("Y");
@@ -154,12 +156,17 @@ public class ExprtRegisterController {
                 .map(fileExtsnName -> "." + fileExtsnName.getValue())
                 .collect(Collectors.joining(", "));
 
+
         /*임시 저장한 이력 확인*/
         ExprtRegisterVo tempExprtRegister = exprtRegisterService.selectExprtRegister(exprtRegisterVo);
         if (tempExprtRegister == null) {
             tempExprtRegister = new ExprtRegisterVo();
-        }
+         }
 
+        /* 환경교육사 연동 테이블 */
+        List<MmbrQlfcVo> mmbrQlfcs = exprtRegisterService.selectMmbrQlfcList(exprtRegisterVo);
+
+        model.addAttribute("mmbrQlfcs", mmbrQlfcs);
         model.addAttribute("uploadFileExtsn", uploadFileExtsn);
         model.addAttribute("tempExprtRegister", tempExprtRegister);
         model.addAttribute("defaultMemberInfo", defaultMemberInfo);

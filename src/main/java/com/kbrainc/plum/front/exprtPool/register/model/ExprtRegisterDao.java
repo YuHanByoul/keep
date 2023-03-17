@@ -33,6 +33,8 @@ public interface ExprtRegisterDao {
      */
     public DefaultMemberInfoVo selectDefaultMemberInfo(ExprtRegisterVo exprtRegisterVo);
 
+    public List<MmbrQlfcVo> selectMmbrQlfcList(ExprtRegisterVo exprtRegisterVo);
+
     public String selectExprtStts(UserVo user) throws Exception;
 
     public int insertExprt(ExprtRegisterVo exprtRegisterVo) throws Exception;
