@@ -23,9 +23,9 @@ import java.util.List;
 public interface EnvPrpslDao {
 
     /**
-     * 환경교육제안 관리 목록 조회
+     * 환경교육제안 관리 조회
      * Title : selectEnvPrpslList
-     * Description : 환경교육제안 관리 목록 조회
+     * Description : 환경교육제안 관리 조회
      *
      * @param envPrpslVo
      * @return list
@@ -33,20 +33,20 @@ public interface EnvPrpslDao {
     List<EnvPrpslVo> selectEnvPrpslList(EnvPrpslVo envPrpslVo);
 
     /**
-     * 마이페이지 > 환경교육제안 관리 목록 조회
+     * 마이페이지 > 환경교육제안 조회
      *
      * @param envPrpslVo
      * @return list
      * @throws Exception
      * @Title : selectMyEnvPrpslList
-     * @Description : 마이페이지 > 환경교육제안 관리 목록 조회
+     * @Description : 마이페이지 > 환경교육제안 조회
      */
     List<EnvPrpslVo> selectMyEnvPrpslList(EnvPrpslVo envPrpslVo) throws Exception;
 
     /**
-     * 환경교육제안 정보 조회
+     * 환경교육제안 조회
      * Title : selectEnvPrpsInfo
-     * Description : 환경교육제안 정보 조회
+     * Description : 환경교육제안 조회
      *
      * @param envPrpslVo
      * @return env prpsl vo
@@ -54,9 +54,9 @@ public interface EnvPrpslDao {
     EnvPrpslVo selectEnvPrps(EnvPrpslVo envPrpslVo);
 
     /**
-     * 환경교육제안 답변 정보 조회
+     * 환경교육제안 답변 조회
      * Title : selectEnvPrpslAnsInfo
-     * Description : 환경교육제안 답변 정보 조회
+     * Description : 환경교육제안 답변 조회
      *
      * @param envPrpslVo
      * @return env prpsl ans vo

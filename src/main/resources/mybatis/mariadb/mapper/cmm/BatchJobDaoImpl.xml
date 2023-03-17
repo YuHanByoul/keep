@@ -16,7 +16,7 @@
 	</update>
     
     <!-- 유아환경교육 안내 알림톡 발송 대상자 리스트를 반환한다 -->
-    <select id="selectInfntEnveduSmsSendList" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="selectInfntEnveduSmsSendList" resultType="java.util.Map">
         /* BatchJobDao.selectInfntEnveduSmsSendList */
         SELECT 
             A.* 
@@ -48,7 +48,7 @@
     </select>
     
     <!-- 푸름이 이동 환경교육 안내 알림톡 발송 대상자 리스트를 반환한다 -->
-    <select id="selectMvnEnveduSmsSendList" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="selectMvnEnveduSmsSendList" resultType="java.util.Map">
         /* BatchJobDao.selectMvnEnveduSmsSendList */
         SELECT 
             A.* 
@@ -79,7 +79,7 @@
     </select>
     
     <!-- 휴면계정 전환 안내 메일 발송 대상자 리스트를 반환한다 -->
-    <select id="selectDrmncyNtcMailSendUserList" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="selectDrmncyNtcMailSendUserList" resultType="java.util.Map">
         /* BatchJobDao.selectDrmncyNtcMailSendUserList */
         SELECT 
             USERID 
@@ -101,7 +101,7 @@
     </select>
     
     <!-- 휴면계정 전환 대상자 리스트를 반환한다 -->
-    <select id="selectDrmncyUserList" parameterType="java.util.Map" resultType="java.util.Map">
+    <select id="selectDrmncyUserList" resultType="java.util.Map">
         /* BatchJobDao.selectDrmncyMailSendUserList */
         SELECT 
             USERID 
@@ -144,7 +144,7 @@
     <update id="updateUserInfo">
         UPDATE TB_CMM_USER
         SET
-            NM = NULL
+            NM = '휴면회원'
             , MOBLPHON = NULL
             , TELNO = NULL
             , BRDT = NULL
@@ -162,5 +162,116 @@
         DELETE FROM TB_CMM_NTCN
         WHERE REG_DT <![CDATA[<]]> DATE_ADD(NOW(), INTERVAL -3 MONTH)
     </delete>
+    
+    <!-- 휴면계정 전환 안내 메일 발송 대상자 리스트를 반환한다 -->
+    <select id="selectExprtEduMsgSendUser" parameterType="int" resultType="java.util.Map">
+        SELECT 
+            ALD.DMNDID 
+            , ALD.EXPRTID
+            , ECU.NM AS ASS_NM
+            , ECU.MOBLPHON AS ASS_MOBLPHON
+            , ECU.EML AS ASS_EML
+            , ALD.USERID 
+            , CU.NM 
+            , ALD.MOBLPHON 
+            , ALD.EML 
+            , ALD.DMND_STTS_CD 
+            , ALD.EDU_NOPE 
+            , DATE_FORMAT(ALD.LCTR_BGNG_DT, '%Y.%m.%d %H:%i:%S') AS LCTR_BGNG_DT
+            , DATE_FORMAT(DATE_ADD(ALD.LCTR_BGNG_DT, INTERVAL -30 MINUTE), '%Y%m%d%H%i%S') AS BFR_SEND_DT
+            , DATE_FORMAT(ALD.LCTR_END_DT, '%Y.%m.%d %H:%i:%S') AS LCTR_END_DT
+            , DATE_FORMAT(ALD.LCTR_END_DT, '%Y%m%d%H%i%S') AS AFTR_SEND_DT
+            , AE.EXPRT_TYPE_CD 
+            , AE.LCTR_GDNC_RCPTN_YN 
+            , AE.STTS_CD 
+        FROM TB_ASS_LCTR_DMND ALD
+            LEFT JOIN TB_CMM_USER ECU ON ALD.EXPRTID = ECU.USERID 
+            LEFT JOIN TB_CMM_USER CU ON ALD.USERID = CU.USERID 
+            LEFT JOIN TB_ASS_EXPRT AE ON ALD.EXPRTID = AE.USERID 
+        WHERE 
+            ALD.DMND_STTS_CD = '139104'
+            AND AE.STTS_CD = '134103'
+            <if test="type == 1">
+                AND ALD.LCTR_BGNG_DT BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            </if>
+            <if test="type == 2">
+                AND ALD.LCTR_END_DT BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+            </if>
+    </select>
+    
+    <!-- 미입금 시설예약 취소처리 메일 발송 대상자 리스트를 반환한다 -->
+    <select id="selectFlctRsvCancleUserList" resultType="java.util.Map">
+        SELECT A.*
+            , DATE_FORMAT(A.DPST_LMT_DT, '%Y.%m.%d') AS DPST_LMT_DT_STR
+        FROM (
+            SELECT 
+                FSA.APLYID 
+                , FAR.RSVTDEID 
+                , FSA.APLCNT_NM 
+                , FSA.APLCNT_EML 
+                , FF.FCLT_NM 
+                , FS.SPCE_NM 
+                , FSA.APLY_DT 
+                , DATE_FORMAT(FSA.APLY_DT, '%Y.%m.%d %H:%i') AS APLY_DT_STR
+                , FSR.BGNG_DT 
+                , DATE_FORMAT(FSR.BGNG_DT, '%Y.%m.%d %H:%i') AS BGNG_DT_STR
+                , CASE
+                    WHEN DATE_ADD(FSA.APLY_DT, INTERVAL 7 DAY) > FSR.BGNG_DT
+                        THEN DATE_ADD(FSR.BGNG_DT, INTERVAL 1 DAY)
+                    ELSE DATE_ADD(FSA.APLY_DT, INTERVAL 7 DAY)
+                END AS DPST_LMT_DT
+                , FSA.APLY_STTS_CD 
+                , FSA.STLM_STTS_CD 
+                , FSA.NOPE_ADULT 
+                , FSA.NOPE_CHIL 
+                , FSA.NOPE_INFNT 
+            FROM TB_FCL_SPCE_APLY FSA
+                LEFT JOIN TB_FCL_APLY_RSVTDE FAR ON FSA.APLYID = FAR.APLYID 
+                LEFT JOIN TB_FCL_SPCE_RSVTDE FSR ON FAR.RSVTDEID = FSR.RSVTDEID 
+                LEFT JOIN TB_FCL_SPCE FS ON FSR.SPCEID = FS.SPCEID 
+                LEFT JOIN TB_FCL_FCLT FF ON FS.FCLTID = FF.FCLTID 
+            WHERE FSA.APLY_STTS_CD = '160101'
+                AND FSA.STLM_STTS_CD = '161101'
+        ) A
+        WHERE A.DPST_LMT_DT <![CDATA[<]]> NOW()
+    </select>
+    
+    <update id="updateFlctRsvCancle" parameterType="int">
+        UPDATE
+            TB_FCL_SPCE_APLY
+        SET
+            APLY_STTS_CD = '160103'
+            , CNCL_RSN_CD = '215103'
+            , MDFCN_DT = SYSDATE()
+            , MDFRID = 10000001
+        WHERE 
+            APLYID = #{aplyId}
+    </update>
+    
+    <!-- 시설 이용자 대상 만족도 평가 안내 메시지 발송 대상자 리스트를 반환한다 -->
+    <select id="selectFlctRsvDgstfnNtcMsgSend" resultType="java.util.Map">
+        SELECT 
+            FSA.APLYID 
+            , FAR.RSVTDEID 
+            , FSA.APLCNT_NM AS NM
+            , FSA.APLCNT_MOBLPHON AS MOBLPHON 
+            , FF.FCLT_NM 
+            , FS.SPCE_NM 
+            , FSR.END_DT 
+            , DATE_FORMAT(FSR.END_DT, '%Y%m%d%H%i%S') AS END_DT_STR
+            , FSA.APLY_STTS_CD 
+            , FSA.STLM_STTS_CD 
+            , FSA.NOPE_ADULT 
+            , FSA.NOPE_CHIL 
+            , FSA.NOPE_INFNT 
+        FROM TB_FCL_SPCE_APLY FSA
+            LEFT JOIN TB_FCL_APLY_RSVTDE FAR ON FSA.APLYID = FAR.APLYID 
+            LEFT JOIN TB_FCL_SPCE_RSVTDE FSR ON FAR.RSVTDEID = FSR.RSVTDEID 
+            LEFT JOIN TB_FCL_SPCE FS ON FSR.SPCEID = FS.SPCEID 
+            LEFT JOIN TB_FCL_FCLT FF ON FS.FCLTID = FF.FCLTID 
+        WHERE FSA.APLY_STTS_CD = '160101'
+            AND FSA.STLM_STTS_CD = '161101'
+            AND FSR.END_DT BETWEEN DATE_ADD(NOW(), INTERVAL 1 HOUR) AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+    </select>
 	
 </mapper>

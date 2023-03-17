@@ -58,6 +58,9 @@ public class ExpertVo extends ParentRequestVo {
     /** 이메일_공개_여부 */
     private String emlRlsYn;
 
+    /** 전화번호_공개_여부 */
+    private String telnoRlsYn;
+
     /** 자격_공개_여부 */
     private String qlfcRlsYn;
 
@@ -199,6 +202,9 @@ public class ExpertVo extends ParentRequestVo {
     private String[] exprtActvtScopeArr;
     /* 저장용 */
     private String[] exprtSbjctArr;
+
+    /* 정보요청 테이블에 값 생성시 필요 */
+    private Integer mdfcnDmndId;
 
     public void setSttsCd(String sttsCd) {
         this.sttsCd = sttsCd;

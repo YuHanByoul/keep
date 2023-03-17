@@ -129,7 +129,7 @@ public class QuartzExecConfig extends QuartzJobBean {
             }
         }
         
-     // 유아환경교육 만족도 조사 안내 메시지 발송
+        // 유아환경교육 만족도 조사 안내 메시지 발송
         if (triggerid == 12 && "infntDgstfnJob".equals(jobName)) {
             try {
                 batchJobService.infntEnveduDgstfnMsgSend(triggerid);
@@ -138,8 +138,59 @@ public class QuartzExecConfig extends QuartzJobBean {
                 throw new JobExecutionException(jobName);
             } catch (Exception e) {
                 log.error("executeInternal.Exception.51L");
-                e.printStackTrace();
-                //throw new JobExecutionException(jobName);
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 전문가 섭외자와 대상 전문가 대상 교육 알림 메시지 발송
+        if (triggerid == 13 && "exprtBfrMsgJob".equals(jobName)) {
+            try {
+                batchJobService.exprtEduBfrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 전문가 섭외자 대상 만족도 평가 안내 메시지 발송
+        if (triggerid == 14 && "exprtAftrMsgJob".equals(jobName)) {
+            try {
+                batchJobService.exprtEduAftrMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 미입금 시설예약 취소처리
+        if (triggerid == 15 && "flctRsvCnclJob".equals(jobName)) {
+            try {
+                batchJobService.flctRsvCancle(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
+            }
+        }
+        
+        // 시설 이용자 대상 만족도 평가 안내 메시지 발송
+        if (triggerid == 16 && "flctRsvDgstfnJob".equals(jobName)) {
+            try {
+                batchJobService.flctRsvDgstfnNtcMsgSend(triggerid);
+            } catch (SQLException e) { 
+                log.error("executeInternal.SQLException.51L");
+                throw new JobExecutionException(jobName);
+            } catch (Exception e) {
+                log.error("executeInternal.Exception.51L");
+                throw new JobExecutionException(jobName);
             }
         }
     	
