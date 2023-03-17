@@ -3,6 +3,7 @@ package com.kbrainc.plum.front.envPrpsl.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kbrainc.plum.cmm.file.model.FileVo;
 import com.kbrainc.plum.rte.model.UserVo;
+import com.kbrainc.plum.rte.util.StringUtil;
 import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
@@ -43,6 +44,9 @@ public class EnvPrpslAnsVo {
     /** 답변자이름 */
     private String acnt;
 
+    /** 답변자 이름 */
+    private String nm;
+
     /** 공개_여부 */
     private String rlsYn;
 
@@ -64,7 +68,13 @@ public class EnvPrpslAnsVo {
     /** 등록자아이디 */
     private Integer rgtrid;
 
+    /** 파일 그룹 아이디*/
     private Integer filegrpid;
 
+    /** 파일 목록 */
     private List<FileVo> fileList;
+
+    public void setNm(String nm) {
+        this.nm = StringUtil.maskingName(nm);
+    }
 }

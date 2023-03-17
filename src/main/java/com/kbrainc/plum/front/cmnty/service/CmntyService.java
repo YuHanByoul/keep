@@ -214,4 +214,34 @@ public interface CmntyService {
      * @return cmnty pst vo
      */
     CmntyPstVo selectPstInfo(CmntyPstVo paramVo);
+
+    /**
+     * 환경동아리 댓글 등록
+     * Title : insertCmnt
+     * Description : 환경동아리 댓글 등록
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean insertCmnt(CmntyCmntVo paramVo);
+
+    /**
+     * 환경동아리 댓글 목록
+     * Title : selectCmntList
+     * Description : 환경동아리 댓글 목록
+     *
+     * @param paramVo
+     * @return list
+     */
+    List<CmntyCmntVo> selectCmntList(CmntyCmntVo paramVo);
+
+    /**
+     * 환경동아리 댓글 수정
+     * Title : updateCmnt
+     * Description : 환경동아리 댓글 수정
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    boolean updateCmnt(CmntyCmntVo paramVo);
 }

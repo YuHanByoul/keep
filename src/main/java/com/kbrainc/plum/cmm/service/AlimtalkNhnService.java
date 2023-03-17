@@ -26,10 +26,11 @@ public interface AlimtalkNhnService {
     * @Title : sendAlimtalk 
     * @Description : 알림톡 발송
     * @param templateCode 템플릿코드
+    * @param requestDate 발송요청일
     * @param recipientList 수신자 목록
     * @return Map<String, Object> 발송결과
     * @throws Exception 예외
     */
-    Map<String, Object> sendAlimtalk(String templateCode, String recipientList) throws Exception;
+    Map<String, Object> sendAlimtalk(String templateCode, String requestDate, String recipientList) throws Exception;
     
 }

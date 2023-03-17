@@ -33,6 +33,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.kbrainc.plum.cmm.esylgn.model.EsylgnDao;
+import com.kbrainc.plum.cmm.model.CommonDao;
 import com.kbrainc.plum.front.member.model.MemberAcntPswdFindVo;
 import com.kbrainc.plum.front.member.model.MemberDao;
 import com.kbrainc.plum.front.member.model.MemberInstSearchVo;
@@ -67,6 +68,9 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
     @Resource(name = "front.memberDao")
     private MemberDao memberDao;
     
+    @Autowired
+    private CommonDao commonDao;
+     
     @Autowired
     private EsylgnDao esylgnDao;
     
@@ -111,6 +115,8 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         int retVal = 0;
         retVal += memberDao.updateMemberDel(user);
         retVal += memberDao.deleteEsylgnByUserid(user);
+        retVal += commonDao.deleteUserDrmncy(user.getUserid()); // 회원 휴면중 탈퇴처리일 수 있으므로 삭제
+        retVal += commonDao.deleteRoleUser(user.getUserid()); // 부여된 역할 삭제
         
         if (session != null) {
             session.invalidate();            
@@ -119,10 +125,10 @@ public class MemberServiceImpl extends PlumAbstractServiceImpl implements Member
         SecurityContextHolder.clearContext();
         
         if (ssoIsUse) {
-            CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
             String sToken = CookieUtil.getCookie(request, "ssotoken"); // 쿠키에 저장된 토큰을 받아 저장
             
-            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 없으면
+            if (!"".equals(StringUtil.nvl(sToken))) { // 토큰이 있으면
+                CookieUtil.setCookie(request, response, "ssotoken", "", serverCookieDomain, "/");
                 SSO sso = new SSO(ssoApikey);
                 sso.setHostName(ssoHost); // engine이 설치된 아이피
                 sso.setPortNumber(ssoPort); // engine이 사용하고 있는 포트넘버

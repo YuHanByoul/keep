@@ -7,6 +7,8 @@
     Description : 탄소중립 헬프데스크
 -->
 <mapper namespace="com.kbrainc.plum.front.helpdesk.model.HelpdeskDao">
+
+    <!--  헬프데스크 등록  -->
     <insert id="insertHelpdesk">
         INSERT INTO TB_CMM_HELPDESK(
             TTL
@@ -39,6 +41,7 @@
              )
     </insert>
 
+    <!-- 헬프데스크 수정   -->
     <update id="updateHelpdesk">
         UPDATE TB_CMM_HELPDESK SET
             TTL = #{ttl}
@@ -51,6 +54,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
+    <!-- 헬프데스크 삭제  -->
     <update id="deleteHelpdesk">
         UPDATE TB_CMM_HELPDESK SET
             DEL_YN = 'Y'
@@ -59,6 +63,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
+    <!--  헬프데스크 취소  -->
     <update id="cancelHelpdesk">
         UPDATE TB_CMM_HELPDESK SET
            STTS_CD = '113102'
@@ -67,6 +72,7 @@
         WHERE INQRYID = #{inqryid}
     </update>
 
+    <!--  헬프데스크 신청 목록 조회  -->
     <select id="selectHelpdeskList" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskVo">
         <include refid="PaginationMapper.header"/>
         SELECT
@@ -79,17 +85,7 @@
             , A.RLS_YN
             , A.REG_DT
             , A.USERID
-            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
-               CONCAT(
-                       SUBSTRING(B.ACNT, 1, 1)
-                   ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
-                   ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
-                   )
-               ELSE CONCAT(
-                       SUBSTRING(B.ACNT, 1, 1)
-                   ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
-                   )
-            END AS ACNT
+            , B.NM
         FROM TB_CMM_HELPDESK A
         INNER JOIN TB_CMM_USER B
             ON A.USERID = B.USERID
@@ -109,6 +105,7 @@
         <include refid="PaginationMapper.footer"/>
     </select>
 
+    <!--  헬프데스크 상세 조회  -->
     <select id="selectHelpdesk" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskVo">
         SELECT
             A.INQRYID
@@ -120,23 +117,14 @@
              , A.RLS_YN
              , A.REG_DT
              , A.USERID
-             , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
-                CONCAT(
-                        SUBSTRING(B.ACNT, 1, 1)
-                    ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
-                    ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
-                    )
-                ELSE CONCAT(
-                        SUBSTRING(B.ACNT, 1, 1)
-                    ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
-                    )
-            END AS ACNT
+             , B.NM
         FROM TB_CMM_HELPDESK A
         INNER JOIN TB_CMM_USER B
             ON A.USERID = B.USERID
         WHERE A.INQRYID = #{inqryid}
     </select>
 
+    <!--  헬프데스크 답변 조회  -->
     <select id="selectHelpdeskAns" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskAnsVo">
         SELECT
             A.ANSID
@@ -145,13 +133,14 @@
             , A.TTL
             , A.CN
             , A.FILEGRPID
-            , B.ACNT
+            , B.NM
         FROM TB_CMM_HELPDESK_ANS A
         INNER JOIN TB_CMM_USER B
             ON A.PRCRID = B.USERID
         WHERE A.INQRYID = #{inqryid}
     </select>
 
+    <!--  마이페이지 > 헬프데스크 신청 목록 조회  -->
     <select id="selectMyHelpdeskList" resultType="com.kbrainc.plum.front.helpdesk.model.HelpdeskVo">
         <include refid="PaginationMapper.header"/>
         SELECT
@@ -164,17 +153,7 @@
             , A.RLS_YN
             , A.REG_DT
             , A.USERID
-            , CASE WHEN CHAR_LENGTH(B.ACNT) > 2 THEN
-            CONCAT(
-            SUBSTRING(B.ACNT, 1, 1)
-            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 2, '*')
-            ,SUBSTRING(B.ACNT, CHAR_LENGTH(B.ACNT), CHAR_LENGTH(B.ACNT))
-            )
-            ELSE CONCAT(
-            SUBSTRING(B.ACNT, 1, 1)
-            ,LPAD('*', CHAR_LENGTH(B.ACNT) - 1, '*')
-            )
-            END AS ACNT
+            , B.NM
         FROM TB_CMM_HELPDESK A
         INNER JOIN TB_CMM_USER B
             ON A.USERID = B.USERID

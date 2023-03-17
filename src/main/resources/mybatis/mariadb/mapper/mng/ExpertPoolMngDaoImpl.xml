@@ -9,7 +9,6 @@
       <!--전문가 목록 조회-->
     <select id="selectExpertList" resultType="ExpertVo">
         <include refid="PaginationMapper.header"/>
-
         SELECT AA.*
         FROM (
             SELECT
@@ -94,6 +93,8 @@
 
         <include refid="PaginationMapper.footer"/>
     </select>
+
+    <!-- 전문가 회원 정보 조회 -->
     <select id="selectExpertInfo" resultType="ExpertVo">
         SELECT
             A.USERID
@@ -110,6 +111,7 @@
             A.USERID = #{userid}
     </select>
 
+    <!-- 전문가 상세 정보 조회 -->
     <select id="selectExpertApplyInfo" resultType="ExpertVo">
         SELECT
             A.USERID
@@ -127,6 +129,7 @@
             , A.FLD_ETC_YN
             , A.FLD_ETC_CN
             , A.MOBLPHON_RLS_YN
+            , A.TELNO_RLS_YN
             , A.EML_RLS_YN
             , A.QLFC_RLS_YN
             , A.HDOF_RLS_YN
@@ -300,4 +303,265 @@
         ORDER BY ORDR
     </select>
 
+    <!-- 정보변경 테이블 존재 여부 조회 -->
+    <select id="getMdfcnDmndCount" resultType="int">
+        SELECT COUNT(1)
+        FROM TB_ASS_EXPRT_MDFCN_DMND
+        WHERE USERID= #{userid}
+    </select>
+
+    <!-- 전문가 수정 요청 테이블 생성 -->
+    <insert id="insertMdfcnExprt" useGeneratedKeys="true" keyProperty="mdfcnDmndId">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_DMND (
+              USERID
+            , EXPRT_TYPE_CD
+            , FLD_LCTR_YN
+            , FLD_PLANNG_YN
+            , FLD_CNSLTNG_YN
+            , FLD_ETC_YN
+            , FLD_ETC_CN
+            , MOBLPHON_RLS_YN
+            , TELNO_RLS_YN
+            , EML_RLS_YN
+            , QLFC_RLS_YN
+            , HDOF_RLS_YN
+            , CAREER_RLS_YN
+            , ENT_LCTR_DMND_RCPTN_YN
+            , LCTR_GDNC_RCPTN_YN
+            , ENV_EDU_CAREER_YY
+            , ENV_EDU_CAREER_MM
+            , STTS_CD /*152102*/
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        )
+        VALUE (
+        #{userid}
+        , #{exprtTypeCd}
+        , #{fldLctrYn}
+        , #{fldPlanngYn}
+        , #{fldCnsltngYn}
+        , #{fldEtcYn}
+        , #{fldEtcCn}
+        , #{moblphonRlsYn}
+        , #{telnoRlsYn}
+        , #{emlRlsYn}
+        , #{qlfcRlsYn}
+        , #{hdofRlsYn}
+        , #{careerRlsYn}
+        , #{entLctrDmndRcptnYn}
+        , #{lctrGdncRcptnYn}
+        , #{envEduCareerYy}
+        , #{envEduCareerMm}
+        , '152102'
+        , NOW()
+        , #{userid}
+        , NOW()
+        , #{userid}
+        )
+    </insert>
+
+    <!-- 전문가 수정 경력 생성 -->
+    <insert id="insertMdfcnCareer">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_CAREER(
+            MDFCN_DMND_ID
+            , FLD_NM
+            , ACTVT_BGNG_DE
+            , ACTVT_END_DE
+            , ACTVT_YN
+            , ACTVT_HR
+            , IDNTY_INST_NM
+            , ACTVT_CN
+            , IDNTY_DE
+            , CRTF_FILEGRPID
+            , ARTCLASS_FILEGRPID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="expertCareerList" item="item" separator="," index="index">
+            (
+            #{mdfcnDmndId}
+            , #{item.fldNm}
+            , #{item.actvtBgngDe}
+            , #{item.actvtEndDe}
+            , #{item.actvtYn}
+            , #{item.actvtHr}
+            , #{item.idntyInstNm}
+            , #{item.actvtCn}
+            , #{item.idntyDe}
+            , #{item.crtfFileid}
+            , #{item.artclassFileid}
+            , #{index}
+            , NOW()
+            , #{userid}
+            , NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 전문가 수정 자격증 생성 -->
+    <insert id="insertMdfcnCrtfct">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_CRTFCT(
+            MDFCN_DMND_ID
+            , CRTFCT_NM
+            , ACQS_INST
+            , ACQS_NO
+            , ACQS_GRD
+            , ACQS_DE
+            , CRTFCT_FILEGRPID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="expertCrtfctList" item="item" separator="," index="index">
+            (
+            #{mdfcnDmndId}
+            , #{item.crtfctNm}
+            , #{item.acqsInst}
+            , #{item.acqsNo}
+            , #{item.acqsGrd}
+            , #{item.acqsDe}
+            , #{item.crtfctFileid}
+            , #{index}
+            , NOW()
+            , #{userid}
+            , NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 전문가 수정 재직 생성 -->
+    <insert id="insertMdfcnHdof">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_HDOF(
+            MDFCN_DMND_ID
+            , HDOF_SE_CD
+            , INST_NM
+            , DEPT_NM
+            , JBGD_NM
+            , HDOF_BGNG_DE
+            , HDOF_END_DE
+            , HDOF_YN
+            , HDOFCRTF_FILEGRPID
+            , ORDR
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="expertHdofList" item="item" separator="," index="index">
+            (
+            #{mdfcnDmndId}
+            , #{item.hdofSeCd}
+            , #{item.instNm}
+            , #{item.deptNm}
+            , #{item.jbgdNm}
+            , #{item.hdofBgngDe}
+            , #{item.hdofEndDe}
+            , #{item.hdofYn}
+            , #{item.hdofcrtfFileid}
+            , #{index}
+            , NOW()
+            , #{userid}
+            ,  NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 전문가 수정 대상 생성 -->
+    <insert id="insertMdfcnTrgtCds">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_TRGT(
+            MDFCN_DMND_ID
+            , TRGT_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="exprtTrgtArr" item="trgtCd" separator=",">
+            (
+            #{mdfcnDmndId}
+            , #{trgtCd}
+            , NOW()
+            , #{userid}
+            , NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 전문가 수정 주제 생성 -->
+    <insert id="insertMdfcnSbjctCds">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_SBJCT (
+            MDFCN_DMND_ID
+            , SBJCT_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="exprtSbjctArr" item="sbjctCd" separator=",">
+            (
+            #{mdfcnDmndId}
+            , #{sbjctCd}
+            , NOW()
+            , #{userid}
+            , NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 전문가 수정 지역 생성 -->
+    <insert id="insertMdfcnActvtRgnCds">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_ACTVT_RGN(
+            MDFCN_DMND_ID
+            , RGN_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="exprtActvtRgnArr" item="actvtRgnCd" separator=",">
+            (
+            #{mdfcnDmndId}
+            , #{actvtRgnCd}
+            , NOW()
+            , #{userid}
+            , NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 전문가 수정 범위 생성 -->
+    <insert id="insertMdfcnActvtScopeCds">
+        INSERT INTO TB_ASS_EXPRT_MDFCN_ACTVT_SCOPE
+        (
+            MDFCN_DMND_ID
+            , RGN_CD
+            , MDFCN_DT
+            , MDFRID
+            , REG_DT
+            , RGTRID
+        ) VALUES
+        <foreach collection="exprtActvtScopeArr" item="actvtScopeCd" separator=",">
+            (
+            #{mdfcnDmndId}
+            , #{actvtScopeCd}
+            , NOW()
+            , #{userid}
+            , NOW()
+            , #{userid}
+            )
+        </foreach>
+    </insert>
 </mapper>

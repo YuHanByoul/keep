@@ -39,36 +39,99 @@ public class PltfomImprvmPropslServiceImpl extends PlumAbstractServiceImpl imple
     @Autowired
     private FileDao fileDao;
 
+    /**
+     * 플랫폼 개선 제안 생성
+     *
+     * @param pltfomImprvmPropslVo
+     * @return int
+     * @throws Exception
+     * @Title : insertPltfomImprvmPropsl
+     * @Description : 플랫폼 개선 제안 생성
+     */
     @Override
     public int insertPltfomImprvmPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         return pltfomImprvmPropslDao.insertPltfomImprvmPropsl(pltfomImprvmPropslVo);
     }
 
+    /**
+     * 플랫폼 개선 제안 수정
+     *
+     * @param pltfomImprvmPropslVo
+     * @return int
+     * @throws Exception
+     * @Title : updatePltfomImprvmPropsl
+     * @Description : 플랫폼 개선 제안 수정
+     */
     @Override
     public int updatePltfomImprvmPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         return pltfomImprvmPropslDao.updatePltfomImprvmPropsl(pltfomImprvmPropslVo);
     }
 
+    /**
+     * 플랫폼 개선 제안 삭제
+     *
+     * @param pltfomImprvmPropslVo
+     * @return int
+     * @throws Exception
+     * @Title : deletePltfomImprvmPropsl
+     * @Description : 플랫폼 개선 제안 삭제
+     */
     @Override
     public int deletePltfomImprvmPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         return pltfomImprvmPropslDao.deletePltfomImprvmPropsl(pltfomImprvmPropslVo);
     }
 
+    /**
+     * 플랫폼 개선 제안 취소
+     *
+     * @param pltfomImprvmPropslVo
+     * @return int
+     * @throws Exception
+     * @Title : cancelPltfomImprvmPropsl
+     * @Description : 플랫폼 개선 제안 취소
+     */
     @Override
     public int cancelPltfomImprvmPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         return pltfomImprvmPropslDao.cancelPltfomImprvmPropsl(pltfomImprvmPropslVo);
     }
 
+    /**
+     * 플랫폼 개선 제안 목록 조회
+     *
+     * @param pltfomImprvmPropslVo
+     * @return list
+     * @throws Exception
+     * @Title : selectPltfomImprvmPropslList
+     * @Description : 플랫폼 개선 제안 목록 조회
+     */
     @Override
     public List<PltfomImprvmPropslVo> selectPltfomImprvmPropslList(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         return pltfomImprvmPropslDao.selectPltfomImprvmPropslList(pltfomImprvmPropslVo);
     }
 
+    /**
+     * 마이페이지 > 플랫폼 개선 제안 목록 조회
+     *
+     * @param pltfomImprvmPropslVo
+     * @return list
+     * @throws Exception
+     * @Title : selectMyPltfomImprvmPropslList
+     * @Description : 마이페이지 > 플랫폼 개선 제안 목록 조회
+     */
     @Override
     public List<PltfomImprvmPropslVo> selectMyPltfomImprvmPropslList(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         return pltfomImprvmPropslDao.selectMyPltfomImprvmPropslList(pltfomImprvmPropslVo);
     }
 
+    /**
+     * 플랫폼 개선 제안 상세 조회
+     *
+     * @param pltfomImprvmPropslVo
+     * @return pltfom imprvm propsl vo
+     * @throws Exception
+     * @Title : selectPropsl
+     * @Description : 플랫폼 개선 제안 상세 조회
+     */
     @Override
     public PltfomImprvmPropslVo selectPropsl(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         PltfomImprvmPropslVo propsl = pltfomImprvmPropslDao.selectPropsl(pltfomImprvmPropslVo);
@@ -83,6 +146,15 @@ public class PltfomImprvmPropslServiceImpl extends PlumAbstractServiceImpl imple
         return propsl;
     }
 
+    /**
+     * 플랫폼 개선 제안 답변 조회
+     *
+     * @param pltfomImprvmPropslVo
+     * @return pltfom imprvm propsl ans vo
+     * @throws Exception
+     * @Title : selectPropslAns
+     * @Description : 플랫폼 개선 제안 답변 조회
+     */
     @Override
     public PltfomImprvmPropslAnsVo selectPropslAns(PltfomImprvmPropslVo pltfomImprvmPropslVo) throws Exception {
         PltfomImprvmPropslAnsVo propslAns = pltfomImprvmPropslDao.selectPropslAns(pltfomImprvmPropslVo);

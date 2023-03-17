@@ -346,4 +346,53 @@ public class CmntyServiceImpl extends PlumAbstractServiceImpl implements CmntySe
     public CmntyPstVo selectPstInfo(CmntyPstVo paramVo) {
         return cmntyDao.selectPstInfo(paramVo);
     }
+
+    /**
+     * 환경동아리 댓글 목록
+     * Title : selectCmntList
+     * Description : 환경동아리 댓글 목록
+     *
+     * @param paramVo
+     * @return list
+     */
+    @Override
+    public List<CmntyCmntVo> selectCmntList(CmntyCmntVo paramVo) {
+        return cmntyDao.selectCmntList(paramVo);
+    }
+
+    /**
+     * 환경동아리 댓글 등록
+     * Title : insertCmnt
+     * Description : 환경동아리 댓글 등록
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    @Override
+    public boolean insertCmnt(CmntyCmntVo paramVo) {
+        boolean result = false;
+        if(paramVo.getCmntid() != null){
+            CmntyCmntVo parentCmntInfo = (CmntyCmntVo) cmntyDao.selectCmntList(paramVo);
+            paramVo.setParntsCmntid(parentCmntInfo.getCmntid());
+            paramVo.setCmntGrp(parentCmntInfo.getCmntGrp());
+            paramVo.setDpth(parentCmntInfo.getDpth() + 1);
+            paramVo.setSortordr(parentCmntInfo.getSortordr() + 1);
+            cmntyDao.updateCmntOrdElse(paramVo);
+        }
+        result = cmntyDao.insertCmnt(paramVo);
+        return result;
+    }
+
+    /**
+     * 환경동아리 댓글 수정
+     * Title : updateCmnt
+     * Description : 환경동아리 댓글 수정
+     *
+     * @param paramVo
+     * @return boolean
+     */
+    @Override
+    public boolean updateCmnt(CmntyCmntVo paramVo) {
+        return cmntyDao.updateCmnt(paramVo);
+    }
 }

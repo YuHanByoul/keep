@@ -7,6 +7,7 @@ import com.kbrainc.plum.mng.expertPoolMng.model.*;
 import com.kbrainc.plum.rte.service.PlumAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -130,11 +131,39 @@ public class ExpertPoolMngServiceImpl extends PlumAbstractServiceImpl implements
      * @Description : 전문가 상태 변경
      */
     @Override
-    public boolean updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo) throws Exception {
+    @Transactional
+    public int updateExpertStatus(ExpertVo expertVo, ExpertLogVo expertLogVo) throws Exception {
+        int retVal = 0;
+
+//        승인 시 정보변경 이력테이블에 값이 없는 경우
+        if (expertVo.getSttsCd().equals("134103")) {
+            int mdfcnDmndCount = expertPoolMngDao.getMdfcnDmndCount(expertVo);
+            if (mdfcnDmndCount == 0) {
+                ExpertVo expert = selectExpertApplyInfo(expertVo);
+//                 정보변경 테이블에 전문가 정보 복사
+                retVal += expertPoolMngDao.insertMdfcnExprt(expert);
+                retVal += expert.getExpertCareerList().size() > 0 ? expertPoolMngDao.insertMdfcnCareer(expert) : 0;
+                retVal += expert.getExpertCrtfctList().size() > 0 ? expertPoolMngDao.insertMdfcnCrtfct(expert) : 0;
+                retVal += expert.getExpertHdofList().size() > 0 ? expertPoolMngDao.insertMdfcnHdof(expert) : 0;
+
+                expert.setExprtTrgtArr(expert.getExprtTrgtCd().split(","));
+                expert.setExprtSbjctArr(expert.getExprtSbjctCd().split(","));
+                expert.setExprtActvtRgnArr(expert.getExprtActvtRgnCd().split(","));
+                expert.setExprtActvtScopeArr(expert.getExprtActvtScopeCd().split(","));
+                retVal += expertPoolMngDao.insertMdfcnTrgtCds(expert);
+                retVal += expertPoolMngDao.insertMdfcnSbjctCds(expert);
+                retVal += expertPoolMngDao.insertMdfcnActvtRgnCds(expert);
+                retVal += expertPoolMngDao.insertMdfcnActvtScopeCds(expert);
+            }
+        }
+
         if (expertLogVo.getPrcsSeCd() != null && !expertLogVo.getPrcsSeCd().equals("")) {
-            return expertPoolMngDao.updateExpertStatus(expertVo) && expertPoolMngDao.insertExpertLog(expertLogVo);
+            retVal += expertPoolMngDao.updateExpertStatus(expertVo);
+            retVal += expertPoolMngDao.insertExpertLog(expertLogVo);
+            return retVal;
         } else {
-            return expertPoolMngDao.updateExpertStatus(expertVo);
+            retVal += expertPoolMngDao.updateExpertStatus(expertVo);
+            return retVal;
         }
     }
 
@@ -149,7 +178,7 @@ public class ExpertPoolMngServiceImpl extends PlumAbstractServiceImpl implements
      */
     @Override
     public boolean insertExpertLog(ExpertLogVo expertLogVo) throws Exception {
-        return expertPoolMngDao.insertExpertLog(expertLogVo);
+        return expertPoolMngDao.insertExpertLog(expertLogVo) > 0;
     }
 
     /**
